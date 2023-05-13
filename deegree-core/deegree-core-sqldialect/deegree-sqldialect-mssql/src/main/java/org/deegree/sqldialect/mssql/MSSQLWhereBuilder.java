@@ -77,211 +77,207 @@ import java.util.List;
 
 /**
  * {@link AbstractWhereBuilder} implementation for Microsoft SQL Server databases.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: mschneider $
- * 
  * @version $Revision: 31370 $, $Date: 2011-07-28 19:37:13 +0200 (Do, 28. Jul 2011) $
  */
 public class MSSQLWhereBuilder extends AbstractWhereBuilder {
 
-    /**
-     * Creates a new {@link MSSQLWhereBuilder} instance.
-     * 
-     * @param dialect
-     *            SQL dialect, can be <code>null</code> (TODO refactor code, so not null is always used)
-     * @param mapper
-     *            provides the mapping from {@link ValueReference}s to DB columns, must not be <code>null</code>
-     * @param filter
-     *            filter to use for generating the WHERE clause, can be <code>null</code>
-     * @param sortCrit
-     *            criteria to use for generating the ORDER BY clause, can be <code>null</code>
-     * @param defaultSortCriteria
-     *             criteria to use for generating the ORDER-BY clause if the sort order is not specified by the query, may be <code>null</code>
-     * @param allowPartialMappings
-     *            if false, any unmappable expression will cause an {@link UnmappableException} to be thrown
-     * @throws FilterEvaluationException
-     *             if the expression contains invalid {@link ValueReference}s
-     * @throws UnmappableException
-     *             if allowPartialMappings is false and an expression could not be mapped to the db
-     */
-    public MSSQLWhereBuilder( SQLDialect dialect, PropertyNameMapper mapper, OperatorFilter filter,
-                              SortProperty[] sortCrit, List<SortCriterion> defaultSortCriteria, boolean allowPartialMappings ) throws FilterEvaluationException,
-                            UnmappableException {
-        super( dialect, mapper, filter, sortCrit, defaultSortCriteria );
-        build( allowPartialMappings );
-    }
+	/**
+	 * Creates a new {@link MSSQLWhereBuilder} instance.
+	 * @param dialect SQL dialect, can be <code>null</code> (TODO refactor code, so not
+	 * null is always used)
+	 * @param mapper provides the mapping from {@link ValueReference}s to DB columns, must
+	 * not be <code>null</code>
+	 * @param filter filter to use for generating the WHERE clause, can be
+	 * <code>null</code>
+	 * @param sortCrit criteria to use for generating the ORDER BY clause, can be
+	 * <code>null</code>
+	 * @param defaultSortCriteria criteria to use for generating the ORDER-BY clause if
+	 * the sort order is not specified by the query, may be <code>null</code>
+	 * @param allowPartialMappings if false, any unmappable expression will cause an
+	 * {@link UnmappableException} to be thrown
+	 * @throws FilterEvaluationException if the expression contains invalid
+	 * {@link ValueReference}s
+	 * @throws UnmappableException if allowPartialMappings is false and an expression
+	 * could not be mapped to the db
+	 */
+	public MSSQLWhereBuilder(SQLDialect dialect, PropertyNameMapper mapper, OperatorFilter filter,
+			SortProperty[] sortCrit, List<SortCriterion> defaultSortCriteria, boolean allowPartialMappings)
+			throws FilterEvaluationException, UnmappableException {
+		super(dialect, mapper, filter, sortCrit, defaultSortCriteria);
+		build(allowPartialMappings);
+	}
 
-    /**
-     * copied from postgis
-     * 
-     * @param op
-     *            comparison operator to be translated, must not be <code>null</code>
-     * @return corresponding SQL expression, never <code>null</code>
-     * @throws UnmappableException
-     *             if translation is not possible (usually due to unmappable property names)
-     * @throws FilterEvaluationException
-     *             if the expression contains invalid {@link ValueReference}s
-     */
-    @Override
-    protected SQLOperation toProtoSQL( PropertyIsLike op )
-                            throws UnmappableException, FilterEvaluationException {
+	/**
+	 * copied from postgis
+	 * @param op comparison operator to be translated, must not be <code>null</code>
+	 * @return corresponding SQL expression, never <code>null</code>
+	 * @throws UnmappableException if translation is not possible (usually due to
+	 * unmappable property names)
+	 * @throws FilterEvaluationException if the expression contains invalid
+	 * {@link ValueReference}s
+	 */
+	@Override
+	protected SQLOperation toProtoSQL(PropertyIsLike op) throws UnmappableException, FilterEvaluationException {
 
-        if ( !( op.getPattern() instanceof Literal ) ) {
-            String msg = "Mapping of PropertyIsLike with non-literal comparisons to SQL is not implemented yet.";
-            throw new UnsupportedOperationException( msg );
-        }
+		if (!(op.getPattern() instanceof Literal)) {
+			String msg = "Mapping of PropertyIsLike with non-literal comparisons to SQL is not implemented yet.";
+			throw new UnsupportedOperationException(msg);
+		}
 
-        String literal = ( (Literal) op.getPattern() ).getValue().toString();
-        String escape = "" + op.getEscapeChar();
-        String wildCard = "" + op.getWildCard();
-        String singleChar = "" + op.getSingleChar();
+		String literal = ((Literal) op.getPattern()).getValue().toString();
+		String escape = "" + op.getEscapeChar();
+		String wildCard = "" + op.getWildCard();
+		String singleChar = "" + op.getSingleChar();
 
-        SQLExpression propName = toProtoSQL( op.getExpression() );
+		SQLExpression propName = toProtoSQL(op.getExpression());
 
-        IsLikeString specialString = new IsLikeString( literal, wildCard, singleChar, escape );
-        String sqlEncoded = specialString.toSQL( !op.isMatchCase() );
+		IsLikeString specialString = new IsLikeString(literal, wildCard, singleChar, escape);
+		String sqlEncoded = specialString.toSQL(!op.isMatchCase());
 
-        if ( propName.isMultiValued() ) {
-            // TODO escaping of pipe symbols
-            sqlEncoded = "%|" + sqlEncoded + "|%";
-        }
+		if (propName.isMultiValued()) {
+			// TODO escaping of pipe symbols
+			sqlEncoded = "%|" + sqlEncoded + "|%";
+		}
 
-        SQLOperationBuilder builder = new SQLOperationBuilder();
-        if ( !op.isMatchCase() ) {
-            builder.add( "LOWER (" + propName + ")" );
-        } else {
-            builder.add( propName );
-        }
+		SQLOperationBuilder builder = new SQLOperationBuilder();
+		if (!op.isMatchCase()) {
+			builder.add("LOWER (" + propName + ")");
+		}
+		else {
+			builder.add(propName);
+		}
 
-        sqlEncoded = replaceAdditionalMsSqlServerSpecialChars( sqlEncoded );
+		sqlEncoded = replaceAdditionalMsSqlServerSpecialChars(sqlEncoded);
 
-        builder.add( " LIKE '" );
-        builder.add( sqlEncoded );
-        builder.add( "' ESCAPE '\\'" );
-        return builder.toOperation();
-    }
+		builder.add(" LIKE '");
+		builder.add(sqlEncoded);
+		builder.add("' ESCAPE '\\'");
+		return builder.toOperation();
+	}
 
-    private String replaceAdditionalMsSqlServerSpecialChars( String sqlEncoded ) {
-        sqlEncoded = sqlEncoded.replace( "[", "\\[" );
-        sqlEncoded = sqlEncoded.replace( "]", "\\]" );
-        return sqlEncoded;
-    }
+	private String replaceAdditionalMsSqlServerSpecialChars(String sqlEncoded) {
+		sqlEncoded = sqlEncoded.replace("[", "\\[");
+		sqlEncoded = sqlEncoded.replace("]", "\\]");
+		return sqlEncoded;
+	}
 
-    @Override
-    protected SQLOperation toProtoSQL( SpatialOperator op )
-                            throws UnmappableException, FilterEvaluationException {
+	@Override
+	protected SQLOperation toProtoSQL(SpatialOperator op) throws UnmappableException, FilterEvaluationException {
 
-        SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
+		SQLOperationBuilder builder = new SQLOperationBuilder(BOOLEAN);
 
-        SQLExpression propNameExpr = toProtoSQLSpatial( op.getPropName() );
-        if ( !propNameExpr.isSpatial() ) {
-            String msg = "Cannot evaluate spatial operator on database. Targeted property name '" + op.getPropName()
-                         + "' does not denote a spatial column.";
-            throw new FilterEvaluationException( msg );
-        }
+		SQLExpression propNameExpr = toProtoSQLSpatial(op.getPropName());
+		if (!propNameExpr.isSpatial()) {
+			String msg = "Cannot evaluate spatial operator on database. Targeted property name '" + op.getPropName()
+					+ "' does not denote a spatial column.";
+			throw new FilterEvaluationException(msg);
+		}
 
-        ICRS storageCRS = propNameExpr.getCRS();
-        int srid = propNameExpr.getSRID() != null ? Integer.parseInt( propNameExpr.getSRID() ) : 0;
+		ICRS storageCRS = propNameExpr.getCRS();
+		int srid = propNameExpr.getSRID() != null ? Integer.parseInt(propNameExpr.getSRID()) : 0;
 
-        switch ( op.getSubType() ) {
-        case BBOX: {
-            BBOX bbox = (BBOX) op;
-            builder.add( propNameExpr ).add( ".STIntersects(" );
-            builder.add( toProtoSQL( bbox.getBoundingBox(), storageCRS, srid ) );
-            builder.add( ")=1" );
-            break;
-        }
-        case BEYOND: {
-            Beyond beyond = (Beyond) op;
-            builder.add( "NOT " ).add( propNameExpr ).add( ".STDWithin(" );
-            builder.add( toProtoSQL( beyond.getGeometry(), storageCRS, srid ) );
-            builder.add( "," );
-            // TODO uom handling
-            PrimitiveType pt = new PrimitiveType( DECIMAL );
-            PrimitiveValue value = new PrimitiveValue( beyond.getDistance().getValue(), pt );
-            PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( pt, null, false );
-            SQLArgument argument = new SQLArgument( value, converter );
-            builder.add( argument );
-            builder.add( ")=1" );
-            break;
-        }
-        case CONTAINS: {
-            Contains contains = (Contains) op;
-            builder.add( propNameExpr ).add( ".STContains(" );
-            builder.add( toProtoSQL( contains.getGeometry(), storageCRS, srid ) );
-            builder.add( ")=1" );
-            break;
-        }
-        case CROSSES: {
-            Crosses crosses = (Crosses) op;
-            builder.add( propNameExpr ).add( ".STCrosses(" );
-            builder.add( toProtoSQL( crosses.getGeometry(), storageCRS, srid ) );
-            builder.add( ")=1" );
-            break;
-        }
-        case DISJOINT: {
-            Disjoint disjoint = (Disjoint) op;
-            builder.add( propNameExpr ).add( ".STDisjoint(" );
-            builder.add( toProtoSQL( disjoint.getGeometry(), storageCRS, srid ) );
-            builder.add( ")=1" );
-            break;
-        }
-        case DWITHIN: {
-            DWithin dWithin = (DWithin) op;
-            builder.add( propNameExpr ).add( ".STDWithin(" );
-            builder.add( toProtoSQL( dWithin.getGeometry(), storageCRS, srid ) );
-            builder.add( "," );
-            // TODO uom handling
-            PrimitiveType pt = new PrimitiveType( DECIMAL );
-            PrimitiveValue value = new PrimitiveValue( dWithin.getDistance().getValue(), pt );
-            PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( pt, null, false );
-            SQLArgument argument = new SQLArgument( value, converter );
-            builder.add( argument );
-            builder.add( ")=1" );
-            break;
-        }
-        case EQUALS: {
-            Equals equals = (Equals) op;
-            builder.add( propNameExpr ).add( ".STEquals(" );
-            builder.add( toProtoSQL( equals.getGeometry(), storageCRS, srid ) );
-            builder.add( ")=1" );
-            break;
-        }
-        case INTERSECTS: {
-            Intersects intersects = (Intersects) op;
-            builder.add( propNameExpr ).add( ".STIntersects(" );
-            builder.add( toProtoSQL( intersects.getGeometry(), storageCRS, srid ) );
-            builder.add( ")=1" );
-            break;
-        }
-        case OVERLAPS: {
-            Overlaps overlaps = (Overlaps) op;
-            builder.add( propNameExpr ).add( ".STOverlaps(" );
-            builder.add( toProtoSQL( overlaps.getGeometry(), storageCRS, srid ) );
-            builder.add( ")=1" );
-            break;
-        }
-        case TOUCHES: {
-            Touches touches = (Touches) op;
-            builder.add( propNameExpr ).add( ".STTouches(" );
-            builder.add( toProtoSQL( touches.getGeometry(), storageCRS, srid ) );
-            builder.add( ")=1" );
-            break;
-        }
-        case WITHIN: {
-            Within within = (Within) op;
-            builder.add( propNameExpr ).add( ".STWithin(" );
-            builder.add( toProtoSQL( within.getGeometry(), storageCRS, srid ) );
-            builder.add( ")=1" );
-            break;
-        }
-        }
-        return builder.toOperation();
-    }
+		switch (op.getSubType()) {
+			case BBOX: {
+				BBOX bbox = (BBOX) op;
+				builder.add(propNameExpr).add(".STIntersects(");
+				builder.add(toProtoSQL(bbox.getBoundingBox(), storageCRS, srid));
+				builder.add(")=1");
+				break;
+			}
+			case BEYOND: {
+				Beyond beyond = (Beyond) op;
+				builder.add("NOT ").add(propNameExpr).add(".STDWithin(");
+				builder.add(toProtoSQL(beyond.getGeometry(), storageCRS, srid));
+				builder.add(",");
+				// TODO uom handling
+				PrimitiveType pt = new PrimitiveType(DECIMAL);
+				PrimitiveValue value = new PrimitiveValue(beyond.getDistance().getValue(), pt);
+				PrimitiveParticleConverter converter = new DefaultPrimitiveConverter(pt, null, false);
+				SQLArgument argument = new SQLArgument(value, converter);
+				builder.add(argument);
+				builder.add(")=1");
+				break;
+			}
+			case CONTAINS: {
+				Contains contains = (Contains) op;
+				builder.add(propNameExpr).add(".STContains(");
+				builder.add(toProtoSQL(contains.getGeometry(), storageCRS, srid));
+				builder.add(")=1");
+				break;
+			}
+			case CROSSES: {
+				Crosses crosses = (Crosses) op;
+				builder.add(propNameExpr).add(".STCrosses(");
+				builder.add(toProtoSQL(crosses.getGeometry(), storageCRS, srid));
+				builder.add(")=1");
+				break;
+			}
+			case DISJOINT: {
+				Disjoint disjoint = (Disjoint) op;
+				builder.add(propNameExpr).add(".STDisjoint(");
+				builder.add(toProtoSQL(disjoint.getGeometry(), storageCRS, srid));
+				builder.add(")=1");
+				break;
+			}
+			case DWITHIN: {
+				DWithin dWithin = (DWithin) op;
+				builder.add(propNameExpr).add(".STDWithin(");
+				builder.add(toProtoSQL(dWithin.getGeometry(), storageCRS, srid));
+				builder.add(",");
+				// TODO uom handling
+				PrimitiveType pt = new PrimitiveType(DECIMAL);
+				PrimitiveValue value = new PrimitiveValue(dWithin.getDistance().getValue(), pt);
+				PrimitiveParticleConverter converter = new DefaultPrimitiveConverter(pt, null, false);
+				SQLArgument argument = new SQLArgument(value, converter);
+				builder.add(argument);
+				builder.add(")=1");
+				break;
+			}
+			case EQUALS: {
+				Equals equals = (Equals) op;
+				builder.add(propNameExpr).add(".STEquals(");
+				builder.add(toProtoSQL(equals.getGeometry(), storageCRS, srid));
+				builder.add(")=1");
+				break;
+			}
+			case INTERSECTS: {
+				Intersects intersects = (Intersects) op;
+				builder.add(propNameExpr).add(".STIntersects(");
+				builder.add(toProtoSQL(intersects.getGeometry(), storageCRS, srid));
+				builder.add(")=1");
+				break;
+			}
+			case OVERLAPS: {
+				Overlaps overlaps = (Overlaps) op;
+				builder.add(propNameExpr).add(".STOverlaps(");
+				builder.add(toProtoSQL(overlaps.getGeometry(), storageCRS, srid));
+				builder.add(")=1");
+				break;
+			}
+			case TOUCHES: {
+				Touches touches = (Touches) op;
+				builder.add(propNameExpr).add(".STTouches(");
+				builder.add(toProtoSQL(touches.getGeometry(), storageCRS, srid));
+				builder.add(")=1");
+				break;
+			}
+			case WITHIN: {
+				Within within = (Within) op;
+				builder.add(propNameExpr).add(".STWithin(");
+				builder.add(toProtoSQL(within.getGeometry(), storageCRS, srid));
+				builder.add(")=1");
+				break;
+			}
+		}
+		return builder.toOperation();
+	}
 
-    private SQLExpression toProtoSQL( Geometry geom, ICRS targetCRS, int srid ) {
-        // always use is2d = true (else srid handling will not function properly in mssql)
-        return new SQLArgument( geom, new MSSQLGeometryConverter( null, targetCRS, "" + srid, true ) );
-    }
+	private SQLExpression toProtoSQL(Geometry geom, ICRS targetCRS, int srid) {
+		// always use is2d = true (else srid handling will not function properly in mssql)
+		return new SQLArgument(geom, new MSSQLGeometryConverter(null, targetCRS, "" + srid, true));
+	}
+
 }

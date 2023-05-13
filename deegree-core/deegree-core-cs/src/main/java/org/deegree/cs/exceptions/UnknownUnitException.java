@@ -37,48 +37,42 @@
 package org.deegree.cs.exceptions;
 
 /**
- * The <code>UnknownUnitException</code> class notifies the user about an unknown unit that was encountered and the
- * program cannot infer a way to handle the data that has this unit.
- * 
+ * The <code>UnknownUnitException</code> class notifies the user about an unknown unit
+ * that was encountered and the program cannot infer a way to handle the data that has
+ * this unit.
+ *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * 
  * @author last edited by: $Author: ionita $
- * 
  * @version $Revision: $, $Date: $
- * 
+ *
  */
 public class UnknownUnitException extends RuntimeException {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 5380200336632993642L;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 5380200336632993642L;
 
-    /**
-     * @param message
-     *            to be presented
-     */
-    public UnknownUnitException( String message ) {
-        super( message );
-    }
+	/**
+	 * @param message to be presented
+	 */
+	public UnknownUnitException(String message) {
+		super(message);
+	}
 
-    /**
-     * @param message
-     *            human readable message
-     * @param e
-     *            cause
-     */
-    public UnknownUnitException( String message, Exception e ) {
-        super( message, e );
-    }
+	/**
+	 * @param message human readable message
+	 * @param e cause
+	 */
+	public UnknownUnitException(String message, Exception e) {
+		super(message, e);
+	}
 
-    /**
-     * 
-     * @param e
-     *            cause
-     */
-    public UnknownUnitException( Exception e ) {
-        super( e );
-    }
+	/**
+	 * @param e cause
+	 */
+	public UnknownUnitException(Exception e) {
+		super(e);
+	}
 
 }

@@ -42,27 +42,26 @@ import org.deegree.geometry.Envelope;
 import org.deegree.tools.coverage.gridifier.RasterLevel;
 
 /**
- * The <code>MultiLevelRasterTileIndex</code> interface defines simple access to the raster index
- * 
+ * The <code>MultiLevelRasterTileIndex</code> interface defines simple access to the
+ * raster index
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- * 
  * @version $Revision: $, $Date: $
  */
 public interface MultiLevelRasterTileIndex {
 
-    /**
-     * Return the matching tilefiles for the given enveloep
-     * 
-     * @param bbox
-     * @param metersPerPixel
-     * @return a set of matching tiel files
-     */
-    public Set<TileFile> getTiles( Envelope bbox, double metersPerPixel );
+	/**
+	 * Return the matching tilefiles for the given enveloep
+	 * @param bbox
+	 * @param metersPerPixel
+	 * @return a set of matching tiel files
+	 */
+	public Set<TileFile> getTiles(Envelope bbox, double metersPerPixel);
 
-    /**
-     * @return the RasterLevels
-     */
-    public RasterLevel[] getRasterLevels();
+	/**
+	 * @return the RasterLevels
+	 */
+	public RasterLevel[] getRasterLevels();
 
 }

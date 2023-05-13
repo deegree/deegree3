@@ -16,25 +16,25 @@ import org.deegree.feature.GenericFeatureCollection;
  */
 public class EmptyFeatureInputStream implements FeatureInputStream {
 
-    @Override
-    public void close() {
-    }
+	@Override
+	public void close() {
+	}
 
-    @Override
-    public FeatureCollection toCollection() {
-        return new GenericFeatureCollection();
-    }
+	@Override
+	public FeatureCollection toCollection() {
+		return new GenericFeatureCollection();
+	}
 
-    @Override
-    public int count() {
-        return 0;
-    }
+	@Override
+	public int count() {
+		return 0;
+	}
 
-    @Override
-    public Iterator<Feature> iterator() {
-        //TODO Use proper Java 1.7 API if JDK 6 is dropped
-        //return Collections.emptyIterator();
-        return Collections.<Feature>emptyList().iterator();
-    }
+	@Override
+	public Iterator<Feature> iterator() {
+		// TODO Use proper Java 1.7 API if JDK 6 is dropped
+		// return Collections.emptyIterator();
+		return Collections.<Feature>emptyList().iterator();
+	}
 
 }

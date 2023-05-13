@@ -47,84 +47,75 @@ import java.net.URL;
 
 /**
  * A resource location is responsible for being able to fetch the configuration content.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public interface ResourceLocation<T extends Resource> {
 
-    /**
-     * Determines the namespace of the configuration.
-     * 
-     * @return the namespace, never <code>null</code>
-     */
-    String getNamespace();
+	/**
+	 * Determines the namespace of the configuration.
+	 * @return the namespace, never <code>null</code>
+	 */
+	String getNamespace();
 
-    /**
-     * Returns the identifier of the resource.
-     * 
-     * @return the identifier, never <code>null</code>
-     */
-    ResourceIdentifier<T> getIdentifier();
+	/**
+	 * Returns the identifier of the resource.
+	 * @return the identifier, never <code>null</code>
+	 */
+	ResourceIdentifier<T> getIdentifier();
 
-    /**
-     * Returns the configuration content as stream.
-     * 
-     * @return the stream, never <code>null</code>
-     */
-    InputStream getAsStream();
+	/**
+	 * Returns the configuration content as stream.
+	 * @return the stream, never <code>null</code>
+	 */
+	InputStream getAsStream();
 
-    /**
-     * Returns the configuration content as file. May not be available in all implementations!
-     *
-     * @return the file, or <code>null</code>, if resolving is not supported
-     */
-    File getAsFile();
+	/**
+	 * Returns the configuration content as file. May not be available in all
+	 * implementations!
+	 * @return the file, or <code>null</code>, if resolving is not supported
+	 */
+	File getAsFile();
 
-    /**
-     * Resolves a path relative to this location to an input stream. May not be available in all implementations!
-     * 
-     * @param path
-     *            never <code>null</code>
-     * @return the stream, or <code>null</code>, if resolving is not supported
-     */
-    InputStream resolve( String path );
+	/**
+	 * Resolves a path relative to this location to an input stream. May not be available
+	 * in all implementations!
+	 * @param path never <code>null</code>
+	 * @return the stream, or <code>null</code>, if resolving is not supported
+	 */
+	InputStream resolve(String path);
 
-    /**
-     * Resolves a path relative to this location to a file. May not be available in all implementations!
-     * 
-     * @param path
-     *            never <code>null</code>
-     * @return the file, or <code>null</code>, if resolving is not supported
-     */
-    File resolveToFile( String path );
+	/**
+	 * Resolves a path relative to this location to a file. May not be available in all
+	 * implementations!
+	 * @param path never <code>null</code>
+	 * @return the file, or <code>null</code>, if resolving is not supported
+	 */
+	File resolveToFile(String path);
 
-    /**
-     * Resolves a path possibly relative to this location to a file. May not be available in all implementations!
-     * 
-     * @param path
-     *            never <code>null</code>
-     * @return the URL, or <code>null</code>, if resolving is not supported
-     */
-    URL resolveToUrl( String path );
+	/**
+	 * Resolves a path possibly relative to this location to a file. May not be available
+	 * in all implementations!
+	 * @param path never <code>null</code>
+	 * @return the URL, or <code>null</code>, if resolving is not supported
+	 */
+	URL resolveToUrl(String path);
 
-    /**
-     * Deactivates this resource location.
-     */
-    void deactivate();
+	/**
+	 * Deactivates this resource location.
+	 */
+	void deactivate();
 
-    /**
-     * Activates this resource location.
-     */
-    void activate();
+	/**
+	 * Activates this resource location.
+	 */
+	void activate();
 
-    /**
-     * Overwrites the resources' location with the content from the input stream.
-     * 
-     * @param in
-     *            may not be <code>null</code>
-     */
-    void setContent( InputStream in );
+	/**
+	 * Overwrites the resources' location with the content from the input stream.
+	 * @param in may not be <code>null</code>
+	 */
+	void setContent(InputStream in);
 
 }

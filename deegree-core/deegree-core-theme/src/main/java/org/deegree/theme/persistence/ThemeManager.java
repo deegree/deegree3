@@ -46,15 +46,14 @@ import org.deegree.workspace.standard.DefaultResourceManagerMetadata;
 
 /**
  * The resource manager for themes.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class ThemeManager extends DefaultResourceManager<Theme> {
 
-    public ThemeManager() {
-        super( new DefaultResourceManagerMetadata<Theme>( ThemeProvider.class, "themes", "themes" ) );
-    }
+	public ThemeManager() {
+		super(new DefaultResourceManagerMetadata<Theme>(ThemeProvider.class, "themes", "themes"));
+	}
 
 }

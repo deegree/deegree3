@@ -50,27 +50,28 @@ import org.deegree.workspace.Workspace;
 
 /**
  * Provider for standard themes.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
+ *
  */
 public class StandardThemeProvider extends ThemeProvider {
 
-    private static final URL SCHEMA_URL = StandardThemeProvider.class.getResource( "/META-INF/schemas/themes/themes.xsd" );
+	private static final URL SCHEMA_URL = StandardThemeProvider.class
+		.getResource("/META-INF/schemas/themes/themes.xsd");
 
-    @Override
-    public String getNamespace() {
-        return "http://www.deegree.org/themes/standard";
-    }
+	@Override
+	public String getNamespace() {
+		return "http://www.deegree.org/themes/standard";
+	}
 
-    @Override
-    public ResourceMetadata<Theme> createFromLocation( Workspace workspace, ResourceLocation<Theme> location ) {
-        return new StandardThemeMetadata( workspace, location, this );
-    }
+	@Override
+	public ResourceMetadata<Theme> createFromLocation(Workspace workspace, ResourceLocation<Theme> location) {
+		return new StandardThemeMetadata(workspace, location, this);
+	}
 
-    @Override
-    public URL getSchema() {
-        return SCHEMA_URL;
-    }
+	@Override
+	public URL getSchema() {
+		return SCHEMA_URL;
+	}
 
 }

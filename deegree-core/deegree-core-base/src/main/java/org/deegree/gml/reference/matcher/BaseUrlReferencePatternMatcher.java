@@ -7,19 +7,19 @@ package org.deegree.gml.reference.matcher;
  */
 public class BaseUrlReferencePatternMatcher implements ReferencePatternMatcher {
 
-    private final String baseUrl;
+	private final String baseUrl;
 
-    public BaseUrlReferencePatternMatcher( String baseUrl ) {
-        if ( baseUrl == null || "".equals( baseUrl ) )
-            throw new IllegalArgumentException( "baseUrl must never be null or empty!" );
-        this.baseUrl = baseUrl;
-    }
+	public BaseUrlReferencePatternMatcher(String baseUrl) {
+		if (baseUrl == null || "".equals(baseUrl))
+			throw new IllegalArgumentException("baseUrl must never be null or empty!");
+		this.baseUrl = baseUrl;
+	}
 
-    @Override
-    public boolean isMatching( String url ) {
-        if ( url == null )
-            return false;
-        return url.startsWith( baseUrl );
-    }
+	@Override
+	public boolean isMatching(String url) {
+		if (url == null)
+			return false;
+		return url.startsWith(baseUrl);
+	}
 
 }

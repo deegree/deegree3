@@ -44,22 +44,21 @@ import org.junit.runners.Suite.SuiteClasses;
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
  * @version $Revision$, $Date$
  *
  */
 @RunWith(Suite.class)
-@SuiteClasses( { org.deegree.test.services.sos.SOSGetCapabilitiesValidation.class,
-                org.deegree.test.services.sos.SOSGetObservationValidator.class,
-                org.deegree.test.services.sos.SOSMiscValidator.class })
+@SuiteClasses({ org.deegree.test.services.sos.SOSGetCapabilitiesValidation.class,
+		org.deegree.test.services.sos.SOSGetObservationValidator.class,
+		org.deegree.test.services.sos.SOSMiscValidator.class })
 public class IntegrationTestSuite {
 
-    /**
-     * List <i>all</i> classes in this source tree.
-     *
-     * @param args
-     */
-    public static void main( String[] args ) {
-        // CommonsTestSuite.buildTestSuite( IntegrationTestSuite.class );
-    }
+	/**
+	 * List <i>all</i> classes in this source tree.
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		// CommonsTestSuite.buildTestSuite( IntegrationTestSuite.class );
+	}
+
 }

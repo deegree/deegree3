@@ -39,62 +39,66 @@ import java.awt.image.BufferedImage;
 
 /**
  * Encapsulates a copyright image or text.
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
 public class Copyright {
 
-    private final String copyrightText;
+	private final String copyrightText;
 
-    private final BufferedImage copyrightImage;
+	private final BufferedImage copyrightImage;
 
-    private final int offsetX;
+	private final int offsetX;
 
-    private final int offsetY;
+	private final int offsetY;
 
-    /**
-     * @param copyrightText
-     *            the text of the copyright, may be <code>null</code> if an copyrightImage is not
-     * @param copyrightImage
-     *            the text of the copyright, may be <code>null</code> if an copyrightImage is not
-     * @param offsetX
-     *            the offset to draw the copyright from the left of the image to the left of the copyright
-     * @param offsetY
-     *            the offset to draw the copyright from the bottom of the image to the bottom of the copyright
-     */
-    public Copyright( String copyrightText, BufferedImage copyrightImage, int offsetX, int offsetY ) {
-        this.copyrightText = copyrightText;
-        this.copyrightImage = copyrightImage;
-        this.offsetX = offsetX;
-        this.offsetY = offsetY;
-    }
+	/**
+	 * @param copyrightText the text of the copyright, may be <code>null</code> if an
+	 * copyrightImage is not
+	 * @param copyrightImage the text of the copyright, may be <code>null</code> if an
+	 * copyrightImage is not
+	 * @param offsetX the offset to draw the copyright from the left of the image to the
+	 * left of the copyright
+	 * @param offsetY the offset to draw the copyright from the bottom of the image to the
+	 * bottom of the copyright
+	 */
+	public Copyright(String copyrightText, BufferedImage copyrightImage, int offsetX, int offsetY) {
+		this.copyrightText = copyrightText;
+		this.copyrightImage = copyrightImage;
+		this.offsetX = offsetX;
+		this.offsetY = offsetY;
+	}
 
-    /**
-     * @return the text of the copyright, may be <code>null</code> if an copyrightImage is not
-     */
-    public String getCopyrightText() {
-        return copyrightText;
-    }
+	/**
+	 * @return the text of the copyright, may be <code>null</code> if an copyrightImage is
+	 * not
+	 */
+	public String getCopyrightText() {
+		return copyrightText;
+	}
 
-    /**
-     * @return the text of the copyright, may be <code>null</code> if an copyrightImage is not
-     */
-    public BufferedImage getCopyrightImage() {
-        return copyrightImage;
-    }
+	/**
+	 * @return the text of the copyright, may be <code>null</code> if an copyrightImage is
+	 * not
+	 */
+	public BufferedImage getCopyrightImage() {
+		return copyrightImage;
+	}
 
-    /**
-     * @return the offset to draw the copyright from the left of the image to the left of the copyright
-     */
-    public int getOffsetX() {
-        return offsetX;
-    }
+	/**
+	 * @return the offset to draw the copyright from the left of the image to the left of
+	 * the copyright
+	 */
+	public int getOffsetX() {
+		return offsetX;
+	}
 
-    /**
-     * @return the offset to draw the copyright from the bottom of the image to the bottom of the copyright
-     */
-    public int getOffsetY() {
-        return offsetY;
-    }
+	/**
+	 * @return the offset to draw the copyright from the bottom of the image to the bottom
+	 * of the copyright
+	 */
+	public int getOffsetY() {
+		return offsetY;
+	}
 
 }

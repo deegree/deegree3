@@ -51,37 +51,36 @@ import org.junit.Test;
 
 /**
  * <code>UnitTest</code> tests the conversion of different units into each other.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
- * 
+ *
  */
 public class UnitTest extends TestCase {
 
-    /**
-     * Tests the conversion of known units and the conversion of incompatible units.
-     */
-    @Test
-    public void testUnitConversion() {
-        assertEquals( 1.0, RADIAN.getScale() );
-        assertEquals( DTR, DEGREE.getScale() );
-        assertTrue( DEGREE.canConvert( RADIAN ) );
-        assertTrue( RADIAN.canConvert( DEGREE ) );
-        assertTrue( RADIAN.canConvert( Unit.ARC_SEC ) );
-        assertTrue( DEGREE.canConvert( ARC_SEC ) );
-        assertTrue( !DEGREE.canConvert( METRE ) );
-        assertTrue( !METRE.canConvert( DEGREE ) );
-        assertTrue( METRE.canConvert( BRITISHYARD ) );
-        assertTrue( USFOOT.canConvert( BRITISHYARD ) );
-        assertTrue( BRITISHYARD.canConvert( METRE ) );
-        double test = 6.8;
-        assertEquals( Math.toRadians( test ), DEGREE.convert( test, RADIAN ) );
-        assertEquals( Math.toDegrees( test ), RADIAN.convert( test, DEGREE ) );
-        assertEquals( test * 1000, SECOND.convert( test, MILLISECOND ) );
-        assertEquals( test / 0.3048006096012192, METRE.convert( test, USFOOT ) );
+	/**
+	 * Tests the conversion of known units and the conversion of incompatible units.
+	 */
+	@Test
+	public void testUnitConversion() {
+		assertEquals(1.0, RADIAN.getScale());
+		assertEquals(DTR, DEGREE.getScale());
+		assertTrue(DEGREE.canConvert(RADIAN));
+		assertTrue(RADIAN.canConvert(DEGREE));
+		assertTrue(RADIAN.canConvert(Unit.ARC_SEC));
+		assertTrue(DEGREE.canConvert(ARC_SEC));
+		assertTrue(!DEGREE.canConvert(METRE));
+		assertTrue(!METRE.canConvert(DEGREE));
+		assertTrue(METRE.canConvert(BRITISHYARD));
+		assertTrue(USFOOT.canConvert(BRITISHYARD));
+		assertTrue(BRITISHYARD.canConvert(METRE));
+		double test = 6.8;
+		assertEquals(Math.toRadians(test), DEGREE.convert(test, RADIAN));
+		assertEquals(Math.toDegrees(test), RADIAN.convert(test, DEGREE));
+		assertEquals(test * 1000, SECOND.convert(test, MILLISECOND));
+		assertEquals(test / 0.3048006096012192, METRE.convert(test, USFOOT));
 
-    }
+	}
+
 }

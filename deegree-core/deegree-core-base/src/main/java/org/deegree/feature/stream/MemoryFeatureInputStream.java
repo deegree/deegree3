@@ -43,44 +43,43 @@ import org.deegree.feature.Features;
 
 /**
  * {@link FeatureInputStream} that stores all features in memory.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class MemoryFeatureInputStream implements FeatureInputStream {
 
-    private FeatureCollection fc;
+	private FeatureCollection fc;
 
-    /**
-     * Creates a new {@link MemoryFeatureInputStream} that is backed by the given {@link FeatureCollection}.
-     * 
-     * @param fc
-     *            FeatureCollection to back the result set
-     */
-    public MemoryFeatureInputStream( FeatureCollection fc ) {
-        this.fc = fc;
-    }
+	/**
+	 * Creates a new {@link MemoryFeatureInputStream} that is backed by the given
+	 * {@link FeatureCollection}.
+	 * @param fc FeatureCollection to back the result set
+	 */
+	public MemoryFeatureInputStream(FeatureCollection fc) {
+		this.fc = fc;
+	}
 
-    @Override
-    public void close() {
-        // noting to do
-    }
+	@Override
+	public void close() {
+		// noting to do
+	}
 
-    @Override
-    public FeatureCollection toCollection() {
-        return Features.toCollection( this );
-    }
+	@Override
+	public FeatureCollection toCollection() {
+		return Features.toCollection(this);
+	}
 
-    @Override
-    public Iterator<Feature> iterator() {
-        return fc.iterator();
-    }
+	@Override
+	public Iterator<Feature> iterator() {
+		return fc.iterator();
+	}
 
-    @Override
-    public int count() {
-        close();
-        return fc.size();
-    }
+	@Override
+	public int count() {
+		close();
+		return fc.size();
+	}
+
 }

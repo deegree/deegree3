@@ -42,18 +42,18 @@
 package org.deegree.workspace;
 
 /**
- * Responsible for building resources. Typically involves parsing jaxb beans and constructing a new object. If the
- * resource cannot be constructed, a ResourceInitException should be thrown.
- * 
+ * Responsible for building resources. Typically involves parsing jaxb beans and
+ * constructing a new object. If the resource cannot be constructed, a
+ * ResourceInitException should be thrown.
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public interface ResourceBuilder<T extends Resource> {
 
-    /**
-     * @return the new resource, may be <code>null</code> if resource building failed
-     */
-    T build();
+	/**
+	 * @return the new resource, may be <code>null</code> if resource building failed
+	 */
+	T build();
 
 }

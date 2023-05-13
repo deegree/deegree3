@@ -39,13 +39,13 @@ import java.util.List;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public interface PostRelation<T> {
 
-    public List<T> getPost( T vertex );
+	public List<T> getPost(T vertex);
+
 }

@@ -47,62 +47,62 @@ import org.slf4j.Logger;
 
 /**
  * The <code></code> class TODO add class documentation here.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class StAXExportingHelper {
 
-    private static final Logger LOG = getLogger( StAXExportingHelper.class );
+	private static final Logger LOG = getLogger(StAXExportingHelper.class);
 
-    public static void writeAttribute( XMLStreamWriter xmlStream, QName name, String value )
-                            throws XMLStreamException {
-        // Note: These methods will not automatically define namespaces if they are not yet defined
-        // This can result in unbound prefixes being used
-        if ( name.getNamespaceURI() == null ) {
-            xmlStream.writeAttribute( name.getLocalPart(), value );
-        } else if ( name.getPrefix() == null ) {
-            xmlStream.writeAttribute( name.getNamespaceURI(), name.getLocalPart(), value );
-        } else {
-            xmlStream.writeAttribute( name.getPrefix(), name.getNamespaceURI(), name.getLocalPart(), value );
-        }
-    }
+	public static void writeAttribute(XMLStreamWriter xmlStream, QName name, String value) throws XMLStreamException {
+		// Note: These methods will not automatically define namespaces if they are not
+		// yet defined
+		// This can result in unbound prefixes being used
+		if (name.getNamespaceURI() == null) {
+			xmlStream.writeAttribute(name.getLocalPart(), value);
+		}
+		else if (name.getPrefix() == null) {
+			xmlStream.writeAttribute(name.getNamespaceURI(), name.getLocalPart(), value);
+		}
+		else {
+			xmlStream.writeAttribute(name.getPrefix(), name.getNamespaceURI(), name.getLocalPart(), value);
+		}
+	}
 
-    /**
-     * Writes a start element from the given QName.
-     * 
-     * @param xmlStream
-     * @param qName
-     * @throws XMLStreamException
-     */
-    public static void writeStartElement( XMLStreamWriter xmlStream, QName qName )
-                            throws XMLStreamException {
-        if ( qName == null ) {
-            throw new XMLStreamException( "The given qname may not be null" );
-        }
-        int id = isSet( qName.getNamespaceURI() ) ? 1 : 0;
-        id += isSet( qName.getLocalPart() ) ? 2 : 0;
-        id += isSet( qName.getPrefix() ) ? 4 : 0;
-        switch ( id ) {
-        case 0:
-            throw new XMLStreamException( "The given qname may not be null or empty" );
-        case 1:
-        case 4:
-        case 5:
-            throw new XMLStreamException( "The given qname must have a local part." );
-        case 2:
-        case 6:
-            xmlStream.writeStartElement( qName.getLocalPart() );
-            break;
-        case 3:
-            xmlStream.writeStartElement( qName.getNamespaceURI(), qName.getLocalPart() );
-            break;
-        case 7:
-            xmlStream.writeStartElement( qName.getPrefix(), qName.getLocalPart(), qName.getNamespaceURI() );
-            break;
-        }
+	/**
+	 * Writes a start element from the given QName.
+	 * @param xmlStream
+	 * @param qName
+	 * @throws XMLStreamException
+	 */
+	public static void writeStartElement(XMLStreamWriter xmlStream, QName qName) throws XMLStreamException {
+		if (qName == null) {
+			throw new XMLStreamException("The given qname may not be null");
+		}
+		int id = isSet(qName.getNamespaceURI()) ? 1 : 0;
+		id += isSet(qName.getLocalPart()) ? 2 : 0;
+		id += isSet(qName.getPrefix()) ? 4 : 0;
+		switch (id) {
+			case 0:
+				throw new XMLStreamException("The given qname may not be null or empty");
+			case 1:
+			case 4:
+			case 5:
+				throw new XMLStreamException("The given qname must have a local part.");
+			case 2:
+			case 6:
+				xmlStream.writeStartElement(qName.getLocalPart());
+				break;
+			case 3:
+				xmlStream.writeStartElement(qName.getNamespaceURI(), qName.getLocalPart());
+				break;
+			case 7:
+				xmlStream.writeStartElement(qName.getPrefix(), qName.getLocalPart(), qName.getNamespaceURI());
+				break;
+		}
 
-    }
+	}
+
 }

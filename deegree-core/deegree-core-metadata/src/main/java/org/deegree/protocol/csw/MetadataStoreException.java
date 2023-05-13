@@ -38,50 +38,47 @@ package org.deegree.protocol.csw;
 
 /**
  * Indicates an exception that occured in the metadata persistence layer.
- * 
+ *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class MetadataStoreException extends Exception {
 
-    private static final long serialVersionUID = -8171919093492328054L;
+	private static final long serialVersionUID = -8171919093492328054L;
 
-    /**
-     * Creates a new {@link MetadataStoreException} without detail message.
-     */
-    public MetadataStoreException() {
-        super();
-    }
+	/**
+	 * Creates a new {@link MetadataStoreException} without detail message.
+	 */
+	public MetadataStoreException() {
+		super();
+	}
 
-    /**
-     * Creates a new {@link MetadataStoreException} with detail message.
-     * 
-     * @param message
-     *            detail message
-     */
-    public MetadataStoreException( String message ) {
-        super( message );
-    }
+	/**
+	 * Creates a new {@link MetadataStoreException} with detail message.
+	 * @param message detail message
+	 */
+	public MetadataStoreException(String message) {
+		super(message);
+	}
 
-    /**
-     * Creates a new {@link MetadataStoreException} which wraps the causing exception.
-     * 
-     * @param cause
-     */
-    public MetadataStoreException( Throwable cause ) {
-        super( cause );
-    }
+	/**
+	 * Creates a new {@link MetadataStoreException} which wraps the causing exception.
+	 * @param cause
+	 */
+	public MetadataStoreException(Throwable cause) {
+		super(cause);
+	}
 
-    /**
-     * Creates a new {@link MetadataStoreException} which wraps the causing exception and provides a detail message.
-     * 
-     * @param message
-     * @param cause
-     */
-    public MetadataStoreException( String message, Throwable cause ) {
-        super( message, cause );
-    }
+	/**
+	 * Creates a new {@link MetadataStoreException} which wraps the causing exception and
+	 * provides a detail message.
+	 * @param message
+	 * @param cause
+	 */
+	public MetadataStoreException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
 }

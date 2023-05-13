@@ -41,20 +41,21 @@ import org.deegree.commons.tom.gml.GMLReference;
 import org.deegree.time.primitive.RelatedTime;
 import org.deegree.time.primitive.TimeGeometricPrimitive;
 
-public class TimeGeometricPrimitiveReference<T extends TimeGeometricPrimitive> extends GMLReference<T> implements
-                                                                                                      TimeGeometricPrimitive {
+public class TimeGeometricPrimitiveReference<T extends TimeGeometricPrimitive> extends GMLReference<T>
+		implements TimeGeometricPrimitive {
 
-    public TimeGeometricPrimitiveReference( final ReferenceResolver resolver, final String uri, final String baseURL ) {
-        super( resolver, uri, baseURL );
-    }
+	public TimeGeometricPrimitiveReference(final ReferenceResolver resolver, final String uri, final String baseURL) {
+		super(resolver, uri, baseURL);
+	}
 
-    @Override
-    public String getFrame() {
-        return getReferencedObject().getFrame();
-    }
+	@Override
+	public String getFrame() {
+		return getReferencedObject().getFrame();
+	}
 
-    @Override
-    public List<RelatedTime> getRelatedTimes() {
-        return getReferencedObject().getRelatedTimes();
-    }
+	@Override
+	public List<RelatedTime> getRelatedTimes() {
+		return getReferencedObject().getRelatedTimes();
+	}
+
 }

@@ -40,25 +40,25 @@ import org.deegree.commons.tom.primitive.PrimitiveValue;
 
 /**
  * {@link ParticleConverter} for {@link PrimitiveValue} particles.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public interface PrimitiveParticleConverter extends ParticleConverter<PrimitiveValue> {
 
-    /**
-     * Returns the primitive type that this converter instance converts.
-     * 
-     * @return the primitive type, never <code>null</code>
-     */
-    public PrimitiveType getType();
+	/**
+	 * Returns the primitive type that this converter instance converts.
+	 * @return the primitive type, never <code>null</code>
+	 */
+	public PrimitiveType getType();
 
-    /**
-     * Returns whether the targeted SQL column stores multiple values in comma-separated form.
-     * 
-     * @return <code>true</code>, if the column stores comma-separated values, <code>false</code> otherwise
-     */
-    public boolean isConcatenated();
+	/**
+	 * Returns whether the targeted SQL column stores multiple values in comma-separated
+	 * form.
+	 * @return <code>true</code>, if the column stores comma-separated values,
+	 * <code>false</code> otherwise
+	 */
+	public boolean isConcatenated();
+
 }

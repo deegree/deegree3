@@ -55,28 +55,28 @@ import org.deegree.workspace.standard.AbstractResourceMetadata;
 
 /**
  * Metadata for connection providers.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
- * 
  * @version $Revision: $, $Date: $
  */
 public class LegacyConnectionProviderMetadata extends AbstractResourceMetadata<ConnectionProvider> {
 
-    public LegacyConnectionProviderMetadata( Workspace workspace, ResourceLocation<ConnectionProvider> location,
-                                             ConnectionProviderProvider provider ) {
-        super( workspace, location, provider );
-    }
+	public LegacyConnectionProviderMetadata(Workspace workspace, ResourceLocation<ConnectionProvider> location,
+			ConnectionProviderProvider provider) {
+		super(workspace, location, provider);
+	}
 
-    @Override
-    public ResourceBuilder<ConnectionProvider> prepare() {
-        try {
-            JDBCConnection cfg = (JDBCConnection) JAXBUtils.unmarshall( "org.deegree.db.legacy.jaxb", SCHEMA_URL,
-                                                                        location.getAsStream(), workspace );
-            return new LegacyConnectionProviderBuilder( cfg, this, workspace );
-        } catch ( Exception e ) {
-            throw new ResourceInitException( e.getLocalizedMessage(), e );
-        }
-    }
+	@Override
+	public ResourceBuilder<ConnectionProvider> prepare() {
+		try {
+			JDBCConnection cfg = (JDBCConnection) JAXBUtils.unmarshall("org.deegree.db.legacy.jaxb", SCHEMA_URL,
+					location.getAsStream(), workspace);
+			return new LegacyConnectionProviderBuilder(cfg, this, workspace);
+		}
+		catch (Exception e) {
+			throw new ResourceInitException(e.getLocalizedMessage(), e);
+		}
+	}
 
 }

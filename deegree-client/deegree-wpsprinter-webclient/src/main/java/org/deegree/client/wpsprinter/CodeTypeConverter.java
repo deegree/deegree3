@@ -45,46 +45,44 @@ import org.deegree.commons.tom.ows.CodeType;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  * @author last edited by: $Author: lyn $
- * 
  * @version $Revision: $, $Date: $
  */
 @FacesConverter(forClass = CodeType.class)
 public class CodeTypeConverter implements Converter {
 
-    @Override
-    public Object getAsObject( FacesContext ctx, UIComponent component, String value )
-                            throws ConverterException {
-        return getAsCodeType( value );
+	@Override
+	public Object getAsObject(FacesContext ctx, UIComponent component, String value) throws ConverterException {
+		return getAsCodeType(value);
 
-    }
+	}
 
-    @Override
-    public String getAsString( FacesContext context, UIComponent component, Object value ) {
-        String s = null;
-        if ( value instanceof CodeType )
-            s = getAsString( (CodeType) value );
-        return s;
-    }
+	@Override
+	public String getAsString(FacesContext context, UIComponent component, Object value) {
+		String s = null;
+		if (value instanceof CodeType)
+			s = getAsString((CodeType) value);
+		return s;
+	}
 
-    static String getAsString( CodeType ct ) {
-        return ct.getCodeSpace() != null ? "{" + ct.getCodeSpace() + "}" : "" + ct.getCode();
-    }
+	static String getAsString(CodeType ct) {
+		return ct.getCodeSpace() != null ? "{" + ct.getCodeSpace() + "}" : "" + ct.getCode();
+	}
 
-    static CodeType getAsCodeType( String value ) {
-        if ( value != null && value.length() > 0 ) {
-            int begIndex = value.indexOf( "{" );
-            int endIndex = value.lastIndexOf( "}" );
-            if ( begIndex > -1 && endIndex > 0 ) {
-                String code = value.substring( endIndex + 1 );
-                String codeSpace = value.substring( begIndex + 1, endIndex );
-                return new CodeType( code, codeSpace );
-            }
-            return new CodeType( value );
-        }
-        return null;
-    }
+	static CodeType getAsCodeType(String value) {
+		if (value != null && value.length() > 0) {
+			int begIndex = value.indexOf("{");
+			int endIndex = value.lastIndexOf("}");
+			if (begIndex > -1 && endIndex > 0) {
+				String code = value.substring(endIndex + 1);
+				String codeSpace = value.substring(begIndex + 1, endIndex);
+				return new CodeType(code, codeSpace);
+			}
+			return new CodeType(value);
+		}
+		return null;
+	}
 
 }

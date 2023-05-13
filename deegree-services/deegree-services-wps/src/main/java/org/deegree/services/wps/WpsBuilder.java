@@ -35,28 +35,27 @@ import org.deegree.workspace.Workspace;
 
 /**
  * This class is responsible for building WPS services.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class WpsBuilder implements ResourceBuilder<OWS> {
 
-    private ResourceMetadata<OWS> metadata;
+	private ResourceMetadata<OWS> metadata;
 
-    private Workspace workspace;
+	private Workspace workspace;
 
-    private DeegreeWPS config;
+	private DeegreeWPS config;
 
-    public WpsBuilder( ResourceMetadata<OWS> metadata, Workspace workspace, DeegreeWPS config ) {
-        this.metadata = metadata;
-        this.workspace = workspace;
-        this.config = config;
-    }
+	public WpsBuilder(ResourceMetadata<OWS> metadata, Workspace workspace, DeegreeWPS config) {
+		this.metadata = metadata;
+		this.workspace = workspace;
+		this.config = config;
+	}
 
-    @Override
-    public OWS build() {
-        return new WPService( metadata, workspace, config );
-    }
+	@Override
+	public OWS build() {
+		return new WPService(metadata, workspace, config);
+	}
 
 }

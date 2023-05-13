@@ -55,85 +55,84 @@ import org.deegree.tile.TileIOException;
 
 /**
  * {@link Tile} implementation used by {@link MergingTileStore}.
- * 
+ *
  * @author <a href="mailto:Reijer.Copier@idgis.nl">Reijer Copier</a>
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * 
  * @since 3.4
  */
 class MergingTile implements Tile {
 
-    private final List<Tile> tiles;
+	private final List<Tile> tiles;
 
-    MergingTile( final List<Tile> tiles ) {
-        this.tiles = tiles;
-    }
+	MergingTile(final List<Tile> tiles) {
+		this.tiles = tiles;
+	}
 
-    @Override
-    public BufferedImage getAsImage()
-                            throws TileIOException {
-        Iterator<Tile> itr = tiles.iterator();
-        Tile firstTile = itr.next();
-        BufferedImage img = firstTile.getAsImage();
-        Graphics g = img.getGraphics();
-        while ( itr.hasNext() ) {
-            Tile nextTile = itr.next();
-            BufferedImage nextImage = nextTile.getAsImage();
-            if ( nextImage.getColorModel().hasAlpha() ) {
-                g.drawImage( nextImage, 0, 0, null );
-            } else {
-                g.drawImage( makeColorTranslucent( nextImage, WHITE ), 0, 0, null );
-            }
-        }
-        return img;
-    }
+	@Override
+	public BufferedImage getAsImage() throws TileIOException {
+		Iterator<Tile> itr = tiles.iterator();
+		Tile firstTile = itr.next();
+		BufferedImage img = firstTile.getAsImage();
+		Graphics g = img.getGraphics();
+		while (itr.hasNext()) {
+			Tile nextTile = itr.next();
+			BufferedImage nextImage = nextTile.getAsImage();
+			if (nextImage.getColorModel().hasAlpha()) {
+				g.drawImage(nextImage, 0, 0, null);
+			}
+			else {
+				g.drawImage(makeColorTranslucent(nextImage, WHITE), 0, 0, null);
+			}
+		}
+		return img;
+	}
 
-    private Image makeColorTranslucent( final BufferedImage image, final Color translucentColor ) {
-        final int transparentRgb = translucentColor.getRGB();
-        final ImageFilter filter = new RGBImageFilter() {
-            public final int filterRGB( final int x, final int y, final int rgb ) {
-                if ( rgb == transparentRgb ) {
-                    return Color.TRANSLUCENT;
-                }
-                return rgb;
-            }
-        };
-        final ImageProducer ip = new FilteredImageSource( image.getSource(), filter );
-        return Toolkit.getDefaultToolkit().createImage( ip );
-    }
+	private Image makeColorTranslucent(final BufferedImage image, final Color translucentColor) {
+		final int transparentRgb = translucentColor.getRGB();
+		final ImageFilter filter = new RGBImageFilter() {
+			public final int filterRGB(final int x, final int y, final int rgb) {
+				if (rgb == transparentRgb) {
+					return Color.TRANSLUCENT;
+				}
+				return rgb;
+			}
+		};
+		final ImageProducer ip = new FilteredImageSource(image.getSource(), filter);
+		return Toolkit.getDefaultToolkit().createImage(ip);
+	}
 
-    @Override
-    public InputStream getAsStream()
-                            throws TileIOException {
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        try {
-            BufferedImage img = getAsImage();
-            if ( img.getTransparency() != BufferedImage.OPAQUE ) {
-                final int width = img.getWidth();
-                final int height = img.getHeight();
-                
-                BufferedImage noTransparency = new BufferedImage( width, height, TYPE_3BYTE_BGR );
-                Graphics g = noTransparency.getGraphics();
-                g.setColor( Color.WHITE );
-                g.fillRect( 0, 0, width, height );
-                g.drawImage( img, 0, 0, null );
-                img = noTransparency;
-            }
-            ImageIO.write( img, "jpeg", output );
-        } catch ( IOException e ) {
-            throw new TileIOException( e );
-        }
-        return new ByteArrayInputStream( output.toByteArray() );
-    }
+	@Override
+	public InputStream getAsStream() throws TileIOException {
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+		try {
+			BufferedImage img = getAsImage();
+			if (img.getTransparency() != BufferedImage.OPAQUE) {
+				final int width = img.getWidth();
+				final int height = img.getHeight();
 
-    @Override
-    public Envelope getEnvelope() {
-        return tiles.get( 0 ).getEnvelope();
-    }
+				BufferedImage noTransparency = new BufferedImage(width, height, TYPE_3BYTE_BGR);
+				Graphics g = noTransparency.getGraphics();
+				g.setColor(Color.WHITE);
+				g.fillRect(0, 0, width, height);
+				g.drawImage(img, 0, 0, null);
+				img = noTransparency;
+			}
+			ImageIO.write(img, "jpeg", output);
+		}
+		catch (IOException e) {
+			throw new TileIOException(e);
+		}
+		return new ByteArrayInputStream(output.toByteArray());
+	}
 
-    @Override
-    public FeatureCollection getFeatures( int i, int j, int limit )
-                            throws UnsupportedOperationException {
-        throw new UnsupportedOperationException( "MergingTile does not support getFeatures" );
-    }
+	@Override
+	public Envelope getEnvelope() {
+		return tiles.get(0).getEnvelope();
+	}
+
+	@Override
+	public FeatureCollection getFeatures(int i, int j, int limit) throws UnsupportedOperationException {
+		throw new UnsupportedOperationException("MergingTile does not support getFeatures");
+	}
+
 }

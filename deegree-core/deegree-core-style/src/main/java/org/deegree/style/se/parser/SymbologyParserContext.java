@@ -46,29 +46,28 @@ import org.deegree.workspace.ResourceLocation;
 
 /**
  * Context object to hold all SE parser instances for a parser setup.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
- * 
  * @version $Revision: $, $Date: $
  */
 class SymbologyParserContext {
 
-    SymbologyParser parser;
+	SymbologyParser parser;
 
-    GraphicSymbologyParser graphicParser;
+	GraphicSymbologyParser graphicParser;
 
-    StrokeSymbologyParser strokeParser;
+	StrokeSymbologyParser strokeParser;
 
-    FillSymbologyParser fillParser;
+	FillSymbologyParser fillParser;
 
-    ResourceLocation<StyleStore> location;
+	ResourceLocation<StyleStore> location;
 
-    SymbologyParserContext( SymbologyParser parser ) {
-        this.parser = parser;
-        graphicParser = new GraphicSymbologyParser( this );
-        strokeParser = new StrokeSymbologyParser( this );
-        fillParser = new FillSymbologyParser( this );
-    }
+	SymbologyParserContext(SymbologyParser parser) {
+		this.parser = parser;
+		graphicParser = new GraphicSymbologyParser(this);
+		strokeParser = new StrokeSymbologyParser(this);
+		fillParser = new FillSymbologyParser(this);
+	}
 
 }

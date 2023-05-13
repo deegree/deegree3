@@ -51,29 +51,29 @@ import org.deegree.workspace.Workspace;
 
 /**
  * Provider for pyramid coverages.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
- * 
  * @version $Revision: $, $Date: $
  */
 public class PyramidCoverageProvider extends CoverageProvider {
 
-    private static final URL CONFIG_SCHEMA = PyramidCoverageProvider.class.getResource( "/META-INF/schemas/datasource/coverage/raster/pyramid.xsd" );
+	private static final URL CONFIG_SCHEMA = PyramidCoverageProvider.class
+		.getResource("/META-INF/schemas/datasource/coverage/raster/pyramid.xsd");
 
-    @Override
-    public String getNamespace() {
-        return "http://www.deegree.org/datasource/coverage/pyramid";
-    }
+	@Override
+	public String getNamespace() {
+		return "http://www.deegree.org/datasource/coverage/pyramid";
+	}
 
-    @Override
-    public ResourceMetadata<Coverage> createFromLocation( Workspace workspace, ResourceLocation<Coverage> location ) {
-        return new PyramidCoverageMetadata( workspace, location, this );
-    }
+	@Override
+	public ResourceMetadata<Coverage> createFromLocation(Workspace workspace, ResourceLocation<Coverage> location) {
+		return new PyramidCoverageMetadata(workspace, location, this);
+	}
 
-    @Override
-    public URL getSchema() {
-        return CONFIG_SCHEMA;
-    }
+	@Override
+	public URL getSchema() {
+		return CONFIG_SCHEMA;
+	}
 
 }

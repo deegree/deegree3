@@ -36,21 +36,20 @@
 package org.deegree.geometry.primitive;
 
 /**
- * The most common case of a {@link Curve}: consist of just one curve segment with linear interpolation between the
- * control points.
+ * The most common case of a {@link Curve}: consist of just one curve segment with linear
+ * interpolation between the control points.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author$
- *
  * @version $Revision$, $Date$
  */
 public interface LineString extends Curve {
 
-    /**
-     * Must always return {@link Curve.CurveType#LineString}.
-     *
-     * @return {@link Curve.CurveType#LineString}
-     */
-    @Override
-    public CurveType getCurveType();
+	/**
+	 * Must always return {@link Curve.CurveType#LineString}.
+	 * @return {@link Curve.CurveType#LineString}
+	 */
+	@Override
+	public CurveType getCurveType();
+
 }

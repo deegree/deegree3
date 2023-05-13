@@ -43,29 +43,29 @@ import org.deegree.workspace.Workspace;
 
 /**
  * {@link ProcessProviderProvider} for the {@link ExampleProcessProvider}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class ExampleProcessProviderProvider extends ProcessProviderProvider {
 
-    private static final String CONFIG_NAMESPACE = "http://www.deegree.org/processes/example";
+	private static final String CONFIG_NAMESPACE = "http://www.deegree.org/processes/example";
 
-    @Override
-    public String getNamespace() {
-        return CONFIG_NAMESPACE;
-    }
+	@Override
+	public String getNamespace() {
+		return CONFIG_NAMESPACE;
+	}
 
-    @Override
-    public ResourceMetadata<ProcessProvider> createFromLocation( Workspace workspace,
-                                                                 ResourceLocation<ProcessProvider> location ) {
-        return new ExampleProcessProviderMetadata( workspace, location, this );
-    }
+	@Override
+	public ResourceMetadata<ProcessProvider> createFromLocation(Workspace workspace,
+			ResourceLocation<ProcessProvider> location) {
+		return new ExampleProcessProviderMetadata(workspace, location, this);
+	}
 
-    @Override
-    public URL getSchema() {
-        return null; // hope that works with new workspace...
-    }
+	@Override
+	public URL getSchema() {
+		return null; // hope that works with new workspace...
+	}
+
 }

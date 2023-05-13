@@ -37,26 +37,23 @@ package org.deegree.commons.config;
 
 /**
  * A resource of a {@link DeegreeWorkspace}.
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public interface Resource {
 
-    /**
-     * Usually called by the {@link ResourceManager} upon workspace startup.
-     * 
-     * @param workspace
-     *            the workspace the resource belongs to, may be null
-     * @throws ResourceInitException
-     */
-    public void init( DeegreeWorkspace workspace )
-                            throws ResourceInitException;
+	/**
+	 * Usually called by the {@link ResourceManager} upon workspace startup.
+	 * @param workspace the workspace the resource belongs to, may be null
+	 * @throws ResourceInitException
+	 */
+	public void init(DeegreeWorkspace workspace) throws ResourceInitException;
 
-    /**
-     * Usually called by the {@link ResourceManager} upon workspace shutdown.
-     */
-    public void destroy();
+	/**
+	 * Usually called by the {@link ResourceManager} upon workspace shutdown.
+	 */
+	public void destroy();
+
 }

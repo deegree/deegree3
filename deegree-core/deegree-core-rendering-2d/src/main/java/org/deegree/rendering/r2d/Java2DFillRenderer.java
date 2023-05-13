@@ -57,96 +57,101 @@ import static org.deegree.rendering.r2d.RenderHelper.renderMarkForFill;
 
 /**
  * Responsible for applying fill stylings to a graphics 2d.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  */
 class Java2DFillRenderer {
 
-    private UomCalculator uomCalculator;
+	private UomCalculator uomCalculator;
 
-    private Graphics2D graphics;
+	private Graphics2D graphics;
 
-    Java2DFillRenderer( UomCalculator uomCalculator, Graphics2D graphics ) {
-        this.uomCalculator = uomCalculator;
-        this.graphics = graphics;
-    }
+	Java2DFillRenderer(UomCalculator uomCalculator, Graphics2D graphics) {
+		this.uomCalculator = uomCalculator;
+		this.graphics = graphics;
+	}
 
-    void applyGraphicFill( Graphic graphic, UOM uom ) {
-        Rectangle2D.Double graphicBounds = getGraphicBounds( graphic, 0, 0, uom );
-        BufferedImage img;
+	void applyGraphicFill(Graphic graphic, UOM uom) {
+		Rectangle2D.Double graphicBounds = getGraphicBounds(graphic, 0, 0, uom);
+		BufferedImage img;
 
-        if ( graphic.image == null ) {
-            int size = round( uomCalculator.considerUOM( graphic.size, uom ) );
+		if (graphic.image == null) {
+			int size = round(uomCalculator.considerUOM(graphic.size, uom));
 
-            if ( graphic.imageURL == null ) {
-                img = renderMarkForFill( graphic.mark, graphic.size < 0 ? 6 : size, uom, graphic.rotation,
-                                         graphics != null ? graphics.getRenderingHints() : null );
-                graphicBounds = getImageBounds( img, graphic, 0, 0, uom );
-            } else {
-                img = new BufferedImage( size, size, TYPE_INT_ARGB );
-                Graphics2D g = img.createGraphics();
-                Java2DRenderer renderer = new Java2DRenderer( g );
-                img = renderer.rendererContext.svgRenderer.prepareSvg( graphicBounds, graphic );
-                g.dispose();
-            }
-        } else {
-            img = graphic.image;
-        }
-        graphics.setPaint( new TexturePaint( img, graphicBounds ) );
-    }
+			if (graphic.imageURL == null) {
+				img = renderMarkForFill(graphic.mark, graphic.size < 0 ? 6 : size, uom, graphic.rotation,
+						graphics != null ? graphics.getRenderingHints() : null);
+				graphicBounds = getImageBounds(img, graphic, 0, 0, uom);
+			}
+			else {
+				img = new BufferedImage(size, size, TYPE_INT_ARGB);
+				Graphics2D g = img.createGraphics();
+				Java2DRenderer renderer = new Java2DRenderer(g);
+				img = renderer.rendererContext.svgRenderer.prepareSvg(graphicBounds, graphic);
+				g.dispose();
+			}
+		}
+		else {
+			img = graphic.image;
+		}
+		graphics.setPaint(new TexturePaint(img, graphicBounds));
+	}
 
-    void applyFill( Fill fill, UOM uom ) {
-        if ( fill == null ) {
-            graphics.setPaint( new Color( 0, 0, 0, 0 ) );
-            return;
-        }
+	void applyFill(Fill fill, UOM uom) {
+		if (fill == null) {
+			graphics.setPaint(new Color(0, 0, 0, 0));
+			return;
+		}
 
-        if ( fill.graphic == null ) {
-            graphics.setPaint( fill.color );
-        } else {
-            applyGraphicFill( fill.graphic, uom );
-        }
-    }
+		if (fill.graphic == null) {
+			graphics.setPaint(fill.color);
+		}
+		else {
+			applyGraphicFill(fill.graphic, uom);
+		}
+	}
 
-    Rectangle2D.Double getImageBounds( BufferedImage image, Graphic graphic, double x, double y, UOM uom ) {
-        double width, height;
-        width = image.getWidth();
-        height = image.getHeight();
-        double x0 = x - width * graphic.anchorPointX + uomCalculator.considerUOM( graphic.displacementX, uom );
-        double y0 = y - height * graphic.anchorPointY + uomCalculator.considerUOM( graphic.displacementY, uom );
+	Rectangle2D.Double getImageBounds(BufferedImage image, Graphic graphic, double x, double y, UOM uom) {
+		double width, height;
+		width = image.getWidth();
+		height = image.getHeight();
+		double x0 = x - width * graphic.anchorPointX + uomCalculator.considerUOM(graphic.displacementX, uom);
+		double y0 = y - height * graphic.anchorPointY + uomCalculator.considerUOM(graphic.displacementY, uom);
 
-        return new Rectangle2D.Double( x0, y0, width, height );
-    }
+		return new Rectangle2D.Double(x0, y0, width, height);
+	}
 
-    Rectangle2D.Double getGraphicBounds( Graphic graphic, double x, double y, UOM uom ) {
-        double width, height;
-        if ( graphic.image != null ) {
-            double max = Math.max( graphic.image.getWidth(), graphic.image.getHeight() );
-            double fac = graphic.size / max;
-            width = fac * graphic.image.getWidth();
-            height = fac * graphic.image.getHeight();
-        } else {
-            width = graphic.size;
-            height = graphic.size;
-        }
-        width = uomCalculator.considerUOM( width, uom );
-        height = uomCalculator.considerUOM( height, uom );
+	Rectangle2D.Double getGraphicBounds(Graphic graphic, double x, double y, UOM uom) {
+		double width, height;
+		if (graphic.image != null) {
+			double max = Math.max(graphic.image.getWidth(), graphic.image.getHeight());
+			double fac = graphic.size / max;
+			width = fac * graphic.image.getWidth();
+			height = fac * graphic.image.getHeight();
+		}
+		else {
+			width = graphic.size;
+			height = graphic.size;
+		}
+		width = uomCalculator.considerUOM(width, uom);
+		height = uomCalculator.considerUOM(height, uom);
 
-        if ( width < 0 ) {
-            if ( graphic.image == null ) {
-                width = 6;
-                height = 6;
-            } else {
-                width = graphic.image.getWidth();
-                height = graphic.image.getHeight();
-            }
-        }
-        
-        double x0 = x - width * graphic.anchorPointX + uomCalculator.considerUOM( graphic.displacementX, uom );
-        double y0 = y - height * graphic.anchorPointY + uomCalculator.considerUOM( graphic.displacementY, uom );
+		if (width < 0) {
+			if (graphic.image == null) {
+				width = 6;
+				height = 6;
+			}
+			else {
+				width = graphic.image.getWidth();
+				height = graphic.image.getHeight();
+			}
+		}
 
-        return new Rectangle2D.Double( x0, y0, width, height );
-    }
+		double x0 = x - width * graphic.anchorPointX + uomCalculator.considerUOM(graphic.displacementX, uom);
+		double y0 = y - height * graphic.anchorPointY + uomCalculator.considerUOM(graphic.displacementY, uom);
+
+		return new Rectangle2D.Double(x0, y0, width, height);
+	}
 
 }

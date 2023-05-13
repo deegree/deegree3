@@ -35,43 +35,43 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.transaction.action;
 
-
 /**
- * Enum type for discriminating the different object id generation policies for {@link Insert} actions.
- * 
+ * Enum type for discriminating the different object id generation policies for
+ * {@link Insert} actions.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public enum IDGenMode {
 
-    /** Use provided ids. */
-    USE_EXISTING,
+	/** Use provided ids. */
+	USE_EXISTING,
 
-    /** Use provided ids, generate new id if object with same id already exists. */
-    REPLACE_DUPLICATE,
+	/** Use provided ids, generate new id if object with same id already exists. */
+	REPLACE_DUPLICATE,
 
-    /** Always generate new ids. */
-    GENERATE_NEW;
+	/** Always generate new ids. */
+	GENERATE_NEW;
 
-    private boolean skipResolveReferences = false;
+	private boolean skipResolveReferences = false;
 
-    /**
-     * @return <code>true</code> if references should be skipped, <code>false</code> otherwise
-     */
-    public boolean isSkipResolveReferences() {
-        return skipResolveReferences;
-    }
+	/**
+	 * @return <code>true</code> if references should be skipped, <code>false</code>
+	 * otherwise
+	 */
+	public boolean isSkipResolveReferences() {
+		return skipResolveReferences;
+	}
 
-    /**
-     * @param skipResolveReferences
-     *            <code>true</code> if references should be skipped, <code>false</code> otherwise
-     *
-     * @return the IDGenMode instance
-     */
-    public IDGenMode withSkipResolveReferences( boolean skipResolveReferences ) {
-        this.skipResolveReferences = skipResolveReferences;
-        return this;
-    }
+	/**
+	 * @param skipResolveReferences <code>true</code> if references should be skipped,
+	 * <code>false</code> otherwise
+	 * @return the IDGenMode instance
+	 */
+	public IDGenMode withSkipResolveReferences(boolean skipResolveReferences) {
+		this.skipResolveReferences = skipResolveReferences;
+		return this;
+	}
+
 }

@@ -58,31 +58,30 @@ import org.deegree.workspace.standard.DefaultResourceIdentifier;
 
 /**
  * <code>MemoryFeatureStoreMetadata</code>
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
- * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 public class MemoryFeatureStoreMetadata extends AbstractResourceMetadata<FeatureStore> {
 
-    public MemoryFeatureStoreMetadata( Workspace workspace, ResourceLocation<FeatureStore> location,
-                                       AbstractResourceProvider<FeatureStore> provider ) {
-        super( workspace, location, provider );
-    }
+	public MemoryFeatureStoreMetadata(Workspace workspace, ResourceLocation<FeatureStore> location,
+			AbstractResourceProvider<FeatureStore> provider) {
+		super(workspace, location, provider);
+	}
 
-    @Override
-    public ResourceBuilder<FeatureStore> prepare() {
-        try {
-            MemoryFeatureStoreConfig config = (MemoryFeatureStoreConfig) unmarshall( "org.deegree.feature.persistence.memory.jaxb",
-                                                                                     CONFIG_SCHEMA,
-                                                                                     location.getAsStream(), workspace );
-            dependencies.add( new DefaultResourceIdentifier<ConnectionProvider>( ConnectionProviderProvider.class,
-                                                                                 "LOCK_DB" ) );
-            return new MemoryFeatureStoreBuilder( this, config, workspace );
-        } catch ( Exception e ) {
-            throw new ResourceInitException( e.getLocalizedMessage(), e );
-        }
-    }
+	@Override
+	public ResourceBuilder<FeatureStore> prepare() {
+		try {
+			MemoryFeatureStoreConfig config = (MemoryFeatureStoreConfig) unmarshall(
+					"org.deegree.feature.persistence.memory.jaxb", CONFIG_SCHEMA, location.getAsStream(), workspace);
+			dependencies
+				.add(new DefaultResourceIdentifier<ConnectionProvider>(ConnectionProviderProvider.class, "LOCK_DB"));
+			return new MemoryFeatureStoreBuilder(this, config, workspace);
+		}
+		catch (Exception e) {
+			throw new ResourceInitException(e.getLocalizedMessage(), e);
+		}
+	}
 
 }

@@ -46,59 +46,59 @@ import org.deegree.process.jaxb.java.ProcessletOutputDefinition;
  * @author <a href="mailto:apadberg@uni-bonn.de">Alexander Padberg</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
  * @version $Revision: $, $Date: $
  */
 public abstract class ProcessletOutputImpl implements ProcessletOutput {
 
-    protected ProcessletOutputDefinition definition;
+	protected ProcessletOutputDefinition definition;
 
-    private boolean isRequested;
+	private boolean isRequested;
 
-    private LanguageString title;
+	private LanguageString title;
 
-    private LanguageString summary;
+	private LanguageString summary;
 
-    protected ProcessletOutputImpl( ProcessletOutputDefinition definition, boolean isRequested ) {
-        this.definition = definition;
-        this.isRequested = isRequested;
-    }
+	protected ProcessletOutputImpl(ProcessletOutputDefinition definition, boolean isRequested) {
+		this.definition = definition;
+		this.isRequested = isRequested;
+	}
 
-    @Override
-    public CodeType getIdentifier() {
-        return new CodeType( definition.getIdentifier().getValue(), definition.getIdentifier().getCodeSpace() );
-    }
+	@Override
+	public CodeType getIdentifier() {
+		return new CodeType(definition.getIdentifier().getValue(), definition.getIdentifier().getCodeSpace());
+	}
 
-    @Override
-    public LanguageString getSubmittedTitle() {
-        return null;
-    }
+	@Override
+	public LanguageString getSubmittedTitle() {
+		return null;
+	}
 
-    @Override
-    public LanguageString getSubmittedAbstract() {
-        return null;
-    }
+	@Override
+	public LanguageString getSubmittedAbstract() {
+		return null;
+	}
 
-    @Override
-    public boolean isRequested() {
-        return isRequested;
-    }
+	@Override
+	public boolean isRequested() {
+		return isRequested;
+	}
 
-    public void setTitle(LanguageString title) {
-        this.title = title;
-    }
+	public void setTitle(LanguageString title) {
+		this.title = title;
+	}
 
-    public void setAbstract(LanguageString summary) {
-        this.summary = summary;
-    }
+	public void setAbstract(LanguageString summary) {
+		this.summary = summary;
+	}
 
-    public ProcessletOutputDefinition getDefinition() {
-        return definition;
-    }
+	public ProcessletOutputDefinition getDefinition() {
+		return definition;
+	}
 
-    @Override
-    public String toString() {
-        return "Output parameter, identifier='" + getIdentifier() + "', title='" + definition.getTitle() + "', abstract='" + definition.getAbstract()
-               + "'";
-    }
+	@Override
+	public String toString() {
+		return "Output parameter, identifier='" + getIdentifier() + "', title='" + definition.getTitle()
+				+ "', abstract='" + definition.getAbstract() + "'";
+	}
+
 }

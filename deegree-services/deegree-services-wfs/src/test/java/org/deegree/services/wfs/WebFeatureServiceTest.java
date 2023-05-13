@@ -67,250 +67,264 @@ import org.junit.Test;
  */
 public class WebFeatureServiceTest {
 
-    private final WebFeatureService webFeatureService = new WebFeatureService( null, null, null );;
+	private final WebFeatureService webFeatureService = new WebFeatureService(null, null, null);
 
-    @Test
-    public void testParseEncodingsWithRequestTypeSpecific() {
-        DeegreeWFS supportedRequests = prepareSupportedRequestsWithRequestTypeSpecific();
+	;
 
-        LimitedSupportedEncodings limitedSupportedEncodings = (LimitedSupportedEncodings) webFeatureService.parseEncodings( supportedRequests );
-        Map<WFSRequestType, Set<String>> enabledEncodings = limitedSupportedEncodings.getEnabledEncodingsPerRequestType();
+	@Test
+	public void testParseEncodingsWithRequestTypeSpecific() {
+		DeegreeWFS supportedRequests = prepareSupportedRequestsWithRequestTypeSpecific();
 
-        Set<String> capabilitiesEncodings = enabledEncodings.get( GetCapabilities );
-        assertThat( capabilitiesEncodings, hasOnlyItems( "xml", "soap" ) );
+		LimitedSupportedEncodings limitedSupportedEncodings = (LimitedSupportedEncodings) webFeatureService
+			.parseEncodings(supportedRequests);
+		Map<WFSRequestType, Set<String>> enabledEncodings = limitedSupportedEncodings
+			.getEnabledEncodingsPerRequestType();
 
-        Set<String> describeFeatureTypeEncodings = enabledEncodings.get( DescribeFeatureType );
-        assertThat( describeFeatureTypeEncodings, hasOnlyItems( "xml" ) );
+		Set<String> capabilitiesEncodings = enabledEncodings.get(GetCapabilities);
+		assertThat(capabilitiesEncodings, hasOnlyItems("xml", "soap"));
 
-        Set<String> getFeatureEncodings = enabledEncodings.get( GetFeature );
-        assertThat( getFeatureEncodings, hasOnlyItems( "xml" ) );
+		Set<String> describeFeatureTypeEncodings = enabledEncodings.get(DescribeFeatureType);
+		assertThat(describeFeatureTypeEncodings, hasOnlyItems("xml"));
 
-        Set<String> getPropertyValueEncodings = enabledEncodings.get( GetPropertyValue );
-        assertThat( getPropertyValueEncodings.size(), is( 0 ) );
-    }
+		Set<String> getFeatureEncodings = enabledEncodings.get(GetFeature);
+		assertThat(getFeatureEncodings, hasOnlyItems("xml"));
 
-    @Test
-    public void testParseEncodingsWithKvpForAll() {
-        DeegreeWFS supportedRequests = prepareSupportedRequestsWithKvpForAll();
+		Set<String> getPropertyValueEncodings = enabledEncodings.get(GetPropertyValue);
+		assertThat(getPropertyValueEncodings.size(), is(0));
+	}
 
-        LimitedSupportedEncodings limitedSupportedEncodings = (LimitedSupportedEncodings) webFeatureService.parseEncodings( supportedRequests );
-        Map<WFSRequestType, Set<String>> enabledEncodings = limitedSupportedEncodings.getEnabledEncodingsPerRequestType();
+	@Test
+	public void testParseEncodingsWithKvpForAll() {
+		DeegreeWFS supportedRequests = prepareSupportedRequestsWithKvpForAll();
 
-        Set<String> capabilitiesEncodings = enabledEncodings.get( GetCapabilities );
-        assertThat( capabilitiesEncodings, hasOnlyItems( "kvp", "xml", "soap" ) );
+		LimitedSupportedEncodings limitedSupportedEncodings = (LimitedSupportedEncodings) webFeatureService
+			.parseEncodings(supportedRequests);
+		Map<WFSRequestType, Set<String>> enabledEncodings = limitedSupportedEncodings
+			.getEnabledEncodingsPerRequestType();
 
-        Set<String> describeFeatureTypeEncodings = enabledEncodings.get( DescribeFeatureType );
-        assertThat( describeFeatureTypeEncodings, hasOnlyItems( "kvp", "xml" ) );
+		Set<String> capabilitiesEncodings = enabledEncodings.get(GetCapabilities);
+		assertThat(capabilitiesEncodings, hasOnlyItems("kvp", "xml", "soap"));
 
-        Set<String> getFeatureEncodings = enabledEncodings.get( GetFeature );
-        assertThat( getFeatureEncodings, hasOnlyItems( "kvp", "xml" ) );
+		Set<String> describeFeatureTypeEncodings = enabledEncodings.get(DescribeFeatureType);
+		assertThat(describeFeatureTypeEncodings, hasOnlyItems("kvp", "xml"));
 
-        Set<String> getPropertyValueEncodings = enabledEncodings.get( GetPropertyValue );
-        assertThat( getPropertyValueEncodings.size(), is( 0 ) );
-    }
+		Set<String> getFeatureEncodings = enabledEncodings.get(GetFeature);
+		assertThat(getFeatureEncodings, hasOnlyItems("kvp", "xml"));
 
-    @Test
-    public void testParseEncodingsWithKvpForAllAndNoRequestTypesSpecific() {
-        DeegreeWFS supportedRequests = prepareSupportedRequestsWithKvpForAllAndNoRequestTypesSpecific();
+		Set<String> getPropertyValueEncodings = enabledEncodings.get(GetPropertyValue);
+		assertThat(getPropertyValueEncodings.size(), is(0));
+	}
 
-        LimitedSupportedEncodings limitedSupportedEncodings = (LimitedSupportedEncodings) webFeatureService.parseEncodings( supportedRequests );
-        Map<WFSRequestType, Set<String>> enabledEncodings = limitedSupportedEncodings.getEnabledEncodingsPerRequestType();
+	@Test
+	public void testParseEncodingsWithKvpForAllAndNoRequestTypesSpecific() {
+		DeegreeWFS supportedRequests = prepareSupportedRequestsWithKvpForAllAndNoRequestTypesSpecific();
 
-        Set<String> capabilitiesEncodings = enabledEncodings.get( GetCapabilities );
-        assertThat( capabilitiesEncodings, hasOnlyItems( "kvp" ) );
+		LimitedSupportedEncodings limitedSupportedEncodings = (LimitedSupportedEncodings) webFeatureService
+			.parseEncodings(supportedRequests);
+		Map<WFSRequestType, Set<String>> enabledEncodings = limitedSupportedEncodings
+			.getEnabledEncodingsPerRequestType();
 
-        Set<String> describeFeatureTypeEncodings = enabledEncodings.get( DescribeFeatureType );
-        assertThat( describeFeatureTypeEncodings, hasOnlyItems( "kvp" ) );
+		Set<String> capabilitiesEncodings = enabledEncodings.get(GetCapabilities);
+		assertThat(capabilitiesEncodings, hasOnlyItems("kvp"));
 
-        Set<String> getFeatureEncodings = enabledEncodings.get( GetFeature );
-        assertThat( getFeatureEncodings, hasOnlyItems( "kvp" ) );
+		Set<String> describeFeatureTypeEncodings = enabledEncodings.get(DescribeFeatureType);
+		assertThat(describeFeatureTypeEncodings, hasOnlyItems("kvp"));
 
-        Set<String> getPropertyValueEncodings = enabledEncodings.get( GetPropertyValue );
-        assertThat( getPropertyValueEncodings, hasOnlyItems( "kvp" ) );
-    }
+		Set<String> getFeatureEncodings = enabledEncodings.get(GetFeature);
+		assertThat(getFeatureEncodings, hasOnlyItems("kvp"));
 
-    @Test
-    public void testParseEncodingsWithKvpForAllAndEmptyRequestTypeSpecific() {
-        DeegreeWFS supportedRequests = prepareSupportedRequestsWithKvpForAllAndEmptyRequestTypeSpecific();
+		Set<String> getPropertyValueEncodings = enabledEncodings.get(GetPropertyValue);
+		assertThat(getPropertyValueEncodings, hasOnlyItems("kvp"));
+	}
 
-        LimitedSupportedEncodings limitedSupportedEncodings = (LimitedSupportedEncodings) webFeatureService.parseEncodings( supportedRequests );
-        Map<WFSRequestType, Set<String>> enabledEncodings = limitedSupportedEncodings.getEnabledEncodingsPerRequestType();
+	@Test
+	public void testParseEncodingsWithKvpForAllAndEmptyRequestTypeSpecific() {
+		DeegreeWFS supportedRequests = prepareSupportedRequestsWithKvpForAllAndEmptyRequestTypeSpecific();
 
-        Set<String> capabilitiesEncodings = enabledEncodings.get( GetCapabilities );
-        assertThat( capabilitiesEncodings, hasOnlyItems( "kvp" ) );
-        assertThat( capabilitiesEncodings, not( hasOnlyItems( "xml", "soap" ) ) );
+		LimitedSupportedEncodings limitedSupportedEncodings = (LimitedSupportedEncodings) webFeatureService
+			.parseEncodings(supportedRequests);
+		Map<WFSRequestType, Set<String>> enabledEncodings = limitedSupportedEncodings
+			.getEnabledEncodingsPerRequestType();
 
-        Set<String> describeFeatureTypeEncodings = enabledEncodings.get( DescribeFeatureType );
-        assertThat( describeFeatureTypeEncodings, hasOnlyItems( "kvp" ) );
-        assertThat( capabilitiesEncodings, not( hasOnlyItems( "xml", "soap" ) ) );
+		Set<String> capabilitiesEncodings = enabledEncodings.get(GetCapabilities);
+		assertThat(capabilitiesEncodings, hasOnlyItems("kvp"));
+		assertThat(capabilitiesEncodings, not(hasOnlyItems("xml", "soap")));
 
-        Set<String> getFeatureEncodings = enabledEncodings.get( GetFeature );
-        assertThat( getFeatureEncodings.size(), is( 0 ) );
+		Set<String> describeFeatureTypeEncodings = enabledEncodings.get(DescribeFeatureType);
+		assertThat(describeFeatureTypeEncodings, hasOnlyItems("kvp"));
+		assertThat(capabilitiesEncodings, not(hasOnlyItems("xml", "soap")));
 
-        Set<String> getPropertyValueEncodings = enabledEncodings.get( GetPropertyValue );
-        assertThat( getPropertyValueEncodings.size(), is( 0 ) );
-    }
+		Set<String> getFeatureEncodings = enabledEncodings.get(GetFeature);
+		assertThat(getFeatureEncodings.size(), is(0));
 
-    @Test
-    public void testParseEncodingsWithEmptyAndSupportedRequestTypeSpecific() {
-        DeegreeWFS supportedRequests = prepareSupportedRequestsWithEmptyAndSupportedRequestTypeSpecific();
+		Set<String> getPropertyValueEncodings = enabledEncodings.get(GetPropertyValue);
+		assertThat(getPropertyValueEncodings.size(), is(0));
+	}
 
-        LimitedSupportedEncodings limitedSupportedEncodings = (LimitedSupportedEncodings) webFeatureService.parseEncodings( supportedRequests );
-        Map<WFSRequestType, Set<String>> enabledEncodings = limitedSupportedEncodings.getEnabledEncodingsPerRequestType();
+	@Test
+	public void testParseEncodingsWithEmptyAndSupportedRequestTypeSpecific() {
+		DeegreeWFS supportedRequests = prepareSupportedRequestsWithEmptyAndSupportedRequestTypeSpecific();
 
-        Set<String> capabilitiesEncodings = enabledEncodings.get( GetCapabilities );
-        assertThat( capabilitiesEncodings, hasOnlyItems( "xml", "soap" ) );
+		LimitedSupportedEncodings limitedSupportedEncodings = (LimitedSupportedEncodings) webFeatureService
+			.parseEncodings(supportedRequests);
+		Map<WFSRequestType, Set<String>> enabledEncodings = limitedSupportedEncodings
+			.getEnabledEncodingsPerRequestType();
 
-        Set<String> describeFeatureTypeEncodings = enabledEncodings.get( DescribeFeatureType );
-        assertThat( describeFeatureTypeEncodings, hasOnlyItems( "xml", "soap", "kvp" ) );
+		Set<String> capabilitiesEncodings = enabledEncodings.get(GetCapabilities);
+		assertThat(capabilitiesEncodings, hasOnlyItems("xml", "soap"));
 
-        Set<String> getFeatureEncodings = enabledEncodings.get( GetFeature );
-        assertThat( getFeatureEncodings, hasOnlyItems( "xml" ) );
+		Set<String> describeFeatureTypeEncodings = enabledEncodings.get(DescribeFeatureType);
+		assertThat(describeFeatureTypeEncodings, hasOnlyItems("xml", "soap", "kvp"));
 
-        Set<String> getPropertyValueEncodings = enabledEncodings.get( GetPropertyValue );
-        assertThat( getPropertyValueEncodings.size(), is( 0 ) );
-    }
+		Set<String> getFeatureEncodings = enabledEncodings.get(GetFeature);
+		assertThat(getFeatureEncodings, hasOnlyItems("xml"));
 
-    @Test
-    public void testParseEncodingsWithEmptyRequestTypesSpecific() {
-        DeegreeWFS supportedRequests = prepareSupportedRequestsWithEmptyRequestTypesSpecific();
+		Set<String> getPropertyValueEncodings = enabledEncodings.get(GetPropertyValue);
+		assertThat(getPropertyValueEncodings.size(), is(0));
+	}
 
-        LimitedSupportedEncodings limitedSupportedEncodings = (LimitedSupportedEncodings) webFeatureService.parseEncodings( supportedRequests );
-        Map<WFSRequestType, Set<String>> enabledEncodings = limitedSupportedEncodings.getEnabledEncodingsPerRequestType();
+	@Test
+	public void testParseEncodingsWithEmptyRequestTypesSpecific() {
+		DeegreeWFS supportedRequests = prepareSupportedRequestsWithEmptyRequestTypesSpecific();
 
-        Set<String> capabilitiesEncodings = enabledEncodings.get( GetCapabilities );
-        assertThat( capabilitiesEncodings, hasOnlyItems( "kvp", "xml", "soap" ) );
+		LimitedSupportedEncodings limitedSupportedEncodings = (LimitedSupportedEncodings) webFeatureService
+			.parseEncodings(supportedRequests);
+		Map<WFSRequestType, Set<String>> enabledEncodings = limitedSupportedEncodings
+			.getEnabledEncodingsPerRequestType();
 
-        Set<String> getFeatureEncodings = enabledEncodings.get( GetFeature );
-        assertThat( getFeatureEncodings, hasOnlyItems( "kvp", "xml", "soap" ) );
+		Set<String> capabilitiesEncodings = enabledEncodings.get(GetCapabilities);
+		assertThat(capabilitiesEncodings, hasOnlyItems("kvp", "xml", "soap"));
 
-        Set<String> describeFeatureTypeEncodings = enabledEncodings.get( DescribeFeatureType );
-        assertThat( describeFeatureTypeEncodings.size(), is( 0 ) );
+		Set<String> getFeatureEncodings = enabledEncodings.get(GetFeature);
+		assertThat(getFeatureEncodings, hasOnlyItems("kvp", "xml", "soap"));
 
-        Set<String> getPropertyValueEncodings = enabledEncodings.get( GetPropertyValue );
-        assertThat( getPropertyValueEncodings.size(), is( 0 ) );
-    }
+		Set<String> describeFeatureTypeEncodings = enabledEncodings.get(DescribeFeatureType);
+		assertThat(describeFeatureTypeEncodings.size(), is(0));
 
-    @Test
-    public void testParseEncodingsWithoutRequestTypesSpecificAndKvp() {
-        DeegreeWFS supportedRequests = prepareSupportedRequestsWithoutRequestTypesSpecificAndKvp();
+		Set<String> getPropertyValueEncodings = enabledEncodings.get(GetPropertyValue);
+		assertThat(getPropertyValueEncodings.size(), is(0));
+	}
 
-        SupportedEncodings unlimitedSupportedEncodings = webFeatureService.parseEncodings( supportedRequests );
+	@Test
+	public void testParseEncodingsWithoutRequestTypesSpecificAndKvp() {
+		DeegreeWFS supportedRequests = prepareSupportedRequestsWithoutRequestTypesSpecificAndKvp();
 
-        assertThat( unlimitedSupportedEncodings, CoreMatchers.instanceOf( UnlimitedSupportedEncodings.class ) );
-    }
+		SupportedEncodings unlimitedSupportedEncodings = webFeatureService.parseEncodings(supportedRequests);
 
-    @Test
-    public void testParseEncodingsWithoutSupportedRequestConfiguration() {
-        DeegreeWFS supportedRequests = prepareSupportedRequestsWithoutSupportedRequestConfiguration();
-
-        SupportedEncodings unlimitedSupportedEncodings = webFeatureService.parseEncodings( supportedRequests );
-
-        assertThat( unlimitedSupportedEncodings, CoreMatchers.instanceOf( UnlimitedSupportedEncodings.class ) );
-    }
-
-    private DeegreeWFS prepareSupportedRequestsWithRequestTypeSpecific() {
-        SupportedRequests supportedRequests = new SupportedRequests();
-
-        supportedRequests.setGetCapabilities( new RequestType() );
-        supportedRequests.getGetCapabilities().getSupportedEncodings().add( "xml" );
-        supportedRequests.getGetCapabilities().getSupportedEncodings().add( "soap" );
-
-        supportedRequests.setDescribeFeatureType( new RequestType() );
-        supportedRequests.getDescribeFeatureType().getSupportedEncodings().add( "xml" );
-
-        supportedRequests.setGetFeature( new RequestType() );
-        supportedRequests.getGetFeature().getSupportedEncodings().add( "xml" );
-        return mockDeegreeConfiguration( supportedRequests );
-    }
-
-    private DeegreeWFS prepareSupportedRequestsWithKvpForAll() {
-        SupportedRequests supportedRequests = new SupportedRequests();
-        supportedRequests.getSupportedEncodings().add( "kvp" );
-
-        supportedRequests.setGetCapabilities( new RequestType() );
-        supportedRequests.getGetCapabilities().getSupportedEncodings().add( "xml" );
-        supportedRequests.getGetCapabilities().getSupportedEncodings().add( "soap" );
-
-        supportedRequests.setDescribeFeatureType( new RequestType() );
-        supportedRequests.getDescribeFeatureType().getSupportedEncodings().add( "xml" );
-
-        supportedRequests.setGetFeature( new RequestType() );
-        supportedRequests.getGetFeature().getSupportedEncodings().add( "xml" );
-        return mockDeegreeConfiguration( supportedRequests );
-    }
-
-    private DeegreeWFS prepareSupportedRequestsWithKvpForAllAndEmptyRequestTypeSpecific() {
-        SupportedRequests supportedRequests = new SupportedRequests();
-        supportedRequests.getSupportedEncodings().add( "kvp" );
-
-        supportedRequests.setGetCapabilities( new RequestType() );
-        supportedRequests.setDescribeFeatureType( new RequestType() );
-        return mockDeegreeConfiguration( supportedRequests );
-    }
-
-    private DeegreeWFS prepareSupportedRequestsWithEmptyAndSupportedRequestTypeSpecific() {
-        SupportedRequests supportedRequests = new SupportedRequests();
-
-        supportedRequests.setGetCapabilities( new RequestType() );
-        supportedRequests.getGetCapabilities().getSupportedEncodings().add( "xml" );
-        supportedRequests.getGetCapabilities().getSupportedEncodings().add( "soap" );
-
-        supportedRequests.setDescribeFeatureType( new RequestType() );
-
-        supportedRequests.setGetFeature( new RequestType() );
-        supportedRequests.getGetFeature().getSupportedEncodings().add( "xml" );
-        return mockDeegreeConfiguration( supportedRequests );
-    }
-
-    private DeegreeWFS prepareSupportedRequestsWithKvpForAllAndNoRequestTypesSpecific() {
-        SupportedRequests supportedRequests = new SupportedRequests();
-        supportedRequests.getSupportedEncodings().add( "kvp" );
-        return mockDeegreeConfiguration( supportedRequests );
-    }
-
-    private DeegreeWFS prepareSupportedRequestsWithEmptyRequestTypesSpecific() {
-        SupportedRequests supportedRequests = new SupportedRequests();
-        supportedRequests.setGetCapabilities( new RequestType() );
-        supportedRequests.setGetFeature( new RequestType() );
-        return mockDeegreeConfiguration( supportedRequests );
-    }
-
-    private DeegreeWFS prepareSupportedRequestsWithoutRequestTypesSpecificAndKvp() {
-        return mockDeegreeConfiguration( new SupportedRequests() );
-    }
-
-    private DeegreeWFS prepareSupportedRequestsWithoutSupportedRequestConfiguration() {
-        return mockDeegreeConfiguration( null );
-    }
-
-    private DeegreeWFS mockDeegreeConfiguration( SupportedRequests supportedRequests ) {
-        DeegreeWFS mockedDeegreeWfs = mock( DeegreeWFS.class );
-        when( mockedDeegreeWfs.getSupportedRequests() ).thenReturn( supportedRequests );
-        return mockedDeegreeWfs;
-    }
-
-    @SuppressWarnings("unchecked")
-    private <T> Matcher<Collection<T>> hasOnlyItems( final T... items ) {
-        return new BaseMatcher<Collection<T>>() {
-
-            @Override
-            public boolean matches( Object item ) {
-                Collection<T> list = (Collection<T>) item;
-                if ( list.size() != items.length )
-                    return false;
-                for ( T expectedItem : items ) {
-                    if ( !list.contains( expectedItem ) )
-                        return false;
-                }
-                return true;
-            }
-
-            @Override
-            public void describeTo( Description description ) {
-                description.appendText( "a collection containing exactly" );
-            }
-        };
-    }
+		assertThat(unlimitedSupportedEncodings, CoreMatchers.instanceOf(UnlimitedSupportedEncodings.class));
+	}
+
+	@Test
+	public void testParseEncodingsWithoutSupportedRequestConfiguration() {
+		DeegreeWFS supportedRequests = prepareSupportedRequestsWithoutSupportedRequestConfiguration();
+
+		SupportedEncodings unlimitedSupportedEncodings = webFeatureService.parseEncodings(supportedRequests);
+
+		assertThat(unlimitedSupportedEncodings, CoreMatchers.instanceOf(UnlimitedSupportedEncodings.class));
+	}
+
+	private DeegreeWFS prepareSupportedRequestsWithRequestTypeSpecific() {
+		SupportedRequests supportedRequests = new SupportedRequests();
+
+		supportedRequests.setGetCapabilities(new RequestType());
+		supportedRequests.getGetCapabilities().getSupportedEncodings().add("xml");
+		supportedRequests.getGetCapabilities().getSupportedEncodings().add("soap");
+
+		supportedRequests.setDescribeFeatureType(new RequestType());
+		supportedRequests.getDescribeFeatureType().getSupportedEncodings().add("xml");
+
+		supportedRequests.setGetFeature(new RequestType());
+		supportedRequests.getGetFeature().getSupportedEncodings().add("xml");
+		return mockDeegreeConfiguration(supportedRequests);
+	}
+
+	private DeegreeWFS prepareSupportedRequestsWithKvpForAll() {
+		SupportedRequests supportedRequests = new SupportedRequests();
+		supportedRequests.getSupportedEncodings().add("kvp");
+
+		supportedRequests.setGetCapabilities(new RequestType());
+		supportedRequests.getGetCapabilities().getSupportedEncodings().add("xml");
+		supportedRequests.getGetCapabilities().getSupportedEncodings().add("soap");
+
+		supportedRequests.setDescribeFeatureType(new RequestType());
+		supportedRequests.getDescribeFeatureType().getSupportedEncodings().add("xml");
+
+		supportedRequests.setGetFeature(new RequestType());
+		supportedRequests.getGetFeature().getSupportedEncodings().add("xml");
+		return mockDeegreeConfiguration(supportedRequests);
+	}
+
+	private DeegreeWFS prepareSupportedRequestsWithKvpForAllAndEmptyRequestTypeSpecific() {
+		SupportedRequests supportedRequests = new SupportedRequests();
+		supportedRequests.getSupportedEncodings().add("kvp");
+
+		supportedRequests.setGetCapabilities(new RequestType());
+		supportedRequests.setDescribeFeatureType(new RequestType());
+		return mockDeegreeConfiguration(supportedRequests);
+	}
+
+	private DeegreeWFS prepareSupportedRequestsWithEmptyAndSupportedRequestTypeSpecific() {
+		SupportedRequests supportedRequests = new SupportedRequests();
+
+		supportedRequests.setGetCapabilities(new RequestType());
+		supportedRequests.getGetCapabilities().getSupportedEncodings().add("xml");
+		supportedRequests.getGetCapabilities().getSupportedEncodings().add("soap");
+
+		supportedRequests.setDescribeFeatureType(new RequestType());
+
+		supportedRequests.setGetFeature(new RequestType());
+		supportedRequests.getGetFeature().getSupportedEncodings().add("xml");
+		return mockDeegreeConfiguration(supportedRequests);
+	}
+
+	private DeegreeWFS prepareSupportedRequestsWithKvpForAllAndNoRequestTypesSpecific() {
+		SupportedRequests supportedRequests = new SupportedRequests();
+		supportedRequests.getSupportedEncodings().add("kvp");
+		return mockDeegreeConfiguration(supportedRequests);
+	}
+
+	private DeegreeWFS prepareSupportedRequestsWithEmptyRequestTypesSpecific() {
+		SupportedRequests supportedRequests = new SupportedRequests();
+		supportedRequests.setGetCapabilities(new RequestType());
+		supportedRequests.setGetFeature(new RequestType());
+		return mockDeegreeConfiguration(supportedRequests);
+	}
+
+	private DeegreeWFS prepareSupportedRequestsWithoutRequestTypesSpecificAndKvp() {
+		return mockDeegreeConfiguration(new SupportedRequests());
+	}
+
+	private DeegreeWFS prepareSupportedRequestsWithoutSupportedRequestConfiguration() {
+		return mockDeegreeConfiguration(null);
+	}
+
+	private DeegreeWFS mockDeegreeConfiguration(SupportedRequests supportedRequests) {
+		DeegreeWFS mockedDeegreeWfs = mock(DeegreeWFS.class);
+		when(mockedDeegreeWfs.getSupportedRequests()).thenReturn(supportedRequests);
+		return mockedDeegreeWfs;
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T> Matcher<Collection<T>> hasOnlyItems(final T... items) {
+		return new BaseMatcher<Collection<T>>() {
+
+			@Override
+			public boolean matches(Object item) {
+				Collection<T> list = (Collection<T>) item;
+				if (list.size() != items.length)
+					return false;
+				for (T expectedItem : items) {
+					if (!list.contains(expectedItem))
+						return false;
+				}
+				return true;
+			}
+
+			@Override
+			public void describeTo(Description description) {
+				description.appendText("a collection containing exactly");
+			}
+		};
+	}
 
 }

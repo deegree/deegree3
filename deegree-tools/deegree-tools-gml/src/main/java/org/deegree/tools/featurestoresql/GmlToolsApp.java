@@ -12,23 +12,28 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class GmlToolsApp {
 
-    public static void main( String[] args ) {
-        if ( args.length == 0 || "--help".equals( args[0] ) || "-help".equals( args[0] )  || "-h".equals( args[0] ) ) {
-            printUsage();
-        } else if ( "SqlFeatureStoreConfigCreator".equalsIgnoreCase( args[0] ) ) {
-            SqlFeatureStoreConfigCreatorApp.run( args );
-        } else if ( "GmlLoader".equalsIgnoreCase( args[0] ) ) {
-            GmlLoaderApp.run( args );
-        } else {
-            printUsage();
-        }
-    }
+	public static void main(String[] args) {
+		if (args.length == 0 || "--help".equals(args[0]) || "-help".equals(args[0]) || "-h".equals(args[0])) {
+			printUsage();
+		}
+		else if ("SqlFeatureStoreConfigCreator".equalsIgnoreCase(args[0])) {
+			SqlFeatureStoreConfigCreatorApp.run(args);
+		}
+		else if ("GmlLoader".equalsIgnoreCase(args[0])) {
+			GmlLoaderApp.run(args);
+		}
+		else {
+			printUsage();
+		}
+	}
 
-    private static void printUsage() {
-        System.out.println( "The deegree CLI includes tools to create SQLFeatureStore configurations and load GML files." );
-        System.out.println( "Use the keywords 'SqlFeatureStoreConfigCreator' or 'GmlLoader' to choose between the tools:" );
-        System.out.println( "   SqlFeatureStoreConfigCreator -h (Prints the usage for this tool)" );
-        System.out.println( "   GmlLoader -h (Prints the usage for this tool)" );
-    }
+	private static void printUsage() {
+		System.out
+			.println("The deegree CLI includes tools to create SQLFeatureStore configurations and load GML files.");
+		System.out
+			.println("Use the keywords 'SqlFeatureStoreConfigCreator' or 'GmlLoader' to choose between the tools:");
+		System.out.println("   SqlFeatureStoreConfigCreator -h (Prints the usage for this tool)");
+		System.out.println("   GmlLoader -h (Prints the usage for this tool)");
+	}
 
 }

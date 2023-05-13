@@ -50,43 +50,45 @@ import org.slf4j.LoggerFactory;
 
 /**
  * {@link SqlDialectProvider} for PostGIS-enabled PostgreSQL databases.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: mschneider $
- * 
  * @version $Revision: 31034 $, $Date: 2011-06-09 16:47:31 +0200 (Do, 09. Jun 2011) $
  */
 public class PostGISDialectProvider implements SqlDialectProvider {
 
-    private static Logger LOG = LoggerFactory.getLogger( PostGISDialectProvider.class );
+	private static Logger LOG = LoggerFactory.getLogger(PostGISDialectProvider.class);
 
-    @Override
-    public boolean supportsConnection( final Connection connection ) {
-        String url = null;
-        try {
-            url = connection.getMetaData().getURL();
-        } catch ( Exception e ) {
-            LOG.debug( "Could not determine metadata/url of connection: {}", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-            return false;
-        }
-        return url.startsWith( "jdbc:postgresql:" );
-    }
+	@Override
+	public boolean supportsConnection(final Connection connection) {
+		String url = null;
+		try {
+			url = connection.getMetaData().getURL();
+		}
+		catch (Exception e) {
+			LOG.debug("Could not determine metadata/url of connection: {}", e.getLocalizedMessage());
+			LOG.trace("Stack trace:", e);
+			return false;
+		}
+		return url.startsWith("jdbc:postgresql:");
+	}
 
-    @Override
-    public SQLDialect createDialect( final Connection conn ) {
-        Statement stmt = null;
-        ResultSet rs = null;
-        String version = null;
-        try {
-            version = determinePostGISVersion( conn, LOG );
-        } catch ( Exception e ) {
-            LOG.trace( e.getMessage(), e );
-            throw new ResourceInitException( e.getMessage(), e );
-        } finally {
-            close( rs, stmt, null, LOG );
-        }
-        return new PostGISDialect( version );
-    }
+	@Override
+	public SQLDialect createDialect(final Connection conn) {
+		Statement stmt = null;
+		ResultSet rs = null;
+		String version = null;
+		try {
+			version = determinePostGISVersion(conn, LOG);
+		}
+		catch (Exception e) {
+			LOG.trace(e.getMessage(), e);
+			throw new ResourceInitException(e.getMessage(), e);
+		}
+		finally {
+			close(rs, stmt, null, LOG);
+		}
+		return new PostGISDialect(version);
+	}
 
 }

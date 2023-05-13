@@ -59,183 +59,175 @@ import org.deegree.protocol.wfs.transaction.action.IDGenMode;
 /**
  * An {@link InsertRow} for a feature type root table (deals with feature id generation).
  * <p>
- * The final value of the feature id is usually not known during construction of the object (i.e. when
- * {@link IDGenMode#GENERATE_NEW} is used). Also, the feature type may not be known (in case an instances gets created,
- * because a reference to a feature occurred, but not the feature itself).
+ * The final value of the feature id is usually not known during construction of the
+ * object (i.e. when {@link IDGenMode#GENERATE_NEW} is used). Also, the feature type may
+ * not be known (in case an instances gets created, because a reference to a feature
+ * occurred, but not the feature itself).
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class FeatureRow extends InsertRow {
 
-    private final String origFid;
+	private final String origFid;
 
-    private FIDMapping fidMapping;
+	private FIDMapping fidMapping;
 
-    private String newId;
+	private String newId;
 
-    /**
-     * Creates a new {@link FeatureRow} instance.
-     * 
-     * @param mgr
-     *            manager for the insert rows, must not be <code>null</code>
-     * @param origFid
-     *            original feature id (before id generation), may be <code>null</code> (feature without id)
-     */
-    public FeatureRow( InsertRowManager mgr, String origFid ) {
-        super( mgr );
-        this.origFid = origFid;
-    }
+	/**
+	 * Creates a new {@link FeatureRow} instance.
+	 * @param mgr manager for the insert rows, must not be <code>null</code>
+	 * @param origFid original feature id (before id generation), may be <code>null</code>
+	 * (feature without id)
+	 */
+	public FeatureRow(InsertRowManager mgr, String origFid) {
+		super(mgr);
+		this.origFid = origFid;
+	}
 
-    /**
-     * Returns the original id value of the {@link Feature}.
-     * 
-     * @return original id, can be <code>null</code> (feature without id)
-     */
-    public String getOriginalId() {
-        return origFid;
-    }
+	/**
+	 * Returns the original id value of the {@link Feature}.
+	 * @return original id, can be <code>null</code> (feature without id)
+	 */
+	public String getOriginalId() {
+		return origFid;
+	}
 
-    /**
-     * Returns the final (insert) id value of the {@link Feature}.
-     * 
-     * @return insert id, can be <code>null</code> (not assigned yet)
-     */
-    public String getNewId() {
-        return newId;
-    }
+	/**
+	 * Returns the final (insert) id value of the {@link Feature}.
+	 * @return insert id, can be <code>null</code> (not assigned yet)
+	 */
+	public String getNewId() {
+		return newId;
+	}
 
-    @Override
-    void performInsert( Connection conn, boolean propagateAutoGenColumns )
-                            throws SQLException, FeatureStoreException {
+	@Override
+	void performInsert(Connection conn, boolean propagateAutoGenColumns) throws SQLException, FeatureStoreException {
 
-        super.performInsert( conn, propagateAutoGenColumns );
+		super.performInsert(conn, propagateAutoGenColumns);
 
-        newId = buildNewFid();
-        if ( newId == null ) {
-            String msg = "Internal/configuration error. Feature id must be assignable after feature row INSERT.";
-            throw new FeatureStoreException( msg );
-        }
+		newId = buildNewFid();
+		if (newId == null) {
+			String msg = "Internal/configuration error. Feature id must be assignable after feature row INSERT.";
+			throw new FeatureStoreException(msg);
+		}
 
-        // clear everything, but keep key columns (values may still be needed by referencing rows)
-        Map<SQLIdentifier, Object> keyColumnToValue = new HashMap<SQLIdentifier, Object>();
-        Set<SQLIdentifier> genColumns = mgr.getKeyColumns( table );
-        if ( genColumns != null ) {
-            for ( SQLIdentifier genColumn : genColumns ) {
-                keyColumnToValue.put( genColumn, get( genColumn ) );
-            }
-        }
+		// clear everything, but keep key columns (values may still be needed by
+		// referencing rows)
+		Map<SQLIdentifier, Object> keyColumnToValue = new HashMap<SQLIdentifier, Object>();
+		Set<SQLIdentifier> genColumns = mgr.getKeyColumns(table);
+		if (genColumns != null) {
+			for (SQLIdentifier genColumn : genColumns) {
+				keyColumnToValue.put(genColumn, get(genColumn));
+			}
+		}
 
-        columnToLiteral.clear();
-        columnToObject.clear();
-        columnToObject.putAll( keyColumnToValue );
-    }
+		columnToLiteral.clear();
+		columnToObject.clear();
+		columnToObject.putAll(keyColumnToValue);
+	}
 
-    void assign( Feature feature )
-                            throws FeatureStoreException {
+	void assign(Feature feature) throws FeatureStoreException {
 
-        FeatureTypeMapping ftMapping = mgr.getSchema().getFtMapping( feature.getName() );
+		FeatureTypeMapping ftMapping = mgr.getSchema().getFtMapping(feature.getName());
 
-        this.table = ftMapping.getFtTable();
-        this.fidMapping = ftMapping.getFidMapping();
+		this.table = ftMapping.getFtTable();
+		this.fidMapping = ftMapping.getFidMapping();
 
-        switch ( mgr.getIdGenMode() ) {
-        case GENERATE_NEW: {
-            Map<SQLIdentifier, IDGenerator> keyColumnToGenerator = new HashMap<SQLIdentifier, IDGenerator>();
-            for ( Pair<SQLIdentifier, BaseType> columnAndType : ftMapping.getFidMapping().getColumns() ) {
-                SQLIdentifier fidColumn = columnAndType.first;
-                keyColumnToGenerator.put( fidColumn, ftMapping.getFidMapping().getIdGenerator() );
-                generateImmediateKeys( keyColumnToGenerator );
-            }
-            break;
-        }
-        case USE_EXISTING: {
-            preInsertUseExisting( ftMapping );
-            break;
-        }
-        case REPLACE_DUPLICATE: {
-            throw new UnsupportedOperationException( "REPLACE_DUPLICATE id generation mode is not implemented yet." );
-        }
-        }
+		switch (mgr.getIdGenMode()) {
+			case GENERATE_NEW: {
+				Map<SQLIdentifier, IDGenerator> keyColumnToGenerator = new HashMap<SQLIdentifier, IDGenerator>();
+				for (Pair<SQLIdentifier, BaseType> columnAndType : ftMapping.getFidMapping().getColumns()) {
+					SQLIdentifier fidColumn = columnAndType.first;
+					keyColumnToGenerator.put(fidColumn, ftMapping.getFidMapping().getIdGenerator());
+					generateImmediateKeys(keyColumnToGenerator);
+				}
+				break;
+			}
+			case USE_EXISTING: {
+				preInsertUseExisting(ftMapping);
+				break;
+			}
+			case REPLACE_DUPLICATE: {
+				throw new UnsupportedOperationException("REPLACE_DUPLICATE id generation mode is not implemented yet.");
+			}
+		}
 
-        newId = buildNewFid();
-    }
+		newId = buildNewFid();
+	}
 
-    boolean isAssigned() {
-        return fidMapping != null;
-    }
+	boolean isAssigned() {
+		return fidMapping != null;
+	}
 
-    @Override
-    protected Set<SQLIdentifier> getAutogenColumns( boolean propagateNonFidAutoGenColumns ) {
-        Set<SQLIdentifier> cols = super.getAutogenColumns( propagateNonFidAutoGenColumns );
-        for ( Pair<SQLIdentifier, BaseType> fidColumn : fidMapping.getColumns() ) {
-            cols.add( fidColumn.first );
-        }
-        return cols;
-    }
+	@Override
+	protected Set<SQLIdentifier> getAutogenColumns(boolean propagateNonFidAutoGenColumns) {
+		Set<SQLIdentifier> cols = super.getAutogenColumns(propagateNonFidAutoGenColumns);
+		for (Pair<SQLIdentifier, BaseType> fidColumn : fidMapping.getColumns()) {
+			cols.add(fidColumn.first);
+		}
+		return cols;
+	}
 
-    private void preInsertUseExisting( FeatureTypeMapping ftMapping )
-                            throws FeatureStoreException {
+	private void preInsertUseExisting(FeatureTypeMapping ftMapping) throws FeatureStoreException {
 
-        if ( origFid == null || origFid.isEmpty() ) {
-            String msg = "Cannot insert features without id and id generation mode 'UseExisting'.";
-            throw new FeatureStoreException( msg );
-        }
-        String[] idKernels = null;
-        try {
-            IdAnalysis analysis = mgr.getSchema().analyzeId( getOriginalId() );
-            idKernels = analysis.getIdKernels();
-            if ( !analysis.getFeatureType().getName().equals( ftMapping.getFeatureType() ) ) {
-                String msg = "Cannot insert feature with id '" + origFid + "' and id generation mode 'UseExisting'. "
-                             + "Id does not match configured feature id pattern for feature type '"
-                             + ftMapping.getFeatureType() + "'.";
-                throw new FeatureStoreException( msg );
-            }
-        } catch ( IllegalArgumentException e ) {
-            String msg = "Cannot insert feature with id '" + getOriginalId()
-                         + "' and id generation mode 'UseExisting'. "
-                         + "Id does not match configured feature id pattern.";
-            throw new FeatureStoreException( msg );
-        }
-        for ( int i = 0; i < fidMapping.getColumns().size(); i++ ) {
-            Pair<SQLIdentifier, BaseType> idColumn = fidMapping.getColumns().get( i );
-            Object value = idKernels[i];
-            BaseType baseType = idColumn.second != null ? idColumn.second : BaseType.STRING;
-            PrimitiveType type = new PrimitiveType( baseType );
-            PrimitiveValue primitiveValue = new PrimitiveValue( value, type );
-            PrimitiveParticleConverter primitiveConverter = mgr.getDialect().getPrimitiveConverter( idColumn.first.getName(),
-                                                                                                    type );
-            addPreparedArgument( idColumn.getFirst(), primitiveValue, primitiveConverter );
-        }
-    }
+		if (origFid == null || origFid.isEmpty()) {
+			String msg = "Cannot insert features without id and id generation mode 'UseExisting'.";
+			throw new FeatureStoreException(msg);
+		}
+		String[] idKernels = null;
+		try {
+			IdAnalysis analysis = mgr.getSchema().analyzeId(getOriginalId());
+			idKernels = analysis.getIdKernels();
+			if (!analysis.getFeatureType().getName().equals(ftMapping.getFeatureType())) {
+				String msg = "Cannot insert feature with id '" + origFid + "' and id generation mode 'UseExisting'. "
+						+ "Id does not match configured feature id pattern for feature type '"
+						+ ftMapping.getFeatureType() + "'.";
+				throw new FeatureStoreException(msg);
+			}
+		}
+		catch (IllegalArgumentException e) {
+			String msg = "Cannot insert feature with id '" + getOriginalId()
+					+ "' and id generation mode 'UseExisting'. " + "Id does not match configured feature id pattern.";
+			throw new FeatureStoreException(msg);
+		}
+		for (int i = 0; i < fidMapping.getColumns().size(); i++) {
+			Pair<SQLIdentifier, BaseType> idColumn = fidMapping.getColumns().get(i);
+			Object value = idKernels[i];
+			BaseType baseType = idColumn.second != null ? idColumn.second : BaseType.STRING;
+			PrimitiveType type = new PrimitiveType(baseType);
+			PrimitiveValue primitiveValue = new PrimitiveValue(value, type);
+			PrimitiveParticleConverter primitiveConverter = mgr.getDialect()
+				.getPrimitiveConverter(idColumn.first.getName(), type);
+			addPreparedArgument(idColumn.getFirst(), primitiveValue, primitiveConverter);
+		}
+	}
 
-    private String buildNewFid()
-                            throws FeatureStoreException {
+	private String buildNewFid() throws FeatureStoreException {
 
-        if ( get( fidMapping.getColumns().get( 0 ).getFirst() ) == null ) {
-            // fid columns not available yet
-            return null;
-        }
+		if (get(fidMapping.getColumns().get(0).getFirst()) == null) {
+			// fid columns not available yet
+			return null;
+		}
 
-        String newId = fidMapping.getPrefix();
-        List<Pair<SQLIdentifier, BaseType>> fidColumns = fidMapping.getColumns();
-        newId += checkFIDParticle( fidColumns.get( 0 ).first );
-        for ( int i = 1; i < fidColumns.size(); i++ ) {
-            newId += fidMapping.getDelimiter() + checkFIDParticle( fidColumns.get( i ).first );
-        }
-        return newId;
-    }
+		String newId = fidMapping.getPrefix();
+		List<Pair<SQLIdentifier, BaseType>> fidColumns = fidMapping.getColumns();
+		newId += checkFIDParticle(fidColumns.get(0).first);
+		for (int i = 1; i < fidColumns.size(); i++) {
+			newId += fidMapping.getDelimiter() + checkFIDParticle(fidColumns.get(i).first);
+		}
+		return newId;
+	}
 
-    private Object checkFIDParticle( SQLIdentifier column )
-                            throws FeatureStoreException {
-        Object value = get( column );
-        if ( value == null ) {
-            throw new FeatureStoreException( "FIDMapping error: No value for feature id column '" + column + "'." );
-        }
-        return value;
-    }
+	private Object checkFIDParticle(SQLIdentifier column) throws FeatureStoreException {
+		Object value = get(column);
+		if (value == null) {
+			throw new FeatureStoreException("FIDMapping error: No value for feature id column '" + column + "'.");
+		}
+		return value;
+	}
 
 }

@@ -41,38 +41,37 @@ import org.deegree.gml.GMLVersion;
 
 /**
  * Encapsulates the xslt file as well as the gml version the xslt file transfoms to.
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
 public class XsltFile {
 
-    private final URL xsltFile;
+	private final URL xsltFile;
 
-    private final GMLVersion targetGmlVersion;
+	private final GMLVersion targetGmlVersion;
 
-    /**
-     * @param xsltFile
-     *            the xslt file used to transform, never <code>null</code>
-     * @param gmlVersion
-     *            the gml version the xsltFile transforms to, never <code>null</code>
-     */
-    public XsltFile( URL xsltFile, GMLVersion targetGmlVersion ) {
-        this.xsltFile = xsltFile;
-        this.targetGmlVersion = targetGmlVersion;
-    }
+	/**
+	 * @param xsltFile the xslt file used to transform, never <code>null</code>
+	 * @param gmlVersion the gml version the xsltFile transforms to, never
+	 * <code>null</code>
+	 */
+	public XsltFile(URL xsltFile, GMLVersion targetGmlVersion) {
+		this.xsltFile = xsltFile;
+		this.targetGmlVersion = targetGmlVersion;
+	}
 
-    /**
-     * @return the xslt file used to transform, never <code>null</code>
-     */
-    public URL getXsltFile() {
-        return xsltFile;
-    }
+	/**
+	 * @return the xslt file used to transform, never <code>null</code>
+	 */
+	public URL getXsltFile() {
+		return xsltFile;
+	}
 
-    /**
-     * @return the gml version the xsltFile transforms to, never <code>null</code>
-     */
-    public GMLVersion getTargetGmlVersion() {
-        return targetGmlVersion;
-    }
+	/**
+	 * @return the gml version the xsltFile transforms to, never <code>null</code>
+	 */
+	public GMLVersion getTargetGmlVersion() {
+		return targetGmlVersion;
+	}
 
 }

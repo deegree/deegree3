@@ -37,26 +37,24 @@ package org.deegree.commons.index;
 
 /**
  * The <code></code> class TODO add class documentation here.
- * 
+ *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * 
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
- * 
+ *
  */
 public class NoOverlapException extends Exception {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 7034200118893198908L;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 7034200118893198908L;
 
-    /**
-     * @param string
-     */
-    public NoOverlapException( String string ) {
-        // TODO Auto-generated constructor stub
-    }
+	/**
+	 * @param string
+	 */
+	public NoOverlapException(String string) {
+		// TODO Auto-generated constructor stub
+	}
 
 }

@@ -78,290 +78,297 @@ import org.slf4j.Logger;
 @ViewScoped
 public class XmlEditorBean implements Serializable {
 
-    private static final long serialVersionUID = -2345424266499294734L;
+	private static final long serialVersionUID = -2345424266499294734L;
 
-    private static final Logger LOG = getLogger( XmlEditorBean.class );
+	private static final Logger LOG = getLogger(XmlEditorBean.class);
 
-    private String id;
+	private String id;
 
-    private String fileName;
+	private String fileName;
 
-    private String schemaUrl;
+	private String schemaUrl;
 
-    private String nextView;
+	private String nextView;
 
-    private String content;
+	private String content;
 
-    private String schemaAsText;
+	private String schemaAsText;
 
-    private String resourceProviderClass;
+	private String resourceProviderClass;
 
-    private String emptyTemplate;
+	private String emptyTemplate;
 
-    public String getEmptyTemplate() {
-        return emptyTemplate;
-    }
+	public String getEmptyTemplate() {
+		return emptyTemplate;
+	}
 
-    public void setEmptyTemplate( String emptyTemplate ) {
-        this.emptyTemplate = emptyTemplate;
-    }
+	public void setEmptyTemplate(String emptyTemplate) {
+		this.emptyTemplate = emptyTemplate;
+	}
 
-    public String getFileName() {
-        return fileName;
-    }
+	public String getFileName() {
+		return fileName;
+	}
 
-    public void setFileName( String fileName ) {
-        this.fileName = fileName;
-    }
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
 
-    public String getId() {
-        return id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public void setId( String id ) {
-        this.id = id;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public String getSchemaUrl() {
-        if ( schemaUrl == null ) {
-            try {
-                Workspace workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
-                Class<?> cls = workspace.getModuleClassLoader().loadClass( resourceProviderClass );
-                ResourceMetadata<?> md = workspace.getResourceMetadata( (Class) cls, id );
-                if ( md.getProvider() instanceof AbstractResourceProvider ) {
-                    setSchemaUrl( ( (AbstractResourceProvider) md.getProvider() ).getSchema().toExternalForm() );
-                }
-            } catch ( Exception e ) {
-                LOG.trace(e.getLocalizedMessage());
-            }
-        }
-        return schemaUrl;
-    }
+	public String getSchemaUrl() {
+		if (schemaUrl == null) {
+			try {
+				Workspace workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
+				Class<?> cls = workspace.getModuleClassLoader().loadClass(resourceProviderClass);
+				ResourceMetadata<?> md = workspace.getResourceMetadata((Class) cls, id);
+				if (md.getProvider() instanceof AbstractResourceProvider) {
+					setSchemaUrl(((AbstractResourceProvider) md.getProvider()).getSchema().toExternalForm());
+				}
+			}
+			catch (Exception e) {
+				LOG.trace(e.getLocalizedMessage());
+			}
+		}
+		return schemaUrl;
+	}
 
-    public void setSchemaUrl( String schemaUrl ) {
-        this.schemaUrl = schemaUrl;
-        if ( schemaUrl != null && !schemaUrl.isEmpty() ) {
-            try {
-                schemaAsText = IOUtils.toString( new URL( schemaUrl ).openStream(), "UTF-8" );
-            } catch ( IOException e ) {
-                LOG.error("Error while setting schema file: ", e.getLocalizedMessage());
-            }
-        }
-    }
+	public void setSchemaUrl(String schemaUrl) {
+		this.schemaUrl = schemaUrl;
+		if (schemaUrl != null && !schemaUrl.isEmpty()) {
+			try {
+				schemaAsText = IOUtils.toString(new URL(schemaUrl).openStream(), "UTF-8");
+			}
+			catch (IOException e) {
+				LOG.error("Error while setting schema file: ", e.getLocalizedMessage());
+			}
+		}
+	}
 
-    public String getNextView() {
-        return nextView;
-    }
+	public String getNextView() {
+		return nextView;
+	}
 
-    public void setNextView( String nextView ) {
-        this.nextView = nextView;
-    }
+	public void setNextView(String nextView) {
+		this.nextView = nextView;
+	}
 
-    public String getContent()
-                            throws IOException, ClassNotFoundException {
-        LOG.trace( "Editing file: " + getFileName() + " with ID + " + getId() );
-        LOG.trace( "Using schema: " + getSchemaUrl() );
-        LOG.trace( "Editor content: " + content );
-        LOG.trace( "Related ResourceProviderClass: " + resourceProviderClass );
-        LOG.trace( "Next view: " + getNextView() );
-        if ( content == null ) {
-            LOG.trace("No content set for " + this.toString());
-            if ( resourceProviderClass == null ) {
-                File file = new File(fileName);
-                if ( fileName != null && file.exists() ) {
-                    LOG.trace( "Loading content from file: " + file.getAbsolutePath() );
-                    content = FileUtils.readFileToString( file );
-                    LOG.trace( "Setting content to: " + content );
-                    return content;
-                } else
-                if ( emptyTemplate != null ) {
-                    // load template content if the requested file did not exists
-                    LOG.trace( "Loading template from " + emptyTemplate );
-                    StringWriter sw = new StringWriter();
-                    IOUtils.copy( ( new URL( emptyTemplate ) ).openStream(), sw );
-                    content = sw.toString();
-                    LOG.trace( "Setting content to:" + content );
-                    return content;
-                }
-            } else {
-                Workspace workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
-                Class<?> cls = workspace.getModuleClassLoader().loadClass(resourceProviderClass);
-                ResourceMetadata<?> md = workspace.getResourceMetadata((Class) cls, id);
-                if (md != null) {
-                    content = IOUtils.toString(md.getLocation().getAsStream());
-                    LOG.trace( "Loading content from resource: " + md.getLocation().getAsFile().getAbsolutePath() );
-                } else if (emptyTemplate != null) {
-                    LOG.trace( "Loading template for resource provider " + this.getResourceProviderClass() + " from " +
-                            emptyTemplate );
-                    StringWriter sw = new StringWriter();
-                    IOUtils.copy((new URL(emptyTemplate)).openStream(), sw);
-                    content = sw.toString();
-                }
-            }
-        }
-        LOG.trace( "Setting content to: " + content );
-        return content;
-    }
+	public String getContent() throws IOException, ClassNotFoundException {
+		LOG.trace("Editing file: " + getFileName() + " with ID + " + getId());
+		LOG.trace("Using schema: " + getSchemaUrl());
+		LOG.trace("Editor content: " + content);
+		LOG.trace("Related ResourceProviderClass: " + resourceProviderClass);
+		LOG.trace("Next view: " + getNextView());
+		if (content == null) {
+			LOG.trace("No content set for " + this.toString());
+			if (resourceProviderClass == null) {
+				File file = new File(fileName);
+				if (fileName != null && file.exists()) {
+					LOG.trace("Loading content from file: " + file.getAbsolutePath());
+					content = FileUtils.readFileToString(file);
+					LOG.trace("Setting content to: " + content);
+					return content;
+				}
+				else if (emptyTemplate != null) {
+					// load template content if the requested file did not exists
+					LOG.trace("Loading template from " + emptyTemplate);
+					StringWriter sw = new StringWriter();
+					IOUtils.copy((new URL(emptyTemplate)).openStream(), sw);
+					content = sw.toString();
+					LOG.trace("Setting content to:" + content);
+					return content;
+				}
+			}
+			else {
+				Workspace workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
+				Class<?> cls = workspace.getModuleClassLoader().loadClass(resourceProviderClass);
+				ResourceMetadata<?> md = workspace.getResourceMetadata((Class) cls, id);
+				if (md != null) {
+					content = IOUtils.toString(md.getLocation().getAsStream());
+					LOG.trace("Loading content from resource: " + md.getLocation().getAsFile().getAbsolutePath());
+				}
+				else if (emptyTemplate != null) {
+					LOG.trace("Loading template for resource provider " + this.getResourceProviderClass() + " from "
+							+ emptyTemplate);
+					StringWriter sw = new StringWriter();
+					IOUtils.copy((new URL(emptyTemplate)).openStream(), sw);
+					content = sw.toString();
+				}
+			}
+		}
+		LOG.trace("Setting content to: " + content);
+		return content;
+	}
 
-    public void setContent( String content ) {
-        this.content = content;
-    }
+	public void setContent(String content) {
+		this.content = content;
+	}
 
-    public String getSchemaAsText() {
-        return schemaAsText;
-    }
+	public String getSchemaAsText() {
+		return schemaAsText;
+	}
 
-    public void setSchemaAsText( String schemaAsText ) {
-        this.schemaAsText = schemaAsText;
-    }
+	public void setSchemaAsText(String schemaAsText) {
+		this.schemaAsText = schemaAsText;
+	}
 
-    public String cancel() {
-        return nextView;
-    }
+	public String cancel() {
+		return nextView;
+	}
 
-    public String save() {
-        if ( checkValidity() ) {
-            activate();
-            FacesMessage fm = new FacesMessage( SEVERITY_INFO, "Saved configuration.", null );
-            getCurrentInstance().addMessage( null, fm );
-            return nextView;
-        }
-        return null;
-    }
+	public String save() {
+		if (checkValidity()) {
+			activate();
+			FacesMessage fm = new FacesMessage(SEVERITY_INFO, "Saved configuration.", null);
+			getCurrentInstance().addMessage(null, fm);
+			return nextView;
+		}
+		return null;
+	}
 
-    public String getResourceProviderClass() {
-        return resourceProviderClass;
-    }
+	public String getResourceProviderClass() {
+		return resourceProviderClass;
+	}
 
-    public void setResourceProviderClass( String providerClass ) {
-        this.resourceProviderClass = providerClass;
-    }
+	public void setResourceProviderClass(String providerClass) {
+		this.resourceProviderClass = providerClass;
+	}
 
-    private ResourceManager<?> lookupResourceManager( Workspace workspace, Class<?> cls ) {
-        ResourceManager<?> mgr = null;
-        outer: for ( ResourceManager<?> r : workspace.getResourceManagers() ) {
-            for ( ResourceProvider<?> p : r.getProviders() ) {
-                if ( p != null && cls.isAssignableFrom( p.getClass() ) ) {
-                    mgr = r;
-                    break outer;
-                }
-            }
-        }
+	private ResourceManager<?> lookupResourceManager(Workspace workspace, Class<?> cls) {
+		ResourceManager<?> mgr = null;
+		outer: for (ResourceManager<?> r : workspace.getResourceManagers()) {
+			for (ResourceProvider<?> p : r.getProviders()) {
+				if (p != null && cls.isAssignableFrom(p.getClass())) {
+					mgr = r;
+					break outer;
+				}
+			}
+		}
 
-        return mgr;
-    }
-    
-    private void activate() {
-        try {
-            if ( resourceProviderClass == null ) {
-                FileUtils.write( new File( fileName ), content );
-                return;
-            }
+		return mgr;
+	}
 
-            Workspace workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
-            Class<?> cls = workspace.getModuleClassLoader().loadClass( resourceProviderClass );
-            ResourceMetadata<?> md = workspace.getResourceMetadata( (Class) cls, id );
+	private void activate() {
+		try {
+			if (resourceProviderClass == null) {
+				FileUtils.write(new File(fileName), content);
+				return;
+			}
 
-            if ( md != null ) {
-                workspace.destroy( md.getIdentifier() );
+			Workspace workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
+			Class<?> cls = workspace.getModuleClassLoader().loadClass(resourceProviderClass);
+			ResourceMetadata<?> md = workspace.getResourceMetadata((Class) cls, id);
 
-                md.getLocation().setContent( IOUtils.toInputStream( content ) );
-                workspace.getLocationHandler().persist( md.getLocation() );
-                workspace.getLocationHandler().activate( md.getLocation() );
-                WorkspaceUtils.reinitializeChain( workspace, md.getIdentifier() );
-            } else {
-                // newly create entry
-                if ( !( workspace instanceof DefaultWorkspace ) ) {
-                    throw new Exception( "Could not persist configuration." );
-                }
+			if (md != null) {
+				workspace.destroy(md.getIdentifier());
 
-                ResourceManager<?> mgr = lookupResourceManager( workspace, cls );
+				md.getLocation().setContent(IOUtils.toInputStream(content));
+				workspace.getLocationHandler().persist(md.getLocation());
+				workspace.getLocationHandler().activate(md.getLocation());
+				WorkspaceUtils.reinitializeChain(workspace, md.getIdentifier());
+			}
+			else {
+				// newly create entry
+				if (!(workspace instanceof DefaultWorkspace)) {
+					throw new Exception("Could not persist configuration.");
+				}
 
-                File wsDir = ( (DefaultWorkspace) workspace ).getLocation();
+				ResourceManager<?> mgr = lookupResourceManager(workspace, cls);
 
-                File resourceDir = new File( wsDir, mgr.getMetadata().getWorkspacePath() );
-                File resourceFile = new File( resourceDir, id + ".xml" );
+				File wsDir = ((DefaultWorkspace) workspace).getLocation();
 
-                if ( !resourceDir.exists() && !resourceDir.mkdirs() ) {
-                    throw new IOException( "Could not create resource directory '" + resourceDir + "'" );
-                }
+				File resourceDir = new File(wsDir, mgr.getMetadata().getWorkspacePath());
+				File resourceFile = new File(resourceDir, id + ".xml");
 
-                FileUtils.writeStringToFile( resourceFile, content );
+				if (!resourceDir.exists() && !resourceDir.mkdirs()) {
+					throw new IOException("Could not create resource directory '" + resourceDir + "'");
+				}
 
-                DefaultResourceIdentifier<?> ident = new DefaultResourceIdentifier( cls, id );
-                ResourceLocation<?> loc = new DefaultResourceLocation( resourceFile, ident );
-                workspace.add( loc );
+				FileUtils.writeStringToFile(resourceFile, content);
 
-                workspace.getLocationHandler().activate( loc );
-                WorkspaceUtils.reinitializeChain( workspace, ident );
-            }
-        } catch ( Exception t ) {
-            LOG.warn( "Could not activate Resource {}", t.getMessage() );
-            LOG.trace( "Exception", t );
-            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to activate resource: " + t.getMessage(), null );
-            FacesContext.getCurrentInstance().addMessage( null, fm );
-            return;
-        }
-    }
+				DefaultResourceIdentifier<?> ident = new DefaultResourceIdentifier(cls, id);
+				ResourceLocation<?> loc = new DefaultResourceLocation(resourceFile, ident);
+				workspace.add(loc);
 
-    public boolean checkValidity() {
-        try {
-            InputStream xml = new ByteArrayInputStream( content.getBytes( "UTF-8" ) );
-            String[] schemas = new String[] { schemaUrl };
-            List<SchemaValidationEvent> events = SchemaValidator.validate( xml, schemas );
-            if ( !events.isEmpty() ) {
-                for ( SchemaValidationEvent event : events ) {
-                    String msg = toString( event );
-                    FacesMessage fm = new FacesMessage( SEVERITY_WARN, msg, null );
-                    getCurrentInstance().addMessage( null, fm );
-                }
-                return false;
-            }
-        } catch ( UnsupportedEncodingException e ) {
-            LOG.error( "UTF-8 is not supported!" );
-            return true;
-        }
-        return true;
-    }
+				workspace.getLocationHandler().activate(loc);
+				WorkspaceUtils.reinitializeChain(workspace, ident);
+			}
+		}
+		catch (Exception t) {
+			LOG.warn("Could not activate Resource {}", t.getMessage());
+			LOG.trace("Exception", t);
+			FacesMessage fm = new FacesMessage(SEVERITY_ERROR, "Unable to activate resource: " + t.getMessage(), null);
+			FacesContext.getCurrentInstance().addMessage(null, fm);
+			return;
+		}
+	}
 
-    private String toString( SchemaValidationEvent event ) {
-        XMLParseException e = event.getException();
-        return "<a href=\"javascript:jumpTo(" + e.getLineNumber() + "," + e.getColumnNumber() + ")\">Error near line "
-               + e.getLineNumber() + ", column " + e.getColumnNumber() + "</a>: " + e.getLocalizedMessage();
-    }
+	public boolean checkValidity() {
+		try {
+			InputStream xml = new ByteArrayInputStream(content.getBytes("UTF-8"));
+			String[] schemas = new String[] { schemaUrl };
+			List<SchemaValidationEvent> events = SchemaValidator.validate(xml, schemas);
+			if (!events.isEmpty()) {
+				for (SchemaValidationEvent event : events) {
+					String msg = toString(event);
+					FacesMessage fm = new FacesMessage(SEVERITY_WARN, msg, null);
+					getCurrentInstance().addMessage(null, fm);
+				}
+				return false;
+			}
+		}
+		catch (UnsupportedEncodingException e) {
+			LOG.error("UTF-8 is not supported!");
+			return true;
+		}
+		return true;
+	}
 
-    public String validate() {
-        if ( checkValidity() ) {
-            FacesMessage fm = new FacesMessage( SEVERITY_INFO, "Document is valid.", null );
-            getCurrentInstance().addMessage( null, fm );
-        }
-        return null;
-    }
+	private String toString(SchemaValidationEvent event) {
+		XMLParseException e = event.getException();
+		return "<a href=\"javascript:jumpTo(" + e.getLineNumber() + "," + e.getColumnNumber() + ")\">Error near line "
+				+ e.getLineNumber() + ", column " + e.getColumnNumber() + "</a>: " + e.getLocalizedMessage();
+	}
 
-    public String getTitle()
-                            throws ClassNotFoundException {
-        if ( fileName != null ) {
-            return fileName;
-        }
+	public String validate() {
+		if (checkValidity()) {
+			FacesMessage fm = new FacesMessage(SEVERITY_INFO, "Document is valid.", null);
+			getCurrentInstance().addMessage(null, fm);
+		}
+		return null;
+	}
 
-        Workspace workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
-        Class<?> cls = workspace.getModuleClassLoader().loadClass( resourceProviderClass );
-        ResourceMetadata<?> md = workspace.getResourceMetadata( (Class) cls, id );
+	public String getTitle() throws ClassNotFoundException {
+		if (fileName != null) {
+			return fileName;
+		}
 
-        if ( md == null ) {
-            // lookup path if file will be created from template
-            ResourceManager<?> mgr = lookupResourceManager( workspace, cls );
-            if ( mgr != null ) {
-                return mgr.getMetadata().getWorkspacePath() + "/" + id;
-            }
-        } else {
-            for ( ResourceManager<? extends Resource> resourceManager : workspace.getResourceManagers() ) {
-                if ( resourceManager.getProviders().contains( md.getProvider() ) ) {
-                    return resourceManager.getMetadata().getWorkspacePath() + "/" + id;
-                }
-            }
-        }
+		Workspace workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
+		Class<?> cls = workspace.getModuleClassLoader().loadClass(resourceProviderClass);
+		ResourceMetadata<?> md = workspace.getResourceMetadata((Class) cls, id);
 
-        return null;
-    }
+		if (md == null) {
+			// lookup path if file will be created from template
+			ResourceManager<?> mgr = lookupResourceManager(workspace, cls);
+			if (mgr != null) {
+				return mgr.getMetadata().getWorkspacePath() + "/" + id;
+			}
+		}
+		else {
+			for (ResourceManager<? extends Resource> resourceManager : workspace.getResourceManagers()) {
+				if (resourceManager.getProviders().contains(md.getProvider())) {
+					return resourceManager.getMetadata().getWorkspacePath() + "/" + id;
+				}
+			}
+		}
+
+		return null;
+	}
+
 }

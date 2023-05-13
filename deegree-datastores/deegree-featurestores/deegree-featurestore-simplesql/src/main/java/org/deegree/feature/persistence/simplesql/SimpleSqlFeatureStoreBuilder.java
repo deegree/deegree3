@@ -58,50 +58,49 @@ import org.deegree.workspace.Workspace;
 
 /**
  * <code>SimpleSqlFeatureStoreBuilder</code>
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
- * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 public class SimpleSqlFeatureStoreBuilder implements ResourceBuilder<FeatureStore> {
 
-    private ResourceMetadata<FeatureStore> metadata;
+	private ResourceMetadata<FeatureStore> metadata;
 
-    private SimpleSQLFeatureStoreConfig config;
+	private SimpleSQLFeatureStoreConfig config;
 
-    private Workspace workspace;
+	private Workspace workspace;
 
-    private static Mapper<Pair<Integer, String>, LODStatement> lodMapper = new Mapper<Pair<Integer, String>, LODStatement>() {
-        public Pair<Integer, String> apply( LODStatement u ) {
-            return new Pair<Integer, String>( u.getAboveScale(), u.getValue() );
-        }
-    };
+	private static Mapper<Pair<Integer, String>, LODStatement> lodMapper = new Mapper<Pair<Integer, String>, LODStatement>() {
+		public Pair<Integer, String> apply(LODStatement u) {
+			return new Pair<Integer, String>(u.getAboveScale(), u.getValue());
+		}
+	};
 
-    public SimpleSqlFeatureStoreBuilder( ResourceMetadata<FeatureStore> metadata, SimpleSQLFeatureStoreConfig config,
-                                         Workspace workspace ) {
-        this.metadata = metadata;
-        this.config = config;
-        this.workspace = workspace;
-    }
+	public SimpleSqlFeatureStoreBuilder(ResourceMetadata<FeatureStore> metadata, SimpleSQLFeatureStoreConfig config,
+			Workspace workspace) {
+		this.metadata = metadata;
+		this.config = config;
+		this.workspace = workspace;
+	}
 
-    @Override
-    public FeatureStore build() {
-        String connId = config.getConnectionPoolId();
-        if ( connId == null ) {
-            connId = config.getJDBCConnId();
-        }
-        String srs = config.getStorageCRS();
-        String stmt = config.getSQLStatement();
-        String name = config.getFeatureTypeName();
-        String ns = config.getFeatureTypeNamespace();
-        String prefix = config.getFeatureTypePrefix();
-        String bbox = config.getBBoxStatement();
-        LinkedList<Pair<Integer, String>> lods = map( config.getLODStatement(), lodMapper );
+	@Override
+	public FeatureStore build() {
+		String connId = config.getConnectionPoolId();
+		if (connId == null) {
+			connId = config.getJDBCConnId();
+		}
+		String srs = config.getStorageCRS();
+		String stmt = config.getSQLStatement();
+		String name = config.getFeatureTypeName();
+		String ns = config.getFeatureTypeNamespace();
+		String prefix = config.getFeatureTypePrefix();
+		String bbox = config.getBBoxStatement();
+		LinkedList<Pair<Integer, String>> lods = map(config.getLODStatement(), lodMapper);
 
-        ConnectionProvider prov = workspace.getResource( ConnectionProviderProvider.class, connId );
+		ConnectionProvider prov = workspace.getResource(ConnectionProviderProvider.class, connId);
 
-        return new SimpleSQLFeatureStore( prov, srs, stmt, name, ns, prefix, bbox, lods, metadata );
-    }
+		return new SimpleSQLFeatureStore(prov, srs, stmt, name, ns, prefix, bbox, lods, metadata);
+	}
 
 }

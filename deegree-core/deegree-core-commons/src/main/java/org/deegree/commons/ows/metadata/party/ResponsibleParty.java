@@ -38,11 +38,10 @@ package org.deegree.commons.ows.metadata.party;
 import org.deegree.commons.tom.ows.CodeType;
 
 /**
- * Encapsulates information on the identification of, and the means of communication with the person/party responsible
- * for the server.
- * <br/>
- * Data model has been carefully designed to capture the expressiveness of all OWS specifications and versions and was
- * verified for the following specifications:
+ * Encapsulates information on the identification of, and the means of communication with
+ * the person/party responsible for the server. <br/>
+ * Data model has been carefully designed to capture the expressiveness of all OWS
+ * specifications and versions and was verified for the following specifications:
  * <ul>
  * <li>OWS Common 2.0</li>
  * </ul>
@@ -50,115 +49,111 @@ import org.deegree.commons.tom.ows.CodeType;
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class ResponsibleParty {
 
-    private String individualName;
+	private String individualName;
 
-    private String positionName;
+	private String positionName;
 
-    private String organizationName;
+	private String organizationName;
 
-    private ContactInfo contactInfo;
+	private ContactInfo contactInfo;
 
-    private CodeType role;
+	private CodeType role;
 
-    /**
-     * Returns the name of the responsible person.
-     * <p>
-     * From OWS Common 2.0: <cite>Name of the responsible person: surname, given name, title separated by a
-     * delimiter.</cite>
-     * </p>
-     * 
-     * @return name of the responsible person, may be <code>null</code>
-     */
-    public String getIndividualName() {
-        return individualName;
-    }
+	/**
+	 * Returns the name of the responsible person.
+	 * <p>
+	 * From OWS Common 2.0: <cite>Name of the responsible person: surname, given name,
+	 * title separated by a delimiter.</cite>
+	 * </p>
+	 * @return name of the responsible person, may be <code>null</code>
+	 */
+	public String getIndividualName() {
+		return individualName;
+	}
 
-    /**
-     * @param individualName
-     */
-    public void setIndividualName( String individualName ) {
-        this.individualName = individualName;
-    }
+	/**
+	 * @param individualName
+	 */
+	public void setIndividualName(String individualName) {
+		this.individualName = individualName;
+	}
 
-    /**
-     * Returns the position of the responsible person.
-     * <p>
-     * From OWS Common 2.0: <cite>Role or position of the responsible person.</cite>
-     * </p>
-     * 
-     * @return position of the responsible person, may be <code>null</code>
-     */
-    public String getPositionName() {
-        return positionName;
-    }
+	/**
+	 * Returns the position of the responsible person.
+	 * <p>
+	 * From OWS Common 2.0: <cite>Role or position of the responsible person.</cite>
+	 * </p>
+	 * @return position of the responsible person, may be <code>null</code>
+	 */
+	public String getPositionName() {
+		return positionName;
+	}
 
-    /**
-     * @param positionName
-     */
-    public void setPositionName( String positionName ) {
-        this.positionName = positionName;
-    }
+	/**
+	 * @param positionName
+	 */
+	public void setPositionName(String positionName) {
+		this.positionName = positionName;
+	}
 
-    /**
-     * Returns the name of the responsible organization.
-     * <p>
-     * From OWS Common 2.0: <cite>Name of the responsible organization.</cite>
-     * </p>
-     * 
-     * @return name of the responsible organization, may be <code>null</code>
-     */
-    public String getOrganizationName() {
-        return organizationName;
-    }
+	/**
+	 * Returns the name of the responsible organization.
+	 * <p>
+	 * From OWS Common 2.0: <cite>Name of the responsible organization.</cite>
+	 * </p>
+	 * @return name of the responsible organization, may be <code>null</code>
+	 */
+	public String getOrganizationName() {
+		return organizationName;
+	}
 
-    /**
-     * @param organizationName
-     */
-    public void setOrganizationName( String organizationName ) {
-        this.organizationName = organizationName;
-    }
+	/**
+	 * @param organizationName
+	 */
+	public void setOrganizationName(String organizationName) {
+		this.organizationName = organizationName;
+	}
 
-    /**
-     * Returns the address of the responsible party.
-     * <p>
-     * From OWS Common 2.0: <cite>Address of the responsible party.</cite>
-     * </p>
-     * 
-     * @return address of the responsible party, may be <code>null</code>
-     */
-    public ContactInfo getContactInfo() {
-        return contactInfo;
-    }
+	/**
+	 * Returns the address of the responsible party.
+	 * <p>
+	 * From OWS Common 2.0: <cite>Address of the responsible party.</cite>
+	 * </p>
+	 * @return address of the responsible party, may be <code>null</code>
+	 */
+	public ContactInfo getContactInfo() {
+		return contactInfo;
+	}
 
-    /**
-     * @param contactInfo
-     */
-    public void setContactInfo( ContactInfo contactInfo ) {
-        this.contactInfo = contactInfo;
-    }
+	/**
+	 * @param contactInfo
+	 */
+	public void setContactInfo(ContactInfo contactInfo) {
+		this.contactInfo = contactInfo;
+	}
 
-    /**
-     * Returns the function of the responsible party.
-     * <p>
-     * From OWS Common 2.0: <cite>Function performed by the responsible party. Possible values of this Role shall
-     * include the values and the meanings listed in Subclause B.5.5 of ISO 19115:2003.</cite>
-     * </p>
-     * 
-     * @return unction of the responsible party, may be <code>null</code>
-     */
-    public CodeType getRole() {
-        return role;
-    }
+	/**
+	 * Returns the function of the responsible party.
+	 * <p>
+	 * From OWS Common 2.0: <cite>Function performed by the responsible party. Possible
+	 * values of this Role shall include the values and the meanings listed in Subclause
+	 * B.5.5 of ISO 19115:2003.</cite>
+	 * </p>
+	 * @return unction of the responsible party, may be <code>null</code>
+	 */
+	public CodeType getRole() {
+		return role;
+	}
 
-    /**
-     * @param role
-     */
-    public void setRole( CodeType role ) {
-        this.role = role;
-    }
+	/**
+	 * @param role
+	 */
+	public void setRole(CodeType role) {
+		this.role = role;
+	}
+
 }

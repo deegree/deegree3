@@ -46,15 +46,15 @@ import org.deegree.services.wps.ProcessManager;
 @ViewScoped
 public class ProcessManagerBean extends AbstractResourceManagerBean<ProcessManager> implements Serializable {
 
-    private static final long serialVersionUID = 7461387824463347969L;
+	private static final long serialVersionUID = 7461387824463347969L;
 
-    public ProcessManagerBean() {
-        super( ProcessManager.class );
-    }
+	public ProcessManagerBean() {
+		super(ProcessManager.class);
+	}
 
-    @Override
-    public String getStartView() {
-        return "/console/process/index";
-    }
+	@Override
+	public String getStartView() {
+		return "/console/process/index";
+	}
 
 }

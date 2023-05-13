@@ -50,41 +50,39 @@ import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class WPSProvider extends OWSProvider {
 
-    protected static final ImplementationMetadata<WPSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<WPSRequestType>() {
-        {
-            supportedVersions = new Version[] { VERSION_100 };
-            handledNamespaces = new String[] { WPS_100_NS };
-            handledRequests = WPSRequestType.class;
-            serviceName = new String[] { "WPS" };
-        }
-    };
+	protected static final ImplementationMetadata<WPSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<WPSRequestType>() {
+		{
+			supportedVersions = new Version[] { VERSION_100 };
+			handledNamespaces = new String[] { WPS_100_NS };
+			handledRequests = WPSRequestType.class;
+			serviceName = new String[] { "WPS" };
+		}
+	};
 
-    @Override
-    public String getNamespace() {
-        return "http://www.deegree.org/services/wps";
-    }
+	@Override
+	public String getNamespace() {
+		return "http://www.deegree.org/services/wps";
+	}
 
-    @Override
-    public URL getSchema() {
-        return WPSProvider.class.getResource( "/META-INF/schemas/services/wps/wps_configuration.xsd" );
-    }
+	@Override
+	public URL getSchema() {
+		return WPSProvider.class.getResource("/META-INF/schemas/services/wps/wps_configuration.xsd");
+	}
 
-    @Override
-    public ImplementationMetadata<WPSRequestType> getImplementationMetadata() {
-        return IMPLEMENTATION_METADATA;
-    }
+	@Override
+	public ImplementationMetadata<WPSRequestType> getImplementationMetadata() {
+		return IMPLEMENTATION_METADATA;
+	}
 
-    @Override
-    public ResourceMetadata<OWS> createFromLocation( Workspace workspace, ResourceLocation<OWS> location ) {
-        return new WpsMetadata( workspace, location, this );
-    }
+	@Override
+	public ResourceMetadata<OWS> createFromLocation(Workspace workspace, ResourceLocation<OWS> location) {
+		return new WpsMetadata(workspace, location, this);
+	}
 
 }

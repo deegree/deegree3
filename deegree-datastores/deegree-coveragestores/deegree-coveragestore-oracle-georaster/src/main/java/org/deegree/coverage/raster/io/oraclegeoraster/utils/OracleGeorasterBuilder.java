@@ -42,55 +42,57 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Oracle GeoRaster Builder
- * 
+ *
  * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
- * 
  * @since 3.4
  */
 public class OracleGeorasterBuilder implements ResourceBuilder<Coverage> {
 
-    private static final Logger LOG = LoggerFactory.getLogger( OracleGeorasterBuilder.class );
+	private static final Logger LOG = LoggerFactory.getLogger(OracleGeorasterBuilder.class);
 
-    private OracleGeorasterConfig config;
+	private OracleGeorasterConfig config;
 
-    private ResourceMetadata<Coverage> metadata;
+	private ResourceMetadata<Coverage> metadata;
 
-    private Workspace workspace;
+	private Workspace workspace;
 
-    public OracleGeorasterBuilder( OracleGeorasterConfig config, ResourceMetadata<Coverage> metadata,
-                                   Workspace workspace ) {
-        this.config = config;
-        this.metadata = metadata;
-        this.workspace = workspace;
-    }
+	public OracleGeorasterBuilder(OracleGeorasterConfig config, ResourceMetadata<Coverage> metadata,
+			Workspace workspace) {
+		this.config = config;
+		this.metadata = metadata;
+		this.workspace = workspace;
+	}
 
-    @Override
-    public Coverage build() {
-        try {
-            OracleGeorasterReader rdr;
-            rdr = new OracleGeorasterReader( workspace, config );
+	@Override
+	public Coverage build() {
+		try {
+			OracleGeorasterReader rdr;
+			rdr = new OracleGeorasterReader(workspace, config);
 
-            return buildPyramidIfNeeded( rdr, rdr.getRaster() );
-        } catch ( Exception e ) {
-            LOG.trace( "Exception", e );
-            throw new ResourceInitException( "Could not build Oracle GeoRaster Reader: " + e.getMessage() );
-        }
-    }
+			return buildPyramidIfNeeded(rdr, rdr.getRaster());
+		}
+		catch (Exception e) {
+			LOG.trace("Exception", e);
+			throw new ResourceInitException("Could not build Oracle GeoRaster Reader: " + e.getMessage());
+		}
+	}
 
-    private Coverage buildPyramidIfNeeded( OracleGeorasterReader rdr, AbstractRaster rasterLvl0 ) {
+	private Coverage buildPyramidIfNeeded(OracleGeorasterReader rdr, AbstractRaster rasterLvl0) {
 
-        if ( rdr.isMultiResulution() ) {
-            AbstractRaster[] ary = rdr.getPyramidRaster();
-            MultiResolutionRaster mrr = new MultiResolutionRaster( metadata );
-            mrr.setCoordinateSystem( rasterLvl0.getCoordinateSystem() );
-            mrr.addRaster( rasterLvl0 );
-            for ( int i = 0; i < ary.length; i++ ) {
-                mrr.addRaster( ary[i] );
-            }
-            return mrr;
-        } else {
-            rasterLvl0.setMetadata( metadata );
-            return rasterLvl0;
-        }
-    }
+		if (rdr.isMultiResulution()) {
+			AbstractRaster[] ary = rdr.getPyramidRaster();
+			MultiResolutionRaster mrr = new MultiResolutionRaster(metadata);
+			mrr.setCoordinateSystem(rasterLvl0.getCoordinateSystem());
+			mrr.addRaster(rasterLvl0);
+			for (int i = 0; i < ary.length; i++) {
+				mrr.addRaster(ary[i]);
+			}
+			return mrr;
+		}
+		else {
+			rasterLvl0.setMetadata(metadata);
+			return rasterLvl0;
+		}
+	}
+
 }

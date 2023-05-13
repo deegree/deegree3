@@ -42,19 +42,18 @@ import org.deegree.coverage.raster.SimpleRaster;
 
 /**
  * The <code>DEMFilter</code> interface allows different dem filter implementations.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
  * @version $Revision$, $Date$
- * 
+ *
  */
 public interface DEMFilter {
 
-    /**
-     * Starts filtering the raster.
-     * 
-     * @return the filtered raster tile
-     */
-    public abstract SimpleRaster applyFilter();
+	/**
+	 * Starts filtering the raster.
+	 * @return the filtered raster tile
+	 */
+	public abstract SimpleRaster applyFilter();
 
 }

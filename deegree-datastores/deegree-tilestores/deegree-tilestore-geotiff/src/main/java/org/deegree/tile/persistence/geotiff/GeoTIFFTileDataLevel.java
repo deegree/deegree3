@@ -53,73 +53,73 @@ import org.deegree.tile.TileDataLevel;
 import org.deegree.tile.TileMatrix;
 
 /**
- * The <code>GeoTIFFTileMatrix</code> is a tile matrix handing out GeoTIFFTile tiles. It uses an object pool shared
- * among all tiles created by this matrix.
- * 
+ * The <code>GeoTIFFTileMatrix</code> is a tile matrix handing out GeoTIFFTile tiles. It
+ * uses an object pool shared among all tiles created by this matrix.
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
- * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 
 public class GeoTIFFTileDataLevel implements TileDataLevel {
 
-    private final TileMatrix metadata;
+	private final TileMatrix metadata;
 
-    private final int imageIndex;
+	private final int imageIndex;
 
-    private final GeometryFactory fac = new GeometryFactory();
+	private final GeometryFactory fac = new GeometryFactory();
 
-    private GenericObjectPool<ImageReader> readerPool;
+	private GenericObjectPool<ImageReader> readerPool;
 
-    private final int xoff, yoff, numx, numy;
+	private final int xoff, yoff, numx, numy;
 
-    public GeoTIFFTileDataLevel( TileMatrix metadata, File file, int imageIndex, int xoff, int yoff, int numx, int numy,
-                                 int maxActive ) {
-        this.metadata = metadata;
-        this.imageIndex = imageIndex;
-        ImageReaderFactory fac = new ImageReaderFactory( file );
-        GenericObjectPoolConfig<ImageReader> poolConfig = new GenericObjectPoolConfig<>();
-        poolConfig.setMaxTotal( maxActive );
-        this.readerPool = new GenericObjectPool<ImageReader>( fac, poolConfig );
-        this.xoff = xoff;
-        this.yoff = yoff;
-        this.numx = numx;
-        this.numy = numy;
-    }
+	public GeoTIFFTileDataLevel(TileMatrix metadata, File file, int imageIndex, int xoff, int yoff, int numx, int numy,
+			int maxActive) {
+		this.metadata = metadata;
+		this.imageIndex = imageIndex;
+		ImageReaderFactory fac = new ImageReaderFactory(file);
+		GenericObjectPoolConfig<ImageReader> poolConfig = new GenericObjectPoolConfig<>();
+		poolConfig.setMaxTotal(maxActive);
+		this.readerPool = new GenericObjectPool<ImageReader>(fac, poolConfig);
+		this.xoff = xoff;
+		this.yoff = yoff;
+		this.numx = numx;
+		this.numy = numy;
+	}
 
-    @Override
-    public TileMatrix getMetadata() {
-        return metadata;
-    }
+	@Override
+	public TileMatrix getMetadata() {
+		return metadata;
+	}
 
-    @Override
-    public GeoTIFFTile getTile( long x, long y ) {
-        if ( metadata.getNumTilesX() <= x || metadata.getNumTilesY() <= y || x < 0 || y < 0 ) {
-            return null;
-        }
-        // are requested tiles contained in tiff?
-        if ( x < xoff || y < yoff ) {
-            return null;
-        }
-        x -= xoff;
-        y -= yoff;
-        if ( x >= numx || y >= numy ) {
-            return null;
-        }
+	@Override
+	public GeoTIFFTile getTile(long x, long y) {
+		if (metadata.getNumTilesX() <= x || metadata.getNumTilesY() <= y || x < 0 || y < 0) {
+			return null;
+		}
+		// are requested tiles contained in tiff?
+		if (x < xoff || y < yoff) {
+			return null;
+		}
+		x -= xoff;
+		y -= yoff;
+		if (x >= numx || y >= numy) {
+			return null;
+		}
 
-        double width = metadata.getTileWidth();
-        double height = metadata.getTileHeight();
-        Envelope env = metadata.getSpatialMetadata().getEnvelope();
-        double minx = width * x + env.getMin().get0();
-        double miny = env.getMax().get1() - height * y;
-        Envelope envelope = fac.createEnvelope( minx, miny, minx + width, miny - height, env.getCoordinateSystem() );
-        return new GeoTIFFTile( readerPool, imageIndex, (int) x, (int) y, envelope, (int) metadata.getTilePixelsX(),
-                                (int) metadata.getTilePixelsY() );
-    }
+		double width = metadata.getTileWidth();
+		double height = metadata.getTileHeight();
+		Envelope env = metadata.getSpatialMetadata().getEnvelope();
+		double minx = width * x + env.getMin().get0();
+		double miny = env.getMax().get1() - height * y;
+		Envelope envelope = fac.createEnvelope(minx, miny, minx + width, miny - height, env.getCoordinateSystem());
+		return new GeoTIFFTile(readerPool, imageIndex, (int) x, (int) y, envelope, (int) metadata.getTilePixelsX(),
+				(int) metadata.getTilePixelsY());
+	}
 
-    @Override
-    public List<String> getStyles() {
-        return null;
-    }
+	@Override
+	public List<String> getStyles() {
+		return null;
+	}
+
 }

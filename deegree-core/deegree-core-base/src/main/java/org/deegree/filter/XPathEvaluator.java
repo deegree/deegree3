@@ -41,39 +41,35 @@ import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.filter.expression.ValueReference;
 
 /**
- * Implementations enable the evaluation of XPath expressions (given as {@link ValueReference}s) on a specific class of
- * objects, e.g. {@link GMLObject} instances.
- * 
- * @param <T>
- *            object type that this evaluator works on
- * 
+ * Implementations enable the evaluation of XPath expressions (given as
+ * {@link ValueReference}s) on a specific class of objects, e.g. {@link GMLObject}
+ * instances.
+ *
+ * @param <T> object type that this evaluator works on
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public interface XPathEvaluator<T> {
 
-    /**
-     * Returns the values that are selected by evaluating the given XPath 1.0 expression using the context object.
-     * 
-     * @param context
-     *            object that the expression is evaluated upon, must not be <code>null</code>
-     * @param valueRef
-     *            value reference, must not be <code>null</code>
-     * @return the selected values, never <code>null</code> and contains at least one entry
-     * @throws FilterEvaluationException
-     *             if an exception occurs during the evaluation of the XPath expression
-     */
-    public TypedObjectNode[] eval( T context, ValueReference valueRef )
-                            throws FilterEvaluationException;
+	/**
+	 * Returns the values that are selected by evaluating the given XPath 1.0 expression
+	 * using the context object.
+	 * @param context object that the expression is evaluated upon, must not be
+	 * <code>null</code>
+	 * @param valueRef value reference, must not be <code>null</code>
+	 * @return the selected values, never <code>null</code> and contains at least one
+	 * entry
+	 * @throws FilterEvaluationException if an exception occurs during the evaluation of
+	 * the XPath expression
+	 */
+	public TypedObjectNode[] eval(T context, ValueReference valueRef) throws FilterEvaluationException;
 
-    /**
-     * Returns the identifier of the given context object.
-     * 
-     * @param context
-     *            context object, never <code>null</code>
-     * @return the identifier, can be <code>null</code>
-     */
-    public String getId( T context );
+	/**
+	 * Returns the identifier of the given context object.
+	 * @param context context object, never <code>null</code>
+	 * @return the identifier, can be <code>null</code>
+	 */
+	public String getId(T context);
+
 }

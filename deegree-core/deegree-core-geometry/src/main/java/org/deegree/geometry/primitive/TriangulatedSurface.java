@@ -49,20 +49,18 @@ import org.deegree.geometry.primitive.patches.Triangle;
  */
 public interface TriangulatedSurface extends Surface {
 
-    /**
-     * Must always return {@link Surface.SurfaceType#TriangulatedSurface}.
-     *
-     * @return {@link Surface.SurfaceType#TriangulatedSurface}
-     */
-    @Override
-    public SurfaceType getSurfaceType();
+	/**
+	 * Must always return {@link Surface.SurfaceType#TriangulatedSurface}.
+	 * @return {@link Surface.SurfaceType#TriangulatedSurface}
+	 */
+	@Override
+	public SurfaceType getSurfaceType();
 
-    /**
-     * Returns the patches that constitute this surface.
-     *
-     * @return the patches that constitute this surface
-     */
-    @Override
-    public List<Triangle> getPatches();
+	/**
+	 * Returns the patches that constitute this surface.
+	 * @return the patches that constitute this surface
+	 */
+	@Override
+	public List<Triangle> getPatches();
 
 }

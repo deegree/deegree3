@@ -46,36 +46,29 @@ import org.deegree.rendering.r2d.context.RenderingInfo;
 import org.deegree.rendering.r2d.context.SvgRenderContext;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class DefaultOutputFormatProvider implements OutputFormatProvider {
 
-    private static final Collection<String> SUPPORTED_OUTPUT_FORMATS = new LinkedHashSet<String>(
-                                                                                                  Arrays.asList( "image/png",
-                                                                                                                 "image/png; subtype=8bit",
-                                                                                                                 "image/png; mode=8bit",
-                                                                                                                 "image/gif",
-                                                                                                                 "image/jpeg",
-                                                                                                                 "image/tiff",
-                                                                                                                 "image/x-ms-bmp",
-                                                                                                                 "image/svg+xml" ) );
+	private static final Collection<String> SUPPORTED_OUTPUT_FORMATS = new LinkedHashSet<String>(
+			Arrays.asList("image/png", "image/png; subtype=8bit", "image/png; mode=8bit", "image/gif", "image/jpeg",
+					"image/tiff", "image/x-ms-bmp", "image/svg+xml"));
 
-    @Override
-    public Collection<String> getSupportedOutputFormats() {
-        return SUPPORTED_OUTPUT_FORMATS;
-    }
+	@Override
+	public Collection<String> getSupportedOutputFormats() {
+		return SUPPORTED_OUTPUT_FORMATS;
+	}
 
-    @Override
-    public RenderContext getRenderers( RenderingInfo info, OutputStream outputStream ) {
-        if ( "image/svg+xml".equals( info.getFormat() ) ) {
-            return SvgRenderContext.createInstance( info, outputStream );
-        } else {
-            return new LazyImageRenderContext( info, outputStream );
-        }
-    }
+	@Override
+	public RenderContext getRenderers(RenderingInfo info, OutputStream outputStream) {
+		if ("image/svg+xml".equals(info.getFormat())) {
+			return SvgRenderContext.createInstance(info, outputStream);
+		}
+		else {
+			return new LazyImageRenderContext(info, outputStream);
+		}
+	}
 
 }

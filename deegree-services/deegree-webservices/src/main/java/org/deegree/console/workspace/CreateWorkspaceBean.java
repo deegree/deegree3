@@ -37,31 +37,31 @@ import org.deegree.console.JsfUtils;
 
 /**
  * JSF backing bean for creating a new workspace folder.
- * 
+ *
  * @author <a href="mailto:stenger@lat-lon.de">Dirk Stenger</a>
- * 
  * @since 3.4
  */
 @ManagedBean
 @RequestScoped
 public class CreateWorkspaceBean {
 
-    private String workspaceName;
+	private String workspaceName;
 
-    public void createWorkspaceFolder() {
-        String workspaceRoot = DeegreeWorkspace.getWorkspaceRoot();
-        File targetWorkspace = new File( workspaceRoot, workspaceName );
-        boolean success = targetWorkspace.mkdir();
-        if ( !success ) {
-            JsfUtils.indicateException( "Creation of workspace", "Workspace identifier already exists." );
-        }
-    }
+	public void createWorkspaceFolder() {
+		String workspaceRoot = DeegreeWorkspace.getWorkspaceRoot();
+		File targetWorkspace = new File(workspaceRoot, workspaceName);
+		boolean success = targetWorkspace.mkdir();
+		if (!success) {
+			JsfUtils.indicateException("Creation of workspace", "Workspace identifier already exists.");
+		}
+	}
 
-    public String getWorkspaceName() {
-        return workspaceName;
-    }
+	public String getWorkspaceName() {
+		return workspaceName;
+	}
 
-    public void setWorkspaceName( String workspaceName ) {
-        this.workspaceName = workspaceName;
-    }
+	public void setWorkspaceName(String workspaceName) {
+		this.workspaceName = workspaceName;
+	}
+
 }

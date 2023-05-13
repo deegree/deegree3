@@ -49,27 +49,28 @@ import org.deegree.workspace.ResourceMetadata;
 
 @ManagedBean
 @ViewScoped
-public class MetadataStoreManagerBean extends AbstractResourceManagerBean<MetadataStoreManager> implements Serializable {
+public class MetadataStoreManagerBean extends AbstractResourceManagerBean<MetadataStoreManager>
+		implements Serializable {
 
-    private static final long serialVersionUID = -4434195887541111329L;
+	private static final long serialVersionUID = -4434195887541111329L;
 
-    public MetadataStoreManagerBean() {
-        super( MetadataStoreManager.class );
-    }
+	public MetadataStoreManagerBean() {
+		super(MetadataStoreManager.class);
+	}
 
-    @Override
-    public List<Config> getConfigs() {
-        List<Config> configs = new ArrayList<Config>();
-        for ( ResourceMetadata<?> md : resourceManager.getResourceMetadata() ) {
-            configs.add( new MetadataStoreConfig( md, resourceManager ) );
-        }
-        Collections.sort( configs );
-        return configs;
-    }
+	@Override
+	public List<Config> getConfigs() {
+		List<Config> configs = new ArrayList<Config>();
+		for (ResourceMetadata<?> md : resourceManager.getResourceMetadata()) {
+			configs.add(new MetadataStoreConfig(md, resourceManager));
+		}
+		Collections.sort(configs);
+		return configs;
+	}
 
-    @Override
-    public String getStartView() {
-        return "/console/datastore/metadata/index";
-    }
+	@Override
+	public String getStartView() {
+		return "/console/datastore/metadata/index";
+	}
 
 }

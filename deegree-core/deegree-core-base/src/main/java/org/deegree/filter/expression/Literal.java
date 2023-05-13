@@ -44,76 +44,70 @@ import org.deegree.filter.XPathEvaluator;
 
 /**
  * {@link Expression} that has a constant value.
- * 
- * @param <V>
- *            type of the contained value, in most cases {@link PrimitiveValue}
- * 
+ *
+ * @param <V> type of the contained value, in most cases {@link PrimitiveValue}
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
  * @version $Revision:$, $Date:$
  */
 public class Literal<V extends TypedObjectNode> implements Expression {
 
-    private final V value;
+	private final V value;
 
-    private final QName type;
+	private final QName type;
 
-    @SuppressWarnings("unchecked")
-    public Literal( String value ) {
-        this.value = (V) new PrimitiveValue( value );
-        this.type = null;
-    }
+	@SuppressWarnings("unchecked")
+	public Literal(String value) {
+		this.value = (V) new PrimitiveValue(value);
+		this.type = null;
+	}
 
-    /**
-     * Creates a new {@link Literal} instance.
-     * 
-     * @param value
-     *            value of the literal
-     * @param type
-     *            name of the type, can be <code>null</code>
-     */
-    public Literal( V value, QName type ) {
-        this.value = value;
-        this.type = type;
-    }
+	/**
+	 * Creates a new {@link Literal} instance.
+	 * @param value value of the literal
+	 * @param type name of the type, can be <code>null</code>
+	 */
+	public Literal(V value, QName type) {
+		this.value = value;
+		this.type = type;
+	}
 
-    /**
-     * Returns the literal's value.
-     * 
-     * @return the literal's value
-     */
-    public V getValue() {
-        return value;
-    }
+	/**
+	 * Returns the literal's value.
+	 * @return the literal's value
+	 */
+	public V getValue() {
+		return value;
+	}
 
-    /**
-     * Returns the name of the value type.
-     * 
-     * @return the name of the value type, can be <code>null</code> (no explicit type information available)
-     */
-    public QName getTypeName() {
-        return type;
-    }
+	/**
+	 * Returns the name of the value type.
+	 * @return the name of the value type, can be <code>null</code> (no explicit type
+	 * information available)
+	 */
+	public QName getTypeName() {
+		return type;
+	}
 
-    @Override
-    public Type getType() {
-        return Type.LITERAL;
-    }
+	@Override
+	public Type getType() {
+		return Type.LITERAL;
+	}
 
-    @Override
-    public <T> TypedObjectNode[] evaluate( T obj, XPathEvaluator<T> xpathEvaluator ) {
-        return new TypedObjectNode[] { value };
-    }
+	@Override
+	public <T> TypedObjectNode[] evaluate(T obj, XPathEvaluator<T> xpathEvaluator) {
+		return new TypedObjectNode[] { value };
+	}
 
-    @Override
-    public String toString( String indent ) {
-        String s = indent + "-Literal ('" + value + "')\n";
-        return s;
-    }
+	@Override
+	public String toString(String indent) {
+		String s = indent + "-Literal ('" + value + "')\n";
+		return s;
+	}
 
-    @Override
-    public Expression[] getParams() {
-        return new Expression[0];
-    }
+	@Override
+	public Expression[] getParams() {
+		return new Expression[0];
+	}
+
 }

@@ -36,11 +36,11 @@
 package org.deegree.feature.persistence.sql.id;
 
 /**
- * {@link IDGenerator} that uses autoincrement columns / insert triggers to generate new ids.
- * 
+ * {@link IDGenerator} that uses autoincrement columns / insert triggers to generate new
+ * ids.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: markus $
- * 
  * @version $Revision: $, $Date: $
  */
 public class AutoIDGenerator implements IDGenerator {

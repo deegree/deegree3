@@ -58,94 +58,95 @@ import java.util.UUID;
  */
 public class CachedRasterDataContainer implements RasterDataContainer, RasterDataContainerProvider {
 
-    private final static Logger LOG = LoggerFactory.getLogger( CachedRasterDataContainer.class );
+	private final static Logger LOG = LoggerFactory.getLogger(CachedRasterDataContainer.class);
 
-    private RasterDataReader reader;
+	private RasterDataReader reader;
 
-    private String identifier;
+	private String identifier;
 
-    private static Cache<String, RasterData> cache;
+	private static Cache<String, RasterData> cache;
 
-    private final static String CACHENAME = "CachedRasterDataContainer";
+	private final static String CACHENAME = "CachedRasterDataContainer";
 
-    private static final StatisticsRetrieval statsRetrievalService = new StatisticsRetrieval();
+	private static final StatisticsRetrieval statsRetrievalService = new StatisticsRetrieval();
 
-    static {
-        try {
-            // TODO: make cachename configurable
-            // see ehcache.xml for CachedRasterDataContainer configuration
-            CacheManager cacheManager = CacheManagerBuilder.newCacheManagerBuilder().using(
-                            statsRetrievalService ).build();
-            cacheManager.init();
-            cache = cacheManager.createCache( CACHENAME, CacheConfigurationBuilder.newCacheConfigurationBuilder(
-                            String.class,
-                            RasterData.class,
-                            ResourcePoolsBuilder.newResourcePoolsBuilder().offheap(
-                                            1,
-                                            MemoryUnit.GB ) ) );
-        } catch ( Throwable e ) {
-            LOG.error( e.getLocalizedMessage(), e );
-        }
+	static {
+		try {
+			// TODO: make cachename configurable
+			// see ehcache.xml for CachedRasterDataContainer configuration
+			CacheManager cacheManager = CacheManagerBuilder.newCacheManagerBuilder()
+				.using(statsRetrievalService)
+				.build();
+			cacheManager.init();
+			cache = cacheManager.createCache(CACHENAME,
+					CacheConfigurationBuilder.newCacheConfigurationBuilder(String.class, RasterData.class,
+							ResourcePoolsBuilder.newResourcePoolsBuilder().offheap(1, MemoryUnit.GB)));
+		}
+		catch (Throwable e) {
+			LOG.error(e.getLocalizedMessage(), e);
+		}
 
-    }
+	}
 
-    /**
-     * Creates an empty RasterDataContainer that loads the data on first access.
-     */
-    public CachedRasterDataContainer() {
-        // empty constructor
-    }
+	/**
+	 * Creates an empty RasterDataContainer that loads the data on first access.
+	 */
+	public CachedRasterDataContainer() {
+		// empty constructor
+	}
 
-    /**
-     * Creates a RasterDataContainer that loads the data on first access.
-     *
-     * @param reader
-     *                 RasterReader for the raster source
-     */
-    public CachedRasterDataContainer( RasterDataReader reader ) {
-        setRasterDataReader( reader );
-    }
+	/**
+	 * Creates a RasterDataContainer that loads the data on first access.
+	 * @param reader RasterReader for the raster source
+	 */
+	public CachedRasterDataContainer(RasterDataReader reader) {
+		setRasterDataReader(reader);
+	}
 
-    public synchronized void setRasterDataReader( RasterDataReader reader ) {
-        // reader.close();
-        this.reader = reader;
-        this.identifier = UUID.randomUUID().toString();
-    }
+	public synchronized void setRasterDataReader(RasterDataReader reader) {
+		// reader.close();
+		this.reader = reader;
+		this.identifier = UUID.randomUUID().toString();
+	}
 
-    @Override
-    public synchronized RasterData getRasterData() {
-        // synchronized to prevent multiple reader.read()-calls when
-        if ( LOG.isDebugEnabled() ) {
-            LOG.debug( "accessing: " + this );
-        }
-        if ( !cache.containsKey( identifier ) ) {
-            RasterData raster = reader.read();
-            cache.put( identifier, raster );
-            if ( LOG.isDebugEnabled() ) {
-                long occupiedByteSize = statsRetrievalService.getStatisticsService().getCacheStatistics(
-                                CACHENAME ).getTierStatistics().get( "OffHeap" ).getOccupiedByteSize();
-                LOG.debug( "cache miss: " + this + " #mem: " + occupiedByteSize );
-            }
-            return raster;
-        } else {
-            if ( LOG.isDebugEnabled() ) {
-                LOG.debug( "cache hit: " + this );
-            }
-            return cache.get( identifier );
-        }
-    }
+	@Override
+	public synchronized RasterData getRasterData() {
+		// synchronized to prevent multiple reader.read()-calls when
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("accessing: " + this);
+		}
+		if (!cache.containsKey(identifier)) {
+			RasterData raster = reader.read();
+			cache.put(identifier, raster);
+			if (LOG.isDebugEnabled()) {
+				long occupiedByteSize = statsRetrievalService.getStatisticsService()
+					.getCacheStatistics(CACHENAME)
+					.getTierStatistics()
+					.get("OffHeap")
+					.getOccupiedByteSize();
+				LOG.debug("cache miss: " + this + " #mem: " + occupiedByteSize);
+			}
+			return raster;
+		}
+		else {
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("cache hit: " + this);
+			}
+			return cache.get(identifier);
+		}
+	}
 
-    @Override
-    public RasterData getReadOnlyRasterData() {
-        return getRasterData().asReadOnly();
-    }
+	@Override
+	public RasterData getReadOnlyRasterData() {
+		return getRasterData().asReadOnly();
+	}
 
-    public RasterDataContainer getRasterDataContainer( LoadingPolicy type ) {
-        if ( type == LoadingPolicy.CACHED && cache != null ) {
-            // the service loader caches provider instances, so return a new instance
-            return new CachedRasterDataContainer();
-        }
-        return null;
-    }
+	public RasterDataContainer getRasterDataContainer(LoadingPolicy type) {
+		if (type == LoadingPolicy.CACHED && cache != null) {
+			// the service loader caches provider instances, so return a new instance
+			return new CachedRasterDataContainer();
+		}
+		return null;
+	}
 
 }

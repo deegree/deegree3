@@ -45,40 +45,36 @@ import org.deegree.geometry.primitive.Point;
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author$
- *
  * @version $Revision$, $Date$
  */
 public interface Triangle extends PolygonPatch {
 
-    /**
-     * Returns the first of the three control points.
-     *
-     * @return the first control point
-     */
-    public Point getPoint1();
+	/**
+	 * Returns the first of the three control points.
+	 * @return the first control point
+	 */
+	public Point getPoint1();
 
-    /**
-     * Returns the second of the three control points.
-     *
-     * @return the second control point
-     */
-    public Point getPoint2();
+	/**
+	 * Returns the second of the three control points.
+	 * @return the second control point
+	 */
+	public Point getPoint2();
 
-    /**
-     * Returns the last of the three control points.
-     *
-     * @return the third control point
-     */
-    public Point getPoint3();
+	/**
+	 * Returns the last of the three control points.
+	 * @return the third control point
+	 */
+	public Point getPoint3();
 
-    /**
-     * Returns the sequence of control points as a {@link LinearRing}.
-     *
-     * @return the exterior ring
-     */
-    @Override
-    public LinearRing getExteriorRing();
+	/**
+	 * Returns the sequence of control points as a {@link LinearRing}.
+	 * @return the exterior ring
+	 */
+	@Override
+	public LinearRing getExteriorRing();
 
-    @Override
-    public List<LinearRing> getBoundaryRings();
+	@Override
+	public List<LinearRing> getBoundaryRings();
+
 }

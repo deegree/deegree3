@@ -38,31 +38,32 @@ package org.deegree.services.wpvs.io;
 
 /**
  * The <code>BackendResult</code> class TODO add class documentation here.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
  * @version $Revision$, $Date$
- * 
+ *
  */
 public class BackendResult {
 
-    /**
-     * The number of updates
-     */
-    public int updateCount = 0;
+	/**
+	 * The number of updates
+	 */
+	public int updateCount = 0;
 
-    /**
-     * The number of inserts
-     */
-    public int insertCount = 0;
+	/**
+	 * The number of inserts
+	 */
+	public int insertCount = 0;
 
-    /**
-     * The number of deletes
-     */
-    public int deleteCount = 0;
+	/**
+	 * The number of deletes
+	 */
+	public int deleteCount = 0;
 
-    @Override
-    public String toString() {
-        return "\n-Inserted: " + insertCount + "\n-Updated: " + updateCount + "\n-deleted:" + deleteCount;
-    }
+	@Override
+	public String toString() {
+		return "\n-Inserted: " + insertCount + "\n-Updated: " + updateCount + "\n-deleted:" + deleteCount;
+	}
+
 }

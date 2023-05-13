@@ -40,41 +40,38 @@ import java.io.File;
 import org.deegree.tile.TileDataSet;
 
 /**
- * Implementations define how the {@link FileSystemTileStore} maps between the {@link org.deegree.tile.TileDataLevel}
- * instances in a {@link TileDataSet} and image files on the file system.
- * 
+ * Implementations define how the {@link FileSystemTileStore} maps between the
+ * {@link org.deegree.tile.TileDataLevel} instances in a {@link TileDataSet} and image
+ * files on the file system.
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public interface DiskLayout {
 
-    /**
-     * Returns the image file for the specified {@link org.deegree.tile.TileDataLevel} and tile indexes.
-     * 
-     * @param matrixId
-     *            identifier of the matrix in the matrix set, must not be <code>null</code>
-     * @param x
-     *            column index of the tile (starting at 0)
-     * @param y
-     *            row index of the tile (starting at 0)
-     * @return tile file or <code>null</code> if the tile matrix does not exist (or indexes are out of range)
-     */
-    File resolve( String matrixId, long x, long y );
+	/**
+	 * Returns the image file for the specified {@link org.deegree.tile.TileDataLevel} and
+	 * tile indexes.
+	 * @param matrixId identifier of the matrix in the matrix set, must not be
+	 * <code>null</code>
+	 * @param x column index of the tile (starting at 0)
+	 * @param y row index of the tile (starting at 0)
+	 * @return tile file or <code>null</code> if the tile matrix does not exist (or
+	 * indexes are out of range)
+	 */
+	File resolve(String matrixId, long x, long y);
 
-    /**
-     * Returns the suffix of the tile files (without '.').
-     * 
-     * @return suffix of the tile files, never <code>null</code>
-     */
-    String getFileType();
+	/**
+	 * Returns the suffix of the tile files (without '.').
+	 * @return suffix of the tile files, never <code>null</code>
+	 */
+	String getFileType();
 
-    /**
-     * Assigns the given {@link TileDataSet}.
-     * 
-     * @param set
-     *            tile matrix to assign, must not be <code>null</code>
-     */
-    void setTileMatrixSet( TileDataSet set );
+	/**
+	 * Assigns the given {@link TileDataSet}.
+	 * @param set tile matrix to assign, must not be <code>null</code>
+	 */
+	void setTileMatrixSet(TileDataSet set);
+
 }

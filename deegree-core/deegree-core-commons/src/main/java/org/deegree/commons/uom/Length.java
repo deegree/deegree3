@@ -38,11 +38,12 @@ import java.math.BigDecimal;
 
 public class Length extends Measure {
 
-    public Length( String value, String uomURI ) throws NumberFormatException {
-        super( value, uomURI );
-    }
+	public Length(String value, String uomURI) throws NumberFormatException {
+		super(value, uomURI);
+	}
 
-    public Length( BigDecimal value, String uomURI ) {
-        super( value, uomURI );
-    }
+	public Length(BigDecimal value, String uomURI) {
+		super(value, uomURI);
+	}
+
 }

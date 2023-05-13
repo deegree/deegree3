@@ -37,39 +37,38 @@ package org.deegree.commons.mail;
 
 /**
  * This exception is an application exception thrown by the mail component
- * 
+ *
  * @author <a href="mailto:tfr@users.sourceforge.net">Torsten Friebe</A>
- * 
  * @author last edited by: $Author$
- * 
  * @version $Revision$,$Date$
  */
 public class SendMailException extends Exception {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 5266241004774907543L;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 5266241004774907543L;
 
-    /**
-     *
-     */
-    public SendMailException() {
-        super();
-    }
+	/**
+	 *
+	 */
+	public SendMailException() {
+		super();
+	}
 
-    /**
-     * @param str
-     */
-    public SendMailException( String str ) {
-        super( str );
-    }
+	/**
+	 * @param str
+	 */
+	public SendMailException(String str) {
+		super(str);
+	}
 
-    /**
-     * @param str
-     * @param ex
-     */
-    public SendMailException( String str, Throwable ex ) {
-        super( str, ex );
-    }
+	/**
+	 * @param str
+	 * @param ex
+	 */
+	public SendMailException(String str, Throwable ex) {
+		super(str, ex);
+	}
+
 }

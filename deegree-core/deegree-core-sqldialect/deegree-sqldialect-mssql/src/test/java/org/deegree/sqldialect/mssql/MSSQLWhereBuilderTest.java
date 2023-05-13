@@ -57,76 +57,74 @@ import org.junit.Test;
 
 /**
  * Tests for {@link MSSQLWhereBuilder}.
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class MSSQLWhereBuilderTest {
 
-    private MSSQLWhereBuilder whereBuilder;
+	private MSSQLWhereBuilder whereBuilder;
 
-    @Before
-    public void setup()
-                            throws FilterEvaluationException, UnmappableException {
-        SQLDialect sqldialect = null;
-        PropertyNameMapper mapper = new PropertyNameMapper() {
+	@Before
+	public void setup() throws FilterEvaluationException, UnmappableException {
+		SQLDialect sqldialect = null;
+		PropertyNameMapper mapper = new PropertyNameMapper() {
 
-            @Override
-            public PropertyNameMapping getSpatialMapping( ValueReference propName, TableAliasManager aliasManager )
-                                    throws FilterEvaluationException, UnmappableException {
-                return new PropertyNameMapping( null, null, propName.getAsText(), "table" );
-            }
+			@Override
+			public PropertyNameMapping getSpatialMapping(ValueReference propName, TableAliasManager aliasManager)
+					throws FilterEvaluationException, UnmappableException {
+				return new PropertyNameMapping(null, null, propName.getAsText(), "table");
+			}
 
-            @Override
-            public PropertyNameMapping getMapping( ValueReference propName, TableAliasManager aliasManager )
-                                    throws FilterEvaluationException, UnmappableException {
-                return new PropertyNameMapping( null, null, propName.getAsText(), "table" );
-            }
-        };
-        OperatorFilter filter = null;
-        SortProperty[] sortCrit = null;
-        boolean allowPartialMappings = false;
-        whereBuilder = new MSSQLWhereBuilder( sqldialect, mapper, filter, sortCrit, null, allowPartialMappings );
-    }
+			@Override
+			public PropertyNameMapping getMapping(ValueReference propName, TableAliasManager aliasManager)
+					throws FilterEvaluationException, UnmappableException {
+				return new PropertyNameMapping(null, null, propName.getAsText(), "table");
+			}
+		};
+		OperatorFilter filter = null;
+		SortProperty[] sortCrit = null;
+		boolean allowPartialMappings = false;
+		whereBuilder = new MSSQLWhereBuilder(sqldialect, mapper, filter, sortCrit, null, allowPartialMappings);
+	}
 
-    @Test
-    public void testToProtoSQLPropertyIsLikeRequiredEscapeClausePresent()
-                            throws UnmappableException, FilterEvaluationException {
+	@Test
+	public void testToProtoSQLPropertyIsLikeRequiredEscapeClausePresent()
+			throws UnmappableException, FilterEvaluationException {
 
-        Expression testValue = new ValueReference( "shortdesc", CommonNamespaces.getNamespaceContext() );
-        Expression pattern = new Literal<PrimitiveValue>( "HOWELLCITY" );
-        String wildCard = "*";
-        String singleChar = "#";
-        String escapeChar = "!";
-        Boolean matchCase = true;
-        MatchAction matchAction = MatchAction.ALL;
-        PropertyIsLike op = new PropertyIsLike( testValue, pattern, wildCard, singleChar, escapeChar, matchCase,
-                                                matchAction );
-        SQLOperation protoSQL = whereBuilder.toProtoSQL( op );
+		Expression testValue = new ValueReference("shortdesc", CommonNamespaces.getNamespaceContext());
+		Expression pattern = new Literal<PrimitiveValue>("HOWELLCITY");
+		String wildCard = "*";
+		String singleChar = "#";
+		String escapeChar = "!";
+		Boolean matchCase = true;
+		MatchAction matchAction = MatchAction.ALL;
+		PropertyIsLike op = new PropertyIsLike(testValue, pattern, wildCard, singleChar, escapeChar, matchCase,
+				matchAction);
+		SQLOperation protoSQL = whereBuilder.toProtoSQL(op);
 
-        StringBuilder sql = protoSQL.getSQL();
-        Assert.assertEquals( "table.shortdesc LIKE 'HOWELLCITY' ESCAPE '\\'", sql.toString() );
-    }
+		StringBuilder sql = protoSQL.getSQL();
+		Assert.assertEquals("table.shortdesc LIKE 'HOWELLCITY' ESCAPE '\\'", sql.toString());
+	}
 
-    @Test
-    public void testToProtoSQLPropertyIsLikeEscapedBrackets()
-                            throws UnmappableException, FilterEvaluationException {
+	@Test
+	public void testToProtoSQLPropertyIsLikeEscapedBrackets() throws UnmappableException, FilterEvaluationException {
 
-        Expression testValue = new ValueReference( "shortdesc", CommonNamespaces.getNamespaceContext() );
-        Expression pattern = new Literal<PrimitiveValue>( "HOWELL [CITY]" );
-        String wildCard = "*";
-        String singleChar = "#";
-        String escapeChar = "!";
-        Boolean matchCase = true;
-        MatchAction matchAction = MatchAction.ALL;
-        PropertyIsLike op = new PropertyIsLike( testValue, pattern, wildCard, singleChar, escapeChar, matchCase,
-                                                matchAction );
-        SQLOperation protoSQL = whereBuilder.toProtoSQL( op );
+		Expression testValue = new ValueReference("shortdesc", CommonNamespaces.getNamespaceContext());
+		Expression pattern = new Literal<PrimitiveValue>("HOWELL [CITY]");
+		String wildCard = "*";
+		String singleChar = "#";
+		String escapeChar = "!";
+		Boolean matchCase = true;
+		MatchAction matchAction = MatchAction.ALL;
+		PropertyIsLike op = new PropertyIsLike(testValue, pattern, wildCard, singleChar, escapeChar, matchCase,
+				matchAction);
+		SQLOperation protoSQL = whereBuilder.toProtoSQL(op);
 
-        StringBuilder sql = protoSQL.getSQL();
-        Assert.assertEquals( "table.shortdesc LIKE 'HOWELL \\[CITY\\]' ESCAPE '\\'", sql.toString() );
-    }
+		StringBuilder sql = protoSQL.getSQL();
+		Assert.assertEquals("table.shortdesc LIKE 'HOWELL \\[CITY\\]' ESCAPE '\\'", sql.toString());
+	}
+
 }

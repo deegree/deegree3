@@ -51,168 +51,168 @@ import org.locationtech.jts.geom.Envelope;
 /**
  * {@link Points} implementation based on a JTS coordinate sequence.
  * <p>
- * This implementation is useful when JTS geometries have to converted into {@link Geometry} objects.
- * 
+ * This implementation is useful when JTS geometries have to converted into
+ * {@link Geometry} objects.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class JTSPoints implements Points {
 
-    private final ICRS crs;
+	private final ICRS crs;
 
-    private final CoordinateSequence seq;
+	private final CoordinateSequence seq;
 
-    private int dim = 0;
+	private int dim = 0;
 
-    public JTSPoints( ICRS crs, CoordinateSequence seq ) {
-        this.crs = crs;
-        this.seq = seq;
-        // TODO is this really necessary? Why does seq.getDimension() always return 3?
-        if ( seq.size() > 0 ) {
-            for ( int i = 0; i < seq.getDimension(); i++ ) {
-                if ( Double.isNaN( seq.getOrdinate( 0, i ) ) ) {
-                    break;
-                }
-                dim++;
-            }
-        }
-    }
+	public JTSPoints(ICRS crs, CoordinateSequence seq) {
+		this.crs = crs;
+		this.seq = seq;
+		// TODO is this really necessary? Why does seq.getDimension() always return 3?
+		if (seq.size() > 0) {
+			for (int i = 0; i < seq.getDimension(); i++) {
+				if (Double.isNaN(seq.getOrdinate(0, i))) {
+					break;
+				}
+				dim++;
+			}
+		}
+	}
 
-    @Override
-    public int getDimension() {
-        return dim;
-    }
+	@Override
+	public int getDimension() {
+		return dim;
+	}
 
-    @Override
-    public int size() {
-        return seq.size();
-    }
+	@Override
+	public int size() {
+		return seq.size();
+	}
 
-    /**
-     * Provides acccess to an arbitrary {@link Point} in the sequence (expensive!).
-     */
-    @Override
-    public Point get( int i ) {
-        double[] pointCoordinates = new double[getDimension()];
-        for ( int d = 0; d < getDimension(); d++ ) {
-            pointCoordinates[d] = getOrdinate( i, d );
-        }
-        return new DefaultPoint( null, crs, null, pointCoordinates );
-    }
+	/**
+	 * Provides acccess to an arbitrary {@link Point} in the sequence (expensive!).
+	 */
+	@Override
+	public Point get(int i) {
+		double[] pointCoordinates = new double[getDimension()];
+		for (int d = 0; d < getDimension(); d++) {
+			pointCoordinates[d] = getOrdinate(i, d);
+		}
+		return new DefaultPoint(null, crs, null, pointCoordinates);
+	}
 
-    @Override
-    public Iterator<Point> iterator() {
+	@Override
+	public Iterator<Point> iterator() {
 
-        return new Iterator<>() {
+		return new Iterator<>() {
 
-            private int idx = 0;
+			private int idx = 0;
 
+			@Override
+			public boolean hasNext() {
+				return idx < size();
+			}
 
-            @Override
-            public boolean hasNext() {
-                return idx < size();
-            }
+			@Override
+			public Point next() {
+				if (!hasNext()) {
+					throw new NoSuchElementException();
+				}
+				double[] pointCoordinates = new double[getDimension()];
+				for (int i = 0; i < getDimension(); i++) {
+					pointCoordinates[i] = getOrdinate(idx, i);
+				}
+				idx++;
+				return new DefaultPoint(null, crs, null, pointCoordinates);
+			}
 
-            @Override
-            public Point next() {
-                if ( !hasNext() ) {
-                    throw new NoSuchElementException();
-                }
-                double[] pointCoordinates = new double[getDimension()];
-                for ( int i = 0; i < getDimension(); i++ ) {
-                    pointCoordinates[i] = getOrdinate( idx, i );
-                }
-                idx++;
-                return new DefaultPoint( null, crs, null, pointCoordinates );
-            }
+			@Override
+			public void remove() {
+				throw new UnsupportedOperationException();
+			}
+		};
+	}
 
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException();
-            }
-        };
-    }
+	@Override
+	public double[] getAsArray() {
+		double[] coords = new double[getDimension() * size()];
+		int i = 0;
+		for (Point p : this) {
+			for (double coord : p.getAsArray()) {
+				coords[i++] = coord;
+			}
+		}
+		return coords;
+	}
 
-    @Override
-    public double[] getAsArray() {
-        double[] coords = new double[getDimension() * size()];
-        int i = 0;
-        for ( Point p : this ) {
-            for ( double coord : p.getAsArray() ) {
-                coords[i++] = coord;
-            }
-        }
-        return coords;
-    }
+	@Override
+	public Point getEndPoint() {
+		return get(size() - 1);
+	}
 
-    @Override
-    public Point getEndPoint() {
-        return get( size() - 1 );
-    }
+	@Override
+	public Point getStartPoint() {
+		return get(0);
+	}
 
-    @Override
-    public Point getStartPoint() {
-        return get( 0 );
-    }
+	// -----------------------------------------------------------------------
+	// Implementation of JTS methods
+	// -----------------------------------------------------------------------
 
-    // -----------------------------------------------------------------------
-    // Implementation of JTS methods
-    // -----------------------------------------------------------------------
+	@Override
+	public Envelope expandEnvelope(Envelope env) {
+		return seq.expandEnvelope(env);
+	}
 
-    @Override
-    public Envelope expandEnvelope( Envelope env ) {
-        return seq.expandEnvelope( env );
-    }
+	@Override
+	public Coordinate getCoordinate(int index) {
+		return seq.getCoordinate(index);
+	}
 
-    @Override
-    public Coordinate getCoordinate( int index ) {
-        return seq.getCoordinate( index );
-    }
+	@Override
+	public void getCoordinate(int index, Coordinate coord) {
+		seq.getCoordinate(index, coord);
+	}
 
-    @Override
-    public void getCoordinate( int index, Coordinate coord ) {
-        seq.getCoordinate( index, coord );
-    }
+	@Override
+	public Coordinate getCoordinateCopy(int index) {
+		return seq.getCoordinateCopy(index);
+	}
 
-    @Override
-    public Coordinate getCoordinateCopy( int index ) {
-        return seq.getCoordinateCopy( index );
-    }
+	@Override
+	public double getOrdinate(int index, int ordinateIndex) {
+		return seq.getOrdinate(index, ordinateIndex);
+	}
 
-    @Override
-    public double getOrdinate( int index, int ordinateIndex ) {
-        return seq.getOrdinate( index, ordinateIndex );
-    }
+	@Override
+	public double getX(int index) {
+		return seq.getX(index);
+	}
 
-    @Override
-    public double getX( int index ) {
-        return seq.getX( index );
-    }
+	@Override
+	public double getY(int index) {
+		return seq.getY(index);
+	}
 
-    @Override
-    public double getY( int index ) {
-        return seq.getY( index );
-    }
+	@Override
+	public void setOrdinate(int index, int ordinateIndex, double value) {
+		seq.setOrdinate(index, ordinateIndex, value);
+	}
 
-    @Override
-    public void setOrdinate( int index, int ordinateIndex, double value ) {
-        seq.setOrdinate( index, ordinateIndex, value );
-    }
+	@Override
+	public Coordinate[] toCoordinateArray() {
+		return seq.toCoordinateArray();
+	}
 
-    @Override
-    public Coordinate[] toCoordinateArray() {
-        return seq.toCoordinateArray();
-    }
+	@Override
+	public Object clone() {
+		return copy();
+	}
 
-    @Override
-    public Object clone() {
-        return copy();
-    }
+	@Override
+	public CoordinateSequence copy() {
+		return new JTSPoints(crs, seq.copy());
+	}
 
-    @Override
-    public CoordinateSequence copy() {
-        return new JTSPoints( crs, seq.copy() );
-    }
 }

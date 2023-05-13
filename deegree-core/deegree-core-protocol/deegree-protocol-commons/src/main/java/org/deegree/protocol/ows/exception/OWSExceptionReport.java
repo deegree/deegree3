@@ -41,46 +41,46 @@ import org.deegree.commons.ows.exception.OWSException;
 
 /**
  * Encapsulates a number of {@link OWSException}s.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class OWSExceptionReport extends Exception {
 
-    private static final long serialVersionUID = 3640316306096580505L;
+	private static final long serialVersionUID = 3640316306096580505L;
 
-    private final String version;
+	private final String version;
 
-    private final String lang;
+	private final String lang;
 
-    private final List<OWSException> exceptions;
+	private final List<OWSException> exceptions;
 
-    public OWSExceptionReport( List<OWSException> exceptions, String lang, String version ) {
-        super( buildMessage( exceptions ) );
-        this.version = version;
-        this.lang = lang;
-        this.exceptions = exceptions;
-    }
+	public OWSExceptionReport(List<OWSException> exceptions, String lang, String version) {
+		super(buildMessage(exceptions));
+		this.version = version;
+		this.lang = lang;
+		this.exceptions = exceptions;
+	}
 
-    private static String buildMessage( List<OWSException> exceptions ) {
-        StringBuilder sb = new StringBuilder();
-        for ( OWSException exception : exceptions ) {
-            sb.append( exception.getMessage() );
-        }
-        return sb.toString();
-    }
+	private static String buildMessage(List<OWSException> exceptions) {
+		StringBuilder sb = new StringBuilder();
+		for (OWSException exception : exceptions) {
+			sb.append(exception.getMessage());
+		}
+		return sb.toString();
+	}
 
-    public String getVersion() {
-        return version;
-    }
+	public String getVersion() {
+		return version;
+	}
 
-    public String getLang() {
-        return lang;
-    }
+	public String getLang() {
+		return lang;
+	}
 
-    public List<OWSException> getExceptions() {
-        return exceptions;
-    }
+	public List<OWSException> getExceptions() {
+		return exceptions;
+	}
+
 }

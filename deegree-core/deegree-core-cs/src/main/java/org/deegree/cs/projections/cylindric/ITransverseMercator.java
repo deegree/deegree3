@@ -39,33 +39,29 @@ import org.deegree.cs.projections.IProjection;
 
 /**
  * Interface describing a TransverseMercator Projection
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  * @author last edited by: $Author: lyn $
- * 
  * @version $Revision: $, $Date: $
  */
 public interface ITransverseMercator extends IProjection {
 
-    /**
-     * @param latitude
-     *            to get the nearest paralles to.
-     * @return the nearest parallel in radians of given latitude
-     */
-    int getRowFromNearestParallel( double latitude );
+	/**
+	 * @param latitude to get the nearest paralles to.
+	 * @return the nearest parallel in radians of given latitude
+	 */
+	int getRowFromNearestParallel(double latitude);
 
-    /**
-     * the utm zone from a given meridian
-     * 
-     * @param longitude
-     *            in radians
-     * @return the utm zone.
-     */
-    int getZoneFromNearestMeridian( double longitude );
+	/**
+	 * the utm zone from a given meridian
+	 * @param longitude in radians
+	 * @return the utm zone.
+	 */
+	int getZoneFromNearestMeridian(double longitude);
 
-    /**
-     * @return the true if defined on the northern hemisphere.
-     */
-    boolean getHemisphere();
+	/**
+	 * @return the true if defined on the northern hemisphere.
+	 */
+	boolean getHemisphere();
 
 }

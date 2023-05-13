@@ -37,40 +37,39 @@ package org.deegree.services.authentication.soapheader;
 
 /**
  * Encapsulates all the necessary information needed to handle a SOAP request.
- * 
+ *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class SoapHeader {
 
-    private String username;
+	private String username;
 
-    private String password;
+	private String password;
 
-    // private String nounce;
+	// private String nounce;
 
-    // private date creationDate;
+	// private date creationDate;
 
-    SoapHeader( String username, String password ) {
-        this.username = username;
-        this.password = password;
+	SoapHeader(String username, String password) {
+		this.username = username;
+		this.password = password;
 
-    }
+	}
 
-    /**
-     * @return the username
-     */
-    public String getUsername() {
-        return username;
-    }
+	/**
+	 * @return the username
+	 */
+	public String getUsername() {
+		return username;
+	}
 
-    /**
-     * @return the password
-     */
-    public String getPassword() {
-        return password;
-    }
+	/**
+	 * @return the password
+	 */
+	public String getPassword() {
+		return password;
+	}
 
 }

@@ -44,34 +44,34 @@ import org.deegree.workspace.standard.DefaultResourceIdentifier;
 
 /**
  * Resource metadata implementation for tile layer stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class TileLayerStoreMetadata extends AbstractResourceMetadata<LayerStore> {
 
-    public TileLayerStoreMetadata( Workspace workspace, ResourceLocation<LayerStore> location,
-                                   AbstractResourceProvider<LayerStore> provider ) {
-        super( workspace, location, provider );
-    }
+	public TileLayerStoreMetadata(Workspace workspace, ResourceLocation<LayerStore> location,
+			AbstractResourceProvider<LayerStore> provider) {
+		super(workspace, location, provider);
+	}
 
-    @Override
-    public ResourceBuilder<LayerStore> prepare() {
-        try {
-            TileLayers cfg = (TileLayers) unmarshall( "org.deegree.layer.persistence.tile.jaxb", provider.getSchema(),
-                                                      location.getAsStream(), workspace );
+	@Override
+	public ResourceBuilder<LayerStore> prepare() {
+		try {
+			TileLayers cfg = (TileLayers) unmarshall("org.deegree.layer.persistence.tile.jaxb", provider.getSchema(),
+					location.getAsStream(), workspace);
 
-            for ( TileLayerType lay : cfg.getTileLayer() ) {
-                for ( TileLayerType.TileDataSet tds : lay.getTileDataSet() ) {
-                    dependencies.add( new DefaultResourceIdentifier<TileStore>( TileStoreProvider.class,
-                                                                                tds.getTileStoreId() ) );
-                }
-            }
-            return new TileLayerStoreBuilder( cfg, this, workspace );
-        } catch ( Exception e ) {
-            throw new ResourceInitException( "Unable to create tile layer store.", e );
-        }
-    }
+			for (TileLayerType lay : cfg.getTileLayer()) {
+				for (TileLayerType.TileDataSet tds : lay.getTileDataSet()) {
+					dependencies
+						.add(new DefaultResourceIdentifier<TileStore>(TileStoreProvider.class, tds.getTileStoreId()));
+				}
+			}
+			return new TileLayerStoreBuilder(cfg, this, workspace);
+		}
+		catch (Exception e) {
+			throw new ResourceInitException("Unable to create tile layer store.", e);
+		}
+	}
 
 }

@@ -43,33 +43,33 @@ import org.deegree.workspace.standard.DefaultResourceIdentifier;
 
 /**
  * Metadata implementation for standard themes.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class StandardThemeMetadata extends AbstractResourceMetadata<Theme> {
 
-    public StandardThemeMetadata( Workspace workspace, ResourceLocation<Theme> location,
-                                  AbstractResourceProvider<Theme> provider ) {
-        super( workspace, location, provider );
-    }
+	public StandardThemeMetadata(Workspace workspace, ResourceLocation<Theme> location,
+			AbstractResourceProvider<Theme> provider) {
+		super(workspace, location, provider);
+	}
 
-    @Override
-    public ResourceBuilder<Theme> prepare() {
-        String pkg = "org.deegree.theme.persistence.standard.jaxb";
-        try {
-            Themes cfg;
-            cfg = (Themes) unmarshall( pkg, provider.getSchema(), location.getAsStream(), workspace );
+	@Override
+	public ResourceBuilder<Theme> prepare() {
+		String pkg = "org.deegree.theme.persistence.standard.jaxb";
+		try {
+			Themes cfg;
+			cfg = (Themes) unmarshall(pkg, provider.getSchema(), location.getAsStream(), workspace);
 
-            for ( String id : cfg.getLayerStoreId() ) {
-                softDependencies.add( new DefaultResourceIdentifier<LayerStore>( LayerStoreProvider.class, id ) );
-            }
+			for (String id : cfg.getLayerStoreId()) {
+				softDependencies.add(new DefaultResourceIdentifier<LayerStore>(LayerStoreProvider.class, id));
+			}
 
-            return new StandardThemeBuilder( cfg, this, workspace );
-        } catch ( Exception e ) {
-            throw new ResourceInitException( "Could not parse theme configuration file.", e );
-        }
-    }
+			return new StandardThemeBuilder(cfg, this, workspace);
+		}
+		catch (Exception e) {
+			throw new ResourceInitException("Could not parse theme configuration file.", e);
+		}
+	}
 
 }

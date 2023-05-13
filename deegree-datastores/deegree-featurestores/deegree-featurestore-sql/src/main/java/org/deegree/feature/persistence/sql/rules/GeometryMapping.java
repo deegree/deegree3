@@ -49,58 +49,58 @@ import java.util.List;
 
 /**
  * {@link Mapping} of {@link Geometry} particles.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class GeometryMapping extends Mapping {
 
-    private final MappingExpression mapping;
+	private final MappingExpression mapping;
 
-    private final GeometryType type;
+	private final GeometryType type;
 
-    private final GeometryStorageParams geometryParams;
+	private final GeometryStorageParams geometryParams;
 
-    public GeometryMapping(ValueReference path, boolean voidable, MappingExpression mapping, GeometryType type,
-                           GeometryStorageParams geometryParams, List<TableJoin> tableChange, CustomConverterJAXB converter) {
-        super( path, voidable, tableChange, converter );
-        this.mapping = mapping;
-        this.type = type;
-        this.geometryParams = geometryParams;
-    }
+	public GeometryMapping(ValueReference path, boolean voidable, MappingExpression mapping, GeometryType type,
+			GeometryStorageParams geometryParams, List<TableJoin> tableChange, CustomConverterJAXB converter) {
+		super(path, voidable, tableChange, converter);
+		this.mapping = mapping;
+		this.type = type;
+		this.geometryParams = geometryParams;
+	}
 
-    public GeometryMapping(ValueReference path, boolean voidable, MappingExpression mapping, GeometryType type,
-                           GeometryStorageParams geometryParams, List<TableJoin> tableChange) {
-        super( path, voidable, tableChange, null );
-        this.mapping = mapping;
-        this.type = type;
-        this.geometryParams = geometryParams;
-    }
+	public GeometryMapping(ValueReference path, boolean voidable, MappingExpression mapping, GeometryType type,
+			GeometryStorageParams geometryParams, List<TableJoin> tableChange) {
+		super(path, voidable, tableChange, null);
+		this.mapping = mapping;
+		this.type = type;
+		this.geometryParams = geometryParams;
+	}
 
-    public MappingExpression getMapping() {
-        return mapping;
-    }
+	public MappingExpression getMapping() {
+		return mapping;
+	}
 
-    public GeometryType getType() {
-        return type;
-    }
+	public GeometryType getType() {
+		return type;
+	}
 
-    public CoordinateDimension getDim() {
-        return geometryParams.getDim();
-    }
+	public CoordinateDimension getDim() {
+		return geometryParams.getDim();
+	}
 
-    public ICRS getCRS() {
-        return geometryParams.getCrs();
-    }
+	public ICRS getCRS() {
+		return geometryParams.getCrs();
+	}
 
-    public String getSrid() {
-        return geometryParams.getSrid();
-    }
+	public String getSrid() {
+		return geometryParams.getSrid();
+	}
 
-    @Override
-    public String toString() {
-        return super.toString() + ",{type=" + type + "}";
-    }
+	@Override
+	public String toString() {
+		return super.toString() + ",{type=" + type + "}";
+	}
+
 }

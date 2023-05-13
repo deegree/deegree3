@@ -39,10 +39,9 @@ import org.deegree.cs.CRSResource;
 
 /**
  * Interface describing general Datum
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  * @author last edited by: $Author: lyn $
- * 
  * @version $Revision: $, $Date: $
  */
 public interface IDatum extends CRSResource {

@@ -51,43 +51,40 @@ import org.deegree.protocol.wps.WPSConstants;
  * @author <a href="mailto:apadberg@uni-bonn.de">Alexander Padberg</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: $
- *
  * @version $Revision: $, $Date: $
  */
 public class DescribeProcessRequestKVPAdapter {
 
-    /**
-     * Parses the given WPS 1.0.0 <code>DescribeProcess</code> KVP request.
-     * <p>
-     * Prerequisites (not checked by this method):
-     * <ul>
-     * <li>Key 'SERVICE' has value 'WPS'</li>
-     * <li>Key 'REQUEST' has value 'DescribeProcess'</li>
-     * <li>Key 'VERSION' has value '1.0.0'</li>
-     * </ul>
-     * </p>
-     *
-     * @param kvpParams
-     *            key-value pairs, keys must be in uppercase
-     * @return corresponding {@link DescribeProcessRequest} object
-     * @throws MissingParameterException if a required parameter is missing
-     */
-    public static DescribeProcessRequest parse100( Map<String, String> kvpParams)
-                            throws MissingParameterException {
+	/**
+	 * Parses the given WPS 1.0.0 <code>DescribeProcess</code> KVP request.
+	 * <p>
+	 * Prerequisites (not checked by this method):
+	 * <ul>
+	 * <li>Key 'SERVICE' has value 'WPS'</li>
+	 * <li>Key 'REQUEST' has value 'DescribeProcess'</li>
+	 * <li>Key 'VERSION' has value '1.0.0'</li>
+	 * </ul>
+	 * </p>
+	 * @param kvpParams key-value pairs, keys must be in uppercase
+	 * @return corresponding {@link DescribeProcessRequest} object
+	 * @throws MissingParameterException if a required parameter is missing
+	 */
+	public static DescribeProcessRequest parse100(Map<String, String> kvpParams) throws MissingParameterException {
 
-        // IDENTIFIER (mandatory)
-        List<String> identifierStrings = KVPUtils.splitAll( kvpParams, "IDENTIFIER" );
-        if ( identifierStrings == null || identifierStrings.isEmpty() ) {
-            throw new MissingParameterException( "Required parameter 'IDENTIFIER' is missing." );
-        }
-        List<CodeType> identifiers = new ArrayList<CodeType>(identifierStrings.size());
-        for ( String identifier : identifierStrings ) {
-            identifiers.add( new CodeType(identifier) );
-        }
+		// IDENTIFIER (mandatory)
+		List<String> identifierStrings = KVPUtils.splitAll(kvpParams, "IDENTIFIER");
+		if (identifierStrings == null || identifierStrings.isEmpty()) {
+			throw new MissingParameterException("Required parameter 'IDENTIFIER' is missing.");
+		}
+		List<CodeType> identifiers = new ArrayList<CodeType>(identifierStrings.size());
+		for (String identifier : identifierStrings) {
+			identifiers.add(new CodeType(identifier));
+		}
 
-        // LANGUAGE (optional)
-        String language = kvpParams.get( "LANGUAGE" );
+		// LANGUAGE (optional)
+		String language = kvpParams.get("LANGUAGE");
 
-        return new DescribeProcessRequest( WPSConstants.VERSION_100, language, identifiers );
-    }
+		return new DescribeProcessRequest(WPSConstants.VERSION_100, language, identifiers);
+	}
+
 }

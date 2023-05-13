@@ -54,64 +54,66 @@ import org.slf4j.LoggerFactory;
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
  * @version $Revision:$, $Date:$
  */
 public class FeaturePropertyType extends ObjectPropertyType {
 
-    private static final Logger LOG = LoggerFactory.getLogger( FeaturePropertyType.class );
+	private static final Logger LOG = LoggerFactory.getLogger(FeaturePropertyType.class);
 
-    private QName valueFtName;
+	private QName valueFtName;
 
-    private FeatureType valueFt;
+	private FeatureType valueFt;
 
-    public FeaturePropertyType( QName name, int minOccurs, int maxOccurs, XSElementDeclaration elDecl,
-                                List<PropertyType> substitutions, QName valueFtName, ValueRepresentation representation ) {
-        super( name, minOccurs, maxOccurs, elDecl, substitutions, representation, FEATURE );
-        this.valueFtName = valueFtName;
-        // this.representation = representation;
-    }
+	public FeaturePropertyType(QName name, int minOccurs, int maxOccurs, XSElementDeclaration elDecl,
+			List<PropertyType> substitutions, QName valueFtName, ValueRepresentation representation) {
+		super(name, minOccurs, maxOccurs, elDecl, substitutions, representation, FEATURE);
+		this.valueFtName = valueFtName;
+		// this.representation = representation;
+	}
 
-    /**
-     * Returns the name of the contained feature type.
-     *
-     * @return the name of the contained feature type, or null if unrestricted (any feature type is allowed)
-     */
-    public QName getFTName() {
-        return valueFtName;
-    }
+	/**
+	 * Returns the name of the contained feature type.
+	 * @return the name of the contained feature type, or null if unrestricted (any
+	 * feature type is allowed)
+	 */
+	public QName getFTName() {
+		return valueFtName;
+	}
 
-    /**
-     * Returns the contained feature type.
-     *
-     * @return the contained feature type, or null if unrestricted (any feature type is allowed)
-     */
-    public FeatureType getValueFt() {
-        // if ( valueFt == null ) {
-        // String msg = "Internal error. Reference to feature type '" + valueFtName + "' has not been resolved.";
-        // throw new RuntimeException (msg);
-        // }
-        return valueFt;
-    }
+	/**
+	 * Returns the contained feature type.
+	 * @return the contained feature type, or null if unrestricted (any feature type is
+	 * allowed)
+	 */
+	public FeatureType getValueFt() {
+		// if ( valueFt == null ) {
+		// String msg = "Internal error. Reference to feature type '" + valueFtName + "'
+		// has not been resolved.";
+		// throw new RuntimeException (msg);
+		// }
+		return valueFt;
+	}
 
-    public void resolve( FeatureType valueFt ) {
-        if ( valueFt == null ) {
-            LOG.warn( "Setting reference to feature type '" + valueFtName
-                      + "' to null -- repairing definition by clearing value feature type name as well." );
-            valueFtName = null;
-        }
-        // TODO (reenable?)
-        // if ( this.valueFt != null ) {
-        // String msg = "Internal error. Reference to feature type '" + valueFtName + "' has already been resolved.";
-        // throw new IllegalArgumentException( msg );
-        // }
-        this.valueFt = valueFt;
-    }
+	public void resolve(FeatureType valueFt) {
+		if (valueFt == null) {
+			LOG.warn("Setting reference to feature type '" + valueFtName
+					+ "' to null -- repairing definition by clearing value feature type name as well.");
+			valueFtName = null;
+		}
+		// TODO (reenable?)
+		// if ( this.valueFt != null ) {
+		// String msg = "Internal error. Reference to feature type '" + valueFtName + "'
+		// has already been resolved.";
+		// throw new IllegalArgumentException( msg );
+		// }
+		this.valueFt = valueFt;
+	}
 
-    @Override
-    public String toString() {
-        String s = "- feature property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs
-                   + ", value feature type: " + valueFtName;
-        return s;
-    }
+	@Override
+	public String toString() {
+		String s = "- feature property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs
+				+ ", value feature type: " + valueFtName;
+		return s;
+	}
+
 }

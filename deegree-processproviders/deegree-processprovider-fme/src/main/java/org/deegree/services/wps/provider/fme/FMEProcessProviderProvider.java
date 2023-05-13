@@ -51,27 +51,27 @@ import java.net.URL;
  */
 public class FMEProcessProviderProvider extends ProcessProviderProvider {
 
-    @Override
-    public String getNamespace() {
-        return "http://www.deegree.org/processes/fme";
-    }
+	@Override
+	public String getNamespace() {
+		return "http://www.deegree.org/processes/fme";
+	}
 
-    /*
-        @Override
-        @SuppressWarnings("unchecked")
-        public Class<? extends ResourceManager>[] getDependencies() {
-            return new Class[] { ProxyUtils.class, ConnectionManager.class };
-        }
-    */
-    @Override
-    public URL getSchema() {
-        return FMEProcessProviderProvider.class.getResource( "/META-INF/schemas/processes/fme/fme.xsd" );
-    }
+	/*
+	 * @Override
+	 *
+	 * @SuppressWarnings("unchecked") public Class<? extends ResourceManager>[]
+	 * getDependencies() { return new Class[] { ProxyUtils.class, ConnectionManager.class
+	 * }; }
+	 */
+	@Override
+	public URL getSchema() {
+		return FMEProcessProviderProvider.class.getResource("/META-INF/schemas/processes/fme/fme.xsd");
+	}
 
-    @Override
-    public ResourceMetadata<ProcessProvider> createFromLocation( Workspace workspace,
-                                                                 ResourceLocation<ProcessProvider> resourceLocation ) {
-        return new FMEProcessMetadata( workspace, resourceLocation, this );
-    }
+	@Override
+	public ResourceMetadata<ProcessProvider> createFromLocation(Workspace workspace,
+			ResourceLocation<ProcessProvider> resourceLocation) {
+		return new FMEProcessMetadata(workspace, resourceLocation, this);
+	}
 
 }

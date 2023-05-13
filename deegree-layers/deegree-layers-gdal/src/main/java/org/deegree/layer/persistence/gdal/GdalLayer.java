@@ -40,35 +40,32 @@ import org.deegree.layer.metadata.LayerMetadata;
 
 /**
  * {@link Layer} implementation for layers backed by GDAL datasets.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * 
  * @since 3.4
  */
 class GdalLayer extends AbstractLayer {
 
-    private final List<File> datasets;
+	private final List<File> datasets;
 
-    private final GdalSettings gdalSettings;
+	private final GdalSettings gdalSettings;
 
-    GdalLayer( LayerMetadata md, List<File> datasets, GdalSettings gdalSettings ) {
-        super( md );
-        this.datasets = datasets;
-        this.gdalSettings = gdalSettings;
-    }
+	GdalLayer(LayerMetadata md, List<File> datasets, GdalSettings gdalSettings) {
+		super(md);
+		this.datasets = datasets;
+		this.gdalSettings = gdalSettings;
+	}
 
-    @Override
-    public GdalLayerData mapQuery( LayerQuery query, List<String> headers )
-                            throws OWSException {
-        Envelope bbox = query.getEnvelope();
-        return new GdalLayerData( datasets, bbox, query.getWidth(), query.getHeight(), gdalSettings );
-    }
+	@Override
+	public GdalLayerData mapQuery(LayerQuery query, List<String> headers) throws OWSException {
+		Envelope bbox = query.getEnvelope();
+		return new GdalLayerData(datasets, bbox, query.getWidth(), query.getHeight(), gdalSettings);
+	}
 
-    @Override
-    public GdalLayerData infoQuery( LayerQuery query, List<String> headers )
-                            throws OWSException {
-        Envelope bbox = query.calcClickBox( query.getRenderingOptions().getFeatureInfoRadius( getMetadata().getName() ) );
-        return new GdalLayerData( datasets, bbox, query.getWidth(), query.getHeight(), gdalSettings );
-    }
+	@Override
+	public GdalLayerData infoQuery(LayerQuery query, List<String> headers) throws OWSException {
+		Envelope bbox = query.calcClickBox(query.getRenderingOptions().getFeatureInfoRadius(getMetadata().getName()));
+		return new GdalLayerData(datasets, bbox, query.getWidth(), query.getHeight(), gdalSettings);
+	}
 
 }

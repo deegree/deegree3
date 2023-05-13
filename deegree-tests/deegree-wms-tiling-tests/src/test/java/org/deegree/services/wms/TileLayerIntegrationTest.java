@@ -67,51 +67,44 @@ import static org.junit.Assert.assertTrue;
 @RunWith(Parameterized.class)
 public class TileLayerIntegrationTest {
 
-    private final BufferedImage expected;
+	private final BufferedImage expected;
 
-    private final String resourceName;
+	private final String resourceName;
 
-    private String request;
+	private String request;
 
-    public TileLayerIntegrationTest( String resourceName, String request )
-                    throws IOException {
-        this.expected = ImageIO.read( TileLayerIntegrationTest.class.getResourceAsStream( resourceName ) );
-        this.resourceName = resourceName;
-        this.request = request;
-    }
+	public TileLayerIntegrationTest(String resourceName, String request) throws IOException {
+		this.expected = ImageIO.read(TileLayerIntegrationTest.class.getResourceAsStream(resourceName));
+		this.resourceName = resourceName;
+		this.request = request;
+	}
 
-    @Parameters
-    public static Collection<Object[]> getParameters() {
-        return asList( new Object[][] {
-                        {
-                                        "maxextent.png",
-                                        "?REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1&WIDTH=978&HEIGHT=645&LAYERS=pyramid&TRANSPARENT=TRUE&FORMAT=image%2Fpng&BBOX=438742.26976744185,4448455.0,450241.7302325581,4456039.0&SRS=urn:opengis:def:crs:epsg::26912&STYLES=" },
-                        {
-                                        "second.png",
-                                        "?REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1&WIDTH=978&HEIGHT=645&LAYERS=pyramid&TRANSPARENT=TRUE&FORMAT=image%2Fpng&BBOX=442054.1850365361,4450977.860706333,445834.7259965481,4453471.162259716&SRS=urn:opengis:def:crs:epsg::26912&STYLES=" },
-                        {
-                                        "third.png",
-                                        "?REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1&WIDTH=978&HEIGHT=645&LAYERS=pyramid&TRANSPARENT=TRUE&FORMAT=image%2Fpng&BBOX=442923.9194703415,4451577.9980723625,444353.2355232765,4452520.645162488&SRS=urn:opengis:def:crs:epsg::26912&STYLES=" } } );
-    }
+	@Parameters
+	public static Collection<Object[]> getParameters() {
+		return asList(new Object[][] { { "maxextent.png",
+				"?REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1&WIDTH=978&HEIGHT=645&LAYERS=pyramid&TRANSPARENT=TRUE&FORMAT=image%2Fpng&BBOX=438742.26976744185,4448455.0,450241.7302325581,4456039.0&SRS=urn:opengis:def:crs:epsg::26912&STYLES=" },
+				{ "second.png",
+						"?REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1&WIDTH=978&HEIGHT=645&LAYERS=pyramid&TRANSPARENT=TRUE&FORMAT=image%2Fpng&BBOX=442054.1850365361,4450977.860706333,445834.7259965481,4453471.162259716&SRS=urn:opengis:def:crs:epsg::26912&STYLES=" },
+				{ "third.png",
+						"?REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1&WIDTH=978&HEIGHT=645&LAYERS=pyramid&TRANSPARENT=TRUE&FORMAT=image%2Fpng&BBOX=442923.9194703415,4451577.9980723625,444353.2355232765,4452520.645162488&SRS=urn:opengis:def:crs:epsg::26912&STYLES=" } });
+	}
 
-    @Test
-    public void testSimilarity()
-                            throws
-                            Exception {
-        String base = createRequest();
-        InputStream in = retrieve( STREAM, base );
-        BufferedImage actual = ImageIO.read( in );
-        assertTrue( "Image for " + resourceName + "are not similar enough",
-                    isImageSimilar( expected, actual, 0.001, getClass().getName() + "_" + resourceName ) );
-    }
+	@Test
+	public void testSimilarity() throws Exception {
+		String base = createRequest();
+		InputStream in = retrieve(STREAM, base);
+		BufferedImage actual = ImageIO.read(in);
+		assertTrue("Image for " + resourceName + "are not similar enough",
+				isImageSimilar(expected, actual, 0.001, getClass().getName() + "_" + resourceName));
+	}
 
-    private String createRequest() {
-        StringBuffer sb = new StringBuffer();
-        sb.append( "http://localhost:" );
-        sb.append( System.getProperty( "portnumber" ) );
-        sb.append( "/deegree-wms-tiling-tests/services" );
-        sb.append( request );
-        return sb.toString();
-    }
+	private String createRequest() {
+		StringBuffer sb = new StringBuffer();
+		sb.append("http://localhost:");
+		sb.append(System.getProperty("portnumber"));
+		sb.append("/deegree-wms-tiling-tests/services");
+		sb.append(request);
+		return sb.toString();
+	}
 
 }

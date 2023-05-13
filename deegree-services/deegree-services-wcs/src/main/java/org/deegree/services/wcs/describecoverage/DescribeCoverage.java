@@ -40,41 +40,38 @@ import java.util.List;
 import org.deegree.commons.tom.ows.Version;
 
 /**
- *
- *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
  * @version $Revision$, $Date$
  *
  */
 public class DescribeCoverage {
 
-    private final Version version;
+	private final Version version;
 
-    private final List<String> coverages;
+	private final List<String> coverages;
 
-    /**
-     * @param version
-     * @param coverages
-     */
-    protected DescribeCoverage( Version version, List<String> coverages ) {
-        this.version = version;
-        this.coverages = coverages;
-    }
+	/**
+	 * @param version
+	 * @param coverages
+	 */
+	protected DescribeCoverage(Version version, List<String> coverages) {
+		this.version = version;
+		this.coverages = coverages;
+	}
 
-    /**
-     * @return all requested coverages
-     */
-    public List<String> getCoverages() {
-        return coverages;
-    }
+	/**
+	 * @return all requested coverages
+	 */
+	public List<String> getCoverages() {
+		return coverages;
+	}
 
-    /**
-     * @return the request version
-     */
-    public Version getVersion() {
-        return version;
-    }
+	/**
+	 * @return the request version
+	 */
+	public Version getVersion() {
+		return version;
+	}
 
 }

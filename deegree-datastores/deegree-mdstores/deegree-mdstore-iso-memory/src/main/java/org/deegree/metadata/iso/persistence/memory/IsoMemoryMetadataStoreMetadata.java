@@ -54,34 +54,32 @@ import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
  * Resource metadata implementation for memory metadata stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class IsoMemoryMetadataStoreMetadata extends AbstractResourceMetadata<MetadataStore<? extends MetadataRecord>> {
 
-    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.metadata.iso.persistence.memory.jaxb";
+	private static final String CONFIG_JAXB_PACKAGE = "org.deegree.metadata.iso.persistence.memory.jaxb";
 
-    public IsoMemoryMetadataStoreMetadata( Workspace workspace,
-                                           ResourceLocation<MetadataStore<? extends MetadataRecord>> location,
-                                           AbstractResourceProvider<MetadataStore<? extends MetadataRecord>> provider ) {
-        super( workspace, location, provider );
-    }
+	public IsoMemoryMetadataStoreMetadata(Workspace workspace,
+			ResourceLocation<MetadataStore<? extends MetadataRecord>> location,
+			AbstractResourceProvider<MetadataStore<? extends MetadataRecord>> provider) {
+		super(workspace, location, provider);
+	}
 
-    @Override
-    public ResourceBuilder<MetadataStore<? extends MetadataRecord>> prepare() {
-        try {
-            ISOMemoryMetadataStoreConfig config = (ISOMemoryMetadataStoreConfig) unmarshall( CONFIG_JAXB_PACKAGE,
-                                                                                             provider.getSchema(),
-                                                                                             location.getAsStream(),
-                                                                                             workspace );
+	@Override
+	public ResourceBuilder<MetadataStore<? extends MetadataRecord>> prepare() {
+		try {
+			ISOMemoryMetadataStoreConfig config = (ISOMemoryMetadataStoreConfig) unmarshall(CONFIG_JAXB_PACKAGE,
+					provider.getSchema(), location.getAsStream(), workspace);
 
-            return new IsoMemoryMetadataStoreBuilder( config, this );
-        } catch ( Exception e ) {
-            String msg = "Error setting up iso memory meatadata store from configuration: " + e.getMessage();
-            throw new ResourceInitException( msg, e );
-        }
-    }
+			return new IsoMemoryMetadataStoreBuilder(config, this);
+		}
+		catch (Exception e) {
+			String msg = "Error setting up iso memory meatadata store from configuration: " + e.getMessage();
+			throw new ResourceInitException(msg, e);
+		}
+	}
 
 }

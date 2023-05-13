@@ -39,17 +39,15 @@ import org.deegree.feature.FeatureCollection;
 import org.deegree.rendering.r2d.context.RenderContext;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
- * 
  * @version $Revision: $, $Date: $
  */
 public interface LayerData {
 
-    void render( RenderContext context ) throws InterruptedException;
+	void render(RenderContext context) throws InterruptedException;
 
-    // think about using a infocontext or something here
-    FeatureCollection info();
+	// think about using a infocontext or something here
+	FeatureCollection info();
 
 }

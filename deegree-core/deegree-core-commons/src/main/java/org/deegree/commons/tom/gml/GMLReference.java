@@ -45,44 +45,40 @@ import org.deegree.commons.tom.ReferenceResolver;
 import org.deegree.commons.tom.gml.property.Property;
 
 /**
- * A {@link Reference} to a {@link GMLObject}, corresponds to a GML property with an <code>xlink:href</code> attribute.
- * 
+ * A {@link Reference} to a {@link GMLObject}, corresponds to a GML property with an
+ * <code>xlink:href</code> attribute.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
- * 
- * @param <T>
- *            type of the referenced object
+ * @param <T> type of the referenced object
  */
 public class GMLReference<T extends GMLObject> extends Reference<T> implements GMLObject {
 
-    /**
-     * Creates a new {@link GMLReference} instance.
-     * 
-     * @param resolver
-     *            used for resolving the reference, must not be <code>null</code>
-     * @param uri
-     *            the object's uri, must not be <code>null</code>
-     * @param baseURL
-     *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
-     */
-    public GMLReference( ReferenceResolver resolver, String uri, String baseURL ) {
-        super( resolver, uri, baseURL );
-    }
+	/**
+	 * Creates a new {@link GMLReference} instance.
+	 * @param resolver used for resolving the reference, must not be <code>null</code>
+	 * @param uri the object's uri, must not be <code>null</code>
+	 * @param baseURL base URL for resolving the uri, may be <code>null</code> (no
+	 * resolving of relative URLs)
+	 */
+	public GMLReference(ReferenceResolver resolver, String uri, String baseURL) {
+		super(resolver, uri, baseURL);
+	}
 
-    @Override
-    public GMLObjectType getType() {
-        return getReferencedObject().getType();
-    }
+	@Override
+	public GMLObjectType getType() {
+		return getReferencedObject().getType();
+	}
 
-    @Override
-    public List<Property> getProperties() {
-        return getReferencedObject().getProperties();
-    }
+	@Override
+	public List<Property> getProperties() {
+		return getReferencedObject().getProperties();
+	}
 
-    @Override
-    public List<Property> getProperties( QName propName ) {
-        return getReferencedObject().getProperties( propName );
-    }
+	@Override
+	public List<Property> getProperties(QName propName) {
+		return getReferencedObject().getProperties(propName);
+	}
+
 }

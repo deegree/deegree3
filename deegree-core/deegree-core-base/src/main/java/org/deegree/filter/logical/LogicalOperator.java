@@ -42,21 +42,23 @@ import org.deegree.filter.Operator;
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
  * @version $Revision:$, $Date:$
  */
 public abstract class LogicalOperator implements Operator {
 
-    public enum SubType {
-        AND, OR, NOT;
-    }
+	public enum SubType {
 
-    @Override
-    public Type getType () {
-        return Type.LOGICAL;
-    }
-    
-    public abstract Operator[] getParams ();
+		AND, OR, NOT;
 
-    public abstract SubType getSubType ();
+	}
+
+	@Override
+	public Type getType() {
+		return Type.LOGICAL;
+	}
+
+	public abstract Operator[] getParams();
+
+	public abstract SubType getSubType();
+
 }

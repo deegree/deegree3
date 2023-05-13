@@ -40,29 +40,29 @@ package org.deegree.protocol.wcs;
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
  * @version $Revision$, $Date$
  *
  */
 public class WCServiceException extends Exception {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = -2785086996162224235L;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = -2785086996162224235L;
 
-    /**
-     * @param message
-     */
-    public WCServiceException( String message ) {
-        super( message );
-    }
+	/**
+	 * @param message
+	 */
+	public WCServiceException(String message) {
+		super(message);
+	}
 
-    /**
-     * @param message
-     * @param e
-     */
-    public WCServiceException( String message, Throwable e ) {
-        super( message, e );
-    }
+	/**
+	 * @param message
+	 * @param e
+	 */
+	public WCServiceException(String message, Throwable e) {
+		super(message, e);
+	}
+
 }

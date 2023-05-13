@@ -66,74 +66,70 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @RunWith(Parameterized.class)
 public class Filter200XMLEncoderParameterizedTest {
 
-    private String filterUnderTest;
+	private String filterUnderTest;
 
-    private String testName;
+	private String testName;
 
-    public Filter200XMLEncoderParameterizedTest( String testName, String filterUnderTest ) {
-        this.testName = testName;
-        this.filterUnderTest = filterUnderTest;
-    }
+	public Filter200XMLEncoderParameterizedTest(String testName, String filterUnderTest) {
+		this.testName = testName;
+		this.filterUnderTest = filterUnderTest;
+	}
 
-    @Parameters
-    public static List<Object[]> data()
-                    throws IOException {
-        List<Object[]> filterTests = new ArrayList<Object[]>();
-        filterTests.add( new Object[] { "testfilter1.xml", asString( "v200/testfilter1.xml" ) } );
-        filterTests.add( new Object[] { "testfilter3.xml", asString( "v200/testfilter3.xml" ) } );
-        filterTests.add( new Object[] { "testfilter4.xml", asString( "v200/testfilter4.xml" ) } );
-        filterTests.add( new Object[] { "testfilter5.xml", asString( "v200/testfilter5.xml" ) } );
-        filterTests.add( new Object[] { "testfilter6.xml", asString( "v200/testfilter6.xml" ) } );
-        filterTests.add( new Object[] { "testfilter7.xml", asString( "v200/testfilter7.xml" ) } );
-        filterTests.add( new Object[] { "testfilter8.xml", asString( "v200/testfilter8.xml" ) } );
-        filterTests.add( new Object[] { "aixm_by_gml_identifier.xml", asString( "v200/aixm_by_gml_identifier.xml" ) } );
-        filterTests.add( new Object[] { "aixm_custom_geometry_bbox.xml",
-                                        asString( "v200/aixm_custom_geometry_bbox.xml" ) } );
-        filterTests.add( new Object[] { "aixm_custom_geometry_property.xml",
-                                        asString( "v200/aixm_custom_geometry_property.xml" ) } );
-        filterTests.add( new Object[] { "aixm_timeinstant_begin.xml", asString( "v200/aixm_timeinstant_begin.xml" ) } );
-        filterTests.add( new Object[] { "temporal/tequals.xml", asString( "v200/temporal/tequals.xml" ) } );
-        filterTests.add( new Object[] { "bboxWithSpatialJoin.xml", asString( "v200/bboxWithSpatialJoin.xml" ) } );
-        filterTests.add( new Object[] { "beyondWithSpatialJoin.xml", asString( "v200/beyondWithSpatialJoin.xml" ) } );
-        filterTests.add( new Object[] { "containsWithSpatialJoin.xml", asString( "v200/containsWithSpatialJoin.xml" ) } );
-        filterTests.add( new Object[] { "crossesWithSpatialJoin.xml", asString( "v200/crossesWithSpatialJoin.xml" ) } );
-        filterTests.add( new Object[] { "disjointWithSpatialJoin.xml", asString( "v200/disjointWithSpatialJoin.xml" ) } );
-        filterTests.add( new Object[] { "dwithinWithSpatialJoin.xml", asString( "v200/dwithinWithSpatialJoin.xml" ) } );
-        filterTests.add( new Object[] { "equalsWithSpatialJoin.xml", asString( "v200/equalsWithSpatialJoin.xml" ) } );
-        filterTests.add( new Object[] { "intersectsWithSpatialJoin.xml", asString( "v200/intersectsWithSpatialJoin.xml" ) } );
-        filterTests.add( new Object[] { "overlapsWithSpatialJoin.xml", asString( "v200/overlapsWithSpatialJoin.xml" ) } );
-        filterTests.add( new Object[] { "touchesWithSpatialJoin.xml", asString( "v200/touchesWithSpatialJoin.xml" ) } );
-        filterTests.add( new Object[] { "withinWithSpatialJoin.xml", asString( "v200/withinWithSpatialJoin.xml" ) } );
-        return filterTests;
-    }
+	@Parameters
+	public static List<Object[]> data() throws IOException {
+		List<Object[]> filterTests = new ArrayList<Object[]>();
+		filterTests.add(new Object[] { "testfilter1.xml", asString("v200/testfilter1.xml") });
+		filterTests.add(new Object[] { "testfilter3.xml", asString("v200/testfilter3.xml") });
+		filterTests.add(new Object[] { "testfilter4.xml", asString("v200/testfilter4.xml") });
+		filterTests.add(new Object[] { "testfilter5.xml", asString("v200/testfilter5.xml") });
+		filterTests.add(new Object[] { "testfilter6.xml", asString("v200/testfilter6.xml") });
+		filterTests.add(new Object[] { "testfilter7.xml", asString("v200/testfilter7.xml") });
+		filterTests.add(new Object[] { "testfilter8.xml", asString("v200/testfilter8.xml") });
+		filterTests.add(new Object[] { "aixm_by_gml_identifier.xml", asString("v200/aixm_by_gml_identifier.xml") });
+		filterTests
+			.add(new Object[] { "aixm_custom_geometry_bbox.xml", asString("v200/aixm_custom_geometry_bbox.xml") });
+		filterTests.add(new Object[] { "aixm_custom_geometry_property.xml",
+				asString("v200/aixm_custom_geometry_property.xml") });
+		filterTests.add(new Object[] { "aixm_timeinstant_begin.xml", asString("v200/aixm_timeinstant_begin.xml") });
+		filterTests.add(new Object[] { "temporal/tequals.xml", asString("v200/temporal/tequals.xml") });
+		filterTests.add(new Object[] { "bboxWithSpatialJoin.xml", asString("v200/bboxWithSpatialJoin.xml") });
+		filterTests.add(new Object[] { "beyondWithSpatialJoin.xml", asString("v200/beyondWithSpatialJoin.xml") });
+		filterTests.add(new Object[] { "containsWithSpatialJoin.xml", asString("v200/containsWithSpatialJoin.xml") });
+		filterTests.add(new Object[] { "crossesWithSpatialJoin.xml", asString("v200/crossesWithSpatialJoin.xml") });
+		filterTests.add(new Object[] { "disjointWithSpatialJoin.xml", asString("v200/disjointWithSpatialJoin.xml") });
+		filterTests.add(new Object[] { "dwithinWithSpatialJoin.xml", asString("v200/dwithinWithSpatialJoin.xml") });
+		filterTests.add(new Object[] { "equalsWithSpatialJoin.xml", asString("v200/equalsWithSpatialJoin.xml") });
+		filterTests
+			.add(new Object[] { "intersectsWithSpatialJoin.xml", asString("v200/intersectsWithSpatialJoin.xml") });
+		filterTests.add(new Object[] { "overlapsWithSpatialJoin.xml", asString("v200/overlapsWithSpatialJoin.xml") });
+		filterTests.add(new Object[] { "touchesWithSpatialJoin.xml", asString("v200/touchesWithSpatialJoin.xml") });
+		filterTests.add(new Object[] { "withinWithSpatialJoin.xml", asString("v200/withinWithSpatialJoin.xml") });
+		return filterTests;
+	}
 
-    @Test
-    public void testExport()
-                    throws Exception {
-        Filter filter = parseFilter( filterUnderTest );
+	@Test
+	public void testExport() throws Exception {
+		Filter filter = parseFilter(filterUnderTest);
 
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        XMLStreamWriter out = XMLOutputFactory.newInstance().createXMLStreamWriter( bos );
-        IndentingXMLStreamWriter writer = new IndentingXMLStreamWriter( out );
-        Filter200XMLEncoder.export( filter, writer );
-        out.close();
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		XMLStreamWriter out = XMLOutputFactory.newInstance().createXMLStreamWriter(bos);
+		IndentingXMLStreamWriter writer = new IndentingXMLStreamWriter(out);
+		Filter200XMLEncoder.export(filter, writer);
+		out.close();
 
-        assertThat( "Failed test: " + testName, bos.toString(),
-                    CompareMatcher.isSimilarTo( filterUnderTest ).ignoreWhitespace() );
-    }
+		assertThat("Failed test: " + testName, bos.toString(),
+				CompareMatcher.isSimilarTo(filterUnderTest).ignoreWhitespace());
+	}
 
-    private static String asString( String filterResource )
-                    throws IOException {
-        InputStream resourceAsStream = Filter200XMLEncoderParameterizedTest.class.getResourceAsStream( filterResource );
-        return IOUtils.toString( resourceAsStream, UTF_8 );
-    }
+	private static String asString(String filterResource) throws IOException {
+		InputStream resourceAsStream = Filter200XMLEncoderParameterizedTest.class.getResourceAsStream(filterResource);
+		return IOUtils.toString(resourceAsStream, UTF_8);
+	}
 
-    private Filter parseFilter( String filterAsString )
-                    throws XMLStreamException, FactoryConfigurationError {
-        XMLStreamReader in = XMLInputFactory.newInstance().createXMLStreamReader(
-                        toInputStream( filterAsString, UTF_8 ) );
-        in.nextTag();
-        return Filter200XMLDecoder.parse( in );
-    }
+	private Filter parseFilter(String filterAsString) throws XMLStreamException, FactoryConfigurationError {
+		XMLStreamReader in = XMLInputFactory.newInstance().createXMLStreamReader(toInputStream(filterAsString, UTF_8));
+		in.nextTag();
+		return Filter200XMLDecoder.parse(in);
+	}
 
 }

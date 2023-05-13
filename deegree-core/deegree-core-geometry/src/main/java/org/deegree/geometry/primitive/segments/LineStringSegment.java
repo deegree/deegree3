@@ -39,20 +39,19 @@ import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
 
 /**
- * A {@link CurveSegment} that is defined by two or more {@link Point}s, with linear interpolation between subsequent
- * pairs of points.
- * 
+ * A {@link CurveSegment} that is defined by two or more {@link Point}s, with linear
+ * interpolation between subsequent pairs of points.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public interface LineStringSegment extends CurveSegment {
 
-    /**
-     * Returns the control points of the string.
-     * 
-     * @return the control points of the string
-     */
-    public Points getControlPoints();
+	/**
+	 * Returns the control points of the string.
+	 * @return the control points of the string
+	 */
+	public Points getControlPoints();
+
 }

@@ -40,35 +40,29 @@ import java.io.File;
 
 /**
  * Listener interface for the {@link FileAlterationMonitor}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- * 
  * @version $Revision: $, $Date: $
  */
 public interface FileAlterationListener {
 
-    /**
-     * Invoked when a new file is detected.
-     * 
-     * @param file
-     *            new file
-     */
-    public void newFile( File file );
+	/**
+	 * Invoked when a new file is detected.
+	 * @param file new file
+	 */
+	public void newFile(File file);
 
-    /**
-     * Invoked when a file change is detected.
-     * 
-     * @param file
-     *            changed file
-     */
-    public void fileChanged( File file );
+	/**
+	 * Invoked when a file change is detected.
+	 * @param file changed file
+	 */
+	public void fileChanged(File file);
 
-    /**
-     * Invoked when a file deletion is detected.
-     * 
-     * @param file
-     *            deleted file
-     */
-    public void fileDeleted( File file );
+	/**
+	 * Invoked when a file deletion is detected.
+	 * @param file deleted file
+	 */
+	public void fileDeleted(File file);
+
 }

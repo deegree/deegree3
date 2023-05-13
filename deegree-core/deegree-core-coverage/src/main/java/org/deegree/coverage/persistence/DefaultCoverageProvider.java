@@ -50,29 +50,29 @@ import org.deegree.workspace.Workspace;
 
 /**
  * Provider for dir/file based coverages.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
- * 
  * @version $Revision: $, $Date: $
  */
 public class DefaultCoverageProvider extends CoverageProvider {
 
-    private static final URL CONFIG_SCHEMA = DefaultCoverageProvider.class.getResource( "/META-INF/schemas/datasource/coverage/raster/raster.xsd" );
+	private static final URL CONFIG_SCHEMA = DefaultCoverageProvider.class
+		.getResource("/META-INF/schemas/datasource/coverage/raster/raster.xsd");
 
-    @Override
-    public String getNamespace() {
-        return "http://www.deegree.org/datasource/coverage/raster";
-    }
+	@Override
+	public String getNamespace() {
+		return "http://www.deegree.org/datasource/coverage/raster";
+	}
 
-    @Override
-    public ResourceMetadata<Coverage> createFromLocation( Workspace workspace, ResourceLocation<Coverage> location ) {
-        return new DefaultCoverageMetadata( workspace, location, this );
-    }
+	@Override
+	public ResourceMetadata<Coverage> createFromLocation(Workspace workspace, ResourceLocation<Coverage> location) {
+		return new DefaultCoverageMetadata(workspace, location, this);
+	}
 
-    @Override
-    public URL getSchema() {
-        return CONFIG_SCHEMA;
-    }
+	@Override
+	public URL getSchema() {
+		return CONFIG_SCHEMA;
+	}
 
 }

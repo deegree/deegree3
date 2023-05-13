@@ -37,10 +37,9 @@ package org.deegree.cs.components;
 
 /**
  * Interface describing a VerticalDatum
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  * @author last edited by: $Author: lyn $
- * 
  * @version $Revision: $, $Date: $
  */
 public interface IVerticalDatum extends IDatum {

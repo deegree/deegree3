@@ -44,7 +44,8 @@ import org.deegree.commons.tom.ows.Version;
 import org.deegree.services.OWS;
 
 /**
- * This class contains metadata information on the details of an implementation of an {@link OWS}.
+ * This class contains metadata information on the details of an implementation of an
+ * {@link OWS}.
  * <p>
  * Contained information:
  * <ul>
@@ -53,127 +54,124 @@ import org.deegree.services.OWS;
  * <li>Namespaces used by XML requests</li>
  * <li>Supported deegree configuration file versions</li>
  * </ul>
- * 
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  * @param <T>
  */
 public abstract class ImplementationMetadata<T extends Enum<T>> {
 
-    /**
-     * The supportedVersions of this service implementation.
-     */
-    protected Version[] supportedVersions;
+	/**
+	 * The supportedVersions of this service implementation.
+	 */
+	protected Version[] supportedVersions;
 
-    /**
-     * The namespaces of this service.
-     */
-    protected String[] handledNamespaces;
+	/**
+	 * The namespaces of this service.
+	 */
+	protected String[] handledNamespaces;
 
-    /**
-     * The abbreviated name of the service.
-     */
-    protected String[] serviceName;
+	/**
+	 * The abbreviated name of the service.
+	 */
+	protected String[] serviceName;
 
-    /**
-     * should the cite test mode be enabled, meaning, that requests should be in the same case as they were defined in
-     * the specification?
-     */
-    protected boolean citeTestMode = false;
+	/**
+	 * should the cite test mode be enabled, meaning, that requests should be in the same
+	 * case as they were defined in the specification?
+	 */
+	protected boolean citeTestMode = false;
 
-    /**
-     * An enum with all supported request names.
-     */
-    protected Class<T> handledRequests;
+	/**
+	 * An enum with all supported request names.
+	 */
+	protected Class<T> handledRequests;
 
-    private final Map<String, T> handledRequestsMap = new HashMap<String, T>();
+	private final Map<String, T> handledRequestsMap = new HashMap<String, T>();
 
-    private final Set<String> handledNamespacesSet = new HashSet<String>();
+	private final Set<String> handledNamespacesSet = new HashSet<String>();
 
-    private final Set<Version> implementedVersionsSet = new HashSet<Version>();
+	private final Set<Version> implementedVersionsSet = new HashSet<Version>();
 
-    private String[] retrieveRequestNames() {
-        T[] enums = handledRequests.getEnumConstants();
-        String[] result = new String[enums.length];
-        int i = 0;
-        for ( T e : enums ) {
-            result[i++] = e.name();
-            handledRequestsMap.put( e.name(), e );
-        }
-        return result;
-    }
+	private String[] retrieveRequestNames() {
+		T[] enums = handledRequests.getEnumConstants();
+		String[] result = new String[enums.length];
+		int i = 0;
+		for (T e : enums) {
+			result[i++] = e.name();
+			handledRequestsMap.put(e.name(), e);
+		}
+		return result;
+	}
 
-    /**
-     * Returns the (local) names of the requests handled by the associated controller.
-     * 
-     * @return the (local) names of the handled requests
-     */
-    public Set<String> getHandledRequests() {
-        if ( handledRequestsMap.isEmpty() && this.handledRequests != null ) {
-            retrieveRequestNames();
-        }
-        return handledRequestsMap.keySet();
-    }
+	/**
+	 * Returns the (local) names of the requests handled by the associated controller.
+	 * @return the (local) names of the handled requests
+	 */
+	public Set<String> getHandledRequests() {
+		if (handledRequestsMap.isEmpty() && this.handledRequests != null) {
+			retrieveRequestNames();
+		}
+		return handledRequestsMap.keySet();
+	}
 
-    /**
-     * Returns the namespaces of request elements handled by the associated controller.
-     * 
-     * @return the namespaces of the handled requests
-     */
-    public Set<String> getHandledNamespaces() {
-        if ( handledNamespacesSet.size() == 0 && this.handledNamespaces != null ) {
-            for ( String ns : this.handledNamespaces ) {
-                this.handledNamespacesSet.add( ns );
-            }
-        }
-        return handledNamespacesSet;
-    }
+	/**
+	 * Returns the namespaces of request elements handled by the associated controller.
+	 * @return the namespaces of the handled requests
+	 */
+	public Set<String> getHandledNamespaces() {
+		if (handledNamespacesSet.size() == 0 && this.handledNamespaces != null) {
+			for (String ns : this.handledNamespaces) {
+				this.handledNamespacesSet.add(ns);
+			}
+		}
+		return handledNamespacesSet;
+	}
 
-    /**
-     * Returns the OGC versions supported by the associated controller implementation.
-     * 
-     * @return the supported OGC versions
-     */
-    public Set<Version> getImplementedVersions() {
-        if ( implementedVersionsSet.size() == 0 && this.supportedVersions != null ) {
-            for ( Version version : this.supportedVersions ) {
-                this.implementedVersionsSet.add( version );
-            }
-        }
-        return implementedVersionsSet;
-    }
+	/**
+	 * Returns the OGC versions supported by the associated controller implementation.
+	 * @return the supported OGC versions
+	 */
+	public Set<Version> getImplementedVersions() {
+		if (implementedVersionsSet.size() == 0 && this.supportedVersions != null) {
+			for (Version version : this.supportedVersions) {
+				this.implementedVersionsSet.add(version);
+			}
+		}
+		return implementedVersionsSet;
+	}
 
-    /**
-     * find an enum type by a given name ignoring case, or if the citetest mode is enabled map perfectly.
-     * 
-     * @param requestName
-     * @return the Enum type or <code>null</code> if the request was not found.
-     */
-    public T getRequestTypeByName( String requestName ) {
-        T requestType = null;
-        if ( requestName != null ) {
-            if ( citeTestMode ) {
-                requestType = handledRequestsMap.get( requestName );
-            } else {
-                for ( String req : getHandledRequests() ) {
-                    if ( req.equalsIgnoreCase( requestName ) ) {
-                        requestType = handledRequestsMap.get( req );
-                        break;
-                    }
-                }
-            }
-        }
-        return requestType;
-    }
+	/**
+	 * find an enum type by a given name ignoring case, or if the citetest mode is enabled
+	 * map perfectly.
+	 * @param requestName
+	 * @return the Enum type or <code>null</code> if the request was not found.
+	 */
+	public T getRequestTypeByName(String requestName) {
+		T requestType = null;
+		if (requestName != null) {
+			if (citeTestMode) {
+				requestType = handledRequestsMap.get(requestName);
+			}
+			else {
+				for (String req : getHandledRequests()) {
+					if (req.equalsIgnoreCase(requestName)) {
+						requestType = handledRequestsMap.get(req);
+						break;
+					}
+				}
+			}
+		}
+		return requestType;
+	}
 
-    /**
-     * @return the service name
-     */
-    public String[] getImplementedServiceName() {
-        return serviceName;
-    }
+	/**
+	 * @return the service name
+	 */
+	public String[] getImplementedServiceName() {
+		return serviceName;
+	}
 
 }

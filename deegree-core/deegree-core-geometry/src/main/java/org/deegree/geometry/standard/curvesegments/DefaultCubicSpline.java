@@ -44,65 +44,61 @@ import org.deegree.geometry.primitive.segments.CubicSpline;
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author$
- *
  * @version $Revision$, $Date$
  */
 public class DefaultCubicSpline implements CubicSpline {
 
-    private Points controlPoints;
+	private Points controlPoints;
 
-    private Point vectorAtStart;
+	private Point vectorAtStart;
 
-    private Point vectorAtEnd;
+	private Point vectorAtEnd;
 
-    /**
-     * Creates a new <code>DefaultCubicSpline</code> instance from the given parameters.
-     *
-     * @param points
-     *            control points, must have at least two entries
-     * @param vectorAtStart
-     *            the unit tangent vector at the start point of the spline
-     * @param vectorAtEnd
-     *            the unit tangent vector at the end point of the spline
-     */
-    public DefaultCubicSpline( Points points, Point vectorAtStart, Point vectorAtEnd ) {
-        this.controlPoints = points;
-        this.vectorAtStart = vectorAtStart;
-        this.vectorAtEnd = vectorAtEnd;
-    }
+	/**
+	 * Creates a new <code>DefaultCubicSpline</code> instance from the given parameters.
+	 * @param points control points, must have at least two entries
+	 * @param vectorAtStart the unit tangent vector at the start point of the spline
+	 * @param vectorAtEnd the unit tangent vector at the end point of the spline
+	 */
+	public DefaultCubicSpline(Points points, Point vectorAtStart, Point vectorAtEnd) {
+		this.controlPoints = points;
+		this.vectorAtStart = vectorAtStart;
+		this.vectorAtEnd = vectorAtEnd;
+	}
 
-    @Override
-    public Point getVectorAtStart() {
-        return vectorAtStart;
-    }
+	@Override
+	public Point getVectorAtStart() {
+		return vectorAtStart;
+	}
 
-    @Override
-    public Point getVectorAtEnd() {
-        return vectorAtEnd;
-    }
+	@Override
+	public Point getVectorAtEnd() {
+		return vectorAtEnd;
+	}
 
-    @Override
-    public int getCoordinateDimension() {
-        return controlPoints.get(0).getCoordinateDimension();
-    }
+	@Override
+	public int getCoordinateDimension() {
+		return controlPoints.get(0).getCoordinateDimension();
+	}
 
-    @Override
-    public Points getControlPoints() {
-        return controlPoints;
-    }
+	@Override
+	public Points getControlPoints() {
+		return controlPoints;
+	}
 
-    @Override
-    public Point getStartPoint() {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Point getStartPoint() {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public Point getEndPoint() {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Point getEndPoint() {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public CurveSegmentType getSegmentType() {
-        return CurveSegmentType.CUBIC_SPLINE;
-    }
+	@Override
+	public CurveSegmentType getSegmentType() {
+		return CurveSegmentType.CUBIC_SPLINE;
+	}
+
 }

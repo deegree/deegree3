@@ -41,18 +41,17 @@ import org.deegree.style.styling.RasterStyling;
 
 /**
  * <code>TestingRasterRenderer interface</code>
- * 
+ *
  * @author <a href="mailto:a.aiordachioaie@jacobs-university.de">Andrei Aiordachioaie</a>
  * @author last edited by: $Author: aaiordachioaie $
- * 
  * @version $Revision: 18377 $, $Date: 2009-09-15 12:07:01 +0200 $
  */
 public interface RasterRenderer {
 
-    /**
-     * @param styling
-     * @param raster
-     */
-    void render( RasterStyling styling, AbstractRaster raster );
+	/**
+	 * @param styling
+	 * @param raster
+	 */
+	void render(RasterStyling styling, AbstractRaster raster);
 
 }

@@ -37,19 +37,19 @@ package org.deegree.services.wms.controller.exceptions;
 
 /**
  * Indicates an exception during serializing.
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
 public class SerializingException extends Exception {
 
-    private static final long serialVersionUID = 6261125723767336888L;
+	private static final long serialVersionUID = 6261125723767336888L;
 
-    public SerializingException( String msg ) {
-        super( msg );
-    }
+	public SerializingException(String msg) {
+		super(msg);
+	}
 
-    public SerializingException( Throwable e ) {
-        super( e );
-    }
+	public SerializingException(Throwable e) {
+		super(e);
+	}
 
 }

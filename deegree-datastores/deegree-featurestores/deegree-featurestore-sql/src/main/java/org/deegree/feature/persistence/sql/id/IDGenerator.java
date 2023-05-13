@@ -37,14 +37,14 @@ package org.deegree.feature.persistence.sql.id;
 
 /**
  * Interface for feature id generators.
- * 
+ *
  * @see FIDMapping
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: markus $
- * 
  * @version $Revision: $, $Date: $
  */
 public interface IDGenerator {
-    // currently, this is just a marker interface
+
+	// currently, this is just a marker interface
+
 }

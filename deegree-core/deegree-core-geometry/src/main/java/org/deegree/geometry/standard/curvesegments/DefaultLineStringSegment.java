@@ -44,45 +44,44 @@ import org.deegree.geometry.primitive.segments.LineStringSegment;
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author$
- *
  * @version $Revision$, $Date$
  */
 public class DefaultLineStringSegment implements LineStringSegment {
 
-    private Points points;
+	private Points points;
 
-    /**
-     * Creates a new <code>DefaultLineStringSegment</code> instance from the given parameters.
-     *
-     * @param points
-     *            interpolation points
-     */
-    public DefaultLineStringSegment( Points points ) {
-        this.points = points;
-    }
+	/**
+	 * Creates a new <code>DefaultLineStringSegment</code> instance from the given
+	 * parameters.
+	 * @param points interpolation points
+	 */
+	public DefaultLineStringSegment(Points points) {
+		this.points = points;
+	}
 
-    @Override
-    public int getCoordinateDimension() {
-        return points.getDimension();
-    }
+	@Override
+	public int getCoordinateDimension() {
+		return points.getDimension();
+	}
 
-    @Override
-    public Points getControlPoints() {
-        return points;
-    }
+	@Override
+	public Points getControlPoints() {
+		return points;
+	}
 
-    @Override
-    public Point getStartPoint() {
-        return points.get( 0 );
-    }
+	@Override
+	public Point getStartPoint() {
+		return points.get(0);
+	}
 
-    @Override
-    public Point getEndPoint() {
-        return points.get( points.size() - 1 );
-    }
+	@Override
+	public Point getEndPoint() {
+		return points.get(points.size() - 1);
+	}
 
-    @Override
-    public CurveSegmentType getSegmentType() {
-        return CurveSegmentType.LINE_STRING_SEGMENT;
-    }
+	@Override
+	public CurveSegmentType getSegmentType() {
+		return CurveSegmentType.LINE_STRING_SEGMENT;
+	}
+
 }

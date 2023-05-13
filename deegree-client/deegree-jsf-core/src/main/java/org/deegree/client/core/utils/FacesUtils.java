@@ -47,71 +47,71 @@ import org.slf4j.Logger;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  * @author last edited by: $Author: lyn $
- * 
  * @version $Revision: $, $Date: $
  */
 public final class FacesUtils {
 
-    private static final Logger LOG = getLogger( FacesUtils.class );
+	private static final Logger LOG = getLogger(FacesUtils.class);
 
-    /**
-     * @param target
-     * @param fileName
-     * @return
-     */
-    public static String getAbsolutePath( String target, String fileName ) {
-        if ( target == null ) {
-            target = "";
-        }
-        if ( !target.endsWith( "/" ) ) {
-            target += "/";
-        }
-        return FacesContext.getCurrentInstance().getExternalContext().getRealPath( target + fileName );
-    }
+	/**
+	 * @param target
+	 * @param fileName
+	 * @return
+	 */
+	public static String getAbsolutePath(String target, String fileName) {
+		if (target == null) {
+			target = "";
+		}
+		if (!target.endsWith("/")) {
+			target += "/";
+		}
+		return FacesContext.getCurrentInstance().getExternalContext().getRealPath(target + fileName);
+	}
 
-    /**
-     * @param target
-     *            the name of an existing directory in the webapps directory, if null the webapps directory will is the
-     *            target
-     * @param fileName
-     *            the name of the file
-     * @return the current URL extended with the target and fileName, or null if an error occurred. Example:
-     *         http://localhost:8080/context/target/fileName
-     */
-    public static URL getWebAccessibleUrl( String target, String fileName )
-                            throws MalformedURLException {
-        try {
-            if ( target == null ) {
-                target = "";
-            } else if ( !target.endsWith( "/" ) ) {
-                target += "/";
-            }
-            return new URL( getServerURL() + target + fileName );
-        } catch ( MalformedURLException e ) {
-            LOG.debug( "Constructing the url was a problem..." );
-            LOG.trace( "Stack trace:", e );
-        }
-        return null;
-    }
+	/**
+	 * @param target the name of an existing directory in the webapps directory, if null
+	 * the webapps directory will is the target
+	 * @param fileName the name of the file
+	 * @return the current URL extended with the target and fileName, or null if an error
+	 * occurred. Example: http://localhost:8080/context/target/fileName
+	 */
+	public static URL getWebAccessibleUrl(String target, String fileName) throws MalformedURLException {
+		try {
+			if (target == null) {
+				target = "";
+			}
+			else if (!target.endsWith("/")) {
+				target += "/";
+			}
+			return new URL(getServerURL() + target + fileName);
+		}
+		catch (MalformedURLException e) {
+			LOG.debug("Constructing the url was a problem...");
+			LOG.trace("Stack trace:", e);
+		}
+		return null;
+	}
 
-    /**
-     * @return the current URL, or null if an error occurred. Example: http://localhost:8080/context/
-     */
-    public static String getServerURL() {
-        ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-        URL url;
-        try {
-            url = new URL( ctx.getRequestScheme(), ctx.getRequestServerName(), ctx.getRequestServerPort(),
-                           ctx.getRequestContextPath() );
-            return url.toExternalForm() + "/";
-        } catch ( MalformedURLException e ) {
-            LOG.debug( "Constructing the url was a problem..." );
-            LOG.trace( "Stack trace:", e );
-        }
-        return null;
-    }
+	/**
+	 * @return the current URL, or null if an error occurred. Example:
+	 * http://localhost:8080/context/
+	 */
+	public static String getServerURL() {
+		ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
+		URL url;
+		try {
+			url = new URL(ctx.getRequestScheme(), ctx.getRequestServerName(), ctx.getRequestServerPort(),
+					ctx.getRequestContextPath());
+			return url.toExternalForm() + "/";
+		}
+		catch (MalformedURLException e) {
+			LOG.debug("Constructing the url was a problem...");
+			LOG.trace("Stack trace:", e);
+		}
+		return null;
+	}
 
 }

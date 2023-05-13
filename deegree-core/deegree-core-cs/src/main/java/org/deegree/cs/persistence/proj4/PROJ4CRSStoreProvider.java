@@ -55,60 +55,59 @@ import org.slf4j.Logger;
 
 /**
  * {@link PROJ4CRSStoreProvider} for {@link PROJ4CRSStore}
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  * @author last edited by: $Author: lyn $
- * 
  * @version $Revision: $, $Date: $
  */
 public class PROJ4CRSStoreProvider implements CRSStoreProvider {
 
-    private static final Logger LOG = getLogger( PROJ4CRSStoreProvider.class );
+	private static final Logger LOG = getLogger(PROJ4CRSStoreProvider.class);
 
-    private static final String CONFIG_NS = "http://www.deegree.org/crs/stores/proj4";
+	private static final String CONFIG_NS = "http://www.deegree.org/crs/stores/proj4";
 
-    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.cs.persistence.proj4.jaxb";
+	private static final String CONFIG_JAXB_PACKAGE = "org.deegree.cs.persistence.proj4.jaxb";
 
-    private static final URL CONFIG_SCHEMA = PROJ4CRSStoreProvider.class.getResource( "/META-INF/schemas/crs/stores/proj4/proj4.xsd" );
+	private static final URL CONFIG_SCHEMA = PROJ4CRSStoreProvider.class
+		.getResource("/META-INF/schemas/crs/stores/proj4/proj4.xsd");
 
-    @Override
-    public String getConfigNamespace() {
-        return CONFIG_NS;
-    }
+	@Override
+	public String getConfigNamespace() {
+		return CONFIG_NS;
+	}
 
-    @Override
-    public URL getConfigSchema() {
-        return CONFIG_SCHEMA;
-    }
+	@Override
+	public URL getConfigSchema() {
+		return CONFIG_SCHEMA;
+	}
 
-    @Override
-    public CRSStore getCRSStore( URL configURL, Workspace workspace )
-                            throws CRSStoreException {
-        try {
-            PROJ4CRSStoreConfig config = (PROJ4CRSStoreConfig) unmarshall( CONFIG_JAXB_PACKAGE,
-                                                                           CONFIG_SCHEMA,
-                                                                           new DURL( configURL.toExternalForm() ).openStream(),
-                                                                           workspace );
+	@Override
+	public CRSStore getCRSStore(URL configURL, Workspace workspace) throws CRSStoreException {
+		try {
+			PROJ4CRSStoreConfig config = (PROJ4CRSStoreConfig) unmarshall(CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA,
+					new DURL(configURL.toExternalForm()).openStream(), workspace);
 
-            PROJ4CRSStore crsStore = new PROJ4CRSStore( DSTransform.fromSchema( config ) );
-            ProjFileResource resource = null;
-            XMLAdapter adapter = new XMLAdapter( configURL );
-            URL fileUrl = adapter.resolve( config.getFile() );
+			PROJ4CRSStore crsStore = new PROJ4CRSStore(DSTransform.fromSchema(config));
+			ProjFileResource resource = null;
+			XMLAdapter adapter = new XMLAdapter(configURL);
+			URL fileUrl = adapter.resolve(config.getFile());
 
-            resource = new ProjFileResource( new File( fileUrl.toExternalForm() ) );
+			resource = new ProjFileResource(new File(fileUrl.toExternalForm()));
 
-            crsStore.setResolver( resource );
-            return crsStore;
-        } catch ( JAXBException e ) {
-            String msg = "Error in proj4 crs store configuration file '" + configURL + "': " + e.getMessage();
-            LOG.error( msg );
-            throw new CRSStoreException( msg, e );
-        } catch ( Exception e ) {
-            String msg = "Error in file declaraition inproj4 crs store configuration file '" + configURL + "': "
-                         + e.getMessage();
-            LOG.error( msg );
-            throw new CRSStoreException( msg, e );
-        }
-    }
+			crsStore.setResolver(resource);
+			return crsStore;
+		}
+		catch (JAXBException e) {
+			String msg = "Error in proj4 crs store configuration file '" + configURL + "': " + e.getMessage();
+			LOG.error(msg);
+			throw new CRSStoreException(msg, e);
+		}
+		catch (Exception e) {
+			String msg = "Error in file declaraition inproj4 crs store configuration file '" + configURL + "': "
+					+ e.getMessage();
+			LOG.error(msg);
+			throw new CRSStoreException(msg, e);
+		}
+	}
 
 }

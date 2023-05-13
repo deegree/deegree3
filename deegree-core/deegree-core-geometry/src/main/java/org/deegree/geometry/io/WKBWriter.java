@@ -49,48 +49,45 @@ import java.io.OutputStream;
 /**
  * Writes {@link Geometry} objects encoded as Well-Known Binary (WKB).
  *
- * TODO re-implement without delegating to JTS TODO add support for non-SFS geometries (e.g. non-linear curves)
+ * TODO re-implement without delegating to JTS TODO add support for non-SFS geometries
+ * (e.g. non-linear curves)
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- *
  * @version $Revision$, $Date$
  */
 public class WKBWriter {
 
-    // TODO remove the need for this object
-    private static AbstractDefaultGeometry defaultGeom = new DefaultPoint( null, null, null, new double[] { 0.0, 0.0 } );
+	// TODO remove the need for this object
+	private static AbstractDefaultGeometry defaultGeom = new DefaultPoint(null, null, null, new double[] { 0.0, 0.0 });
 
-    /**
-     * Exports the passed geom to WKB.
-     *
-     * @param geom
-     *                         never <code>null</code>
-     * @return the WKB as byte array, may be <code>null</code> if the passed geom is an empty multi geometry
-     */
-    public static byte[] write( Geometry geom ) {
-        if ( geom instanceof GeometryReference ) {
-            geom = ( (GeometryReference<Geometry>) geom ).getReferencedObject();
-        }
-        if ( isEmptyMultiGeometry( geom ) ) {
-            return null;
-        }
-        // org.locationtech.jts.io.WKBWriter is not thread safe
-        int dim = geom.getCoordinateDimension();
-        return new org.locationtech.jts.io.WKBWriter(dim).write( ( (AbstractDefaultGeometry) geom ).getJTSGeometry() );
-    }
+	/**
+	 * Exports the passed geom to WKB.
+	 * @param geom never <code>null</code>
+	 * @return the WKB as byte array, may be <code>null</code> if the passed geom is an
+	 * empty multi geometry
+	 */
+	public static byte[] write(Geometry geom) {
+		if (geom instanceof GeometryReference) {
+			geom = ((GeometryReference<Geometry>) geom).getReferencedObject();
+		}
+		if (isEmptyMultiGeometry(geom)) {
+			return null;
+		}
+		// org.locationtech.jts.io.WKBWriter is not thread safe
+		int dim = geom.getCoordinateDimension();
+		return new org.locationtech.jts.io.WKBWriter(dim).write(((AbstractDefaultGeometry) geom).getJTSGeometry());
+	}
 
-    public static void write( Geometry geom, OutputStream os )
-                            throws IOException, ParseException {
-        // org.locationtech.jts.io.WKBWriter is not thread safe
-        //TODO: test for dimentionality here aswell?
-        new org.locationtech.jts.io.WKBWriter().write( ( (AbstractDefaultGeometry) geom ).getJTSGeometry(),
-                                                         new OutputStreamOutStream( os ) );
-    }
+	public static void write(Geometry geom, OutputStream os) throws IOException, ParseException {
+		// org.locationtech.jts.io.WKBWriter is not thread safe
+		// TODO: test for dimentionality here aswell?
+		new org.locationtech.jts.io.WKBWriter().write(((AbstractDefaultGeometry) geom).getJTSGeometry(),
+				new OutputStreamOutStream(os));
+	}
 
-    private static boolean isEmptyMultiGeometry( Geometry geom ) {
-        return Geometry.GeometryType.MULTI_GEOMETRY.equals( geom.getGeometryType() )
-               && ( (MultiGeometry) geom ).isEmpty();
-    }
+	private static boolean isEmptyMultiGeometry(Geometry geom) {
+		return Geometry.GeometryType.MULTI_GEOMETRY.equals(geom.getGeometryType()) && ((MultiGeometry) geom).isEmpty();
+	}
 
 }

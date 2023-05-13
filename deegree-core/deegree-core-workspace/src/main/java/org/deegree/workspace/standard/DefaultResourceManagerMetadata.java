@@ -47,38 +47,37 @@ import org.deegree.workspace.ResourceProvider;
 
 /**
  * Default resource manager metadata.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class DefaultResourceManagerMetadata<T extends Resource> implements ResourceManagerMetadata<T> {
 
-    private Class<? extends ResourceProvider<T>> provider;
+	private Class<? extends ResourceProvider<T>> provider;
 
-    private String name;
+	private String name;
 
-    private String path;
+	private String path;
 
-    public DefaultResourceManagerMetadata( Class<? extends ResourceProvider<T>> provider, String name, String path ) {
-        this.provider = provider;
-        this.name = name;
-        this.path = path;
-    }
+	public DefaultResourceManagerMetadata(Class<? extends ResourceProvider<T>> provider, String name, String path) {
+		this.provider = provider;
+		this.name = name;
+		this.path = path;
+	}
 
-    @Override
-    public Class<? extends ResourceProvider<T>> getProviderClass() {
-        return provider;
-    }
+	@Override
+	public Class<? extends ResourceProvider<T>> getProviderClass() {
+		return provider;
+	}
 
-    @Override
-    public String getWorkspacePath() {
-        return path;
-    }
+	@Override
+	public String getWorkspacePath() {
+		return path;
+	}
 
-    @Override
-    public String getName() {
-        return name;
-    }
+	@Override
+	public String getName() {
+		return name;
+	}
 
 }

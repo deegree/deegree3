@@ -64,86 +64,88 @@ import java.util.Map;
  */
 public class FeatureStoreManager extends DefaultResourceManager<FeatureStore> {
 
-    private static Logger LOG = LoggerFactory.getLogger( FeatureStoreManager.class );
+	private static Logger LOG = LoggerFactory.getLogger(FeatureStoreManager.class);
 
-    private static final String BBOX_CACHE_FILE = "bbox_cache.properties";
+	private static final String BBOX_CACHE_FILE = "bbox_cache.properties";
 
-    private static final String BBOX_CACHE_FEATURESTOE_FILE = "bbox_cache_%s.properties";
+	private static final String BBOX_CACHE_FEATURESTOE_FILE = "bbox_cache_%s.properties";
 
-    private BBoxPropertiesCache bboxCache;
+	private BBoxPropertiesCache bboxCache;
 
-    private final Map<String, BBoxPropertiesCache> customBboxCaches = new HashMap<>();
+	private final Map<String, BBoxPropertiesCache> customBboxCaches = new HashMap<>();
 
-    private Workspace workspace;
+	private Workspace workspace;
 
-    public FeatureStoreManager() {
-        super( new DefaultResourceManagerMetadata<>( FeatureStoreProvider.class, "feature stores",
-                                                     "datasources/feature" ) );
-    }
+	public FeatureStoreManager() {
+		super(new DefaultResourceManagerMetadata<>(FeatureStoreProvider.class, "feature stores",
+				"datasources/feature"));
+	}
 
-    @Override
-    public void startup( Workspace workspace ) {
-        this.workspace = workspace;
-        super.startup( workspace );
-    }
+	@Override
+	public void startup(Workspace workspace) {
+		this.workspace = workspace;
+		super.startup(workspace);
+	}
 
-    /**
-     * Returns the bbox_cache.properties file (which is created if not existing).
-     * As there may be feature store specific bbox_cache_FEATURESTOE_ID.properties
-     * file the method getBBoxCache( String featureStoreId ) should be used.
-     */
-    public BBoxCache getBBoxCache() {
-        return getOrCreateBBoxCache();
-    }
+	/**
+	 * Returns the bbox_cache.properties file (which is created if not existing). As there
+	 * may be feature store specific bbox_cache_FEATURESTOE_ID.properties file the method
+	 * getBBoxCache( String featureStoreId ) should be used.
+	 */
+	public BBoxCache getBBoxCache() {
+		return getOrCreateBBoxCache();
+	}
 
-    /**
-     * Returns the feature store specific bbox_cache_FEATURESTOE_ID.properties if existing,
-     * if not the bbox_cache.properties file is returned (which is created if not existing).
-     *
-     * @param featureStoreId
-     * @return
-     */
-    public BBoxCache getBBoxCache( String featureStoreId ) {
-        if ( customBboxCaches.containsValue( featureStoreId ) ) {
-            return customBboxCaches.get( featureStoreId );
-        }
-        BBoxPropertiesCache customBBoxCache = getCustomBBoxCache( featureStoreId );
-        if ( customBBoxCache != null ) {
-            customBboxCaches.put( featureStoreId, customBBoxCache );
-            return customBBoxCache;
-        }
-        return getOrCreateBBoxCache();
-    }
+	/**
+	 * Returns the feature store specific bbox_cache_FEATURESTOE_ID.properties if
+	 * existing, if not the bbox_cache.properties file is returned (which is created if
+	 * not existing).
+	 * @param featureStoreId
+	 * @return
+	 */
+	public BBoxCache getBBoxCache(String featureStoreId) {
+		if (customBboxCaches.containsValue(featureStoreId)) {
+			return customBboxCaches.get(featureStoreId);
+		}
+		BBoxPropertiesCache customBBoxCache = getCustomBBoxCache(featureStoreId);
+		if (customBBoxCache != null) {
+			customBboxCaches.put(featureStoreId, customBBoxCache);
+			return customBBoxCache;
+		}
+		return getOrCreateBBoxCache();
+	}
 
-    private BBoxPropertiesCache getOrCreateBBoxCache() {
-        try {
-            if ( bboxCache == null ) {
-                File dir = new File( ( (DefaultWorkspace) workspace ).getLocation(), getMetadata().getWorkspacePath() );
-                File propsFile = new File( dir, BBOX_CACHE_FILE );
-                bboxCache = new BBoxPropertiesCache( propsFile );
-            }
-        } catch ( IOException e ) {
-            LOG.error( "Unable to initialize envelope cache {}: {}", BBOX_CACHE_FILE, e.getMessage() );
-            LOG.trace( e.getMessage(), e );
-        }
-        return bboxCache;
-    }
+	private BBoxPropertiesCache getOrCreateBBoxCache() {
+		try {
+			if (bboxCache == null) {
+				File dir = new File(((DefaultWorkspace) workspace).getLocation(), getMetadata().getWorkspacePath());
+				File propsFile = new File(dir, BBOX_CACHE_FILE);
+				bboxCache = new BBoxPropertiesCache(propsFile);
+			}
+		}
+		catch (IOException e) {
+			LOG.error("Unable to initialize envelope cache {}: {}", BBOX_CACHE_FILE, e.getMessage());
+			LOG.trace(e.getMessage(), e);
+		}
+		return bboxCache;
+	}
 
-    private BBoxPropertiesCache getCustomBBoxCache( String featureStoreId ) {
-        try {
-            if ( workspace instanceof DefaultWorkspace ) {
-                File dir = new File( ( (DefaultWorkspace) workspace ).getLocation(), getMetadata().getWorkspacePath() );
-                File propsFile = new File( dir, String.format( BBOX_CACHE_FEATURESTOE_FILE, featureStoreId ) );
-                if ( propsFile.exists() ) {
-                    return new BBoxPropertiesCache( propsFile );
-                }
-            }
-        } catch ( IOException e ) {
-            LOG.error( "Unable to initialize envelope cache for feature store with id {}: {}", featureStoreId,
-                       e.getMessage() );
-            LOG.trace( e.getMessage(), e );
-        }
-        return null;
-    }
+	private BBoxPropertiesCache getCustomBBoxCache(String featureStoreId) {
+		try {
+			if (workspace instanceof DefaultWorkspace) {
+				File dir = new File(((DefaultWorkspace) workspace).getLocation(), getMetadata().getWorkspacePath());
+				File propsFile = new File(dir, String.format(BBOX_CACHE_FEATURESTOE_FILE, featureStoreId));
+				if (propsFile.exists()) {
+					return new BBoxPropertiesCache(propsFile);
+				}
+			}
+		}
+		catch (IOException e) {
+			LOG.error("Unable to initialize envelope cache for feature store with id {}: {}", featureStoreId,
+					e.getMessage());
+			LOG.trace(e.getMessage(), e);
+		}
+		return null;
+	}
 
 }

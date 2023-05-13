@@ -40,28 +40,28 @@ import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
  * This class is the metadata implementation for tile matrix set resources.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class DefaultTileMatrixSetMetadata extends AbstractResourceMetadata<TileMatrixSet> {
 
-    public DefaultTileMatrixSetMetadata( Workspace workspace, ResourceLocation<TileMatrixSet> location,
-                                         AbstractResourceProvider<TileMatrixSet> provider ) {
-        super( workspace, location, provider );
-    }
+	public DefaultTileMatrixSetMetadata(Workspace workspace, ResourceLocation<TileMatrixSet> location,
+			AbstractResourceProvider<TileMatrixSet> provider) {
+		super(workspace, location, provider);
+	}
 
-    @Override
-    public ResourceBuilder<TileMatrixSet> prepare() {
-        TileMatrixSetConfig cfg = null;
-        try {
-            cfg = (TileMatrixSetConfig) unmarshall( "org.deegree.tile.tilematrixset.jaxb", provider.getSchema(),
-                                                    location.getAsStream(), workspace );
-        } catch ( Exception e ) {
-            throw new ResourceInitException( e.getLocalizedMessage(), e );
-        }
-        return new DefaultTileMatrixSetBuilder( cfg, this );
-    }
+	@Override
+	public ResourceBuilder<TileMatrixSet> prepare() {
+		TileMatrixSetConfig cfg = null;
+		try {
+			cfg = (TileMatrixSetConfig) unmarshall("org.deegree.tile.tilematrixset.jaxb", provider.getSchema(),
+					location.getAsStream(), workspace);
+		}
+		catch (Exception e) {
+			throw new ResourceInitException(e.getLocalizedMessage(), e);
+		}
+		return new DefaultTileMatrixSetBuilder(cfg, this);
+	}
 
 }

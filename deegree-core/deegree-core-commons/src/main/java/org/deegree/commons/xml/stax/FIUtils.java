@@ -49,51 +49,48 @@ import com.sun.xml.fastinfoset.vocab.ParserVocabulary;
 import com.sun.xml.fastinfoset.vocab.SerializerVocabulary;
 
 /**
- * Provides convenience methods for working with <a href="https://fi.dev.java.net/">Fast Infoset</a> encoded XML.
- * 
+ * Provides convenience methods for working with <a href="https://fi.dev.java.net/">Fast
+ * Infoset</a> encoded XML.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: markus $
- * 
  * @version $Revision: $, $Date: $
  */
 public class FIUtils {
 
-    /**
-     * Creates a new {@link StAXDocumentSerializer} (Fast Infoset {@link XMLStreamWriter}) instance.
-     * 
-     * @param os
-     *            binary stream to write to, must not be <code>null</code>
-     * @param voc
-     *            vocabulary to use, must not be <code>null</code>
-     * @param vocUri
-     *            uri used for declaring the external vocabulary, must not be <code>null</code> or empty
-     * @return binary XML writer, never <code>null</code>
-     */
-    public static StAXDocumentSerializer getFIWriter( OutputStream os, SerializerVocabulary voc, String vocUri ) {
-        SerializerVocabulary sVoc = new SerializerVocabulary();
-        voc.setExternalVocabulary( vocUri, sVoc, false );
-        StAXDocumentSerializer writer = new StAXDocumentSerializer();
-        writer.setVocabulary( voc );
-        writer.setOutputStream( os );
-        return writer;
-    }
+	/**
+	 * Creates a new {@link StAXDocumentSerializer} (Fast Infoset {@link XMLStreamWriter})
+	 * instance.
+	 * @param os binary stream to write to, must not be <code>null</code>
+	 * @param voc vocabulary to use, must not be <code>null</code>
+	 * @param vocUri uri used for declaring the external vocabulary, must not be
+	 * <code>null</code> or empty
+	 * @return binary XML writer, never <code>null</code>
+	 */
+	public static StAXDocumentSerializer getFIWriter(OutputStream os, SerializerVocabulary voc, String vocUri) {
+		SerializerVocabulary sVoc = new SerializerVocabulary();
+		voc.setExternalVocabulary(vocUri, sVoc, false);
+		StAXDocumentSerializer writer = new StAXDocumentSerializer();
+		writer.setVocabulary(voc);
+		writer.setOutputStream(os);
+		return writer;
+	}
 
-    /**
-     * Creates a new {@link StAXDocumentParser} (Fast Infoset {@link XMLStreamReader}) instance.
-     * 
-     * @param is
-     *            binary stream to read from, must not be <code>null</code>
-     * @param voc
-     *            vocabulary to use, must not be <code>null</code>
-     * @param vocUri
-     *            uri used for declaring the external vocabulary, must not be <code>null</code> or empty
-     * @return binary XML reader, never <code>null</code>
-     */
-    public static StAXDocumentParser getFIReader( InputStream is, ParserVocabulary voc, String vocUri ) {
-        Map<String, ParserVocabulary> externalVocabularies = new HashMap<String, ParserVocabulary>();
-        externalVocabularies.put( vocUri, voc );
-        StAXDocumentParser reader = new StAXDocumentParser( is );
-        reader.setExternalVocabularies( externalVocabularies );
-        return reader;
-    }
+	/**
+	 * Creates a new {@link StAXDocumentParser} (Fast Infoset {@link XMLStreamReader})
+	 * instance.
+	 * @param is binary stream to read from, must not be <code>null</code>
+	 * @param voc vocabulary to use, must not be <code>null</code>
+	 * @param vocUri uri used for declaring the external vocabulary, must not be
+	 * <code>null</code> or empty
+	 * @return binary XML reader, never <code>null</code>
+	 */
+	public static StAXDocumentParser getFIReader(InputStream is, ParserVocabulary voc, String vocUri) {
+		Map<String, ParserVocabulary> externalVocabularies = new HashMap<String, ParserVocabulary>();
+		externalVocabularies.put(vocUri, voc);
+		StAXDocumentParser reader = new StAXDocumentParser(is);
+		reader.setExternalVocabularies(externalVocabularies);
+		return reader;
+	}
+
 }

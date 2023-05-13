@@ -60,44 +60,43 @@ import org.slf4j.Logger;
 
 /**
  * ConnectionProviderProvider which provides the feature locking database connection (H2).
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
- * 
  * @version $Revision: $, $Date: $
  */
 public class LockDbProviderProvider extends ConnectionProviderProvider {
 
-    private static final Logger LOG = getLogger( LockDbProviderProvider.class );
+	private static final Logger LOG = getLogger(LockDbProviderProvider.class);
 
-    @Override
-    public String getNamespace() {
-        return null;
-    }
+	@Override
+	public String getNamespace() {
+		return null;
+	}
 
-    @Override
-    public ResourceMetadata<ConnectionProvider> createFromLocation( Workspace workspace,
-                                                                    ResourceLocation<ConnectionProvider> location ) {
-        return null;
-    }
+	@Override
+	public ResourceMetadata<ConnectionProvider> createFromLocation(Workspace workspace,
+			ResourceLocation<ConnectionProvider> location) {
+		return null;
+	}
 
-    @Override
-    public URL getSchema() {
-        return null;
-    }
+	@Override
+	public URL getSchema() {
+		return null;
+	}
 
-    @Override
-    public List<ResourceMetadata<ConnectionProvider>> getAdditionalResources( Workspace workspace ) {
-        List<ResourceMetadata<ConnectionProvider>> list = new ArrayList<ResourceMetadata<ConnectionProvider>>();
+	@Override
+	public List<ResourceMetadata<ConnectionProvider>> getAdditionalResources(Workspace workspace) {
+		List<ResourceMetadata<ConnectionProvider>> list = new ArrayList<ResourceMetadata<ConnectionProvider>>();
 
-        String lockDb = new File( TempFileManager.getBaseDir(), "lockdb" ).getAbsolutePath();
-        LOG.info( "Using '" + lockDb + "' for h2 lock database." );
-        String url = "jdbc:h2:" + lockDb;
+		String lockDb = new File(TempFileManager.getBaseDir(), "lockdb").getAbsolutePath();
+		LOG.info("Using '" + lockDb + "' for h2 lock database.");
+		String url = "jdbc:h2:" + lockDb;
 
-        ResourceLocation<ConnectionProvider> location = getSyntheticProvider( "LOCK_DB", url, "SA", "" );
-        list.add( new LegacyConnectionProviderMetadata( workspace, location, this ) );
+		ResourceLocation<ConnectionProvider> location = getSyntheticProvider("LOCK_DB", url, "SA", "");
+		list.add(new LegacyConnectionProviderMetadata(workspace, location, this));
 
-        return list;
-    }
+		return list;
+	}
 
 }

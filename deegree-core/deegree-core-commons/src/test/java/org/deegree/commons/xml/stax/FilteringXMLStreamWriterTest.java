@@ -60,128 +60,123 @@ import static org.hamcrest.MatcherAssert.assertThat;
  */
 public class FilteringXMLStreamWriterTest {
 
-    private final static String app = "http://www.deegree.org/app";
+	private final static String app = "http://www.deegree.org/app";
 
-    private final static String nix = "http://www.deegree.org/nix";
+	private final static String nix = "http://www.deegree.org/nix";
 
-    private final static String alles = "http://www.deegree.org/alles";
+	private final static String alles = "http://www.deegree.org/alles";
 
-    private static final NamespaceBindings nsBindings = new NamespaceBindings();
+	private static final NamespaceBindings nsBindings = new NamespaceBindings();
 
-    static {
-        nsBindings.addNamespace( "app", app );
-        nsBindings.addNamespace( "nix", nix );
-        nsBindings.addNamespace( "alles", alles );
-    }
+	static {
+		nsBindings.addNamespace("app", app);
+		nsBindings.addNamespace("nix", nix);
+		nsBindings.addNamespace("alles", alles);
+	}
 
-    private void writeDocument( XMLStreamWriter writer )
-                    throws XMLStreamException {
-        writer.writeStartDocument();
-        writer.setPrefix( "app", app );
-        writer.setPrefix( "nix", nix );
-        writer.setPrefix( "alles", alles );
-        writer.writeStartElement( app, "a" );
-        writer.writeNamespace( "app", app );
-        writer.writeNamespace( "nix", nix );
-        writer.writeNamespace( "alles", alles );
-        writer.writeStartElement( app, "b" );
-        writer.writeStartElement( nix, "c" );
-        writer.writeStartElement( app, "d" );
-        writer.writeEndElement();
-        writer.writeStartElement( alles, "e" );
-        writer.writeCharacters( "sometext" );
-        writer.writeEndElement();
-        writer.writeStartElement( app, "b" );
-        writer.writeStartElement( nix, "c" );
-        writer.writeEndElement();
-        writer.writeEndElement();
-        writer.writeEndElement();
-        writer.writeEndElement();
-        writer.writeEndElement();
-        writer.close();
-    }
+	private void writeDocument(XMLStreamWriter writer) throws XMLStreamException {
+		writer.writeStartDocument();
+		writer.setPrefix("app", app);
+		writer.setPrefix("nix", nix);
+		writer.setPrefix("alles", alles);
+		writer.writeStartElement(app, "a");
+		writer.writeNamespace("app", app);
+		writer.writeNamespace("nix", nix);
+		writer.writeNamespace("alles", alles);
+		writer.writeStartElement(app, "b");
+		writer.writeStartElement(nix, "c");
+		writer.writeStartElement(app, "d");
+		writer.writeEndElement();
+		writer.writeStartElement(alles, "e");
+		writer.writeCharacters("sometext");
+		writer.writeEndElement();
+		writer.writeStartElement(app, "b");
+		writer.writeStartElement(nix, "c");
+		writer.writeEndElement();
+		writer.writeEndElement();
+		writer.writeEndElement();
+		writer.writeEndElement();
+		writer.writeEndElement();
+		writer.close();
+	}
 
-    private XMLStreamWriter getWriter( List<String> paths, OutputStream stream )
-                    throws Exception {
-        XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter( stream );
-        writer = new IndentingXMLStreamWriter( writer );
-        List<XPath> xpaths = new ArrayList<XPath>();
-        for ( String s : paths ) {
-            xpaths.add( new XPath( s, nsBindings ) );
-        }
-        writer = new FilteringXMLStreamWriter( writer, xpaths );
-        return writer;
-    }
+	private XMLStreamWriter getWriter(List<String> paths, OutputStream stream) throws Exception {
+		XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter(stream);
+		writer = new IndentingXMLStreamWriter(writer);
+		List<XPath> xpaths = new ArrayList<XPath>();
+		for (String s : paths) {
+			xpaths.add(new XPath(s, nsBindings));
+		}
+		writer = new FilteringXMLStreamWriter(writer, xpaths);
+		return writer;
+	}
 
-    @Test
-    public void testFilteringOneXPath()
-                    throws Exception {
-        List<String> list = new ArrayList<>();
-        list.add( "/app:a/app:b/nix:c/app:b" );
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        XMLStreamWriter writer = getWriter( list, bos );
-        writeDocument( writer );
-        String actual = bos.toString();
-        String expected = IOUtils.toString( FilteringXMLStreamWriterTest.class.getResourceAsStream(
-                        "filteringxpathone.xml" ), UTF_8 );
-        assertThat( actual, CompareMatcher.isSimilarTo( expected ).ignoreWhitespace() );
-    }
+	@Test
+	public void testFilteringOneXPath() throws Exception {
+		List<String> list = new ArrayList<>();
+		list.add("/app:a/app:b/nix:c/app:b");
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		XMLStreamWriter writer = getWriter(list, bos);
+		writeDocument(writer);
+		String actual = bos.toString();
+		String expected = IOUtils
+			.toString(FilteringXMLStreamWriterTest.class.getResourceAsStream("filteringxpathone.xml"), UTF_8);
+		assertThat(actual, CompareMatcher.isSimilarTo(expected).ignoreWhitespace());
+	}
 
-    @Test
-    public void testFilteringMultipleXPaths()
-                    throws Exception {
-        List<String> list = new ArrayList<>();
-        list.add( "/app:a/app:b/nix:c/app:d" );
-        list.add( "/app:a/app:b/nix:c/app:b" );
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        XMLStreamWriter writer = getWriter( list, bos );
-        writeDocument( writer );
-        String actual = bos.toString();
-        String expected = IOUtils.toString( FilteringXMLStreamWriterTest.class.getResourceAsStream(
-                        "filteringxpathmultiple.xml" ), UTF_8 );
-        assertThat( actual, CompareMatcher.isSimilarTo( expected ).ignoreWhitespace() );
-    }
+	@Test
+	public void testFilteringMultipleXPaths() throws Exception {
+		List<String> list = new ArrayList<>();
+		list.add("/app:a/app:b/nix:c/app:d");
+		list.add("/app:a/app:b/nix:c/app:b");
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		XMLStreamWriter writer = getWriter(list, bos);
+		writeDocument(writer);
+		String actual = bos.toString();
+		String expected = IOUtils
+			.toString(FilteringXMLStreamWriterTest.class.getResourceAsStream("filteringxpathmultiple.xml"), UTF_8);
+		assertThat(actual, CompareMatcher.isSimilarTo(expected).ignoreWhitespace());
+	}
 
-    @Test
-    public void testFilteringMultipleXPathsWithText()
-                    throws Exception {
-        List<String> list = new ArrayList<>();
-        list.add( "/app:a/app:b/nix:c/alles:e" );
-        list.add( "/app:a/app:b/nix:c/app:b" );
-        list.add( "/app:a/app:b/nix:c/falsch:d" );
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        XMLStreamWriter writer = getWriter( list, bos );
-        writeDocument( writer );
-        String actual = bos.toString();
-        String expected = IOUtils.toString( FilteringXMLStreamWriterTest.class.getResourceAsStream(
-                        "filteringxpathmultiplewithtext.xml" ), UTF_8 );
-        assertThat( actual, CompareMatcher.isSimilarTo( expected ).ignoreWhitespace() );
-    }
+	@Test
+	public void testFilteringMultipleXPathsWithText() throws Exception {
+		List<String> list = new ArrayList<>();
+		list.add("/app:a/app:b/nix:c/alles:e");
+		list.add("/app:a/app:b/nix:c/app:b");
+		list.add("/app:a/app:b/nix:c/falsch:d");
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		XMLStreamWriter writer = getWriter(list, bos);
+		writeDocument(writer);
+		String actual = bos.toString();
+		String expected = IOUtils.toString(
+				FilteringXMLStreamWriterTest.class.getResourceAsStream("filteringxpathmultiplewithtext.xml"), UTF_8);
+		assertThat(actual, CompareMatcher.isSimilarTo(expected).ignoreWhitespace());
+	}
 
-    @Test(expected = XMLStreamException.class)
-    public void testFilteringOneXPathWithoutMatchingRootElement()
-                    throws Exception {
-        List<String> list = new ArrayList<>();
-        list.add( "/ap:a/app:c" );
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        XMLStreamWriter writer = getWriter( list, bos );
-        writeDocument( writer );
-    }
+	@Test(expected = XMLStreamException.class)
+	public void testFilteringOneXPathWithoutMatchingRootElement() throws Exception {
+		List<String> list = new ArrayList<>();
+		list.add("/ap:a/app:c");
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		XMLStreamWriter writer = getWriter(list, bos);
+		writeDocument(writer);
+	}
 
-    @Test
-    public void testFilteringXPathSetPrefixBug()
-                    throws Exception {
-        final XMLAdapter input = new XMLAdapter(
-                        FilteringXMLStreamWriterTest.class.getResourceAsStream( "filtering_xpath_set_prefix.xml" ) );
-        final List<String> list = new ArrayList<>();
-        list.add( "/app:a/nix:d" );
-        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        final XMLStreamWriter writer = getWriter( list, bos );
-        input.getRootElement().serialize( writer );
-        writer.close();
-        String actual = bos.toString();
-        String expected = IOUtils.toString( FilteringXMLStreamWriterTest.class.getResourceAsStream(
-                        "filtering_xpath_set_prefix_expected.xml" ), UTF_8 );
-        assertThat( actual, CompareMatcher.isSimilarTo( expected ).ignoreWhitespace() );
-    }
+	@Test
+	public void testFilteringXPathSetPrefixBug() throws Exception {
+		final XMLAdapter input = new XMLAdapter(
+				FilteringXMLStreamWriterTest.class.getResourceAsStream("filtering_xpath_set_prefix.xml"));
+		final List<String> list = new ArrayList<>();
+		list.add("/app:a/nix:d");
+		final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		final XMLStreamWriter writer = getWriter(list, bos);
+		input.getRootElement().serialize(writer);
+		writer.close();
+		String actual = bos.toString();
+		String expected = IOUtils.toString(
+				FilteringXMLStreamWriterTest.class.getResourceAsStream("filtering_xpath_set_prefix_expected.xml"),
+				UTF_8);
+		assertThat(actual, CompareMatcher.isSimilarTo(expected).ignoreWhitespace());
+	}
+
 }

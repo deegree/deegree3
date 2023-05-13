@@ -42,29 +42,28 @@ import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
  * Resource metadata for webservice metadata providers.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class DefaultOwsMetadataProviderMetadata extends AbstractResourceMetadata<OWSMetadataProvider> {
 
-    public DefaultOwsMetadataProviderMetadata( Workspace workspace, ResourceLocation<OWSMetadataProvider> location,
-                                               AbstractResourceProvider<OWSMetadataProvider> provider ) {
-        super( workspace, location, provider );
-    }
+	public DefaultOwsMetadataProviderMetadata(Workspace workspace, ResourceLocation<OWSMetadataProvider> location,
+			AbstractResourceProvider<OWSMetadataProvider> provider) {
+		super(workspace, location, provider);
+	}
 
-    @Override
-    public ResourceBuilder<OWSMetadataProvider> prepare() {
-        try {
-            JAXBElement<DeegreeServicesMetadataType> md;
-            md = (JAXBElement<DeegreeServicesMetadataType>) unmarshall( "org.deegree.services.jaxb.metadata",
-                                                                        provider.getSchema(), location.getAsStream(),
-                                                                        workspace );
-            return new DefaultOwsMetadataProviderBuilder( md, this );
-        } catch ( Exception e ) {
-            throw new ResourceInitException( "Unable to read service metadata config: " + e.getLocalizedMessage(), e );
-        }
-    }
+	@Override
+	public ResourceBuilder<OWSMetadataProvider> prepare() {
+		try {
+			JAXBElement<DeegreeServicesMetadataType> md;
+			md = (JAXBElement<DeegreeServicesMetadataType>) unmarshall("org.deegree.services.jaxb.metadata",
+					provider.getSchema(), location.getAsStream(), workspace);
+			return new DefaultOwsMetadataProviderBuilder(md, this);
+		}
+		catch (Exception e) {
+			throw new ResourceInitException("Unable to read service metadata config: " + e.getLocalizedMessage(), e);
+		}
+	}
 
 }

@@ -40,9 +40,10 @@ import org.deegree.commons.tom.gml.GMLObject;
  * Base type for all temporal {@link GMLObject}s.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- *
  * @since 3.4
  */
 public interface TimeObject extends GMLObject {
-    // marker interface
+
+	// marker interface
+
 }

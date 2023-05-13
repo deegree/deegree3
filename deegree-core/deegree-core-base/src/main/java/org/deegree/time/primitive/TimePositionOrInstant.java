@@ -35,5 +35,7 @@
 package org.deegree.time.primitive;
 
 public interface TimePositionOrInstant {
-    // marker interface
+
+	// marker interface
+
 }

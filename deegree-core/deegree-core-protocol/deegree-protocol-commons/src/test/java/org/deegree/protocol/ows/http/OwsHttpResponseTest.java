@@ -74,233 +74,224 @@ import org.mockito.Mockito;
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @author last edited by: $Author$
- *
  * @version $Revision$, $Date$
  */
 public class OwsHttpResponseTest {
 
-    private static final String SCENARIO1_RESPONSE = "scenario1.xml";
+	private static final String SCENARIO1_RESPONSE = "scenario1.xml";
 
-    private static final String SCENARIO2_RESPONSE = "scenario2.xml";
+	private static final String SCENARIO2_RESPONSE = "scenario2.xml";
 
-    private static final String SCENARIO3_RESPONSE = "scenario3.gif";
+	private static final String SCENARIO3_RESPONSE = "scenario3.gif";
 
-    private OwsHttpResponse scenario1;
+	private OwsHttpResponse scenario1;
 
-    private OwsHttpResponse scenario2;
+	private OwsHttpResponse scenario2;
 
-    private OwsHttpResponse scenario3;
+	private OwsHttpResponse scenario3;
 
-    private OwsHttpResponse scenario4;
+	private OwsHttpResponse scenario4;
 
-    private ClientConnectionManager connManager;
+	private ClientConnectionManager connManager;
 
-    @Before
-    public void setup()
-                            throws Exception {
-        connManager = mock( ClientConnectionManager.class );
-        scenario1 = createScenario1();
-        scenario2 = createScenario2();
-        scenario3 = createScenario3();
-        scenario4 = createScenario4();
-    }
+	@Before
+	public void setup() throws Exception {
+		connManager = mock(ClientConnectionManager.class);
+		scenario1 = createScenario1();
+		scenario2 = createScenario2();
+		scenario3 = createScenario3();
+		scenario4 = createScenario4();
+	}
 
-    /**
-     * Test method for {@link org.deegree.protocol.ows.http.OwsHttpResponse#getAsHttpResponse()}.
-     */
-    @Test
-    public void testGetAsHttpResponse() {
-        assertNotNull( scenario1.getAsHttpResponse() );
-    }
+	/**
+	 * Test method for
+	 * {@link org.deegree.protocol.ows.http.OwsHttpResponse#getAsHttpResponse()}.
+	 */
+	@Test
+	public void testGetAsHttpResponse() {
+		assertNotNull(scenario1.getAsHttpResponse());
+	}
 
-    /**
-     * Test method for {@link org.deegree.protocol.ows.http.OwsHttpResponse#getAsBinaryStream()}.
-     */
-    @Test
-    public void testGetAsBinaryStreamScenario1()
-                            throws IOException {
-        InputStream is = scenario1.getAsBinaryStream();
-        String actual = org.apache.commons.io.IOUtils.toString( is, UTF_8 );
-        String expected = org.apache.commons.io.IOUtils.toString(
-                        OwsHttpResponseTest.class.getResourceAsStream( "scenario1.xml" ),
-                        UTF_8 );
-        assertThat( actual, isSimilarTo( expected ).ignoreWhitespace() );
-    }
+	/**
+	 * Test method for
+	 * {@link org.deegree.protocol.ows.http.OwsHttpResponse#getAsBinaryStream()}.
+	 */
+	@Test
+	public void testGetAsBinaryStreamScenario1() throws IOException {
+		InputStream is = scenario1.getAsBinaryStream();
+		String actual = org.apache.commons.io.IOUtils.toString(is, UTF_8);
+		String expected = org.apache.commons.io.IOUtils
+			.toString(OwsHttpResponseTest.class.getResourceAsStream("scenario1.xml"), UTF_8);
+		assertThat(actual, isSimilarTo(expected).ignoreWhitespace());
+	}
 
-    /**
-     * Test method for {@link org.deegree.protocol.ows.http.OwsHttpResponse#getAsBinaryStream()}.
-     */
-    @Test
-    public void testGetAsBinaryStreamScenario2()
-                            throws IOException {
-        InputStream is = scenario2.getAsBinaryStream();
-        String actual = org.apache.commons.io.IOUtils.toString( is, UTF_8 );
-        String expected = org.apache.commons.io.IOUtils.toString(
-                        OwsHttpResponseTest.class.getResourceAsStream( "scenario2.xml" ),
-                        UTF_8 );
-        assertThat( actual, isSimilarTo( expected ).ignoreWhitespace() );
-    }
+	/**
+	 * Test method for
+	 * {@link org.deegree.protocol.ows.http.OwsHttpResponse#getAsBinaryStream()}.
+	 */
+	@Test
+	public void testGetAsBinaryStreamScenario2() throws IOException {
+		InputStream is = scenario2.getAsBinaryStream();
+		String actual = org.apache.commons.io.IOUtils.toString(is, UTF_8);
+		String expected = org.apache.commons.io.IOUtils
+			.toString(OwsHttpResponseTest.class.getResourceAsStream("scenario2.xml"), UTF_8);
+		assertThat(actual, isSimilarTo(expected).ignoreWhitespace());
+	}
 
-    /**
-     * Test method for {@link org.deegree.protocol.ows.http.OwsHttpResponse#getAsBinaryStream()}.
-     */
-    @Test
-    public void testGetAsBinaryStreamScenario3()
-                            throws IOException {
-        InputStream is = scenario3.getAsBinaryStream();
-        byte[] readBytesAndClose = IOUtils.readBytesAndClose( is, -1 );
-        assertEquals( 2107, readBytesAndClose.length );
-    }
+	/**
+	 * Test method for
+	 * {@link org.deegree.protocol.ows.http.OwsHttpResponse#getAsBinaryStream()}.
+	 */
+	@Test
+	public void testGetAsBinaryStreamScenario3() throws IOException {
+		InputStream is = scenario3.getAsBinaryStream();
+		byte[] readBytesAndClose = IOUtils.readBytesAndClose(is, -1);
+		assertEquals(2107, readBytesAndClose.length);
+	}
 
-    /**
-     * Test method for {@link org.deegree.protocol.ows.http.OwsHttpResponse#getAsBinaryStream()}.
-     */
-    @Test
-    public void testGetAsBinaryStreamScenario4()
-                            throws IOException {
-        InputStream is = scenario4.getAsBinaryStream();
-        byte[] readBytesAndClose = IOUtils.readBytesAndClose( is, -1 );
-        assertEquals( 0, readBytesAndClose.length );
-    }
+	/**
+	 * Test method for
+	 * {@link org.deegree.protocol.ows.http.OwsHttpResponse#getAsBinaryStream()}.
+	 */
+	@Test
+	public void testGetAsBinaryStreamScenario4() throws IOException {
+		InputStream is = scenario4.getAsBinaryStream();
+		byte[] readBytesAndClose = IOUtils.readBytesAndClose(is, -1);
+		assertEquals(0, readBytesAndClose.length);
+	}
 
-    /**
-     * Test method for {@link org.deegree.protocol.ows.http.OwsHttpResponse#getAsXMLStream()}.
-     */
-    @Test
-    public void testGetAsXMLStreamScenario1()
-                            throws OWSExceptionReport, XMLStreamException {
-        XMLStreamReader xmlStream = scenario1.getAsXMLStream();
-        int i = 0;
-        while ( xmlStream.hasNext() ) {
-            xmlStream.next();
-            i++;
-        }
-        xmlStream.close();
-        assertEquals( 8215, i );
-    }
+	/**
+	 * Test method for
+	 * {@link org.deegree.protocol.ows.http.OwsHttpResponse#getAsXMLStream()}.
+	 */
+	@Test
+	public void testGetAsXMLStreamScenario1() throws OWSExceptionReport, XMLStreamException {
+		XMLStreamReader xmlStream = scenario1.getAsXMLStream();
+		int i = 0;
+		while (xmlStream.hasNext()) {
+			xmlStream.next();
+			i++;
+		}
+		xmlStream.close();
+		assertEquals(8215, i);
+	}
 
-    /**
-     * Test method for {@link org.deegree.protocol.ows.http.OwsHttpResponse#getAsXMLStream()}.
-     */
-    @Test(expected = OWSExceptionReport.class)
-    public void testGetAsXMLStreamScenario2()
-                            throws OWSExceptionReport, XMLStreamException {
-        scenario2.getAsXMLStream();
-    }
+	/**
+	 * Test method for
+	 * {@link org.deegree.protocol.ows.http.OwsHttpResponse#getAsXMLStream()}.
+	 */
+	@Test(expected = OWSExceptionReport.class)
+	public void testGetAsXMLStreamScenario2() throws OWSExceptionReport, XMLStreamException {
+		scenario2.getAsXMLStream();
+	}
 
-    /**
-     * Test method for {@link org.deegree.protocol.ows.http.OwsHttpResponse#getAsXMLStream()}.
-     */
-    @Test(expected = XMLStreamException.class)
-    public void testGetAsXMLStreamScenario3()
-                            throws OWSExceptionReport, XMLStreamException {
-        scenario3.getAsXMLStream();
-    }
+	/**
+	 * Test method for
+	 * {@link org.deegree.protocol.ows.http.OwsHttpResponse#getAsXMLStream()}.
+	 */
+	@Test(expected = XMLStreamException.class)
+	public void testGetAsXMLStreamScenario3() throws OWSExceptionReport, XMLStreamException {
+		scenario3.getAsXMLStream();
+	}
 
-    /**
-     * Test method for {@link org.deegree.protocol.ows.http.OwsHttpResponse#getAsXMLStream()}.
-     */
-    @Test(expected = XMLStreamException.class)
-    public void testGetAsXMLStreamScenario4()
-                            throws OWSExceptionReport, XMLStreamException {
-        scenario4.getAsXMLStream();
-    }
+	/**
+	 * Test method for
+	 * {@link org.deegree.protocol.ows.http.OwsHttpResponse#getAsXMLStream()}.
+	 */
+	@Test(expected = XMLStreamException.class)
+	public void testGetAsXMLStreamScenario4() throws OWSExceptionReport, XMLStreamException {
+		scenario4.getAsXMLStream();
+	}
 
-    /**
-     * Test method for {@link org.deegree.protocol.ows.http.OwsHttpResponse#assertHttpStatus200()}.
-     */
-    @Test
-    public void testAssertHttpStatus200Scenario1()
-                            throws OWSExceptionReport {
-        scenario1.assertHttpStatus200();
-    }
+	/**
+	 * Test method for
+	 * {@link org.deegree.protocol.ows.http.OwsHttpResponse#assertHttpStatus200()}.
+	 */
+	@Test
+	public void testAssertHttpStatus200Scenario1() throws OWSExceptionReport {
+		scenario1.assertHttpStatus200();
+	}
 
-    /**
-     * Test method for {@link org.deegree.protocol.ows.http.OwsHttpResponse#assertHttpStatus200()}.
-     */
-    @Test
-    public void testAssertHttpStatus200Scenario2()
-                            throws OWSExceptionReport {
-        scenario2.assertHttpStatus200();
-    }
+	/**
+	 * Test method for
+	 * {@link org.deegree.protocol.ows.http.OwsHttpResponse#assertHttpStatus200()}.
+	 */
+	@Test
+	public void testAssertHttpStatus200Scenario2() throws OWSExceptionReport {
+		scenario2.assertHttpStatus200();
+	}
 
-    /**
-     * Test method for {@link org.deegree.protocol.ows.http.OwsHttpResponse#assertHttpStatus200()}.
-     */
-    @Test
-    public void testAssertHttpStatus200Scenario3()
-                            throws OWSExceptionReport {
-        scenario3.assertHttpStatus200();
-    }
+	/**
+	 * Test method for
+	 * {@link org.deegree.protocol.ows.http.OwsHttpResponse#assertHttpStatus200()}.
+	 */
+	@Test
+	public void testAssertHttpStatus200Scenario3() throws OWSExceptionReport {
+		scenario3.assertHttpStatus200();
+	}
 
-    /**
-     * Test method for {@link org.deegree.protocol.ows.http.OwsHttpResponse#assertHttpStatus200()}.
-     */
-    @Test(expected = OWSExceptionReport.class)
-    public void testAssertHttpStatus200Scenario4()
-                            throws OWSExceptionReport {
-        scenario4.assertHttpStatus200();
-    }
+	/**
+	 * Test method for
+	 * {@link org.deegree.protocol.ows.http.OwsHttpResponse#assertHttpStatus200()}.
+	 */
+	@Test(expected = OWSExceptionReport.class)
+	public void testAssertHttpStatus200Scenario4() throws OWSExceptionReport {
+		scenario4.assertHttpStatus200();
+	}
 
-    /**
-     * Test method for {@link org.deegree.protocol.ows.http.OwsHttpResponse#close()}.
-     */
-    @Test
-    public void testClose()
-                            throws IOException {
-        Mockito.verify( connManager, times( 0 ) ).shutdown();
-        scenario1.close();
-        Mockito.verify( connManager, times( 1 ) ).shutdown();
-    }
+	/**
+	 * Test method for {@link org.deegree.protocol.ows.http.OwsHttpResponse#close()}.
+	 */
+	@Test
+	public void testClose() throws IOException {
+		Mockito.verify(connManager, times(0)).shutdown();
+		scenario1.close();
+		Mockito.verify(connManager, times(1)).shutdown();
+	}
 
-    private OwsHttpResponse createScenario1()
-                            throws Exception {
-        InputStream payload = OwsHttpResponseTest.class.getResourceAsStream( SCENARIO1_RESPONSE );
-        HttpResponse httpResponse = mockHttpResponse( payload, 200 );
-        return new OwsHttpResponseImpl( httpResponse, connManager, "" );
-    }
+	private OwsHttpResponse createScenario1() throws Exception {
+		InputStream payload = OwsHttpResponseTest.class.getResourceAsStream(SCENARIO1_RESPONSE);
+		HttpResponse httpResponse = mockHttpResponse(payload, 200);
+		return new OwsHttpResponseImpl(httpResponse, connManager, "");
+	}
 
-    private OwsHttpResponse createScenario2()
-                            throws Exception {
-        InputStream payload = OwsHttpResponseTest.class.getResourceAsStream( SCENARIO2_RESPONSE );
-        HttpResponse httpResponse = mockHttpResponse( payload, 200 );
-        return new OwsHttpResponseImpl( httpResponse, connManager, "" );
-    }
+	private OwsHttpResponse createScenario2() throws Exception {
+		InputStream payload = OwsHttpResponseTest.class.getResourceAsStream(SCENARIO2_RESPONSE);
+		HttpResponse httpResponse = mockHttpResponse(payload, 200);
+		return new OwsHttpResponseImpl(httpResponse, connManager, "");
+	}
 
-    private OwsHttpResponse createScenario3()
-                            throws Exception {
-        InputStream payload = OwsHttpResponseTest.class.getResourceAsStream( SCENARIO3_RESPONSE );
-        HttpResponse httpResponse = mockHttpResponse( payload, 200 );
-        return new OwsHttpResponseImpl( httpResponse, connManager, "" );
-    }
+	private OwsHttpResponse createScenario3() throws Exception {
+		InputStream payload = OwsHttpResponseTest.class.getResourceAsStream(SCENARIO3_RESPONSE);
+		HttpResponse httpResponse = mockHttpResponse(payload, 200);
+		return new OwsHttpResponseImpl(httpResponse, connManager, "");
+	}
 
-    private OwsHttpResponse createScenario4()
-                            throws Exception {
-        InputStream payload = new ByteArrayInputStream( new byte[0] );
-        HttpResponse httpResponse = mockHttpResponse( payload, 500 );
-        return new OwsHttpResponseImpl( httpResponse, connManager, "" );
-    }
+	private OwsHttpResponse createScenario4() throws Exception {
+		InputStream payload = new ByteArrayInputStream(new byte[0]);
+		HttpResponse httpResponse = mockHttpResponse(payload, 500);
+		return new OwsHttpResponseImpl(httpResponse, connManager, "");
+	}
 
-    private HttpResponse mockHttpResponse( InputStream payload, int status )
-                            throws IllegalStateException, IOException {
-        HttpResponse httpResponse = Mockito.mock( HttpResponse.class );
-        HttpEntity mockedEntity = mockHttpEntity( payload );
-        Mockito.when( httpResponse.getEntity() ).thenReturn( mockedEntity );
-        StatusLine mockedStatus = mockStatusLine( status );
-        Mockito.when( httpResponse.getStatusLine() ).thenReturn( mockedStatus );
-        return httpResponse;
-    }
+	private HttpResponse mockHttpResponse(InputStream payload, int status) throws IllegalStateException, IOException {
+		HttpResponse httpResponse = Mockito.mock(HttpResponse.class);
+		HttpEntity mockedEntity = mockHttpEntity(payload);
+		Mockito.when(httpResponse.getEntity()).thenReturn(mockedEntity);
+		StatusLine mockedStatus = mockStatusLine(status);
+		Mockito.when(httpResponse.getStatusLine()).thenReturn(mockedStatus);
+		return httpResponse;
+	}
 
-    private StatusLine mockStatusLine( int status ) {
-        StatusLine statusLine = Mockito.mock( StatusLine.class );
-        Mockito.when( statusLine.getStatusCode() ).thenReturn( status );
-        return statusLine;
-    }
+	private StatusLine mockStatusLine(int status) {
+		StatusLine statusLine = Mockito.mock(StatusLine.class);
+		Mockito.when(statusLine.getStatusCode()).thenReturn(status);
+		return statusLine;
+	}
 
-    private HttpEntity mockHttpEntity( InputStream mockedPayload )
-                            throws IllegalStateException, IOException {
-        HttpEntity mock = Mockito.mock( HttpEntity.class );
-        Mockito.when( mock.getContent() ).thenReturn( mockedPayload );
-        return mock;
-    }
+	private HttpEntity mockHttpEntity(InputStream mockedPayload) throws IllegalStateException, IOException {
+		HttpEntity mock = Mockito.mock(HttpEntity.class);
+		Mockito.when(mock.getContent()).thenReturn(mockedPayload);
+		return mock;
+	}
+
 }

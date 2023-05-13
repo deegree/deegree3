@@ -44,62 +44,59 @@ import org.deegree.geometry.Geometry;
 
 /**
  * If a geometry is spatially crossing in an other geometry.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
  * @version $Revision:$, $Date:$
  */
 public class Touches extends SpatialOperator {
 
-    /**
-     * @param param1
-     *            geometry to compare to, can be <code>null</code> (use default geometry)
-     * @param param2
-     *            geometry argument for testing, never <code>null</code>
-     */
-    public Touches( Expression param1, Geometry param2 ) {
-        super( param1, param2 );
-    }
+	/**
+	 * @param param1 geometry to compare to, can be <code>null</code> (use default
+	 * geometry)
+	 * @param param2 geometry argument for testing, never <code>null</code>
+	 */
+	public Touches(Expression param1, Geometry param2) {
+		super(param1, param2);
+	}
 
-    /**
-     * @param param1
-     *            geometry to compare to, can be <code>null</code> (use default geometry)
-     * @param param2
-     *            value reference argument for testing, never <code>null</code>
-     */
-    public Touches( Expression param1, ValueReference param2 ) {
-        super( param1, param2 );
-    }
+	/**
+	 * @param param1 geometry to compare to, can be <code>null</code> (use default
+	 * geometry)
+	 * @param param2 value reference argument for testing, never <code>null</code>
+	 */
+	public Touches(Expression param1, ValueReference param2) {
+		super(param1, param2);
+	}
 
-    @Override
-    public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
-                            throws FilterEvaluationException {
-        for ( TypedObjectNode paramValue : param1.evaluate( obj, xpathEvaluator ) ) {
-            Geometry geom = checkGeometryOrNull( paramValue );
-            if ( geom != null ) {
-                Geometry transformedLiteral = getCompatibleGeometry( geom, param2AsGeometry );
-                return geom.touches( transformedLiteral );
-            }
-        }
-        return false;
-    }
+	@Override
+	public <T> boolean evaluate(T obj, XPathEvaluator<T> xpathEvaluator) throws FilterEvaluationException {
+		for (TypedObjectNode paramValue : param1.evaluate(obj, xpathEvaluator)) {
+			Geometry geom = checkGeometryOrNull(paramValue);
+			if (geom != null) {
+				Geometry transformedLiteral = getCompatibleGeometry(geom, param2AsGeometry);
+				return geom.touches(transformedLiteral);
+			}
+		}
+		return false;
+	}
 
-    @Override
-    public String toString( String indent ) {
-        String s = indent + "-Touches\n";
-        s += indent + param1 + "\n";
-        if ( param2AsGeometry != null )
-            s += indent + param2AsGeometry;
-        if ( param2AsValueReference != null )
-            s += indent + param2AsValueReference;
-        return s;
-    }
+	@Override
+	public String toString(String indent) {
+		String s = indent + "-Touches\n";
+		s += indent + param1 + "\n";
+		if (param2AsGeometry != null)
+			s += indent + param2AsGeometry;
+		if (param2AsValueReference != null)
+			s += indent + param2AsValueReference;
+		return s;
+	}
 
-    @Override
-    public Object[] getParams() {
-        if ( param2AsValueReference != null )
-            return new Object[] { param1, param2AsValueReference };
-        return new Object[] { param1, param2AsGeometry };
-    }
+	@Override
+	public Object[] getParams() {
+		if (param2AsValueReference != null)
+			return new Object[] { param1, param2AsValueReference };
+		return new Object[] { param1, param2AsGeometry };
+	}
+
 }

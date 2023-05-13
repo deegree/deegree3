@@ -19,67 +19,63 @@ import org.deegree.services.wfs.format.geojson.request.GeoJsonGetFeatureHandler;
  */
 public class GeoJsonFormat implements Format {
 
-    private final GeoJsonGetFeatureHandler geoJsonGetFeatureHandler;
+	private final GeoJsonGetFeatureHandler geoJsonGetFeatureHandler;
 
-    private boolean allowOtherCrsThanWGS84;
+	private boolean allowOtherCrsThanWGS84;
 
-    /**
-     * Instantiate {@link GeoJsonFormat}
-     *
-     * @param webFeatureService
-     *            the {@link WebFeatureService} using this format, never <code>null</code>
-     */
-    public GeoJsonFormat( WebFeatureService webFeatureService ) {
-        this.geoJsonGetFeatureHandler = new GeoJsonGetFeatureHandler( webFeatureService );
-    }
+	/**
+	 * Instantiate {@link GeoJsonFormat}
+	 * @param webFeatureService the {@link WebFeatureService} using this format, never
+	 * <code>null</code>
+	 */
+	public GeoJsonFormat(WebFeatureService webFeatureService) {
+		this.geoJsonGetFeatureHandler = new GeoJsonGetFeatureHandler(webFeatureService);
+	}
 
-    /**
-     * Instantiate {@link GeoJsonFormat}
-     *
-     * @param webFeatureService
-     *            the {@link WebFeatureService} using this format, never <code>null</code>
-     * @param allowOtherCrsThanWGS84
-     *            <code>true</code> if the DefaultCRS of the WFS or the CRS of the GetFeature request should be used,
-     *            otherwise <code>false</code> (default is WGS84 as specified in GeoJson)
-     */
-    public GeoJsonFormat( WebFeatureService webFeatureService, boolean allowOtherCrsThanWGS84 ) {
-        this.geoJsonGetFeatureHandler = new GeoJsonGetFeatureHandler( webFeatureService );
-        this.allowOtherCrsThanWGS84 = allowOtherCrsThanWGS84;
-    }
+	/**
+	 * Instantiate {@link GeoJsonFormat}
+	 * @param webFeatureService the {@link WebFeatureService} using this format, never
+	 * <code>null</code>
+	 * @param allowOtherCrsThanWGS84 <code>true</code> if the DefaultCRS of the WFS or the
+	 * CRS of the GetFeature request should be used, otherwise <code>false</code> (default
+	 * is WGS84 as specified in GeoJson)
+	 */
+	public GeoJsonFormat(WebFeatureService webFeatureService, boolean allowOtherCrsThanWGS84) {
+		this.geoJsonGetFeatureHandler = new GeoJsonGetFeatureHandler(webFeatureService);
+		this.allowOtherCrsThanWGS84 = allowOtherCrsThanWGS84;
+	}
 
-    @Override
-    public void destroy() {
-        // nothing to do
-    }
+	@Override
+	public void destroy() {
+		// nothing to do
+	}
 
-    @Override
-    public void doGetFeature( GetFeature request, HttpResponseBuffer response )
-                            throws Exception {
+	@Override
+	public void doGetFeature(GetFeature request, HttpResponseBuffer response) throws Exception {
 
-        ResultType type = request.getPresentationParams().getResultType();
-        if ( type == RESULTS || type == null ) {
-            geoJsonGetFeatureHandler.doGetFeatureResults( request, response, allowOtherCrsThanWGS84 );
-        } else {
-            throw new UnsupportedOperationException( "GetFeature with RESULTTYPE=HITS for GeoJSON is not supported" );
-        }
-    }
+		ResultType type = request.getPresentationParams().getResultType();
+		if (type == RESULTS || type == null) {
+			geoJsonGetFeatureHandler.doGetFeatureResults(request, response, allowOtherCrsThanWGS84);
+		}
+		else {
+			throw new UnsupportedOperationException("GetFeature with RESULTTYPE=HITS for GeoJSON is not supported");
+		}
+	}
 
-    @Override
-    public void doDescribeFeatureType( DescribeFeatureType request, HttpResponseBuffer response, boolean isSoap )
-                            throws Exception {
-        throw new UnsupportedOperationException( "DescribeFeatureType for GeoJSON is not supported" );
-    }
+	@Override
+	public void doDescribeFeatureType(DescribeFeatureType request, HttpResponseBuffer response, boolean isSoap)
+			throws Exception {
+		throw new UnsupportedOperationException("DescribeFeatureType for GeoJSON is not supported");
+	}
 
-    @Override
-    public void doGetGmlObject( GetGmlObject request, HttpResponseBuffer response )
-                            throws Exception {
-        throw new UnsupportedOperationException( "GetGmlObject for GeoJSON is not supported" );
-    }
+	@Override
+	public void doGetGmlObject(GetGmlObject request, HttpResponseBuffer response) throws Exception {
+		throw new UnsupportedOperationException("GetGmlObject for GeoJSON is not supported");
+	}
 
-    @Override
-    public void doGetPropertyValue( GetPropertyValue getPropertyValue, HttpResponseBuffer response )
-                            throws Exception {
-        throw new UnsupportedOperationException( "GetPropertyValue for GeoJSON is not supported" );
-    }
+	@Override
+	public void doGetPropertyValue(GetPropertyValue getPropertyValue, HttpResponseBuffer response) throws Exception {
+		throw new UnsupportedOperationException("GetPropertyValue for GeoJSON is not supported");
+	}
 
 }

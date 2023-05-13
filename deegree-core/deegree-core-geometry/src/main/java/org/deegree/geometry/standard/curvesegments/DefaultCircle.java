@@ -45,39 +45,38 @@ import org.deegree.geometry.primitive.segments.Circle;
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author$
- *
  * @version $Revision$, $Date$
  */
 public class DefaultCircle extends DefaultArc implements Circle {
 
-    /**
-     * Creates a new <code>DefaultCircle</code> instance from the given parameters.
-     *
-     * @param p1
-     * @param p2
-     * @param p3
-     */
-    public DefaultCircle( Point p1, Point p2, Point p3 ) {
-        super( p1, p2, p3 );
-    }
+	/**
+	 * Creates a new <code>DefaultCircle</code> instance from the given parameters.
+	 * @param p1
+	 * @param p2
+	 * @param p3
+	 */
+	public DefaultCircle(Point p1, Point p2, Point p3) {
+		super(p1, p2, p3);
+	}
 
-    @Override
-    public Point getMidPoint() {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Point getMidPoint() {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public Measure getRadius(Unit requestedUnits) {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Measure getRadius(Unit requestedUnits) {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public Point getEndPoint() {
-        return points.get( 0 );
-    }
+	@Override
+	public Point getEndPoint() {
+		return points.get(0);
+	}
 
-    @Override
-    public CurveSegmentType getSegmentType() {
-        return CurveSegmentType.CIRCLE;
-    }
+	@Override
+	public CurveSegmentType getSegmentType() {
+		return CurveSegmentType.CIRCLE;
+	}
+
 }

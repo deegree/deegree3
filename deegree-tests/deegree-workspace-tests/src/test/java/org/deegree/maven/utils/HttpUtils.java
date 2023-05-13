@@ -63,28 +63,27 @@ import org.deegree.maven.ithelper.TestEnvironment;
 
 /**
  * <code>HttpUtils</code>
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
- * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 public final class HttpUtils {
 
-    public static HttpClient getAuthenticatedHttpClient( TestEnvironment environment ) {
-        HttpClientBuilder builder = HttpClientBuilder.create();
-        CredentialsProvider creds = new BasicCredentialsProvider();
-        creds.setCredentials( AuthScope.ANY, new UsernamePasswordCredentials( "deegree", "deegree" ) );
-        builder.setDefaultCredentialsProvider( creds );
-        HttpClient client = builder.build();
-        // preemptive authentication used to be easier in pre-4.x httpclient
-        AuthCache authCache = new BasicAuthCache();
-        BasicScheme basicAuth = new BasicScheme();
-        HttpHost host = new HttpHost( "localhost", Integer.parseInt( environment.getPort() ) );
-        authCache.put( host, basicAuth );
-        BasicHttpContext localcontext = new BasicHttpContext();
-        localcontext.setAttribute( AUTH_CACHE, authCache );
-        return client;
-    }
+	public static HttpClient getAuthenticatedHttpClient(TestEnvironment environment) {
+		HttpClientBuilder builder = HttpClientBuilder.create();
+		CredentialsProvider creds = new BasicCredentialsProvider();
+		creds.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("deegree", "deegree"));
+		builder.setDefaultCredentialsProvider(creds);
+		HttpClient client = builder.build();
+		// preemptive authentication used to be easier in pre-4.x httpclient
+		AuthCache authCache = new BasicAuthCache();
+		BasicScheme basicAuth = new BasicScheme();
+		HttpHost host = new HttpHost("localhost", Integer.parseInt(environment.getPort()));
+		authCache.put(host, basicAuth);
+		BasicHttpContext localcontext = new BasicHttpContext();
+		localcontext.setAttribute(AUTH_CACHE, authCache);
+		return client;
+	}
 
 }

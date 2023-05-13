@@ -75,258 +75,258 @@ import org.slf4j.Logger;
 
 /**
  * The <code>RasterFactory</code> class TODO add class documentation here.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
  * @version $Revision$, $Date$
- * 
+ *
  */
 public class RasterFactoryTest {
-    private static final Logger LOG = getLogger( RasterFactoryTest.class );
 
-    private final static float[] TEST_HEIGHTS = new float[] { -10.912f, -5.8f, 0.001f, 5.5f, 10.1f, 15.3f };
+	private static final Logger LOG = getLogger(RasterFactoryTest.class);
 
-    private static final int TILE_SIZE = 500;
+	private final static float[] TEST_HEIGHTS = new float[] { -10.912f, -5.8f, 0.001f, 5.5f, 10.1f, 15.3f };
 
-    /**
-     * Test the creation of a float buffered image.
-     * 
-     * @throws IOException
-     */
-    @Test
-    public void testFloatRaster()
-                            throws IOException {
-        int width = 20;
-        int height = 20;
-        RasterDataInfo rdi = new RasterDataInfo( new BandType[] { BandType.BAND_0 }, DataType.FLOAT,
-                                                 InterleaveType.PIXEL );
-        PixelInterleavedRasterData pird = new PixelInterleavedRasterData( new RasterRect( 0, 0, width, height ), width,
-                                                                          height, rdi );
+	private static final int TILE_SIZE = 500;
 
-        for ( int y = 0; y < height; y++ ) {
-            for ( int x = 0; x < width; x++ ) {
-                pird.setFloatSample( x, y, 0, TEST_HEIGHTS[(int) ( Math.random() * TEST_HEIGHTS.length )] );
-            }
-        }
+	/**
+	 * Test the creation of a float buffered image.
+	 * @throws IOException
+	 */
+	@Test
+	public void testFloatRaster() throws IOException {
+		int width = 20;
+		int height = 20;
+		RasterDataInfo rdi = new RasterDataInfo(new BandType[] { BandType.BAND_0 }, DataType.FLOAT,
+				InterleaveType.PIXEL);
+		PixelInterleavedRasterData pird = new PixelInterleavedRasterData(new RasterRect(0, 0, width, height), width,
+				height, rdi);
 
-        BufferedImage img = org.deegree.coverage.raster.utils.RasterFactory.rasterDataToImage( pird );
-        Assert.assertEquals( width, img.getWidth() );
-        Assert.assertEquals( height, img.getHeight() );
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				pird.setFloatSample(x, y, 0, TEST_HEIGHTS[(int) (Math.random() * TEST_HEIGHTS.length)]);
+			}
+		}
 
-        byte[] result = new byte[DataType.FLOAT.getSize()];
-        ByteBuffer converter = ByteBuffer.wrap( result );
-        for ( int by = 0; by < height; ++by ) {
-            for ( int bx = 0; bx < width; ++bx ) {
-                int val = img.getRGB( bx, by );
-                converter.putInt( 0, val );
-                float realVal = converter.getFloat( 0 );
-                float compareVal = pird.getFloatSample( bx, by, 0 );
-                Assert.assertEquals( compareVal, realVal );
-            }
-        }
-    }
+		BufferedImage img = org.deegree.coverage.raster.utils.RasterFactory.rasterDataToImage(pird);
+		Assert.assertEquals(width, img.getWidth());
+		Assert.assertEquals(height, img.getHeight());
 
-    /**
-     * Test the creation of a float buffered image.
-     * 
-     * @throws IOException
-     * @throws InterruptedException
-     * @throws URISyntaxException
-     */
-    // @Test
-    public synchronized void testTiledImage()
-                            throws IOException, InterruptedException, URISyntaxException {
+		byte[] result = new byte[DataType.FLOAT.getSize()];
+		ByteBuffer converter = ByteBuffer.wrap(result);
+		for (int by = 0; by < height; ++by) {
+			for (int bx = 0; bx < width; ++bx) {
+				int val = img.getRGB(bx, by);
+				converter.putInt(0, val);
+				float realVal = converter.getFloat(0);
+				float compareVal = pird.getFloatSample(bx, by, 0);
+				Assert.assertEquals(compareVal, realVal);
+			}
+		}
+	}
 
-        long t = System.currentTimeMillis();
+	/**
+	 * Test the creation of a float buffered image.
+	 * @throws IOException
+	 * @throws InterruptedException
+	 * @throws URISyntaxException
+	 */
+	// @Test
+	public synchronized void testTiledImage() throws IOException, InterruptedException, URISyntaxException {
 
-        RenderedOp jpg = getJAIImage( "test_tiled_image.jpg" );
-        RenderedOp tiff = getJAIImage( "test_tiled_image_lzw.tif" );
-        RenderedOp tiffNone = getJAIImage( "test_tiled_image.tif" );
+		long t = System.currentTimeMillis();
 
-        LOG.debug( "jpg:  " + jpg.getWidth() + ", " + jpg.getHeight() );
-        LOG.debug( "tiff:  " + tiff.getWidth() + ", " + tiff.getHeight() );
-        LOG.debug( "tiffNone:  " + tiffNone.getWidth() + ", " + tiffNone.getHeight() );
+		RenderedOp jpg = getJAIImage("test_tiled_image.jpg");
+		RenderedOp tiff = getJAIImage("test_tiled_image_lzw.tif");
+		RenderedOp tiffNone = getJAIImage("test_tiled_image.tif");
 
-        // synchronized ( tiff ) {
-        // tiff.wait( 10000 );
-        // tiff.notifyAll();
-        // }
+		LOG.debug("jpg:  " + jpg.getWidth() + ", " + jpg.getHeight());
+		LOG.debug("tiff:  " + tiff.getWidth() + ", " + tiff.getHeight());
+		LOG.debug("tiffNone:  " + tiffNone.getWidth() + ", " + tiffNone.getHeight());
 
-        long ret = currentTimeMillis();
-        saveSubset( jpg, "jpg", 0, 0, 250, 260 );
-        LOG.debug( "jpg subset 1: " + ( currentTimeMillis() - ret ) + "millis" );
-        // jpg.dispose();
-        //
-        ret = currentTimeMillis();
-        saveSubset( jpg, "jpg", 2098, 2000, 1050, 1008 );
-        LOG.debug( "jpg subset 2: " + ( currentTimeMillis() - ret ) + "millis" );
-        jpg.dispose();
+		// synchronized ( tiff ) {
+		// tiff.wait( 10000 );
+		// tiff.notifyAll();
+		// }
 
-        gc();
-        gc();
-        gc();
-        gc();
-        gc();
-        gc();
-        synchronized ( tiff ) {
-            LOG.debug( "done getting jpg." );
-            // tiff.wait( 50000 );
-            tiff.notifyAll();
-        }
+		long ret = currentTimeMillis();
+		saveSubset(jpg, "jpg", 0, 0, 250, 260);
+		LOG.debug("jpg subset 1: " + (currentTimeMillis() - ret) + "millis");
+		// jpg.dispose();
+		//
+		ret = currentTimeMillis();
+		saveSubset(jpg, "jpg", 2098, 2000, 1050, 1008);
+		LOG.debug("jpg subset 2: " + (currentTimeMillis() - ret) + "millis");
+		jpg.dispose();
 
-        ret = currentTimeMillis();
-        saveSubset( tiff, "jai_tif_1", 0, 0, 250, 260 );
-        LOG.debug( "compressed tiff subset 1: " + ( currentTimeMillis() - ret ) + "millis" );
+		gc();
+		gc();
+		gc();
+		gc();
+		gc();
+		gc();
+		synchronized (tiff) {
+			LOG.debug("done getting jpg.");
+			// tiff.wait( 50000 );
+			tiff.notifyAll();
+		}
 
-        ret = currentTimeMillis();
-        saveSubset( tiff, "jai_tif_2", 4998, 4900, 10500, 13080 );
-        LOG.debug( "compressed tiff subset 2: " + ( currentTimeMillis() - ret ) + "millis" );
+		ret = currentTimeMillis();
+		saveSubset(tiff, "jai_tif_1", 0, 0, 250, 260);
+		LOG.debug("compressed tiff subset 1: " + (currentTimeMillis() - ret) + "millis");
 
-        gc();
-        gc();
-        gc();
-        gc();
-        gc();
-        gc();
-        synchronized ( tiff ) {
-            LOG.debug( "done getting compressed." );
-            tiff.wait( 5000 );
-            tiff.notifyAll();
-        }
-        ret = currentTimeMillis();
-        saveSubset( tiffNone, "jai_tif_none_1", 0, 0, 250, 260 );
-        LOG.debug( "tiff subset 1: " + ( currentTimeMillis() - ret ) + "millis" );
-        ret = currentTimeMillis();
-        saveSubset( tiffNone, "jai_tif_none_2", 4998, 4900, 10500, 13080 );
-        LOG.debug( "tiff subset 2: " + ( currentTimeMillis() - ret ) + "millis" );
+		ret = currentTimeMillis();
+		saveSubset(tiff, "jai_tif_2", 4998, 4900, 10500, 13080);
+		LOG.debug("compressed tiff subset 2: " + (currentTimeMillis() - ret) + "millis");
 
-        LOG.debug( "jai total: " + ( currentTimeMillis() - t ) + "millis" );
-        t = System.currentTimeMillis();
-    }
+		gc();
+		gc();
+		gc();
+		gc();
+		gc();
+		gc();
+		synchronized (tiff) {
+			LOG.debug("done getting compressed.");
+			tiff.wait(5000);
+			tiff.notifyAll();
+		}
+		ret = currentTimeMillis();
+		saveSubset(tiffNone, "jai_tif_none_1", 0, 0, 250, 260);
+		LOG.debug("tiff subset 1: " + (currentTimeMillis() - ret) + "millis");
+		ret = currentTimeMillis();
+		saveSubset(tiffNone, "jai_tif_none_2", 4998, 4900, 10500, 13080);
+		LOG.debug("tiff subset 2: " + (currentTimeMillis() - ret) + "millis");
 
-    private void saveSubset( RenderedOp image, String name, int x, int y, int w, int h ) {
-        LOG.debug( "getting subset: " + name );
-        WritableRaster jpgRaster = image.getColorModel().createCompatibleWritableRaster( w, h ).createWritableTranslatedChild(
-                                                                                                                               x,
-                                                                                                                               y );
-        image.copyExtendedData( jpgRaster, BorderExtender.createInstance( BorderExtender.BORDER_ZERO ) );
-        // BufferedImage img = new BufferedImage( image.getColorModel(), jpgRaster.getWritableParent(), false, null );
-        // ImageIO.write( img, "png", File.createTempFile( name, ".png" ) );
-        LOG.debug( "wrote subset: " + name );
-    }
+		LOG.debug("jai total: " + (currentTimeMillis() - t) + "millis");
+		t = System.currentTimeMillis();
+	}
 
-    private RenderedOp getJAIImage( String file )
-                            throws IOException, URISyntaxException {
+	private void saveSubset(RenderedOp image, String name, int x, int y, int w, int h) {
+		LOG.debug("getting subset: " + name);
+		WritableRaster jpgRaster = image.getColorModel()
+			.createCompatibleWritableRaster(w, h)
+			.createWritableTranslatedChild(x, y);
+		image.copyExtendedData(jpgRaster, BorderExtender.createInstance(BorderExtender.BORDER_ZERO));
+		// BufferedImage img = new BufferedImage( image.getColorModel(),
+		// jpgRaster.getWritableParent(), false, null );
+		// ImageIO.write( img, "png", File.createTempFile( name, ".png" ) );
+		LOG.debug("wrote subset: " + name);
+	}
 
-        // jpg: 15000, 15000
-        // tiff: 20000, 20000
-        // tiffNone: 20000, 20000
-        // getting subset: jpg
-        // wrote subset: jpg
-        // jpg subset 1: 13005millis
-        // getting subset: jpg
-        // wrote subset: jpg
-        // jpg subset 2: 13248millis
-        // done getting jpg.
-        // getting subset: jai_tif_1
-        // wrote subset: jai_tif_1
-        // compressed tiff subset 1: 249millis
-        // getting subset: jai_tif_2
-        // wrote subset: jai_tif_2
-        // compressed tiff subset 2: 6115millis
-        // done getting compressed.
-        // getting subset: jai_tif_none_1
-        // wrote subset: jai_tif_none_1
-        // tiff subset 1: 94millis
-        // getting subset: jai_tif_none_2
-        // wrote subset: jai_tif_none_2
-        // tiff subset 2: 4532millis
-        // jai total: 44543millis
+	private RenderedOp getJAIImage(String file) throws IOException, URISyntaxException {
 
-        File f = new File( RasterFactoryTest.class.getResource( file ).toURI() );
-        ImageInputStream iis = ImageIO.createImageInputStream( f );
+		// jpg: 15000, 15000
+		// tiff: 20000, 20000
+		// tiffNone: 20000, 20000
+		// getting subset: jpg
+		// wrote subset: jpg
+		// jpg subset 1: 13005millis
+		// getting subset: jpg
+		// wrote subset: jpg
+		// jpg subset 2: 13248millis
+		// done getting jpg.
+		// getting subset: jai_tif_1
+		// wrote subset: jai_tif_1
+		// compressed tiff subset 1: 249millis
+		// getting subset: jai_tif_2
+		// wrote subset: jai_tif_2
+		// compressed tiff subset 2: 6115millis
+		// done getting compressed.
+		// getting subset: jai_tif_none_1
+		// wrote subset: jai_tif_none_1
+		// tiff subset 1: 94millis
+		// getting subset: jai_tif_none_2
+		// wrote subset: jai_tif_none_2
+		// tiff subset 2: 4532millis
+		// jai total: 44543millis
 
-        Iterator<ImageReader> iter = ImageIO.getImageReadersByFormatName( FileUtils.getFileExtension( f ) );
-        ImageReader reader = null;
-        if ( iter.hasNext() ) {
-            // use the first.
-            reader = iter.next();
-            reader.setInput( iis );
-        }
+		File f = new File(RasterFactoryTest.class.getResource(file).toURI());
+		ImageInputStream iis = ImageIO.createImageInputStream(f);
 
-        RenderingHints hints = null;
-        // if ( reader.isImageTiled( 0 ) ) {
-        if ( reader == null ) {
-            return null;
-        }
-        int width = reader.getWidth( 0 );
-        int height = reader.getHeight( 0 );
-        int numberOfTiles = Rasters.calcApproxTiles( width, height, TILE_SIZE );
-        Rasters.calcTileSize( width, numberOfTiles );
+		Iterator<ImageReader> iter = ImageIO.getImageReadersByFormatName(FileUtils.getFileExtension(f));
+		ImageReader reader = null;
+		if (iter.hasNext()) {
+			// use the first.
+			reader = iter.next();
+			reader.setInput(iis);
+		}
 
-        ImageLayout layout = new ImageLayout();
-        layout.setTileWidth( TILE_SIZE );
-        layout.setTileHeight( TILE_SIZE );
-        hints = new RenderingHints( JAI.KEY_IMAGE_LAYOUT, layout );
-        // }
-        reader.dispose();
-        iis.close();
-        ParameterBlockJAI pbj = new ParameterBlockJAI( "ImageRead" );
-        iis = ImageIO.createImageInputStream( f );
-        pbj.setParameter( "Input", iis );
+		RenderingHints hints = null;
+		// if ( reader.isImageTiled( 0 ) ) {
+		if (reader == null) {
+			return null;
+		}
+		int width = reader.getWidth(0);
+		int height = reader.getHeight(0);
+		int numberOfTiles = Rasters.calcApproxTiles(width, height, TILE_SIZE);
+		Rasters.calcTileSize(width, numberOfTiles);
 
-        RenderedOp result = JAI.create( "ImageRead", pbj, hints );
+		ImageLayout layout = new ImageLayout();
+		layout.setTileWidth(TILE_SIZE);
+		layout.setTileHeight(TILE_SIZE);
+		hints = new RenderingHints(JAI.KEY_IMAGE_LAYOUT, layout);
+		// }
+		reader.dispose();
+		iis.close();
+		ParameterBlockJAI pbj = new ParameterBlockJAI("ImageRead");
+		iis = ImageIO.createImageInputStream(f);
+		pbj.setParameter("Input", iis);
 
-        return result;
-    }
+		RenderedOp result = JAI.create("ImageRead", pbj, hints);
 
-    // private void enableTilingForReader( ImageReader imageReader, ImageInputStream iis ) {
-    // ParameterBlockJAI pbj = new ParameterBlockJAI( "ImageRead" );
-    // pbj.setParameter( "Input", iis );
-    //
-    // RenderedOp result = JAI.create( "ImageRead", pbj, null );
-    //
-    // int width = result.getWidth();
-    // int height = result.getHeight();
-    // int numberOfTiles = Rasters.calcApproxTiles( width, height, TILE_SIZE );
-    // int tileSize = Rasters.calcTileSize( width, numberOfTiles );
-    //
-    // ImageLayout layout = new ImageLayout();
-    // layout.setTileWidth( tileSize );
-    // layout.setTileHeight( tileSize );
-    // result.setRenderingHint( JAI.KEY_IMAGE_LAYOUT, layout );
-    // }
-    //
-    // private void outputJAIParams() {
-    // JAI jai = JAI.getDefaultInstance();
-    // OperationRegistry reg = jai.getOperationRegistry();
-    // RenderingHints renderingHints = jai.getRenderingHints();
-    // LOG.debug( "values: " + renderingHints.values() );
-    //
-    // String[] modeNames = RegistryMode.getModeNames();
-    // for ( String modeName : modeNames ) {
-    // LOG.debug( "**** " + modeName + " ****" );
-    // String[] descriptorNames = reg.getDescriptorNames( modeName );
-    // for ( String dn : descriptorNames ) {
-    // LOG.debug( "- " + dn );
-    // RegistryElementDescriptor descriptor = reg.getDescriptor( modeName, dn );
-    // String[] supportedModes = descriptor.getSupportedModes();
-    // for ( String sm : supportedModes ) {
-    // LOG.debug( " - " + sm );
-    // ParameterListDescriptor parameterListDescriptor = descriptor.getParameterListDescriptor( sm );
-    // if ( parameterListDescriptor != null ) {
-    // String[] parameterNames = parameterListDescriptor.getParamNames();
-    // if ( parameterNames != null ) {
-    // for ( String parameterName : parameterNames ) {
-    // LOG.debug( "  - " + parameterName );
-    // }
-    // }
-    // } else {
-    // LOG.debug( "  - no parameters" );
-    // }
-    // }
-    // }
-    // }
-    //
-    // }
+		return result;
+	}
+
+	// private void enableTilingForReader( ImageReader imageReader, ImageInputStream iis )
+	// {
+	// ParameterBlockJAI pbj = new ParameterBlockJAI( "ImageRead" );
+	// pbj.setParameter( "Input", iis );
+	//
+	// RenderedOp result = JAI.create( "ImageRead", pbj, null );
+	//
+	// int width = result.getWidth();
+	// int height = result.getHeight();
+	// int numberOfTiles = Rasters.calcApproxTiles( width, height, TILE_SIZE );
+	// int tileSize = Rasters.calcTileSize( width, numberOfTiles );
+	//
+	// ImageLayout layout = new ImageLayout();
+	// layout.setTileWidth( tileSize );
+	// layout.setTileHeight( tileSize );
+	// result.setRenderingHint( JAI.KEY_IMAGE_LAYOUT, layout );
+	// }
+	//
+	// private void outputJAIParams() {
+	// JAI jai = JAI.getDefaultInstance();
+	// OperationRegistry reg = jai.getOperationRegistry();
+	// RenderingHints renderingHints = jai.getRenderingHints();
+	// LOG.debug( "values: " + renderingHints.values() );
+	//
+	// String[] modeNames = RegistryMode.getModeNames();
+	// for ( String modeName : modeNames ) {
+	// LOG.debug( "**** " + modeName + " ****" );
+	// String[] descriptorNames = reg.getDescriptorNames( modeName );
+	// for ( String dn : descriptorNames ) {
+	// LOG.debug( "- " + dn );
+	// RegistryElementDescriptor descriptor = reg.getDescriptor( modeName, dn );
+	// String[] supportedModes = descriptor.getSupportedModes();
+	// for ( String sm : supportedModes ) {
+	// LOG.debug( " - " + sm );
+	// ParameterListDescriptor parameterListDescriptor =
+	// descriptor.getParameterListDescriptor( sm );
+	// if ( parameterListDescriptor != null ) {
+	// String[] parameterNames = parameterListDescriptor.getParamNames();
+	// if ( parameterNames != null ) {
+	// for ( String parameterName : parameterNames ) {
+	// LOG.debug( " - " + parameterName );
+	// }
+	// }
+	// } else {
+	// LOG.debug( " - no parameters" );
+	// }
+	// }
+	// }
+	// }
+	//
+	// }
+
 }

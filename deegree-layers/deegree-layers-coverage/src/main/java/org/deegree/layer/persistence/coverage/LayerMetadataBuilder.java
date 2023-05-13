@@ -61,38 +61,37 @@ import org.deegree.layer.persistence.coverage.jaxb.CoverageLayerType;
 
 /**
  * Builds basic layer metadata info from jaxb beans and coverage.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
- * 
  * @version $Revision: $, $Date: $
  */
 class LayerMetadataBuilder {
 
-    static LayerMetadata buildLayerMetadata( CoverageLayerType lay, Coverage cov ) {
-        SpatialMetadata smd = fromJaxb( lay.getEnvelope(), lay.getCRS() );
-        Description desc = fromJaxb( lay.getTitle(), lay.getAbstract(), lay.getKeywords() );
-        LayerMetadata md = new LayerMetadata( lay.getName(), desc, smd );
-        md.setDimensions( parseDimensions( md.getName(), lay.getDimension() ) );
-        md.setMapOptions( ConfigUtils.parseLayerOptions( lay.getLayerOptions() ) );
-        md.setMetadataId( lay.getMetadataSetId() );
+	static LayerMetadata buildLayerMetadata(CoverageLayerType lay, Coverage cov) {
+		SpatialMetadata smd = fromJaxb(lay.getEnvelope(), lay.getCRS());
+		Description desc = fromJaxb(lay.getTitle(), lay.getAbstract(), lay.getKeywords());
+		LayerMetadata md = new LayerMetadata(lay.getName(), desc, smd);
+		md.setDimensions(parseDimensions(md.getName(), lay.getDimension()));
+		md.setMapOptions(ConfigUtils.parseLayerOptions(lay.getLayerOptions()));
+		md.setMetadataId(lay.getMetadataSetId());
 
-        md.getFeatureTypes().add( buildFeatureType() );
+		md.getFeatureTypes().add(buildFeatureType());
 
-        if ( smd.getEnvelope() == null ) {
-            smd.setEnvelope( cov.getEnvelope() );
-        }
-        if ( smd.getCoordinateSystems() == null || smd.getCoordinateSystems().isEmpty() ) {
-            List<ICRS> crs = new ArrayList<ICRS>();
-            crs.add( smd.getEnvelope().getCoordinateSystem() );
-            smd.setCoordinateSystems( crs );
-        }
+		if (smd.getEnvelope() == null) {
+			smd.setEnvelope(cov.getEnvelope());
+		}
+		if (smd.getCoordinateSystems() == null || smd.getCoordinateSystems().isEmpty()) {
+			List<ICRS> crs = new ArrayList<ICRS>();
+			crs.add(smd.getEnvelope().getCoordinateSystem());
+			smd.setCoordinateSystems(crs);
+		}
 
-        ScaleDenominatorsType denoms = lay.getScaleDenominators();
-        if ( denoms != null ) {
-            md.setScaleDenominators( new DoublePair( denoms.getMin(), denoms.getMax() ) );
-        }
-        return md;
-    }
+		ScaleDenominatorsType denoms = lay.getScaleDenominators();
+		if (denoms != null) {
+			md.setScaleDenominators(new DoublePair(denoms.getMin(), denoms.getMax()));
+		}
+		return md;
+	}
 
 }

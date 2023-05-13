@@ -42,61 +42,57 @@ import org.deegree.commons.jdbc.TableName;
 import org.deegree.filter.expression.ValueReference;
 
 /**
- * Creates and tracks table aliases that are needed for mapping {@link ValueReference}s to a relational schema.
- * 
+ * Creates and tracks table aliases that are needed for mapping {@link ValueReference}s to
+ * a relational schema.
+ *
  * @see AbstractWhereBuilder
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: mschneider $
- * 
  * @version $Revision: 25462 $, $Date: 2010-07-21 18:45:40 +0200 (Mi, 21. Jul 2010) $
  */
 public class TableAliasManager {
 
-    private final Map<TableName, String> aliases = new HashMap<TableName, String>();
+	private final Map<TableName, String> aliases = new HashMap<TableName, String>();
 
-    private final String rootTableAlias;
+	private final String rootTableAlias;
 
-    private int currentIdx = 1;
+	private int currentIdx = 1;
 
-    /**
-     * Creates a new {@link TableAliasManager} instance.
-     */
-    public TableAliasManager() {
-        rootTableAlias = generateNew();
-    }
+	/**
+	 * Creates a new {@link TableAliasManager} instance.
+	 */
+	public TableAliasManager() {
+		rootTableAlias = generateNew();
+	}
 
-    /**
-     * Deprecated: Use #getTableAlias(TableName) instead.
-     * 
-     * Returns the table alias for the root table.
-     * 
-     * @return the table alias for the root table, never <code>null</code>
-     */
-    @Deprecated
-    public String getRootTableAlias() {
-        return rootTableAlias;
-    }
+	/**
+	 * Deprecated: Use #getTableAlias(TableName) instead.
+	 *
+	 * Returns the table alias for the root table.
+	 * @return the table alias for the root table, never <code>null</code>
+	 */
+	@Deprecated
+	public String getRootTableAlias() {
+		return rootTableAlias;
+	}
 
-    /**
-     * Returns the table alias for the passed {@link TableName}.
-     * 
-     * @param tableName
-     *            to retrieve the alias for, never <code>null</code>
-     * @return the table alias of the passed {@link TableName}, never <code>null</code>
-     */
-    public String getTableAlias( TableName tableName ) {
-        if ( !aliases.containsKey( tableName ) )
-            aliases.put( tableName, generateNew() );
-        return aliases.get( tableName );
-    }
+	/**
+	 * Returns the table alias for the passed {@link TableName}.
+	 * @param tableName to retrieve the alias for, never <code>null</code>
+	 * @return the table alias of the passed {@link TableName}, never <code>null</code>
+	 */
+	public String getTableAlias(TableName tableName) {
+		if (!aliases.containsKey(tableName))
+			aliases.put(tableName, generateNew());
+		return aliases.get(tableName);
+	}
 
-    /**
-     * Returns a new unique table alias.
-     * 
-     * @return a new unique table alias, never <code>null</code>
-     */
-    public String generateNew() {
-        return "X" + ( currentIdx++ );
-    }
+	/**
+	 * Returns a new unique table alias.
+	 * @return a new unique table alias, never <code>null</code>
+	 */
+	public String generateNew() {
+		return "X" + (currentIdx++);
+	}
+
 }

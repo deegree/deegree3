@@ -37,28 +37,28 @@ import org.deegree.workspace.Workspace;
 
 /**
  * SPI provider class for remote WMS layer stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class RemoteWMSLayerStoreProvider extends LayerStoreProvider {
 
-    private static final URL SCHEMA_URL = RemoteWMSLayerStoreProvider.class.getResource( "/META-INF/schemas/layers/remotewms/remotewms.xsd" );
+	private static final URL SCHEMA_URL = RemoteWMSLayerStoreProvider.class
+		.getResource("/META-INF/schemas/layers/remotewms/remotewms.xsd");
 
-    @Override
-    public String getNamespace() {
-        return "http://www.deegree.org/layers/remotewms";
-    }
+	@Override
+	public String getNamespace() {
+		return "http://www.deegree.org/layers/remotewms";
+	}
 
-    @Override
-    public ResourceMetadata<LayerStore> createFromLocation( Workspace workspace, ResourceLocation<LayerStore> location ) {
-        return new RemoteWmsLayerStoreMetadata( workspace, location, this );
-    }
+	@Override
+	public ResourceMetadata<LayerStore> createFromLocation(Workspace workspace, ResourceLocation<LayerStore> location) {
+		return new RemoteWmsLayerStoreMetadata(workspace, location, this);
+	}
 
-    @Override
-    public URL getSchema() {
-        return SCHEMA_URL;
-    }
+	@Override
+	public URL getSchema() {
+		return SCHEMA_URL;
+	}
 
 }

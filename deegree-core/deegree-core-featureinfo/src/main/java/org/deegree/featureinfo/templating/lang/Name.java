@@ -42,30 +42,29 @@ import org.deegree.feature.Feature;
 
 /**
  * <code>Name</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class Name {
 
-    /**
-     * @param sb
-     * @param o
-     */
-    public void eval( StringBuilder sb, Object o ) {
-        if ( o instanceof Feature ) {
-            sb.append( ( (Feature) o ).getName().getLocalPart() );
-        }
-        if ( o instanceof Property ) {
-            sb.append( ( (Property) o ).getName().getLocalPart() );
-        }
-    }
+	/**
+	 * @param sb
+	 * @param o
+	 */
+	public void eval(StringBuilder sb, Object o) {
+		if (o instanceof Feature) {
+			sb.append(((Feature) o).getName().getLocalPart());
+		}
+		if (o instanceof Property) {
+			sb.append(((Property) o).getName().getLocalPart());
+		}
+	}
 
-    @Override
-    public String toString() {
-        return generateToString( this );
-    }
+	@Override
+	public String toString() {
+		return generateToString(this);
+	}
 
 }

@@ -49,33 +49,32 @@ import org.deegree.protocol.csw.client.AbstractCSWRequest;
  * <li>CSW 2.0.2</li>
  * </ul>
  * </p>
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
- * 
  * @version $Revision: $, $Date: $
  */
 public class GetRecordById extends AbstractCSWRequest {
 
-    private final List<String> ids;
-    
-    /**
-     * @param version
-     */
-    public GetRecordById( Version version, String id ) {
-        this( version, Collections.singletonList( id ) );
-    }
+	private final List<String> ids;
 
-    /**
-     * @param version
-     */
-    public GetRecordById( Version version, List<String> ids ) {
-        super( version );
-        this.ids = ids;
-    }
+	/**
+	 * @param version
+	 */
+	public GetRecordById(Version version, String id) {
+		this(version, Collections.singletonList(id));
+	}
 
-    public List<String> getIds() {
-        return ids;
-    }
+	/**
+	 * @param version
+	 */
+	public GetRecordById(Version version, List<String> ids) {
+		super(version);
+		this.ids = ids;
+	}
+
+	public List<String> getIds() {
+		return ids;
+	}
 
 }

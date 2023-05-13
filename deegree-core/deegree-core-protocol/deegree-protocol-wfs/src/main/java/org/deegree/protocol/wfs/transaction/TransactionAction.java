@@ -37,27 +37,25 @@ package org.deegree.protocol.wfs.transaction;
 
 /**
  * An action that can occur inside a {@link Transaction} request.
- * 
+ *
  * @see Transaction
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public interface TransactionAction {
 
-    /**
-     * Returns the type of action. Use this to safely determine the subtype of {@link TransactionAction}.
-     * 
-     * @return type of action, never <code>null</code>
-     */
-    TransactionActionType getType();
+	/**
+	 * Returns the type of action. Use this to safely determine the subtype of
+	 * {@link TransactionAction}.
+	 * @return type of action, never <code>null</code>
+	 */
+	TransactionActionType getType();
 
-    /**
-     * Returns the idenfifier of the action.
-     * 
-     * @return the idenfifier of the action, or <code>null</code> if it is unspecified
-     */
-    String getHandle();
+	/**
+	 * Returns the idenfifier of the action.
+	 * @return the idenfifier of the action, or <code>null</code> if it is unspecified
+	 */
+	String getHandle();
+
 }

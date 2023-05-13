@@ -47,46 +47,47 @@ import org.deegree.coverage.raster.io.RasterWriter;
 
 /**
  * The <code>XYZRasterIOProvider</code> class defines the access to xyz files
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
  * @version $Revision$, $Date$
- * 
+ *
  */
 public class GridRasterIOProvider implements RasterIOProvider {
 
-    /**
-     * Supported formats
-     */
-    final static Set<String> FORMATS = new HashSet<String>();
-    static {
-        FORMATS.add( "grid" );
-        FORMATS.add( "bin" );
-    }
+	/**
+	 * Supported formats
+	 */
+	final static Set<String> FORMATS = new HashSet<String>();
+	static {
+		FORMATS.add("grid");
+		FORMATS.add("bin");
+	}
 
-    @Override
-    public RasterReader getRasterReader( String type ) {
-        if ( type != null && FORMATS.contains( type.toLowerCase() ) ) {
-            return new GridFileReader();
-        }
-        return null;
-    }
+	@Override
+	public RasterReader getRasterReader(String type) {
+		if (type != null && FORMATS.contains(type.toLowerCase())) {
+			return new GridFileReader();
+		}
+		return null;
+	}
 
-    @Override
-    public Set<String> getRasterReaderFormats() {
-        return new HashSet<String>( FORMATS );
-    }
+	@Override
+	public Set<String> getRasterReaderFormats() {
+		return new HashSet<String>(FORMATS);
+	}
 
-    @Override
-    public RasterWriter getRasterWriter( String type ) {
-        if ( type != null && FORMATS.contains( type.toLowerCase() ) ) {
-            return new GridWriter();
-        }
-        return null;
-    }
+	@Override
+	public RasterWriter getRasterWriter(String type) {
+		if (type != null && FORMATS.contains(type.toLowerCase())) {
+			return new GridWriter();
+		}
+		return null;
+	}
 
-    @Override
-    public Set<String> getRasterWriterFormats() {
-        return new HashSet<String>( FORMATS );
-    }
+	@Override
+	public Set<String> getRasterWriterFormats() {
+		return new HashSet<String>(FORMATS);
+	}
+
 }

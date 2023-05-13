@@ -39,30 +39,30 @@ import org.deegree.commons.tom.TypedObjectNode;
 
 /**
  * {@link ElementNode} that wraps an {@link ElementNode}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class XMLElementNode<P extends TypedObjectNode> extends ElementNode<org.deegree.commons.tom.ElementNode> {
 
-    private XPathNode<P> parentNode;
+	private XPathNode<P> parentNode;
 
-    private org.deegree.commons.tom.ElementNode element;
+	private org.deegree.commons.tom.ElementNode element;
 
-    public XMLElementNode( XPathNode<P> parentNode, org.deegree.commons.tom.ElementNode element ) {
-        super( element.getName() );
-        this.parentNode = parentNode;
-        this.element = element;
-    }
+	public XMLElementNode(XPathNode<P> parentNode, org.deegree.commons.tom.ElementNode element) {
+		super(element.getName());
+		this.parentNode = parentNode;
+		this.element = element;
+	}
 
-    @Override
-    public XPathNode<P> getParent() {
-        return parentNode;
-    }
+	@Override
+	public XPathNode<P> getParent() {
+		return parentNode;
+	}
 
-    public org.deegree.commons.tom.ElementNode getValue() {
-        return element;
-    }
+	public org.deegree.commons.tom.ElementNode getValue() {
+		return element;
+	}
+
 }

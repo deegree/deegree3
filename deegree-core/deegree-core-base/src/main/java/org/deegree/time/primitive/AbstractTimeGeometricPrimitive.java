@@ -40,28 +40,24 @@ import org.deegree.commons.tom.gml.property.Property;
 
 abstract class AbstractTimeGeometricPrimitive extends AbstractTimePrimitive implements TimeGeometricPrimitive {
 
-    private final String frame;
+	private final String frame;
 
-    /**
-     * Creates a new {@link AbstractTimeGeometricPrimitive} instance.
-     *
-     * @param id
-     *            gml id, can be <code>null</code>
-     * @param props
-     *            can be empty, but must not be <code>null</code>
-     * @param relatedTimes
-     *            can be empty, but must not be <code>null</code>
-     * @param frame
-     *            time frame, can be <code>null</code>
-     */
-    protected AbstractTimeGeometricPrimitive( final String id, final List<Property> props,
-                                              final List<RelatedTime> relatedTimes, final String frame ) {
-        super( id, props, relatedTimes );
-        this.frame = frame;
-    }
+	/**
+	 * Creates a new {@link AbstractTimeGeometricPrimitive} instance.
+	 * @param id gml id, can be <code>null</code>
+	 * @param props can be empty, but must not be <code>null</code>
+	 * @param relatedTimes can be empty, but must not be <code>null</code>
+	 * @param frame time frame, can be <code>null</code>
+	 */
+	protected AbstractTimeGeometricPrimitive(final String id, final List<Property> props,
+			final List<RelatedTime> relatedTimes, final String frame) {
+		super(id, props, relatedTimes);
+		this.frame = frame;
+	}
 
-    @Override
-    public String getFrame() {
-        return frame;
-    }
+	@Override
+	public String getFrame() {
+		return frame;
+	}
+
 }

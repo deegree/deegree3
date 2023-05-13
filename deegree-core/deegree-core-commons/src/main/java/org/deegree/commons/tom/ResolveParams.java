@@ -39,40 +39,39 @@ import java.math.BigInteger;
 
 /**
  * Common set of parameters for controlling the resolving of resource {@link Reference}s.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class ResolveParams {
 
-    private final ResolveMode resolve;
+	private final ResolveMode resolve;
 
-    private final String resolveDepth;
+	private final String resolveDepth;
 
-    private BigInteger resolveTimeout;
+	private BigInteger resolveTimeout;
 
-    public ResolveParams( ResolveMode resolve, String resolveDepth, BigInteger resolveTimeout ) {
-        this.resolve = resolve;
-        this.resolveDepth = resolveDepth;
-        this.resolveTimeout = resolveTimeout;
-    }
+	public ResolveParams(ResolveMode resolve, String resolveDepth, BigInteger resolveTimeout) {
+		this.resolve = resolve;
+		this.resolveDepth = resolveDepth;
+		this.resolveTimeout = resolveTimeout;
+	}
 
-    public ResolveMode getMode() {
-        return resolve;
-    }
+	public ResolveMode getMode() {
+		return resolve;
+	}
 
-    public String getDepth() {
-        return resolveDepth;
-    }
+	public String getDepth() {
+		return resolveDepth;
+	}
 
-    public BigInteger getTimeout() {
-        return resolveTimeout;
-    }
+	public BigInteger getTimeout() {
+		return resolveTimeout;
+	}
 
-    public void setTimeout( BigInteger resolveTimeout ) {
-        this.resolveTimeout = resolveTimeout;
-    }
+	public void setTimeout(BigInteger resolveTimeout) {
+		this.resolveTimeout = resolveTimeout;
+	}
 
 }

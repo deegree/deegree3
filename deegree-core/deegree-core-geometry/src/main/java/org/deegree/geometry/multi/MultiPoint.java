@@ -46,5 +46,7 @@ import org.deegree.geometry.primitive.Point;
  * @version. $Revision$, $Date$
  */
 public interface MultiPoint extends MultiGeometry<Point> {
-    // no additional methods
+
+	// no additional methods
+
 }

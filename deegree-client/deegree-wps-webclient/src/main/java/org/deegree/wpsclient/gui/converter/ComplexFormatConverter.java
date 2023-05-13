@@ -44,48 +44,47 @@ import org.deegree.protocol.wps.client.param.ComplexFormat;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  * @author last edited by: $Author: lyn $
- * 
  * @version $Revision: $, $Date: $
  */
 @FacesConverter(forClass = ComplexFormat.class, value = "org.deegree.wpsclient.ComplexFormat")
 public class ComplexFormatConverter implements Converter {
 
-    @Override
-    public Object getAsObject( FacesContext context, UIComponent component, String value ) {
-        String schema = value;
-        String encoding = null, mimeType = null;
-        if ( value != null && value.length() > 0 ) {
-            String[] split = value.split( "\\|" );
-            if ( split != null && split.length > 0 ) {
-                schema = split[0];
-                if ( split.length > 1 )
-                    encoding = split[1];
-                if ( split.length > 2 )
-                    mimeType = split[2];
-            }
-        }
-        return new ComplexFormat( mimeType, encoding, schema );
-    }
+	@Override
+	public Object getAsObject(FacesContext context, UIComponent component, String value) {
+		String schema = value;
+		String encoding = null, mimeType = null;
+		if (value != null && value.length() > 0) {
+			String[] split = value.split("\\|");
+			if (split != null && split.length > 0) {
+				schema = split[0];
+				if (split.length > 1)
+					encoding = split[1];
+				if (split.length > 2)
+					mimeType = split[2];
+			}
+		}
+		return new ComplexFormat(mimeType, encoding, schema);
+	}
 
-    @Override
-    public String getAsString( FacesContext context, UIComponent component, Object value ) {
-        if ( value instanceof ComplexFormat )
-            return getAsString( (ComplexFormat) value );
-        return (String) value;
-    }
+	@Override
+	public String getAsString(FacesContext context, UIComponent component, Object value) {
+		if (value instanceof ComplexFormat)
+			return getAsString((ComplexFormat) value);
+		return (String) value;
+	}
 
-    public static String getAsDesc( ComplexFormat complexFormat ) {
-        return "Schema: " + complexFormat.getSchema() + "; Encoding: " + complexFormat.getEncoding() + "; Mime-Type:"
-               + complexFormat.getMimeType();
-    }
+	public static String getAsDesc(ComplexFormat complexFormat) {
+		return "Schema: " + complexFormat.getSchema() + "; Encoding: " + complexFormat.getEncoding() + "; Mime-Type:"
+				+ complexFormat.getMimeType();
+	}
 
-    public static String getAsString( ComplexFormat complexFormat ) {
-        if ( complexFormat == null )
-            return null;
-        return complexFormat.getSchema() + "|" + complexFormat.getEncoding() + "|" + complexFormat.getMimeType();
-    }
+	public static String getAsString(ComplexFormat complexFormat) {
+		if (complexFormat == null)
+			return null;
+		return complexFormat.getSchema() + "|" + complexFormat.getEncoding() + "|" + complexFormat.getMimeType();
+	}
 
 }

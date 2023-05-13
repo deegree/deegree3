@@ -57,36 +57,35 @@ import org.deegree.workspace.standard.DefaultResourceIdentifier;
 
 /**
  * Resource metadata for iso metadata stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class IsoMetadataStoreMetadata extends AbstractResourceMetadata<MetadataStore<? extends MetadataRecord>> {
 
-    public IsoMetadataStoreMetadata( Workspace workspace,
-                                     ResourceLocation<MetadataStore<? extends MetadataRecord>> location,
-                                     AbstractResourceProvider<MetadataStore<? extends MetadataRecord>> provider ) {
-        super( workspace, location, provider );
-    }
+	public IsoMetadataStoreMetadata(Workspace workspace,
+			ResourceLocation<MetadataStore<? extends MetadataRecord>> location,
+			AbstractResourceProvider<MetadataStore<? extends MetadataRecord>> provider) {
+		super(workspace, location, provider);
+	}
 
-    @Override
-    public ResourceBuilder<MetadataStore<? extends MetadataRecord>> prepare() {
-        try {
+	@Override
+	public ResourceBuilder<MetadataStore<? extends MetadataRecord>> prepare() {
+		try {
 
-            ISOMetadataStoreConfig cfg = (ISOMetadataStoreConfig) JAXBUtils.unmarshall( "org.deegree.metadata.persistence.iso19115.jaxb",
-                                                                                        provider.getSchema(),
-                                                                                        location.getAsStream(),
-                                                                                        workspace );
+			ISOMetadataStoreConfig cfg = (ISOMetadataStoreConfig) JAXBUtils.unmarshall(
+					"org.deegree.metadata.persistence.iso19115.jaxb", provider.getSchema(), location.getAsStream(),
+					workspace);
 
-            dependencies.add( new DefaultResourceIdentifier<ConnectionProvider>( ConnectionProviderProvider.class,
-                                                                                 cfg.getJDBCConnId() ) );
+			dependencies.add(new DefaultResourceIdentifier<ConnectionProvider>(ConnectionProviderProvider.class,
+					cfg.getJDBCConnId()));
 
-            return new IsoMetadataStoreBuilder( cfg, this, workspace );
-        } catch ( Exception e ) {
-            String msg = Messages.getMessage( "ERROR_IN_CONFIG_FILE", location.getIdentifier(), e.getMessage() );
-            throw new ResourceInitException( msg, e );
-        }
-    }
+			return new IsoMetadataStoreBuilder(cfg, this, workspace);
+		}
+		catch (Exception e) {
+			String msg = Messages.getMessage("ERROR_IN_CONFIG_FILE", location.getIdentifier(), e.getMessage());
+			throw new ResourceInitException(msg, e);
+		}
+	}
 
 }

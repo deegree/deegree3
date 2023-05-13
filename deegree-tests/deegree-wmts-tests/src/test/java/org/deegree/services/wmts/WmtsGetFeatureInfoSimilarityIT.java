@@ -71,38 +71,38 @@ import static org.slf4j.LoggerFactory.getLogger;
 @RunWith(Parameterized.class)
 public class WmtsGetFeatureInfoSimilarityIT extends AbstractWmtsSimilarityIT {
 
-    private static final Logger LOG = getLogger( WmtsGetFeatureInfoSimilarityIT.class );
+	private static final Logger LOG = getLogger(WmtsGetFeatureInfoSimilarityIT.class);
 
-    private final String expected;
+	private final String expected;
 
-    public WmtsGetFeatureInfoSimilarityIT( String resourceName )
-                    throws IOException {
-        super( resourceName, "/getFeatureInfo" );
-        this.expected = IOUtils.toString(
-                        WmtsGetFeatureInfoSimilarityIT.class.getResourceAsStream(
-                                        "/getFeatureInfo/" + resourceName + ".html" ) ).trim();
-    }
+	public WmtsGetFeatureInfoSimilarityIT(String resourceName) throws IOException {
+		super(resourceName, "/getFeatureInfo");
+		this.expected = IOUtils
+			.toString(WmtsGetFeatureInfoSimilarityIT.class
+				.getResourceAsStream("/getFeatureInfo/" + resourceName + ".html"))
+			.trim();
+	}
 
-    @Parameters
-    public static Collection<Object[]> getParameters() {
-        List<Object[]> requests = new ArrayList<>();
-        requests.add( new Object[] { "cached_gfi" } );
-        requests.add( new Object[] { "remotewmsfi" } );
-        return requests;
-    }
+	@Parameters
+	public static Collection<Object[]> getParameters() {
+		List<Object[]> requests = new ArrayList<>();
+		requests.add(new Object[] { "cached_gfi" });
+		requests.add(new Object[] { "remotewmsfi" });
+		return requests;
+	}
 
-    @Test
-    public void testSimilarity()
-                    throws IOException {
-        String request = createRequest();
-        InputStream in = retrieve( STREAM, request );
-        LOG.info( "Requesting {}", request );
-        String actual = IOUtils.toString( in );
-        assertNotNull("GetFeatureResponse should never be null", actual);
-        //TRICKY prevent end line issues
-        actual = actual.trim();
-        assertEquals( "GetFeatureResponse does not match expected response " + resourceName + ", request: " + request
-                      + ".", expected, actual );
-    }
+	@Test
+	public void testSimilarity() throws IOException {
+		String request = createRequest();
+		InputStream in = retrieve(STREAM, request);
+		LOG.info("Requesting {}", request);
+		String actual = IOUtils.toString(in);
+		assertNotNull("GetFeatureResponse should never be null", actual);
+		// TRICKY prevent end line issues
+		actual = actual.trim();
+		assertEquals(
+				"GetFeatureResponse does not match expected response " + resourceName + ", request: " + request + ".",
+				expected, actual);
+	}
 
 }

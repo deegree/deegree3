@@ -62,121 +62,122 @@ import org.slf4j.LoggerFactory;
 /**
  * Encapsulates an HTTP response from an OGC web service.
  * <p>
- * NOTE: The receiver <b>must</b> call {@link #close()} eventually, otherwise the HTTP connection will not be freed.
+ * NOTE: The receiver <b>must</b> call {@link #close()} eventually, otherwise the HTTP
+ * connection will not be freed.
  * </p>
- * 
+ *
  * @version $Revision$, $Date$
  */
 public class OwsHttpResponseImpl implements OwsHttpResponse {
 
-    private static Logger LOG = LoggerFactory.getLogger( OwsHttpResponseImpl.class );
+	private static Logger LOG = LoggerFactory.getLogger(OwsHttpResponseImpl.class);
 
-    private static final XMLInputFactory xmlFac = XMLInputFactoryUtils.newSafeInstance();
+	private static final XMLInputFactory xmlFac = XMLInputFactoryUtils.newSafeInstance();
 
-    private final HttpResponse httpResponse;
+	private final HttpResponse httpResponse;
 
-    private final ClientConnectionManager connManager;
+	private final ClientConnectionManager connManager;
 
-    private final String url;
+	private final String url;
 
-    private final InputStream is;
+	private final InputStream is;
 
-    /**
-     * Creates a new {@link OwsHttpResponseImpl} instance.
-     * 
-     * @param httpResponse
-     * @param httpClient
-     * @param url
-     * @throws IllegalStateException
-     * @throws IOException
-     */
-    OwsHttpResponseImpl( HttpResponse httpResponse, ClientConnectionManager connManager, String url )
-                            throws IllegalStateException, IOException {
-        this.httpResponse = httpResponse;
-        this.connManager = connManager;
-        this.url = url;
-        HttpEntity entity = httpResponse.getEntity();
-        if ( entity == null ) {
-            // TODO exception
-        }
-        is = entity.getContent();
-    }
+	/**
+	 * Creates a new {@link OwsHttpResponseImpl} instance.
+	 * @param httpResponse
+	 * @param httpClient
+	 * @param url
+	 * @throws IllegalStateException
+	 * @throws IOException
+	 */
+	OwsHttpResponseImpl(HttpResponse httpResponse, ClientConnectionManager connManager, String url)
+			throws IllegalStateException, IOException {
+		this.httpResponse = httpResponse;
+		this.connManager = connManager;
+		this.url = url;
+		HttpEntity entity = httpResponse.getEntity();
+		if (entity == null) {
+			// TODO exception
+		}
+		is = entity.getContent();
+	}
 
-    @Override
-    public HttpResponse getAsHttpResponse() {
-        return httpResponse;
-    }
+	@Override
+	public HttpResponse getAsHttpResponse() {
+		return httpResponse;
+	}
 
-    @Override
-    public CloseRequiredInputStream getAsBinaryStream() {
-        return new CloseRequiredInputStream( this, is );
-    }
+	@Override
+	public CloseRequiredInputStream getAsBinaryStream() {
+		return new CloseRequiredInputStream(this, is);
+	}
 
-    @Override
-    public XMLStreamReader getAsXMLStream()
-                            throws OWSExceptionReport, XMLStreamException {
-        XMLStreamReader xmlStream = xmlFac.createXMLStreamReader( url, is );
-        assertNoExceptionReport( xmlStream );
-        LOG.debug( "Response root element: " + xmlStream.getName() );
-        String version = xmlStream.getAttributeValue( null, "version" );
-        LOG.trace( "Response version attribute: " + version );
-        return xmlStream;
-    }
+	@Override
+	public XMLStreamReader getAsXMLStream() throws OWSExceptionReport, XMLStreamException {
+		XMLStreamReader xmlStream = xmlFac.createXMLStreamReader(url, is);
+		assertNoExceptionReport(xmlStream);
+		LOG.debug("Response root element: " + xmlStream.getName());
+		String version = xmlStream.getAttributeValue(null, "version");
+		LOG.trace("Response version attribute: " + version);
+		return xmlStream;
+	}
 
-    private void assertNoExceptionReport( XMLStreamReader xmlStream )
-                            throws OWSExceptionReport, XMLStreamException {
-        skipStartDocument( xmlStream );
-        if ( isExceptionReport( xmlStream.getName() ) ) {
-            try {
-                throw parseExceptionReport( xmlStream );
-            } finally {
-                close();
-            }
-        }
-    }
+	private void assertNoExceptionReport(XMLStreamReader xmlStream) throws OWSExceptionReport, XMLStreamException {
+		skipStartDocument(xmlStream);
+		if (isExceptionReport(xmlStream.getName())) {
+			try {
+				throw parseExceptionReport(xmlStream);
+			}
+			finally {
+				close();
+			}
+		}
+	}
 
-    @Override
-    public void assertHttpStatus200()
-                            throws OWSExceptionReport {
-        StatusLine statusLine = httpResponse.getStatusLine();
-        int statusCode = statusLine.getStatusCode();
-        if ( statusCode != 200 ) {
-            try {
-                XMLStreamReader xmlStream = xmlFac.createXMLStreamReader( url, is );
-                assertNoExceptionReport( xmlStream );
-            } catch ( OWSExceptionReport e ) {
-                throw e;
-            } catch ( Exception e ) {
-                throwHttpStatusException( statusLine );
-            }
-            throwHttpStatusException( statusLine );
-        }
-    }
+	@Override
+	public void assertHttpStatus200() throws OWSExceptionReport {
+		StatusLine statusLine = httpResponse.getStatusLine();
+		int statusCode = statusLine.getStatusCode();
+		if (statusCode != 200) {
+			try {
+				XMLStreamReader xmlStream = xmlFac.createXMLStreamReader(url, is);
+				assertNoExceptionReport(xmlStream);
+			}
+			catch (OWSExceptionReport e) {
+				throw e;
+			}
+			catch (Exception e) {
+				throwHttpStatusException(statusLine);
+			}
+			throwHttpStatusException(statusLine);
+		}
+	}
 
-    private void throwHttpStatusException( StatusLine statusLine )
-                            throws OWSExceptionReport {
-        OWSException exception = new OWSException( "Request failed with HTTP status " + statusLine.getStatusCode()
-                                                   + ": " + statusLine.getReasonPhrase(), NO_APPLICABLE_CODE );
-        throw new OWSExceptionReport( Collections.singletonList( exception ), null, null );
-    }
+	private void throwHttpStatusException(StatusLine statusLine) throws OWSExceptionReport {
+		OWSException exception = new OWSException(
+				"Request failed with HTTP status " + statusLine.getStatusCode() + ": " + statusLine.getReasonPhrase(),
+				NO_APPLICABLE_CODE);
+		throw new OWSExceptionReport(Collections.singletonList(exception), null, null);
+	}
 
-    @Override
-    public void assertNoXmlContentTypeAndExceptionReport()
-                            throws OWSExceptionReport, XMLStreamException {
+	@Override
+	public void assertNoXmlContentTypeAndExceptionReport() throws OWSExceptionReport, XMLStreamException {
 
-        Header contentType = httpResponse.getFirstHeader( "Content-Type" );
-        if ( contentType != null && contentType.getValue().startsWith( "text/xml" ) ) {
-            XMLStreamReader xmlStream = xmlFac.createXMLStreamReader( url, is );
-            try {
-                assertNoExceptionReport( xmlStream );
-            } finally {
-                xmlStream.close();
-            }
-        }
-    }
+		Header contentType = httpResponse.getFirstHeader("Content-Type");
+		if (contentType != null && contentType.getValue().startsWith("text/xml")) {
+			XMLStreamReader xmlStream = xmlFac.createXMLStreamReader(url, is);
+			try {
+				assertNoExceptionReport(xmlStream);
+			}
+			finally {
+				xmlStream.close();
+			}
+		}
+	}
 
-    @Override
-    public void close() {
-        connManager.shutdown();
-    }
+	@Override
+	public void close() {
+		connManager.shutdown();
+	}
+
 }

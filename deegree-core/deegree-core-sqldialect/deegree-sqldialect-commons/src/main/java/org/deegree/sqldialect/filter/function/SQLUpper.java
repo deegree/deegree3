@@ -46,47 +46,47 @@ import org.deegree.workspace.Workspace;
 
 /**
  * {@link SQLFunctionProvider} for the <code>Upper</code> function.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: mschneider $
- * 
  * @version $Revision: 30337 $, $Date: 2011-04-04 14:21:18 +0200 (Mo, 04. Apr 2011) $
  */
 public class SQLUpper implements SQLFunctionProvider {
 
-    private static final String NAME = "Upper";
+	private static final String NAME = "Upper";
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
+	@Override
+	public String getName() {
+		return NAME;
+	}
 
-    @Override
-    public SQLExpression toProtoSQL( List<SQLExpression> args, SQLDialect dialect ) {
-        if ( args.size() != 1 ) {
-            throw new IllegalArgumentException( "Unable to map function '" + NAME
-                                                + "' to SQL. Expected a single argument." );
-        }
+	@Override
+	public SQLExpression toProtoSQL(List<SQLExpression> args, SQLDialect dialect) {
+		if (args.size() != 1) {
+			throw new IllegalArgumentException(
+					"Unable to map function '" + NAME + "' to SQL. Expected a single argument.");
+		}
 
-        SQLExpression arg = args.get( 0 );
+		SQLExpression arg = args.get(0);
 
-        // TODO infer type information on arguments
-        // arg.cast( expr );
+		// TODO infer type information on arguments
+		// arg.cast( expr );
 
-        SQLOperationBuilder builder = new SQLOperationBuilder( VARCHAR );
-        builder.add( "upper(" );
-        builder.add( arg );
-        builder.add( ")" );
-        return builder.toOperation();
-    }
+		SQLOperationBuilder builder = new SQLOperationBuilder(VARCHAR);
+		builder.add("upper(");
+		builder.add(arg);
+		builder.add(")");
+		return builder.toOperation();
+	}
 
-    @Override
-    public void init( Workspace ws ) {
-        // nothing to do
-    }
+	@Override
+	public void init(Workspace ws) {
+		// nothing to do
+	}
 
-    @Override
-    public void destroy() {
-        // nothing to do
-    }
+	@Override
+	public void destroy() {
+		// nothing to do
+	}
+
 }

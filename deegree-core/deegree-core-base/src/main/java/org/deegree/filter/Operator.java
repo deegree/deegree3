@@ -40,53 +40,64 @@ import org.deegree.filter.logical.LogicalOperator;
 import org.deegree.filter.spatial.SpatialOperator;
 
 /**
- * {@link Operator} instances are predicates and the building blocks of {@link OperatorFilter}s. They may be nested
- * recursively -- an argument of an {@link Operator} can be another {@link Operator} so they form a tree structure that
- * can be evaluated by traversing it.
- * 
+ * {@link Operator} instances are predicates and the building blocks of
+ * {@link OperatorFilter}s. They may be nested recursively -- an argument of an
+ * {@link Operator} can be another {@link Operator} so they form a tree structure that can
+ * be evaluated by traversing it.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
  * @version $Revision:$, $Date:$
  */
 public interface Operator {
 
-    /**
-     * Convenience enum type for discriminating the different operator types.
-     */
-    public enum Type {
-        /** Spatial operator. The {@link Operator} is an instance of {@link SpatialOperator}. */
-        SPATIAL,
-        /** Logical operator. The {@link Operator} is an instance of {@link LogicalOperator}. */
-        LOGICAL,
-        /** Comparison operator. The {@link Operator} is an instance of {@link ComparisonOperator}. */
-        COMPARISON,
-        /** Temporal operator. The {@link Operator} is an instance of {@link TemporalOperator}. */
-        TEMPORAL;
-    }
+	/**
+	 * Convenience enum type for discriminating the different operator types.
+	 */
+	public enum Type {
 
-    /**
-     * Returns the type of operator. Use this to safely determine the subtype of {@link Operator}.
-     * 
-     * @return type of operator
-     */
-    public Type getType();
+		/**
+		 * Spatial operator. The {@link Operator} is an instance of
+		 * {@link SpatialOperator}.
+		 */
+		SPATIAL,
+		/**
+		 * Logical operator. The {@link Operator} is an instance of
+		 * {@link LogicalOperator}.
+		 */
+		LOGICAL,
+		/**
+		 * Comparison operator. The {@link Operator} is an instance of
+		 * {@link ComparisonOperator}.
+		 */
+		COMPARISON,
+		/**
+		 * Temporal operator. The {@link Operator} is an instance of
+		 * {@link TemporalOperator}.
+		 */
+		TEMPORAL;
 
-    /**
-     * Determines the value of the boolean operator.
-     * 
-     * @param <T>
-     *            type of the context object
-     * @param obj
-     *            object that the operator is evaluated upon, must not be <code>null</code>
-     * @param xpathEvaluator
-     *            used for evaluation of XPath expressions, must not be <code>null</code>
-     * @return true, if the operator evaluates to true, false otherwise
-     * @throws FilterEvaluationException
-     *             if the evaluation fails
-     */
-    public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
-                            throws FilterEvaluationException;
+	}
 
-    public String toString( String indent );
+	/**
+	 * Returns the type of operator. Use this to safely determine the subtype of
+	 * {@link Operator}.
+	 * @return type of operator
+	 */
+	public Type getType();
+
+	/**
+	 * Determines the value of the boolean operator.
+	 * @param <T> type of the context object
+	 * @param obj object that the operator is evaluated upon, must not be
+	 * <code>null</code>
+	 * @param xpathEvaluator used for evaluation of XPath expressions, must not be
+	 * <code>null</code>
+	 * @return true, if the operator evaluates to true, false otherwise
+	 * @throws FilterEvaluationException if the evaluation fails
+	 */
+	public <T> boolean evaluate(T obj, XPathEvaluator<T> xpathEvaluator) throws FilterEvaluationException;
+
+	public String toString(String indent);
+
 }

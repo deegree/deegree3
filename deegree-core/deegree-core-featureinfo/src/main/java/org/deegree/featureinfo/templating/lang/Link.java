@@ -52,86 +52,87 @@ import org.slf4j.Logger;
 
 /**
  * <code>Link</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class Link {
 
-    private static final Logger LOG = getLogger( Link.class );
+	private static final Logger LOG = getLogger(Link.class);
 
-    public static final QName XLINK_HREF = new QName( XLNNS, "href" );
+	public static final QName XLINK_HREF = new QName(XLNNS, "href");
 
-    private String prefix;
+	private String prefix;
 
-    private String text;
+	private String text;
 
-    /**
-     * @param prefix
-     */
-    public Link( String prefix ) {
-        this.prefix = prefix;
-    }
+	/**
+	 * @param prefix
+	 */
+	public Link(String prefix) {
+		this.prefix = prefix;
+	}
 
-    /**
-     * @param prefix
-     * @param text
-     */
-    public Link( String prefix, String text ) {
-        this.prefix = prefix;
-        if ( text != null ) {
-            // TODO price question: what's the Java Way to sgml-quote?
-            text = text.replace( "&", "&amp;" );
-        }
-        this.text = text;
-    }
+	/**
+	 * @param prefix
+	 * @param text
+	 */
+	public Link(String prefix, String text) {
+		this.prefix = prefix;
+		if (text != null) {
+			// TODO price question: what's the Java Way to sgml-quote?
+			text = text.replace("&", "&amp;");
+		}
+		this.text = text;
+	}
 
-    /**
-     * @param sb
-     * @param o
-     */
-    public void eval( StringBuilder sb, Object o ) {
-        if ( !( o instanceof Property ) ) {
-            LOG.warn( "Trying to get value as link while current object is a feature." );
-            return;
-        }
-        String val = getValueAsString( (Property) o );
-        if ( val == null || val.isEmpty() ) {
-            return;
-        }
-        // TODO: what is wanted is a real check for validity. org.apache.xerces.util.URI.isWellFormedAddress has been
-        // tried and seems not to work
-        if ( !val.startsWith( "http://" ) && !val.startsWith( "https://" ) && !val.startsWith( "ftp://" ) ) {
-            val = prefix == null ? val : ( prefix + val );
-        }
-        // TODO price question: what's the Java Way to sgml-quote?
-        val = val.replace( "&", "&amp;" );
-        sb.append( "<a target='_blank' href='" ).append( val ).append( "'>" );
-        sb.append( text == null ? val : text );
-        sb.append( "</a>" );
-    }
+	/**
+	 * @param sb
+	 * @param o
+	 */
+	public void eval(StringBuilder sb, Object o) {
+		if (!(o instanceof Property)) {
+			LOG.warn("Trying to get value as link while current object is a feature.");
+			return;
+		}
+		String val = getValueAsString((Property) o);
+		if (val == null || val.isEmpty()) {
+			return;
+		}
+		// TODO: what is wanted is a real check for validity.
+		// org.apache.xerces.util.URI.isWellFormedAddress has been
+		// tried and seems not to work
+		if (!val.startsWith("http://") && !val.startsWith("https://") && !val.startsWith("ftp://")) {
+			val = prefix == null ? val : (prefix + val);
+		}
+		// TODO price question: what's the Java Way to sgml-quote?
+		val = val.replace("&", "&amp;");
+		sb.append("<a target='_blank' href='").append(val).append("'>");
+		sb.append(text == null ? val : text);
+		sb.append("</a>");
+	}
 
-    @Override
-    public String toString() {
-        return generateToString( this );
-    }
+	@Override
+	public String toString() {
+		return generateToString(this);
+	}
 
-    private String getValueAsString( Property o ) {
-        TypedObjectNode value = o.getValue();
-        if ( value != null ) {
-            if ( value instanceof FeatureReference ) {
-                return ( (FeatureReference) value ).getURI();
-            }
-            return value.toString();
-        } else {
-            Map<QName, PrimitiveValue> attributes = o.getAttributes();
-            if ( attributes.containsKey( XLINK_HREF ) ) {
-                return attributes.get( XLINK_HREF ).getAsText();
-            }
-        }
-        return null;
-    }
+	private String getValueAsString(Property o) {
+		TypedObjectNode value = o.getValue();
+		if (value != null) {
+			if (value instanceof FeatureReference) {
+				return ((FeatureReference) value).getURI();
+			}
+			return value.toString();
+		}
+		else {
+			Map<QName, PrimitiveValue> attributes = o.getAttributes();
+			if (attributes.containsKey(XLINK_HREF)) {
+				return attributes.get(XLINK_HREF).getAsText();
+			}
+		}
+		return null;
+	}
 
 }

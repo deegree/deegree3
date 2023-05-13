@@ -38,20 +38,19 @@ import org.deegree.layer.persistence.LayerStoreManager;
  * JSF backing bean for "Create new layer" view.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- *
  * @since 3.3
  */
 @ManagedBean
 @ViewScoped
 public class CreateLayerBean extends AbstractCreateResourceBean {
 
-    public CreateLayerBean() {
-        super( LayerStoreManager.class );
-    }
+	public CreateLayerBean() {
+		super(LayerStoreManager.class);
+	}
 
-    @Override
-    protected String getOutcome() {
-        return "/console/layer/layer/index";
-    }
+	@Override
+	protected String getOutcome() {
+		return "/console/layer/layer/index";
+	}
 
 }

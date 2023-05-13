@@ -40,87 +40,84 @@ package org.deegree.sqldialect.filter.islike;
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author: mschneider $
- *
  * @version $Revision: 22060 $, $Date: 2010-01-20 17:59:52 +0100 (Mi, 20. Jan 2010) $
  */
 final class PlainText implements IsLikeStringPart {
 
-    private String text;
+	private String text;
 
-    /**
-     * Creates a new instance of {@link PlainText}.
-     *
-     * @param text
-     */
-    PlainText( String text ) {
-        this.text = text;
-    }
+	/**
+	 * Creates a new instance of {@link PlainText}.
+	 * @param text
+	 */
+	PlainText(String text) {
+		this.text = text;
+	}
 
-    /**
-     * Returns an encoding that is suitable for arguments of "IS LIKE"-clauses in SQL.
-     * <p>
-     * This means:
-     * <ul>
-     * <li>wildCard: encoded as the '%'-character</li>
-     * <li>singleChar: encoded as the '_'-character</li>
-     * <li>escape: encoded as the '\'-character</li>
-     * </ul>
-     *
-     * @return encoded string
-     */
-    public String toSQL() {
-        return toSQL( false );
-    }
+	/**
+	 * Returns an encoding that is suitable for arguments of "IS LIKE"-clauses in SQL.
+	 * <p>
+	 * This means:
+	 * <ul>
+	 * <li>wildCard: encoded as the '%'-character</li>
+	 * <li>singleChar: encoded as the '_'-character</li>
+	 * <li>escape: encoded as the '\'-character</li>
+	 * </ul>
+	 * @return encoded string
+	 */
+	public String toSQL() {
+		return toSQL(false);
+	}
 
-    /**
-     * Returns an encoding that is suitable for arguments of "IS LIKE"-clauses in SQL.
-     * <p>
-     * This means:
-     * <ul>
-     * <li>wildCard: encoded as the '%'-character</li>
-     * <li>singleChar: encoded as the '_'-character</li>
-     * <li>escape: encoded as the '\'-character</li>
-     * </ul>
-     *
-     * @param toLowerCase
-     *            true means: convert to lowercase letters
-     * @return encoded string
-     */
-    public String toSQL( boolean toLowerCase ) {
-        StringBuffer sqlEscaped = new StringBuffer( text.length() );
-        String rest = text;
-        while ( rest.length() > 0 ) {
-            char currentChar = rest.charAt( 0 );
-            switch ( currentChar ) {
-            case '%':
-            case '_':
-            case '"':
-            case '\\': {
-                sqlEscaped.append( '\\' );
-                sqlEscaped.append( currentChar );
-                break;
-            }
-            case '\'': {
-                sqlEscaped.append( '\'' );
-                sqlEscaped.append( currentChar );
-                break;
-            }
-            default: {
-                if ( toLowerCase ) {
-                    sqlEscaped.append( Character.toLowerCase( currentChar ) );
-                } else {
-                    sqlEscaped.append( currentChar );
-                }
-                break;
-            }
-            }
-            rest = rest.substring( 1 );
-        }
-        return sqlEscaped.toString();
-    }
+	/**
+	 * Returns an encoding that is suitable for arguments of "IS LIKE"-clauses in SQL.
+	 * <p>
+	 * This means:
+	 * <ul>
+	 * <li>wildCard: encoded as the '%'-character</li>
+	 * <li>singleChar: encoded as the '_'-character</li>
+	 * <li>escape: encoded as the '\'-character</li>
+	 * </ul>
+	 * @param toLowerCase true means: convert to lowercase letters
+	 * @return encoded string
+	 */
+	public String toSQL(boolean toLowerCase) {
+		StringBuffer sqlEscaped = new StringBuffer(text.length());
+		String rest = text;
+		while (rest.length() > 0) {
+			char currentChar = rest.charAt(0);
+			switch (currentChar) {
+				case '%':
+				case '_':
+				case '"':
+				case '\\': {
+					sqlEscaped.append('\\');
+					sqlEscaped.append(currentChar);
+					break;
+				}
+				case '\'': {
+					sqlEscaped.append('\'');
+					sqlEscaped.append(currentChar);
+					break;
+				}
+				default: {
+					if (toLowerCase) {
+						sqlEscaped.append(Character.toLowerCase(currentChar));
+					}
+					else {
+						sqlEscaped.append(currentChar);
+					}
+					break;
+				}
+			}
+			rest = rest.substring(1);
+		}
+		return sqlEscaped.toString();
+	}
 
-    @Override
-    public String toString() {
-        return "Text: " + text;
-    }
+	@Override
+	public String toString() {
+		return "Text: " + text;
+	}
+
 }

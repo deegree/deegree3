@@ -43,22 +43,20 @@ import org.deegree.feature.FeatureCollection;
 
 /**
  * Responsible for parsing 'feature collections'.
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
 public interface FeatureInfoParser {
 
-    /**
-     * @param featureInfoToParse
-     *            the feature info to parse, never <code>null</code>
-     * @param csvLayerNames
-     *            a comma separated list of layer names, should not be <code>null</code>
-     * @return a feature collection containingall features that could be reconstructed or synthesized, never
-     *         <code>null</code>
-     * @throws XMLStreamException
-     *             if the content could not be parsed as feature collection
-     */
-    FeatureCollection parseAsFeatureCollection( InputStream featureInfoToParse, String csvLayerNames )
-                            throws XMLStreamException;
+	/**
+	 * @param featureInfoToParse the feature info to parse, never <code>null</code>
+	 * @param csvLayerNames a comma separated list of layer names, should not be
+	 * <code>null</code>
+	 * @return a feature collection containingall features that could be reconstructed or
+	 * synthesized, never <code>null</code>
+	 * @throws XMLStreamException if the content could not be parsed as feature collection
+	 */
+	FeatureCollection parseAsFeatureCollection(InputStream featureInfoToParse, String csvLayerNames)
+			throws XMLStreamException;
 
 }

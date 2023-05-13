@@ -58,524 +58,521 @@ import org.deegree.workspace.standard.DefaultWorkspace;
 import org.slf4j.Logger;
 
 /**
- * Utility class for accessing and modifying the VM's proxy configuration and for opening URL connections that respect
- * proxy configurations which require authentication.
+ * Utility class for accessing and modifying the VM's proxy configuration and for opening
+ * URL connections that respect proxy configurations which require authentication.
  * <p>
- * Please note that Java's proxy configuration is VM-global: there is a set of system properties (proxyHost, proxyPort,
- * etc.) that determines the behaviour of network-related classes (e.g. in <code>java.net</code>). This makes sense, as
- * the proxy configuration is usually defined by the network environment of the physical machine.
+ * Please note that Java's proxy configuration is VM-global: there is a set of system
+ * properties (proxyHost, proxyPort, etc.) that determines the behaviour of
+ * network-related classes (e.g. in <code>java.net</code>). This makes sense, as the proxy
+ * configuration is usually defined by the network environment of the physical machine.
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  */
 public final class ProxySettings implements Initializable {
 
-    private static final Logger LOG = getLogger( ProxySettings.class );
+	private static final Logger LOG = getLogger(ProxySettings.class);
 
-    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.commons.proxy.jaxb";
+	private static final String CONFIG_JAXB_PACKAGE = "org.deegree.commons.proxy.jaxb";
 
-    private static final URL CONFIG_SCHEMA = ProxySettings.class.getResource( "/META-INF/schemas/proxy/proxy.xsd" );
+	private static final URL CONFIG_SCHEMA = ProxySettings.class.getResource("/META-INF/schemas/proxy/proxy.xsd");
 
-    private static final String PROXY_HOST = "proxyHost";
+	private static final String PROXY_HOST = "proxyHost";
 
-    private static final String HTTP_PROXY_HOST = "http.proxyHost";
-    
-    private static final String HTTPS_PROXY_HOST = "https.proxyHost";
+	private static final String HTTP_PROXY_HOST = "http.proxyHost";
 
-    private static final String FTP_PROXY_HOST = "ftp.proxyHost";
+	private static final String HTTPS_PROXY_HOST = "https.proxyHost";
 
-    private static final String PROXY_PORT = "proxyPort";
+	private static final String FTP_PROXY_HOST = "ftp.proxyHost";
 
-    private static final String HTTP_PROXY_PORT = "http.proxyPort";
-    
-    private static final String HTTPS_PROXY_PORT = "https.proxyPort";
+	private static final String PROXY_PORT = "proxyPort";
 
-    private static final String FTP_PROXY_PORT = "ftp.proxyPort";
+	private static final String HTTP_PROXY_PORT = "http.proxyPort";
 
-    private static final String PROXY_USER = "proxyUser";
+	private static final String HTTPS_PROXY_PORT = "https.proxyPort";
 
-    private static final String HTTP_PROXY_USER = "http.proxyUser";
-    
-    private static final String HTTPS_PROXY_USER = "https.proxyUser";
+	private static final String FTP_PROXY_PORT = "ftp.proxyPort";
 
-    private static final String FTP_PROXY_USER = "ftp.proxyUser";
+	private static final String PROXY_USER = "proxyUser";
 
-    private static final String PROXY_PASSWORD = "proxyPassword";
+	private static final String HTTP_PROXY_USER = "http.proxyUser";
 
-    private static final String HTTP_PROXY_PASSWORD = "http.proxyPassword";
-    
-    private static final String HTTPS_PROXY_PASSWORD = "https.proxyPassword";
+	private static final String HTTPS_PROXY_USER = "https.proxyUser";
 
-    private static final String FTP_PROXY_PASSWORD = "ftp.proxyPassword";
+	private static final String FTP_PROXY_USER = "ftp.proxyUser";
 
-    private static final String NON_PROXY_HOSTS = "nonProxyHosts";
+	private static final String PROXY_PASSWORD = "proxyPassword";
 
-    private static final String HTTP_NON_PROXY_HOSTS = "http.nonProxyHosts";
-    
-    private static final String HTTPS_NON_PROXY_HOSTS = "https.nonProxyHosts";
+	private static final String HTTP_PROXY_PASSWORD = "http.proxyPassword";
 
-    private static final String FTP_NON_PROXY_HOSTS = "ftp.nonProxyHosts";
+	private static final String HTTPS_PROXY_PASSWORD = "https.proxyPassword";
 
-    private static final String PROXY_SET = "proxySet";
+	private static final String FTP_PROXY_PASSWORD = "ftp.proxyPassword";
 
-    /**
-     * Sets/augments the VM's proxy configuration.
-     *
-     * @param workspace proxy.xml located in the workspaces is used
-     *                  in case the workspace root has no proxy.xml, never <code>null</code>
-     */
-    public void init( Workspace workspace ) {
+	private static final String NON_PROXY_HOSTS = "nonProxyHosts";
 
-        File globalProxy = new File( DeegreeWorkspace.getWorkspaceRoot(), "proxy.xml" );
+	private static final String HTTP_NON_PROXY_HOSTS = "http.nonProxyHosts";
 
-        File proxyConfigFile = new File( ( (DefaultWorkspace) workspace ).getLocation(), "proxy.xml" );
-        if ( proxyConfigFile.exists() ) {
-            LOG.info( "Using 'proxy.xml' from workspace." );
-        } else if ( globalProxy.exists() ) {
-            LOG.info( "Using global 'proxy.xml'." );
-            proxyConfigFile = globalProxy;
-        } else {
-            setupAuthenticator();
-            LOG.info( "No 'proxy.xml' file -- skipping set up of proxy configuration." );
-            return;
-        }
+	private static final String HTTPS_NON_PROXY_HOSTS = "https.nonProxyHosts";
 
-        LOG.info( "--------------------------------------------------------------------------------" );
-        LOG.info( "Proxy configuration." );
-        LOG.info( "--------------------------------------------------------------------------------" );
-        try {
-            ProxyConfiguration proxyConfig = (ProxyConfiguration) unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA,
-                                                                              new FileInputStream( proxyConfigFile ),
-                                                                              workspace );
-            if ( proxyConfig != null ) {
-                setupProxyParameters( proxyConfig );
-                LOG.info( "Current proxy settings (if present) will be overwritten: {}",
-                          proxyConfig.isOverrideSystemSettings() ? "yes" : "no" );
-            }
-        } catch ( Exception e ) {
-            String msg = "Could not unmarshall proxy configuration: " + e.getMessage();
-            throw new ResourceInitException( msg, e );
-        }
-        setupAuthenticator();
-        logProxyConfiguration( LOG );
-        LOG.info( "" );
-    }
+	private static final String FTP_NON_PROXY_HOSTS = "ftp.nonProxyHosts";
 
-    /**
-     * Sets/augments the VM's proxy configuration.
-     * 
-     * @param config
-     */
-    public synchronized static void setupProxyParameters( ProxyConfiguration config ) {
+	private static final String PROXY_SET = "proxySet";
 
-        String proxyHost = config.getProxyHost();
-        String httpProxyHost = config.getHttpProxyHost();
-        String httpsProxyHost = config.getHttpsProxyHost();
-        String ftpProxyHost = config.getFtpProxyHost();
-        int proxyPort = config.getProxyPort() != null ? config.getProxyPort().intValue() : -1;
-        int httpProxyPort = config.getHttpProxyPort() != null ? config.getHttpProxyPort().intValue() : -1;
-        int httpsProxyPort = config.getHttpsProxyPort() != null ? config.getHttpsProxyPort().intValue() : -1;
-        int ftpProxyPort = config.getFtpProxyPort() != null ? config.getFtpProxyPort().intValue() : -1;
-        String proxyUser = config.getProxyUser();
-        String httpProxyUser = config.getHttpProxyUser();
-        String httpsProxyUser = config.getHttpsProxyUser();
-        String ftpProxyUser = config.getFtpProxyUser();
-        String proxyPassword = config.getProxyPassword();
-        String httpProxyPassword = config.getHttpProxyPassword();
-        String httpsProxyPassword = config.getHttpsProxyPassword();
-        String ftpProxyPassword = config.getFtpProxyPassword();
-        String nonProxyHosts = config.getNonProxyHosts();
-        String httpNonProxyHosts = config.getHttpNonProxyHosts();
-        String httpsNonProxyHosts = config.getHttpsNonProxyHosts();
-        String ftpNonProxyHosts = config.getFtpNonProxyHosts();
+	/**
+	 * Sets/augments the VM's proxy configuration.
+	 * @param workspace proxy.xml located in the workspaces is used in case the workspace
+	 * root has no proxy.xml, never <code>null</code>
+	 */
+	public void init(Workspace workspace) {
 
-        setupProxyParameters( proxyHost, httpProxyHost, httpsProxyHost, ftpProxyHost, proxyPort, httpProxyPort,
-                              httpsProxyPort, ftpProxyPort, proxyUser, httpProxyUser, httpsProxyUser, ftpProxyUser,
-                              proxyPassword, httpProxyPassword, httpsProxyPassword, ftpProxyPassword, nonProxyHosts,
-                              httpNonProxyHosts, httpsNonProxyHosts, ftpNonProxyHosts,
-                              config.isOverrideSystemSettings() );
-    }
-    
-    /**
-     * Sets/augments the VM's proxy configuration.
-     * 
-     * @see ProxySettings#setupProxyParameters(String, String, String, String, int, int, int, int, String, String, String, String, String, String, String, String, String, String, String, String, boolean) 
-     */
-    @Deprecated
-    public synchronized static void setupProxyParameters( String proxyHost, String httpProxyHost, String ftpProxyHost,
-                                                          int proxyPort, int httpProxyPort, int ftpProxyPort,
-                                                          String proxyUser, String httpProxyUser, String ftpProxyUser,
-                                                          String proxyPassword, String httpProxyPassword,
-                                                          String ftpProxyPassword, String nonProxyHosts,
-                                                          String httpNonProxyHosts, String ftpNonProxyHosts,
-                                                          boolean override ) {
-        LOG.warn( "Using HTTP proxy settings for HTTPS proxy" );
-        setupProxyParameters( proxyHost, httpProxyHost, httpProxyHost, ftpProxyHost, proxyPort, httpProxyPort,
-                              httpProxyPort, ftpProxyPort, proxyUser, httpProxyUser, httpProxyUser, ftpProxyUser,
-                              proxyPassword, httpProxyPassword, httpProxyPassword, ftpProxyPassword, nonProxyHosts,
-                              httpNonProxyHosts, httpNonProxyHosts, ftpNonProxyHosts, override );
-    }
+		File globalProxy = new File(DeegreeWorkspace.getWorkspaceRoot(), "proxy.xml");
 
-    /**
-     * Sets/augments the VM's proxy configuration.
-     * 
-     * @param proxyHost
-     * @param httpProxyHost
-     * @param httpsProxyHost
-     * @param ftpProxyHost
-     * @param proxyPort
-     * @param httpProxyPort
-     * @param httpsProxyHost
-     * @param ftpProxyPort
-     * @param proxyUser
-     * @param httpProxyUser
-     * @param httpsProxyUser
-     * @param ftpProxyUser
-     * @param proxyPassword
-     * @param httpProxyPassword
-     * @param httpsProxyPassword
-     * @param ftpProxyPassword
-     * @param nonProxyHosts
-     * @param httpNonProxyHosts
-     * @param httpsNonProxyHosts
-     * @param ftpNonProxyHosts
-     * @param override
-     */
-    public synchronized static void setupProxyParameters( String proxyHost, String httpProxyHost, String httpsProxyHost, String ftpProxyHost,
-                                                          int proxyPort, int httpProxyPort, int httpsProxyPort, int ftpProxyPort,
-                                                          String proxyUser, String httpProxyUser, String httpsProxyUser, String ftpProxyUser,
-                                                          String proxyPassword, String httpProxyPassword, String httpsProxyPassword,
-                                                          String ftpProxyPassword, String nonProxyHosts,
-                                                          String httpNonProxyHosts, String httpsNonProxyHosts, String ftpNonProxyHosts,
-                                                          boolean override ) {
+		File proxyConfigFile = new File(((DefaultWorkspace) workspace).getLocation(), "proxy.xml");
+		if (proxyConfigFile.exists()) {
+			LOG.info("Using 'proxy.xml' from workspace.");
+		}
+		else if (globalProxy.exists()) {
+			LOG.info("Using global 'proxy.xml'.");
+			proxyConfigFile = globalProxy;
+		}
+		else {
+			setupAuthenticator();
+			LOG.info("No 'proxy.xml' file -- skipping set up of proxy configuration.");
+			return;
+		}
 
-        Properties props = System.getProperties();
-        if ( override || props.get( PROXY_HOST ) == null ) {
-            setProperty( PROXY_HOST, proxyHost );
-        }
-        if ( override || props.get( HTTP_PROXY_HOST ) == null ) {
-            setProperty( HTTP_PROXY_HOST, httpProxyHost );
-        }
-        if ( override || props.get( HTTPS_PROXY_HOST ) == null ) {
-            setProperty( HTTPS_PROXY_HOST, httpsProxyHost );
-        }
-        if ( override || props.get( FTP_PROXY_HOST ) == null ) {
-            setProperty( FTP_PROXY_HOST, ftpProxyHost );
-        }
-        if ( override || props.get( PROXY_PORT ) == null ) {
-            if ( proxyPort != -1 ) {
-                setProperty( PROXY_PORT, "" + proxyPort );
-            } else {
-                setProperty( PROXY_PORT, null );
-            }
-        }
-        if ( override || props.get( HTTP_PROXY_PORT ) == null ) {
-            if ( httpProxyPort != -1 ) {
-                setProperty( HTTP_PROXY_PORT, "" + httpProxyPort );
-            } else {
-                setProperty( HTTP_PROXY_PORT, null );
-            }
-        }
-        if ( override || props.get( HTTPS_PROXY_PORT ) == null ) {
-            if ( httpProxyPort != -1 ) {
-                setProperty( HTTPS_PROXY_PORT, "" + httpsProxyPort );
-            } else {
-                setProperty( HTTPS_PROXY_PORT, null );
-            }
-        }
-        if ( override || props.get( FTP_PROXY_PORT ) == null ) {
-            if ( ftpProxyPort != -1 ) {
-                setProperty( FTP_PROXY_PORT, "" + ftpProxyPort );
-            } else {
-                setProperty( FTP_PROXY_PORT, null );
-            }
-        }
+		LOG.info("--------------------------------------------------------------------------------");
+		LOG.info("Proxy configuration.");
+		LOG.info("--------------------------------------------------------------------------------");
+		try {
+			ProxyConfiguration proxyConfig = (ProxyConfiguration) unmarshall(CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA,
+					new FileInputStream(proxyConfigFile), workspace);
+			if (proxyConfig != null) {
+				setupProxyParameters(proxyConfig);
+				LOG.info("Current proxy settings (if present) will be overwritten: {}",
+						proxyConfig.isOverrideSystemSettings() ? "yes" : "no");
+			}
+		}
+		catch (Exception e) {
+			String msg = "Could not unmarshall proxy configuration: " + e.getMessage();
+			throw new ResourceInitException(msg, e);
+		}
+		setupAuthenticator();
+		logProxyConfiguration(LOG);
+		LOG.info("");
+	}
 
-        if ( override || props.get( PROXY_USER ) == null ) {
-            setProperty( PROXY_USER, proxyUser );
-        }
-        if ( override || props.get( HTTP_PROXY_USER ) == null ) {
-            setProperty( HTTP_PROXY_USER, httpProxyUser );
-        }
-        if ( override || props.get( HTTPS_PROXY_USER ) == null ) {
-            setProperty( HTTPS_PROXY_USER, httpsProxyUser );
-        }
-        if ( override || props.get( FTP_PROXY_USER ) == null ) {
-            setProperty( FTP_PROXY_USER, ftpProxyUser );
-        }
+	/**
+	 * Sets/augments the VM's proxy configuration.
+	 * @param config
+	 */
+	public synchronized static void setupProxyParameters(ProxyConfiguration config) {
 
-        if ( override || props.get( PROXY_PASSWORD ) == null ) {
-            setProperty( PROXY_PASSWORD, proxyPassword );
-        }
-        if ( override || props.get( HTTP_PROXY_PASSWORD ) == null ) {
-            setProperty( HTTP_PROXY_PASSWORD, httpProxyPassword );
-        }
-        if ( override || props.get( HTTPS_PROXY_PASSWORD ) == null ) {
-            setProperty( HTTPS_PROXY_PASSWORD, httpsProxyPassword );
-        }
-        if ( override || props.get( FTP_PROXY_PASSWORD ) == null ) {
-            setProperty( FTP_PROXY_PASSWORD, ftpProxyPassword );
-        }
+		String proxyHost = config.getProxyHost();
+		String httpProxyHost = config.getHttpProxyHost();
+		String httpsProxyHost = config.getHttpsProxyHost();
+		String ftpProxyHost = config.getFtpProxyHost();
+		int proxyPort = config.getProxyPort() != null ? config.getProxyPort().intValue() : -1;
+		int httpProxyPort = config.getHttpProxyPort() != null ? config.getHttpProxyPort().intValue() : -1;
+		int httpsProxyPort = config.getHttpsProxyPort() != null ? config.getHttpsProxyPort().intValue() : -1;
+		int ftpProxyPort = config.getFtpProxyPort() != null ? config.getFtpProxyPort().intValue() : -1;
+		String proxyUser = config.getProxyUser();
+		String httpProxyUser = config.getHttpProxyUser();
+		String httpsProxyUser = config.getHttpsProxyUser();
+		String ftpProxyUser = config.getFtpProxyUser();
+		String proxyPassword = config.getProxyPassword();
+		String httpProxyPassword = config.getHttpProxyPassword();
+		String httpsProxyPassword = config.getHttpsProxyPassword();
+		String ftpProxyPassword = config.getFtpProxyPassword();
+		String nonProxyHosts = config.getNonProxyHosts();
+		String httpNonProxyHosts = config.getHttpNonProxyHosts();
+		String httpsNonProxyHosts = config.getHttpsNonProxyHosts();
+		String ftpNonProxyHosts = config.getFtpNonProxyHosts();
 
-        if ( override || props.get( NON_PROXY_HOSTS ) == null ) {
-            setProperty( NON_PROXY_HOSTS, nonProxyHosts );
-        }
-        if ( override || props.get( HTTP_NON_PROXY_HOSTS ) == null ) {
-            setProperty( HTTP_NON_PROXY_HOSTS, httpNonProxyHosts );
-        }
-        if ( override || props.get( HTTPS_NON_PROXY_HOSTS ) == null ) {
-            setProperty( HTTPS_NON_PROXY_HOSTS, httpsNonProxyHosts );
-        }
-        if ( override || props.get( FTP_NON_PROXY_HOSTS ) == null ) {
-            setProperty( FTP_NON_PROXY_HOSTS, ftpNonProxyHosts );
-        }
-        
-        if ( override || props.get( PROXY_SET ) == null ) {
-            setProperty( PROXY_SET, "true" );
-        }
-    }
+		setupProxyParameters(proxyHost, httpProxyHost, httpsProxyHost, ftpProxyHost, proxyPort, httpProxyPort,
+				httpsProxyPort, ftpProxyPort, proxyUser, httpProxyUser, httpsProxyUser, ftpProxyUser, proxyPassword,
+				httpProxyPassword, httpsProxyPassword, ftpProxyPassword, nonProxyHosts, httpNonProxyHosts,
+				httpsNonProxyHosts, ftpNonProxyHosts, config.isOverrideSystemSettings());
+	}
 
-    private static void setProperty( String key, String value ) {
-        if ( value != null ) {
-            System.setProperty( key, value );
-        } else {
-            System.clearProperty( key );
-        }
-    }
+	/**
+	 * Sets/augments the VM's proxy configuration.
+	 *
+	 * @see ProxySettings#setupProxyParameters(String, String, String, String, int, int,
+	 * int, int, String, String, String, String, String, String, String, String, String,
+	 * String, String, String, boolean)
+	 */
+	@Deprecated
+	public synchronized static void setupProxyParameters(String proxyHost, String httpProxyHost, String ftpProxyHost,
+			int proxyPort, int httpProxyPort, int ftpProxyPort, String proxyUser, String httpProxyUser,
+			String ftpProxyUser, String proxyPassword, String httpProxyPassword, String ftpProxyPassword,
+			String nonProxyHosts, String httpNonProxyHosts, String ftpNonProxyHosts, boolean override) {
+		LOG.warn("Using HTTP proxy settings for HTTPS proxy");
+		setupProxyParameters(proxyHost, httpProxyHost, httpProxyHost, ftpProxyHost, proxyPort, httpProxyPort,
+				httpProxyPort, ftpProxyPort, proxyUser, httpProxyUser, httpProxyUser, ftpProxyUser, proxyPassword,
+				httpProxyPassword, httpProxyPassword, ftpProxyPassword, nonProxyHosts, httpNonProxyHosts,
+				httpNonProxyHosts, ftpNonProxyHosts, override);
+	}
 
-    /**
-     * This method should be used everywhere instead of <code>URL.openConnection()</code>, as it copes with proxies that
-     * require user authentication. This method will retrieve the configured password and user name.
-     * 
-     * @param url
-     * @return connection
-     * @throws IOException
-     */
-    public static URLConnection openURLConnection( URL url )
-                            throws IOException {
-        return openURLConnection( url, getProxyUser(), getProxyPassword() );
-    }
+	/**
+	 * Sets/augments the VM's proxy configuration.
+	 * @param proxyHost
+	 * @param httpProxyHost
+	 * @param httpsProxyHost
+	 * @param ftpProxyHost
+	 * @param proxyPort
+	 * @param httpProxyPort
+	 * @param httpsProxyHost
+	 * @param ftpProxyPort
+	 * @param proxyUser
+	 * @param httpProxyUser
+	 * @param httpsProxyUser
+	 * @param ftpProxyUser
+	 * @param proxyPassword
+	 * @param httpProxyPassword
+	 * @param httpsProxyPassword
+	 * @param ftpProxyPassword
+	 * @param nonProxyHosts
+	 * @param httpNonProxyHosts
+	 * @param httpsNonProxyHosts
+	 * @param ftpNonProxyHosts
+	 * @param override
+	 */
+	public synchronized static void setupProxyParameters(String proxyHost, String httpProxyHost, String httpsProxyHost,
+			String ftpProxyHost, int proxyPort, int httpProxyPort, int httpsProxyPort, int ftpProxyPort,
+			String proxyUser, String httpProxyUser, String httpsProxyUser, String ftpProxyUser, String proxyPassword,
+			String httpProxyPassword, String httpsProxyPassword, String ftpProxyPassword, String nonProxyHosts,
+			String httpNonProxyHosts, String httpsNonProxyHosts, String ftpNonProxyHosts, boolean override) {
 
-    /**
-     * This method should be used everywhere instead of <code>URL.openConnection()</code>, as it copes with proxies that
-     * require user authentication and http basic authentication.
-     * 
-     * @param url
-     * @return connection
-     * @throws IOException
-     */
-    public static URLConnection openURLConnection( URL url, String proxyUser, String proxyPass, String httpUser,
-                                                   String httpPass )
-                            throws IOException {
-        URLConnection conn = url.openConnection();
-        if ( proxyUser != null ) {
-            // TODO evaluate java.net.Authenticator
-            String userAndPass = Base64.encodeBase64String( ( proxyUser + ":" + proxyPass ).getBytes() );
-            conn.setRequestProperty( "Proxy-Authorization", "Basic " + userAndPass );
-        }
-        if ( httpUser != null ) {
-            // TODO evaluate java.net.Authenticator
-            String userAndPass = Base64.encodeBase64String( ( httpUser + ":" + httpPass ).getBytes() );
-            conn.setRequestProperty( "Authorization", "Basic " + userAndPass );
-        }
-        // TODO should this be a method parameter?
-        conn.setConnectTimeout( 5000 );
-        return conn;
-    }
+		Properties props = System.getProperties();
+		if (override || props.get(PROXY_HOST) == null) {
+			setProperty(PROXY_HOST, proxyHost);
+		}
+		if (override || props.get(HTTP_PROXY_HOST) == null) {
+			setProperty(HTTP_PROXY_HOST, httpProxyHost);
+		}
+		if (override || props.get(HTTPS_PROXY_HOST) == null) {
+			setProperty(HTTPS_PROXY_HOST, httpsProxyHost);
+		}
+		if (override || props.get(FTP_PROXY_HOST) == null) {
+			setProperty(FTP_PROXY_HOST, ftpProxyHost);
+		}
+		if (override || props.get(PROXY_PORT) == null) {
+			if (proxyPort != -1) {
+				setProperty(PROXY_PORT, "" + proxyPort);
+			}
+			else {
+				setProperty(PROXY_PORT, null);
+			}
+		}
+		if (override || props.get(HTTP_PROXY_PORT) == null) {
+			if (httpProxyPort != -1) {
+				setProperty(HTTP_PROXY_PORT, "" + httpProxyPort);
+			}
+			else {
+				setProperty(HTTP_PROXY_PORT, null);
+			}
+		}
+		if (override || props.get(HTTPS_PROXY_PORT) == null) {
+			if (httpProxyPort != -1) {
+				setProperty(HTTPS_PROXY_PORT, "" + httpsProxyPort);
+			}
+			else {
+				setProperty(HTTPS_PROXY_PORT, null);
+			}
+		}
+		if (override || props.get(FTP_PROXY_PORT) == null) {
+			if (ftpProxyPort != -1) {
+				setProperty(FTP_PROXY_PORT, "" + ftpProxyPort);
+			}
+			else {
+				setProperty(FTP_PROXY_PORT, null);
+			}
+		}
 
-    /**
-     * This method should be used everywhere instead of <code>URL.openConnection()</code>, as it copes with proxies that
-     * require user authentication.
-     * 
-     * @param url
-     * @param user
-     * @param pass
-     * @return connection
-     * @throws IOException
-     */
-    public static URLConnection openURLConnection( URL url, String user, String pass )
-                            throws IOException {
-        URLConnection conn = url.openConnection();
-        if ( user != null ) {
-            // TODO evaluate java.net.Authenticator
-            String userAndPass = Base64.encodeBase64String( ( user + ":" + pass ).getBytes() );
-            conn.setRequestProperty( "Proxy-Authorization", "Basic " + userAndPass );
-        }
-        // TODO should this be a method parameter?
-        conn.setConnectTimeout( 5000 );
-        return conn;
-    }
+		if (override || props.get(PROXY_USER) == null) {
+			setProperty(PROXY_USER, proxyUser);
+		}
+		if (override || props.get(HTTP_PROXY_USER) == null) {
+			setProperty(HTTP_PROXY_USER, httpProxyUser);
+		}
+		if (override || props.get(HTTPS_PROXY_USER) == null) {
+			setProperty(HTTPS_PROXY_USER, httpsProxyUser);
+		}
+		if (override || props.get(FTP_PROXY_USER) == null) {
+			setProperty(FTP_PROXY_USER, ftpProxyUser);
+		}
 
-    public static String getProxyHost() {
-        return System.getProperty( PROXY_HOST );
-    }
+		if (override || props.get(PROXY_PASSWORD) == null) {
+			setProperty(PROXY_PASSWORD, proxyPassword);
+		}
+		if (override || props.get(HTTP_PROXY_PASSWORD) == null) {
+			setProperty(HTTP_PROXY_PASSWORD, httpProxyPassword);
+		}
+		if (override || props.get(HTTPS_PROXY_PASSWORD) == null) {
+			setProperty(HTTPS_PROXY_PASSWORD, httpsProxyPassword);
+		}
+		if (override || props.get(FTP_PROXY_PASSWORD) == null) {
+			setProperty(FTP_PROXY_PASSWORD, ftpProxyPassword);
+		}
 
-    public static String getHttpProxyHost( boolean considerBaseConfig ) {
-        String result = System.getProperty( HTTP_PROXY_HOST );
-        if ( considerBaseConfig && result == null ) {
-            result = getProxyHost();
-        }
-        return result;
-    }
-    
-    public static String getHttpsProxyHost( boolean considerBaseConfig ) {
-        String result = System.getProperty( HTTPS_PROXY_HOST );
-        if ( considerBaseConfig && result == null ) {
-            result = getProxyHost();
-        }
-        return result;
-    }
+		if (override || props.get(NON_PROXY_HOSTS) == null) {
+			setProperty(NON_PROXY_HOSTS, nonProxyHosts);
+		}
+		if (override || props.get(HTTP_NON_PROXY_HOSTS) == null) {
+			setProperty(HTTP_NON_PROXY_HOSTS, httpNonProxyHosts);
+		}
+		if (override || props.get(HTTPS_NON_PROXY_HOSTS) == null) {
+			setProperty(HTTPS_NON_PROXY_HOSTS, httpsNonProxyHosts);
+		}
+		if (override || props.get(FTP_NON_PROXY_HOSTS) == null) {
+			setProperty(FTP_NON_PROXY_HOSTS, ftpNonProxyHosts);
+		}
 
-    public static String getFtpProxyHost( boolean considerBaseConfig ) {
-        String result = System.getProperty( FTP_PROXY_HOST );
-        if ( considerBaseConfig && result == null ) {
-            result = getProxyHost();
-        }
-        return result;
-    }
+		if (override || props.get(PROXY_SET) == null) {
+			setProperty(PROXY_SET, "true");
+		}
+	}
 
-    public static String getProxyPort() {
-        return System.getProperty( PROXY_PORT );
-    }
+	private static void setProperty(String key, String value) {
+		if (value != null) {
+			System.setProperty(key, value);
+		}
+		else {
+			System.clearProperty(key);
+		}
+	}
 
-    public static String getHttpProxyPort( boolean considerBaseConfig ) {
-        String result = System.getProperty( HTTP_PROXY_PORT );
-        if ( considerBaseConfig && result == null ) {
-            result = getProxyPort();
-        }
-        return result;
-    }
-    
-    public static String getHttpsProxyPort( boolean considerBaseConfig ) {
-        String result = System.getProperty( HTTPS_PROXY_PORT );
-        if ( considerBaseConfig && result == null ) {
-            result = getProxyPort();
-        }
-        return result;
-    }
+	/**
+	 * This method should be used everywhere instead of <code>URL.openConnection()</code>,
+	 * as it copes with proxies that require user authentication. This method will
+	 * retrieve the configured password and user name.
+	 * @param url
+	 * @return connection
+	 * @throws IOException
+	 */
+	public static URLConnection openURLConnection(URL url) throws IOException {
+		return openURLConnection(url, getProxyUser(), getProxyPassword());
+	}
 
-    public static String getFtpProxyPort( boolean considerBaseConfig ) {
-        String result = System.getProperty( FTP_PROXY_PORT );
-        if ( considerBaseConfig && result == null ) {
-            result = getProxyPort();
-        }
-        return result;
-    }
+	/**
+	 * This method should be used everywhere instead of <code>URL.openConnection()</code>,
+	 * as it copes with proxies that require user authentication and http basic
+	 * authentication.
+	 * @param url
+	 * @return connection
+	 * @throws IOException
+	 */
+	public static URLConnection openURLConnection(URL url, String proxyUser, String proxyPass, String httpUser,
+			String httpPass) throws IOException {
+		URLConnection conn = url.openConnection();
+		if (proxyUser != null) {
+			// TODO evaluate java.net.Authenticator
+			String userAndPass = Base64.encodeBase64String((proxyUser + ":" + proxyPass).getBytes());
+			conn.setRequestProperty("Proxy-Authorization", "Basic " + userAndPass);
+		}
+		if (httpUser != null) {
+			// TODO evaluate java.net.Authenticator
+			String userAndPass = Base64.encodeBase64String((httpUser + ":" + httpPass).getBytes());
+			conn.setRequestProperty("Authorization", "Basic " + userAndPass);
+		}
+		// TODO should this be a method parameter?
+		conn.setConnectTimeout(5000);
+		return conn;
+	}
 
-    public static String getProxyUser() {
-        return System.getProperty( PROXY_USER );
-    }
+	/**
+	 * This method should be used everywhere instead of <code>URL.openConnection()</code>,
+	 * as it copes with proxies that require user authentication.
+	 * @param url
+	 * @param user
+	 * @param pass
+	 * @return connection
+	 * @throws IOException
+	 */
+	public static URLConnection openURLConnection(URL url, String user, String pass) throws IOException {
+		URLConnection conn = url.openConnection();
+		if (user != null) {
+			// TODO evaluate java.net.Authenticator
+			String userAndPass = Base64.encodeBase64String((user + ":" + pass).getBytes());
+			conn.setRequestProperty("Proxy-Authorization", "Basic " + userAndPass);
+		}
+		// TODO should this be a method parameter?
+		conn.setConnectTimeout(5000);
+		return conn;
+	}
 
-    public static String getHttpProxyUser( boolean considerBaseConfig ) {
-        String result = System.getProperty( HTTP_PROXY_USER );
-        if ( considerBaseConfig && result == null ) {
-            result = getProxyUser();
-        }
-        return result;
-    }
-    
-    public static String getHttpsProxyUser( boolean considerBaseConfig ) {
-        String result = System.getProperty( HTTPS_PROXY_USER );
-        if ( considerBaseConfig && result == null ) {
-            result = getProxyUser();
-        }
-        return result;
-    }
+	public static String getProxyHost() {
+		return System.getProperty(PROXY_HOST);
+	}
 
-    public static String getFtpProxyUser( boolean considerBaseConfig ) {
-        String result = System.getProperty( FTP_PROXY_USER );
-        if ( considerBaseConfig && result == null ) {
-            result = getProxyUser();
-        }
-        return result;
-    }
+	public static String getHttpProxyHost(boolean considerBaseConfig) {
+		String result = System.getProperty(HTTP_PROXY_HOST);
+		if (considerBaseConfig && result == null) {
+			result = getProxyHost();
+		}
+		return result;
+	}
 
-    public static String getProxyPassword() {
-        return System.getProperty( PROXY_PASSWORD );
-    }
+	public static String getHttpsProxyHost(boolean considerBaseConfig) {
+		String result = System.getProperty(HTTPS_PROXY_HOST);
+		if (considerBaseConfig && result == null) {
+			result = getProxyHost();
+		}
+		return result;
+	}
 
-    public static String getHttpProxyPassword( boolean considerBaseConfig ) {
-        String result = System.getProperty( HTTP_PROXY_PASSWORD );
-        if ( considerBaseConfig && result == null ) {
-            result = getProxyPassword();
-        }
-        return result;
-    }
-    
-    public static String getHttpsProxyPassword( boolean considerBaseConfig ) {
-        String result = System.getProperty( HTTPS_PROXY_PASSWORD );
-        if ( considerBaseConfig && result == null ) {
-            result = getProxyPassword();
-        }
-        return result;
-    }
+	public static String getFtpProxyHost(boolean considerBaseConfig) {
+		String result = System.getProperty(FTP_PROXY_HOST);
+		if (considerBaseConfig && result == null) {
+			result = getProxyHost();
+		}
+		return result;
+	}
 
-    public static String getFtpProxyPassword( boolean considerBaseConfig ) {
-        String result = System.getProperty( FTP_PROXY_PASSWORD );
-        if ( considerBaseConfig && result == null ) {
-            result = getProxyPassword();
-        }
-        return result;
-    }
+	public static String getProxyPort() {
+		return System.getProperty(PROXY_PORT);
+	}
 
-    public static String getNonProxyHosts() {
-        return System.getProperty( NON_PROXY_HOSTS );
-    }
+	public static String getHttpProxyPort(boolean considerBaseConfig) {
+		String result = System.getProperty(HTTP_PROXY_PORT);
+		if (considerBaseConfig && result == null) {
+			result = getProxyPort();
+		}
+		return result;
+	}
 
-    public static String getHttpNonProxyHosts( boolean considerBaseConfig ) {
-        String result = System.getProperty( HTTP_NON_PROXY_HOSTS );
-        if ( considerBaseConfig && result == null ) {
-            result = getNonProxyHosts();
-        }
-        return result;
-    }
-    
-    public static String getHttpsNonProxyHosts( boolean considerBaseConfig ) {
-        String result = System.getProperty( HTTPS_NON_PROXY_HOSTS );
-        if ( considerBaseConfig && result == null ) {
-            result = getNonProxyHosts();
-        }
-        return result;
-    }
+	public static String getHttpsProxyPort(boolean considerBaseConfig) {
+		String result = System.getProperty(HTTPS_PROXY_PORT);
+		if (considerBaseConfig && result == null) {
+			result = getProxyPort();
+		}
+		return result;
+	}
 
-    public static String getFtpNonProxyHosts( boolean considerBaseConfig ) {
-        String result = System.getProperty( FTP_NON_PROXY_HOSTS );
-        if ( considerBaseConfig && result == null ) {
-            result = getNonProxyHosts();
-        }
-        return result;
-    }
+	public static String getFtpProxyPort(boolean considerBaseConfig) {
+		String result = System.getProperty(FTP_PROXY_PORT);
+		if (considerBaseConfig && result == null) {
+			result = getProxyPort();
+		}
+		return result;
+	}
 
-    public static void logProxyConfiguration( Logger log ) {
-        
-        log.info( "- proxyHost={}, http.proxyHost={}, https.proxyHost={}, ftp.proxyHost={}", getProxyHost(),
-                  getHttpProxyHost( false ), getHttpsProxyHost( false ), getFtpProxyHost( false ) );
-        log.info( "- proxyPort={}, http.proxyPort={}, https.proxyPort={}, ftp.proxyPort={}", getProxyPort(),
-                  getHttpProxyPort( false ), getHttpsProxyPort( false ), getFtpProxyPort( false ) );
-        log.info( "- proxyUser={}, http.proxyUser={}, https.proxyUser={}, ftp.proxyUser={}", getProxyUser(),
-                  getHttpProxyUser( false ), getHttpsProxyUser( false ), getFtpProxyUser( false ) );
-        log.info( "- proxyPassword={}, http.proxyPassword={}, https.proxyPassword={}, ftp.proxyPassword={}",
-                  getProxyPassword(), getHttpProxyPassword( false ), getHttpsProxyPassword( false ),
-                  getFtpProxyPassword( false ) );
-        log.info( "- nonProxyHosts={}, http.nonProxyHosts={},  https.nonProxyHosts={},ftp.nonProxyHosts={}",
-                  getNonProxyHosts(), getHttpNonProxyHosts( false ), getHttpsNonProxyHosts( false ),
-                  getFtpNonProxyHosts( false ) );
-    }
+	public static String getProxyUser() {
+		return System.getProperty(PROXY_USER);
+	}
 
-    private void setupAuthenticator() {
-        String httpProxyUser = getHttpProxyUser( true );
-        String httpProxyPassword = getHttpProxyPassword( true );
-        if ( httpProxyUser != null && httpProxyPassword != null )
-            Authenticator.setDefault( createAuthenticator( httpProxyUser, httpProxyPassword ) );
-    }
+	public static String getHttpProxyUser(boolean considerBaseConfig) {
+		String result = System.getProperty(HTTP_PROXY_USER);
+		if (considerBaseConfig && result == null) {
+			result = getProxyUser();
+		}
+		return result;
+	}
 
-    private Authenticator createAuthenticator( String httpProxyUser, String httpProxyPassword ) {
-        return new Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication( httpProxyUser, httpProxyPassword.toCharArray() );
-            }
-        };
-    }
+	public static String getHttpsProxyUser(boolean considerBaseConfig) {
+		String result = System.getProperty(HTTPS_PROXY_USER);
+		if (considerBaseConfig && result == null) {
+			result = getProxyUser();
+		}
+		return result;
+	}
+
+	public static String getFtpProxyUser(boolean considerBaseConfig) {
+		String result = System.getProperty(FTP_PROXY_USER);
+		if (considerBaseConfig && result == null) {
+			result = getProxyUser();
+		}
+		return result;
+	}
+
+	public static String getProxyPassword() {
+		return System.getProperty(PROXY_PASSWORD);
+	}
+
+	public static String getHttpProxyPassword(boolean considerBaseConfig) {
+		String result = System.getProperty(HTTP_PROXY_PASSWORD);
+		if (considerBaseConfig && result == null) {
+			result = getProxyPassword();
+		}
+		return result;
+	}
+
+	public static String getHttpsProxyPassword(boolean considerBaseConfig) {
+		String result = System.getProperty(HTTPS_PROXY_PASSWORD);
+		if (considerBaseConfig && result == null) {
+			result = getProxyPassword();
+		}
+		return result;
+	}
+
+	public static String getFtpProxyPassword(boolean considerBaseConfig) {
+		String result = System.getProperty(FTP_PROXY_PASSWORD);
+		if (considerBaseConfig && result == null) {
+			result = getProxyPassword();
+		}
+		return result;
+	}
+
+	public static String getNonProxyHosts() {
+		return System.getProperty(NON_PROXY_HOSTS);
+	}
+
+	public static String getHttpNonProxyHosts(boolean considerBaseConfig) {
+		String result = System.getProperty(HTTP_NON_PROXY_HOSTS);
+		if (considerBaseConfig && result == null) {
+			result = getNonProxyHosts();
+		}
+		return result;
+	}
+
+	public static String getHttpsNonProxyHosts(boolean considerBaseConfig) {
+		String result = System.getProperty(HTTPS_NON_PROXY_HOSTS);
+		if (considerBaseConfig && result == null) {
+			result = getNonProxyHosts();
+		}
+		return result;
+	}
+
+	public static String getFtpNonProxyHosts(boolean considerBaseConfig) {
+		String result = System.getProperty(FTP_NON_PROXY_HOSTS);
+		if (considerBaseConfig && result == null) {
+			result = getNonProxyHosts();
+		}
+		return result;
+	}
+
+	public static void logProxyConfiguration(Logger log) {
+
+		log.info("- proxyHost={}, http.proxyHost={}, https.proxyHost={}, ftp.proxyHost={}", getProxyHost(),
+				getHttpProxyHost(false), getHttpsProxyHost(false), getFtpProxyHost(false));
+		log.info("- proxyPort={}, http.proxyPort={}, https.proxyPort={}, ftp.proxyPort={}", getProxyPort(),
+				getHttpProxyPort(false), getHttpsProxyPort(false), getFtpProxyPort(false));
+		log.info("- proxyUser={}, http.proxyUser={}, https.proxyUser={}, ftp.proxyUser={}", getProxyUser(),
+				getHttpProxyUser(false), getHttpsProxyUser(false), getFtpProxyUser(false));
+		log.info("- proxyPassword={}, http.proxyPassword={}, https.proxyPassword={}, ftp.proxyPassword={}",
+				getProxyPassword(), getHttpProxyPassword(false), getHttpsProxyPassword(false),
+				getFtpProxyPassword(false));
+		log.info("- nonProxyHosts={}, http.nonProxyHosts={},  https.nonProxyHosts={},ftp.nonProxyHosts={}",
+				getNonProxyHosts(), getHttpNonProxyHosts(false), getHttpsNonProxyHosts(false),
+				getFtpNonProxyHosts(false));
+	}
+
+	private void setupAuthenticator() {
+		String httpProxyUser = getHttpProxyUser(true);
+		String httpProxyPassword = getHttpProxyPassword(true);
+		if (httpProxyUser != null && httpProxyPassword != null)
+			Authenticator.setDefault(createAuthenticator(httpProxyUser, httpProxyPassword));
+	}
+
+	private Authenticator createAuthenticator(String httpProxyUser, String httpProxyPassword) {
+		return new Authenticator() {
+			@Override
+			protected PasswordAuthentication getPasswordAuthentication() {
+				return new PasswordAuthentication(httpProxyUser, httpProxyPassword.toCharArray());
+			}
+		};
+	}
 
 }

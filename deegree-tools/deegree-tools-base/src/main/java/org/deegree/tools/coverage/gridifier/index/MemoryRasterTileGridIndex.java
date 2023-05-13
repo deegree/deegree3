@@ -46,156 +46,157 @@ import org.deegree.geometry.Envelope;
 
 /**
  * The <code></code> class TODO add class documentation here.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- * 
  * @version $Revision: $, $Date: $
  */
 public class MemoryRasterTileGridIndex {
 
-    private static final double AVG_LOAD = 100;
+	private static final double AVG_LOAD = 100;
 
-    private final float domainMinX;
+	private final float domainMinX;
 
-    private final float domainMinY;
+	private final float domainMinY;
 
-    // private final float domainMaxX;
+	// private final float domainMaxX;
 
-    // private final float domainMaxY;
+	// private final float domainMaxY;
 
-    private final float domainWidth;
+	private final float domainWidth;
 
-    private final float domainHeight;
+	private final float domainHeight;
 
-    private int rows;
+	private int rows;
 
-    private int columns;
+	private int columns;
 
-    private List<TileFile>[] gridCells;
+	private List<TileFile>[] gridCells;
 
-    // private float cellWidth;
+	// private float cellWidth;
 
-    // private float cellHeight;
+	// private float cellHeight;
 
-    @SuppressWarnings("unchecked")
-    public MemoryRasterTileGridIndex( float minX, float minY, float maxX, float maxY, Collection<TileFile> tileFiles ) {
-        this.domainMinX = minX;
-        this.domainMinY = minY;
-        // this.domainMaxX = maxX;
-        // this.domainMaxY = maxY;
-        this.domainWidth = maxX - minX;
-        this.domainHeight = maxY - minY;
+	@SuppressWarnings("unchecked")
+	public MemoryRasterTileGridIndex(float minX, float minY, float maxX, float maxY, Collection<TileFile> tileFiles) {
+		this.domainMinX = minX;
+		this.domainMinY = minY;
+		// this.domainMaxX = maxX;
+		// this.domainMaxY = maxY;
+		this.domainWidth = maxX - minX;
+		this.domainHeight = maxY - minY;
 
-        int n = (int) ( Math.sqrt( tileFiles.size() / AVG_LOAD ) + 0.5 );
-        if ( n == 0 ) {
-            n = 1;
-        }
-        System.out.println( tileFiles.size() + " tiles, -> using " + n + " rows and columns for an average load of "
-                            + AVG_LOAD );
-        rows = n;
-        columns = n;
-        // cellWidth = domainWidth / columns;
-        // cellHeight = domainHeight / columns;
-        gridCells = new List[rows * columns];
+		int n = (int) (Math.sqrt(tileFiles.size() / AVG_LOAD) + 0.5);
+		if (n == 0) {
+			n = 1;
+		}
+		System.out.println(
+				tileFiles.size() + " tiles, -> using " + n + " rows and columns for an average load of " + AVG_LOAD);
+		rows = n;
+		columns = n;
+		// cellWidth = domainWidth / columns;
+		// cellHeight = domainHeight / columns;
+		gridCells = new List[rows * columns];
 
-        for ( TileFile tileFile : tileFiles ) {
-            insertTile( tileFile );
-        }
+		for (TileFile tileFile : tileFiles) {
+			insertTile(tileFile);
+		}
 
-        int minLoad = Integer.MAX_VALUE;
-        int maxLoad = Integer.MIN_VALUE;
+		int minLoad = Integer.MAX_VALUE;
+		int maxLoad = Integer.MIN_VALUE;
 
-        int i = 0;
-        for ( int rowId = 0; rowId < rows; rowId++ ) {
-            for ( int columnId = 0; columnId < columns; columnId++ ) {
-                i++;
-                List<TileFile> filesInCell = gridCells[getCellIdx( columnId, rowId )];
-                if ( filesInCell != null ) {
-                    int number = filesInCell.size();
-                    if ( number < minLoad ) {
-                        minLoad = number;
-                    }
-                    if ( number > maxLoad ) {
-                        maxLoad = number;
-                    }
-                }
-            }
-        }
-        System.out.println( "i: " + i + ", min load: " + minLoad + ", max load: " + maxLoad );
-    }
+		int i = 0;
+		for (int rowId = 0; rowId < rows; rowId++) {
+			for (int columnId = 0; columnId < columns; columnId++) {
+				i++;
+				List<TileFile> filesInCell = gridCells[getCellIdx(columnId, rowId)];
+				if (filesInCell != null) {
+					int number = filesInCell.size();
+					if (number < minLoad) {
+						minLoad = number;
+					}
+					if (number > maxLoad) {
+						maxLoad = number;
+					}
+				}
+			}
+		}
+		System.out.println("i: " + i + ", min load: " + minLoad + ", max load: " + maxLoad);
+	}
 
-    private void insertTile( TileFile tileFile ) {
+	private void insertTile(TileFile tileFile) {
 
-        int minColumnId = getColumnIdx( (float) tileFile.getGeoEnvelope().getMin().get0() );
-        int minRowId = getRowIdx( (float) tileFile.getGeoEnvelope().getMin().get1() );
-        int maxColumnId = getColumnIdx( (float) tileFile.getGeoEnvelope().getMax().get0() );
-        int maxRowId = getRowIdx( (float) tileFile.getGeoEnvelope().getMax().get1() );
+		int minColumnId = getColumnIdx((float) tileFile.getGeoEnvelope().getMin().get0());
+		int minRowId = getRowIdx((float) tileFile.getGeoEnvelope().getMin().get1());
+		int maxColumnId = getColumnIdx((float) tileFile.getGeoEnvelope().getMax().get0());
+		int maxRowId = getRowIdx((float) tileFile.getGeoEnvelope().getMax().get1());
 
-        for ( int rowId = minRowId; rowId <= maxRowId; rowId++ ) {
-            for ( int columnId = minColumnId; columnId <= maxColumnId; columnId++ ) {
-                List<TileFile> filesInCell = gridCells[getCellIdx( columnId, rowId )];
-                if ( filesInCell == null ) {
-                    filesInCell = new ArrayList<TileFile>();
-                    gridCells[getCellIdx( columnId, rowId )] = filesInCell;
-                }
-                filesInCell.add( tileFile );
-            }
-        }
-    }
+		for (int rowId = minRowId; rowId <= maxRowId; rowId++) {
+			for (int columnId = minColumnId; columnId <= maxColumnId; columnId++) {
+				List<TileFile> filesInCell = gridCells[getCellIdx(columnId, rowId)];
+				if (filesInCell == null) {
+					filesInCell = new ArrayList<TileFile>();
+					gridCells[getCellIdx(columnId, rowId)] = filesInCell;
+				}
+				filesInCell.add(tileFile);
+			}
+		}
+	}
 
-    public Set<TileFile> getTiles( Envelope bbox /* float minX, float minY, float maxX, float maxY */) {
+	public Set<TileFile> getTiles(
+			Envelope bbox /* float minX, float minY, float maxX, float maxY */) {
 
-        Set<TileFile> tiles = new HashSet<TileFile>();
-        org.deegree.geometry.primitive.Point min = bbox.getMin();
-        org.deegree.geometry.primitive.Point max = bbox.getMax();
-        int minColumnId = getColumnIdx( (float) min.get0() );
-        int minRowId = getRowIdx( (float) min.get1() );
-        int maxColumnId = getColumnIdx( (float) max.get0() );
-        int maxRowId = getRowIdx( (float) max.get1() );
+		Set<TileFile> tiles = new HashSet<TileFile>();
+		org.deegree.geometry.primitive.Point min = bbox.getMin();
+		org.deegree.geometry.primitive.Point max = bbox.getMax();
+		int minColumnId = getColumnIdx((float) min.get0());
+		int minRowId = getRowIdx((float) min.get1());
+		int maxColumnId = getColumnIdx((float) max.get0());
+		int maxRowId = getRowIdx((float) max.get1());
 
-        for ( int rowId = minRowId; rowId <= maxRowId; rowId++ ) {
-            for ( int columnId = minColumnId; columnId <= maxColumnId; columnId++ ) {
-                List<TileFile> filesInCell = gridCells[getCellIdx( columnId, rowId )];
-                if ( filesInCell != null ) {
-                    for ( TileFile tileFile : filesInCell ) {
-                        if ( tileFile.intersects( bbox ) ) {
-                            tiles.add( tileFile );
-                        }
-                    }
-                }
-            }
-        }
+		for (int rowId = minRowId; rowId <= maxRowId; rowId++) {
+			for (int columnId = minColumnId; columnId <= maxColumnId; columnId++) {
+				List<TileFile> filesInCell = gridCells[getCellIdx(columnId, rowId)];
+				if (filesInCell != null) {
+					for (TileFile tileFile : filesInCell) {
+						if (tileFile.intersects(bbox)) {
+							tiles.add(tileFile);
+						}
+					}
+				}
+			}
+		}
 
-        return tiles;
-    }
+		return tiles;
+	}
 
-    private int getCellIdx( int columnIdx, int rowIdx ) {
-        int idx = rowIdx * columns + columnIdx;
-        return idx;
-    }
+	private int getCellIdx(int columnIdx, int rowIdx) {
+		int idx = rowIdx * columns + columnIdx;
+		return idx;
+	}
 
-    public int getColumnIdx( float x ) {
-        float dx = x - domainMinX;
-        int columnIdx = (int) ( columns * dx / domainWidth );
-        if ( columnIdx < 0 ) {
-            columnIdx = 0;
-        }
-        if ( columnIdx > columns - 1 ) {
-            columnIdx = columns - 1;
-        }
-        return columnIdx;
-    }
+	public int getColumnIdx(float x) {
+		float dx = x - domainMinX;
+		int columnIdx = (int) (columns * dx / domainWidth);
+		if (columnIdx < 0) {
+			columnIdx = 0;
+		}
+		if (columnIdx > columns - 1) {
+			columnIdx = columns - 1;
+		}
+		return columnIdx;
+	}
 
-    public int getRowIdx( float y ) {
-        float dy = y - domainMinY;
-        int rowIdx = (int) ( rows * dy / domainHeight );
-        if ( rowIdx < 0 ) {
-            rowIdx = 0;
-        }
-        if ( rowIdx > rows - 1 ) {
-            rowIdx = rows - 1;
-        }
-        return rowIdx;
-    }
+	public int getRowIdx(float y) {
+		float dy = y - domainMinY;
+		int rowIdx = (int) (rows * dy / domainHeight);
+		if (rowIdx < 0) {
+			rowIdx = 0;
+		}
+		if (rowIdx > rows - 1) {
+			rowIdx = rows - 1;
+		}
+		return rowIdx;
+	}
+
 }

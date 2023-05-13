@@ -38,6 +38,6 @@ import org.deegree.process.jaxb.java.ProcessDefinition.OutputParameters;
 
 interface FMEInvocationStrategy {
 
-    OutputParameters getOutputParameters();
+	OutputParameters getOutputParameters();
 
 }

@@ -63,49 +63,54 @@ import org.deegree.tile.TileDataLevel;
 import org.deegree.tile.TileDataSet;
 
 /**
- * Responsible for fetching features from tile layers, prepared to immediately be serialized.
- * 
+ * Responsible for fetching features from tile layers, prepared to immediately be
+ * serialized.
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
- * 
  * @version $Revision: $, $Date: $
  */
 class FeatureInfoFetcher {
 
-    private TileLayer layer;
+	private TileLayer layer;
 
-    private GetFeatureInfo gfi;
+	private GetFeatureInfo gfi;
 
-    FeatureInfoFetcher( TileLayer layer, GetFeatureInfo gfi ) {
-        this.layer = layer;
-        this.gfi = gfi;
-    }
+	FeatureInfoFetcher(TileLayer layer, GetFeatureInfo gfi) {
+		this.layer = layer;
+		this.gfi = gfi;
+	}
 
-    void fetch( FeatureInfoManager featureInfoManager, HttpResponseBuffer response )
-                            throws OWSException, IOException, XMLStreamException {
-        TileDataSet tds = layer.getTileDataSet( gfi.getTileMatrixSet() );
-        if ( tds == null ) {
-            throw new OWSException( "The TileMatrixSet parameter value of '" + gfi.getTileMatrixSet() + "' is not valid.", INVALID_PARAMETER_VALUE, "tileMatrixSet" );
-        }
-        TileDataLevel tdl = tds.getTileDataLevel( gfi.getTileMatrix() );
-        if ( tdl == null ) {
-            throw new OWSException( "The TileMatrix parameter value of '" + gfi.getTileMatrix() + "' is not valid.", INVALID_PARAMETER_VALUE, "tileMatrix" );
-        }
-        List<String> styles = tdl.getStyles();
-        if ( styles != null ) {
-            for (String style : styles) {
-                if ( !style.equals( gfi.getStyle() ) ) {
-                    throw new OWSException( "The STYLE parameter value of '" + gfi.getStyle() + "' is not valid.", INVALID_PARAMETER_VALUE, "style" );
-                }
-            } 
-        }
-        Tile t = tdl.getTile( gfi.getTileCol(), gfi.getTileRow() );
-        FeatureCollection col = t.getFeatures( gfi.getI(), gfi.getJ(), 10 );
-        ICRS crs = tds.getTileMatrixSet().getSpatialMetadata().getEnvelope().getCoordinateSystem();
-        HashMap<String, String> nsBindings = new HashMap<String, String>();
+	void fetch(FeatureInfoManager featureInfoManager, HttpResponseBuffer response)
+			throws OWSException, IOException, XMLStreamException {
+		TileDataSet tds = layer.getTileDataSet(gfi.getTileMatrixSet());
+		if (tds == null) {
+			throw new OWSException(
+					"The TileMatrixSet parameter value of '" + gfi.getTileMatrixSet() + "' is not valid.",
+					INVALID_PARAMETER_VALUE, "tileMatrixSet");
+		}
+		TileDataLevel tdl = tds.getTileDataLevel(gfi.getTileMatrix());
+		if (tdl == null) {
+			throw new OWSException("The TileMatrix parameter value of '" + gfi.getTileMatrix() + "' is not valid.",
+					INVALID_PARAMETER_VALUE, "tileMatrix");
+		}
+		List<String> styles = tdl.getStyles();
+		if (styles != null) {
+			for (String style : styles) {
+				if (!style.equals(gfi.getStyle())) {
+					throw new OWSException("The STYLE parameter value of '" + gfi.getStyle() + "' is not valid.",
+							INVALID_PARAMETER_VALUE, "style");
+				}
+			}
+		}
+		Tile t = tdl.getTile(gfi.getTileCol(), gfi.getTileRow());
+		FeatureCollection col = t.getFeatures(gfi.getI(), gfi.getJ(), 10);
+		ICRS crs = tds.getTileMatrixSet().getSpatialMetadata().getEnvelope().getCoordinateSystem();
+		HashMap<String, String> nsBindings = new HashMap<String, String>();
 
-        FeatureInfoParams params = new FeatureInfoParams( nsBindings, col, gfi.getInfoFormat(), false, null, null, crs );
+		FeatureInfoParams params = new FeatureInfoParams(nsBindings, col, gfi.getInfoFormat(), false, null, null, crs);
 
-        featureInfoManager.serializeFeatureInfo( params, new StandardFeatureInfoContext( response ) );
-    }
+		featureInfoManager.serializeFeatureInfo(params, new StandardFeatureInfoContext(response));
+	}
+
 }

@@ -51,39 +51,37 @@ import org.junit.Test;
 
 /**
  * Tests for {@link LockFeatureXMLAdapter}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class GetFeatureWithLockXMLAdapterTest {
 
-    @Test
-    public void testWfs200Example1()
-                            throws Exception {
-        GetFeatureWithLockXMLAdapter parser = new GetFeatureWithLockXMLAdapter();
-        parser.load( GetFeatureWithLockXMLAdapterTest.class.getResource( "wfs200/example1.xml" ) );
-        GetFeatureWithLock request = parser.parse();
-        assertEquals( VERSION_200, request.getVersion() );
+	@Test
+	public void testWfs200Example1() throws Exception {
+		GetFeatureWithLockXMLAdapter parser = new GetFeatureWithLockXMLAdapter();
+		parser.load(GetFeatureWithLockXMLAdapterTest.class.getResource("wfs200/example1.xml"));
+		GetFeatureWithLock request = parser.parse();
+		assertEquals(VERSION_200, request.getVersion());
 
-        assertEquals( 1, request.getQueries().size() );
-        assertNull( request.getExpiryInSeconds() );
-        assertNull( request.getLockAll() );
-        assertNull( request.getHandle() );
-    }
+		assertEquals(1, request.getQueries().size());
+		assertNull(request.getExpiryInSeconds());
+		assertNull(request.getLockAll());
+		assertNull(request.getHandle());
+	}
 
-    @Test
-    public void testWfs200Example2()
-                            throws Exception {
-        GetFeatureWithLockXMLAdapter parser = new GetFeatureWithLockXMLAdapter();
-        parser.load( GetFeatureWithLockXMLAdapterTest.class.getResource( "wfs200/example2.xml" ) );
-        GetFeatureWithLock request = parser.parse();
-        assertEquals( VERSION_200, request.getVersion() );
+	@Test
+	public void testWfs200Example2() throws Exception {
+		GetFeatureWithLockXMLAdapter parser = new GetFeatureWithLockXMLAdapter();
+		parser.load(GetFeatureWithLockXMLAdapterTest.class.getResource("wfs200/example2.xml"));
+		GetFeatureWithLock request = parser.parse();
+		assertEquals(VERSION_200, request.getVersion());
 
-        assertEquals( 1, request.getQueries().size() );
-        assertEquals( new BigInteger( "902544598624567873156901" ), request.getExpiryInSeconds() );
-        assertFalse( request.getLockAll() );
-        assertNull( request.getHandle() );
-    }
+		assertEquals(1, request.getQueries().size());
+		assertEquals(new BigInteger("902544598624567873156901"), request.getExpiryInSeconds());
+		assertFalse(request.getLockAll());
+		assertNull(request.getHandle());
+	}
+
 }

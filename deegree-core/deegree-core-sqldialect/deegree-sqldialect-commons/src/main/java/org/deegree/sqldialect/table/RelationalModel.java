@@ -44,45 +44,40 @@ import org.deegree.commons.jdbc.SQLIdentifier;
 
 /**
  * Metadata for a number of tables in an SQL database.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @author last edited by: $Author: markus $
- * 
  * @version $Revision: $, $Date: $
  */
 public class RelationalModel {
 
-    private Map<SQLIdentifier, TableDefinition> tableNameToTable = new TreeMap<SQLIdentifier, TableDefinition>();
+	private Map<SQLIdentifier, TableDefinition> tableNameToTable = new TreeMap<SQLIdentifier, TableDefinition>();
 
-    /**
-     * Creates a new <code>RelationalModel</code> instance.
-     * 
-     * @param tables
-     *            tables, must not be <code>null</code>
-     */
-    public RelationalModel( List<TableDefinition> tables ) {
-        for ( TableDefinition table : tables ) {
-            tableNameToTable.put( table.getName(), table );
-        }
-    }
+	/**
+	 * Creates a new <code>RelationalModel</code> instance.
+	 * @param tables tables, must not be <code>null</code>
+	 */
+	public RelationalModel(List<TableDefinition> tables) {
+		for (TableDefinition table : tables) {
+			tableNameToTable.put(table.getName(), table);
+		}
+	}
 
-    /**
-     * Returns the tables.
-     * 
-     * @return tables, never <code>null</code>
-     */
-    public List<TableDefinition> getTables() {
-        return new ArrayList<TableDefinition>( tableNameToTable.values() );
-    }
+	/**
+	 * Returns the tables.
+	 * @return tables, never <code>null</code>
+	 */
+	public List<TableDefinition> getTables() {
+		return new ArrayList<TableDefinition>(tableNameToTable.values());
+	}
 
-    /**
-     * Returns the specified table.
-     * 
-     * @param name
-     *            name of the table, must not be <code>null</code>
-     * @return specified table, may be <code>null</code> (no such table)
-     */
-    public TableDefinition getTable( SQLIdentifier name ) {
-        return tableNameToTable.get( name );
-    }
+	/**
+	 * Returns the specified table.
+	 * @param name name of the table, must not be <code>null</code>
+	 * @return specified table, may be <code>null</code> (no such table)
+	 */
+	public TableDefinition getTable(SQLIdentifier name) {
+		return tableNameToTable.get(name);
+	}
+
 }

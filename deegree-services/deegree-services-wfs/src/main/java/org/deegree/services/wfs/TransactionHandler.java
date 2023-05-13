@@ -150,845 +150,863 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Handles a single {@link Transaction} request for the {@link WebFeatureService}.
- * 
+ *
  * @see WebFeatureService
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 class TransactionHandler {
 
-    private static final Logger LOG = LoggerFactory.getLogger( TransactionHandler.class );
-
-    private static final SimpleGeometryFactory GEOM_FACTORY = new SimpleGeometryFactory();
-
-    private final WebFeatureService master;
-
-    private final WfsFeatureStoreManager service;
-
-    private final Transaction request;
-
-    private final Map<FeatureStore, FeatureStoreTransaction> acquiredTransactions = new HashMap<FeatureStore, FeatureStoreTransaction>();
-
-    private final ActionResults inserted = new ActionResults();
-
-    private final ActionResults updated = new ActionResults();
-
-    private final ActionResults replaced = new ActionResults();
-
-    private int deleted;
-
-    private final IDGenMode idGenMode;
-
-    private final ReferenceResolvingMode referenceResolvingMode;
-
-    /**
-     * Creates a new {@link TransactionHandler} instance that uses the given service to lookup requested
-     * {@link FeatureType}s.
-     *  @param master
-     *
-     * @param service
-     *            WFS instance used to lookup the feature types
-     * @param request
- *            request to be handled
-     * @param idGenMode
-     * @param referenceResolvingMode
-     */
-    TransactionHandler( WebFeatureService master, WfsFeatureStoreManager service, Transaction request,
-                        IDGenMode idGenMode, ReferenceResolvingMode referenceResolvingMode ) {
-        this.master = master;
-        this.service = service;
-        this.request = request;
-        this.idGenMode = idGenMode;
-        this.referenceResolvingMode = referenceResolvingMode;
-    }
-
-    /**
-     * Performs the given {@link Transaction} request.
-     * 
-     * @param response
-     *            response that is used to write the result
-     * @throws OWSException
-     *             if a WFS specific exception occurs, e.g. a feature type is not served
-     * @throws IOException
-     * @throws XMLStreamException
-     */
-    void doTransaction( HttpResponseBuffer response )
-                            throws OWSException, XMLStreamException, IOException {
-
-        LOG.debug( "doTransaction: " + request );
-
-        try {
-            Lock lock = null;
-            String lockId = request.getLockId();
-            LockManager manager = null;
-            try {
-                // TODO: determine correct feature store
-                manager = service.getStores()[0].getLockManager();
-            } catch ( FeatureStoreException e ) {
-                throw new OWSException( "Cannot acquire lock manager: " + e.getMessage(),
-                                        OWSException.NO_APPLICABLE_CODE );
-            }
-            if ( lockId != null && manager != null ) {
-                lock = manager.getLock( lockId );
-            }
-
-            for ( TransactionAction operation : request.getActions() ) {
-                switch ( operation.getType() ) {
-                case DELETE: {
-                    doDelete( (Delete) operation, lock );
-                    break;
-                }
-                case INSERT: {
-                    doInsert( (Insert) operation );
-                    break;
-                }
-                case NATIVE: {
-                    doNative( (Native) operation );
-                    break;
-                }
-                case UPDATE: {
-                    doUpdate( (Update) operation, lock );
-                    break;
-                }
-                case REPLACE: {
-                    doReplace( (Replace) operation, lock );
-                    break;
-                }
-                }
-            }
-
-            // if a lockId has been specified and releaseAction="ALL", release lock
-            ReleaseAction releaseAction = request.getReleaseAction();
-            if ( lock != null && ( releaseAction == null || releaseAction == ALL || lock.getNumLocked() == 0 ) ) {
-                lock.release();
-            } else {
-                // TODO renew expiry timeout according to WFS spec
-            }
-
-            for ( FeatureStoreTransaction ta : acquiredTransactions.values() ) {
-                LOG.debug( "Committing feature store transaction:" + ta );
-                ta.commit();
-            }
-        } catch ( MissingParameterException e ) {
-            // needed for CITE compliance (wfs:wfs-1.1.0-Transaction-tc12.1)
-            LOG.debug( "Error occured during transaction, performing rollback." );
-            for ( FeatureStoreTransaction ta : acquiredTransactions.values() ) {
-                try {
-                    LOG.debug( "Rolling back feature store transaction:" + ta );
-                    ta.rollback();
-                } catch ( FeatureStoreException e1 ) {
-                    LOG.debug( "Error occured during rollback: " + e.getMessage(), e );
-                }
-            }
-            if ( request.getVersion().equals( VERSION_100 ) ) {
-                sendResponse100( request, response, true );
-                return;
-            }
-            throw new OWSException( "Error occured during transaction: " + e.getMessage(), MISSING_PARAMETER_VALUE,
-                                    e.getName() );
-        } catch ( InvalidParameterValueException e ) {
-            // needed for CITE compliance (wfs:wfs-1.1.0-LockFeature-tc2.1)
-            LOG.debug( "Error occured during transaction, performing rollback." );
-            for ( FeatureStoreTransaction ta : acquiredTransactions.values() ) {
-                try {
-                    LOG.debug( "Rolling back feature store transaction:" + ta );
-                    ta.rollback();
-                } catch ( FeatureStoreException e1 ) {
-                    LOG.debug( "Error occured during rollback: " + e.getMessage(), e );
-                }
-            }
-            if ( request.getVersion().equals( VERSION_100 ) ) {
-                sendResponse100( request, response, true );
-                return;
-            }
-            throw new OWSException( "Error occured during transaction: " + e.getMessage(), INVALID_PARAMETER_VALUE,
-                                    e.getName() );
-        } catch ( OWSException e ) {
-            LOG.debug( "Error occured during transaction, performing rollback." );
-            for ( FeatureStoreTransaction ta : acquiredTransactions.values() ) {
-                try {
-                    LOG.debug( "Rolling back feature store transaction:" + ta );
-                    ta.rollback();
-                } catch ( FeatureStoreException e1 ) {
-                    LOG.debug( "Error occured during rollback: " + e.getMessage(), e );
-                }
-            }
-            throw e;
-        } catch ( Exception e ) {
-            LOG.debug( "Error occured during transaction, performing rollback." );
-            LOG.trace( "Stack trace:", e );
-            for ( FeatureStoreTransaction ta : acquiredTransactions.values() ) {
-                try {
-                    LOG.debug( "Rolling back feature store transaction:" + ta );
-                    ta.rollback();
-                } catch ( FeatureStoreException e1 ) {
-                    LOG.debug( "Error occured during rollback: " + e.getMessage(), e );
-                }
-            }
-            throw new OWSException( "Error occured during transaction: " + e.getMessage(), NO_APPLICABLE_CODE );
-        }
-
-        if ( VERSION_100.equals( request.getVersion() ) ) {
-            sendResponse100( request, response, false );
-        } else if ( VERSION_110.equals( request.getVersion() ) ) {
-            sendResponse110( response );
-        } else if ( VERSION_200.equals( request.getVersion() ) ) {
-            sendResponse200( response );
-        } else {
-            throw new UnsupportedOperationException();
-        }
-    }
-
-    private void doDelete( Delete delete, Lock lock )
-                            throws OWSException {
-
-        LOG.debug( "doDelete: " + delete );
-        QName ftName = delete.getTypeName();
-        FeatureStore fs = service.getStore( ftName );
-        if ( fs == null ) {
-            throw new OWSException( Messages.get( "WFS_FEATURE_TYPE_NOT_SERVED", ftName ), INVALID_PARAMETER_VALUE );
-        }
-
-        FeatureStoreTransaction ta = acquireTransaction( fs );
-
-        Filter filter = delete.getFilter();
-        // superimpose default query CRS
-        Filters.setDefaultCRS( filter, master.getDefaultQueryCrs() );
-
-        try {
-            switch ( filter.getType() ) {
-            case ID_FILTER: {
-                deleted += ta.performDelete( (IdFilter) filter, lock );
-                break;
-            }
-            case OPERATOR_FILTER: {
-                deleted += ta.performDelete( ftName, (OperatorFilter) filter, lock );
-                break;
-            }
-            }
-        } catch ( FeatureStoreException e ) {
-            throw new OWSException( Messages.get( "WFS_ERROR_PERFORMING_DELETE", e.getMessage() ), NO_APPLICABLE_CODE );
-        }
-    }
-
-    private void doInsert( Insert insert )
-                            throws OWSException {
-
-        LOG.debug( "doInsert: " + insert );
-
-        if ( service.getStores().length == 0 ) {
-            throw new OWSException( "Cannot perform insert. No feature store defined.", NO_APPLICABLE_CODE );
-        }
-
-        // TODO deal with this problem
-        if ( service.getStores().length > 1 ) {
-            String msg = "Cannot perform insert. More than one feature store is active -- "
-                         + "this is currently not supported. Please deactivate all feature stores, "
-                         + "but one in order to make Insert transactions work.";
-            throw new OWSException( msg, NO_APPLICABLE_CODE );
-        }
-
-        ICRS defaultCRS = determineDefaultCrs( insert );
-        GMLVersion inputFormat = determineFormat( request.getVersion(), insert.getInputFormat() );
-
-        // TODO streaming
-        try {
-            XMLStreamReader xmlStream = insert.getFeatures();
-            FeatureCollection fc = parseFeaturesOrCollection( xmlStream, inputFormat, defaultCRS );
-            evaluateValidDomainOfGeometriesInFeature( fc, insert.getHandle() );
-            FeatureStore fs = service.getStores()[0];
-            FeatureStoreTransaction ta = acquireTransaction( fs );
-            IDGenMode mode = insert.getIdGen();
-            if ( mode == null ) {
-                if ( VERSION_110.equals( request.getVersion() ) ) {
-                    mode = GENERATE_NEW;
-                } else {
-                    mode = idGenMode;
-                }
-            }
-            List<String> newFids = ta.performInsert( fc, mode );
-            for ( String newFid : newFids ) {
-                inserted.add( newFid, insert.getHandle() );
-            }
-        } catch ( OWSException e ) {
-            throw e;
-        } catch ( XMLParsingException e ) {
-            String exceptionCode = INVALID_PARAMETER_VALUE;
-            if ( VERSION_200.equals( request.getVersion() ) ) {
-                exceptionCode = OWSException.INVALID_VALUE;
-            }
-            LOG.debug( e.getMessage(), e );
-            String msg = "Cannot perform insert operation: " + e.getMessage();
-            throw new OWSException( msg, exceptionCode );
-        } catch ( Exception e ) {
-            LOG.debug( e.getMessage(), e );
-            String msg = "Cannot perform insert operation: " + e.getMessage();
-            throw new OWSException( msg, INVALID_PARAMETER_VALUE );
-        }
-    }
-
-    private FeatureCollection parseFeaturesOrCollection( XMLStreamReader xmlStream, GMLVersion inputFormat,
-                                                         ICRS defaultCRS )
-                                                                                 throws XMLStreamException,
-                                                                                 XMLParsingException,
-                                                                                 UnknownCRSException,
-                                                                                 ReferenceResolvingException {
-
-        FeatureCollection fc = null;
-
-        // TODO determine correct schema
-        FeatureStore featureStore = service.getStores()[0];
-        AppSchema schema = featureStore.getSchema();
-        GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader( inputFormat, xmlStream );
-
-        if ( CHECK_INTERNALLY.equals( referenceResolvingMode ) ) {
-            gmlStream.setInternalResolver( new FeatureStoreGMLIdResolver( featureStore ) );
-        }
-        gmlStream.setApplicationSchema( schema );
-        gmlStream.setDefaultCRS( defaultCRS );
-        gmlStream.setReferencePatternMatcher( master.getReferencePatternMatcher() );
-
-        if ( new QName( WFS_NS, "FeatureCollection" ).equals( xmlStream.getName() ) ) {
-            LOG.debug( "Features embedded in wfs:FeatureCollection" );
-            fc = parseWFSFeatureCollection( xmlStream, gmlStream );
-            // skip to wfs:Insert END_ELEMENT
-            xmlStream.nextTag();
-        } else {
-            // must contain one or more features or a feature collection from the application schema
-            Feature feature = gmlStream.readFeature();
-            if ( feature instanceof FeatureCollection ) {
-                LOG.debug( "Features embedded in application FeatureCollection" );
-                fc = (FeatureCollection) feature;
-                // skip to wfs:Insert END_ELEMENT
-                xmlStream.nextTag();
-            } else {
-                LOG.debug( "Unenclosed features to be inserted" );
-                List<Feature> features = new LinkedList<Feature>();
-                features.add( feature );
-                while ( xmlStream.nextTag() == START_ELEMENT ) {
-                    // more features
-                    feature = gmlStream.readFeature();
-                    features.add( feature );
-                }
-                fc = new GenericFeatureCollection( null, features );
-            }
-        }
-
-        if ( CHECK_ALL.equals( referenceResolvingMode ) || CHECK_INTERNALLY.equals( referenceResolvingMode ) ) {
-            // resolve local xlink references
-            gmlStream.getIdContext().resolveLocalRefs();
-        }
-
-        return fc;
-    }
-
-    private FeatureCollection parseWFSFeatureCollection( XMLStreamReader xmlStream, GMLStreamReader gmlStream )
-                            throws XMLStreamException, XMLParsingException, UnknownCRSException {
-
-        // TODO handle crs + move this method somewhere else
-        xmlStream.require( START_ELEMENT, WFS_NS, "FeatureCollection" );
-        List<Feature> memberFeatures = new ArrayList<Feature>();
-
-        while ( xmlStream.nextTag() == START_ELEMENT ) {
-            QName elName = xmlStream.getName();
-            if ( CommonNamespaces.GMLNS.equals( elName.getNamespaceURI() ) ) {
-                if ( "featureMember".equals( elName.getLocalPart() ) ) {
-                    // xlink?
-                    String href = xmlStream.getAttributeValue( XLNNS, "href" );
-                    if ( href != null ) {
-                        FeatureReference refFeature = new FeatureReference( gmlStream.getIdContext(), href, null );
-                        memberFeatures.add( refFeature );
-                        gmlStream.getIdContext().addReference( refFeature );
-                    } else {
-                        xmlStream.nextTag();
-                        memberFeatures.add( gmlStream.readFeature() );
-                    }
-                    xmlStream.nextTag();
-                } else if ( "featureMembers".equals( elName.getLocalPart() ) ) {
-                    while ( xmlStream.nextTag() == START_ELEMENT ) {
-                        memberFeatures.add( gmlStream.readFeature() );
-                    }
-                } else {
-                    LOG.debug( "Ignoring element '" + elName + "'" );
-                    XMLStreamUtils.skipElement( xmlStream );
-                }
-            } else {
-                LOG.debug( "Ignoring element '" + elName + "'" );
-                XMLStreamUtils.skipElement( xmlStream );
-            }
-        }
-
-        // idContext.resolveXLinks( decoder.getApplicationSchema() );
-        xmlStream.require( END_ELEMENT, WFS_NS, "FeatureCollection" );
-        return new GenericFeatureCollection( null, memberFeatures );
-    }
-
-    private void doNative( Native nativeOp )
-                            throws OWSException {
-        LOG.debug( "doNative: " + nativeOp );
-        if ( nativeOp.isSafeToIgnore() == false ) {
-            throw new OWSException( "Native operations are not supported by this WFS.", INVALID_PARAMETER_VALUE,
-                                    "Native" );
-        }
-
-        XMLStreamReader xmlStream = nativeOp.getVendorSpecificData();
-        try {
-            skipElement( xmlStream );
-        } catch ( XMLStreamException e ) {
-            String msg = "Error in native operation: " + e.getMessage();
-            throw new OWSException( msg, INVALID_PARAMETER_VALUE );
-        }
-    }
-
-    private void doUpdate( Update update, Lock lock )
-                            throws OWSException {
-        LOG.debug( "doUpdate: " + update );
-        QName ftName = update.getTypeName();
-        FeatureType ft = service.lookupFeatureType( ftName );
-        FeatureStore fs = service.getStore( ftName );
-        if ( fs == null ) {
-            throw new OWSException( Messages.get( "WFS_FEATURE_TYPE_NOT_SERVED", ftName ), INVALID_PARAMETER_VALUE );
-        }
-
-        GMLVersion inputFormat = determineFormat( request.getVersion(), update.getInputFormat() );
-
-        FeatureStoreTransaction ta = acquireTransaction( fs );
-        List<ParsedPropertyReplacement> replacementProps = getReplacementProps( update, ft, inputFormat );
-        Filter filter = null;
-        try {
-            filter = update.getFilter();
-            // superimpose default query CRS
-            Filters.setDefaultCRS( filter, master.getDefaultQueryCrs() );
-        } catch ( Exception e ) {
-            throw new OWSException( e.getMessage(), INVALID_PARAMETER_VALUE );
-        }
-
-        try {
-            List<String> updatedFids = ta.performUpdate( ftName, replacementProps, filter, lock );
-            for ( String updatedFid : updatedFids ) {
-                this.updated.add( updatedFid, update.getHandle() );
-            }
-        } catch ( FeatureStoreException e ) {
-            throw new OWSException( "Error performing update: " + e.getMessage(), e, NO_APPLICABLE_CODE );
-        }
-    }
-
-    private Pair<QName, Integer> trySimpleMultiProp( ValueReference valueReference, FeatureType ft )
-                            throws OWSException {
-        Expr expr = valueReference.getAsXPath();
-        if ( !( expr instanceof LocationPath ) ) {
-            throw new OWSException( "Cannot update property on feature type '" + ft.getName()
-                                    + "'. Complex property paths are not supported.", OPERATION_NOT_SUPPORTED );
-        }
-        Object obj = ( (LocationPath) expr ).getSteps().get( 0 );
-        if ( !( obj instanceof NameStep ) ) {
-            throw new OWSException( "Cannot update property on feature type '" + ft.getName()
-                                    + "'. Complex property paths are not supported.", OPERATION_NOT_SUPPORTED );
-        }
-        NameStep namestep = (NameStep) obj;
-        obj = namestep.getPredicates().get( 0 );
-        if ( !( obj instanceof Predicate ) ) {
-            throw new OWSException( "Cannot update property on feature type '" + ft.getName()
-                                    + "'. Complex property paths are not supported.", OPERATION_NOT_SUPPORTED );
-        }
-        Predicate pred = (Predicate) obj;
-        expr = pred.getExpr();
-        if ( !( expr instanceof NumberExpr ) ) {
-            throw new OWSException( "Cannot update property on feature type '" + ft.getName()
-                                    + "'. Complex property paths are not supported.", OPERATION_NOT_SUPPORTED );
-        }
-        NumberExpr ne = (NumberExpr) expr;
-        int index = Math.round( Float.parseFloat( ne.getText() ) );
-        String namespaceUri = determineNamespaceUri( valueReference, ft, namestep );
-        return new Pair<QName, Integer>( new QName( namespaceUri, namestep.getLocalName() ), index - 1 );
-    }
-
-    private List<ParsedPropertyReplacement> getReplacementProps( Update update, FeatureType ft, GMLVersion inputFormat )
-                            throws OWSException {
-
-        List<ParsedPropertyReplacement> newProperties = new ArrayList<ParsedPropertyReplacement>();
-        Iterator<PropertyReplacement> replacementIter = update.getReplacementProps();
-        while ( replacementIter.hasNext() ) {
-            PropertyReplacement replacement = replacementIter.next();
-            QName propName = replacement.getPropertyName().getAsQName();
-            Pair<QName, Integer> simpleMultiProp = null;
-            if ( propName == null ) {
-                simpleMultiProp = trySimpleMultiProp( replacement.getPropertyName(), ft );
-                propName = simpleMultiProp.first;
-            }
-
-            PropertyType pt = ft.getPropertyDeclaration( propName );
-            if ( pt == null ) {
-                throw new OWSException( "Cannot update property '" + propName + "' of feature type '" + ft.getName()
-                                        + "'. The feature type does not define this property.",
-                                        OPERATION_NOT_SUPPORTED );
-            }
-            XMLStreamReader xmlStream = replacement.getReplacementValue();
-            int index = simpleMultiProp == null ? 0 : simpleMultiProp.second;
-            UpdateAction updateAction = replacement.getUpdateAction();
-
-            if ( xmlStream != null ) {
-                try {
-                    xmlStream.require( START_ELEMENT, null, "Value" );
-                    GMLStreamReader gmlReader = createGMLStreamReader( inputFormat, xmlStream );
-                    gmlReader.setApplicationSchema( ft.getSchema() );
-                    GeometryFactory geomFac = new GeometryFactory();
-                    geomFac.addInspector( new CoordinateValidityInspector() );
-                    gmlReader.setGeometryFactory( geomFac );
-                    GMLFeatureReader featureReader = gmlReader.getFeatureReader();
-
-                    ICRS crs = master.getDefaultQueryCrs();
-                    Property prop = featureReader.parseProperty( new XMLStreamReaderWrapper( xmlStream, null ), pt,
-                                                                 crs );
-
-                    // TODO make this hack unnecessary
-                    TypedObjectNode propValue = prop.getValue();
-                    if ( pt instanceof CustomPropertyType && propValue instanceof GenericXMLElement ) {
-                        prop = new GenericProperty( pt, propValue );
-                        prop.setChildren( ( (GenericXMLElement) propValue ).getChildren() );
-                    }
-
-                    ParsedPropertyReplacement repl = new ParsedPropertyReplacement( prop, updateAction,
-                                                                                    replacement.getPropertyName(),
-                                                                                    index );
-                    newProperties.add( repl );
-
-                    // contract: skip to "wfs:Property" END_ELEMENT
-                    xmlStream.nextTag();
-                    xmlStream.require( END_ELEMENT, null, "Property" );
-                    // contract: skip to next ELEMENT_EVENT
-                    xmlStream.nextTag();
-                } catch ( XMLParsingException e ) {
-                    LOG.debug( e.getMessage(), e );
-                    throw new OWSException( e.getMessage(), INVALID_VALUE );
-                } catch ( Exception e ) {
-                    LOG.debug( e.getMessage(), e );
-                    throw new OWSException( e.getMessage(), NO_APPLICABLE_CODE );
-                }
-
-            } else {
-                // if the wfs:Value element is omitted, the property shall be removed (CITE 1.1.0 test,
-                // wfs:wfs-1.1.0-Transaction-tc11.1)
-                GenericProperty newProp = new GenericProperty( pt, null );
-                ParsedPropertyReplacement repl = new ParsedPropertyReplacement( newProp, updateAction,
-                                                                                replacement.getPropertyName(), index );
-                newProperties.add( repl );
-            }
-        }
-        return newProperties;
-    }
-
-    private void doReplace( Replace replace, Lock lock )
-                            throws OWSException {
-
-        LOG.debug( "doReplace: " + replace );
-        XMLStreamReader xmlStream = replace.getReplacementFeatureStream();
-        QName ftName = xmlStream.getName();
-        FeatureStore fs = service.getStore( ftName );
-        if ( fs == null ) {
-            throw new OWSException( Messages.get( "WFS_FEATURE_TYPE_NOT_SERVED", ftName ), INVALID_PARAMETER_VALUE );
-        }
-
-        Feature replacementFeature = null;
-        Filter filter = null;
-        try {
-            GMLStreamReader gmlReader = createGMLStreamReader( GML_32, xmlStream );
-            gmlReader.setApplicationSchema( fs.getSchema() );
-            replacementFeature = gmlReader.readFeature();
-            filter = replace.getFilter();
-            // superimpose default CRS
-            Filters.setDefaultCRS( filter, master.getDefaultQueryCrs() );
-        } catch ( Exception e ) {
-            throw new OWSException( e.getMessage(), INVALID_PARAMETER_VALUE );
-        }
-
-        FeatureStoreTransaction ta = acquireTransaction( fs );
-        try {
-            String newFid = ta.performReplace( replacementFeature, filter, lock, idGenMode );
-            replaced.add( newFid, replace.getHandle() );
-        } catch ( FeatureStoreException e ) {
-            throw new OWSException( "Error performing replace: " + e.getMessage(), e, NO_APPLICABLE_CODE );
-        }
-    }
-
-    private FeatureStoreTransaction acquireTransaction( FeatureStore fs )
-                            throws OWSException {
-
-        FeatureStoreTransaction ta = acquiredTransactions.get( fs );
-        if ( ta == null ) {
-            try {
-                LOG.debug( "Acquiring transaction for feature store " + fs );
-                ta = fs.acquireTransaction();
-                acquiredTransactions.put( fs, ta );
-            } catch ( FeatureStoreException e ) {
-                throw new OWSException( Messages.get( "WFS_CANNOT_ACQUIRE_TA", e.getMessage() ), NO_APPLICABLE_CODE );
-            }
-        }
-        return ta;
-    }
-
-    private void sendResponse100( Transaction request, HttpResponseBuffer response, boolean failed )
-                            throws XMLStreamException, IOException {
-
-        String schemaLocation = WFS_NS + " " + WFS_100_TRANSACTION_URL;
-        XMLStreamWriter xmlWriter = getXMLResponseWriter( response, "text/xml", schemaLocation );
-        xmlWriter.setPrefix( "wfs", WFS_NS );
-        xmlWriter.writeStartElement( WFS_NS, "WFS_TransactionResponse" );
-        xmlWriter.writeNamespace( "wfs", WFS_NS );
-        xmlWriter.writeNamespace( "ogc", OGCNS );
-        xmlWriter.writeAttribute( "version", VERSION_100.toString() );
-
-        if ( inserted.getTotal() > 0 ) {
-            for ( String handle : inserted.getHandles() ) {
-                xmlWriter.writeStartElement( "wfs", "InsertResult", WFS_NS );
-                writeHandle( xmlWriter, handle );
-                Collection<String> fids = inserted.getFids( handle );
-                for ( String fid : fids ) {
-                    LOG.debug( "Inserted fid: " + fid );
-                    xmlWriter.writeStartElement( "ogc", "FeatureId", OGCNS );
-                    xmlWriter.writeAttribute( "fid", fid );
-                    xmlWriter.writeEndElement();
-                }
-                xmlWriter.writeEndElement();
-            }
-            if ( !inserted.getFidsWithoutHandle().isEmpty() ) {
-                xmlWriter.writeStartElement( "wfs", "InsertResult", WFS_NS );
-                for ( String fid : inserted.getFidsWithoutHandle() ) {
-                    LOG.debug( "Inserted fid: " + fid );
-                    xmlWriter.writeStartElement( "ogc", "FeatureId", OGCNS );
-                    xmlWriter.writeAttribute( "fid", fid );
-                    xmlWriter.writeEndElement();
-                }
-                xmlWriter.writeEndElement();
-            }
-        }
-
-        xmlWriter.writeStartElement( "wfs", "TransactionResult", WFS_NS );
-        writeHandle( xmlWriter, request.getHandle() );
-        xmlWriter.writeStartElement( "wfs", "Status", WFS_NS );
-        if ( failed ) {
-            xmlWriter.writeEmptyElement( "wfs", "FAILED", WFS_NS );
-        } else {
-            xmlWriter.writeEmptyElement( "wfs", "SUCCESS", WFS_NS );
-        }
-
-        xmlWriter.writeEndElement(); // wfs:Status
-        xmlWriter.writeEndElement(); // wfs:TransactionResult
-        xmlWriter.writeEndElement(); // wfs:WFS_TransactionResult
-        xmlWriter.flush();
-    }
-
-    private void writeHandle( XMLStreamWriter xmlWriter, String handle )
-                            throws XMLStreamException {
-        if ( handle != null ) {
-            xmlWriter.writeAttribute( "handle", handle );
-        }
-    }
-
-    private void sendResponse110( HttpResponseBuffer response )
-                            throws XMLStreamException, IOException {
-
-        String ns = WFS_NS;
-        String schemaLocation = ns + " " + WFS_110_SCHEMA_URL;
-
-        XMLStreamWriter xmlWriter = getXMLResponseWriter( response, "text/xml", schemaLocation );
-
-        xmlWriter.setPrefix( "wfs", WFS_NS );
-        xmlWriter.writeStartElement( WFS_NS, "TransactionResponse" );
-        xmlWriter.writeNamespace( "wfs", WFS_NS );
-        xmlWriter.writeNamespace( "ogc", OGCNS );
-
-        xmlWriter.writeAttribute( "version", VERSION_110.toString() );
-
-        xmlWriter.writeStartElement( WFS_NS, "TransactionSummary" );
-        writeElement( xmlWriter, WFS_NS, "totalInserted", "" + inserted.getTotal() );
-        writeElement( xmlWriter, WFS_NS, "totalUpdated", "" + updated.getTotal() );
-        writeElement( xmlWriter, WFS_NS, "totalDeleted", "" + deleted );
-        xmlWriter.writeEndElement();
-        if ( inserted.getTotal() > 0 ) {
-            xmlWriter.writeStartElement( WFS_NS, "InsertResults" );
-            for ( String handle : inserted.getHandles() ) {
-                Collection<String> fids = inserted.getFids( handle );
-                for ( String fid : fids ) {
-                    LOG.debug( "Inserted fid: " + fid );
-                    xmlWriter.writeStartElement( WFS_NS, "Feature" );
-                    xmlWriter.writeAttribute( "handle", handle );
-                    xmlWriter.writeStartElement( OGCNS, "FeatureId" );
-                    xmlWriter.writeAttribute( "fid", fid );
-                    xmlWriter.writeEndElement();
-                    xmlWriter.writeEndElement();
-                }
-            }
-            for ( String fid : inserted.getFidsWithoutHandle() ) {
-                LOG.debug( "Inserted fid: " + fid );
-                xmlWriter.writeStartElement( WFS_NS, "Feature" );
-                xmlWriter.writeStartElement( OGCNS, "FeatureId" );
-                xmlWriter.writeAttribute( "fid", fid );
-                xmlWriter.writeEndElement();
-                xmlWriter.writeEndElement();
-            }
-            xmlWriter.writeEndElement();
-        }
-
-        xmlWriter.writeEndElement();
-        xmlWriter.flush();
-    }
-
-    private void sendResponse200( HttpResponseBuffer response )
-                            throws XMLStreamException, IOException {
-
-        String ns = WFS_200_NS;
-        String schemaLocation = ns + " " + WFS_200_SCHEMA_URL;
-        XMLStreamWriter xmlWriter = getXMLResponseWriter( response, "text/xml", schemaLocation );
-
-        xmlWriter.setPrefix( "wfs", WFS_200_NS );
-        xmlWriter.writeStartElement( WFS_200_NS, "TransactionResponse" );
-        xmlWriter.writeAttribute( "version", VERSION_200.toString() );
-        xmlWriter.writeNamespace( "wfs", WFS_200_NS );
-        xmlWriter.writeNamespace( "fes", FES_20_NS );
-
-        xmlWriter.writeStartElement( WFS_200_NS, "TransactionSummary" );
-        writeElement( xmlWriter, WFS_200_NS, "totalInserted", "" + inserted.getTotal() );
-        writeElement( xmlWriter, WFS_200_NS, "totalUpdated", "" + updated.getTotal() );
-        writeElement( xmlWriter, WFS_200_NS, "totalReplaced", "" + replaced.getTotal() );
-        writeElement( xmlWriter, WFS_200_NS, "totalDeleted", "" + deleted );
-        xmlWriter.writeEndElement();
-
-        writeActionResults200( xmlWriter, "InsertResults", inserted );
-        writeActionResults200( xmlWriter, "UpdateResults", updated );
-        writeActionResults200( xmlWriter, "ReplaceResults", replaced );
-
-        xmlWriter.writeEndElement();
-        xmlWriter.flush();
-    }
-
-    private void writeActionResults200( XMLStreamWriter xmlWriter, String elName, ActionResults results )
-                            throws XMLStreamException {
-
-        if ( results.getTotal() > 0 ) {
-            xmlWriter.writeStartElement( WFS_200_NS, elName );
-            for ( String handle : results.getHandles() ) {
-                Collection<String> fids = results.getFids( handle );
-                for ( String fid : fids ) {
-                    xmlWriter.writeStartElement( WFS_200_NS, "Feature" );
-                    xmlWriter.writeAttribute( "handle", handle );
-                    xmlWriter.writeStartElement( FES_20_NS, "ResourceId" );
-                    xmlWriter.writeAttribute( "rid", fid );
-                    xmlWriter.writeEndElement();
-                    xmlWriter.writeEndElement();
-                }
-            }
-
-            for ( String fid : results.getFidsWithoutHandle() ) {
-                xmlWriter.writeStartElement( WFS_200_NS, "Feature" );
-                xmlWriter.writeStartElement( FES_20_NS, "ResourceId" );
-                xmlWriter.writeAttribute( "rid", fid );
-                xmlWriter.writeEndElement();
-                xmlWriter.writeEndElement();
-            }
-            xmlWriter.writeEndElement();
-        }
-    }
-
-    private GMLVersion determineFormat( Version requestVersion, String format ) {
-
-        GMLVersion gmlVersion = null;
-
-        if ( format == null ) {
-            // default values for the different WFS version
-            if ( VERSION_100.equals( requestVersion ) ) {
-                gmlVersion = GMLVersion.GML_2;
-            } else if ( VERSION_110.equals( requestVersion ) ) {
-                gmlVersion = GMLVersion.GML_31;
-            } else if ( VERSION_200.equals( requestVersion ) ) {
-                gmlVersion = GMLVersion.GML_32;
-            } else {
-                throw new RuntimeException( "Internal error: Unhandled WFS version: " + requestVersion );
-            }
-        } else {
-            if ( "text/xml; subtype=gml/2.1.2".equals( format ) || "GML2".equals( format ) ) {
-                gmlVersion = GMLVersion.GML_2;
-            } else if ( "text/xml; subtype=gml/3.0.1".equals( format ) ) {
-                gmlVersion = GMLVersion.GML_30;
-            } else if ( "text/xml; subtype=gml/3.1.1".equals( format ) || "GML3".equals( format ) ) {
-                gmlVersion = GMLVersion.GML_31;
-            } else if ( "text/xml; subtype=gml/3.2.1".equals( format ) ) {
-                gmlVersion = GMLVersion.GML_32;
-            } else if ( "text/xml; subtype=gml/3.2.2".equals( format ) ) {
-                gmlVersion = GMLVersion.GML_32;
-            }
-        }
-        return gmlVersion;
-    }
-
-    private String determineNamespaceUri( ValueReference valueReference, FeatureType ft, NameStep namestep ) {
-        String prefix = namestep.getPrefix();
-        if ( prefix != null && !"".equals( prefix ) ) {
-            String namespaceUriByPrefix = valueReference.getNsContext().getNamespaceURI( prefix );
-            if ( namespaceUriByPrefix != null && !"".equals( namespaceUriByPrefix ) )
-                return namespaceUriByPrefix;
-        }
-        return ft.getName().getNamespaceURI();
-    }
-
-    private ICRS determineDefaultCrs( Insert insert )
-                    throws OWSException {
-        String srsName = insert.getSrsName();
-        if ( srsName != null ) {
-            try {
-                return CRSManager.lookup( insert.getSrsName() );
-            } catch ( UnknownCRSException e ) {
-                String msg = "Cannot perform insert. Specified srsName '" + srsName + "' is not supported by this WFS.";
-                throw new OWSException( msg, INVALID_PARAMETER_VALUE, "srsName" );
-            }
-        }
-        return null;
-    }
-
-    private void evaluateValidDomainOfGeometriesInFeature( FeatureCollection fc, String handle )
-                    throws OWSException {
-        if ( this.master.isTransactionCheckAreaOfUse() ) {
-            for ( Feature feature : fc )
-                evaluateValidDomainOfGeometriesInFeature( feature, handle );
-        }
-    }
-
-    private void evaluateValidDomainOfGeometriesInFeature( Feature feature, String handle )
-                    throws OWSException {
-        Set<Geometry> geometries = new LinkedHashSet<>();
-        findFeaturesAndGeometries( feature, geometries, new LinkedHashSet<>(), new LinkedHashSet<>(),
-                                   new LinkedHashSet<>() );
-        for ( Geometry geometry : geometries ) {
-            ICRS crs = geometry.getCoordinateSystem();
-            evaluateValidDomain( feature, crs, geometry, handle );
-        }
-    }
-
-    private void evaluateValidDomain( Feature feature, ICRS crs, Geometry geometry, String handle )
-                    throws OWSException {
-        if ( crs == null ) {
-            LOG.warn( "CRS of geometry of fetaure with id {} is not available. Check if geometry is inside the valid "
-                      + "domain not possible. The check is skipped and insert processed.", feature.getId() );
-            return;
-        }
-        double[] validDomain = crs.getValidDomain();
-        if ( validDomain == null ) {
-            LOG.warn( "Valid domain of crs {} is not available (concerns feature with id {}). Check if geometry is inside the valid "
-                      + "domain not possible. The check is skipped and insert processed.", crs.getAlias(),
-                      feature.getId() );
-            return;
-        }
-        Envelope validDomainBbox = GEOM_FACTORY.createEnvelope( validDomain[0], validDomain[1], validDomain[2],
-                                                                validDomain[3], crs );
-        if ( !geometry.isWithin( validDomainBbox ) ) {
-            String message = "At least one geometry is not in the valid domain of the srs.";
-            if ( handle == null || "".equals( handle ) )
-                handle = "Transaction";
-            throw new OWSException( message, OWSException.OPERATION_PROCESSING_FAILED, handle );
-        }
-    }
+	private static final Logger LOG = LoggerFactory.getLogger(TransactionHandler.class);
+
+	private static final SimpleGeometryFactory GEOM_FACTORY = new SimpleGeometryFactory();
+
+	private final WebFeatureService master;
+
+	private final WfsFeatureStoreManager service;
+
+	private final Transaction request;
+
+	private final Map<FeatureStore, FeatureStoreTransaction> acquiredTransactions = new HashMap<FeatureStore, FeatureStoreTransaction>();
+
+	private final ActionResults inserted = new ActionResults();
+
+	private final ActionResults updated = new ActionResults();
+
+	private final ActionResults replaced = new ActionResults();
+
+	private int deleted;
+
+	private final IDGenMode idGenMode;
+
+	private final ReferenceResolvingMode referenceResolvingMode;
+
+	/**
+	 * Creates a new {@link TransactionHandler} instance that uses the given service to
+	 * lookup requested {@link FeatureType}s.
+	 * @param master
+	 * @param service WFS instance used to lookup the feature types
+	 * @param request request to be handled
+	 * @param idGenMode
+	 * @param referenceResolvingMode
+	 */
+	TransactionHandler(WebFeatureService master, WfsFeatureStoreManager service, Transaction request,
+			IDGenMode idGenMode, ReferenceResolvingMode referenceResolvingMode) {
+		this.master = master;
+		this.service = service;
+		this.request = request;
+		this.idGenMode = idGenMode;
+		this.referenceResolvingMode = referenceResolvingMode;
+	}
+
+	/**
+	 * Performs the given {@link Transaction} request.
+	 * @param response response that is used to write the result
+	 * @throws OWSException if a WFS specific exception occurs, e.g. a feature type is not
+	 * served
+	 * @throws IOException
+	 * @throws XMLStreamException
+	 */
+	void doTransaction(HttpResponseBuffer response) throws OWSException, XMLStreamException, IOException {
+
+		LOG.debug("doTransaction: " + request);
+
+		try {
+			Lock lock = null;
+			String lockId = request.getLockId();
+			LockManager manager = null;
+			try {
+				// TODO: determine correct feature store
+				manager = service.getStores()[0].getLockManager();
+			}
+			catch (FeatureStoreException e) {
+				throw new OWSException("Cannot acquire lock manager: " + e.getMessage(),
+						OWSException.NO_APPLICABLE_CODE);
+			}
+			if (lockId != null && manager != null) {
+				lock = manager.getLock(lockId);
+			}
+
+			for (TransactionAction operation : request.getActions()) {
+				switch (operation.getType()) {
+					case DELETE: {
+						doDelete((Delete) operation, lock);
+						break;
+					}
+					case INSERT: {
+						doInsert((Insert) operation);
+						break;
+					}
+					case NATIVE: {
+						doNative((Native) operation);
+						break;
+					}
+					case UPDATE: {
+						doUpdate((Update) operation, lock);
+						break;
+					}
+					case REPLACE: {
+						doReplace((Replace) operation, lock);
+						break;
+					}
+				}
+			}
+
+			// if a lockId has been specified and releaseAction="ALL", release lock
+			ReleaseAction releaseAction = request.getReleaseAction();
+			if (lock != null && (releaseAction == null || releaseAction == ALL || lock.getNumLocked() == 0)) {
+				lock.release();
+			}
+			else {
+				// TODO renew expiry timeout according to WFS spec
+			}
+
+			for (FeatureStoreTransaction ta : acquiredTransactions.values()) {
+				LOG.debug("Committing feature store transaction:" + ta);
+				ta.commit();
+			}
+		}
+		catch (MissingParameterException e) {
+			// needed for CITE compliance (wfs:wfs-1.1.0-Transaction-tc12.1)
+			LOG.debug("Error occured during transaction, performing rollback.");
+			for (FeatureStoreTransaction ta : acquiredTransactions.values()) {
+				try {
+					LOG.debug("Rolling back feature store transaction:" + ta);
+					ta.rollback();
+				}
+				catch (FeatureStoreException e1) {
+					LOG.debug("Error occured during rollback: " + e.getMessage(), e);
+				}
+			}
+			if (request.getVersion().equals(VERSION_100)) {
+				sendResponse100(request, response, true);
+				return;
+			}
+			throw new OWSException("Error occured during transaction: " + e.getMessage(), MISSING_PARAMETER_VALUE,
+					e.getName());
+		}
+		catch (InvalidParameterValueException e) {
+			// needed for CITE compliance (wfs:wfs-1.1.0-LockFeature-tc2.1)
+			LOG.debug("Error occured during transaction, performing rollback.");
+			for (FeatureStoreTransaction ta : acquiredTransactions.values()) {
+				try {
+					LOG.debug("Rolling back feature store transaction:" + ta);
+					ta.rollback();
+				}
+				catch (FeatureStoreException e1) {
+					LOG.debug("Error occured during rollback: " + e.getMessage(), e);
+				}
+			}
+			if (request.getVersion().equals(VERSION_100)) {
+				sendResponse100(request, response, true);
+				return;
+			}
+			throw new OWSException("Error occured during transaction: " + e.getMessage(), INVALID_PARAMETER_VALUE,
+					e.getName());
+		}
+		catch (OWSException e) {
+			LOG.debug("Error occured during transaction, performing rollback.");
+			for (FeatureStoreTransaction ta : acquiredTransactions.values()) {
+				try {
+					LOG.debug("Rolling back feature store transaction:" + ta);
+					ta.rollback();
+				}
+				catch (FeatureStoreException e1) {
+					LOG.debug("Error occured during rollback: " + e.getMessage(), e);
+				}
+			}
+			throw e;
+		}
+		catch (Exception e) {
+			LOG.debug("Error occured during transaction, performing rollback.");
+			LOG.trace("Stack trace:", e);
+			for (FeatureStoreTransaction ta : acquiredTransactions.values()) {
+				try {
+					LOG.debug("Rolling back feature store transaction:" + ta);
+					ta.rollback();
+				}
+				catch (FeatureStoreException e1) {
+					LOG.debug("Error occured during rollback: " + e.getMessage(), e);
+				}
+			}
+			throw new OWSException("Error occured during transaction: " + e.getMessage(), NO_APPLICABLE_CODE);
+		}
+
+		if (VERSION_100.equals(request.getVersion())) {
+			sendResponse100(request, response, false);
+		}
+		else if (VERSION_110.equals(request.getVersion())) {
+			sendResponse110(response);
+		}
+		else if (VERSION_200.equals(request.getVersion())) {
+			sendResponse200(response);
+		}
+		else {
+			throw new UnsupportedOperationException();
+		}
+	}
+
+	private void doDelete(Delete delete, Lock lock) throws OWSException {
+
+		LOG.debug("doDelete: " + delete);
+		QName ftName = delete.getTypeName();
+		FeatureStore fs = service.getStore(ftName);
+		if (fs == null) {
+			throw new OWSException(Messages.get("WFS_FEATURE_TYPE_NOT_SERVED", ftName), INVALID_PARAMETER_VALUE);
+		}
+
+		FeatureStoreTransaction ta = acquireTransaction(fs);
+
+		Filter filter = delete.getFilter();
+		// superimpose default query CRS
+		Filters.setDefaultCRS(filter, master.getDefaultQueryCrs());
+
+		try {
+			switch (filter.getType()) {
+				case ID_FILTER: {
+					deleted += ta.performDelete((IdFilter) filter, lock);
+					break;
+				}
+				case OPERATOR_FILTER: {
+					deleted += ta.performDelete(ftName, (OperatorFilter) filter, lock);
+					break;
+				}
+			}
+		}
+		catch (FeatureStoreException e) {
+			throw new OWSException(Messages.get("WFS_ERROR_PERFORMING_DELETE", e.getMessage()), NO_APPLICABLE_CODE);
+		}
+	}
+
+	private void doInsert(Insert insert) throws OWSException {
+
+		LOG.debug("doInsert: " + insert);
+
+		if (service.getStores().length == 0) {
+			throw new OWSException("Cannot perform insert. No feature store defined.", NO_APPLICABLE_CODE);
+		}
+
+		// TODO deal with this problem
+		if (service.getStores().length > 1) {
+			String msg = "Cannot perform insert. More than one feature store is active -- "
+					+ "this is currently not supported. Please deactivate all feature stores, "
+					+ "but one in order to make Insert transactions work.";
+			throw new OWSException(msg, NO_APPLICABLE_CODE);
+		}
+
+		ICRS defaultCRS = determineDefaultCrs(insert);
+		GMLVersion inputFormat = determineFormat(request.getVersion(), insert.getInputFormat());
+
+		// TODO streaming
+		try {
+			XMLStreamReader xmlStream = insert.getFeatures();
+			FeatureCollection fc = parseFeaturesOrCollection(xmlStream, inputFormat, defaultCRS);
+			evaluateValidDomainOfGeometriesInFeature(fc, insert.getHandle());
+			FeatureStore fs = service.getStores()[0];
+			FeatureStoreTransaction ta = acquireTransaction(fs);
+			IDGenMode mode = insert.getIdGen();
+			if (mode == null) {
+				if (VERSION_110.equals(request.getVersion())) {
+					mode = GENERATE_NEW;
+				}
+				else {
+					mode = idGenMode;
+				}
+			}
+			List<String> newFids = ta.performInsert(fc, mode);
+			for (String newFid : newFids) {
+				inserted.add(newFid, insert.getHandle());
+			}
+		}
+		catch (OWSException e) {
+			throw e;
+		}
+		catch (XMLParsingException e) {
+			String exceptionCode = INVALID_PARAMETER_VALUE;
+			if (VERSION_200.equals(request.getVersion())) {
+				exceptionCode = OWSException.INVALID_VALUE;
+			}
+			LOG.debug(e.getMessage(), e);
+			String msg = "Cannot perform insert operation: " + e.getMessage();
+			throw new OWSException(msg, exceptionCode);
+		}
+		catch (Exception e) {
+			LOG.debug(e.getMessage(), e);
+			String msg = "Cannot perform insert operation: " + e.getMessage();
+			throw new OWSException(msg, INVALID_PARAMETER_VALUE);
+		}
+	}
+
+	private FeatureCollection parseFeaturesOrCollection(XMLStreamReader xmlStream, GMLVersion inputFormat,
+			ICRS defaultCRS)
+			throws XMLStreamException, XMLParsingException, UnknownCRSException, ReferenceResolvingException {
+
+		FeatureCollection fc = null;
+
+		// TODO determine correct schema
+		FeatureStore featureStore = service.getStores()[0];
+		AppSchema schema = featureStore.getSchema();
+		GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader(inputFormat, xmlStream);
+
+		if (CHECK_INTERNALLY.equals(referenceResolvingMode)) {
+			gmlStream.setInternalResolver(new FeatureStoreGMLIdResolver(featureStore));
+		}
+		gmlStream.setApplicationSchema(schema);
+		gmlStream.setDefaultCRS(defaultCRS);
+		gmlStream.setReferencePatternMatcher(master.getReferencePatternMatcher());
+
+		if (new QName(WFS_NS, "FeatureCollection").equals(xmlStream.getName())) {
+			LOG.debug("Features embedded in wfs:FeatureCollection");
+			fc = parseWFSFeatureCollection(xmlStream, gmlStream);
+			// skip to wfs:Insert END_ELEMENT
+			xmlStream.nextTag();
+		}
+		else {
+			// must contain one or more features or a feature collection from the
+			// application schema
+			Feature feature = gmlStream.readFeature();
+			if (feature instanceof FeatureCollection) {
+				LOG.debug("Features embedded in application FeatureCollection");
+				fc = (FeatureCollection) feature;
+				// skip to wfs:Insert END_ELEMENT
+				xmlStream.nextTag();
+			}
+			else {
+				LOG.debug("Unenclosed features to be inserted");
+				List<Feature> features = new LinkedList<Feature>();
+				features.add(feature);
+				while (xmlStream.nextTag() == START_ELEMENT) {
+					// more features
+					feature = gmlStream.readFeature();
+					features.add(feature);
+				}
+				fc = new GenericFeatureCollection(null, features);
+			}
+		}
+
+		if (CHECK_ALL.equals(referenceResolvingMode) || CHECK_INTERNALLY.equals(referenceResolvingMode)) {
+			// resolve local xlink references
+			gmlStream.getIdContext().resolveLocalRefs();
+		}
+
+		return fc;
+	}
+
+	private FeatureCollection parseWFSFeatureCollection(XMLStreamReader xmlStream, GMLStreamReader gmlStream)
+			throws XMLStreamException, XMLParsingException, UnknownCRSException {
+
+		// TODO handle crs + move this method somewhere else
+		xmlStream.require(START_ELEMENT, WFS_NS, "FeatureCollection");
+		List<Feature> memberFeatures = new ArrayList<Feature>();
+
+		while (xmlStream.nextTag() == START_ELEMENT) {
+			QName elName = xmlStream.getName();
+			if (CommonNamespaces.GMLNS.equals(elName.getNamespaceURI())) {
+				if ("featureMember".equals(elName.getLocalPart())) {
+					// xlink?
+					String href = xmlStream.getAttributeValue(XLNNS, "href");
+					if (href != null) {
+						FeatureReference refFeature = new FeatureReference(gmlStream.getIdContext(), href, null);
+						memberFeatures.add(refFeature);
+						gmlStream.getIdContext().addReference(refFeature);
+					}
+					else {
+						xmlStream.nextTag();
+						memberFeatures.add(gmlStream.readFeature());
+					}
+					xmlStream.nextTag();
+				}
+				else if ("featureMembers".equals(elName.getLocalPart())) {
+					while (xmlStream.nextTag() == START_ELEMENT) {
+						memberFeatures.add(gmlStream.readFeature());
+					}
+				}
+				else {
+					LOG.debug("Ignoring element '" + elName + "'");
+					XMLStreamUtils.skipElement(xmlStream);
+				}
+			}
+			else {
+				LOG.debug("Ignoring element '" + elName + "'");
+				XMLStreamUtils.skipElement(xmlStream);
+			}
+		}
+
+		// idContext.resolveXLinks( decoder.getApplicationSchema() );
+		xmlStream.require(END_ELEMENT, WFS_NS, "FeatureCollection");
+		return new GenericFeatureCollection(null, memberFeatures);
+	}
+
+	private void doNative(Native nativeOp) throws OWSException {
+		LOG.debug("doNative: " + nativeOp);
+		if (nativeOp.isSafeToIgnore() == false) {
+			throw new OWSException("Native operations are not supported by this WFS.", INVALID_PARAMETER_VALUE,
+					"Native");
+		}
+
+		XMLStreamReader xmlStream = nativeOp.getVendorSpecificData();
+		try {
+			skipElement(xmlStream);
+		}
+		catch (XMLStreamException e) {
+			String msg = "Error in native operation: " + e.getMessage();
+			throw new OWSException(msg, INVALID_PARAMETER_VALUE);
+		}
+	}
+
+	private void doUpdate(Update update, Lock lock) throws OWSException {
+		LOG.debug("doUpdate: " + update);
+		QName ftName = update.getTypeName();
+		FeatureType ft = service.lookupFeatureType(ftName);
+		FeatureStore fs = service.getStore(ftName);
+		if (fs == null) {
+			throw new OWSException(Messages.get("WFS_FEATURE_TYPE_NOT_SERVED", ftName), INVALID_PARAMETER_VALUE);
+		}
+
+		GMLVersion inputFormat = determineFormat(request.getVersion(), update.getInputFormat());
+
+		FeatureStoreTransaction ta = acquireTransaction(fs);
+		List<ParsedPropertyReplacement> replacementProps = getReplacementProps(update, ft, inputFormat);
+		Filter filter = null;
+		try {
+			filter = update.getFilter();
+			// superimpose default query CRS
+			Filters.setDefaultCRS(filter, master.getDefaultQueryCrs());
+		}
+		catch (Exception e) {
+			throw new OWSException(e.getMessage(), INVALID_PARAMETER_VALUE);
+		}
+
+		try {
+			List<String> updatedFids = ta.performUpdate(ftName, replacementProps, filter, lock);
+			for (String updatedFid : updatedFids) {
+				this.updated.add(updatedFid, update.getHandle());
+			}
+		}
+		catch (FeatureStoreException e) {
+			throw new OWSException("Error performing update: " + e.getMessage(), e, NO_APPLICABLE_CODE);
+		}
+	}
+
+	private Pair<QName, Integer> trySimpleMultiProp(ValueReference valueReference, FeatureType ft) throws OWSException {
+		Expr expr = valueReference.getAsXPath();
+		if (!(expr instanceof LocationPath)) {
+			throw new OWSException("Cannot update property on feature type '" + ft.getName()
+					+ "'. Complex property paths are not supported.", OPERATION_NOT_SUPPORTED);
+		}
+		Object obj = ((LocationPath) expr).getSteps().get(0);
+		if (!(obj instanceof NameStep)) {
+			throw new OWSException("Cannot update property on feature type '" + ft.getName()
+					+ "'. Complex property paths are not supported.", OPERATION_NOT_SUPPORTED);
+		}
+		NameStep namestep = (NameStep) obj;
+		obj = namestep.getPredicates().get(0);
+		if (!(obj instanceof Predicate)) {
+			throw new OWSException("Cannot update property on feature type '" + ft.getName()
+					+ "'. Complex property paths are not supported.", OPERATION_NOT_SUPPORTED);
+		}
+		Predicate pred = (Predicate) obj;
+		expr = pred.getExpr();
+		if (!(expr instanceof NumberExpr)) {
+			throw new OWSException("Cannot update property on feature type '" + ft.getName()
+					+ "'. Complex property paths are not supported.", OPERATION_NOT_SUPPORTED);
+		}
+		NumberExpr ne = (NumberExpr) expr;
+		int index = Math.round(Float.parseFloat(ne.getText()));
+		String namespaceUri = determineNamespaceUri(valueReference, ft, namestep);
+		return new Pair<QName, Integer>(new QName(namespaceUri, namestep.getLocalName()), index - 1);
+	}
+
+	private List<ParsedPropertyReplacement> getReplacementProps(Update update, FeatureType ft, GMLVersion inputFormat)
+			throws OWSException {
+
+		List<ParsedPropertyReplacement> newProperties = new ArrayList<ParsedPropertyReplacement>();
+		Iterator<PropertyReplacement> replacementIter = update.getReplacementProps();
+		while (replacementIter.hasNext()) {
+			PropertyReplacement replacement = replacementIter.next();
+			QName propName = replacement.getPropertyName().getAsQName();
+			Pair<QName, Integer> simpleMultiProp = null;
+			if (propName == null) {
+				simpleMultiProp = trySimpleMultiProp(replacement.getPropertyName(), ft);
+				propName = simpleMultiProp.first;
+			}
+
+			PropertyType pt = ft.getPropertyDeclaration(propName);
+			if (pt == null) {
+				throw new OWSException("Cannot update property '" + propName + "' of feature type '" + ft.getName()
+						+ "'. The feature type does not define this property.", OPERATION_NOT_SUPPORTED);
+			}
+			XMLStreamReader xmlStream = replacement.getReplacementValue();
+			int index = simpleMultiProp == null ? 0 : simpleMultiProp.second;
+			UpdateAction updateAction = replacement.getUpdateAction();
+
+			if (xmlStream != null) {
+				try {
+					xmlStream.require(START_ELEMENT, null, "Value");
+					GMLStreamReader gmlReader = createGMLStreamReader(inputFormat, xmlStream);
+					gmlReader.setApplicationSchema(ft.getSchema());
+					GeometryFactory geomFac = new GeometryFactory();
+					geomFac.addInspector(new CoordinateValidityInspector());
+					gmlReader.setGeometryFactory(geomFac);
+					GMLFeatureReader featureReader = gmlReader.getFeatureReader();
+
+					ICRS crs = master.getDefaultQueryCrs();
+					Property prop = featureReader.parseProperty(new XMLStreamReaderWrapper(xmlStream, null), pt, crs);
+
+					// TODO make this hack unnecessary
+					TypedObjectNode propValue = prop.getValue();
+					if (pt instanceof CustomPropertyType && propValue instanceof GenericXMLElement) {
+						prop = new GenericProperty(pt, propValue);
+						prop.setChildren(((GenericXMLElement) propValue).getChildren());
+					}
+
+					ParsedPropertyReplacement repl = new ParsedPropertyReplacement(prop, updateAction,
+							replacement.getPropertyName(), index);
+					newProperties.add(repl);
+
+					// contract: skip to "wfs:Property" END_ELEMENT
+					xmlStream.nextTag();
+					xmlStream.require(END_ELEMENT, null, "Property");
+					// contract: skip to next ELEMENT_EVENT
+					xmlStream.nextTag();
+				}
+				catch (XMLParsingException e) {
+					LOG.debug(e.getMessage(), e);
+					throw new OWSException(e.getMessage(), INVALID_VALUE);
+				}
+				catch (Exception e) {
+					LOG.debug(e.getMessage(), e);
+					throw new OWSException(e.getMessage(), NO_APPLICABLE_CODE);
+				}
+
+			}
+			else {
+				// if the wfs:Value element is omitted, the property shall be removed
+				// (CITE 1.1.0 test,
+				// wfs:wfs-1.1.0-Transaction-tc11.1)
+				GenericProperty newProp = new GenericProperty(pt, null);
+				ParsedPropertyReplacement repl = new ParsedPropertyReplacement(newProp, updateAction,
+						replacement.getPropertyName(), index);
+				newProperties.add(repl);
+			}
+		}
+		return newProperties;
+	}
+
+	private void doReplace(Replace replace, Lock lock) throws OWSException {
+
+		LOG.debug("doReplace: " + replace);
+		XMLStreamReader xmlStream = replace.getReplacementFeatureStream();
+		QName ftName = xmlStream.getName();
+		FeatureStore fs = service.getStore(ftName);
+		if (fs == null) {
+			throw new OWSException(Messages.get("WFS_FEATURE_TYPE_NOT_SERVED", ftName), INVALID_PARAMETER_VALUE);
+		}
+
+		Feature replacementFeature = null;
+		Filter filter = null;
+		try {
+			GMLStreamReader gmlReader = createGMLStreamReader(GML_32, xmlStream);
+			gmlReader.setApplicationSchema(fs.getSchema());
+			replacementFeature = gmlReader.readFeature();
+			filter = replace.getFilter();
+			// superimpose default CRS
+			Filters.setDefaultCRS(filter, master.getDefaultQueryCrs());
+		}
+		catch (Exception e) {
+			throw new OWSException(e.getMessage(), INVALID_PARAMETER_VALUE);
+		}
+
+		FeatureStoreTransaction ta = acquireTransaction(fs);
+		try {
+			String newFid = ta.performReplace(replacementFeature, filter, lock, idGenMode);
+			replaced.add(newFid, replace.getHandle());
+		}
+		catch (FeatureStoreException e) {
+			throw new OWSException("Error performing replace: " + e.getMessage(), e, NO_APPLICABLE_CODE);
+		}
+	}
+
+	private FeatureStoreTransaction acquireTransaction(FeatureStore fs) throws OWSException {
+
+		FeatureStoreTransaction ta = acquiredTransactions.get(fs);
+		if (ta == null) {
+			try {
+				LOG.debug("Acquiring transaction for feature store " + fs);
+				ta = fs.acquireTransaction();
+				acquiredTransactions.put(fs, ta);
+			}
+			catch (FeatureStoreException e) {
+				throw new OWSException(Messages.get("WFS_CANNOT_ACQUIRE_TA", e.getMessage()), NO_APPLICABLE_CODE);
+			}
+		}
+		return ta;
+	}
+
+	private void sendResponse100(Transaction request, HttpResponseBuffer response, boolean failed)
+			throws XMLStreamException, IOException {
+
+		String schemaLocation = WFS_NS + " " + WFS_100_TRANSACTION_URL;
+		XMLStreamWriter xmlWriter = getXMLResponseWriter(response, "text/xml", schemaLocation);
+		xmlWriter.setPrefix("wfs", WFS_NS);
+		xmlWriter.writeStartElement(WFS_NS, "WFS_TransactionResponse");
+		xmlWriter.writeNamespace("wfs", WFS_NS);
+		xmlWriter.writeNamespace("ogc", OGCNS);
+		xmlWriter.writeAttribute("version", VERSION_100.toString());
+
+		if (inserted.getTotal() > 0) {
+			for (String handle : inserted.getHandles()) {
+				xmlWriter.writeStartElement("wfs", "InsertResult", WFS_NS);
+				writeHandle(xmlWriter, handle);
+				Collection<String> fids = inserted.getFids(handle);
+				for (String fid : fids) {
+					LOG.debug("Inserted fid: " + fid);
+					xmlWriter.writeStartElement("ogc", "FeatureId", OGCNS);
+					xmlWriter.writeAttribute("fid", fid);
+					xmlWriter.writeEndElement();
+				}
+				xmlWriter.writeEndElement();
+			}
+			if (!inserted.getFidsWithoutHandle().isEmpty()) {
+				xmlWriter.writeStartElement("wfs", "InsertResult", WFS_NS);
+				for (String fid : inserted.getFidsWithoutHandle()) {
+					LOG.debug("Inserted fid: " + fid);
+					xmlWriter.writeStartElement("ogc", "FeatureId", OGCNS);
+					xmlWriter.writeAttribute("fid", fid);
+					xmlWriter.writeEndElement();
+				}
+				xmlWriter.writeEndElement();
+			}
+		}
+
+		xmlWriter.writeStartElement("wfs", "TransactionResult", WFS_NS);
+		writeHandle(xmlWriter, request.getHandle());
+		xmlWriter.writeStartElement("wfs", "Status", WFS_NS);
+		if (failed) {
+			xmlWriter.writeEmptyElement("wfs", "FAILED", WFS_NS);
+		}
+		else {
+			xmlWriter.writeEmptyElement("wfs", "SUCCESS", WFS_NS);
+		}
+
+		xmlWriter.writeEndElement(); // wfs:Status
+		xmlWriter.writeEndElement(); // wfs:TransactionResult
+		xmlWriter.writeEndElement(); // wfs:WFS_TransactionResult
+		xmlWriter.flush();
+	}
+
+	private void writeHandle(XMLStreamWriter xmlWriter, String handle) throws XMLStreamException {
+		if (handle != null) {
+			xmlWriter.writeAttribute("handle", handle);
+		}
+	}
+
+	private void sendResponse110(HttpResponseBuffer response) throws XMLStreamException, IOException {
+
+		String ns = WFS_NS;
+		String schemaLocation = ns + " " + WFS_110_SCHEMA_URL;
+
+		XMLStreamWriter xmlWriter = getXMLResponseWriter(response, "text/xml", schemaLocation);
+
+		xmlWriter.setPrefix("wfs", WFS_NS);
+		xmlWriter.writeStartElement(WFS_NS, "TransactionResponse");
+		xmlWriter.writeNamespace("wfs", WFS_NS);
+		xmlWriter.writeNamespace("ogc", OGCNS);
+
+		xmlWriter.writeAttribute("version", VERSION_110.toString());
+
+		xmlWriter.writeStartElement(WFS_NS, "TransactionSummary");
+		writeElement(xmlWriter, WFS_NS, "totalInserted", "" + inserted.getTotal());
+		writeElement(xmlWriter, WFS_NS, "totalUpdated", "" + updated.getTotal());
+		writeElement(xmlWriter, WFS_NS, "totalDeleted", "" + deleted);
+		xmlWriter.writeEndElement();
+		if (inserted.getTotal() > 0) {
+			xmlWriter.writeStartElement(WFS_NS, "InsertResults");
+			for (String handle : inserted.getHandles()) {
+				Collection<String> fids = inserted.getFids(handle);
+				for (String fid : fids) {
+					LOG.debug("Inserted fid: " + fid);
+					xmlWriter.writeStartElement(WFS_NS, "Feature");
+					xmlWriter.writeAttribute("handle", handle);
+					xmlWriter.writeStartElement(OGCNS, "FeatureId");
+					xmlWriter.writeAttribute("fid", fid);
+					xmlWriter.writeEndElement();
+					xmlWriter.writeEndElement();
+				}
+			}
+			for (String fid : inserted.getFidsWithoutHandle()) {
+				LOG.debug("Inserted fid: " + fid);
+				xmlWriter.writeStartElement(WFS_NS, "Feature");
+				xmlWriter.writeStartElement(OGCNS, "FeatureId");
+				xmlWriter.writeAttribute("fid", fid);
+				xmlWriter.writeEndElement();
+				xmlWriter.writeEndElement();
+			}
+			xmlWriter.writeEndElement();
+		}
+
+		xmlWriter.writeEndElement();
+		xmlWriter.flush();
+	}
+
+	private void sendResponse200(HttpResponseBuffer response) throws XMLStreamException, IOException {
+
+		String ns = WFS_200_NS;
+		String schemaLocation = ns + " " + WFS_200_SCHEMA_URL;
+		XMLStreamWriter xmlWriter = getXMLResponseWriter(response, "text/xml", schemaLocation);
+
+		xmlWriter.setPrefix("wfs", WFS_200_NS);
+		xmlWriter.writeStartElement(WFS_200_NS, "TransactionResponse");
+		xmlWriter.writeAttribute("version", VERSION_200.toString());
+		xmlWriter.writeNamespace("wfs", WFS_200_NS);
+		xmlWriter.writeNamespace("fes", FES_20_NS);
+
+		xmlWriter.writeStartElement(WFS_200_NS, "TransactionSummary");
+		writeElement(xmlWriter, WFS_200_NS, "totalInserted", "" + inserted.getTotal());
+		writeElement(xmlWriter, WFS_200_NS, "totalUpdated", "" + updated.getTotal());
+		writeElement(xmlWriter, WFS_200_NS, "totalReplaced", "" + replaced.getTotal());
+		writeElement(xmlWriter, WFS_200_NS, "totalDeleted", "" + deleted);
+		xmlWriter.writeEndElement();
+
+		writeActionResults200(xmlWriter, "InsertResults", inserted);
+		writeActionResults200(xmlWriter, "UpdateResults", updated);
+		writeActionResults200(xmlWriter, "ReplaceResults", replaced);
+
+		xmlWriter.writeEndElement();
+		xmlWriter.flush();
+	}
+
+	private void writeActionResults200(XMLStreamWriter xmlWriter, String elName, ActionResults results)
+			throws XMLStreamException {
+
+		if (results.getTotal() > 0) {
+			xmlWriter.writeStartElement(WFS_200_NS, elName);
+			for (String handle : results.getHandles()) {
+				Collection<String> fids = results.getFids(handle);
+				for (String fid : fids) {
+					xmlWriter.writeStartElement(WFS_200_NS, "Feature");
+					xmlWriter.writeAttribute("handle", handle);
+					xmlWriter.writeStartElement(FES_20_NS, "ResourceId");
+					xmlWriter.writeAttribute("rid", fid);
+					xmlWriter.writeEndElement();
+					xmlWriter.writeEndElement();
+				}
+			}
+
+			for (String fid : results.getFidsWithoutHandle()) {
+				xmlWriter.writeStartElement(WFS_200_NS, "Feature");
+				xmlWriter.writeStartElement(FES_20_NS, "ResourceId");
+				xmlWriter.writeAttribute("rid", fid);
+				xmlWriter.writeEndElement();
+				xmlWriter.writeEndElement();
+			}
+			xmlWriter.writeEndElement();
+		}
+	}
+
+	private GMLVersion determineFormat(Version requestVersion, String format) {
+
+		GMLVersion gmlVersion = null;
+
+		if (format == null) {
+			// default values for the different WFS version
+			if (VERSION_100.equals(requestVersion)) {
+				gmlVersion = GMLVersion.GML_2;
+			}
+			else if (VERSION_110.equals(requestVersion)) {
+				gmlVersion = GMLVersion.GML_31;
+			}
+			else if (VERSION_200.equals(requestVersion)) {
+				gmlVersion = GMLVersion.GML_32;
+			}
+			else {
+				throw new RuntimeException("Internal error: Unhandled WFS version: " + requestVersion);
+			}
+		}
+		else {
+			if ("text/xml; subtype=gml/2.1.2".equals(format) || "GML2".equals(format)) {
+				gmlVersion = GMLVersion.GML_2;
+			}
+			else if ("text/xml; subtype=gml/3.0.1".equals(format)) {
+				gmlVersion = GMLVersion.GML_30;
+			}
+			else if ("text/xml; subtype=gml/3.1.1".equals(format) || "GML3".equals(format)) {
+				gmlVersion = GMLVersion.GML_31;
+			}
+			else if ("text/xml; subtype=gml/3.2.1".equals(format)) {
+				gmlVersion = GMLVersion.GML_32;
+			}
+			else if ("text/xml; subtype=gml/3.2.2".equals(format)) {
+				gmlVersion = GMLVersion.GML_32;
+			}
+		}
+		return gmlVersion;
+	}
+
+	private String determineNamespaceUri(ValueReference valueReference, FeatureType ft, NameStep namestep) {
+		String prefix = namestep.getPrefix();
+		if (prefix != null && !"".equals(prefix)) {
+			String namespaceUriByPrefix = valueReference.getNsContext().getNamespaceURI(prefix);
+			if (namespaceUriByPrefix != null && !"".equals(namespaceUriByPrefix))
+				return namespaceUriByPrefix;
+		}
+		return ft.getName().getNamespaceURI();
+	}
+
+	private ICRS determineDefaultCrs(Insert insert) throws OWSException {
+		String srsName = insert.getSrsName();
+		if (srsName != null) {
+			try {
+				return CRSManager.lookup(insert.getSrsName());
+			}
+			catch (UnknownCRSException e) {
+				String msg = "Cannot perform insert. Specified srsName '" + srsName + "' is not supported by this WFS.";
+				throw new OWSException(msg, INVALID_PARAMETER_VALUE, "srsName");
+			}
+		}
+		return null;
+	}
+
+	private void evaluateValidDomainOfGeometriesInFeature(FeatureCollection fc, String handle) throws OWSException {
+		if (this.master.isTransactionCheckAreaOfUse()) {
+			for (Feature feature : fc)
+				evaluateValidDomainOfGeometriesInFeature(feature, handle);
+		}
+	}
+
+	private void evaluateValidDomainOfGeometriesInFeature(Feature feature, String handle) throws OWSException {
+		Set<Geometry> geometries = new LinkedHashSet<>();
+		findFeaturesAndGeometries(feature, geometries, new LinkedHashSet<>(), new LinkedHashSet<>(),
+				new LinkedHashSet<>());
+		for (Geometry geometry : geometries) {
+			ICRS crs = geometry.getCoordinateSystem();
+			evaluateValidDomain(feature, crs, geometry, handle);
+		}
+	}
+
+	private void evaluateValidDomain(Feature feature, ICRS crs, Geometry geometry, String handle) throws OWSException {
+		if (crs == null) {
+			LOG.warn("CRS of geometry of fetaure with id {} is not available. Check if geometry is inside the valid "
+					+ "domain not possible. The check is skipped and insert processed.", feature.getId());
+			return;
+		}
+		double[] validDomain = crs.getValidDomain();
+		if (validDomain == null) {
+			LOG.warn(
+					"Valid domain of crs {} is not available (concerns feature with id {}). Check if geometry is inside the valid "
+							+ "domain not possible. The check is skipped and insert processed.",
+					crs.getAlias(), feature.getId());
+			return;
+		}
+		Envelope validDomainBbox = GEOM_FACTORY.createEnvelope(validDomain[0], validDomain[1], validDomain[2],
+				validDomain[3], crs);
+		if (!geometry.isWithin(validDomainBbox)) {
+			String message = "At least one geometry is not in the valid domain of the srs.";
+			if (handle == null || "".equals(handle))
+				handle = "Transaction";
+			throw new OWSException(message, OWSException.OPERATION_PROCESSING_FAILED, handle);
+		}
+	}
 
 }

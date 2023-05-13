@@ -49,61 +49,58 @@ import org.deegree.services.controller.utils.HttpResponseBuffer;
 
 /**
  * {@link XMLExceptionSerializer} for CSW 2.0.2 <code>ExceptionReport</code> documents.
- * 
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class CswExceptionReportSerializer extends XMLExceptionSerializer {
 
-    private static final String OWS_NS = "http://www.opengis.net/ows";
+	private static final String OWS_NS = "http://www.opengis.net/ows";
 
-    private static final String OWS_SCHEMA = "http://schemas.opengis.net/ows/1.0.0/owsExceptionReport.xsd";
+	private static final String OWS_SCHEMA = "http://schemas.opengis.net/ows/1.0.0/owsExceptionReport.xsd";
 
-    private final Version version;
+	private final Version version;
 
-    /**
-     * Creates a new {@link CswExceptionReportSerializer} instance.
-     * 
-     * @param version
-     *            version attribute, must not be <code>null</code>
-     */
-    public CswExceptionReportSerializer( Version version ) {
-        this.version = version;
-    }
+	/**
+	 * Creates a new {@link CswExceptionReportSerializer} instance.
+	 * @param version version attribute, must not be <code>null</code>
+	 */
+	public CswExceptionReportSerializer(Version version) {
+		this.version = version;
+	}
 
-    @Override
-    public void serializeException( HttpResponseBuffer response, OWSException exception )
-                            throws IOException, XMLStreamException {
+	@Override
+	public void serializeException(HttpResponseBuffer response, OWSException exception)
+			throws IOException, XMLStreamException {
 
-        response.reset();
-        response.setCharacterEncoding( "UTF-8" );
-        response.setContentType( "application/xml" );
-        setExceptionStatusCode( response, exception );
-        serializeExceptionToXML( response.getXMLWriter(), exception );
-    }
+		response.reset();
+		response.setCharacterEncoding("UTF-8");
+		response.setContentType("application/xml");
+		setExceptionStatusCode(response, exception);
+		serializeExceptionToXML(response.getXMLWriter(), exception);
+	}
 
-    @Override
-    public void serializeExceptionToXML( XMLStreamWriter writer, OWSException ex )
-                            throws XMLStreamException {
-        if ( ex == null || writer == null ) {
-            return;
-        }
-        writer.writeStartElement( "ows", "ExceptionReport", OWS_NS );
-        writer.writeNamespace( "ows", OWS_NS );
-        writer.writeNamespace( "xsi", XSINS );
-        writer.writeAttribute( XSINS, "schemaLocation", OWS_NS + " " + OWS_SCHEMA );
-        writer.writeAttribute( "version", "" + version );
-        writer.writeStartElement( OWS_NS, "Exception" );
-        writer.writeAttribute( "exceptionCode", ex.getExceptionCode() );
-        if ( ex.getLocator() != null && !"".equals( ex.getLocator().trim() ) ) {
-            writer.writeAttribute( "locator", ex.getLocator() );
-        }
-        writer.writeStartElement( OWS_NS, "ExceptionText" );
-        writer.writeCharacters( ex.getMessage() != null ? ex.getMessage() : "not available" );
-        writer.writeEndElement();
-        writer.writeEndElement(); // Exception
-        writer.writeEndElement(); // ExceptionReport
-    }
+	@Override
+	public void serializeExceptionToXML(XMLStreamWriter writer, OWSException ex) throws XMLStreamException {
+		if (ex == null || writer == null) {
+			return;
+		}
+		writer.writeStartElement("ows", "ExceptionReport", OWS_NS);
+		writer.writeNamespace("ows", OWS_NS);
+		writer.writeNamespace("xsi", XSINS);
+		writer.writeAttribute(XSINS, "schemaLocation", OWS_NS + " " + OWS_SCHEMA);
+		writer.writeAttribute("version", "" + version);
+		writer.writeStartElement(OWS_NS, "Exception");
+		writer.writeAttribute("exceptionCode", ex.getExceptionCode());
+		if (ex.getLocator() != null && !"".equals(ex.getLocator().trim())) {
+			writer.writeAttribute("locator", ex.getLocator());
+		}
+		writer.writeStartElement(OWS_NS, "ExceptionText");
+		writer.writeCharacters(ex.getMessage() != null ? ex.getMessage() : "not available");
+		writer.writeEndElement();
+		writer.writeEndElement(); // Exception
+		writer.writeEndElement(); // ExceptionReport
+	}
+
 }

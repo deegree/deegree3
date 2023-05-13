@@ -51,58 +51,58 @@ import org.deegree.workspace.standard.DefaultResourceIdentifier;
 
 /**
  * Resource metadata for WMS services.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class WmsMetadata extends AbstractResourceMetadata<OWS> {
 
-    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.services.jaxb.wms";
+	private static final String CONFIG_JAXB_PACKAGE = "org.deegree.services.jaxb.wms";
 
-    public WmsMetadata( Workspace workspace, ResourceLocation<OWS> location, AbstractResourceProvider<OWS> provider ) {
-        super( workspace, location, provider );
-    }
+	public WmsMetadata(Workspace workspace, ResourceLocation<OWS> location, AbstractResourceProvider<OWS> provider) {
+		super(workspace, location, provider);
+	}
 
-    @Override
-    public ResourceBuilder<OWS> prepare() {
-        try {
-            DeegreeWMS cfg = (DeegreeWMS) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, provider.getSchema(),
-                                                                location.getAsStream(), workspace );
+	@Override
+	public ResourceBuilder<OWS> prepare() {
+		try {
+			DeegreeWMS cfg = (DeegreeWMS) JAXBUtils.unmarshall(CONFIG_JAXB_PACKAGE, provider.getSchema(),
+					location.getAsStream(), workspace);
 
-            String id = cfg.getMetadataStoreId();
-            if ( id != null ) {
-                // is that really a metadata store id? Saw services with UUID here.
-                softDependencies.add( new DefaultResourceIdentifier( MetadataStoreProvider.class, id ) );
-            }
+			String id = cfg.getMetadataStoreId();
+			if (id != null) {
+				// is that really a metadata store id? Saw services with UUID here.
+				softDependencies.add(new DefaultResourceIdentifier(MetadataStoreProvider.class, id));
+			}
 
-            for ( String tid : cfg.getServiceConfiguration().getThemeId() ) {
-                dependencies.add( new DefaultResourceIdentifier<Theme>( ThemeProvider.class, tid ) );
-            }
+			for (String tid : cfg.getServiceConfiguration().getThemeId()) {
+				dependencies.add(new DefaultResourceIdentifier<Theme>(ThemeProvider.class, tid));
+			}
 
-            OwsManager mgr = workspace.getResourceManager( OwsManager.class );
-            Collection<ResourceMetadata<OWS>> mds = mgr.getResourceMetadata();
-            for ( ResourceMetadata<OWS> md : mds ) {
-                OWSProvider prov = (OWSProvider) md.getProvider();
-                for ( String name : prov.getImplementationMetadata().getImplementedServiceName() ) {
-                    if ( name.equalsIgnoreCase( "CSW" ) ) {
-                        softDependencies.add( md.getIdentifier() );
-                    }
-                }
-            }
-            
-            OWSMetadataProviderManager mmgr = workspace.getResourceManager( OWSMetadataProviderManager.class );
-            for ( ResourceMetadata<OWSMetadataProvider> md : mmgr.getResourceMetadata() ) {
-                ResourceIdentifier<OWSMetadataProvider> mdId = md.getIdentifier();
-                if ( mdId.getId().equals( getIdentifier().getId() + "_metadata" ) ) {
-                    softDependencies.add( mdId );
-                }
-            }
+			OwsManager mgr = workspace.getResourceManager(OwsManager.class);
+			Collection<ResourceMetadata<OWS>> mds = mgr.getResourceMetadata();
+			for (ResourceMetadata<OWS> md : mds) {
+				OWSProvider prov = (OWSProvider) md.getProvider();
+				for (String name : prov.getImplementationMetadata().getImplementedServiceName()) {
+					if (name.equalsIgnoreCase("CSW")) {
+						softDependencies.add(md.getIdentifier());
+					}
+				}
+			}
 
-            return new WmsBuilder( this, workspace, cfg );
-        } catch ( Exception e ) {
-            throw new ResourceInitException( e.getLocalizedMessage(), e );
-        }
-    }
+			OWSMetadataProviderManager mmgr = workspace.getResourceManager(OWSMetadataProviderManager.class);
+			for (ResourceMetadata<OWSMetadataProvider> md : mmgr.getResourceMetadata()) {
+				ResourceIdentifier<OWSMetadataProvider> mdId = md.getIdentifier();
+				if (mdId.getId().equals(getIdentifier().getId() + "_metadata")) {
+					softDependencies.add(mdId);
+				}
+			}
+
+			return new WmsBuilder(this, workspace, cfg);
+		}
+		catch (Exception e) {
+			throw new ResourceInitException(e.getLocalizedMessage(), e);
+		}
+	}
 
 }

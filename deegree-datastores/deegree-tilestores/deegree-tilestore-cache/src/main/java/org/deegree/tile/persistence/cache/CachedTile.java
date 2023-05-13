@@ -67,69 +67,72 @@ import static org.slf4j.LoggerFactory.getLogger;
  */
 public class CachedTile implements Tile {
 
-    private static final Logger LOG = getLogger( CachedTile.class );
+	private static final Logger LOG = getLogger(CachedTile.class);
 
-    private final Tile tile;
+	private final Tile tile;
 
-    private final Cache<String, byte[]> cache;
+	private final Cache<String, byte[]> cache;
 
-    private final String key;
+	private final String key;
 
-    private byte[] data;
+	private byte[] data;
 
-    public CachedTile( Tile tile, Cache<String, byte[]> cache, String key ) {
-        this.tile = tile;
-        this.cache = cache;
-        this.key = key;
-    }
+	public CachedTile(Tile tile, Cache<String, byte[]> cache, String key) {
+		this.tile = tile;
+		this.cache = cache;
+		this.key = key;
+	}
 
-    @Override
-    public BufferedImage getAsImage()
-                    throws TileIOException {
-        try {
-            return ImageIO.read( new ByteArrayInputStream( getData() ) );
-        } catch ( IOException e ) {
-            String msg = "Error decoding image from byte array: " + e.getMessage();
-            LOG.trace( msg, e );
-            throw new TileIOException( e.getMessage(), e );
-        }
-    }
+	@Override
+	public BufferedImage getAsImage() throws TileIOException {
+		try {
+			return ImageIO.read(new ByteArrayInputStream(getData()));
+		}
+		catch (IOException e) {
+			String msg = "Error decoding image from byte array: " + e.getMessage();
+			LOG.trace(msg, e);
+			throw new TileIOException(e.getMessage(), e);
+		}
+	}
 
-    @Override
-    public InputStream getAsStream() {
-        return new ByteArrayInputStream( getData() );
-    }
+	@Override
+	public InputStream getAsStream() {
+		return new ByteArrayInputStream(getData());
+	}
 
-    @Override
-    public Envelope getEnvelope() {
-        return tile.getEnvelope();
-    }
+	@Override
+	public Envelope getEnvelope() {
+		return tile.getEnvelope();
+	}
 
-    @Override
-    public FeatureCollection getFeatures( int i, int j, int limit )
-                    throws UnsupportedOperationException {
-        return tile.getFeatures( i, j, limit );
-    }
+	@Override
+	public FeatureCollection getFeatures(int i, int j, int limit) throws UnsupportedOperationException {
+		return tile.getFeatures(i, j, limit);
+	}
 
-    private synchronized byte[] getData() {
-        if ( data == null ) {
-            if ( !cache.containsKey( key ) ) {
-                try {
-                    InputStream is = tile.getAsStream();
-                    if ( is == null ) {
-                        data = new byte[] {};
-                    } else {
-                        data = IOUtils.toByteArray( is );
-                    }
-                    cache.put( key, data );
-                } catch ( IOException e ) {
-                    LOG.trace( e.getMessage(), e );
-                    throw new TileIOException( e.getMessage(), e );
-                }
-            } else {
-                data = cache.get( key );
-            }
-        }
-        return data;
-    }
+	private synchronized byte[] getData() {
+		if (data == null) {
+			if (!cache.containsKey(key)) {
+				try {
+					InputStream is = tile.getAsStream();
+					if (is == null) {
+						data = new byte[] {};
+					}
+					else {
+						data = IOUtils.toByteArray(is);
+					}
+					cache.put(key, data);
+				}
+				catch (IOException e) {
+					LOG.trace(e.getMessage(), e);
+					throw new TileIOException(e.getMessage(), e);
+				}
+			}
+			else {
+				data = cache.get(key);
+			}
+		}
+		return data;
+	}
+
 }

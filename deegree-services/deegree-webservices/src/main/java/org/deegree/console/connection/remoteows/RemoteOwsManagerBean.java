@@ -46,15 +46,15 @@ import org.deegree.remoteows.RemoteOWSManager;
 @ViewScoped
 public class RemoteOwsManagerBean extends AbstractResourceManagerBean<RemoteOWSManager> implements Serializable {
 
-    private static final long serialVersionUID = 1272052355293535515L;
+	private static final long serialVersionUID = 1272052355293535515L;
 
-    public RemoteOwsManagerBean() {
-        super( RemoteOWSManager.class );
-    }
+	public RemoteOwsManagerBean() {
+		super(RemoteOWSManager.class);
+	}
 
-    @Override
-    public String getStartView() {
-        return "/console/connection/ows/index";
-    }
+	@Override
+	public String getStartView() {
+		return "/console/connection/ows/index";
+	}
 
 }

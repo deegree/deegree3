@@ -37,10 +37,10 @@ package org.deegree.time.primitive;
 
 public interface TimeGeometricPrimitive extends TimePrimitive {
 
-    /**
-     * Returns the time frame.
-     * 
-     * @return time frame, can be <code>null</code>
-     */
-    String getFrame();
+	/**
+	 * Returns the time frame.
+	 * @return time frame, can be <code>null</code>
+	 */
+	String getFrame();
+
 }

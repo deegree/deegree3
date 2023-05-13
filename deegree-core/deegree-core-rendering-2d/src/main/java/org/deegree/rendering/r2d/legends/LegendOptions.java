@@ -36,21 +36,19 @@
 package org.deegree.rendering.r2d.legends;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class LegendOptions {
 
-    public int spacing = 6, textSize = 12, baseWidth = 20, baseHeight = 15;
+	public int spacing = 6, textSize = 12, baseWidth = 20, baseHeight = 15;
 
-    /**
-     * @return true, if base/text sizes are default
-     */
-    public boolean isDefault() {
-        return baseWidth == 20 && baseHeight == 15 && textSize == 12 && spacing == 6;
-    }
+	/**
+	 * @return true, if base/text sizes are default
+	 */
+	public boolean isDefault() {
+		return baseWidth == 20 && baseHeight == 15 && textSize == 12 && spacing == 6;
+	}
 
 }

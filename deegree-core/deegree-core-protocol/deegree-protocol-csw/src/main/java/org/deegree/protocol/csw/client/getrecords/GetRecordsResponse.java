@@ -57,102 +57,102 @@ import org.deegree.protocol.ows.http.OwsHttpResponse;
 
 /**
  * Represents a <code>GetRecords</code> response of a CSW.
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
- * 
  * @version $Revision: $, $Date: $
  */
 public class GetRecordsResponse {
 
-    private final OwsHttpResponse response;
+	private final OwsHttpResponse response;
 
-    private int numberOfRecordsReturned;
+	private int numberOfRecordsReturned;
 
-    private int numberOfRecordsMatched;
+	private int numberOfRecordsMatched;
 
-    private int nextRecord;
+	private int nextRecord;
 
-    private XMLStreamReader xmlStream;
+	private XMLStreamReader xmlStream;
 
-    protected String recordElementName;
+	protected String recordElementName;
 
-    public GetRecordsResponse( OwsHttpResponse response ) throws XMLProcessingException, OWSExceptionReport,
-                            XMLStreamException {
-        this.response = response;
-        xmlStream = response.getAsXMLStream();
-        XMLStreamUtils.skipStartDocument( xmlStream );
-        XMLStreamUtils.moveReaderToFirstMatch( xmlStream, new QName( CSW_202_NS, "SearchResults" ) );
-        String noOfRecM = XMLStreamUtils.getAttributeValue( xmlStream, "numberOfRecordsMatched" );
-        numberOfRecordsMatched = noOfRecM != null ? Integer.parseInt( noOfRecM ) : 0;
+	public GetRecordsResponse(OwsHttpResponse response)
+			throws XMLProcessingException, OWSExceptionReport, XMLStreamException {
+		this.response = response;
+		xmlStream = response.getAsXMLStream();
+		XMLStreamUtils.skipStartDocument(xmlStream);
+		XMLStreamUtils.moveReaderToFirstMatch(xmlStream, new QName(CSW_202_NS, "SearchResults"));
+		String noOfRecM = XMLStreamUtils.getAttributeValue(xmlStream, "numberOfRecordsMatched");
+		numberOfRecordsMatched = noOfRecM != null ? Integer.parseInt(noOfRecM) : 0;
 
-        String noOfRecR = XMLStreamUtils.getAttributeValue( xmlStream, "numberOfRecordsReturned" );
-        numberOfRecordsReturned = noOfRecR != null ? Integer.parseInt( noOfRecR ) : 0;
+		String noOfRecR = XMLStreamUtils.getAttributeValue(xmlStream, "numberOfRecordsReturned");
+		numberOfRecordsReturned = noOfRecR != null ? Integer.parseInt(noOfRecR) : 0;
 
-        String nextRec = XMLStreamUtils.getAttributeValue( xmlStream, "nextRecord" );
-        nextRecord = nextRec != null ? Integer.parseInt( nextRec ) : 0;
+		String nextRec = XMLStreamUtils.getAttributeValue(xmlStream, "nextRecord");
+		nextRecord = nextRec != null ? Integer.parseInt(nextRec) : 0;
 
-        xmlStream.next();
-        while ( xmlStream.getEventType() != END_DOCUMENT && !xmlStream.isStartElement() && !xmlStream.isEndElement() ) {
-            xmlStream.next();
-        }
-        if ( xmlStream.getEventType() != END_DOCUMENT ) {
-            recordElementName = xmlStream.getLocalName();
-        }
-    }
+		xmlStream.next();
+		while (xmlStream.getEventType() != END_DOCUMENT && !xmlStream.isStartElement() && !xmlStream.isEndElement()) {
+			xmlStream.next();
+		}
+		if (xmlStream.getEventType() != END_DOCUMENT) {
+			recordElementName = xmlStream.getLocalName();
+		}
+	}
 
-    public OwsHttpResponse getResponse() {
-        return response;
-    }
+	public OwsHttpResponse getResponse() {
+		return response;
+	}
 
-    public Iterator<MetadataRecord> getRecords() {
-        return new Iterator<MetadataRecord>() {
+	public Iterator<MetadataRecord> getRecords() {
+		return new Iterator<MetadataRecord>() {
 
-            @Override
-            public boolean hasNext() {
-                return recordElementName != null && xmlStream.isStartElement()
-                       && recordElementName.equals( xmlStream.getLocalName() );
-            }
+			@Override
+			public boolean hasNext() {
+				return recordElementName != null && xmlStream.isStartElement()
+						&& recordElementName.equals(xmlStream.getLocalName());
+			}
 
-            @Override
-            public MetadataRecord next() {
-                if ( !hasNext() ) {
-                    throw new NoSuchElementException();
-                }
-                try {
-                    MetadataRecord record = MetadataRecordFactory.create( xmlStream );
-                    return record;
-                } finally {
-                    try {
-                        nextElement( xmlStream );
-                    } catch ( XMLStreamException e ) {
-                        throw new XMLParsingException( xmlStream, e.getMessage() );
-                    }
-                }
-            }
+			@Override
+			public MetadataRecord next() {
+				if (!hasNext()) {
+					throw new NoSuchElementException();
+				}
+				try {
+					MetadataRecord record = MetadataRecordFactory.create(xmlStream);
+					return record;
+				}
+				finally {
+					try {
+						nextElement(xmlStream);
+					}
+					catch (XMLStreamException e) {
+						throw new XMLParsingException(xmlStream, e.getMessage());
+					}
+				}
+			}
 
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException();
-            }
-        };
-    }
+			@Override
+			public void remove() {
+				throw new UnsupportedOperationException();
+			}
+		};
+	}
 
-    public int getNumberOfRecordsMatched() {
-        return numberOfRecordsMatched;
-    }
+	public int getNumberOfRecordsMatched() {
+		return numberOfRecordsMatched;
+	}
 
-    public int getNumberOfRecordsReturned() {
-        return numberOfRecordsReturned;
-    }
+	public int getNumberOfRecordsReturned() {
+		return numberOfRecordsReturned;
+	}
 
-    public int getNextRecord() {
-        return nextRecord;
-    }
+	public int getNextRecord() {
+		return nextRecord;
+	}
 
-    public void close()
-                            throws IOException {
-        response.close();
-    }
+	public void close() throws IOException {
+		response.close();
+	}
 
 }

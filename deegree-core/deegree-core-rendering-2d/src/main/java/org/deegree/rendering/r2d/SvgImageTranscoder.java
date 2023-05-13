@@ -49,42 +49,43 @@ import org.apache.batik.transcoder.image.ImageTranscoder;
 
 public class SvgImageTranscoder extends ImageTranscoder {
 
-    public class SvgImageOutput extends TranscoderOutput {
+	public class SvgImageOutput extends TranscoderOutput {
 
-        private BufferedImage image;
+		private BufferedImage image;
 
-        public SvgImageOutput() {
-        }
+		public SvgImageOutput() {
+		}
 
-        public BufferedImage getBufferedImage() {
-            return this.image;
-        }
+		public BufferedImage getBufferedImage() {
+			return this.image;
+		}
 
-        public void setImage( BufferedImage image ) {
-            this.image = image;
-        }
-    }
+		public void setImage(BufferedImage image) {
+			this.image = image;
+		}
 
-    public SvgImageTranscoder() {
-        super();
-    }
+	}
 
-    @Override
-    public BufferedImage createImage( int w, int h ) {
-        return new BufferedImage( w, h, BufferedImage.TYPE_INT_ARGB );
-    }
+	public SvgImageTranscoder() {
+		super();
+	}
 
-    @Override
-    public void writeImage( BufferedImage image, TranscoderOutput output )
-                            throws TranscoderException {
-        if ( !( output instanceof SvgImageOutput ) ) {
-            throw new TranscoderException( "TranscoderOutput has to be of type SvgImageOutput" );
-        }
+	@Override
+	public BufferedImage createImage(int w, int h) {
+		return new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+	}
 
-        ( (SvgImageOutput) output ).setImage( image );
-    }
+	@Override
+	public void writeImage(BufferedImage image, TranscoderOutput output) throws TranscoderException {
+		if (!(output instanceof SvgImageOutput)) {
+			throw new TranscoderException("TranscoderOutput has to be of type SvgImageOutput");
+		}
 
-    public SvgImageOutput createOutput() {
-        return new SvgImageOutput();
-    }
+		((SvgImageOutput) output).setImage(image);
+	}
+
+	public SvgImageOutput createOutput() {
+		return new SvgImageOutput();
+	}
+
 }

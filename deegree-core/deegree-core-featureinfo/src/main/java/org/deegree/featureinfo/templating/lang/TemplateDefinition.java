@@ -40,15 +40,14 @@ import java.util.List;
 
 /**
  * <code>TemplateDefinition</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class TemplateDefinition extends Definition {
 
-    /***/
-    public List<Object> body = new LinkedList<Object>();
+	/***/
+	public List<Object> body = new LinkedList<Object>();
 
 }

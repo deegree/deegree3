@@ -37,14 +37,14 @@ package org.deegree.services.encoding;
 
 /**
  * {@link SupportedEncodings} implementation supporting all encodings.
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
 public class UnlimitedSupportedEncodings<E extends Enum> implements SupportedEncodings<E> {
 
-    @Override
-    public boolean isEncodingSupported( E requestType, String encoding ) {
-        return true;
-    }
+	@Override
+	public boolean isEncodingSupported(E requestType, String encoding) {
+		return true;
+	}
 
 }

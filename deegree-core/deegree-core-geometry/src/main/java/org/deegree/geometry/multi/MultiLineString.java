@@ -39,12 +39,14 @@ import org.deegree.geometry.primitive.LineString;
 
 /**
  * Specialised aggregation type for {@link LineString} objects.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version. $Revision$, $Date$
  */
 public interface MultiLineString extends MultiCurve<LineString> {
-    // just a marker interface
+
+	// just a marker interface
+
 }

@@ -17,18 +17,17 @@ import org.junit.Test;
  */
 public class PropertyNameParserTest {
 
-    private PropertyNameParser propertyNameParser = new PropertyNameParser();
+	private PropertyNameParser propertyNameParser = new PropertyNameParser();
 
-    @Test
-    public void testParsePropertiesWithPrimitiveHref()
-                            throws URISyntaxException {
-        URL resource = PropertyNameParserTest.class.getResource( "/listOfPropertiesWithPrimitiveHref" );
-        List<QName> qNames = propertyNameParser.parsePropertiesWithPrimitiveHref( resource.toURI() );
+	@Test
+	public void testParsePropertiesWithPrimitiveHref() throws URISyntaxException {
+		URL resource = PropertyNameParserTest.class.getResource("/listOfPropertiesWithPrimitiveHref");
+		List<QName> qNames = propertyNameParser.parsePropertiesWithPrimitiveHref(resource.toURI());
 
-        assertThat( qNames.size(), is( 3 ) );
-        assertThat( qNames, hasItem( new QName( "http://inspire.ec.europa.eu/schemas/gn/4.0", "nativeness" ) ) );
-        assertThat( qNames, hasItem( new QName( "nativeness" ) ) );
-        assertThat( qNames, hasItem( new QName( "nativenessWithSpace" ) ) );
-    }
+		assertThat(qNames.size(), is(3));
+		assertThat(qNames, hasItem(new QName("http://inspire.ec.europa.eu/schemas/gn/4.0", "nativeness")));
+		assertThat(qNames, hasItem(new QName("nativeness")));
+		assertThat(qNames, hasItem(new QName("nativenessWithSpace")));
+	}
 
 }

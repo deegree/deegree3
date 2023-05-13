@@ -48,26 +48,25 @@ import org.deegree.workspace.Resource;
 
 /**
  * A node in a theme tree.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public interface Theme extends Resource {
 
-    /**
-     * @return the metadata (description, spatial) for this theme
-     */
-    LayerMetadata getLayerMetadata();
+	/**
+	 * @return the metadata (description, spatial) for this theme
+	 */
+	LayerMetadata getLayerMetadata();
 
-    /**
-     * @return all direct child layers of this theme
-     */
-    List<Layer> getLayers();
+	/**
+	 * @return all direct child layers of this theme
+	 */
+	List<Layer> getLayers();
 
-    /**
-     * @return all direct child themes of this theme
-     */
-    List<Theme> getThemes();
+	/**
+	 * @return all direct child themes of this theme
+	 */
+	List<Theme> getThemes();
 
 }

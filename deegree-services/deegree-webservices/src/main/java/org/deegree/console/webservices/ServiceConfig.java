@@ -45,42 +45,46 @@ import org.deegree.workspace.ResourceMetadata;
 
 public class ServiceConfig extends Config {
 
-    private static final URL METADATA_EXAMPLE_URL = ServicesBean.class.getResource( "/META-INF/schemas/services/metadata/example.xml" );
+	private static final URL METADATA_EXAMPLE_URL = ServicesBean.class
+		.getResource("/META-INF/schemas/services/metadata/example.xml");
 
-    public ServiceConfig( ResourceMetadata<?> metadata, ResourceManager<?> resourceManager ) {
-        super( metadata, resourceManager, "/console/webservices/index", true );
-    }
+	public ServiceConfig(ResourceMetadata<?> metadata, ResourceManager<?> resourceManager) {
+		super(metadata, resourceManager, "/console/webservices/index", true);
+	}
 
-    public String editMetadata()
-                            throws IOException {
-        ResourceManager mgr = getWorkspace().getResourceManager( OWSMetadataProviderManager.class );
-        Config metadataConfig;
-        if ( getWorkspace().getResource( OWSMetadataProviderProvider.class, id + "_metadata" ) != null ) {
-            ResourceMetadata<?> md = getWorkspace().getResourceMetadata( OWSMetadataProviderProvider.class,
-                                                                         id + "_metadata" );
-            metadataConfig = new Config( md, mgr, "/console/webservices/index", true );
-        } else {
-            StringBuilder sb = new StringBuilder( "/console/generic/xmleditor?faces-redirect=true" );
-            sb.append( "&id=" ).append( id ).append( "_metadata" );
-            sb.append( "&schemaUrl=" ).append( ( (OWSMetadataProviderProvider) mgr.getProviders().get( 0 ) ).getSchema() );
-            sb.append( "&resourceProviderClass=" ).append( OWSMetadataProviderProvider.class.getCanonicalName() );
-            sb.append( "&nextView=" ).append( "/console/webservices/index" );
-            sb.append( "&emptyTemplate=" ).append( METADATA_EXAMPLE_URL );
-            return sb.toString();
-        }
-        return metadataConfig.edit();
-    }
+	public String editMetadata() throws IOException {
+		ResourceManager mgr = getWorkspace().getResourceManager(OWSMetadataProviderManager.class);
+		Config metadataConfig;
+		if (getWorkspace().getResource(OWSMetadataProviderProvider.class, id + "_metadata") != null) {
+			ResourceMetadata<?> md = getWorkspace().getResourceMetadata(OWSMetadataProviderProvider.class,
+					id + "_metadata");
+			metadataConfig = new Config(md, mgr, "/console/webservices/index", true);
+		}
+		else {
+			StringBuilder sb = new StringBuilder("/console/generic/xmleditor?faces-redirect=true");
+			sb.append("&id=").append(id).append("_metadata");
+			sb.append("&schemaUrl=").append(((OWSMetadataProviderProvider) mgr.getProviders().get(0)).getSchema());
+			sb.append("&resourceProviderClass=").append(OWSMetadataProviderProvider.class.getCanonicalName());
+			sb.append("&nextView=").append("/console/webservices/index");
+			sb.append("&emptyTemplate=").append(METADATA_EXAMPLE_URL);
+			return sb.toString();
+		}
+		return metadataConfig.edit();
+	}
 
-    public String getCapabilitiesUrl() {
-        OWS ows = getWorkspace().getResource( OWSProvider.class, id );
-        String type = ( (OWSProvider) ows.getMetadata().getProvider() ).getImplementationMetadata().getImplementedServiceName()[0];
+	public String getCapabilitiesUrl() {
+		OWS ows = getWorkspace().getResource(OWSProvider.class, id);
+		String type = ((OWSProvider) ows.getMetadata().getProvider()).getImplementationMetadata()
+			.getImplementedServiceName()[0];
 
-        HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-        StringBuffer sb = req.getRequestURL();
+		HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance()
+			.getExternalContext()
+			.getRequest();
+		StringBuffer sb = req.getRequestURL();
 
-        // HACK HACK HACK
-        int index = sb.indexOf( "/console" );
-        return sb.substring( 0, index ) + "/services/" + id + "?service=" + type + "&request=GetCapabilities";
-    }
+		// HACK HACK HACK
+		int index = sb.indexOf("/console");
+		return sb.substring(0, index) + "/services/" + id + "?service=" + type + "&request=GetCapabilities";
+	}
 
 }

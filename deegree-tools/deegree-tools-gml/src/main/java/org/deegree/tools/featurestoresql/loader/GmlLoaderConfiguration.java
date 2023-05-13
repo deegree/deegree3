@@ -67,159 +67,168 @@ import org.springframework.core.io.Resource;
 @EnableBatchProcessing
 public class GmlLoaderConfiguration {
 
-    private static final Logger LOG = getLogger( GmlLoaderConfiguration.class );
+	private static final Logger LOG = getLogger(GmlLoaderConfiguration.class);
 
-    @Autowired
-    private JobBuilderFactory jobBuilderFactory;
+	@Autowired
+	private JobBuilderFactory jobBuilderFactory;
 
-    @Autowired
-    private StepBuilderFactory stepBuilderFactory;
+	@Autowired
+	private StepBuilderFactory stepBuilderFactory;
 
-    @JobScope
-    @Bean
-    public Summary summary( @Value("#{jobParameters[reportWriteStatistics] ?: false}") boolean reportWriteStatistics ) {
-        Summary summary = new Summary();
+	@JobScope
+	@Bean
+	public Summary summary(@Value("#{jobParameters[reportWriteStatistics] ?: false}") boolean reportWriteStatistics) {
+		Summary summary = new Summary();
 
-        if ( reportWriteStatistics ) {
-            summary.setStatistics( new FeatureStatistics() );
-        }
+		if (reportWriteStatistics) {
+			summary.setStatistics(new FeatureStatistics());
+		}
 
-        return summary;
-    }
+		return summary;
+	}
 
-    @JobScope
-    @Bean
-    public ReportWriter reportWriter( Summary summary,
-                                      @Value("#{jobParameters['reportFile'] ?: 'GmlLoader.log'}") String fileName ) {
-        Path outputFile = Paths.get( fileName );
-        return new ReportWriter( summary, outputFile );
-    }
+	@JobScope
+	@Bean
+	public ReportWriter reportWriter(Summary summary,
+			@Value("#{jobParameters['reportFile'] ?: 'GmlLoader.log'}") String fileName) {
+		Path outputFile = Paths.get(fileName);
+		return new ReportWriter(summary, outputFile);
+	}
 
-    @StepScope
-    @Bean
-    public TransactionHandler transactionHandler( SQLFeatureStore sqlFeatureStore, Summary summary ) {
-        return new TransactionHandler( sqlFeatureStore, summary );
-    }
+	@StepScope
+	@Bean
+	public TransactionHandler transactionHandler(SQLFeatureStore sqlFeatureStore, Summary summary) {
+		return new TransactionHandler(sqlFeatureStore, summary);
+	}
 
-    @StepScope
-    @Bean
-    public AbstractItemStreamItemReader<Feature> gmlReader( SQLFeatureStore sqlFeatureStore,
-                                @Value("#{jobParameters[pathToFile]}") String pathToFile,
-                                @Value("#{jobParameters[pathToList]}") String pathToList,
-                                @Value("#{jobParameters[disabledResources]}") String disabledResources ) {
-        GmlReader gmlReader = new GmlReader( sqlFeatureStore );
-        gmlReader.setDisabledResources( parseDisabledResources( disabledResources ) );
-        if ( pathToFile != null && pathToList != null) {
-            // error
-            throw new IllegalArgumentException( "Specify file to read or file with list of files only!" );
-        } else if ( pathToFile != null ) {
-            gmlReader.setResource( new PathResource( pathToFile ) );
-            return gmlReader;
-        } else {
-            MultiResourceItemReader<Feature> reader = new MultiResourceItemReader<Feature>();
-            reader.setDelegate( gmlReader );
-            List<Resource> resources;
-            try {
-                resources = Files.lines( Paths.get( pathToList ) ) //
-                                 .filter( Objects::nonNull ) //
-                                 .filter( line -> !line.startsWith( "#" ) ) //
-                                 .filter( line -> !line.trim().isEmpty() ) //
-                                 .map( PathResource::new ) //
-                                 .peek( pr -> {
-                                     if ( !pr.exists() ) {
-                                         final String msg = "The file " + pr.getDescription() + " in the list '"
-                                                                 + pathToList + "' does not exist!";
-                                         throw new IllegalArgumentException( msg );
-                                     } else if ( !pr.isReadable() ) {
-                                         final String msg = "The file " + pr.getDescription() + " in the list '"
-                                                                 + pathToList + "' is not readable!";
-                                         throw new IllegalArgumentException( msg );
-                                     }
-                                 } )
-                                 .collect( Collectors.toList() );
-                
-                reader.setResources( resources.toArray( new Resource[resources.size()] ) );
-                return reader;
-            } catch ( IllegalArgumentException iex ) {
-                throw iex;
-            } catch ( IOException ex ) {
-                throw new IllegalArgumentException( "Could not read file list.", ex );
-            }
-        }
-    }
+	@StepScope
+	@Bean
+	public AbstractItemStreamItemReader<Feature> gmlReader(SQLFeatureStore sqlFeatureStore,
+			@Value("#{jobParameters[pathToFile]}") String pathToFile,
+			@Value("#{jobParameters[pathToList]}") String pathToList,
+			@Value("#{jobParameters[disabledResources]}") String disabledResources) {
+		GmlReader gmlReader = new GmlReader(sqlFeatureStore);
+		gmlReader.setDisabledResources(parseDisabledResources(disabledResources));
+		if (pathToFile != null && pathToList != null) {
+			// error
+			throw new IllegalArgumentException("Specify file to read or file with list of files only!");
+		}
+		else if (pathToFile != null) {
+			gmlReader.setResource(new PathResource(pathToFile));
+			return gmlReader;
+		}
+		else {
+			MultiResourceItemReader<Feature> reader = new MultiResourceItemReader<Feature>();
+			reader.setDelegate(gmlReader);
+			List<Resource> resources;
+			try {
+				resources = Files.lines(Paths.get(pathToList)) //
+					.filter(Objects::nonNull) //
+					.filter(line -> !line.startsWith("#")) //
+					.filter(line -> !line.trim().isEmpty()) //
+					.map(PathResource::new) //
+					.peek(pr -> {
+						if (!pr.exists()) {
+							final String msg = "The file " + pr.getDescription() + " in the list '" + pathToList
+									+ "' does not exist!";
+							throw new IllegalArgumentException(msg);
+						}
+						else if (!pr.isReadable()) {
+							final String msg = "The file " + pr.getDescription() + " in the list '" + pathToList
+									+ "' is not readable!";
+							throw new IllegalArgumentException(msg);
+						}
+					})
+					.collect(Collectors.toList());
 
-    @StepScope
-    @Bean
-    public FeatureReferencesParser featureReferencesParser() {
-        return new FeatureReferencesParser();
-    }
+				reader.setResources(resources.toArray(new Resource[resources.size()]));
+				return reader;
+			}
+			catch (IllegalArgumentException iex) {
+				throw iex;
+			}
+			catch (IOException ex) {
+				throw new IllegalArgumentException("Could not read file list.", ex);
+			}
+		}
+	}
 
-    @StepScope
-    @Bean
-    public FeatureStoreWriter featureStoreWriter( SQLFeatureStore sqlFeatureStore, Summary summary ) {
-        return new FeatureStoreWriter( sqlFeatureStore, summary );
-    }
+	@StepScope
+	@Bean
+	public FeatureReferencesParser featureReferencesParser() {
+		return new FeatureReferencesParser();
+	}
 
-    @StepScope
-    @Bean
-    public SQLFeatureStore sqlFeatureStore( @Value("#{jobParameters[workspaceName]}") String workspaceName,
-                                            @Value("#{jobParameters[sqlFeatureStoreId]}") String sqlFeatureStoreId )
-                            throws Exception {
-        DeegreeWorkspace workspace = DeegreeWorkspace.getInstance( workspaceName );
-        workspace.initAll();
-        LOG.info( "deegree workspace directory: [" + workspace.getLocation() + "] initialized" );
-        Workspace newWorkspace = workspace.getNewWorkspace();
-        SQLFeatureStore featureStore = (SQLFeatureStore) newWorkspace.getResource( FeatureStoreProvider.class,
-                                                                                   sqlFeatureStoreId );
-        LOG.info( "SQLFeatureStore: [" + sqlFeatureStoreId + "] requested." );
-        if ( featureStore == null )
-            throw new IllegalArgumentException( "SQLFeatureStore with ID " + sqlFeatureStoreId + " in workspace "
-                                                + workspaceName
-                                                + " does not exist or could not be initialised successful." );
-        return featureStore;
-    }
+	@StepScope
+	@Bean
+	public FeatureStoreWriter featureStoreWriter(SQLFeatureStore sqlFeatureStore, Summary summary) {
+		return new FeatureStoreWriter(sqlFeatureStore, summary);
+	}
 
-    @JobScope
-    @Bean
-    public Step step( TransactionHandler transactionHandler, AbstractItemStreamItemReader<Feature> gmlReader,
-                      FeatureReferencesParser featureReferencesParser, FeatureStoreWriter featureStoreWriter,
-                      @Value("#{jobParameters['chunkSize']}") Integer chunkSize,
-                      @Value("#{jobParameters['dryRun'] ?: false}") boolean dryRun,
-                      @Value("#{jobParameters['skipReferenceCheck'] ?: false}") boolean skipReferenceCheck ) {
-        int chunk = chunkSize != null && chunkSize.intValue() > 10 ? chunkSize.intValue() : 10;
+	@StepScope
+	@Bean
+	public SQLFeatureStore sqlFeatureStore(@Value("#{jobParameters[workspaceName]}") String workspaceName,
+			@Value("#{jobParameters[sqlFeatureStoreId]}") String sqlFeatureStoreId) throws Exception {
+		DeegreeWorkspace workspace = DeegreeWorkspace.getInstance(workspaceName);
+		workspace.initAll();
+		LOG.info("deegree workspace directory: [" + workspace.getLocation() + "] initialized");
+		Workspace newWorkspace = workspace.getNewWorkspace();
+		SQLFeatureStore featureStore = (SQLFeatureStore) newWorkspace.getResource(FeatureStoreProvider.class,
+				sqlFeatureStoreId);
+		LOG.info("SQLFeatureStore: [" + sqlFeatureStoreId + "] requested.");
+		if (featureStore == null)
+			throw new IllegalArgumentException("SQLFeatureStore with ID " + sqlFeatureStoreId + " in workspace "
+					+ workspaceName + " does not exist or could not be initialised successful.");
+		return featureStore;
+	}
 
-        SimpleStepBuilder<Feature, Feature> builder = stepBuilderFactory.get( "gmlLoaderStep" ).<Feature, Feature> chunk( chunk );
-        builder.reader( gmlReader );
-        if ( skipReferenceCheck ) {
-            LOG.warn( "The feature reference check will be skipped." );
-        } else {
-            builder.processor( featureReferencesParser );
-        }
+	@JobScope
+	@Bean
+	public Step step(TransactionHandler transactionHandler, AbstractItemStreamItemReader<Feature> gmlReader,
+			FeatureReferencesParser featureReferencesParser, FeatureStoreWriter featureStoreWriter,
+			@Value("#{jobParameters['chunkSize']}") Integer chunkSize,
+			@Value("#{jobParameters['dryRun'] ?: false}") boolean dryRun,
+			@Value("#{jobParameters['skipReferenceCheck'] ?: false}") boolean skipReferenceCheck) {
+		int chunk = chunkSize != null && chunkSize.intValue() > 10 ? chunkSize.intValue() : 10;
 
-        if ( dryRun ) {
-            return builder.build();
-        } else {
-            return builder.writer( featureStoreWriter ).listener( transactionHandler ).build();
-        }
-    }
+		SimpleStepBuilder<Feature, Feature> builder = stepBuilderFactory.get("gmlLoaderStep")
+			.<Feature, Feature>chunk(chunk);
+		builder.reader(gmlReader);
+		if (skipReferenceCheck) {
+			LOG.warn("The feature reference check will be skipped.");
+		}
+		else {
+			builder.processor(featureReferencesParser);
+		}
 
-    @Bean
-    public Job job( Step step, ReportWriter reportWriter ) {
-        return jobBuilderFactory.get( "gmlLoaderJob" ).incrementer( new RunIdIncrementer() ).start( step ).listener(
-                        reportWriter ).build();
-    }
+		if (dryRun) {
+			return builder.build();
+		}
+		else {
+			return builder.writer(featureStoreWriter).listener(transactionHandler).build();
+		}
+	}
 
-    private List<String> parseDisabledResources( String disabledResources ) {
-        List<String> patterns = new ArrayList<>();
-        if ( disabledResources != null ) {
-            String[] split = disabledResources.split( "," );
-            for ( String resource : split ) {
-                String pattern = resource.trim();
-                if ( !pattern.isEmpty() )
-                    patterns.add( pattern );
-            }
-        }
-        return patterns;
-    }
+	@Bean
+	public Job job(Step step, ReportWriter reportWriter) {
+		return jobBuilderFactory.get("gmlLoaderJob")
+			.incrementer(new RunIdIncrementer())
+			.start(step)
+			.listener(reportWriter)
+			.build();
+	}
+
+	private List<String> parseDisabledResources(String disabledResources) {
+		List<String> patterns = new ArrayList<>();
+		if (disabledResources != null) {
+			String[] split = disabledResources.split(",");
+			for (String resource : split) {
+				String pattern = resource.trim();
+				if (!pattern.isEmpty())
+					patterns.add(pattern);
+			}
+		}
+		return patterns;
+	}
 
 }

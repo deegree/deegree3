@@ -44,42 +44,44 @@ import org.deegree.workspace.ResourceMetadata;
 
 /**
  * This class is responsible for building SE style stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class SeStyleStoreBuilder implements ResourceBuilder<StyleStore> {
 
-    private ResourceMetadata<StyleStore> metadata;
+	private ResourceMetadata<StyleStore> metadata;
 
-    public SeStyleStoreBuilder( ResourceMetadata<StyleStore> metadata ) {
-        this.metadata = metadata;
-    }
+	public SeStyleStoreBuilder(ResourceMetadata<StyleStore> metadata) {
+		this.metadata = metadata;
+	}
 
-    @Override
-    public StyleStore build() {
-        InputStream in = null;
-        XMLStreamReader reader = null;
-        try {
-            in = metadata.getLocation().getAsStream();
-            XMLInputFactory fac = XMLInputFactory.newInstance();
-            reader = fac.createXMLStreamReader( in );
-            SymbologyParser parser = new SymbologyParser( metadata.getLocation() );
-            Style style = parser.parse( reader );
-            return new SEStyleStore( style, metadata );
-        } catch ( Exception e ) {
-            throw new ResourceInitException( "Could not read SE style file.", e );
-        } finally {
-            try {
-                if ( reader != null ) {
-                    reader.close();
-                }
-            } catch ( XMLStreamException e ) {
-                // eat it
-            }
-            closeQuietly( in );
-        }
-    }
+	@Override
+	public StyleStore build() {
+		InputStream in = null;
+		XMLStreamReader reader = null;
+		try {
+			in = metadata.getLocation().getAsStream();
+			XMLInputFactory fac = XMLInputFactory.newInstance();
+			reader = fac.createXMLStreamReader(in);
+			SymbologyParser parser = new SymbologyParser(metadata.getLocation());
+			Style style = parser.parse(reader);
+			return new SEStyleStore(style, metadata);
+		}
+		catch (Exception e) {
+			throw new ResourceInitException("Could not read SE style file.", e);
+		}
+		finally {
+			try {
+				if (reader != null) {
+					reader.close();
+				}
+			}
+			catch (XMLStreamException e) {
+				// eat it
+			}
+			closeQuietly(in);
+		}
+	}
 
 }

@@ -23,48 +23,56 @@ import org.springframework.core.io.PathResource;
 @EnableBatchProcessing
 public class FeatureReferencesParserTestConfig {
 
-    @Autowired
-    private JobBuilderFactory jobBuilderFactory;
+	@Autowired
+	private JobBuilderFactory jobBuilderFactory;
 
-    @Autowired
-    private StepBuilderFactory stepBuilderFactory;
+	@Autowired
+	private StepBuilderFactory stepBuilderFactory;
 
-    @Bean
-    public JobLauncherTestUtils jobLauncherTestUtils() {
-        return new JobLauncherTestUtils();
-    }
+	@Bean
+	public JobLauncherTestUtils jobLauncherTestUtils() {
+		return new JobLauncherTestUtils();
+	}
 
-    @StepScope
-    @Bean
-    public GmlReader gmlReader( @Value("#{jobParameters[pathToFile]}") String pathToFile ) {
-        GmlReader gmlReader = new GmlReader( null );
-        gmlReader.setResource( new PathResource( pathToFile ) );
-        return gmlReader;
-    }
+	@StepScope
+	@Bean
+	public GmlReader gmlReader(@Value("#{jobParameters[pathToFile]}") String pathToFile) {
+		GmlReader gmlReader = new GmlReader(null);
+		gmlReader.setResource(new PathResource(pathToFile));
+		return gmlReader;
+	}
 
-    @StepScope
-    @Bean
-    public FeatureReferencesParser featureReferencesParser() {
-        return new FeatureReferencesParser();
-    }
+	@StepScope
+	@Bean
+	public FeatureReferencesParser featureReferencesParser() {
+		return new FeatureReferencesParser();
+	}
 
-    @Bean
-    public ItemWriter itemWriter() {
-        return new ItemWriter<Feature>() {
-            public void write(java.util.List<? extends Feature> items) throws java.lang.Exception {
-                System.out.println(items.toString());
-            }
-        };
-    }
+	@Bean
+	public ItemWriter itemWriter() {
+		return new ItemWriter<Feature>() {
+			public void write(java.util.List<? extends Feature> items) throws java.lang.Exception {
+				System.out.println(items.toString());
+			}
+		};
+	}
 
-    @Bean
-    public Step step( GmlReader gmlReader, FeatureReferencesParser featureReferencesParser, ItemWriter itemWriter ) {
-        return stepBuilderFactory.get( "FeatureReferencesParserTestStep" ).<Feature, Feature> chunk( 10 ).reader( gmlReader ).processor( featureReferencesParser ).writer( itemWriter ).build();
-    }
+	@Bean
+	public Step step(GmlReader gmlReader, FeatureReferencesParser featureReferencesParser, ItemWriter itemWriter) {
+		return stepBuilderFactory.get("FeatureReferencesParserTestStep")
+			.<Feature, Feature>chunk(10)
+			.reader(gmlReader)
+			.processor(featureReferencesParser)
+			.writer(itemWriter)
+			.build();
+	}
 
-    @Bean
-    public Job job( Step step )
-                            throws Exception {
-        return jobBuilderFactory.get( "FeatureReferencesParserTestJob" ).incrementer( new RunIdIncrementer() ).start( step ).build();
-    }
+	@Bean
+	public Job job(Step step) throws Exception {
+		return jobBuilderFactory.get("FeatureReferencesParserTestJob")
+			.incrementer(new RunIdIncrementer())
+			.start(step)
+			.build();
+	}
+
 }

@@ -38,19 +38,19 @@ import org.deegree.services.OwsManager;
  * JSF backing bean for "Create new webservice" view.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- *
  * @since 3.3
  */
 @ManagedBean
 @ViewScoped
 public class CreateServiceBean extends AbstractCreateResourceBean {
 
-    public CreateServiceBean() {
-        super( OwsManager.class );
-    }
+	public CreateServiceBean() {
+		super(OwsManager.class);
+	}
 
-    @Override
-    protected String getOutcome() {
-        return "/console/webservices/index";
-    }
+	@Override
+	protected String getOutcome() {
+		return "/console/webservices/index";
+	}
+
 }

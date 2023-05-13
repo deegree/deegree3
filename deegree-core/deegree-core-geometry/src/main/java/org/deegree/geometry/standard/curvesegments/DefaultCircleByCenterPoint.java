@@ -45,24 +45,24 @@ import org.deegree.geometry.primitive.segments.CircleByCenterPoint;
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author$
- *
  * @version $Revision$, $Date$
  */
 public class DefaultCircleByCenterPoint extends DefaultArcByCenterPoint implements CircleByCenterPoint {
 
-    /**
-     * Creates a new <code>DefaultCircleByCenterPoint</code> instance from the given parameters.
-     *
-     * @param midPoint
-     * @param radius
-     * @param startAngle
-     */
-    public DefaultCircleByCenterPoint( Point midPoint, Length radius, Angle startAngle ) {
-        super( midPoint, radius, startAngle, startAngle );
-    }
+	/**
+	 * Creates a new <code>DefaultCircleByCenterPoint</code> instance from the given
+	 * parameters.
+	 * @param midPoint
+	 * @param radius
+	 * @param startAngle
+	 */
+	public DefaultCircleByCenterPoint(Point midPoint, Length radius, Angle startAngle) {
+		super(midPoint, radius, startAngle, startAngle);
+	}
 
-    @Override
-    public CurveSegmentType getSegmentType() {
-        return CurveSegmentType.CIRCLE_BY_CENTER_POINT;
-    }
+	@Override
+	public CurveSegmentType getSegmentType() {
+		return CurveSegmentType.CIRCLE_BY_CENTER_POINT;
+	}
+
 }

@@ -59,59 +59,58 @@ import org.deegree.workspace.Workspace;
 
 public class MetadataStoreConfig extends Config {
 
-    public MetadataStoreConfig( ResourceMetadata<?> state, ResourceManager<?> resourceManager ) {
-        super( state, resourceManager, "/console/datastore/metadata/index", true );
-    }
+	public MetadataStoreConfig(ResourceMetadata<?> state, ResourceManager<?> resourceManager) {
+		super(state, resourceManager, "/console/datastore/metadata/index", true);
+	}
 
-    private Workspace getWorkspace() {
-        ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-        Workspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace().getNewWorkspace();
-        return ws;
-    }
+	private Workspace getWorkspace() {
+		ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
+		Workspace ws = ((WorkspaceBean) ctx.getApplicationMap().get("workspace")).getActiveWorkspace()
+			.getNewWorkspace();
+		return ws;
+	}
 
-    public void updateId( ActionEvent evt ) {
-        id = ( (HtmlCommandButton) evt.getComponent() ).getAlt();
-    }
+	public void updateId(ActionEvent evt) {
+		id = ((HtmlCommandButton) evt.getComponent()).getAlt();
+	}
 
-    public String openImporter()
-                            throws Exception {
-        MetadataStore<?> ms = getWorkspace().getResource( MetadataStoreProvider.class, getId() );
-        if ( ms == null ) {
-            throw new Exception( "No metadata store with id '" + getId() + "' known / active." );
-        }
-        MetadataImporter msImporter = new MetadataImporter( ms );
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "msConfig", this );
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "msImporter", msImporter );
-        return "/console/metadatastore/importer?faces-redirect=true";
-    }
+	public String openImporter() throws Exception {
+		MetadataStore<?> ms = getWorkspace().getResource(MetadataStoreProvider.class, getId());
+		if (ms == null) {
+			throw new Exception("No metadata store with id '" + getId() + "' known / active.");
+		}
+		MetadataImporter msImporter = new MetadataImporter(ms);
+		FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("msConfig", this);
+		FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("msImporter", msImporter);
+		return "/console/metadatastore/importer?faces-redirect=true";
+	}
 
-    public String createTables()
-                            throws MetadataStoreException {
-        MetadataStore<?> ms = getWorkspace().getResource( MetadataStoreProvider.class, getId() );
-        MetadataStoreProvider provider = (MetadataStoreProvider) ms.getMetadata().getProvider();
-        String[] sql;
-        try {
-            String connId = ms.getConnId();
-            Workspace ws = getWorkspace();
-            ConnectionProvider prov = ws.getResource( ConnectionProviderProvider.class, connId );
+	public String createTables() throws MetadataStoreException {
+		MetadataStore<?> ms = getWorkspace().getResource(MetadataStoreProvider.class, getId());
+		MetadataStoreProvider provider = (MetadataStoreProvider) ms.getMetadata().getProvider();
+		String[] sql;
+		try {
+			String connId = ms.getConnId();
+			Workspace ws = getWorkspace();
+			ConnectionProvider prov = ws.getResource(ConnectionProviderProvider.class, connId);
 
-            sql = provider.getCreateStatements( prov.getDialect() );
+			sql = provider.getCreateStatements(prov.getDialect());
 
-            SQLExecution execution = new SQLExecution( connId, sql, "/console/datastore/metadata/index", ws );
+			SQLExecution execution = new SQLExecution(connId, sql, "/console/datastore/metadata/index", ws);
 
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "execution", execution );
-        } catch ( UnsupportedEncodingException e ) {
-            FacesMessage msg = MessageUtils.getFacesMessage( FacesMessage.SEVERITY_ERROR,
-                                                             "METADATASTORE_FAILED_CREATE_SQL_STATEMENTS", getId(),
-                                                             e.getMessage() );
-            FacesContext.getCurrentInstance().addMessage( null, msg );
-        } catch ( IOException e ) {
-            FacesMessage msg = MessageUtils.getFacesMessage( FacesMessage.SEVERITY_ERROR,
-                                                             "METADATASTORE_FAILED_CREATE_SQL_STATEMENTS", getId(),
-                                                             e.getMessage() );
-            FacesContext.getCurrentInstance().addMessage( null, msg );
-        }
-        return "/console/generic/sql.jsf?faces-redirect=true";
-    }
+			FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("execution", execution);
+		}
+		catch (UnsupportedEncodingException e) {
+			FacesMessage msg = MessageUtils.getFacesMessage(FacesMessage.SEVERITY_ERROR,
+					"METADATASTORE_FAILED_CREATE_SQL_STATEMENTS", getId(), e.getMessage());
+			FacesContext.getCurrentInstance().addMessage(null, msg);
+		}
+		catch (IOException e) {
+			FacesMessage msg = MessageUtils.getFacesMessage(FacesMessage.SEVERITY_ERROR,
+					"METADATASTORE_FAILED_CREATE_SQL_STATEMENTS", getId(), e.getMessage());
+			FacesContext.getCurrentInstance().addMessage(null, msg);
+		}
+		return "/console/generic/sql.jsf?faces-redirect=true";
+	}
 
 }

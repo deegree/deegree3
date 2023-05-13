@@ -47,47 +47,47 @@ import org.deegree.time.primitive.TimeInstant;
 
 public class GmlTimeInstantWriter {
 
-    private static final String FRAME = "frame";
+	private static final String FRAME = "frame";
 
-    private static final String TIME_POSITION = "timePosition";
+	private static final String TIME_POSITION = "timePosition";
 
-    private static final String gmlNs = GML3_2_NS;
+	private static final String gmlNs = GML3_2_NS;
 
-    private static final String gmlPrefix = "gml";
+	private static final String gmlPrefix = "gml";
 
-    public void write( final XMLStreamWriter writer, final TimeInstant timeInstant )
-                            throws XMLStreamException {
-        writer.writeStartElement( gmlPrefix, "TimeInstant", gmlNs );
-        writeGmlId( writer, timeInstant );
-        // <attribute name="frame" type="anyURI" default="#ISO-8601"/>
-        writeAttributeIfNotNull( FRAME, timeInstant.getFrame(), writer );
-        // <element name="relatedTime" type="gml:RelatedTimeType" minOccurs="0" maxOccurs="unbounded"/>
-        // <element name="timePosition" type="gml:TimePositionType">
-        writeTimePosition( writer, timeInstant.getPosition() );
-        writer.writeEndElement();
-    }
+	public void write(final XMLStreamWriter writer, final TimeInstant timeInstant) throws XMLStreamException {
+		writer.writeStartElement(gmlPrefix, "TimeInstant", gmlNs);
+		writeGmlId(writer, timeInstant);
+		// <attribute name="frame" type="anyURI" default="#ISO-8601"/>
+		writeAttributeIfNotNull(FRAME, timeInstant.getFrame(), writer);
+		// <element name="relatedTime" type="gml:RelatedTimeType" minOccurs="0"
+		// maxOccurs="unbounded"/>
+		// <element name="timePosition" type="gml:TimePositionType">
+		writeTimePosition(writer, timeInstant.getPosition());
+		writer.writeEndElement();
+	}
 
-    private void writeGmlId( final XMLStreamWriter writer, final TimeInstant timeInstant )
-                            throws XMLStreamException {
-        if ( timeInstant.getId() != null ) {
-            writer.writeAttribute( gmlPrefix, gmlNs, "id", timeInstant.getId() );
-        } else {
-            writer.writeAttribute( gmlPrefix, gmlNs, "id", "uuid." + randomUUID() );
-        }
-    }
+	private void writeGmlId(final XMLStreamWriter writer, final TimeInstant timeInstant) throws XMLStreamException {
+		if (timeInstant.getId() != null) {
+			writer.writeAttribute(gmlPrefix, gmlNs, "id", timeInstant.getId());
+		}
+		else {
+			writer.writeAttribute(gmlPrefix, gmlNs, "id", "uuid." + randomUUID());
+		}
+	}
 
-    private void writeAttributeIfNotNull( final String name, final String value, final XMLStreamWriter writer )
-                            throws XMLStreamException {
-        if ( value != null ) {
-            writer.writeAttribute( name, value );
-        }
-    }
+	private void writeAttributeIfNotNull(final String name, final String value, final XMLStreamWriter writer)
+			throws XMLStreamException {
+		if (value != null) {
+			writer.writeAttribute(name, value);
+		}
+	}
 
-    private void writeTimePosition( final XMLStreamWriter writer, final TimePosition timePosition )
-                            throws XMLStreamException {
-        writer.writeStartElement( gmlPrefix, TIME_POSITION, gmlNs );
-        new GmlTimePositionTypeWriter().write( timePosition, writer );
-        writer.writeEndElement();
-    }
+	private void writeTimePosition(final XMLStreamWriter writer, final TimePosition timePosition)
+			throws XMLStreamException {
+		writer.writeStartElement(gmlPrefix, TIME_POSITION, gmlNs);
+		new GmlTimePositionTypeWriter().write(timePosition, writer);
+		writer.writeEndElement();
+	}
 
 }

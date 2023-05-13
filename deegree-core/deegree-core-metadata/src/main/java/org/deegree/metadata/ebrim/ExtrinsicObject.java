@@ -41,34 +41,33 @@ import org.apache.axiom.om.OMElement;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.org">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
- * 
  * @version $Revision: $, $Date: $
  */
 public class ExtrinsicObject extends RegistryObject {
 
-    public ExtrinsicObject( XMLStreamReader xmlReader ) {
-        super( xmlReader );
-    }
+	public ExtrinsicObject(XMLStreamReader xmlReader) {
+		super(xmlReader);
+	}
 
-    public ExtrinsicObject( OMElement eoElement ) {
-        super( eoElement );
-    }
+	public ExtrinsicObject(OMElement eoElement) {
+		super(eoElement);
+	}
 
-    /**
-     * @return the isOpaque
-     */
-    public boolean isOpaque() {
-        return false;
-    }
+	/**
+	 * @return the isOpaque
+	 */
+	public boolean isOpaque() {
+		return false;
+	}
 
-    /**
-     * @return
-     */
-    public Object getResource() {
-        return null;
-    }
+	/**
+	 * @return
+	 */
+	public Object getResource() {
+		return null;
+	}
 
 }

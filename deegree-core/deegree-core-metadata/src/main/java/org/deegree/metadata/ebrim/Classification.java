@@ -42,41 +42,40 @@ import org.deegree.commons.xml.XPath;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.org">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
- * 
  * @version $Revision: $, $Date: $
  */
 public class Classification extends RegistryObject {
 
-    public Classification( XMLStreamReader xmlReader ) {
-        super( xmlReader );
-    }
+	public Classification(XMLStreamReader xmlReader) {
+		super(xmlReader);
+	}
 
-    public Classification( OMElement record ) {
-        super( record );
-    }
+	public Classification(OMElement record) {
+		super(record);
+	}
 
-    /**
-     * @return the classificationScheme
-     */
-    public String getClassificationScheme() {
-        return adapter.getNodeAsString( adapter.getRootElement(), new XPath( "@classificationScheme", ns ), null );
-    }
+	/**
+	 * @return the classificationScheme
+	 */
+	public String getClassificationScheme() {
+		return adapter.getNodeAsString(adapter.getRootElement(), new XPath("@classificationScheme", ns), null);
+	}
 
-    /**
-     * @return the classificationNode
-     */
-    public String getClassificationNode() {
-        return adapter.getNodeAsString( adapter.getRootElement(), new XPath( "@classificationNode", ns ), null );
-    }
+	/**
+	 * @return the classificationNode
+	 */
+	public String getClassificationNode() {
+		return adapter.getNodeAsString(adapter.getRootElement(), new XPath("@classificationNode", ns), null);
+	}
 
-    /**
-     * @return the classifiedObject
-     */
-    public String getClassifiedObject() {
-        return adapter.getRequiredNodeAsString( adapter.getRootElement(), new XPath( "@classifiedObject", ns ) );
-    }
+	/**
+	 * @return the classifiedObject
+	 */
+	public String getClassifiedObject() {
+		return adapter.getRequiredNodeAsString(adapter.getRootElement(), new XPath("@classifiedObject", ns));
+	}
 
 }

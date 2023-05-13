@@ -389,8 +389,7 @@
         <groupId>io.spring.javaformat</groupId>
         <artifactId>spring-javaformat-maven-plugin</artifactId>
         <version>0.0.38</version>
-        <!-- Can be activated as soon as formatting was executed -->
-        <!--<executions>
+        <executions>
           <execution>
             <phase>validate</phase>
             <inherited>true</inherited>
@@ -398,7 +397,7 @@
               <goal>validate</goal>
             </goals>
           </execution>
-        </executions>-->
+        </executions>
       </plugin>
     </plugins>
   </build>

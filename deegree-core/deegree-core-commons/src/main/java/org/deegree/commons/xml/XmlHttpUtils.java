@@ -38,39 +38,38 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 
 /**
  * Utility class to use with HttpUtils.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class XmlHttpUtils {
 
-    private static final XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
+	private static final XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
 
-    /**
-     * Returns streaming XMLAdapter.
-     */
-    public static final Worker<XMLAdapter> XML = new Worker<XMLAdapter>() {
-        @Override
-        public XMLAdapter work( InputStream in ) {
-            return new XMLAdapter( in );
-        }
-    };
+	/**
+	 * Returns streaming XMLAdapter.
+	 */
+	public static final Worker<XMLAdapter> XML = new Worker<XMLAdapter>() {
+		@Override
+		public XMLAdapter work(InputStream in) {
+			return new XMLAdapter(in);
+		}
+	};
 
-    /**
-     * Returns streaming XMLAdapter.
-     */
-    public static final Worker<XMLStreamReaderWrapper> XML_STREAM = new Worker<XMLStreamReaderWrapper>() {
-        @Override
-        public XMLStreamReaderWrapper work( InputStream in )
-                                throws IOException {
-            try {
-                return new XMLStreamReaderWrapper( XmlHttpUtils.xmlInputFactory.createXMLStreamReader( in ),
-                                                   "Post response" );
-            } catch ( XMLStreamException e ) {
-                throw new IOException( "Error creating XMLStreamReader for POST response: " + e.getMessage() );
-            }
-        }
-    };
+	/**
+	 * Returns streaming XMLAdapter.
+	 */
+	public static final Worker<XMLStreamReaderWrapper> XML_STREAM = new Worker<XMLStreamReaderWrapper>() {
+		@Override
+		public XMLStreamReaderWrapper work(InputStream in) throws IOException {
+			try {
+				return new XMLStreamReaderWrapper(XmlHttpUtils.xmlInputFactory.createXMLStreamReader(in),
+						"Post response");
+			}
+			catch (XMLStreamException e) {
+				throw new IOException("Error creating XMLStreamReader for POST response: " + e.getMessage());
+			}
+		}
+	};
 
 }

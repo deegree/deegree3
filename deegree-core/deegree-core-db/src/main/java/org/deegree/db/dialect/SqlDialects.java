@@ -51,38 +51,35 @@ import org.slf4j.Logger;
 
 /**
  * Static utility methods for common {@link SQLDialect} tasks.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * 
  * @since 3.4
  */
 public class SqlDialects {
 
-    private static final Logger LOG = getLogger( SqlDialects.class );
+	private static final Logger LOG = getLogger(SqlDialects.class);
 
-    /**
-     * Looks up the matching {@link SQLDialect} for the given {@link Connection}.
-     * 
-     * @param conn
-     *            database connection, must not be <code>null</code>
-     * @param classLoader
-     *            class loader to use, must not be <code>null</code>
-     * @return matching SQL dialect, can be <code>null</code> (no such dialect)
-     */
-    public static SQLDialect lookupSqlDialect( Connection conn, ClassLoader classLoader ) {
-        ServiceLoader<SqlDialectProvider> dialectLoader = ServiceLoader.load( SqlDialectProvider.class, classLoader );
-        Iterator<SqlDialectProvider> iter = dialectLoader.iterator();
-        SQLDialect dialect = null;
-        while ( iter.hasNext() ) {
-            SqlDialectProvider prov = iter.next();
-            if ( prov.supportsConnection( conn ) ) {
-                dialect = prov.createDialect( conn );
-                break;
-            }
-        }
-        if ( dialect == null ) {
-            LOG.warn( "No SQL dialect for connection found, trying to continue." );
-        }
-        return dialect;
-    }
+	/**
+	 * Looks up the matching {@link SQLDialect} for the given {@link Connection}.
+	 * @param conn database connection, must not be <code>null</code>
+	 * @param classLoader class loader to use, must not be <code>null</code>
+	 * @return matching SQL dialect, can be <code>null</code> (no such dialect)
+	 */
+	public static SQLDialect lookupSqlDialect(Connection conn, ClassLoader classLoader) {
+		ServiceLoader<SqlDialectProvider> dialectLoader = ServiceLoader.load(SqlDialectProvider.class, classLoader);
+		Iterator<SqlDialectProvider> iter = dialectLoader.iterator();
+		SQLDialect dialect = null;
+		while (iter.hasNext()) {
+			SqlDialectProvider prov = iter.next();
+			if (prov.supportsConnection(conn)) {
+				dialect = prov.createDialect(conn);
+				break;
+			}
+		}
+		if (dialect == null) {
+			LOG.warn("No SQL dialect for connection found, trying to continue.");
+		}
+		return dialect;
+	}
+
 }

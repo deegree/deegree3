@@ -46,30 +46,29 @@ import org.deegree.services.wms.controller.WMSController;
 
 /**
  * Serializes an exception as xml document.
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
 public class XmlExceptionSerializer implements ExceptionsSerializer {
 
-    private WMSController controller;
+	private WMSController controller;
 
-    /**
-     * @param controller
-     *            never <code>null</code>
-     */
-    public XmlExceptionSerializer( WMSController controller ) {
-        this.controller = controller;
-    }
+	/**
+	 * @param controller never <code>null</code>
+	 */
+	public XmlExceptionSerializer(WMSController controller) {
+		this.controller = controller;
+	}
 
-    @Override
-    public void serializeException( HttpResponseBuffer response, OWSException ex,
-                                    XMLExceptionSerializer exceptionSerializer, Map<String, String> map )
-                            throws SerializingException {
-        try {
-            controller.sendException( null, exceptionSerializer, ex, response );
-        } catch ( ServletException e ) {
-            throw new SerializingException( e );
-        }
-    }
+	@Override
+	public void serializeException(HttpResponseBuffer response, OWSException ex,
+			XMLExceptionSerializer exceptionSerializer, Map<String, String> map) throws SerializingException {
+		try {
+			controller.sendException(null, exceptionSerializer, ex, response);
+		}
+		catch (ServletException e) {
+			throw new SerializingException(e);
+		}
+	}
 
 }

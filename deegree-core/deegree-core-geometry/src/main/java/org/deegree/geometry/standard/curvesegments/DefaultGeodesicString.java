@@ -44,45 +44,44 @@ import org.deegree.geometry.primitive.segments.GeodesicString;
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author$
- *
  * @version $Revision$, $Date$
  */
 public class DefaultGeodesicString implements GeodesicString {
 
-    private Points points;
+	private Points points;
 
-    /**
-     * Creates a new <code>DefaultGeodesicString</code> instance from the given parameters.
-     *
-     * @param points
-     *            interpolation points
-     */
-    public DefaultGeodesicString( Points points ) {
-        this.points = points;
-    }
+	/**
+	 * Creates a new <code>DefaultGeodesicString</code> instance from the given
+	 * parameters.
+	 * @param points interpolation points
+	 */
+	public DefaultGeodesicString(Points points) {
+		this.points = points;
+	}
 
-    @Override
-    public int getCoordinateDimension() {
-        return points.get(0).getCoordinateDimension();
-    }
+	@Override
+	public int getCoordinateDimension() {
+		return points.get(0).getCoordinateDimension();
+	}
 
-    @Override
-    public Points getControlPoints() {
-        return points;
-    }
+	@Override
+	public Points getControlPoints() {
+		return points;
+	}
 
-    @Override
-    public Point getStartPoint() {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Point getStartPoint() {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public Point getEndPoint() {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Point getEndPoint() {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public CurveSegmentType getSegmentType() {
-        return CurveSegmentType.GEODESIC_STRING;
-    }
+	@Override
+	public CurveSegmentType getSegmentType() {
+		return CurveSegmentType.GEODESIC_STRING;
+	}
+
 }

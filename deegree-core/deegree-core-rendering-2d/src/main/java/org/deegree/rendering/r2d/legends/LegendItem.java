@@ -36,30 +36,27 @@
 package org.deegree.rendering.r2d.legends;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public interface LegendItem {
 
-    /**
-     * @return the number of legend items this item occupies
-     */
-    int getHeight();
+	/**
+	 * @return the number of legend items this item occupies
+	 */
+	int getHeight();
 
-    /**
-     * @param origin
-     *            y coordinate of origin point (x origin is always 0)
-     * @param options
-     */
-    void paint( int origin, LegendOptions options );
+	/**
+	 * @param origin y coordinate of origin point (x origin is always 0)
+	 * @param options
+	 */
+	void paint(int origin, LegendOptions options);
 
-    /**
-     * @param options
-     * @return the maximum width of the legend row(s)
-     */
-    int getMaxWidth( LegendOptions options );
+	/**
+	 * @param options
+	 * @return the maximum width of the legend row(s)
+	 */
+	int getMaxWidth(LegendOptions options);
 
 }

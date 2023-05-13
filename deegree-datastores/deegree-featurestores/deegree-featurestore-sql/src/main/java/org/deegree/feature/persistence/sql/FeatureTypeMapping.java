@@ -54,172 +54,162 @@ import org.deegree.sqldialect.SortCriterion;
 
 /**
  * Defines the mapping between a {@link FeatureType} and tables in a relational database.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class FeatureTypeMapping {
 
-    private final QName ftName;
+	private final QName ftName;
 
-    private final TableName table;
+	private final TableName table;
 
-    private final FIDMapping fidMapping;
+	private final FIDMapping fidMapping;
 
-    private final List<SortCriterion> defaultSortCriteria;
+	private final List<SortCriterion> defaultSortCriteria;
 
-    private final Map<QName, Mapping> propToMapping;
+	private final Map<QName, Mapping> propToMapping;
 
-    private final List<Mapping> particles = new ArrayList<Mapping>();
+	private final List<Mapping> particles = new ArrayList<Mapping>();
 
-    /**
-     * Creates a new {@link FeatureTypeMapping} instance.
-     * 
-     * @param ftName
-     *            name of the mapped feature type, must not be <code>null</code>
-     * @param table
-     *            name of the database table that the feature type is mapped to, must not be <code>null</code>
-     * @param fidMapping
-     *            mapping for the feature id, must not be <code>null</code>
-     * @param particleMappings
-     *            particle mappings for the feature type, must not be <code>null</code>
-     * @param defaultSortCriteria
-     *            default sort criterion for the feature type, must not be <code>null</code>
-     */
-    public FeatureTypeMapping( QName ftName, TableName table, FIDMapping fidMapping, List<Mapping> particleMappings,
-                               List<SortCriterion> defaultSortCriteria ) {
-        this.ftName = ftName;
-        this.table = table;
-        this.fidMapping = fidMapping;
-        this.defaultSortCriteria = defaultSortCriteria;
-        this.propToMapping = new HashMap<QName, Mapping>();
-        // TODO cope with non-QName XPaths as well
-        for ( Mapping mapping : particleMappings ) {
-            if ( mapping != null && mapping.getPath().getAsQName() != null ) {
-                propToMapping.put( mapping.getPath().getAsQName(), mapping );
-            }
-        }
-        for ( Mapping mapping : particleMappings ) {
-            if ( mapping != null ) {
-                this.particles.add( mapping );
-            }
-        }
-    }
+	/**
+	 * Creates a new {@link FeatureTypeMapping} instance.
+	 * @param ftName name of the mapped feature type, must not be <code>null</code>
+	 * @param table name of the database table that the feature type is mapped to, must
+	 * not be <code>null</code>
+	 * @param fidMapping mapping for the feature id, must not be <code>null</code>
+	 * @param particleMappings particle mappings for the feature type, must not be
+	 * <code>null</code>
+	 * @param defaultSortCriteria default sort criterion for the feature type, must not be
+	 * <code>null</code>
+	 */
+	public FeatureTypeMapping(QName ftName, TableName table, FIDMapping fidMapping, List<Mapping> particleMappings,
+			List<SortCriterion> defaultSortCriteria) {
+		this.ftName = ftName;
+		this.table = table;
+		this.fidMapping = fidMapping;
+		this.defaultSortCriteria = defaultSortCriteria;
+		this.propToMapping = new HashMap<QName, Mapping>();
+		// TODO cope with non-QName XPaths as well
+		for (Mapping mapping : particleMappings) {
+			if (mapping != null && mapping.getPath().getAsQName() != null) {
+				propToMapping.put(mapping.getPath().getAsQName(), mapping);
+			}
+		}
+		for (Mapping mapping : particleMappings) {
+			if (mapping != null) {
+				this.particles.add(mapping);
+			}
+		}
+	}
 
-    /**
-     * Returns the name of the feature type.
-     * 
-     * @return name of the feature type, never <code>null</code>
-     */
-    public QName getFeatureType() {
-        return ftName;
-    }
+	/**
+	 * Returns the name of the feature type.
+	 * @return name of the feature type, never <code>null</code>
+	 */
+	public QName getFeatureType() {
+		return ftName;
+	}
 
-    /**
-     * Returns the identifier of the table that the feature type is mapped to.
-     * 
-     * @return identifier of the table, never <code>null</code>
-     */
-    public TableName getFtTable() {
-        return table;
-    }
+	/**
+	 * Returns the identifier of the table that the feature type is mapped to.
+	 * @return identifier of the table, never <code>null</code>
+	 */
+	public TableName getFtTable() {
+		return table;
+	}
 
-    /**
-     * Returns the feature id mapping.
-     * 
-     * @return mapping for the feature id, never <code>null</code>
-     */
-    public FIDMapping getFidMapping() {
-        return fidMapping;
-    }
+	/**
+	 * Returns the feature id mapping.
+	 * @return mapping for the feature id, never <code>null</code>
+	 */
+	public FIDMapping getFidMapping() {
+		return fidMapping;
+	}
 
-    /**
-     * Returns the mapping parameters for the specified property.
-     * 
-     * @param propName
-     *            name of the property, must not be <code>null</code>
-     * @return mapping, may be <code>null</code> (if the property is not mapped)
-     */
-    @Deprecated
-    public Mapping getMapping( QName propName ) {
-        return propToMapping.get( propName );
-    }
+	/**
+	 * Returns the mapping parameters for the specified property.
+	 * @param propName name of the property, must not be <code>null</code>
+	 * @return mapping, may be <code>null</code> (if the property is not mapped)
+	 */
+	@Deprecated
+	public Mapping getMapping(QName propName) {
+		return propToMapping.get(propName);
+	}
 
-    /**
-     * Returns the {@link Mapping} particles.
-     * 
-     * @return mapping particles, may be empty, but never <code>null</code>
-     */
-    public List<Mapping> getMappings() {
-        return particles;
-    }
+	/**
+	 * Returns the {@link Mapping} particles.
+	 * @return mapping particles, may be empty, but never <code>null</code>
+	 */
+	public List<Mapping> getMappings() {
+		return particles;
+	}
 
-    /**
-     * Returns the default {@link SortCriterion}.
-     *
-     * @return sort criterions, may be empty, but never <code>null</code>
-     */
-    public List<SortCriterion> getDefaultSortCriteria() {
-        return defaultSortCriteria;
-    }
+	/**
+	 * Returns the default {@link SortCriterion}.
+	 * @return sort criterions, may be empty, but never <code>null</code>
+	 */
+	public List<SortCriterion> getDefaultSortCriteria() {
+		return defaultSortCriteria;
+	}
 
-    /**
-     * Returns the default (i.e. the first) {@link GeometryMapping}.
-     * 
-     * @return default geometry mapping, may be <code>null</code> (no geometry mapping defined)
-     */
-    public Pair<TableName, GeometryMapping> getDefaultGeometryMapping() {
-        TableName table = getFtTable();
-        for ( Mapping particle : particles ) {
-            if ( particle instanceof GeometryMapping ) {
-                List<TableJoin> joins = particle.getJoinedTable();
-                if ( joins != null && !joins.isEmpty() ) {
-                    table = joins.get( joins.size() - 1 ).getToTable();
-                }
-                return new Pair<TableName, GeometryMapping>( table, (GeometryMapping) particle );
-            }
-        }
-        for ( Mapping particle : particles ) {
-            TableName propTable = table;
-            if ( particle instanceof CompoundMapping ) {
-                List<TableJoin> joins = particle.getJoinedTable();
-                if ( joins != null && !joins.isEmpty() ) {
-                    propTable = joins.get( joins.size() - 1 ).getToTable();
-                }
-                Pair<TableName, GeometryMapping> gm = getDefaultGeometryMapping( propTable, (CompoundMapping) particle );
-                if ( gm != null ) {
-                    return gm;
-                }
-            }
-        }
-        return null;
-    }
+	/**
+	 * Returns the default (i.e. the first) {@link GeometryMapping}.
+	 * @return default geometry mapping, may be <code>null</code> (no geometry mapping
+	 * defined)
+	 */
+	public Pair<TableName, GeometryMapping> getDefaultGeometryMapping() {
+		TableName table = getFtTable();
+		for (Mapping particle : particles) {
+			if (particle instanceof GeometryMapping) {
+				List<TableJoin> joins = particle.getJoinedTable();
+				if (joins != null && !joins.isEmpty()) {
+					table = joins.get(joins.size() - 1).getToTable();
+				}
+				return new Pair<TableName, GeometryMapping>(table, (GeometryMapping) particle);
+			}
+		}
+		for (Mapping particle : particles) {
+			TableName propTable = table;
+			if (particle instanceof CompoundMapping) {
+				List<TableJoin> joins = particle.getJoinedTable();
+				if (joins != null && !joins.isEmpty()) {
+					propTable = joins.get(joins.size() - 1).getToTable();
+				}
+				Pair<TableName, GeometryMapping> gm = getDefaultGeometryMapping(propTable, (CompoundMapping) particle);
+				if (gm != null) {
+					return gm;
+				}
+			}
+		}
+		return null;
+	}
 
-    private Pair<TableName, GeometryMapping> getDefaultGeometryMapping( TableName table, CompoundMapping complex ) {
-        for ( Mapping particle : complex.getParticles() ) {
-            if ( particle instanceof GeometryMapping ) {
-                List<TableJoin> joins = particle.getJoinedTable();
-                if ( joins != null && !joins.isEmpty() ) {
-                    table = joins.get( joins.size() - 1 ).getToTable();
-                }
-                return new Pair<TableName, GeometryMapping>( table, (GeometryMapping) particle );
-            }
-        }
-        for ( Mapping particle : complex.getParticles() ) {
-            TableName propTable = table;
-            if ( particle instanceof CompoundMapping ) {
-                List<TableJoin> joins = particle.getJoinedTable();
-                if ( joins != null && !joins.isEmpty() ) {
-                    propTable = joins.get( joins.size() - 1 ).getToTable();
-                }
-                Pair<TableName, GeometryMapping> gm = getDefaultGeometryMapping( propTable, (CompoundMapping) particle );
-                if ( gm != null ) {
-                    return gm;
-                }
-            }
-        }
-        return null;
-    }
+	private Pair<TableName, GeometryMapping> getDefaultGeometryMapping(TableName table, CompoundMapping complex) {
+		for (Mapping particle : complex.getParticles()) {
+			if (particle instanceof GeometryMapping) {
+				List<TableJoin> joins = particle.getJoinedTable();
+				if (joins != null && !joins.isEmpty()) {
+					table = joins.get(joins.size() - 1).getToTable();
+				}
+				return new Pair<TableName, GeometryMapping>(table, (GeometryMapping) particle);
+			}
+		}
+		for (Mapping particle : complex.getParticles()) {
+			TableName propTable = table;
+			if (particle instanceof CompoundMapping) {
+				List<TableJoin> joins = particle.getJoinedTable();
+				if (joins != null && !joins.isEmpty()) {
+					propTable = joins.get(joins.size() - 1).getToTable();
+				}
+				Pair<TableName, GeometryMapping> gm = getDefaultGeometryMapping(propTable, (CompoundMapping) particle);
+				if (gm != null) {
+					return gm;
+				}
+			}
+		}
+		return null;
+	}
+
 }

@@ -44,29 +44,28 @@ import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
- * 
  * @version $Revision: $, $Date: $
  */
 public class RemoteWMSThemeProvider extends ThemeProvider {
 
-    private static final URL CONFIG_SCHEMA = RemoteWMSThemeProvider.class.getResource( "/META-INF/schemas/themes/remotewms/remotewms.xsd" );
+	private static final URL CONFIG_SCHEMA = RemoteWMSThemeProvider.class
+		.getResource("/META-INF/schemas/themes/remotewms/remotewms.xsd");
 
-    @Override
-    public String getNamespace() {
-        return "http://www.deegree.org/themes/remotewms";
-    }
+	@Override
+	public String getNamespace() {
+		return "http://www.deegree.org/themes/remotewms";
+	}
 
-    @Override
-    public ResourceMetadata<Theme> createFromLocation( Workspace workspace, ResourceLocation<Theme> location ) {
-        return new RemoteWmsThemeMetadata( workspace, location, this );
-    }
+	@Override
+	public ResourceMetadata<Theme> createFromLocation(Workspace workspace, ResourceLocation<Theme> location) {
+		return new RemoteWmsThemeMetadata(workspace, location, this);
+	}
 
-    @Override
-    public URL getSchema() {
-        return CONFIG_SCHEMA;
-    }
+	@Override
+	public URL getSchema() {
+		return CONFIG_SCHEMA;
+	}
 
 }

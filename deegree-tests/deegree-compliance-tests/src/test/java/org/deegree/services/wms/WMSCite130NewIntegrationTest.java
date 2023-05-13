@@ -45,31 +45,32 @@ import org.junit.runners.Parameterized.Parameters;
 
 /**
  * Wraps the execution of the new CITE WMS 1.3.0 TestSuite as a JUnit-test.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: mschneider $
- * 
  * @version $Revision: 22950 $, $Date: 2010-03-09 19:05:17 +0100 (Di, 09. Mär 2010) $
  */
 @RunWith(Parameterized.class)
 public class WMSCite130NewIntegrationTest extends AbstractCiteIntegrationTest {
 
-    private String testLabel = "WMS130New";
+	private String testLabel = "WMS130New";
 
-    @Parameters
-    public static Collection getResultSnippets() throws Exception {
-        return getResultSnippets( "/citewms130-new/ctl/" , "capabilities-url", "wms?request=GetCapabilities&service=WMS&version=1.3.0");
-    }
+	@Parameters
+	public static Collection getResultSnippets() throws Exception {
+		return getResultSnippets("/citewms130-new/ctl/", "capabilities-url",
+				"wms?request=GetCapabilities&service=WMS&version=1.3.0");
+	}
 
-    public WMSCite130NewIntegrationTest( String testLabel, String resultSnippet ) {
-        this.testLabel = testLabel;
-        this.resultSnippet = resultSnippet;
-    }
+	public WMSCite130NewIntegrationTest(String testLabel, String resultSnippet) {
+		this.testLabel = testLabel;
+		this.resultSnippet = resultSnippet;
+	}
 
-    @Test
-    public void singleTest() {
-        if ( resultSnippet.contains( "Failed" ) ) {
-            throw new RuntimeException( "Test '" + testLabel + "' failed." );
-        }
-    }
+	@Test
+	public void singleTest() {
+		if (resultSnippet.contains("Failed")) {
+			throw new RuntimeException("Test '" + testLabel + "' failed.");
+		}
+	}
+
 }

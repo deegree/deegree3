@@ -44,29 +44,26 @@ import org.deegree.metadata.MetadataRecordFactory;
 import org.deegree.metadata.iso.ISORecord;
 
 /**
- * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
- * 
  * @version $Revision: 30992 $, $Date: 2011-05-31 16:09:20 +0200 (Di, 31. Mai 2011) $
  */
 public class GetTestRecordsUtils {
 
-    public static List<ISORecord> getAllRecords()
-                            throws Exception {
-        List<ISORecord> records = new ArrayList<ISORecord>();
-        records.add( getRecord( "1.xml" ) );
-        records.add( getRecord( "2.xml" ) );
-        records.add( getRecord( "3.xml" ) );
-        records.add( getRecord( "4.xml" ) );
-        records.add( getRecord( "5.xml" ) );
-        return records;
-    }
+	public static List<ISORecord> getAllRecords() throws Exception {
+		List<ISORecord> records = new ArrayList<ISORecord>();
+		records.add(getRecord("1.xml"));
+		records.add(getRecord("2.xml"));
+		records.add(getRecord("3.xml"));
+		records.add(getRecord("4.xml"));
+		records.add(getRecord("5.xml"));
+		return records;
+	}
 
-    public static ISORecord getRecord( String name )
-                            throws Exception {
-        URL url = ListMetadataResultSet.class.getResource( name );
-        ISORecord record = (ISORecord) MetadataRecordFactory.create( new File( url.toURI() ) );
-        return record;
-    }
+	public static ISORecord getRecord(String name) throws Exception {
+		URL url = ListMetadataResultSet.class.getResource(name);
+		ISORecord record = (ISORecord) MetadataRecordFactory.create(new File(url.toURI()));
+		return record;
+	}
+
 }

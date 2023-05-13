@@ -39,19 +39,19 @@ import org.deegree.geometry.primitive.Curve;
 
 /**
  * Specialised aggregation type for {@link Curve} objects.
- * 
+ *
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version. $Revision$, $Date$
  */
 public interface MultiCurve<T extends Curve> extends MultiGeometry<T> {
 
-    /**
-     * The length of a <code>MultiLineString</code> is calculated as the sum of the length of all contained
-     * {@link Curve}s.
-     * 
-     * @return accumulated length
-     */
-    public double getLength();
+	/**
+	 * The length of a <code>MultiLineString</code> is calculated as the sum of the length
+	 * of all contained {@link Curve}s.
+	 * @return accumulated length
+	 */
+	public double getLength();
+
 }

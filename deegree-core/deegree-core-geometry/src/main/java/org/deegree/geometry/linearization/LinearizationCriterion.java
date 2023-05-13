@@ -36,5 +36,7 @@
 package org.deegree.geometry.linearization;
 
 public interface LinearizationCriterion {
-    // at the moment this is just a marker interface
+
+	// at the moment this is just a marker interface
+
 }

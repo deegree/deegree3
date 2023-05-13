@@ -69,123 +69,119 @@ import static org.deegree.style.utils.Styles.getStyleFilters;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
- * 
  * @version $Revision: $, $Date: $
  */
 public class FeatureLayer extends AbstractLayer {
 
-    private static final Logger LOG = getLogger( FeatureLayer.class );
+	private static final Logger LOG = getLogger(FeatureLayer.class);
 
-    private final FeatureStore featureStore;
+	private final FeatureStore featureStore;
 
-    private final OperatorFilter filter;
+	private final OperatorFilter filter;
 
-    private final QName featureType;
+	private final QName featureType;
 
-    SortProperty[] sortBy, sortByFeatureInfo;
+	SortProperty[] sortBy, sortByFeatureInfo;
 
-    private final DimensionFilterBuilder dimFilterBuilder;
+	private final DimensionFilterBuilder dimFilterBuilder;
 
-    public FeatureLayer( LayerMetadata md, FeatureStore featureStore, QName featureType, OperatorFilter filter,
-                         List<SortProperty> sortBy, List<SortProperty> sortByFeatureInfo ) {
-        super( md );
-        this.featureStore = featureStore;
-        this.featureType = featureType;
-        this.filter = filter;
-        if ( sortBy != null ) {
-            this.sortBy = sortBy.toArray( new SortProperty[sortBy.size()] );
-        }
-        if ( sortByFeatureInfo != null ) {
-            this.sortByFeatureInfo = sortByFeatureInfo.toArray( new SortProperty[sortByFeatureInfo.size()] );
-        }
-        dimFilterBuilder = new DimensionFilterBuilder( md.getDimensions() );
-    }
+	public FeatureLayer(LayerMetadata md, FeatureStore featureStore, QName featureType, OperatorFilter filter,
+			List<SortProperty> sortBy, List<SortProperty> sortByFeatureInfo) {
+		super(md);
+		this.featureStore = featureStore;
+		this.featureType = featureType;
+		this.filter = filter;
+		if (sortBy != null) {
+			this.sortBy = sortBy.toArray(new SortProperty[sortBy.size()]);
+		}
+		if (sortByFeatureInfo != null) {
+			this.sortByFeatureInfo = sortByFeatureInfo.toArray(new SortProperty[sortByFeatureInfo.size()]);
+		}
+		dimFilterBuilder = new DimensionFilterBuilder(md.getDimensions());
+	}
 
-    @Override
-    public FeatureLayerData mapQuery( final LayerQuery query, List<String> headers )
-                            throws OWSException {
-        Style style = resolveStyleRef( query.getStyle() );
-        if ( style == null ) {
-            throw new OWSException( "The style " + query.getStyle().getName() + " is not defined for layer "
-                                    + getMetadata().getName() + ".", "StyleNotDefined", "styles" );
-        }
-        style = style.filter( query.getScale() );
+	@Override
+	public FeatureLayerData mapQuery(final LayerQuery query, List<String> headers) throws OWSException {
+		Style style = resolveStyleRef(query.getStyle());
+		if (style == null) {
+			throw new OWSException("The style " + query.getStyle().getName() + " is not defined for layer "
+					+ getMetadata().getName() + ".", "StyleNotDefined", "styles");
+		}
+		style = style.filter(query.getScale());
 
-        OperatorFilter filter = buildFilterForMap( this.filter, style, query, dimFilterBuilder, headers );
+		OperatorFilter filter = buildFilterForMap(this.filter, style, query, dimFilterBuilder, headers);
 
-        final Envelope bbox = query.getQueryBox();
+		final Envelope bbox = query.getQueryBox();
 
-        Set<Expression> exprs = new HashSet<Expression>( Styles.getGeometryExpressions( style ) );
+		Set<Expression> exprs = new HashSet<Expression>(Styles.getGeometryExpressions(style));
 
-        final ValueReference geomProp;
+		final ValueReference geomProp;
 
-        if ( exprs.size() == 1 && exprs.iterator().next() instanceof ValueReference ) {
-            geomProp = (ValueReference) exprs.iterator().next();
-        } else {
-            geomProp = null;
-        }
+		if (exprs.size() == 1 && exprs.iterator().next() instanceof ValueReference) {
+			geomProp = (ValueReference) exprs.iterator().next();
+		}
+		else {
+			geomProp = null;
+		}
 
+		QName ftName = featureType == null ? style.getFeatureType() : featureType;
+		if (ftName != null && featureStore.getSchema().getFeatureType(ftName) == null) {
+			LOG.warn("FeatureType '" + ftName + "' is not known to the FeatureStore.");
+			return null;
+		}
 
-        QName ftName = featureType == null ? style.getFeatureType() : featureType;
-        if ( ftName != null && featureStore.getSchema().getFeatureType( ftName ) == null ) {
-            LOG.warn( "FeatureType '" + ftName + "' is not known to the FeatureStore." );
-            return null;
-        }
+		Set<QName> propertyNames = AppSchemas.collectProperyNames(featureStore.getSchema(), ftName);
+		filter = FilterBuilder.appendRequestFilter(filter, query, propertyNames);
+		filter = Filters.repair(filter, propertyNames);
 
-        Set<QName> propertyNames = AppSchemas.collectProperyNames( featureStore.getSchema(), ftName );
-        filter = FilterBuilder.appendRequestFilter( filter, query, propertyNames );
-        filter = Filters.repair( filter, propertyNames );
+		QueryBuilder builder = new QueryBuilder(featureStore, filter, ftName, bbox, query, geomProp, sortBy,
+				getMetadata().getName());
+		List<Query> queries = builder.buildMapQueries();
 
-        QueryBuilder builder = new QueryBuilder( featureStore, filter, ftName, bbox, query, geomProp, sortBy,
-                                                 getMetadata().getName() );
-        List<Query> queries = builder.buildMapQueries();
+		if (queries.isEmpty()) {
+			LOG.warn("No queries were generated. Is the configuration correct?");
+			return null;
+		}
 
-        if ( queries.isEmpty() ) {
-            LOG.warn( "No queries were generated. Is the configuration correct?" );
-            return null;
-        }
+		Integer maxFeats = query.getRenderingOptions().getMaxFeatures(getMetadata().getName());
+		final int maxFeatures = maxFeats == null ? -1 : maxFeats;
 
-        Integer maxFeats = query.getRenderingOptions().getMaxFeatures( getMetadata().getName() );
-        final int maxFeatures = maxFeats == null ? -1 : maxFeats;
+		return new FeatureLayerData(queries, featureStore, maxFeatures, style, ftName);
+	}
 
-        return new FeatureLayerData( queries, featureStore, maxFeatures, style, ftName );
-    }
+	@Override
+	public FeatureLayerData infoQuery(final LayerQuery query, List<String> headers) throws OWSException {
+		OperatorFilter filter = this.filter;
+		filter = Filters.and(filter, dimFilterBuilder.getDimensionFilter(query.getDimensions(), headers));
+		Style style = resolveStyleRef(query.getStyle());
+		style = style.filter(query.getScale());
 
-    @Override
-    public FeatureLayerData infoQuery( final LayerQuery query, List<String> headers )
-                            throws OWSException {
-        OperatorFilter filter = this.filter;
-        filter = Filters.and( filter, dimFilterBuilder.getDimensionFilter( query.getDimensions(), headers ) );
-        Style style = resolveStyleRef( query.getStyle() );
-        style = style.filter( query.getScale() );
+		filter = Filters.and(filter, getStyleFilters(style, query.getScale()));
+		filter = Filters.and(filter, query.getFilter());
 
-        filter = Filters.and( filter, getStyleFilters( style, query.getScale() ) );
-        filter = Filters.and( filter, query.getFilter() );
+		int layerRadius = -1;
+		if (getMetadata().getMapOptions() != null) {
+			layerRadius = getMetadata().getMapOptions().getFeatureInfoRadius();
+		}
+		final Envelope clickBox = query.calcClickBox(layerRadius > -1 ? layerRadius : query.getLayerRadius());
 
-        int layerRadius = -1;
-        if ( getMetadata().getMapOptions() != null ) {
-            layerRadius = getMetadata().getMapOptions().getFeatureInfoRadius();
-        }
-        final Envelope clickBox = query.calcClickBox( layerRadius > -1 ? layerRadius : query.getLayerRadius() );
+		filter = (OperatorFilter) addBBoxConstraint(clickBox, filter, null, false);
 
-        filter = (OperatorFilter) addBBoxConstraint( clickBox, filter, null, false );
+		QName featureType = this.featureType == null ? style.getFeatureType() : this.featureType;
 
-        QName featureType = this.featureType == null ? style.getFeatureType() : this.featureType;
+		filter = Filters.repair(filter, AppSchemas.collectProperyNames(featureStore.getSchema(), featureType));
 
-        filter = Filters.repair( filter, AppSchemas.collectProperyNames( featureStore.getSchema(), featureType ) );
+		LOG.debug("Querying the feature store(s)...");
 
-        LOG.debug( "Querying the feature store(s)..." );
+		QueryBuilder builder = new QueryBuilder(featureStore, filter, featureType, clickBox, query, null,
+				sortByFeatureInfo, getMetadata().getName());
+		List<Query> queries = builder.buildInfoQueries();
 
-        QueryBuilder builder = new QueryBuilder( featureStore, filter, featureType, clickBox, query, null,
-                                                 sortByFeatureInfo, getMetadata().getName() );
-        List<Query> queries = builder.buildInfoQueries();
+		LOG.debug("Finished querying the feature store(s).");
 
-        LOG.debug( "Finished querying the feature store(s)." );
-
-        return new FeatureLayerData( queries, featureStore, query.getFeatureCount(), style, featureType );
-    }
+		return new FeatureLayerData(queries, featureStore, query.getFeatureCount(), style, featureType);
+	}
 
 }

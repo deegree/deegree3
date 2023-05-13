@@ -38,11 +38,12 @@ import java.math.BigDecimal;
 
 public class Angle extends Measure {
 
-    public Angle( String value, String uomURI ) throws NumberFormatException {
-        super( value, uomURI );
-    }
+	public Angle(String value, String uomURI) throws NumberFormatException {
+		super(value, uomURI);
+	}
 
-    public Angle( BigDecimal value, String uomURI ) {
-        super( value, uomURI );
-    }
+	public Angle(BigDecimal value, String uomURI) {
+		super(value, uomURI);
+	}
+
 }

@@ -43,13 +43,14 @@ import org.deegree.time.primitive.TimePeriod;
 
 public class GmlTimeGeometricPrimitiveWriter {
 
-    public void write( final XMLStreamWriter writer, final TimeGeometricPrimitive timeGeometricPrimitive )
-                            throws XMLStreamException {
-        if ( timeGeometricPrimitive instanceof TimeInstant ) {
-            new GmlTimeInstantWriter().write( writer, (TimeInstant) timeGeometricPrimitive );
-        } else {
-            new GmlTimePeriodWriter().write( writer, (TimePeriod) timeGeometricPrimitive );
-        }
-    }
+	public void write(final XMLStreamWriter writer, final TimeGeometricPrimitive timeGeometricPrimitive)
+			throws XMLStreamException {
+		if (timeGeometricPrimitive instanceof TimeInstant) {
+			new GmlTimeInstantWriter().write(writer, (TimeInstant) timeGeometricPrimitive);
+		}
+		else {
+			new GmlTimePeriodWriter().write(writer, (TimePeriod) timeGeometricPrimitive);
+		}
+	}
 
 }

@@ -41,32 +41,33 @@ import org.deegree.time.primitive.TimePositionOrInstant;
 
 public class TimePeriodReference extends TimeGeometricPrimitiveReference<TimePeriod> implements TimePeriod {
 
-    public TimePeriodReference( final ReferenceResolver resolver, final String uri, final String baseURL ) {
-        super( resolver, uri, baseURL );
-    }
+	public TimePeriodReference(final ReferenceResolver resolver, final String uri, final String baseURL) {
+		super(resolver, uri, baseURL);
+	}
 
-    @Override
-    public TimePositionOrInstant getBegin() {
-        return getReferencedObject().getBegin();
-    }
+	@Override
+	public TimePositionOrInstant getBegin() {
+		return getReferencedObject().getBegin();
+	}
 
-    @Override
-    public TimePositionOrInstant getEnd() {
-        return getReferencedObject().getEnd();
-    }
+	@Override
+	public TimePositionOrInstant getEnd() {
+		return getReferencedObject().getEnd();
+	}
 
-    @Override
-    public Object getLength() {
-        return getReferencedObject().getLength();
-    }
+	@Override
+	public Object getLength() {
+		return getReferencedObject().getLength();
+	}
 
-    @Override
-    public TimePosition getBeginPosition() {
-        return getReferencedObject().getBeginPosition();
-    }
+	@Override
+	public TimePosition getBeginPosition() {
+		return getReferencedObject().getBeginPosition();
+	}
 
-    @Override
-    public TimePosition getEndPosition() {
-        return getReferencedObject().getEndPosition();
-    }
+	@Override
+	public TimePosition getEndPosition() {
+		return getReferencedObject().getEndPosition();
+	}
+
 }

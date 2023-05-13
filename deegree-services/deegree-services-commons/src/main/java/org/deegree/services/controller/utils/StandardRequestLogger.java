@@ -47,30 +47,29 @@ import org.deegree.services.controller.RequestLogger;
 import org.slf4j.Logger;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class StandardRequestLogger implements RequestLogger {
 
-    private static final Logger LOG = getLogger( StandardRequestLogger.class );
+	private static final Logger LOG = getLogger(StandardRequestLogger.class);
 
-    public void logKVP( String address, String queryString, long startTime, long endTime, Credentials creds ) {
-        // store address as well?
-        incomingKVP( queryString, startTime );
-    }
+	public void logKVP(String address, String queryString, long startTime, long endTime, Credentials creds) {
+		// store address as well?
+		incomingKVP(queryString, startTime);
+	}
 
-    public void logXML( String address, File logFile, long startTime, long endTime, Credentials creds ) {
-        try {
-            File tmp = File.createTempFile( "request", ".xml", logFile.getParentFile() );
-            FileUtils.copyFile( logFile, tmp );
-            LOG.debug( "Logging request to {}", tmp );
-        } catch ( IOException e ) {
-            LOG.trace( "Stack trace:", e );
-            LOG.warn( "Could not log to directory {}", logFile.getParentFile() );
-        }
-    }
+	public void logXML(String address, File logFile, long startTime, long endTime, Credentials creds) {
+		try {
+			File tmp = File.createTempFile("request", ".xml", logFile.getParentFile());
+			FileUtils.copyFile(logFile, tmp);
+			LOG.debug("Logging request to {}", tmp);
+		}
+		catch (IOException e) {
+			LOG.trace("Stack trace:", e);
+			LOG.warn("Could not log to directory {}", logFile.getParentFile());
+		}
+	}
 
 }

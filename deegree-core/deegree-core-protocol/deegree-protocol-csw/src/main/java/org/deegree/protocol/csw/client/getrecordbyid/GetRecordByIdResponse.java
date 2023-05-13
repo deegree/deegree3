@@ -39,19 +39,19 @@ import org.deegree.metadata.MetadataRecord;
 
 /**
  * Represents a <code>GetRecordById</code> response of a CSW.
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
- * 
  * @version $Revision: $, $Date: $
  */
 public class GetRecordByIdResponse {
 
-    public MetadataRecord getNextRecord() {
-        throw new UnsupportedOperationException();
-    }
+	public MetadataRecord getNextRecord() {
+		throw new UnsupportedOperationException();
+	}
 
-    public boolean hasNext() {
-        return false;
-    }
+	public boolean hasNext() {
+		return false;
+	}
+
 }

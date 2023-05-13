@@ -65,71 +65,71 @@ import org.junit.Test;
 
 /**
  * <code>TileLayerPT</code>
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
- * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 public class TileLayerPerformanceTest {
 
-    @Test
-    public void testPerformance()
-                            throws IOException, InterruptedException, OWSExceptionReport, XMLStreamException {
-        String base = "http://localhost:" + System.getProperty( "portnumber", "8080" );
-        base += "/deegree-wms-tiling-tests/services";
-        WMSClient client = new WMSClient( new URL( base + "?request=GetCapabilities&service=WMS&version=1.1.1" ) );
+	@Test
+	public void testPerformance() throws IOException, InterruptedException, OWSExceptionReport, XMLStreamException {
+		String base = "http://localhost:" + System.getProperty("portnumber", "8080");
+		base += "/deegree-wms-tiling-tests/services";
+		WMSClient client = new WMSClient(new URL(base + "?request=GetCapabilities&service=WMS&version=1.1.1"));
 
-        // skip test if layer is not available, then we probably don't have the huge file available
-        Assume.assumeTrue( client.hasLayer( "performance" ) );
+		// skip test if layer is not available, then we probably don't have the huge file
+		// available
+		Assume.assumeTrue(client.hasLayer("performance"));
 
-        String crs = client.getCoordinateSystems( "performance" ).getFirst();
+		String crs = client.getCoordinateSystems("performance").getFirst();
 
-        Envelope envelope = client.getBoundingBox( crs, "performance" );
-        double minx = envelope.getMin().get0();
-        double miny = envelope.getMin().get1();
-        double res = 0.14;
-        double spanx = res * 800;
-        double spany = res * 600;
-        base += "?request=GetMap&service=WMS&version=1.1.1&layers=performance&styles=&width=800&height=600&";
-        base += "format=image/png&transparent=true&srs=" + crs + "&bbox=";
+		Envelope envelope = client.getBoundingBox(crs, "performance");
+		double minx = envelope.getMin().get0();
+		double miny = envelope.getMin().get1();
+		double res = 0.14;
+		double spanx = res * 800;
+		double spany = res * 600;
+		base += "?request=GetMap&service=WMS&version=1.1.1&layers=performance&styles=&width=800&height=600&";
+		base += "format=image/png&transparent=true&srs=" + crs + "&bbox=";
 
-        List<Callable<Object>> list = new ArrayList<Callable<Object>>();
+		List<Callable<Object>> list = new ArrayList<Callable<Object>>();
 
-        for ( int i = 0; i < 100; ++i ) {
-            String url = base + minx + "," + miny + ",";
-            minx += spanx;
-            miny += spany;
-            url += minx + "," + miny;
-            list.add( new Fetcher( url ) );
-        }
+		for (int i = 0; i < 100; ++i) {
+			String url = base + minx + "," + miny + ",";
+			minx += spanx;
+			miny += spany;
+			url += minx + "," + miny;
+			list.add(new Fetcher(url));
+		}
 
-        ExecutorService service = Executors.newFixedThreadPool( 10 );
+		ExecutorService service = Executors.newFixedThreadPool(10);
 
-        long t1 = System.currentTimeMillis();
-        service.invokeAll( list );
-        t1 = System.currentTimeMillis() - t1;
-        System.out.println( "Requested 100 images, 10 in parallel, took " + ( t1 / 1000 ) + " seconds." );
-        double avg = ( t1 / 100d ) / 1000d;
-        System.out.println( "Average secs/request: " + avg );
-        Assert.assertTrue( "Average response time was too high.", avg < 5 );
-    }
+		long t1 = System.currentTimeMillis();
+		service.invokeAll(list);
+		t1 = System.currentTimeMillis() - t1;
+		System.out.println("Requested 100 images, 10 in parallel, took " + (t1 / 1000) + " seconds.");
+		double avg = (t1 / 100d) / 1000d;
+		System.out.println("Average secs/request: " + avg);
+		Assert.assertTrue("Average response time was too high.", avg < 5);
+	}
 
-    static class Fetcher implements Callable<Object> {
-        private String url;
+	static class Fetcher implements Callable<Object> {
 
-        Fetcher( String url ) {
-            this.url = url;
-        }
+		private String url;
 
-        @Override
-        public Object call()
-                                throws Exception {
-            InputStream in = retrieve( STREAM, url );
-            IOUtils.copy( in, DEV_NULL );
-            in.close();
-            return null;
-        }
-    }
+		Fetcher(String url) {
+			this.url = url;
+		}
+
+		@Override
+		public Object call() throws Exception {
+			InputStream in = retrieve(STREAM, url);
+			IOUtils.copy(in, DEV_NULL);
+			in.close();
+			return null;
+		}
+
+	}
 
 }

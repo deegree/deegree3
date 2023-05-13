@@ -51,55 +51,50 @@ import org.mockito.Mockito;
  */
 public class GetFeature200KVPEncoderTest {
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testExport_MultipleQueries()
-                            throws Exception {
-        Map<String, String> kvpUnderTest = asKvp( "wfs200/example8.kvp" );
-        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpUnderTest, null );
-        GetFeature200KVPEncoder.export( getFeature );
-    }
+	@Test(expected = IllegalArgumentException.class)
+	public void testExport_MultipleQueries() throws Exception {
+		Map<String, String> kvpUnderTest = asKvp("wfs200/example8.kvp");
+		GetFeature getFeature = GetFeatureKVPAdapter.parse(kvpUnderTest, null);
+		GetFeature200KVPEncoder.export(getFeature);
+	}
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testExport_MissingQuery()
-                            throws Exception {
-        Map<String, String> kvpUnderTest = asKvp( "wfs200/example8.kvp" );
-        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpUnderTest, null );
-        getFeature.getQueries().clear();
-        GetFeature200KVPEncoder.export( getFeature );
-    }
+	@Test(expected = IllegalArgumentException.class)
+	public void testExport_MissingQuery() throws Exception {
+		Map<String, String> kvpUnderTest = asKvp("wfs200/example8.kvp");
+		GetFeature getFeature = GetFeatureKVPAdapter.parse(kvpUnderTest, null);
+		getFeature.getQueries().clear();
+		GetFeature200KVPEncoder.export(getFeature);
+	}
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testExport_UnsupportedQueryClass()
-                            throws Exception {
-        Map<String, String> kvpUnderTest = asKvp( "wfs200/example8.kvp" );
-        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpUnderTest, null );
-        getFeature.getQueries().clear();
-        getFeature.getQueries().add( unknownQuery() );
-        GetFeature200KVPEncoder.export( getFeature );
-    }
+	@Test(expected = IllegalArgumentException.class)
+	public void testExport_UnsupportedQueryClass() throws Exception {
+		Map<String, String> kvpUnderTest = asKvp("wfs200/example8.kvp");
+		GetFeature getFeature = GetFeatureKVPAdapter.parse(kvpUnderTest, null);
+		getFeature.getQueries().clear();
+		getFeature.getQueries().add(unknownQuery());
+		GetFeature200KVPEncoder.export(getFeature);
+	}
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testExport_UnsupportedAdHocQueryClass()
-                            throws Exception {
-        Map<String, String> kvpUnderTest = asKvp( "wfs200/example8.kvp" );
-        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpUnderTest, null );
-        getFeature.getQueries().clear();
-        getFeature.getQueries().add( unknownAdHocQuery() );
-        GetFeature200KVPEncoder.export( getFeature );
-    }
+	@Test(expected = IllegalArgumentException.class)
+	public void testExport_UnsupportedAdHocQueryClass() throws Exception {
+		Map<String, String> kvpUnderTest = asKvp("wfs200/example8.kvp");
+		GetFeature getFeature = GetFeatureKVPAdapter.parse(kvpUnderTest, null);
+		getFeature.getQueries().clear();
+		getFeature.getQueries().add(unknownAdHocQuery());
+		GetFeature200KVPEncoder.export(getFeature);
+	}
 
-    private Query unknownQuery() {
-        return Mockito.mock( Query.class );
-    }
+	private Query unknownQuery() {
+		return Mockito.mock(Query.class);
+	}
 
-    private Query unknownAdHocQuery() {
-        return Mockito.mock( AdHocQuery.class );
-    }
+	private Query unknownAdHocQuery() {
+		return Mockito.mock(AdHocQuery.class);
+	}
 
-    private static Map<String, String> asKvp( String name )
-                            throws IOException {
-        URL exampleURL = GetFeature200KVPEncoderParameterizedTest.class.getResource( name );
-        return KVPUtils.readFileIntoMap( exampleURL );
-    }
+	private static Map<String, String> asKvp(String name) throws IOException {
+		URL exampleURL = GetFeature200KVPEncoderParameterizedTest.class.getResource(name);
+		return KVPUtils.readFileIntoMap(exampleURL);
+	}
 
 }

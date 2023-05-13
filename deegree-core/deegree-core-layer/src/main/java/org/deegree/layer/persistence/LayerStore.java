@@ -41,23 +41,21 @@ import org.deegree.layer.Layer;
 import org.deegree.workspace.Resource;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public interface LayerStore extends Resource {
 
-    /**
-     * @return all layers of this layer store.
-     */
-    List<Layer> getAll();
+	/**
+	 * @return all layers of this layer store.
+	 */
+	List<Layer> getAll();
 
-    /**
-     * @param identifier
-     * @return the layer with the given identifier, or null, if non-existent
-     */
-    Layer get( String identifier );
+	/**
+	 * @param identifier
+	 * @return the layer with the given identifier, or null, if non-existent
+	 */
+	Layer get(String identifier);
 
 }

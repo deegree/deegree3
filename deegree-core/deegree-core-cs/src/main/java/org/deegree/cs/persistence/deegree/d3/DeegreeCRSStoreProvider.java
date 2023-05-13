@@ -57,72 +57,72 @@ import org.slf4j.Logger;
 
 /**
  * {@link DeegreeCRSStoreProvider} for the {@link DeegreeCRSStore} (deegree3!)
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  * @author last edited by: $Author: lyn $
- * 
  * @version $Revision: $, $Date: $
  */
 public class DeegreeCRSStoreProvider implements CRSStoreProvider {
 
-    private static final Logger LOG = getLogger( DeegreeCRSStoreProvider.class );
+	private static final Logger LOG = getLogger(DeegreeCRSStoreProvider.class);
 
-    private static final String CONFIG_NS = "http://www.deegree.org/crs/stores/deegree";
+	private static final String CONFIG_NS = "http://www.deegree.org/crs/stores/deegree";
 
-    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.cs.persistence.deegree.d3.jaxb";
+	private static final String CONFIG_JAXB_PACKAGE = "org.deegree.cs.persistence.deegree.d3.jaxb";
 
-    private static final URL CONFIG_SCHEMA = DeegreeCRSStoreProvider.class.getResource( "/META-INF/schemas/crs/stores/deegree/deegree.xsd" );
+	private static final URL CONFIG_SCHEMA = DeegreeCRSStoreProvider.class
+		.getResource("/META-INF/schemas/crs/stores/deegree/deegree.xsd");
 
-    private static final String CONFIG_TEMPLATE = "/META-INF/schemas/crs/stores/deegree/example.xml";
+	private static final String CONFIG_TEMPLATE = "/META-INF/schemas/crs/stores/deegree/example.xml";
 
-    @Override
-    public String getConfigNamespace() {
-        return CONFIG_NS;
-    }
+	@Override
+	public String getConfigNamespace() {
+		return CONFIG_NS;
+	}
 
-    @Override
-    public URL getConfigSchema() {
-        return CONFIG_SCHEMA;
-    }
+	@Override
+	public URL getConfigSchema() {
+		return CONFIG_SCHEMA;
+	}
 
-    public static Map<String, URL> getConfigTemplates() {
-        return singletonMap( "example", DeegreeCRSStoreProvider.class.getResource( CONFIG_TEMPLATE ) );
-    }
+	public static Map<String, URL> getConfigTemplates() {
+		return singletonMap("example", DeegreeCRSStoreProvider.class.getResource(CONFIG_TEMPLATE));
+	}
 
-    @Override
-    public CRSStore getCRSStore( URL configURL, Workspace workspace )
-                            throws CRSStoreException {
-        DeegreeCRSStore crsStore = null;
-        try {
-            DeegreeCRSStoreConfig config = (DeegreeCRSStoreConfig) unmarshall( CONFIG_JAXB_PACKAGE,
-                                                                               CONFIG_SCHEMA,
-                                                                               new DURL( configURL.toExternalForm() ).openStream(),
-                                                                               workspace );
-            XMLAdapter adapter = new XMLAdapter();
-            adapter.setSystemId( configURL.toString() );
+	@Override
+	public CRSStore getCRSStore(URL configURL, Workspace workspace) throws CRSStoreException {
+		DeegreeCRSStore crsStore = null;
+		try {
+			DeegreeCRSStoreConfig config = (DeegreeCRSStoreConfig) unmarshall(CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA,
+					new DURL(configURL.toExternalForm()).openStream(), workspace);
+			XMLAdapter adapter = new XMLAdapter();
+			adapter.setSystemId(configURL.toString());
 
-            String parserFile = config.getFile();
-            if ( parserFile == null || parserFile.trim().length() == 0 ) {
-                String msg = "Error in crs store configuration file '" + configURL + "': parserFile must not be null!";
-                LOG.error( msg );
-                throw new CRSStoreException( msg );
-            }
-            crsStore = new DeegreeCRSStore( DSTransform.fromSchema( config ), adapter.resolve( parserFile ) );
-        } catch ( JAXBException e ) {
-            String msg = "Error in crs store configuration file '" + configURL + "': " + e.getMessage();
-            LOG.error( msg );
-            throw new CRSStoreException( msg, e );
-        } catch ( MalformedURLException e ) {
-            String msg = "Error in file declaration in the crs store configuration file '" + configURL + "': "
-                         + e.getMessage();
-            LOG.error( msg );
-            throw new CRSStoreException( msg, e );
-        } catch ( Exception e ) {
-            String msg = "Error when loading crs store configuration file '" + configURL + "': " + e.getMessage();
-            LOG.error( msg );
-            throw new CRSStoreException( msg, e );
-        }
-        return crsStore;
-    }
+			String parserFile = config.getFile();
+			if (parserFile == null || parserFile.trim().length() == 0) {
+				String msg = "Error in crs store configuration file '" + configURL + "': parserFile must not be null!";
+				LOG.error(msg);
+				throw new CRSStoreException(msg);
+			}
+			crsStore = new DeegreeCRSStore(DSTransform.fromSchema(config), adapter.resolve(parserFile));
+		}
+		catch (JAXBException e) {
+			String msg = "Error in crs store configuration file '" + configURL + "': " + e.getMessage();
+			LOG.error(msg);
+			throw new CRSStoreException(msg, e);
+		}
+		catch (MalformedURLException e) {
+			String msg = "Error in file declaration in the crs store configuration file '" + configURL + "': "
+					+ e.getMessage();
+			LOG.error(msg);
+			throw new CRSStoreException(msg, e);
+		}
+		catch (Exception e) {
+			String msg = "Error when loading crs store configuration file '" + configURL + "': " + e.getMessage();
+			LOG.error(msg);
+			throw new CRSStoreException(msg, e);
+		}
+		return crsStore;
+	}
 
 }
