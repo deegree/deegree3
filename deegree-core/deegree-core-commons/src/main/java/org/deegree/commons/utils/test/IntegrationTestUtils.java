@@ -158,8 +158,8 @@ public class IntegrationTestUtils {
             Files.write( tempDir.resolve( name + "_actual.png" ), toBytes( actual, "png" ) );
             Files.write( tempDir.resolve( name + "_expected.png" ), toBytes( expected, "png" ) );
 
-            System.out.println( "Result returned for " + name + " (base64 -di encoded.dat > failed-test.zip)" );
-            System.out.println( toBase64Zip( toBytes( actual, "png" ), name + ".png" ) );
+            LOG.debug( "Result returned for " + name + " (base64 -di encoded.dat > failed-test.zip)" );
+            LOG.debug( toBase64Zip( toBytes( actual, "png" ), name + ".png" ) );
         } catch ( Throwable t ) {
         }
     }
@@ -178,7 +178,7 @@ public class IntegrationTestUtils {
 
             String pasteBin = IntegrationTestUtils.toPasteBin( toBytes( actual, "png" ) );
             if ( pasteBin != null ) {
-                System.out.println( "Actual returned image for " + name + " available at " + pasteBin );
+                LOG.info( "Actual returned image for " + name + " available at " + pasteBin );
             }
             toTempfile( expected, actual, name );
 

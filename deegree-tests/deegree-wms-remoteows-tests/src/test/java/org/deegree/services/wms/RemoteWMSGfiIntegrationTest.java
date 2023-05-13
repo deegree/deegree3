@@ -42,24 +42,22 @@
 package org.deegree.services.wms;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.slf4j.Logger;
+import org.xmlunit.matchers.CompareMatcher;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static org.deegree.commons.utils.net.HttpUtils.IMAGE;
+import static org.deegree.commons.utils.net.HttpUtils.UTF8STRING;
 import static org.deegree.commons.utils.net.HttpUtils.retrieve;
-import static org.deegree.commons.utils.test.IntegrationTestUtils.isImageSimilar;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
@@ -70,87 +68,52 @@ import static org.slf4j.LoggerFactory.getLogger;
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 
+@Ignore
 @RunWith(Parameterized.class)
-public class RemoteWMSIntegrationTest {
+public class RemoteWMSGfiIntegrationTest {
 
-    private static final Logger LOG = getLogger( RemoteWMSIntegrationTest.class );
-
-    private enum IMAGE_RESPONSE_SUFFIXES {
-        FIRST( "" ), SECOND( "2" ), THIRD( "3" ), FOURTH( "4" );
-
-        private String suffix;
-
-        IMAGE_RESPONSE_SUFFIXES( String suffix ) {
-            this.suffix = suffix;
-        }
-    }
+    private static final Logger LOG = getLogger( RemoteWMSGfiIntegrationTest.class );
 
     private final String resourceName;
 
     private final String request;
 
-    private final List<String> expectedResourcePath = new ArrayList<>();
+    private final String expected;
 
-    public RemoteWMSIntegrationTest( String resourceName )
+    public RemoteWMSGfiIntegrationTest( String resourceName )
                     throws IOException {
         this.resourceName = resourceName;
         this.request = IOUtils.toString(
-                        RemoteWMSIntegrationTest.class.getResourceAsStream(
+                        RemoteWMSGfiIntegrationTest.class.getResourceAsStream(
                                         "/requests/" + resourceName + ".kvp" ) );
-        for ( IMAGE_RESPONSE_SUFFIXES suffix : IMAGE_RESPONSE_SUFFIXES.values() ) {
-            String resourcePath = "/requests/" + resourceName + suffix.suffix + ".png";
-            URL resource = RemoteWMSIntegrationTest.class.getResource(
-                            resourcePath );
-            if ( resource != null )
-                this.expectedResourcePath.add( resourcePath );
-        }
+        this.expected = IOUtils.toString(
+                        RemoteWMSGfiIntegrationTest.class.getResourceAsStream(
+                                        "/requests/" + resourceName + ".xml" ) );
     }
 
     @Parameters(name = "{index}: {0}")
     public static Collection<Object[]> getParameters() {
         List<Object[]> requests = new ArrayList<>();
-        requests.add( new Object[] { "multiple" } );
-        requests.add( new Object[] { "optionsmultiple" } );
-        requests.add( new Object[] { "optionssingle" } );
-        requests.add( new Object[] { "parameters" } );
-        requests.add( new Object[] { "parametersext" } );
-        requests.add( new Object[] { "single" } );
-        requests.add( new Object[] { "timeout" } );
-        requests.add( new Object[] { "transformedgif" } );
+        requests.add( new Object[] { "featureinfofromdeegree" } );
         return requests;
     }
 
     @Test
-    public void testSimilarity()
+    public void testGfiResponse()
                     throws
                     Exception {
         String request = createRequest();
         LOG.info( "Requesting {}", request );
-        BufferedImage actual = retrieve( IMAGE, request );
+        String actual = retrieve( UTF8STRING, request );
 
-        assertTrue( "Image for " + resourceName + " are not similar enough",
-                    isAtLeastOneImageCandidateSimilar( actual ) );
-    }
-
-    private boolean isAtLeastOneImageCandidateSimilar( BufferedImage actual )
-                    throws Exception {
-        for ( String expectedCandidate : expectedResourcePath ) {
-            BufferedImage expected = ImageIO.read( RemoteWMSIntegrationTest.class.getResourceAsStream(
-                            expectedCandidate ) );
-            boolean imageSimilar = isImageSimilar( expected, actual, 0.01,
-                                                   getClass().getName() + "_" + expectedCandidate );
-            if ( imageSimilar ) {
-                LOG.info( "Found expected image {}", expectedCandidate );
-                return true;
-            }
-        }
-        return false;
+        assertThat( "GFI Response for " + resourceName + " does not match expected response", actual,
+                    CompareMatcher.isSimilarTo( expected ).ignoreWhitespace() );
     }
 
     private String createRequest() {
         StringBuffer sb = new StringBuffer();
         sb.append( "http://localhost:" );
-        sb.append( System.getProperty( "portnumber", "8080" ) );
+        sb.append( "8090" );
         sb.append( "/" );
         sb.append( System.getProperty( "deegree-wms-remoteows-webapp", "deegree-wms-remoteows-tests" ) );
         sb.append( "/services/wms" );
