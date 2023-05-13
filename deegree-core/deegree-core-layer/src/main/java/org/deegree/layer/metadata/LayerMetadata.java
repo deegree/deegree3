@@ -54,358 +54,350 @@ import org.deegree.rendering.r2d.context.MapOptions;
 import org.deegree.style.se.unevaluated.Style;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author: aschmitz $
- * 
  * @version $Revision: 31393 $, $Date: 2011-08-01 20:19:40 +0200 (Mon, 01 Aug 2011) $
  */
 public class LayerMetadata {
 
-    private String name;
+	private String name;
 
-    private Description description;
+	private Description description;
 
-    private String metadataId;
+	private String metadataId;
 
-    private SpatialMetadata spatialMetadata;
+	private SpatialMetadata spatialMetadata;
 
-    private DoublePair scaleDenominators = new DoublePair( NEGATIVE_INFINITY, POSITIVE_INFINITY );
+	private DoublePair scaleDenominators = new DoublePair(NEGATIVE_INFINITY, POSITIVE_INFINITY);
 
-    private List<FeatureType> featureTypes = new ArrayList<FeatureType>();
+	private List<FeatureType> featureTypes = new ArrayList<FeatureType>();
 
-    private int cascaded;
+	private int cascaded;
 
-    private Map<String, Dimension<?>> dimensions = new LinkedHashMap<String, Dimension<?>>();
+	private Map<String, Dimension<?>> dimensions = new LinkedHashMap<String, Dimension<?>>();
 
-    private Map<String, Style> styles = new LinkedHashMap<String, Style>(),
-                            legendStyles = new LinkedHashMap<String, Style>();
+	private Map<String, Style> styles = new LinkedHashMap<String, Style>(),
+			legendStyles = new LinkedHashMap<String, Style>();
 
-    private MapOptions mapOptions;
+	private MapOptions mapOptions;
 
-    private List<MetadataUrl> metadataUrls = new ArrayList<MetadataUrl>();
+	private List<MetadataUrl> metadataUrls = new ArrayList<MetadataUrl>();
 
-    private List<Pair<String, String>> identifiers = new ArrayList<Pair<String, String>>();
+	private List<Pair<String, String>> identifiers = new ArrayList<Pair<String, String>>();
 
-    private List<Pair<String, String>> authorities = new ArrayList<Pair<String, String>>();
+	private List<Pair<String, String>> authorities = new ArrayList<Pair<String, String>>();
 
-    private boolean requestable = true;
-    
-    private XsltFile xsltFile;
+	private boolean requestable = true;
 
-    public LayerMetadata( String name, Description description, SpatialMetadata spatialMetadata ) {
-        this.name = name;
-        this.description = description;
-        this.spatialMetadata = spatialMetadata;
-    }
+	private XsltFile xsltFile;
 
-    public LayerMetadata( List<Pair<String, String>> identifier, List<Pair<String, String>> authorities, String name,
-                          Description description, SpatialMetadata spatialMetadata ) {
-        this( name, description, spatialMetadata );
-        this.identifiers = identifier;
-        this.authorities = authorities;
-    }
+	public LayerMetadata(String name, Description description, SpatialMetadata spatialMetadata) {
+		this.name = name;
+		this.description = description;
+		this.spatialMetadata = spatialMetadata;
+	}
 
-    public void setDescription( Description description ) {
-        this.description = description;
-    }
+	public LayerMetadata(List<Pair<String, String>> identifier, List<Pair<String, String>> authorities, String name,
+			Description description, SpatialMetadata spatialMetadata) {
+		this(name, description, spatialMetadata);
+		this.identifiers = identifier;
+		this.authorities = authorities;
+	}
 
-    public Description getDescription() {
-        return description;
-    }
+	public void setDescription(Description description) {
+		this.description = description;
+	}
 
-    public boolean isRequestable() {
-        return requestable;
-    }
+	public Description getDescription() {
+		return description;
+	}
 
-    public void setRequestable( boolean requestable ) {
-        this.requestable = requestable;
-    }
+	public boolean isRequestable() {
+		return requestable;
+	}
 
-    /**
-     * @param scaleDenominators
-     *            the scaleDenominators to set, SLD style
-     */
-    public void setScaleDenominators( DoublePair scaleDenominators ) {
-        this.scaleDenominators = scaleDenominators;
-    }
+	public void setRequestable(boolean requestable) {
+		this.requestable = requestable;
+	}
 
-    /**
-     * @return the scaleDenominators, SLD style
-     */
-    public DoublePair getScaleDenominators() {
-        return scaleDenominators;
-    }
+	/**
+	 * @param scaleDenominators the scaleDenominators to set, SLD style
+	 */
+	public void setScaleDenominators(DoublePair scaleDenominators) {
+		this.scaleDenominators = scaleDenominators;
+	}
 
-    /**
-     * @return the name
-     */
-    public String getName() {
-        return name;
-    }
+	/**
+	 * @return the scaleDenominators, SLD style
+	 */
+	public DoublePair getScaleDenominators() {
+		return scaleDenominators;
+	}
 
-    /**
-     * @param name
-     *            the name to set
-     */
-    public void setName( String name ) {
-        this.name = name;
-    }
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
+	}
 
-    /**
-     * @return the cascaded
-     */
-    public int getCascaded() {
-        return cascaded;
-    }
+	/**
+	 * @param name the name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    /**
-     * @param cascaded
-     *            the cascaded to set
-     */
-    public void setCascaded( int cascaded ) {
-        this.cascaded = cascaded;
-    }
+	/**
+	 * @return the cascaded
+	 */
+	public int getCascaded() {
+		return cascaded;
+	}
 
-    /**
-     * @return true if the layer can be queried
-     * @see MapOptions#getFeatureInfoRadius()
-     */
-    public boolean isQueryable() {
-        if ( mapOptions == null ) {
-            return true;
-        }
+	/**
+	 * @param cascaded the cascaded to set
+	 */
+	public void setCascaded(int cascaded) {
+		this.cascaded = cascaded;
+	}
 
-        // TRICKY assume that, the service is query able by default (<0)
-        return mapOptions.getFeatureInfoRadius() != 0;
-    }
+	/**
+	 * @return true if the layer can be queried
+	 * @see MapOptions#getFeatureInfoRadius()
+	 */
+	public boolean isQueryable() {
+		if (mapOptions == null) {
+			return true;
+		}
 
-    /**
-     * @param queryable
-     *            the queryable to set
-     */
-    public void setQueryable( boolean queryable ) {
-        if ( mapOptions != null ) {
-            if ( queryable ) {
-                if ( mapOptions.getFeatureInfoRadius() < 1 ) {
-                    mapOptions.setFeatureInfoRadius( 1 );
-                }
-            } else {
-                if ( mapOptions.getFeatureInfoRadius() > 0 ) {
-                    mapOptions.setFeatureInfoRadius( 0 );
-                }
-            }
-        } else {
-            int featureInfoRadius = queryable ? 1 : 0;
-            mapOptions = new MapOptions.Builder().featureInfoRadius( featureInfoRadius ).build();
-        }
-    }
+		// TRICKY assume that, the service is query able by default (<0)
+		return mapOptions.getFeatureInfoRadius() != 0;
+	}
 
-    /**
-     * @return the spatialMetadata
-     */
-    public SpatialMetadata getSpatialMetadata() {
-        return spatialMetadata;
-    }
+	/**
+	 * @param queryable the queryable to set
+	 */
+	public void setQueryable(boolean queryable) {
+		if (mapOptions != null) {
+			if (queryable) {
+				if (mapOptions.getFeatureInfoRadius() < 1) {
+					mapOptions.setFeatureInfoRadius(1);
+				}
+			}
+			else {
+				if (mapOptions.getFeatureInfoRadius() > 0) {
+					mapOptions.setFeatureInfoRadius(0);
+				}
+			}
+		}
+		else {
+			int featureInfoRadius = queryable ? 1 : 0;
+			mapOptions = new MapOptions.Builder().featureInfoRadius(featureInfoRadius).build();
+		}
+	}
 
-    /**
-     * @param spatialMetadata
-     *            the spatialMetadata to set
-     */
-    public void setSpatialMetadata( SpatialMetadata spatialMetadata ) {
-        this.spatialMetadata = spatialMetadata;
-    }
+	/**
+	 * @return the spatialMetadata
+	 */
+	public SpatialMetadata getSpatialMetadata() {
+		return spatialMetadata;
+	}
 
-    /**
-     * Copies any fields from md which are currently not set (applies to description and spatial metadata only).
-     * 
-     * @param md
-     */
-    public void merge( LayerMetadata md ) {
-        if ( md == null ) {
-            return;
-        }
-        if ( description == null ) {
-            description = md.getDescription();
-        } else {
-            mergeDescription( md.getDescription() );
-        }
-        if ( spatialMetadata == null && md.getSpatialMetadata() != null ) {
-            spatialMetadata = new SpatialMetadata( md.getSpatialMetadata() );
-        } else if ( spatialMetadata != null && md.getSpatialMetadata() == null ) {
-            spatialMetadata = new SpatialMetadata( spatialMetadata );
-        } else if ( spatialMetadata != null && md.getSpatialMetadata() != null ) {
-            spatialMetadata = this.spatialMetadata.merge( md.getSpatialMetadata() );
-        }
-    }
+	/**
+	 * @param spatialMetadata the spatialMetadata to set
+	 */
+	public void setSpatialMetadata(SpatialMetadata spatialMetadata) {
+		this.spatialMetadata = spatialMetadata;
+	}
 
-    /**
-     * @return the dimensions
-     */
-    public Map<String, Dimension<?>> getDimensions() {
-        return dimensions;
-    }
+	/**
+	 * Copies any fields from md which are currently not set (applies to description and
+	 * spatial metadata only).
+	 * @param md
+	 */
+	public void merge(LayerMetadata md) {
+		if (md == null) {
+			return;
+		}
+		if (description == null) {
+			description = md.getDescription();
+		}
+		else {
+			mergeDescription(md.getDescription());
+		}
+		if (spatialMetadata == null && md.getSpatialMetadata() != null) {
+			spatialMetadata = new SpatialMetadata(md.getSpatialMetadata());
+		}
+		else if (spatialMetadata != null && md.getSpatialMetadata() == null) {
+			spatialMetadata = new SpatialMetadata(spatialMetadata);
+		}
+		else if (spatialMetadata != null && md.getSpatialMetadata() != null) {
+			spatialMetadata = this.spatialMetadata.merge(md.getSpatialMetadata());
+		}
+	}
 
-    /**
-     * @param dimensions
-     *            the dimensions to set
-     */
-    public void setDimensions( Map<String, Dimension<?>> dimensions ) {
-        this.dimensions = dimensions;
-    }
+	/**
+	 * @return the dimensions
+	 */
+	public Map<String, Dimension<?>> getDimensions() {
+		return dimensions;
+	}
 
-    /**
-     * @return the styles
-     */
-    public Map<String, Style> getStyles() {
-        return styles;
-    }
+	/**
+	 * @param dimensions the dimensions to set
+	 */
+	public void setDimensions(Map<String, Dimension<?>> dimensions) {
+		this.dimensions = dimensions;
+	}
 
-    /**
-     * @param styles
-     *            the styles to set
-     */
-    public void setStyles( Map<String, Style> styles ) {
-        this.styles = styles;
-    }
+	/**
+	 * @return the styles
+	 */
+	public Map<String, Style> getStyles() {
+		return styles;
+	}
 
-    /**
-     * @return the legendStyles
-     */
-    public Map<String, Style> getLegendStyles() {
-        return legendStyles;
-    }
+	/**
+	 * @param styles the styles to set
+	 */
+	public void setStyles(Map<String, Style> styles) {
+		this.styles = styles;
+	}
 
-    /**
-     * @param legendStyles
-     *            the legendStyles to set
-     */
-    public void setLegendStyles( Map<String, Style> legendStyles ) {
-        this.legendStyles = legendStyles;
-    }
+	/**
+	 * @return the legendStyles
+	 */
+	public Map<String, Style> getLegendStyles() {
+		return legendStyles;
+	}
 
-    /**
-     * @return the featureTypes
-     */
-    public List<FeatureType> getFeatureTypes() {
-        return featureTypes;
-    }
+	/**
+	 * @param legendStyles the legendStyles to set
+	 */
+	public void setLegendStyles(Map<String, Style> legendStyles) {
+		this.legendStyles = legendStyles;
+	}
 
-    /**
-     * @param featureTypes
-     *            the featureTypes to set
-     */
-    public void setFeatureTypes( List<FeatureType> featureTypes ) {
-        this.featureTypes = featureTypes;
-    }
+	/**
+	 * @return the featureTypes
+	 */
+	public List<FeatureType> getFeatureTypes() {
+		return featureTypes;
+	}
 
-    /**
-     * @return the mapOptions
-     */
-    public MapOptions getMapOptions() {
-        return mapOptions;
-    }
+	/**
+	 * @param featureTypes the featureTypes to set
+	 */
+	public void setFeatureTypes(List<FeatureType> featureTypes) {
+		this.featureTypes = featureTypes;
+	}
 
-    /**
-     * @param mapOptions
-     *            the mapOptions to set
-     */
-    public void setMapOptions( MapOptions mapOptions ) {
-        this.mapOptions = mapOptions;
-    }
+	/**
+	 * @return the mapOptions
+	 */
+	public MapOptions getMapOptions() {
+		return mapOptions;
+	}
 
-    /**
-     * @return the metadataId
-     */
-    public String getMetadataId() {
-        return metadataId;
-    }
+	/**
+	 * @param mapOptions the mapOptions to set
+	 */
+	public void setMapOptions(MapOptions mapOptions) {
+		this.mapOptions = mapOptions;
+	}
 
-    /**
-     * @param metadataId
-     *            the metadataId to set
-     */
-    public void setMetadataId( String metadataId ) {
-        this.metadataId = metadataId;
-    }
+	/**
+	 * @return the metadataId
+	 */
+	public String getMetadataId() {
+		return metadataId;
+	}
 
-    /**
-     * @param metadataUrls
-     *            the metadataUrls to set
-     */
-    public void setMetadataUrls( List<MetadataUrl> metadataUrls ) {
-        this.metadataUrls = metadataUrls;
-    }
+	/**
+	 * @param metadataId the metadataId to set
+	 */
+	public void setMetadataId(String metadataId) {
+		this.metadataId = metadataId;
+	}
 
-    /**
-     * @return the metadataUrls
-     */
-    public List<MetadataUrl> getMetadataUrls() {
-        return metadataUrls;
-    }
+	/**
+	 * @param metadataUrls the metadataUrls to set
+	 */
+	public void setMetadataUrls(List<MetadataUrl> metadataUrls) {
+		this.metadataUrls = metadataUrls;
+	}
 
-    /**
-     * @return the identifiers, first element of a pair is the identifier, second the authority
-     */
-    public List<Pair<String, String>> getIdentifiers() {
-        return identifiers;
-    }
+	/**
+	 * @return the metadataUrls
+	 */
+	public List<MetadataUrl> getMetadataUrls() {
+		return metadataUrls;
+	}
 
-    /**
-     * @param identifiers
-     *            the identifiers to set, first element of a pair is the identifier, second the authority
-     */
-    public void setIdentifiers( List<Pair<String, String>> identifiers ) {
-        this.identifiers = identifiers;
-    }
+	/**
+	 * @return the identifiers, first element of a pair is the identifier, second the
+	 * authority
+	 */
+	public List<Pair<String, String>> getIdentifiers() {
+		return identifiers;
+	}
 
-    /**
-     * @return the authorities
-     */
-    public List<Pair<String, String>> getAuthorities() {
-        return authorities;
-    }
+	/**
+	 * @param identifiers the identifiers to set, first element of a pair is the
+	 * identifier, second the authority
+	 */
+	public void setIdentifiers(List<Pair<String, String>> identifiers) {
+		this.identifiers = identifiers;
+	}
 
-    /**
-     * @param authorities
-     *            the authorities to set
-     */
-    public void setAuthorities( List<Pair<String, String>> authorities ) {
-        this.authorities = authorities;
-    }
+	/**
+	 * @return the authorities
+	 */
+	public List<Pair<String, String>> getAuthorities() {
+		return authorities;
+	}
 
-    /**
-     * @return the xslt file used to transform a feature info response from remote layer, may be <code>null</code>
-     */
-    public XsltFile getXsltFile() {
-        return xsltFile;
-    }
+	/**
+	 * @param authorities the authorities to set
+	 */
+	public void setAuthorities(List<Pair<String, String>> authorities) {
+		this.authorities = authorities;
+	}
 
-    /**
-     * @param xsltFile
-     *            the xslt file used to transform a feature info response from remote layer, may be <code>null</code>
-     */
-    public void setXsltFile( XsltFile xsltFile ) {
-        this.xsltFile = xsltFile;
-    }
+	/**
+	 * @return the xslt file used to transform a feature info response from remote layer,
+	 * may be <code>null</code>
+	 */
+	public XsltFile getXsltFile() {
+		return xsltFile;
+	}
 
-    private void mergeDescription( Description desc ) {
-        if ( desc != null ) {
-            if ( description.getTitles() == null || description.getTitles().isEmpty() ) {
-                description.setTitles( desc.getTitles() );
-            }
-            if ( description.getAbstracts() == null || description.getAbstracts().isEmpty() ) {
-                description.setAbstracts( desc.getAbstracts() );
-            }
-            if ( description.getKeywords() == null || description.getKeywords().isEmpty() ) {
-                description.setKeywords( desc.getKeywords() );
-            }
-        }
-    }
+	/**
+	 * @param xsltFile the xslt file used to transform a feature info response from remote
+	 * layer, may be <code>null</code>
+	 */
+	public void setXsltFile(XsltFile xsltFile) {
+		this.xsltFile = xsltFile;
+	}
 
-    @Override
-    public String toString() {
-        return "LayerMetadata [description=" + description + ", spatialMetadata=" + spatialMetadata + ", ...]";
-    }
+	private void mergeDescription(Description desc) {
+		if (desc != null) {
+			if (description.getTitles() == null || description.getTitles().isEmpty()) {
+				description.setTitles(desc.getTitles());
+			}
+			if (description.getAbstracts() == null || description.getAbstracts().isEmpty()) {
+				description.setAbstracts(desc.getAbstracts());
+			}
+			if (description.getKeywords() == null || description.getKeywords().isEmpty()) {
+				description.setKeywords(desc.getKeywords());
+			}
+		}
+	}
+
+	@Override
+	public String toString() {
+		return "LayerMetadata [description=" + description + ", spatialMetadata=" + spatialMetadata + ", ...]";
+	}
 
 }

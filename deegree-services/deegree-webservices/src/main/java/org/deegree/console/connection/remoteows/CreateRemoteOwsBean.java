@@ -38,20 +38,19 @@ import org.deegree.remoteows.RemoteOWSManager;
  * JSF backing bean for "Create new remote OWS connection" view.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- *
  * @since 3.4
  */
 @ManagedBean
 @ViewScoped
 public class CreateRemoteOwsBean extends AbstractCreateResourceBean {
 
-    public CreateRemoteOwsBean() {
-        super( RemoteOWSManager.class );
-    }
+	public CreateRemoteOwsBean() {
+		super(RemoteOWSManager.class);
+	}
 
-    @Override
-    protected String getOutcome() {
-        return "/console/connection/ows/index";
-    }
+	@Override
+	protected String getOutcome() {
+		return "/console/connection/ows/index";
+	}
 
 }

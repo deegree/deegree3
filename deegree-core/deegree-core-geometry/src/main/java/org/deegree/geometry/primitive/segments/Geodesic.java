@@ -42,23 +42,20 @@ import org.deegree.geometry.primitive.Point;
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author$
- *
  * @version $Revision$, $Date$
  */
 public interface Geodesic extends GeodesicString {
 
-    /**
-     * Returns the first control point.
-     *
-     * @return the first control point
-     */
-    public Point getPoint1();
+	/**
+	 * Returns the first control point.
+	 * @return the first control point
+	 */
+	public Point getPoint1();
 
-    /**
-     * Returns the second control point.
-     *
-     * @return the second control point
-     */
-    public Point getPoint2();
+	/**
+	 * Returns the second control point.
+	 * @return the second control point
+	 */
+	public Point getPoint2();
 
 }

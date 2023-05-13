@@ -53,33 +53,34 @@ import org.junit.runners.Parameterized.Parameters;
 
 /**
  * Wraps the execution of the CITE WFS 1.0.0 TestSuite as a JUnit-test suite.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 @RunWith(Parameterized.class)
 public class WFSCite100IntegrationTest extends AbstractCiteIntegrationTest {
 
-    private static final String CITE_SCRIPT_PROP = "cite.script";
+	private static final String CITE_SCRIPT_PROP = "cite.script";
 
-    private String testLabel = "WFS100";
+	private String testLabel = "WFS100";
 
-    @Parameters
-    public static Collection getResultSnippets() throws Exception {
-        return getResultSnippets("/citewfs100/ctl/wfs.xml", "VAR_WFS_CAPABILITIES_URL", "wfs100?request=GetCapabilities&service=WFS" );
-    }
+	@Parameters
+	public static Collection getResultSnippets() throws Exception {
+		return getResultSnippets("/citewfs100/ctl/wfs.xml", "VAR_WFS_CAPABILITIES_URL",
+				"wfs100?request=GetCapabilities&service=WFS");
+	}
 
-    public WFSCite100IntegrationTest( String testLabel, String resultSnippet ) {
-        this.testLabel = testLabel;
-        this.resultSnippet = resultSnippet;
-    }
+	public WFSCite100IntegrationTest(String testLabel, String resultSnippet) {
+		this.testLabel = testLabel;
+		this.resultSnippet = resultSnippet;
+	}
 
-    @Test
-    public void singleTest() {
-        if ( resultSnippet.contains( "Failed" ) ) {
-            throw new RuntimeException( "Test '" + testLabel + "' failed." );
-        }
-    }
+	@Test
+	public void singleTest() {
+		if (resultSnippet.contains("Failed")) {
+			throw new RuntimeException("Test '" + testLabel + "' failed.");
+		}
+	}
+
 }

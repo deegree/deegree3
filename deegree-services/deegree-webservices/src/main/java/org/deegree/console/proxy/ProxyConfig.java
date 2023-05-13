@@ -35,54 +35,53 @@ import org.deegree.console.Config;
 
 /**
  * Config implementation for the main.xml.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class ProxyConfig extends Config {
 
-    private static final URL PROXY_SCHEMA_URL = ProxyConfig.class.getResource( "/META-INF/schemas/proxy/proxy.xsd" );
+	private static final URL PROXY_SCHEMA_URL = ProxyConfig.class.getResource("/META-INF/schemas/proxy/proxy.xsd");
 
-    private static final URL PROXY_EXAMPLE_URL = ProxyConfig.class.getResource( "/META-INF/schemas/proxy/example.xml" );
+	private static final URL PROXY_EXAMPLE_URL = ProxyConfig.class.getResource("/META-INF/schemas/proxy/example.xml");
 
-    private String file;
+	private String file;
 
-    public ProxyConfig( String file ) {
-        super( null, null, "/console/proxy/index", false );
-        this.file = file;
-    }
+	public ProxyConfig(String file) {
+		super(null, null, "/console/proxy/index", false);
+		this.file = file;
+	}
 
-    @Override
-    public String edit()
-                            throws IOException {
-        StringBuilder sb = new StringBuilder( "/console/generic/xmleditor?faces-redirect=true" );
-        sb.append( "&id=" ).append( id );
-        sb.append( "&schemaUrl=" ).append( PROXY_SCHEMA_URL.toString() );
-        sb.append( "&fileName=" ).append( file );
-        sb.append( "&nextView=" ).append( getResourceOutcome() );
-        sb.append( "&emptyTemplate=").append( getTemplate() );
-        return sb.toString();
-    }
+	@Override
+	public String edit() throws IOException {
+		StringBuilder sb = new StringBuilder("/console/generic/xmleditor?faces-redirect=true");
+		sb.append("&id=").append(id);
+		sb.append("&schemaUrl=").append(PROXY_SCHEMA_URL.toString());
+		sb.append("&fileName=").append(file);
+		sb.append("&nextView=").append(getResourceOutcome());
+		sb.append("&emptyTemplate=").append(getTemplate());
+		return sb.toString();
+	}
 
-    @Override
-    public String getSchemaAsText() {
-        try {
-            return IOUtils.toString( PROXY_SCHEMA_URL );
-        } catch ( IOException e ) {
-            // ignore
-        }
-        return "";
-    }
+	@Override
+	public String getSchemaAsText() {
+		try {
+			return IOUtils.toString(PROXY_SCHEMA_URL);
+		}
+		catch (IOException e) {
+			// ignore
+		}
+		return "";
+	}
 
-    @Override
-    public URL getTemplate() {
-        return PROXY_EXAMPLE_URL;
-    }
+	@Override
+	public URL getTemplate() {
+		return PROXY_EXAMPLE_URL;
+	}
 
-    @Override
-    public URL getSchemaURL() {
-        return PROXY_SCHEMA_URL;
-    }
+	@Override
+	public URL getSchemaURL() {
+		return PROXY_SCHEMA_URL;
+	}
 
 }

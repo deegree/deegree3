@@ -37,20 +37,19 @@ import org.deegree.tile.persistence.TileStoreManager;
  * JSF backing bean for "Create new tile store" view.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- *
  * @since 3.3
  */
 @ManagedBean
 @ViewScoped
 public class CreateTileStoreBean extends AbstractCreateResourceBean {
 
-    public CreateTileStoreBean() {
-        super( TileStoreManager.class );
-    }
+	public CreateTileStoreBean() {
+		super(TileStoreManager.class);
+	}
 
-    @Override
-    protected String getOutcome() {
-        return "/console/datastore/tile/index";
-    }
+	@Override
+	protected String getOutcome() {
+		return "/console/datastore/tile/index";
+	}
 
 }

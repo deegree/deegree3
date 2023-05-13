@@ -44,15 +44,14 @@ import org.deegree.workspace.standard.DefaultResourceManagerMetadata;
 
 /**
  * Resource manager for style stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class StyleStoreManager extends DefaultResourceManager<StyleStore> {
 
-    public StyleStoreManager() {
-        super( new DefaultResourceManagerMetadata<StyleStore>( StyleStoreProvider.class, "styles", "styles" ) );
-    }
+	public StyleStoreManager() {
+		super(new DefaultResourceManagerMetadata<StyleStore>(StyleStoreProvider.class, "styles", "styles"));
+	}
 
 }

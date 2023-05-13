@@ -43,66 +43,59 @@ import org.deegree.time.position.TimePosition;
  * Standard implementation of {@link TimePeriod}.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- *
  * @since 3.4
  */
 public class GenericTimePeriod extends AbstractTimeGeometricPrimitive implements TimePeriod {
 
-    private final TimePositionOrInstant begin;
+	private final TimePositionOrInstant begin;
 
-    private final TimePositionOrInstant end;
+	private final TimePositionOrInstant end;
 
-    /**
-     * Creates a new {@link GenericTimePeriod} instance.
-     *
-     * @param id
-     *            gml id, can be <code>null</code>
-     * @param props
-     *            can be empty, but must not be <code>null</code>
-     * @param relatedTimes
-     *            can be empty, but must not be <code>null</code>
-     * @param frame
-     *            time frame, can be <code>null</code>
-     * @param begin
-     *            temporal position, must not be <code>null</code>
-     * @param end
-     *            temporal position, must not be <code>null</code>
-     */
-    public GenericTimePeriod( final String id, final List<Property> props, final List<RelatedTime> relatedTimes,
-                              final String frame, final TimePositionOrInstant begin, final TimePositionOrInstant end ) {
-        super( id, props, relatedTimes, frame );
-        this.begin = begin;
-        this.end = end;
-    }
+	/**
+	 * Creates a new {@link GenericTimePeriod} instance.
+	 * @param id gml id, can be <code>null</code>
+	 * @param props can be empty, but must not be <code>null</code>
+	 * @param relatedTimes can be empty, but must not be <code>null</code>
+	 * @param frame time frame, can be <code>null</code>
+	 * @param begin temporal position, must not be <code>null</code>
+	 * @param end temporal position, must not be <code>null</code>
+	 */
+	public GenericTimePeriod(final String id, final List<Property> props, final List<RelatedTime> relatedTimes,
+			final String frame, final TimePositionOrInstant begin, final TimePositionOrInstant end) {
+		super(id, props, relatedTimes, frame);
+		this.begin = begin;
+		this.end = end;
+	}
 
-    @Override
-    public TimePositionOrInstant getBegin() {
-        return begin;
-    }
+	@Override
+	public TimePositionOrInstant getBegin() {
+		return begin;
+	}
 
-    @Override
-    public TimePosition getBeginPosition() {
-        if ( begin instanceof TimePosition ) {
-            return (TimePosition) begin;
-        }
-        return ( (TimeInstant) begin ).getPosition();
-    }
+	@Override
+	public TimePosition getBeginPosition() {
+		if (begin instanceof TimePosition) {
+			return (TimePosition) begin;
+		}
+		return ((TimeInstant) begin).getPosition();
+	}
 
-    @Override
-    public TimePositionOrInstant getEnd() {
-        return end;
-    }
+	@Override
+	public TimePositionOrInstant getEnd() {
+		return end;
+	}
 
-    @Override
-    public TimePosition getEndPosition() {
-        if ( end instanceof TimePosition ) {
-            return (TimePosition) end;
-        }
-        return ( (TimeInstant) end ).getPosition();
-    }
+	@Override
+	public TimePosition getEndPosition() {
+		if (end instanceof TimePosition) {
+			return (TimePosition) end;
+		}
+		return ((TimeInstant) end).getPosition();
+	}
 
-    @Override
-    public Object getLength() {
-        throw new UnsupportedOperationException( "Needs implementation" );
-    }
+	@Override
+	public Object getLength() {
+		throw new UnsupportedOperationException("Needs implementation");
+	}
+
 }

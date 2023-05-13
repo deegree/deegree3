@@ -39,28 +39,28 @@ import javax.xml.namespace.QName;
 
 /**
  * XPath <code>NameStep</code> (attribute axis).
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 class AttrStep extends MappableNameStep {
 
-    public AttrStep( QName nodeName ) {
-        super( nodeName );
-    }
+	public AttrStep(QName nodeName) {
+		super(nodeName);
+	}
 
-    @Override
-    public boolean equals( Object o ) {
-        if ( !( o instanceof AttrStep ) ) {
-            return false;
-        }
-        return ( (AttrStep) o ).getNodeName().equals( getNodeName() );
-    }
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof AttrStep)) {
+			return false;
+		}
+		return ((AttrStep) o).getNodeName().equals(getNodeName());
+	}
 
-    @Override
-    public String toString() {
-        return "@" + getNodeName().toString();
-    }
+	@Override
+	public String toString() {
+		return "@" + getNodeName().toString();
+	}
+
 }

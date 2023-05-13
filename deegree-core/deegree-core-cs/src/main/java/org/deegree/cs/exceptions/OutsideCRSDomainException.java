@@ -39,26 +39,26 @@
 package org.deegree.cs.exceptions;
 
 /**
- * The <code>OutsideDomainException</code> exception is thrown when a Geometry is outside the domain of coordinate
- * system in which the Geometry was defined.
- * 
+ * The <code>OutsideDomainException</code> exception is thrown when a Geometry is outside
+ * the domain of coordinate system in which the Geometry was defined.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
  * @version $Revision$, $Date$
- * 
+ *
  */
 public class OutsideCRSDomainException extends RuntimeException {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 6131934900011528537L;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 6131934900011528537L;
 
-    /**
-     * @param message
-     */
-    public OutsideCRSDomainException( String message ) {
-        super( message );
-    }
+	/**
+	 * @param message
+	 */
+	public OutsideCRSDomainException(String message) {
+		super(message);
+	}
 
 }

@@ -40,22 +40,21 @@ import org.deegree.cs.components.IVerticalDatum;
 
 /**
  * Interface describing a VerticalCRS
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  * @author last edited by: $Author: lyn $
- * 
  * @version $Revision: $, $Date: $
  */
-public interface IVerticalCRS extends ICRS{
+public interface IVerticalCRS extends ICRS {
 
-    /**
-     * @return the vertical datum of this crs
-     */
-    IVerticalDatum getVerticalDatum();
+	/**
+	 * @return the vertical datum of this crs
+	 */
+	IVerticalDatum getVerticalDatum();
 
-    /**
-     * @return the axis of this vertical crs.
-     */
-    IAxis getVerticalAxis();
+	/**
+	 * @return the axis of this vertical crs.
+	 */
+	IAxis getVerticalAxis();
 
 }

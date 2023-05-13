@@ -47,17 +47,16 @@ import org.deegree.workspace.standard.DefaultResourceManagerMetadata;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
- * 
  * @version $Revision: $, $Date: $
  */
 public class CoverageManager extends DefaultResourceManager<Coverage> {
 
-    public CoverageManager() {
-        super( new DefaultResourceManagerMetadata<Coverage>( CoverageProvider.class, "coverage stores",
-                                                             "datasources/coverage" ) );
-    }
+	public CoverageManager() {
+		super(new DefaultResourceManagerMetadata<Coverage>(CoverageProvider.class, "coverage stores",
+				"datasources/coverage"));
+	}
 
 }

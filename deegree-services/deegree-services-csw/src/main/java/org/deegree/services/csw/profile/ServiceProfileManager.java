@@ -42,25 +42,24 @@ import org.slf4j.Logger;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.org">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
- * 
  * @version $Revision: $, $Date: $
  */
 public class ServiceProfileManager {
 
-    private static final Logger LOG = getLogger( ServiceProfileManager.class );
+	private static final Logger LOG = getLogger(ServiceProfileManager.class);
 
-    public static ServiceProfile createProfile( MetadataStore<?> store ) {
-        LOG.info( "Create profile for store with type " + store.getType() );
-        if ( "iso".equals( store.getType() ) ) {
-            return new CommonCSWProfile();
-        }
-        if ( "ebrimeo".equals( store.getType() ) ) {
-            return new EbrimProfile();
-        }
-        throw new IllegalArgumentException( "Unknown store type '" + store.getType() + "'" );
-    }
+	public static ServiceProfile createProfile(MetadataStore<?> store) {
+		LOG.info("Create profile for store with type " + store.getType());
+		if ("iso".equals(store.getType())) {
+			return new CommonCSWProfile();
+		}
+		if ("ebrimeo".equals(store.getType())) {
+			return new EbrimProfile();
+		}
+		throw new IllegalArgumentException("Unknown store type '" + store.getType() + "'");
+	}
 
 }

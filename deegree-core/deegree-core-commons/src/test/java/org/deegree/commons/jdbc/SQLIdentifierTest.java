@@ -47,39 +47,39 @@ import org.junit.Test;
  */
 public class SQLIdentifierTest {
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testGetNameWithNullIdentifier() {
-        new SQLIdentifier( null );
-    }
+	@Test(expected = IllegalArgumentException.class)
+	public void testGetNameWithNullIdentifier() {
+		new SQLIdentifier(null);
+	}
 
-    @Test
-    public void testGetNameWithEscapedColumnName() {
-        String expected = "\"column\"";
-        SQLIdentifier actual = new SQLIdentifier( expected );
-        Assert.assertEquals( expected, actual.getName() );
-    }
+	@Test
+	public void testGetNameWithEscapedColumnName() {
+		String expected = "\"column\"";
+		SQLIdentifier actual = new SQLIdentifier(expected);
+		Assert.assertEquals(expected, actual.getName());
+	}
 
-    @Test
-    public void testGetNameWithoutEscapedColumnName() {
-        String expected = "column";
-        SQLIdentifier actual = new SQLIdentifier( expected );
-        Assert.assertEquals( expected, actual.getName() );
-    }
+	@Test
+	public void testGetNameWithoutEscapedColumnName() {
+		String expected = "column";
+		SQLIdentifier actual = new SQLIdentifier(expected);
+		Assert.assertEquals(expected, actual.getName());
+	}
 
-    @Test
-    public void testGetNameWithEscapedTableAndColumnName() {
-        String identifier = "\"table.column\"";
-        String expected = "\"column\"";
-        SQLIdentifier actual = new SQLIdentifier( identifier );
-        Assert.assertEquals( expected, actual.getName() );
-    }
+	@Test
+	public void testGetNameWithEscapedTableAndColumnName() {
+		String identifier = "\"table.column\"";
+		String expected = "\"column\"";
+		SQLIdentifier actual = new SQLIdentifier(identifier);
+		Assert.assertEquals(expected, actual.getName());
+	}
 
-    @Test
-    public void testGetNameWithoutEscapedTableAndColumnName() {
-        String identifier = "table.column";
-        String expected = "column";
-        SQLIdentifier actual = new SQLIdentifier( identifier );
-        Assert.assertEquals( expected, actual.getName() );
-    }
+	@Test
+	public void testGetNameWithoutEscapedTableAndColumnName() {
+		String identifier = "table.column";
+		String expected = "column";
+		SQLIdentifier actual = new SQLIdentifier(identifier);
+		Assert.assertEquals(expected, actual.getName());
+	}
 
 }

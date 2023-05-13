@@ -40,36 +40,34 @@ package org.deegree.test.services.wpvs;
  * The <code></code> class TODO add class documentation here.
  *
  * @author <a href="mailto:name@deegree.org">Your Name</a>
- *
  * @author last edited by: $Author: ionita $
- *
  * @version $Revision: $, $Date: $
  *
  */
 public class TestResultData {
 
-    private int threadNo;
+	private int threadNo;
 
-    private int requestNo;
+	private int requestNo;
 
-    private long timeElapsed;
+	private long timeElapsed;
 
-    public TestResultData( int threadNo, int requestNo, long timeElapsed ) {
-        this.threadNo = threadNo;
-        this.requestNo = requestNo;
-        this.timeElapsed = timeElapsed;
-    }
+	public TestResultData(int threadNo, int requestNo, long timeElapsed) {
+		this.threadNo = threadNo;
+		this.requestNo = requestNo;
+		this.timeElapsed = timeElapsed;
+	}
 
-    public int getThreadNumber() {
-        return threadNo;
-    }
+	public int getThreadNumber() {
+		return threadNo;
+	}
 
-    public int getRequestNumber() {
-        return requestNo;
-    }
+	public int getRequestNumber() {
+		return requestNo;
+	}
 
-    public long getTimeElapsed() {
-        return timeElapsed;
-    }
+	public long getTimeElapsed() {
+		return timeElapsed;
+	}
 
 }

@@ -43,19 +43,20 @@ import static java.util.Objects.requireNonNull;
 
 public class StatisticsRetrieval implements Service {
 
-    private StatisticsService statisticsService;
+	private StatisticsService statisticsService;
 
-    @Override
-    public void start( ServiceProvider<Service> serviceProvider ) {
-        this.statisticsService = serviceProvider.getService( StatisticsService.class );
-    }
+	@Override
+	public void start(ServiceProvider<Service> serviceProvider) {
+		this.statisticsService = serviceProvider.getService(StatisticsService.class);
+	}
 
-    @Override
-    public void stop() {
-        this.statisticsService = null;
-    }
+	@Override
+	public void stop() {
+		this.statisticsService = null;
+	}
 
-    public StatisticsService getStatisticsService() {
-        return requireNonNull( statisticsService );
-    }
+	public StatisticsService getStatisticsService() {
+		return requireNonNull(statisticsService);
+	}
+
 }

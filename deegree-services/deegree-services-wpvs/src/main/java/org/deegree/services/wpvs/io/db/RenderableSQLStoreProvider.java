@@ -45,32 +45,32 @@ import org.deegree.workspace.Workspace;
 
 /**
  * The <code></code> class TODO add class documentation here.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class RenderableSQLStoreProvider extends RenderableStoreProvider {
 
-    private static final String CONFIG_NS = "http://www.deegree.org/datasource/renderable/sql";
+	private static final String CONFIG_NS = "http://www.deegree.org/datasource/renderable/sql";
 
-    private static final URL CONFIG_SCHEMA = RenderableSQLStoreProvider.class.getResource( "/META-INF/schemas/datasource/3d/renderable/sql.xsd" );
+	private static final URL CONFIG_SCHEMA = RenderableSQLStoreProvider.class
+		.getResource("/META-INF/schemas/datasource/3d/renderable/sql.xsd");
 
-    @Override
-    public String getNamespace() {
-        return CONFIG_NS;
-    }
+	@Override
+	public String getNamespace() {
+		return CONFIG_NS;
+	}
 
-    @Override
-    public URL getSchema() {
-        return CONFIG_SCHEMA;
-    }
+	@Override
+	public URL getSchema() {
+		return CONFIG_SCHEMA;
+	}
 
-    @Override
-    public ResourceMetadata<RenderableStore> createFromLocation( Workspace workspace,
-                                                                 ResourceLocation<RenderableStore> location ) {
-        return new SqlRenderableStoreMetadata( workspace, location, this );
-    }
+	@Override
+	public ResourceMetadata<RenderableStore> createFromLocation(Workspace workspace,
+			ResourceLocation<RenderableStore> location) {
+		return new SqlRenderableStoreMetadata(workspace, location, this);
+	}
 
 }

@@ -47,28 +47,25 @@ import org.deegree.sqldialect.SQLDialect;
 
 /**
  * SPI interface for loading SQL dialect implementations.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
- * 
  * @version $Revision: $, $Date: $
  */
 public interface SqlDialectProvider {
 
-    /**
-     * @param connection
-     *            never <code>null</code>
-     * @return true, if the provider can create a dialect for the given connection
-     */
-    boolean supportsConnection( Connection connection );
+	/**
+	 * @param connection never <code>null</code>
+	 * @return true, if the provider can create a dialect for the given connection
+	 */
+	boolean supportsConnection(Connection connection);
 
-    /**
-     * Note that the implementation must ensure the connection is closed!
-     * 
-     * @param connection
-     *            never <code>null</code>
-     * @return an SQL dialect for the given connection (make sure #supportsConnection returns true for the connection)
-     */
-    SQLDialect createDialect( Connection connection );
+	/**
+	 * Note that the implementation must ensure the connection is closed!
+	 * @param connection never <code>null</code>
+	 * @return an SQL dialect for the given connection (make sure #supportsConnection
+	 * returns true for the connection)
+	 */
+	SQLDialect createDialect(Connection connection);
 
 }

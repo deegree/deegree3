@@ -35,19 +35,19 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry.io;
 
-
 /**
- * {@link CoordinateFormatter} that simply uses the string value of the coordinate (#toString()).
- * 
+ * {@link CoordinateFormatter} that simply uses the string value of the coordinate
+ * (#toString()).
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class DoubleCoordinateFormatter implements CoordinateFormatter {
 
-    @Override
-    public String format( double number ) {
-        return Double.toString( number );
-    }
+	@Override
+	public String format(double number) {
+		return Double.toString(number);
+	}
+
 }

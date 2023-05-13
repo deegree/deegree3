@@ -37,29 +37,29 @@ import org.deegree.workspace.Workspace;
 
 /**
  * This class is responsible for loading exception serializer providers.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class SerializerProviderInitializer implements Initializable {
 
-    private List<SerializerProvider> exceptionSerializers = new ArrayList<SerializerProvider>();
+	private List<SerializerProvider> exceptionSerializers = new ArrayList<SerializerProvider>();
 
-    @Override
-    public void init( Workspace workspace ) {
-        exceptionSerializers.clear();
-        Iterator<SerializerProvider> serializers = ServiceLoader.load( SerializerProvider.class,
-                                                                       workspace.getModuleClassLoader() ).iterator();
-        while ( serializers.hasNext() ) {
-            SerializerProvider p = serializers.next();
-            p.init( workspace );
-            exceptionSerializers.add( p );
-        }
-    }
+	@Override
+	public void init(Workspace workspace) {
+		exceptionSerializers.clear();
+		Iterator<SerializerProvider> serializers = ServiceLoader
+			.load(SerializerProvider.class, workspace.getModuleClassLoader())
+			.iterator();
+		while (serializers.hasNext()) {
+			SerializerProvider p = serializers.next();
+			p.init(workspace);
+			exceptionSerializers.add(p);
+		}
+	}
 
-    public List<SerializerProvider> getExceptionSerializers() {
-        return exceptionSerializers;
-    }
+	public List<SerializerProvider> getExceptionSerializers() {
+		return exceptionSerializers;
+	}
 
 }

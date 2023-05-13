@@ -63,95 +63,89 @@ import org.junit.Test;
  */
 public class SQLPropertyNameMapperTest {
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testConstructorFtMapping_Null()
-                            throws Exception {
-        FeatureTypeMapping ftMapping = null;
-        new SQLPropertyNameMapper( mockFeatureStore(), ftMapping, false );
-    }
+	@Test(expected = IllegalArgumentException.class)
+	public void testConstructorFtMapping_Null() throws Exception {
+		FeatureTypeMapping ftMapping = null;
+		new SQLPropertyNameMapper(mockFeatureStore(), ftMapping, false);
+	}
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testConstructorFtMappingList_Null()
-                            throws Exception {
-        List<FeatureTypeMapping> ftMapping = null;
-        new SQLPropertyNameMapper( mockFeatureStore(), ftMapping, false );
-    }
+	@Test(expected = IllegalArgumentException.class)
+	public void testConstructorFtMappingList_Null() throws Exception {
+		List<FeatureTypeMapping> ftMapping = null;
+		new SQLPropertyNameMapper(mockFeatureStore(), ftMapping, false);
+	}
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testConstructorFtMappingList_Empty()
-                            throws Exception {
-        List<FeatureTypeMapping> ftMapping = new ArrayList<FeatureTypeMapping>();
-        new SQLPropertyNameMapper( mockFeatureStore(), ftMapping, false );
-    }
+	@Test(expected = IllegalArgumentException.class)
+	public void testConstructorFtMappingList_Empty() throws Exception {
+		List<FeatureTypeMapping> ftMapping = new ArrayList<FeatureTypeMapping>();
+		new SQLPropertyNameMapper(mockFeatureStore(), ftMapping, false);
+	}
 
-    @Test
-    public void testGetSpatialMapping()
-                            throws Exception {
-        ValueReference propName = new ValueReference( "app:ftType2/app:geometry", nsContext() );
-        List<FeatureTypeMapping> ftMapping = createFeatureTypeMappings( propName );
-        SQLPropertyNameMapper mapper = new SQLPropertyNameMapper( mockFeatureStore(), ftMapping, false );
-        PropertyNameMapping spatialMapping = mapper.getSpatialMapping( propName, mockAliasManager() );
+	@Test
+	public void testGetSpatialMapping() throws Exception {
+		ValueReference propName = new ValueReference("app:ftType2/app:geometry", nsContext());
+		List<FeatureTypeMapping> ftMapping = createFeatureTypeMappings(propName);
+		SQLPropertyNameMapper mapper = new SQLPropertyNameMapper(mockFeatureStore(), ftMapping, false);
+		PropertyNameMapping spatialMapping = mapper.getSpatialMapping(propName, mockAliasManager());
 
-        assertThat( spatialMapping, notNullValue() );
-    }
+		assertThat(spatialMapping, notNullValue());
+	}
 
-    @Test
-    public void testGetSpatialMapping_withMissingNamespaceBinding()
-                            throws Exception {
-        ValueReference propName = new ValueReference( "app:ftType2/app:geometry",
-                                                      CommonNamespaces.getNamespaceContext() );
-        List<FeatureTypeMapping> ftMapping = createFeatureTypeMappings( propName );
-        SQLPropertyNameMapper mapper = new SQLPropertyNameMapper( mockFeatureStore(), ftMapping, false );
-        PropertyNameMapping spatialMapping = mapper.getSpatialMapping( propName, mockAliasManager() );
+	@Test
+	public void testGetSpatialMapping_withMissingNamespaceBinding() throws Exception {
+		ValueReference propName = new ValueReference("app:ftType2/app:geometry",
+				CommonNamespaces.getNamespaceContext());
+		List<FeatureTypeMapping> ftMapping = createFeatureTypeMappings(propName);
+		SQLPropertyNameMapper mapper = new SQLPropertyNameMapper(mockFeatureStore(), ftMapping, false);
+		PropertyNameMapping spatialMapping = mapper.getSpatialMapping(propName, mockAliasManager());
 
-        assertThat( spatialMapping, notNullValue() );
-    }
+		assertThat(spatialMapping, notNullValue());
+	}
 
-    @Test
-    public void testGetSpatialMapping_withMissingNamespaceBindingAndPrefix()
-                            throws Exception {
-        ValueReference propName = new ValueReference( "ftType2/geometry", CommonNamespaces.getNamespaceContext() );
-        List<FeatureTypeMapping> ftMapping = createFeatureTypeMappings( propName );
-        SQLPropertyNameMapper mapper = new SQLPropertyNameMapper( mockFeatureStore(), ftMapping, false );
-        PropertyNameMapping spatialMapping = mapper.getSpatialMapping( propName, mockAliasManager() );
+	@Test
+	public void testGetSpatialMapping_withMissingNamespaceBindingAndPrefix() throws Exception {
+		ValueReference propName = new ValueReference("ftType2/geometry", CommonNamespaces.getNamespaceContext());
+		List<FeatureTypeMapping> ftMapping = createFeatureTypeMappings(propName);
+		SQLPropertyNameMapper mapper = new SQLPropertyNameMapper(mockFeatureStore(), ftMapping, false);
+		PropertyNameMapping spatialMapping = mapper.getSpatialMapping(propName, mockAliasManager());
 
-        assertThat( spatialMapping, notNullValue() );
-    }
+		assertThat(spatialMapping, notNullValue());
+	}
 
-    private List<FeatureTypeMapping> createFeatureTypeMappings( ValueReference valueReference ) {
-        List<FeatureTypeMapping> ftMapping = new ArrayList<FeatureTypeMapping>();
-        ftMapping.add( mockFeatureTypeMapping( "ftType1", "http://www.deegree.org/app", valueReference ) );
-        ftMapping.add( mockFeatureTypeMapping( "ftType2", "http://www.deegree.org/app", valueReference ) );
-        return ftMapping;
-    }
+	private List<FeatureTypeMapping> createFeatureTypeMappings(ValueReference valueReference) {
+		List<FeatureTypeMapping> ftMapping = new ArrayList<FeatureTypeMapping>();
+		ftMapping.add(mockFeatureTypeMapping("ftType1", "http://www.deegree.org/app", valueReference));
+		ftMapping.add(mockFeatureTypeMapping("ftType2", "http://www.deegree.org/app", valueReference));
+		return ftMapping;
+	}
 
-    private SQLFeatureStore mockFeatureStore() {
-        return mock( SQLFeatureStore.class );
-    }
+	private SQLFeatureStore mockFeatureStore() {
+		return mock(SQLFeatureStore.class);
+	}
 
-    private FeatureTypeMapping mockFeatureTypeMapping( String featureTypeName, String featureTypeNamespace,
-                                                       ValueReference valueReference ) {
-        QName featureType = new QName( featureTypeNamespace, featureTypeName, "app" );
-        FeatureTypeMapping mockedFtMapping = mock( FeatureTypeMapping.class );
-        when( mockedFtMapping.getFtTable() ).thenReturn( new TableName( "table" ) );
-        when( mockedFtMapping.getFeatureType() ).thenReturn( featureType );
-        List<Mapping> mappings = new ArrayList<Mapping>();
-        MappingExpression mappingExpression = new DBField( "column" );
-        Mapping mapping = new GeometryMapping( valueReference, true, mappingExpression, GeometryType.GEOMETRY, null,
-                                               null );
-        mappings.add( mapping );
-        when( mockedFtMapping.getMappings() ).thenReturn( mappings );
-        return mockedFtMapping;
-    }
+	private FeatureTypeMapping mockFeatureTypeMapping(String featureTypeName, String featureTypeNamespace,
+			ValueReference valueReference) {
+		QName featureType = new QName(featureTypeNamespace, featureTypeName, "app");
+		FeatureTypeMapping mockedFtMapping = mock(FeatureTypeMapping.class);
+		when(mockedFtMapping.getFtTable()).thenReturn(new TableName("table"));
+		when(mockedFtMapping.getFeatureType()).thenReturn(featureType);
+		List<Mapping> mappings = new ArrayList<Mapping>();
+		MappingExpression mappingExpression = new DBField("column");
+		Mapping mapping = new GeometryMapping(valueReference, true, mappingExpression, GeometryType.GEOMETRY, null,
+				null);
+		mappings.add(mapping);
+		when(mockedFtMapping.getMappings()).thenReturn(mappings);
+		return mockedFtMapping;
+	}
 
-    private TableAliasManager mockAliasManager() {
-        return mock( TableAliasManager.class );
-    }
+	private TableAliasManager mockAliasManager() {
+		return mock(TableAliasManager.class);
+	}
 
-    private NamespaceBindings nsContext() {
-        NamespaceBindings nsContext = CommonNamespaces.getNamespaceContext();
-        nsContext.addNamespace( "app", "http://www.deegree.org/app" );
-        return nsContext;
-    }
+	private NamespaceBindings nsContext() {
+		NamespaceBindings nsContext = CommonNamespaces.getNamespaceContext();
+		nsContext.addNamespace("app", "http://www.deegree.org/app");
+		return nsContext;
+	}
 
 }

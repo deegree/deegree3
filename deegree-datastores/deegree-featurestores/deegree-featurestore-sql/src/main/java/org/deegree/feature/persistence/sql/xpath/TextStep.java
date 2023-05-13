@@ -37,17 +37,16 @@ package org.deegree.feature.persistence.sql.xpath;
 
 /**
  * XPath text step.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 class TextStep extends MappableStep {
 
-    @Override
-    public boolean equals( Object o ) {
-        return o instanceof TextStep;
-    }
+	@Override
+	public boolean equals(Object o) {
+		return o instanceof TextStep;
+	}
 
 }

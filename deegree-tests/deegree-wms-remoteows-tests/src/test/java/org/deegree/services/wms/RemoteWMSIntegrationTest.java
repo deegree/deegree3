@@ -76,73 +76,68 @@ import static org.slf4j.LoggerFactory.getLogger;
 @Ignore
 public class RemoteWMSIntegrationTest {
 
-    private static final Logger LOG = getLogger( RemoteWMSIntegrationTest.class );
+	private static final Logger LOG = getLogger(RemoteWMSIntegrationTest.class);
 
-    private static int numFailed = 0;
+	private static int numFailed = 0;
 
-    private final String resourceName;
+	private final String resourceName;
 
-    private final String request;
+	private final String request;
 
-    private final BufferedImage expected;
+	private final BufferedImage expected;
 
-    public RemoteWMSIntegrationTest( String resourceName )
-                    throws IOException {
-        this.resourceName = resourceName;
-        this.request = IOUtils.toString(
-                        RemoteWMSIntegrationTest.class.getResourceAsStream(
-                                        "/requests/" + resourceName + ".kvp" ) );
-        this.expected = ImageIO.read(
-                        RemoteWMSIntegrationTest.class.getResourceAsStream(
-                                        "/requests/" + resourceName + ".response" ) );
-    }
+	public RemoteWMSIntegrationTest(String resourceName) throws IOException {
+		this.resourceName = resourceName;
+		this.request = IOUtils
+			.toString(RemoteWMSIntegrationTest.class.getResourceAsStream("/requests/" + resourceName + ".kvp"));
+		this.expected = ImageIO
+			.read(RemoteWMSIntegrationTest.class.getResourceAsStream("/requests/" + resourceName + ".response"));
+	}
 
-    @Parameters(name = "{index}: {0}")
-    public static Collection<Object[]> getParameters() {
-        List<Object[]> requests = new ArrayList<>();
-        requests.add( new Object[] { "featureinfofromdeegree" } );
-        requests.add( new Object[] { "multiple" } );
-        requests.add( new Object[] { "optionsmultiple" } );
-        requests.add( new Object[] { "optionssingle" } );
-        requests.add( new Object[] { "parameters" } );
-        requests.add( new Object[] { "parametersext" } );
-        requests.add( new Object[] { "single" } );
-        requests.add( new Object[] { "timeout" } );
-        requests.add( new Object[] { "transformedgif" } );
-        return requests;
-    }
+	@Parameters(name = "{index}: {0}")
+	public static Collection<Object[]> getParameters() {
+		List<Object[]> requests = new ArrayList<>();
+		requests.add(new Object[] { "featureinfofromdeegree" });
+		requests.add(new Object[] { "multiple" });
+		requests.add(new Object[] { "optionsmultiple" });
+		requests.add(new Object[] { "optionssingle" });
+		requests.add(new Object[] { "parameters" });
+		requests.add(new Object[] { "parametersext" });
+		requests.add(new Object[] { "single" });
+		requests.add(new Object[] { "timeout" });
+		requests.add(new Object[] { "transformedgif" });
+		return requests;
+	}
 
-    @Test
-    public void testSimilarity()
-                            throws
-                            Exception {
-        String request = createRequest();
-        LOG.info( "Requesting {}", request );
-        BufferedImage actual = retrieve( IMAGE, request );
+	@Test
+	public void testSimilarity() throws Exception {
+		String request = createRequest();
+		LOG.info("Requesting {}", request);
+		BufferedImage actual = retrieve(IMAGE, request);
 
-        assertTrue( "Image for " + resourceName + "are not similar enough",
-                           isImageSimilar( expected, actual, 0.01, getClass().getName() + resourceName ) );
-    }
+		assertTrue("Image for " + resourceName + "are not similar enough",
+				isImageSimilar(expected, actual, 0.01, getClass().getName() + resourceName));
+	}
 
-    private String createRequest() {
-        StringBuffer sb = new StringBuffer();
-        sb.append( "http://localhost:" );
-        sb.append( System.getProperty( "portnumber", "8080" ) );
-        sb.append( "/" );
-        sb.append( System.getProperty( "deegree-wms-remoteows-webapp", "deegree-wms-remoteows-tests" ) );
-        sb.append( "/services/wms" );
-        if ( !request.startsWith( "?" ) )
-            sb.append( "?" );
-        sb.append( request );
-        return sb.toString();
-    }
+	private String createRequest() {
+		StringBuffer sb = new StringBuffer();
+		sb.append("http://localhost:");
+		sb.append(System.getProperty("portnumber", "8080"));
+		sb.append("/");
+		sb.append(System.getProperty("deegree-wms-remoteows-webapp", "deegree-wms-remoteows-tests"));
+		sb.append("/services/wms");
+		if (!request.startsWith("?"))
+			sb.append("?");
+		sb.append(request);
+		return sb.toString();
+	}
 
-    private byte[] parseAsBytes( RenderedImage actual )
-                    throws IOException {
-        ByteArrayOutputStream bosActual = new ByteArrayOutputStream();
-        ImageIO.write( actual, "png", bosActual );
-        bosActual.flush();
-        bosActual.close();
-        return bosActual.toByteArray();
-    }
+	private byte[] parseAsBytes(RenderedImage actual) throws IOException {
+		ByteArrayOutputStream bosActual = new ByteArrayOutputStream();
+		ImageIO.write(actual, "png", bosActual);
+		bosActual.flush();
+		bosActual.close();
+		return bosActual.toByteArray();
+	}
+
 }

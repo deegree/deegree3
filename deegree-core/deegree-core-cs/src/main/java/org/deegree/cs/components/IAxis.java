@@ -39,32 +39,32 @@ import org.deegree.cs.CRSResource;
 
 /**
  * Interface describing Axis
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  * @author last edited by: $Author: lyn $
- * 
  * @version $Revision: $, $Date: $
  */
 public interface IAxis extends CRSResource {
 
-    /**
-     * @return the orientation.
-     */
-    int getOrientation();
+	/**
+	 * @return the orientation.
+	 */
+	int getOrientation();
 
-    /**
-     * @return the units.
-     */
-    IUnit getUnits();
+	/**
+	 * @return the units.
+	 */
+	IUnit getUnits();
 
-    /**
-     * @return an 'English' representation for the Axis Orientation, or Unknown if the given direction is not known.
-     */
-    String getOrientationAsString();
+	/**
+	 * @return an 'English' representation for the Axis Orientation, or Unknown if the
+	 * given direction is not known.
+	 */
+	String getOrientationAsString();
 
-    /**
-     * @return
-     */
-    String getName();
+	/**
+	 * @return
+	 */
+	String getName();
 
 }

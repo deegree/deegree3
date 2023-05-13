@@ -45,35 +45,34 @@ import org.deegree.style.styling.Copyable;
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
- *
  * @version $Revision: 18171 $, $Date: 2009-06-17 16:00:07 +0200 (Wed, 17 Jun 2009) $
  */
 public class Halo implements Copyable<Halo> {
 
-    /**
-     * Default is a white fill.
-     */
-    public Fill fill;
+	/**
+	 * Default is a white fill.
+	 */
+	public Fill fill;
 
-    /**
-     * Default is 1.
-     */
-    public double radius = 1;
+	/**
+	 * Default is 1.
+	 */
+	public double radius = 1;
 
-    /**
-     *
-     */
-    public Halo() {
-        fill = new Fill();
-        fill.color = WHITE;
-    }
+	/**
+	 *
+	 */
+	public Halo() {
+		fill = new Fill();
+		fill.color = WHITE;
+	}
 
-    @Override
-    public Halo copy() {
-        Halo copy = new Halo();
-        copy.fill = fill == null ? null : fill.copy();
-        copy.radius = radius;
-        return copy;
-    }
+	@Override
+	public Halo copy() {
+		Halo copy = new Halo();
+		copy.fill = fill == null ? null : fill.copy();
+		copy.radius = radius;
+		return copy;
+	}
 
 }

@@ -42,29 +42,29 @@ import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 
 /**
- * {@link XMLExceptionSerializer} for WMS 1.1.1 <code>ServiceExceptionReport</code> documents.
- * 
+ * {@link XMLExceptionSerializer} for WMS 1.1.1 <code>ServiceExceptionReport</code>
+ * documents.
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class WMS111ExceptionReportSerializer extends XMLExceptionSerializer {
 
-    @Override
-    public void serializeExceptionToXML( XMLStreamWriter writer, OWSException ex )
-                            throws XMLStreamException {
-        if ( ex == null || writer == null ) {
-            return;
-        }
-        writer.writeStartElement( "ServiceExceptionReport" );
-        writer.writeStartElement( "ServiceException" );
-        writer.writeAttribute( "code", ex.getExceptionCode() );
-        if ( ex.getLocator() != null && !"".equals( ex.getLocator().trim() ) ) {
-            writer.writeAttribute( "locator", ex.getLocator() );
-        }
-        writer.writeCharacters( ex.getMessage() != null ? ex.getMessage() : "not available" );
-        writer.writeEndElement(); // ServiceException
-        writer.writeEndElement(); // ServiceExceptionReport
-    }
+	@Override
+	public void serializeExceptionToXML(XMLStreamWriter writer, OWSException ex) throws XMLStreamException {
+		if (ex == null || writer == null) {
+			return;
+		}
+		writer.writeStartElement("ServiceExceptionReport");
+		writer.writeStartElement("ServiceException");
+		writer.writeAttribute("code", ex.getExceptionCode());
+		if (ex.getLocator() != null && !"".equals(ex.getLocator().trim())) {
+			writer.writeAttribute("locator", ex.getLocator());
+		}
+		writer.writeCharacters(ex.getMessage() != null ? ex.getMessage() : "not available");
+		writer.writeEndElement(); // ServiceException
+		writer.writeEndElement(); // ServiceExceptionReport
+	}
+
 }

@@ -43,40 +43,39 @@ import org.deegree.cs.components.IUnit;
 import org.deegree.cs.projections.Projection;
 
 /**
- * The <code>CylindricalProjection</code> is a super class for all cylindrical projections.
+ * The <code>CylindricalProjection</code> is a super class for all cylindrical
+ * projections.
  * <p>
  * <q>(From Snyder p.97)</q>
  * </p>
  * <p>
- * Cylindrical projections are used primarily for complete world maps, or for maps along narrow strips of a great circle
- * arc, such as the Equator, a meridian or an oblique great circle.
+ * Cylindrical projections are used primarily for complete world maps, or for maps along
+ * narrow strips of a great circle arc, such as the Equator, a meridian or an oblique
+ * great circle.
  * </p>
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
- * 
+ *
  */
 
 public abstract class CylindricalProjection extends Projection {
 
-    /**
-     * @param geographicCRS
-     * @param falseNorthing
-     * @param falseEasting
-     * @param naturalOrigin
-     * @param units
-     * @param scale
-     * @param conformal
-     * @param equalArea
-     * @param id
-     *            an identifiable instance containing information about this projection
-     */
-    public CylindricalProjection( double falseNorthing, double falseEasting, Point2d naturalOrigin, IUnit units,
-                                  double scale, boolean conformal, boolean equalArea, CRSResource id ) {
-        super( falseNorthing, falseEasting, naturalOrigin, units, scale, conformal, equalArea, id );
-    }
+	/**
+	 * @param geographicCRS
+	 * @param falseNorthing
+	 * @param falseEasting
+	 * @param naturalOrigin
+	 * @param units
+	 * @param scale
+	 * @param conformal
+	 * @param equalArea
+	 * @param id an identifiable instance containing information about this projection
+	 */
+	public CylindricalProjection(double falseNorthing, double falseEasting, Point2d naturalOrigin, IUnit units,
+			double scale, boolean conformal, boolean equalArea, CRSResource id) {
+		super(falseNorthing, falseEasting, naturalOrigin, units, scale, conformal, equalArea, id);
+	}
 
 }

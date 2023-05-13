@@ -45,22 +45,22 @@ import org.deegree.commons.tom.ows.StringOrRef;
 
 /**
  * {@link PropertyType} that defines a property with a {@link StringOrRef} value.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class StringOrRefPropertyType extends AbstractPropertyType {
 
-    public StringOrRefPropertyType( QName name, int minOccurs, int maxOccurs, XSElementDeclaration elDecl,
-                                    List<PropertyType> substitutions ) {
-        super( name, minOccurs, maxOccurs, elDecl, substitutions );
-    }
+	public StringOrRefPropertyType(QName name, int minOccurs, int maxOccurs, XSElementDeclaration elDecl,
+			List<PropertyType> substitutions) {
+		super(name, minOccurs, maxOccurs, elDecl, substitutions);
+	}
 
-    @Override
-    public String toString() {
-        String s = "- stringOrRef property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs;
-        return s;
-    }
+	@Override
+	public String toString() {
+		String s = "- stringOrRef property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs;
+		return s;
+	}
+
 }

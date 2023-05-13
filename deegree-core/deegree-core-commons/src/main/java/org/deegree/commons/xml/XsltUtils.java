@@ -57,28 +57,27 @@ import javax.xml.transform.stream.StreamSource;
 
 /**
  * Utility methods to transform xml streams with xslt.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
- * 
  * @version $Revision: $, $Date: $
  */
 public class XsltUtils {
 
-    public static void transform( byte[] doc, URL xsltUrl, OutputStream out )
-                            throws URISyntaxException, TransformerException {
-        ByteArrayInputStream inputStream = new ByteArrayInputStream( doc );
-        transform( inputStream, xsltUrl, out );
-    }
+	public static void transform(byte[] doc, URL xsltUrl, OutputStream out)
+			throws URISyntaxException, TransformerException {
+		ByteArrayInputStream inputStream = new ByteArrayInputStream(doc);
+		transform(inputStream, xsltUrl, out);
+	}
 
-    public static void transform( InputStream doc, URL xsltUrl, OutputStream out )
-                            throws URISyntaxException, TransformerException {
-        StreamSource source = new StreamSource( doc );
-        StreamSource xslt = new StreamSource( new File( xsltUrl.toURI() ) );
-        TransformerFactory fac = TransformerFactory.newInstance();
-        Transformer t = fac.newTransformer( xslt );
-        Result result = new StreamResult( out );
-        t.transform( source, result );
-    }
+	public static void transform(InputStream doc, URL xsltUrl, OutputStream out)
+			throws URISyntaxException, TransformerException {
+		StreamSource source = new StreamSource(doc);
+		StreamSource xslt = new StreamSource(new File(xsltUrl.toURI()));
+		TransformerFactory fac = TransformerFactory.newInstance();
+		Transformer t = fac.newTransformer(xslt);
+		Result result = new StreamResult(out);
+		t.transform(source, result);
+	}
 
 }

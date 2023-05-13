@@ -42,58 +42,57 @@ import org.deegree.geometry.standard.points.PointsArray;
 
 /**
  * Default implementation of {@link Geodesic} segments.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class DefaultGeodesic implements Geodesic {
 
-    private final Points controlPoints;
+	private final Points controlPoints;
 
-    /**
-     * Creates a new <code>DefaultGeodesic</code> instance from the given parameters.
-     * 
-     * @param p1
-     * @param p2
-     */
-    public DefaultGeodesic( Point p1, Point p2 ) {
-        controlPoints = new PointsArray( p1, p2 );
-    }
+	/**
+	 * Creates a new <code>DefaultGeodesic</code> instance from the given parameters.
+	 * @param p1
+	 * @param p2
+	 */
+	public DefaultGeodesic(Point p1, Point p2) {
+		controlPoints = new PointsArray(p1, p2);
+	}
 
-    @Override
-    public Point getPoint1() {
-        return controlPoints.get( 0 );
-    }
+	@Override
+	public Point getPoint1() {
+		return controlPoints.get(0);
+	}
 
-    @Override
-    public Point getPoint2() {
-        return controlPoints.get( 1 );
-    }
+	@Override
+	public Point getPoint2() {
+		return controlPoints.get(1);
+	}
 
-    @Override
-    public int getCoordinateDimension() {
-        return controlPoints.get( 0 ).getCoordinateDimension();
-    }
+	@Override
+	public int getCoordinateDimension() {
+		return controlPoints.get(0).getCoordinateDimension();
+	}
 
-    @Override
-    public Points getControlPoints() {
-        return controlPoints;
-    }
+	@Override
+	public Points getControlPoints() {
+		return controlPoints;
+	}
 
-    @Override
-    public Point getStartPoint() {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Point getStartPoint() {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public Point getEndPoint() {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Point getEndPoint() {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public CurveSegmentType getSegmentType() {
-        return CurveSegmentType.GEODESIC;
-    }
+	@Override
+	public CurveSegmentType getSegmentType() {
+		return CurveSegmentType.GEODESIC;
+	}
+
 }

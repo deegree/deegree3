@@ -43,45 +43,46 @@ import org.deegree.services.csw.AbstractCSWRequest;
 
 /**
  * Represents a <code>Transaction</code> request to a CSW.
- * 
+ *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author: thomas $
- * 
  * @version $Revision: $, $Date: $
  */
 public class Transaction extends AbstractCSWRequest {
 
-    List<TransactionOperation> operations;
+	List<TransactionOperation> operations;
 
-    String requestId;
+	String requestId;
 
-    boolean verboseRequest;
+	boolean verboseRequest;
 
-    public Transaction( Version version, List<TransactionOperation> operations, String requestId, boolean verboseRequest ) {
-        super( version, null, null, null );
-        this.operations = operations;
-        this.requestId = requestId;
-        this.verboseRequest = verboseRequest;
-    }
+	public Transaction(Version version, List<TransactionOperation> operations, String requestId,
+			boolean verboseRequest) {
+		super(version, null, null, null);
+		this.operations = operations;
+		this.requestId = requestId;
+		this.verboseRequest = verboseRequest;
+	}
 
-    /**
-     * @return the operations
-     */
-    public List<TransactionOperation> getOperations() {
-        return this.operations;
-    }
+	/**
+	 * @return the operations
+	 */
+	public List<TransactionOperation> getOperations() {
+		return this.operations;
+	}
 
-    /**
-     * @return the requestId
-     */
-    public String getRequestId() {
-        return requestId;
-    }
+	/**
+	 * @return the requestId
+	 */
+	public String getRequestId() {
+		return requestId;
+	}
 
-    /**
-     * @return the verboseRequest
-     */
-    public boolean isVerboseRequest() {
-        return verboseRequest;
-    }
+	/**
+	 * @return the verboseRequest
+	 */
+	public boolean isVerboseRequest() {
+		return verboseRequest;
+	}
+
 }

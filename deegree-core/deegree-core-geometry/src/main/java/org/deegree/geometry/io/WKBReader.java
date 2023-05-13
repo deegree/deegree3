@@ -48,27 +48,26 @@ import static org.deegree.geometry.utils.GeometryUtils.createFromJTS;
 /**
  * Reads {@link Geometry} objects encoded as Well-Known Binary (WKB).
  *
- * TODO re-implement without delegating to JTS TODO add support for non-SFS geometries (e.g. non-linear curves)
+ * TODO re-implement without delegating to JTS TODO add support for non-SFS geometries
+ * (e.g. non-linear curves)
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- *
  * @version $Revision$, $Date$
  */
 public class WKBReader {
 
-    public static Geometry read( byte[] wkb, ICRS crs )
-                            throws ParseException {
-        // org.locationtech.jts.io.WKBReader() is not thread safe
-        org.locationtech.jts.geom.Geometry jtsGeom = new org.locationtech.jts.io.WKBReader().read( wkb );
-        return createFromJTS( jtsGeom, crs );
-    }
+	public static Geometry read(byte[] wkb, ICRS crs) throws ParseException {
+		// org.locationtech.jts.io.WKBReader() is not thread safe
+		org.locationtech.jts.geom.Geometry jtsGeom = new org.locationtech.jts.io.WKBReader().read(wkb);
+		return createFromJTS(jtsGeom, crs);
+	}
 
-    public static Geometry read( InputStream is, ICRS crs )
-                            throws IOException, ParseException {
-        // org.locationtech.jts.io.WKBReader() is not thread safe
-        org.locationtech.jts.geom.Geometry jtsGeom = new org.locationtech.jts.io.WKBReader().read(
-                        new InputStreamInStream( is ) );
-        return createFromJTS( jtsGeom, crs );
-    }
+	public static Geometry read(InputStream is, ICRS crs) throws IOException, ParseException {
+		// org.locationtech.jts.io.WKBReader() is not thread safe
+		org.locationtech.jts.geom.Geometry jtsGeom = new org.locationtech.jts.io.WKBReader()
+			.read(new InputStreamInStream(is));
+		return createFromJTS(jtsGeom, crs);
+	}
+
 }

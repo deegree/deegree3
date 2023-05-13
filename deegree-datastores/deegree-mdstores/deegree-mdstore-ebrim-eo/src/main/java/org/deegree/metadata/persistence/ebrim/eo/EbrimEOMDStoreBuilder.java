@@ -63,72 +63,76 @@ import org.deegree.workspace.Workspace;
 
 /**
  * Responsible for building ebrim eo stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class EbrimEOMDStoreBuilder implements ResourceBuilder<MetadataStore<? extends MetadataRecord>> {
 
-    private ResourceMetadata<MetadataStore<? extends MetadataRecord>> metadata;
+	private ResourceMetadata<MetadataStore<? extends MetadataRecord>> metadata;
 
-    private Workspace workspace;
+	private Workspace workspace;
 
-    private EbrimEOMDStoreConfig storeConfig;
+	private EbrimEOMDStoreConfig storeConfig;
 
-    public EbrimEOMDStoreBuilder( ResourceMetadata<MetadataStore<? extends MetadataRecord>> metadata,
-                                  Workspace workspace, EbrimEOMDStoreConfig storeConfig ) {
-        this.metadata = metadata;
-        this.workspace = workspace;
-        this.storeConfig = storeConfig;
-    }
+	public EbrimEOMDStoreBuilder(ResourceMetadata<MetadataStore<? extends MetadataRecord>> metadata,
+			Workspace workspace, EbrimEOMDStoreConfig storeConfig) {
+		this.metadata = metadata;
+		this.workspace = workspace;
+		this.storeConfig = storeConfig;
+	}
 
-    @Override
-    public MetadataStore<? extends MetadataRecord> build() {
-        File queriesDir = null;
-        String dir = null;
-        try {
-            dir = storeConfig.getAdhocQueriesDirectory();
-            if ( dir != null ) {
-                URL resolved = metadata.getLocation().resolveToUrl( dir );
-                queriesDir = new File( resolved.toURI() );
-            }
-        } catch ( URISyntaxException e ) {
-            String msg = "Could not resolve path to the queries directory: " + dir;
-            throw new ResourceInitException( msg, e );
-        }
+	@Override
+	public MetadataStore<? extends MetadataRecord> build() {
+		File queriesDir = null;
+		String dir = null;
+		try {
+			dir = storeConfig.getAdhocQueriesDirectory();
+			if (dir != null) {
+				URL resolved = metadata.getLocation().resolveToUrl(dir);
+				queriesDir = new File(resolved.toURI());
+			}
+		}
+		catch (URISyntaxException e) {
+			String msg = "Could not resolve path to the queries directory: " + dir;
+			throw new ResourceInitException(msg, e);
+		}
 
-        String profile = null;
-        RegistryPackage rp = null;
-        profile = storeConfig.getExtensionPackage();
-        Date lastModified = null;
-        try {
-            if ( profile != null ) {
-                URL resolved = metadata.getLocation().resolveToUrl( profile );
-                File f = new File( resolved.toURI() );
-                lastModified = new Date( f.lastModified() );
-                XMLInputFactory inf = XMLInputFactory.newInstance();
-                XMLStreamReader reader = inf.createXMLStreamReader( resolved.openStream() );
-                rp = new RegistryPackage( reader );
-            }
-        } catch ( MalformedURLException e ) {
-            String msg = "Could not resolve path to the profile: " + profile;
-            throw new ResourceInitException( msg, e );
-        } catch ( XMLStreamException e ) {
-            String msg = "Could not resolve profile: " + profile;
-            throw new ResourceInitException( msg, e );
-        } catch ( IOException e ) {
-            String msg = "Could not resolve profile: " + profile;
-            throw new ResourceInitException( msg, e );
-        } catch ( URISyntaxException e ) {
-            String msg = "Could not resolve path to the profile: " + profile;
-            throw new ResourceInitException( msg, e );
-        }
-        long queryTimeout = storeConfig.getQueryTimeout() == null ? 0 : storeConfig.getQueryTimeout().intValue();
+		String profile = null;
+		RegistryPackage rp = null;
+		profile = storeConfig.getExtensionPackage();
+		Date lastModified = null;
+		try {
+			if (profile != null) {
+				URL resolved = metadata.getLocation().resolveToUrl(profile);
+				File f = new File(resolved.toURI());
+				lastModified = new Date(f.lastModified());
+				XMLInputFactory inf = XMLInputFactory.newInstance();
+				XMLStreamReader reader = inf.createXMLStreamReader(resolved.openStream());
+				rp = new RegistryPackage(reader);
+			}
+		}
+		catch (MalformedURLException e) {
+			String msg = "Could not resolve path to the profile: " + profile;
+			throw new ResourceInitException(msg, e);
+		}
+		catch (XMLStreamException e) {
+			String msg = "Could not resolve profile: " + profile;
+			throw new ResourceInitException(msg, e);
+		}
+		catch (IOException e) {
+			String msg = "Could not resolve profile: " + profile;
+			throw new ResourceInitException(msg, e);
+		}
+		catch (URISyntaxException e) {
+			String msg = "Could not resolve path to the profile: " + profile;
+			throw new ResourceInitException(msg, e);
+		}
+		long queryTimeout = storeConfig.getQueryTimeout() == null ? 0 : storeConfig.getQueryTimeout().intValue();
 
-        EbrimEOMDStore store = new EbrimEOMDStore( storeConfig.getJDBCConnId(), queriesDir, rp, lastModified,
-                                                   queryTimeout, metadata, workspace );
-        return store;
-    }
+		EbrimEOMDStore store = new EbrimEOMDStore(storeConfig.getJDBCConnId(), queriesDir, rp, lastModified,
+				queryTimeout, metadata, workspace);
+		return store;
+	}
 
 }

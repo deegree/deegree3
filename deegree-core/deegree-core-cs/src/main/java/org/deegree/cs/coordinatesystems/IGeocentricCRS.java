@@ -37,10 +37,9 @@ package org.deegree.cs.coordinatesystems;
 
 /**
  * Interface describing a GeocentricCRS
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  * @author last edited by: $Author: lyn $
- * 
  * @version $Revision: $, $Date: $
  */
 public interface IGeocentricCRS extends ICRS {

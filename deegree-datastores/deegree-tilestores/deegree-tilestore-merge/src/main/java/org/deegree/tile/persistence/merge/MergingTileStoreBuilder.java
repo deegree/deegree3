@@ -41,40 +41,39 @@ import org.deegree.workspace.Workspace;
 
 /**
  * {@link ResourceBuilder} for {@link MergingTileStore}.
- * 
+ *
  * @author <a href="mailto:Reijer.Copier@idgis.nl">Reijer Copier</a>
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * 
  * @since 3.4
  */
 class MergingTileStoreBuilder implements ResourceBuilder<TileStore> {
 
-    private final org.deegree.tile.persistence.merge.jaxb.MergingTileStore cfg;
+	private final org.deegree.tile.persistence.merge.jaxb.MergingTileStore cfg;
 
-    private final ResourceMetadata<TileStore> metadata;
+	private final ResourceMetadata<TileStore> metadata;
 
-    private final Workspace workspace;
+	private final Workspace workspace;
 
-    MergingTileStoreBuilder( org.deegree.tile.persistence.merge.jaxb.MergingTileStore cfg,
-                             ResourceMetadata<TileStore> metadata, Workspace workspace ) {
-        this.cfg = cfg;
-        this.metadata = metadata;
-        this.workspace = workspace;
-    }
+	MergingTileStoreBuilder(org.deegree.tile.persistence.merge.jaxb.MergingTileStore cfg,
+			ResourceMetadata<TileStore> metadata, Workspace workspace) {
+		this.cfg = cfg;
+		this.metadata = metadata;
+		this.workspace = workspace;
+	}
 
-    @Override
-    public TileStore build()
-                            throws ResourceInitException {
-        List<TileStore> tileStores = new ArrayList<TileStore>();
-        TileMatrixSet tileMatrix = workspace.getResource( TileMatrixSetProvider.class, cfg.getTileMatrixSetId() );
-        for ( String tileStoreId : cfg.getTileStoreId() ) {
-            TileStore tileStore = workspace.getResource( TileStoreProvider.class, tileStoreId );
-            if ( tileStore == null ) {
-                throw new ResourceInitException( "Cannot build MergingTileStore: No tile store with id '" + tileStoreId
-                                                 + "' in workspace." );
-            }
-            tileStores.add( tileStore );
-        }
-        return new MergingTileStore( metadata, tileMatrix, tileStores );
-    }
+	@Override
+	public TileStore build() throws ResourceInitException {
+		List<TileStore> tileStores = new ArrayList<TileStore>();
+		TileMatrixSet tileMatrix = workspace.getResource(TileMatrixSetProvider.class, cfg.getTileMatrixSetId());
+		for (String tileStoreId : cfg.getTileStoreId()) {
+			TileStore tileStore = workspace.getResource(TileStoreProvider.class, tileStoreId);
+			if (tileStore == null) {
+				throw new ResourceInitException(
+						"Cannot build MergingTileStore: No tile store with id '" + tileStoreId + "' in workspace.");
+			}
+			tileStores.add(tileStore);
+		}
+		return new MergingTileStore(metadata, tileMatrix, tileStores);
+	}
+
 }

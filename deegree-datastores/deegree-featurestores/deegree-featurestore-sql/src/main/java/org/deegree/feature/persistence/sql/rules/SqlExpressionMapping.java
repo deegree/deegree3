@@ -40,32 +40,29 @@ import org.deegree.feature.persistence.sql.jaxb.CustomConverterJAXB;
 import org.deegree.filter.expression.ValueReference;
 
 /**
- * {@link Mapping} of a particle to an SQL expression (e.g. a constant or a CASE statement).
- * 
- * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
+ * {@link Mapping} of a particle to an SQL expression (e.g. a constant or a CASE
+ * statement).
  *
+ * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @since 3.4
  */
 public class SqlExpressionMapping<T extends TypedObjectNode> extends Mapping {
 
-    private final String sql;
+	private final String sql;
 
-    /**
-     * Creates a new {@link SqlExpressionMapping} instance.
-     * 
-     * @param path
-     *            relative xpath expression, must not be <code>null</code>
-     * @param sql
-     *            the SQL expression, must not be <code>null</code>
-     */
-    public SqlExpressionMapping( ValueReference path, final String sql, CustomConverterJAXB converter ) {
-        super( path, false, null, converter );
-        this.sql = sql;
-    }
+	/**
+	 * Creates a new {@link SqlExpressionMapping} instance.
+	 * @param path relative xpath expression, must not be <code>null</code>
+	 * @param sql the SQL expression, must not be <code>null</code>
+	 */
+	public SqlExpressionMapping(ValueReference path, final String sql, CustomConverterJAXB converter) {
+		super(path, false, null, converter);
+		this.sql = sql;
+	}
 
-    public SqlExpressionMapping( ValueReference path, final String sql ) {
-        super( path, false, null, null );
-        this.sql = sql;
-    }
+	public SqlExpressionMapping(ValueReference path, final String sql) {
+		super(path, false, null, null);
+		this.sql = sql;
+	}
 
 }

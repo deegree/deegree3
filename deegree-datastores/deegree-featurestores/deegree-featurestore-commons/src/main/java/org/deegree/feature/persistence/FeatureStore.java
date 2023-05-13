@@ -54,216 +54,189 @@ import org.deegree.workspace.Resource;
 import java.util.Date;
 
 /**
- * Base interface of the {@link Feature} persistence layer, provides access to stored {@link Feature} instances.
+ * Base interface of the {@link Feature} persistence layer, provides access to stored
+ * {@link Feature} instances.
  * <p>
- * Note that a {@link FeatureStore} instance is always associated with exactly one {@link AppSchema} instance.
+ * Note that a {@link FeatureStore} instance is always associated with exactly one
+ * {@link AppSchema} instance.
  * </p>
  * <p>
- * NOTE: Implementations must be thread-safe, as {@link FeatureStore} instances are usually used in multiple threads
- * concurrently.
+ * NOTE: Implementations must be thread-safe, as {@link FeatureStore} instances are
+ * usually used in multiple threads concurrently.
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- * 
  * @version $Revision: $, $Date: $
  */
 public interface FeatureStore extends Resource {
 
-    /**
-     * Returns whether the store is currently able to perform operations.
-     * 
-     * @return true, if the store is functional, false otherwise
-     */
-    boolean isAvailable();
+	/**
+	 * Returns whether the store is currently able to perform operations.
+	 * @return true, if the store is functional, false otherwise
+	 */
+	boolean isAvailable();
 
-    /**
-     * Returns the application schema that this {@link FeatureStore} serves.
-     * 
-     * @return the served application schema, never <code>null</code>
-     */
-    AppSchema getSchema();
+	/**
+	 * Returns the application schema that this {@link FeatureStore} serves.
+	 * @return the served application schema, never <code>null</code>
+	 */
+	AppSchema getSchema();
 
-    /**
-     * Returns whether the specified feature type is actually mapped in the backend.
-     * 
-     * @param ftName
-     *            feature type name, must not be <code>null</code>
-     * @return <code>true</code>, if the feature type is mapped, <code>false</code> otherwise
-     */
-    boolean isMapped( QName ftName );
+	/**
+	 * Returns whether the specified feature type is actually mapped in the backend.
+	 * @param ftName feature type name, must not be <code>null</code>
+	 * @return <code>true</code>, if the feature type is mapped, <code>false</code>
+	 * otherwise
+	 */
+	boolean isMapped(QName ftName);
 
-    /**
-     * Returns whether the store supports evaluation of maxFeatures and startIndex.
-     *
-     * @param queries
-     *            the queries to check if evaluation of maxFeatures and startIndex is applicable, must not be <code>null</code>
-     * @return <code>true</code>, if evaluation of maxFeatures and startIndex is applicable, <code>false</code> otherwise
-     */
-    boolean isMaxFeaturesAndStartIndexApplicable( Query[] queries );
+	/**
+	 * Returns whether the store supports evaluation of maxFeatures and startIndex.
+	 * @param queries the queries to check if evaluation of maxFeatures and startIndex is
+	 * applicable, must not be <code>null</code>
+	 * @return <code>true</code>, if evaluation of maxFeatures and startIndex is
+	 * applicable, <code>false</code> otherwise
+	 */
+	boolean isMaxFeaturesAndStartIndexApplicable(Query[] queries);
 
-    /**
-     * Returns the envelope for all stored features of the given type.
-     * <p>
-     * NOTE: This method may return incorrect (cached) results. Use {@link #calcEnvelope(QName)} to force the
-     * recalculation of the {@link Envelope}.
-     * </p>
-     * 
-     * @param ftName
-     *            name of the feature type, must not be <code>null</code> and must be served by this store
-     * @return the envelope (using the storage CRS), or <code>null</code> if the feature type does not have an envelope
-     *         (no geometry properties or no instances)
-     * @throws FeatureStoreException
-     */
-    Envelope getEnvelope( QName ftName )
-                            throws FeatureStoreException;
+	/**
+	 * Returns the envelope for all stored features of the given type.
+	 * <p>
+	 * NOTE: This method may return incorrect (cached) results. Use
+	 * {@link #calcEnvelope(QName)} to force the recalculation of the {@link Envelope}.
+	 * </p>
+	 * @param ftName name of the feature type, must not be <code>null</code> and must be
+	 * served by this store
+	 * @return the envelope (using the storage CRS), or <code>null</code> if the feature
+	 * type does not have an envelope (no geometry properties or no instances)
+	 * @throws FeatureStoreException
+	 */
+	Envelope getEnvelope(QName ftName) throws FeatureStoreException;
 
-    /**
-     * Recalculates the envelope for all stored features of the given type.
-     * <p>
-     * NOTE: This method may potentially be expensive. Depending on the implementation, it may involve fetching all
-     * features of the specified type.
-     * </p>
-     * 
-     * @param ftName
-     *            name of the feature type, must not be <code>null</code> and must be served by this store
-     * @return the envelope (using the storage CRS), or <code>null</code> if the feature type does not have an envelope
-     *         (no geometry properties or no instances)
-     * @throws FeatureStoreException
-     */
-    Envelope calcEnvelope( QName ftName )
-                            throws FeatureStoreException;
+	/**
+	 * Recalculates the envelope for all stored features of the given type.
+	 * <p>
+	 * NOTE: This method may potentially be expensive. Depending on the implementation, it
+	 * may involve fetching all features of the specified type.
+	 * </p>
+	 * @param ftName name of the feature type, must not be <code>null</code> and must be
+	 * served by this store
+	 * @return the envelope (using the storage CRS), or <code>null</code> if the feature
+	 * type does not have an envelope (no geometry properties or no instances)
+	 * @throws FeatureStoreException
+	 */
+	Envelope calcEnvelope(QName ftName) throws FeatureStoreException;
 
-    /**
-     * Returns the temporal extent for all stored features of the given type.
-     * <p>
-     * NOTE: This method may return incorrect (cached) results. Use {@link #calcTemporalExtent(QName,QName)} to force the
-     * recalculation of the temporal extent.
-     * </p>
-     *
-     * @param ftName
-     *            name of the feature type, must not be <code>null</code> and must be served by this store
-     * @param datetimeProperty
-     *            the name of the date time property must not be <code>null</code> and must be served by the feature store
-     * @return the min and max values of the temporal extent, or <code>null</code> if the temporal extent could not be calculated
-     * @throws FeatureStoreException
-     */
-    Pair<Date, Date> getTemporalExtent( QName ftName, QName datetimeProperty )
-                    throws FeatureStoreException;
+	/**
+	 * Returns the temporal extent for all stored features of the given type.
+	 * <p>
+	 * NOTE: This method may return incorrect (cached) results. Use
+	 * {@link #calcTemporalExtent(QName,QName)} to force the recalculation of the temporal
+	 * extent.
+	 * </p>
+	 * @param ftName name of the feature type, must not be <code>null</code> and must be
+	 * served by this store
+	 * @param datetimeProperty the name of the date time property must not be
+	 * <code>null</code> and must be served by the feature store
+	 * @return the min and max values of the temporal extent, or <code>null</code> if the
+	 * temporal extent could not be calculated
+	 * @throws FeatureStoreException
+	 */
+	Pair<Date, Date> getTemporalExtent(QName ftName, QName datetimeProperty) throws FeatureStoreException;
 
-    /**
-     * Recalculates the temporal extent for all stored features of the given type.
-     * <p>
-     * NOTE: This method may potentially be expensive. Depending on the implementation, it may involve fetching all
-     * features of the specified type.
-     * </p>
-     *
-     * @param ftName
-     *            name of the feature type, must not be <code>null</code> and must be served by this store
-     * @param datetimeProperty
-     *            the name of the date time property must not be <code>null</code> and must be served by the feature store
-     * @return the min and max values of the temporal extent, or <code>null</code> if the temporal extent could not be calculated
-     * @throws FeatureStoreException
-     */
-    Pair<Date, Date> calcTemporalExtent( QName ftName, QName datetimeProperty )
-                    throws FeatureStoreException;
+	/**
+	 * Recalculates the temporal extent for all stored features of the given type.
+	 * <p>
+	 * NOTE: This method may potentially be expensive. Depending on the implementation, it
+	 * may involve fetching all features of the specified type.
+	 * </p>
+	 * @param ftName name of the feature type, must not be <code>null</code> and must be
+	 * served by this store
+	 * @param datetimeProperty the name of the date time property must not be
+	 * <code>null</code> and must be served by the feature store
+	 * @return the min and max values of the temporal extent, or <code>null</code> if the
+	 * temporal extent could not be calculated
+	 * @throws FeatureStoreException
+	 */
+	Pair<Date, Date> calcTemporalExtent(QName ftName, QName datetimeProperty) throws FeatureStoreException;
 
-    /**
-     * Performs the given query and returns the matching features as a {@link FeatureInputStream}.
-     * 
-     * @param query
-     *            query to be performed, must not be <code>null</code>
-     * @return matching features, never <code>null</code>
-     * @throws FeatureStoreException
-     *             if the query could not be performed
-     * @throws FilterEvaluationException
-     *             if the filter contained in the query could not be evaluated
-     */
-    FeatureInputStream query( Query query )
-                            throws FeatureStoreException, FilterEvaluationException;
+	/**
+	 * Performs the given query and returns the matching features as a
+	 * {@link FeatureInputStream}.
+	 * @param query query to be performed, must not be <code>null</code>
+	 * @return matching features, never <code>null</code>
+	 * @throws FeatureStoreException if the query could not be performed
+	 * @throws FilterEvaluationException if the filter contained in the query could not be
+	 * evaluated
+	 */
+	FeatureInputStream query(Query query) throws FeatureStoreException, FilterEvaluationException;
 
-    /**
-     * Performs the given queries and returns the matching features as a {@link FeatureInputStream}.
-     * 
-     * @param queries
-     *            queries to be performed, must not be <code>null</code> and contain at least one entry
-     * @return matching features, never <code>null</code>
-     * @throws FeatureStoreException
-     *             if the query could not be performed
-     * @throws FilterEvaluationException
-     *             if the filter contained in the query could not be evaluated
-     */
-    FeatureInputStream query( Query[] queries )
-                            throws FeatureStoreException, FilterEvaluationException;
+	/**
+	 * Performs the given queries and returns the matching features as a
+	 * {@link FeatureInputStream}.
+	 * @param queries queries to be performed, must not be <code>null</code> and contain
+	 * at least one entry
+	 * @return matching features, never <code>null</code>
+	 * @throws FeatureStoreException if the query could not be performed
+	 * @throws FilterEvaluationException if the filter contained in the query could not be
+	 * evaluated
+	 */
+	FeatureInputStream query(Query[] queries) throws FeatureStoreException, FilterEvaluationException;
 
-    /**
-     * Returns the number of features that are matched by the given query.
-     * 
-     * @param query
-     *            query to be performed, must not be <code>null</code>
-     * @return number of matching featuress
-     * @throws FeatureStoreException
-     *             if the query could not be performed
-     * @throws FilterEvaluationException
-     *             if the filter contained in the query could not be evaluated
-     */
-    int queryHits( Query query )
-                            throws FeatureStoreException, FilterEvaluationException;
+	/**
+	 * Returns the number of features that are matched by the given query.
+	 * @param query query to be performed, must not be <code>null</code>
+	 * @return number of matching featuress
+	 * @throws FeatureStoreException if the query could not be performed
+	 * @throws FilterEvaluationException if the filter contained in the query could not be
+	 * evaluated
+	 */
+	int queryHits(Query query) throws FeatureStoreException, FilterEvaluationException;
 
-    /**
-     * Returns the number of features that are matched by the given queries.
-     * 
-     * @param queries
-     *            queries to be performed, must not be <code>null</code> and contain at least one entry
-     * @return number of matching features, one entry per query
-     * @throws FeatureStoreException
-     *             if the query could not be performed
-     * @throws FilterEvaluationException
-     *             if the filter contained in the query could not be evaluated
-     */
-    int[] queryHits( Query[] queries )
-                            throws FeatureStoreException, FilterEvaluationException;
+	/**
+	 * Returns the number of features that are matched by the given queries.
+	 * @param queries queries to be performed, must not be <code>null</code> and contain
+	 * at least one entry
+	 * @return number of matching features, one entry per query
+	 * @throws FeatureStoreException if the query could not be performed
+	 * @throws FilterEvaluationException if the filter contained in the query could not be
+	 * evaluated
+	 */
+	int[] queryHits(Query[] queries) throws FeatureStoreException, FilterEvaluationException;
 
-    /**
-     * Retrieves the stored object with a certain id.
-     * 
-     * @param id
-     *            identifier of the object to be retrieved
-     * @return the stored object (currently either a {@link Feature} or a {@link Geometry}) or <code>null</code> if no
-     *         object with the given id is known
-     * @throws FeatureStoreException
-     *             if the query could not be performed
-     */
-    GMLObject getObjectById( String id )
-                            throws FeatureStoreException;
+	/**
+	 * Retrieves the stored object with a certain id.
+	 * @param id identifier of the object to be retrieved
+	 * @return the stored object (currently either a {@link Feature} or a
+	 * {@link Geometry}) or <code>null</code> if no object with the given id is known
+	 * @throws FeatureStoreException if the query could not be performed
+	 */
+	GMLObject getObjectById(String id) throws FeatureStoreException;
 
-    /**
-     * Acquires transactional access to the feature store.
-     * 
-     * @return transaction object that allows to perform transactions operations on the datastore, never
-     *         <code>null</code>
-     * @throws FeatureStoreException
-     *             if the transactional access could not be acquired or is not implemented for this {@link FeatureStore}
-     */
-    FeatureStoreTransaction acquireTransaction()
-                            throws FeatureStoreException;
+	/**
+	 * Acquires transactional access to the feature store.
+	 * @return transaction object that allows to perform transactions operations on the
+	 * datastore, never <code>null</code>
+	 * @throws FeatureStoreException if the transactional access could not be acquired or
+	 * is not implemented for this {@link FeatureStore}
+	 */
+	FeatureStoreTransaction acquireTransaction() throws FeatureStoreException;
 
-    /**
-     * Returns the associated {@link LockManager}.
-     * 
-     * @return the associated {@link LockManager} instance, or <code>null</code> if the {@link FeatureStore} does not
-     *         implement locking
-     * @throws FeatureStoreException
-     *             if the lock manager could not be acquired
-     */
-    LockManager getLockManager()
-                            throws FeatureStoreException;
+	/**
+	 * Returns the associated {@link LockManager}.
+	 * @return the associated {@link LockManager} instance, or <code>null</code> if the
+	 * {@link FeatureStore} does not implement locking
+	 * @throws FeatureStoreException if the lock manager could not be acquired
+	 */
+	LockManager getLockManager() throws FeatureStoreException;
 
-    /**
-     * Returns the CRS of all stored features, if all features and geometries are in the same CRS.
-     *
-     * @return the CRS of all stored features, <code>null</code> if not known or the features of geometries are stored in different CRS.
-     */
-    ICRS getStorageCrs();
+	/**
+	 * Returns the CRS of all stored features, if all features and geometries are in the
+	 * same CRS.
+	 * @return the CRS of all stored features, <code>null</code> if not known or the
+	 * features of geometries are stored in different CRS.
+	 */
+	ICRS getStorageCrs();
 
 }

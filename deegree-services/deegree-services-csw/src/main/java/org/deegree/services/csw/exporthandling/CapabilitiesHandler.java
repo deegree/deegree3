@@ -39,15 +39,13 @@ import javax.xml.stream.XMLStreamException;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.org">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
- * 
  * @version $Revision: $, $Date: $
  */
 public interface CapabilitiesHandler {
 
-    void export()
-                            throws XMLStreamException;
+	void export() throws XMLStreamException;
 
 }

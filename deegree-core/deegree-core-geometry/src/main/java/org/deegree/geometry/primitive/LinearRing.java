@@ -40,16 +40,15 @@ package org.deegree.geometry.primitive;
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author$
- *
  * @version $Revision$, $Date$
  */
 public interface LinearRing extends Ring {
 
-    /**
-     * Must always return {@link Ring.RingType#LinearRing}.
-     *
-     * @return {@link Ring.RingType#LinearRing}
-     */
-    @Override
-    public RingType getRingType();
+	/**
+	 * Must always return {@link Ring.RingType#LinearRing}.
+	 * @return {@link Ring.RingType#LinearRing}
+	 */
+	@Override
+	public RingType getRingType();
+
 }

@@ -38,62 +38,60 @@ package org.deegree.layer;
 import org.deegree.commons.utils.CollectionUtils.Mapper;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
- * 
  * @version $Revision: $, $Date: $
  */
 public class LayerRef {
 
-    private String name;
+	private String name;
 
-    private Layer layer;
+	private Layer layer;
 
-    public LayerRef( String name ) {
-        this.name = name;
-    }
+	public LayerRef(String name) {
+		this.name = name;
+	}
 
-    public LayerRef( Layer layer ) {
-        this.layer = layer;
-        this.name = layer.getMetadata().getName();
-    }
+	public LayerRef(Layer layer) {
+		this.layer = layer;
+		this.name = layer.getMetadata().getName();
+	}
 
-    public boolean isResolved() {
-        return layer != null;
-    }
+	public boolean isResolved() {
+		return layer != null;
+	}
 
-    public Layer getLayer() {
-        return layer;
-    }
+	public Layer getLayer() {
+		return layer;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    @Override
-    public boolean equals( Object other ) {
-        if ( !( other instanceof LayerRef ) ) {
-            return false;
-        }
-        return name.equals( ( (LayerRef) other ).getName() );
-    }
+	@Override
+	public boolean equals(Object other) {
+		if (!(other instanceof LayerRef)) {
+			return false;
+		}
+		return name.equals(((LayerRef) other).getName());
+	}
 
-    @Override
-    public int hashCode() {
-        return name.hashCode();
-    }
+	@Override
+	public int hashCode() {
+		return name.hashCode();
+	}
 
-    @Override
-    public String toString() {
-        return name;
-    }
+	@Override
+	public String toString() {
+		return name;
+	}
 
-    public static final Mapper<LayerRef, String> FROM_NAMES = new Mapper<LayerRef, String>() {
-        @Override
-        public LayerRef apply( String u ) {
-            return new LayerRef( u );
-        }
-    };
+	public static final Mapper<LayerRef, String> FROM_NAMES = new Mapper<LayerRef, String>() {
+		@Override
+		public LayerRef apply(String u) {
+			return new LayerRef(u);
+		}
+	};
 
 }

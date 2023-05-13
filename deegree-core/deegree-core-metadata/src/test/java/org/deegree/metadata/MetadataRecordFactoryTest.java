@@ -54,32 +54,29 @@ import org.junit.Test;
  */
 public class MetadataRecordFactoryTest {
 
-    @Test
-    public void testCreate()
-                            throws Exception {
-        XMLStreamReader xmlStream = createStream( "metadataRecord.xml" );
-        MetadataRecord record = MetadataRecordFactory.create( xmlStream );
+	@Test
+	public void testCreate() throws Exception {
+		XMLStreamReader xmlStream = createStream("metadataRecord.xml");
+		MetadataRecord record = MetadataRecordFactory.create(xmlStream);
 
-        assertThat( record, instanceOf( ISORecord.class ) );
-        assertThat( record.getIdentifier(), is( "655e5998-a20e-66b5-c888-00005553421" ) );
-    }
+		assertThat(record, instanceOf(ISORecord.class));
+		assertThat(record.getIdentifier(), is("655e5998-a20e-66b5-c888-00005553421"));
+	}
 
-    @Test
-    public void testCreate_DuplicatedNamespace()
-                            throws Exception {
-        XMLStreamReader xmlStream = createStream( "metadataRecord_namespaceDuplicated.xml" );
-        MetadataRecord record = MetadataRecordFactory.create( xmlStream );
+	@Test
+	public void testCreate_DuplicatedNamespace() throws Exception {
+		XMLStreamReader xmlStream = createStream("metadataRecord_namespaceDuplicated.xml");
+		MetadataRecord record = MetadataRecordFactory.create(xmlStream);
 
-        assertThat( record, instanceOf( ISORecord.class ) );
-        assertThat( record.getIdentifier(), is( "655e5998-a20e-66b5-c888-00005553499" ) );
-    }
+		assertThat(record, instanceOf(ISORecord.class));
+		assertThat(record.getIdentifier(), is("655e5998-a20e-66b5-c888-00005553499"));
+	}
 
-    private XMLStreamReader createStream( String name )
-                            throws XMLStreamException, FactoryConfigurationError {
-        InputStream resourceAsStream = MetadataRecordFactoryTest.class.getResourceAsStream( name );
-        XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( resourceAsStream );
-        xmlStream.nextTag();
-        return xmlStream;
-    }
+	private XMLStreamReader createStream(String name) throws XMLStreamException, FactoryConfigurationError {
+		InputStream resourceAsStream = MetadataRecordFactoryTest.class.getResourceAsStream(name);
+		XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader(resourceAsStream);
+		xmlStream.nextTag();
+		return xmlStream;
+	}
 
 }

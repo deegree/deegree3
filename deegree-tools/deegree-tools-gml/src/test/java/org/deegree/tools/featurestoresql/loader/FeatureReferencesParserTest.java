@@ -32,63 +32,60 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(classes = { FeatureReferencesParserTestConfig.class })
 public class FeatureReferencesParserTest {
 
-    @Autowired
-    private JobLauncherTestUtils jobLauncherTestUtils;
+	@Autowired
+	private JobLauncherTestUtils jobLauncherTestUtils;
 
-    @Test
-    public void testProcess_cadastralparcels()
-                            throws Exception {
-        JobParameters jobParameters = createJobParameters( "cadastralparcels.xml" );
-        ExecutionContext executionContext = new ExecutionContext();
-        JobExecution jobExecution = jobLauncherTestUtils.launchStep( "FeatureReferencesParserTestStep", jobParameters,
-                                                                     executionContext );
+	@Test
+	public void testProcess_cadastralparcels() throws Exception {
+		JobParameters jobParameters = createJobParameters("cadastralparcels.xml");
+		ExecutionContext executionContext = new ExecutionContext();
+		JobExecution jobExecution = jobLauncherTestUtils.launchStep("FeatureReferencesParserTestStep", jobParameters,
+				executionContext);
 
-        Collection<StepExecution> stepExecutions = jobExecution.getStepExecutions();
-        assertThat( stepExecutions.size(), is( 1 ) );
+		Collection<StepExecution> stepExecutions = jobExecution.getStepExecutions();
+		assertThat(stepExecutions.size(), is(1));
 
-        ExecutionContext stepExecutionContext = stepExecutions.iterator().next().getExecutionContext();
+		ExecutionContext stepExecutionContext = stepExecutions.iterator().next().getExecutionContext();
 
-        List<String> featureIds = (List<String>) stepExecutionContext.get( FeatureReferencesParser.FEATURE_IDS );
-        assertThat( featureIds, is( notNullValue() ) );
-        assertThat( featureIds.size(), is( 5 ) );
+		List<String> featureIds = (List<String>) stepExecutionContext.get(FeatureReferencesParser.FEATURE_IDS);
+		assertThat(featureIds, is(notNullValue()));
+		assertThat(featureIds.size(), is(5));
 
-        List<String> referenceIds = (List<String>) stepExecutionContext.get( FeatureReferencesParser.REFERENCE_IDS );
-        assertThat( referenceIds, is( notNullValue() ) );
-        assertThat( referenceIds.size(), is( 0 ) );
-    }
+		List<String> referenceIds = (List<String>) stepExecutionContext.get(FeatureReferencesParser.REFERENCE_IDS);
+		assertThat(referenceIds, is(notNullValue()));
+		assertThat(referenceIds.size(), is(0));
+	}
 
-    @Test
-    public void testProcess_cadastralzonings()
-                            throws Exception {
-        JobParameters jobParameters = createJobParameters( "cadastralzonings.xml" );
-        ExecutionContext executionContext = new ExecutionContext();
-        JobExecution jobExecution = jobLauncherTestUtils.launchStep( "FeatureReferencesParserTestStep", jobParameters,
-                                                                     executionContext );
+	@Test
+	public void testProcess_cadastralzonings() throws Exception {
+		JobParameters jobParameters = createJobParameters("cadastralzonings.xml");
+		ExecutionContext executionContext = new ExecutionContext();
+		JobExecution jobExecution = jobLauncherTestUtils.launchStep("FeatureReferencesParserTestStep", jobParameters,
+				executionContext);
 
-        Collection<StepExecution> stepExecutions = jobExecution.getStepExecutions();
-        assertThat( stepExecutions.size(), is( 1 ) );
+		Collection<StepExecution> stepExecutions = jobExecution.getStepExecutions();
+		assertThat(stepExecutions.size(), is(1));
 
-        ExecutionContext stepExecutionContext = stepExecutions.iterator().next().getExecutionContext();
+		ExecutionContext stepExecutionContext = stepExecutions.iterator().next().getExecutionContext();
 
-        List<String> featureIds = (List<String>) stepExecutionContext.get( FeatureReferencesParser.FEATURE_IDS );
-        assertThat( featureIds, is( notNullValue() ) );
-        assertThat( featureIds.size(), is( 2 ) );
+		List<String> featureIds = (List<String>) stepExecutionContext.get(FeatureReferencesParser.FEATURE_IDS);
+		assertThat(featureIds, is(notNullValue()));
+		assertThat(featureIds.size(), is(2));
 
-        List<String> referenceIds = (List<String>) stepExecutionContext.get( FeatureReferencesParser.REFERENCE_IDS );
-        assertThat( referenceIds, is( notNullValue() ) );
-        assertThat( referenceIds.size(), is( 1 ) );
-    }
+		List<String> referenceIds = (List<String>) stepExecutionContext.get(FeatureReferencesParser.REFERENCE_IDS);
+		assertThat(referenceIds, is(notNullValue()));
+		assertThat(referenceIds.size(), is(1));
+	}
 
-    private JobParameters createJobParameters( String resourceName )
-                            throws IOException {
-        JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
-        InputStream resourceAsStream = FeatureReferencesParserTest.class.getResourceAsStream( resourceName );
-        File file = File.createTempFile( "FeatureReferencesParserTest", ".xml" );
-        FileOutputStream fos = new FileOutputStream( file );
-        IOUtils.copy( resourceAsStream, fos );
-        String pathToFile = file.toString();
-        fos.close();
-        return jobParametersBuilder.addString( "pathToFile", pathToFile ).addDate( "date", new Date() ).toJobParameters();
-    }
+	private JobParameters createJobParameters(String resourceName) throws IOException {
+		JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
+		InputStream resourceAsStream = FeatureReferencesParserTest.class.getResourceAsStream(resourceName);
+		File file = File.createTempFile("FeatureReferencesParserTest", ".xml");
+		FileOutputStream fos = new FileOutputStream(file);
+		IOUtils.copy(resourceAsStream, fos);
+		String pathToFile = file.toString();
+		fos.close();
+		return jobParametersBuilder.addString("pathToFile", pathToFile).addDate("date", new Date()).toJobParameters();
+	}
 
 }

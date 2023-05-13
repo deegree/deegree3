@@ -48,11 +48,11 @@ import org.deegree.geometry.primitive.Solid;
  */
 public interface MultiSolid extends MultiGeometry<Solid> {
 
-    /**
-     * The volume of all contained {@link Solid}s measured in units of the used {@link CRS}.
-     *
-     * @return volume
-     */
-    public double getVolume();
+	/**
+	 * The volume of all contained {@link Solid}s measured in units of the used
+	 * {@link CRS}.
+	 * @return volume
+	 */
+	public double getVolume();
 
 }

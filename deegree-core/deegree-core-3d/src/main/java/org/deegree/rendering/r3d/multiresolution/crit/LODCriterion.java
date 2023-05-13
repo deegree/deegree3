@@ -41,38 +41,37 @@ import org.deegree.rendering.r3d.multiresolution.SelectiveRefinement;
 import org.deegree.rendering.r3d.multiresolution.SpatialSelection;
 
 /**
- * Interface for LOD criteria, i.e. functions that determine whether {@link Arc}s in the DAG have to be "applied" (the
- * arcs correspond to mesh refinements) during <i>selective refinement</i> / <i>spatial selection</i>.
- * 
+ * Interface for LOD criteria, i.e. functions that determine whether {@link Arc}s in the
+ * DAG have to be "applied" (the arcs correspond to mesh refinements) during <i>selective
+ * refinement</i> / <i>spatial selection</i>.
+ *
  * @see MultiresolutionMesh
  * @see SelectiveRefinement
  * @see SpatialSelection
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$
  */
 public interface LODCriterion {
 
-    /**
-     * Static instance of a {@link Coarsest} criterion, use this to extract the coarsest LOD contained in a
-     * {@link MultiresolutionMesh}.
-     */
-    public static final LODCriterion COARSEST = new Coarsest();
+	/**
+	 * Static instance of a {@link Coarsest} criterion, use this to extract the coarsest
+	 * LOD contained in a {@link MultiresolutionMesh}.
+	 */
+	public static final LODCriterion COARSEST = new Coarsest();
 
-    /**
-     * Static instance of a {@link Finest} criterion, use this to extract the finest LOD contained in a
-     * {@link MultiresolutionMesh}.
-     */
-    public static final LODCriterion FINEST = new Finest();
+	/**
+	 * Static instance of a {@link Finest} criterion, use this to extract the finest LOD
+	 * contained in a {@link MultiresolutionMesh}.
+	 */
+	public static final LODCriterion FINEST = new Finest();
 
-    /**
-     * Checks whether the given {@link Arc} is necessary in order to satisfy this LOD criterion.
-     * 
-     * @param arc
-     *            arc to be checked
-     * @return true, if the arc is necessary, false otherwise
-     */
-    public abstract boolean needsRefinement( Arc arc );
+	/**
+	 * Checks whether the given {@link Arc} is necessary in order to satisfy this LOD
+	 * criterion.
+	 * @param arc arc to be checked
+	 * @return true, if the arc is necessary, false otherwise
+	 */
+	public abstract boolean needsRefinement(Arc arc);
+
 }

@@ -42,34 +42,32 @@ import org.deegree.cs.CRSResource;
 
 /**
  * The <code>Datum</code> is a generic type for all datums.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
- * 
+ *
  */
 
 public class Datum extends CRSIdentifiable implements IDatum {
 
-    /**
-     * @param id
-     *            containing all relevant id data.
-     */
-    public Datum( CRSResource id ) {
-        super( id );
+	/**
+	 * @param id containing all relevant id data.
+	 */
+	public Datum(CRSResource id) {
+		super(id);
 
-    }
+	}
 
-    /**
-     * @param codes
-     * @param names
-     * @param versions
-     * @param descriptions
-     * @param areasOfUse
-     */
-    public Datum( CRSCodeType[] codes, String[] names, String[] versions, String[] descriptions, String[] areasOfUse ) {
-        this( new CRSIdentifiable( codes, names, versions, descriptions, areasOfUse ) );
-    }
+	/**
+	 * @param codes
+	 * @param names
+	 * @param versions
+	 * @param descriptions
+	 * @param areasOfUse
+	 */
+	public Datum(CRSCodeType[] codes, String[] names, String[] versions, String[] descriptions, String[] areasOfUse) {
+		this(new CRSIdentifiable(codes, names, versions, descriptions, areasOfUse));
+	}
+
 }

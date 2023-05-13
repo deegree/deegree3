@@ -43,40 +43,39 @@ import org.deegree.workspace.Workspace;
 
 /**
  * This class is responsible for building remote WMS layer stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class RemoteWmsLayerStoreBuilder implements ResourceBuilder<LayerStore> {
 
-    private RemoteWMSLayers cfg;
+	private RemoteWMSLayers cfg;
 
-    private ResourceMetadata<LayerStore> metadata;
+	private ResourceMetadata<LayerStore> metadata;
 
-    private Workspace workspace;
+	private Workspace workspace;
 
-    public RemoteWmsLayerStoreBuilder( RemoteWMSLayers cfg, ResourceMetadata<LayerStore> metadata, Workspace workspace ) {
-        this.cfg = cfg;
-        this.metadata = metadata;
-        this.workspace = workspace;
-    }
+	public RemoteWmsLayerStoreBuilder(RemoteWMSLayers cfg, ResourceMetadata<LayerStore> metadata, Workspace workspace) {
+		this.cfg = cfg;
+		this.metadata = metadata;
+		this.workspace = workspace;
+	}
 
-    @Override
-    public LayerStore build() {
-        String id = cfg.getRemoteWMSId();
+	@Override
+	public LayerStore build() {
+		String id = cfg.getRemoteWMSId();
 
-        RemoteOWS store = workspace.getResource( RemoteOWSProvider.class, id );
-        if ( !( store instanceof RemoteWMS ) ) {
-            throw new ResourceInitException( "The remote WMS store with id " + id
-                                             + " is not available or not of type WMS." );
-        }
+		RemoteOWS store = workspace.getResource(RemoteOWSProvider.class, id);
+		if (!(store instanceof RemoteWMS)) {
+			throw new ResourceInitException(
+					"The remote WMS store with id " + id + " is not available or not of type WMS.");
+		}
 
-        RemoteWmsLayerBuilder builder = new RemoteWmsLayerBuilder( ( (RemoteWMS) store ).getClient(), cfg, metadata );
+		RemoteWmsLayerBuilder builder = new RemoteWmsLayerBuilder(((RemoteWMS) store).getClient(), cfg, metadata);
 
-        Map<String, Layer> map = builder.buildLayerMap();
+		Map<String, Layer> map = builder.buildLayerMap();
 
-        return new MultipleLayerStore( map, metadata );
-    }
+		return new MultipleLayerStore(map, metadata);
+	}
 
 }

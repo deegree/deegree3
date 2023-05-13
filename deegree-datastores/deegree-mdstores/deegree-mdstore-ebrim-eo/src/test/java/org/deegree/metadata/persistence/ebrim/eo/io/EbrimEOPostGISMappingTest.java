@@ -43,43 +43,40 @@ import org.junit.Test;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:goltz@deegree.org">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
- * 
  * @version $Revision: $, $Date: $
  */
 public class EbrimEOPostGISMappingTest {
 
-    private static final NamespaceBindings ns = CommonNamespaces.getNamespaceContext();
+	private static final NamespaceBindings ns = CommonNamespaces.getNamespaceContext();
 
-    static {
-        ns.addNamespace( "rim", "urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" );
-        ns.addNamespace( "wrs", "http://www.opengis.net/cat/wrs/1.0" );
-    }
+	static {
+		ns.addNamespace("rim", "urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0");
+		ns.addNamespace("wrs", "http://www.opengis.net/cat/wrs/1.0");
+	}
 
-    @Test
-    public void testRegPack()
-                            throws FilterEvaluationException, UnmappableException {
-        // PropertyName pn = new PropertyName( "/rim:RegistryPackage/@id", ns );
-        // EbrimEOPostGISMapping mapping = new EbrimEOPostGISMapping();
-//        PropertyNameMapping pnm = mapping.getMapping( pn, null );
-//        assertNotNull( pnm );
-//        assertNotNull( pnm.getTargetField() );
-//        assertEquals( EOTYPE.PRODUCT.getTableName(), pnm.getTargetField().getTable() );
-//        assertEquals( "regpackid", pnm.getTargetField().getColumn() );
+	@Test
+	public void testRegPack() throws FilterEvaluationException, UnmappableException {
+		// PropertyName pn = new PropertyName( "/rim:RegistryPackage/@id", ns );
+		// EbrimEOPostGISMapping mapping = new EbrimEOPostGISMapping();
+		// PropertyNameMapping pnm = mapping.getMapping( pn, null );
+		// assertNotNull( pnm );
+		// assertNotNull( pnm.getTargetField() );
+		// assertEquals( EOTYPE.PRODUCT.getTableName(), pnm.getTargetField().getTable() );
+		// assertEquals( "regpackid", pnm.getTargetField().getColumn() );
 
-    }
+	}
 
-    @Test
-    public void testEOProductID()
-                            throws FilterEvaluationException, UnmappableException {
-        // PropertyName pn = new PropertyName(
-        // "/rim:ExtrinsicObject/rim:Slot[@name=”urn:ogc:def:ebRIM-Slot:OGC-06-131:beginPosition”]/rim:ValueList/rim:Value[1]",
-        // ns );
-        // EbrimEOPostGISMapping mapping = new EbrimEOPostGISMapping();
-        // PropertyNameMapping pnm = mapping.getMapping( pn, null );
-        // assertEquals( "regPackId", pnm.getTargetField() );
-    }
+	@Test
+	public void testEOProductID() throws FilterEvaluationException, UnmappableException {
+		// PropertyName pn = new PropertyName(
+		// "/rim:ExtrinsicObject/rim:Slot[@name=”urn:ogc:def:ebRIM-Slot:OGC-06-131:beginPosition”]/rim:ValueList/rim:Value[1]",
+		// ns );
+		// EbrimEOPostGISMapping mapping = new EbrimEOPostGISMapping();
+		// PropertyNameMapping pnm = mapping.getMapping( pn, null );
+		// assertEquals( "regPackId", pnm.getTargetField() );
+	}
 
 }

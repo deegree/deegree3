@@ -44,42 +44,42 @@ import org.deegree.commons.tom.gml.property.Property;
 
 public class GenericTimeSlice implements TimeSlice {
 
-    private final String id;
+	private final String id;
 
-    private final GMLObjectType type;
+	private final GMLObjectType type;
 
-    private final List<Property> props;
+	private final List<Property> props;
 
-    public GenericTimeSlice( final String id, final GMLObjectType type, final List<Property> props ) {
-        this.id = id;
-        this.type = type;
-        this.props = props;
-    }
+	public GenericTimeSlice(final String id, final GMLObjectType type, final List<Property> props) {
+		this.id = id;
+		this.type = type;
+		this.props = props;
+	}
 
-    @Override
-    public String getId() {
-        return id;
-    }
+	@Override
+	public String getId() {
+		return id;
+	}
 
-    @Override
-    public GMLObjectType getType() {
-        return type;
-    }
+	@Override
+	public GMLObjectType getType() {
+		return type;
+	}
 
-    @Override
-    public List<Property> getProperties() {
-        return props;
-    }
+	@Override
+	public List<Property> getProperties() {
+		return props;
+	}
 
-    @Override
-    public List<Property> getProperties( final QName propName ) {
-        final List<Property> namedProps = new ArrayList<Property>( props.size() );
-        for ( final Property property : props ) {
-            if ( propName.equals( property.getName() ) ) {
-                namedProps.add( property );
-            }
-        }
-        return namedProps;
-    }
+	@Override
+	public List<Property> getProperties(final QName propName) {
+		final List<Property> namedProps = new ArrayList<Property>(props.size());
+		for (final Property property : props) {
+			if (propName.equals(property.getName())) {
+				namedProps.add(property);
+			}
+		}
+		return namedProps;
+	}
 
 }

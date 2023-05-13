@@ -38,35 +38,37 @@ import org.deegree.workspace.ResourceMetadata;
 
 /**
  * This class is responsible for building style process providers.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class StyleProcessProviderBuilder implements ResourceBuilder<ProcessProvider> {
 
-    private ResourceMetadata<ProcessProvider> metadata;
+	private ResourceMetadata<ProcessProvider> metadata;
 
-    public StyleProcessProviderBuilder( ResourceMetadata<ProcessProvider> metadata ) {
-        this.metadata = metadata;
-    }
+	public StyleProcessProviderBuilder(ResourceMetadata<ProcessProvider> metadata) {
+		this.metadata = metadata;
+	}
 
-    @Override
-    public ProcessProvider build() {
-        try {
-            XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( metadata.getLocation().getAsStream() );
-            while ( xmlStream.getEventType() != XMLStreamConstants.END_DOCUMENT ) {
-                if ( xmlStream.isStartElement() && "Process".equals( xmlStream.getLocalName() ) ) {
-                    return new StyleProcessProvider( xmlStream.getAttributeValue( null, "id" ), metadata );
-                } else {
-                    xmlStream.next();
-                }
-            }
-        } catch ( Exception e ) {
-            throw new ResourceInitException( "Error parsing style process provider configuration '"
-                                             + metadata.getIdentifier() + "': " + e.getMessage(), e );
-        }
-        throw new ResourceInitException( "Could not parse style process configuration." );
-    }
+	@Override
+	public ProcessProvider build() {
+		try {
+			XMLStreamReader xmlStream = XMLInputFactory.newInstance()
+				.createXMLStreamReader(metadata.getLocation().getAsStream());
+			while (xmlStream.getEventType() != XMLStreamConstants.END_DOCUMENT) {
+				if (xmlStream.isStartElement() && "Process".equals(xmlStream.getLocalName())) {
+					return new StyleProcessProvider(xmlStream.getAttributeValue(null, "id"), metadata);
+				}
+				else {
+					xmlStream.next();
+				}
+			}
+		}
+		catch (Exception e) {
+			throw new ResourceInitException("Error parsing style process provider configuration '"
+					+ metadata.getIdentifier() + "': " + e.getMessage(), e);
+		}
+		throw new ResourceInitException("Could not parse style process configuration.");
+	}
 
 }

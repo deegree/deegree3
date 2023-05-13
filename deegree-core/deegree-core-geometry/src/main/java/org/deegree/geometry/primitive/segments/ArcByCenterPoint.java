@@ -43,44 +43,40 @@ import org.deegree.geometry.primitive.Point;
 /**
  * Circular {@link CurveSegment} that consists of a single arc only.
  * <p>
- * This variant of the arc requires that the points on the arc have to be computed instead of storing the coordinates
- * directly. The control point is the center point of the arc plus the radius and the bearing at start and end. This
- * representation can be used only in 2D.
- * 
+ * This variant of the arc requires that the points on the arc have to be computed instead
+ * of storing the coordinates directly. The control point is the center point of the arc
+ * plus the radius and the bearing at start and end. This representation can be used only
+ * in 2D.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public interface ArcByCenterPoint extends CurveSegment {
 
-    /**
-     * Returns the center point of the arc.
-     * 
-     * @return the center point of the arc, never <code>null</code>
-     */
-    public Point getMidPoint();
+	/**
+	 * Returns the center point of the arc.
+	 * @return the center point of the arc, never <code>null</code>
+	 */
+	public Point getMidPoint();
 
-    /**
-     * Returns the radius of the arc.
-     * 
-     * @param requestedUnits
-     *            units that the radius should be expressed as
-     * @return the radius of the arc, never <code>null</code>
-     */
-    public Measure getRadius( Unit requestedUnits );
+	/**
+	 * Returns the radius of the arc.
+	 * @param requestedUnits units that the radius should be expressed as
+	 * @return the radius of the arc, never <code>null</code>
+	 */
+	public Measure getRadius(Unit requestedUnits);
 
-    /**
-     * Returns the bearing of the arc at the start.
-     * 
-     * @return the bearing of the arc at the start, can be <code>null</code>
-     */
-    public Angle getStartAngle();
+	/**
+	 * Returns the bearing of the arc at the start.
+	 * @return the bearing of the arc at the start, can be <code>null</code>
+	 */
+	public Angle getStartAngle();
 
-    /**
-     * Returns the bearing of the arc at the end.
-     * 
-     * @return the bearing of the arc at the end, can be <code>null</code>
-     */
-    public Angle getEndAngle();
+	/**
+	 * Returns the bearing of the arc at the end.
+	 * @return the bearing of the arc at the end, can be <code>null</code>
+	 */
+	public Angle getEndAngle();
+
 }

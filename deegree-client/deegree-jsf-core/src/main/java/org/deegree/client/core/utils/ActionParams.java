@@ -41,58 +41,62 @@ import javax.faces.context.FacesContext;
 import java.io.Serializable;
 
 /**
- * Utility class to provide a workaround for the missing parameters for action expressions in JSF versions before 2.2.
- * 
+ * Utility class to provide a workaround for the missing parameters for action expressions
+ * in JSF versions before 2.2.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 @ManagedBean(name = "actionParams")
 @RequestScoped
 public class ActionParams implements Serializable {
 
-    private Object param1;
+	private Object param1;
 
-    private Object param2;
+	private Object param2;
 
-    private Object param3;
+	private Object param3;
 
-    private Object param4;
+	private Object param4;
 
-    public void setParam1( Object param1 ) {
-        this.param1 = param1;
-    }
+	public void setParam1(Object param1) {
+		this.param1 = param1;
+	}
 
-    public static Object getParam1() {
-        return getInstance().param1;
-    }
+	public static Object getParam1() {
+		return getInstance().param1;
+	}
 
-    public void setParam2( Object param2 ) {
-        this.param2 = param2;
-    }
+	public void setParam2(Object param2) {
+		this.param2 = param2;
+	}
 
-    public static Object getParam2() {
-        return getInstance().param2;
-    }
+	public static Object getParam2() {
+		return getInstance().param2;
+	}
 
-    public void setParam3( Object param3 ) {
-        this.param3 = param3;
-    }
+	public void setParam3(Object param3) {
+		this.param3 = param3;
+	}
 
-    public static Object getParam3() {
-        return getInstance().param3;
-    }
+	public static Object getParam3() {
+		return getInstance().param3;
+	}
 
-    public void setParam4( Object param4 ) {
-        this.param4 = param4;
-    }
+	public void setParam4(Object param4) {
+		this.param4 = param4;
+	}
 
-    public static Object getParam4() {
-        return getInstance().param4;
-    }
+	public static Object getParam4() {
+		return getInstance().param4;
+	}
 
-    private static ActionParams getInstance() {
-        return (ActionParams) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get( "actionParams" );
-    }
+	private static ActionParams getInstance() {
+		return (ActionParams) FacesContext.getCurrentInstance()
+			.getExternalContext()
+			.getRequestMap()
+			.get("actionParams");
+	}
+
 }

@@ -47,48 +47,49 @@ import org.deegree.workspace.standard.DefaultResourceIdentifier;
 
 /**
  * Resource metadata implementation for remote WMTS tile stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class RemoteWmtsTileStoreMetadata extends AbstractResourceMetadata<TileStore> {
 
-    private static final String JAXB_PACKAGE = "org.deegree.tile.persistence.remotewmts.jaxb";
+	private static final String JAXB_PACKAGE = "org.deegree.tile.persistence.remotewmts.jaxb";
 
-    public RemoteWmtsTileStoreMetadata( Workspace workspace, ResourceLocation<TileStore> location,
-                                        AbstractResourceProvider<TileStore> provider ) {
-        super( workspace, location, provider );
-    }
+	public RemoteWmtsTileStoreMetadata(Workspace workspace, ResourceLocation<TileStore> location,
+			AbstractResourceProvider<TileStore> provider) {
+		super(workspace, location, provider);
+	}
 
-    @Override
-    public ResourceBuilder<TileStore> prepare() {
-        try {
-            RemoteWMTSTileStoreJAXB config = unmarshallConfig();
-            String wmts = config.getRemoteWMTSId();
+	@Override
+	public ResourceBuilder<TileStore> prepare() {
+		try {
+			RemoteWMTSTileStoreJAXB config = unmarshallConfig();
+			String wmts = config.getRemoteWMTSId();
 
-            dependencies.add( new DefaultResourceIdentifier<RemoteOWS>( RemoteOWSProvider.class, wmts ) );
+			dependencies.add(new DefaultResourceIdentifier<RemoteOWS>(RemoteOWSProvider.class, wmts));
 
-            // does not really collect all dependencies, only the ones that can be determined from config
-            // probably needs to be adapted to also use the matrix set ids from remote as dependencies
-            for ( RemoteWMTSTileStoreJAXB.TileDataSet tds : config.getTileDataSet() ) {
-                if ( tds.getTileMatrixSetId() != null ) {
-                    dependencies.add( new DefaultResourceIdentifier<TileMatrixSet>( TileMatrixSetProvider.class,
-                                                                                    tds.getTileMatrixSetId() ) );
-                }
-            }
+			// does not really collect all dependencies, only the ones that can be
+			// determined from config
+			// probably needs to be adapted to also use the matrix set ids from remote as
+			// dependencies
+			for (RemoteWMTSTileStoreJAXB.TileDataSet tds : config.getTileDataSet()) {
+				if (tds.getTileMatrixSetId() != null) {
+					dependencies.add(new DefaultResourceIdentifier<TileMatrixSet>(TileMatrixSetProvider.class,
+							tds.getTileMatrixSetId()));
+				}
+			}
 
-            return new RemoteWmtsTileStoreBuilder( config, workspace, this );
-        } catch ( Exception e ) {
-            throw new ResourceInitException( "Unable to create resource " + location.getIdentifier() + ": "
-                                             + e.getLocalizedMessage(), e );
-        }
-    }
+			return new RemoteWmtsTileStoreBuilder(config, workspace, this);
+		}
+		catch (Exception e) {
+			throw new ResourceInitException(
+					"Unable to create resource " + location.getIdentifier() + ": " + e.getLocalizedMessage(), e);
+		}
+	}
 
-    private RemoteWMTSTileStoreJAXB unmarshallConfig()
-                            throws JAXBException {
-        return (RemoteWMTSTileStoreJAXB) unmarshall( JAXB_PACKAGE, provider.getSchema(), location.getAsStream(),
-                                                     workspace );
-    }
+	private RemoteWMTSTileStoreJAXB unmarshallConfig() throws JAXBException {
+		return (RemoteWMTSTileStoreJAXB) unmarshall(JAXB_PACKAGE, provider.getSchema(), location.getAsStream(),
+				workspace);
+	}
 
 }

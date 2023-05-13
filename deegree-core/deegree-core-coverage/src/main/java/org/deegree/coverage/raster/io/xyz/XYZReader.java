@@ -73,375 +73,376 @@ import org.slf4j.Logger;
 
 /**
  * This class implements a simple reader for text raster files.
- * 
- * The text file should contain lines with whitespace-delimited x y z/value coordinates. The coordinates should be
- * integer or float values as ascii text.
- * 
+ *
+ * The text file should contain lines with whitespace-delimited x y z/value coordinates.
+ * The coordinates should be integer or float values as ascii text.
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author:otonnhofer $
- * 
  * @version $Revision:10872 $, $Date:2008-04-01 15:41:48 +0200 (Tue, 01 Apr 2008) $
  */
 public class XYZReader implements RasterReader {
 
-    private static final Logger LOG = getLogger( XYZReader.class );
+	private static final Logger LOG = getLogger(XYZReader.class);
 
-    private final static GeometryFactory factory = new GeometryFactory();
+	private final static GeometryFactory factory = new GeometryFactory();
 
-    private File file;
+	private File file;
 
-    private RasterGeoReference geoReference;
+	private RasterGeoReference geoReference;
 
-    private int height;
+	private int height;
 
-    private int width;
+	private int width;
 
-    private RasterDataInfo rasterDataInfo;
+	private RasterDataInfo rasterDataInfo;
 
-    private String dataLocationId;
+	private String dataLocationId;
 
-    private Envelope envelope;
+	private Envelope envelope;
 
-    // saves a point in the raster grid (eg. each line becomes a GridPoint)
-    private static class GridPoint {
-        /**
-         * x value
-         */
-        public float x;
+	// saves a point in the raster grid (eg. each line becomes a GridPoint)
+	private static class GridPoint {
 
-        /**
-         * y value
-         */
-        public float y;
+		/**
+		 * x value
+		 */
+		public float x;
 
-        /**
-         * the value
-         */
-        public float value;
+		/**
+		 * y value
+		 */
+		public float y;
 
-        GridPoint( float[] xyz ) {
-            this.x = xyz[0];
-            this.y = xyz[1];
-            this.value = xyz[2];
-        }
+		/**
+		 * the value
+		 */
+		public float value;
 
-        @Override
-        public String toString() {
-            return String.format( "%.2f %.2f:\t%.2f", x, y, value );
-        }
-    }
+		GridPoint(float[] xyz) {
+			this.x = xyz[0];
+			this.y = xyz[1];
+			this.value = xyz[2];
+		}
 
-    // saves the extension of the raster grid
-    static class GridExtension {
+		@Override
+		public String toString() {
+			return String.format("%.2f %.2f:\t%.2f", x, y, value);
+		}
 
-        private float prevX = Float.NaN;
+	}
 
-        private float prevY = Float.NaN;
+	// saves the extension of the raster grid
+	static class GridExtension {
 
-        public float resX = Float.NaN;
+		private float prevX = Float.NaN;
 
-        public float resY = Float.NaN;
+		private float prevY = Float.NaN;
 
-        /**
-         * the min x value
-         */
-        public float minx = Float.MAX_VALUE;
+		public float resX = Float.NaN;
 
-        /**
-         * the min y value
-         */
-        public float miny = Float.MAX_VALUE;
+		public float resY = Float.NaN;
 
-        /**
-         * the max x value
-         */
-        public float maxx = Float.NEGATIVE_INFINITY;
+		/**
+		 * the min x value
+		 */
+		public float minx = Float.MAX_VALUE;
 
-        /**
-         * the max y value
-         */
-        public float maxy = Float.NEGATIVE_INFINITY;
+		/**
+		 * the min y value
+		 */
+		public float miny = Float.MAX_VALUE;
 
-        /**
-         * Extend the current extension to contain point <code>p</code>.
-         * 
-         * @param p
-         */
-        public void extend( GridPoint p ) {
-            minx = min( minx, p.x );
-            miny = min( miny, p.y );
-            maxx = max( maxx, p.x );
-            maxy = max( maxy, p.y );
+		/**
+		 * the max x value
+		 */
+		public float maxx = Float.NEGATIVE_INFINITY;
 
-            if ( Float.isNaN( resX ) ) {
-                if ( Float.isNaN( prevX ) ) {
-                    prevX = minx;
-                } else {
-                    if ( Math.abs( prevX - p.x ) > 1E-11 ) {
-                        resX = Math.abs( prevX - p.x );
-                    }
-                }
-            }
-            if ( Float.isNaN( resY ) ) {
-                if ( Float.isNaN( prevY ) ) {
-                    prevY = miny;
-                } else {
-                    if ( Math.abs( prevY - p.y ) > 1E-11 ) {
-                        resY = -Math.abs( prevY - p.y );
-                    }
-                }
-            }
-        }
-    }
+		/**
+		 * the max y value
+		 */
+		public float maxy = Float.NEGATIVE_INFINITY;
 
-    /**
-     * Creates a SimpleRaster from a text file.
-     * 
-     * @return new SimpleRaster with data from file
-     * @throws IOException
-     */
-    private ByteBufferRasterData readASCIIGrid( BufferedReader reader, RasterIOOptions options )
-                            throws IOException {
+		/**
+		 * Extend the current extension to contain point <code>p</code>.
+		 * @param p
+		 */
+		public void extend(GridPoint p) {
+			minx = min(minx, p.x);
+			miny = min(miny, p.y);
+			maxx = max(maxx, p.x);
+			maxy = max(maxy, p.y);
 
-        if ( options == null ) {
-            return null;
-        }
+			if (Float.isNaN(resX)) {
+				if (Float.isNaN(prevX)) {
+					prevX = minx;
+				}
+				else {
+					if (Math.abs(prevX - p.x) > 1E-11) {
+						resX = Math.abs(prevX - p.x);
+					}
+				}
+			}
+			if (Float.isNaN(resY)) {
+				if (Float.isNaN(prevY)) {
+					prevY = miny;
+				}
+				else {
+					if (Math.abs(prevY - p.y) > 1E-11) {
+						resY = -Math.abs(prevY - p.y);
+					}
+				}
+			}
+		}
 
-        geoReference = options.getRasterGeoReference();
+	}
 
-        List<GridPoint> gridPoints = new LinkedList<GridPoint>();
+	/**
+	 * Creates a SimpleRaster from a text file.
+	 * @return new SimpleRaster with data from file
+	 * @throws IOException
+	 */
+	private ByteBufferRasterData readASCIIGrid(BufferedReader reader, RasterIOOptions options) throws IOException {
 
-        GridExtension gridExtension = new GridExtension();
+		if (options == null) {
+			return null;
+		}
 
-        float[] xyzValues = new float[3];
-        StreamTokenizer st = new StreamTokenizer( reader );
-        st.commentChar( '#' );
-        st.parseNumbers();
-        st.nextToken();
-        st.eolIsSignificant( true );
-        int type = st.ttype;
-        while ( type != StreamTokenizer.TT_EOF ) {
-            int numbersRead = readValues( st, xyzValues );
-            if ( numbersRead == 3 ) {
-                // all is well
-                GridPoint gridPoint = new GridPoint( xyzValues );
-                gridPoints.add( gridPoint );
-                gridExtension.extend( gridPoint );
+		geoReference = options.getRasterGeoReference();
 
-            } else {
-                LOG.warn( "Line {} only contains {} values.", st.lineno(), numbersRead );
-            }
-            type = st.ttype;
-            // st.next token till end of line.
-            while ( type != StreamTokenizer.TT_EOL && type != StreamTokenizer.TT_EOF ) {
-                type = st.nextToken();
-            }
-            if ( type != StreamTokenizer.TT_EOF ) {
-                type = st.nextToken();
-            }
+		List<GridPoint> gridPoints = new LinkedList<GridPoint>();
 
-        }
+		GridExtension gridExtension = new GridExtension();
 
-        if ( LOG.isDebugEnabled() ) {
-            LOG.debug( String.format( "%f %f %f %f", gridExtension.maxx, gridExtension.maxy, gridExtension.minx,
-                                      gridExtension.miny ) );
-        }
+		float[] xyzValues = new float[3];
+		StreamTokenizer st = new StreamTokenizer(reader);
+		st.commentChar('#');
+		st.parseNumbers();
+		st.nextToken();
+		st.eolIsSignificant(true);
+		int type = st.ttype;
+		while (type != StreamTokenizer.TT_EOF) {
+			int numbersRead = readValues(st, xyzValues);
+			if (numbersRead == 3) {
+				// all is well
+				GridPoint gridPoint = new GridPoint(xyzValues);
+				gridPoints.add(gridPoint);
+				gridExtension.extend(gridPoint);
 
-        if ( geoReference == null ) {
-            geoReference = new RasterGeoReference( RasterGeoReference.OriginLocation.CENTER, gridExtension.resX,
-                                                   gridExtension.resY, gridExtension.minx, gridExtension.maxy );
-        }
+			}
+			else {
+				LOG.warn("Line {} only contains {} values.", st.lineno(), numbersRead);
+			}
+			type = st.ttype;
+			// st.next token till end of line.
+			while (type != StreamTokenizer.TT_EOL && type != StreamTokenizer.TT_EOF) {
+				type = st.nextToken();
+			}
+			if (type != StreamTokenizer.TT_EOF) {
+				type = st.nextToken();
+			}
 
-        Envelope rasterEnvelope = factory.createEnvelope( gridExtension.minx, gridExtension.miny, gridExtension.maxx,
-                                                          gridExtension.maxy, options.getCRS() );
-        int[] size = geoReference.getSize( rasterEnvelope );
-        width = size[0];
-        height = size[1];
-        // the first data should not be added to the cache, it is only temporary
-        RasterData data = RasterDataFactory.createRasterData( size[0], size[1], DataType.FLOAT, false );
+		}
 
-        for ( GridPoint p : gridPoints ) {
-            int[] pos = geoReference.getRasterCoordinate( p.x, p.y );
-            data.setFloatSample( pos[0], pos[1], 0, p.value );
-        }
-        // clear up the gridpoints
-        gridPoints.clear();
-        gridPoints = null;
-        // System.gc();
+		if (LOG.isDebugEnabled()) {
+			LOG.debug(String.format("%f %f %f %f", gridExtension.maxx, gridExtension.maxy, gridExtension.minx,
+					gridExtension.miny));
+		}
 
-        this.rasterDataInfo = data.getDataInfo();
-        this.envelope = rasterEnvelope;
-        return ( (ByteBufferRasterData) data );
+		if (geoReference == null) {
+			geoReference = new RasterGeoReference(RasterGeoReference.OriginLocation.CENTER, gridExtension.resX,
+					gridExtension.resY, gridExtension.minx, gridExtension.maxy);
+		}
 
-    }
+		Envelope rasterEnvelope = factory.createEnvelope(gridExtension.minx, gridExtension.miny, gridExtension.maxx,
+				gridExtension.maxy, options.getCRS());
+		int[] size = geoReference.getSize(rasterEnvelope);
+		width = size[0];
+		height = size[1];
+		// the first data should not be added to the cache, it is only temporary
+		RasterData data = RasterDataFactory.createRasterData(size[0], size[1], DataType.FLOAT, false);
 
-    /**
-     * @param st
-     * @param xyzValues
-     * @throws IOException
-     */
-    private int readValues( StreamTokenizer st, float[] xyzValues )
-                            throws IOException {
-        int type = st.ttype;
-        int numbers = 0;
-        if ( type == StreamTokenizer.TT_NUMBER ) {
-            numbers++;
-            xyzValues[0] = (float) st.nval;
-            type = st.nextToken();
-            if ( type == StreamTokenizer.TT_NUMBER ) {
-                numbers++;
-                xyzValues[1] = (float) st.nval;
-                type = st.nextToken();
-                if ( type == StreamTokenizer.TT_NUMBER ) {
-                    numbers++;
-                    xyzValues[2] = (float) st.nval;
-                    st.nextToken();
-                }
-            }
-        }
-        return numbers;
-    }
+		for (GridPoint p : gridPoints) {
+			int[] pos = geoReference.getRasterCoordinate(p.x, p.y);
+			data.setFloatSample(pos[0], pos[1], 0, p.value);
+		}
+		// clear up the gridpoints
+		gridPoints.clear();
+		gridPoints = null;
+		// System.gc();
 
-    @Override
-    public boolean canLoad( File filename ) {
-        return "xyz".equalsIgnoreCase( FileUtils.getFileExtension( filename ) );
-    }
+		this.rasterDataInfo = data.getDataInfo();
+		this.envelope = rasterEnvelope;
+		return ((ByteBufferRasterData) data);
 
-    @Override
-    public Set<String> getSupportedFormats() {
-        return new HashSet<String>( XYZRasterIOProvider.FORMATS );
-    }
+	}
 
-    private void setID( RasterIOOptions options ) {
-        this.dataLocationId = options != null ? options.get( RasterIOOptions.ORIGIN_OF_RASTER ) : null;
-        if ( dataLocationId == null ) {
-            if ( this.file != null ) {
-                this.dataLocationId = FileUtils.getFilename( this.file );
-            }
-        }
-    }
+	/**
+	 * @param st
+	 * @param xyzValues
+	 * @throws IOException
+	 */
+	private int readValues(StreamTokenizer st, float[] xyzValues) throws IOException {
+		int type = st.ttype;
+		int numbers = 0;
+		if (type == StreamTokenizer.TT_NUMBER) {
+			numbers++;
+			xyzValues[0] = (float) st.nval;
+			type = st.nextToken();
+			if (type == StreamTokenizer.TT_NUMBER) {
+				numbers++;
+				xyzValues[1] = (float) st.nval;
+				type = st.nextToken();
+				if (type == StreamTokenizer.TT_NUMBER) {
+					numbers++;
+					xyzValues[2] = (float) st.nval;
+					st.nextToken();
+				}
+			}
+		}
+		return numbers;
+	}
 
-    @Override
-    public AbstractRaster load( File filename, RasterIOOptions options )
-                            throws IOException {
-        this.file = filename;
-        RasterIOOptions nOpts = options;
-        if ( nOpts == null ) {
-            nOpts = RasterIOOptions.forFile( filename );
-        }
-        // try to read from cache.
-        RasterCache cache = RasterCache.getInstance( nOpts );
-        setID( nOpts );
-        // File cacheFile = cache.createCacheFile( dataLocationId );
-        SimpleRaster result = cache.createFromCache( null, dataLocationId );
-        // the cachefiles are not backed with the xyz files.
+	@Override
+	public boolean canLoad(File filename) {
+		return "xyz".equalsIgnoreCase(FileUtils.getFileExtension(filename));
+	}
 
-        if ( result == null ) {
-            // no cache file found or now instantiation of cache file possible.
-            BufferedReader reader = new BufferedReader( new FileReader( filename ) );
-            if ( nOpts != null && nOpts.readWorldFile() ) {
-                try {
-                    RasterGeoReference geoRef = WorldFileAccess.readWorldFile( filename, nOpts );
-                    nOpts.setRasterGeoReference( geoRef );
-                } catch ( IOException e ) {
-                    LOG.debug( "Could not read xyz world file: " + e.getLocalizedMessage(), e );
-                }
-            }
-            result = createSimpleRaster( reader, nOpts );
-            reader.close();
-        } else {
-            LOG.info( "Cache seems coherent using cachefile: {}.", cache.createCacheFile( dataLocationId ) );
-        }
-        // rb: setting the no value pixel from the options, should the cache actually save the no data value?
-        if ( result != null && nOpts != null && nOpts.getNoDataValue() != null ) {
-            result.getRasterData().setNoDataValue( nOpts.getNoDataValue() );
-        }
+	@Override
+	public Set<String> getSupportedFormats() {
+		return new HashSet<String>(XYZRasterIOProvider.FORMATS);
+	}
 
-        return result;
-    }
+	private void setID(RasterIOOptions options) {
+		this.dataLocationId = options != null ? options.get(RasterIOOptions.ORIGIN_OF_RASTER) : null;
+		if (dataLocationId == null) {
+			if (this.file != null) {
+				this.dataLocationId = FileUtils.getFilename(this.file);
+			}
+		}
+	}
 
-    /**
-     * @param reader
-     * @param nOpts
-     * @throws IOException
-     */
-    private SimpleRaster createSimpleRaster( BufferedReader reader, RasterIOOptions nOpts )
-                            throws IOException {
-        ByteBufferRasterData data = readASCIIGrid( reader, nOpts );
-        ByteBuffer byteBuffer = data.getByteBuffer();
-        data = RasterDataFactory.createRasterData( width, height, data.getDataInfo(), geoReference, byteBuffer, true,
-                                                   FileUtils.getFilename( this.file ), nOpts );
+	@Override
+	public AbstractRaster load(File filename, RasterIOOptions options) throws IOException {
+		this.file = filename;
+		RasterIOOptions nOpts = options;
+		if (nOpts == null) {
+			nOpts = RasterIOOptions.forFile(filename);
+		}
+		// try to read from cache.
+		RasterCache cache = RasterCache.getInstance(nOpts);
+		setID(nOpts);
+		// File cacheFile = cache.createCacheFile( dataLocationId );
+		SimpleRaster result = cache.createFromCache(null, dataLocationId);
+		// the cachefiles are not backed with the xyz files.
 
-        SimpleRaster simpleRaster = new SimpleRaster( data, this.envelope, geoReference, null );
+		if (result == null) {
+			// no cache file found or now instantiation of cache file possible.
+			BufferedReader reader = new BufferedReader(new FileReader(filename));
+			if (nOpts != null && nOpts.readWorldFile()) {
+				try {
+					RasterGeoReference geoRef = WorldFileAccess.readWorldFile(filename, nOpts);
+					nOpts.setRasterGeoReference(geoRef);
+				}
+				catch (IOException e) {
+					LOG.debug("Could not read xyz world file: " + e.getLocalizedMessage(), e);
+				}
+			}
+			result = createSimpleRaster(reader, nOpts);
+			reader.close();
+		}
+		else {
+			LOG.info("Cache seems coherent using cachefile: {}.", cache.createCacheFile(dataLocationId));
+		}
+		// rb: setting the no value pixel from the options, should the cache actually save
+		// the no data value?
+		if (result != null && nOpts != null && nOpts.getNoDataValue() != null) {
+			result.getRasterData().setNoDataValue(nOpts.getNoDataValue());
+		}
 
-        return simpleRaster;
-    }
+		return result;
+	}
 
-    @Override
-    public AbstractRaster load( InputStream stream, RasterIOOptions options )
-                            throws IOException {
-        BufferedReader reader = new BufferedReader( new InputStreamReader( stream ) );
-        RasterIOOptions nOpts = options;
-        if ( nOpts == null ) {
-            nOpts = new RasterIOOptions();
-        }
-        setID( nOpts );
-        return createSimpleRaster( reader, nOpts );
-    }
+	/**
+	 * @param reader
+	 * @param nOpts
+	 * @throws IOException
+	 */
+	private SimpleRaster createSimpleRaster(BufferedReader reader, RasterIOOptions nOpts) throws IOException {
+		ByteBufferRasterData data = readASCIIGrid(reader, nOpts);
+		ByteBuffer byteBuffer = data.getByteBuffer();
+		data = RasterDataFactory.createRasterData(width, height, data.getDataInfo(), geoReference, byteBuffer, true,
+				FileUtils.getFilename(this.file), nOpts);
 
-    @Override
-    public File file() {
-        return file;
-    }
+		SimpleRaster simpleRaster = new SimpleRaster(data, this.envelope, geoReference, null);
 
-    @Override
-    public RasterGeoReference getGeoReference() {
-        return geoReference;
-    }
+		return simpleRaster;
+	}
 
-    @Override
-    public int getHeight() {
-        return height;
-    }
+	@Override
+	public AbstractRaster load(InputStream stream, RasterIOOptions options) throws IOException {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+		RasterIOOptions nOpts = options;
+		if (nOpts == null) {
+			nOpts = new RasterIOOptions();
+		}
+		setID(nOpts);
+		return createSimpleRaster(reader, nOpts);
+	}
 
-    @Override
-    public int getWidth() {
-        return width;
-    }
+	@Override
+	public File file() {
+		return file;
+	}
 
-    @Override
-    public BufferResult read( RasterRect rect, ByteBuffer buffer )
-                            throws IOException {
-        // rb: not very optimized yet..
-        BufferedReader reader = new BufferedReader( new FileReader( this.file ) );
-        ByteBufferRasterData grid = readASCIIGrid( reader, null );
-        reader.close();
-        ByteBufferRasterData subset = grid.getSubset( rect );
-        return new BufferResult( rect, subset.getByteBuffer() );
-    }
+	@Override
+	public RasterGeoReference getGeoReference() {
+		return geoReference;
+	}
 
-    @Override
-    public boolean shouldCreateCacheFile() {
-        return true;
-    }
+	@Override
+	public int getHeight() {
+		return height;
+	}
 
-    @Override
-    public RasterDataInfo getRasterDataInfo() {
-        return rasterDataInfo;
-    }
+	@Override
+	public int getWidth() {
+		return width;
+	}
 
-    @Override
-    public boolean canReadTiles() {
-        return false;
-    }
+	@Override
+	public BufferResult read(RasterRect rect, ByteBuffer buffer) throws IOException {
+		// rb: not very optimized yet..
+		BufferedReader reader = new BufferedReader(new FileReader(this.file));
+		ByteBufferRasterData grid = readASCIIGrid(reader, null);
+		reader.close();
+		ByteBufferRasterData subset = grid.getSubset(rect);
+		return new BufferResult(rect, subset.getByteBuffer());
+	}
 
-    @Override
-    public String getDataLocationId() {
-        return dataLocationId;
-    }
+	@Override
+	public boolean shouldCreateCacheFile() {
+		return true;
+	}
 
-    @Override
-    public void dispose() {
-        // nothing to do yet.
-    }
+	@Override
+	public RasterDataInfo getRasterDataInfo() {
+		return rasterDataInfo;
+	}
+
+	@Override
+	public boolean canReadTiles() {
+		return false;
+	}
+
+	@Override
+	public String getDataLocationId() {
+		return dataLocationId;
+	}
+
+	@Override
+	public void dispose() {
+		// nothing to do yet.
+	}
+
 }

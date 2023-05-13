@@ -36,55 +36,55 @@ import org.deegree.tile.TileMatrix;
 
 /**
  * {@link TileDataLevel} implementation used by {@link MergingTileStore}.
- * 
+ *
  * @author <a href="mailto:Reijer.Copier@idgis.nl">Reijer Copier</a>
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * 
  * @since 3.4
  */
 class MergingTileDataLevel implements TileDataLevel {
 
-    private final TileMatrix tileMatrix;
+	private final TileMatrix tileMatrix;
 
-    private final List<TileDataLevel> mergeLevels = new ArrayList<TileDataLevel>();
+	private final List<TileDataLevel> mergeLevels = new ArrayList<TileDataLevel>();
 
-    MergingTileDataLevel( TileMatrix tileMatrix ) {
-        this.tileMatrix = tileMatrix;
-    }
+	MergingTileDataLevel(TileMatrix tileMatrix) {
+		this.tileMatrix = tileMatrix;
+	}
 
-    void addMergeLevel( TileDataLevel mergeLevel ) {
-        mergeLevels.add( mergeLevel );
-    }
+	void addMergeLevel(TileDataLevel mergeLevel) {
+		mergeLevels.add(mergeLevel);
+	}
 
-    List<TileDataLevel> getMergeLevels() {
-        return mergeLevels;
-    }
+	List<TileDataLevel> getMergeLevels() {
+		return mergeLevels;
+	}
 
-    @Override
-    public TileMatrix getMetadata() {
-        return tileMatrix;
-    }
+	@Override
+	public TileMatrix getMetadata() {
+		return tileMatrix;
+	}
 
-    @Override
-    public Tile getTile( long x, long y ) {
-        List<Tile> tiles = new ArrayList<Tile>( mergeLevels.size() );
-        for ( TileDataLevel tileDataLevel : mergeLevels ) {
-            Tile tile = tileDataLevel.getTile( x, y );
-            if ( tile != null ) {
-                tiles.add( tile );
-            }
-        }
-        if ( tiles.isEmpty() ) {
-            return null;
-        }
-        if ( tiles.size() == 1 ) {
-            return tiles.get( 0 );
-        }
-        return new MergingTile( tiles );
-    }
+	@Override
+	public Tile getTile(long x, long y) {
+		List<Tile> tiles = new ArrayList<Tile>(mergeLevels.size());
+		for (TileDataLevel tileDataLevel : mergeLevels) {
+			Tile tile = tileDataLevel.getTile(x, y);
+			if (tile != null) {
+				tiles.add(tile);
+			}
+		}
+		if (tiles.isEmpty()) {
+			return null;
+		}
+		if (tiles.size() == 1) {
+			return tiles.get(0);
+		}
+		return new MergingTile(tiles);
+	}
 
-    @Override
-    public List<String> getStyles() {
-        return null;
-    }
+	@Override
+	public List<String> getStyles() {
+		return null;
+	}
+
 }

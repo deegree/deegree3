@@ -51,37 +51,37 @@ import org.deegree.geometry.Geometry;
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author$
- *
  * @version $Revision$, $Date$
  */
 public interface GeometricPrimitive extends Geometry {
 
-    /**
-     * Convenience enum type for discriminating the different primitive variants.
-     */
-    public enum PrimitiveType {
-        /** 0-dimensional primitive */
-        Point,
-        /** 1-dimensional primitive */
-        Curve,
-        /** 2-dimensional primitive */
-        Surface,
-        /** 3-dimensional primitive */
-        Solid
-    }
+	/**
+	 * Convenience enum type for discriminating the different primitive variants.
+	 */
+	public enum PrimitiveType {
 
-    /**
-     * Must always return {@link Geometry.GeometryType#PRIMITIVE_GEOMETRY}.
-     *
-     * @return must always return {@link Geometry.GeometryType#PRIMITIVE_GEOMETRY}
-     */
-    @Override
-    public GeometryType getGeometryType();
+		/** 0-dimensional primitive */
+		Point,
+		/** 1-dimensional primitive */
+		Curve,
+		/** 2-dimensional primitive */
+		Surface,
+		/** 3-dimensional primitive */
+		Solid
 
-    /**
-     * Returns the type of primitive.
-     *
-     * @return the type of primitive
-     */
-    public PrimitiveType getPrimitiveType();
+	}
+
+	/**
+	 * Must always return {@link Geometry.GeometryType#PRIMITIVE_GEOMETRY}.
+	 * @return must always return {@link Geometry.GeometryType#PRIMITIVE_GEOMETRY}
+	 */
+	@Override
+	public GeometryType getGeometryType();
+
+	/**
+	 * Returns the type of primitive.
+	 * @return the type of primitive
+	 */
+	public PrimitiveType getPrimitiveType();
+
 }

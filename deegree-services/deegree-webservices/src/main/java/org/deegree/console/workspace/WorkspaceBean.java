@@ -76,351 +76,357 @@ import org.slf4j.LoggerFactory;
 
 /**
  * JSF Bean for controlling various global aspects of the {@link DeegreeWorkspace}.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * 
  * @since 3.4
  */
 @ManagedBean(name = "workspace")
 @ApplicationScoped
 public class WorkspaceBean implements Serializable {
 
-    private static Logger LOG = LoggerFactory.getLogger( WorkspaceBean.class );
+	private static Logger LOG = LoggerFactory.getLogger(WorkspaceBean.class);
 
-    private static final long serialVersionUID = -2225303815897732019L;
+	private static final long serialVersionUID = -2225303815897732019L;
 
-    public static final String WS_MAIN_VIEW = "/console/workspace/workspace";
+	public static final String WS_MAIN_VIEW = "/console/workspace/workspace";
 
-    public static final String WS_UPLOAD_VIEW = "/console/workspace/upload";
+	public static final String WS_UPLOAD_VIEW = "/console/workspace/upload";
 
-    // only used when no build (Maven) module version information is available
-    private static final String DEFAULT_VERSION = "UNKNOWN";
+	// only used when no build (Maven) module version information is available
+	private static final String DEFAULT_VERSION = "UNKNOWN";
 
-    private static final String[] WS_LIST = { "deegree-workspace-csw", "deegree-workspace-inspire",
-                                             "deegree-workspace-utah", "deegree-workspace-wps" };
+	private static final String[] WS_LIST = { "deegree-workspace-csw", "deegree-workspace-inspire",
+			"deegree-workspace-utah", "deegree-workspace-wps" };
 
-    private final HashMap<String, String> workspaceLocations = new HashMap<String, String>();
+	private final HashMap<String, String> workspaceLocations = new HashMap<String, String>();
 
-    private String lastMessage = "Workspace initialized.";
+	private String lastMessage = "Workspace initialized.";
 
-    private String workspaceImportUrl;
+	private String workspaceImportUrl;
 
-    private String workspaceImportName;
+	private String workspaceImportName;
 
-    private UploadedFile upload;
+	private UploadedFile upload;
 
-    private boolean modified;
+	private boolean modified;
 
-    public String getLastMessage() {
-        return lastMessage;
-    }
+	public String getLastMessage() {
+		return lastMessage;
+	}
 
-    public void setLastMessage( String lastMessage ) {
-        this.lastMessage = lastMessage;
-    }
+	public void setLastMessage(String lastMessage) {
+		this.lastMessage = lastMessage;
+	}
 
-    public String getWorkspaceImportUrl() {
-        return workspaceImportUrl;
-    }
+	public String getWorkspaceImportUrl() {
+		return workspaceImportUrl;
+	}
 
-    public void setWorkspaceImportUrl( String workspaceImportUrl ) {
-        this.workspaceImportUrl = workspaceImportUrl;
-    }
+	public void setWorkspaceImportUrl(String workspaceImportUrl) {
+		this.workspaceImportUrl = workspaceImportUrl;
+	}
 
-    public String getWorkspaceImportName() {
-        return workspaceImportName;
-    }
+	public String getWorkspaceImportName() {
+		return workspaceImportName;
+	}
 
-    public void setWorkspaceImportName( String workspaceImportName ) {
-        this.workspaceImportName = workspaceImportName;
-    }
+	public void setWorkspaceImportName(String workspaceImportName) {
+		this.workspaceImportName = workspaceImportName;
+	}
 
-    public UploadedFile getUpload() {
-        return upload;
-    }
+	public UploadedFile getUpload() {
+		return upload;
+	}
 
-    public void setUpload( UploadedFile upload ) {
-        this.upload = upload;
-    }
+	public void setUpload(UploadedFile upload) {
+		this.upload = upload;
+	}
 
-    public boolean isModified() {
-        return modified;
-    }
+	public boolean isModified() {
+		return modified;
+	}
 
-    public void setModified( boolean modified ) {
-        this.modified = modified;
-    }
+	public void setModified(boolean modified) {
+		this.modified = modified;
+	}
 
-    public static long getSerialversionuid() {
-        return serialVersionUID;
-    }
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
 
-    public static String getWsMainView() {
-        return WS_MAIN_VIEW;
-    }
+	public static String getWsMainView() {
+		return WS_MAIN_VIEW;
+	}
 
-    public static String getWsUploadView() {
-        return WS_UPLOAD_VIEW;
-    }
+	public static String getWsUploadView() {
+		return WS_UPLOAD_VIEW;
+	}
 
-    public HashMap<String, String> getWorkspaceLocations() {
-        return workspaceLocations;
-    }
+	public HashMap<String, String> getWorkspaceLocations() {
+		return workspaceLocations;
+	}
 
-    public String getWorkspaceRoot() {
-        return DeegreeWorkspace.getWorkspaceRoot();
-    }
+	public String getWorkspaceRoot() {
+		return DeegreeWorkspace.getWorkspaceRoot();
+	}
 
-    public boolean getOtherAvailable() {
-        return getWorkspaceList().size() > 1;
-    }
+	public boolean getOtherAvailable() {
+		return getWorkspaceList().size() > 1;
+	}
 
-    /**
-     * Returns the currently active {@link DeegreeWorkspace}.
-     * 
-     * @return the currently active workspace, never <code>null</code>
-     */
-    public DeegreeWorkspace getActiveWorkspace() {
-        return OGCFrontController.getServiceWorkspace();
-    }
+	/**
+	 * Returns the currently active {@link DeegreeWorkspace}.
+	 * @return the currently active workspace, never <code>null</code>
+	 */
+	public DeegreeWorkspace getActiveWorkspace() {
+		return OGCFrontController.getServiceWorkspace();
+	}
 
-    public List<String> getWorkspaceList() {
-        List<String> list = DeegreeWorkspace.listWorkspaces();
-        Collections.sort( list );
-        return list;
-    }
+	public List<String> getWorkspaceList() {
+		List<String> list = DeegreeWorkspace.listWorkspaces();
+		Collections.sort(list);
+		return list;
+	}
 
-    public void startWorkspace() {
-        String wsName = (String) getParam1();
-        try {
-            OGCFrontController fc = OGCFrontController.getInstance();
-            fc.setActiveWorkspaceName( wsName );
-            fc.reload();
-            lastMessage = "Workspace has been started.";
-        } catch ( Throwable t ) {
-            indicateException( "Workspace startup", t );
-        }
-    }
+	public void startWorkspace() {
+		String wsName = (String) getParam1();
+		try {
+			OGCFrontController fc = OGCFrontController.getInstance();
+			fc.setActiveWorkspaceName(wsName);
+			fc.reload();
+			lastMessage = "Workspace has been started.";
+		}
+		catch (Throwable t) {
+			indicateException("Workspace startup", t);
+		}
+	}
 
-    public void deleteWorkspace()
-                            throws IOException {
-        String wsName = (String) getParam1();
-        DeegreeWorkspace dw = DeegreeWorkspace.getInstance( wsName );
-        if ( dw.getLocation().isDirectory() ) {
-            FileUtils.deleteDirectory( dw.getLocation() );
-            lastMessage = "Workspace has been deleted.";
-        }
-    }
+	public void deleteWorkspace() throws IOException {
+		String wsName = (String) getParam1();
+		DeegreeWorkspace dw = DeegreeWorkspace.getInstance(wsName);
+		if (dw.getLocation().isDirectory()) {
+			FileUtils.deleteDirectory(dw.getLocation());
+			lastMessage = "Workspace has been deleted.";
+		}
+	}
 
-    public String applyChanges() {
-        try {
-            OGCFrontController.getInstance().reload();
-        } catch ( Exception e ) {
-            e.printStackTrace();
-        }
+	public String applyChanges() {
+		try {
+			OGCFrontController.getInstance().reload();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 
-        modified = false;
+		modified = false;
 
-        lastMessage = "Workspace changes have been applied.";
-        FacesContext ctx = FacesContext.getCurrentInstance();
-        RequestBean bean = (RequestBean) ctx.getExternalContext().getSessionMap().get( "requestBean" );
-        if ( bean != null ) {
-            bean.init();
-        }
-        return "/index?faces-redirect=true";
-    }
+		lastMessage = "Workspace changes have been applied.";
+		FacesContext ctx = FacesContext.getCurrentInstance();
+		RequestBean bean = (RequestBean) ctx.getExternalContext().getSessionMap().get("requestBean");
+		if (bean != null) {
+			bean.init();
+		}
+		return "/index?faces-redirect=true";
+	}
 
-    public void downloadWorkspace() {
-        String wsName = (String) getParam1();
-        String location = workspaceLocations.get( wsName );
-        InputStream in = null;
-        try {
-            setWorkspaceImportName( wsName );
-            importWorkspace( location );
-        } catch ( Throwable t ) {
-            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to download workspace: " + t.getMessage(), null );
-            FacesContext.getCurrentInstance().addMessage( null, fm );
-        } finally {
-            closeQuietly( in );
-        }
-    }
+	public void downloadWorkspace() {
+		String wsName = (String) getParam1();
+		String location = workspaceLocations.get(wsName);
+		InputStream in = null;
+		try {
+			setWorkspaceImportName(wsName);
+			importWorkspace(location);
+		}
+		catch (Throwable t) {
+			FacesMessage fm = new FacesMessage(SEVERITY_ERROR, "Unable to download workspace: " + t.getMessage(), null);
+			FacesContext.getCurrentInstance().addMessage(null, fm);
+		}
+		finally {
+			closeQuietly(in);
+		}
+	}
 
-    private void importWorkspace( String location ) {
-        InputStream in = null;
-        try {
-            URL url = new URL( location );
-            Pair<InputStream, HttpResponse> p = HttpUtils.getFullResponse( STREAM, location, null, null, null, 10 );
-            File root = new File( getWorkspaceRoot() );
-            in = p.getFirst();
-            if ( p.second.getStatusLine().getStatusCode() != 200 ) {
-                throw new Exception( "Download of '" + location + "' failed. Server responded with HTTP status code "
-                                     + p.second.getStatusLine().getStatusCode() );
-            }
-            String name = workspaceImportName;
-            if ( name == null || name.isEmpty() ) {
-                name = new File( url.getPath() ).getName();
-                name = name.substring( 0, name.lastIndexOf( "." ) );
-            }
-            File target = new File( root, name );
-            if ( target.exists() ) {
-                lastMessage = "Workspace already exists!";
-            } else {
-                Zip.unzip( in, target );
-                lastMessage = "Workspace has been imported.";
-            }
-        } catch ( Exception e ) {
-            e.printStackTrace();
-            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to import workspace: " + e.getMessage(), null );
-            FacesContext.getCurrentInstance().addMessage( null, fm );
-        } finally {
-            closeQuietly( in );
-        }
-    }
+	private void importWorkspace(String location) {
+		InputStream in = null;
+		try {
+			URL url = new URL(location);
+			Pair<InputStream, HttpResponse> p = HttpUtils.getFullResponse(STREAM, location, null, null, null, 10);
+			File root = new File(getWorkspaceRoot());
+			in = p.getFirst();
+			if (p.second.getStatusLine().getStatusCode() != 200) {
+				throw new Exception("Download of '" + location + "' failed. Server responded with HTTP status code "
+						+ p.second.getStatusLine().getStatusCode());
+			}
+			String name = workspaceImportName;
+			if (name == null || name.isEmpty()) {
+				name = new File(url.getPath()).getName();
+				name = name.substring(0, name.lastIndexOf("."));
+			}
+			File target = new File(root, name);
+			if (target.exists()) {
+				lastMessage = "Workspace already exists!";
+			}
+			else {
+				Zip.unzip(in, target);
+				lastMessage = "Workspace has been imported.";
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			FacesMessage fm = new FacesMessage(SEVERITY_ERROR, "Unable to import workspace: " + e.getMessage(), null);
+			FacesContext.getCurrentInstance().addMessage(null, fm);
+		}
+		finally {
+			closeQuietly(in);
+		}
+	}
 
-    public String uploadWorkspace() {
-        if ( upload == null || upload.getFileName() == null ) {
-            FacesMessage fm = new FacesMessage( SEVERITY_INFO, "Please select a workspace file first.", null );
-            FacesContext.getCurrentInstance().addMessage( null, fm );
-            return null;
-        }
-        LOG.info( "Uploaded workspace file: '" + upload.getFileName() + "'" );
-        workspaceImportName = upload.getFileName();
-        if ( workspaceImportName.endsWith( ".deegree-workspace" ) ) {
-            workspaceImportName = workspaceImportName.substring( 0,
-                                                                 workspaceImportName.length()
-                                                                                         - ".deegree-workspace".length() );
-        }
-        if ( workspaceImportName.endsWith( ".zip" ) ) {
-            workspaceImportName = workspaceImportName.substring( 0, workspaceImportName.length() - ".zip".length() );
-        }
+	public String uploadWorkspace() {
+		if (upload == null || upload.getFileName() == null) {
+			FacesMessage fm = new FacesMessage(SEVERITY_INFO, "Please select a workspace file first.", null);
+			FacesContext.getCurrentInstance().addMessage(null, fm);
+			return null;
+		}
+		LOG.info("Uploaded workspace file: '" + upload.getFileName() + "'");
+		workspaceImportName = upload.getFileName();
+		if (workspaceImportName.endsWith(".deegree-workspace")) {
+			workspaceImportName = workspaceImportName.substring(0,
+					workspaceImportName.length() - ".deegree-workspace".length());
+		}
+		if (workspaceImportName.endsWith(".zip")) {
+			workspaceImportName = workspaceImportName.substring(0, workspaceImportName.length() - ".zip".length());
+		}
 
-        return WS_UPLOAD_VIEW;
-    }
+		return WS_UPLOAD_VIEW;
+	}
 
-    public String unzipWorkspace() {
-        InputStream in = null;
-        try {
-            File wsRoot = new File( getWorkspaceRoot() );
-            in = upload.getInputStream();
-            File target = new File( wsRoot, workspaceImportName );
+	public String unzipWorkspace() {
+		InputStream in = null;
+		try {
+			File wsRoot = new File(getWorkspaceRoot());
+			in = upload.getInputStream();
+			File target = new File(wsRoot, workspaceImportName);
 
-            if ( target.exists() ) {
-                throw new Exception( "Workspace '" + workspaceImportName + "' already exists." );
-            } else {
-                Zip.unzip( in, target );
-                LOG.debug( "Workspace unzipped into: '" + target.getAbsolutePath() + "'" );
-            }
-        } catch ( Throwable t ) {
-            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Workspace could not be imported: " + t.getMessage(),
-                                                t.getLocalizedMessage() );
-            FacesContext.getCurrentInstance().addMessage( null, fm );
-            LOG.error("Workspace could not be imported: " + t.getMessage(), t);
-            return null;
-        } finally {
-            closeQuietly( in );
-        }
-        FacesMessage fm = new FacesMessage( SEVERITY_INFO,
-                                            "Workspace '" + workspaceImportName + "' added succesfully.", null );
-        FacesContext.getCurrentInstance().addMessage( null, fm );
-        return WS_MAIN_VIEW;
-    }
+			if (target.exists()) {
+				throw new Exception("Workspace '" + workspaceImportName + "' already exists.");
+			}
+			else {
+				Zip.unzip(in, target);
+				LOG.debug("Workspace unzipped into: '" + target.getAbsolutePath() + "'");
+			}
+		}
+		catch (Throwable t) {
+			FacesMessage fm = new FacesMessage(SEVERITY_ERROR, "Workspace could not be imported: " + t.getMessage(),
+					t.getLocalizedMessage());
+			FacesContext.getCurrentInstance().addMessage(null, fm);
+			LOG.error("Workspace could not be imported: " + t.getMessage(), t);
+			return null;
+		}
+		finally {
+			closeQuietly(in);
+		}
+		FacesMessage fm = new FacesMessage(SEVERITY_INFO, "Workspace '" + workspaceImportName + "' added succesfully.",
+				null);
+		FacesContext.getCurrentInstance().addMessage(null, fm);
+		return WS_MAIN_VIEW;
+	}
 
-    public void importWorkspace() {
-        importWorkspace( workspaceImportUrl );
-    }
+	public void importWorkspace() {
+		importWorkspace(workspaceImportUrl);
+	}
 
-    public List<String> downloadWorkspaceList( String url ) {
-        InputStream in = null;
-        try {
-            Pair<InputStream, HttpResponse> p = HttpUtils.getFullResponse( STREAM, url, null, null, null, 10 );
-            LOG.debug( "Retrieving list of remote workspaces from {} ", url );
-            in = p.getFirst();
-            if ( p.second.getStatusLine().getStatusCode() != 200 ) {
-                LOG.warn( "Could not get workspace list: Server responded with HTTP status code {}.",
-                          p.second.getStatusLine().getStatusCode() );
-                return new ArrayList<String>();
-            }
-            List<String> list = readLines( in );
-            List<String> res = new ArrayList<String>( list.size() );
-            for ( String s : list ) {
-                if ( !s.trim().isEmpty() ) {
-                    String[] tokens = s.split( " ", 2 );
-                    if ( tokens.length != 2 ) {
-                        LOG.warn( "Invalid workspace metadata line: '" + s + "'" );
-                    }
-                    res.add( tokens[1] );
-                    workspaceLocations.put( tokens[1], tokens[0] );
-                }
-            }
-            return res;
-        } catch ( Throwable t ) {
-            LOG.warn( "Could not get workspace list: {}.", t.getMessage() );
-            return new ArrayList<String>();
-        } finally {
-            closeQuietly( in );
-        }
-    }
+	public List<String> downloadWorkspaceList(String url) {
+		InputStream in = null;
+		try {
+			Pair<InputStream, HttpResponse> p = HttpUtils.getFullResponse(STREAM, url, null, null, null, 10);
+			LOG.debug("Retrieving list of remote workspaces from {} ", url);
+			in = p.getFirst();
+			if (p.second.getStatusLine().getStatusCode() != 200) {
+				LOG.warn("Could not get workspace list: Server responded with HTTP status code {}.",
+						p.second.getStatusLine().getStatusCode());
+				return new ArrayList<String>();
+			}
+			List<String> list = readLines(in);
+			List<String> res = new ArrayList<String>(list.size());
+			for (String s : list) {
+				if (!s.trim().isEmpty()) {
+					String[] tokens = s.split(" ", 2);
+					if (tokens.length != 2) {
+						LOG.warn("Invalid workspace metadata line: '" + s + "'");
+					}
+					res.add(tokens[1]);
+					workspaceLocations.put(tokens[1], tokens[0]);
+				}
+			}
+			return res;
+		}
+		catch (Throwable t) {
+			LOG.warn("Could not get workspace list: {}.", t.getMessage());
+			return new ArrayList<String>();
+		}
+		finally {
+			closeQuietly(in);
+		}
+	}
 
-    public List<String> getRemoteWorkspaces() {
-        workspaceLocations.clear();
-        List<String> list = new ArrayList<String>();
-        for ( String wsArtifactName : WS_LIST ) {
-            addWorkspaceLocation( wsArtifactName, list );
-        }
-        return list;
-    }
+	public List<String> getRemoteWorkspaces() {
+		workspaceLocations.clear();
+		List<String> list = new ArrayList<String>();
+		for (String wsArtifactName : WS_LIST) {
+			addWorkspaceLocation(wsArtifactName, list);
+		}
+		return list;
+	}
 
-    private void addWorkspaceLocation( String wsArtifactName, List<String> list ) {
-        String url = "https://repo.deegree.org/service/rest/v1/search/assets/download?"
-                + "repository=releases"
-                + "&maven.groupId=org.deegree"
-                + "&maven.artifactId=" + wsArtifactName
-                + "&sort=version"
-                + "&maven.extension=zip";
-        workspaceLocations.put( wsArtifactName, url );
-        list.add( wsArtifactName );
-    }
+	private void addWorkspaceLocation(String wsArtifactName, List<String> list) {
+		String url = "https://repo.deegree.org/service/rest/v1/search/assets/download?" + "repository=releases"
+				+ "&maven.groupId=org.deegree" + "&maven.artifactId=" + wsArtifactName + "&sort=version"
+				+ "&maven.extension=zip";
+		workspaceLocations.put(wsArtifactName, url);
+		list.add(wsArtifactName);
+	}
 
-    public String getVersion() {
-        String version = null;
-        Collection<ModuleInfo> modules = getModulesInfo();
-        for ( ModuleInfo module : modules ) {
-            if ( module.getArtifactId().equals( "deegree-core-commons" ) ) {
-                version = module.getVersion();
-                break;
-            }
-        }
-        if ( version == null ) {
-            LOG.warn( "No valid version information from Maven deegree modules available. Defaulting to "
-                      + DEFAULT_VERSION );
-            version = DEFAULT_VERSION;
-        }
-        return version;
-    }
+	public String getVersion() {
+		String version = null;
+		Collection<ModuleInfo> modules = getModulesInfo();
+		for (ModuleInfo module : modules) {
+			if (module.getArtifactId().equals("deegree-core-commons")) {
+				version = module.getVersion();
+				break;
+			}
+		}
+		if (version == null) {
+			LOG.warn("No valid version information from Maven deegree modules available. Defaulting to "
+					+ DEFAULT_VERSION);
+			version = DEFAULT_VERSION;
+		}
+		return version;
+	}
 
-    public void setModified() {
-        this.modified = true;
-    }
+	public void setModified() {
+		this.modified = true;
+	}
 
-    public boolean getPendingChanges() {
-        if ( modified ) {
-            lastMessage = "Workspace has been changed.";
-        }
-        return modified;
-    }
+	public boolean getPendingChanges() {
+		if (modified) {
+			lastMessage = "Workspace has been changed.";
+		}
+		return modified;
+	}
 
-    public void validate() {
-        DeegreeWorkspace activeWorkspace = getActiveWorkspace();
-        LOG.debug("Starting validation of workspace {} ", activeWorkspace );
-        new WorkspaceValidator().validateWorkspace(activeWorkspace);
-        LOG.debug("Completed validation of workspace {} ", activeWorkspace );
-    }
+	public void validate() {
+		DeegreeWorkspace activeWorkspace = getActiveWorkspace();
+		LOG.debug("Starting validation of workspace {} ", activeWorkspace);
+		new WorkspaceValidator().validateWorkspace(activeWorkspace);
+		LOG.debug("Completed validation of workspace {} ", activeWorkspace);
+	}
 
-    public void handleFileUpload(FileUploadEvent event) {
-        LOG.debug("New workspace file {} uploaded", event.getFile().getFileName() );
-        this.upload = event.getFile();
-        this.uploadWorkspace();
-        this.unzipWorkspace();
-        LOG.debug("Workspace {} unzipped into workspace root directory", workspaceImportName );
-    }
+	public void handleFileUpload(FileUploadEvent event) {
+		LOG.debug("New workspace file {} uploaded", event.getFile().getFileName());
+		this.upload = event.getFile();
+		this.uploadWorkspace();
+		this.unzipWorkspace();
+		LOG.debug("Workspace {} unzipped into workspace root directory", workspaceImportName);
+	}
+
 }

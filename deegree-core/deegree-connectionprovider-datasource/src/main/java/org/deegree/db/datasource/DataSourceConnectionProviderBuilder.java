@@ -37,7 +37,7 @@
  Occam Labs UG (haftungsbeschränkt)
  Godesberger Allee 139, 53175 Bonn
  Germany
- 
+
  grit graphische Informationstechnik Beratungsgesellschaft mbH
  Landwehrstr. 143, 59368 Werne
  Germany
@@ -66,94 +66,98 @@ import org.slf4j.Logger;
 
 /**
  * {@link ResourceBuilder} for the {@link DataSourceConnectionProvider}.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
- * 
  * @since 3.4
  */
 class DataSourceConnectionProviderBuilder implements ResourceBuilder<ConnectionProvider> {
 
-    private static final Logger LOG = getLogger( DataSourceConnectionProviderBuilder.class );
+	private static final Logger LOG = getLogger(DataSourceConnectionProviderBuilder.class);
 
-    private final org.deegree.db.datasource.jaxb.DataSourceConnectionProvider config;
+	private final org.deegree.db.datasource.jaxb.DataSourceConnectionProvider config;
 
-    private final DataSourceConnectionProviderMetadata metadata;
+	private final DataSourceConnectionProviderMetadata metadata;
 
-    private final Workspace workspace;
+	private final Workspace workspace;
 
-    DataSourceConnectionProviderBuilder( final org.deegree.db.datasource.jaxb.DataSourceConnectionProvider config,
-                                         final DataSourceConnectionProviderMetadata metadata, final Workspace workspace ) {
-        this.config = config;
-        this.metadata = metadata;
-        this.workspace = workspace;
-    }
+	DataSourceConnectionProviderBuilder(final org.deegree.db.datasource.jaxb.DataSourceConnectionProvider config,
+			final DataSourceConnectionProviderMetadata metadata, final Workspace workspace) {
+		this.config = config;
+		this.metadata = metadata;
+		this.workspace = workspace;
+	}
 
-    @Override
-    public ConnectionProvider build() {
-        final DataSource ds = initializeDataSourceInstance();
-        final Method destroyMethod = getDestroyMethod( ds, config.getDataSource().getDestroyMethod() );
-        final Connection conn = checkConnectivity( ds );
-        final SQLDialect dialect;
-        if ( config.getDialectProvider() != null ) {
-            String dialectProviderCls = config.getDialectProvider().getJavaClass();
-            try {
-                Class<?> clazz = workspace.getModuleClassLoader().loadClass( dialectProviderCls );
-                SqlDialectProvider prov = clazz.asSubclass( SqlDialectProvider.class ).newInstance();
-                dialect = prov.createDialect( conn );
-            } catch ( Exception ex ) {
-                final String msg = "Configured SQL dialect provider '" + dialectProviderCls + "' failed to initialize: "
-                                   + ex.getLocalizedMessage();
-                throw new ResourceException( msg, ex );
-            }
-        } else {
-            dialect = SqlDialects.lookupSqlDialect( conn, workspace.getModuleClassLoader() );
-        }
-        close( conn );
-        return new DataSourceConnectionProvider( metadata, ds, dialect, destroyMethod );
-    }
+	@Override
+	public ConnectionProvider build() {
+		final DataSource ds = initializeDataSourceInstance();
+		final Method destroyMethod = getDestroyMethod(ds, config.getDataSource().getDestroyMethod());
+		final Connection conn = checkConnectivity(ds);
+		final SQLDialect dialect;
+		if (config.getDialectProvider() != null) {
+			String dialectProviderCls = config.getDialectProvider().getJavaClass();
+			try {
+				Class<?> clazz = workspace.getModuleClassLoader().loadClass(dialectProviderCls);
+				SqlDialectProvider prov = clazz.asSubclass(SqlDialectProvider.class).newInstance();
+				dialect = prov.createDialect(conn);
+			}
+			catch (Exception ex) {
+				final String msg = "Configured SQL dialect provider '" + dialectProviderCls + "' failed to initialize: "
+						+ ex.getLocalizedMessage();
+				throw new ResourceException(msg, ex);
+			}
+		}
+		else {
+			dialect = SqlDialects.lookupSqlDialect(conn, workspace.getModuleClassLoader());
+		}
+		close(conn);
+		return new DataSourceConnectionProvider(metadata, ds, dialect, destroyMethod);
+	}
 
-    private DataSource initializeDataSourceInstance() {
-        try {
-            final DataSourceInitializer initializer = new DataSourceInitializer( workspace.getModuleClassLoader() );
-            return initializer.getConfiguredDataSource( config );
-        } catch ( Exception e ) {
-            String msg = getMessageOrCauseMessage( e );
-            LOG.error( msg, e );
-            throw new ResourceException( msg, e );
-        }
-    }
+	private DataSource initializeDataSourceInstance() {
+		try {
+			final DataSourceInitializer initializer = new DataSourceInitializer(workspace.getModuleClassLoader());
+			return initializer.getConfiguredDataSource(config);
+		}
+		catch (Exception e) {
+			String msg = getMessageOrCauseMessage(e);
+			LOG.error(msg, e);
+			throw new ResourceException(msg, e);
+		}
+	}
 
-    private String getMessageOrCauseMessage( final Exception e ) {
-        if ( e.getLocalizedMessage() != null ) {
-            return e.getLocalizedMessage();
-        }
-        if ( e.getCause() != null ) {
-            return e.getCause().getLocalizedMessage();
-        }
-        return null;
-    }
+	private String getMessageOrCauseMessage(final Exception e) {
+		if (e.getLocalizedMessage() != null) {
+			return e.getLocalizedMessage();
+		}
+		if (e.getCause() != null) {
+			return e.getCause().getLocalizedMessage();
+		}
+		return null;
+	}
 
-    private Connection checkConnectivity( DataSource ds ) {
-        try {
-            return ds.getConnection();
-        } catch ( Exception e ) {
-            String msg = "Error connecting to database: " + e.getLocalizedMessage();
-            throw new ResourceException( msg, e );
-        }
-    }
+	private Connection checkConnectivity(DataSource ds) {
+		try {
+			return ds.getConnection();
+		}
+		catch (Exception e) {
+			String msg = "Error connecting to database: " + e.getLocalizedMessage();
+			throw new ResourceException(msg, e);
+		}
+	}
 
-    Method getDestroyMethod( final DataSource ds, final String methodName ) {
-        if ( methodName != null ) {
-            try {
-                return ds.getClass().getMethod( methodName );
-            } catch ( Exception e ) {
-                String msg = "Cannot find specified destroy method '" + methodName + "' for class '"
-                             + ds.getClass().getCanonicalName() + "'";
-                LOG.error( msg );
-            }
-        }
-        return null;
-    }
+	Method getDestroyMethod(final DataSource ds, final String methodName) {
+		if (methodName != null) {
+			try {
+				return ds.getClass().getMethod(methodName);
+			}
+			catch (Exception e) {
+				String msg = "Cannot find specified destroy method '" + methodName + "' for class '"
+						+ ds.getClass().getCanonicalName() + "'";
+				LOG.error(msg);
+			}
+		}
+		return null;
+	}
 
 }

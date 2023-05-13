@@ -40,35 +40,34 @@ import org.apache.xerces.util.SymbolTable;
 import org.apache.xerces.util.XMLGrammarPoolImpl;
 
 /**
- * Xerces <code>XMLGrammarPool</code> implementation that wraps a Xerces <code>SymbolTable</code>.
- * 
+ * Xerces <code>XMLGrammarPool</code> implementation that wraps a Xerces
+ * <code>SymbolTable</code>.
+ *
  * TODO can Grammars be parsed individually?
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- * 
  * @version $Revision: $, $Date: $
  */
 class GrammarPool extends XMLGrammarPoolImpl {
 
-    private SymbolTable sym;
+	private SymbolTable sym;
 
-    /**
-     * Creates a new {@link GrammarPool} instance based on the given Xerces <code>SymbolTable</code>.
-     * 
-     * @param sym
-     *            Xerces <code>SymbolTable</code>, never <code>null</code>
-     */
-    GrammarPool( SymbolTable sym ) {
-        this.sym = sym;
-    }
+	/**
+	 * Creates a new {@link GrammarPool} instance based on the given Xerces
+	 * <code>SymbolTable</code>.
+	 * @param sym Xerces <code>SymbolTable</code>, never <code>null</code>
+	 */
+	GrammarPool(SymbolTable sym) {
+		this.sym = sym;
+	}
 
-    /**
-     * Returns the wrapped <code>SymbolTable</code>.
-     * 
-     * @return Xerces <code>SymbolTable</code>, never <code>null</code>
-     */
-    SymbolTable getSymbolTable() {
-        return sym;
-    }
+	/**
+	 * Returns the wrapped <code>SymbolTable</code>.
+	 * @return Xerces <code>SymbolTable</code>, never <code>null</code>
+	 */
+	SymbolTable getSymbolTable() {
+		return sym;
+	}
+
 }

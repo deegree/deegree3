@@ -53,49 +53,46 @@ import org.deegree.geometry.standard.points.PointsList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 public abstract class AbstractSimilarityTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger( AbstractSimilarityTest.class );
+	private static final Logger LOG = LoggerFactory.getLogger(AbstractSimilarityTest.class);
 
-    private static final ICRS mapcs = CRSManager.getCRSRef( "CRS:1" );
+	private static final ICRS mapcs = CRSManager.getCRSRef("CRS:1");
 
-    private static final GeometryFactory fac = new GeometryFactory();
+	private static final GeometryFactory fac = new GeometryFactory();
 
-    /**
-     * @param offx
-     * @param offy
-     * @param sizex
-     * @param sizey
-     * @return a curve similar to the points of #randomQuad (but without the last)
-     */
-    static Curve testCurve( double offx, double offy, double sizex, double sizey ) {
-        Point[] ps = { fac.createPoint( null, offx + 0, offy, mapcs ),
-                       fac.createPoint( null, offx + sizex * 0.2d, offy + sizey, mapcs ),
-                       fac.createPoint( null, offx + sizex * 0.8d, offy + sizey, mapcs ),
-                       fac.createPoint( null, offx + sizex, offy, mapcs ) };
-        return fac.createLineString( null, mapcs, new PointsList( asList( ps ) ) );
-    }
-    
-    /**
-     * @param offx
-     * @param offy
-     * @param sizex
-     * @param sizey
-     * @return a curve similar to the points of #randomQuad (but without the last)
-     */
-    static Polygon testPolygon( double offx, double offy, double sizex, double sizey ) {
-        Point[] ps = { fac.createPoint( null, offx + 0, offy, mapcs ),
-                       fac.createPoint( null, offx + sizex * 0.2d, offy + sizey, mapcs ),
-                       fac.createPoint( null, offx + sizex * 0.8d, offy + sizey, mapcs ),
-                       fac.createPoint( null, offx + sizex, offy, mapcs ),
-                       fac.createPoint( null, offx + 0, offy, mapcs )};
-        return fac.createPolygon( null, mapcs, fac.createLinearRing( null, mapcs, new PointsList( asList( ps ) ) ),
-                                  null );
-    }
+	/**
+	 * @param offx
+	 * @param offy
+	 * @param sizex
+	 * @param sizey
+	 * @return a curve similar to the points of #randomQuad (but without the last)
+	 */
+	static Curve testCurve(double offx, double offy, double sizex, double sizey) {
+		Point[] ps = { fac.createPoint(null, offx + 0, offy, mapcs),
+				fac.createPoint(null, offx + sizex * 0.2d, offy + sizey, mapcs),
+				fac.createPoint(null, offx + sizex * 0.8d, offy + sizey, mapcs),
+				fac.createPoint(null, offx + sizex, offy, mapcs) };
+		return fac.createLineString(null, mapcs, new PointsList(asList(ps)));
+	}
 
-    String prefixed( String name ) {
-        return getClass().getName() + "_" + name;
-    }
+	/**
+	 * @param offx
+	 * @param offy
+	 * @param sizex
+	 * @param sizey
+	 * @return a curve similar to the points of #randomQuad (but without the last)
+	 */
+	static Polygon testPolygon(double offx, double offy, double sizex, double sizey) {
+		Point[] ps = { fac.createPoint(null, offx + 0, offy, mapcs),
+				fac.createPoint(null, offx + sizex * 0.2d, offy + sizey, mapcs),
+				fac.createPoint(null, offx + sizex * 0.8d, offy + sizey, mapcs),
+				fac.createPoint(null, offx + sizex, offy, mapcs), fac.createPoint(null, offx + 0, offy, mapcs) };
+		return fac.createPolygon(null, mapcs, fac.createLinearRing(null, mapcs, new PointsList(asList(ps))), null);
+	}
+
+	String prefixed(String name) {
+		return getClass().getName() + "_" + name;
+	}
 
 }

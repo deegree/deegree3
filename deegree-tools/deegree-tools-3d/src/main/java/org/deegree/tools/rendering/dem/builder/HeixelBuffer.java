@@ -5,21 +5,22 @@ import java.util.Map;
 
 class HeixelBuffer {
 
-    private final Map<String, Float> xyToHeight = new HashMap<String, Float>();
+	private final Map<String, Float> xyToHeight = new HashMap<String, Float>();
 
-    Float getHeight( float x, float y ) {
-        String s = Math.round( x ) + "," + Math.round( y );
-        Float height = xyToHeight.get( s );
-        return height;
-    }
+	Float getHeight(float x, float y) {
+		String s = Math.round(x) + "," + Math.round(y);
+		Float height = xyToHeight.get(s);
+		return height;
+	}
 
-    public void putHeight( float x, float y, float height ) {
-        String s = Math.round( x ) + "," + Math.round( y );
-        xyToHeight.put( s, height );
-    }
+	public void putHeight(float x, float y, float height) {
+		String s = Math.round(x) + "," + Math.round(y);
+		xyToHeight.put(s, height);
+	}
 
-    @Override
-    public String toString() {
-        return "heixels: " + xyToHeight.size();
-    }
+	@Override
+	public String toString() {
+		return "heixels: " + xyToHeight.size();
+	}
+
 }

@@ -38,30 +38,27 @@ package org.deegree.commons.utils;
 
 /**
  * <code>StringPair</code> is a convenience class, which pairs two Strings.
- * 
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
- * 
+ *
  */
 public class StringPair extends Pair<String, String> {
 
-    /**
-     * create a StringPair with empty strings
-     */
-    public StringPair() {
-        super( "", "" );
-    }
+	/**
+	 * create a StringPair with empty strings
+	 */
+	public StringPair() {
+		super("", "");
+	}
 
-    /**
-     * @param first
-     *            value of the pair.
-     * @param second
-     *            value of the pair.
-     */
-    public StringPair( String first, String second ) {
-        super( first, second );
-    }
+	/**
+	 * @param first value of the pair.
+	 * @param second value of the pair.
+	 */
+	public StringPair(String first, String second) {
+		super(first, second);
+	}
 
 }

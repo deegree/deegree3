@@ -37,22 +37,21 @@ package org.deegree.services.csw.getrepositoryitem;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:goltz@deegree.org">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
- * 
  * @version $Revision: $, $Date: $
  */
 public class GetRepositoryItem {
 
-    private final String id;
+	private final String id;
 
-    public GetRepositoryItem( String id ) {
-        this.id = id;
-    }
+	public GetRepositoryItem(String id) {
+		this.id = id;
+	}
 
-    public String getId() {
-        return id;
-    }
+	public String getId() {
+		return id;
+	}
 
 }

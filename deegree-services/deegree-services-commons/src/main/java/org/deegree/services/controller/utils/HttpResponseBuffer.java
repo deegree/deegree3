@@ -67,8 +67,8 @@ import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.slf4j.Logger;
 
 /**
- * Custom {@link HttpServletResponseWrapper} that buffers all written data internally and will only send the result when
- * {@link #flushBuffer()} is called.
+ * Custom {@link HttpServletResponseWrapper} that buffers all written data internally and
+ * will only send the result when {@link #flushBuffer()} is called.
  * <p>
  * This allows for two things:
  * <ul>
@@ -76,317 +76,325 @@ import org.slf4j.Logger;
  * <li>The whole response and the header can be discarded.</li>
  * </ul>
  * </p>
- * With the first the service is able to set the Content-length. The second allows to discard the generated response and
- * start the response from scratch. This is useful if an exception occurred and an ExceptionReport should be returned
- * and not the partial original result.
+ * With the first the service is able to set the Content-length. The second allows to
+ * discard the generated response and start the response from scratch. This is useful if
+ * an exception occurred and an ExceptionReport should be returned and not the partial
+ * original result.
  * <p>
- * This wrapper allows the change between {@link #getWriter()} and {@link #getOutputStream()} after {@link #reset()} was
- * called. This is unlike the original servlet API that throws an {@link IllegalStateException} when getWriter is called
- * after getOutputStream, or vice versa.
+ * This wrapper allows the change between {@link #getWriter()} and
+ * {@link #getOutputStream()} after {@link #reset()} was called. This is unlike the
+ * original servlet API that throws an {@link IllegalStateException} when getWriter is
+ * called after getOutputStream, or vice versa.
  * </p>
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class HttpResponseBuffer extends HttpServletResponseWrapper {
 
-    private static final Logger LOG = getLogger( HttpResponseBuffer.class );
+	private static final Logger LOG = getLogger(HttpResponseBuffer.class);
 
-    private boolean addEncoding = true;
+	private boolean addEncoding = true;
 
-    // if buffer == null, buffering is disabled
-    private StreamBufferStore buffer;
+	// if buffer == null, buffering is disabled
+	private StreamBufferStore buffer;
 
-    /**
-     * The servlet api only allows a call to either getWriter or getOutputStream. This enum will protocol the current
-     * state.
-     */
-    private enum ReturnType {
-        NOT_DEFINED_YET, PRINT_WRITER, OUTPUT_STREAM
-    }
+	/**
+	 * The servlet api only allows a call to either getWriter or getOutputStream. This
+	 * enum will protocol the current state.
+	 */
+	private enum ReturnType {
 
-    private ReturnType returnType = ReturnType.NOT_DEFINED_YET;
+		NOT_DEFINED_YET, PRINT_WRITER, OUTPUT_STREAM
 
-    private PrintWriter printWriter;
+	}
 
-    private ServletOutputStream outputStream;
+	private ReturnType returnType = ReturnType.NOT_DEFINED_YET;
 
-    private XMLStreamWriter xmlWriter;
+	private PrintWriter printWriter;
 
-    private final HttpServletResponse wrappee;
+	private ServletOutputStream outputStream;
 
-    private final HttpServletRequest request;
+	private XMLStreamWriter xmlWriter;
 
-    /**
-     * @param response
-     * @param request
-     */
-    public HttpResponseBuffer( HttpServletResponse response, HttpServletRequest request ) {
-        super( response );
-        wrappee = response;
-        this.request = request;
-        buffer = new StreamBufferStore();
-        outputStream = new BufferedServletOutputStream( buffer );
-    }
+	private final HttpServletResponse wrappee;
 
-    /**
-     * @return the underlying servlet response
-     */
-    public HttpServletResponse getWrappee() {
-        return wrappee;
-    }
+	private final HttpServletRequest request;
 
-    /**
-     * Disables the buffering of the output.
-     * <p>
-     * This method may only be called, if neither {@link #getWriter()}, {@link #getOutputStream()} nor
-     * {@link #getXMLWriter()} has been called before.
-     * </p>
-     */
-    public void disableBuffering() {
-        if ( returnType != ReturnType.NOT_DEFINED_YET ) {
-            throw new IllegalStateException(
-                                             "getOutputStream() / getWriter() has already been called for this response, cannot disable output buffering" );
-        }
-        LOG.debug( "Disabling buffering." );
-        this.buffer = null;
-    }
+	/**
+	 * @param response
+	 * @param request
+	 */
+	public HttpResponseBuffer(HttpServletResponse response, HttpServletRequest request) {
+		super(response);
+		wrappee = response;
+		this.request = request;
+		buffer = new StreamBufferStore();
+		outputStream = new BufferedServletOutputStream(buffer);
+	}
 
-    @Override
-    public PrintWriter getWriter()
-                            throws IOException {
-        if ( buffer == null ) {
-            return super.getWriter();
-        }
+	/**
+	 * @return the underlying servlet response
+	 */
+	public HttpServletResponse getWrappee() {
+		return wrappee;
+	}
 
-        if ( returnType == ReturnType.NOT_DEFINED_YET ) {
-            String encoding = getCharacterEncoding();
-            if ( encoding == null || "".equals( encoding ) ) {
-                encoding = Charset.defaultCharset().name();
-            }
-            OutputStreamWriter writer = new OutputStreamWriter( outputStream, encoding );
-            printWriter = new PrintWriter( writer );
-            returnType = ReturnType.PRINT_WRITER;
-        }
-        if ( returnType == ReturnType.OUTPUT_STREAM ) {
-            throw new IllegalStateException( "getOutputStream() has already been called for this response" );
-        }
-        return printWriter;
-    }
+	/**
+	 * Disables the buffering of the output.
+	 * <p>
+	 * This method may only be called, if neither {@link #getWriter()},
+	 * {@link #getOutputStream()} nor {@link #getXMLWriter()} has been called before.
+	 * </p>
+	 */
+	public void disableBuffering() {
+		if (returnType != ReturnType.NOT_DEFINED_YET) {
+			throw new IllegalStateException(
+					"getOutputStream() / getWriter() has already been called for this response, cannot disable output buffering");
+		}
+		LOG.debug("Disabling buffering.");
+		this.buffer = null;
+	}
 
-    @Override
-    public ServletOutputStream getOutputStream()
-                            throws IOException {
-        if ( buffer == null ) {
-            return super.getOutputStream();
-        }
-        if ( returnType == ReturnType.NOT_DEFINED_YET ) {
-            returnType = ReturnType.OUTPUT_STREAM;
-        }
-        if ( returnType == ReturnType.PRINT_WRITER ) {
-            throw new IllegalStateException( "getWriter() has already been called for this response" );
-        }
-        return outputStream;
-    }
+	@Override
+	public PrintWriter getWriter() throws IOException {
+		if (buffer == null) {
+			return super.getWriter();
+		}
 
-    /**
-     * Returns an {@link XMLStreamWriter} for writing a response with XML content.
-     * <p>
-     * NOTE: This method may be called more than once -- the first call will create an {@link XMLStreamWriter} object
-     * and subsequent calls return the same object. This provides a convenient means to produce plain XML responses and
-     * SOAP wrapped response bodies with the same code.
-     * </p>
-     * 
-     * @return {@link XMLStreamWriter} for writing the response, with XML preamble already written
-     * @throws IOException
-     * @throws XMLStreamException
-     */
-    public synchronized XMLStreamWriter getXMLWriter()
-                            throws IOException, XMLStreamException {
-        if ( xmlWriter == null ) {
-            XMLOutputFactory factory = XMLOutputFactory.newInstance();
-            String encoding = "UTF-8";
-            xmlWriter = new IndentingXMLStreamWriter( factory.createXMLStreamWriter( getOutputStream(), encoding ) );
-            xmlWriter.writeStartDocument( encoding, "1.0" );
-            // TODO decide again if character encoding should be set (WFS CITE 1.1.0 tests don't like it, but
-            // iGeoDesktop/OpenJUMP currently require it)
-            if ( addEncoding ) {
-                setCharacterEncoding( "UTF-8" );
-            }
-        }
-        return xmlWriter;
-    }
+		if (returnType == ReturnType.NOT_DEFINED_YET) {
+			String encoding = getCharacterEncoding();
+			if (encoding == null || "".equals(encoding)) {
+				encoding = Charset.defaultCharset().name();
+			}
+			OutputStreamWriter writer = new OutputStreamWriter(outputStream, encoding);
+			printWriter = new PrintWriter(writer);
+			returnType = ReturnType.PRINT_WRITER;
+		}
+		if (returnType == ReturnType.OUTPUT_STREAM) {
+			throw new IllegalStateException("getOutputStream() has already been called for this response");
+		}
+		return printWriter;
+	}
 
-    /**
-     * Returns an {@link XMLStreamWriter} for writing a response with XML content.
-     * <p>
-     * NOTE: This method may be called more than once -- the first call will create an {@link XMLStreamWriter} object
-     * and subsequent calls return the same object. This provides a convenient means to produce plain XML responses and
-     * SOAP wrapped response bodies with the same code.
-     * </p>
-     * 
-     * @param setCharacterEncoding
-     *            true, if the response's character encoding should be set, false otherwise
-     * @return {@link XMLStreamWriter} for writing the response, with XML preamble already written
-     * @throws IOException
-     * @throws XMLStreamException
-     */
-    public XMLStreamWriter getXMLWriter( boolean setCharacterEncoding )
-                            throws IOException, XMLStreamException {
+	@Override
+	public ServletOutputStream getOutputStream() throws IOException {
+		if (buffer == null) {
+			return super.getOutputStream();
+		}
+		if (returnType == ReturnType.NOT_DEFINED_YET) {
+			returnType = ReturnType.OUTPUT_STREAM;
+		}
+		if (returnType == ReturnType.PRINT_WRITER) {
+			throw new IllegalStateException("getWriter() has already been called for this response");
+		}
+		return outputStream;
+	}
 
-        if ( xmlWriter == null ) {
-            XMLOutputFactory factory = XMLOutputFactory.newInstance();
-            String xmlEncoding = "UTF-8";
-            xmlWriter = new IndentingXMLStreamWriter( factory.createXMLStreamWriter( getOutputStream(), xmlEncoding ) );
-            xmlWriter.writeStartDocument( xmlEncoding, "1.0" );
-            if ( setCharacterEncoding ) {
-                setCharacterEncoding( xmlEncoding );
-            }
-        }
-        return xmlWriter;
-    }
+	/**
+	 * Returns an {@link XMLStreamWriter} for writing a response with XML content.
+	 * <p>
+	 * NOTE: This method may be called more than once -- the first call will create an
+	 * {@link XMLStreamWriter} object and subsequent calls return the same object. This
+	 * provides a convenient means to produce plain XML responses and SOAP wrapped
+	 * response bodies with the same code.
+	 * </p>
+	 * @return {@link XMLStreamWriter} for writing the response, with XML preamble already
+	 * written
+	 * @throws IOException
+	 * @throws XMLStreamException
+	 */
+	public synchronized XMLStreamWriter getXMLWriter() throws IOException, XMLStreamException {
+		if (xmlWriter == null) {
+			XMLOutputFactory factory = XMLOutputFactory.newInstance();
+			String encoding = "UTF-8";
+			xmlWriter = new IndentingXMLStreamWriter(factory.createXMLStreamWriter(getOutputStream(), encoding));
+			xmlWriter.writeStartDocument(encoding, "1.0");
+			// TODO decide again if character encoding should be set (WFS CITE 1.1.0 tests
+			// don't like it, but
+			// iGeoDesktop/OpenJUMP currently require it)
+			if (addEncoding) {
+				setCharacterEncoding("UTF-8");
+			}
+		}
+		return xmlWriter;
+	}
 
-    /**
-     * Performs a schema-based validation of the response (only if the written output has been buffered and was XML).
-     */
-    public void validate() {
+	/**
+	 * Returns an {@link XMLStreamWriter} for writing a response with XML content.
+	 * <p>
+	 * NOTE: This method may be called more than once -- the first call will create an
+	 * {@link XMLStreamWriter} object and subsequent calls return the same object. This
+	 * provides a convenient means to produce plain XML responses and SOAP wrapped
+	 * response bodies with the same code.
+	 * </p>
+	 * @param setCharacterEncoding true, if the response's character encoding should be
+	 * set, false otherwise
+	 * @return {@link XMLStreamWriter} for writing the response, with XML preamble already
+	 * written
+	 * @throws IOException
+	 * @throws XMLStreamException
+	 */
+	public XMLStreamWriter getXMLWriter(boolean setCharacterEncoding) throws IOException, XMLStreamException {
 
-        if ( buffer != null ) {
+		if (xmlWriter == null) {
+			XMLOutputFactory factory = XMLOutputFactory.newInstance();
+			String xmlEncoding = "UTF-8";
+			xmlWriter = new IndentingXMLStreamWriter(factory.createXMLStreamWriter(getOutputStream(), xmlEncoding));
+			xmlWriter.writeStartDocument(xmlEncoding, "1.0");
+			if (setCharacterEncoding) {
+				setCharacterEncoding(xmlEncoding);
+			}
+		}
+		return xmlWriter;
+	}
 
-            boolean isXML = xmlWriter != null || ( getContentType() != null && getContentType().contains( "xml" ) );
+	/**
+	 * Performs a schema-based validation of the response (only if the written output has
+	 * been buffered and was XML).
+	 */
+	public void validate() {
 
-            if ( isXML && buffer != null ) {
+		if (buffer != null) {
 
-                long begin = System.currentTimeMillis();
-                List<String> messages = null;
+			boolean isXML = xmlWriter != null || (getContentType() != null && getContentType().contains("xml"));
 
-                XMLStreamReader reader;
-                try {
-                    reader = XMLInputFactory.newInstance().createXMLStreamReader( buffer.getInputStream() );
-                    reader.nextTag();
-                    QName firstElement = reader.getName();
-                    if ( new QName( CommonNamespaces.XSNS, "schema" ).equals( firstElement ) ) {
-                        LOG.info( "Validating generated XML output (schema document)." );
-                        messages = SchemaValidator.validateSchema( buffer.getInputStream() );
-                    } else {
-                        LOG.info( "Validating generated XML output (instance document)." );
-                        messages = new ArrayList<String>();
-                        List<SchemaValidationEvent> evts = SchemaValidator.validate( buffer.getInputStream() );
-                        for ( SchemaValidationEvent evt : evts ) {
-                            messages.add( evt.toString() );
-                        }
-                    }
-                } catch ( Exception e ) {
-                    messages = Collections.singletonList( e.getLocalizedMessage() );
-                }
+			if (isXML && buffer != null) {
 
-                long elapsed = System.currentTimeMillis() - begin;
-                if ( messages.size() == 0 ) {
-                    LOG.info( "Output is valid. Validation took " + elapsed + " ms." );
-                } else {
-                    LOG.error( "Output is ***invalid***: " + messages.size() + " error(s)/warning(s). Validation took "
-                               + elapsed + " ms." );
-                    for ( String msg : messages ) {
-                        LOG.error( "***" + msg );
-                    }
-                }
-            }
-        }
-    }
+				long begin = System.currentTimeMillis();
+				List<String> messages = null;
 
-    @Override
-    public void flushBuffer()
-                            throws IOException {
-        if ( request instanceof LoggingHttpRequestWrapper ) {
-            ( (LoggingHttpRequestWrapper) request ).finalizeLogging();
-        }
-        if ( xmlWriter != null ) {
-            try {
-                xmlWriter.flush();
-            } catch ( XMLStreamException e ) {
-                LOG.debug( e.getLocalizedMessage(), e );
-                throw new IOException( e );
-            }
-        }
-        if ( buffer != null ) {
-            try {
-                buffer.flush();
-                buffer.writeTo( super.getOutputStream() );
-            } finally {
-                buffer.reset();
-            }
-        }
-        super.flushBuffer();
-    }
+				XMLStreamReader reader;
+				try {
+					reader = XMLInputFactory.newInstance().createXMLStreamReader(buffer.getInputStream());
+					reader.nextTag();
+					QName firstElement = reader.getName();
+					if (new QName(CommonNamespaces.XSNS, "schema").equals(firstElement)) {
+						LOG.info("Validating generated XML output (schema document).");
+						messages = SchemaValidator.validateSchema(buffer.getInputStream());
+					}
+					else {
+						LOG.info("Validating generated XML output (instance document).");
+						messages = new ArrayList<String>();
+						List<SchemaValidationEvent> evts = SchemaValidator.validate(buffer.getInputStream());
+						for (SchemaValidationEvent evt : evts) {
+							messages.add(evt.toString());
+						}
+					}
+				}
+				catch (Exception e) {
+					messages = Collections.singletonList(e.getLocalizedMessage());
+				}
 
-    @Override
-    public void reset() {
-        if ( buffer != null && !isCommitted() ) {
-            buffer.reset();
-            super.reset();
-            returnType = ReturnType.NOT_DEFINED_YET;
-            xmlWriter = null;
-        } else {
-            super.reset(); // throws IllegalStateException
-        }
-    }
+				long elapsed = System.currentTimeMillis() - begin;
+				if (messages.size() == 0) {
+					LOG.info("Output is valid. Validation took " + elapsed + " ms.");
+				}
+				else {
+					LOG.error("Output is ***invalid***: " + messages.size() + " error(s)/warning(s). Validation took "
+							+ elapsed + " ms.");
+					for (String msg : messages) {
+						LOG.error("***" + msg);
+					}
+				}
+			}
+		}
+	}
 
-    @Override
-    public int getBufferSize() {
-        if ( buffer != null ) {
-            return buffer.size();
-        }
-        return super.getBufferSize();
-    }
+	@Override
+	public void flushBuffer() throws IOException {
+		if (request instanceof LoggingHttpRequestWrapper) {
+			((LoggingHttpRequestWrapper) request).finalizeLogging();
+		}
+		if (xmlWriter != null) {
+			try {
+				xmlWriter.flush();
+			}
+			catch (XMLStreamException e) {
+				LOG.debug(e.getLocalizedMessage(), e);
+				throw new IOException(e);
+			}
+		}
+		if (buffer != null) {
+			try {
+				buffer.flush();
+				buffer.writeTo(super.getOutputStream());
+			}
+			finally {
+				buffer.reset();
+			}
+		}
+		super.flushBuffer();
+	}
 
-    /**
-     * @return the buffer
-     */
-    public OutputStream getBuffer() {
-        return buffer;
-    }
+	@Override
+	public void reset() {
+		if (buffer != null && !isCommitted()) {
+			buffer.reset();
+			super.reset();
+			returnType = ReturnType.NOT_DEFINED_YET;
+			xmlWriter = null;
+		}
+		else {
+			super.reset(); // throws IllegalStateException
+		}
+	}
 
-    /**
-     * This is a ServletOutputStream that uses our internal ByteArrayOutputStream to buffer all data.
-     */
-    private static class BufferedServletOutputStream extends ServletOutputStream {
+	@Override
+	public int getBufferSize() {
+		if (buffer != null) {
+			return buffer.size();
+		}
+		return super.getBufferSize();
+	}
 
-        private final OutputStream buffer;
+	/**
+	 * @return the buffer
+	 */
+	public OutputStream getBuffer() {
+		return buffer;
+	}
 
-        public BufferedServletOutputStream( OutputStream buffer ) {
-            this.buffer = buffer;
-        }
+	/**
+	 * This is a ServletOutputStream that uses our internal ByteArrayOutputStream to
+	 * buffer all data.
+	 */
+	private static class BufferedServletOutputStream extends ServletOutputStream {
 
-        @Override
-        public void write( byte[] b )
-                                throws IOException {
-            buffer.write( b );
-        }
+		private final OutputStream buffer;
 
-        @Override
-        public void write( byte[] b, int off, int len )
-                                throws IOException {
-            buffer.write( b, off, len );
-        }
+		public BufferedServletOutputStream(OutputStream buffer) {
+			this.buffer = buffer;
+		}
 
-        @Override
-        public void write( int b )
-                                throws IOException {
-            buffer.write( b );
-        }
+		@Override
+		public void write(byte[] b) throws IOException {
+			buffer.write(b);
+		}
 
-        @Override
-        public boolean isReady() {
-            return false;
-        }
+		@Override
+		public void write(byte[] b, int off, int len) throws IOException {
+			buffer.write(b, off, len);
+		}
 
-        @Override
-        public void setWriteListener(WriteListener writeListener) {
+		@Override
+		public void write(int b) throws IOException {
+			buffer.write(b);
+		}
 
-        }
-    }
+		@Override
+		public boolean isReady() {
+			return false;
+		}
+
+		@Override
+		public void setWriteListener(WriteListener writeListener) {
+
+		}
+
+	}
+
 }

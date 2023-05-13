@@ -49,25 +49,25 @@ import org.deegree.workspace.ResourceMetadata;
 
 @ManagedBean
 @ViewScoped
-public class SqlConnectionManagerBean extends AbstractResourceManagerBean<ConnectionProviderManager> implements
-Serializable {
+public class SqlConnectionManagerBean extends AbstractResourceManagerBean<ConnectionProviderManager>
+		implements Serializable {
 
-    private static final long serialVersionUID = 2946865645336970064L;
+	private static final long serialVersionUID = 2946865645336970064L;
 
-    public SqlConnectionManagerBean() {
-        super( ConnectionProviderManager.class );
-    }
+	public SqlConnectionManagerBean() {
+		super(ConnectionProviderManager.class);
+	}
 
-    @Override
-    public List<Config> getConfigs() {
-        List<Config> configs = new ArrayList<Config>();
-        for ( ResourceMetadata<?> state : resourceManager.getResourceMetadata() ) {
-            if (!state.getIdentifier().getId().equals( "LOCK_DB" )) {
-                configs.add( new Config( state, resourceManager, "/console/connection/sql/index", true ) );
-            }
-        }
-        Collections.sort( configs );
-        return configs;
-    }
+	@Override
+	public List<Config> getConfigs() {
+		List<Config> configs = new ArrayList<Config>();
+		for (ResourceMetadata<?> state : resourceManager.getResourceMetadata()) {
+			if (!state.getIdentifier().getId().equals("LOCK_DB")) {
+				configs.add(new Config(state, resourceManager, "/console/connection/sql/index", true));
+			}
+		}
+		Collections.sort(configs);
+		return configs;
+	}
 
 }

@@ -53,82 +53,82 @@ import static org.mockito.Mockito.when;
  */
 public class RequestedLayerVisibilityInspectorTest {
 
-    @Test
-    public void testIsVisible_InspectorForOneCategoryLayerIdentifier()
-                            throws Exception {
-        List<VisibilityInspectorType> visibilityInspectorTypes = createConfigurationWithOneCategoryLayerIdentifier( "ReqestedLayerToCheck" );
-        Workspace workspace = mockWorkspace();
-        RequestedLayerVisibilityInspector inspector = new RequestedLayerVisibilityInspector( visibilityInspectorTypes,
-                                                                                             workspace );
+	@Test
+	public void testIsVisible_InspectorForOneCategoryLayerIdentifier() throws Exception {
+		List<VisibilityInspectorType> visibilityInspectorTypes = createConfigurationWithOneCategoryLayerIdentifier(
+				"ReqestedLayerToCheck");
+		Workspace workspace = mockWorkspace();
+		RequestedLayerVisibilityInspector inspector = new RequestedLayerVisibilityInspector(visibilityInspectorTypes,
+				workspace);
 
-        assertTrue( inspector.isVisible( "ReqestedLayerToCheck", createLayerMetadata( "IAmVisible" ) ) );
-        assertFalse( inspector.isVisible( "ReqestedLayerToCheck", createLayerMetadata( "NotVisible" ) ) );
-        assertTrue( inspector.isVisible( "ReqestedLayer", createLayerMetadata( "IAmVisible" ) ) );
-        assertTrue( inspector.isVisible( "ReqestedLayer", createLayerMetadata( "NotVisible" ) ) );
-    }
+		assertTrue(inspector.isVisible("ReqestedLayerToCheck", createLayerMetadata("IAmVisible")));
+		assertFalse(inspector.isVisible("ReqestedLayerToCheck", createLayerMetadata("NotVisible")));
+		assertTrue(inspector.isVisible("ReqestedLayer", createLayerMetadata("IAmVisible")));
+		assertTrue(inspector.isVisible("ReqestedLayer", createLayerMetadata("NotVisible")));
+	}
 
-    @Test
-    public void testIsVisible_InspectorForAllRequestedLayer()
-                            throws Exception {
-        List<VisibilityInspectorType> visibilityInspectorTypes = createConfigurationWithInspectorForAll();
-        Workspace workspace = mockWorkspace();
-        RequestedLayerVisibilityInspector inspector = new RequestedLayerVisibilityInspector( visibilityInspectorTypes,
-                                                                                             workspace );
+	@Test
+	public void testIsVisible_InspectorForAllRequestedLayer() throws Exception {
+		List<VisibilityInspectorType> visibilityInspectorTypes = createConfigurationWithInspectorForAll();
+		Workspace workspace = mockWorkspace();
+		RequestedLayerVisibilityInspector inspector = new RequestedLayerVisibilityInspector(visibilityInspectorTypes,
+				workspace);
 
-        assertTrue( inspector.isVisible( "ReqestedLayerToCheck", createLayerMetadata( "IAmVisible" ) ) );
-        assertFalse( inspector.isVisible( "ReqestedLayerToCheck", createLayerMetadata( "NotVisible" ) ) );
-        assertTrue( inspector.isVisible( "ReqestedLayer", createLayerMetadata( "IAmVisible" ) ) );
-        assertFalse( inspector.isVisible( "ReqestedLayer", createLayerMetadata( "NotVisible" ) ) );
-    }
+		assertTrue(inspector.isVisible("ReqestedLayerToCheck", createLayerMetadata("IAmVisible")));
+		assertFalse(inspector.isVisible("ReqestedLayerToCheck", createLayerMetadata("NotVisible")));
+		assertTrue(inspector.isVisible("ReqestedLayer", createLayerMetadata("IAmVisible")));
+		assertFalse(inspector.isVisible("ReqestedLayer", createLayerMetadata("NotVisible")));
+	}
 
-    @Test
-    public void testIsVisible_TwoInspectorsOneForAllRequestedLayerOneForTwoCategoryLayerIdentifier()
-                            throws Exception {
-        List<VisibilityInspectorType> visibilityInspectorTypes = createConfigurationWithMultipleInspectors( "ReqestedLayerToCheck" );
-        Workspace workspace = mockWorkspace();
-        RequestedLayerVisibilityInspector inspector = new RequestedLayerVisibilityInspector( visibilityInspectorTypes,
-                                                                                             workspace );
+	@Test
+	public void testIsVisible_TwoInspectorsOneForAllRequestedLayerOneForTwoCategoryLayerIdentifier() throws Exception {
+		List<VisibilityInspectorType> visibilityInspectorTypes = createConfigurationWithMultipleInspectors(
+				"ReqestedLayerToCheck");
+		Workspace workspace = mockWorkspace();
+		RequestedLayerVisibilityInspector inspector = new RequestedLayerVisibilityInspector(visibilityInspectorTypes,
+				workspace);
 
-        assertTrue( inspector.isVisible( "ReqestedLayerToCheck", createLayerMetadata( "IAmVisible" ) ) );
-        assertFalse( inspector.isVisible( "ReqestedLayerToCheck", createLayerMetadata( "NotVisible" ) ) );
-        assertTrue( inspector.isVisible( "ReqestedLayer", createLayerMetadata( "IAmVisible" ) ) );
-        assertFalse( inspector.isVisible( "ReqestedLayer", createLayerMetadata( "NotVisible" ) ) );
-    }
+		assertTrue(inspector.isVisible("ReqestedLayerToCheck", createLayerMetadata("IAmVisible")));
+		assertFalse(inspector.isVisible("ReqestedLayerToCheck", createLayerMetadata("NotVisible")));
+		assertTrue(inspector.isVisible("ReqestedLayer", createLayerMetadata("IAmVisible")));
+		assertFalse(inspector.isVisible("ReqestedLayer", createLayerMetadata("NotVisible")));
+	}
 
-    private LayerMetadata createLayerMetadata( String layerName ) {
-        return new LayerMetadata( layerName, null, null );
-    }
+	private LayerMetadata createLayerMetadata(String layerName) {
+		return new LayerMetadata(layerName, null, null);
+	}
 
-    private List<VisibilityInspectorType> createConfigurationWithOneCategoryLayerIdentifier( String... categoryLayerIdentifier ) {
-        return createInspectors( categoryLayerIdentifier );
-    }
+	private List<VisibilityInspectorType> createConfigurationWithOneCategoryLayerIdentifier(
+			String... categoryLayerIdentifier) {
+		return createInspectors(categoryLayerIdentifier);
+	}
 
-    private List<VisibilityInspectorType> createConfigurationWithInspectorForAll() {
-        return createInspectors();
-    }
+	private List<VisibilityInspectorType> createConfigurationWithInspectorForAll() {
+		return createInspectors();
+	}
 
-    private List<VisibilityInspectorType> createConfigurationWithMultipleInspectors( String... categoryLayerIdentifier ) {
-        List<VisibilityInspectorType> inspectorForAll = createInspectors();
-        List<VisibilityInspectorType> inspector = createInspectors( categoryLayerIdentifier );
-        inspectorForAll.addAll( inspector );
-        return inspectorForAll;
-    }
+	private List<VisibilityInspectorType> createConfigurationWithMultipleInspectors(String... categoryLayerIdentifier) {
+		List<VisibilityInspectorType> inspectorForAll = createInspectors();
+		List<VisibilityInspectorType> inspector = createInspectors(categoryLayerIdentifier);
+		inspectorForAll.addAll(inspector);
+		return inspectorForAll;
+	}
 
-    private List<VisibilityInspectorType> createInspectors( String... categoryLayerIdentifier ) {
-        List<VisibilityInspectorType> inspectorTypes = new ArrayList<VisibilityInspectorType>();
-        VisibilityInspectorType inspectorType = new VisibilityInspectorType();
-        inspectorType.setJavaClass( LayerVisibilityInspectorTestImpl.class.getCanonicalName() );
-        if ( categoryLayerIdentifier != null && categoryLayerIdentifier.length > 0 )
-            inspectorType.getCategoryLayerIdentifier().addAll( Arrays.asList( categoryLayerIdentifier ) );
-        inspectorTypes.add( inspectorType );
-        return inspectorTypes;
-    }
+	private List<VisibilityInspectorType> createInspectors(String... categoryLayerIdentifier) {
+		List<VisibilityInspectorType> inspectorTypes = new ArrayList<VisibilityInspectorType>();
+		VisibilityInspectorType inspectorType = new VisibilityInspectorType();
+		inspectorType.setJavaClass(LayerVisibilityInspectorTestImpl.class.getCanonicalName());
+		if (categoryLayerIdentifier != null && categoryLayerIdentifier.length > 0)
+			inspectorType.getCategoryLayerIdentifier().addAll(Arrays.asList(categoryLayerIdentifier));
+		inspectorTypes.add(inspectorType);
+		return inspectorTypes;
+	}
 
-    private Workspace mockWorkspace() {
-        Workspace workspace = mock( Workspace.class );
-        ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        when( workspace.getModuleClassLoader() ).thenReturn( classLoader );
-        return workspace;
-    }
+	private Workspace mockWorkspace() {
+		Workspace workspace = mock(Workspace.class);
+		ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+		when(workspace.getModuleClassLoader()).thenReturn(classLoader);
+		return workspace;
+	}
 
 }

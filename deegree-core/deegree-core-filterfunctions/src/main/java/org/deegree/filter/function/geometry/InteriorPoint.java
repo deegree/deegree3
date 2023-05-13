@@ -57,64 +57,63 @@ import org.deegree.geometry.standard.primitive.DefaultSurface;
 import org.deegree.workspace.Workspace;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class InteriorPoint implements FunctionProvider {
 
-    private static final String NAME = "InteriorPoint";
+	private static final String NAME = "InteriorPoint";
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
+	@Override
+	public String getName() {
+		return NAME;
+	}
 
-    @Override
-    public List<ParameterType> getArgs() {
-        return Collections.singletonList( GEOMETRY );
-    }
+	@Override
+	public List<ParameterType> getArgs() {
+		return Collections.singletonList(GEOMETRY);
+	}
 
-    @Override
-    public ParameterType getReturnType() {
-        return POINT;
-    }
+	@Override
+	public ParameterType getReturnType() {
+		return POINT;
+	}
 
-    @Override
-    public Function create( List<Expression> params ) {
-        return new Function( NAME, params ) {
-            @Override
-            public <T> TypedObjectNode[] evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
-                                    throws FilterEvaluationException {
-                TypedObjectNode[] inputs = getParams()[0].evaluate( obj, xpathEvaluator );
-                List<TypedObjectNode> points = new ArrayList<TypedObjectNode>( inputs.length );
-                for ( TypedObjectNode val : inputs ) {
-                    Geometry geom = getGeometryValue( val );
-                    if ( geom != null && geom instanceof DefaultSurface ) {
-                        points.add( ( (DefaultSurface) geom ).getInteriorPoint() );
-                    }
-                    if ( geom != null && geom instanceof MultiPolygon ) {
-                        for ( Polygon p : ( (MultiPolygon) geom ) ) {
-                            if ( p instanceof DefaultSurface ) {
-                                points.add( ( (DefaultSurface) p ).getInteriorPoint() );
-                            }
-                        }
-                    }
-                }
-                return points.toArray( new TypedObjectNode[points.size()] );
-            }
-        };
-    }
+	@Override
+	public Function create(List<Expression> params) {
+		return new Function(NAME, params) {
+			@Override
+			public <T> TypedObjectNode[] evaluate(T obj, XPathEvaluator<T> xpathEvaluator)
+					throws FilterEvaluationException {
+				TypedObjectNode[] inputs = getParams()[0].evaluate(obj, xpathEvaluator);
+				List<TypedObjectNode> points = new ArrayList<TypedObjectNode>(inputs.length);
+				for (TypedObjectNode val : inputs) {
+					Geometry geom = getGeometryValue(val);
+					if (geom != null && geom instanceof DefaultSurface) {
+						points.add(((DefaultSurface) geom).getInteriorPoint());
+					}
+					if (geom != null && geom instanceof MultiPolygon) {
+						for (Polygon p : ((MultiPolygon) geom)) {
+							if (p instanceof DefaultSurface) {
+								points.add(((DefaultSurface) p).getInteriorPoint());
+							}
+						}
+					}
+				}
+				return points.toArray(new TypedObjectNode[points.size()]);
+			}
+		};
+	}
 
-    @Override
-    public void init( Workspace ws ) {
-        // nothing to do
-    }
+	@Override
+	public void init(Workspace ws) {
+		// nothing to do
+	}
 
-    @Override
-    public void destroy() {
-        // nothing to do
-    }
+	@Override
+	public void destroy() {
+		// nothing to do
+	}
+
 }

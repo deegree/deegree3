@@ -39,38 +39,38 @@ import org.deegree.cs.transformations.helmert.Helmert;
 
 /**
  * Interface describing a GeodeticDatum
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  * @author last edited by: $Author: lyn $
- * 
  * @version $Revision: $, $Date: $
  */
 public interface IGeodeticDatum extends IDatum {
 
-    /**
-     * @return the ellipsoid.
-     */
-    IEllipsoid getEllipsoid();
+	/**
+	 * @return the ellipsoid.
+	 */
+	IEllipsoid getEllipsoid();
 
-    /**
-     * @return the primeMeridian.
-     */
-    IPrimeMeridian getPrimeMeridian();
+	/**
+	 * @return the primeMeridian.
+	 */
+	IPrimeMeridian getPrimeMeridian();
 
-    /**
-     * @param primeMeridian
-     */
-    void setPrimeMeridian( IPrimeMeridian primeMeridian );
+	/**
+	 * @param primeMeridian
+	 */
+	void setPrimeMeridian(IPrimeMeridian primeMeridian);
 
-    /**
-     * @return the toWGS84Conversion information needed to convert this geodetic Datum into the geocentric WGS84 Datum.
-     */
-    Helmert getWGS84Conversion();
+	/**
+	 * @return the toWGS84Conversion information needed to convert this geodetic Datum
+	 * into the geocentric WGS84 Datum.
+	 */
+	Helmert getWGS84Conversion();
 
-    /**
-     * 
-     * @param toWGS84Conversion
-     *            the transformation to be used to convert this geodetic datum into the wgs84 datum.
-     */
-    void setToWGS84( Helmert toWGS84Conversion );
+	/**
+	 * @param toWGS84Conversion the transformation to be used to convert this geodetic
+	 * datum into the wgs84 datum.
+	 */
+	void setToWGS84(Helmert toWGS84Conversion);
+
 }

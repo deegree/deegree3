@@ -47,45 +47,45 @@ import org.slf4j.Logger;
 
 /**
  * Resource metadata implementation for file system tile stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class FileSystemTileStoreMetadata extends AbstractResourceMetadata<TileStore> {
 
-    private static final Logger LOG = getLogger( FileSystemTileStoreMetadata.class );
+	private static final Logger LOG = getLogger(FileSystemTileStoreMetadata.class);
 
-    private static final String JAXB_PACKAGE = "org.deegree.tile.persistence.filesystem.jaxb";
+	private static final String JAXB_PACKAGE = "org.deegree.tile.persistence.filesystem.jaxb";
 
-    public FileSystemTileStoreMetadata( Workspace workspace, ResourceLocation<TileStore> location,
-                                        AbstractResourceProvider<TileStore> provider ) {
-        super( workspace, location, provider );
-    }
+	public FileSystemTileStoreMetadata(Workspace workspace, ResourceLocation<TileStore> location,
+			AbstractResourceProvider<TileStore> provider) {
+		super(workspace, location, provider);
+	}
 
-    @Override
-    public ResourceBuilder<TileStore> prepare() {
-        try {
+	@Override
+	public ResourceBuilder<TileStore> prepare() {
+		try {
 
-            FileSystemTileStoreJAXB config = (FileSystemTileStoreJAXB) unmarshall( JAXB_PACKAGE, provider.getSchema(),
-                                                                                   location.getAsStream(), workspace );
+			FileSystemTileStoreJAXB config = (FileSystemTileStoreJAXB) unmarshall(JAXB_PACKAGE, provider.getSchema(),
+					location.getAsStream(), workspace);
 
-            for ( FileSystemTileStoreJAXB.TileDataSet tds : config.getTileDataSet() ) {
-                String tmsId = tds.getTileMatrixSetId();
-                dependencies.add( new DefaultResourceIdentifier<TileMatrixSet>( TileMatrixSetProvider.class, tmsId ) );
-                TileDataSetBase base = tds.getTileDataSetBase();
-                if ( base != null ) {
-                    dependencies.add( new DefaultResourceIdentifier<TileStore>( TileStoreProvider.class,
-                                                                                base.getTileStoreId() ) );
-                }
-            }
+			for (FileSystemTileStoreJAXB.TileDataSet tds : config.getTileDataSet()) {
+				String tmsId = tds.getTileMatrixSetId();
+				dependencies.add(new DefaultResourceIdentifier<TileMatrixSet>(TileMatrixSetProvider.class, tmsId));
+				TileDataSetBase base = tds.getTileDataSetBase();
+				if (base != null) {
+					dependencies
+						.add(new DefaultResourceIdentifier<TileStore>(TileStoreProvider.class, base.getTileStoreId()));
+				}
+			}
 
-            return new FileSystemTileStoreBuilder( config, this, workspace );
-        } catch ( Exception e ) {
-            String msg = "Unable to prepare FileSystemTileStore: " + e.getMessage();
-            LOG.error( msg );
-            throw new ResourceInitException( msg, e );
-        }
-    }
+			return new FileSystemTileStoreBuilder(config, this, workspace);
+		}
+		catch (Exception e) {
+			String msg = "Unable to prepare FileSystemTileStore: " + e.getMessage();
+			LOG.error(msg);
+			throw new ResourceInitException(msg, e);
+		}
+	}
 
 }

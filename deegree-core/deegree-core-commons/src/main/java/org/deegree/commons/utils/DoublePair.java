@@ -38,27 +38,26 @@ package org.deegree.commons.utils;
 
 /**
  * <code>DoublePair</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class DoublePair extends Pair<Double, Double> {
 
-    /**
-     *
-     */
-    public DoublePair() {
-        super( 0d, 0d );
-    }
+	/**
+	 *
+	 */
+	public DoublePair() {
+		super(0d, 0d);
+	}
 
-    /**
-     * @param a
-     * @param b
-     */
-    public DoublePair( double a, double b ) {
-        super( a, b );
-    }
+	/**
+	 * @param a
+	 * @param b
+	 */
+	public DoublePair(double a, double b) {
+		super(a, b);
+	}
 
 }

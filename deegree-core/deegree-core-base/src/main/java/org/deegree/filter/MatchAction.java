@@ -37,18 +37,18 @@ package org.deegree.filter;
 
 /**
  * Specifies how a predicate shall be evaluated for a collection of values.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public enum MatchAction {
 
-    /** Match if all values in the collection satisfy the predicate */
-    ALL,
-    /** Match if one or more of the values in the collection satisfy the predicate */
-    ANY,
-    /** Match if exactly one value in the collection satisfies the predicate */
-    ONE
+	/** Match if all values in the collection satisfy the predicate */
+	ALL,
+	/** Match if one or more of the values in the collection satisfy the predicate */
+	ANY,
+	/** Match if exactly one value in the collection satisfies the predicate */
+	ONE
+
 }

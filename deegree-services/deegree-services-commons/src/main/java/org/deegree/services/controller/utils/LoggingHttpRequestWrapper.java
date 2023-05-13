@@ -60,137 +60,129 @@ import static org.slf4j.LoggerFactory.getLogger;
  */
 public class LoggingHttpRequestWrapper extends HttpServletRequestWrapper {
 
-    private static final Logger LOG = getLogger( LoggingHttpRequestWrapper.class );
+	private static final Logger LOG = getLogger(LoggingHttpRequestWrapper.class);
 
-    private final String kvp;
+	private final String kvp;
 
-    private final String logDirectory;
+	private final String logDirectory;
 
-    private final RequestLogger logger;
+	private final RequestLogger logger;
 
-    private final long entryTime;
+	private final long entryTime;
 
-    private boolean logged;
+	private boolean logged;
 
-    private byte[] requestBody;
+	private byte[] requestBody;
 
-    /**
-     * If XML request should possibly be logged.
-     *
-     * @param request
-     * @param logDirectory
-     * @param logger
-     *                 is closed before logging is initiated if not null
-     */
-    public LoggingHttpRequestWrapper( HttpServletRequest request, String logDirectory,
-                                      RequestLogger logger ) {
-        super( request );
-        this.kvp = request.getQueryString();
-        this.logDirectory = logDirectory;
-        this.logger = logger;
-        this.entryTime = System.currentTimeMillis();
-        try {
-            if ( request.getInputStream() != null )
-                requestBody = IOUtils.toByteArray( request.getInputStream() );
-        } catch ( IOException ex ) {
-            requestBody = new byte[0];
-        }
-    }
+	/**
+	 * If XML request should possibly be logged.
+	 * @param request
+	 * @param logDirectory
+	 * @param logger is closed before logging is initiated if not null
+	 */
+	public LoggingHttpRequestWrapper(HttpServletRequest request, String logDirectory, RequestLogger logger) {
+		super(request);
+		this.kvp = request.getQueryString();
+		this.logDirectory = logDirectory;
+		this.logger = logger;
+		this.entryTime = System.currentTimeMillis();
+		try {
+			if (request.getInputStream() != null)
+				requestBody = IOUtils.toByteArray(request.getInputStream());
+		}
+		catch (IOException ex) {
+			requestBody = new byte[0];
+		}
+	}
 
-    @Override
-    public ServletInputStream getInputStream()
-                    throws IOException {
-        return new DelegatingServletInputStream( new ByteArrayInputStream( requestBody ) );
-    }
+	@Override
+	public ServletInputStream getInputStream() throws IOException {
+		return new DelegatingServletInputStream(new ByteArrayInputStream(requestBody));
+	}
 
-    /**
-     * kvp: possibly writes the entry into the log, XML/SOAP: possibly deletes the logged request file
-     */
-    public void finalizeLogging()
-                    throws IOException {
-        if ( logged ) {
-            return;
-        }
-        logged = true;
-        if ( kvp != null ) {
-            logger.logKVP( getRequestURL().toString(), kvp, entryTime, currentTimeMillis(), null );
-        }
-        if ( requestBody != null && requestBody.length > 0 ) {
-            File tmpLogFile = createTmpLogFile();
-            IOUtils.copy( new ByteArrayInputStream( requestBody ), new FileOutputStream( tmpLogFile ) );
-            logger.logXML( getRequestURL().toString(), tmpLogFile, entryTime, currentTimeMillis(), null );
-            if ( !tmpLogFile.delete() ) {
-                LOG.warn( "Could not delete temporary file {}.", tmpLogFile );
-            }
-        }
-    }
+	/**
+	 * kvp: possibly writes the entry into the log, XML/SOAP: possibly deletes the logged
+	 * request file
+	 */
+	public void finalizeLogging() throws IOException {
+		if (logged) {
+			return;
+		}
+		logged = true;
+		if (kvp != null) {
+			logger.logKVP(getRequestURL().toString(), kvp, entryTime, currentTimeMillis(), null);
+		}
+		if (requestBody != null && requestBody.length > 0) {
+			File tmpLogFile = createTmpLogFile();
+			IOUtils.copy(new ByteArrayInputStream(requestBody), new FileOutputStream(tmpLogFile));
+			logger.logXML(getRequestURL().toString(), tmpLogFile, entryTime, currentTimeMillis(), null);
+			if (!tmpLogFile.delete()) {
+				LOG.warn("Could not delete temporary file {}.", tmpLogFile);
+			}
+		}
+	}
 
-    private File createTmpLogFile()
-                    throws IOException {
-        if ( logDirectory == null ) {
-            return createTempFile( "request", ".body" );
-        }
-        File directory = new File( logDirectory );
-        if ( !directory.exists() ) {
-            directory.mkdirs();
-        }
-        return createTempFile( "request", ".body", directory );
-    }
+	private File createTmpLogFile() throws IOException {
+		if (logDirectory == null) {
+			return createTempFile("request", ".body");
+		}
+		File directory = new File(logDirectory);
+		if (!directory.exists()) {
+			directory.mkdirs();
+		}
+		return createTempFile("request", ".body", directory);
+	}
 
-    private class DelegatingServletInputStream extends ServletInputStream {
+	private class DelegatingServletInputStream extends ServletInputStream {
 
-        private final InputStream sourceStream;
+		private final InputStream sourceStream;
 
-        /**
-         * Create a DelegatingServletInputStream for the given source stream.
-         *
-         * @param sourceStream
-         *                 the source stream (never {@code null})
-         */
-        public DelegatingServletInputStream( InputStream sourceStream ) {
-            this.sourceStream = sourceStream;
-        }
+		/**
+		 * Create a DelegatingServletInputStream for the given source stream.
+		 * @param sourceStream the source stream (never {@code null})
+		 */
+		public DelegatingServletInputStream(InputStream sourceStream) {
+			this.sourceStream = sourceStream;
+		}
 
-        /**
-         * Return the underlying source stream (never {@code null}).
-         */
-        public final InputStream getSourceStream() {
-            return this.sourceStream;
-        }
+		/**
+		 * Return the underlying source stream (never {@code null}).
+		 */
+		public final InputStream getSourceStream() {
+			return this.sourceStream;
+		}
 
-        @Override
-        public int read()
-                        throws IOException {
-            return this.sourceStream.read();
-        }
+		@Override
+		public int read() throws IOException {
+			return this.sourceStream.read();
+		}
 
-        @Override
-        public int available()
-                        throws IOException {
-            return this.sourceStream.available();
-        }
+		@Override
+		public int available() throws IOException {
+			return this.sourceStream.available();
+		}
 
-        @Override
-        public void close()
-                        throws IOException {
-            super.close();
-            this.sourceStream.close();
-        }
+		@Override
+		public void close() throws IOException {
+			super.close();
+			this.sourceStream.close();
+		}
 
-        @Override
-        public boolean isFinished() {
-            return false;
-        }
+		@Override
+		public boolean isFinished() {
+			return false;
+		}
 
-        @Override
-        public boolean isReady() {
-            return false;
-        }
+		@Override
+		public boolean isReady() {
+			return false;
+		}
 
-        @Override
-        public void setReadListener(ReadListener listener) throws IllegalStateException {
-            throw new UnsupportedOperationException();
-        }
-    }
+		@Override
+		public void setReadListener(ReadListener listener) throws IllegalStateException {
+			throw new UnsupportedOperationException();
+		}
+
+	}
 
 }

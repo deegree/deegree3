@@ -71,80 +71,74 @@ import static org.slf4j.LoggerFactory.getLogger;
 @RunWith(Parameterized.class)
 public class WorkpacesIT {
 
-    private static final Logger LOG = getLogger( WorkpacesIT.class );
+	private static final Logger LOG = getLogger(WorkpacesIT.class);
 
-    private final Path workspaceUnderTest;
+	private final Path workspaceUnderTest;
 
-    private static final TestEnvironment env = new TestEnvironment( System.getProperties() );
+	private static final TestEnvironment env = new TestEnvironment(System.getProperties());
 
-    public WorkpacesIT( Path workspaceUnderTest ) {
-        this.workspaceUnderTest = workspaceUnderTest;
-    }
+	public WorkpacesIT(Path workspaceUnderTest) {
+		this.workspaceUnderTest = workspaceUnderTest;
+	}
 
-    @Parameters
-    public static List<Path> getParameters()
-                    throws IOException {
-        String workspaceDir = env.getWorkspaceDir();
-        Path workspaces = Paths.get( workspaceDir );
-        return Files.list( workspaces ).filter( p -> Files.isDirectory( p ) && Files.exists( p ) ).collect(
-                        Collectors.toList() );
-    }
+	@Parameters
+	public static List<Path> getParameters() throws IOException {
+		String workspaceDir = env.getWorkspaceDir();
+		Path workspaces = Paths.get(workspaceDir);
+		return Files.list(workspaces).filter(p -> Files.isDirectory(p) && Files.exists(p)).collect(Collectors.toList());
+	}
 
-    @Before
-    public void restartWorkspace()
-                    throws Exception {
-        ServiceIntegrationTestHelper helper = new ServiceIntegrationTestHelper( env );
-        String workspaceName = workspaceUnderTest.getFileName().toString();
-        LOG.info( "Restart Workspace {}", workspaceName );
-        try {
-            HttpClient client = HttpUtils.getAuthenticatedHttpClient( env );
-            String restartUrl = helper.createBaseURL() + "config/restart/" + workspaceName;
-            LOG.info( "Sending against: " + restartUrl );
-            HttpGet get = new HttpGet( restartUrl );
-            HttpResponse resp = client.execute( get );
-            String response = EntityUtils.toString( resp.getEntity(), "UTF-8" ).trim();
-            LOG.info( "Response after initial restart was: " + response );
-        } catch ( IOException e ) {
-            throw new Exception( "Could not test workspace " + workspaceName + ": "
-                                 + e.getLocalizedMessage(), e );
-        }
-    }
+	@Before
+	public void restartWorkspace() throws Exception {
+		ServiceIntegrationTestHelper helper = new ServiceIntegrationTestHelper(env);
+		String workspaceName = workspaceUnderTest.getFileName().toString();
+		LOG.info("Restart Workspace {}", workspaceName);
+		try {
+			HttpClient client = HttpUtils.getAuthenticatedHttpClient(env);
+			String restartUrl = helper.createBaseURL() + "config/restart/" + workspaceName;
+			LOG.info("Sending against: " + restartUrl);
+			HttpGet get = new HttpGet(restartUrl);
+			HttpResponse resp = client.execute(get);
+			String response = EntityUtils.toString(resp.getEntity(), "UTF-8").trim();
+			LOG.info("Response after initial restart was: " + response);
+		}
+		catch (IOException e) {
+			throw new Exception("Could not test workspace " + workspaceName + ": " + e.getLocalizedMessage(), e);
+		}
+	}
 
-    @Test
-    public void execute()
-                    throws Exception {
-        try {
-            String workspaceName = workspaceUnderTest.getFileName().toString();
-            LOG.info( "Workspace under test {}", workspaceName );
-            ServiceIntegrationTestHelper helper = new ServiceIntegrationTestHelper( env );
-            Path services = workspaceUnderTest.resolve( "services" );
-            if ( Files.exists( services ) ) {
-                List<Path> serviceList = Files.list( services ).filter(
-                                f -> isService( f ) ).collect( Collectors.toList() );
-                for ( Path service : serviceList ) {
-                    testService( helper, service );
-                }
-            }
-        } catch ( NoClassDefFoundError e ) {
-            LOG.warn( "Class not found, not performing any tests." );
-        }
-    }
+	@Test
+	public void execute() throws Exception {
+		try {
+			String workspaceName = workspaceUnderTest.getFileName().toString();
+			LOG.info("Workspace under test {}", workspaceName);
+			ServiceIntegrationTestHelper helper = new ServiceIntegrationTestHelper(env);
+			Path services = workspaceUnderTest.resolve("services");
+			if (Files.exists(services)) {
+				List<Path> serviceList = Files.list(services).filter(f -> isService(f)).collect(Collectors.toList());
+				for (Path service : serviceList) {
+					testService(helper, service);
+				}
+			}
+		}
+		catch (NoClassDefFoundError e) {
+			LOG.warn("Class not found, not performing any tests.");
+		}
+	}
 
-    private void testService( ServiceIntegrationTestHelper helper, Path service )
-                    throws Exception {
-        String serviceName = service.getFileName().toString().toLowerCase();
-        String serviceType = serviceName.substring( 0, 3 ).toUpperCase();
-        LOG.info( "Service name: {}, service type: {}", serviceName, serviceType );
-        helper.testCapabilities( serviceType );
-        helper.testLayers( serviceType );
-        LOG.info( "All maps can be requested." );
-    }
+	private void testService(ServiceIntegrationTestHelper helper, Path service) throws Exception {
+		String serviceName = service.getFileName().toString().toLowerCase();
+		String serviceType = serviceName.substring(0, 3).toUpperCase();
+		LOG.info("Service name: {}, service type: {}", serviceName, serviceType);
+		helper.testCapabilities(serviceType);
+		helper.testLayers(serviceType);
+		LOG.info("All maps can be requested.");
+	}
 
-    private boolean isService( Path f ) {
-        String fileName = f.getFileName().toString();
-        return fileName.endsWith( ".xml" ) && !"wmts.xml".equals( fileName ) && !"main.xml".equals( fileName )
-               && !fileName.endsWith( "metadata.xml" );
-    }
+	private boolean isService(Path f) {
+		String fileName = f.getFileName().toString();
+		return fileName.endsWith(".xml") && !"wmts.xml".equals(fileName) && !"main.xml".equals(fileName)
+				&& !fileName.endsWith("metadata.xml");
+	}
 
 }
-

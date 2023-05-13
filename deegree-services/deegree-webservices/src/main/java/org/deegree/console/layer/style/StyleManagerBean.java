@@ -46,9 +46,10 @@ import org.deegree.style.persistence.StyleStoreManager;
 @ViewScoped
 public class StyleManagerBean extends AbstractResourceManagerBean<StyleStoreManager> implements Serializable {
 
-    private static final long serialVersionUID = -7445293485322343946L;
+	private static final long serialVersionUID = -7445293485322343946L;
 
-    public StyleManagerBean() {
-        super( StyleStoreManager.class );
-    }
+	public StyleManagerBean() {
+		super(StyleStoreManager.class);
+	}
+
 }

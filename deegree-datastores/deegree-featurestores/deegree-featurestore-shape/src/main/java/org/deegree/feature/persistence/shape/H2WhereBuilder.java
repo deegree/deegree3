@@ -58,64 +58,59 @@ import org.deegree.sqldialect.filter.expression.SQLExpression;
 import org.deegree.sqldialect.filter.expression.SQLOperation;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class H2WhereBuilder extends AbstractWhereBuilder {
 
-    /**
-     * @param dialect
-     *            SQL dialect, can be <code>null</code> (TODO refactor code, so not null is always used)
-     * @param filter
-     * @param sort
-     * @throws FilterEvaluationException
-     */
-    public H2WhereBuilder( SQLDialect dialect, OperatorFilter filter, SortProperty[] sort )
-                            throws FilterEvaluationException {
-        super( dialect, null, filter, sort, null );
-        try {
-            build( true );
-        } catch ( UnmappableException e ) {
-            // can not happen
-        }
-    }
+	/**
+	 * @param dialect SQL dialect, can be <code>null</code> (TODO refactor code, so not
+	 * null is always used)
+	 * @param filter
+	 * @param sort
+	 * @throws FilterEvaluationException
+	 */
+	public H2WhereBuilder(SQLDialect dialect, OperatorFilter filter, SortProperty[] sort)
+			throws FilterEvaluationException {
+		super(dialect, null, filter, sort, null);
+		try {
+			build(true);
+		}
+		catch (UnmappableException e) {
+			// can not happen
+		}
+	}
 
-    @Override
-    protected SQLOperation toProtoSQL( SpatialOperator op )
-                            throws UnmappableException, FilterEvaluationException {
-        throw new UnmappableException( "Spatial operators are currently not mappable in h2." );
-    }
+	@Override
+	protected SQLOperation toProtoSQL(SpatialOperator op) throws UnmappableException, FilterEvaluationException {
+		throw new UnmappableException("Spatial operators are currently not mappable in h2.");
+	}
 
-    @Override
-    protected SQLExpression toProtoSQL( ValueReference expr )
-                            throws UnmappableException, FilterEvaluationException {
-        // TODO
-        PrimitiveType pt = new PrimitiveType( STRING );
-        PrimitiveParticleConverter converter = new DefaultPrimitiveConverter(
-                                                                              pt,
-                                                                              expr.getAsQName().getLocalPart().toLowerCase(),
-                                                                              false );
-        return new SQLColumn( null, expr.getAsQName().getLocalPart().toLowerCase(), converter );
-    }
+	@Override
+	protected SQLExpression toProtoSQL(ValueReference expr) throws UnmappableException, FilterEvaluationException {
+		// TODO
+		PrimitiveType pt = new PrimitiveType(STRING);
+		PrimitiveParticleConverter converter = new DefaultPrimitiveConverter(pt,
+				expr.getAsQName().getLocalPart().toLowerCase(), false);
+		return new SQLColumn(null, expr.getAsQName().getLocalPart().toLowerCase(), converter);
+	}
 
-    // avoid setting a Date on fields which are strings just containing ISO dates...
-    @Override
-    protected SQLExpression toProtoSQL( Literal<?> literal )
-                            throws UnmappableException, FilterEvaluationException {
-        if ( literal.getValue().toString().equals( "true" ) || literal.getValue().toString().equals( "false" ) ) {
-            PrimitiveType pt = new PrimitiveType( BOOLEAN );
-            PrimitiveValue value = new PrimitiveValue( literal.getValue().toString(), pt );
-            PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( pt, null, false );
-            SQLArgument argument = new SQLArgument( value, converter );
-            return argument;
-        }
-        PrimitiveType pt = new PrimitiveType( BaseType.STRING );
-        PrimitiveValue value = new PrimitiveValue( literal.getValue().toString(), pt );
-        PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( pt, null, false );
-        SQLArgument argument = new SQLArgument( value, converter );
-        return argument;
-    }
+	// avoid setting a Date on fields which are strings just containing ISO dates...
+	@Override
+	protected SQLExpression toProtoSQL(Literal<?> literal) throws UnmappableException, FilterEvaluationException {
+		if (literal.getValue().toString().equals("true") || literal.getValue().toString().equals("false")) {
+			PrimitiveType pt = new PrimitiveType(BOOLEAN);
+			PrimitiveValue value = new PrimitiveValue(literal.getValue().toString(), pt);
+			PrimitiveParticleConverter converter = new DefaultPrimitiveConverter(pt, null, false);
+			SQLArgument argument = new SQLArgument(value, converter);
+			return argument;
+		}
+		PrimitiveType pt = new PrimitiveType(BaseType.STRING);
+		PrimitiveValue value = new PrimitiveValue(literal.getValue().toString(), pt);
+		PrimitiveParticleConverter converter = new DefaultPrimitiveConverter(pt, null, false);
+		SQLArgument argument = new SQLArgument(value, converter);
+		return argument;
+	}
+
 }

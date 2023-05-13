@@ -37,205 +37,210 @@ import org.slf4j.LoggerFactory;
 
 /**
  * {@link MetadataStoreTransaction} implementation for the {@link ISOMetadataStore}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: mschneider $
- * 
  * @version $Revision: 31272 $, $Date: 2011-07-13 23:10:35 +0200 (Mi, 13. Jul 2011) $
  */
 public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
 
-    private static final Logger LOG = LoggerFactory.getLogger( ISOMetadataStoreTransaction.class );
+	private static final Logger LOG = LoggerFactory.getLogger(ISOMetadataStoreTransaction.class);
 
-    private final List<RecordInspector<ISORecord>> inspectors;
+	private final List<RecordInspector<ISORecord>> inspectors;
 
-    private final AnyText anyTextConfig;
+	private final AnyText anyTextConfig;
 
-    private final SQLDialect dialect;
+	private final SQLDialect dialect;
 
-    private final Connection conn;
+	private final Connection conn;
 
-    private final List<Queryable> queryables;
+	private final List<Queryable> queryables;
 
-    ISOMetadataStoreTransaction( Connection conn, SQLDialect dialect, List<RecordInspector<ISORecord>> inspectors,
-                                 List<Queryable> queryables, AnyText anyText ) throws SQLException {
-        this.conn = conn;
-        this.dialect = dialect;
-        this.queryables = queryables;
-        this.anyTextConfig = anyText;
-        this.inspectors = inspectors;
-    }
+	ISOMetadataStoreTransaction(Connection conn, SQLDialect dialect, List<RecordInspector<ISORecord>> inspectors,
+			List<Queryable> queryables, AnyText anyText) throws SQLException {
+		this.conn = conn;
+		this.dialect = dialect;
+		this.queryables = queryables;
+		this.anyTextConfig = anyText;
+		this.inspectors = inspectors;
+	}
 
-    @Override
-    public void commit()
-                            throws MetadataStoreException {
-        LOG.debug( Messages.getMessage( "INFO_TA_COMMIT" ) );
-        try {
-            conn.commit();
-        } catch ( SQLException e ) {
-            String msg = Messages.getMessage( "ERROR_TA_COMMIT", e.getMessage() );
-            LOG.debug( msg );
-            throw new MetadataStoreException( msg );
-        } finally {
-            JDBCUtils.close( conn );
-        }
-    }
+	@Override
+	public void commit() throws MetadataStoreException {
+		LOG.debug(Messages.getMessage("INFO_TA_COMMIT"));
+		try {
+			conn.commit();
+		}
+		catch (SQLException e) {
+			String msg = Messages.getMessage("ERROR_TA_COMMIT", e.getMessage());
+			LOG.debug(msg);
+			throw new MetadataStoreException(msg);
+		}
+		finally {
+			JDBCUtils.close(conn);
+		}
+	}
 
-    @Override
-    public int performDelete( DeleteOperation delete )
-                            throws MetadataStoreException {
+	@Override
+	public int performDelete(DeleteOperation delete) throws MetadataStoreException {
 
-        try {
-            // TODO: mapping!
-            ISOPropertyNameMapper mapping = new ISOPropertyNameMapper( dialect, queryables );
-            AbstractWhereBuilder builder = dialect.getWhereBuilder( mapping, (OperatorFilter) delete.getConstraint(),
-                                                                    null, null,false );
+		try {
+			// TODO: mapping!
+			ISOPropertyNameMapper mapping = new ISOPropertyNameMapper(dialect, queryables);
+			AbstractWhereBuilder builder = dialect.getWhereBuilder(mapping, (OperatorFilter) delete.getConstraint(),
+					null, null, false);
 
-            TransactionService transactionService = getTransactionalSqlService();
-            return transactionService.executeDelete( conn, builder );
+			TransactionService transactionService = getTransactionalSqlService();
+			return transactionService.executeDelete(conn, builder);
 
-        } catch ( Exception e ) {
-            throw new MetadataStoreException( e.getMessage() );
-        }
-    }
+		}
+		catch (Exception e) {
+			throw new MetadataStoreException(e.getMessage());
+		}
+	}
 
-    @Override
-    public List<String> performInsert( InsertOperation insert )
-                            throws MetadataStoreException, MetadataInspectorException {
+	@Override
+	public List<String> performInsert(InsertOperation insert)
+			throws MetadataStoreException, MetadataInspectorException {
 
-        List<String> identifierList = new ArrayList<String>();
-        for ( MetadataRecord record : insert.getRecords() ) {
-            try {
-                for ( RecordInspector<ISORecord> r : inspectors ) {
-                    record = r.inspect( (ISORecord) record, conn, dialect );
-                }
-                if ( record != null ) {
-                    ISORecord rec = new ISORecord( record.getAsOMElement() );
-                    TransactionService transactionService = getTransactionalSqlService();
-                    transactionService.executeInsert( conn, rec );
-                    identifierList.add( rec.getIdentifier() );
-                }
-            } catch ( XMLStreamException e ) {
-                e.printStackTrace();
-                throw new MetadataStoreException( "Error on insert: " + e.getMessage(), e );
-            }
-        }
-        return identifierList;
-    }
+		List<String> identifierList = new ArrayList<String>();
+		for (MetadataRecord record : insert.getRecords()) {
+			try {
+				for (RecordInspector<ISORecord> r : inspectors) {
+					record = r.inspect((ISORecord) record, conn, dialect);
+				}
+				if (record != null) {
+					ISORecord rec = new ISORecord(record.getAsOMElement());
+					TransactionService transactionService = getTransactionalSqlService();
+					transactionService.executeInsert(conn, rec);
+					identifierList.add(rec.getIdentifier());
+				}
+			}
+			catch (XMLStreamException e) {
+				e.printStackTrace();
+				throw new MetadataStoreException("Error on insert: " + e.getMessage(), e);
+			}
+		}
+		return identifierList;
+	}
 
-    @Override
-    public int performUpdate( UpdateOperation update )
-                            throws MetadataStoreException, MetadataInspectorException {
-        TransactionService generateQP = getTransactionalSqlService();
-        int result = 0;
+	@Override
+	public int performUpdate(UpdateOperation update) throws MetadataStoreException, MetadataInspectorException {
+		TransactionService generateQP = getTransactionalSqlService();
+		int result = 0;
 
-        if ( update.getRecord() != null && update.getConstraint() == null ) {
-            LOG.warn( "Update with complete metadatset and without constraint is deprecated. Updating is forwarded, the fileIdentifer is used to find the record to update." );
-            ISORecord record = (ISORecord) update.getRecord();
-            for ( RecordInspector<ISORecord> r : inspectors ) {
-                record = r.inspect( record, conn, dialect );
-            }
-            ISORecord rec = new ISORecord( record.getAsOMElement() );
-            generateQP.executeUpdate( conn, rec, null );
-            return 1;
-        }
+		if (update.getRecord() != null && update.getConstraint() == null) {
+			LOG.warn(
+					"Update with complete metadatset and without constraint is deprecated. Updating is forwarded, the fileIdentifer is used to find the record to update.");
+			ISORecord record = (ISORecord) update.getRecord();
+			for (RecordInspector<ISORecord> r : inspectors) {
+				record = r.inspect(record, conn, dialect);
+			}
+			ISORecord rec = new ISORecord(record.getAsOMElement());
+			generateQP.executeUpdate(conn, rec, null);
+			return 1;
+		}
 
-        QueryService qh = getReadOnlySqlService();
-        try {
-            MetadataQuery query = new MetadataQuery( null, null, (OperatorFilter) update.getConstraint(), null, 1,
-                                                     Integer.MIN_VALUE );
-            // get all metadatasets to update
-            ISOMetadataResultSet isoRs = qh.execute( query, conn );
-            while ( isoRs.next() ) {
-                ISORecord rec = isoRs.getRecord();
-                LOG.debug( "record to update" + rec );
-                boolean updated = false;
+		QueryService qh = getReadOnlySqlService();
+		try {
+			MetadataQuery query = new MetadataQuery(null, null, (OperatorFilter) update.getConstraint(), null, 1,
+					Integer.MIN_VALUE);
+			// get all metadatasets to update
+			ISOMetadataResultSet isoRs = qh.execute(query, conn);
+			while (isoRs.next()) {
+				ISORecord rec = isoRs.getRecord();
+				LOG.debug("record to update" + rec);
+				boolean updated = false;
 
-                if ( update.getRecord() != null ) {
-                    ISORecord record = (ISORecord) update.getRecord();
-                    for ( RecordInspector<ISORecord> r : inspectors ) {
-                        record = r.inspect( record, conn, dialect );
-                    }
-                    rec = new ISORecord( record.getAsOMElement() );
-                    updated = true;
-                } else if ( update.getConstraint() != null
-                            && ( update.getRecordProperty() != null && update.getRecordProperty().size() > 0 ) ) {
-                    List<MetadataProperty> recordProperty = update.getRecordProperty();
-                    for ( MetadataProperty metadataProperty : recordProperty ) {
-                        ValueReference name = metadataProperty.getPropertyName();
-                        Object value = metadataProperty.getReplacementValue();
+				if (update.getRecord() != null) {
+					ISORecord record = (ISORecord) update.getRecord();
+					for (RecordInspector<ISORecord> r : inspectors) {
+						record = r.inspect(record, conn, dialect);
+					}
+					rec = new ISORecord(record.getAsOMElement());
+					updated = true;
+				}
+				else if (update.getConstraint() != null
+						&& (update.getRecordProperty() != null && update.getRecordProperty().size() > 0)) {
+					List<MetadataProperty> recordProperty = update.getRecordProperty();
+					for (MetadataProperty metadataProperty : recordProperty) {
+						ValueReference name = metadataProperty.getPropertyName();
+						Object value = metadataProperty.getReplacementValue();
 
-                        if ( value == null ) {
-                            LOG.debug( "    Remove: " + name );
-                            rec.removeNode( name );
-                            updated = true;
-                        } else if ( value instanceof String ) {
-                            LOG.debug( "    Update: " + name + " with: " + value );
-                            try {
-                                rec.update( name, (String) value );
-                                updated = true;
-                            } catch ( Exception e ) {
-                                LOG.info( "Update or record " + rec + " failed: " + e.getMessage() );
-                            }
-                        } else if ( value instanceof OMElement ) {
-                            LOG.debug( "    Update: " + name + " with xml: " + value );
-                            rec.update( name, (OMElement) value );
-                            updated = true;
-                        } else {
-                            LOG.warn( "Could not update propertyName: " + name
-                                      + ": must be a string, an OMELement or null!" );
-                        }
-                    }
-                    // inspect element if it is still valid
-                    for ( RecordInspector<ISORecord> inspector : inspectors ) {
-                        rec = inspector.inspect( rec, conn, dialect );
-                    }
-                }
-                if ( rec != null ) {
-                    generateQP.executeUpdate( conn, rec, rec.getIdentifier() );
-                    if ( updated )
-                        result++;
-                }
-            }
-        } catch ( Exception e ) {
-            e.printStackTrace();
-            String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), e.getMessage() );
-            throw new MetadataStoreException( msg );
-        }
-        return result;
-    }
+						if (value == null) {
+							LOG.debug("    Remove: " + name);
+							rec.removeNode(name);
+							updated = true;
+						}
+						else if (value instanceof String) {
+							LOG.debug("    Update: " + name + " with: " + value);
+							try {
+								rec.update(name, (String) value);
+								updated = true;
+							}
+							catch (Exception e) {
+								LOG.info("Update or record " + rec + " failed: " + e.getMessage());
+							}
+						}
+						else if (value instanceof OMElement) {
+							LOG.debug("    Update: " + name + " with xml: " + value);
+							rec.update(name, (OMElement) value);
+							updated = true;
+						}
+						else {
+							LOG.warn("Could not update propertyName: " + name
+									+ ": must be a string, an OMELement or null!");
+						}
+					}
+					// inspect element if it is still valid
+					for (RecordInspector<ISORecord> inspector : inspectors) {
+						rec = inspector.inspect(rec, conn, dialect);
+					}
+				}
+				if (rec != null) {
+					generateQP.executeUpdate(conn, rec, rec.getIdentifier());
+					if (updated)
+						result++;
+				}
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			String msg = Messages.getMessage("ERROR_REQUEST_TYPE", ResultType.results.name(), e.getMessage());
+			throw new MetadataStoreException(msg);
+		}
+		return result;
+	}
 
-    @Override
-    public void rollback()
-                            throws MetadataStoreException {
-        LOG.debug( Messages.getMessage( "INFO_TA_ROLLBACK" ) );
-        try {
-            conn.rollback();
-        } catch ( SQLException e ) {
-            String msg = Messages.getMessage( "ERROR_TA_ROLLBACK", e.getMessage() );
-            LOG.debug( msg );
-            throw new MetadataStoreException( msg );
-        } finally {
-            JDBCUtils.close( conn );
-        }
-    }
+	@Override
+	public void rollback() throws MetadataStoreException {
+		LOG.debug(Messages.getMessage("INFO_TA_ROLLBACK"));
+		try {
+			conn.rollback();
+		}
+		catch (SQLException e) {
+			String msg = Messages.getMessage("ERROR_TA_ROLLBACK", e.getMessage());
+			LOG.debug(msg);
+			throw new MetadataStoreException(msg);
+		}
+		finally {
+			JDBCUtils.close(conn);
+		}
+	}
 
-    private QueryService getReadOnlySqlService()
-                            throws MetadataStoreException {
-        ServiceManager serviceManager = getServiceManager();
-        return serviceManager.getQueryService( dialect, queryables );
-    }
+	private QueryService getReadOnlySqlService() throws MetadataStoreException {
+		ServiceManager serviceManager = getServiceManager();
+		return serviceManager.getQueryService(dialect, queryables);
+	}
 
-    private TransactionService getTransactionalSqlService()
-                            throws MetadataStoreException {
-        ServiceManager serviceManager = getServiceManager();
-        return serviceManager.getTransactionService( dialect, queryables, anyTextConfig );
-    }
+	private TransactionService getTransactionalSqlService() throws MetadataStoreException {
+		ServiceManager serviceManager = getServiceManager();
+		return serviceManager.getTransactionService(dialect, queryables, anyTextConfig);
+	}
 
-    private ServiceManager getServiceManager()
-                            throws MetadataStoreException {
-        ServiceManager serviceManager = ServiceManagerProvider.getInstance().getServiceManager();
-        return serviceManager;
-    }
+	private ServiceManager getServiceManager() throws MetadataStoreException {
+		ServiceManager serviceManager = ServiceManagerProvider.getInstance().getServiceManager();
+		return serviceManager;
+	}
 
 }

@@ -50,7 +50,8 @@ import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.slf4j.Logger;
 
 /**
- * Simple implementation of a JDBC connection pool based on the Apache Commons Pool and DBCP projects.
+ * Simple implementation of a JDBC connection pool based on the Apache Commons Pool and
+ * DBCP projects.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
@@ -58,71 +59,67 @@ import org.slf4j.Logger;
  */
 public class ConnectionPool {
 
-    private static final Logger LOG = getLogger( ConnectionPool.class );
+	private static final Logger LOG = getLogger(ConnectionPool.class);
 
-    private final String id;
+	private final String id;
 
-    private final PoolingDataSource ds;
+	private final PoolingDataSource ds;
 
-    private final GenericObjectPool<PoolableConnection> pool;
+	private final GenericObjectPool<PoolableConnection> pool;
 
-    /**
-     * Creates a new {@link ConnectionPool} instance.
-     *
-     * @param id
-     * @param connectURI
-     * @param user
-     * @param password
-     * @param readOnly
-     * @param minIdle
-     * @param maxActive
-     */
-    public ConnectionPool( String id, String connectURI, String user, String password, boolean readOnly, int minIdle,
-                    int maxActive ) {
+	/**
+	 * Creates a new {@link ConnectionPool} instance.
+	 * @param id
+	 * @param connectURI
+	 * @param user
+	 * @param password
+	 * @param readOnly
+	 * @param minIdle
+	 * @param maxActive
+	 */
+	public ConnectionPool(String id, String connectURI, String user, String password, boolean readOnly, int minIdle,
+			int maxActive) {
 
-        this.id = id;
-        ConnectionFactory connectionFactory = new DriverManagerConnectionFactory( connectURI, user, password );
-        PoolableConnectionFactory poolableConnectionFactory = new PoolableConnectionFactory( connectionFactory, null );
-        pool = new GenericObjectPool<>( poolableConnectionFactory );
-        pool.setMinIdle( minIdle );
-        pool.setMaxTotal( maxActive );
-        pool.setTestOnBorrow( true );
+		this.id = id;
+		ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(connectURI, user, password);
+		PoolableConnectionFactory poolableConnectionFactory = new PoolableConnectionFactory(connectionFactory, null);
+		pool = new GenericObjectPool<>(poolableConnectionFactory);
+		pool.setMinIdle(minIdle);
+		pool.setMaxTotal(maxActive);
+		pool.setTestOnBorrow(true);
 
-        poolableConnectionFactory.setPool( pool );
-        ds = new PoolingDataSource( pool );
+		poolableConnectionFactory.setPool(pool);
+		ds = new PoolingDataSource(pool);
 
-        // needed, so users can retrieve the underlying connection from pooled
-        // connections, e.g. to access the
-        // LargeObjectManager from a PGConnection
-        ds.setAccessToUnderlyingConnectionAllowed( true );
-    }
+		// needed, so users can retrieve the underlying connection from pooled
+		// connections, e.g. to access the
+		// LargeObjectManager from a PGConnection
+		ds.setAccessToUnderlyingConnectionAllowed(true);
+	}
 
-    /**
-     * Returns a {@link Connection} from the pool.
-     *
-     * @return a connection from the pool
-     * @throws SQLException
-     */
-    public Connection getConnection()
-                            throws SQLException {
-        LOG.debug( "For connection id '{}': active connections: {}, idle connections: {}",
-                   new Object[] { id, pool.getNumActive(), pool.getNumIdle() } );
-        return ds.getConnection();
-    }
+	/**
+	 * Returns a {@link Connection} from the pool.
+	 * @return a connection from the pool
+	 * @throws SQLException
+	 */
+	public Connection getConnection() throws SQLException {
+		LOG.debug("For connection id '{}': active connections: {}, idle connections: {}",
+				new Object[] { id, pool.getNumActive(), pool.getNumIdle() });
+		return ds.getConnection();
+	}
 
-    /**
-     * @throws Exception
-     */
-    public void destroy()
-                            throws Exception {
-        pool.close();
-        ds.close();
-    }
+	/**
+	 * @throws Exception
+	 */
+	public void destroy() throws Exception {
+		pool.close();
+		ds.close();
+	}
 
-    public void invalidate( PoolableConnection conn )
-                            throws Exception {
-        conn.getDelegate().close();
-        conn.reallyClose();
-        pool.invalidateObject( conn );
-    }
+	public void invalidate(PoolableConnection conn) throws Exception {
+		conn.getDelegate().close();
+		conn.reallyClose();
+		pool.invalidateObject(conn);
+	}
+
 }

@@ -40,22 +40,20 @@ package org.deegree.geometry.primitive.segments;
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author$
- *
  * @version $Revision$, $Date$
  */
 public interface Bezier extends BSpline {
 
-    /**
-     * Returns the first knot that defines the spline's basis functions.
-     *
-     * @return first knot
-     */
-    public Knot getKnot1();
+	/**
+	 * Returns the first knot that defines the spline's basis functions.
+	 * @return first knot
+	 */
+	public Knot getKnot1();
 
-    /**
-     * Returns the second knot that defines the spline's basis functions.
-     *
-     * @return second knot
-     */
-    public Knot getKnot2();
+	/**
+	 * Returns the second knot that defines the spline's basis functions.
+	 * @return second knot
+	 */
+	public Knot getKnot2();
+
 }

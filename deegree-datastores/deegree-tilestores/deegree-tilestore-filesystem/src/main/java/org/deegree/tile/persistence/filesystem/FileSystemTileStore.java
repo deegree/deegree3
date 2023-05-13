@@ -43,29 +43,27 @@ import org.deegree.workspace.ResourceMetadata;
 
 /**
  * Generic {@link org.deegree.tile.persistence.TileStore}.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class FileSystemTileStore extends GenericTileStore {
 
-    /**
-     * Creates a new {@link FileSystemTileStore} instance.
-     * 
-     * @param tileDataSets
-     *            the tile data sets to serve, must not be <code>null</code>
-     * @param metadata
-     *            resource metadata for this tile store, may not be <code>null</code> if managed by workspace
-     */
-    public FileSystemTileStore( Map<String, TileDataSet> tileDataSets, ResourceMetadata<TileStore> metadata ) {
-        super( tileDataSets, metadata );
-    }
+	/**
+	 * Creates a new {@link FileSystemTileStore} instance.
+	 * @param tileDataSets the tile data sets to serve, must not be <code>null</code>
+	 * @param metadata resource metadata for this tile store, may not be <code>null</code>
+	 * if managed by workspace
+	 */
+	public FileSystemTileStore(Map<String, TileDataSet> tileDataSets, ResourceMetadata<TileStore> metadata) {
+		super(tileDataSets, metadata);
+	}
 
-    @Override
-    public TileStoreTransaction acquireTransaction( String id ) {
-        return new FileSystemTileStoreTransaction( id, this );
-    }
+	@Override
+	public TileStoreTransaction acquireTransaction(String id) {
+		return new FileSystemTileStoreTransaction(id, this);
+	}
+
 }

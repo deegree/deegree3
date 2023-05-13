@@ -32,23 +32,22 @@ import org.springframework.batch.item.ItemReader;
  */
 public class AppSchemaReader implements ItemReader<AppSchema> {
 
-    private String schemaUrl;
+	private String schemaUrl;
 
-    public AppSchemaReader( String schemaUrl ) {
-        this.schemaUrl = schemaUrl;
-    }
+	public AppSchemaReader(String schemaUrl) {
+		this.schemaUrl = schemaUrl;
+	}
 
-    @Override
-    public AppSchema read()
-                            throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-        if ( schemaUrl != null ) {
-            String[] schemaUrls = { schemaUrl };
-            GMLAppSchemaReader xsdDecoder = new GMLAppSchemaReader( null, null, schemaUrls );
-            AppSchema appSchema = xsdDecoder.extractAppSchema();
-            schemaUrl = null;
-            return appSchema;
-        }
-        return null;
-    }
+	@Override
+	public AppSchema read() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+		if (schemaUrl != null) {
+			String[] schemaUrls = { schemaUrl };
+			GMLAppSchemaReader xsdDecoder = new GMLAppSchemaReader(null, null, schemaUrls);
+			AppSchema appSchema = xsdDecoder.extractAppSchema();
+			schemaUrl = null;
+			return appSchema;
+		}
+		return null;
+	}
 
 }

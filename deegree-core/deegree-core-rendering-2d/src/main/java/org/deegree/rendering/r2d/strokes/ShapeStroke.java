@@ -71,236 +71,239 @@ import org.deegree.style.styling.components.Graphic;
 
 /**
  * <code>ShapeStroke</code>
- * 
+ *
  * @author Jerry Huxtable
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class ShapeStroke implements Stroke {
-    private Shape shapes[];
 
-    private double advance;
+	private Shape shapes[];
 
-    private boolean repeat = true;
+	private double advance;
 
-    private boolean rotate = true;
+	private boolean repeat = true;
 
-    private AffineTransform t = new AffineTransform();
+	private boolean rotate = true;
 
-    private double positionPercentage;
+	private AffineTransform t = new AffineTransform();
 
-    private double initialGap;
+	private double positionPercentage;
 
-    private static final float FLATNESS = 1;
+	private double initialGap;
 
-    private class Counter {
-        private int value = 0;
-    }
+	private static final float FLATNESS = 1;
 
-    private interface StrokeResult {
-        boolean append(float x, float y, double rotation);
-    }
+	private class Counter {
 
-    /**
-     * @param shapes
-     * @param advance
-     * @param positionPercentage
-     * @param initialGap
-     */
-    public ShapeStroke( Shape shapes, double advance, double positionPercentage, double initialGap ) {
-        this( new Shape[] { shapes }, advance, positionPercentage, initialGap );
-    }
+		private int value = 0;
 
-    /**
-     * @param shapes
-     * @param advance
-     * @param positionPercentage
-     * @param initialGap
-     */
-    public ShapeStroke( Shape shapes[], double advance, double positionPercentage, double initialGap ) {
-        this( shapes, advance, positionPercentage, initialGap, 0.5, 0.5, 0, 0, false );
-    }
+	}
 
-    public ShapeStroke( Shape shapes, double advance, double positionPercentage, double initialGap, double anchorPointX,
-                        double anchorPointY, double displacementX, double displacementY, boolean rotate ) {
-        this( new Shape[] { shapes }, advance, positionPercentage, initialGap, anchorPointX, anchorPointY,
-              displacementX, displacementY, rotate );
-    }
+	private interface StrokeResult {
 
-    public ShapeStroke( Shape shapes[], double advance, double positionPercentage, double initialGap,
-                        double anchorPointX, double anchorPointY, double displacementX, double displacementY, boolean rotate ) {
-        this.advance = advance;
-        this.shapes = new Shape[shapes.length];
-        this.positionPercentage = positionPercentage;
-        this.repeat = positionPercentage < 0;
-        this.initialGap = initialGap;
-        this.rotate = rotate;
+		boolean append(float x, float y, double rotation);
 
-        for ( int i = 0; i < this.shapes.length; i++ ) {
-            Rectangle2D bounds = shapes[i].getBounds2D();
-            double translateX = bounds.getX() + bounds.getWidth() * anchorPointX + displacementX;
-            double translateY = bounds.getY() + bounds.getHeight() * anchorPointY + displacementY;
-            t.setToTranslation( -translateX, -translateY );
-            this.shapes[i] = t.createTransformedShape( shapes[i] );
-        }
-    }
+	}
 
-    @Override
-    public Shape createStrokedShape( Shape shape ) {
-        GeneralPath result = new GeneralPath();
-        PathIterator it = new FlatteningPathIterator( shape.getPathIterator( null ), FLATNESS );
+	/**
+	 * @param shapes
+	 * @param advance
+	 * @param positionPercentage
+	 * @param initialGap
+	 */
+	public ShapeStroke(Shape shapes, double advance, double positionPercentage, double initialGap) {
+		this(new Shape[] { shapes }, advance, positionPercentage, initialGap);
+	}
 
-        // a little sub optimal to actually go through twice
-        double totalLength = 0;
-        if ( positionPercentage >= 0 ) {
-            totalLength = calculatePathLength( it );
-            it = new FlatteningPathIterator( shape.getPathIterator( null ), FLATNESS );
-        }
+	/**
+	 * @param shapes
+	 * @param advance
+	 * @param positionPercentage
+	 * @param initialGap
+	 */
+	public ShapeStroke(Shape shapes[], double advance, double positionPercentage, double initialGap) {
+		this(shapes, advance, positionPercentage, initialGap, 0.5, 0.5, 0, 0, false);
+	}
 
-        float next = 0;
-        float minLength = (float) initialGap;
-        if ( positionPercentage >= 0 ) {
-            minLength = (float) ( totalLength * ( positionPercentage / 100 ) );
-            next = minLength;
-        }
+	public ShapeStroke(Shape shapes, double advance, double positionPercentage, double initialGap, double anchorPointX,
+			double anchorPointY, double displacementX, double displacementY, boolean rotate) {
+		this(new Shape[] { shapes }, advance, positionPercentage, initialGap, anchorPointX, anchorPointY, displacementX,
+				displacementY, rotate);
+	}
 
-        Counter currentShape = new Counter();
-        final int length = shapes.length;
+	public ShapeStroke(Shape shapes[], double advance, double positionPercentage, double initialGap,
+			double anchorPointX, double anchorPointY, double displacementX, double displacementY, boolean rotate) {
+		this.advance = advance;
+		this.shapes = new Shape[shapes.length];
+		this.positionPercentage = positionPercentage;
+		this.repeat = positionPercentage < 0;
+		this.initialGap = initialGap;
+		this.rotate = rotate;
 
-        createStrokedShape( ( x, y, angle ) -> {
-            t.setToTranslation( x, y );
-            if ( this.rotate ) {
-                t.rotate( angle );
-            }
+		for (int i = 0; i < this.shapes.length; i++) {
+			Rectangle2D bounds = shapes[i].getBounds2D();
+			double translateX = bounds.getX() + bounds.getWidth() * anchorPointX + displacementX;
+			double translateY = bounds.getY() + bounds.getHeight() * anchorPointY + displacementY;
+			t.setToTranslation(-translateX, -translateY);
+			this.shapes[i] = t.createTransformedShape(shapes[i]);
+		}
+	}
 
-            result.append( t.createTransformedShape( shapes[currentShape.value] ), false );
-            currentShape.value++;
-            if ( currentShape.value >= length && repeat ) {
-                currentShape.value = 0;
-                return false;
-            } else {
-                return true;
-            }
-        }, it, next, minLength );
+	@Override
+	public Shape createStrokedShape(Shape shape) {
+		GeneralPath result = new GeneralPath();
+		PathIterator it = new FlatteningPathIterator(shape.getPathIterator(null), FLATNESS);
 
-        return result;
-    }
+		// a little sub optimal to actually go through twice
+		double totalLength = 0;
+		if (positionPercentage >= 0) {
+			totalLength = calculatePathLength(it);
+			it = new FlatteningPathIterator(shape.getPathIterator(null), FLATNESS);
+		}
 
-    /**
-     * Draw a {@code Image} along a {@code Shape}
-     *
-     * @param shape Shape to render along
-     * @param graphics Graphics context
-     * @param img The image
-     * @param g Graphics for anchor point and rotation
-     * @param rect  Rectangle describing the image
-     */
-    public void renderStroke( Shape shape, Graphics2D graphics, Image img, Graphic g, Rectangle2D.Double rect) {
-        PathIterator it = new FlatteningPathIterator( shape.getPathIterator( null ), FLATNESS );
+		float next = 0;
+		float minLength = (float) initialGap;
+		if (positionPercentage >= 0) {
+			minLength = (float) (totalLength * (positionPercentage / 100));
+			next = minLength;
+		}
 
-        // a little sub optimal to actually go through twice
-        double totalLength = 0;
-        if ( positionPercentage >= 0 ) {
-            totalLength = calculatePathLength( it );
-            it = new FlatteningPathIterator( shape.getPathIterator( null ), FLATNESS );
-        }
+		Counter currentShape = new Counter();
+		final int length = shapes.length;
 
-        float next = 0;
-        float minLength = (float) initialGap;
-        if ( positionPercentage >= 0 ) {
-            minLength = (float) ( totalLength * ( positionPercentage / 100 ) );
-            next = minLength;
-        }
-        double graphicsRotation = toRadians( g.rotation );
+		createStrokedShape((x, y, angle) -> {
+			t.setToTranslation(x, y);
+			if (this.rotate) {
+				t.rotate(angle);
+			}
 
-        createStrokedShape( ( x, y, angle ) -> {
-            double rotation = this.rotate ? graphicsRotation + angle : graphicsRotation;
-            AffineTransform t = graphics.getTransform();
-            if ( !isZero( rotation ) ) {
-                int rotationPointX = round( x + rect.x + rect.getWidth() * g.anchorPointX );
-                int rotationPointY = round( y + rect.y + rect.getHeight() * g.anchorPointY );
-                graphics.rotate( rotation, rotationPointX, rotationPointY );
-            }
-            graphics.drawImage( img, round( x + rect.x ), round( y + rect.y ), round( rect.width ),
-                                round( rect.height ), null );
-            graphics.setTransform( t );
-            return !repeat;
-        }, it, next, minLength );
-    }
+			result.append(t.createTransformedShape(shapes[currentShape.value]), false);
+			currentShape.value++;
+			if (currentShape.value >= length && repeat) {
+				currentShape.value = 0;
+				return false;
+			}
+			else {
+				return true;
+			}
+		}, it, next, minLength);
 
+		return result;
+	}
 
-    private void createStrokedShape( StrokeResult result, PathIterator it, float next, float minLength ) {
-        int type = 0;
-        float moveX = 0, moveY = 0;
-        float lastX = 0, lastY = 0;
-        float thisX = 0, thisY = 0;
-        float points[] = new float[6];
-        boolean stop = false;
+	/**
+	 * Draw a {@code Image} along a {@code Shape}
+	 * @param shape Shape to render along
+	 * @param graphics Graphics context
+	 * @param img The image
+	 * @param g Graphics for anchor point and rotation
+	 * @param rect Rectangle describing the image
+	 */
+	public void renderStroke(Shape shape, Graphics2D graphics, Image img, Graphic g, Rectangle2D.Double rect) {
+		PathIterator it = new FlatteningPathIterator(shape.getPathIterator(null), FLATNESS);
 
-        while ( !stop && !it.isDone() ) {
-            type = it.currentSegment( points );
-            switch ( type ) {
-            case PathIterator.SEG_MOVETO:
-                moveX = lastX = points[0];
-                moveY = lastY = points[1];
-                next = minLength;
-                break;
+		// a little sub optimal to actually go through twice
+		double totalLength = 0;
+		if (positionPercentage >= 0) {
+			totalLength = calculatePathLength(it);
+			it = new FlatteningPathIterator(shape.getPathIterator(null), FLATNESS);
+		}
 
-            case PathIterator.SEG_CLOSE:
-                points[0] = moveX;
-                points[1] = moveY;
-                // Fall into....
+		float next = 0;
+		float minLength = (float) initialGap;
+		if (positionPercentage >= 0) {
+			minLength = (float) (totalLength * (positionPercentage / 100));
+			next = minLength;
+		}
+		double graphicsRotation = toRadians(g.rotation);
 
-            case PathIterator.SEG_LINETO:
-                thisX = points[0];
-                thisY = points[1];
-                float dx = thisX - lastX;
-                float dy = thisY - lastY;
-                float distance = (float) Math.sqrt( dx * dx + dy * dy );
-                if ( distance >= next ) {
-                    float r = 1.0f / distance;
-                    double angle = Math.atan2( dy, dx );
-                    while ( !stop && distance >= next ) {
-                        float x = lastX + next * dx * r;
-                        float y = lastY + next * dy * r;
-                        stop = result.append(x, y, angle);
-                        next += advance;
-                    }
-                }
-                next -= distance;
-                lastX = thisX;
-                lastY = thisY;
-                break;
-            }
-            it.next();
-        }
-    }
+		createStrokedShape((x, y, angle) -> {
+			double rotation = this.rotate ? graphicsRotation + angle : graphicsRotation;
+			AffineTransform t = graphics.getTransform();
+			if (!isZero(rotation)) {
+				int rotationPointX = round(x + rect.x + rect.getWidth() * g.anchorPointX);
+				int rotationPointY = round(y + rect.y + rect.getHeight() * g.anchorPointY);
+				graphics.rotate(rotation, rotationPointX, rotationPointY);
+			}
+			graphics.drawImage(img, round(x + rect.x), round(y + rect.y), round(rect.width), round(rect.height), null);
+			graphics.setTransform(t);
+			return !repeat;
+		}, it, next, minLength);
+	}
 
-    private double calculatePathLength( PathIterator it ) {
-        double totalLength = 0;
-        double lx = 0, ly = 0;
-        while ( !it.isDone() ) {
-            float[] ps = new float[6];
-            int type = it.currentSegment( ps );
-            switch ( type ) {
-            case PathIterator.SEG_MOVETO:
-                lx = ps[0];
-                ly = ps[1];
-                break;
+	private void createStrokedShape(StrokeResult result, PathIterator it, float next, float minLength) {
+		int type = 0;
+		float moveX = 0, moveY = 0;
+		float lastX = 0, lastY = 0;
+		float thisX = 0, thisY = 0;
+		float points[] = new float[6];
+		boolean stop = false;
 
-            case PathIterator.SEG_CLOSE:
-                break;
+		while (!stop && !it.isDone()) {
+			type = it.currentSegment(points);
+			switch (type) {
+				case PathIterator.SEG_MOVETO:
+					moveX = lastX = points[0];
+					moveY = lastY = points[1];
+					next = minLength;
+					break;
 
-            case PathIterator.SEG_LINETO:
-                totalLength += sqrt( ( lx - ps[0] ) * ( lx - ps[0] ) + ( ly - ps[1] ) * ( ly - ps[1] ) );
-                lx = ps[0];
-                ly = ps[1];
-                break;
-            }
-            it.next();
-        }
-        return totalLength;
-    }
+				case PathIterator.SEG_CLOSE:
+					points[0] = moveX;
+					points[1] = moveY;
+					// Fall into....
+
+				case PathIterator.SEG_LINETO:
+					thisX = points[0];
+					thisY = points[1];
+					float dx = thisX - lastX;
+					float dy = thisY - lastY;
+					float distance = (float) Math.sqrt(dx * dx + dy * dy);
+					if (distance >= next) {
+						float r = 1.0f / distance;
+						double angle = Math.atan2(dy, dx);
+						while (!stop && distance >= next) {
+							float x = lastX + next * dx * r;
+							float y = lastY + next * dy * r;
+							stop = result.append(x, y, angle);
+							next += advance;
+						}
+					}
+					next -= distance;
+					lastX = thisX;
+					lastY = thisY;
+					break;
+			}
+			it.next();
+		}
+	}
+
+	private double calculatePathLength(PathIterator it) {
+		double totalLength = 0;
+		double lx = 0, ly = 0;
+		while (!it.isDone()) {
+			float[] ps = new float[6];
+			int type = it.currentSegment(ps);
+			switch (type) {
+				case PathIterator.SEG_MOVETO:
+					lx = ps[0];
+					ly = ps[1];
+					break;
+
+				case PathIterator.SEG_CLOSE:
+					break;
+
+				case PathIterator.SEG_LINETO:
+					totalLength += sqrt((lx - ps[0]) * (lx - ps[0]) + (ly - ps[1]) * (ly - ps[1]));
+					lx = ps[0];
+					ly = ps[1];
+					break;
+			}
+			it.next();
+		}
+		return totalLength;
+	}
+
 }

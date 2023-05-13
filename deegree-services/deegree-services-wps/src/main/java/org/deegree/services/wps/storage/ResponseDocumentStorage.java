@@ -40,24 +40,24 @@ import java.io.File;
 
 /**
  * {@link StorageLocation} for response documents.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- * 
  * @version $Revision: $, $Date: $
  */
 public class ResponseDocumentStorage extends StorageLocation {
 
-    private String getUrl;
+	private String getUrl;
 
-    ResponseDocumentStorage( File resourceFile, String id, String getUrl ) {
-        super( resourceFile, id, "text/xml" );
-        this.getUrl = getUrl;
-    }
+	ResponseDocumentStorage(File resourceFile, String id, String getUrl) {
+		super(resourceFile, id, "text/xml");
+		this.getUrl = getUrl;
+	}
 
-    @Override
-    public String getWebURL() {
-        String url = getUrl + "service=WPS&version=1.0.0&request=GetResponseDocument&identifier=" + id;
-        return url;
-    }
+	@Override
+	public String getWebURL() {
+		String url = getUrl + "service=WPS&version=1.0.0&request=GetResponseDocument&identifier=" + id;
+		return url;
+	}
+
 }

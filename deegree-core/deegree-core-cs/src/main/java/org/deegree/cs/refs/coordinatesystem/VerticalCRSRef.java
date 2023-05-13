@@ -43,45 +43,42 @@ import org.deegree.cs.coordinatesystems.VerticalCRS;
 
 /**
  * {@link CRSRef} to a {@link VerticalCRS}
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  * @author last edited by: $Author: lyn $
- * 
  * @version $Revision: $, $Date: $
  */
 public class VerticalCRSRef extends CRSRef implements IVerticalCRS {
 
-    private static final long serialVersionUID = 2868443405450143905L;
+	private static final long serialVersionUID = 2868443405450143905L;
 
-    /**
-     * Creates a a reference to a {@link VerticalCRS}
-     * 
-     * @param resolver
-     *            used for resolving the reference, must not be <code>null</code>
-     * @param uri
-     *            the object's uri, must not be <code>null</code>
-     * @param baseURL
-     *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
-     */
-    public VerticalCRSRef( ReferenceResolver resolver, String uri, String baseURL ) {
-        super( resolver, uri, baseURL );
-    }
+	/**
+	 * Creates a a reference to a {@link VerticalCRS}
+	 * @param resolver used for resolving the reference, must not be <code>null</code>
+	 * @param uri the object's uri, must not be <code>null</code>
+	 * @param baseURL base URL for resolving the uri, may be <code>null</code> (no
+	 * resolving of relative URLs)
+	 */
+	public VerticalCRSRef(ReferenceResolver resolver, String uri, String baseURL) {
+		super(resolver, uri, baseURL);
+	}
 
-    @Override
-    public VerticalCRS getReferencedObject() {
-        return (VerticalCRS) super.getReferencedObject();
-    }
+	@Override
+	public VerticalCRS getReferencedObject() {
+		return (VerticalCRS) super.getReferencedObject();
+	}
 
-    public IVerticalDatum getVerticalDatum() {
-        return getReferencedObject().getVerticalDatum();
-    }
+	public IVerticalDatum getVerticalDatum() {
+		return getReferencedObject().getVerticalDatum();
+	}
 
-    public IAxis getVerticalAxis() {
-        return getReferencedObject().getVerticalAxis();
-    }
+	public IAxis getVerticalAxis() {
+		return getReferencedObject().getVerticalAxis();
+	}
 
-    @Override
-    public boolean equals( Object obj ) {
-        return super.equals( obj ) ? true : getReferencedObject().equals( obj );
-    }
+	@Override
+	public boolean equals(Object obj) {
+		return super.equals(obj) ? true : getReferencedObject().equals(obj);
+	}
+
 }

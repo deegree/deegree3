@@ -65,216 +65,211 @@ import org.slf4j.LoggerFactory;
 
 /**
  * <code>Categorize</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author <a href="mailto:a.aiordachioaie@jacobs-university.de">Andrei Aiordachioaie</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class Categorize extends AbstractCustomExpression {
 
-    private static final QName ELEMENT_NAME = new QName( SENS, "Categorize" );
+	private static final QName ELEMENT_NAME = new QName(SENS, "Categorize");
 
-    private static final Logger LOG = LoggerFactory.getLogger( Categorize.class );
+	private static final Logger LOG = LoggerFactory.getLogger(Categorize.class);
 
-    private StringBuffer value;
+	private StringBuffer value;
 
-    private Continuation<StringBuffer> contn;
+	private Continuation<StringBuffer> contn;
 
-    private boolean precedingBelongs;
+	private boolean precedingBelongs;
 
-    private List<StringBuffer> values;
+	private List<StringBuffer> values;
 
-    private Color[] valuesArray;
+	private Color[] valuesArray;
 
-    private List<StringBuffer> thresholds;
+	private List<StringBuffer> thresholds;
 
-    private Float[] thresholdsArray;
+	private Float[] thresholdsArray;
 
-    private LinkedList<Continuation<StringBuffer>> valueContns;
+	private LinkedList<Continuation<StringBuffer>> valueContns;
 
-    private LinkedList<Continuation<StringBuffer>> thresholdContns;
+	private LinkedList<Continuation<StringBuffer>> thresholdContns;
 
-    /***/
-    public Categorize() {
-        // just used for SPI
-    }
+	/***/
+	public Categorize() {
+		// just used for SPI
+	}
 
-    Categorize( StringBuffer value, Continuation<StringBuffer> contn, boolean precedingBelongs,
-                List<StringBuffer> values, Color[] valuesArray, List<StringBuffer> thresholds, Float[] thresholdsArray,
-                LinkedList<Continuation<StringBuffer>> valueContns,
-                LinkedList<Continuation<StringBuffer>> thresholdContns ) {
-        this.value = value;
-        this.contn = contn;
-        this.precedingBelongs = precedingBelongs;
-        this.values = values;
-        this.valuesArray = valuesArray;
-        this.thresholds = thresholds;
-        this.thresholdsArray = thresholdsArray;
-        this.valueContns = valueContns;
-        this.thresholdContns = thresholdContns;
-    }
+	Categorize(StringBuffer value, Continuation<StringBuffer> contn, boolean precedingBelongs,
+			List<StringBuffer> values, Color[] valuesArray, List<StringBuffer> thresholds, Float[] thresholdsArray,
+			LinkedList<Continuation<StringBuffer>> valueContns,
+			LinkedList<Continuation<StringBuffer>> thresholdContns) {
+		this.value = value;
+		this.contn = contn;
+		this.precedingBelongs = precedingBelongs;
+		this.values = values;
+		this.valuesArray = valuesArray;
+		this.thresholds = thresholds;
+		this.thresholdsArray = thresholdsArray;
+		this.valueContns = valueContns;
+		this.thresholdContns = thresholdContns;
+	}
 
-    @Override
-    public QName getElementName() {
-        return ELEMENT_NAME;
-    }
+	@Override
+	public QName getElementName() {
+		return ELEMENT_NAME;
+	}
 
-    @SuppressWarnings("unchecked")
-    private static <T> String eval( StringBuffer initial, Continuation<StringBuffer> contn, T f,
-                                    XPathEvaluator<T> evaluator ) {
-        StringBuffer sb = new StringBuffer( initial.toString().trim() );
-        if ( contn != null ) {
-            contn.evaluate( sb, (Feature) f, (XPathEvaluator<Feature>) evaluator );
-        }
-        return sb.toString();
-    }
+	@SuppressWarnings("unchecked")
+	private static <T> String eval(StringBuffer initial, Continuation<StringBuffer> contn, T f,
+			XPathEvaluator<T> evaluator) {
+		StringBuffer sb = new StringBuffer(initial.toString().trim());
+		if (contn != null) {
+			contn.evaluate(sb, (Feature) f, (XPathEvaluator<Feature>) evaluator);
+		}
+		return sb.toString();
+	}
 
-    @Override
-    public <T> TypedObjectNode[] evaluate( T f, XPathEvaluator<T> xpathEvaluator ) {
-        String val = eval( value, contn, f, xpathEvaluator );
+	@Override
+	public <T> TypedObjectNode[] evaluate(T f, XPathEvaluator<T> xpathEvaluator) {
+		String val = eval(value, contn, f, xpathEvaluator);
 
-        Iterator<StringBuffer> vals = values.iterator();
-        Iterator<StringBuffer> barriers = thresholds.iterator();
-        Iterator<Continuation<StringBuffer>> valContns = valueContns.iterator();
-        Iterator<Continuation<StringBuffer>> barrierContns = thresholdContns.iterator();
+		Iterator<StringBuffer> vals = values.iterator();
+		Iterator<StringBuffer> barriers = thresholds.iterator();
+		Iterator<Continuation<StringBuffer>> valContns = valueContns.iterator();
+		Iterator<Continuation<StringBuffer>> barrierContns = thresholdContns.iterator();
 
-        String curVal = eval( vals.next(), valContns.next(), f, xpathEvaluator );
+		String curVal = eval(vals.next(), valContns.next(), f, xpathEvaluator);
 
-        boolean stringMode = false;
+		boolean stringMode = false;
 
-        while ( barriers.hasNext() ) {
-            String cur = eval( barriers.next(), barrierContns.next(), f, xpathEvaluator );
-            String nextVal = eval( vals.next(), valContns.next(), f, xpathEvaluator );
-            if ( cur.equals( val ) ) {
-                return new TypedObjectNode[] { new PrimitiveValue( precedingBelongs ? curVal : nextVal ) };
-            }
-            if ( !stringMode ) {
-                try {
-                    float val1 = Float.parseFloat( cur );
-                    float val2 = Float.parseFloat( val );
-                    if ( val2 < val1 ) {
-                        return new TypedObjectNode[] { new PrimitiveValue( curVal ) };
-                    }
-                    curVal = nextVal;
-                    continue;
-                } catch ( NumberFormatException e ) {
-                    // must be a string valued categorize then
-                    stringMode = true;
-                }
-            }
-            if ( val.compareTo( cur ) == -1 ) {
-                return new TypedObjectNode[] { new PrimitiveValue( curVal ) };
-            }
-            curVal = nextVal;
-        }
+		while (barriers.hasNext()) {
+			String cur = eval(barriers.next(), barrierContns.next(), f, xpathEvaluator);
+			String nextVal = eval(vals.next(), valContns.next(), f, xpathEvaluator);
+			if (cur.equals(val)) {
+				return new TypedObjectNode[] { new PrimitiveValue(precedingBelongs ? curVal : nextVal) };
+			}
+			if (!stringMode) {
+				try {
+					float val1 = Float.parseFloat(cur);
+					float val2 = Float.parseFloat(val);
+					if (val2 < val1) {
+						return new TypedObjectNode[] { new PrimitiveValue(curVal) };
+					}
+					curVal = nextVal;
+					continue;
+				}
+				catch (NumberFormatException e) {
+					// must be a string valued categorize then
+					stringMode = true;
+				}
+			}
+			if (val.compareTo(cur) == -1) {
+				return new TypedObjectNode[] { new PrimitiveValue(curVal) };
+			}
+			curVal = nextVal;
+		}
 
-        return new TypedObjectNode[] { new PrimitiveValue( curVal ) };
-    }
+		return new TypedObjectNode[] { new PrimitiveValue(curVal) };
+	}
 
-    /**
-     * @return the array of threshholds
-     */
-    public Float[] getThreshholds() {
-        return thresholdsArray;
-    }
+	/**
+	 * @return the array of threshholds
+	 */
+	public Float[] getThreshholds() {
+		return thresholdsArray;
+	}
 
-    /**
-     * @return true, if preceding value belongs to current category
-     */
-    public boolean getPrecedingBelongs() {
-        return precedingBelongs;
-    }
+	/**
+	 * @return true, if preceding value belongs to current category
+	 */
+	public boolean getPrecedingBelongs() {
+		return precedingBelongs;
+	}
 
-    /**
-     * @return the categories' colors
-     */
-    public Color[] getColors() {
-        return valuesArray;
-    }
+	/**
+	 * @return the categories' colors
+	 */
+	public Color[] getColors() {
+		return valuesArray;
+	}
 
-    /**
-     * Construct an image map, as the result of the Categorize operation
-     * 
-     * @param raster
-     *            input raster
-     * @param style
-     *            raster style, that contains channel mappings (if applicable)
-     * @return a buffered image with the processed data
-     */
-    public BufferedImage evaluateRaster( AbstractRaster raster, RasterStyling style ) {
-        BufferedImage img = null;
-        int col = -1, row = -1;
-        RasterData data = raster.getAsSimpleRaster().getRasterData();
+	/**
+	 * Construct an image map, as the result of the Categorize operation
+	 * @param raster input raster
+	 * @param style raster style, that contains channel mappings (if applicable)
+	 * @return a buffered image with the processed data
+	 */
+	public BufferedImage evaluateRaster(AbstractRaster raster, RasterStyling style) {
+		BufferedImage img = null;
+		int col = -1, row = -1;
+		RasterData data = raster.getAsSimpleRaster().getRasterData();
 
-        RasterDataUtility converter = new RasterDataUtility( raster, style.channelSelection );
+		RasterDataUtility converter = new RasterDataUtility(raster, style.channelSelection);
 
-        img = new BufferedImage( data.getColumns(), data.getRows(), BufferedImage.TYPE_INT_ARGB );
-        LOG.trace( "Created image with H={}, L={}", img.getHeight(), img.getWidth() );
-        for ( row = 0; row < img.getHeight(); row++ ) {
-            for ( col = 0; col < img.getWidth(); col++ ) {
-                Color c = lookup2( converter.get( col, row ) );
-                img.setRGB( col, row, c.getRGB() );
-            }
-        }
+		img = new BufferedImage(data.getColumns(), data.getRows(), BufferedImage.TYPE_INT_ARGB);
+		LOG.trace("Created image with H={}, L={}", img.getHeight(), img.getWidth());
+		for (row = 0; row < img.getHeight(); row++) {
+			for (col = 0; col < img.getWidth(); col++) {
+				Color c = lookup2(converter.get(col, row));
+				img.setRGB(col, row, c.getRGB());
+			}
+		}
 
-        return img;
-    }
+		return img;
+	}
 
-    /**
-     * Looks up a value in the current categories and thresholds. Uses binary search for optimization.
-     * 
-     * @param value
-     *            value
-     * @return Category value
-     */
-    final Color lookup2( final double value ) {
-        int pos = Arrays.binarySearch( thresholdsArray, new Float( value ) );
-        if ( pos >= 0 ) {
-            // found exact value in the thresholds array
-            if ( precedingBelongs == false ) {
-                pos++;
-            }
-        } else {
-            pos = -pos - 1;
-        }
+	/**
+	 * Looks up a value in the current categories and thresholds. Uses binary search for
+	 * optimization.
+	 * @param value value
+	 * @return Category value
+	 */
+	final Color lookup2(final double value) {
+		int pos = Arrays.binarySearch(thresholdsArray, new Float(value));
+		if (pos >= 0) {
+			// found exact value in the thresholds array
+			if (precedingBelongs == false) {
+				pos++;
+			}
+		}
+		else {
+			pos = -pos - 1;
+		}
 
-        return valuesArray[pos];
-    }
+		return valuesArray[pos];
+	}
 
-    /**
-     * Looks up a value in the current categories and thresholds. Naive implementation. Used for comparisons in tests.
-     * 
-     * @param val
-     *            double value
-     * @return rgb int value, for storing in a BufferedImage
-     */
-    final Color lookup( final double val ) {
-        Iterator<StringBuffer> ts = thresholds.iterator();
-        Iterator<StringBuffer> vs = values.iterator();
+	/**
+	 * Looks up a value in the current categories and thresholds. Naive implementation.
+	 * Used for comparisons in tests.
+	 * @param val double value
+	 * @return rgb int value, for storing in a BufferedImage
+	 */
+	final Color lookup(final double val) {
+		Iterator<StringBuffer> ts = thresholds.iterator();
+		Iterator<StringBuffer> vs = values.iterator();
 
-        Float threshold = Float.parseFloat( ts.next().toString() );
+		Float threshold = Float.parseFloat(ts.next().toString());
 
-        while ( ( precedingBelongs ? ( threshold < val ) : ( threshold <= val ) ) && ts.hasNext() ) {
-            threshold = Float.parseFloat( ts.next().toString() );
-            vs.next();
-        }
+		while ((precedingBelongs ? (threshold < val) : (threshold <= val)) && ts.hasNext()) {
+			threshold = Float.parseFloat(ts.next().toString());
+			vs.next();
+		}
 
-        String col = vs.next().toString();
-        Color c = decodeWithAlpha( col );
-        return c;
-    }
+		String col = vs.next().toString();
+		Color c = decodeWithAlpha(col);
+		return c;
+	}
 
-    @Override
-    public Categorize parse( XMLStreamReader in )
-                            throws XMLStreamException {
-        return CategorizeParser.parse( in );
-    }
+	@Override
+	public Categorize parse(XMLStreamReader in) throws XMLStreamException {
+		return CategorizeParser.parse(in);
+	}
 
-    @Override
-    public String toString() {
-        return generateToString( this );
-    }
+	@Override
+	public String toString() {
+		return generateToString(this);
+	}
 
 }

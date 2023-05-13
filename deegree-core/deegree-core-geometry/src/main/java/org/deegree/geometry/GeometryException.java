@@ -37,8 +37,6 @@
 package org.deegree.geometry;
 
 /**
- *
- *
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author last edited by: $Author$
  *
@@ -46,34 +44,32 @@ package org.deegree.geometry;
  */
 public class GeometryException extends RuntimeException {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 3327285706883207758L;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 3327285706883207758L;
 
-    /**
-     *
-     *
-     */
-    public GeometryException() {
-        super();
-    }
+	/**
+	 *
+	 *
+	 */
+	public GeometryException() {
+		super();
+	}
 
-    /**
-     *
-     * @param message
-     * @param throwable
-     */
-    public GeometryException( String message, Throwable throwable ) {
-        super( message, throwable );
-    }
+	/**
+	 * @param message
+	 * @param throwable
+	 */
+	public GeometryException(String message, Throwable throwable) {
+		super(message, throwable);
+	}
 
-    /**
-     *
-     * @param message
-     */
-    public GeometryException( String message ) {
-        super( message );
-    }
+	/**
+	 * @param message
+	 */
+	public GeometryException(String message) {
+		super(message);
+	}
 
 }

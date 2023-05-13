@@ -45,42 +45,42 @@ import java.util.List;
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author$
- *
  * @version $Revision$, $Date$
  */
 public interface Ring extends Curve {
 
-    /**
-     * All ring variants.
-     */
-    public enum RingType {
+	/**
+	 * All ring variants.
+	 */
+	public enum RingType {
 
-        /** Just one curve member (with a single segment) with linear interpolation. **/
-        LinearRing,
+		/** Just one curve member (with a single segment) with linear interpolation. **/
+		LinearRing,
 
-        /** Generic ring: arbitrary number of members with arbitrary interpolation methods. **/
-        Ring
-    }
+		/**
+		 * Generic ring: arbitrary number of members with arbitrary interpolation methods.
+		 **/
+		Ring
 
-    /**
-     * Must always return {@link Curve.CurveType#Ring}.
-     *
-     * @return {@link Curve.CurveType#Ring}
-     */
-    @Override
-    public CurveType getCurveType();
+	}
 
-    /**
-     * Returns the type of ring.
-     *
-     * @return the type of ring
-     */
-    public RingType getRingType();
+	/**
+	 * Must always return {@link Curve.CurveType#Ring}.
+	 * @return {@link Curve.CurveType#Ring}
+	 */
+	@Override
+	public CurveType getCurveType();
 
-    /**
-     * Returns the {@link Curve}s that constitute this {@link Ring}.
-     *
-     * @return the constituting curves
-     */
-    public List<Curve> getMembers();
+	/**
+	 * Returns the type of ring.
+	 * @return the type of ring
+	 */
+	public RingType getRingType();
+
+	/**
+	 * Returns the {@link Curve}s that constitute this {@link Ring}.
+	 * @return the constituting curves
+	 */
+	public List<Curve> getMembers();
+
 }

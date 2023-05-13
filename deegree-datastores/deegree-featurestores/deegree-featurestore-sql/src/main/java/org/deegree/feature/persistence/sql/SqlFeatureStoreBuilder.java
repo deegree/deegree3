@@ -57,52 +57,52 @@ import org.slf4j.Logger;
 
 /**
  * <code>SqlFeatureStoreBuilder</code>
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
- * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 public class SqlFeatureStoreBuilder implements ResourceBuilder<FeatureStore> {
 
-    private static final Logger LOG = getLogger( SqlFeatureStoreBuilder.class );
+	private static final Logger LOG = getLogger(SqlFeatureStoreBuilder.class);
 
-    private SqlFeatureStoreMetadata metadata;
+	private SqlFeatureStoreMetadata metadata;
 
-    private SQLFeatureStoreJAXB config;
+	private SQLFeatureStoreJAXB config;
 
-    private Workspace workspace;
+	private Workspace workspace;
 
-    public SqlFeatureStoreBuilder( SqlFeatureStoreMetadata metadata, SQLFeatureStoreJAXB config, Workspace workspace ) {
-        this.metadata = metadata;
-        this.config = config;
-        this.workspace = workspace;
-    }
+	public SqlFeatureStoreBuilder(SqlFeatureStoreMetadata metadata, SQLFeatureStoreJAXB config, Workspace workspace) {
+		this.metadata = metadata;
+		this.config = config;
+		this.workspace = workspace;
+	}
 
-    @Override
-    public FeatureStore build() {
-        ConnectionProvider conn = workspace.getResource( ConnectionProviderProvider.class,
-                                                         config.getJDBCConnId().getValue() );
-        checkConnection( conn );
+	@Override
+	public FeatureStore build() {
+		ConnectionProvider conn = workspace.getResource(ConnectionProviderProvider.class,
+				config.getJDBCConnId().getValue());
+		checkConnection(conn);
 
-        File file = metadata.getLocation().getAsFile();
-        SQLFeatureStore fs = null;
-        try {
-            // TODO rewrite needed to properly resolve files using resource location
-            fs = new SQLFeatureStore( config, file.toURI().toURL(), conn.getDialect(), metadata, workspace );
-        } catch ( MalformedURLException e ) {
-            LOG.trace( "Stack trace:", e );
-        }
-        return fs;
-    }
+		File file = metadata.getLocation().getAsFile();
+		SQLFeatureStore fs = null;
+		try {
+			// TODO rewrite needed to properly resolve files using resource location
+			fs = new SQLFeatureStore(config, file.toURI().toURL(), conn.getDialect(), metadata, workspace);
+		}
+		catch (MalformedURLException e) {
+			LOG.trace("Stack trace:", e);
+		}
+		return fs;
+	}
 
-    private void checkConnection( ConnectionProvider conn ) {
-        if ( conn == null ) {
-            String msg = "Unable to create SqlFeatureStore: Connection with identifier "
-                         + config.getJDBCConnId().getValue() + " is not available.";
-            LOG.error( msg );
-            throw new ResourceInitException( msg );
-        }
-    }
+	private void checkConnection(ConnectionProvider conn) {
+		if (conn == null) {
+			String msg = "Unable to create SqlFeatureStore: Connection with identifier "
+					+ config.getJDBCConnId().getValue() + " is not available.";
+			LOG.error(msg);
+			throw new ResourceInitException(msg);
+		}
+	}
 
 }

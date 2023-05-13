@@ -58,36 +58,36 @@ import java.util.List;
 
 public class CachingTileMatrix implements TileDataLevel {
 
-    private final TileDataLevel tileMatrix;
+	private final TileDataLevel tileMatrix;
 
-    private final Cache<String, byte[]> cache;
+	private final Cache<String, byte[]> cache;
 
-    private final String identifier;
+	private final String identifier;
 
-    public CachingTileMatrix( TileDataLevel tileMatrix, Cache<String, byte[]> cache ) {
-        this.tileMatrix = tileMatrix;
-        this.cache = cache;
-        this.identifier = tileMatrix.getMetadata().getIdentifier();
-    }
+	public CachingTileMatrix(TileDataLevel tileMatrix, Cache<String, byte[]> cache) {
+		this.tileMatrix = tileMatrix;
+		this.cache = cache;
+		this.identifier = tileMatrix.getMetadata().getIdentifier();
+	}
 
-    @Override
-    public TileMatrix getMetadata() {
-        return tileMatrix.getMetadata();
-    }
+	@Override
+	public TileMatrix getMetadata() {
+		return tileMatrix.getMetadata();
+	}
 
-    @Override
-    public Tile getTile( long x, long y ) {
-        Tile tile = tileMatrix.getTile( x, y );
-        if ( tile == null ) {
-            return null;
-        }
-        String key = identifier + "_" + x + "_" + y;
-        return new CachedTile( tile, cache, key );
-    }
+	@Override
+	public Tile getTile(long x, long y) {
+		Tile tile = tileMatrix.getTile(x, y);
+		if (tile == null) {
+			return null;
+		}
+		String key = identifier + "_" + x + "_" + y;
+		return new CachedTile(tile, cache, key);
+	}
 
-    @Override
-    public List<String> getStyles() {
-        return null;
-    }
+	@Override
+	public List<String> getStyles() {
+		return null;
+	}
 
 }

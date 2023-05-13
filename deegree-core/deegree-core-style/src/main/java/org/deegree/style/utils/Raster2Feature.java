@@ -48,40 +48,39 @@ import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.standard.points.PointsList;
 
 /**
- * Creates a Feature from a Raster. The resulting feature contains the raster outline as a geometry and other
- * information about the raster as attributes.
- * 
+ * Creates a Feature from a Raster. The resulting feature contains the raster outline as a
+ * geometry and other information about the raster as attributes.
+ *
  * @author <a href="mailto:a.aiordachioaie@jacobs-university.de">Andrei Aiordachioaie</a>
  * @author last edited by: $Author: lbuesching $
- * 
  * @version $Revision: 29642 $, $Date: 2011-02-11 13:59:33 +0100 (Fri, 11 Feb 2011) $
  */
 public class Raster2Feature {
 
-    /**
-     * Return the bounding geometry of a raster as a polygon (but is actually a rectangle).
-     * 
-     * @param raster
-     * @return bounding polygon
-     */
-    public static Polygon createPolygonGeometry( AbstractRaster raster ) {
-        ICRS crs = raster.getCoordinateSystem();
-        GeometryFactory fac = new GeometryFactory();
-        Envelope env = raster.getEnvelope();
-        env = raster.getRasterReference().relocateEnvelope( OriginLocation.OUTER, env );
-        Point pmin = env.getMin();
-        Point pmax = env.getMax();
-        Point p1 = fac.createPoint( null, pmin.get0(), pmin.get1(), crs );
-        Point p3 = fac.createPoint( null, pmax.get0(), pmax.get1(), crs );
+	/**
+	 * Return the bounding geometry of a raster as a polygon (but is actually a
+	 * rectangle).
+	 * @param raster
+	 * @return bounding polygon
+	 */
+	public static Polygon createPolygonGeometry(AbstractRaster raster) {
+		ICRS crs = raster.getCoordinateSystem();
+		GeometryFactory fac = new GeometryFactory();
+		Envelope env = raster.getEnvelope();
+		env = raster.getRasterReference().relocateEnvelope(OriginLocation.OUTER, env);
+		Point pmin = env.getMin();
+		Point pmax = env.getMax();
+		Point p1 = fac.createPoint(null, pmin.get0(), pmin.get1(), crs);
+		Point p3 = fac.createPoint(null, pmax.get0(), pmax.get1(), crs);
 
-        Point p2 = fac.createPoint( null, p1.get0(), p3.get1(), crs );
-        Point p4 = fac.createPoint( null, p3.get0(), p1.get1(), crs );
-        Point p5 = fac.createPoint( null, p1.get0(), p1.get1(), crs );
-        Point[] points = { p1, p2, p3, p4, p5 };
-        // (asList(points));
-        LinearRing ring = fac.createLinearRing( null, crs, new PointsList( asList( points ) ) );
-        Polygon poly = fac.createPolygon( null, crs, ring, null );
-        return poly;
-    }
+		Point p2 = fac.createPoint(null, p1.get0(), p3.get1(), crs);
+		Point p4 = fac.createPoint(null, p3.get0(), p1.get1(), crs);
+		Point p5 = fac.createPoint(null, p1.get0(), p1.get1(), crs);
+		Point[] points = { p1, p2, p3, p4, p5 };
+		// (asList(points));
+		LinearRing ring = fac.createLinearRing(null, crs, new PointsList(asList(points)));
+		Polygon poly = fac.createPolygon(null, crs, ring, null);
+		return poly;
+	}
 
 }

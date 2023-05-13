@@ -42,25 +42,23 @@ import org.deegree.geometry.points.Points;
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author$
- *
  * @version $Revision$, $Date$
  */
 public interface ArcString extends CurveSegment {
 
-    /**
-     * Returns the number of arcs of the string.
-     *
-     * @return the number <code>n</code> of arcs (n >= 1)
-     */
-    public int getNumArcs();
+	/**
+	 * Returns the number of arcs of the string.
+	 * @return the number <code>n</code> of arcs (n >= 1)
+	 */
+	public int getNumArcs();
 
-    /**
-     * Returns the control points of the interpolation.
-     * <p>
-     * The number of points is always <code>2 * k + 1</code> points (k >= 1).
-     * </p>
-     *
-     * @return the control points of the interpolation, never <code>null</code>
-     */
-    public Points getControlPoints();
+	/**
+	 * Returns the control points of the interpolation.
+	 * <p>
+	 * The number of points is always <code>2 * k + 1</code> points (k >= 1).
+	 * </p>
+	 * @return the control points of the interpolation, never <code>null</code>
+	 */
+	public Points getControlPoints();
+
 }

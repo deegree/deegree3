@@ -48,30 +48,28 @@ import org.deegree.workspace.Resource;
 
 /**
  * Resource to provide SQL connections and SQL dialects.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
- * 
  * @version $Revision: $, $Date: $
  */
 public interface ConnectionProvider extends Resource {
 
-    /**
-     * @return a new SQL connection, never <code>null</code>
-     */
-    Connection getConnection();
+	/**
+	 * @return a new SQL connection, never <code>null</code>
+	 */
+	Connection getConnection();
 
-    /**
-     * @return an SQL dialect if the connection type has one, or <code>null</code> if it hasn't
-     */
-    SQLDialect getDialect();
+	/**
+	 * @return an SQL dialect if the connection type has one, or <code>null</code> if it
+	 * hasn't
+	 */
+	SQLDialect getDialect();
 
-    /**
-     * Invalidates a connection.
-     * 
-     * @param conn
-     *            never <code>null</code>
-     */
-    void invalidate( Connection conn );
+	/**
+	 * Invalidates a connection.
+	 * @param conn never <code>null</code>
+	 */
+	void invalidate(Connection conn);
 
 }

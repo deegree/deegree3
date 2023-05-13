@@ -37,36 +37,34 @@ package org.deegree.geometry;
 
 /**
  * Indicates that a {@link GeometryInspector} rejects a {@link Geometry}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class GeometryInspectionException extends GeometryException {
 
-    private static final long serialVersionUID = -5464465536498293360L;
+	private static final long serialVersionUID = -5464465536498293360L;
 
-   /**
-    */
-    public GeometryInspectionException() {
-        super();
-    }
+	/**
+	*/
+	public GeometryInspectionException() {
+		super();
+	}
 
-    /**
-     * 
-     * @param message
-     * @param throwable
-     */
-    public GeometryInspectionException( String message, Throwable throwable ) {
-        super( message, throwable );
-    }
+	/**
+	 * @param message
+	 * @param throwable
+	 */
+	public GeometryInspectionException(String message, Throwable throwable) {
+		super(message, throwable);
+	}
 
-    /**
-     * 
-     * @param message
-     */
-    public GeometryInspectionException( String message ) {
-        super( message );
-    }
+	/**
+	 * @param message
+	 */
+	public GeometryInspectionException(String message) {
+		super(message);
+	}
+
 }

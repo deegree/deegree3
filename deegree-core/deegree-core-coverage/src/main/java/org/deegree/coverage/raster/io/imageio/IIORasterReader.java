@@ -61,216 +61,217 @@ import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 
 /**
- * 
- * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
- * 
+ *
  */
 public class IIORasterReader implements RasterReader {
 
-    private static final Set<String> SUPPORTED_TYPES;
+	private static final Set<String> SUPPORTED_TYPES;
 
-    static {
-        SUPPORTED_TYPES = new HashSet<String>();
+	static {
+		SUPPORTED_TYPES = new HashSet<String>();
 
-        ImageIO.scanForPlugins();
-        String[] readerFormatNames = ImageIO.getReaderFormatNames();
-        if ( readerFormatNames != null ) {
-            for ( String format : readerFormatNames ) {
-                if ( format != null && !"".equals( format.trim() ) && !format.contains( " " ) ) {
-                    SUPPORTED_TYPES.add( format.toLowerCase() );
-                }
-            }
-        }
-        // SUPPORTED_TYPES.add( IIORasterReader.class.getCanonicalName() );
-        // SUPPORTED_TYPES.add( "iio" );
-        // SUPPORTED_TYPES.add( "imageio" );
-        // SUPPORTED_TYPES.add( "iio-reader" );
-        // String[] types = new String[] { "jpg", "jpeg", "png", "tif", "tiff", "jp2", "gif" };
-        //
-        // for ( String type : types ) {
-        // Iterator<ImageReader> iter = ImageIO.getImageReadersBySuffix( type );
-        // if ( iter != null && iter.hasNext() ) {
-        // SUPPORTED_TYPES.add( type.toLowerCase() );
-        // LOG.debug( "register ImageReader for " + type );
-        // } else {
-        // LOG.error( "no ImageReader for " + type + " found" );
-        // }
-        // }
-    }
+		ImageIO.scanForPlugins();
+		String[] readerFormatNames = ImageIO.getReaderFormatNames();
+		if (readerFormatNames != null) {
+			for (String format : readerFormatNames) {
+				if (format != null && !"".equals(format.trim()) && !format.contains(" ")) {
+					SUPPORTED_TYPES.add(format.toLowerCase());
+				}
+			}
+		}
+		// SUPPORTED_TYPES.add( IIORasterReader.class.getCanonicalName() );
+		// SUPPORTED_TYPES.add( "iio" );
+		// SUPPORTED_TYPES.add( "imageio" );
+		// SUPPORTED_TYPES.add( "iio-reader" );
+		// String[] types = new String[] { "jpg", "jpeg", "png", "tif", "tiff", "jp2",
+		// "gif" };
+		//
+		// for ( String type : types ) {
+		// Iterator<ImageReader> iter = ImageIO.getImageReadersBySuffix( type );
+		// if ( iter != null && iter.hasNext() ) {
+		// SUPPORTED_TYPES.add( type.toLowerCase() );
+		// LOG.debug( "register ImageReader for " + type );
+		// } else {
+		// LOG.error( "no ImageReader for " + type + " found" );
+		// }
+		// }
+	}
 
-    private IIORasterDataReader reader;
+	private IIORasterDataReader reader;
 
-    private int width;
+	private int width;
 
-    private int height;
+	private int height;
 
-    private RasterGeoReference rasterReference;
+	private RasterGeoReference rasterReference;
 
-    private String dataLocationId;
+	private String dataLocationId;
 
-    @Override
-    public boolean canLoad( File filename ) {
-        return true;
-    }
+	@Override
+	public boolean canLoad(File filename) {
+		return true;
+	}
 
-    @Override
-    public AbstractRaster load( File file, RasterIOOptions options )
-                            throws IOException {
-        String imageIndex = options.get( RasterIOOptions.IMAGE_INDEX );
-        reader = new IIORasterDataReader( file, options, imageIndex == null ? 0 : Integer.parseInt( imageIndex ) );
-        AbstractRaster r = loadFromReader( reader, options );
-        return r;
-    }
+	@Override
+	public AbstractRaster load(File file, RasterIOOptions options) throws IOException {
+		String imageIndex = options.get(RasterIOOptions.IMAGE_INDEX);
+		reader = new IIORasterDataReader(file, options, imageIndex == null ? 0 : Integer.parseInt(imageIndex));
+		AbstractRaster r = loadFromReader(reader, options);
+		return r;
+	}
 
-    @Override
-    public AbstractRaster load( InputStream stream, RasterIOOptions options )
-                            throws IOException {
-        String imageIndex = options.get( RasterIOOptions.IMAGE_INDEX );
-        reader = new IIORasterDataReader( stream, options, imageIndex == null ? 0 : Integer.parseInt( imageIndex ) );
-        return loadFromReader( reader, options );
-    }
+	@Override
+	public AbstractRaster load(InputStream stream, RasterIOOptions options) throws IOException {
+		String imageIndex = options.get(RasterIOOptions.IMAGE_INDEX);
+		reader = new IIORasterDataReader(stream, options, imageIndex == null ? 0 : Integer.parseInt(imageIndex));
+		return loadFromReader(reader, options);
+	}
 
-    private AbstractRaster loadFromReader( IIORasterDataReader reader, RasterIOOptions options ) {
-        width = reader.getColumns();
-        height = reader.getRows();
-        RasterIOOptions opts = new RasterIOOptions();
-        opts.copyOf( options );
-        setID( opts );
+	private AbstractRaster loadFromReader(IIORasterDataReader reader, RasterIOOptions options) {
+		width = reader.getColumns();
+		height = reader.getRows();
+		RasterIOOptions opts = new RasterIOOptions();
+		opts.copyOf(options);
+		setID(opts);
 
-        OriginLocation definedRasterOrigLoc = opts.getRasterOriginLocation();
-        String imageIndex = opts.get( RasterIOOptions.IMAGE_INDEX );
-        int factor = 0;
-        if ( imageIndex != null ) {
-            factor = Integer.parseInt( imageIndex );
-        }
-        factor = 1 << factor;
-        MetaDataReader metaDataReader = new MetaDataReader( reader.getMetaData(), definedRasterOrigLoc, factor );
-        ICRS crs = metaDataReader.getCRS();
-        rasterReference = metaDataReader.getRasterReference();
+		OriginLocation definedRasterOrigLoc = opts.getRasterOriginLocation();
+		String imageIndex = opts.get(RasterIOOptions.IMAGE_INDEX);
+		int factor = 0;
+		if (imageIndex != null) {
+			factor = Integer.parseInt(imageIndex);
+		}
+		factor = 1 << factor;
+		MetaDataReader metaDataReader = new MetaDataReader(reader.getMetaData(), definedRasterOrigLoc, factor);
+		ICRS crs = metaDataReader.getCRS();
+		rasterReference = metaDataReader.getRasterReference();
 
-        if ( rasterReference == null ) {
-            if ( opts.hasRasterGeoReference() ) {
-                rasterReference = opts.getRasterGeoReference();
-            } else {
-                // create a 1:1 mapping
-                rasterReference = new RasterGeoReference( definedRasterOrigLoc, 1, -1, 0.5, height - 0.5 );
-                if ( opts.readWorldFile() ) {
-                    try {
-                        if ( reader.file() != null ) {
-                            rasterReference = WorldFileAccess.readWorldFile( reader.file(), opts );
-                        }
-                    } catch ( IOException e ) {
-                        //
-                    }
-                }
-            }
-        }
+		if (rasterReference == null) {
+			if (opts.hasRasterGeoReference()) {
+				rasterReference = opts.getRasterGeoReference();
+			}
+			else {
+				// create a 1:1 mapping
+				rasterReference = new RasterGeoReference(definedRasterOrigLoc, 1, -1, 0.5, height - 0.5);
+				if (opts.readWorldFile()) {
+					try {
+						if (reader.file() != null) {
+							rasterReference = WorldFileAccess.readWorldFile(reader.file(), opts);
+						}
+					}
+					catch (IOException e) {
+						//
+					}
+				}
+			}
+		}
 
-        // reader.close();
-        // read crs from options (if any)
-        ICRS readCRS = null;
-        if ( crs == null ) {
-            readCRS = opts.getCRS();
-        } else {
-            readCRS = CRSManager.getCRSRef( crs );
-        }
+		// reader.close();
+		// read crs from options (if any)
+		ICRS readCRS = null;
+		if (crs == null) {
+			readCRS = opts.getCRS();
+		}
+		else {
+			readCRS = CRSManager.getCRSRef(crs);
+		}
 
-        Envelope envelope = rasterReference.getEnvelope( width, height, readCRS );
+		Envelope envelope = rasterReference.getEnvelope(width, height, readCRS);
 
-        // RasterDataContainer source = RasterDataContainerFactory.withDefaultLoadingPolicy( reader );
-        // RasterDataContainer source = RasterDataContainerFactory.withLoadingPolicy( reader, options.getLoadingPolicy()
-        // );
-        RasterDataInfo rdi = reader.getRasterDataInfo();
+		// RasterDataContainer source =
+		// RasterDataContainerFactory.withDefaultLoadingPolicy( reader );
+		// RasterDataContainer source = RasterDataContainerFactory.withLoadingPolicy(
+		// reader, options.getLoadingPolicy()
+		// );
+		RasterDataInfo rdi = reader.getRasterDataInfo();
 
-        RasterCache cache = RasterCache.getInstance( opts );
-        SimpleRaster result = null;
+		RasterCache cache = RasterCache.getInstance(opts);
+		SimpleRaster result = null;
 
-        boolean useCache = shouldCreateCacheFile();
-        if ( useCache ) {
-            result = cache.createFromCache( this, this.dataLocationId );
-        }
-        if ( result == null ) {
-            result = RasterFactory.createEmptyRaster( rdi, envelope, rasterReference, this, useCache, opts );
-        }
-        this.reader.dispose();
-        return result;
-        //
-        // return new SimpleRaster( data, envelope, rasterReference );
-    }
+		boolean useCache = shouldCreateCacheFile();
+		if (useCache) {
+			result = cache.createFromCache(this, this.dataLocationId);
+		}
+		if (result == null) {
+			result = RasterFactory.createEmptyRaster(rdi, envelope, rasterReference, this, useCache, opts);
+		}
+		this.reader.dispose();
+		return result;
+		//
+		// return new SimpleRaster( data, envelope, rasterReference );
+	}
 
-    private void setID( RasterIOOptions options ) {
-        this.dataLocationId = options != null ? options.get( RasterIOOptions.ORIGIN_OF_RASTER ) : null;
-        if ( dataLocationId == null ) {
-            if ( reader != null && reader.file() != null ) {
-                this.dataLocationId = RasterCache.getUniqueCacheIdentifier( reader.file() );
-            }
-        }
-        
-        String imageIndex = options.get( RasterIOOptions.IMAGE_INDEX );
-        if (imageIndex != null) {
-            this.dataLocationId += "__" + imageIndex;
-        }
-    }
+	private void setID(RasterIOOptions options) {
+		this.dataLocationId = options != null ? options.get(RasterIOOptions.ORIGIN_OF_RASTER) : null;
+		if (dataLocationId == null) {
+			if (reader != null && reader.file() != null) {
+				this.dataLocationId = RasterCache.getUniqueCacheIdentifier(reader.file());
+			}
+		}
 
-    @Override
-    public Set<String> getSupportedFormats() {
-        return SUPPORTED_TYPES;
-    }
+		String imageIndex = options.get(RasterIOOptions.IMAGE_INDEX);
+		if (imageIndex != null) {
+			this.dataLocationId += "__" + imageIndex;
+		}
+	}
 
-    @Override
-    public File file() {
-        return reader == null ? null : reader.file();
-    }
+	@Override
+	public Set<String> getSupportedFormats() {
+		return SUPPORTED_TYPES;
+	}
 
-    @Override
-    public boolean shouldCreateCacheFile() {
-        return reader == null ? true : reader.shouldCreateCacheFile();
-    }
+	@Override
+	public File file() {
+		return reader == null ? null : reader.file();
+	}
 
-    @Override
-    public RasterGeoReference getGeoReference() {
-        return rasterReference;
-    }
+	@Override
+	public boolean shouldCreateCacheFile() {
+		return reader == null ? true : reader.shouldCreateCacheFile();
+	}
 
-    @Override
-    public int getHeight() {
-        return height;
-    }
+	@Override
+	public RasterGeoReference getGeoReference() {
+		return rasterReference;
+	}
 
-    @Override
-    public int getWidth() {
-        return width;
-    }
+	@Override
+	public int getHeight() {
+		return height;
+	}
 
-    @Override
-    public BufferResult read( RasterRect rect, ByteBuffer buffer )
-                            throws IOException {
-        return reader == null ? null : reader.read( rect, buffer );
-    }
+	@Override
+	public int getWidth() {
+		return width;
+	}
 
-    @Override
-    public RasterDataInfo getRasterDataInfo() {
-        return reader == null ? null : reader.getRasterDataInfo();
-    }
+	@Override
+	public BufferResult read(RasterRect rect, ByteBuffer buffer) throws IOException {
+		return reader == null ? null : reader.read(rect, buffer);
+	}
 
-    @Override
-    public boolean canReadTiles() {
-        return reader == null ? false : reader.getReadTiles();
-    }
+	@Override
+	public RasterDataInfo getRasterDataInfo() {
+		return reader == null ? null : reader.getRasterDataInfo();
+	}
 
-    @Override
-    public String getDataLocationId() {
-        return dataLocationId;
-    }
+	@Override
+	public boolean canReadTiles() {
+		return reader == null ? false : reader.getReadTiles();
+	}
 
-    @Override
-    public void dispose() {
-        if ( reader != null ) {
-            reader.dispose();
-        }
-    }
+	@Override
+	public String getDataLocationId() {
+		return dataLocationId;
+	}
+
+	@Override
+	public void dispose() {
+		if (reader != null) {
+			reader.dispose();
+		}
+	}
+
 }

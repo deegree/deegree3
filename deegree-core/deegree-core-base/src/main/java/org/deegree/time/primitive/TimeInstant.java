@@ -40,15 +40,14 @@ import org.deegree.time.position.TimePosition;
  * Zero-dimensional {@link TimeGeometricPrimitive}.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- *
  * @since 3.4
  */
 public interface TimeInstant extends TimeGeometricPrimitive, TimePositionOrInstant {
 
-    /**
-     * Returns the {@link TimePosition}.
-     *
-     * @return temporal position, never <code>null</code>
-     */
-    public TimePosition getPosition();
+	/**
+	 * Returns the {@link TimePosition}.
+	 * @return temporal position, never <code>null</code>
+	 */
+	public TimePosition getPosition();
+
 }

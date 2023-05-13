@@ -51,20 +51,20 @@ import org.deegree.workspace.ResourceMetadata;
 @ViewScoped
 public class FeatureStoreManagerBean extends AbstractResourceManagerBean<FeatureStoreManager> implements Serializable {
 
-    private static final long serialVersionUID = -7258840439551611498L;
+	private static final long serialVersionUID = -7258840439551611498L;
 
-    public FeatureStoreManagerBean() {
-        super( FeatureStoreManager.class );
-    }
+	public FeatureStoreManagerBean() {
+		super(FeatureStoreManager.class);
+	}
 
-    @Override
-    public List<Config> getConfigs() {
-        List<Config> configs = new ArrayList<Config>();
-        for ( ResourceMetadata<?> md : resourceManager.getResourceMetadata() ) {
-            configs.add( new FeatureStoreConfig( md, resourceManager ) );
-        }
-        Collections.sort( configs );
-        return configs;
-    }
+	@Override
+	public List<Config> getConfigs() {
+		List<Config> configs = new ArrayList<Config>();
+		for (ResourceMetadata<?> md : resourceManager.getResourceMetadata()) {
+			configs.add(new FeatureStoreConfig(md, resourceManager));
+		}
+		Collections.sort(configs);
+		return configs;
+	}
 
 }

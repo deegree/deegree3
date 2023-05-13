@@ -37,18 +37,18 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class CommonConfiguration {
 
-    @Autowired
-    private JobLauncher jobLauncher;
+	@Autowired
+	private JobLauncher jobLauncher;
 
-    @Autowired
-    private JobExplorer jobExplorer;
+	@Autowired
+	private JobExplorer jobExplorer;
 
-    @Autowired
-    private JobRepository jobRepository;
+	@Autowired
+	private JobRepository jobRepository;
 
-    @Bean
-    public JobLauncherApplicationRunner runner() {
-        return new JobLauncherApplicationRunner( jobLauncher, jobExplorer, jobRepository );
-    }
+	@Bean
+	public JobLauncherApplicationRunner runner() {
+		return new JobLauncherApplicationRunner(jobLauncher, jobExplorer, jobRepository);
+	}
 
 }

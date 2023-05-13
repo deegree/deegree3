@@ -46,70 +46,69 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Xerces entity resolver that performs redirection of requests for OpenGIS core schemas (e.g. GML) to a local copy on
- * the classpath.
- * 
+ * Xerces entity resolver that performs redirection of requests for OpenGIS core schemas
+ * (e.g. GML) to a local copy on the classpath.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
  * @version $Revision:$, $Date:$
  */
 public class RedirectingEntityResolver implements XMLEntityResolver {
 
-    private static final Logger LOG = LoggerFactory.getLogger( RedirectingEntityResolver.class );
+	private static final Logger LOG = LoggerFactory.getLogger(RedirectingEntityResolver.class);
 
-    private static final String SCHEMAS_OPENGIS_NET_URL = "http://schemas.opengis.net/";
+	private static final String SCHEMAS_OPENGIS_NET_URL = "http://schemas.opengis.net/";
 
-    public static final String INSPIRE_SCHEMAS_URL = "http://inspire.ec.europa.eu/schemas";
+	public static final String INSPIRE_SCHEMAS_URL = "http://inspire.ec.europa.eu/schemas";
 
-    private static final String ROOT = "/META-INF/SCHEMAS_OPENGIS_NET/";
+	private static final String ROOT = "/META-INF/SCHEMAS_OPENGIS_NET/";
 
-    private static final URL baseURL;
+	private static final URL baseURL;
 
-    static {
-        baseURL = RedirectingEntityResolver.class.getResource( ROOT );
-        if ( baseURL == null ) {
-            LOG.warn( "'"
-                      + ROOT
-                      + "' could not be found on the classpath. Schema references to 'http://schemas.opengis.net' will not be redirected, but fetched from their original location.  " );
-        }
-    }
+	static {
+		baseURL = RedirectingEntityResolver.class.getResource(ROOT);
+		if (baseURL == null) {
+			LOG.warn("'" + ROOT
+					+ "' could not be found on the classpath. Schema references to 'http://schemas.opengis.net' will not be redirected, but fetched from their original location.  ");
+		}
+	}
 
-    /**
-     * Redirects the given entity URL, returning a local URL if available.
-     * 
-     * @param systemId
-     *            entity URL, must not be <code>null</code>
-     * @return redirected URL, identical to input if it cannot be redirected, never <code>null</code>
-     */
-    public String redirect( String systemId ) {
-        if ( systemId.startsWith( SCHEMAS_OPENGIS_NET_URL ) ) {
-            String localPart = systemId.substring( SCHEMAS_OPENGIS_NET_URL.length() );
-            URL u = RedirectingEntityResolver.class.getResource( ROOT + localPart );
-            if ( u != null ) {
-                LOG.debug( "Local hit: " + systemId );
-                return u.toString();
-            }
-        } else if ( systemId.startsWith( INSPIRE_SCHEMAS_URL ) ) {
-            return systemId.replaceFirst( "http://", "https://" );
-        } else if ( systemId.equals( "http://www.w3.org/2001/xml.xsd" ) ) {
-            // workaround for schemas that include the xml base schema...
-            return RedirectingEntityResolver.class.getResource( "/w3c/xml.xsd" ).toString();
-        } else if ( systemId.equals( "http://www.w3.org/1999/xlink.xsd" ) ) {
-            // workaround for schemas that include the xlink schema...
-            return RedirectingEntityResolver.class.getResource( "/w3c/xlink.xsd" ).toString();
-        }
-        return systemId;
-    }
+	/**
+	 * Redirects the given entity URL, returning a local URL if available.
+	 * @param systemId entity URL, must not be <code>null</code>
+	 * @return redirected URL, identical to input if it cannot be redirected, never
+	 * <code>null</code>
+	 */
+	public String redirect(String systemId) {
+		if (systemId.startsWith(SCHEMAS_OPENGIS_NET_URL)) {
+			String localPart = systemId.substring(SCHEMAS_OPENGIS_NET_URL.length());
+			URL u = RedirectingEntityResolver.class.getResource(ROOT + localPart);
+			if (u != null) {
+				LOG.debug("Local hit: " + systemId);
+				return u.toString();
+			}
+		}
+		else if (systemId.startsWith(INSPIRE_SCHEMAS_URL)) {
+			return systemId.replaceFirst("http://", "https://");
+		}
+		else if (systemId.equals("http://www.w3.org/2001/xml.xsd")) {
+			// workaround for schemas that include the xml base schema...
+			return RedirectingEntityResolver.class.getResource("/w3c/xml.xsd").toString();
+		}
+		else if (systemId.equals("http://www.w3.org/1999/xlink.xsd")) {
+			// workaround for schemas that include the xlink schema...
+			return RedirectingEntityResolver.class.getResource("/w3c/xlink.xsd").toString();
+		}
+		return systemId;
+	}
 
-    @Override
-    public XMLInputSource resolveEntity( XMLResourceIdentifier identifier )
-                            throws XNIException, IOException {
+	@Override
+	public XMLInputSource resolveEntity(XMLResourceIdentifier identifier) throws XNIException, IOException {
 
-        String systemId = identifier.getExpandedSystemId();
-        String redirectedSystemId = systemId != null ? redirect( systemId ) : null;
-        LOG.debug( "'" + systemId + "' -> '" + redirectedSystemId + "'" );
-        return new XMLInputSource( null, redirectedSystemId, null );
-    }
+		String systemId = identifier.getExpandedSystemId();
+		String redirectedSystemId = systemId != null ? redirect(systemId) : null;
+		LOG.debug("'" + systemId + "' -> '" + redirectedSystemId + "'");
+		return new XMLInputSource(null, redirectedSystemId, null);
+	}
 
 }

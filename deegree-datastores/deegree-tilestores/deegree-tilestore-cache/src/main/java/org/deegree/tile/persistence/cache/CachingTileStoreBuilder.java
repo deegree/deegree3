@@ -46,38 +46,38 @@ import java.net.URL;
  */
 public class CachingTileStoreBuilder implements ResourceBuilder<TileStore> {
 
-    private org.deegree.tile.persistence.cache.jaxb.CachingTileStore cfg;
+	private org.deegree.tile.persistence.cache.jaxb.CachingTileStore cfg;
 
-    private ResourceMetadata<TileStore> metadata;
+	private ResourceMetadata<TileStore> metadata;
 
-    private Workspace workspace;
+	private Workspace workspace;
 
-    public CachingTileStoreBuilder( org.deegree.tile.persistence.cache.jaxb.CachingTileStore cfg,
-                                    ResourceMetadata<TileStore> metadata, Workspace workspace ) {
-        this.cfg = cfg;
-        this.metadata = metadata;
-        this.workspace = workspace;
-    }
+	public CachingTileStoreBuilder(org.deegree.tile.persistence.cache.jaxb.CachingTileStore cfg,
+			ResourceMetadata<TileStore> metadata, Workspace workspace) {
+		this.cfg = cfg;
+		this.metadata = metadata;
+		this.workspace = workspace;
+	}
 
-    @Override
-    public TileStore build() {
-        try {
-            URL cacheConfiguration = getCacheConfiguration();
-            TileStore tileStore = workspace.getResource( TileStoreProvider.class, cfg.getTileStoreId() );
-            return new CachingTileStore( tileStore, cfg.getCacheName(), cacheConfiguration, metadata );
-        } catch ( Exception e ) {
-            throw new ResourceInitException( "Unable to create tile store", e );
-        }
-    }
+	@Override
+	public TileStore build() {
+		try {
+			URL cacheConfiguration = getCacheConfiguration();
+			TileStore tileStore = workspace.getResource(TileStoreProvider.class, cfg.getTileStoreId());
+			return new CachingTileStore(tileStore, cfg.getCacheName(), cacheConfiguration, metadata);
+		}
+		catch (Exception e) {
+			throw new ResourceInitException("Unable to create tile store", e);
+		}
+	}
 
-    private URL getCacheConfiguration()
-                    throws MalformedURLException {
-        String cacheConfiguration = cfg.getCacheConfiguration();
-        File f = new File( cacheConfiguration );
-        if ( !f.isAbsolute() ) {
-            f = metadata.getLocation().resolveToFile( cacheConfiguration );
-        }
-        return f.toURI().toURL();
-    }
+	private URL getCacheConfiguration() throws MalformedURLException {
+		String cacheConfiguration = cfg.getCacheConfiguration();
+		File f = new File(cacheConfiguration);
+		if (!f.isAbsolute()) {
+			f = metadata.getLocation().resolveToFile(cacheConfiguration);
+		}
+		return f.toURI().toURL();
+	}
 
 }

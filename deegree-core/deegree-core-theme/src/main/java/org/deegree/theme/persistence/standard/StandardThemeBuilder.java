@@ -83,197 +83,200 @@ import org.slf4j.Logger;
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
- *
  * @version $Revision: $, $Date: $
  */
 public class StandardThemeBuilder implements ResourceBuilder<Theme> {
 
-    private static final Logger LOG = getLogger( StandardThemeBuilder.class );
+	private static final Logger LOG = getLogger(StandardThemeBuilder.class);
 
-    private Themes config;
+	private Themes config;
 
-    private ResourceMetadata<Theme> metadata;
+	private ResourceMetadata<Theme> metadata;
 
-    private Workspace workspace;
+	private Workspace workspace;
 
-    public StandardThemeBuilder( Themes config, ResourceMetadata<Theme> metadata, Workspace workspace ) {
-        this.config = config;
-        this.metadata = metadata;
-        this.workspace = workspace;
-    }
+	public StandardThemeBuilder(Themes config, ResourceMetadata<Theme> metadata, Workspace workspace) {
+		this.config = config;
+		this.metadata = metadata;
+		this.workspace = workspace;
+	}
 
-    private Layer findLayer( ThemeType.Layer l, Map<String, LayerStore> stores ) {
-        Layer lay = null;
-        if ( l.getLayerStore() != null ) {
-            LayerStore s = stores.get( l.getLayerStore() );
-            if ( s != null ) {
-                lay = s.get( l.getValue() );
-            }
-            if ( lay == null ) {
-                LOG.warn( "Layer with identifier {} is not available from {}, trying all.", l.getValue(),
-                          l.getLayerStore() );
-            }
-        }
-        if ( lay == null ) {
-            for ( LayerStore s : stores.values() ) {
-                lay = s.get( l.getValue() );
-                if ( lay != null ) {
-                    break;
-                }
-            }
-        }
-        if ( lay == null ) {
-            LOG.warn( "Layer with identifier {} is not available from any layer store.", l.getValue() );
-        }
-        return lay;
-    }
+	private Layer findLayer(ThemeType.Layer l, Map<String, LayerStore> stores) {
+		Layer lay = null;
+		if (l.getLayerStore() != null) {
+			LayerStore s = stores.get(l.getLayerStore());
+			if (s != null) {
+				lay = s.get(l.getValue());
+			}
+			if (lay == null) {
+				LOG.warn("Layer with identifier {} is not available from {}, trying all.", l.getValue(),
+						l.getLayerStore());
+			}
+		}
+		if (lay == null) {
+			for (LayerStore s : stores.values()) {
+				lay = s.get(l.getValue());
+				if (lay != null) {
+					break;
+				}
+			}
+		}
+		if (lay == null) {
+			LOG.warn("Layer with identifier {} is not available from any layer store.", l.getValue());
+		}
+		return lay;
+	}
 
-    private StandardTheme buildTheme( ThemeType current, List<ThemeType.Layer> layers, List<ThemeType> themes,
-                                      Map<String, LayerStore> stores ) {
-        List<Layer> lays = new ArrayList<Layer>( layers.size() );
+	private StandardTheme buildTheme(ThemeType current, List<ThemeType.Layer> layers, List<ThemeType> themes,
+			Map<String, LayerStore> stores) {
+		List<Layer> lays = new ArrayList<Layer>(layers.size());
 
-        LinkedHashMap<String, Dimension<?>> dims = new LinkedHashMap<String, Dimension<?>>();
-        LinkedHashMap<String, Style> styles = new LinkedHashMap<String, Style>();
-        LinkedHashMap<String, Style> legendStyles = new LinkedHashMap<String, Style>();
-        List<FeatureType> types = new ArrayList<FeatureType>();
+		LinkedHashMap<String, Dimension<?>> dims = new LinkedHashMap<String, Dimension<?>>();
+		LinkedHashMap<String, Style> styles = new LinkedHashMap<String, Style>();
+		LinkedHashMap<String, Style> legendStyles = new LinkedHashMap<String, Style>();
+		List<FeatureType> types = new ArrayList<FeatureType>();
 
-        for ( ThemeType.Layer l : layers ) {
-            Layer lay = findLayer( l, stores );
-            if ( lay != null ) {
-                if ( lay.getMetadata().getDimensions() != null ) {
-                    dims.putAll( lay.getMetadata().getDimensions() );
-                }
-                styles.putAll( lay.getMetadata().getStyles() );
-                legendStyles.putAll( lay.getMetadata().getLegendStyles() );
-                types.addAll( lay.getMetadata().getFeatureTypes() );
-                lays.add( lay );
-            }
-        }
-        List<Theme> thms = new ArrayList<Theme>( themes.size() );
-        for ( ThemeType tt : themes ) {
-            StandardTheme thm = buildTheme( tt, tt.getLayer(), tt.getTheme(), stores );
-            if ( thm != null ) {
-                thms.add( thm );
-            }
-        }
+		for (ThemeType.Layer l : layers) {
+			Layer lay = findLayer(l, stores);
+			if (lay != null) {
+				if (lay.getMetadata().getDimensions() != null) {
+					dims.putAll(lay.getMetadata().getDimensions());
+				}
+				styles.putAll(lay.getMetadata().getStyles());
+				legendStyles.putAll(lay.getMetadata().getLegendStyles());
+				types.addAll(lay.getMetadata().getFeatureTypes());
+				lays.add(lay);
+			}
+		}
+		List<Theme> thms = new ArrayList<Theme>(themes.size());
+		for (ThemeType tt : themes) {
+			StandardTheme thm = buildTheme(tt, tt.getLayer(), tt.getTheme(), stores);
+			if (thm != null) {
+				thms.add(thm);
+			}
+		}
 
-        if ( lays.isEmpty() && themes.isEmpty() ) {
-            LOG.warn( "Skipping theme or subtheme with id {} because it is empty (no subthemes and no layers).",
-                      current.getIdentifier() != null ? current.getIdentifier().getValue() : " - (no identifier)" );
-            return null;
-        }
+		if (lays.isEmpty() && themes.isEmpty()) {
+			LOG.warn("Skipping theme or subtheme with id {} because it is empty (no subthemes and no layers).",
+					current.getIdentifier() != null ? current.getIdentifier().getValue() : " - (no identifier)");
+			return null;
+		}
 
-        SpatialMetadata smd = SpatialMetadataConverter.fromJaxb( current.getEnvelope(), current.getCRS() );
-        Description desc = DescriptionConverter.fromJaxb( current.getTitle(), current.getAbstract(),
-                                                          current.getKeywords() );
-        final Identifier identifier = current.getIdentifier();
-        final String name = identifier != null ? identifier.getValue() : null;
-        final LayerMetadata md = new LayerMetadata( name, desc, smd );
-        if ( identifier != null && !identifier.isRequestable() ) {
-            md.setRequestable( false );
-        }
-        md.setDimensions( dims );
-        if ( current.getLegendGraphic() != null && current.getLegendGraphic().getValue() != null
-             && !current.getLegendGraphic().getValue().isEmpty() ) {
-            Map<String, Style> configuredLegendStyles = new HashMap<>();
-            Style style = parseConfiguredStyle( current.getLegendGraphic() );
-            configuredLegendStyles.put( style.getName(), style );
-            md.setStyles( configuredLegendStyles );
-            md.setLegendStyles( configuredLegendStyles );
-        } else {
-            md.setStyles( styles );
-            md.setLegendStyles( legendStyles );
-        }
-        return new StandardTheme( md, thms, lays, metadata );
-    }
+		SpatialMetadata smd = SpatialMetadataConverter.fromJaxb(current.getEnvelope(), current.getCRS());
+		Description desc = DescriptionConverter.fromJaxb(current.getTitle(), current.getAbstract(),
+				current.getKeywords());
+		final Identifier identifier = current.getIdentifier();
+		final String name = identifier != null ? identifier.getValue() : null;
+		final LayerMetadata md = new LayerMetadata(name, desc, smd);
+		if (identifier != null && !identifier.isRequestable()) {
+			md.setRequestable(false);
+		}
+		md.setDimensions(dims);
+		if (current.getLegendGraphic() != null && current.getLegendGraphic().getValue() != null
+				&& !current.getLegendGraphic().getValue().isEmpty()) {
+			Map<String, Style> configuredLegendStyles = new HashMap<>();
+			Style style = parseConfiguredStyle(current.getLegendGraphic());
+			configuredLegendStyles.put(style.getName(), style);
+			md.setStyles(configuredLegendStyles);
+			md.setLegendStyles(configuredLegendStyles);
+		}
+		else {
+			md.setStyles(styles);
+			md.setLegendStyles(legendStyles);
+		}
+		return new StandardTheme(md, thms, lays, metadata);
+	}
 
-    private Style parseConfiguredStyle( ThemeType.LegendGraphic configuredLegendGraphic ) {
-        Style style = new Style();
-        style.setName( "default" );
-        URL url = null;
-        try {
-            url = new URL( configuredLegendGraphic.getValue() );
-            if ( url.toURI().isAbsolute() ) {
-                style.setLegendURL( url );
-            }
-            style.setPrefersGetLegendGraphicUrl( configuredLegendGraphic.isOutputGetLegendGraphicUrl() );
-        } catch ( Exception e ) {
-            LOG.debug( "LegendGraphic was not an absolute URL." );
-            LOG.trace( "Stack trace:", e );
-        }
+	private Style parseConfiguredStyle(ThemeType.LegendGraphic configuredLegendGraphic) {
+		Style style = new Style();
+		style.setName("default");
+		URL url = null;
+		try {
+			url = new URL(configuredLegendGraphic.getValue());
+			if (url.toURI().isAbsolute()) {
+				style.setLegendURL(url);
+			}
+			style.setPrefersGetLegendGraphicUrl(configuredLegendGraphic.isOutputGetLegendGraphicUrl());
+		}
+		catch (Exception e) {
+			LOG.debug("LegendGraphic was not an absolute URL.");
+			LOG.trace("Stack trace:", e);
+		}
 
-        if ( url == null ) {
-            File file = metadata.getLocation().resolveToFile( configuredLegendGraphic.getValue() );
-            if ( file.exists() ) {
-                style.setLegendFile( file );
-            } else {
-                LOG.warn( "LegendGraphic {} could not be resolved to a legend.", configuredLegendGraphic );
-            }
-        }
-        return style;
-    }
+		if (url == null) {
+			File file = metadata.getLocation().resolveToFile(configuredLegendGraphic.getValue());
+			if (file.exists()) {
+				style.setLegendFile(file);
+			}
+			else {
+				LOG.warn("LegendGraphic {} could not be resolved to a legend.", configuredLegendGraphic);
+			}
+		}
+		return style;
+	}
 
-    private Theme buildAutoTheme( Layer layer ) {
-        LayerMetadata md = new LayerMetadata( null, null, null );
-        LayerMetadata lmd = layer.getMetadata();
-        md.merge( lmd );
-        md.setDimensions( new LinkedHashMap<String, Dimension<?>>( lmd.getDimensions() ) );
-        md.setStyles( new LinkedHashMap<String, Style>( lmd.getStyles() ) );
-        md.setLegendStyles( new LinkedHashMap<String, Style>( lmd.getLegendStyles() ) );
-        return new StandardTheme( md, Collections.<Theme> emptyList(), singletonList( layer ), metadata );
-    }
+	private Theme buildAutoTheme(Layer layer) {
+		LayerMetadata md = new LayerMetadata(null, null, null);
+		LayerMetadata lmd = layer.getMetadata();
+		md.merge(lmd);
+		md.setDimensions(new LinkedHashMap<String, Dimension<?>>(lmd.getDimensions()));
+		md.setStyles(new LinkedHashMap<String, Style>(lmd.getStyles()));
+		md.setLegendStyles(new LinkedHashMap<String, Style>(lmd.getLegendStyles()));
+		return new StandardTheme(md, Collections.<Theme>emptyList(), singletonList(layer), metadata);
+	}
 
-    private Theme buildAutoTheme( String id, LayerStore store ) {
-        Description desc = new Description( id, singletonList( new LanguageString( id, null ) ), null, null );
-        LayerMetadata md = new LayerMetadata( null, desc, new SpatialMetadata( null, Collections.<ICRS> emptyList() ) );
-        List<Theme> themes = new ArrayList<Theme>();
+	private Theme buildAutoTheme(String id, LayerStore store) {
+		Description desc = new Description(id, singletonList(new LanguageString(id, null)), null, null);
+		LayerMetadata md = new LayerMetadata(null, desc, new SpatialMetadata(null, Collections.<ICRS>emptyList()));
+		List<Theme> themes = new ArrayList<Theme>();
 
-        for ( Layer l : store.getAll() ) {
-            themes.add( buildAutoTheme( l ) );
-        }
+		for (Layer l : store.getAll()) {
+			themes.add(buildAutoTheme(l));
+		}
 
-        return new StandardTheme( md, themes, new ArrayList<Layer>(), metadata );
-    }
+		return new StandardTheme(md, themes, new ArrayList<Layer>(), metadata);
+	}
 
-    private Theme buildAutoTheme( Map<String, LayerStore> stores ) {
-        Description desc = new Description( null, Collections.singletonList( new LanguageString( "root", null ) ),
-                                            null, null );
-        LayerMetadata md = new LayerMetadata( null, desc, new SpatialMetadata( null, Collections.<ICRS> emptyList() ) );
-        List<Theme> themes = new ArrayList<Theme>();
+	private Theme buildAutoTheme(Map<String, LayerStore> stores) {
+		Description desc = new Description(null, Collections.singletonList(new LanguageString("root", null)), null,
+				null);
+		LayerMetadata md = new LayerMetadata(null, desc, new SpatialMetadata(null, Collections.<ICRS>emptyList()));
+		List<Theme> themes = new ArrayList<Theme>();
 
-        for ( Entry<String, LayerStore> e : stores.entrySet() ) {
-            themes.add( buildAutoTheme( e.getKey(), e.getValue() ) );
-        }
+		for (Entry<String, LayerStore> e : stores.entrySet()) {
+			themes.add(buildAutoTheme(e.getKey(), e.getValue()));
+		}
 
-        return new StandardTheme( md, themes, new ArrayList<Layer>(), metadata );
-    }
+		return new StandardTheme(md, themes, new ArrayList<Layer>(), metadata);
+	}
 
-    @Override
-    public Theme build() {
-        List<String> storeIds = config.getLayerStoreId();
-        Map<String, LayerStore> stores = new LinkedHashMap<String, LayerStore>( storeIds.size() );
+	@Override
+	public Theme build() {
+		List<String> storeIds = config.getLayerStoreId();
+		Map<String, LayerStore> stores = new LinkedHashMap<String, LayerStore>(storeIds.size());
 
-        for ( String id : storeIds ) {
-            LayerStore store = workspace.getResource( LayerStoreProvider.class, id );
-            if ( store == null ) {
-                LOG.warn( "Layer store with id {} is not available.", id );
-                continue;
-            }
-            stores.put( id, store );
-        }
+		for (String id : storeIds) {
+			LayerStore store = workspace.getResource(LayerStoreProvider.class, id);
+			if (store == null) {
+				LOG.warn("Layer store with id {} is not available.", id);
+				continue;
+			}
+			stores.put(id, store);
+		}
 
-        ThemeType root = config.getTheme();
-        Theme theme;
-        if ( root == null ) {
-            theme = buildAutoTheme( stores );
-        } else {
-            theme = buildTheme( root, root.getLayer(), root.getTheme(), stores );
-        }
-        if ( theme == null ) {
-            throw new ResourceInitException( "Root theme contains no layers and no themes." );
-        }
-        aggregateSpatialMetadata( theme );
-        return theme;
-    }
+		ThemeType root = config.getTheme();
+		Theme theme;
+		if (root == null) {
+			theme = buildAutoTheme(stores);
+		}
+		else {
+			theme = buildTheme(root, root.getLayer(), root.getTheme(), stores);
+		}
+		if (theme == null) {
+			throw new ResourceInitException("Root theme contains no layers and no themes.");
+		}
+		aggregateSpatialMetadata(theme);
+		return theme;
+	}
 
 }

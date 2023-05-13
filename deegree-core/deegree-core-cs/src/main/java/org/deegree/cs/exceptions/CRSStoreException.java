@@ -37,49 +37,46 @@ package org.deegree.cs.exceptions;
 
 /**
  * Indicates an exception in the CRS Store management.
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  * @author last edited by: $Author: lyn $
- * 
  * @version $Revision: $, $Date: $
  */
 public class CRSStoreException extends Exception {
 
-    private static final long serialVersionUID = -2812418632725614066L;
+	private static final long serialVersionUID = -2812418632725614066L;
 
-    /**
-     * Creates a new {@link CRSStoreException} without detail message.
-     */
-    public CRSStoreException() {
-        super();
-    }
+	/**
+	 * Creates a new {@link CRSStoreException} without detail message.
+	 */
+	public CRSStoreException() {
+		super();
+	}
 
-    /**
-     * Creates a new {@link CRSStoreException} with detail message.
-     * 
-     * @param message
-     *            detail message
-     */
-    public CRSStoreException( String message ) {
-        super( message );
-    }
+	/**
+	 * Creates a new {@link CRSStoreException} with detail message.
+	 * @param message detail message
+	 */
+	public CRSStoreException(String message) {
+		super(message);
+	}
 
-    /**
-     * Creates a new {@link CRSStoreException} which wraps the causing exception.
-     * 
-     * @param cause
-     */
-    public CRSStoreException( Throwable cause ) {
-        super( cause );
-    }
+	/**
+	 * Creates a new {@link CRSStoreException} which wraps the causing exception.
+	 * @param cause
+	 */
+	public CRSStoreException(Throwable cause) {
+		super(cause);
+	}
 
-    /**
-     * Creates a new {@link CRSStoreException} which wraps the causing exception and provides a detail message.
-     * 
-     * @param message
-     * @param cause
-     */
-    public CRSStoreException( String message, Throwable cause ) {
-        super( message, cause );
-    }
+	/**
+	 * Creates a new {@link CRSStoreException} which wraps the causing exception and
+	 * provides a detail message.
+	 * @param message
+	 * @param cause
+	 */
+	public CRSStoreException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
 }

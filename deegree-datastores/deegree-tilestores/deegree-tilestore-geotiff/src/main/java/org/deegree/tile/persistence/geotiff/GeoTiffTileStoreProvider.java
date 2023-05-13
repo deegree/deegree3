@@ -49,31 +49,31 @@ import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
 
 /**
- * The <code>GeoTIFFTileStoreProvider</code> provides a <code>TileMatrixSet</code> out of a GeoTIFF file (tiled
- * BIGTIFF).
- * 
+ * The <code>GeoTIFFTileStoreProvider</code> provides a <code>TileMatrixSet</code> out of
+ * a GeoTIFF file (tiled BIGTIFF).
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
- * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 public class GeoTiffTileStoreProvider extends TileStoreProvider {
 
-    private static final URL SCHEMA = GeoTiffTileStoreProvider.class.getResource( "/META-INF/schemas/datasource/tile/geotiff/geotiff.xsd" );
+	private static final URL SCHEMA = GeoTiffTileStoreProvider.class
+		.getResource("/META-INF/schemas/datasource/tile/geotiff/geotiff.xsd");
 
-    @Override
-    public String getNamespace() {
-        return "http://www.deegree.org/datasource/tile/geotiff";
-    }
+	@Override
+	public String getNamespace() {
+		return "http://www.deegree.org/datasource/tile/geotiff";
+	}
 
-    @Override
-    public ResourceMetadata<TileStore> createFromLocation( Workspace workspace, ResourceLocation<TileStore> location ) {
-        return new GeoTiffTileStoreMetadata( workspace, location, this );
-    }
+	@Override
+	public ResourceMetadata<TileStore> createFromLocation(Workspace workspace, ResourceLocation<TileStore> location) {
+		return new GeoTiffTileStoreMetadata(workspace, location, this);
+	}
 
-    @Override
-    public URL getSchema() {
-        return SCHEMA;
-    }
+	@Override
+	public URL getSchema() {
+		return SCHEMA;
+	}
 
 }

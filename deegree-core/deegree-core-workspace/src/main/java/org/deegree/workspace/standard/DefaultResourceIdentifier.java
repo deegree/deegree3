@@ -47,80 +47,81 @@ import org.deegree.workspace.ResourceProvider;
 
 /**
  * Default implementations for resource identifiers.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class DefaultResourceIdentifier<T extends Resource> implements ResourceIdentifier<T> {
 
-    private Class<? extends ResourceProvider<T>> provider;
+	private Class<? extends ResourceProvider<T>> provider;
 
-    private String id;
+	private String id;
 
-    public DefaultResourceIdentifier( Class<? extends ResourceProvider<T>> provider, String id ) {
-        this.provider = provider;
-        this.id = id;
-    }
+	public DefaultResourceIdentifier(Class<? extends ResourceProvider<T>> provider, String id) {
+		this.provider = provider;
+		this.id = id;
+	}
 
-    @Override
-    public String getId() {
-        return id;
-    }
+	@Override
+	public String getId() {
+		return id;
+	}
 
-    @Override
-    public Class<? extends ResourceProvider<T>> getProvider() {
-        return provider;
-    }
+	@Override
+	public Class<? extends ResourceProvider<T>> getProvider() {
+		return provider;
+	}
 
-    /**
-     * Implementation as proposed by Joshua Block in Effective Java (Addison-Wesley 2001), which supplies an even
-     * distribution and is relatively fast. It is created from field <b>f</b> as follows:
-     * <ul>
-     * <li>boolean -- code = (f ? 0 : 1)</li>
-     * <li>byte, char, short, int -- code = (int)f</li>
-     * <li>long -- code = (int)(f ^ (f &gt;&gt;&gt;32))</li>
-     * <li>float -- code = Float.floatToIntBits(f);</li>
-     * <li>double -- long l = Double.doubleToLongBits(f); code = (int)(l ^ (l &gt;&gt;&gt; 32))</li>
-     * <li>all Objects, (where equals(&nbsp;) calls equals(&nbsp;) for this field) -- code = f.hashCode(&nbsp;)</li>
-     * <li>Array -- Apply above rules to each element</li>
-     * </ul>
-     * <p>
-     * Combining the hash code(s) computed above: result = 37 * result + code;
-     * </p>
-     * 
-     * @return <code>(int) ( result &gt;&gt;&gt; 32 ) ^ (int) result;</code>
-     *
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-        // the 2nd millionth prime, :-)
-        long result = 32452843;
-        result = result * 37 + getId().hashCode();
-        result = result * 37 + getProvider().hashCode();
-        return (int) ( result >>> 32 ) ^ (int) result;
-    }
+	/**
+	 * Implementation as proposed by Joshua Block in Effective Java (Addison-Wesley 2001),
+	 * which supplies an even distribution and is relatively fast. It is created from
+	 * field <b>f</b> as follows:
+	 * <ul>
+	 * <li>boolean -- code = (f ? 0 : 1)</li>
+	 * <li>byte, char, short, int -- code = (int)f</li>
+	 * <li>long -- code = (int)(f ^ (f &gt;&gt;&gt;32))</li>
+	 * <li>float -- code = Float.floatToIntBits(f);</li>
+	 * <li>double -- long l = Double.doubleToLongBits(f); code = (int)(l ^ (l &gt;&gt;&gt;
+	 * 32))</li>
+	 * <li>all Objects, (where equals(&nbsp;) calls equals(&nbsp;) for this field) -- code
+	 * = f.hashCode(&nbsp;)</li>
+	 * <li>Array -- Apply above rules to each element</li>
+	 * </ul>
+	 * <p>
+	 * Combining the hash code(s) computed above: result = 37 * result + code;
+	 * </p>
+	 * @return <code>(int) ( result &gt;&gt;&gt; 32 ) ^ (int) result;</code>
+	 *
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		// the 2nd millionth prime, :-)
+		long result = 32452843;
+		result = result * 37 + getId().hashCode();
+		result = result * 37 + getProvider().hashCode();
+		return (int) (result >>> 32) ^ (int) result;
+	}
 
-    @Override
-    public boolean equals( Object obj ) {
-        if ( !( obj instanceof ResourceIdentifier ) ) {
-            return false;
-        }
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof ResourceIdentifier)) {
+			return false;
+		}
 
-        ResourceIdentifier<? extends Resource> id = (ResourceIdentifier<?>) obj;
+		ResourceIdentifier<? extends Resource> id = (ResourceIdentifier<?>) obj;
 
-        return getId().equals( id.getId() ) && getProvider().equals( id.getProvider() );
-    }
+		return getId().equals(id.getId()) && getProvider().equals(id.getProvider());
+	}
 
-    @Override
-    public String toString() {
-        return provider.getSimpleName() + ":" + id;
-    }
+	@Override
+	public String toString() {
+		return provider.getSimpleName() + ":" + id;
+	}
 
-    @Override
-    public int compareTo( ResourceIdentifier<T> o ) {
-        return toString().compareTo( o.toString() );
-    }
+	@Override
+	public int compareTo(ResourceIdentifier<T> o) {
+		return toString().compareTo(o.toString());
+	}
 
 }

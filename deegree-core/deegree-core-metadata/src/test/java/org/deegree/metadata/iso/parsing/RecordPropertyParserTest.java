@@ -50,36 +50,33 @@ import org.junit.Test;
 
 /**
  * Basic tests for usage of {@link RecordPropertyParser}.
- * 
+ *
  * @author <a href="mailto:stenger@lat-lon.de">Dirk Stenger</a>
  * @author last edited by: $Author: stenger $
- * 
  * @version $Revision: $, $Date: $
  */
 public class RecordPropertyParserTest {
 
-    private final String metadataEmptyDateFile = "metadataEmptyDate.xml";
+	private final String metadataEmptyDateFile = "metadataEmptyDate.xml";
 
-    @Test
-    public void testRecordPropertyParserWithEmptyDate()
-                            throws IOException, XMLStreamException {
-        RecordPropertyParser recordPropertyParser = new RecordPropertyParser( createOmElement( metadataEmptyDateFile ) );
-        recordPropertyParser.parse();
-    }
+	@Test
+	public void testRecordPropertyParserWithEmptyDate() throws IOException, XMLStreamException {
+		RecordPropertyParser recordPropertyParser = new RecordPropertyParser(createOmElement(metadataEmptyDateFile));
+		recordPropertyParser.parse();
+	}
 
-    private OMElement createOmElement( String inputFile )
-                            throws IOException, XMLStreamException {
-        MetadataRecord record = MetadataRecordFactory.create( createXmlStream( inputFile ) );
-        OMElement omElement = record.getAsOMElement();
-        return omElement;
-    }
+	private OMElement createOmElement(String inputFile) throws IOException, XMLStreamException {
+		MetadataRecord record = MetadataRecordFactory.create(createXmlStream(inputFile));
+		OMElement omElement = record.getAsOMElement();
+		return omElement;
+	}
 
-    private XMLStreamReader createXmlStream( String inputFile )
-                            throws IOException, XMLStreamException {
-        InputStream inputStream = RecordPropertyParserTest.class.getResourceAsStream( inputFile );
-        XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( inputStream );
-        XMLStreamUtils.skipStartDocument( xmlStream );
-        XMLStreamUtils.skipToRequiredElement( xmlStream, new QName( "http://www.isotc211.org/2005/gmd", "MD_Metadata" ) );
-        return xmlStream;
-    }
+	private XMLStreamReader createXmlStream(String inputFile) throws IOException, XMLStreamException {
+		InputStream inputStream = RecordPropertyParserTest.class.getResourceAsStream(inputFile);
+		XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader(inputStream);
+		XMLStreamUtils.skipStartDocument(xmlStream);
+		XMLStreamUtils.skipToRequiredElement(xmlStream, new QName("http://www.isotc211.org/2005/gmd", "MD_Metadata"));
+		return xmlStream;
+	}
+
 }

@@ -52,73 +52,74 @@ import org.slf4j.Logger;
 
 /**
  * This class is responsible for building file system tile stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class FileSystemTileStoreBuilder implements ResourceBuilder<TileStore> {
 
-    private static final Logger LOG = getLogger( FileSystemTileStoreBuilder.class );
+	private static final Logger LOG = getLogger(FileSystemTileStoreBuilder.class);
 
-    private FileSystemTileStoreJAXB config;
+	private FileSystemTileStoreJAXB config;
 
-    private ResourceMetadata<TileStore> metadata;
+	private ResourceMetadata<TileStore> metadata;
 
-    private Workspace workspace;
+	private Workspace workspace;
 
-    public FileSystemTileStoreBuilder( FileSystemTileStoreJAXB config, ResourceMetadata<TileStore> metadata,
-                                       Workspace workspace ) {
-        this.config = config;
-        this.metadata = metadata;
-        this.workspace = workspace;
-    }
+	public FileSystemTileStoreBuilder(FileSystemTileStoreJAXB config, ResourceMetadata<TileStore> metadata,
+			Workspace workspace) {
+		this.config = config;
+		this.metadata = metadata;
+		this.workspace = workspace;
+	}
 
-    @Override
-    public TileStore build() {
-        try {
-            Map<String, TileDataSet> map = new HashMap<String, TileDataSet>();
+	@Override
+	public TileStore build() {
+		try {
+			Map<String, TileDataSet> map = new HashMap<String, TileDataSet>();
 
-            for ( FileSystemTileStoreJAXB.TileDataSet tds : config.getTileDataSet() ) {
-                String id = tds.getIdentifier();
-                String tmsId = tds.getTileMatrixSetId();
-                org.deegree.tile.persistence.filesystem.jaxb.FileSystemTileStoreJAXB.TileDataSet.TileCacheDiskLayout lay = tds.getTileCacheDiskLayout();
+			for (FileSystemTileStoreJAXB.TileDataSet tds : config.getTileDataSet()) {
+				String id = tds.getIdentifier();
+				String tmsId = tds.getTileMatrixSetId();
+				org.deegree.tile.persistence.filesystem.jaxb.FileSystemTileStoreJAXB.TileDataSet.TileCacheDiskLayout lay = tds
+					.getTileCacheDiskLayout();
 
-                File baseDir = new File( lay.getLayerDirectory() );
-                if ( !baseDir.isAbsolute() ) {
-                    baseDir = metadata.getLocation().resolveToFile( lay.getLayerDirectory() );
-                }
+				File baseDir = new File(lay.getLayerDirectory());
+				if (!baseDir.isAbsolute()) {
+					baseDir = metadata.getLocation().resolveToFile(lay.getLayerDirectory());
+				}
 
-                String baseStore = null;
-                String baseDataSet = null;
-                if ( tds.getTileDataSetBase() != null ) {
-                    baseStore = tds.getTileDataSetBase().getTileStoreId();
-                    baseDataSet = tds.getTileDataSetBase().getValue();
-                }
+				String baseStore = null;
+				String baseDataSet = null;
+				if (tds.getTileDataSetBase() != null) {
+					baseStore = tds.getTileDataSetBase().getTileStoreId();
+					baseDataSet = tds.getTileDataSetBase().getValue();
+				}
 
-                TileCacheDiskLayout layout = new TileCacheDiskLayout( baseDir, lay.getFileType() );
+				TileCacheDiskLayout layout = new TileCacheDiskLayout(baseDir, lay.getFileType());
 
-                TileMatrixSet tms = workspace.getResource( TileMatrixSetProvider.class, tmsId );
+				TileMatrixSet tms = workspace.getResource(TileMatrixSetProvider.class, tmsId);
 
-                List<TileDataLevel> list = new ArrayList<TileDataLevel>( tms.getTileMatrices().size() );
+				List<TileDataLevel> list = new ArrayList<TileDataLevel>(tms.getTileMatrices().size());
 
-                for ( TileMatrix tm : tms.getTileMatrices() ) {
-                    list.add( new FileSystemTileDataLevel( tm, layout, baseStore, baseDataSet, workspace, metadata, id ) );
-                }
+				for (TileMatrix tm : tms.getTileMatrices()) {
+					list.add(new FileSystemTileDataLevel(tm, layout, baseStore, baseDataSet, workspace, metadata, id));
+				}
 
-                String format = "image/" + layout.getFileType();
+				String format = "image/" + layout.getFileType();
 
-                DefaultTileDataSet dataset = new DefaultTileDataSet( list, tms, format );
-                layout.setTileMatrixSet( dataset );
-                map.put( id, dataset );
-            }
+				DefaultTileDataSet dataset = new DefaultTileDataSet(list, tms, format);
+				layout.setTileMatrixSet(dataset);
+				map.put(id, dataset);
+			}
 
-            return new FileSystemTileStore( map, metadata );
-        } catch ( Exception e ) {
-            String msg = "Unable to create FileSystemTileStore: " + e.getMessage();
-            LOG.error( msg );
-            throw new ResourceInitException( msg, e );
-        }
-    }
+			return new FileSystemTileStore(map, metadata);
+		}
+		catch (Exception e) {
+			String msg = "Unable to create FileSystemTileStore: " + e.getMessage();
+			LOG.error(msg);
+			throw new ResourceInitException(msg, e);
+		}
+	}
 
 }

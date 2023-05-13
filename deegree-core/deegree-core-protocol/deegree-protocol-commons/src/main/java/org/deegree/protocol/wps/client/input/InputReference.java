@@ -39,36 +39,34 @@ import java.util.Map;
 
 /**
  * The <code></code> class TODO add class documentation here.
- * 
+ *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * 
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
- * 
+ *
  */
 public class InputReference {
 
-    private Map<String, String> headers;
+	private Map<String, String> headers;
 
-    private String body;
+	private String body;
 
-    private String bodyXlink;
+	private String bodyXlink;
 
-    private String xlink;
+	private String xlink;
 
-    private String method;
+	private String method;
 
-    public InputReference( Map<String, String> headers, String body, String bodyXlink, String xlink, String method ) {
-        this.headers = headers;
-        this.body = body;
-        this.bodyXlink = bodyXlink;
-        this.xlink = xlink;
-        this.method = method;
-    }
+	public InputReference(Map<String, String> headers, String body, String bodyXlink, String xlink, String method) {
+		this.headers = headers;
+		this.body = body;
+		this.bodyXlink = bodyXlink;
+		this.xlink = xlink;
+		this.method = method;
+	}
 
-    public String getXlink() {
-        return xlink;
-    }
+	public String getXlink() {
+		return xlink;
+	}
 
 }

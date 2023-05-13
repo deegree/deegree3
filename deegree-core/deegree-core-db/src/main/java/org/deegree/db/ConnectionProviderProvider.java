@@ -45,14 +45,13 @@ import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
  * Resource provider class for database connection providers.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
- * 
  * @version $Revision: $, $Date: $
  */
 public abstract class ConnectionProviderProvider extends AbstractResourceProvider<ConnectionProvider> {
 
-    // marker class specializing provider
+	// marker class specializing provider
 
 }

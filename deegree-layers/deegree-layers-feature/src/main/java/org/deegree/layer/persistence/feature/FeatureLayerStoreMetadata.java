@@ -47,45 +47,46 @@ import org.deegree.workspace.standard.DefaultResourceIdentifier;
 
 /**
  * Resource metadata implementation for feature layer stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class FeatureLayerStoreMetadata extends AbstractResourceMetadata<LayerStore> {
 
-    public FeatureLayerStoreMetadata( Workspace workspace, ResourceLocation<LayerStore> location,
-                                      AbstractResourceProvider<LayerStore> provider ) {
-        super( workspace, location, provider );
-    }
+	public FeatureLayerStoreMetadata(Workspace workspace, ResourceLocation<LayerStore> location,
+			AbstractResourceProvider<LayerStore> provider) {
+		super(workspace, location, provider);
+	}
 
-    @Override
-    public ResourceBuilder<LayerStore> prepare() {
-        String pkg = "org.deegree.layer.persistence.feature.jaxb";
-        try {
-            FeatureLayers lays = (FeatureLayers) unmarshall( pkg, provider.getSchema(), location.getAsStream(),
-                                                             workspace );
+	@Override
+	public ResourceBuilder<LayerStore> prepare() {
+		String pkg = "org.deegree.layer.persistence.feature.jaxb";
+		try {
+			FeatureLayers lays = (FeatureLayers) unmarshall(pkg, provider.getSchema(), location.getAsStream(),
+					workspace);
 
-            if ( lays.getAutoLayers() != null ) {
-                String fid = lays.getAutoLayers().getFeatureStoreId();
-                if ( fid != null ) {
-                    dependencies.add( new DefaultResourceIdentifier<FeatureStore>( FeatureStoreProvider.class, fid ) );
-                }
-                String sid = lays.getAutoLayers().getStyleStoreId();
-                if ( sid != null ) {
-                    dependencies.add( new DefaultResourceIdentifier<StyleStore>( StyleStoreProvider.class, sid ) );
-                }
-            } else {
-                dependencies.add( new DefaultResourceIdentifier<FeatureStore>( FeatureStoreProvider.class,
-                                                                               lays.getFeatureStoreId() ) );
-                for ( FeatureLayerType flt : lays.getFeatureLayer() ) {
-                    dependencies.addAll( ConfigUtils.getStyleDeps( flt.getStyleRef() ) );
-                }
-            }
-            return new FeatureLayerStoreBuilder( lays, this, workspace );
-        } catch ( Exception e ) {
-            throw new ResourceInitException( "Could not parse layer configuration file.", e );
-        }
-    }
+			if (lays.getAutoLayers() != null) {
+				String fid = lays.getAutoLayers().getFeatureStoreId();
+				if (fid != null) {
+					dependencies.add(new DefaultResourceIdentifier<FeatureStore>(FeatureStoreProvider.class, fid));
+				}
+				String sid = lays.getAutoLayers().getStyleStoreId();
+				if (sid != null) {
+					dependencies.add(new DefaultResourceIdentifier<StyleStore>(StyleStoreProvider.class, sid));
+				}
+			}
+			else {
+				dependencies.add(new DefaultResourceIdentifier<FeatureStore>(FeatureStoreProvider.class,
+						lays.getFeatureStoreId()));
+				for (FeatureLayerType flt : lays.getFeatureLayer()) {
+					dependencies.addAll(ConfigUtils.getStyleDeps(flt.getStyleRef()));
+				}
+			}
+			return new FeatureLayerStoreBuilder(lays, this, workspace);
+		}
+		catch (Exception e) {
+			throw new ResourceInitException("Could not parse layer configuration file.", e);
+		}
+	}
 
 }

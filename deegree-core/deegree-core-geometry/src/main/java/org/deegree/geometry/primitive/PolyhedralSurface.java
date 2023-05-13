@@ -47,12 +47,11 @@ import org.deegree.geometry.primitive.patches.PolygonPatch;
  */
 public interface PolyhedralSurface extends Surface {
 
-    /**
-     * Must always return {@link Surface.SurfaceType#PolyhedralSurface}.
-     *
-     * @return {@link Surface.SurfaceType#PolyhedralSurface}
-     */
-    @Override
-    public SurfaceType getSurfaceType();
+	/**
+	 * Must always return {@link Surface.SurfaceType#PolyhedralSurface}.
+	 * @return {@link Surface.SurfaceType#PolyhedralSurface}
+	 */
+	@Override
+	public SurfaceType getSurfaceType();
 
 }

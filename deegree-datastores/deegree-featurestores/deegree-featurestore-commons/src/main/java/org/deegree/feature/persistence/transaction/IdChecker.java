@@ -45,39 +45,39 @@ import org.deegree.gml.utils.GMLObjectVisitor;
 
 class IdChecker implements GMLObjectVisitor {
 
-    final Set<String> ids = new HashSet<String>();
+	final Set<String> ids = new HashSet<String>();
 
-    @Override
-    public boolean visitGeometry( final Geometry geom ) {
-        checkForDuplication( geom.getId() );
-        return true;
-    }
+	@Override
+	public boolean visitGeometry(final Geometry geom) {
+		checkForDuplication(geom.getId());
+		return true;
+	}
 
-    @Override
-    public boolean visitFeature( final Feature feature ) {
-        checkForDuplication( feature.getId() );
-        return true;
-    }
+	@Override
+	public boolean visitFeature(final Feature feature) {
+		checkForDuplication(feature.getId());
+		return true;
+	}
 
-    @Override
-    public boolean visitObject( final GMLObject o ) {
-        checkForDuplication( o.getId() );
-        return true;
-    }
+	@Override
+	public boolean visitObject(final GMLObject o) {
+		checkForDuplication(o.getId());
+		return true;
+	}
 
-    @Override
-    public boolean visitReference( final Reference<?> ref ) {
-        return false;
-    }
+	@Override
+	public boolean visitReference(final Reference<?> ref) {
+		return false;
+	}
 
-    private void checkForDuplication( final String id ) {
-        if ( id != null ) {
-            if ( ids.contains( id ) ) {
-                final String msg = "Duplication of object id '" + id + "'.";
-                throw new IllegalArgumentException( msg );
-            }
-            ids.add( id );
-        }
-    }
+	private void checkForDuplication(final String id) {
+		if (id != null) {
+			if (ids.contains(id)) {
+				final String msg = "Duplication of object id '" + id + "'.";
+				throw new IllegalArgumentException(msg);
+			}
+			ids.add(id);
+		}
+	}
 
 }

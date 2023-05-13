@@ -44,42 +44,41 @@ import org.deegree.time.position.TimePosition;
 
 public class GmlTimePositionTypeReader {
 
-    private static final String FRAME = "frame";
+	private static final String FRAME = "frame";
 
-    private static final String CALENDAR_ERA_NAME = "calendarEraName";
+	private static final String CALENDAR_ERA_NAME = "calendarEraName";
 
-    private static final String INDETERMINATE_POSITION = "indeterminatePosition";
+	private static final String INDETERMINATE_POSITION = "indeterminatePosition";
 
-    /**
-     * Consumes and parses the given <code>gml:TimePositionType</code> element event.
-     * <ul>
-     * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event
-     * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event</li>
-     * </ul>
-     *
-     * @param xmlStream
-     *            must not be <code>null</code>
-     * @return corresponding {@link TimePosition} object, never <code>null</code>
-     * @throws XMLStreamException
-     */
-    public TimePosition read( final XMLStreamReader xmlStream )
-                            throws XMLStreamException {
-        // <attribute name="frame" type="anyURI" default="#ISO-8601"/>
-        final String frame = getAttributeValue( xmlStream, FRAME );
-        // <attribute name="calendarEraName" type="string"/>
-        final String calendarEraName = getAttributeValue( xmlStream, CALENDAR_ERA_NAME );
-        // <attribute name="indeterminatePosition" type="gml:TimeIndeterminateValueType"/>
-        final IndeterminateValue indeterminatePosition = parseIndeterminateValueIfPresent( xmlStream );
-        // gml:TimePositionUnion
-        final String timePositionUnion = xmlStream.getElementText().trim();
-        return new TimePosition( frame, calendarEraName, indeterminatePosition, timePositionUnion );
-    }
+	/**
+	 * Consumes and parses the given <code>gml:TimePositionType</code> element event.
+	 * <ul>
+	 * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event
+	 * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code>
+	 * event</li>
+	 * </ul>
+	 * @param xmlStream must not be <code>null</code>
+	 * @return corresponding {@link TimePosition} object, never <code>null</code>
+	 * @throws XMLStreamException
+	 */
+	public TimePosition read(final XMLStreamReader xmlStream) throws XMLStreamException {
+		// <attribute name="frame" type="anyURI" default="#ISO-8601"/>
+		final String frame = getAttributeValue(xmlStream, FRAME);
+		// <attribute name="calendarEraName" type="string"/>
+		final String calendarEraName = getAttributeValue(xmlStream, CALENDAR_ERA_NAME);
+		// <attribute name="indeterminatePosition" type="gml:TimeIndeterminateValueType"/>
+		final IndeterminateValue indeterminatePosition = parseIndeterminateValueIfPresent(xmlStream);
+		// gml:TimePositionUnion
+		final String timePositionUnion = xmlStream.getElementText().trim();
+		return new TimePosition(frame, calendarEraName, indeterminatePosition, timePositionUnion);
+	}
 
-    private IndeterminateValue parseIndeterminateValueIfPresent( final XMLStreamReader xmlStream ) {
-        final String indeterminatePosition = getAttributeValue( xmlStream, INDETERMINATE_POSITION );
-        if ( indeterminatePosition == null ) {
-            return null;
-        }
-        return IndeterminateValue.valueOf( indeterminatePosition.toUpperCase() );
-    }
+	private IndeterminateValue parseIndeterminateValueIfPresent(final XMLStreamReader xmlStream) {
+		final String indeterminatePosition = getAttributeValue(xmlStream, INDETERMINATE_POSITION);
+		if (indeterminatePosition == null) {
+			return null;
+		}
+		return IndeterminateValue.valueOf(indeterminatePosition.toUpperCase());
+	}
+
 }

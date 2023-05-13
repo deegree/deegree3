@@ -42,28 +42,27 @@ import javax.xml.namespace.QName;
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
  * @version $Revision:$, $Date:$
  */
 public class PropertyDeclaration {
 
-    QName name;
+	QName name;
 
-    String minOccurs;
+	String minOccurs;
 
-    String maxOccurs;
+	String maxOccurs;
 
-    QName typeName;
+	QName typeName;
 
-    public PropertyDeclaration( QName propertyName, String minOccurs, String maxOccurs, QName propertyType ) {
-        this.name = propertyName;
-        this.minOccurs = minOccurs;
-        this.maxOccurs = maxOccurs;
-        this.typeName = propertyType;
-    }
+	public PropertyDeclaration(QName propertyName, String minOccurs, String maxOccurs, QName propertyType) {
+		this.name = propertyName;
+		this.minOccurs = minOccurs;
+		this.maxOccurs = maxOccurs;
+		this.typeName = propertyType;
+	}
 
-    public String toString() {
-        return "minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs
-               + ", type: " + typeName.getLocalPart();
-    }
+	public String toString() {
+		return "minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs + ", type: " + typeName.getLocalPart();
+	}
+
 }

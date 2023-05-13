@@ -35,28 +35,27 @@ import org.deegree.workspace.Workspace;
 
 /**
  * This class is responsible for building WCS services.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class WcsBuilder implements ResourceBuilder<OWS> {
 
-    private ResourceMetadata<OWS> metadata;
+	private ResourceMetadata<OWS> metadata;
 
-    private Workspace workspace;
+	private Workspace workspace;
 
-    private DeegreeWCS config;
+	private DeegreeWCS config;
 
-    public WcsBuilder( ResourceMetadata<OWS> metadata, Workspace workspace, DeegreeWCS config ) {
-        this.metadata = metadata;
-        this.workspace = workspace;
-        this.config = config;
-    }
+	public WcsBuilder(ResourceMetadata<OWS> metadata, Workspace workspace, DeegreeWCS config) {
+		this.metadata = metadata;
+		this.workspace = workspace;
+		this.config = config;
+	}
 
-    @Override
-    public OWS build() {
-        return new WCSController( metadata, workspace, config );
-    }
+	@Override
+	public OWS build() {
+		return new WCSController(metadata, workspace, config);
+	}
 
 }

@@ -42,70 +42,69 @@ import java.util.List;
 
 /**
  * The <code>RangeSet</code> models the different range possibilities in a WCS coverage.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
  * @version $Revision$, $Date$
- * 
+ *
  */
 public class RangeSet {
 
-    private final SingleValue<?> nullValue;
+	private final SingleValue<?> nullValue;
 
-    private List<AxisSubset> axisDescriptions;
+	private List<AxisSubset> axisDescriptions;
 
-    private final String name;
+	private final String name;
 
-    private final String label;
+	private final String label;
 
-    /**
-     * @param name
-     * @param label
-     * @param axisDescriptions
-     * @param nullValue
-     */
-    public RangeSet( String name, String label, List<AxisSubset> axisDescriptions, SingleValue<?> nullValue ) {
-        this.name = name;
-        this.label = label;
-        this.axisDescriptions = axisDescriptions;
-        this.nullValue = nullValue;
-    }
+	/**
+	 * @param name
+	 * @param label
+	 * @param axisDescriptions
+	 * @param nullValue
+	 */
+	public RangeSet(String name, String label, List<AxisSubset> axisDescriptions, SingleValue<?> nullValue) {
+		this.name = name;
+		this.label = label;
+		this.axisDescriptions = axisDescriptions;
+		this.nullValue = nullValue;
+	}
 
-    /**
-     * Defines the construction of a range subset.
-     * 
-     * @param axisDescriptions
-     */
-    public RangeSet( List<AxisSubset> axisDescriptions ) {
-        this( null, null, axisDescriptions, null );
-    }
+	/**
+	 * Defines the construction of a range subset.
+	 * @param axisDescriptions
+	 */
+	public RangeSet(List<AxisSubset> axisDescriptions) {
+		this(null, null, axisDescriptions, null);
+	}
 
-    /**
-     * @return the name
-     */
-    public final String getName() {
-        return name;
-    }
+	/**
+	 * @return the name
+	 */
+	public final String getName() {
+		return name;
+	}
 
-    /**
-     * @return the nullValue
-     */
-    public final SingleValue<?> getNullValue() {
-        return nullValue;
-    }
+	/**
+	 * @return the nullValue
+	 */
+	public final SingleValue<?> getNullValue() {
+		return nullValue;
+	}
 
-    /**
-     * @return the axisDescriptions
-     */
-    public final List<AxisSubset> getAxisDescriptions() {
-        return axisDescriptions;
-    }
+	/**
+	 * @return the axisDescriptions
+	 */
+	public final List<AxisSubset> getAxisDescriptions() {
+		return axisDescriptions;
+	}
 
-    /**
-     * @return the label or the name if the label was <code>null</code>
-     */
-    public final String getLabel() {
-        return label == null ? name : label;
-    }
+	/**
+	 * @return the label or the name if the label was <code>null</code>
+	 */
+	public final String getLabel() {
+		return label == null ? name : label;
+	}
 
 }

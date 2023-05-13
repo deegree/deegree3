@@ -62,95 +62,91 @@ import org.junit.Test;
  */
 public class XsltExceptionSerializerTest {
 
-    private static final String CONTENT_TYPE = "text/html";
+	private static final String CONTENT_TYPE = "text/html";
 
-    private static final String EXCEPTION = "EXCEPTION";
+	private static final String EXCEPTION = "EXCEPTION";
 
-    @Test
-    public void testSerializeException()
-                            throws Exception {
-        XsltExceptionSerializer xsltExceptionSerializer = createXsltExceptionSerializer();
+	@Test
+	public void testSerializeException() throws Exception {
+		XsltExceptionSerializer xsltExceptionSerializer = createXsltExceptionSerializer();
 
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        OWSException ex = new OWSException( EXCEPTION, NO_APPLICABLE_CODE );
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		OWSException ex = new OWSException(EXCEPTION, NO_APPLICABLE_CODE);
 
-        serialize( xsltExceptionSerializer, os, ex );
+		serialize(xsltExceptionSerializer, os, ex);
 
-        String htmlException = os.toString();
+		String htmlException = os.toString();
 
-        assertThat( htmlException, containsString( EXCEPTION ) );
-        assertThat( htmlException, containsString( NO_APPLICABLE_CODE ) );
-    }
+		assertThat(htmlException, containsString(EXCEPTION));
+		assertThat(htmlException, containsString(NO_APPLICABLE_CODE));
+	}
 
-    @Test
-    public void testSerializeException_ContentType()
-                            throws Exception {
-        XsltExceptionSerializer xsltExceptionSerializer = createXsltExceptionSerializer();
+	@Test
+	public void testSerializeException_ContentType() throws Exception {
+		XsltExceptionSerializer xsltExceptionSerializer = createXsltExceptionSerializer();
 
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        OWSException ex = new OWSException( EXCEPTION, NO_APPLICABLE_CODE );
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		OWSException ex = new OWSException(EXCEPTION, NO_APPLICABLE_CODE);
 
-        XMLExceptionSerializer exceptionSerializer = exceptionSerializer();
-        HttpResponseBuffer response = responseBuffer( os );
-        xsltExceptionSerializer.serializeException( response, ex, exceptionSerializer, null );
+		XMLExceptionSerializer exceptionSerializer = exceptionSerializer();
+		HttpResponseBuffer response = responseBuffer(os);
+		xsltExceptionSerializer.serializeException(response, ex, exceptionSerializer, null);
 
-        serialize( xsltExceptionSerializer, os, ex );
+		serialize(xsltExceptionSerializer, os, ex);
 
-        verify( response ).setContentType( eq( CONTENT_TYPE ) );
-    }
+		verify(response).setContentType(eq(CONTENT_TYPE));
+	}
 
-    private void serialize( XsltExceptionSerializer xsltExceptionSerializer, ByteArrayOutputStream os, OWSException ex )
-                            throws Exception {
-        XMLExceptionSerializer exceptionSerializer = exceptionSerializer();
-        HttpResponseBuffer response = responseBuffer( os );
-        xsltExceptionSerializer.serializeException( response, ex, exceptionSerializer, null );
-    }
+	private void serialize(XsltExceptionSerializer xsltExceptionSerializer, ByteArrayOutputStream os, OWSException ex)
+			throws Exception {
+		XMLExceptionSerializer exceptionSerializer = exceptionSerializer();
+		HttpResponseBuffer response = responseBuffer(os);
+		xsltExceptionSerializer.serializeException(response, ex, exceptionSerializer, null);
+	}
 
-    private HttpResponseBuffer responseBuffer( ByteArrayOutputStream os )
-                            throws IOException {
-        ServletOutputStream outputStream = createServletStream( os );
-        return mockResponse( outputStream );
-    }
+	private HttpResponseBuffer responseBuffer(ByteArrayOutputStream os) throws IOException {
+		ServletOutputStream outputStream = createServletStream(os);
+		return mockResponse(outputStream);
+	}
 
-    private XMLExceptionSerializer exceptionSerializer() {
-        return new PreOWSExceptionReportSerializer( "text/xml" );
-    }
+	private XMLExceptionSerializer exceptionSerializer() {
+		return new PreOWSExceptionReportSerializer("text/xml");
+	}
 
-    private XsltExceptionSerializer createXsltExceptionSerializer() {
-        URL xsltUrl = XsltExceptionSerializerTest.class.getResource( "exceptions2html.xsl" );
-        Workspace workspace = mockWorkspace();
-        return new XsltExceptionSerializer( CONTENT_TYPE, xsltUrl, workspace );
-    }
+	private XsltExceptionSerializer createXsltExceptionSerializer() {
+		URL xsltUrl = XsltExceptionSerializerTest.class.getResource("exceptions2html.xsl");
+		Workspace workspace = mockWorkspace();
+		return new XsltExceptionSerializer(CONTENT_TYPE, xsltUrl, workspace);
+	}
 
-    private HttpResponseBuffer mockResponse( ServletOutputStream outputStream )
-                            throws IOException {
-        HttpResponseBuffer mockedResponse = mock( HttpResponseBuffer.class );
-        when( mockedResponse.getOutputStream() ).thenReturn( outputStream );
-        return mockedResponse;
-    }
+	private HttpResponseBuffer mockResponse(ServletOutputStream outputStream) throws IOException {
+		HttpResponseBuffer mockedResponse = mock(HttpResponseBuffer.class);
+		when(mockedResponse.getOutputStream()).thenReturn(outputStream);
+		return mockedResponse;
+	}
 
-    private Workspace mockWorkspace() {
-        return mock( Workspace.class );
-    }
+	private Workspace mockWorkspace() {
+		return mock(Workspace.class);
+	}
 
-    private ServletOutputStream createServletStream( final ByteArrayOutputStream os ) {
-        return new ServletOutputStream() {
+	private ServletOutputStream createServletStream(final ByteArrayOutputStream os) {
+		return new ServletOutputStream() {
 
-            @Override
-            public boolean isReady() {
-                return false;
-            }
+			@Override
+			public boolean isReady() {
+				return false;
+			}
 
-            @Override
-            public void setWriteListener(WriteListener writeListener) {
+			@Override
+			public void setWriteListener(WriteListener writeListener) {
 
-            }
+			}
 
-            @Override
-            public void write( int b )
-                                    throws IOException {
-                os.write( b );
-            }
-        };
-    }
+			@Override
+			public void write(int b) throws IOException {
+				os.write(b);
+			}
+		};
+	}
+
 }

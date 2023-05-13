@@ -45,22 +45,22 @@ import org.deegree.commons.tom.ows.CodeType;
 
 /**
  * {@link PropertyType} that defines a property with a {@link CodeType} value.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- * 
  * @version $Revision: $, $Date: $
  */
 public class CodePropertyType extends AbstractPropertyType {
 
-    public CodePropertyType( QName name, int minOccurs, int maxOccurs, XSElementDeclaration elDecl,
-                             List<PropertyType> substitutions ) {
-        super( name, minOccurs, maxOccurs, elDecl, substitutions );
-    }
+	public CodePropertyType(QName name, int minOccurs, int maxOccurs, XSElementDeclaration elDecl,
+			List<PropertyType> substitutions) {
+		super(name, minOccurs, maxOccurs, elDecl, substitutions);
+	}
 
-    @Override
-    public String toString() {
-        String s = "- code property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs;
-        return s;
-    }
+	@Override
+	public String toString() {
+		String s = "- code property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs;
+		return s;
+	}
+
 }

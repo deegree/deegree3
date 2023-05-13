@@ -51,37 +51,40 @@ import org.deegree.geometry.primitive.Point;
 
 public class ShapeConverterLinearize extends AbstractShapeConverter {
 
-    private static final GeometryLinearizer linearizer = new GeometryLinearizer();
+	private static final GeometryLinearizer linearizer = new GeometryLinearizer();
 
-    private final LinearizationCriterion crit;
+	private final LinearizationCriterion crit;
 
-    private final boolean close;
+	private final boolean close;
 
-    public ShapeConverterLinearize( boolean close, int pointsPerArc ) {
-        this.close = close;
-        this.crit = new NumPointsCriterion( pointsPerArc );
-    }
+	public ShapeConverterLinearize(boolean close, int pointsPerArc) {
+		this.close = close;
+		this.crit = new NumPointsCriterion(pointsPerArc);
+	}
 
-    @Override
-    protected void toShape( GeneralPath path, Curve geometry ) {
-        geometry = linearizer.linearize( geometry, crit );
+	@Override
+	protected void toShape(GeneralPath path, Curve geometry) {
+		geometry = linearizer.linearize(geometry, crit);
 
-        Points points = geometry.getControlPoints();
-        Iterator<Point> iter = points.iterator();
-        Point p = iter.next();
-        double x = p.get0(), y = p.get1();
-        path.moveTo( x, y );
-        while ( iter.hasNext() ) {
-            p = iter.next();
-            if ( iter.hasNext() ) {
-                path.lineTo( p.get0(), p.get1() );
-            } else {
-                if ( close && isZero( x - p.get0() ) && isZero( y - p.get1() ) ) {
-                    path.closePath();
-                } else {
-                    path.lineTo( p.get0(), p.get1() );
-                }
-            }
-        }
-    }
+		Points points = geometry.getControlPoints();
+		Iterator<Point> iter = points.iterator();
+		Point p = iter.next();
+		double x = p.get0(), y = p.get1();
+		path.moveTo(x, y);
+		while (iter.hasNext()) {
+			p = iter.next();
+			if (iter.hasNext()) {
+				path.lineTo(p.get0(), p.get1());
+			}
+			else {
+				if (close && isZero(x - p.get0()) && isZero(y - p.get1())) {
+					path.closePath();
+				}
+				else {
+					path.lineTo(p.get0(), p.get1());
+				}
+			}
+		}
+	}
+
 }

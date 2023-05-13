@@ -46,15 +46,15 @@ import org.deegree.layer.persistence.LayerStoreManager;
 @ViewScoped
 public class LayerManagerBean extends AbstractResourceManagerBean<LayerStoreManager> implements Serializable {
 
-    private static final long serialVersionUID = -7445293485322343946L;
+	private static final long serialVersionUID = -7445293485322343946L;
 
-    public LayerManagerBean() {
-        super( LayerStoreManager.class );
-    }
-    
-    @Override
-    public String getStartView() {
-        return "/console/layer/layer/index";
-    }
+	public LayerManagerBean() {
+		super(LayerStoreManager.class);
+	}
+
+	@Override
+	public String getStartView() {
+		return "/console/layer/layer/index";
+	}
 
 }

@@ -17,39 +17,37 @@ import org.deegree.workspace.Workspace;
 import org.deegree.workspace.WorkspaceUtils;
 
 /**
- *
  * @author <a href="mailto:markus@beefcafe.de">Markus Schneider</a>
  * @author last edited by: $Author$
- *
  * @version $Revision$, $Date$
  */
 public class Update {
 
-    public static void update( String path, HttpServletResponse resp )
-                            throws IOException, ServletException {
-        Pair<DeegreeWorkspace, String> p = getWorkspaceAndPath( path );
+	public static void update(String path, HttpServletResponse resp) throws IOException, ServletException {
+		Pair<DeegreeWorkspace, String> p = getWorkspaceAndPath(path);
 
-        resp.setContentType( "text/plain" );
+		resp.setContentType("text/plain");
 
-        try {
-            if ( p.second != null ) {
-                Workspace ws = p.first.getNewWorkspace();
-                List<ResourceIdentifier<?>> ids = WorkspaceUtils.getPossibleIdentifiers( ws, p.second );
-                for ( ResourceIdentifier<?> id : ids ) {
-                    WorkspaceUtils.reinitializeChain( ws, id );
-                }
-                return;
-            }
+		try {
+			if (p.second != null) {
+				Workspace ws = p.first.getNewWorkspace();
+				List<ResourceIdentifier<?>> ids = WorkspaceUtils.getPossibleIdentifiers(ws, p.second);
+				for (ResourceIdentifier<?> id : ids) {
+					WorkspaceUtils.reinitializeChain(ws, id);
+				}
+				return;
+			}
 
-            OGCFrontController fc = OGCFrontController.getInstance();
-            fc.setActiveWorkspaceName( p.first.getName() );
-            fc.update();
-        } catch ( Exception e ) {
-            IOUtils.write( "Error while updating: " + e.getLocalizedMessage() + "\n", resp.getOutputStream() );
-            return;
-        }
+			OGCFrontController fc = OGCFrontController.getInstance();
+			fc.setActiveWorkspaceName(p.first.getName());
+			fc.update();
+		}
+		catch (Exception e) {
+			IOUtils.write("Error while updating: " + e.getLocalizedMessage() + "\n", resp.getOutputStream());
+			return;
+		}
 
-        IOUtils.write( "Update complete.", resp.getOutputStream() );
-    }
+		IOUtils.write("Update complete.", resp.getOutputStream());
+	}
 
 }

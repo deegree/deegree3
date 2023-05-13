@@ -45,48 +45,50 @@ import org.deegree.workspace.Workspace;
 
 /**
  * {@link FeatureStoreProvider} for the {@link ShapeFeatureStore}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class ShapeFeatureStoreProvider extends FeatureStoreProvider {
 
-    private static final String CONFIG_NS = "http://www.deegree.org/datasource/feature/shape";
+	private static final String CONFIG_NS = "http://www.deegree.org/datasource/feature/shape";
 
-    static final String CONFIG_JAXB_PACKAGE = "org.deegree.feature.persistence.shape.jaxb";
+	static final String CONFIG_JAXB_PACKAGE = "org.deegree.feature.persistence.shape.jaxb";
 
-    private static final URL CONFIG_SCHEMA = ShapeFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/feature/shape/shape.xsd" );
+	private static final URL CONFIG_SCHEMA = ShapeFeatureStoreProvider.class
+		.getResource("/META-INF/schemas/datasource/feature/shape/shape.xsd");
 
-    static class Mapping {
-        String fieldname;
+	static class Mapping {
 
-        String propname;
+		String fieldname;
 
-        boolean index;
+		String propname;
 
-        Mapping( String fieldname, String propname, boolean index ) {
-            this.fieldname = fieldname;
-            this.propname = propname;
-            this.index = index;
-        }
-    }
+		boolean index;
 
-    @Override
-    public String getNamespace() {
-        return CONFIG_NS;
-    }
+		Mapping(String fieldname, String propname, boolean index) {
+			this.fieldname = fieldname;
+			this.propname = propname;
+			this.index = index;
+		}
 
-    @Override
-    public ResourceMetadata<FeatureStore> createFromLocation( Workspace workspace,
-                                                              ResourceLocation<FeatureStore> location ) {
-        return new ShapeFeatureStoreMetadata( workspace, location, this );
-    }
+	}
 
-    @Override
-    public URL getSchema() {
-        return CONFIG_SCHEMA;
-    }
+	@Override
+	public String getNamespace() {
+		return CONFIG_NS;
+	}
+
+	@Override
+	public ResourceMetadata<FeatureStore> createFromLocation(Workspace workspace,
+			ResourceLocation<FeatureStore> location) {
+		return new ShapeFeatureStoreMetadata(workspace, location, this);
+	}
+
+	@Override
+	public URL getSchema() {
+		return CONFIG_SCHEMA;
+	}
 
 }

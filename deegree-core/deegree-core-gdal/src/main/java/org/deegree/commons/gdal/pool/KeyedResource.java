@@ -4,6 +4,6 @@ import java.io.Closeable;
 
 public interface KeyedResource extends Closeable {
 
-    String getKey ();
-    
+	String getKey();
+
 }

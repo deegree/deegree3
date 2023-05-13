@@ -48,43 +48,45 @@ import org.deegree.workspace.Workspace;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: mschneider $
- * 
  * @version $Revision: 29926 $, $Date: 2011-03-08 11:47:59 +0100 (Di, 08. Mär 2011) $
  */
 @ManagedBean
 @RequestScoped
 public class Connection implements Serializable {
 
-    private static final long serialVersionUID = 6495856816506360039L;
+	private static final long serialVersionUID = 6495856816506360039L;
 
-    private String id;
+	private String id;
 
-    private String status = "OK";
+	private String status = "OK";
 
-    private Workspace getWorkspace() {
-        ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-        Workspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace().getNewWorkspace();
-        return ws;
-    }
+	private Workspace getWorkspace() {
+		ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
+		Workspace ws = ((WorkspaceBean) ctx.getApplicationMap().get("workspace")).getActiveWorkspace()
+			.getNewWorkspace();
+		return ws;
+	}
 
-    public String getId() {
-        return id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public String getStatus() {
-        return status;
-    }
+	public String getStatus() {
+		return status;
+	}
 
-    Connection( String id ) {
-        try {
-            this.id = id;
-            ConnectionProvider prov = getWorkspace().getResource( ConnectionProviderProvider.class, id );
-            prov.getConnection().close();
-        } catch ( Exception e ) {
-            status = "ERROR: " + e.getMessage();
-        }
-    }
+	Connection(String id) {
+		try {
+			this.id = id;
+			ConnectionProvider prov = getWorkspace().getResource(ConnectionProviderProvider.class, id);
+			prov.getConnection().close();
+		}
+		catch (Exception e) {
+			status = "ERROR: " + e.getMessage();
+		}
+	}
+
 }

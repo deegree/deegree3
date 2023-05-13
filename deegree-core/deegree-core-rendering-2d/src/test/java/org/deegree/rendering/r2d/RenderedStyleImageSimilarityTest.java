@@ -91,148 +91,143 @@ import org.slf4j.LoggerFactory;
 @RunWith(Parameterized.class)
 public class RenderedStyleImageSimilarityTest extends AbstractSimilarityTest {
 
-    private static final File TEST_DIR = new File( "src/test/resources/org/deegree/rendering/r2d/similaritytests" );
+	private static final File TEST_DIR = new File("src/test/resources/org/deegree/rendering/r2d/similaritytests");
 
-    private static final Logger LOG = LoggerFactory.getLogger( RenderedStyleImageSimilarityTest.class );
+	private static final Logger LOG = LoggerFactory.getLogger(RenderedStyleImageSimilarityTest.class);
 
-    private static Workspace ws = new DefaultWorkspace( TEST_DIR );
+	private static Workspace ws = new DefaultWorkspace(TEST_DIR);
 
-    private static List<Destroyable> destroyableResources = new LinkedList<>();
+	private static List<Destroyable> destroyableResources = new LinkedList<>();
 
-    @Parameterized.Parameter(0)
-    public String testName;
+	@Parameterized.Parameter(0)
+	public String testName;
 
-    @Parameterized.Parameter(1)
-    public File gmlFile;
+	@Parameterized.Parameter(1)
+	public File gmlFile;
 
-    @Parameterized.Parameter(2)
-    public File styleFile;
+	@Parameterized.Parameter(2)
+	public File styleFile;
 
-    @Parameterized.Parameter(3)
-    public File imageFile;
+	@Parameterized.Parameter(3)
+	public File imageFile;
 
-    @BeforeClass
-    public static void runBefore() {
-        new WellKnownNameManager().init( ws );
-        FunctionManager fm = new FunctionManager();
-        fm.init( ws );
-        destroyableResources.add( fm );
-    }
+	@BeforeClass
+	public static void runBefore() {
+		new WellKnownNameManager().init(ws);
+		FunctionManager fm = new FunctionManager();
+		fm.init(ws);
+		destroyableResources.add(fm);
+	}
 
-    @AfterClass
-    public static void runAfter() {
-        destroyableResources.forEach( da -> da.destroy( ws ) );
-    }
+	@AfterClass
+	public static void runAfter() {
+		destroyableResources.forEach(da -> da.destroy(ws));
+	}
 
-    @Parameterized.Parameters(name = "{index}: {0}")
-    public static Collection<Object[]> getFiles() {
-        Collection<Object[]> params = new LinkedList<Object[]>();
-        String baseName = TEST_DIR.getAbsolutePath();
+	@Parameterized.Parameters(name = "{index}: {0}")
+	public static Collection<Object[]> getFiles() {
+		Collection<Object[]> params = new LinkedList<Object[]>();
+		String baseName = TEST_DIR.getAbsolutePath();
 
-        for ( File fGML : FileUtils.findFilesForExtensions( TEST_DIR, true, ".gml" ) ) {
-            String base = FileUtils.getBasename( fGML.getAbsoluteFile() );
-            String name = base;
-            if ( name.startsWith( baseName ) )
-                name = name.substring( baseName.length() + 1 );
+		for (File fGML : FileUtils.findFilesForExtensions(TEST_DIR, true, ".gml")) {
+			String base = FileUtils.getBasename(fGML.getAbsoluteFile());
+			String name = base;
+			if (name.startsWith(baseName))
+				name = name.substring(baseName.length() + 1);
 
-            File fStyle = new File( base + ".xml" );
-            File fImg = new File( base + ".png" );
+			File fStyle = new File(base + ".xml");
+			File fImg = new File(base + ".png");
 
-            if ( fGML.isFile() && fStyle.isFile() && fImg.isFile() ) {
-                params.add( new Object[] { name, fGML, fStyle, fImg } );
-            } else {
-                LOG.warn( "Could not find test data same {}.gml/.xml/.png", name );
-            }
-        }
-        return params;
-    }
+			if (fGML.isFile() && fStyle.isFile() && fImg.isFile()) {
+				params.add(new Object[] { name, fGML, fStyle, fImg });
+			}
+			else {
+				LOG.warn("Could not find test data same {}.gml/.xml/.png", name);
+			}
+		}
+		return params;
+	}
 
-    @Test
-    public void renderAndCompare()
-                            throws
-                            Exception {
+	@Test
+	public void renderAndCompare() throws Exception {
 
-        Style style = readStyle( styleFile );
-        FeatureCollection fc = readFeatureCollection( gmlFile );
-        BufferedImage expected = ImageIO.read( imageFile );
+		Style style = readStyle(styleFile);
+		FeatureCollection fc = readFeatureCollection(gmlFile);
+		BufferedImage expected = ImageIO.read(imageFile);
 
-        long time = currentTimeMillis();
-        BufferedImage actual = new BufferedImage( expected.getWidth(), expected.getHeight(), TYPE_INT_RGB );
-        Graphics2D graphics = actual.createGraphics();
-        graphics.setColor( Color.WHITE );
-        graphics.fillRect( 0, 0, actual.getWidth(), actual.getHeight() );
+		long time = currentTimeMillis();
+		BufferedImage actual = new BufferedImage(expected.getWidth(), expected.getHeight(), TYPE_INT_RGB);
+		Graphics2D graphics = actual.createGraphics();
+		graphics.setColor(Color.WHITE);
+		graphics.fillRect(0, 0, actual.getWidth(), actual.getHeight());
 
-        Envelope fcEnv = (Envelope) fc.getProperties( GMLFeatureReader.BOUNDED_BY_GML32 ).get( 0 ).getValue();
-        LOG.trace( "Envelope: {}", fcEnv );
-        Java2DRenderer r = new Java2DRenderer( graphics, actual.getWidth(), actual.getHeight(), fcEnv );
-        XPathEvaluator<Feature> evaluator = (XPathEvaluator) new TypedObjectNodeXPathEvaluator();
+		Envelope fcEnv = (Envelope) fc.getProperties(GMLFeatureReader.BOUNDED_BY_GML32).get(0).getValue();
+		LOG.trace("Envelope: {}", fcEnv);
+		Java2DRenderer r = new Java2DRenderer(graphics, actual.getWidth(), actual.getHeight(), fcEnv);
+		XPathEvaluator<Feature> evaluator = (XPathEvaluator) new TypedObjectNodeXPathEvaluator();
 
-        for ( Feature f : fc ) {
-            LOG.trace( "Rendering Feature {}", f.getId() );
-            for ( Triple<Styling, LinkedList<Geometry>, String> evaluated : style.evaluate( f, evaluator ) ) {
-                for ( Geometry evaluatedGeometry : evaluated.second ) {
-                    r.render( evaluated.first, evaluatedGeometry );
-                }
-            }
-        }
-        graphics.dispose();
-        LOG.debug( "Took {} ms", currentTimeMillis() - time );
+		for (Feature f : fc) {
+			LOG.trace("Rendering Feature {}", f.getId());
+			for (Triple<Styling, LinkedList<Geometry>, String> evaluated : style.evaluate(f, evaluator)) {
+				for (Geometry evaluatedGeometry : evaluated.second) {
+					r.render(evaluated.first, evaluatedGeometry);
+				}
+			}
+		}
+		graphics.dispose();
+		LOG.debug("Took {} ms", currentTimeMillis() - time);
 
-        Assert.assertTrue( "Image for " + testName + "are not similar enough",
-                           isImageSimilar( expected, actual, 0.01, prefixed( testName ) ) );
-    }
+		Assert.assertTrue("Image for " + testName + "are not similar enough",
+				isImageSimilar(expected, actual, 0.01, prefixed(testName)));
+	}
 
-    private Style readStyle( File file )
-                            throws
-                            Exception {
-        final XMLInputFactory fac = XMLInputFactory.newInstance();
-        XMLStreamReader xmlReader = fac.createXMLStreamReader( file.toURI().toURL().toString(),
-                                                               file.toURI().toURL().openStream() );
-        xmlReader.next();
-        LOG.debug("Reading style document {}", file);
-        Style style = SymbologyParser.INSTANCE.parse( xmlReader );
-        return style;
-    }
+	private Style readStyle(File file) throws Exception {
+		final XMLInputFactory fac = XMLInputFactory.newInstance();
+		XMLStreamReader xmlReader = fac.createXMLStreamReader(file.toURI().toURL().toString(),
+				file.toURI().toURL().openStream());
+		xmlReader.next();
+		LOG.debug("Reading style document {}", file);
+		Style style = SymbologyParser.INSTANCE.parse(xmlReader);
+		return style;
+	}
 
-    private FeatureCollection readFeatureCollection( File file )
-                            throws
-                            Exception {
-        GMLVersion version = GMLVersion.GML_32;
-        URL docURL = file.toURI().toURL();
-        GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader( version, docURL );
-        gmlStream.setApplicationSchema( new DynamicAppSchema() );
-        LOG.debug( "Populating feature store with features from file '{}'...", docURL );
-        FeatureCollection fc = gmlStream.readFeatureCollection();
-        return fc;
-    }
+	private FeatureCollection readFeatureCollection(File file) throws Exception {
+		GMLVersion version = GMLVersion.GML_32;
+		URL docURL = file.toURI().toURL();
+		GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader(version, docURL);
+		gmlStream.setApplicationSchema(new DynamicAppSchema());
+		LOG.debug("Populating feature store with features from file '{}'...", docURL);
+		FeatureCollection fc = gmlStream.readFeatureCollection();
+		return fc;
+	}
 
-    public void generateDemoDataForHatching() {
-        int objectId = 0;
-        int rotation = 0;
+	public void generateDemoDataForHatching() {
+		int objectId = 0;
+		int rotation = 0;
 
-        GeometryFactory fac = new GeometryFactory();
-        Points points = new PackedPoints( null, new double[] { 10, 10, 10, 90, 90, 90, 90, 10, 10, 10 }, 2 );
-        Geometry poly = fac.createPolygon( "0", null, fac.createLinearRing( null, null, points ), null );
-        String tpl = "<gml:featureMember><Object gml:id=\"FEATURE_{0}\"><id>{0}</id><rotation>{1}</rotation>";
-        tpl = tpl + "<geom><gml:Polygon gml:id=\"GML_{0}\">";
-        tpl = tpl + "<gml:exterior><gml:LinearRing><gml:posList>{2}</gml:posList></gml:LinearRing></gml:exterior>";
-        tpl = tpl + "</gml:Polygon></geom></Object></gml:featureMember>";
+		GeometryFactory fac = new GeometryFactory();
+		Points points = new PackedPoints(null, new double[] { 10, 10, 10, 90, 90, 90, 90, 10, 10, 10 }, 2);
+		Geometry poly = fac.createPolygon("0", null, fac.createLinearRing(null, null, points), null);
+		String tpl = "<gml:featureMember><Object gml:id=\"FEATURE_{0}\"><id>{0}</id><rotation>{1}</rotation>";
+		tpl = tpl + "<geom><gml:Polygon gml:id=\"GML_{0}\">";
+		tpl = tpl + "<gml:exterior><gml:LinearRing><gml:posList>{2}</gml:posList></gml:LinearRing></gml:exterior>";
+		tpl = tpl + "</gml:Polygon></geom></Object></gml:featureMember>";
 
-        for ( int rowOffset = 0; rowOffset < 10; rowOffset += 1 ) {
-            for ( int colOffset = 0; colOffset < 10; colOffset += 1 ) {
-                objectId++;
-                rotation += 1;
+		for (int rowOffset = 0; rowOffset < 10; rowOffset += 1) {
+			for (int colOffset = 0; colOffset < 10; colOffset += 1) {
+				objectId++;
+				rotation += 1;
 
-                Geometry movedGeometry = GeometryUtils.move( poly, colOffset * 100, rowOffset * 100 );
+				Geometry movedGeometry = GeometryUtils.move(poly, colOffset * 100, rowOffset * 100);
 
-                String pointsAsText = movedGeometry.toString() //
-                                                   .replace( ',', ' ' ) //
-                                                   .replaceAll( ".000000", "" );
-                pointsAsText = pointsAsText.substring( pointsAsText.lastIndexOf( '(' ) + 1,
-                                                       pointsAsText.indexOf( ')' ) );
-                System.out.println( MessageFormat.format( tpl, objectId, rotation, pointsAsText ) );
-            }
-            System.out.println();
-        }
-    }
+				String pointsAsText = movedGeometry.toString() //
+					.replace(',', ' ') //
+					.replaceAll(".000000", "");
+				pointsAsText = pointsAsText.substring(pointsAsText.lastIndexOf('(') + 1, pointsAsText.indexOf(')'));
+				System.out.println(MessageFormat.format(tpl, objectId, rotation, pointsAsText));
+			}
+			System.out.println();
+		}
+	}
+
 }

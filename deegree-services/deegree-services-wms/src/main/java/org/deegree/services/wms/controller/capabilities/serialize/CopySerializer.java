@@ -43,15 +43,14 @@ import java.io.OutputStream;
 
 /**
  * Copies exact the incoming stream in the response stream.
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
 public class CopySerializer implements CapabilitiesSerializer {
 
-    @Override
-    public void serialize( InputStream capabilitiesXmlStream, OutputStream responseStream )
-                            throws IOException {
-        copy( capabilitiesXmlStream, responseStream );
-    }
+	@Override
+	public void serialize(InputStream capabilitiesXmlStream, OutputStream responseStream) throws IOException {
+		copy(capabilitiesXmlStream, responseStream);
+	}
 
 }

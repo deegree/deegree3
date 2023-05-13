@@ -40,20 +40,19 @@ package org.deegree.filter;
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
  * @version $Revision:$, $Date:$
  */
 public class FilterEvaluationException extends Exception {
 
-    private static final long serialVersionUID = 2009587694159886757L;
+	private static final long serialVersionUID = 2009587694159886757L;
 
-    /**
-     * Constructs a new <code>FilterEvaluationException</code> with the given detail message.
-     *
-     * @param msg
-     *            the detail message
-     */
-    public FilterEvaluationException( String msg ) {
-        super( msg );
-    }
+	/**
+	 * Constructs a new <code>FilterEvaluationException</code> with the given detail
+	 * message.
+	 * @param msg the detail message
+	 */
+	public FilterEvaluationException(String msg) {
+		super(msg);
+	}
+
 }

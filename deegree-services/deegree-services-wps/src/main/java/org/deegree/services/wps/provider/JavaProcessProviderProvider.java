@@ -43,31 +43,32 @@ import org.deegree.workspace.Workspace;
 
 /**
  * {@link ProcessProviderProvider} for the {@link JavaProcessProvider}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class JavaProcessProviderProvider extends ProcessProviderProvider {
 
-    private static final URL JAXB_CONFIG_SCHEMA = JavaProcessProviderProvider.class.getResource( "/META-INF/schemas/processes/java/java.xsd" );
+	private static final URL JAXB_CONFIG_SCHEMA = JavaProcessProviderProvider.class
+		.getResource("/META-INF/schemas/processes/java/java.xsd");
 
-    private static final String CONFIG_NS = "http://www.deegree.org/processes/java";
+	private static final String CONFIG_NS = "http://www.deegree.org/processes/java";
 
-    @Override
-    public String getNamespace() {
-        return CONFIG_NS;
-    }
+	@Override
+	public String getNamespace() {
+		return CONFIG_NS;
+	}
 
-    @Override
-    public ResourceMetadata<ProcessProvider> createFromLocation( Workspace workspace,
-                                                                 ResourceLocation<ProcessProvider> location ) {
-        return new JavaProcessProviderMetadata( workspace, location, this );
-    }
+	@Override
+	public ResourceMetadata<ProcessProvider> createFromLocation(Workspace workspace,
+			ResourceLocation<ProcessProvider> location) {
+		return new JavaProcessProviderMetadata(workspace, location, this);
+	}
 
-    @Override
-    public URL getSchema() {
-        return JAXB_CONFIG_SCHEMA;
-    }
+	@Override
+	public URL getSchema() {
+		return JAXB_CONFIG_SCHEMA;
+	}
+
 }

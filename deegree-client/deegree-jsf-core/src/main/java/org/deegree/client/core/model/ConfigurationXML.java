@@ -37,40 +37,39 @@ package org.deegree.client.core.model;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  * @author last edited by: $Author: lyn $
- * 
  * @version $Revision: $, $Date: $
  */
 public class ConfigurationXML {
 
-    private String schemaURLS;
+	private String schemaURLS;
 
-    private String xml;
+	private String xml;
 
-    private String type;
+	private String type;
 
-    public ConfigurationXML( String xml, String schemaURLS, String type ) {
-        this.xml = xml;
-        this.schemaURLS = schemaURLS;
-        this.type = type;
-    }
+	public ConfigurationXML(String xml, String schemaURLS, String type) {
+		this.xml = xml;
+		this.schemaURLS = schemaURLS;
+		this.type = type;
+	}
 
-    public String getSchemaURLS() {
-        return schemaURLS;
-    }
+	public String getSchemaURLS() {
+		return schemaURLS;
+	}
 
-    public String getType() {
-        return type;
-    }
+	public String getType() {
+		return type;
+	}
 
-    public void setXml( String xml ) {
-        this.xml = xml;
-    }
+	public void setXml(String xml) {
+		this.xml = xml;
+	}
 
-    public String getXml() {
-        return xml;
-    }
+	public String getXml() {
+		return xml;
+	}
 
 }

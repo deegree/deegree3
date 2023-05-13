@@ -45,45 +45,39 @@ import org.deegree.workspace.Workspace;
 
 /**
  * Implementations map {@link Function}s to SQL functions.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- * 
  * @version $Revision: $, $Date: $
  */
 public interface SQLFunctionProvider {
 
-    /**
-     * Called by {@link SQLFunctionManager} once when this {@link SQLFunctionProvider} is being taken into service.
-     * 
-     * @param ws
-     *            workspace context, never <code>null</code>
-     * @throws ResourceInitException
-     *             if the initialization fails
-     */
-    public void init( Workspace ws );
+	/**
+	 * Called by {@link SQLFunctionManager} once when this {@link SQLFunctionProvider} is
+	 * being taken into service.
+	 * @param ws workspace context, never <code>null</code>
+	 * @throws ResourceInitException if the initialization fails
+	 */
+	public void init(Workspace ws);
 
-    /**
-     * Called by {@link SQLFunctionManager} once when this {@link SQLFunctionProvider} is being taken out of service.
-     */
-    public void destroy();
+	/**
+	 * Called by {@link SQLFunctionManager} once when this {@link SQLFunctionProvider} is
+	 * being taken out of service.
+	 */
+	public void destroy();
 
-    /**
-     * Returns the name of the provided function.
-     * 
-     * @return name of the provided function, never <code>null</code>
-     */
-    public String getName();
+	/**
+	 * Returns the name of the provided function.
+	 * @return name of the provided function, never <code>null</code>
+	 */
+	public String getName();
 
-    /**
-     * Translates the given arguments into an an SQL function call.
-     * 
-     * @param args
-     *            SQL arguments, can be empty, but never <code>null</code>
-     * @param dialect
-     *            SQL dialect, can be <code>null</code> (TODO shouldn't be)
-     * @return corresponding SQL expression, never <code>null</code>
-     */
-    public SQLExpression toProtoSQL( List<SQLExpression> args, SQLDialect dialect );
+	/**
+	 * Translates the given arguments into an an SQL function call.
+	 * @param args SQL arguments, can be empty, but never <code>null</code>
+	 * @param dialect SQL dialect, can be <code>null</code> (TODO shouldn't be)
+	 * @return corresponding SQL expression, never <code>null</code>
+	 */
+	public SQLExpression toProtoSQL(List<SQLExpression> args, SQLDialect dialect);
 
 }

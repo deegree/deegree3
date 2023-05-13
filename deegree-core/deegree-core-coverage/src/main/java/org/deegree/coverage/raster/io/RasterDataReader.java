@@ -39,23 +39,22 @@ import org.deegree.coverage.raster.data.RasterData;
 
 /**
  * Interface for {@link RasterData} readers.
- * 
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public interface RasterDataReader {
 
-    /**
-     * Reads the raster data.
-     * 
-     * @return the underlying raster data, never <code>null</code>
-     */
-    public RasterData read();
+	/**
+	 * Reads the raster data.
+	 * @return the underlying raster data, never <code>null</code>
+	 */
+	public RasterData read();
 
-    /**
-     * Clean up all memory references to the loaded image file.
-     */
-    public void close();
+	/**
+	 * Clean up all memory references to the loaded image file.
+	 */
+	public void close();
+
 }

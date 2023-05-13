@@ -37,37 +37,37 @@ package org.deegree.commons.xml;
 
 /**
  * TODO add documentation here
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
  * @version $Revision:$, $Date:$
  */
 public class XPath {
 
-    private String xpath;
+	private String xpath;
 
-    private NamespaceBindings nsContext;
+	private NamespaceBindings nsContext;
 
-    public XPath( String xpath, NamespaceBindings nsContext ) {
-        this.xpath = xpath;
-        this.nsContext = nsContext == null ? new NamespaceBindings() : nsContext;
-    }
+	public XPath(String xpath, NamespaceBindings nsContext) {
+		this.xpath = xpath;
+		this.nsContext = nsContext == null ? new NamespaceBindings() : nsContext;
+	}
 
-    public XPath( String xpath ) {
-        this.xpath = xpath;
-    }
+	public XPath(String xpath) {
+		this.xpath = xpath;
+	}
 
-    public String getXPath() {
-        return xpath;
-    }
+	public String getXPath() {
+		return xpath;
+	}
 
-    public NamespaceBindings getNamespaceContext() {
-        return nsContext;
-    }
+	public NamespaceBindings getNamespaceContext() {
+		return nsContext;
+	}
 
-    @Override
-    public String toString() {
-        return xpath;
-    }
+	@Override
+	public String toString() {
+		return xpath;
+	}
+
 }

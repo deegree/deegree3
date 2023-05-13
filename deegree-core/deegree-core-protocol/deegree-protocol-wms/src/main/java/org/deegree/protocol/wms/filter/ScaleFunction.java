@@ -50,54 +50,51 @@ import org.deegree.filter.function.ParameterType;
 import org.deegree.workspace.Workspace;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
- * 
  * @version $Revision: $, $Date: $
  */
 public class ScaleFunction implements FunctionProvider {
 
-    static final ThreadLocal<Double> scale = new ThreadLocal<Double>();
+	static final ThreadLocal<Double> scale = new ThreadLocal<Double>();
 
-    public static ThreadLocal<Double> getCurrentScaleValue() {
-        return scale;
-    }
+	public static ThreadLocal<Double> getCurrentScaleValue() {
+		return scale;
+	}
 
-    @Override
-    public void init( Workspace ws ) {
-        // nothing to do
-    }
+	@Override
+	public void init(Workspace ws) {
+		// nothing to do
+	}
 
-    @Override
-    public void destroy() {
-        // nothing to do
-    }
+	@Override
+	public void destroy() {
+		// nothing to do
+	}
 
-    @Override
-    public String getName() {
-        return "GetCurrentScale";
-    }
+	@Override
+	public String getName() {
+		return "GetCurrentScale";
+	}
 
-    @Override
-    public List<ParameterType> getArgs() {
-        return Collections.emptyList();
-    }
+	@Override
+	public List<ParameterType> getArgs() {
+		return Collections.emptyList();
+	}
 
-    @Override
-    public ParameterType getReturnType() {
-        return ParameterType.DOUBLE;
-    }
+	@Override
+	public ParameterType getReturnType() {
+		return ParameterType.DOUBLE;
+	}
 
-    @Override
-    public Function create( List<Expression> params ) {
-        return new Function( "GetCurrentScale", params ) {
-            @Override
-            public TypedObjectNode[] evaluate( List<TypedObjectNode[]> args )
-                                    throws FilterEvaluationException {
-                return new TypedObjectNode[] { new PrimitiveValue( scale.get(), new PrimitiveType( BaseType.DOUBLE ) ) };
-            }
-        };
-    }
+	@Override
+	public Function create(List<Expression> params) {
+		return new Function("GetCurrentScale", params) {
+			@Override
+			public TypedObjectNode[] evaluate(List<TypedObjectNode[]> args) throws FilterEvaluationException {
+				return new TypedObjectNode[] { new PrimitiveValue(scale.get(), new PrimitiveType(BaseType.DOUBLE)) };
+			}
+		};
+	}
 
 }

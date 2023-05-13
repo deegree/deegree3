@@ -46,42 +46,41 @@ import org.deegree.workspace.standard.DefaultWorkspace;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:name@company.com">Your Name</a>
  * @author last edited by: $Author: schneider $
- * 
  * @version $Revision: $, $Date: $
  */
 @ManagedBean
 @ViewScoped
 public class ServicesBean extends AbstractResourceManagerBean<OwsManager> implements Serializable {
 
-    private static final long serialVersionUID = -8669333203479413121L;
+	private static final long serialVersionUID = -8669333203479413121L;
 
-    private Config mainConfig;
+	private Config mainConfig;
 
-    public ServicesBean() {
-        super( OwsManager.class );
-        Workspace workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
-        if ( workspace instanceof DefaultWorkspace ) {
-            File file = new File( ( (DefaultWorkspace) workspace ).getLocation(), "services" );
-            file = new File( file, "main.xml" );
-            mainConfig = new MainConfig( file.getAbsolutePath() );
-        }
-    }
+	public ServicesBean() {
+		super(OwsManager.class);
+		Workspace workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
+		if (workspace instanceof DefaultWorkspace) {
+			File file = new File(((DefaultWorkspace) workspace).getLocation(), "services");
+			file = new File(file, "main.xml");
+			mainConfig = new MainConfig(file.getAbsolutePath());
+		}
+	}
 
-    public Config getMainConfig() {
-        return mainConfig;
-    }
+	public Config getMainConfig() {
+		return mainConfig;
+	}
 
-    @Override
-    public List<Config> getConfigs() {
-        List<Config> configs = new ArrayList<Config>();
-        for ( ResourceMetadata<?> state : resourceManager.getResourceMetadata() ) {
-            configs.add( new ServiceConfig( state, resourceManager ) );
-        }
-        Collections.sort( configs );
-        return configs;
-    }
+	@Override
+	public List<Config> getConfigs() {
+		List<Config> configs = new ArrayList<Config>();
+		for (ResourceMetadata<?> state : resourceManager.getResourceMetadata()) {
+			configs.add(new ServiceConfig(state, resourceManager));
+		}
+		Collections.sort(configs);
+		return configs;
+	}
 
 }

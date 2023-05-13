@@ -59,145 +59,147 @@ import org.slf4j.LoggerFactory;
 
 /**
  * A JAI based raster reader, rb: should be refactored to use the 'new' tiling raster api.
- * 
+ *
  * @version $Revision$
- * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- * 
+ *
  */
 public class JAIRasterReader implements RasterReader {
 
-    private static Logger LOG = LoggerFactory.getLogger( JAIRasterReader.class );
+	private static Logger LOG = LoggerFactory.getLogger(JAIRasterReader.class);
 
-    private File file = null;
+	private File file = null;
 
-    private RasterGeoReference rasterReference;
+	private RasterGeoReference rasterReference;
 
-    private int width;
+	private int width;
 
-    private int height;
+	private int height;
 
-    private JAIRasterDataReader reader;
+	private JAIRasterDataReader reader;
 
-    private String dataLocationId;
+	private String dataLocationId;
 
-    @Override
-    public AbstractRaster load( File file, RasterIOOptions options ) {
-        LOG.debug( "reading " + file + " with JAI" );
-        reader = new JAIRasterDataReader( file, options );
+	@Override
+	public AbstractRaster load(File file, RasterIOOptions options) {
+		LOG.debug("reading " + file + " with JAI");
+		reader = new JAIRasterDataReader(file, options);
 
-        return loadFromReader( reader, options );
-    }
+		return loadFromReader(reader, options);
+	}
 
-    @Override
-    public AbstractRaster load( InputStream stream, RasterIOOptions options )
-                            throws IOException {
-        LOG.debug( "reading from stream with JAI" );
-        reader = new JAIRasterDataReader( stream, options );
-        return loadFromReader( reader, options );
-    }
+	@Override
+	public AbstractRaster load(InputStream stream, RasterIOOptions options) throws IOException {
+		LOG.debug("reading from stream with JAI");
+		reader = new JAIRasterDataReader(stream, options);
+		return loadFromReader(reader, options);
+	}
 
-    private AbstractRaster loadFromReader( JAIRasterDataReader reader, RasterIOOptions options ) {
-        width = reader.getColumns();
-        height = reader.getRows();
-        setID( options );
-        reader.close();
-        OriginLocation definedRasterOrigLoc = options.getRasterOriginLocation();
-        // create a 1:1 mapping
-        rasterReference = new RasterGeoReference( definedRasterOrigLoc, 1, -1, 0.5, height - 0.5 );
+	private AbstractRaster loadFromReader(JAIRasterDataReader reader, RasterIOOptions options) {
+		width = reader.getColumns();
+		height = reader.getRows();
+		setID(options);
+		reader.close();
+		OriginLocation definedRasterOrigLoc = options.getRasterOriginLocation();
+		// create a 1:1 mapping
+		rasterReference = new RasterGeoReference(definedRasterOrigLoc, 1, -1, 0.5, height - 0.5);
 
-        if ( options.hasRasterGeoReference() ) {
-            rasterReference = options.getRasterGeoReference();
-        } else {
-            if ( options.readWorldFile() ) {
-                try {
-                    if ( file != null ) {
-                        rasterReference = WorldFileAccess.readWorldFile( file, options );
-                    }
-                } catch ( IOException e ) {
-                    //
-                }
-            }
-        }
+		if (options.hasRasterGeoReference()) {
+			rasterReference = options.getRasterGeoReference();
+		}
+		else {
+			if (options.readWorldFile()) {
+				try {
+					if (file != null) {
+						rasterReference = WorldFileAccess.readWorldFile(file, options);
+					}
+				}
+				catch (IOException e) {
+					//
+				}
+			}
+		}
 
-        Envelope envelope = rasterReference.getEnvelope( width, height, null );
-        // RasterDataContainer source = RasterDataContainerFactory.withDefaultLoadingPolicy( reader );
-        // RasterDataContainer source = RasterDataContainerFactory.withLoadingPolicy( reader, options.getLoadingPolicy()
-        // );
-        RasterDataInfo rdi = reader.getRasterDataInfo();
-        return RasterFactory.createEmptyRaster( rdi, envelope, rasterReference, this, true, options );
-    }
+		Envelope envelope = rasterReference.getEnvelope(width, height, null);
+		// RasterDataContainer source =
+		// RasterDataContainerFactory.withDefaultLoadingPolicy( reader );
+		// RasterDataContainer source = RasterDataContainerFactory.withLoadingPolicy(
+		// reader, options.getLoadingPolicy()
+		// );
+		RasterDataInfo rdi = reader.getRasterDataInfo();
+		return RasterFactory.createEmptyRaster(rdi, envelope, rasterReference, this, true, options);
+	}
 
-    private void setID( RasterIOOptions options ) {
-        this.dataLocationId = options != null ? options.get( RasterIOOptions.ORIGIN_OF_RASTER ) : null;
-        if ( dataLocationId == null ) {
-            if ( this.file != null ) {
-                this.dataLocationId = RasterCache.getUniqueCacheIdentifier( this.file );
-            }
-        }
-    }
+	private void setID(RasterIOOptions options) {
+		this.dataLocationId = options != null ? options.get(RasterIOOptions.ORIGIN_OF_RASTER) : null;
+		if (dataLocationId == null) {
+			if (this.file != null) {
+				this.dataLocationId = RasterCache.getUniqueCacheIdentifier(this.file);
+			}
+		}
+	}
 
-    @Override
-    public boolean canLoad( File filename ) {
-        return true;
-    }
+	@Override
+	public boolean canLoad(File filename) {
+		return true;
+	}
 
-    @Override
-    public Set<String> getSupportedFormats() {
-        return JAIRasterIOProvider.SUPPORTED_TYPES;
-    }
+	@Override
+	public Set<String> getSupportedFormats() {
+		return JAIRasterIOProvider.SUPPORTED_TYPES;
+	}
 
-    @Override
-    public File file() {
-        return reader == null ? null : reader.file();
-    }
+	@Override
+	public File file() {
+		return reader == null ? null : reader.file();
+	}
 
-    @Override
-    public RasterGeoReference getGeoReference() {
-        return rasterReference;
-    }
+	@Override
+	public RasterGeoReference getGeoReference() {
+		return rasterReference;
+	}
 
-    @Override
-    public int getHeight() {
-        return height;
-    }
+	@Override
+	public int getHeight() {
+		return height;
+	}
 
-    @Override
-    public int getWidth() {
-        return width;
-    }
+	@Override
+	public int getWidth() {
+		return width;
+	}
 
-    @Override
-    public BufferResult read( RasterRect rect, ByteBuffer buffer )
-                            throws IOException {
-        throw new UnsupportedOperationException( "Not yet implemented for the JAI readers" );
-    }
+	@Override
+	public BufferResult read(RasterRect rect, ByteBuffer buffer) throws IOException {
+		throw new UnsupportedOperationException("Not yet implemented for the JAI readers");
+	}
 
-    @Override
-    public boolean shouldCreateCacheFile() {
-        return true;
-    }
+	@Override
+	public boolean shouldCreateCacheFile() {
+		return true;
+	}
 
-    @Override
-    public boolean canReadTiles() {
-        return false;
-    }
+	@Override
+	public boolean canReadTiles() {
+		return false;
+	}
 
-    @Override
-    public RasterDataInfo getRasterDataInfo() {
-        return ( reader != null ) ? reader.getRasterDataInfo() : null;
-    }
+	@Override
+	public RasterDataInfo getRasterDataInfo() {
+		return (reader != null) ? reader.getRasterDataInfo() : null;
+	}
 
-    @Override
-    public String getDataLocationId() {
-        return dataLocationId;
-    }
+	@Override
+	public String getDataLocationId() {
+		return dataLocationId;
+	}
 
-    @Override
-    public void dispose() {
-        if ( reader != null ) {
-            reader.dispose();
-        }
-    }
+	@Override
+	public void dispose() {
+		if (reader != null) {
+			reader.dispose();
+		}
+	}
+
 }

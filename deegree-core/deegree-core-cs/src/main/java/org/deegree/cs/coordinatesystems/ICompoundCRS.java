@@ -40,36 +40,36 @@ import org.deegree.cs.components.IUnit;
 
 /**
  * Interface describing a CompundCRS
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  * @author last edited by: $Author: lyn $
- * 
  * @version $Revision: $, $Date: $
  */
 public interface ICompoundCRS extends ICRS {
 
-    /**
-     * @return the heightAxis.
-     */
-    IAxis getHeightAxis();
+	/**
+	 * @return the heightAxis.
+	 */
+	IAxis getHeightAxis();
 
-    /**
-     * @return the units of the heightAxis.
-     */
-    IUnit getHeightUnits();
+	/**
+	 * @return the units of the heightAxis.
+	 */
+	IUnit getHeightUnits();
 
-    /**
-     * @return the geographic Axis and the heightAxis as the third component.
-     */
-    IAxis[] getAxis();
+	/**
+	 * @return the geographic Axis and the heightAxis as the third component.
+	 */
+	IAxis[] getAxis();
 
-    /**
-     * @return the underlyingCRS.
-     */
-    ICRS getUnderlyingCRS();
+	/**
+	 * @return the underlyingCRS.
+	 */
+	ICRS getUnderlyingCRS();
 
-    /**
-     * @return the defaultHeight or 0 if it was not set.
-     */
-    double getDefaultHeight();
+	/**
+	 * @return the defaultHeight or 0 if it was not set.
+	 */
+	double getDefaultHeight();
+
 }

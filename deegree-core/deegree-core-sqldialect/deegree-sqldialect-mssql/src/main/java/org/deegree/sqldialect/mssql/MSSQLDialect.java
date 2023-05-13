@@ -67,137 +67,134 @@ import org.deegree.sqldialect.AbstractSQLDialect;
 
 /**
  * {@link SQLDialect} for Microsoft SQL Server databases.
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- * 
  * @version $Revision: 417 $, $Date: 2011-11-02 11:09:47 +0100 (Mi, 02 Nov 2011) $
  */
 public class MSSQLDialect extends AbstractSQLDialect implements SQLDialect {
 
-    private static Logger LOG = LoggerFactory.getLogger( MSSQLDialect.class );
+	private static Logger LOG = LoggerFactory.getLogger(MSSQLDialect.class);
 
-    private final char escapeChar = 0;
+	private final char escapeChar = 0;
 
-    @Override
-    public int getMaxColumnNameLength() {
-        return 128;
-    }
+	@Override
+	public int getMaxColumnNameLength() {
+		return 128;
+	}
 
-    @Override
-    public int getMaxTableNameLength() {
-        return 128;
-    }
+	@Override
+	public int getMaxTableNameLength() {
+		return 128;
+	}
 
-    public String getDefaultSchema() {
-        return "dbo";
-    }
+	public String getDefaultSchema() {
+		return "dbo";
+	}
 
-    public String stringPlus() {
-        return "+";
-    }
+	public String stringPlus() {
+		return "+";
+	}
 
-    public String stringIndex( String pattern, String string ) {
-        return "CHARINDEX(" + pattern + "," + string + ")";
-    }
+	public String stringIndex(String pattern, String string) {
+		return "CHARINDEX(" + pattern + "," + string + ")";
+	}
 
-    public String cast( String expr, String type ) {
-        return "CAST(" + expr + " AS " + type + ")";
-    }
+	public String cast(String expr, String type) {
+		return "CAST(" + expr + " AS " + type + ")";
+	}
 
-    @Override
-    public String geometryMetadata( TableName qTable, String column, boolean isGeography ) {
-        // TODO no way to get more out of this "database"?
-        return "SELECT 2,-1,'GEOMETRY'";
-    }
+	@Override
+	public String geometryMetadata(TableName qTable, String column, boolean isGeography) {
+		// TODO no way to get more out of this "database"?
+		return "SELECT 2,-1,'GEOMETRY'";
+	}
 
-    @Override
-    public AbstractWhereBuilder getWhereBuilder( PropertyNameMapper mapper, OperatorFilter filter,
-                                                 SortProperty[] sortCrit, List<SortCriterion> defaultSortCriteria,
-                                                 boolean allowPartialMappings )
-                            throws UnmappableException, FilterEvaluationException {
-        return new MSSQLWhereBuilder( this, mapper, filter, sortCrit, defaultSortCriteria, allowPartialMappings );
-    }
+	@Override
+	public AbstractWhereBuilder getWhereBuilder(PropertyNameMapper mapper, OperatorFilter filter,
+			SortProperty[] sortCrit, List<SortCriterion> defaultSortCriteria, boolean allowPartialMappings)
+			throws UnmappableException, FilterEvaluationException {
+		return new MSSQLWhereBuilder(this, mapper, filter, sortCrit, defaultSortCriteria, allowPartialMappings);
+	}
 
-    @Override
-    public String getUndefinedSrid() {
-        return "0";
-    }
+	@Override
+	public String getUndefinedSrid() {
+		return "0";
+	}
 
-    @Override
-    public String getBBoxAggregateSnippet( String colummn ) {
-        return "1";
-    }
+	@Override
+	public String getBBoxAggregateSnippet(String colummn) {
+		return "1";
+	}
 
-    @Override
-    public Envelope getBBoxAggregateValue( ResultSet rs, int colIdx, ICRS crs ) {
-        return new GeometryFactory().createEnvelope( -180, -90, 180, 90, CRSUtils.EPSG_4326 );
-    }
+	@Override
+	public Envelope getBBoxAggregateValue(ResultSet rs, int colIdx, ICRS crs) {
+		return new GeometryFactory().createEnvelope(-180, -90, 180, 90, CRSUtils.EPSG_4326);
+	}
 
-    @Override
-    public GeometryParticleConverter getGeometryConverter( String column, ICRS crs, String srid, boolean is2d ) {
-        return new MSSQLGeometryConverter( column, crs, srid, is2d );
-    }
+	@Override
+	public GeometryParticleConverter getGeometryConverter(String column, ICRS crs, String srid, boolean is2d) {
+		return new MSSQLGeometryConverter(column, crs, srid, is2d);
+	}
 
-    @Override
-    public PrimitiveParticleConverter getPrimitiveConverter( String column, PrimitiveType pt ) {
-        return new DefaultPrimitiveConverter( pt, column );
-    }
+	@Override
+	public PrimitiveParticleConverter getPrimitiveConverter(String column, PrimitiveType pt) {
+		return new DefaultPrimitiveConverter(pt, column);
+	}
 
-    @Override
-    public void createDB( Connection adminConn, String dbName )
-                            throws SQLException {
+	@Override
+	public void createDB(Connection adminConn, String dbName) throws SQLException {
 
-        String sql = "CREATE DATABASE " + dbName;
+		String sql = "CREATE DATABASE " + dbName;
 
-        Statement stmt = null;
-        try {
-            stmt = adminConn.createStatement();
-            stmt.executeUpdate( sql );
-        } finally {
-            JDBCUtils.close( null, stmt, null, LOG );
-        }
-    }
+		Statement stmt = null;
+		try {
+			stmt = adminConn.createStatement();
+			stmt.executeUpdate(sql);
+		}
+		finally {
+			JDBCUtils.close(null, stmt, null, LOG);
+		}
+	}
 
-    @Override
-    public void dropDB( Connection adminConn, String dbName )
-                            throws SQLException {
+	@Override
+	public void dropDB(Connection adminConn, String dbName) throws SQLException {
 
-        String sql = "DROP DATABASE " + dbName;
-        Statement stmt = null;
-        try {
-            stmt = adminConn.createStatement();
-            stmt.executeUpdate( sql );
-        } finally {
-            JDBCUtils.close( null, stmt, null, LOG );
-        }
-    }
+		String sql = "DROP DATABASE " + dbName;
+		Statement stmt = null;
+		try {
+			stmt = adminConn.createStatement();
+			stmt.executeUpdate(sql);
+		}
+		finally {
+			JDBCUtils.close(null, stmt, null, LOG);
+		}
+	}
 
-    @Override
-    public void createAutoColumn( StringBuffer currentStmt, List<StringBuffer> additionalSmts, SQLIdentifier column,
-                                  SQLIdentifier table ) {
-        currentStmt.append( column );
-        currentStmt.append( " integer IDENTITY(1,1)" );
-    }
+	@Override
+	public void createAutoColumn(StringBuffer currentStmt, List<StringBuffer> additionalSmts, SQLIdentifier column,
+			SQLIdentifier table) {
+		currentStmt.append(column);
+		currentStmt.append(" integer IDENTITY(1,1)");
+	}
 
-    @Override
-    public ResultSet getTableColumnMetadata( DatabaseMetaData md, TableName qTable )
-                            throws SQLException {
-        String schema = qTable.getSchema() != null ? qTable.getSchema() : getDefaultSchema();
-        String table = qTable.getTable();
-        return md.getColumns( null, schema.toLowerCase(), table.toLowerCase(), null );
-    }
+	@Override
+	public ResultSet getTableColumnMetadata(DatabaseMetaData md, TableName qTable) throws SQLException {
+		String schema = qTable.getSchema() != null ? qTable.getSchema() : getDefaultSchema();
+		String table = qTable.getTable();
+		return md.getColumns(null, schema.toLowerCase(), table.toLowerCase(), null);
+	}
 
-    @Override
-    public boolean requiresTransactionForCursorMode() {
-        return false;
-    }
+	@Override
+	public boolean requiresTransactionForCursorMode() {
+		return false;
+	}
 
-    @Override
-    public String getSelectSequenceNextVal( String sequence ) {
-        throw new UnsupportedOperationException(
-                                                 "Using DB sequences for FIDs is currently not supported on Microsoft SQL Server." );
-    }
+	@Override
+	public String getSelectSequenceNextVal(String sequence) {
+		throw new UnsupportedOperationException(
+				"Using DB sequences for FIDs is currently not supported on Microsoft SQL Server.");
+	}
 
 }

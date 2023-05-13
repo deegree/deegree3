@@ -51,41 +51,39 @@ import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class WCSProvider extends OWSProvider {
 
-    protected static final ImplementationMetadata<WCSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<WCSRequestType>() {
-        {
-            supportedVersions = new Version[] { VERSION_100, VERSION_110 };
-            handledNamespaces = new String[] { WCS_100_NS };
-            handledRequests = WCSRequestType.class;
-            serviceName = new String[] { "WCS" };
-        }
-    };
+	protected static final ImplementationMetadata<WCSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<WCSRequestType>() {
+		{
+			supportedVersions = new Version[] { VERSION_100, VERSION_110 };
+			handledNamespaces = new String[] { WCS_100_NS };
+			handledRequests = WCSRequestType.class;
+			serviceName = new String[] { "WCS" };
+		}
+	};
 
-    @Override
-    public String getNamespace() {
-        return "http://www.deegree.org/services/wcs";
-    }
+	@Override
+	public String getNamespace() {
+		return "http://www.deegree.org/services/wcs";
+	}
 
-    @Override
-    public URL getSchema() {
-        return WCSProvider.class.getResource( "/META-INF/schemas/services/wcs/wcs_configuration.xsd" );
-    }
+	@Override
+	public URL getSchema() {
+		return WCSProvider.class.getResource("/META-INF/schemas/services/wcs/wcs_configuration.xsd");
+	}
 
-    @Override
-    public ImplementationMetadata<WCSRequestType> getImplementationMetadata() {
-        return IMPLEMENTATION_METADATA;
-    }
+	@Override
+	public ImplementationMetadata<WCSRequestType> getImplementationMetadata() {
+		return IMPLEMENTATION_METADATA;
+	}
 
-    @Override
-    public ResourceMetadata<OWS> createFromLocation( Workspace workspace, ResourceLocation<OWS> location ) {
-        return new WcsMetadata( workspace, location, this );
-    }
+	@Override
+	public ResourceMetadata<OWS> createFromLocation(Workspace workspace, ResourceLocation<OWS> location) {
+		return new WcsMetadata(workspace, location, this);
+	}
 
 }

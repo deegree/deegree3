@@ -41,34 +41,32 @@ import org.deegree.time.primitive.TimeGeometricPrimitive;
 
 /**
  * Time operator to evaluate 'After'.
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
 public class AfterOperator {
 
-    /**
-     * Evaluates if self is after other or not. TimeInstant and TimePeriods are allowed and handled as followed:
-     * 
-     * <ul>
-     * <li>self.position > other.position</li>
-     * <li>self.position > other.end.position</li>
-     * <li>self.begin.position > other.position</li>
-     * <li>self.begin.position > other.end.position</li>
-     * </ul>
-     * 
-     * @param self
-     *            may be <code>null</code> (evaluation results in <code>false</code>)
-     * @param other
-     *            may be <code>null</code> (evaluation results in <code>false</code>)
-     * @return <code>true</code> if self is temporal after other, <code>false</code> if self is before or equal to other
-     *         or self and/or other are <code>null</code>
-     */
-    public boolean evaluate( final TimeGeometricPrimitive self, final TimeGeometricPrimitive other ) {
-        if ( self == null || other == null )
-            return false;
+	/**
+	 * Evaluates if self is after other or not. TimeInstant and TimePeriods are allowed
+	 * and handled as followed:
+	 *
+	 * <ul>
+	 * <li>self.position > other.position</li>
+	 * <li>self.position > other.end.position</li>
+	 * <li>self.begin.position > other.position</li>
+	 * <li>self.begin.position > other.end.position</li>
+	 * </ul>
+	 * @param self may be <code>null</code> (evaluation results in <code>false</code>)
+	 * @param other may be <code>null</code> (evaluation results in <code>false</code>)
+	 * @return <code>true</code> if self is temporal after other, <code>false</code> if
+	 * self is before or equal to other or self and/or other are <code>null</code>
+	 */
+	public boolean evaluate(final TimeGeometricPrimitive self, final TimeGeometricPrimitive other) {
+		if (self == null || other == null)
+			return false;
 
-        int compareBeginWithEnd = compareBeginWithEnd( self, other );
-        return compareBeginWithEnd > 0;
-    }
+		int compareBeginWithEnd = compareBeginWithEnd(self, other);
+		return compareBeginWithEnd > 0;
+	}
 
 }

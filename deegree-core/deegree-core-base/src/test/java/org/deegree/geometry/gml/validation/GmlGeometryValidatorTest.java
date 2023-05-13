@@ -63,83 +63,81 @@ import org.deegree.gml.geometry.validation.GmlStreamGeometryValidator;
 import org.junit.Test;
 
 /**
- * Tests that check the expected generation of validation events by the {@link GmlGeometryValidationEvent}.
- * 
+ * Tests that check the expected generation of validation events by the
+ * {@link GmlGeometryValidationEvent}.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
  * @version $Revision:$, $Date:$
  */
 public class GmlGeometryValidatorTest {
 
-    private static final String BASE_DIR = "../misc/geometry/";
+	private static final String BASE_DIR = "../misc/geometry/";
 
-    @Test
-    public void validateCurve()
-                            throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
-                            UnknownCRSException {
-        TestEventHandler eventHandler = validate( "Curve.gml" );
-        assertEquals( 0, eventHandler.getEvents().size() );
-    }
+	@Test
+	public void validateCurve()
+			throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException, UnknownCRSException {
+		TestEventHandler eventHandler = validate("Curve.gml");
+		assertEquals(0, eventHandler.getEvents().size());
+	}
 
-    @Test
-    public void validateCurveDiscontinuity()
-                            throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
-                            UnknownCRSException {
-        TestEventHandler eventHandler = validate( "invalid/Curve_discontinuity.gml" );
-        assertEquals( 1, eventHandler.getEvents().size() );
-        GmlGeometryValidationEvent event = eventHandler.getEvents().get( 0 );
-        Assert.assertEquals( CurveDiscontinuity.class, event.getEvent().getClass() );
-    }
+	@Test
+	public void validateCurveDiscontinuity()
+			throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException, UnknownCRSException {
+		TestEventHandler eventHandler = validate("invalid/Curve_discontinuity.gml");
+		assertEquals(1, eventHandler.getEvents().size());
+		GmlGeometryValidationEvent event = eventHandler.getEvents().get(0);
+		Assert.assertEquals(CurveDiscontinuity.class, event.getEvent().getClass());
+	}
 
-    @Test
-    public void validateRingNotClosed()
-                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
-        TestEventHandler eventHandler = validate( "invalid/Ring_not_closed.gml" );
-        assertEquals( 1, eventHandler.getEvents().size() );
-        GmlGeometryValidationEvent event = eventHandler.getEvents().get( 0 );
-        Assert.assertEquals( RingNotClosed.class, event.getEvent().getClass() );
-    }
+	@Test
+	public void validateRingNotClosed()
+			throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
+		TestEventHandler eventHandler = validate("invalid/Ring_not_closed.gml");
+		assertEquals(1, eventHandler.getEvents().size());
+		GmlGeometryValidationEvent event = eventHandler.getEvents().get(0);
+		Assert.assertEquals(RingNotClosed.class, event.getEvent().getClass());
+	}
 
-    @Test
-    public void validatePolygonExteriorClockwise()
-                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
-        TestEventHandler eventHandler = validate( "invalid/Polygon_exterior_clockwise.gml" );
-        assertEquals( 3, eventHandler.getEvents().size() );
-        Assert.assertTrue( ( (ExteriorRingOrientation) ( eventHandler.getEvents().get( 0 ).getEvent() ) ).isClockwise() );
-        Assert.assertTrue( ( (InteriorRingOrientation) ( eventHandler.getEvents().get( 1 ).getEvent() ) ).isClockwise() );
-        Assert.assertTrue( ( (InteriorRingOrientation) ( eventHandler.getEvents().get( 2 ).getEvent() ) ).isClockwise() );
-    }
+	@Test
+	public void validatePolygonExteriorClockwise()
+			throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
+		TestEventHandler eventHandler = validate("invalid/Polygon_exterior_clockwise.gml");
+		assertEquals(3, eventHandler.getEvents().size());
+		Assert.assertTrue(((ExteriorRingOrientation) (eventHandler.getEvents().get(0).getEvent())).isClockwise());
+		Assert.assertTrue(((InteriorRingOrientation) (eventHandler.getEvents().get(1).getEvent())).isClockwise());
+		Assert.assertTrue(((InteriorRingOrientation) (eventHandler.getEvents().get(2).getEvent())).isClockwise());
+	}
 
-    private TestEventHandler validate( String resourceName )
-                            throws XMLStreamException, UnknownCRSException, FactoryConfigurationError, IOException {
-        TestEventHandler eventHandler = new TestEventHandler();
-        URL resourceUrl = GML3GeometryReaderTest.class.getResource( BASE_DIR + resourceName );
-        GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader( GML_31, resourceUrl );
-        GmlStreamGeometryValidator validator = new GmlStreamGeometryValidator( gmlStream, eventHandler );
-        validator.validateGeometries();
-        return eventHandler;
-    }
+	private TestEventHandler validate(String resourceName)
+			throws XMLStreamException, UnknownCRSException, FactoryConfigurationError, IOException {
+		TestEventHandler eventHandler = new TestEventHandler();
+		URL resourceUrl = GML3GeometryReaderTest.class.getResource(BASE_DIR + resourceName);
+		GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader(GML_31, resourceUrl);
+		GmlStreamGeometryValidator validator = new GmlStreamGeometryValidator(gmlStream, eventHandler);
+		validator.validateGeometries();
+		return eventHandler;
+	}
 
 }
 
 class TestEventHandler implements GmlGeometryValidationEventHandler {
 
-    private final List<GmlGeometryValidationEvent> events = new ArrayList<GmlGeometryValidationEvent>();
+	private final List<GmlGeometryValidationEvent> events = new ArrayList<GmlGeometryValidationEvent>();
 
-    @Override
-    public void parsingError( GmlElementIdentifier geometryElement, Exception e ) {
-        // TODO Auto-generated method stub
-    }
+	@Override
+	public void parsingError(GmlElementIdentifier geometryElement, Exception e) {
+		// TODO Auto-generated method stub
+	}
 
-    @Override
-    public boolean topologicalEvent( GmlGeometryValidationEvent event ) {
-        events.add( event );
-        return false;
-    }
+	@Override
+	public boolean topologicalEvent(GmlGeometryValidationEvent event) {
+		events.add(event);
+		return false;
+	}
 
-    List<GmlGeometryValidationEvent> getEvents() {
-        return events;
-    }
+	List<GmlGeometryValidationEvent> getEvents() {
+		return events;
+	}
 
 }

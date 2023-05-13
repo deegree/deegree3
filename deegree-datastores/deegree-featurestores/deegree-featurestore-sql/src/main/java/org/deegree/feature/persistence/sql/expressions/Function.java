@@ -42,32 +42,32 @@ import org.deegree.sqldialect.filter.MappingExpression;
 
 /**
  * The <code></code> class TODO add class documentation here.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class Function implements MappingExpression {
 
-    private String functionName;
+	private String functionName;
 
-    private List<MappingExpression> args = new ArrayList<MappingExpression>();
+	private List<MappingExpression> args = new ArrayList<MappingExpression>();
 
-    public Function( String functionName ) {
-        this.functionName = functionName;
-    }
+	public Function(String functionName) {
+		this.functionName = functionName;
+	}
 
-    public void addArg( MappingExpression arg ) {
-        args.add( arg );
-    }
+	public void addArg(MappingExpression arg) {
+		args.add(arg);
+	}
 
-    public List<MappingExpression> getArgs() {
-        return args;
-    }
+	public List<MappingExpression> getArgs() {
+		return args;
+	}
 
-    @Override
-    public String toString() {
-        return functionName;
-    }
+	@Override
+	public String toString() {
+		return functionName;
+	}
+
 }

@@ -53,127 +53,124 @@ import org.slf4j.Logger;
 
 /**
  * {@link GeometryParticleConverter} for Microsoft SQL Server databases.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: mschneider $
- * 
  * @version $Revision: 31055 $, $Date: 2011-06-14 17:19:48 +0200 (Di, 14. Jun 2011) $
  */
 public class MSSQLGeometryConverter implements GeometryParticleConverter {
 
-    private static final Logger LOG = getLogger( MSSQLGeometryConverter.class );
+	private static final Logger LOG = getLogger(MSSQLGeometryConverter.class);
 
-    private final String column;
+	private final String column;
 
-    private final ICRS crs;
+	private final ICRS crs;
 
-    private final String srid;
+	private final String srid;
 
-    private final boolean is2d;
+	private final boolean is2d;
 
-    /**
-     * Creates a new {@link MSSQLGeometryConverter} instance.
-     * 
-     * @param column
-     *            (unqualified) column that stores the geometry, must not be <code>null</code>
-     * @param crs
-     *            CRS of the stored geometries, can be <code>null</code>
-     * @param srid
-     *            MSSQL spatial reference identifier, must not be <code>null</code>
-     * @param is2D
-     */
-    public MSSQLGeometryConverter( String column, ICRS crs, String srid, boolean is2D ) {
-        this.column = column;
-        this.crs = crs;
-        this.srid = srid;
-        this.is2d = is2D;
-    }
+	/**
+	 * Creates a new {@link MSSQLGeometryConverter} instance.
+	 * @param column (unqualified) column that stores the geometry, must not be
+	 * <code>null</code>
+	 * @param crs CRS of the stored geometries, can be <code>null</code>
+	 * @param srid MSSQL spatial reference identifier, must not be <code>null</code>
+	 * @param is2D
+	 */
+	public MSSQLGeometryConverter(String column, ICRS crs, String srid, boolean is2D) {
+		this.column = column;
+		this.crs = crs;
+		this.srid = srid;
+		this.is2d = is2D;
+	}
 
-    public String getSelectSnippet( String tableAlias ) {
-        if ( is2d )
-            return ( tableAlias == null ? "" : ( tableAlias + "." ) ) + column + ".STAsBinary()";
-        if ( tableAlias == null )
-            return column + ".ToString()";
-        return tableAlias + "." + column + ".ToString()";
-    }
+	public String getSelectSnippet(String tableAlias) {
+		if (is2d)
+			return (tableAlias == null ? "" : (tableAlias + ".")) + column + ".STAsBinary()";
+		if (tableAlias == null)
+			return column + ".ToString()";
+		return tableAlias + "." + column + ".ToString()";
+	}
 
-    public String getSetSnippet( Geometry particle ) {
-        if ( is2d )
-            return "geometry::STGeomFromWKB(?, " + srid + ")";
-        return "geometry::Parse(?)";
-    }
+	public String getSetSnippet(Geometry particle) {
+		if (is2d)
+			return "geometry::STGeomFromWKB(?, " + srid + ")";
+		return "geometry::Parse(?)";
+	}
 
-    @Override
-    public Geometry toParticle( ResultSet rs, int colIndex )
-                            throws SQLException {
-        Object sqlValue = rs.getObject( colIndex );
-        try {
-            if ( sqlValue != null ) {
-                if ( sqlValue instanceof byte[] ) {
-                    if ( is2d ) {
-                        return WKBReader.read( (byte[]) sqlValue, crs );
-                    }
-                    // hur hur, not using cp1252 any more, are we?
-                    sqlValue = new String( (byte[]) sqlValue, "UTF-16LE" );
-                }
-                return new WKTReader( crs ).read( sqlValue.toString() );
-            }
-        } catch ( Throwable e ) {
-            throw new SQLException( e );
-        }
-        return null;
-    }
+	@Override
+	public Geometry toParticle(ResultSet rs, int colIndex) throws SQLException {
+		Object sqlValue = rs.getObject(colIndex);
+		try {
+			if (sqlValue != null) {
+				if (sqlValue instanceof byte[]) {
+					if (is2d) {
+						return WKBReader.read((byte[]) sqlValue, crs);
+					}
+					// hur hur, not using cp1252 any more, are we?
+					sqlValue = new String((byte[]) sqlValue, "UTF-16LE");
+				}
+				return new WKTReader(crs).read(sqlValue.toString());
+			}
+		}
+		catch (Throwable e) {
+			throw new SQLException(e);
+		}
+		return null;
+	}
 
-    @Override
-    public void setParticle( PreparedStatement stmt, Geometry particle, int paramIndex )
-                            throws SQLException {
-        if ( particle == null ) {
-            stmt.setObject( paramIndex, null );
-            return;
-        }
-        particle = getCompatibleGeometry( particle );
-        if ( is2d ) {
-            try {
-                stmt.setBytes( paramIndex, WKBWriter.write( particle ) );
-            } catch ( Throwable e ) {
-                throw new SQLException( e );
-            }
-        } else {
-            stmt.setString( paramIndex, WKTWriter.write( particle ) );
-        }
-    }
+	@Override
+	public void setParticle(PreparedStatement stmt, Geometry particle, int paramIndex) throws SQLException {
+		if (particle == null) {
+			stmt.setObject(paramIndex, null);
+			return;
+		}
+		particle = getCompatibleGeometry(particle);
+		if (is2d) {
+			try {
+				stmt.setBytes(paramIndex, WKBWriter.write(particle));
+			}
+			catch (Throwable e) {
+				throw new SQLException(e);
+			}
+		}
+		else {
+			stmt.setString(paramIndex, WKTWriter.write(particle));
+		}
+	}
 
-    @Override
-    public String getSrid() {
-        return srid;
-    }
+	@Override
+	public String getSrid() {
+		return srid;
+	}
 
-    @Override
-    public ICRS getCrs() {
-        return crs;
-    }
+	@Override
+	public ICRS getCrs() {
+		return crs;
+	}
 
-    private Geometry getCompatibleGeometry( Geometry literal )
-                            throws SQLException {
-        if ( crs == null ) {
-            return literal;
-        }
+	private Geometry getCompatibleGeometry(Geometry literal) throws SQLException {
+		if (crs == null) {
+			return literal;
+		}
 
-        Geometry transformedLiteral = literal;
-        if ( literal != null ) {
-            ICRS literalCRS = literal.getCoordinateSystem();
-            if ( literalCRS != null && !( crs.equals( literalCRS ) ) ) {
-                LOG.debug( "Need transformed literal geometry for evaluation: " + literalCRS.getAlias() + " -> "
-                           + crs.getAlias() );
-                try {
-                    GeometryTransformer transformer = new GeometryTransformer( crs );
-                    transformedLiteral = transformer.transform( literal );
-                } catch ( Throwable e ) {
-                    throw new SQLException( e.getMessage() );
-                }
-            }
-        }
-        return transformedLiteral;
-    }
+		Geometry transformedLiteral = literal;
+		if (literal != null) {
+			ICRS literalCRS = literal.getCoordinateSystem();
+			if (literalCRS != null && !(crs.equals(literalCRS))) {
+				LOG.debug("Need transformed literal geometry for evaluation: " + literalCRS.getAlias() + " -> "
+						+ crs.getAlias());
+				try {
+					GeometryTransformer transformer = new GeometryTransformer(crs);
+					transformedLiteral = transformer.transform(literal);
+				}
+				catch (Throwable e) {
+					throw new SQLException(e.getMessage());
+				}
+			}
+		}
+		return transformedLiteral;
+	}
 
 }

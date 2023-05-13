@@ -46,15 +46,15 @@ import org.deegree.coverage.persistence.CoverageManager;
 @ViewScoped
 public class CoverageManagerBean extends AbstractResourceManagerBean<CoverageManager> implements Serializable {
 
-    private static final long serialVersionUID = 8213393417005100905L;
+	private static final long serialVersionUID = 8213393417005100905L;
 
-    public CoverageManagerBean() {
-        super( CoverageManager.class );
-    }
+	public CoverageManagerBean() {
+		super(CoverageManager.class);
+	}
 
-    @Override
-    public String getStartView() {
-        return "/console/datastore/coverage/index";
-    }
+	@Override
+	public String getStartView() {
+		return "/console/datastore/coverage/index";
+	}
 
 }

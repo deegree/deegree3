@@ -50,50 +50,54 @@ import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.workspace.Workspace;
 
 /**
- * JSF Bean for testing the availability of connections offered by {@link ConnectionProvider}s.
- * 
+ * JSF Bean for testing the availability of connections offered by
+ * {@link ConnectionProvider}s.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 @ManagedBean
 @SessionScoped
 public class ConnectionTester {
 
-    private Workspace getWorkspace() {
-        ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-        Workspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace().getNewWorkspace();
-        return ws;
-    }
+	private Workspace getWorkspace() {
+		ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
+		Workspace ws = ((WorkspaceBean) ctx.getApplicationMap().get("workspace")).getActiveWorkspace()
+			.getNewWorkspace();
+		return ws;
+	}
 
-    public void test() {
-        String id = (String) getParam1();
-        try {
-            ConnectionProvider prov = getWorkspace().getResource( ConnectionProviderProvider.class, id );
-            prov.getConnection().close();
-            FacesMessage fm = new FacesMessage( SEVERITY_INFO, "Connection '" + id + "' ok", null );
-            FacesContext.getCurrentInstance().addMessage( null, fm );
-        } catch ( Throwable t ) {
-            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Connection '" + id + "' unavailable: "
-                                                                + t.getMessage(), null );
-            FacesContext.getCurrentInstance().addMessage( null, fm );
-        }
-    }
+	public void test() {
+		String id = (String) getParam1();
+		try {
+			ConnectionProvider prov = getWorkspace().getResource(ConnectionProviderProvider.class, id);
+			prov.getConnection().close();
+			FacesMessage fm = new FacesMessage(SEVERITY_INFO, "Connection '" + id + "' ok", null);
+			FacesContext.getCurrentInstance().addMessage(null, fm);
+		}
+		catch (Throwable t) {
+			FacesMessage fm = new FacesMessage(SEVERITY_ERROR, "Connection '" + id + "' unavailable: " + t.getMessage(),
+					null);
+			FacesContext.getCurrentInstance().addMessage(null, fm);
+		}
+	}
 
-    public String testAndSave() {
-        String id = (String) getParam1();
-        try {
-            ConnectionProvider prov = getWorkspace().getResource( ConnectionProviderProvider.class, id );
-            prov.getConnection().close();
-            FacesMessage fm = new FacesMessage( SEVERITY_INFO, "Connection '" + id + "' ok", null );
-            FacesContext.getCurrentInstance().addMessage( null, fm );
-        } catch ( Throwable t ) {
-            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Connection '" + id + "' unavailable: "
-                                                                + t.getMessage(), null );
-            FacesContext.getCurrentInstance().addMessage( null, fm );
-        }
-        return "/console/jdbc/index.xhtml";
-    }
+	public String testAndSave() {
+		String id = (String) getParam1();
+		try {
+			ConnectionProvider prov = getWorkspace().getResource(ConnectionProviderProvider.class, id);
+			prov.getConnection().close();
+			FacesMessage fm = new FacesMessage(SEVERITY_INFO, "Connection '" + id + "' ok", null);
+			FacesContext.getCurrentInstance().addMessage(null, fm);
+		}
+		catch (Throwable t) {
+			FacesMessage fm = new FacesMessage(SEVERITY_ERROR, "Connection '" + id + "' unavailable: " + t.getMessage(),
+					null);
+			FacesContext.getCurrentInstance().addMessage(null, fm);
+		}
+		return "/console/jdbc/index.xhtml";
+	}
+
 }

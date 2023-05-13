@@ -40,40 +40,42 @@ import org.deegree.workspace.ResourceMetadata;
 
 /**
  * This class is responsible for building example process providers.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class ExampleProcessProviderBuilder implements ResourceBuilder<ProcessProvider> {
 
-    private ResourceMetadata<ProcessProvider> metadata;
+	private ResourceMetadata<ProcessProvider> metadata;
 
-    public ExampleProcessProviderBuilder( ResourceMetadata<ProcessProvider> metadata ) {
-        this.metadata = metadata;
-    }
+	public ExampleProcessProviderBuilder(ResourceMetadata<ProcessProvider> metadata) {
+		this.metadata = metadata;
+	}
 
-    @Override
-    public ProcessProvider build() {
-        Map<String, String> processIdToReturnValue = new HashMap<String, String>();
+	@Override
+	public ProcessProvider build() {
+		Map<String, String> processIdToReturnValue = new HashMap<String, String>();
 
-        try {
-            XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( metadata.getLocation().getAsStream() );
-            while ( xmlStream.getEventType() != XMLStreamConstants.END_DOCUMENT ) {
-                if ( xmlStream.isStartElement() && "Process".equals( xmlStream.getLocalName() ) ) {
-                    String processId = xmlStream.getAttributeValue( null, "id" );
-                    String returnValue = xmlStream.getElementText();
-                    processIdToReturnValue.put( processId, returnValue );
-                } else {
-                    xmlStream.next();
-                }
-            }
-        } catch ( Exception e ) {
-            throw new ResourceInitException( "Error parsing example process provider configuration '"
-                                             + metadata.getIdentifier() + "': " + e.getMessage() );
-        }
+		try {
+			XMLStreamReader xmlStream = XMLInputFactory.newInstance()
+				.createXMLStreamReader(metadata.getLocation().getAsStream());
+			while (xmlStream.getEventType() != XMLStreamConstants.END_DOCUMENT) {
+				if (xmlStream.isStartElement() && "Process".equals(xmlStream.getLocalName())) {
+					String processId = xmlStream.getAttributeValue(null, "id");
+					String returnValue = xmlStream.getElementText();
+					processIdToReturnValue.put(processId, returnValue);
+				}
+				else {
+					xmlStream.next();
+				}
+			}
+		}
+		catch (Exception e) {
+			throw new ResourceInitException("Error parsing example process provider configuration '"
+					+ metadata.getIdentifier() + "': " + e.getMessage());
+		}
 
-        return new ExampleProcessProvider( processIdToReturnValue, metadata );
-    }
+		return new ExampleProcessProvider(processIdToReturnValue, metadata);
+	}
 
 }

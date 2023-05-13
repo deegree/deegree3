@@ -48,34 +48,32 @@ import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class CSWProvider extends OWSProvider {
 
-    private ServiceProfile profile = new EbrimProfile();
+	private ServiceProfile profile = new EbrimProfile();
 
-    @Override
-    public String getNamespace() {
-        return "http://www.deegree.org/services/csw";
-    }
+	@Override
+	public String getNamespace() {
+		return "http://www.deegree.org/services/csw";
+	}
 
-    @Override
-    public URL getSchema() {
-        return CSWProvider.class.getResource( "/META-INF/schemas/services/csw/csw_configuration.xsd" );
-    }
+	@Override
+	public URL getSchema() {
+		return CSWProvider.class.getResource("/META-INF/schemas/services/csw/csw_configuration.xsd");
+	}
 
-    @Override
-    public ImplementationMetadata<CSWRequestType> getImplementationMetadata() {
-        return profile.getImplementationMetadata();
-    }
+	@Override
+	public ImplementationMetadata<CSWRequestType> getImplementationMetadata() {
+		return profile.getImplementationMetadata();
+	}
 
-    @Override
-    public ResourceMetadata<OWS> createFromLocation( Workspace workspace, ResourceLocation<OWS> location ) {
-        return new CswMetadata( workspace, location, this );
-    }
+	@Override
+	public ResourceMetadata<OWS> createFromLocation(Workspace workspace, ResourceLocation<OWS> location) {
+		return new CswMetadata(workspace, location, this);
+	}
 
 }

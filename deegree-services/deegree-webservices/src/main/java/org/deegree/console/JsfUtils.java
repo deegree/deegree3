@@ -46,52 +46,46 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Static utility methods for JSF stuff.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * 
  * @since 3.4
  */
 public class JsfUtils {
 
-    private static Logger LOG = LoggerFactory.getLogger( JsfUtils.class );
+	private static Logger LOG = LoggerFactory.getLogger(JsfUtils.class);
 
-    /**
-     * Returns the active {@link Workspace}.
-     * 
-     * @return active workspace, never <code>null</code>
-     */
-    public static Workspace getWorkspace() {
-        return OGCFrontController.getServiceWorkspace().getNewWorkspace();
-    }
+	/**
+	 * Returns the active {@link Workspace}.
+	 * @return active workspace, never <code>null</code>
+	 */
+	public static Workspace getWorkspace() {
+		return OGCFrontController.getServiceWorkspace().getNewWorkspace();
+	}
 
-    /**
-     * Provides information on a failed action to the user.
-     * 
-     * @param failedAction
-     *            description of the action that failed, e.g. "Workspace startup", must not be <code>null</code>
-     * @param cause
-     *            cause, must not be <code>null</code>
-     */
-    public static void indicateException( String failedAction, Throwable cause ) {
-        String msg = failedAction + " failed: " + cause.getMessage() + "(" + cause.getClass() + ")";
-        FacesMessage fm = new FacesMessage( SEVERITY_ERROR, msg, null );
-        FacesContext.getCurrentInstance().addMessage( null, fm );
-        LOG.error( msg, cause );
-    }
+	/**
+	 * Provides information on a failed action to the user.
+	 * @param failedAction description of the action that failed, e.g. "Workspace
+	 * startup", must not be <code>null</code>
+	 * @param cause cause, must not be <code>null</code>
+	 */
+	public static void indicateException(String failedAction, Throwable cause) {
+		String msg = failedAction + " failed: " + cause.getMessage() + "(" + cause.getClass() + ")";
+		FacesMessage fm = new FacesMessage(SEVERITY_ERROR, msg, null);
+		FacesContext.getCurrentInstance().addMessage(null, fm);
+		LOG.error(msg, cause);
+	}
 
-    /**
-     * Provides information on a failed action to the user.
-     * 
-     * @param failedAction
-     *            description of the action that failed, e.g. "Workspace startup", must not be <code>null</code>
-     * @param cause
-     *            cause, must not be <code>null</code>
-     */
-    public static void indicateException( String failedAction, String cause ) {
-        String msg = failedAction + " failed: " + cause;
-        FacesMessage fm = new FacesMessage( SEVERITY_ERROR, msg, null );
-        FacesContext.getCurrentInstance().addMessage( null, fm );
-        LOG.error( cause );
-    }
+	/**
+	 * Provides information on a failed action to the user.
+	 * @param failedAction description of the action that failed, e.g. "Workspace
+	 * startup", must not be <code>null</code>
+	 * @param cause cause, must not be <code>null</code>
+	 */
+	public static void indicateException(String failedAction, String cause) {
+		String msg = failedAction + " failed: " + cause;
+		FacesMessage fm = new FacesMessage(SEVERITY_ERROR, msg, null);
+		FacesContext.getCurrentInstance().addMessage(null, fm);
+		LOG.error(cause);
+	}
 
 }

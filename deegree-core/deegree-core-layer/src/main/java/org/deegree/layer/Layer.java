@@ -44,52 +44,48 @@ import org.deegree.style.StyleRef;
 
 /**
  * <code>Layer</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public interface Layer {
 
-    /**
-     * @return the metadata object, never null
-     */
-    LayerMetadata getMetadata();
+	/**
+	 * @return the metadata object, never null
+	 */
+	LayerMetadata getMetadata();
 
-    /**
-     * @param query
-     *            may not be null
-     * @param headers
-     *            may not be null. Extra HTTP headers will be added, as required by the WMS spec.
-     * @return a layer data corresponding to the query, never null
-     * @throws OWSException
-     */
-    LayerData mapQuery( LayerQuery query, List<String> headers )
-                            throws OWSException;
+	/**
+	 * @param query may not be null
+	 * @param headers may not be null. Extra HTTP headers will be added, as required by
+	 * the WMS spec.
+	 * @return a layer data corresponding to the query, never null
+	 * @throws OWSException
+	 */
+	LayerData mapQuery(LayerQuery query, List<String> headers) throws OWSException;
 
-    /**
-     * @param query
-     *            may not be null
-     * @param headers
-     *            may not be null. Extra HTTP headers will be added, as required by the WMS spec.
-     * @return a layer data corresponding to the query, never null
-     * @throws OWSException
-     */
-    LayerData infoQuery( LayerQuery query, List<String> headers )
-                            throws OWSException;
+	/**
+	 * @param query may not be null
+	 * @param headers may not be null. Extra HTTP headers will be added, as required by
+	 * the WMS spec.
+	 * @return a layer data corresponding to the query, never null
+	 * @throws OWSException
+	 */
+	LayerData infoQuery(LayerQuery query, List<String> headers) throws OWSException;
 
-    /**
-     * Should be called by layer stores upon workspace destruction.
-     */
-    void destroy();
+	/**
+	 * Should be called by layer stores upon workspace destruction.
+	 */
+	void destroy();
 
-    /**
-     * Returns whether the given {@link StyleRef} can be applied when rendering this layer.
-     * 
-     * @param style
-     *            style, must not be <code>null</code>
-     * @return <code>true</code>, if the style can be applied, <code>false</code> otherwise
-     */
-    boolean isStyleApplicable( StyleRef style );
+	/**
+	 * Returns whether the given {@link StyleRef} can be applied when rendering this
+	 * layer.
+	 * @param style style, must not be <code>null</code>
+	 * @return <code>true</code>, if the style can be applied, <code>false</code>
+	 * otherwise
+	 */
+	boolean isStyleApplicable(StyleRef style);
+
 }

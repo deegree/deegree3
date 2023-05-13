@@ -38,15 +38,16 @@ package org.deegree.remoteows;
 import org.deegree.workspace.Resource;
 
 /**
- * Workspace {@link Resource} that defines the access to a remote OGC Web Service instance.
- * 
+ * Workspace {@link Resource} that defines the access to a remote OGC Web Service
+ * instance.
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public interface RemoteOWS extends Resource {
 
-    // probably does not make much sense to define something here, as the services are very different
+	// probably does not make much sense to define something here, as the services are
+	// very different
 
 }

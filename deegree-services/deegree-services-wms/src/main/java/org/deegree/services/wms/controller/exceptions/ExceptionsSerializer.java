@@ -43,27 +43,21 @@ import org.deegree.services.controller.utils.HttpResponseBuffer;
 
 /**
  * Serializer of exceptions.
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
 public interface ExceptionsSerializer {
 
-    /**
-     * Serializes a {@link OWSException} to the {@link HttpResponseBuffer}.
-     * 
-     * @param response
-     *            never <code>null</code>
-     * @param exeptionToSerialize
-     *            never <code>null</code>
-     * @param exceptionSerializer
-     *            default {@link XMLExceptionSerializer}, never <code>null</code>
-     * @param parameterMap
-     *            contains the request map, never <code>null</code>
-     * @throws SerializingException
-     *             if the serialization failed
-     */
-    void serializeException( HttpResponseBuffer response, OWSException exeptionToSerialize,
-                             XMLExceptionSerializer exceptionSerializer, Map<String, String> parameterMap )
-                            throws SerializingException;
+	/**
+	 * Serializes a {@link OWSException} to the {@link HttpResponseBuffer}.
+	 * @param response never <code>null</code>
+	 * @param exeptionToSerialize never <code>null</code>
+	 * @param exceptionSerializer default {@link XMLExceptionSerializer}, never
+	 * <code>null</code>
+	 * @param parameterMap contains the request map, never <code>null</code>
+	 * @throws SerializingException if the serialization failed
+	 */
+	void serializeException(HttpResponseBuffer response, OWSException exeptionToSerialize,
+			XMLExceptionSerializer exceptionSerializer, Map<String, String> parameterMap) throws SerializingException;
 
 }

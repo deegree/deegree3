@@ -31,13 +31,12 @@ import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
  * SPI provider class for tile stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public abstract class TileStoreProvider extends AbstractResourceProvider<TileStore> {
 
-    // specifies type parameter
+	// specifies type parameter
 
 }

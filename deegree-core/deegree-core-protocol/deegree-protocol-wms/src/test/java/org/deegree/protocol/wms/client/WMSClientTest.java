@@ -48,35 +48,34 @@ import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.junit.Test;
 
 /**
- * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lgoltz $
- * 
  * @version $Revision: 31860 $, $Date: 2011-09-13 15:11:47 +0200 (Di, 13. Sep 2011) $
  */
 
 public class WMSClientTest {
 
-    @Test
-    public void testWMS111InstantiationWithXMLAdapter()
-                            throws XMLProcessingException, IOException, OWSExceptionReport, XMLStreamException {
-        InputStream is = WMSClientTest.class.getResourceAsStream( "wms111.xml" );
-        new WMSClient( new XMLAdapter( is ) );
-    }
+	@Test
+	public void testWMS111InstantiationWithXMLAdapter()
+			throws XMLProcessingException, IOException, OWSExceptionReport, XMLStreamException {
+		InputStream is = WMSClientTest.class.getResourceAsStream("wms111.xml");
+		new WMSClient(new XMLAdapter(is));
+	}
 
-    @Test
-    public void testWMS130InstantiationWithXMLAdapter()
-                            throws XMLProcessingException, IOException, OWSExceptionReport, XMLStreamException {
-        InputStream is = WMSClientTest.class.getResourceAsStream( "wms130.xml" );
-        new WMSClient( new XMLAdapter( is ) );
-    }
+	@Test
+	public void testWMS130InstantiationWithXMLAdapter()
+			throws XMLProcessingException, IOException, OWSExceptionReport, XMLStreamException {
+		InputStream is = WMSClientTest.class.getResourceAsStream("wms130.xml");
+		new WMSClient(new XMLAdapter(is));
+	}
 
-    @Test
-    public void testWMS111InstantiationFromUrl()
-                            throws OWSExceptionReport, XMLStreamException, MalformedURLException, IOException {
-        URL capaUrl = new URL(
-                               "https://deegree3-demo.deegree.org/utah-workspace/services?request=GetCapabilities&service=WMS&version=1.1.1" );
-        // TODO: check if demo WMS available
-        new WMSClient( capaUrl );
-    }
+	@Test
+	public void testWMS111InstantiationFromUrl()
+			throws OWSExceptionReport, XMLStreamException, MalformedURLException, IOException {
+		URL capaUrl = new URL(
+				"https://deegree3-demo.deegree.org/utah-workspace/services?request=GetCapabilities&service=WMS&version=1.1.1");
+		// TODO: check if demo WMS available
+		new WMSClient(capaUrl);
+	}
+
 }

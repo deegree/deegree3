@@ -41,9 +41,9 @@ import org.deegree.layer.metadata.LayerMetadata;
  */
 public class LayerVisibilityInspectorTestImpl implements LayerVisibilityInspector {
 
-    @Override
-    public boolean isVisible( LayerMetadata layerMetadata ) {
-        return !"NotVisible".equals( layerMetadata.getName() );
-    }
+	@Override
+	public boolean isVisible(LayerMetadata layerMetadata) {
+		return !"NotVisible".equals(layerMetadata.getName());
+	}
 
 }

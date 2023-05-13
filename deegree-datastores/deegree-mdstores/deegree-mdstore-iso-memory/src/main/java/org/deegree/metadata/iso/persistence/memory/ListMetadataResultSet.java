@@ -43,55 +43,50 @@ import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.protocol.csw.MetadataStoreException;
 
 /**
- * Implementation of an {@link MetadataResultSet} encapsulating a list of {@link ISORecord}s.
- * 
+ * Implementation of an {@link MetadataResultSet} encapsulating a list of
+ * {@link ISORecord}s.
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
- * 
  * @version $Revision: 30992 $, $Date: 2011-05-31 16:09:20 +0200 (Di, 31. Mai 2011) $
  */
 public class ListMetadataResultSet implements MetadataResultSet<ISORecord> {
 
-    private int requestedRecords = 0;
+	private int requestedRecords = 0;
 
-    private Iterator<ISORecord> iterator;
+	private Iterator<ISORecord> iterator;
 
-    private List<ISORecord> foundRecords;
+	private List<ISORecord> foundRecords;
 
-    ListMetadataResultSet( List<ISORecord> foundRecords ) {
-        this.foundRecords = foundRecords;
-        iterator = foundRecords.iterator();
-    }
+	ListMetadataResultSet(List<ISORecord> foundRecords) {
+		this.foundRecords = foundRecords;
+		iterator = foundRecords.iterator();
+	}
 
-    @Override
-    public void close()
-                            throws MetadataStoreException {
-        // nothing to do
-    }
+	@Override
+	public void close() throws MetadataStoreException {
+		// nothing to do
+	}
 
-    @Override
-    public boolean next()
-                            throws MetadataStoreException {
-        return iterator.hasNext();
-    }
+	@Override
+	public boolean next() throws MetadataStoreException {
+		return iterator.hasNext();
+	}
 
-    @Override
-    public void skip( int rows )
-                            throws MetadataStoreException {
-        throw new UnsupportedOperationException( "skip is not implemented yet" );
-    }
+	@Override
+	public void skip(int rows) throws MetadataStoreException {
+		throw new UnsupportedOperationException("skip is not implemented yet");
+	}
 
-    @Override
-    public synchronized int getRemaining()
-                            throws MetadataStoreException {
-        return foundRecords.size() - requestedRecords;
-    }
+	@Override
+	public synchronized int getRemaining() throws MetadataStoreException {
+		return foundRecords.size() - requestedRecords;
+	}
 
-    @Override
-    public synchronized ISORecord getRecord()
-                            throws MetadataStoreException {
-        requestedRecords++;
-        return iterator.next();
-    }
+	@Override
+	public synchronized ISORecord getRecord() throws MetadataStoreException {
+		requestedRecords++;
+		return iterator.next();
+	}
 
 }

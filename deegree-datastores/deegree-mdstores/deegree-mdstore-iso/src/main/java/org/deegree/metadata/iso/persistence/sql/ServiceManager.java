@@ -43,35 +43,28 @@ import org.deegree.sqldialect.SQLDialect;
 
 /**
  * Provides access to the sql service manager.
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
- * 
  * @version $Revision: $, $Date: $
  */
 public interface ServiceManager {
 
-    /**
-     * A read only service requesting the sql backend.
-     * 
-     * @param dialect
-     *            never <code>null</code>
-     * @param queryables
-     *            may be empty but never <code>null</code>
-     * @return never <code>null</code>
-     */
-    QueryService getQueryService( SQLDialect dialect, List<Queryable> queryables );
+	/**
+	 * A read only service requesting the sql backend.
+	 * @param dialect never <code>null</code>
+	 * @param queryables may be empty but never <code>null</code>
+	 * @return never <code>null</code>
+	 */
+	QueryService getQueryService(SQLDialect dialect, List<Queryable> queryables);
 
-    /**
-     * A service with transactional access to the sql backend.
-     * 
-     * @param dialect
-     *            never <code>null</code>
-     * @param queryables
-     *            may be empty but never <code>null</code>
-     * @param anyTextConfig
-     * @return never <code>null</code>
-     */
-    TransactionService getTransactionService( SQLDialect dialect, List<Queryable> queryables, AnyText anyTextConfig );
+	/**
+	 * A service with transactional access to the sql backend.
+	 * @param dialect never <code>null</code>
+	 * @param queryables may be empty but never <code>null</code>
+	 * @param anyTextConfig
+	 * @return never <code>null</code>
+	 */
+	TransactionService getTransactionService(SQLDialect dialect, List<Queryable> queryables, AnyText anyTextConfig);
 
 }

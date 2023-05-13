@@ -37,28 +37,28 @@ import org.deegree.workspace.Workspace;
 
 /**
  * SPI provider implementation for tile layer stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class TileLayerStoreProvider extends LayerStoreProvider {
 
-    private static final URL SCHEMA = TileLayerStoreProvider.class.getResource( "/META-INF/schemas/layers/tile/tile.xsd" );
+	private static final URL SCHEMA = TileLayerStoreProvider.class
+		.getResource("/META-INF/schemas/layers/tile/tile.xsd");
 
-    @Override
-    public String getNamespace() {
-        return "http://www.deegree.org/layers/tile";
-    }
+	@Override
+	public String getNamespace() {
+		return "http://www.deegree.org/layers/tile";
+	}
 
-    @Override
-    public ResourceMetadata<LayerStore> createFromLocation( Workspace workspace, ResourceLocation<LayerStore> location ) {
-        return new TileLayerStoreMetadata( workspace, location, this );
-    }
+	@Override
+	public ResourceMetadata<LayerStore> createFromLocation(Workspace workspace, ResourceLocation<LayerStore> location) {
+		return new TileLayerStoreMetadata(workspace, location, this);
+	}
 
-    @Override
-    public URL getSchema() {
-        return SCHEMA;
-    }
+	@Override
+	public URL getSchema() {
+		return SCHEMA;
+	}
 
 }

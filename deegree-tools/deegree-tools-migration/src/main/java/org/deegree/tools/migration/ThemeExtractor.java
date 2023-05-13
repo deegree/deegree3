@@ -58,36 +58,34 @@ import org.deegree.workspace.Workspace;
 import org.deegree.workspace.WorkspaceUtils;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
- * 
  * @version $Revision: $, $Date: $
  */
 public class ThemeExtractor {
 
-    private ThemeExtractor() {
-    }
+	private ThemeExtractor() {
+	}
 
-    public static void transform( Workspace workspace )
-                            throws TransformerException, XMLStreamException, URISyntaxException, IOException {
-        OwsManager mgr = workspace.getResourceManager( OwsManager.class );
-        List<OWS> wmss = mgr.getByOWSClass( WMSController.class );
-        for ( OWS ows : wmss ) {
-            ResourceMetadata<? extends Resource> md = ows.getMetadata();
-            ResourceIdentifier<? extends Resource> id = md.getIdentifier();
-            File loc = md.getLocation().resolveToFile( id.getId() + ".xml" );
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+	public static void transform(Workspace workspace)
+			throws TransformerException, XMLStreamException, URISyntaxException, IOException {
+		OwsManager mgr = workspace.getResourceManager(OwsManager.class);
+		List<OWS> wmss = mgr.getByOWSClass(WMSController.class);
+		for (OWS ows : wmss) {
+			ResourceMetadata<? extends Resource> md = ows.getMetadata();
+			ResourceIdentifier<? extends Resource> id = md.getIdentifier();
+			File loc = md.getLocation().resolveToFile(id.getId() + ".xml");
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
-            FileInputStream doc = new FileInputStream( loc );
-            XsltUtils.transform( doc, ThemeExtractor.class.getResource( "extracttheme.xsl" ), bos );
-            doc.close();
+			FileInputStream doc = new FileInputStream(loc);
+			XsltUtils.transform(doc, ThemeExtractor.class.getResource("extracttheme.xsl"), bos);
+			doc.close();
 
-            ThemeXmlStreamEncoder.writeOut( bos );
+			ThemeXmlStreamEncoder.writeOut(bos);
 
-            WorkspaceUtils.activateSynthetic( workspace, ThemeProvider.class, id.getId(),
-                                              new String( bos.toByteArray(), Charset.forName( "UTF-8" ) ) );
-        }
-    }
+			WorkspaceUtils.activateSynthetic(workspace, ThemeProvider.class, id.getId(),
+					new String(bos.toByteArray(), Charset.forName("UTF-8")));
+		}
+	}
 
 }

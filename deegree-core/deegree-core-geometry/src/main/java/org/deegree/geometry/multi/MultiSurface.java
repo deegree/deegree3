@@ -40,19 +40,19 @@ import org.deegree.geometry.primitive.Surface;
 
 /**
  * Specialised aggregation type for {@link Surface} objects.
- * 
+ *
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version. $Revision$, $Date$
  */
 public interface MultiSurface<T extends Surface> extends MultiGeometry<T> {
 
-    /**
-     * The are of all contained {@link Surface}s measured in units of the used {@link CRS}.
-     * 
-     * @return area
-     */
-    public double getArea();
+	/**
+	 * The are of all contained {@link Surface}s measured in units of the used
+	 * {@link CRS}.
+	 * @return area
+	 */
+	public double getArea();
 
 }

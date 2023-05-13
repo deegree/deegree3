@@ -59,75 +59,79 @@ import org.slf4j.Logger;
 
 /**
  * Methods to extract envelope/crs info from imageio metadata objects (GeoTIFF tags).
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
- * 
  * @version $Revision: $, $Date: $
  */
 public class GeoTiffUtils {
 
-    private static final Logger LOG = getLogger( GeoTiffUtils.class );
+	private static final Logger LOG = getLogger(GeoTiffUtils.class);
 
-    public static Envelope getEnvelopeAndCrs( IIOMetadata metaData, int width, int height, ICRS crs ) {
-        GeoTiffIIOMetadataAdapter geoTIFFMetaData = new GeoTiffIIOMetadataAdapter( metaData );
-        try {
-            if ( crs == null ) {
-                int modelType = Integer.valueOf( geoTIFFMetaData.getGeoKey( GeoTiffIIOMetadataAdapter.GTModelTypeGeoKey ) );
-                String epsgCode = null;
-                if ( modelType == GeoTiffIIOMetadataAdapter.ModelTypeProjected ) {
-                    epsgCode = geoTIFFMetaData.getGeoKey( GeoTiffIIOMetadataAdapter.ProjectedCSTypeGeoKey );
-                } else if ( modelType == GeoTiffIIOMetadataAdapter.ModelTypeGeographic ) {
-                    epsgCode = geoTIFFMetaData.getGeoKey( GeoTiffIIOMetadataAdapter.GeographicTypeGeoKey );
-                }
-                if ( epsgCode != null && epsgCode.length() != 0 ) {
-                    try {
-                        CRSRef ref = CRSManager.getCRSRef( "EPSG:" + epsgCode );
-                        ref.getReferencedObject();
-                        crs = ref;
-                    } catch ( ReferenceResolvingException e ) {
-                        LOG.error( "No coordinate system found for EPSG:" + epsgCode );
-                    }
-                }
-            }
-            if ( crs == null ) {
-                throw new ResourceInitException( "No CRS information could be read from GeoTIFF, "
-                                                 + "and none was configured. Please configure a"
-                                                 + " CRS or add one to the GeoTIFF." );
-            }
+	public static Envelope getEnvelopeAndCrs(IIOMetadata metaData, int width, int height, ICRS crs) {
+		GeoTiffIIOMetadataAdapter geoTIFFMetaData = new GeoTiffIIOMetadataAdapter(metaData);
+		try {
+			if (crs == null) {
+				int modelType = Integer.valueOf(geoTIFFMetaData.getGeoKey(GeoTiffIIOMetadataAdapter.GTModelTypeGeoKey));
+				String epsgCode = null;
+				if (modelType == GeoTiffIIOMetadataAdapter.ModelTypeProjected) {
+					epsgCode = geoTIFFMetaData.getGeoKey(GeoTiffIIOMetadataAdapter.ProjectedCSTypeGeoKey);
+				}
+				else if (modelType == GeoTiffIIOMetadataAdapter.ModelTypeGeographic) {
+					epsgCode = geoTIFFMetaData.getGeoKey(GeoTiffIIOMetadataAdapter.GeographicTypeGeoKey);
+				}
+				if (epsgCode != null && epsgCode.length() != 0) {
+					try {
+						CRSRef ref = CRSManager.getCRSRef("EPSG:" + epsgCode);
+						ref.getReferencedObject();
+						crs = ref;
+					}
+					catch (ReferenceResolvingException e) {
+						LOG.error("No coordinate system found for EPSG:" + epsgCode);
+					}
+				}
+			}
+			if (crs == null) {
+				throw new ResourceInitException("No CRS information could be read from GeoTIFF, "
+						+ "and none was configured. Please configure a" + " CRS or add one to the GeoTIFF.");
+			}
 
-            return getEnvelope( metaData, width, height, crs );
-        } catch ( UnsupportedOperationException ex ) {
-            LOG.debug( "couldn't read crs information in GeoTIFF" );
-        }
-        return null;
-    }
+			return getEnvelope(metaData, width, height, crs);
+		}
+		catch (UnsupportedOperationException ex) {
+			LOG.debug("couldn't read crs information in GeoTIFF");
+		}
+		return null;
+	}
 
-    public static Envelope getEnvelope( IIOMetadata metaData, int width, int height, ICRS crs ) {
-        GeoTiffIIOMetadataAdapter geoTIFFMetaData = new GeoTiffIIOMetadataAdapter( metaData );
-        try {
-            double[] tiePoints = geoTIFFMetaData.getModelTiePoints();
-            double[] scale = geoTIFFMetaData.getModelPixelScales();
-            if ( tiePoints != null && scale != null ) {
+	public static Envelope getEnvelope(IIOMetadata metaData, int width, int height, ICRS crs) {
+		GeoTiffIIOMetadataAdapter geoTIFFMetaData = new GeoTiffIIOMetadataAdapter(metaData);
+		try {
+			double[] tiePoints = geoTIFFMetaData.getModelTiePoints();
+			double[] scale = geoTIFFMetaData.getModelPixelScales();
+			if (tiePoints != null && scale != null) {
 
-                RasterGeoReference rasterReference;
-                if ( Math.abs( scale[0] - 0.5 ) < 0.001 ) { // when first pixel tie point is 0.5 -> center type
-                    // rb: this might not always be right, see examples at
-                    // http://www.remotesensing.org/geotiff/spec/geotiff3.html#3.2.1.
-                    // search for PixelIsArea/PixelIsPoint to determine center/outer
-                    rasterReference = new RasterGeoReference( CENTER, scale[0], -scale[1], tiePoints[3], tiePoints[4],
-                                                              crs );
-                } else {
-                    rasterReference = new RasterGeoReference( OUTER, scale[0], -scale[1], tiePoints[3], tiePoints[4],
-                                                              crs );
-                }
-                return rasterReference.getEnvelope( OUTER, width, height, crs );
-            }
+				RasterGeoReference rasterReference;
+				if (Math.abs(scale[0] - 0.5) < 0.001) { // when first pixel tie point is
+														// 0.5 -> center type
+					// rb: this might not always be right, see examples at
+					// http://www.remotesensing.org/geotiff/spec/geotiff3.html#3.2.1.
+					// search for PixelIsArea/PixelIsPoint to determine center/outer
+					rasterReference = new RasterGeoReference(CENTER, scale[0], -scale[1], tiePoints[3], tiePoints[4],
+							crs);
+				}
+				else {
+					rasterReference = new RasterGeoReference(OUTER, scale[0], -scale[1], tiePoints[3], tiePoints[4],
+							crs);
+				}
+				return rasterReference.getEnvelope(OUTER, width, height, crs);
+			}
 
-        } catch ( UnsupportedOperationException ex ) {
-            LOG.debug( "couldn't read crs information in GeoTIFF" );
-        }
-        return null;
-    }
+		}
+		catch (UnsupportedOperationException ex) {
+			LOG.debug("couldn't read crs information in GeoTIFF");
+		}
+		return null;
+	}
 
 }

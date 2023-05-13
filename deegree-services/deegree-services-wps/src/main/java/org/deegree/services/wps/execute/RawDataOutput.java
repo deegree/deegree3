@@ -37,34 +37,31 @@
 package org.deegree.services.wps.execute;
 
 /**
- * Indicates that a single output parameter shall be returned directly as raw data without an encapsulating WPS response
- * document.
- * 
+ * Indicates that a single output parameter shall be returned directly as raw data without
+ * an encapsulating WPS response document.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- * 
  * @version $Revision: $, $Date: $
  */
 public class RawDataOutput implements ResponseForm {
 
-    private RequestedOutput output;
+	private RequestedOutput output;
 
-    /**
-     * Creates a new {@link RawDataOutput} instance.
-     * 
-     * @param output
-     *            settings for the output format, must not be <code>null</code>
-     */
-    RawDataOutput( RequestedOutput output ) {
-        this.output = output;
-    }
+	/**
+	 * Creates a new {@link RawDataOutput} instance.
+	 * @param output settings for the output format, must not be <code>null</code>
+	 */
+	RawDataOutput(RequestedOutput output) {
+		this.output = output;
+	}
 
-    /**
-     * Returns the settings for the output format.
-     * 
-     * @return the output format setttings, never <code>null</code>
-     */
-    public RequestedOutput getRequestedOutput() {
-        return output;
-    }
+	/**
+	 * Returns the settings for the output format.
+	 * @return the output format setttings, never <code>null</code>
+	 */
+	public RequestedOutput getRequestedOutput() {
+		return output;
+	}
+
 }

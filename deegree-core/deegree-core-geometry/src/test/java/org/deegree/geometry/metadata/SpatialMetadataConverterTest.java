@@ -52,22 +52,22 @@ import static org.junit.Assert.assertThat;
  */
 public class SpatialMetadataConverterTest {
 
-    @Test
-    public void testConvertEnvelopeFromJaxb() throws JAXBException {
-        EnvelopeType env = createEnvelopeType();
-        Envelope envelope = SpatialMetadataConverter.fromJaxb(env);
-        assertThat(envelope.getMin().get(0), is(8.3));
-        assertThat(envelope.getMin().get(1), is(53.2));
-        assertThat(envelope.getMax().get(0), is(10.4));
-        assertThat(envelope.getMax().get(1), is(54.0));
+	@Test
+	public void testConvertEnvelopeFromJaxb() throws JAXBException {
+		EnvelopeType env = createEnvelopeType();
+		Envelope envelope = SpatialMetadataConverter.fromJaxb(env);
+		assertThat(envelope.getMin().get(0), is(8.3));
+		assertThat(envelope.getMin().get(1), is(53.2));
+		assertThat(envelope.getMax().get(0), is(10.4));
+		assertThat(envelope.getMax().get(1), is(54.0));
 
-    }
+	}
 
-    private EnvelopeType createEnvelopeType() throws JAXBException {
-        JAXBContext jc = JAXBContext.newInstance(EnvelopeType.class);
-        Unmarshaller unmarshaller = jc.createUnmarshaller();
-        InputStream resourceAsStream = getClass().getResourceAsStream("envelope.xml");
-        return unmarshaller.unmarshal(new StreamSource(resourceAsStream), EnvelopeType.class).getValue();
-    }
+	private EnvelopeType createEnvelopeType() throws JAXBException {
+		JAXBContext jc = JAXBContext.newInstance(EnvelopeType.class);
+		Unmarshaller unmarshaller = jc.createUnmarshaller();
+		InputStream resourceAsStream = getClass().getResourceAsStream("envelope.xml");
+		return unmarshaller.unmarshal(new StreamSource(resourceAsStream), EnvelopeType.class).getValue();
+	}
 
 }

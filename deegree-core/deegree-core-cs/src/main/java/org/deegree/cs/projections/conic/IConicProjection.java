@@ -39,23 +39,25 @@ import org.deegree.cs.projections.IProjection;
 
 /**
  * Interface describing a ConicProjection
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  * @author last edited by: $Author: lyn $
- * 
  * @version $Revision: $, $Date: $
  */
 public interface IConicProjection extends IProjection {
 
-    /**
-     * @return the latitude of the first parallel which is the intersection of the earth with the cone or the
-     *         projectionLatitude if the cone is tangential with earth (e.g. one standard parallel).
-     */
-    double getFirstParallelLatitude();
+	/**
+	 * @return the latitude of the first parallel which is the intersection of the earth
+	 * with the cone or the projectionLatitude if the cone is tangential with earth (e.g.
+	 * one standard parallel).
+	 */
+	double getFirstParallelLatitude();
 
-    /**
-     * @return the latitude of the first parallel which is the intersection of the earth with the cone or the
-     *         projectionLatitude if the cone is tangential with earth (e.g. one standard parallel).
-     */
-    double getSecondParallelLatitude();
+	/**
+	 * @return the latitude of the first parallel which is the intersection of the earth
+	 * with the cone or the projectionLatitude if the cone is tangential with earth (e.g.
+	 * one standard parallel).
+	 */
+	double getSecondParallelLatitude();
+
 }

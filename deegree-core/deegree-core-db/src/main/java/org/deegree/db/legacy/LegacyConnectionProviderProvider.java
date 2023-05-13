@@ -51,30 +51,29 @@ import org.deegree.workspace.Workspace;
 
 /**
  * Provider for legacy connection providers.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
- * 
  * @version $Revision: $, $Date: $
  */
 public class LegacyConnectionProviderProvider extends ConnectionProviderProvider {
 
-    static final URL SCHEMA_URL = LegacyConnectionProviderProvider.class.getResource( "/META-INF/schemas/jdbc/jdbc.xsd" );
+	static final URL SCHEMA_URL = LegacyConnectionProviderProvider.class.getResource("/META-INF/schemas/jdbc/jdbc.xsd");
 
-    @Override
-    public String getNamespace() {
-        return "http://www.deegree.org/jdbc";
-    }
+	@Override
+	public String getNamespace() {
+		return "http://www.deegree.org/jdbc";
+	}
 
-    @Override
-    public ResourceMetadata<ConnectionProvider> createFromLocation( Workspace workspace,
-                                                                    ResourceLocation<ConnectionProvider> location ) {
-        return new LegacyConnectionProviderMetadata( workspace, location, this );
-    }
+	@Override
+	public ResourceMetadata<ConnectionProvider> createFromLocation(Workspace workspace,
+			ResourceLocation<ConnectionProvider> location) {
+		return new LegacyConnectionProviderMetadata(workspace, location, this);
+	}
 
-    @Override
-    public URL getSchema() {
-        return SCHEMA_URL;
-    }
+	@Override
+	public URL getSchema() {
+		return SCHEMA_URL;
+	}
 
 }

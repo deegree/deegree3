@@ -43,15 +43,15 @@ import org.deegree.commons.version.DeegreeModuleInfo;
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
  * @version $Revision: $, $Date: $
  */
 public class TestModuleInfo extends DeegreeModuleInfo {
 
-    private static final String MODULE_NAME = "test";
+	private static final String MODULE_NAME = "test";
 
-    @Override
-    public String getName() {
-        return MODULE_NAME;
-    }
+	@Override
+	public String getName() {
+		return MODULE_NAME;
+	}
+
 }

@@ -57,35 +57,35 @@ import org.deegree.workspace.standard.DefaultResourceIdentifier;
 
 /**
  * Resource metadata implementation for ebrim eo metadata stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class EbrimEOMDStoreMetadata extends AbstractResourceMetadata<MetadataStore<? extends MetadataRecord>> {
 
-    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.metadata.persistence.ebrim.eo.jaxb";
+	private static final String CONFIG_JAXB_PACKAGE = "org.deegree.metadata.persistence.ebrim.eo.jaxb";
 
-    public EbrimEOMDStoreMetadata( Workspace workspace,
-                                   ResourceLocation<MetadataStore<? extends MetadataRecord>> location,
-                                   AbstractResourceProvider<MetadataStore<? extends MetadataRecord>> provider ) {
-        super( workspace, location, provider );
-    }
+	public EbrimEOMDStoreMetadata(Workspace workspace,
+			ResourceLocation<MetadataStore<? extends MetadataRecord>> location,
+			AbstractResourceProvider<MetadataStore<? extends MetadataRecord>> provider) {
+		super(workspace, location, provider);
+	}
 
-    @Override
-    public ResourceBuilder<MetadataStore<? extends MetadataRecord>> prepare() {
-        EbrimEOMDStoreConfig storeConfig;
-        try {
-            storeConfig = (EbrimEOMDStoreConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, provider.getSchema(),
-                                                                       location.getAsStream(), workspace );
-            dependencies.add( new DefaultResourceIdentifier<ConnectionProvider>( ConnectionProviderProvider.class,
-                                                                                 storeConfig.getJDBCConnId() ) );
+	@Override
+	public ResourceBuilder<MetadataStore<? extends MetadataRecord>> prepare() {
+		EbrimEOMDStoreConfig storeConfig;
+		try {
+			storeConfig = (EbrimEOMDStoreConfig) JAXBUtils.unmarshall(CONFIG_JAXB_PACKAGE, provider.getSchema(),
+					location.getAsStream(), workspace);
+			dependencies.add(new DefaultResourceIdentifier<ConnectionProvider>(ConnectionProviderProvider.class,
+					storeConfig.getJDBCConnId()));
 
-            return new EbrimEOMDStoreBuilder( this, workspace, storeConfig );
-        } catch ( Exception e ) {
-            String msg = Messages.getMessage( "ERROR_IN_CONFIG_FILE", location.getIdentifier(), e.getMessage() );
-            throw new ResourceInitException( msg, e );
-        }
-    }
+			return new EbrimEOMDStoreBuilder(this, workspace, storeConfig);
+		}
+		catch (Exception e) {
+			String msg = Messages.getMessage("ERROR_IN_CONFIG_FILE", location.getIdentifier(), e.getMessage());
+			throw new ResourceInitException(msg, e);
+		}
+	}
 
 }

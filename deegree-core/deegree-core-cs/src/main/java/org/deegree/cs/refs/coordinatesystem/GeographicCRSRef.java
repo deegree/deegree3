@@ -41,37 +41,34 @@ import org.deegree.cs.coordinatesystems.IGeographicCRS;
 
 /**
  * {@link CRSRef} to a {@link GeographicCRS}
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  * @author last edited by: $Author: lyn $
- * 
  * @version $Revision: $, $Date: $
  */
 public class GeographicCRSRef extends CRSRef implements IGeographicCRS {
 
-    private static final long serialVersionUID = 2668656767770037914L;
+	private static final long serialVersionUID = 2668656767770037914L;
 
-    /**
-     * Creates a reference to a {@link GeographicCRS}.
-     * 
-     * @param resolver
-     *            used for resolving the reference, must not be <code>null</code>
-     * @param uri
-     *            the object's uri, must not be <code>null</code>
-     * @param baseURL
-     *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
-     */
-    public GeographicCRSRef( ReferenceResolver resolver, String uri, String baseURL ) {
-        super( resolver, uri, baseURL );
-    }
+	/**
+	 * Creates a reference to a {@link GeographicCRS}.
+	 * @param resolver used for resolving the reference, must not be <code>null</code>
+	 * @param uri the object's uri, must not be <code>null</code>
+	 * @param baseURL base URL for resolving the uri, may be <code>null</code> (no
+	 * resolving of relative URLs)
+	 */
+	public GeographicCRSRef(ReferenceResolver resolver, String uri, String baseURL) {
+		super(resolver, uri, baseURL);
+	}
 
-    @Override
-    public GeographicCRS getReferencedObject() {
-        return (GeographicCRS) super.getReferencedObject();
-    }
+	@Override
+	public GeographicCRS getReferencedObject() {
+		return (GeographicCRS) super.getReferencedObject();
+	}
 
-    @Override
-    public boolean equals( Object obj ) {
-        return super.equals( obj ) ? true : getReferencedObject().equals( obj );
-    }
+	@Override
+	public boolean equals(Object obj) {
+		return super.equals(obj) ? true : getReferencedObject().equals(obj);
+	}
+
 }

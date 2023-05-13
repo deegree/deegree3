@@ -48,58 +48,58 @@ import org.slf4j.LoggerFactory;
 
 /**
  * {@link StorageLocation} for process outputs.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- * 
  * @version $Revision: $, $Date: $
  */
 public class OutputStorage extends StorageLocation {
 
-    private static final Logger LOG = LoggerFactory.getLogger( OutputStorage.class );
+	private static final Logger LOG = LoggerFactory.getLogger(OutputStorage.class);
 
-    OutputStorage( File file, String id, String mimeType ) throws IOException {
-        super( file, id, mimeType );
-        storeMimeType();
-    }
+	OutputStorage(File file, String id, String mimeType) throws IOException {
+		super(file, id, mimeType);
+		storeMimeType();
+	}
 
-    OutputStorage( File file, String id ) throws IOException {
-        super( file, id, null );
-        this.mimeType = retrieveMimeType();
-    }
+	OutputStorage(File file, String id) throws IOException {
+		super(file, id, null);
+		this.mimeType = retrieveMimeType();
+	}
 
-    public String getWebURL() {
-        String url = OGCFrontController.getHttpGetURL() + "service=WPS&version=1.0.0&request=GetOutput&identifier="
-                     + id;
-        return url;
-    }
+	public String getWebURL() {
+		String url = OGCFrontController.getHttpGetURL() + "service=WPS&version=1.0.0&request=GetOutput&identifier="
+				+ id;
+		return url;
+	}
 
-    private void storeMimeType()
-                            throws IOException {
-        File mimeInfoFile = new File( file.getPath() + ".mimeinfo" );
-        LOG.debug( "Storing output mime type ('" + mimeType + "') in file '" + mimeInfoFile + "'" );
-        BufferedWriter writer = new BufferedWriter( new FileWriter( mimeInfoFile ) );
-        if ( mimeType == null ) {
-            LOG.warn( "No mimetype specified!? defaulting to text/xml..." );
-            mimeType = "text/xml";
-        }
-        writer.write( mimeType );
-        writer.close();
-    }
+	private void storeMimeType() throws IOException {
+		File mimeInfoFile = new File(file.getPath() + ".mimeinfo");
+		LOG.debug("Storing output mime type ('" + mimeType + "') in file '" + mimeInfoFile + "'");
+		BufferedWriter writer = new BufferedWriter(new FileWriter(mimeInfoFile));
+		if (mimeType == null) {
+			LOG.warn("No mimetype specified!? defaulting to text/xml...");
+			mimeType = "text/xml";
+		}
+		writer.write(mimeType);
+		writer.close();
+	}
 
-    private String retrieveMimeType() {
-        String mimeType = null;
-        File mimeInfoFile = new File( file.getPath() + ".mimeinfo" );
-        LOG.debug( "Retrieving output mime type from file '" + mimeInfoFile + "'" );
-        BufferedReader reader;
-        try {
-            reader = new BufferedReader( new FileReader( mimeInfoFile ) );
-            mimeType = reader.readLine();
-            reader.close();
-        } catch ( IOException e ) {
-            e.printStackTrace();
-        }
-        LOG.debug( "mimeType: " + mimeType );
-        return mimeType;
-    }
+	private String retrieveMimeType() {
+		String mimeType = null;
+		File mimeInfoFile = new File(file.getPath() + ".mimeinfo");
+		LOG.debug("Retrieving output mime type from file '" + mimeInfoFile + "'");
+		BufferedReader reader;
+		try {
+			reader = new BufferedReader(new FileReader(mimeInfoFile));
+			mimeType = reader.readLine();
+			reader.close();
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		LOG.debug("mimeType: " + mimeType);
+		return mimeType;
+	}
+
 }

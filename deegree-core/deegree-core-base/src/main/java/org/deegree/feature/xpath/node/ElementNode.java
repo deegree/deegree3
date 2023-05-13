@@ -41,39 +41,39 @@ import org.deegree.commons.tom.TypedObjectNode;
 
 /**
  * {@link XPathNode} that represents an XML element node.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
  * @version $Revision:$, $Date:$
  */
 public abstract class ElementNode<V extends TypedObjectNode> implements XPathNode<V> {
 
-    private QName name;
+	private QName name;
 
-    protected ElementNode( QName name ) {
-        this.name = name;
-    }
+	protected ElementNode(QName name) {
+		this.name = name;
+	}
 
-    public boolean isElement() {
-        return true;
-    }
+	public boolean isElement() {
+		return true;
+	}
 
-    public String getLocalName() {
-        return name.getLocalPart();
-    }
+	public String getLocalName() {
+		return name.getLocalPart();
+	}
 
-    public String getPrefixedName() {
-        String prefixedName = "";
-        String prefix = name.getPrefix();
-        if ( prefix != null && prefix.length() > 0 ) {
-            prefixedName = prefix + ":";
-        }
-        prefixedName += name.getLocalPart();
-        return prefixedName;
-    }
+	public String getPrefixedName() {
+		String prefixedName = "";
+		String prefix = name.getPrefix();
+		if (prefix != null && prefix.length() > 0) {
+			prefixedName = prefix + ":";
+		}
+		prefixedName += name.getLocalPart();
+		return prefixedName;
+	}
 
-    public String getNamespaceUri() {
-        return name.getNamespaceURI();
-    }
+	public String getNamespaceUri() {
+		return name.getNamespaceURI();
+	}
+
 }

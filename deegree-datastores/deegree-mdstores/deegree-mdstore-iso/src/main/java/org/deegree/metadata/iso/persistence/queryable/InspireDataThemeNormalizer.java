@@ -45,37 +45,37 @@ import org.slf4j.Logger;
 
 /**
  * Replaces written codes (as string) with the code number.
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
- * 
  * @version $Revision: $, $Date: $
  */
 public class InspireDataThemeNormalizer implements QueryableConverter {
 
-    private static final Logger LOG = getLogger( InspireDataThemeNormalizer.class );
+	private static final Logger LOG = getLogger(InspireDataThemeNormalizer.class);
 
-    private static final String pattern = "GEMET[\\s-]*INSPIRE themes.*";
+	private static final String pattern = "GEMET[\\s-]*INSPIRE themes.*";
 
-    private Properties props;
+	private Properties props;
 
-    public InspireDataThemeNormalizer() throws ResourceInitException {
-        props = new Properties();
-        try {
-            props.load( InspireDataThemeNormalizer.class.getResourceAsStream( "inspireThemes.properties" ) );
-        } catch ( IOException e ) {
-            throw new ResourceInitException( "Could not load properties file 'inspireThemes.properties'", e );
-        }
-    }
+	public InspireDataThemeNormalizer() throws ResourceInitException {
+		props = new Properties();
+		try {
+			props.load(InspireDataThemeNormalizer.class.getResourceAsStream("inspireThemes.properties"));
+		}
+		catch (IOException e) {
+			throw new ResourceInitException("Could not load properties file 'inspireThemes.properties'", e);
+		}
+	}
 
-    @Override
-    public String convert( String toConvert ) {
-        String converted = toConvert;
-        if ( props != null ) {
-            converted = props.getProperty( toConvert, toConvert );
-            LOG.debug( "Replace {} with {}.", toConvert, converted );
-        }
-        return converted;
-    }
+	@Override
+	public String convert(String toConvert) {
+		String converted = toConvert;
+		if (props != null) {
+			converted = props.getProperty(toConvert, toConvert);
+			LOG.debug("Replace {} with {}.", toConvert, converted);
+		}
+		return converted;
+	}
 
 }

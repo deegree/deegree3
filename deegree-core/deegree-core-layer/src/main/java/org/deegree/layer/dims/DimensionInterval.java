@@ -38,10 +38,9 @@ package org.deegree.layer.dims;
 
 /**
  * <code>DimensionInterval</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author: aschmitz $
- * 
  * @version $Revision: 32241 $, $Date: 2011-10-21 15:06:29 +0200 (Fri, 21 Oct 2011) $
  * @param <T>
  * @param <U>
@@ -49,29 +48,29 @@ package org.deegree.layer.dims;
  */
 public class DimensionInterval<T, U, V> {
 
-    /***/
-    public T min;
+	/***/
+	public T min;
 
-    /***/
-    public U max;
+	/***/
+	public U max;
 
-    /***/
-    public V res;
+	/***/
+	public V res;
 
-    /**
-     * @param min
-     * @param max
-     * @param res
-     */
-    public DimensionInterval( T min, U max, V res ) {
-        this.min = min;
-        this.max = max;
-        this.res = res;
-    }
+	/**
+	 * @param min
+	 * @param max
+	 * @param res
+	 */
+	public DimensionInterval(T min, U max, V res) {
+		this.min = min;
+		this.max = max;
+		this.res = res;
+	}
 
-    @Override
-    public String toString() {
-        return min + "/" + max + "/" + res;
-    }
+	@Override
+	public String toString() {
+		return min + "/" + max + "/" + res;
+	}
 
 }

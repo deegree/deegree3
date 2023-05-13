@@ -14,48 +14,44 @@ import static org.mockito.Mockito.when;
  */
 public class MultipleReferencePatternMatcherTest {
 
-    @Test
-    public void testIsMatching_oneTrue()
-                            throws Exception {
-        MultipleReferencePatternMatcher matcher = new MultipleReferencePatternMatcher();
-        matcher.addMatcherToApply( mockMatcher( true ) );
-        matcher.addMatcherToApply( mockMatcher( false ) );
+	@Test
+	public void testIsMatching_oneTrue() throws Exception {
+		MultipleReferencePatternMatcher matcher = new MultipleReferencePatternMatcher();
+		matcher.addMatcherToApply(mockMatcher(true));
+		matcher.addMatcherToApply(mockMatcher(false));
 
-        assertThat( matcher.isMatching( "test" ), is( true ) );
-    }
+		assertThat(matcher.isMatching("test"), is(true));
+	}
 
-    @Test
-    public void testIsMatching_allTrue()
-                            throws Exception {
-        MultipleReferencePatternMatcher matcher = new MultipleReferencePatternMatcher();
-        matcher.addMatcherToApply( mockMatcher( true ) );
-        matcher.addMatcherToApply( mockMatcher( true ) );
+	@Test
+	public void testIsMatching_allTrue() throws Exception {
+		MultipleReferencePatternMatcher matcher = new MultipleReferencePatternMatcher();
+		matcher.addMatcherToApply(mockMatcher(true));
+		matcher.addMatcherToApply(mockMatcher(true));
 
-        assertThat( matcher.isMatching( "test" ), is( true ) );
-    }
+		assertThat(matcher.isMatching("test"), is(true));
+	}
 
-    @Test
-    public void testIsMatching_allFalse()
-                            throws Exception {
-        MultipleReferencePatternMatcher matcher = new MultipleReferencePatternMatcher();
-        matcher.addMatcherToApply( mockMatcher( false ) );
-        matcher.addMatcherToApply( mockMatcher( false ) );
+	@Test
+	public void testIsMatching_allFalse() throws Exception {
+		MultipleReferencePatternMatcher matcher = new MultipleReferencePatternMatcher();
+		matcher.addMatcherToApply(mockMatcher(false));
+		matcher.addMatcherToApply(mockMatcher(false));
 
-        assertThat( matcher.isMatching( "test" ), is( false ) );
-    }
+		assertThat(matcher.isMatching("test"), is(false));
+	}
 
-    @Test
-    public void testIsMatching_noMatchers()
-                            throws Exception {
-        MultipleReferencePatternMatcher matcher = new MultipleReferencePatternMatcher();
+	@Test
+	public void testIsMatching_noMatchers() throws Exception {
+		MultipleReferencePatternMatcher matcher = new MultipleReferencePatternMatcher();
 
-        assertThat( matcher.isMatching( "test" ), is( false ) );
-    }
+		assertThat(matcher.isMatching("test"), is(false));
+	}
 
-    private ReferencePatternMatcher mockMatcher( boolean isMatching ) {
-        ReferencePatternMatcher mock = mock( ReferencePatternMatcher.class );
-        when( mock.isMatching( anyString() ) ).thenReturn( isMatching );
-        return mock;
-    }
+	private ReferencePatternMatcher mockMatcher(boolean isMatching) {
+		ReferencePatternMatcher mock = mock(ReferencePatternMatcher.class);
+		when(mock.isMatching(anyString())).thenReturn(isMatching);
+		return mock;
+	}
 
 }

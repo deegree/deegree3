@@ -68,71 +68,73 @@ import org.slf4j.Logger;
 
 /**
  * Responsible for building legend models.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
- * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 class LegendBuilder {
 
-    private static final Logger LOG = getLogger( LegendBuilder.class );
+	private static final Logger LOG = getLogger(LegendBuilder.class);
 
-    private GeometryFactory geofac = new GeometryFactory();
+	private GeometryFactory geofac = new GeometryFactory();
 
-    private LegendOptions opts;
+	private LegendOptions opts;
 
-    LegendBuilder( LegendOptions opts ) {
-        this.opts = opts;
-    }
+	LegendBuilder(LegendOptions opts) {
+		this.opts = opts;
+	}
 
-    List<LegendItem> prepareLegend( Style style, Graphics2D g, int width, int height ) {
-        Pair<Integer, Integer> p = getLegendSize( style );
-        Envelope box = geofac.createEnvelope( 0, 0, p.first, p.second, null );
-        Java2DRenderer renderer = new Java2DRenderer( g, width, height, box );
-        Java2DTextRenderer textRenderer = new Java2DTextRenderer( renderer );
-        Java2DRasterRenderer rasterRenderer = new Java2DRasterRenderer( g, width, height, box );
-        return LegendItemBuilder.prepareLegend( style, renderer, textRenderer, rasterRenderer );
-    }
+	List<LegendItem> prepareLegend(Style style, Graphics2D g, int width, int height) {
+		Pair<Integer, Integer> p = getLegendSize(style);
+		Envelope box = geofac.createEnvelope(0, 0, p.first, p.second, null);
+		Java2DRenderer renderer = new Java2DRenderer(g, width, height, box);
+		Java2DTextRenderer textRenderer = new Java2DTextRenderer(renderer);
+		Java2DRasterRenderer rasterRenderer = new Java2DRasterRenderer(g, width, height, box);
+		return LegendItemBuilder.prepareLegend(style, renderer, textRenderer, rasterRenderer);
+	}
 
-    Pair<Integer, Integer> getLegendSize( Style style ) {
-        URL url = style.getLegendURL();
-        File file = style.getLegendFile();
-        if ( url == null ) {
-            if ( file != null ) {
-                try {
-                    url = file.toURI().toURL();
-                } catch ( MalformedURLException e ) {
-                    // nothing to do
-                }
-            }
-        }
-        if ( url != null ) {
-            try {
-                BufferedImage legend = get( IMAGE, url.toExternalForm(), null );
-                if ( legend != null ) {
-                    return new Pair<Integer, Integer>( legend.getWidth(), legend.getHeight() );
-                } else {
-                    LOG.warn( "Legend file {} could not be read, using dynamic legend.", url );
-                }
-            } catch ( IOException e ) {
-                LOG.warn( "Legend file {} could not be read, using dynamic legend: {}", url, e.getLocalizedMessage() );
-                LOG.trace( "Stack trace:", e );
-            }
-        }
-        Pair<Integer, Integer> res = new Pair<Integer, Integer>( 2 * opts.spacing + opts.baseWidth, 0 );
+	Pair<Integer, Integer> getLegendSize(Style style) {
+		URL url = style.getLegendURL();
+		File file = style.getLegendFile();
+		if (url == null) {
+			if (file != null) {
+				try {
+					url = file.toURI().toURL();
+				}
+				catch (MalformedURLException e) {
+					// nothing to do
+				}
+			}
+		}
+		if (url != null) {
+			try {
+				BufferedImage legend = get(IMAGE, url.toExternalForm(), null);
+				if (legend != null) {
+					return new Pair<Integer, Integer>(legend.getWidth(), legend.getHeight());
+				}
+				else {
+					LOG.warn("Legend file {} could not be read, using dynamic legend.", url);
+				}
+			}
+			catch (IOException e) {
+				LOG.warn("Legend file {} could not be read, using dynamic legend: {}", url, e.getLocalizedMessage());
+				LOG.trace("Stack trace:", e);
+			}
+		}
+		Pair<Integer, Integer> res = new Pair<Integer, Integer>(2 * opts.spacing + opts.baseWidth, 0);
 
-        for ( LegendItem item : LegendItemBuilder.prepareLegend( style, null, null, null ) ) {
-            res.second += item.getHeight() * ( 2 * opts.spacing + opts.baseHeight );
-            res.first = max( res.first, item.getMaxWidth( opts ) );
-        }
+		for (LegendItem item : LegendItemBuilder.prepareLegend(style, null, null, null)) {
+			res.second += item.getHeight() * (2 * opts.spacing + opts.baseHeight);
+			res.first = max(res.first, item.getMaxWidth(opts));
+		}
 
-        if ( res.second == 0 ) {
-            // prevent >0 * 0 sized images
-            res.second = 2 * opts.spacing + opts.baseWidth;
-        }
+		if (res.second == 0) {
+			// prevent >0 * 0 sized images
+			res.second = 2 * opts.spacing + opts.baseWidth;
+		}
 
-        return res;
-    }
+		return res;
+	}
 
 }

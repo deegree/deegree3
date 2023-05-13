@@ -53,31 +53,33 @@ import org.locationtech.jts.io.ParseException;
 
 public class WKTLoader implements WellKnownNameLoader {
 
-    private static final Logger LOG = LoggerFactory.getLogger( WKTLoader.class );
+	private static final Logger LOG = LoggerFactory.getLogger(WKTLoader.class);
 
-    public static final String PREFIX = "wkt://";
+	public static final String PREFIX = "wkt://";
 
-    @Override
-    public Shape parse( String wellKnownName, Function<String, URL> resolver ) {
-        if ( wellKnownName == null || !wellKnownName.startsWith( PREFIX ) )
-            return null;
+	@Override
+	public Shape parse(String wellKnownName, Function<String, URL> resolver) {
+		if (wellKnownName == null || !wellKnownName.startsWith(PREFIX))
+			return null;
 
-        String wkn = wellKnownName.substring( PREFIX.length() );
-        Shape s = null;
-        try {
-            EWKTReader reader = new EWKTReader();
-            Geometry geom = reader.read( wkn );
+		String wkn = wellKnownName.substring(PREFIX.length());
+		Shape s = null;
+		try {
+			EWKTReader reader = new EWKTReader();
+			Geometry geom = reader.read(wkn);
 
-            ShapeConverterArc converter = new ShapeConverterArc();
+			ShapeConverterArc converter = new ShapeConverterArc();
 
-            Shape orig = converter.convert( geom );
-            AffineTransform at = AffineTransform.getScaleInstance( 1.0, -1.0 );
-            s = at.createTransformedShape( orig );
-        } catch ( ParseException ex ) {
-            LOG.warn( "Could not Parse WKT {}: {}", wkn, ex.getMessage() );
-            LOG.trace( "Exception", ex );
-        }
+			Shape orig = converter.convert(geom);
+			AffineTransform at = AffineTransform.getScaleInstance(1.0, -1.0);
+			s = at.createTransformedShape(orig);
+		}
+		catch (ParseException ex) {
+			LOG.warn("Could not Parse WKT {}: {}", wkn, ex.getMessage());
+			LOG.trace("Exception", ex);
+		}
 
-        return s;
-    }
+		return s;
+	}
+
 }

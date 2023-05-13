@@ -44,35 +44,34 @@ import org.deegree.style.styling.components.UOM;
 
 /**
  * <code>PointStyling</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author: aschmitz $
- * 
  * @version $Revision: 30169 $, $Date: 2011-03-25 11:49:50 +0100 (Fri, 25 Mar 2011) $
  */
 public class PointStyling implements Styling<PointStyling> {
 
-    /**
-     * The unit of measure for all values.
-     */
-    public UOM uom = Pixel;
+	/**
+	 * The unit of measure for all values.
+	 */
+	public UOM uom = Pixel;
 
-    /**
-     * Default is a SQUARE mark graphic.
-     */
-    public Graphic graphic = new Graphic();
+	/**
+	 * Default is a SQUARE mark graphic.
+	 */
+	public Graphic graphic = new Graphic();
 
-    @Override
-    public PointStyling copy() {
-        PointStyling other = new PointStyling();
-        other.graphic = graphic.copy();
-        other.uom = uom;
-        return other;
-    }
+	@Override
+	public PointStyling copy() {
+		PointStyling other = new PointStyling();
+		other.graphic = graphic.copy();
+		other.uom = uom;
+		return other;
+	}
 
-    @Override
-    public String toString() {
-        return generateToString( this );
-    }
+	@Override
+	public String toString() {
+		return generateToString(this);
+	}
 
 }

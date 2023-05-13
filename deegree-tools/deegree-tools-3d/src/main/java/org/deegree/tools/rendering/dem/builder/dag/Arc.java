@@ -40,49 +40,50 @@ import java.nio.ByteBuffer;
 
 public class Arc {
 
-    public static final int SIZE = org.deegree.rendering.r3d.multiresolution.Arc.SIZE;
+	public static final int SIZE = org.deegree.rendering.r3d.multiresolution.Arc.SIZE;
 
-    int id;
+	int id;
 
-    int sourceNode;
+	int sourceNode;
 
-    int destinationNode;
+	int destinationNode;
 
-    int lowestPatch;
+	int lowestPatch;
 
-    int highestPatch;
+	int highestPatch;
 
-    int nextArcWithSameDestination = -1;
+	int nextArcWithSameDestination = -1;
 
-    int[] locationCodes;
+	int[] locationCodes;
 
-    int[] patchIds;
+	int[] patchIds;
 
-    float error;
+	float error;
 
-    Arc(int id, int sourceNode, int destinationNode) {
-        this.id = id;
-        this.sourceNode = sourceNode;
-        this.destinationNode = destinationNode;
-    }
+	Arc(int id, int sourceNode, int destinationNode) {
+		this.id = id;
+		this.sourceNode = sourceNode;
+		this.destinationNode = destinationNode;
+	}
 
-    private String codeToString(int code) {
-        String s = Integer.toString(code, 2);
-        return s.substring(1);
-    }
+	private String codeToString(int code) {
+		String s = Integer.toString(code, 2);
+		return s.substring(1);
+	}
 
-    public String toString() {
-        StringBuffer sb = new StringBuffer(id + ": ( " + sourceNode + " -> " + destinationNode
-                + ", nextArc: " + nextArcWithSameDestination + ") (");
-        for (int i = 0; i < locationCodes.length; i++) {
-            sb.append(" " + codeToString(locationCodes[i]) + "[" + patchIds[i] + "]");
-        }
-        sb.append(" )");
-        return sb.toString();
-    }
+	public String toString() {
+		StringBuffer sb = new StringBuffer(id + ": ( " + sourceNode + " -> " + destinationNode + ", nextArc: "
+				+ nextArcWithSameDestination + ") (");
+		for (int i = 0; i < locationCodes.length; i++) {
+			sb.append(" " + codeToString(locationCodes[i]) + "[" + patchIds[i] + "]");
+		}
+		sb.append(" )");
+		return sb.toString();
+	}
 
-    void append(ByteBuffer buffer) {
-        org.deegree.rendering.r3d.multiresolution.Arc.store(buffer, sourceNode, destinationNode, lowestPatch, highestPatch,
-                nextArcWithSameDestination, error);
-    }
+	void append(ByteBuffer buffer) {
+		org.deegree.rendering.r3d.multiresolution.Arc.store(buffer, sourceNode, destinationNode, lowestPatch,
+				highestPatch, nextArcWithSameDestination, error);
+	}
+
 }

@@ -37,12 +37,13 @@ package org.deegree.sqldialect.filter;
 
 /**
  * The <code></code> class TODO add class documentation here.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: aschmitz $
- * 
  * @version $Revision: 29163 $, $Date: 2011-01-11 11:39:42 +0100 (Di, 11. Jan 2011) $
  */
 public interface MappingExpression {
-    // marker interface
+
+	// marker interface
+
 }

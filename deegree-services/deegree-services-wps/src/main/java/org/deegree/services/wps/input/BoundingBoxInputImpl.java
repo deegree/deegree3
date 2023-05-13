@@ -45,58 +45,55 @@ import org.deegree.process.jaxb.java.BoundingBoxInputDefinition;
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
  * @version $Revision: $, $Date: $
  */
 public class BoundingBoxInputImpl extends ProcessletInputImpl implements BoundingBoxInput {
 
-    private Envelope value;
+	private Envelope value;
 
-    /**
-     * Creates a new {@link BoundingBoxInputImpl} instance.
-     *
-     * @param definition
-     *            corresponding input definition from process description
-     * @param title
-     *            optional title supplied with the input parameter, may be null
-     * @param summary
-     *            optional narrative description supplied with the input parameter, may be null
-     * @param value
-     *            bounding box value, the srs must be null or supported according to the input definition
-     */
-    public BoundingBoxInputImpl( BoundingBoxInputDefinition definition, LanguageString title, LanguageString summary,
-                                 Envelope value ) {
-        super( definition, title, summary );
-        this.value = value;
-    }
+	/**
+	 * Creates a new {@link BoundingBoxInputImpl} instance.
+	 * @param definition corresponding input definition from process description
+	 * @param title optional title supplied with the input parameter, may be null
+	 * @param summary optional narrative description supplied with the input parameter,
+	 * may be null
+	 * @param value bounding box value, the srs must be null or supported according to the
+	 * input definition
+	 */
+	public BoundingBoxInputImpl(BoundingBoxInputDefinition definition, LanguageString title, LanguageString summary,
+			Envelope value) {
+		super(definition, title, summary);
+		this.value = value;
+	}
 
-    @Override
-    public String getCRSName() {
-        return value.getCoordinateSystem() == null ? null : value.getCoordinateSystem().getAlias();
-    }
+	@Override
+	public String getCRSName() {
+		return value.getCoordinateSystem() == null ? null : value.getCoordinateSystem().getAlias();
+	}
 
-    @Override
-    public double[] getLower() {
-        return value.getMin().getAsArray();
-    }
+	@Override
+	public double[] getLower() {
+		return value.getMin().getAsArray();
+	}
 
-    @Override
-    public double[] getUpper() {
-        return value.getMax().getAsArray();
-    }
+	@Override
+	public double[] getUpper() {
+		return value.getMax().getAsArray();
+	}
 
-    @Override
-    public Envelope getValue() {
-        return value;
-    }
+	@Override
+	public Envelope getValue() {
+		return value;
+	}
 
-    @Override
-    public BoundingBoxInputDefinition getDefinition() {
-        return (BoundingBoxInputDefinition) definition;
-    }
+	@Override
+	public BoundingBoxInputDefinition getDefinition() {
+		return (BoundingBoxInputDefinition) definition;
+	}
 
-    @Override
-    public String toString() {
-        return super.toString() + " (BoundingBoxData), bbox='" + value + "'";
-    }
+	@Override
+	public String toString() {
+		return super.toString() + " (BoundingBoxData), bbox='" + value + "'";
+	}
+
 }

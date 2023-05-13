@@ -37,14 +37,13 @@ package org.deegree.metadata.iso.persistence.queryable;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
- * 
  * @version $Revision: $, $Date: $
  */
 public interface QueryableConverter {
 
-    String convert( String toConvert );
+	String convert(String toConvert);
 
 }
