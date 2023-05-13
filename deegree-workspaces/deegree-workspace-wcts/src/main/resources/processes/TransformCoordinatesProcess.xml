@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ProcessDefinition storeSupported="true" processVersion="1.0.0" statusSupported="false"
   xmlns="http://www.deegree.org/processes/java" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/services/wps http://schemas.deegree.org/core/3.5/processes/java/java.xsd">
+  xsi:schemaLocation="http://www.deegree.org/services/wps https://schemas.deegree.org/core/3.5/processes/java/java.xsd">
   <Identifier>TransformCoordinates</Identifier>
   <JavaClass>org.deegree.services.wps.ap.wcts.TransformCoordinates</JavaClass>
   <Title>Process for transforming a GML geometry from a given sourceCRS to a given targetCRS.</Title>

@@ -2,7 +2,7 @@
 <ISOMetadataStore
 	xmlns="http://www.deegree.org/datasource/metadata/iso19115"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.deegree.org/datasource/metadata/iso19115 http://schemas.deegree.org/core/3.5/datasource/metadata/iso19115/iso19115.xsd">
+	xsi:schemaLocation="http://www.deegree.org/datasource/metadata/iso19115 https://schemas.deegree.org/core/3.5/datasource/metadata/iso19115/iso19115.xsd">
 	  <JDBCConnId>iso_pg_set_up_tables</JDBCConnId>
   <Inspectors>
 	  <FileIdentifierInspector rejectEmpty="true"/>

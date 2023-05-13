@@ -60,9 +60,9 @@ import org.deegree.services.encoding.SupportedEncodings;
  */
 public class Wms130SoapExtendedCapabilitesWriter {
 
-	private static final String SOAPWMS_XSD_LOCATION = "http://schemas.deegree.org/core/3.5/extensions/services/wms/soapwms.xsd";
+	private static final String SOAPWMS_XSD_LOCATION = "https://schemas.deegree.org/core/3.5/extensions/services/wms/soapwms.xsd";
 
-	public static final String SOAPWMS_NS = "http://schemas.deegree.org/extensions/services/wms/1.3.0";
+	public static final String SOAPWMS_NS = "https://schemas.deegree.org/extensions/services/wms/1.3.0";
 
 	public static final String SOAPWMS_PREFIX = "soapwms";
 

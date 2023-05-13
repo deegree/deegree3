@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <deegreeWCS xmlns="http://www.deegree.org/services/wcs" xmlns:xlink="http://www.w3.org/1999/xlink"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:md="http://www.deegree.org/webservices"
-  xsi:schemaLocation="http://www.deegree.org/services/wcs http://schemas.deegree.org/core/3.5/services/wcs/wcs_configuration.xsd">
+  xsi:schemaLocation="http://www.deegree.org/services/wcs https://schemas.deegree.org/core/3.5/services/wcs/wcs_configuration.xsd">
   <ServiceConfiguration>
     <SupportOptions>
       <OutputFormat>tiff</OutputFormat>

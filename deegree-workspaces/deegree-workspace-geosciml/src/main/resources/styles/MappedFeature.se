@@ -2,7 +2,7 @@
 <FeatureTypeStyle xmlns="http://www.opengis.net/se" xmlns:gsml="urn:cgi:xmlns:CGI:GeoSciML:2.0"
   xmlns:app="http://www.deegree.org/app" xmlns:ogc="http://www.opengis.net/ogc" xmlns:sed="http://www.deegree.org/se"
   xmlns:deegreeogc="http://www.deegree.org/ogc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink"
-  xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se http://schemas.deegree.org/core/3.5/se/Symbolizer-deegree.xsd">
+  xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se https://schemas.deegree.org/core/3.5/se/Symbolizer-deegree.xsd">
   <Name>MappedFeature</Name>
   <FeatureTypeName>gsml:MappedFeature</FeatureTypeName>
   <Rule>
