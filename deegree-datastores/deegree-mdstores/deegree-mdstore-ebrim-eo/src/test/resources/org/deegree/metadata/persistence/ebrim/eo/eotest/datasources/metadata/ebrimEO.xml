@@ -1,6 +1,6 @@
 <EbrimEOMDStore xmlns="http://www.deegree.org/datasource/metadata/ebrimEO" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 
-  xsi:schemaLocation="http://www.deegree.org/datasource/metadata/ebrimEO http://schemas.deegree.org/core/3.5/datasource/metadata/ebrimEO/ebrimEO.xsd">
+  xsi:schemaLocation="http://www.deegree.org/datasource/metadata/ebrimEO https://schemas.deegree.org/core/3.5/datasource/metadata/ebrimEO/ebrimEO.xsd">
 
   <!-- [1] Identifier of JDBC connection -->
   <JDBCConnId>rapideye-csw-ebrim</JDBCConnId>

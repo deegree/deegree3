@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<GeoTIFFTileStore xmlns="http://www.deegree.org/datasource/tile/geotiff" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/datasource/tile/geotiff http://schemas.deegree.org/core/3.5/datasource/tile/geotiff/geotiff.xsd">
+<GeoTIFFTileStore xmlns="http://www.deegree.org/datasource/tile/geotiff" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/datasource/tile/geotiff https://schemas.deegree.org/core/3.5/datasource/tile/geotiff/geotiff.xsd">
 
  <TileDataSet>
     <Identifier>utah_ortho</Identifier>

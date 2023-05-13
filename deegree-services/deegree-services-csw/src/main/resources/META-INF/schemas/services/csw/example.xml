@@ -2,7 +2,7 @@
 <deegreeCSW
   xmlns="http://www.deegree.org/services/csw" xmlns:xlink="http://www.w3.org/1999/xlink"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/services/csw http://schemas.deegree.org/core/3.5/services/csw/csw_configuration.xsd">
+  xsi:schemaLocation="http://www.deegree.org/services/csw https://schemas.deegree.org/core/3.5/services/csw/csw_configuration.xsd">
 
   <!-- [0...1] Activated OGC protocol versions, default: latest implementation 
     of CSW spec - 2.0.2 -->

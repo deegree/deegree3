@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Themes xmlns="http://www.deegree.org/themes/standard" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
  xmlns:d="http://www.deegree.org/metadata/description"
-  xmlns:s="http://www.deegree.org/metadata/spatial" xsi:schemaLocation="http://www.deegree.org/themes/standard http://schemas.deegree.org/core/3.5/themes/themes.xsd">
+  xmlns:s="http://www.deegree.org/metadata/spatial" xsi:schemaLocation="http://www.deegree.org/themes/standard https://schemas.deegree.org/core/3.5/themes/themes.xsd">
 
   <LayerStoreId>layerstore</LayerStoreId>
   <LayerStoreId>layerstore2</LayerStoreId>

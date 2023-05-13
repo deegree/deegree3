@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <RemoteWMSThemes xmlns="http://www.deegree.org/themes/remotewms" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                 xsi:schemaLocation="http://www.deegree.org/themes/remotewms http://schemas.deegree.org/core/3.5//themes/remotewms/remotewms.xsd">
+                 xsi:schemaLocation="http://www.deegree.org/themes/remotewms https://schemas.deegree.org/core/3.5/themes/remotewms/remotewms.xsd">
   <RemoteWMSId>d3</RemoteWMSId>
   <LayerStoreId>d3</LayerStoreId>
 </RemoteWMSThemes>

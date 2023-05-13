@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CoverageLayers xmlns="http://www.deegree.org/layers/coverage" xmlns:l="http://www.deegree.org/layers/base" xmlns:d="http://www.deegree.org/metadata/description" xmlns:s="http://www.deegree.org/metadata/spatial" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/layers/coverage http://schemas.deegree.org/core/3.5/layers/coverage/coverage.xsd">
+  xsi:schemaLocation="http://www.deegree.org/layers/coverage https://schemas.deegree.org/core/3.5/layers/coverage/coverage.xsd">
   <CoverageStoreId>utah_geotiff_ortho</CoverageStoreId>
   <CoverageLayer>
     <l:Name>orthophoto</l:Name>

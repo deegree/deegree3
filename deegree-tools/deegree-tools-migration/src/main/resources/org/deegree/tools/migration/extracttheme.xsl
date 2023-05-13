@@ -13,7 +13,7 @@
   </template>
 
   <template match='wms:ServiceConfiguration'>
-    <t:Themes configVersion='3.1.0'>
+    <t:Themes>
       <apply-templates select='.//wms:FeatureStoreId' mode='fstore' />
       <apply-templates mode='layer' />
     </t:Themes>
