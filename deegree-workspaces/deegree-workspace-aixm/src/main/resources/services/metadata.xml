@@ -13,9 +13,9 @@
     <ServiceContact>
       <IndividualName>Gerhard Mercator</IndividualName>
       <PositionName>Geographer</PositionName>
-      <Phone>0123/123456</Phone>
-      <Facsimile>0123/123456</Facsimile>
-      <ElectronicMailAddress>info@deegree.org</ElectronicMailAddress>
+      <Phone>0000/000000</Phone>
+      <Facsimile>0000/000000</Facsimile>
+      <ElectronicMailAddress>info@example.com</ElectronicMailAddress>
       <Address>
         <DeliveryPoint>9450 SW Gemini Dr #42523</DeliveryPoint>
         <City>Beaverton</City>

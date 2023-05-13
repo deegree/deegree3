@@ -16,8 +16,8 @@
       <ows:PositionName>Geographer</ows:PositionName>
       <ows:ContactInfo>
         <ows:Phone>
-          <ows:Voice>0123/123456</ows:Voice>
-          <ows:Facsimile>0123/123456</ows:Facsimile>
+          <ows:Voice>0000/000000</ows:Voice>
+          <ows:Facsimile>0000/000000</ows:Facsimile>
         </ows:Phone>
         <ows:Address>
           <ows:DeliveryPoint>9450 SW Gemini Dr #42523</ows:DeliveryPoint>
@@ -25,7 +25,7 @@
           <ows:AdministrativeArea>OR</ows:AdministrativeArea>
           <ows:PostalCode>97008</ows:PostalCode>
           <ows:Country>USA</ows:Country>
-          <ows:ElectronicMailAddress>info@deegree.org</ows:ElectronicMailAddress>
+          <ows:ElectronicMailAddress>info@example.com</ows:ElectronicMailAddress>
         </ows:Address>
         <ows:OnlineResource xlink:href="http://www.deegree.org" />
         <ows:HoursOfService>24x7</ows:HoursOfService>

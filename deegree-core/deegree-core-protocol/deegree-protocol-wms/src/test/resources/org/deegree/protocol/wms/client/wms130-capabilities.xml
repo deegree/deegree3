@@ -19,9 +19,9 @@
         <PostCode>97008</PostCode>
         <Country>USA</Country>
       </ContactAddress>
-      <ContactVoiceTelephone>0123/123456</ContactVoiceTelephone>
-      <ContactFacsimileTelephone>0123/123456</ContactFacsimileTelephone>
-      <ContactElectronicMailAddress>info@deegree.org</ContactElectronicMailAddress>
+      <ContactVoiceTelephone>0000/000000</ContactVoiceTelephone>
+      <ContactFacsimileTelephone>0000/000000</ContactFacsimileTelephone>
+      <ContactElectronicMailAddress>info@example.com</ContactElectronicMailAddress>
     </ContactInformation>
   </Service>
   <Capability>

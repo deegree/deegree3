@@ -6,9 +6,9 @@
   <dgws:ServiceContact>
    <dgws:IndividualName>Gerhard Mercator</dgws:IndividualName>
    <dgws:PositionName>Geographer</dgws:PositionName>
-   <dgws:Phone>0123/123456</dgws:Phone>
-   <dgws:Facsimile>0123/123456</dgws:Facsimile>
-   <dgws:ElectronicMailAddress>info@deegree.org</dgws:ElectronicMailAddress>
+   <dgws:Phone>0000/000000</dgws:Phone>
+   <dgws:Facsimile>0000/000000</dgws:Facsimile>
+   <dgws:ElectronicMailAddress>info@example.com</dgws:ElectronicMailAddress>
    <dgws:Address>
     <dgws:DeliveryPoint>9450 SW Gemini Dr #42523</dgws:DeliveryPoint>
     <dgws:City>Beaverton</dgws:City>

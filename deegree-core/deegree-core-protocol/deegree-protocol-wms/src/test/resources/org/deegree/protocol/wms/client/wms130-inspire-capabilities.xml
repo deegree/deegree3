@@ -27,9 +27,9 @@
         <wms:PostCode>97008</wms:PostCode>
         <wms:Country>USA</wms:Country>
       </wms:ContactAddress>
-      <wms:ContactVoiceTelephone>0123/123456</wms:ContactVoiceTelephone>
-      <wms:ContactFacsimileTelephone>0123/123456</wms:ContactFacsimileTelephone>
-      <wms:ContactElectronicMailAddress>info@deegree.org</wms:ContactElectronicMailAddress>
+      <wms:ContactVoiceTelephone>0000/000000</wms:ContactVoiceTelephone>
+      <wms:ContactFacsimileTelephone>0000/000000</wms:ContactFacsimileTelephone>
+      <wms:ContactElectronicMailAddress>info@example.com</wms:ContactElectronicMailAddress>
     </wms:ContactInformation>
     <wms:Fees xmlns:wms="http://www.opengis.net/wms">none</wms:Fees>
     <wms:AccessConstraints xmlns:wms="http://www.opengis.net/wms">none</wms:AccessConstraints>
