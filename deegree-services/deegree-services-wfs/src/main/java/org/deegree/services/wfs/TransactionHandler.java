@@ -707,8 +707,10 @@ class TransactionHandler {
 
         FeatureStoreTransaction ta = acquireTransaction( fs );
         try {
-            String newFid = ta.performReplace( replacementFeature, filter, lock, idGenMode );
-            replaced.add( newFid, replace.getHandle() );
+            List<String> newFids = ta.performReplace( replacementFeature, filter, lock, idGenMode );
+            for (String newFid : newFids){
+                replaced.add( newFid, replace.getHandle() );
+            }
         } catch ( FeatureStoreException e ) {
             throw new OWSException( "Error performing replace: " + e.getMessage(), e, NO_APPLICABLE_CODE );
         }
