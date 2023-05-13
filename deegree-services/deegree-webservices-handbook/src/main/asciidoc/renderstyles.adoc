@@ -645,7 +645,7 @@ deegree supports some extensions of SLD/SE and filter encoding to enable
 more sophisticated styling. The following sections describe the
 respective extensions for SLD/SE and filter encoding. For several
 specific extensions, there is a deegree SE XML
-https://schemas.deegree.org/3.5/se/[Schema].
+https://schemas.deegree.org/core/3.5/se/[Schema].
 
 ==== SLD/SE extensions
 

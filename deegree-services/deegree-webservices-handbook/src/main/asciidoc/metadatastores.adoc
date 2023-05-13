@@ -31,7 +31,7 @@ https://schemas.deegree.org/core/3.5/datasource/metadata/iso19139/memory/memory.
 <ISOMemoryMetadataStore
   xmlns="http://www.deegree.org/datasource/metadata/iso19139/memory"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://schemas.deegree.org/3.5/datasource/metadata/iso19139/memory/memory.xsd">
+  xsi:schemaLocation="http://schemas.deegree.org/core/3.5/datasource/metadata/iso19139/memory/memory.xsd">
   <!-- [1...n] directory to be used -->
   <ISORecordDirectory>..</ISORecordDirectory>
   <!-- [0...1] directory to be used to insert records -->
