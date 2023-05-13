@@ -954,7 +954,7 @@ directory of your workspace and reference the schema in your
 configuration. You can use tools such as https://github.com/mfalaize/schema-fetcher[schema-fetcher] to retrieve all
 schema files and store them locally. You may need to adjust `include` and `import` elements
 to apply the local file references.
-The schemas from https://schemas.opengis.net/ (downloaded at 2023-05-12) are integrated and must not be provided locally.
+The schemas from https://schemas.opengis.net/ (downloaded at 2023-05-12) are already provided internally and must not be stored locally.
 
 In schema-driven mode, the SQL feature store extracts detailed feature
 type definitions and property declarations from GML application schema
