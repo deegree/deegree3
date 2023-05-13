@@ -89,7 +89,6 @@ public class ConnectionProviderUtils {
 			writer.setDefaultNamespace(ns);
 			writer.writeStartElement(ns, "JDBCConnection");
 			writer.writeDefaultNamespace(ns);
-			writer.writeAttribute("configVersion", "3.0.0");
 			writeElement(writer, ns, "Url", url);
 			writeElement(writer, ns, "User", user);
 			writeElement(writer, ns, "Password", pass);

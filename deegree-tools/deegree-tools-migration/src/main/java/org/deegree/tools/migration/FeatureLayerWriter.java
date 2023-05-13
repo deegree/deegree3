@@ -94,7 +94,6 @@ class FeatureLayerWriter {
 			writer.writeNamespace("l", lns);
 			writer.writeNamespace("d", dns);
 			writer.writeNamespace("g", gns);
-			writer.writeAttribute("configVersion", "3.2.0");
 
 			XMLAdapter.writeElement(writer, flns, "FeatureStoreId", id);
 
