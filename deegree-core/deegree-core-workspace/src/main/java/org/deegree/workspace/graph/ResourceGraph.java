@@ -104,7 +104,7 @@ public class ResourceGraph {
         return node;
     }
 
-    public <T extends Resource> void removeNode (ResourceIdentifier<T> id) {
+    public synchronized <T extends Resource> void removeNode (ResourceIdentifier<T> id) {
         nodeMap.remove( id );
         updateDependencies();
     }
@@ -140,7 +140,7 @@ public class ResourceGraph {
      * 
      * @return a sorted list of resource metadata objects, never <code>null</code>
      */
-    public List<ResourceMetadata<? extends Resource>> toSortedList() {
+    public synchronized List<ResourceMetadata<? extends Resource>> toSortedList() {
         // sketch: first add resources without dependencies, then add resources whose dependencies are met until done
         HashSet<ResourceNode<? extends Resource>> nodes = new HashSet<ResourceNode<?>>( nodeMap.values() );
 
