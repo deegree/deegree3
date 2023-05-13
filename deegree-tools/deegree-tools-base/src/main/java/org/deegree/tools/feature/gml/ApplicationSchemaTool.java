@@ -205,7 +205,7 @@ public class ApplicationSchemaTool {
 		// m.setProperty( Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE );
 		// m.setProperty( Marshaller.JAXB_SCHEMA_LOCATION,
 		// "http://www.deegree.org/feature/featuretype
-		// http://schemas.deegree.org/core/3.5/feature/postgis_appschema.xsd"
+		// https://schemas.deegree.org/core/3.5/feature/postgis_appschema.xsd"
 		// );
 		// m.marshal( jaxbSchema, System.out );
 	}
