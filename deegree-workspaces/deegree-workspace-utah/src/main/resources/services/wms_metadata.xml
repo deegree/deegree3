@@ -19,7 +19,7 @@
   </ServiceIdentification>
   <ServiceProvider>
     <ProviderName>deegree</ProviderName>
-    <ProviderSite>deegree.org</ProviderSite>
+    <ProviderSite>http://www.deegree.org</ProviderSite>
     <ServiceContact>
       <IndividualName>Gerhard Mercator</IndividualName>
       <PositionName>Geographer</PositionName>
