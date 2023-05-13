@@ -1142,7 +1142,7 @@
       <dependency>
         <groupId>org.deegree</groupId>
         <artifactId>deegree-ogcschemas</artifactId>
-        <version>20210817</version>
+        <version>20230513</version>
       </dependency>
       <dependency>
         <groupId>javax.mail</groupId>
