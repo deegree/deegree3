@@ -47,19 +47,13 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.CodeType;
-import org.deegree.commons.xml.stax.XMLStreamUtils;
-import org.deegree.protocol.ows.exception.OWSExceptionReader;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
-import org.deegree.protocol.wps.WPSConstants;
 import org.deegree.protocol.wps.WPSConstants.ExecutionState;
 import org.deegree.protocol.wps.client.WPSClient;
 import org.deegree.protocol.wps.client.output.type.OutputType;
@@ -227,16 +221,8 @@ public class ProcessExecution extends AbstractProcessExecution {
             if ( statusLocation == null ) {
                 throw new RuntimeException( "Cannot update status. No statusLocation provided." );
             }
-            LOG.debug( "Polling response document from status location: " + statusLocation );
-            XMLInputFactory inFactory = XMLInputFactory.newInstance();
-            InputStream is = statusLocation.openStream();
-            XMLStreamReader xmlReader = inFactory.createXMLStreamReader( is );
-            XMLStreamUtils.nextElement( xmlReader );
-            if ( OWSExceptionReader.isExceptionReport( xmlReader.getName() ) ) {
-                throw OWSExceptionReader.parseExceptionReport( xmlReader );
-            }
-            ExecuteResponse100Reader reader = new ExecuteResponse100Reader( xmlReader );
-            lastResponse = reader.parse100();
+
+            lastResponse = ExecuteResponse100Reader.createExecutionResponseFromURL( statusLocation );
         }
         return lastResponse.getStatus().getState();
     }
@@ -328,7 +314,6 @@ public class ProcessExecution extends AbstractProcessExecution {
         XMLOutputFactory outFactory = XMLOutputFactory.newInstance();
 
         OutputStream os = conn.getOutputStream();
-        XMLInputFactory inFactory = XMLInputFactory.newInstance();
 
         if ( LOG.isDebugEnabled() ) {
             File logFile = File.createTempFile( "wpsclient", "request.xml" );
@@ -390,20 +375,9 @@ public class ProcessExecution extends AbstractProcessExecution {
         }
 
         // String outputContent = conn.getContentType();
-        // TODO determine XML reader encoding based on mime type
-        XMLStreamReader reader = inFactory.createXMLStreamReader( responseStream );
-        XMLStreamUtils.nextElement( reader );
-        if ( OWSExceptionReader.isExceptionReport( reader.getName() ) ) {
-            throw OWSExceptionReader.parseExceptionReport( reader );
-        }
-        if ( new QName( WPSConstants.WPS_100_NS, "ExecuteResponse" ).equals( reader.getName() ) ) {
-            ExecuteResponse100Reader responseReader = new ExecuteResponse100Reader( reader );
-            lastResponse = responseReader.parse100();
-            reader.close();
 
-        } else {
-            throw new RuntimeException( "Unexpected Execute response: root element is '" + reader.getName() + "'" );
-        }
+        lastResponse = ExecuteResponse100Reader.createExecutionResponseFromStream( responseStream );
+
         return lastResponse;
     }
 }

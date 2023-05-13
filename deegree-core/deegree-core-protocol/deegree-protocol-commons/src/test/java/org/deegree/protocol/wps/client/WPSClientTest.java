@@ -80,6 +80,8 @@ import org.deegree.protocol.wps.client.process.Process;
 import org.deegree.protocol.wps.client.process.ProcessExecution;
 import org.deegree.protocol.wps.client.process.RawProcessExecution;
 import org.deegree.protocol.wps.client.process.execute.ExecutionOutputs;
+import org.deegree.protocol.wps.client.process.execute.ExecutionResponse;
+import org.deegree.protocol.wps.client.wps100.ExecuteResponse100Reader;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Test;
@@ -539,8 +541,21 @@ public class WPSClientTest {
         Assert.assertNotSame( ExecutionState.SUCCEEDED, execution.getState() );
         Assert.assertNotSame( ExecutionState.FAILED, execution.getState() );
 
+        URL url = execution.getStatusLocation();
+        Integer progress = new Integer(0);
+
         while ( ( execution.getState() ) != ExecutionState.SUCCEEDED ) {
             System.out.println( execution.getPercentCompleted() );
+
+            Assert.assertNotNull( execution.getPercentCompleted() );
+            Assert.assertTrue( progress <= execution.getPercentCompleted() );
+            Assert.assertTrue( execution.getPercentCompleted() <= 100 );
+            progress = execution.getPercentCompleted();
+
+            ExecutionResponse response = ExecuteResponse100Reader.createExecutionResponseFromURL( url );
+            Assert.assertNotNull( response );
+            Assert.assertTrue( progress <= response.getStatus().getPercentCompleted() );
+
             Thread.sleep( 500 );
         }
 
