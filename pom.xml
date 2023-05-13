@@ -385,6 +385,21 @@
           </dependency>
         </dependencies>
       </plugin>
+      <plugin>
+        <groupId>io.spring.javaformat</groupId>
+        <artifactId>spring-javaformat-maven-plugin</artifactId>
+        <version>0.0.38</version>
+        <!-- Can be activated as soon as formatting was executed -->
+        <!--<executions>
+          <execution>
+            <phase>validate</phase>
+            <inherited>true</inherited>
+            <goals>
+              <goal>validate</goal>
+            </goals>
+          </execution>
+        </executions>-->
+      </plugin>
     </plugins>
   </build>
 
