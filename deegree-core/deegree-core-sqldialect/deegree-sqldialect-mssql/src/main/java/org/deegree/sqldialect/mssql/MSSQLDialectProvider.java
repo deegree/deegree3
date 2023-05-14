@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://goerke@criador:2222/srv/svn/deegree-intern/trunk/latlon-sqldialect-mssql/src/main/java/de/latlon/deegree/sqldialect/mssql/MSSQLDialectProvider.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2013 by:

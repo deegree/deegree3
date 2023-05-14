@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://svn.wald.intevation.org/deegree/deegree3/branches/tiling/deegree-datastores/deegree-tilestores/deegree-tilestore-filesystem/src/main/java/org/deegree/tile/persistence/filesystem/FileSystemTileStore.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:

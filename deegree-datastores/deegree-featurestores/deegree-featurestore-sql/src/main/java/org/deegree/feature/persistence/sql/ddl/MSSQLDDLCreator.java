@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://criador.lat-lon.de/srv/svn/deegree-intern/trunk/latlon-sqldialect-mssql/src/main/java/de/latlon/deegree/sqldialect/mssql/MSSQLDDLCreator.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:

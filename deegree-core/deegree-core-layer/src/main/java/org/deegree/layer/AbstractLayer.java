@@ -1,6 +1,5 @@
 package org.deegree.layer;
 
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:

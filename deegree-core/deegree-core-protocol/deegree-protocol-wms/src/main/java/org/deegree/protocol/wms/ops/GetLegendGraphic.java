@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aschmitz@wald.intevation.org/deegree/deegree3/branches/3.1/deegree-services/deegree-services-wms/src/main/java/org/deegree/services/wms/controller/ops/GetLegendGraphic.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:

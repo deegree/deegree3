@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aionita@svn.wald.intevation.org/deegree/deegree3/tools/trunk/src/org/deegree/tools/annotations/Tool.java $
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2009 by:

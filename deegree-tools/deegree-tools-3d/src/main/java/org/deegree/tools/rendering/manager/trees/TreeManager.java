@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://rbezema@svn.wald.intevation.org/deegree/deegree3/tools/trunk/src/org/deegree/tools/rendering/manager/TreeManager.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:

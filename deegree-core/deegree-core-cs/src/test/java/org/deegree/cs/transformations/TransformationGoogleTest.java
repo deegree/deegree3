@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/deegree3/trunk/deegree-core/deegree-core-cs/src/main/java/org/deegree/cs/transformations/TransformationFactory.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:

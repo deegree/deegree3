@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://buesching@criador.lat-lon.de/srv/svn/deegree-intern/trunk/latlon-mdstore-ebrim-eo/src/test/java/de/latlon/metadata/persistence/ebrim/eo/EbrimEOMDStoreTest.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:

@@ -1,4 +1,3 @@
-//$HeadURL$
 package org.deegree.commons.tom.gml;
 
 import java.util.ArrayList;

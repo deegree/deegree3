@@ -1,4 +1,3 @@
-//$HeadURL$
 package org.deegree.filter.function.geometry;
 
 import static org.deegree.filter.function.ParameterType.BOOLEAN;
