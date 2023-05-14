@@ -59,8 +59,6 @@ import org.apache.commons.httpclient.methods.PostMethod;
  * URL again. It also gives you access to the status and response headers.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class HTTPTempFile {

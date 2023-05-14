@@ -51,8 +51,6 @@ import org.deegree.style.se.unevaluated.Symbolizer;
 
 /**
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: aschmitz $
- * @version $Revision: 31075 $, $Date: 2011-06-17 14:51:51 +0200 (Fri, 17 Jun 2011) $
  */
 public class Styles {
 

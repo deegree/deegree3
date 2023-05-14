@@ -47,8 +47,6 @@ import org.deegree.geometry.Envelope;
  *
  * @see FeatureStore
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision$
  */
 public interface BBoxCache {
 

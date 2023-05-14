@@ -48,8 +48,6 @@ import org.deegree.geometry.primitive.patches.Rectangle;
  * Default implementation of {@link Rectangle}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class DefaultRectangle implements Rectangle {
 

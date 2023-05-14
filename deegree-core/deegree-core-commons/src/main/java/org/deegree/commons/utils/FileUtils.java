@@ -49,8 +49,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class FileUtils {
 

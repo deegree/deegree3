@@ -47,8 +47,6 @@ import org.deegree.rendering.r3d.opengl.rendering.dem.manager.TextureManager;
  * {@link LODCriterion} for specifying LODs that are optimized for perspective rendering.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$
  */
 public class ViewFrustumCrit implements LODCriterion {
 

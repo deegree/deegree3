@@ -48,9 +48,7 @@ import org.deegree.geometry.primitive.patches.Triangle;
  * surface patches which are not necessarily planar.
  *
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
- * @author last edited by: $Author$
  *
- * @version. $Revision$, $Date$
  */
 public interface Surface extends GeometricPrimitive {
 

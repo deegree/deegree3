@@ -48,8 +48,6 @@ package org.deegree.cs;
  * any new codetypes are noticed, please add them to the constructor and valueOf method.
  *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author: ionita $
- * @version $Revision: $, $Date: $
  *
  */
 public class CRSCodeType {

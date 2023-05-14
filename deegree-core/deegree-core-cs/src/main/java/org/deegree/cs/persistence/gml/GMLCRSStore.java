@@ -113,8 +113,6 @@ import org.slf4j.LoggerFactory;
  * (transformations, crs's, axis, units, projections) should work quite well.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class GMLCRSStore extends AbstractCRSStore {

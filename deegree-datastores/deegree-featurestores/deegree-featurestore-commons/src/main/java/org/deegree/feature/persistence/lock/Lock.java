@@ -45,8 +45,6 @@ import org.deegree.filter.Filter;
  * Represents a lock of a {@link LockManager}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public interface Lock {
 

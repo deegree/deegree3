@@ -46,8 +46,6 @@ import org.deegree.commons.jdbc.TableName;
  * Metadata for a table in an SQL database (columns/types).
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: markus $
- * @version $Revision: $, $Date: $
  */
 public class TableDefinition {
 

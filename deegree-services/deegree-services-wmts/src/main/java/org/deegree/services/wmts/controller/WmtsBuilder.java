@@ -56,8 +56,6 @@ import org.slf4j.Logger;
  * Responsible for extracting/parsing WMTS jaxb config beans.
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 
 class WmtsBuilder {

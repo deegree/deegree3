@@ -40,8 +40,6 @@ import org.deegree.metadata.ebrim.ExtrinsicObject;
  * Defines the mapping of a slot of an {@link ExtrinsicObject} to a database column.
  *
  * @author <a href="mailto:goltz@deegree.org">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class SlotMapping {
 

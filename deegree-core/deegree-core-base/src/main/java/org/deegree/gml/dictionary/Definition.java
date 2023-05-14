@@ -44,8 +44,6 @@ import org.deegree.commons.tom.ows.StringOrRef;
  *
  * @see Dictionary
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public interface Definition extends GMLObject {
 

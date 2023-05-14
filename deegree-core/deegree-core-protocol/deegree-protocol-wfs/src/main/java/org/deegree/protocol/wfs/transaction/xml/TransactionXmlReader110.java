@@ -76,8 +76,6 @@ import org.deegree.protocol.wfs.transaction.action.Update;
  * {@link TransactionXmlReader} for WFS 1.1.0.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 class TransactionXmlReader110 extends AbstractTransactionXmlReader {
 

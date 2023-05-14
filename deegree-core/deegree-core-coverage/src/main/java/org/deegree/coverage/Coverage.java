@@ -61,8 +61,6 @@ import org.deegree.workspace.Resource;
  * getAsRaster method can be used.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public interface Coverage extends Resource {
 

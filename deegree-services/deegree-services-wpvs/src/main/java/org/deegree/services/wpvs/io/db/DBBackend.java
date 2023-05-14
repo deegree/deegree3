@@ -82,8 +82,6 @@ import org.slf4j.LoggerFactory;
  * database.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  * @param <G> the Geometry type used to create the envelope from.
  *
  */
@@ -94,8 +92,6 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
 	 * tables containing renderable objects.
 	 *
 	 * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
-	 * @author last edited by: $Author$
-	 * @version $Revision$, $Date$
 	 *
 	 */
 	private enum RelevantColumns {
@@ -157,8 +153,6 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
 	 * The <code>Tables</code> enum describe the tables for the db backend.
 	 *
 	 * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
-	 * @author last edited by: $Author$
-	 * @version $Revision$, $Date$
 	 *
 	 */
 	private enum Tables {

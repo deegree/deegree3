@@ -61,8 +61,6 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:taddei@lat-lon.de">Ugo Taddei</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:schneider@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class Messages {
 

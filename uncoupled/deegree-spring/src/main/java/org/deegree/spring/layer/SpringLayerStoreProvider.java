@@ -54,9 +54,7 @@ import org.deegree.workspace.Workspace;
  * to be used within a deegree workspace.
  * 
  * @author <a href="mailto:reijer.copier@idgis.nl">Reijer Copier</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
  */
 public class SpringLayerStoreProvider extends LayerStoreProvider {
 

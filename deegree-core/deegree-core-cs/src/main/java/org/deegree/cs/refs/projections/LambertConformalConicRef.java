@@ -45,8 +45,6 @@ import org.deegree.cs.projections.conic.LambertConformalConic;
  * {@link ProjectionRef} to a {@link LambertConformalConic}
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class LambertConformalConicRef extends ProjectionRef implements Serializable, ILambertConformalConic {
 

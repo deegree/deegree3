@@ -53,7 +53,6 @@ package org.deegree.sqldialect.oracle.sdo;
  *
  * @see Oracle Spatial User's Guide and Reference / Section SDO_GEOMETRY Object Type
  * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
- * @version $Revision$, $Date$
  */
 public interface SDOGTypeTT {
 

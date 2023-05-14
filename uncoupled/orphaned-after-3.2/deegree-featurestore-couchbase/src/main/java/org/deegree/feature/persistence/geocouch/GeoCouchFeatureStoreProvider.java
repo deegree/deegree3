@@ -55,9 +55,7 @@ import org.slf4j.LoggerFactory;
  * {@link FeatureStoreProvider} for the {@link GeoCouchFeatureStore}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: aschmitz $
  * 
- * @version $Revision: 30164 $, $Date: 2011-03-25 09:17:32 +0100 (Fri, 25 Mar 2011) $
  */
 public class GeoCouchFeatureStoreProvider implements FeatureStoreProvider {
 

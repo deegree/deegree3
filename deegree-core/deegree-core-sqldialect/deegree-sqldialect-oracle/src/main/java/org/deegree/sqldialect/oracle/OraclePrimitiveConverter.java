@@ -44,8 +44,6 @@ import org.deegree.commons.tom.sql.DefaultPrimitiveConverter;
  * Implementations convert between {@link PrimitiveValue} particles and SQL column values.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schmitz $
- * @version $Revision: 297 $, $Date: 2011-06-10 10:23:47 +0200 (Fr, 10. Jun 2011) $
  */
 public class OraclePrimitiveConverter extends DefaultPrimitiveConverter {
 

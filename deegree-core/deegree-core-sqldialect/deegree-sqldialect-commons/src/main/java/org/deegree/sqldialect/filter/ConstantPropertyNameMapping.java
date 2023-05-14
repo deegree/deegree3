@@ -40,8 +40,6 @@ import org.deegree.commons.tom.TypedObjectNode;
  * TODO add class documentation here
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 30994 $, $Date: 2011-05-31 17:20:05 +0200 (Di, 31. Mai 2011) $
  */
 public class ConstantPropertyNameMapping extends PropertyNameMapping {
 

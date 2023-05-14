@@ -65,8 +65,6 @@ import org.junit.Test;
  * Test the caching of rasters.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class TestRasterCache {
 

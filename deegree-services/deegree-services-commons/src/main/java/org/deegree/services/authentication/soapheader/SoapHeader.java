@@ -38,8 +38,6 @@ package org.deegree.services.authentication.soapheader;
  * Encapsulates all the necessary information needed to handle a SOAP request.
  *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class SoapHeader {
 

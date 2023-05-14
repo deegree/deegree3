@@ -40,8 +40,6 @@ import org.deegree.protocol.csw.CSWConstants.TransactionType;
  * Abstract base class for the operations that can occur inside a CSW Transaction.
  *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 30340 $, $Date: 2011-04-04 16:05:42 +0200 (Mo, 04. Apr 2011) $
  */
 public abstract class TransactionOperation {
 

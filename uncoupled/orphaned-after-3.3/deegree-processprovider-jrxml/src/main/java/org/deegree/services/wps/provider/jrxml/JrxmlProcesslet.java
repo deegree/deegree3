@@ -68,9 +68,7 @@ import org.slf4j.LoggerFactory;
  * processes {@link JrxmlWPSProcess} requests
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
  * 
- * @version $Revision: $, $Date: $
  */
 public class JrxmlProcesslet implements Processlet {
 

@@ -73,8 +73,6 @@ import org.slf4j.LoggerFactory;
  * objects.
  *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: thomas $
- * @version $Revision: $, $Date: $
  */
 public class TransactionXMLAdapter extends AbstractCSWRequestXMLAdapter {
 

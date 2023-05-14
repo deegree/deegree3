@@ -44,8 +44,6 @@ import org.deegree.filter.XPathEvaluator;
  * TODO add documentation here
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * @version $Revision:$, $Date:$
  */
 public class PropertyIsNull extends ComparisonOperator {
 

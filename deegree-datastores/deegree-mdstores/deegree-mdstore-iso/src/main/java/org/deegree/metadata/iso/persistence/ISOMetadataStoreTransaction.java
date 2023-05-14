@@ -39,8 +39,6 @@ import org.slf4j.LoggerFactory;
  * {@link MetadataStoreTransaction} implementation for the {@link ISOMetadataStore}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 31272 $, $Date: 2011-07-13 23:10:35 +0200 (Mi, 13. Jul 2011) $
  */
 public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
 

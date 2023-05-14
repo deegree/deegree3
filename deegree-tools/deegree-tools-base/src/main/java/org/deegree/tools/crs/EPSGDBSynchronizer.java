@@ -83,8 +83,6 @@ import org.slf4j.LoggerFactory;
  * tool. At the moment of writing the database is at d3_core/bin/META-INF/deegreeCRS/</b>
  *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author: ionita $
- * @version $Revision: $, $Date: $
  *
  */
 @Tool("Connects to the EPSG database at //hurricane/epsg, and for all projections (other objects to be added!) that have no CRS codetype in the CRS database, the codes are fetched from the EPSG database.")

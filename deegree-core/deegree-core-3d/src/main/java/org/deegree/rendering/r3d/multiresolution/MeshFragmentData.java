@@ -44,8 +44,6 @@ import org.deegree.commons.utils.nio.PooledByteBuffer;
  * The <code>MeshFragmentData</code> holds the fragment data.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class MeshFragmentData {
 

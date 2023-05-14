@@ -72,8 +72,6 @@ import com.sun.opengl.util.GLUT;
  * fragment shaders if multiple texture are requested.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class TerrainRenderingManager {
 
@@ -495,8 +493,6 @@ public class TerrainRenderingManager {
 	 * Simple callable for retrieving the textures from the managers.
 	 *
 	 * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
-	 * @author last edited by: $Author$
-	 * @version $Revision$, $Date$
 	 *
 	 */
 	private class TextureWorker implements Callable<Map<RenderMeshFragment, FragmentTexture>> {

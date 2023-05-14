@@ -51,8 +51,6 @@ import org.deegree.workspace.Workspace;
  * {@link TileStoreProvider} for remote WMTS.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$
  */
 public class RemoteWMTSTileStoreProvider extends TileStoreProvider {
 

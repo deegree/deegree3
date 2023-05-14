@@ -45,8 +45,6 @@ import org.junit.Test;
  * This class contains various integration tests for the SOS OGC services.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class SOSMiscValidator extends SOSValidator {

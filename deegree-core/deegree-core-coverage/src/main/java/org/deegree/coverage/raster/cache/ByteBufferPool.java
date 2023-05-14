@@ -48,8 +48,6 @@ import org.slf4j.Logger;
  * used for rasters. Currently only new byte buffers are created, no pooling is done.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class ByteBufferPool {

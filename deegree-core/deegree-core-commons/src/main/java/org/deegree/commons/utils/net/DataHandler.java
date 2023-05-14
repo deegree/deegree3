@@ -40,8 +40,6 @@ import org.apache.xerces.impl.dv.util.Base64;
 
 /**
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class DataHandler extends URLStreamHandler {
 

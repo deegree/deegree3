@@ -50,8 +50,6 @@ import org.junit.Test;
  * org.deegree.services.sos.SOSValidator
  *
  * @author <a href="mailto:apadberg@uni-bonn.de">Alexander Padberg</a>
- * @author last edited by: $Author: $
- * @version $Revision: $, $Date: $
  *
  */
 public class WPSValidator extends OGCValidator {

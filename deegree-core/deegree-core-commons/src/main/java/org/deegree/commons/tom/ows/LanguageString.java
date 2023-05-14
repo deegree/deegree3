@@ -40,8 +40,6 @@ package org.deegree.commons.tom.ows;
  * W3C Recommendation, section 2.12 (RFC 4646 language code).
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class LanguageString {
 

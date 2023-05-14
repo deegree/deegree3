@@ -44,8 +44,6 @@ import javax.xml.namespace.QName;
  * Provides some utility methods for working with qualified names.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class QNameUtils {
 

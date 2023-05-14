@@ -47,8 +47,6 @@ import org.slf4j.Logger;
  * Information about the (native) resolutions of a coverage.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class ResolutionInfo implements Serializable {
 

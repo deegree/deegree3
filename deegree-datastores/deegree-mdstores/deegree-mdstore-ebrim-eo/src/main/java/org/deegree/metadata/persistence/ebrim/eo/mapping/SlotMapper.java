@@ -55,8 +55,6 @@ import org.deegree.metadata.persistence.ebrim.eo.mapping.SlotMapping.SlotType;
  * mapping to the relational model.
  *
  * @author <a href="mailto:goltz@deegree.org">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class SlotMapper {
 

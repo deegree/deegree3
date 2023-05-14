@@ -50,8 +50,6 @@ import com.sun.faces.renderkit.html_basic.HtmlBasicRenderer;
  * TODO add class documentation here
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 @FacesRenderer(componentFamily = "org.deegre.Status", rendererType = "org.deegree.AjaxStatus")
 public class AjaxStatusRenderer extends HtmlBasicRenderer {

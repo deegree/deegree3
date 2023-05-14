@@ -46,8 +46,6 @@ import org.junit.Test;
  * <code>ParserTest</code>
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class ParserTest extends TestCase {
 

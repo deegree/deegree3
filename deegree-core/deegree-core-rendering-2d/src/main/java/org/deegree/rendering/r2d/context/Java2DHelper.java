@@ -69,8 +69,6 @@ import org.deegree.rendering.r2d.context.MapOptions.Quality;
  * Utility methods to apply map options to a graphics 2d object.
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * @version $Revision: $, $Date: $
  */
 public class Java2DHelper {
 

@@ -49,9 +49,7 @@ import org.deegree.services.wps.storage.StorageLocation;
  *
  * @author <a href="mailto:apadberg@uni-bonn.de">Alexander Padberg</a>
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
- * @author last edited by: $Author$
  *
- * @version. $Revision$, $Date$
  */
 public class ExecuteResponse {
 

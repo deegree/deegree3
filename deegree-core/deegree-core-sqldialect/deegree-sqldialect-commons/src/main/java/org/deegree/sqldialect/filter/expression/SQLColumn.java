@@ -47,8 +47,6 @@ import org.deegree.geometry.utils.GeometryParticleConverter;
  * {@link SQLExpression} that represents a table column.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: aschmitz $
- * @version $Revision: 30988 $, $Date: 2011-05-31 15:09:31 +0200 (Di, 31. Mai 2011) $
  */
 public class SQLColumn implements SQLExpression {
 

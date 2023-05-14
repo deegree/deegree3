@@ -48,8 +48,6 @@ import org.slf4j.Logger;
  * Encapsulates columns and values for updating one row in a database table.
  *
  * @author <a href="mailto:goltz@lat-lon.org">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class UpdateRow extends TransactionRow {
 

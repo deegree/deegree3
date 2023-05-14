@@ -47,8 +47,6 @@ import org.deegree.protocol.i18n.Messages;
  * abstract class for parsing a CSW kvp request it provides utilities
  *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: thomas $
- * @version $Revision: $, $Date: $
  */
 public abstract class AbstractCSWKVPAdapter {
 

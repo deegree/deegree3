@@ -48,8 +48,6 @@ package org.deegree.protocol.wfs.getfeature;
  * </p>
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public enum ResultType {
 

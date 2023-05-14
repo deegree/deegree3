@@ -55,8 +55,6 @@ import org.deegree.rendering.r3d.ViewParams;
  * {@link PositionableModel}s.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  * @param <T> a positionable
  *
  */

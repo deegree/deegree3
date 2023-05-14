@@ -107,8 +107,6 @@ import org.slf4j.LoggerFactory;
  * Basic {@link SQLFeatureStore} test for table-based configurations.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 @RunWith(value = Parameterized.class)
 public class SQLFeatureStoreTOPPStatesTest {

@@ -47,8 +47,6 @@ import org.deegree.geometry.primitive.segments.CurveSegment;
  * CRS of the geometry.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class CoordinateValidityInspector implements GeometryInspector {
 

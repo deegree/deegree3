@@ -46,8 +46,6 @@ import org.slf4j.Logger;
  * Replaces written codes (as string) with the code number.
  *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class InspireDataThemeNormalizer implements QueryableConverter {
 

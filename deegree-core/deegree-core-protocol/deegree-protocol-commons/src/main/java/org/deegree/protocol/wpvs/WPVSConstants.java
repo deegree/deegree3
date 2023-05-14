@@ -41,8 +41,6 @@ import org.deegree.commons.tom.ows.Version;
  * Important constants from the WPVS specifications.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class WPVSConstants {
 
@@ -63,8 +61,6 @@ public class WPVSConstants {
 	 * (WPVS) requests.
 	 *
 	 * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
-	 * @author last edited by: $Author: schneider $
-	 * @version $Revision: $, $Date: $
 	 */
 	public enum WPVSRequestType {
 

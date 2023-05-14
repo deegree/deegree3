@@ -45,8 +45,6 @@ import org.deegree.commons.tom.sql.ParticleConverter;
  * Encapsulates columns and values for manipulating one row in a database.
  *
  * @author <a href="mailto:goltz@deegree.org">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public abstract class TransactionRow {
 

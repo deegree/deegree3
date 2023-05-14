@@ -45,8 +45,6 @@ import org.deegree.geometry.primitive.patches.PolygonPatch;
  * ring).
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class InteriorRingIntersectsExterior extends AbstractGeometryValidationEvent {
 

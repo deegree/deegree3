@@ -69,8 +69,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * @version $Revision: $, $Date: $
  */
 public class FeatureLayer extends AbstractLayer {
 

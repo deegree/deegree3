@@ -43,8 +43,6 @@ import static java.lang.Math.sqrt;
  * Note: methods currently more or less copied from deegree 2.
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class MapUtils {
 

@@ -45,8 +45,6 @@ import org.deegree.cs.projections.cylindric.TransverseMercator;
  * {@link ProjectionRef} to a {@link TransverseMercator}
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class TransverseMercatorRef extends ProjectionRef implements Serializable, ITransverseMercator {
 

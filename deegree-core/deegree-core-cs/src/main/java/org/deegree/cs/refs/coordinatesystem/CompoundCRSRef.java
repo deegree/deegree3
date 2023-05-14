@@ -45,8 +45,6 @@ import org.deegree.cs.coordinatesystems.ICompoundCRS;
  * {@link CRSRef} to a {@link CompoundCRS}
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class CompoundCRSRef extends CRSRef implements ICompoundCRS {
 

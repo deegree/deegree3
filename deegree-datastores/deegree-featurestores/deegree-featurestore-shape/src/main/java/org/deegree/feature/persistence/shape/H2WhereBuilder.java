@@ -58,8 +58,6 @@ import org.deegree.sqldialect.filter.expression.SQLOperation;
 
 /**
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class H2WhereBuilder extends AbstractWhereBuilder {
 

@@ -55,8 +55,6 @@ import org.deegree.workspace.ResourceMetadata;
  * Example {@link ProcessProvider} implementation for process provider tutorial.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class ExampleProcessProvider implements ProcessProvider {
 

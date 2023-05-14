@@ -49,8 +49,6 @@ import org.junit.Test;
  * <code>StereographicAlternativeTest</code> tests the transverse mercator projection.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class TransverseMercatorTest extends ProjectionBase {

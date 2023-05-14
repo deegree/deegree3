@@ -41,9 +41,7 @@ import org.deegree.geometry.Envelope;
  * A {@link Process} input parameter with a bounding box value.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
  *
- * @version $Revision: $, $Date: $
  */
 public interface BoundingBoxInput extends ProcessletInput {
 

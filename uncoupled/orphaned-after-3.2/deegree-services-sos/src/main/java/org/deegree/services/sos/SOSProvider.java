@@ -51,9 +51,7 @@ import org.deegree.services.controller.ImplementationMetadata;
 /**
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
  */
 public class SOSProvider implements OWSProvider {
 

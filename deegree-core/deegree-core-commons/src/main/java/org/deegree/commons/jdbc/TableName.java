@@ -38,8 +38,6 @@ package org.deegree.commons.jdbc;
  * Table name with optional schema qualifier and optional quoting.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: markus $
- * @version $Revision: $, $Date: $
  */
 public class TableName extends SQLIdentifier {
 

@@ -47,8 +47,6 @@ import org.junit.Assert;
  * test. Read the comments!
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 

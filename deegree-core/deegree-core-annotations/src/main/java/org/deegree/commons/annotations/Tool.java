@@ -49,8 +49,6 @@ import java.lang.annotation.Target;
  * course).
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  * @deprecated This annotation is deprecated as of version 3.4 of deegree.
  *
  */

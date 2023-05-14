@@ -43,8 +43,6 @@ import org.deegree.commons.config.ResourceState.StateType;
  * configuration documents.
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public interface ResourceManager {
 

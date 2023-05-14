@@ -38,8 +38,6 @@ package org.deegree.metadata.iso.types;
  * TODO add class documentation here
  *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class PointOfContact {
 

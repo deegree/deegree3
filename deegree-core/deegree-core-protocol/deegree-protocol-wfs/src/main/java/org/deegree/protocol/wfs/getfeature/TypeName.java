@@ -49,8 +49,6 @@ import org.deegree.commons.utils.kvp.InvalidParameterValueException;
  * queries.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class TypeName {
 

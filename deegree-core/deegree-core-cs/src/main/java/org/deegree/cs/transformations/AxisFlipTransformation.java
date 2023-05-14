@@ -46,8 +46,6 @@ import org.deegree.cs.exceptions.TransformationException;
  * Transformation means flipping of the first and second axis!
  *
  * @author <a href="mailto:goltz@lat-lon.org">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class AxisFlipTransformation extends Transformation {
 

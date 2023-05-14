@@ -56,8 +56,6 @@ import org.slf4j.Logger;
  *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: 30800 $, $Date: 2011-05-12 16:49:44 +0200 (Do, 12. Mai 2011) $
  */
 public class ISOMemoryMetadataStoreTransaction implements MetadataStoreTransaction {
 

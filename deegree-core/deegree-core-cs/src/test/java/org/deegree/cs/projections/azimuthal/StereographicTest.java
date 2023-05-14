@@ -53,8 +53,6 @@ import org.junit.Test;
  * as it was defined by snyder.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class StereographicTest extends ProjectionBase {

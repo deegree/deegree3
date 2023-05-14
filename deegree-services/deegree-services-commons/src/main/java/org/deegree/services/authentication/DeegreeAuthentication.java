@@ -54,8 +54,6 @@ import org.slf4j.LoggerFactory;
  * the username and password as well as the sessionID in the URL.
  *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: thomas $
- * @version $Revision: $, $Date: $
  */
 public class DeegreeAuthentication implements CredentialsProvider {
 

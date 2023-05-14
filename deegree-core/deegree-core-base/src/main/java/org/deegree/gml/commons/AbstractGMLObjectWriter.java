@@ -53,8 +53,6 @@ import org.slf4j.LoggerFactory;
  * Concrete extensions are writers for a specific category of GML objects.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author:$
- * @version $Revision:$, $Date:$
  */
 public abstract class AbstractGMLObjectWriter {
 

@@ -54,7 +54,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
- * @version $Revision: $, $Date: $
  */
 public class ConnectionProviderManager extends DefaultResourceManager<ConnectionProvider> {
 

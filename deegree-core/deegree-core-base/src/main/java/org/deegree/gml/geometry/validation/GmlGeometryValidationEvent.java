@@ -44,8 +44,6 @@ import org.deegree.geometry.validation.event.GeometryValidationEvent;
  * names of affected GML elements.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class GmlGeometryValidationEvent {
 

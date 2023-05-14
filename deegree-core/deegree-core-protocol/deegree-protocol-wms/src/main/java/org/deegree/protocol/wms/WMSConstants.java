@@ -41,8 +41,6 @@ import org.deegree.commons.tom.ows.Version;
  * Important constants from the WMS specifications.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class WMSConstants {
 
@@ -69,8 +67,6 @@ public class WMSConstants {
 	 * requests.
 	 *
 	 * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
-	 * @author last edited by: $Author: schneider $
-	 * @version $Revision: $, $Date: $
 	 */
 	public static enum WMSRequestType {
 

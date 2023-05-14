@@ -51,8 +51,6 @@ import org.deegree.workspace.Workspace;
  * This is an xml adapter for the deegree WCS ServiceConfiguration.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class ServiceConfigurationXMLAdapter extends XMLAdapter {
 

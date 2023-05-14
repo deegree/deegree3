@@ -58,8 +58,6 @@ import org.xml.sax.helpers.XMLReaderFactory;
  * TODO add class documentation here
  *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 @Tool(value = "Validates single metadata records or metadata records from directory against the ISO Schema.")
 public class ISO19139Validator {

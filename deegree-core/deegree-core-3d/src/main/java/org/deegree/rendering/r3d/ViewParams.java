@@ -43,8 +43,6 @@ import javax.vecmath.Vector3d;
  * performing view frustum culling and LOD (level-of-detail) adaptation.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class ViewParams {
 

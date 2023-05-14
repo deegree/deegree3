@@ -98,8 +98,6 @@ import org.locationtech.jts.io.ParseException;
  * {@link MetadataStoreTransaction} implementation for the {@link EbrimEOMDStore}.
  *
  * @author <a href="mailto:goltz@deegree.org">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class EbrimEOMDStoreTransaction implements MetadataStoreTransaction {
 

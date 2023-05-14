@@ -39,7 +39,6 @@ package org.deegree.sqldialect;
  * accessed by deegree.
  *
  * @author <a href="mailto:wanhoff@lat-lon.de">Jeronimo Wanhoff</a>
- * @author last edited by: $Author: wanhoff $
  *
  */
 public abstract class AbstractSQLDialect implements SQLDialect {

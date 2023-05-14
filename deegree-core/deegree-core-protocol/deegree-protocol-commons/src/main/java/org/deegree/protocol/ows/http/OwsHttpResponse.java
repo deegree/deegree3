@@ -49,7 +49,6 @@ import org.deegree.protocol.ows.exception.OWSExceptionReport;
  * connection will not be freed.
  * </p>
  *
- * @version $Revision$, $Date$
  */
 public interface OwsHttpResponse extends Closeable {
 

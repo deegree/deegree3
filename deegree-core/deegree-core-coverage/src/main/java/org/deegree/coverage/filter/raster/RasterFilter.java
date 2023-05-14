@@ -60,8 +60,6 @@ import org.deegree.coverage.raster.data.info.BandType;
  * values, as well as the selection of specific bands in a raster.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class RasterFilter extends CoverageFilter {

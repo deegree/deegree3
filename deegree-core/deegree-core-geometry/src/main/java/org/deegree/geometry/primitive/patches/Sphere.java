@@ -43,8 +43,6 @@ package org.deegree.geometry.primitive.patches;
  * arcs resemble lines of constant longitude.
  *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public interface Sphere extends GriddedSurfacePatch {

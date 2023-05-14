@@ -52,8 +52,6 @@ import java.util.UUID;
  * This class implements a cached RasterDataContainer.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class CachedRasterDataContainer implements RasterDataContainer, RasterDataContainerProvider {
 

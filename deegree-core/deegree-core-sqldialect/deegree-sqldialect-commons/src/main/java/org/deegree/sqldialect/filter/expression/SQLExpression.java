@@ -45,8 +45,6 @@ import org.deegree.cs.coordinatesystems.ICRS;
  * Marks (a node of) an SQL expression with type information.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 30977 $, $Date: 2011-05-31 11:30:55 +0200 (Di, 31. Mai 2011) $
  */
 public interface SQLExpression {
 

@@ -42,8 +42,6 @@ import org.deegree.coverage.raster.interpolation.InterpolationType;
  * Important constants from the WCS specifications.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class WCSConstants {
 
@@ -76,8 +74,6 @@ public class WCSConstants {
 	 * (WCS) requests.
 	 *
 	 * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
-	 * @author last edited by: $Author: schneider $
-	 * @version $Revision: $, $Date: $
 	 */
 	public enum WCSRequestType {
 
@@ -96,8 +92,6 @@ public class WCSConstants {
 	 * specification.
 	 *
 	 * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
-	 * @author last edited by: $Author: rbezema $
-	 * @version $Revision: $, $Date: $
 	 *
 	 */
 	public enum ExeptionCode_1_0_0 {
@@ -115,8 +109,6 @@ public class WCSConstants {
 	 * protocol name.
 	 *
 	 * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
-	 * @author last edited by: $Author: rbezema $
-	 * @version $Revision: $, $Date: $
 	 *
 	 */
 	public enum InterpolationMethod {

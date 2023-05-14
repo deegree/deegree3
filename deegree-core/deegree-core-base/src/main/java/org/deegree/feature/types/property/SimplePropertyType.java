@@ -50,8 +50,6 @@ import org.deegree.commons.tom.primitive.PrimitiveType;
  *
  * @see BaseType
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class SimplePropertyType extends AbstractPropertyType {
 

@@ -62,8 +62,6 @@ import org.deegree.services.jaxb.metadata.ServiceProviderType;
  * Bundles the differences of different CSW implemantations.
  *
  * @author <a href="mailto:goltz@lat-lon.org">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public interface ServiceProfile {
 

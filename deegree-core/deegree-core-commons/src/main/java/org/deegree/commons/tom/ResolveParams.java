@@ -40,8 +40,6 @@ import java.math.BigInteger;
  * Common set of parameters for controlling the resolving of resource {@link Reference}s.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class ResolveParams {
 

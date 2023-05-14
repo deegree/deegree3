@@ -68,8 +68,6 @@ import static org.slf4j.LoggerFactory.getLogger;
  * TODO add documentation here
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * @version $Revision:$, $Date:$
  */
 public class GMLAppSchemaWriterTest {
 

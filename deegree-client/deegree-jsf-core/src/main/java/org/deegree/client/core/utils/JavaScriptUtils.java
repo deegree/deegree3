@@ -40,8 +40,6 @@ import java.util.Map;
  * TODO add class documentation here
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public final class JavaScriptUtils {
 

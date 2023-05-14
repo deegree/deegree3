@@ -39,8 +39,6 @@ package org.deegree.commons.mail;
  * passed to the MailerEJB sendMail(...) method.
  *
  * @author <a href="mailto:tfr@users.sourceforge.net">Torsten Friebe</A>
- * @author last edited by: $Author$
- * @version $Revision$,$Date$
  */
 public class EMailMessage implements java.io.Serializable, MailMessage {
 

@@ -55,8 +55,6 @@ import org.junit.Test;
  * Test for correctness of AxisOrder, if x/y forced or not.
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class AxisOrderTest {
 

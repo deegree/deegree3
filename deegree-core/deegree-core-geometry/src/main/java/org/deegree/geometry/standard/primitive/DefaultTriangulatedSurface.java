@@ -50,8 +50,6 @@ import org.deegree.geometry.standard.AbstractDefaultGeometry;
  * Default implementation of {@link TriangulatedSurface}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class DefaultTriangulatedSurface extends AbstractDefaultGeometry implements TriangulatedSurface {
 

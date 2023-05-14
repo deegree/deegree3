@@ -173,8 +173,6 @@ public class MapOptions {
 	 * <code>Quality</code>
 	 *
 	 * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-	 * @author last edited by: $Author: aschmitz $
-	 * @version $Revision: 32136 $, $Date: 2011-10-12 15:21:52 +0200 (Wed, 12 Oct 2011) $
 	 */
 	public static enum Quality {
 
@@ -191,8 +189,6 @@ public class MapOptions {
 	 * <code>Interpolation</code>
 	 *
 	 * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-	 * @author last edited by: $Author: aschmitz $
-	 * @version $Revision: 32136 $, $Date: 2011-10-12 15:21:52 +0200 (Wed, 12 Oct 2011) $
 	 */
 	public static enum Interpolation {
 
@@ -211,8 +207,6 @@ public class MapOptions {
 	 * <code>Antialias</code>
 	 *
 	 * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-	 * @author last edited by: $Author: aschmitz $
-	 * @version $Revision: 32136 $, $Date: 2011-10-12 15:21:52 +0200 (Wed, 12 Oct 2011) $
 	 */
 	public static enum Antialias {
 

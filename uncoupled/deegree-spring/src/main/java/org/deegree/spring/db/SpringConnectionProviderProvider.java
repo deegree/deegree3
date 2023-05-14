@@ -53,9 +53,7 @@ import org.deegree.workspace.Workspace;
  * {@link org.deegree.spring.db.SpringConnectionProviderBuilder}.
  * 
  * @author <a href="mailto:reijer.copier@idgis.nl">Reijer Copier</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
  */
 public class SpringConnectionProviderProvider extends ConnectionProviderProvider {
 

@@ -58,8 +58,6 @@ import org.slf4j.Logger;
  * This class represents an abstract grid coverage.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public abstract class AbstractRaster extends AbstractCoverage {
 

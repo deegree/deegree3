@@ -64,8 +64,6 @@ import org.deegree.cs.persistence.CRSStore;
  * certain crs or to retrieve all available crs's from the deegree crs configuration.
  *
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
- * @author last edited by: $Author: rbezema $
- * @version $Revision: 10745 $, $Date: 2008-03-27 17:29:52 +0100 (Do, 27 Mrz 2008) $
  */
 @Tool("Retrieve information about the availability|definition of a certain crs in deegree")
 public class CRSInfo {

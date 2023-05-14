@@ -67,8 +67,6 @@ import org.deegree.workspace.ResourceMetadata;
  * @see FeatureStore
  * @see StoredFeatures
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class MemoryFeatureStore implements FeatureStore {
 

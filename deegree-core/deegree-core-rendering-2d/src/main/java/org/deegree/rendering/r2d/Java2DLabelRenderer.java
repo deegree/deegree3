@@ -73,8 +73,6 @@ import org.slf4j.Logger;
  * Responsible for creating and rendering of labels. Based on Java2DTextRenderer
  *
  * @author Florian Bingel
- * @author last edited by: $Author: stranger $
- * @version $Revision: $, $Date: $
  */
 public class Java2DLabelRenderer implements LabelRenderer {
 

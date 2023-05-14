@@ -50,9 +50,7 @@ import org.deegree.services.jaxb.sos.ServiceConfiguration;
  * This is an xml adapter for the deegree SOS ServiceConfiguration.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
  * 
- * @version $Revision:$, $Date:$
  */
 public class ServiceConfigurationXMLAdapter extends XMLAdapter {
 

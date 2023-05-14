@@ -64,8 +64,6 @@ import org.deegree.workspace.Workspace;
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: stranger $
- * @version $Revision: $, $Date: $
  */
 class FeatureInfoHandler {
 

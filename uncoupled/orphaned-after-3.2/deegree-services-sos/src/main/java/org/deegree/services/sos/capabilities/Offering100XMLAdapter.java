@@ -49,9 +49,7 @@ import org.deegree.services.sos.getobservation.EventTime100XMLExporter;
  * This is an xml adapter for ObservationOffering elements after the SOS 1.0.0 spec.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
  */
 public class Offering100XMLAdapter extends XMLAdapter {
 

@@ -47,8 +47,6 @@ import org.deegree.commons.utils.Pair;
  * querying of a spatial index.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  * @param <T> the type returned by the query
  *
  */

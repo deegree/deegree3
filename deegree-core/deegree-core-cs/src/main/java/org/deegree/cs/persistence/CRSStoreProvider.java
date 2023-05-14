@@ -46,8 +46,6 @@ import org.deegree.workspace.Workspace;
  * to be loaded by the {@link ServiceLoader}.
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public interface CRSStoreProvider extends ResourceProvider {
 

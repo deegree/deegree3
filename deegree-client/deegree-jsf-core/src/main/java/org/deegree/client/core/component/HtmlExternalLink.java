@@ -41,8 +41,6 @@ import javax.faces.component.UICommand;
  * <code>HtmlExternalLink</code> a link component ignoring the JSF navigation
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 @FacesComponent(value = "HtmlExternalLink")
 public class HtmlExternalLink extends UICommand {

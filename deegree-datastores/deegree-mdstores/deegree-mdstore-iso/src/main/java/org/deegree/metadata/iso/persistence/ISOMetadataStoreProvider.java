@@ -55,8 +55,6 @@ import org.deegree.workspace.Workspace;
  * {@link MetadataStoreProvider} for the {@link ISOMetadataStore}.
  *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: lbuesching $
- * @version $Revision: 30800 $, $Date: 2011-05-12 16:49:44 +0200 (Do, 12. Mai 2011) $
  */
 public class ISOMetadataStoreProvider extends MetadataStoreProvider {
 

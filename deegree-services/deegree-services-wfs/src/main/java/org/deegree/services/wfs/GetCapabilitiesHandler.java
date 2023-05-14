@@ -122,8 +122,6 @@ import org.slf4j.LoggerFactory;
  * Handles a single {@link GetCapabilities} request for the {@link WebFeatureService}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * @version $Revision:$, $Date:$
  */
 class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 

@@ -45,8 +45,6 @@ import org.deegree.style.styling.Copyable;
  * <code>Graphic</code>
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: aschmitz $
- * @version $Revision: 21314 $, $Date: 2009-12-08 13:48:34 +0100 (Tue, 08 Dec 2009) $
  */
 public class Graphic implements Copyable<Graphic> {
 

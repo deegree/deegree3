@@ -52,8 +52,6 @@ import org.locationtech.jts.geom.GeometryCollection;
  * Default implementation of {@link CompositeGeometry}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class DefaultCompositeGeometry extends AbstractDefaultGeometry implements CompositeGeometry<GeometricPrimitive> {
 

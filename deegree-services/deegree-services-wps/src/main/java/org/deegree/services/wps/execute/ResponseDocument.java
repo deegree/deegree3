@@ -42,8 +42,6 @@ import java.util.List;
  * response document and defines which parameters actually have to be included.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class ResponseDocument implements ResponseForm {
 

@@ -49,8 +49,6 @@ import org.deegree.services.csw.AbstractCSWKVPAdapter;
  * Encapsulates the method for parsing a {@link DescribeRecord} kvp request via Http-GET.
  *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: thomas $
- * @version $Revision: $, $Date: $
  */
 public class DescribeRecordKVPAdapter extends AbstractCSWKVPAdapter {
 

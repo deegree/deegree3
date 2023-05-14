@@ -42,8 +42,6 @@ import org.deegree.workspace.Workspace;
  * identified by their implementation metadata.
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public interface SerializerProvider {
 

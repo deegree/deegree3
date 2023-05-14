@@ -58,9 +58,7 @@ import org.springframework.jdbc.datasource.DataSourceUtils;
  * expected to be available as bean.
  * 
  * @author <a href="mailto:reijer.copier@idgis.nl">Reijer Copier</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
  */
 public class SpringConnectionProvider implements ConnectionProvider {
 

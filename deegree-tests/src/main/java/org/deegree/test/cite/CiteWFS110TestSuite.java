@@ -50,8 +50,6 @@ import org.junit.runners.Parameterized.Parameters;
  * Wraps the execution of the CITE WFS 1.1.0 TestSuite as a JUnit-test.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 @RunWith(Parameterized.class)
 public class CiteWFS110TestSuite {

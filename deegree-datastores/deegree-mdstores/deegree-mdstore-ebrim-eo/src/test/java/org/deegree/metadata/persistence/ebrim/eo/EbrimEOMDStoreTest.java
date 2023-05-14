@@ -83,8 +83,6 @@ import org.slf4j.Logger;
  * TODO add class documentation here
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: 182 $, $Date: 2011-05-11 18:00:02 +0200 (Mi, 11. Mai 2011) $
  */
 public class EbrimEOMDStoreTest {
 

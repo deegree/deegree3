@@ -53,8 +53,6 @@ import org.deegree.commons.xml.XMLParsingException;
  * TODO add documentation here
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * @version $Revision:$, $Date:$
  */
 public class XMLStreamReaderWrapper implements XMLStreamReader {
 

@@ -38,8 +38,6 @@ package org.deegree.geometry.primitive.segments;
  * An {@link ArcByCenterPoint} with identical start and end angles to form a full circle.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public interface CircleByCenterPoint extends ArcByCenterPoint {
 

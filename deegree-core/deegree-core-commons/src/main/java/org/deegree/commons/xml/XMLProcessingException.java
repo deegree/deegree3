@@ -38,8 +38,6 @@ package org.deegree.commons.xml;
  * Base class for XML-related exceptions.
  *
  * @author <a href="mailto:mschneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class XMLProcessingException extends RuntimeException {
 

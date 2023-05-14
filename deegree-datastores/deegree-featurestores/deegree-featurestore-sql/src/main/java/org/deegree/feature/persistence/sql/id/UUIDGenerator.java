@@ -38,8 +38,6 @@ package org.deegree.feature.persistence.sql.id;
  * {@link IDGenerator} that generates new identifiers using the UUID algorithm.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: markus $
- * @version $Revision: $, $Date: $
  */
 public class UUIDGenerator implements IDGenerator {
 

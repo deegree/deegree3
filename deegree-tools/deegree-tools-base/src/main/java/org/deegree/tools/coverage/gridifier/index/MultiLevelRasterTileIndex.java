@@ -45,8 +45,6 @@ import org.deegree.tools.coverage.gridifier.RasterLevel;
  * raster index
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public interface MultiLevelRasterTileIndex {
 

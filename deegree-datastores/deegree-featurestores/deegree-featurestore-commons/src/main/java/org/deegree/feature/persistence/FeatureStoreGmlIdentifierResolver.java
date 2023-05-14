@@ -62,8 +62,6 @@ import org.deegree.protocol.wfs.getfeature.TypeName;
  * GML id. Currently supports urn:uuid: identifiers only.
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 31641 $, $Date: 2011-08-24 21:24:55 +0200 (Wed, 24 Aug 2011) $
  */
 public class FeatureStoreGmlIdentifierResolver implements GMLReferenceResolver {
 

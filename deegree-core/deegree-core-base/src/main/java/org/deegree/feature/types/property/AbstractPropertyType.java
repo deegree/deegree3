@@ -56,8 +56,6 @@ import org.deegree.commons.tom.gml.property.PropertyType;
  * </p>
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * @version $Revision:$, $Date:$
  */
 public abstract class AbstractPropertyType implements PropertyType {
 

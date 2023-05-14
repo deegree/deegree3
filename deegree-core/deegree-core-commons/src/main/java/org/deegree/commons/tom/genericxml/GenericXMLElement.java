@@ -54,8 +54,6 @@ import static org.deegree.commons.tom.primitive.BaseType.BOOLEAN;
  * schema type information.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class GenericXMLElement implements ElementNode {
 

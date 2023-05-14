@@ -40,9 +40,7 @@ import org.deegree.geometry.primitive.patches.PolygonPatch;
  * A {@link Surface} that consists only of {@link PolygonPatch} patches.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
  *
- * @version. $Revision$, $Date$
  */
 public interface PolyhedralSurface extends Surface {
 

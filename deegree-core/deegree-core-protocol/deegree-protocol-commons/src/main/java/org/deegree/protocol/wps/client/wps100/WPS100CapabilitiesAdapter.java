@@ -59,8 +59,6 @@ import org.deegree.protocol.wps.client.process.ProcessInfo;
  * @see WPSClient
  * @see ProcessInfo
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class WPS100CapabilitiesAdapter extends OWSCommon110CapabilitiesAdapter {
 

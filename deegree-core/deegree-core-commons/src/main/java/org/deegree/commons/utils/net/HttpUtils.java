@@ -98,8 +98,6 @@ import com.google.gson.JsonParser;
  * </code>
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class HttpUtils {
 
@@ -114,8 +112,6 @@ public class HttpUtils {
 	 * location.
 	 *
 	 * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-	 * @author last edited by: $Author$
-	 * @version $Revision$, $Date$
 	 * @param <T>
 	 */
 	public interface Worker<T> {

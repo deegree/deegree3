@@ -61,8 +61,6 @@ import com.sun.opengl.util.texture.Texture;
  * texture id.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class TreeRenderer extends RenderableManager<BillBoard> {

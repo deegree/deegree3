@@ -64,8 +64,6 @@ import org.slf4j.Logger;
  *
  * @see BBoxCache
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision$
  */
 public class BBoxPropertiesCache implements BBoxCache {
 

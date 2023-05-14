@@ -50,8 +50,6 @@ import org.junit.runners.Parameterized.Parameters;
  * <code>CiteWMS111TestSuite</code>
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 @RunWith(Parameterized.class)
 public class CiteWMS111TestSuite {

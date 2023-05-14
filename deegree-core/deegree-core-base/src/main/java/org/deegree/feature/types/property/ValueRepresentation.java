@@ -41,8 +41,6 @@ package org.deegree.feature.types.property;
  * @see FeaturePropertyType
  * @see GeometryPropertyType
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public enum ValueRepresentation {
 

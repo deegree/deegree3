@@ -44,8 +44,6 @@ import org.deegree.cs.projections.cylindric.Mercator;
  * {@link ProjectionRef} to a {@link Mercator}
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class MercatorRef extends ProjectionRef implements Serializable, IMercator {
 

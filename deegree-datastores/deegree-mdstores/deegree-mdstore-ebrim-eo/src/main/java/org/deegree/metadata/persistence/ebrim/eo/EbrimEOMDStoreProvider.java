@@ -55,8 +55,6 @@ import org.deegree.workspace.Workspace;
  * {@link MetadataStoreProvider} for {@link EbrimEOMDStore}s
  *
  * @author <a href="mailto:goltz@deegree.org">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class EbrimEOMDStoreProvider extends MetadataStoreProvider {
 

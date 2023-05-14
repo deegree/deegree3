@@ -42,8 +42,6 @@ import org.deegree.filter.XPathEvaluator;
  * <code>Continuation</code> is not a real continuation...
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: aschmitz $
- * @version $Revision: 30128 $, $Date: 2011-03-22 13:02:43 +0100 (Tue, 22 Mar 2011) $
  * @param <T>
  */
 public abstract class Continuation<T> {
@@ -85,8 +83,6 @@ public abstract class Continuation<T> {
 	 * <code>Updater</code>
 	 *
 	 * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-	 * @author last edited by: $Author: aschmitz $
-	 * @version $Revision: 30128 $, $Date: 2011-03-22 13:02:43 +0100 (Tue, 22 Mar 2011) $
 	 * @param <T>
 	 */
 	public static interface Updater<T> {

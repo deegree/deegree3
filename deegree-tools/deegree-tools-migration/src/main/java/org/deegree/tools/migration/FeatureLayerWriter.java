@@ -61,8 +61,6 @@ import org.deegree.workspace.WorkspaceUtils;
  * Responsible for creating new feature layer configurations.
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * @version $Revision: $, $Date: $
  */
 class FeatureLayerWriter {
 

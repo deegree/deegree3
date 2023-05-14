@@ -45,8 +45,6 @@ import org.deegree.featureinfo.FeatureInfoParams;
  * <code>FeatureInfoSerializer</code>
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public interface FeatureInfoSerializer {
 

@@ -49,8 +49,6 @@ import org.deegree.rendering.r3d.opengl.rendering.model.prototype.PrototypeRefer
  * both.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class RenderableQualityModel extends QualityModel<RenderableQualityModelPart> implements JOGLRenderable {

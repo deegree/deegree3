@@ -43,8 +43,6 @@ import org.deegree.commons.xml.NamespaceBindings;
  * Abstract base class for the requests of all operations.
  *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: thomas $
- * @version $Revision: $, $Date: $
  */
 public abstract class AbstractCSWRequest {
 

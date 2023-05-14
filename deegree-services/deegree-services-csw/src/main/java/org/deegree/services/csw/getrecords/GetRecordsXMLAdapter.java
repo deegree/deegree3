@@ -55,8 +55,6 @@ import org.slf4j.LoggerFactory;
  * Encapsulates the method for parsing a {@link GetRecords} XML request via Http-POST.
  *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: thomas $
- * @version $Revision: $, $Date: $
  */
 public class GetRecordsXMLAdapter extends AbstractGetRecordsXMLAdapter {
 

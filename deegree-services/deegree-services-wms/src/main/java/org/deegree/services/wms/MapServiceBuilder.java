@@ -57,8 +57,6 @@ import org.slf4j.Logger;
  * Builds map service components from jaxb config beans.
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * @version $Revision: $, $Date: $
  */
 class MapServiceBuilder {
 

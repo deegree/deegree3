@@ -84,9 +84,7 @@ import es.unex.sextante.exceptions.IteratorException;
  * 
  * 
  * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
- * @author last edited by: $Author: pabel $
  * 
- * @version $Revision: $, $Date: $
  */
 public class VectorLayerAdapter {
 

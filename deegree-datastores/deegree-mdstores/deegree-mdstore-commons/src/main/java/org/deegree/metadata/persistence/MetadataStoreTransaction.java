@@ -50,8 +50,6 @@ import org.deegree.protocol.csw.MetadataStoreException;
  *
  * @see MetadataStore#acquireTransaction()
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 30650 $, $Date: 2011-05-05 11:34:25 +0200 (Do, 05. Mai 2011) $
  */
 public interface MetadataStoreTransaction {
 

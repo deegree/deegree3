@@ -59,8 +59,6 @@ import org.deegree.gml.GMLStreamWriter;
  * geometries in general for a given process.
  *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class XMLGeometryProcessor {

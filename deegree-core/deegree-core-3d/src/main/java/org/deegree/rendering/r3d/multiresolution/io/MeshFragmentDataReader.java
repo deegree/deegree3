@@ -55,8 +55,6 @@ import org.slf4j.LoggerFactory;
  * This class opens a channel to a file containing meshfragments.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$
  */
 public class MeshFragmentDataReader {
 

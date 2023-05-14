@@ -49,8 +49,6 @@ import org.deegree.commons.utils.StringPair;
  * <code>HtmlLiteralInput</code> capsulates a LiteralInput GUI field
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 @FacesComponent(value = "HtmlLiteralInput")
 public class HtmlLiteralInput extends UISelectOne {

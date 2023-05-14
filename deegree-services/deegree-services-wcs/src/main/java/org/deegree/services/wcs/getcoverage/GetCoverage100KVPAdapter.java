@@ -72,8 +72,6 @@ import org.deegree.protocol.wcs.WCSConstants;
  * This is a kvp adapter for WCS 1.0.0 GetCoverage requests.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class GetCoverage100KVPAdapter {

@@ -61,8 +61,6 @@ import org.deegree.coverage.raster.geom.RasterRect;
  * methods for other data types.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  * @see DataType
  * @see InterleaveType
  *

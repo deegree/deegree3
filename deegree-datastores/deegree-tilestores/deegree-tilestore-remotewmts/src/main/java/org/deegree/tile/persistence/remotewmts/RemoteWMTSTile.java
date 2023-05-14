@@ -73,8 +73,6 @@ import org.slf4j.Logger;
  * {@link Tile} implementation for {@link RemoteWMTSTileDataLevel}.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 class RemoteWMTSTile implements Tile {
 

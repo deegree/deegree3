@@ -56,8 +56,6 @@ import org.deegree.tools.coverage.gridifier.RasterLevel;
  * Raster api.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class MultiResolutionTileGrid implements MultiLevelRasterTileIndex {

@@ -48,8 +48,6 @@ import org.junit.Test;
  * <code>StereographicAlternativeTest</code> test the lambert conformal conic projection
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class LambertConformalConicTest extends ProjectionBase {

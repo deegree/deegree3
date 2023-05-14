@@ -89,8 +89,6 @@ import org.slf4j.Logger;
  *
  * @author <a href="mailto:goltz@deegree.org">Lyn Goltz</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class EOPropertyNameMapper implements PropertyNameMapper {
 

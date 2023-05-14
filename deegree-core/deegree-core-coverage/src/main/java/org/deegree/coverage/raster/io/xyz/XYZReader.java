@@ -77,8 +77,6 @@ import org.slf4j.Logger;
  * The coordinates should be integer or float values as ascii text.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author:otonnhofer $
- * @version $Revision:10872 $, $Date:2008-04-01 15:41:48 +0200 (Tue, 01 Apr 2008) $
  */
 public class XYZReader implements RasterReader {
 

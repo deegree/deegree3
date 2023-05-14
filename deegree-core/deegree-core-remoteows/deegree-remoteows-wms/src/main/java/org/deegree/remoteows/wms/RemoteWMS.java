@@ -41,8 +41,6 @@ import org.deegree.workspace.ResourceMetadata;
 
 /**
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: aschmitz $
- * @version $Revision: 31451 $, $Date: 2011-08-08 08:13:46 +0200 (Mon, 08 Aug 2011) $
  */
 public class RemoteWMS implements RemoteOWS {
 

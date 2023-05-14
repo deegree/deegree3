@@ -46,8 +46,6 @@ import org.deegree.cs.transformations.polynomial.PolynomialTransformation;
  * transformations
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public enum SupportedTransformations {

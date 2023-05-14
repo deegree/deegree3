@@ -71,8 +71,6 @@ import org.slf4j.Logger;
  * <code>GetFeatureInfo</code>
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: aschmitz $
- * @version $Revision: 31400 $, $Date: 2011-08-02 10:11:48 +0200 (Tue, 02 Aug 2011) $
  */
 public class GetFeatureInfo extends RequestBase {
 

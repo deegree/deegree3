@@ -58,8 +58,6 @@ import org.slf4j.LoggerFactory;
  * Handles the setting up of clean instances and the starting and stopping of Tomcat.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class TomcatHelper {
 

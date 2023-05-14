@@ -62,8 +62,6 @@ import org.deegree.coverage.raster.io.RasterWriter;
  * used.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class XYZWriter implements RasterWriter {

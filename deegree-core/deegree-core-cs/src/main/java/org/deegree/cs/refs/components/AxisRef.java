@@ -45,8 +45,6 @@ import org.deegree.cs.refs.CRSResourceRef;
  * {@link CRSResourceRef} ti a {@link IAxis}
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class AxisRef extends CRSResourceRef<IAxis> implements Serializable, IAxis {
 

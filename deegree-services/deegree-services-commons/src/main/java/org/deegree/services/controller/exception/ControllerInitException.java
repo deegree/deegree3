@@ -42,8 +42,6 @@ import org.deegree.services.controller.AbstractOWS;
  * configuration error).
  *
  * @author <a href="mailto:apadberg@uni-bonn.de">Alexander Padberg</a>
- * @author last edited by: $Author: $
- * @version $Revision: $, $Date: $
  */
 public class ControllerInitException extends Exception {
 

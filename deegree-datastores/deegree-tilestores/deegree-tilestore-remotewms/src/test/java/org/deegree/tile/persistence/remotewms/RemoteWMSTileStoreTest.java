@@ -71,8 +71,6 @@ import org.junit.Test;
  * </p>
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$
  */
 public class RemoteWMSTileStoreTest {
 

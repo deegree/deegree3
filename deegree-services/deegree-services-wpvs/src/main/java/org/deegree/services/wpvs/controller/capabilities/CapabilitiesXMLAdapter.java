@@ -68,8 +68,6 @@ import org.slf4j.LoggerFactory;
  * The <code>CapabilitiesXMLAdapter</code> class exports the capabilities of a wpvs.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class CapabilitiesXMLAdapter extends OWSCapabilitiesXMLAdapter {
 

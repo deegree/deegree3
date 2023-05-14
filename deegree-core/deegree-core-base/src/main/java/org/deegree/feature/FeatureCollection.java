@@ -51,8 +51,6 @@ import org.deegree.filter.XPathEvaluator;
  *
  * @see Feature
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 13814 $, $Date: 2008-09-02 20:28:13 +0200 (Di, 02 Sep 2008) $
  */
 public interface FeatureCollection extends Feature, Collection<Feature> {
 

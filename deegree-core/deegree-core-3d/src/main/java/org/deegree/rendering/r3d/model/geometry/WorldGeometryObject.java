@@ -43,8 +43,6 @@ import org.deegree.rendering.r3d.model.WorldObject;
  * on geometry quality models.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class WorldGeometryObject extends WorldObject<SimpleAccessGeometry, GeometryQualityModel> {
 

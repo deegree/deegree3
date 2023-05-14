@@ -48,8 +48,6 @@ import org.deegree.rendering.r3d.multiresolution.SpatialSelection;
  * @see SelectiveRefinement
  * @see SpatialSelection
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$
  */
 public interface LODCriterion {
 

@@ -45,9 +45,7 @@ import org.deegree.geometry.primitive.Solid;
  * single solid.
  *
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
- * @author last edited by: $Author$
  *
- * @version. $Revision$, $Date$
  */
 public interface CompositeSolid extends Solid, List<Solid> {
 

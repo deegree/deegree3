@@ -40,8 +40,6 @@ import org.deegree.cs.CRSResource;
  * Interface describing Axis
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public interface IAxis extends CRSResource {
 

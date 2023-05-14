@@ -41,8 +41,6 @@ import org.deegree.cs.components.IVerticalDatum;
  * Interface describing a VerticalCRS
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public interface IVerticalCRS extends ICRS {
 

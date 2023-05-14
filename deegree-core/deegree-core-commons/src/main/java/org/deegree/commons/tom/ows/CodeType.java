@@ -44,8 +44,6 @@ import org.deegree.commons.utils.kvp.InvalidParameterValueException;
  * as the organisation who assigned the value, or the dictionary from which it is taken.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class CodeType implements TypedObjectNode {
 

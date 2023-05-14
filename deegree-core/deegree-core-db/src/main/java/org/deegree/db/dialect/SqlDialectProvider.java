@@ -48,8 +48,6 @@ import org.deegree.sqldialect.SQLDialect;
  * SPI interface for loading SQL dialect implementations.
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * @version $Revision: $, $Date: $
  */
 public interface SqlDialectProvider {
 

@@ -45,8 +45,6 @@ import org.deegree.geometry.primitive.Surface;
  * Default implementation of {@link MultiSurface}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class DefaultMultiSurface extends DefaultMultiGeometry<Surface> implements MultiSurface<Surface> {
 

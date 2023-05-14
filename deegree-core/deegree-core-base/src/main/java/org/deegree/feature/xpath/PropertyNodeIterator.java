@@ -56,8 +56,6 @@ import org.deegree.time.primitive.TimePeriod;
  * {@link Iterator} over property nodes of a feature node.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * @version $Revision:$, $Date:$
  */
 class PropertyNodeIterator implements Iterator<PropertyNode> {
 

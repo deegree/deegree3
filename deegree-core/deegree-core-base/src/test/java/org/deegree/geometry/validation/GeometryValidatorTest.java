@@ -69,8 +69,6 @@ import org.junit.Test;
  * {@link GeometryValidator}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * @version $Revision:$, $Date:$
  */
 public class GeometryValidatorTest {
 

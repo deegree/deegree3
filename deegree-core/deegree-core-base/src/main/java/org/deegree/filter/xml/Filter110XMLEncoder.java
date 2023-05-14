@@ -98,8 +98,6 @@ import org.deegree.gml.GMLVersion;
  * Encodes {@link Filter} objects according to the Filter Encoding Specification 1.1.0.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * @version $Revision:$, $Date:$
  */
 public class Filter110XMLEncoder {
 

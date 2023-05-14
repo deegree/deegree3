@@ -42,8 +42,6 @@ import java.util.List;
  * metadata element.
  *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class Address {
 

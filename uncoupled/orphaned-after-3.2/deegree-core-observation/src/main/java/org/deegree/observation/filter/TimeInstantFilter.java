@@ -40,9 +40,7 @@ import java.util.Date;
  *
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
  *
- * @version $Revision$, $Date$
  *
  */
 public class TimeInstantFilter implements TimeFilter {

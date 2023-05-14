@@ -42,8 +42,6 @@ import org.deegree.coverage.raster.io.RasterDataReader;
  * This class implements a RasterDataContainer that keeps RasterData in memory.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class MemoryRasterDataContainer implements RasterDataContainer, RasterDataContainerProvider {

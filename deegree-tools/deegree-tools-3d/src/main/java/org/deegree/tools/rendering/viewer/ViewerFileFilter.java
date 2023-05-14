@@ -45,8 +45,6 @@ import javax.swing.filechooser.FileFilter;
  * of the JFileChooser.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class ViewerFileFilter extends FileFilter {
 

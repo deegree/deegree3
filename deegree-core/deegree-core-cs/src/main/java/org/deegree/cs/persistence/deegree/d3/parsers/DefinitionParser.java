@@ -72,8 +72,6 @@ import org.slf4j.Logger;
  * crs parsers as well as reading in the locations of the crs components defintions.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public abstract class DefinitionParser {

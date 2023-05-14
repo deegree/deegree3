@@ -43,8 +43,6 @@ import org.junit.Test;
  * This class contains integration tests for SOS OGC GetObservation requests.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class SOSGetObservationValidator extends SOSValidator {

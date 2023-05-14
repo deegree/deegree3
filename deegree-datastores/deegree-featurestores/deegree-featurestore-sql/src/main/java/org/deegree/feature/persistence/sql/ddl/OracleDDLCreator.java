@@ -60,8 +60,6 @@ import org.slf4j.LoggerFactory;
  * instances.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: 348 $, $Date: 2011-07-01 18:02:24 +0200 (Fr, 01. Jul 2011) $
  */
 public class OracleDDLCreator extends DDLCreator {
 

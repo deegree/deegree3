@@ -40,8 +40,6 @@ package org.deegree.rendering.r3d.opengl.rendering.dem;
  * and semi transparent support.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class CompositingShader {

@@ -54,8 +54,6 @@ import org.slf4j.LoggerFactory;
  * representation of the metadata record as binary at the first position!
  *
  * @author <a href="mailto:goltz@deegree.org">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public abstract class XMLMetadataResultSet<T extends MetadataRecord> implements MetadataResultSet<T> {
 

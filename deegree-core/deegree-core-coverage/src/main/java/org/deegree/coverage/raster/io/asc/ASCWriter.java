@@ -64,8 +64,6 @@ import org.deegree.cs.coordinatesystems.ICRS;
  * the 'space' character will be used.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class ASCWriter implements RasterWriter {

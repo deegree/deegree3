@@ -43,8 +43,6 @@ import java.text.SimpleDateFormat;
  * {@link org.deegree.services.wps.ProcessExecution}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 29926 $, $Date: 2011-03-08 11:47:59 +0100 (Di, 08. Mär 2011) $
  */
 public class ProcessExecution {
 

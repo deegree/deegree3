@@ -67,8 +67,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author <a href="mailto:a.aiordachioaie@jacobs-university.de">Andrei Aiordachioaie</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class Categorize extends AbstractCustomExpression {
 

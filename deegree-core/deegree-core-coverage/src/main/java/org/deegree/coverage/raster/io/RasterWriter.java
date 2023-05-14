@@ -45,8 +45,6 @@ import org.deegree.coverage.raster.AbstractRaster;
  * This interface is for abstraction of the raster writing handling.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$
  *
  */
 public interface RasterWriter {

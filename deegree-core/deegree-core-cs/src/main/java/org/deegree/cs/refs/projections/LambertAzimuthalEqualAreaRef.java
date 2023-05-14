@@ -45,8 +45,6 @@ import org.deegree.cs.projections.azimuthal.LambertAzimuthalEqualArea;
  * {@link ProjectionRef} to a {@link LambertAzimuthalEqualArea}
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class LambertAzimuthalEqualAreaRef extends ProjectionRef implements Serializable, ILambertAzimuthalEqualArea {
 

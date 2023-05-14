@@ -40,8 +40,6 @@ import org.apache.xerces.xs.XSSimpleTypeDefinition;
  * Defines a primitive type.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class PrimitiveType {
 

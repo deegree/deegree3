@@ -114,8 +114,6 @@ import org.slf4j.Logger;
  * spatial SQL databases (currently only PostgreSQL / PostGIS is supported).
  *
  * @author <a href="mailto:goltz@deegree.org">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
 

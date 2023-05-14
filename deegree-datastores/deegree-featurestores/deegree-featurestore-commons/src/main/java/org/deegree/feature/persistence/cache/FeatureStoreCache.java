@@ -43,8 +43,6 @@ import org.deegree.feature.persistence.FeatureStore;
  *
  * @see FeatureStore
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public interface FeatureStoreCache {
 

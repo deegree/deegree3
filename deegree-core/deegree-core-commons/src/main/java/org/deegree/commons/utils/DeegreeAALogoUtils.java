@@ -50,8 +50,6 @@ import org.slf4j.LoggerFactory;
  * Provides utility methods for outputting/logging the deegree 3 ascii art logo.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class DeegreeAALogoUtils {
 

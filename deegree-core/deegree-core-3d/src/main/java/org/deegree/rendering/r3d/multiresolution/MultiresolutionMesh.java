@@ -68,8 +68,6 @@ import org.slf4j.LoggerFactory;
  * @see SpatialSelection
  * @see LODCriterion
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$
  */
 public class MultiresolutionMesh {
 

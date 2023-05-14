@@ -58,8 +58,6 @@ import org.slf4j.Logger;
  * matrix between two coordinate systems.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class Matrix extends GMatrix {

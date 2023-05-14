@@ -45,8 +45,6 @@ import org.deegree.geometry.points.Points;
  * vertical surface curves.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public interface GriddedSurfacePatch extends SurfacePatch {
 

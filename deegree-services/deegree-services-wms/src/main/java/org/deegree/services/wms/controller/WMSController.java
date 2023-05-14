@@ -174,8 +174,6 @@ import org.slf4j.Logger;
  * <code>WMSController</code> handles the protocol and map service globally.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class WMSController extends AbstractOWS {
 
@@ -1229,8 +1227,6 @@ public class WMSController extends AbstractOWS {
 	 * <code>Controller</code>
 	 *
 	 * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-	 * @author last edited by: $Author$
-	 * @version $Revision$, $Date$
 	 */
 	public interface Controller {
 

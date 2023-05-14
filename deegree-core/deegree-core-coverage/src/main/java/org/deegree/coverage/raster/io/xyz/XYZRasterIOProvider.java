@@ -48,8 +48,6 @@ import org.deegree.coverage.raster.io.RasterWriter;
  * The <code>XYZRasterIOProvider</code> class defines the access to xyz files
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class XYZRasterIOProvider implements RasterIOProvider {

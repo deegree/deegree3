@@ -41,8 +41,6 @@ package org.deegree.metadata.iso.types;
  * operates on a resource.
  *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class Format {
 

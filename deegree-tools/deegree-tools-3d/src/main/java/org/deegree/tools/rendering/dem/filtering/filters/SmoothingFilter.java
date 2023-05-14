@@ -56,8 +56,6 @@ import org.slf4j.Logger;
  *
  * @author <a href="mailto:name@deegree.org">Andreas Poth</a>
  * @author <a href="mailto:name@deegree.org">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class SmoothingFilter implements DEMFilter {
 

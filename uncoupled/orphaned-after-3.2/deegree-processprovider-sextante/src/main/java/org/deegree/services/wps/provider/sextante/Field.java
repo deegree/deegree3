@@ -41,9 +41,7 @@ import javax.xml.namespace.QName;
  * 'Name' is the column name and 'Type' the data type.
  * 
  * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
- * @author last edited by: $Author: pabel $
  * 
- * @version $Revision: $, $Date: $
  */
 public class Field {
     private final String m_Name; // column name

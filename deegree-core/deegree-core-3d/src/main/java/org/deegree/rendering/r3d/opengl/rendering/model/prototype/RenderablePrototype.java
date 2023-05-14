@@ -45,8 +45,6 @@ import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderable
  * one level of detail.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class RenderablePrototype extends WorldRenderableObject {

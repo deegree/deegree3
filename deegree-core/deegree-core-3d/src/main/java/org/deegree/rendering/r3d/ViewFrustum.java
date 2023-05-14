@@ -55,8 +55,6 @@ import javax.vecmath.Vector3d;
  * </p>
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$
  */
 public class ViewFrustum {
 

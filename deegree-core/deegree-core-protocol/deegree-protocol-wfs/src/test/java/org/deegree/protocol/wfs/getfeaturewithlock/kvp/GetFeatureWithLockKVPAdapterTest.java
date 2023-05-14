@@ -49,8 +49,6 @@ import org.junit.Test;
  * kvp adapter.
  *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class GetFeatureWithLockKVPAdapterTest extends TestCase {
 

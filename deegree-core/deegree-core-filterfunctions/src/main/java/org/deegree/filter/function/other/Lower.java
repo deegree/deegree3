@@ -56,8 +56,6 @@ import org.deegree.workspace.Workspace;
  * Lowercasing function.
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: aschmitz $
- * @version $Revision: 30121 $, $Date: 2011-03-22 10:08:12 +0100 (Di, 22. Mär 2011) $
  */
 public class Lower implements FunctionProvider {
 

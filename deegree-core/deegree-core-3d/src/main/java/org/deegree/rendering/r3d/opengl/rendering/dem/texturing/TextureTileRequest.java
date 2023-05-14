@@ -42,8 +42,6 @@ import static java.lang.Math.round;
  * Represents the request for a {@link TextureTile}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class TextureTileRequest {
 

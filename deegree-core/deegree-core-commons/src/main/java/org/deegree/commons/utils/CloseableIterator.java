@@ -49,8 +49,6 @@ import java.util.List;
  * </p>
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  * @param <T> type of the iterated objects
  */
 public interface CloseableIterator<T> extends Iterator<T> {

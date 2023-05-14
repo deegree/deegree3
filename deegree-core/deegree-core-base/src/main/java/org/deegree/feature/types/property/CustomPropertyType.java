@@ -45,8 +45,6 @@ import java.util.List;
  * {@link PropertyType} that defines a property with a user-defined value type.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class CustomPropertyType extends AbstractPropertyType {
 

@@ -48,8 +48,6 @@ import org.slf4j.Logger;
  * <code>xlink:href</code> attribute in GML (may be document-local or remote).
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public abstract class CRSResourceRef<T extends CRSResource> extends Reference<T> implements CRSResource {
 

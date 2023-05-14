@@ -47,9 +47,7 @@ import org.deegree.commons.tom.datetime.ISO8601Converter;
  * This class represets a time period between to dates. The period can be extended.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
  * 
  */
 public class TimePeriod implements SamplingTime {

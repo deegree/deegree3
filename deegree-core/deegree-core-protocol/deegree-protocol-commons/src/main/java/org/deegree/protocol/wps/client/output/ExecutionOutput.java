@@ -41,8 +41,6 @@ import org.deegree.commons.tom.ows.CodeType;
  *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public abstract class ExecutionOutput {
 

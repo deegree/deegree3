@@ -53,8 +53,6 @@ import org.junit.Test;
  * Tests for {@link RemoteWMTSProvider}.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class RemoteWMTSProviderTest {
 

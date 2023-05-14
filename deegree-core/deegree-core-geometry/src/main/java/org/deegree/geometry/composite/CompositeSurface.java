@@ -45,9 +45,7 @@ import org.deegree.geometry.primitive.Surface;
  * single surface.
  *
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
- * @author last edited by: $Author$
  *
- * @version. $Revision$, $Date$
  */
 public interface CompositeSurface extends Surface, List<Surface> {
 

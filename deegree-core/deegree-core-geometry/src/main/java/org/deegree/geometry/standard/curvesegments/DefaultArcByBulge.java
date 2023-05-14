@@ -46,8 +46,6 @@ import org.deegree.geometry.standard.points.PointsList;
  * Default implementation of {@link ArcByBulge} segments.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class DefaultArcByBulge implements ArcByBulge {
 

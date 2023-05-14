@@ -42,8 +42,6 @@ package org.deegree.protocol.wps.ap.wcts;
  * INSPIRE Coordinate Transformation Services Version 2 (07-09-2009).
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class WCTSConstants {
@@ -53,8 +51,6 @@ public class WCTSConstants {
 	 * Inspire WPS application profile (WCTS) exception codes.
 	 *
 	 * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
-	 * @author last edited by: $Author$
-	 * @version $Revision$, $Date$
 	 *
 	 */
 	public enum ExceptionCodes {

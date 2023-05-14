@@ -45,8 +45,6 @@ import org.deegree.commons.jdbc.SQLIdentifier;
  * Metadata for a number of tables in an SQL database.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: markus $
- * @version $Revision: $, $Date: $
  */
 public class RelationalModel {
 

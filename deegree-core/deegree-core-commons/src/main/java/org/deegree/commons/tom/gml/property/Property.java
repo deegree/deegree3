@@ -50,8 +50,6 @@ import org.deegree.commons.tom.gml.GMLObject;
  *
  * @see GMLObject
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public interface Property extends ElementNode {
 

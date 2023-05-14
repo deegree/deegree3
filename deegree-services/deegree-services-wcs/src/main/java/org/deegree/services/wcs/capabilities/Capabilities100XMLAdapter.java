@@ -67,8 +67,6 @@ import org.deegree.services.wcs.describecoverage.CoverageDescription100XMLAdapte
 
 /**
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class Capabilities100XMLAdapter extends XMLAdapter {

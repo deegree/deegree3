@@ -65,8 +65,6 @@ import org.slf4j.Logger;
  * <code>FormatDate</code>
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class FormatDate extends AbstractCustomExpression {
 

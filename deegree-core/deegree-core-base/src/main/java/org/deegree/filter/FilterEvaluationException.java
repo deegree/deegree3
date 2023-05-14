@@ -38,8 +38,6 @@ package org.deegree.filter;
  * Indicates that the evaluation of a {@link Filter} expression failed.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * @version $Revision:$, $Date:$
  */
 public class FilterEvaluationException extends Exception {
 

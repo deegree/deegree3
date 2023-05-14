@@ -41,9 +41,7 @@ package org.deegree.services.wps.input;
  * (unit-of-measure) information.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
  *
- * @version $Revision: $, $Date: $
  */
 public interface LiteralInput extends ProcessletInput {
 

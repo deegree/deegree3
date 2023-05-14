@@ -39,8 +39,6 @@ package org.deegree.commons.utils;
  * debug.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class LogUtils {

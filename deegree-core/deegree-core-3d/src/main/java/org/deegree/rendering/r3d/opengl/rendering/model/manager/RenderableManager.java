@@ -58,8 +58,6 @@ import org.deegree.rendering.r3d.opengl.rendering.JOGLRenderable;
  * view frustum.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  * @param <T> type of this manager
  *
  */

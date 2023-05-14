@@ -43,8 +43,6 @@ import org.deegree.protocol.wps.client.output.type.LiteralOutputType;
  * @see LiteralInputType
  * @see LiteralOutputType
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class ValueWithRef {
 

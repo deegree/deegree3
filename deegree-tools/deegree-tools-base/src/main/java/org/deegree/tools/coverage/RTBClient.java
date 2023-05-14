@@ -73,8 +73,6 @@ import org.deegree.tools.coverage.rtb.RasterTreeBuilder;
  * This is the commandline interface for the {@link RasterTreeBuilder}.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 @Tool("Builds a raster tree from a given set of rasters.")
 public class RTBClient {

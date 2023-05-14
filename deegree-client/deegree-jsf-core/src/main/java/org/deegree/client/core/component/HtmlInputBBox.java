@@ -47,8 +47,6 @@ import org.deegree.client.core.utils.MessageUtils;
  * <code>HtmlInputBBox</code>
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 
 @FacesComponent(value = "HtmlInputBBox")

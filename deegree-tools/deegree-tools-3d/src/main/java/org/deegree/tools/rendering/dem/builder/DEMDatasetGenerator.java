@@ -89,8 +89,6 @@ import org.deegree.tools.rendering.dem.builder.dag.DAGBuilder;
  * recursively bisecting the triangles.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 @Tool("Generates DEM multiresolution datasets from rasters, suitable for the WPVS.")
 public class DEMDatasetGenerator {

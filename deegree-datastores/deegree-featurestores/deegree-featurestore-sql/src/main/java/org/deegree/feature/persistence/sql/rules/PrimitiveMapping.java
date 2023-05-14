@@ -47,8 +47,6 @@ import java.util.List;
  * {@link Mapping} of {@link PrimitiveValue} particles.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class PrimitiveMapping extends Mapping {
 

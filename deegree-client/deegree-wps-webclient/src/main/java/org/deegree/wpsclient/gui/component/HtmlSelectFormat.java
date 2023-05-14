@@ -44,8 +44,6 @@ import org.deegree.protocol.wps.client.param.ComplexFormat;
  * TODO add class documentation here
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 @FacesComponent(value = "HtmlSelectFormat")
 public class HtmlSelectFormat extends UISelectOne {

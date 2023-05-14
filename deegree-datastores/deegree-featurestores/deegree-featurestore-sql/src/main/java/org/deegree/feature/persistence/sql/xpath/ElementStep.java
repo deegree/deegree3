@@ -40,8 +40,6 @@ import javax.xml.namespace.QName;
  * XPath <code>NameStep</code> (element axis) with optional child position predicate.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 class ElementStep extends MappableNameStep {
 

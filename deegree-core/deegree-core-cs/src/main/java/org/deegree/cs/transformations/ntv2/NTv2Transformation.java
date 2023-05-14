@@ -77,8 +77,6 @@ import au.com.objectix.jgridshift.SubGrid;
  * The Coordinate systems are normally {@link GeographicCRS}s.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class NTv2Transformation extends Transformation {

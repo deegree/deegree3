@@ -37,9 +37,7 @@ package org.deegree.rendering.r2d;
 
 /**
  * @author <a href="mailto:a.aiordachioaie@jacobs-university.de">Andrei Aiordachioaie</a>
- * @author last edited by: $Author: aaiordachioaie$
  *
- * @version. $Revision$, $Date$
  */
 public class RasterRenderingException extends RuntimeException {
 

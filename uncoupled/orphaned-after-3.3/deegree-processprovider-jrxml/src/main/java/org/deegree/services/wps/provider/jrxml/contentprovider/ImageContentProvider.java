@@ -67,9 +67,7 @@ import org.deegree.workspace.Workspace;
  * A {@link JrxmlContentProvider} for image parameters
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
  * 
- * @version $Revision: $, $Date: $
  */
 public class ImageContentProvider extends AbstractJrxmlContentProvider {
 

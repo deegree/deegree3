@@ -41,8 +41,6 @@ package org.deegree.commons.xml;
  *
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class CommonNamespaces {
 

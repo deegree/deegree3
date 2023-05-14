@@ -62,9 +62,7 @@ import org.springframework.context.support.GenericXmlApplicationContext;
  * {@link org.springframework.context.ApplicationContext}.
  * 
  * @author <a href="mailto:reijer.copier@idgis.nl">Reijer Copier</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
  */
 public class BootstrapApplicationContextHolderBuilder implements ResourceBuilder<ApplicationContextHolder> {
     

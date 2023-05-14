@@ -59,8 +59,6 @@ import org.deegree.cs.utilities.Matrix;
  * &times; 3 and 4 &times; 4 matrices are supported.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class MatrixTransform extends Transformation {

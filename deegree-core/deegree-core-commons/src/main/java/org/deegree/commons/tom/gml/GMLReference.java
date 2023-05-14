@@ -48,8 +48,6 @@ import org.deegree.commons.tom.gml.property.Property;
  * <code>xlink:href</code> attribute.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  * @param <T> type of the referenced object
  */
 public class GMLReference<T extends GMLObject> extends Reference<T> implements GMLObject {

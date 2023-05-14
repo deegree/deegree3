@@ -45,8 +45,6 @@ import org.deegree.services.csw.AbstractCSWRequestXMLAdapter;
  * objects.
  *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: thomas $
- * @version $Revision: $, $Date: $
  */
 public class TransactionKVPAdapter extends AbstractCSWRequestXMLAdapter {
 

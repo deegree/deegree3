@@ -63,8 +63,6 @@ import org.slf4j.LoggerFactory;
  * TODO add documentation here
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * @version $Revision:$, $Date:$
  */
 class GML3GeometryBaseReader extends AbstractGMLObjectReader {
 

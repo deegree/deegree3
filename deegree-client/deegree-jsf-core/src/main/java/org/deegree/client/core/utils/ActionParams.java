@@ -44,8 +44,6 @@ import java.io.Serializable;
  * in JSF versions before 2.2.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 @ManagedBean(name = "actionParams")
 @RequestScoped

@@ -68,9 +68,7 @@ import org.deegree.geometry.standard.primitive.DefaultPolygon;
  * @see GeometryFactory
  * @see GeometryInspector
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
  *
- * @version. $Revision$, $Date$
  */
 public class SimpleGeometryFactory {
 

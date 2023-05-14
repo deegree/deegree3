@@ -62,8 +62,6 @@ import org.junit.Test;
  * that are substitutable for <code>gml:_SurfacePatch</code>.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * @version $Revision:$, $Date:$
  */
 public class GML3SurfacePatchReaderTest {
 

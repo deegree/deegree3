@@ -38,8 +38,6 @@ package org.deegree.commons.config;
  * Indicates that a {@link Resource} could not be initialized properly.
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class ResourceInitException extends Exception {
 

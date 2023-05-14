@@ -46,8 +46,6 @@ import org.junit.runners.Parameterized.Parameters;
  * Wraps the execution of the CITE WMS 1.3.0 TestSuite as a JUnit-test.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 @RunWith(Parameterized.class)
 public class WMSCite130IntegrationTest extends AbstractCiteIntegrationTest {

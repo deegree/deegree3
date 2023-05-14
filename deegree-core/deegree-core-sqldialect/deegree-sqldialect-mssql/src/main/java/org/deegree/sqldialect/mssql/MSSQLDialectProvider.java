@@ -46,8 +46,6 @@ import org.slf4j.Logger;
  * {@link SqlDialectProvider} for Microsoft SQL Server databases.
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: 295 $, $Date: 2011-06-09 16:48:47 +0200 (Do, 09 Jun 2011) $
  */
 public class MSSQLDialectProvider implements SqlDialectProvider {
 

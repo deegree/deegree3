@@ -77,8 +77,6 @@ import org.slf4j.LoggerFactory;
  * </ul>
  *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author: ionita $
- * @version $Revision: $, $Date: $
  *
  */
 public class WPVSStressTest {
@@ -124,8 +122,6 @@ public class WPVSStressTest {
 	 * thread
 	 *
 	 * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
-	 * @author last edited by: $Author: ionita $
-	 * @version $Revision: $, $Date: $
 	 *
 	 */
 	private class WPVSSender implements Runnable {

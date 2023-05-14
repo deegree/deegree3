@@ -45,8 +45,6 @@ import org.deegree.geometry.primitive.segments.Knot;
  * Default implementation of {@link BSpline} segments.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class DefaultBSpline implements BSpline {
 

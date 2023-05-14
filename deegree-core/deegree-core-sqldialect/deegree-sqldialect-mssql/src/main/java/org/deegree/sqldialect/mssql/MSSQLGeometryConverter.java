@@ -54,8 +54,6 @@ import org.slf4j.Logger;
  * {@link GeometryParticleConverter} for Microsoft SQL Server databases.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 31055 $, $Date: 2011-06-14 17:19:48 +0200 (Di, 14. Jun 2011) $
  */
 public class MSSQLGeometryConverter implements GeometryParticleConverter {
 

@@ -56,8 +56,6 @@ import org.deegree.services.OWS;
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  * @param <T>
  */
 public abstract class ImplementationMetadata<T extends Enum<T>> {

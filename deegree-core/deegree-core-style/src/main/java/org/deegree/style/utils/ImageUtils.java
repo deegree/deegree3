@@ -55,8 +55,6 @@ import javax.media.jai.operator.ColorQuantizerDescriptor;
 
 /**
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: aschmitz $
- * @version $Revision: 28386 $, $Date: 2010-11-25 15:38:59 +0100 (Thu, 25 Nov 2010) $
  */
 public class ImageUtils {
 

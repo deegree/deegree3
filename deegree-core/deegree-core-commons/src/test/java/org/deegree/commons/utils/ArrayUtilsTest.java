@@ -47,8 +47,6 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class ArrayUtilsTest {
 

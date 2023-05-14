@@ -40,8 +40,6 @@ import org.deegree.commons.tom.TypedObjectNode;
  * A simple text description or a reference to an external description.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class StringOrRef implements TypedObjectNode {
 

@@ -45,8 +45,6 @@ import org.deegree.tools.rendering.dem.builder.MacroTriangle;
  * TODO comment me
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class FragmentInfo implements Serializable {
 

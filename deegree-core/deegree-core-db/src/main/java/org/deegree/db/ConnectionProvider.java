@@ -49,8 +49,6 @@ import org.deegree.workspace.Resource;
  * Resource to provide SQL connections and SQL dialects.
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * @version $Revision: $, $Date: $
  */
 public interface ConnectionProvider extends Resource {
 

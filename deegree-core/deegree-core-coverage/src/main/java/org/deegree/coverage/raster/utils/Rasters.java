@@ -46,8 +46,6 @@ import org.deegree.coverage.raster.geom.RasterRect;
  * <code>Rasters</code> supplies handy methods for rasters.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class Rasters {

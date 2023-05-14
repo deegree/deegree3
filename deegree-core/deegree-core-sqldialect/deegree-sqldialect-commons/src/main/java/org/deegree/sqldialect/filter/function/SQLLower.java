@@ -47,8 +47,6 @@ import org.deegree.workspace.Workspace;
  * {@link SQLFunctionProvider} for the <code>Lower</code> function.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 30337 $, $Date: 2011-04-04 14:21:18 +0200 (Mo, 04. Apr 2011) $
  */
 public class SQLLower implements SQLFunctionProvider {
 

@@ -43,8 +43,6 @@ import org.deegree.style.styling.Copyable;
  * <code>Halo</code>
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 18171 $, $Date: 2009-06-17 16:00:07 +0200 (Wed, 17 Jun 2009) $
  */
 public class Halo implements Copyable<Halo> {
 

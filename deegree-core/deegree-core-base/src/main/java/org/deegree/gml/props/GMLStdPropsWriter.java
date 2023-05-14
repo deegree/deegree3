@@ -51,8 +51,6 @@ import org.deegree.gml.GMLVersion;
  * TODO handle gml:metadataProperty, gml:identifier and gml:descriptionReference
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class GMLStdPropsWriter {
 

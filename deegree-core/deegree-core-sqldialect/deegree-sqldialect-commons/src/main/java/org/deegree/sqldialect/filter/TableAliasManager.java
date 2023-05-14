@@ -46,8 +46,6 @@ import org.deegree.filter.expression.ValueReference;
  *
  * @see AbstractWhereBuilder
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 25462 $, $Date: 2010-07-21 18:45:40 +0200 (Mi, 21. Jul 2010) $
  */
 public class TableAliasManager {
 

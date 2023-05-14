@@ -46,9 +46,7 @@ import org.deegree.protocol.ows.OWSCommonXMLAdapter;
  * Base class for all SOS 1.0.0 XMLAdapter. Defines the SOS XML namespace.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
  * 
  */
 public class SOSRequest100XMLAdapter extends OWSCommonXMLAdapter {

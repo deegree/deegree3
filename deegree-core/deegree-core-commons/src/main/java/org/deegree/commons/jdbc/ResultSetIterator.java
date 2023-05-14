@@ -53,8 +53,6 @@ import org.slf4j.LoggerFactory;
  * backed by an SQL result set.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  * @param <T> type of the iterated objects
  */
 public abstract class ResultSetIterator<T> implements CloseableIterator<T> {

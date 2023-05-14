@@ -39,8 +39,6 @@ package org.deegree.style.styling;
  * <code>Styling</code>
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: aschmitz $
- * @version $Revision: 30169 $, $Date: 2011-03-25 11:49:50 +0100 (Fri, 25 Mar 2011) $
  */
 public interface Styling<T> extends Copyable<T> {
 

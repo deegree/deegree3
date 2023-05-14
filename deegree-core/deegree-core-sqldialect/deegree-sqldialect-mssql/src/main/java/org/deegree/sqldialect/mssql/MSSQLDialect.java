@@ -69,8 +69,6 @@ import org.deegree.sqldialect.AbstractSQLDialect;
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: 417 $, $Date: 2011-11-02 11:09:47 +0100 (Mi, 02 Nov 2011) $
  */
 public class MSSQLDialect extends AbstractSQLDialect implements SQLDialect {
 

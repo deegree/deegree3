@@ -89,8 +89,6 @@ import org.slf4j.Logger;
  * <code>Style</code>
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: aschmitz $
- * @version $Revision: 31255 $, $Date: 2011-07-12 12:08:02 +0200 (Tue, 12 Jul 2011) $
  */
 public class Style implements Copyable<Style> {
 

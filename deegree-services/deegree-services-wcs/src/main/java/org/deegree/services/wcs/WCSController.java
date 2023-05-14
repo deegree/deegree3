@@ -113,8 +113,6 @@ import org.slf4j.LoggerFactory;
  * Coverage Service</a> server protocol.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class WCSController extends AbstractOWS {
 

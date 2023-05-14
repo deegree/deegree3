@@ -56,8 +56,6 @@ import org.mockito.Mockito;
  * Basic tests for {@link TileCacheDiskLayout}.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class TileCacheDiskLayoutTest {
 

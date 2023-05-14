@@ -54,8 +54,6 @@ import org.deegree.geometry.standard.AbstractDefaultGeometry;
  * Default implementation of {@link OrientableSurface}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class DefaultOrientableSurface extends AbstractDefaultGeometry implements OrientableSurface {
 

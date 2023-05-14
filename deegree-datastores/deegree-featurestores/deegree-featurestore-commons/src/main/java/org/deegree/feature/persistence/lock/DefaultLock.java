@@ -65,8 +65,6 @@ import org.slf4j.LoggerFactory;
  *
  * @see DefaultLockManager
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 class DefaultLock implements Lock {
 

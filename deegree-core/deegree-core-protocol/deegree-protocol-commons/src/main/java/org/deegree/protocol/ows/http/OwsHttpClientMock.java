@@ -44,8 +44,6 @@ import org.deegree.commons.utils.io.StreamBufferStore;
  * Easy mocking for {@link OwsHttpClient}.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class OwsHttpClientMock implements OwsHttpClient {
 

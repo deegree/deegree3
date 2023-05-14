@@ -56,8 +56,6 @@ import org.reflections.Reflections;
  * Allows for convenient starting and listing of available deegree command line tools.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class ToolBox {
 
@@ -354,8 +352,6 @@ public class ToolBox {
 	 * mechanism of the JFileChooser.
 	 *
 	 * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
-	 * @author last edited by: $Author$
-	 * @version $Revision$, $Date$
 	 *
 	 */
 	static class CustomFileFilter implements java.io.FileFilter {

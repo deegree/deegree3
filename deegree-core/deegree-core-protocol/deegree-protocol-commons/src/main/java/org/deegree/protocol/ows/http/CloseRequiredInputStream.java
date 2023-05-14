@@ -43,8 +43,6 @@ import java.io.InputStream;
  * (e.g. an HTTP connection) will be closed.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class CloseRequiredInputStream extends InputStream {
 

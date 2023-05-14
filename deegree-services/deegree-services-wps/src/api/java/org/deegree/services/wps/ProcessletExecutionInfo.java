@@ -40,9 +40,7 @@ package org.deegree.services.wps;
  * that it wants to make known to clients.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
  *
- * @version $Revision: $, $Date: $
  */
 public interface ProcessletExecutionInfo {
 

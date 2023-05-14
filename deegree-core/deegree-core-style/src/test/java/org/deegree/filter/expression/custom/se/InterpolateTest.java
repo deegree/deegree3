@@ -63,8 +63,6 @@ import org.slf4j.Logger;
  * <code>InterpolateTest</code>
  *
  * @author <a href="mailto:a.aiordachioaie@jacobs-university.de">Andrei Aiordachioaie</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class InterpolateTest extends TestCase {
 

@@ -44,8 +44,6 @@ package org.deegree.geometry.primitive;
  * OrientableSurface, the sense of "the top of the surface".
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public interface OrientableSurface extends Surface {
 

@@ -58,8 +58,6 @@ import java.util.Map;
  * Responsible for finding feature store resources.
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * @version $Revision: $, $Date: $
  */
 public class FeatureStoreManager extends DefaultResourceManager<FeatureStore> {
 

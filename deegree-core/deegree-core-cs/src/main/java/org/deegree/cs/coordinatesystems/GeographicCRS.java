@@ -55,8 +55,6 @@ import org.deegree.cs.transformations.Transformation;
  * dimensional crs with axis of lat-lon.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 

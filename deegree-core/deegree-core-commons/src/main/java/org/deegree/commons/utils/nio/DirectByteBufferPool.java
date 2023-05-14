@@ -49,8 +49,6 @@ import org.slf4j.LoggerFactory;
  * they can be reused.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class DirectByteBufferPool {
 

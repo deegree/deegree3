@@ -74,9 +74,7 @@ import org.slf4j.LoggerFactory;
  * Process to get a preview about the report.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
  * 
- * @version $Revision: $, $Date: $
  */
 public class JrxmlTemplateProcess extends AbstractJrxmlWPSProcess {
 

@@ -46,8 +46,6 @@ import org.deegree.cs.refs.components.PrimeMeridianRef;
  * The <code>PrimeMeridian</code> class saves the longitude to the greenwich meridian.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 

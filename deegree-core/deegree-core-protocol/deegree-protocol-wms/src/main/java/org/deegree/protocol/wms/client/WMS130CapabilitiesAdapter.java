@@ -51,8 +51,6 @@ import org.slf4j.LoggerFactory;
  * href="http://www.opengeospatial.org/standards/wms>WMS 1.3.0</a> specification.
  *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class WMS130CapabilitiesAdapter extends WMSCapabilitiesAdapter {
 

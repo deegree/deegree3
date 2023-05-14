@@ -56,8 +56,6 @@ import org.deegree.geometry.primitive.Point;
  * Supplies some basic exports methods for deegree/commons to ows mappings.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author: rbezema $
- * @version $Revision: $, $Date: $
  */
 public class OWSCommonXMLAdapter extends XMLAdapter {
 

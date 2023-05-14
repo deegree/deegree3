@@ -54,8 +54,6 @@ import org.deegree.client.core.utils.MessageUtils;
  * to a list of supported mime types.
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 @FacesValidator(value = "fileMimeTypeValidator")
 public class FileMimeTypeValidator implements Validator {

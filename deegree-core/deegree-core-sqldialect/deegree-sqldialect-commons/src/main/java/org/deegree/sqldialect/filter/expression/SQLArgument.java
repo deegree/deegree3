@@ -58,8 +58,6 @@ import org.slf4j.LoggerFactory;
  * number or a geometry.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 31370 $, $Date: 2011-07-28 19:37:13 +0200 (Do, 28. Jul 2011) $
  */
 public class SQLArgument implements SQLExpression {
 

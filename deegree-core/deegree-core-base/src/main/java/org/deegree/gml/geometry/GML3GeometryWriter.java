@@ -130,8 +130,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: ionita $
- * @version $Revision: $, $Date: $
  */
 public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGeometryWriter {
 

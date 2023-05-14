@@ -46,8 +46,6 @@ import org.deegree.commons.tom.ows.CodeType;
  * TODO add class documentation here
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 @FacesConverter(forClass = CodeType.class)
 public class CodeTypeConverter implements Converter {

@@ -44,8 +44,6 @@ import org.deegree.geometry.primitive.patches.PolygonPatch;
  * {@link Ring} of a {@link PolygonPatch}.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class ExteriorRingOrientation extends AbstractGeometryValidationEvent {
 

@@ -42,8 +42,6 @@ import org.deegree.filter.expression.ValueReference;
  * {@link AbstractWhereBuilder} implementations.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 30964 $, $Date: 2011-05-30 14:34:29 +0200 (Mo, 30. Mai 2011) $
  */
 public interface PropertyNameMapper {
 

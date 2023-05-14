@@ -59,8 +59,6 @@ import org.slf4j.LoggerFactory;
  * exists to provide multilanguage capability.
  *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: thomas $
- * @version $Revision: $, $Date: $
  */
 public class HttpBasicAuthentication implements CredentialsProvider {
 

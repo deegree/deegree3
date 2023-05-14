@@ -52,8 +52,6 @@ import org.slf4j.LoggerFactory;
  * {@link GetFeature} response.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: markus $
- * @version $Revision: $, $Date: $
  */
 class XlinkedObjectsHandler implements GmlXlinkStrategy {
 

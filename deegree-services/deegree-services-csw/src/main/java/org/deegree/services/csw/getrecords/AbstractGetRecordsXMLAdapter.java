@@ -53,8 +53,6 @@ import org.slf4j.LoggerFactory;
  * Abstract base class encapsulating the parsing an {@link GetRecords} XML request.
  *
  * @author <a href="mailto:goltz@deegree.org">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public abstract class AbstractGetRecordsXMLAdapter extends AbstractCSWRequestXMLAdapter {
 

@@ -42,8 +42,6 @@ import org.deegree.sqldialect.filter.expression.SQLExpression;
  * equivalent {@link SQLExpression}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 24519 $, $Date: 2010-05-20 20:35:27 +0200 (Do, 20. Mai 2010) $
  */
 public class UnmappableException extends Exception {
 

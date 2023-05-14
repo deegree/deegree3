@@ -42,8 +42,6 @@ import org.deegree.time.primitive.TimeGeometricPrimitive;
  * {@link TemporalOperator} that evaluates Before.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class Before extends TemporalOperator {
 

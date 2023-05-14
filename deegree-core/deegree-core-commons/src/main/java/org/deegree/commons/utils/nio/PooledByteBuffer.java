@@ -43,8 +43,6 @@ import java.nio.ByteOrder;
  * buffer which can be reused again.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author: rbezema $
- * @version $Revision: $, $Date: $
  *
  */
 public class PooledByteBuffer {

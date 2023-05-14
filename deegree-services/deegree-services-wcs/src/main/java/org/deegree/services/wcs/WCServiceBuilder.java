@@ -84,8 +84,6 @@ import org.slf4j.LoggerFactory;
  * This class builds WCServices from the deegree WCS configuration files.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class WCServiceBuilder {

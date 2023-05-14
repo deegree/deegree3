@@ -44,9 +44,7 @@ import org.slf4j.LoggerFactory;
  * This class creates a RasterDataContainer. A RasterDataContainer wraps a
  * RasterDataReader and controls the loading/storing of the raster data.
  *
- * @version $Revision$
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
  *
  */
 public class RasterDataContainerFactory {

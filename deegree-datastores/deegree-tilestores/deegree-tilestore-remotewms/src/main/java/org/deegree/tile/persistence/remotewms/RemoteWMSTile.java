@@ -71,8 +71,6 @@ import org.deegree.tile.TileIOException;
  * {@link Tile} implementation used by the {@link RemoteWMSTileDataLevel}.
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 class RemoteWMSTile implements Tile {
 

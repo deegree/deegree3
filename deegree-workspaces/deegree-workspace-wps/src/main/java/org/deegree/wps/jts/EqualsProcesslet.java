@@ -53,8 +53,6 @@ import org.deegree.services.wps.output.LiteralOutput;
  * The <code></code> class TODO add class documentation here.
  *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class EqualsProcesslet implements Processlet {

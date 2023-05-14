@@ -56,8 +56,6 @@ import org.deegree.style.se.unevaluated.Continuation;
  * <code>StringLength</code>
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class StringLength extends AbstractCustomExpression {
 

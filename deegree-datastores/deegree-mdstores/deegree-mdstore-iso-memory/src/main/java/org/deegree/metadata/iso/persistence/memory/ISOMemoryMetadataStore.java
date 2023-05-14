@@ -55,8 +55,6 @@ import org.deegree.workspace.ResourceMetadata;
  * {@link MetadataStore} implementation for accessing ISO 19115 records kept in memory.
  *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: 30992 $, $Date: 2011-05-31 16:09:20 +0200 (Di, 31. Mai 2011) $
  */
 public class ISOMemoryMetadataStore implements MetadataStore<ISORecord> {
 

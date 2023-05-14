@@ -72,8 +72,6 @@ import org.deegree.gml.GMLVersion;
  * will be copied.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class XMLTransformer extends GeometryTransformer {
 

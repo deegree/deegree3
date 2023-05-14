@@ -40,8 +40,6 @@ import org.deegree.commons.tom.TypedObjectNode;
  * Base interface for XML nodes that have to be represented during XPath-evaluation.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * @version $Revision:$, $Date:$
  */
 public interface XPathNode<V extends TypedObjectNode> {
 

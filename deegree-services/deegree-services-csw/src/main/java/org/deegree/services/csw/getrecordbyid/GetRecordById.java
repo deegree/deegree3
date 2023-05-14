@@ -47,8 +47,6 @@ import org.deegree.services.csw.AbstractCSWRequest;
  * Represents a <Code>GetRecordById</Code> request to a CSW.
  *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: thomas $
- * @version $Revision: $, $Date: $
  */
 public class GetRecordById extends AbstractCSWRequest {
 

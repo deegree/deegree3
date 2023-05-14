@@ -49,8 +49,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class ResourceProviderMetadata {
 

@@ -65,8 +65,6 @@ import org.deegree.services.wps.wsdl.WSDL;
  * Responsible for the generation of WPS GetCapabilities response documents.
  *
  * @author <a href="mailto:apadberg@uni-bonn.de">Alexander Padberg</a>
- * @author last edited by: $Author: $
- * @version $Revision: $, $Date: $
  */
 public class CapabilitiesXMLWriter extends OWSCapabilitiesXMLAdapter {
 

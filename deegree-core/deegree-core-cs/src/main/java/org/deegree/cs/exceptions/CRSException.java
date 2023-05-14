@@ -40,8 +40,6 @@ package org.deegree.cs.exceptions;
  * transforming, projecting or creating a crs. The exporting process has been halted.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 

@@ -60,8 +60,6 @@ import java.util.UUID;
  * instances.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 31176 $, $Date: 2011-07-01 11:31:06 +0200 (Fr, 01. Jul 2011) $
  */
 public class PostGISDDLCreator extends DDLCreator {
 

@@ -40,8 +40,6 @@ import org.deegree.commons.tom.TypedObjectNode;
  * {@link ElementNode} that wraps an {@link ElementNode}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class XMLElementNode<P extends TypedObjectNode> extends ElementNode<org.deegree.commons.tom.ElementNode> {
 

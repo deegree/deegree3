@@ -46,8 +46,6 @@ import org.deegree.style.styling.Copyable;
  * <code>Font</code>
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: aschmitz $
- * @version $Revision: 29574 $, $Date: 2011-02-08 13:31:14 +0100 (Tue, 08 Feb 2011) $
  */
 public class Font implements Copyable<Font> {
 
@@ -75,8 +73,6 @@ public class Font implements Copyable<Font> {
 	 * <code>Style</code>
 	 *
 	 * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-	 * @author last edited by: $Author: aschmitz $
-	 * @version $Revision: 29574 $, $Date: 2011-02-08 13:31:14 +0100 (Tue, 08 Feb 2011) $
 	 */
 	public static enum Style {
 

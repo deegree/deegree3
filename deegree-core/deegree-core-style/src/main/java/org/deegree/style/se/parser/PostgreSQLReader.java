@@ -100,8 +100,6 @@ import org.slf4j.Logger;
  * <code>PostgreSQLReader</code>
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: aschmitz $
- * @version $Revision: 31398 $, $Date: 2011-08-02 09:03:40 +0200 (Tue, 02 Aug 2011) $
  */
 public class PostgreSQLReader {
 

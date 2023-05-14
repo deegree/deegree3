@@ -71,8 +71,6 @@ import org.slf4j.LoggerFactory;
  * {@link StreamFeatureCollection} for GML feature collection elements.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: markus $
- * @version $Revision: $, $Date: $
  */
 public class StreamFeatureCollection implements FeatureInputStream {
 

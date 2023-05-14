@@ -42,8 +42,6 @@ import org.deegree.cs.CRSIdentifiable;
  * The <code>Axis</code> class describe the orientation, unit and the name of a crs-axis.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 

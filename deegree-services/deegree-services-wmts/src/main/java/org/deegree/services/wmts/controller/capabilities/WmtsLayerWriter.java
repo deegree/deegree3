@@ -63,8 +63,6 @@ import org.deegree.tile.TileMatrixSet;
  * Responsible to write out layer capability section.
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * @version $Revision: $, $Date: $
  */
 public class WmtsLayerWriter extends OWSCapabilitiesXMLAdapter {
 

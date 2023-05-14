@@ -37,9 +37,7 @@ package org.deegree.geometry;
 
 /**
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
- * @author last edited by: $Author$
  *
- * @version. $Revision$, $Date$
  */
 public class GeometryException extends RuntimeException {
 

@@ -40,8 +40,6 @@ package org.deegree.cs.exceptions;
  * process of exporting a CRS to a file, database, etc.
  *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author: ionita $
- * @version $Revision: $, $Date: $
  *
  */
 public class CRSExportingException extends RuntimeException {

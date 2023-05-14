@@ -85,8 +85,6 @@ import org.slf4j.LoggerFactory;
  * Provides parsing methods for WFS <code>Query</code> elements and related constructs.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class QueryXMLAdapter extends AbstractWFSRequestXMLAdapter {
 

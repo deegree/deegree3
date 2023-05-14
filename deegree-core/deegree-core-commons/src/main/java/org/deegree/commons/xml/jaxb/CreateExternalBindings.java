@@ -57,8 +57,6 @@ import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
  * map=false schema binding file for those classes.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class CreateExternalBindings {
@@ -294,8 +292,6 @@ public class CreateExternalBindings {
 	 * mechanism of the JFileChooser.
 	 *
 	 * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
-	 * @author last edited by: $Author$
-	 * @version $Revision$, $Date$
 	 *
 	 */
 	static class CustomFileFilter implements java.io.FileFilter {

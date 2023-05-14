@@ -66,8 +66,6 @@ import org.deegree.workspace.Workspace;
  * Converts manual coverage layer config beans to layers.
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * @version $Revision: $, $Date: $
  */
 class ManualCoverageLayerBuilder {
 

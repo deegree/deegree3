@@ -46,8 +46,6 @@ import org.deegree.coverage.raster.data.RasterData;
  * The <code>BandType</code> defines band information of a rasterdata object
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public enum BandType {

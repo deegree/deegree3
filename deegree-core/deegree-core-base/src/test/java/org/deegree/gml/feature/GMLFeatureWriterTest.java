@@ -105,8 +105,6 @@ import static org.xmlunit.matchers.EvaluateXPathMatcher.hasXPath;
  * corresponding schema.
  *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author: ionita $
- * @version $Revision: $, $Date: $
  */
 public class GMLFeatureWriterTest {
 

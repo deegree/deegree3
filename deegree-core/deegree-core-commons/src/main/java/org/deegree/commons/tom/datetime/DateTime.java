@@ -45,8 +45,6 @@ import java.util.TimeZone;
  * <code>xs:dateTime</code>).
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class DateTime extends Temporal {
 

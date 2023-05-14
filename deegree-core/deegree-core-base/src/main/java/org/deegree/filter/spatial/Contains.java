@@ -45,8 +45,6 @@ import org.deegree.geometry.Geometry;
  * If a geometry is spatially contained in an other geometry.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * @version $Revision:$, $Date:$
  */
 public class Contains extends SpatialOperator {
 

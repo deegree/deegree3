@@ -84,8 +84,6 @@ import org.slf4j.Logger;
  *
  * @author Jerry Huxtable
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class TextStroke implements Stroke {
 

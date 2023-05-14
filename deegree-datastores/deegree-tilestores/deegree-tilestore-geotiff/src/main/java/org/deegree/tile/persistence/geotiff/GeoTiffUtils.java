@@ -60,8 +60,6 @@ import org.slf4j.Logger;
  * Methods to extract envelope/crs info from imageio metadata objects (GeoTIFF tags).
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * @version $Revision: $, $Date: $
  */
 public class GeoTiffUtils {
 

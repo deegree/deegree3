@@ -48,8 +48,6 @@ import org.deegree.cs.coordinatesystems.ICRS;
  * exception occurs. For example in the process of creating a transformation step.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 

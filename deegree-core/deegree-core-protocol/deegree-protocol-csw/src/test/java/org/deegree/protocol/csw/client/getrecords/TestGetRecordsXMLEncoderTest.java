@@ -83,8 +83,6 @@ import org.xml.sax.SAXException;
  * Validates the GetRecords requests.
  *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class TestGetRecordsXMLEncoderTest {
 

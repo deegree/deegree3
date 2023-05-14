@@ -111,8 +111,6 @@ import static org.deegree.feature.persistence.sql.blob.BlobCodec.Compression.NON
  * canonical database mapping.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class AppSchemaMapper {
 

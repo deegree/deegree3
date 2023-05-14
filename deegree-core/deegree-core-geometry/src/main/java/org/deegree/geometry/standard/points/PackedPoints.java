@@ -53,8 +53,6 @@ import org.locationtech.jts.geom.Envelope;
  * {@link Point} objects.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class PackedPoints implements Points {
 

@@ -44,8 +44,6 @@ import org.deegree.commons.jdbc.TableName;
  * columns in a target table.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: markus $
- * @version $Revision: $, $Date: $
  */
 public class KeyPropagation {
 

@@ -87,8 +87,6 @@ import org.deegree.time.primitive.GenericTimePeriod;
  * {@link AbstractWhereBuilder} implementation for PostGIS databases.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 31186 $, $Date: 2011-07-01 18:01:58 +0200 (Fr, 01. Jul 2011) $
  */
 public class PostGISWhereBuilder extends AbstractWhereBuilder {
 

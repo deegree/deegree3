@@ -39,8 +39,6 @@ package org.deegree.geometry.precision;
  * The <code></code> class TODO add class documentation here.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class PrecisionModel {
 

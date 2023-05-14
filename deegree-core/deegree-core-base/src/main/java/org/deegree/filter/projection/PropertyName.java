@@ -42,8 +42,6 @@ import org.deegree.filter.expression.ValueReference;
  * {@link ProjectionClause} that is based on {@link ValueReference}s.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class PropertyName implements ProjectionClause {
 

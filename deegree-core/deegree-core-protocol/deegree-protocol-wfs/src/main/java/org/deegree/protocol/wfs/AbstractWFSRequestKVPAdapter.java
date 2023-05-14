@@ -51,8 +51,6 @@ import org.deegree.protocol.i18n.Messages;
  * requests.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public abstract class AbstractWFSRequestKVPAdapter {
 

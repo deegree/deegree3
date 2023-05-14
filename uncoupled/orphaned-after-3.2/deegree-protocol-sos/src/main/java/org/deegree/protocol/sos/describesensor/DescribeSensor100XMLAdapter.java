@@ -44,9 +44,7 @@ import org.deegree.protocol.sos.SOSRequest100XMLAdapter;
  * This is an xml adapter for DescribeSensor requests after the SOS 1.0.0 spec.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
  * 
  */
 public class DescribeSensor100XMLAdapter extends SOSRequest100XMLAdapter {

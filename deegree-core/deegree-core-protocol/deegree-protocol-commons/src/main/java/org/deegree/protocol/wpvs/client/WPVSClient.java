@@ -61,8 +61,6 @@ import org.slf4j.LoggerFactory;
  * Web Perspective View Service (WPVS).
  *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author: ionita $
- * @version $Revision: $, $Date: $
  */
 public class WPVSClient {
 

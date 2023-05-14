@@ -44,8 +44,6 @@ import org.deegree.geometry.primitive.patches.PolygonPatch;
  * is completely inside the other.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class InteriorRingsNested extends AbstractGeometryValidationEvent {
 

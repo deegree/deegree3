@@ -45,8 +45,6 @@ import org.deegree.commons.utils.kvp.MissingParameterException;
  * OGC Web Service Exception for all OGC service related errors.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class OWSException extends Exception {
 

@@ -40,8 +40,6 @@ import org.deegree.commons.tom.ows.Version;
  * Abstract base class for CSW request beans.
  *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public abstract class AbstractCSWRequest {
 

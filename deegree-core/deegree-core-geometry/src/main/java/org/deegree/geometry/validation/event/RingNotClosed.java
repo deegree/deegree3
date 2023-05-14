@@ -43,8 +43,6 @@ import org.deegree.geometry.primitive.Ring;
  * the start point is not identical to the end point.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class RingNotClosed extends AbstractGeometryValidationEvent {
 

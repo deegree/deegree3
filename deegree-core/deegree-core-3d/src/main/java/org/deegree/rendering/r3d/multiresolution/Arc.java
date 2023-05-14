@@ -43,8 +43,6 @@ import org.deegree.rendering.r3d.ViewFrustum;
  * A directed arc of a {@link MultiresolutionMesh}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$
  */
 public class Arc {
 

@@ -65,8 +65,6 @@ import org.deegree.protocol.wfs.transaction.action.IDGenMode;
  * </p>
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class FeatureRow extends InsertRow {
 

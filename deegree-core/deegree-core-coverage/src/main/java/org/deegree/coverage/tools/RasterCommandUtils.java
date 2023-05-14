@@ -49,8 +49,6 @@ import org.deegree.geometry.GeometryFactory;
  * This class contains some static convenience methods for raster commandline tools.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class RasterCommandUtils {
 

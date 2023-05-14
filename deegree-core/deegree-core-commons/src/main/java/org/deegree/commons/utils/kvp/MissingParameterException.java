@@ -39,8 +39,6 @@ package org.deegree.commons.utils.kvp;
  * Thrown to indicate that a required parameter is missing.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class MissingParameterException extends IllegalArgumentException {
 

@@ -53,9 +53,7 @@ import org.deegree.services.wps.output.ComplexOutput;
  * This class can be use to write a {@link FeatureCollection}, {@link Feature} for {@link Feature} on a Stream.
  * 
  * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
- * @author last edited by: $Author: pabel $
  * 
- * @version $Revision: $, $Date: $
  */
 public class SextanteFeatureCollectionStreamWriter {
 

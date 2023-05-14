@@ -48,8 +48,6 @@ import org.deegree.geometry.primitive.Point;
  * in 2D.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public interface ArcByCenterPoint extends CurveSegment {
 

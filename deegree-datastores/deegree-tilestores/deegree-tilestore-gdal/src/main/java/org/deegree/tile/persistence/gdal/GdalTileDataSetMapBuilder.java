@@ -64,8 +64,6 @@ import org.slf4j.Logger;
  * Builds a tile data set map from jaxb config.
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * @version $Revision: $, $Date: $
  */
 class GdalTileDataSetMapBuilder {
 

@@ -54,8 +54,6 @@ import org.junit.Test;
  * Test cases for {@link WMTSClient}.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class WMTSClientTest {
 

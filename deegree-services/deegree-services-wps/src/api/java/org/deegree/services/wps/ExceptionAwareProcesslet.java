@@ -43,9 +43,7 @@ import org.deegree.commons.ows.exception.OWSException;
  * {@link Processlet} that provides customized exception generation.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
  */
 public interface ExceptionAwareProcesslet extends Processlet {
 

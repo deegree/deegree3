@@ -58,8 +58,6 @@ import org.slf4j.LoggerFactory;
  * (e.g., using GML), and provides a sink for writing it.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class ComplexOutputImpl extends ProcessletOutputImpl implements ComplexOutput {
 

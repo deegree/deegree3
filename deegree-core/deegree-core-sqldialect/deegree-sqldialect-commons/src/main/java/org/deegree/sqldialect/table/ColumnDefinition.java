@@ -43,8 +43,6 @@ import org.deegree.commons.tom.primitive.BaseType;
  * Metadata for a column of a table in an SQL database.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: markus $
- * @version $Revision: $, $Date: $
  */
 public class ColumnDefinition {
 

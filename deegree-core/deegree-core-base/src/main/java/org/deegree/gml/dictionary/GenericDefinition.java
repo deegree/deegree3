@@ -48,8 +48,6 @@ import org.deegree.commons.tom.ows.StringOrRef;
  * Default implementation of {@link Definition}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class GenericDefinition implements Definition {
 

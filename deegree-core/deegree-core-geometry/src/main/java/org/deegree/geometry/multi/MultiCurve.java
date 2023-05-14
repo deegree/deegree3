@@ -40,9 +40,7 @@ import org.deegree.geometry.primitive.Curve;
  * Specialised aggregation type for {@link Curve} objects.
  *
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
- * @author last edited by: $Author$
  *
- * @version. $Revision$, $Date$
  */
 public interface MultiCurve<T extends Curve> extends MultiGeometry<T> {
 

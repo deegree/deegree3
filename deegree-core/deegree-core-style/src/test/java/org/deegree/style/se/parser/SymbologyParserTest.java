@@ -59,8 +59,6 @@ import org.slf4j.Logger;
  * <code>SymbologyParserTest</code>
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: aschmitz $
- * @version $Revision: 23463 $, $Date: 2010-04-08 14:15:03 +0200 (Thu, 08 Apr 2010) $
  */
 @RunWith(Parameterized.class)
 public class SymbologyParserTest extends TestCase {

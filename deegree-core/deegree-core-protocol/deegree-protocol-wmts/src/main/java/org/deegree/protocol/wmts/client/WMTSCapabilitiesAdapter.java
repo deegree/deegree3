@@ -75,8 +75,6 @@ import org.deegree.tile.TileMatrixSet;
  * Service (WMTS) 1.0.0 capabilities documents.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: markus $
- * @version $Revision: $, $Date: $
  */
 public class WMTSCapabilitiesAdapter extends OWSCommon110CapabilitiesAdapter {
 

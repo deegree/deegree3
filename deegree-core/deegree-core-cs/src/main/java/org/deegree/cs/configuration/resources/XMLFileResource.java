@@ -49,8 +49,6 @@ import org.slf4j.LoggerFactory;
  * The <code>XMLFileResource</code> is an {@link OMElement} based adapter for an xml file.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public abstract class XMLFileResource extends XMLAdapter implements XMLResource {

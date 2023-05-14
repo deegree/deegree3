@@ -38,8 +38,6 @@ package org.deegree.metadata.ebrim;
  * Enum for discriminating the registry object types of the ebRIM 3.0 information model.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public enum RIMType {
 

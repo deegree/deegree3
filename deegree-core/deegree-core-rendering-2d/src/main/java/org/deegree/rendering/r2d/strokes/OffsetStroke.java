@@ -63,8 +63,6 @@ import org.slf4j.Logger;
  * the offset and line width could be adjusted dynamically when angles are too small.
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class OffsetStroke implements Stroke {
 

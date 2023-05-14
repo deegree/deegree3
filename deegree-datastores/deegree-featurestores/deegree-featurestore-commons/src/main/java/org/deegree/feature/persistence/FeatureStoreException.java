@@ -40,8 +40,6 @@ package org.deegree.feature.persistence;
  * Indicates an exception that occured in the feature persistence layer.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class FeatureStoreException extends Exception {
 

@@ -92,8 +92,6 @@ import org.slf4j.Logger;
  * SQL databases (currently only supports PostgreSQL / PostGIS).
  *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: lbuesching $
- * @version $Revision: 30992 $, $Date: 2011-05-31 16:09:20 +0200 (Di, 31. Mai 2011) $
  */
 public class ISOMetadataStore implements MetadataStore<ISORecord> {
 

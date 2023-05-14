@@ -40,9 +40,7 @@
  * <code>XMLInputFactoryUtils</code>
  *
  * @author <a href="mailto:reijer.copier@idgis.nl">Reijer Copier</a>
- * @author last edited by: $Author$
  *
- * @version $Revision$, $Date$
  */
 package org.deegree.commons.xml.stax;
 

@@ -71,8 +71,6 @@ import org.deegree.workspace.standard.DefaultWorkspace;
  * buildings.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 @Tool("Generates a generalization of a building by projecting the boundaries on a 2d plane and calculating a convex hull from them.")

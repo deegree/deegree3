@@ -61,8 +61,6 @@ import org.slf4j.Logger;
  * ConnectionProviderProvider which provides the feature locking database connection (H2).
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * @version $Revision: $, $Date: $
  */
 public class LockDbProviderProvider extends ConnectionProviderProvider {
 

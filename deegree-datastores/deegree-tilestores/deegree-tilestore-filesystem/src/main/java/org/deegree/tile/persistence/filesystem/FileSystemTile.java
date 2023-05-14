@@ -54,8 +54,6 @@ import org.deegree.tile.TileIOException;
  * A {@link Tile} that is backed by a {@link FileSystemTileStore}.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 class FileSystemTile implements Tile {
 

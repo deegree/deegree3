@@ -76,8 +76,6 @@ import org.slf4j.LoggerFactory;
  * Encapsulates stored feature instances plus index structures for id and spatial queries.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 class StoredFeatures {
 

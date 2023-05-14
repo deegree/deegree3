@@ -45,9 +45,7 @@ import org.slf4j.LoggerFactory;
  * Entry point for creating {@link CredentialsProvider} instances from XML elements (JAXB objects).
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: thomas $
  * 
- * @version $Revision: $, $Date: $
  */
 public class CredentialsProviderManager {
 

@@ -45,9 +45,7 @@ import es.unex.sextante.exceptions.IteratorException;
  * He will used by {@link VectorLayerImpl}.
  * 
  * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
- * @author last edited by: $Author: pabel $
  * 
- * @version $Revision: $, $Date: $
  */
 public class FeatureIteratorImpl implements IFeatureIterator {
 

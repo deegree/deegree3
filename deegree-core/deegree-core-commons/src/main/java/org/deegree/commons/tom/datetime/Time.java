@@ -43,8 +43,6 @@ import java.util.TimeZone;
  * {@link Temporal} for representing times (e.g. <code>xs:time</code>).
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class Time extends Temporal {
 

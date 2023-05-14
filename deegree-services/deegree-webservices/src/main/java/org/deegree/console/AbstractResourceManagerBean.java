@@ -53,8 +53,6 @@ import org.deegree.workspace.Workspace;
  * TODO add class documentation here
  *
  * @author <a href="mailto:name@company.com">Your Name</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public abstract class AbstractResourceManagerBean<T extends ResourceManager<?>> implements Serializable {
 

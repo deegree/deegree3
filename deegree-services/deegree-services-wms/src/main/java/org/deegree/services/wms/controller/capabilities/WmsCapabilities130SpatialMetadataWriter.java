@@ -65,8 +65,6 @@ import org.slf4j.Logger;
  * Responsible for writing out envelopes and crs.
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * @version $Revision: $, $Date: $
  */
 public class WmsCapabilities130SpatialMetadataWriter {
 

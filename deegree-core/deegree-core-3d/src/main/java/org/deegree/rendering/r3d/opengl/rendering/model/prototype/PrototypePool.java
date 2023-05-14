@@ -54,8 +54,6 @@ import org.deegree.rendering.r3d.opengl.rendering.model.geometry.RenderableQuali
  * be defined between [0,1] at the origin.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class PrototypePool {

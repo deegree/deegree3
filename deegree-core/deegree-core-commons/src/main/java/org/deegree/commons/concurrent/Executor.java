@@ -65,8 +65,6 @@ import java.util.concurrent.TimeUnit;
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: apoth $
- * @version $Revision: 9339 $, $Date: 2007-12-27 12:31:52 +0000 (Do, 27 Dez 2007) $
  */
 public class Executor {
 
@@ -241,8 +239,6 @@ public class Executor {
 	 * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
 	 * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
 	 * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
-	 * @author last edited by: $Author: apoth $
-	 * @version $Revision: 9339 $
 	 */
 	private static class AsyncPerformer<T> implements Runnable {
 

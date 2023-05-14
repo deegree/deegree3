@@ -41,8 +41,6 @@ package org.deegree.protocol.csw;
  *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class MetadataStoreException extends Exception {
 

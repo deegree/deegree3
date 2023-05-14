@@ -77,8 +77,6 @@ import org.deegree.geometry.primitive.TriangulatedSurface;
  * {@link ObjectPropertyType} that defines a property with a {@link Geometry} value.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * @version $Revision:$, $Date:$
  */
 public class GeometryPropertyType extends ObjectPropertyType {
 

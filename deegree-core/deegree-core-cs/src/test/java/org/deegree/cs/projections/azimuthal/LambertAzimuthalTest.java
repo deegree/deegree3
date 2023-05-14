@@ -47,8 +47,6 @@ import org.junit.Test;
  * projection.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class LambertAzimuthalTest extends ProjectionBase {

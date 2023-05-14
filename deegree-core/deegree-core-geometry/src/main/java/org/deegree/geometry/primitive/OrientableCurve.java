@@ -44,8 +44,6 @@ package org.deegree.geometry.primitive;
  * reverses the sense of the curve traversal.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public interface OrientableCurve extends Curve {
 

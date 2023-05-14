@@ -49,8 +49,6 @@ import org.deegree.workspace.ResourceMetadata;
  * This class represents a single raster with multiple bands.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class SimpleRaster extends AbstractRaster {
 

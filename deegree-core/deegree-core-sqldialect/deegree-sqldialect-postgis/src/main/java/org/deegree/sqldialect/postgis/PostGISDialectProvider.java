@@ -51,8 +51,6 @@ import org.slf4j.LoggerFactory;
  * {@link SqlDialectProvider} for PostGIS-enabled PostgreSQL databases.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 31034 $, $Date: 2011-06-09 16:47:31 +0200 (Do, 09. Jun 2011) $
  */
 public class PostGISDialectProvider implements SqlDialectProvider {
 

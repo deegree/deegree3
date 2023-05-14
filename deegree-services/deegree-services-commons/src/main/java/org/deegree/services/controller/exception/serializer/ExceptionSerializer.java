@@ -46,8 +46,6 @@ import org.deegree.services.controller.utils.HttpResponseBuffer;
  * Writes {@link OWSException}s to the {@link HttpResponseBuffer}.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public interface ExceptionSerializer {
 

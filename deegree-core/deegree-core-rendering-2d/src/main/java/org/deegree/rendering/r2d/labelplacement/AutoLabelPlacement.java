@@ -58,8 +58,6 @@ import org.deegree.style.utils.UomCalculator;
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author Florian Bingel
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 
 public class AutoLabelPlacement {

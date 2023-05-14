@@ -41,9 +41,7 @@ import org.deegree.commons.tom.ows.Version;
  * Important constants from the SOS specifications.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
  * 
- * @version $Revision: $, $Date: $
  */
 public class SOSConstants {
 
@@ -60,9 +58,7 @@ public class SOSConstants {
      * Enum type for discriminating between the different types of SensorObservationService (SOS) requests.
      * 
      * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
-     * @author last edited by: $Author: schneider $
      * 
-     * @version $Revision: $, $Date: $
      */
     public enum SOSRequestType {
 

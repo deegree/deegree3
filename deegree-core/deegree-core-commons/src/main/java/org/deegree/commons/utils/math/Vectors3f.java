@@ -45,8 +45,6 @@ package org.deegree.commons.utils.math;
  * sure the supplied array is initialized and has a length of at least 3.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class Vectors3f {

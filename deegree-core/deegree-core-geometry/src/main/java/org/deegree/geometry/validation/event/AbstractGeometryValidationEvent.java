@@ -43,8 +43,6 @@ import org.deegree.cs.components.Axis;
  * Abstract base class for {@link GeometryValidationEvent} implementations.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 abstract class AbstractGeometryValidationEvent implements GeometryValidationEvent {
 

@@ -52,8 +52,6 @@ import com.sun.xml.fastinfoset.vocab.SerializerVocabulary;
  * Infoset</a> encoded XML.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: markus $
- * @version $Revision: $, $Date: $
  */
 public class FIUtils {
 

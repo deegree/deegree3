@@ -46,8 +46,6 @@ import org.deegree.services.wcs.model.CoverageResult;
  * This is a container for coverage results.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class SimpleRasterResult implements CoverageResult {

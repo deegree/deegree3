@@ -38,8 +38,6 @@ package org.deegree.cs.exceptions;
  * Indicates an exception in the CRS Store management.
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class CRSStoreException extends Exception {
 

@@ -61,8 +61,6 @@ import org.deegree.protocol.wps.client.input.XMLInput;
  * @see RawProcessExecution
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 class AbstractProcessExecution {
 

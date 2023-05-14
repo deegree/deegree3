@@ -38,8 +38,6 @@ package org.deegree.tile;
  * Indicates an exception that occured while reading or writing tile data.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class TileIOException extends RuntimeException {
 

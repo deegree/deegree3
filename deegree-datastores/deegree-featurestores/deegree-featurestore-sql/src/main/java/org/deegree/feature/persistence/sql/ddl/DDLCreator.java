@@ -60,8 +60,6 @@ import org.deegree.sqldialect.SQLDialect;
  * Creates DDL (DataDefinitionLanguage) scripts from {@link MappedAppSchema} instances.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public abstract class DDLCreator {
 

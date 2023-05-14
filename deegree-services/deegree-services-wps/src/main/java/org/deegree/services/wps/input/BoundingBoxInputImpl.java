@@ -43,8 +43,6 @@ import org.deegree.process.jaxb.java.BoundingBoxInputDefinition;
  * A {@link Process} input parameter with a bounding box value.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class BoundingBoxInputImpl extends ProcessletInputImpl implements BoundingBoxInput {
 

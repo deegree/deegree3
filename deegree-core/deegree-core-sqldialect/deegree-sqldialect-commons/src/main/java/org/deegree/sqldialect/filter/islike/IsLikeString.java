@@ -49,8 +49,6 @@ import org.deegree.filter.comparison.PropertyIsLike;
  * </p>
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 22060 $, $Date: 2010-01-20 17:59:52 +0100 (Mi, 20. Jan 2010) $
  */
 public class IsLikeString {
 

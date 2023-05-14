@@ -52,8 +52,6 @@ import org.deegree.cs.refs.CRSResourceRef;
  * General {@link CRSResourceRef} referncing a {@link Projection}
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class ProjectionRef extends CRSResourceRef<IProjection> implements Serializable, IProjection {
 

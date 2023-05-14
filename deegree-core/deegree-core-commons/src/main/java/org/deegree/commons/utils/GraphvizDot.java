@@ -44,8 +44,6 @@ import java.util.List;
  * file. For more information on dot files please see http://www.graphviz.org
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class GraphvizDot {

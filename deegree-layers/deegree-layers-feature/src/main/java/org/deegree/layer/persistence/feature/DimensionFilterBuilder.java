@@ -67,8 +67,6 @@ import org.deegree.layer.dims.DimensionInterval;
  * Is used to create dimension related filter parts.
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * @version $Revision: $, $Date: $
  */
 class DimensionFilterBuilder {
 

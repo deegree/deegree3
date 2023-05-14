@@ -47,8 +47,6 @@ import org.deegree.filter.Expression;
  * <code>ogc:expression</code> element).
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public interface CustomExpression extends Expression {
 

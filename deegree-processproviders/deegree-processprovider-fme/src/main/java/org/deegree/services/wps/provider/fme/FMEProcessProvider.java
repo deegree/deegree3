@@ -46,8 +46,6 @@ import java.util.Map;
  * Example {@link ProcessProvider} implementation for process provider tutorial.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: goltz $
- * @version $Revision: 91 $, $Date: 2016-12-14 13:00:39 +0100 (Mi, 14. Dez 2016) $
  */
 public class FMEProcessProvider implements ProcessProvider {
 

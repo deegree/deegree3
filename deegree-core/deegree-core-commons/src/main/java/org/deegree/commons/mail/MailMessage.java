@@ -38,8 +38,6 @@ package org.deegree.commons.mail;
  * Interface of a email message.
  *
  * @author <a href="mailto:tfr@users.sourceforge.net">Torsten Friebe</A>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 
 public interface MailMessage {

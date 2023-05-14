@@ -53,8 +53,6 @@ import org.slf4j.Logger;
  * TODO: move this!
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class CRSUtils {
 

@@ -40,8 +40,6 @@ package org.deegree.cs.exceptions;
  * into a problem.
  *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author: ionita $
- * @version $Revision: $, $Date: $
  *
  */
 public class WKTParsingException extends RuntimeException {

@@ -52,8 +52,6 @@ import org.slf4j.LoggerFactory;
  * {@link ObjectPropertyType} that defines a property with a {@link Feature} value.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * @version $Revision:$, $Date:$
  */
 public class FeaturePropertyType extends ObjectPropertyType {
 

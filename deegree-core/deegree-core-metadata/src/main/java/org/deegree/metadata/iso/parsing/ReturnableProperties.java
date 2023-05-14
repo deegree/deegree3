@@ -43,8 +43,6 @@ import java.util.List;
  * profile. So it has to be extracted from an insertable record.
  *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 30651 $, $Date: 2011-05-05 11:40:31 +0200 (Do, 05. Mai 2011) $
  */
 public class ReturnableProperties {
 

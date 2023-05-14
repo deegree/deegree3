@@ -42,8 +42,6 @@ import org.deegree.workspace.standard.DefaultWorkspace;
 
 /**
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * @version $Revision: $, $Date: $
  */
 @Tool(value = "Converts a 3.1 or earlier WMS configuration to 3.2 style configurations. Currently only works for feature layers.")
 public class WMSMigrator {

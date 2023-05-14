@@ -60,8 +60,6 @@ import org.deegree.style.se.unevaluated.Continuation;
  * <code>Recode</code>
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class Recode extends AbstractCustomExpression {
 

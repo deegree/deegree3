@@ -44,8 +44,6 @@ import org.deegree.geometry.primitive.patches.PolygonPatch;
  * it's shell (exterior ring)
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class InteriorRingOutsideExterior extends AbstractGeometryValidationEvent {
 

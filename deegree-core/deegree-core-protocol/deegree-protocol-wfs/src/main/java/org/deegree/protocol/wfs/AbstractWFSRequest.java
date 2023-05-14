@@ -40,8 +40,6 @@ import org.deegree.commons.tom.ows.Version;
  * Abstract base class for WFS request beans.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public abstract class AbstractWFSRequest {
 

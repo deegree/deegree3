@@ -45,8 +45,6 @@ import org.deegree.cs.CRSIdentifiable;
  * measurements units, such as british_yard and meter.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 

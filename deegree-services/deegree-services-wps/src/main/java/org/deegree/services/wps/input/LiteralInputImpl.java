@@ -44,8 +44,6 @@ import org.deegree.process.jaxb.java.LiteralInputDefinition.DataType;
  * number) with optional UOM (unit-of-measure) information.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class LiteralInputImpl extends ProcessletInputImpl implements LiteralInput {
 

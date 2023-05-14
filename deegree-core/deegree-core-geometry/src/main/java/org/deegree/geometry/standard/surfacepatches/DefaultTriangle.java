@@ -50,8 +50,6 @@ import org.deegree.geometry.primitive.patches.Triangle;
  * Default implementation of {@link Triangle}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class DefaultTriangle implements Triangle {
 

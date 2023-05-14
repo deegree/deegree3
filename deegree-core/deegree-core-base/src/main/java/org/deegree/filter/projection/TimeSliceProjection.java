@@ -40,8 +40,6 @@ import org.deegree.filter.Filter;
  * {@link ProjectionClause} for projecting time-varying objects.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class TimeSliceProjection implements ProjectionClause {
 

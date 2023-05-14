@@ -42,8 +42,6 @@ import org.deegree.commons.ows.exception.OWSException;
  * Encapsulates a number of {@link OWSException}s.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class OWSExceptionReport extends Exception {
 

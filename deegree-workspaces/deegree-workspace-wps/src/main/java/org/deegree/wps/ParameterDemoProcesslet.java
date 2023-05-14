@@ -62,8 +62,6 @@ import org.slf4j.LoggerFactory;
  * output parameter types in a deegree 3 WPS process.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class ParameterDemoProcesslet implements Processlet {
 

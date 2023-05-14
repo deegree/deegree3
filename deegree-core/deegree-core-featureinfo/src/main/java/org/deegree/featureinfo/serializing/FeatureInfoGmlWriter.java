@@ -68,8 +68,6 @@ import org.slf4j.Logger;
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:reijer.copier@idgis.nl">Reijer Copier</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class FeatureInfoGmlWriter implements FeatureInfoSerializer {
 

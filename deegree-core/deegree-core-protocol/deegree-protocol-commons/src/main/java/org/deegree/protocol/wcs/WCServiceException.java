@@ -38,8 +38,6 @@ package org.deegree.protocol.wcs;
  * This is an exception class for internal (non-OGC) Web Coverage Service exceptions.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class WCServiceException extends Exception {

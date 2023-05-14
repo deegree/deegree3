@@ -38,8 +38,6 @@ package org.deegree.metadata.persistence;
  * Indicates an exception that occured in the metadata inspectation.
  *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: sthomas $
- * @version $Revision: 27732 $, $Date: 2010-11-03 10:52:35 +0100 (Mi, 03. Nov 2010) $
  */
 public class MetadataInspectorException extends Exception {
 

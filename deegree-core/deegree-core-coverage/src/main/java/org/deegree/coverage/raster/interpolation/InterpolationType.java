@@ -38,8 +38,6 @@ package org.deegree.coverage.raster.interpolation;
  * Enum for all implemented interpolation types.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public enum InterpolationType {
 

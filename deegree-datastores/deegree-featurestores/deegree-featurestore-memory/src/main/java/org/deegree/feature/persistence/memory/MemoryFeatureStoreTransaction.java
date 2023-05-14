@@ -88,8 +88,6 @@ import org.slf4j.LoggerFactory;
  * @see MemoryFeatureStore
  * @see StoredFeatures
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
 

@@ -44,8 +44,6 @@ import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
  * normally a geometry.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public interface RenderableQualityModelPart extends QualityModelPart, JOGLRenderable {

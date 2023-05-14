@@ -84,8 +84,6 @@ import org.deegree.workspace.ResourceMetadata;
  * @see FeatureStore
  * @see WFSClient
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class RemoteWFSFeatureStore implements FeatureStore {
 

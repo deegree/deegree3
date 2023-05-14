@@ -38,8 +38,6 @@ package org.deegree.protocol.wfs.transaction.action;
  * Controls how an {@link Update} affects existing content nodes.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public enum UpdateAction {
 

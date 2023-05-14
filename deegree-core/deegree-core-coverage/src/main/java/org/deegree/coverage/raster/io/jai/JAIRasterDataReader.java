@@ -62,8 +62,6 @@ import com.sun.media.jai.codec.SeekableStream;
  * streams would not work any more, but using the renderOp would.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author:otonnhofer $
- * @version $Revision:10872 $, $Date:2008-04-01 15:41:48 +0200 (Tue, 01 Apr 2008) $
  *
  */
 public class JAIRasterDataReader implements RasterDataReader {

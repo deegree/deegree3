@@ -60,8 +60,6 @@ import org.jaxen.expr.VariableReferenceExpr;
  * Utilitiy methods for common tasks that involve XPath expressions.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class XPathUtils {
 

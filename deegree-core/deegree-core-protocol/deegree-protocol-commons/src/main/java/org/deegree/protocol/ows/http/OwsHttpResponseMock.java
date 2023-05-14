@@ -52,8 +52,6 @@ import org.deegree.protocol.ows.exception.OWSExceptionReport;
  * {@link OwsHttpResponse} used by {@link OwsHttpClientMock}.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 class OwsHttpResponseMock implements OwsHttpResponse {
 

@@ -61,8 +61,6 @@ import org.slf4j.Logger;
  * {@link GMLCRSStoreProvider} for {@link GMLCRSStore}
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class GMLCRSStoreProvider implements CRSStoreProvider {
 

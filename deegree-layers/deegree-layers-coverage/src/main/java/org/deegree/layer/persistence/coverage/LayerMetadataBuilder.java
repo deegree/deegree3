@@ -62,8 +62,6 @@ import org.deegree.layer.persistence.coverage.jaxb.CoverageLayerType;
  * Builds basic layer metadata info from jaxb beans and coverage.
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * @version $Revision: $, $Date: $
  */
 class LayerMetadataBuilder {
 

@@ -43,8 +43,6 @@ import java.io.IOException;
  * a server or anything to which an URI could point.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  * @param <T> the type of the implementation
  *
  */

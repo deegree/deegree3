@@ -49,8 +49,6 @@ import org.slf4j.LoggerFactory;
  * The implementation is adapted from org.deegree.tools.ToolBox
  *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author: ionita $
- * @version $Revision: $, $Date: $
  *
  */
 public class TestingToolBox {

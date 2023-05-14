@@ -42,8 +42,6 @@ import org.deegree.geometry.primitive.segments.GeodesicString;
  * Default implementation of {@link GeodesicString} segments.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class DefaultGeodesicString implements GeodesicString {
 

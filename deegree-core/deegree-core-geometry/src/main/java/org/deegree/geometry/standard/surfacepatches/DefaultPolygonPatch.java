@@ -47,8 +47,6 @@ import org.deegree.geometry.primitive.patches.PolygonPatch;
  * Default implementation of {@link PolygonPatch}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class DefaultPolygonPatch implements PolygonPatch {
 

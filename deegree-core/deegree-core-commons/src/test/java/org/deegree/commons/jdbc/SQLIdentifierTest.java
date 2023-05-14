@@ -41,7 +41,6 @@ import org.junit.Test;
  * Test cases for creation of {@link SQLIdentifier}s
  *
  * @author <a href="mailto:wanhoff@lat-lon.de">Jeronimo Wanhoff</a>
- * @author last edited by: $Author: wanhoff $
  *
  */
 public class SQLIdentifierTest {

@@ -48,8 +48,6 @@ import org.deegree.cs.refs.components.EllipsoidRef;
  * eccentricity or semi-minor-axis.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 

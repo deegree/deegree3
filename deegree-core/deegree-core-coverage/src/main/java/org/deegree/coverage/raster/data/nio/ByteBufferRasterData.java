@@ -75,8 +75,6 @@ import org.slf4j.Logger;
  * implementation makes no use of it.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public abstract class ByteBufferRasterData implements RasterData {

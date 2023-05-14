@@ -55,8 +55,6 @@ import org.deegree.cs.transformations.Transformation;
  * meters) and the lat/lon coordinates of the geographic crs and vice versa.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 

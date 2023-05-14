@@ -61,8 +61,6 @@ import org.deegree.cs.persistence.CRSManager;
  * Multiple input files will be mosaiced into one transformed output file.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 @Tool("Transforms a raster with the given crs into another crs")

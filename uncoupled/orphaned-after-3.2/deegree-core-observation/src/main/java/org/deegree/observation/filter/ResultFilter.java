@@ -40,9 +40,7 @@ import org.deegree.filter.comparison.ComparisonOperator;
  *
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
  *
- * @version $Revision$, $Date$
  *
  */
 public class ResultFilter implements Filter {

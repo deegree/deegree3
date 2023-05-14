@@ -64,8 +64,6 @@ import static org.junit.Assert.assertTrue;
  * <code>WMSSimilarityIntegrationTest</code>
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 
 @RunWith(Parameterized.class)

@@ -77,8 +77,6 @@ import static org.deegree.feature.types.property.GeometryPropertyType.Coordinate
  * Responsible for building feature layer filters.
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * @version $Revision: $, $Date: $
  */
 class FilterBuilder {
 

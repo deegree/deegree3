@@ -17,8 +17,6 @@ import org.deegree.protocol.wfs.getgmlobject.GetGmlObject;
  *
  * @author <a href="mailto:Tschirner@bafg.de">Sven Tschirner</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class GetGmlObject110XMLEncoder {
 

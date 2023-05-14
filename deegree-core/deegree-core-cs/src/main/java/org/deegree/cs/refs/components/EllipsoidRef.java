@@ -45,8 +45,6 @@ import org.deegree.cs.refs.CRSResourceRef;
  * {@link CRSesourceRef} to a {@link IEllipsoid}
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class EllipsoidRef extends CRSResourceRef<IEllipsoid> implements Serializable, IEllipsoid {
 

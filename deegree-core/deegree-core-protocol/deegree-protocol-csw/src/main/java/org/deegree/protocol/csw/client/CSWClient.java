@@ -104,8 +104,6 @@ import org.deegree.protocol.ows.http.OwsHttpResponse;
  * <h4>Accessing records</h4> ...
  *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
 

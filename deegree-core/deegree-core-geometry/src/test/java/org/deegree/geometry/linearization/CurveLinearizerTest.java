@@ -75,8 +75,6 @@ import org.locationtech.jts.io.ParseException;
  * Tests for {@link CurveLinearizer}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class CurveLinearizerTest {
 

@@ -45,8 +45,6 @@ import org.deegree.cs.projections.azimuthal.StereographicAzimuthal;
  * {@link ProjectionRef} to a {@link StereographicAzimuthal}
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class StereographicAzimuthalRef extends ProjectionRef implements Serializable, IStereographicAzimuthal {
 

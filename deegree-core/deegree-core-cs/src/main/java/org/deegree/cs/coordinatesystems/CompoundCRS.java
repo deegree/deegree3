@@ -46,8 +46,6 @@ import org.deegree.cs.components.IUnit;
  * height above or below the datums surface.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class CompoundCRS extends CRS implements ICompoundCRS {

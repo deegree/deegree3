@@ -64,8 +64,6 @@ import org.deegree.services.wcs.WCSRequest100XMLAdapter;
  * This is an xml adapter for GetCoverage requests after the WCS 1.0.0 spec.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class GetCoverage100XMLAdapter extends WCSRequest100XMLAdapter {

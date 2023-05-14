@@ -40,8 +40,6 @@ import java.io.Serializable;
  * Encapsulates the parameters needed for defining a complex input / output format.
  *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class ComplexFormat implements Serializable {
 

@@ -46,8 +46,6 @@ import org.deegree.feature.persistence.sql.FeatureTypeMapping;
  *
  * @see FeatureTypeMapping
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: markus $
- * @version $Revision: $, $Date: $
  */
 public class FIDMapping {
 

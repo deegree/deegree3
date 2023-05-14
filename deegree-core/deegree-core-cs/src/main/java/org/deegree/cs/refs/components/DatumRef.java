@@ -42,8 +42,6 @@ import org.deegree.cs.refs.CRSResourceRef;
  * General {@link CRSResourceRef} to a {@link IDatum}
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class DatumRef extends CRSResourceRef<IDatum> implements IDatum {
 

@@ -40,8 +40,6 @@ import org.deegree.geometry.primitive.Point;
  * A {@link GeodesicString} that consists of a single arc only.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public interface Geodesic extends GeodesicString {
 

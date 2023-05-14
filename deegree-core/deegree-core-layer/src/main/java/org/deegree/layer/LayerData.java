@@ -39,8 +39,6 @@ import org.deegree.rendering.r2d.context.RenderContext;
 
 /**
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * @version $Revision: $, $Date: $
  */
 public interface LayerData {
 

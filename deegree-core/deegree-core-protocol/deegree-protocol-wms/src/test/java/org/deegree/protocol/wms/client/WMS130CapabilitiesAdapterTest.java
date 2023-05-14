@@ -57,8 +57,6 @@ import org.junit.Test;
  * Test cases for {@link WMS130CapabilitiesAdapter}
  *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class WMS130CapabilitiesAdapterTest extends WMSCapabilitiesAdapterTest {
 

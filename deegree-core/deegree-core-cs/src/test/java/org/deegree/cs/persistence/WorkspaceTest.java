@@ -56,8 +56,6 @@ import org.junit.Test;
  * TODO add class documentation here
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class WorkspaceTest {
 

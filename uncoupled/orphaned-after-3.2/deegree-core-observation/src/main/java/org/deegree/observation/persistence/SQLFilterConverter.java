@@ -45,9 +45,7 @@ import org.deegree.observation.model.Offering;
  * 
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
  * 
  */
 public interface SQLFilterConverter {

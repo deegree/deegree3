@@ -38,8 +38,6 @@ package org.deegree.geometry.primitive.segments;
  * Special case of a {@link BSpline} curve segment with two knots.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public interface Bezier extends BSpline {
 

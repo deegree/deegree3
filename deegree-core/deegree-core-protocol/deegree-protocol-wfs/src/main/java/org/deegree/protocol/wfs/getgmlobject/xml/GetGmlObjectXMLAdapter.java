@@ -55,8 +55,6 @@ import org.deegree.protocol.wfs.getgmlobject.GetGmlObject;
  * TODO code for exporting to XML
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class GetGmlObjectXMLAdapter extends AbstractWFSRequestXMLAdapter {
 

@@ -63,8 +63,6 @@ import org.slf4j.Logger;
  * A TiledRaster contains multiple non-overlapping (TODO verify this) AbstractRasters
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class TiledRaster extends AbstractRaster {

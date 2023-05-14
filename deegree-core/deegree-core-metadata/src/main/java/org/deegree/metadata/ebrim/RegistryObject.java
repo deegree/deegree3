@@ -68,8 +68,6 @@ import org.slf4j.Logger;
  * Base type for all ebRIM {@link MetadataRecord}s.
  *
  * @author <a href="mailto:goltz@lat-lon.org">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class RegistryObject implements MetadataRecord {
 

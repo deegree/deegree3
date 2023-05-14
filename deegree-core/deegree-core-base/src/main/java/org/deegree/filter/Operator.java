@@ -45,8 +45,6 @@ import org.deegree.filter.spatial.SpatialOperator;
  * be evaluated by traversing it.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * @version $Revision:$, $Date:$
  */
 public interface Operator {
 

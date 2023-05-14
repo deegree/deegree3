@@ -41,8 +41,6 @@ import org.deegree.commons.utils.CollectionUtils.Mapper;
  * <code>Triple</code>
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  * @param <T>
  * @param <U>
  * @param <V>

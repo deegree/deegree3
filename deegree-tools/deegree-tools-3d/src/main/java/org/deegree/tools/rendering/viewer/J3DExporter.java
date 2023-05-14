@@ -44,8 +44,6 @@ import org.deegree.commons.utils.memory.MemoryAware;
  * methods.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 

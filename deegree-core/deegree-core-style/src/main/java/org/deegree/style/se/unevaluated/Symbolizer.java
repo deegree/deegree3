@@ -56,8 +56,6 @@ import org.slf4j.Logger;
  * <code>Symbolizer</code>
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: aschmitz $
- * @version $Revision: 31072 $, $Date: 2011-06-17 13:08:25 +0200 (Fri, 17 Jun 2011) $
  * @param <T>
  */
 public class Symbolizer<T extends Styling<T>> {

@@ -26,8 +26,6 @@ import org.deegree.workspace.Workspace;
  * values, or the value can not be interpreted as a geometry.
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class IsSurface implements FunctionProvider {
 

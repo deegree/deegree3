@@ -54,8 +54,6 @@ import org.deegree.commons.utils.StringUtils;
  * TODO add class documentation here
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public abstract class ModelClass {
 

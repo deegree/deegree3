@@ -64,7 +64,6 @@ import org.slf4j.LoggerFactory;
  * {@link CRSIdentifiable}s and instantiates a given resolver used for inverse lookup.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @version $Revision$, $Date$
  * @param <T> the type of object the parse method awaits.
  *
  */

@@ -49,8 +49,6 @@ import org.deegree.services.controller.utils.HttpResponseBuffer;
  * {@link XMLExceptionSerializer} for pre-OWS <code>ExceptionReports</code>.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class PreOWSExceptionReportSerializer extends XMLExceptionSerializer {
 

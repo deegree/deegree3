@@ -39,8 +39,6 @@ package org.deegree.services.wpvs.controller.getview;
  * The <code>GetViewResponseParameters</code> class wraps the response parameters.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class GetViewResponseParameters {

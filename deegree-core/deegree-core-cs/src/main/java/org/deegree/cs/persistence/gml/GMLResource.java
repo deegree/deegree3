@@ -46,8 +46,6 @@ import org.deegree.cs.coordinatesystems.ICRS;
  * An interface enhancing the capabilities of an xml resource.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public interface GMLResource extends XMLResource {
 

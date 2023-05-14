@@ -44,8 +44,6 @@ import org.deegree.rendering.r3d.model.QualityModel;
  * geometries.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class GeometryQualityModel extends QualityModel<SimpleAccessGeometry> {

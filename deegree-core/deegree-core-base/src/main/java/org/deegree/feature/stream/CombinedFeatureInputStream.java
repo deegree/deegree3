@@ -45,8 +45,6 @@ import org.deegree.feature.Features;
  * {@link FeatureInputStream} that encapsulates a sequence of {@link FeatureInputStream}s.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class CombinedFeatureInputStream implements FeatureInputStream {
 

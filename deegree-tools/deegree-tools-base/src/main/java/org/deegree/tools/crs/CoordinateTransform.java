@@ -67,8 +67,6 @@ import org.slf4j.Logger;
  * coordinate systems and their transformations.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 @Tool("Convert a point or a list of points from one SRS to another.")

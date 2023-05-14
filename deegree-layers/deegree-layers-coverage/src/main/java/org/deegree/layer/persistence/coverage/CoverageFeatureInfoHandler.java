@@ -81,8 +81,6 @@ import org.slf4j.Logger;
  * Responsible for creating coverage feature info responses.
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * @version $Revision: $, $Date: $
  */
 class CoverageFeatureInfoHandler {
 

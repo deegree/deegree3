@@ -51,8 +51,6 @@ import org.deegree.tile.persistence.AbstractTileStoreTransaction;
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 class FileSystemTileStoreTransaction extends AbstractTileStoreTransaction {
 

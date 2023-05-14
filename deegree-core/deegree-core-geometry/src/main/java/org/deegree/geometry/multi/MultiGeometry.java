@@ -54,9 +54,7 @@ import org.deegree.geometry.primitive.Surface;
  *
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
  *
- * @version. $Revision$, $Date$
  * @param <T> the type of the contained geometries
  */
 public interface MultiGeometry<T extends Geometry> extends Geometry, List<T> {

@@ -50,8 +50,6 @@ import org.slf4j.LoggerFactory;
  * The <code>GeometryQualityModel</code> defines a Quality level of a geometry model.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  * @param <T> the qualitymodel type
  *
  */

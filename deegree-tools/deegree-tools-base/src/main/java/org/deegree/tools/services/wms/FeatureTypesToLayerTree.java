@@ -69,8 +69,6 @@ import org.slf4j.Logger;
 
 /**
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 @Tool(value = "generates a WMS layer tree/configuration file from a feature type hierarchy")
 public class FeatureTypesToLayerTree {

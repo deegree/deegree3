@@ -44,8 +44,6 @@ import org.deegree.commons.utils.kvp.KVPUtils;
  * This is a kvp adapter for WCS 1.0.0 DescribeCoverage requests.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class DescribeCoverage100KVPAdapter {

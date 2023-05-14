@@ -48,8 +48,6 @@ import org.deegree.sqldialect.filter.PropertyNameMapping;
  * sql snippets.
  *
  * @author <a href="mailto:goltz@lat-lon.org">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 abstract class AbstractSqlHelper {
 

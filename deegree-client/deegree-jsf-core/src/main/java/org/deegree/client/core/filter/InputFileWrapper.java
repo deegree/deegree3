@@ -54,8 +54,6 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
  * TODO add class documentation here
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class InputFileWrapper extends HttpServletRequestWrapper {
 

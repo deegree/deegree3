@@ -45,8 +45,6 @@ import org.deegree.workspace.standard.AbstractResourceProvider;
  * Implementations plug-in {@link MetadataStore}s.
  *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: lbuesching $
- * @version $Revision: 30800 $, $Date: 2011-05-12 16:49:44 +0200 (Do, 12. Mai 2011) $
  */
 public abstract class MetadataStoreProvider extends AbstractResourceProvider<MetadataStore<? extends MetadataRecord>> {
 

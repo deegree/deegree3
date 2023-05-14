@@ -67,8 +67,6 @@ import org.slf4j.LoggerFactory;
  * enabling/disabling in a certain GL context.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class TextureManager {
 
@@ -308,8 +306,6 @@ public class TextureManager {
 	 * part.
 	 *
 	 * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
-	 * @author last edited by: $Author$
-	 * @version $Revision$, $Date$
 	 *
 	 */
 	private class GPUCache extends LinkedHashMap<Integer, FragmentTexture> {

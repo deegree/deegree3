@@ -67,8 +67,6 @@ import org.junit.Test;
  * Various integration tests for the WMTS.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class WmtsIT {
 

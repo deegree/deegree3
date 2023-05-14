@@ -65,8 +65,6 @@ import org.deegree.services.wms.controller.exceptions.ExceptionsManager;
  * <code>WMSController130</code>
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class WMSController130 extends WMSControllerBase {
 

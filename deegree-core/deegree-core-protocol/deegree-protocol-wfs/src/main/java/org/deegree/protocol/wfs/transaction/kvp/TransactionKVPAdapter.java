@@ -47,8 +47,6 @@ import org.deegree.protocol.wfs.transaction.Transaction;
  * objects.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class TransactionKVPAdapter extends AbstractWFSRequestKVPAdapter {
 

@@ -60,8 +60,6 @@ import org.deegree.tools.rendering.manager.buildings.importers.ModelImporter;
  * </p>
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class CityGMLImporterGenerator {
 

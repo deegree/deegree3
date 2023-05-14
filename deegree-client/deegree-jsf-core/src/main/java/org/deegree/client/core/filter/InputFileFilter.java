@@ -51,8 +51,6 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
  * <code>InputFileFilter</code>
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class InputFileFilter implements Filter {
 

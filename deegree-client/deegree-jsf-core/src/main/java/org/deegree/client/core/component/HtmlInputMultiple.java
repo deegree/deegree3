@@ -51,8 +51,6 @@ import com.sun.faces.util.Util;
  * Input component which allows multiple insert.
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 @ResourceDependencies({ @ResourceDependency(library = "deegree", name = "css/inputMultiple.css", target = "head"),
 		@ResourceDependency(name = "javascript/multipleItems.js", library = "deegree"),

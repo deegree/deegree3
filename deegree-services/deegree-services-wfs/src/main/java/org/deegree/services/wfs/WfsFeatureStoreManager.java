@@ -68,8 +68,6 @@ import org.slf4j.LoggerFactory;
  *
  * @see WebFeatureService
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class WfsFeatureStoreManager {
 

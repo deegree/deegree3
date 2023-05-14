@@ -56,8 +56,6 @@ import com.sun.opengl.util.BufferUtil;
  * viewer, with the z-axis as it's rotation axis.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class BillBoard extends RenderableQualityModel implements PositionableModel {

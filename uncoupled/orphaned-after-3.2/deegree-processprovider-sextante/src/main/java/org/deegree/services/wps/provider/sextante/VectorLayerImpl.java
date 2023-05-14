@@ -60,9 +60,7 @@ import es.unex.sextante.dataObjects.IVectorLayer;
  * Manages features to execute a SEXTANTE {@link GeoAlgorithm}.
  * 
  * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
- * @author last edited by: $Author: pabel $
  * 
- * @version $Revision: $, $Date: $
  */
 
 public class VectorLayerImpl extends AbstractVectorLayer {

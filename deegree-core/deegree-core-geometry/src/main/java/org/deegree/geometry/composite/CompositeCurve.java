@@ -44,9 +44,7 @@ import org.deegree.geometry.primitive.Curve;
  * each curve in the sequence ends at the start point of the subsequent curve in the list.
  *
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
- * @author last edited by: $Author$
  *
- * @version. $Revision$, $Date$
  */
 public interface CompositeCurve extends Curve, List<Curve> {
 

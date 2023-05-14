@@ -43,8 +43,6 @@ import org.deegree.filter.Expression;
  * Base class for implementing {@link CustomExpression}s.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public abstract class AbstractCustomExpression implements CustomExpression {
 

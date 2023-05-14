@@ -48,9 +48,7 @@ import org.deegree.observation.time.TimePeriod;
  * {@link MeasurementCollection}s.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
  * 
  */
 public class Observation implements Iterable<MeasurementCollection> {

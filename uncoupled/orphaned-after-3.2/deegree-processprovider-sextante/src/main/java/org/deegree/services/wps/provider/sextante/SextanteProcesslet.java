@@ -86,9 +86,7 @@ import es.unex.sextante.parameters.Parameter;
  * differentiates all input and output parameters of a SEXTANTE {@link GeoAlgorithm}.
  * 
  * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
- * @author last edited by: $Author: pabel $
  * 
- * @version $Revision: $, $Date: $
  */
 public class SextanteProcesslet implements Processlet {
 

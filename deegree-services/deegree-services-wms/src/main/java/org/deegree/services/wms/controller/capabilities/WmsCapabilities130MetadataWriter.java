@@ -70,8 +70,6 @@ import org.deegree.services.wms.controller.WMSController;
  * Used to write out WMS 1.3.0 capabilities metadata parts.
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * @version $Revision: $, $Date: $
  */
 class WmsCapabilities130MetadataWriter {
 

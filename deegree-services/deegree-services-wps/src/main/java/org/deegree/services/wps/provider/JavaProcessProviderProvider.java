@@ -44,8 +44,6 @@ import org.deegree.workspace.Workspace;
  * {@link ProcessProviderProvider} for the {@link JavaProcessProvider}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class JavaProcessProviderProvider extends ProcessProviderProvider {
 

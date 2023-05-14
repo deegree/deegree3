@@ -56,8 +56,6 @@ import com.sun.faces.renderkit.html_basic.MenuRenderer;
  * <code>LiteralInputRenderer</code> renderes a HtmlLiteralInput form element.
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 @FacesRenderer(componentFamily = "javax.faces.SelectOne", rendererType = "org.deegree.LiteralInput")
 public class LiteralInputRenderer extends MenuRenderer {

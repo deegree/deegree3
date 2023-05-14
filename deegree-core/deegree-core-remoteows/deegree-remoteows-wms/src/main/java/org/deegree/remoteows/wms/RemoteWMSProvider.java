@@ -47,8 +47,6 @@ import org.deegree.workspace.Workspace;
  * <a href="http://www.opengeospatial.org/standards/wms">Web Map Services</a>.
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: aschmitz $
- * @version $Revision: 31451 $, $Date: 2011-08-08 08:13:46 +0200 (Mon, 08 Aug 2011) $
  */
 public class RemoteWMSProvider extends RemoteOWSProvider {
 

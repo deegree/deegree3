@@ -42,8 +42,6 @@ import org.deegree.geometry.primitive.Point;
  * the coordinate reference system being used.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class AffinePlacement {
 

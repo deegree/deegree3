@@ -57,8 +57,6 @@ import org.deegree.geometry.Geometry;
  * use {@link FeatureCollectionType}s with additional properties.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * @version $Revision:$, $Date:$
  */
 public class GenericFeatureCollection extends AbstractFeatureCollection {
 

@@ -52,8 +52,6 @@ import org.junit.Test;
  * <code>UnitTest</code> tests the conversion of different units into each other.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class UnitTest extends TestCase {

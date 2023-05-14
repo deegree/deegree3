@@ -47,8 +47,6 @@ import org.deegree.geometry.Envelope;
  * This class represents an AbstractRaster with multiple ranges.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class MultiRangedRaster extends AbstractRaster {

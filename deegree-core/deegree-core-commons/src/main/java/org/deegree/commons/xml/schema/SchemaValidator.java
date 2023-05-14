@@ -76,8 +76,6 @@ import org.w3c.dom.ls.LSInput;
  * network, but loaded from a local copy.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class SchemaValidator {
 
@@ -310,8 +308,6 @@ public class SchemaValidator {
  * </p>
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 class LSInputListImpl implements LSInputList, List {
 

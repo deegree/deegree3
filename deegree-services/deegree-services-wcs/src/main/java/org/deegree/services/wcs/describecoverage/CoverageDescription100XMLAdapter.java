@@ -71,8 +71,6 @@ import org.deegree.services.wcs.model.CoverageOptions;
  * This is an XMLAdapter for the CoverageDescription of the WCS 1.0.0 spec.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class CoverageDescription100XMLAdapter extends XMLAdapter {

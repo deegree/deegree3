@@ -45,8 +45,6 @@ import org.deegree.geometry.Envelope;
  * Concrete implementation of {@link GriddedTileContainer} that keeps the tiles in memory.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class GriddedMemoryTileContainer extends GriddedTileContainer {
 

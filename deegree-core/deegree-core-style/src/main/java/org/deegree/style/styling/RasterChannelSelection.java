@@ -49,8 +49,6 @@ import org.slf4j.LoggerFactory;
  * TODO: move the evaluation code somewhere else
  *
  * @author <a href="mailto:a.aiordachioaie@jacobs-university.de">Andrei Aiordachioaie</a>
- * @author last edited by: $Author: aschmitz $
- * @version $Revision: 22327 $, $Date: 2010-02-02 09:32:51 +0100 (Tue, 02 Feb 2010) $
  */
 public class RasterChannelSelection implements Copyable<RasterChannelSelection> {
 
@@ -68,8 +66,6 @@ public class RasterChannelSelection implements Copyable<RasterChannelSelection> 
 	 *
 	 * @author <a href="mailto:a.aiordachioaie@jacobs-university.de">Andrei
 	 * Aiordachioaie</a>
-	 * @author last edited by: $Author: aaiordachioaie$
-	 * @version $Revision: 22327 $, $Date: 2010-02-02 09:32:51 +0100 (Tue, 02 Feb 2010) $
 	 */
 	public static enum ChannelSelectionMode {
 

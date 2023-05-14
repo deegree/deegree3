@@ -49,8 +49,6 @@ import org.slf4j.LoggerFactory;
  * {@link StorageLocation} for process outputs.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class OutputStorage extends StorageLocation {
 

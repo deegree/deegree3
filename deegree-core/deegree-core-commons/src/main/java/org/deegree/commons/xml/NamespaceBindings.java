@@ -52,8 +52,6 @@ import javax.xml.namespace.NamespaceContext;
  * </p>
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 24581 $, $Date: 2010-05-26 17:05:14 +0200 (Mi, 26. Mai 2010) $
  */
 public class NamespaceBindings implements org.jaxen.NamespaceContext, javax.xml.namespace.NamespaceContext {
 

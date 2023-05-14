@@ -41,8 +41,6 @@ import java.util.List;
  * Helper class for building {@link SQLOperation} expressions.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 30975 $, $Date: 2011-05-31 11:09:09 +0200 (Di, 31. Mai 2011) $
  */
 public class SQLOperationBuilder {
 

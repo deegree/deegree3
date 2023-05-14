@@ -46,8 +46,6 @@ import org.deegree.protocol.wfs.getfeature.TypeName;
  * use a filter constraint.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class FeatureIdQuery extends AdHocQuery {
 

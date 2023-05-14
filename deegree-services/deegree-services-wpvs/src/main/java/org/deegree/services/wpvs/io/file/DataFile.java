@@ -63,8 +63,6 @@ import org.deegree.services.wpvs.io.serializer.ObjectSerializer;
  * The <code>DataFile</code> class TODO add class documentation here.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  * @param <T> to add to the file
  *
  */

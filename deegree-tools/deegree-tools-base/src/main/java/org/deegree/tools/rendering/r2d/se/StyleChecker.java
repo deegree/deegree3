@@ -68,8 +68,6 @@ import org.slf4j.Logger;
  * <code>StyleChecker</code>
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 @Tool(value = "This tool can be used to check and remove faulty styles in a WMS style database (PostgreSQL).")
 public class StyleChecker {

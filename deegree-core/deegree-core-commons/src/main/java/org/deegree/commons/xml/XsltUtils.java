@@ -58,8 +58,6 @@ import javax.xml.transform.stream.StreamSource;
  * Utility methods to transform xml streams with xslt.
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * @version $Revision: $, $Date: $
  */
 public class XsltUtils {
 

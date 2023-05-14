@@ -44,9 +44,7 @@ import org.deegree.commons.ows.exception.OWSException;
  * This is an kvp adapter for SOS 1.0.0 DescribeSensor requests.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
  * 
  */
 public class DescribeSensor100KVPAdapter {

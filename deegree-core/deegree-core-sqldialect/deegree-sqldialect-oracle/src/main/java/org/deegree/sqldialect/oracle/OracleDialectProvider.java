@@ -60,8 +60,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class OracleDialectProvider implements SqlDialectProvider {
 

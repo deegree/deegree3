@@ -43,8 +43,6 @@ import org.deegree.geometry.primitive.Point;
  * A {@link Rectangle} is a {@link PolygonPatch} defined by four planar points.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public interface Rectangle extends PolygonPatch {
 

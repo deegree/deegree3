@@ -48,8 +48,6 @@ import org.deegree.cs.projections.cylindric.TransverseMercator;
  * projections
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public enum SupportedProjections {

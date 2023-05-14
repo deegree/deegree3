@@ -61,8 +61,6 @@ import org.slf4j.LoggerFactory;
  * instances.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: 328 $, $Date: 2011-07-01 11:31:23 +0200 (Fr, 01. Jul 2011) $
  */
 public class MSSQLDDLCreator extends DDLCreator {
 

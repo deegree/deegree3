@@ -72,8 +72,6 @@ import org.deegree.rendering.r3d.ViewParams;
  * The <code>GetViewKVPAdapter</code> class provides a GetView request chopper.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class GetViewKVPAdapter {
 

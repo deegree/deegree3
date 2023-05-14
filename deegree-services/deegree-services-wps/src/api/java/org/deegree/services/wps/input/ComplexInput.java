@@ -45,9 +45,7 @@ import javax.xml.stream.XMLStreamReader;
  * A complex data structure {@link ProcessletInput} parameter, i.e. an object encoded in XML or a raw binary stream.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
  * 
- * @version $Revision: $, $Date: $
  */
 public interface ComplexInput extends ProcessletInput {
 

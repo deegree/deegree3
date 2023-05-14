@@ -43,8 +43,6 @@ import org.deegree.rendering.r3d.multiresolution.MultiresolutionMesh;
  * {@link MultiresolutionMesh}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class Coarsest implements LODCriterion {
 

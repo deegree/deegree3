@@ -55,8 +55,6 @@ import org.deegree.workspace.Workspace;
  *
  * @see DiskLayout
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 class FileSystemTileDataLevel implements TileDataLevel {
 

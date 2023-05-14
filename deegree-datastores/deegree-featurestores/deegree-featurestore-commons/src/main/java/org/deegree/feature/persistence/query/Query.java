@@ -60,8 +60,6 @@ import org.deegree.protocol.wfs.getfeature.TypeName;
  * Encapsulates the parameter of a query to a {@link FeatureStore}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class Query {
 
@@ -72,8 +70,6 @@ public class Query {
 	 * implementation may take into account to increase efficient query processing.
 	 *
 	 * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
-	 * @author last edited by: $Author$
-	 * @version $Revision$, $Date$
 	 */
 	public enum QueryHint {
 

@@ -84,8 +84,6 @@ import org.slf4j.LoggerFactory;
  * capabilities documents.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 abstract class AbstractOWSCommonCapabilitiesAdapter extends XMLAdapter implements OWSCapabilitiesAdapter {
 

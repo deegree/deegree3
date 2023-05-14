@@ -41,8 +41,6 @@ import javax.faces.component.UIPanel;
  * TODO add class documentation here
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 @FacesComponent(value = "HtmlFieldset")
 public class HtmlFieldset extends UIPanel {

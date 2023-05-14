@@ -49,8 +49,6 @@ import org.deegree.geometry.Envelope;
  * Abstract base class for common {@link FeatureCollection} implementations.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * @version $Revision:$, $Date:$
  */
 public abstract class AbstractFeatureCollection extends AbstractFeature implements FeatureCollection {
 

@@ -63,8 +63,6 @@ import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
  * logical layers.
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * @version $Revision: $, $Date: $
  */
 class ThemeXmlStreamEncoder {
 

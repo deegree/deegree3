@@ -54,8 +54,6 @@ import org.junit.Test;
  * inspected.
  *
  * @author <a href="mailto:ionita@deegree.org">Andrei Ionita</a>
- * @author last edited by: $Author: ionita $
- * @version $Revision: $, $Date: $
  *
  */
 public class EqualityBetweenProvidersTest extends TestCase {

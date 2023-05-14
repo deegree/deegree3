@@ -42,8 +42,6 @@ import java.util.List;
  * The <code></code> class TODO add class documentation here.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 30979 $, $Date: 2011-05-31 14:00:22 +0200 (Di, 31. Mai 2011) $
  */
 public class Join {
 

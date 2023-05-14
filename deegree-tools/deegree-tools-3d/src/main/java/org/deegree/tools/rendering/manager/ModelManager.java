@@ -50,8 +50,6 @@ import org.deegree.services.wpvs.io.ModelBackend.Type;
  * and updating different kind of data models into the WPVS.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  * @param <FB> The type of the filebackend.
  *
  */

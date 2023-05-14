@@ -47,9 +47,7 @@ import org.deegree.services.wps.input.ProcessletInput;
  * Encapsulates the input parameters for the execution of a {@link Processlet}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
  *
- * @version $Revision: $, $Date: $
  */
 public final class ProcessletInputs {
 

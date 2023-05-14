@@ -40,8 +40,6 @@ import org.deegree.cs.transformations.helmert.Helmert;
  * Interface describing a GeodeticDatum
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public interface IGeodeticDatum extends IDatum {
 

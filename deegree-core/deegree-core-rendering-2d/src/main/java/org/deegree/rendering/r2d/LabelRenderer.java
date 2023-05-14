@@ -48,8 +48,6 @@ import org.deegree.rendering.r2d.Label;
  * <code>LabelRenderer</code>
  *
  * @author Florian Bingel
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public interface LabelRenderer {
 

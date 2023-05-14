@@ -54,8 +54,6 @@ import org.locationtech.jts.geom.GeometryCollection;
  *
  * @param <T> type of contained geometry objects
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class DefaultMultiGeometry<T extends Geometry> extends AbstractDefaultGeometry implements MultiGeometry<T> {
 

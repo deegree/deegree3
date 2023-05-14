@@ -47,8 +47,6 @@ import org.deegree.style.StyleRef;
  * <code>GetLegendGraphic</code>
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 31688 $, $Date: 2011-08-30 15:05:12 +0200 (Tue, 30 Aug 2011) $
  */
 public class GetLegendGraphic {
 

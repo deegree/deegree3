@@ -48,8 +48,6 @@ import org.deegree.coverage.raster.io.RasterReader;
  * This class implements a pixel-interleaved, ByteBuffer-based RasterData.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class PixelInterleavedRasterData extends ByteBufferRasterData {
 

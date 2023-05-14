@@ -43,8 +43,6 @@ import org.deegree.style.styling.Copyable;
  * <code>PerpendicularOffsetType</code>
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: aschmitz $
- * @version $Revision: 21443 $, $Date: 2009-12-15 09:25:22 +0100 (Tue, 15 Dec 2009) $
  */
 public class PerpendicularOffsetType implements Copyable<PerpendicularOffsetType> {
 
@@ -58,8 +56,6 @@ public class PerpendicularOffsetType implements Copyable<PerpendicularOffsetType
 	 * <code>Type</code>
 	 *
 	 * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-	 * @author last edited by: $Author: aschmitz $
-	 * @version $Revision: 21443 $, $Date: 2009-12-15 09:25:22 +0100 (Tue, 15 Dec 2009) $
 	 */
 	public enum Type {
 
@@ -76,8 +72,6 @@ public class PerpendicularOffsetType implements Copyable<PerpendicularOffsetType
 	 * <code>Substraction</code>
 	 *
 	 * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-	 * @author last edited by: $Author: aschmitz $
-	 * @version $Revision: 21443 $, $Date: 2009-12-15 09:25:22 +0100 (Tue, 15 Dec 2009) $
 	 */
 	public enum Substraction {
 

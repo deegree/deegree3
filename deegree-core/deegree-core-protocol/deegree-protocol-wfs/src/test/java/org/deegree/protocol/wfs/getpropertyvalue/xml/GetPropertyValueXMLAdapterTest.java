@@ -54,8 +54,6 @@ import org.junit.Test;
  * Tests for {@link GetPropertyValueXMLAdapter}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class GetPropertyValueXMLAdapterTest {
 

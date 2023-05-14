@@ -50,9 +50,7 @@ import org.deegree.observation.time.TimePeriod;
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * 
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
  * 
  */
 public class EventTime100XMLExporter extends XMLAdapter {

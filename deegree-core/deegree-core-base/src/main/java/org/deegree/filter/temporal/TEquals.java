@@ -42,8 +42,6 @@ import org.deegree.time.primitive.TimeGeometricPrimitive;
  * {@link TemporalOperator} that...
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class TEquals extends TemporalOperator {
 

@@ -86,9 +86,7 @@ import org.slf4j.LoggerFactory;
  * Simple {@link ObservationDatastore} that stores all measurements with time.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
  * 
  */
 public class SimpleObservationDatastore extends SQLObservationDatastore {

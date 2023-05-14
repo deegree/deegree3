@@ -53,8 +53,6 @@ import org.deegree.coverage.raster.io.grid.TileOffsetReader;
  * operations on the tiles.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class TiledRasterData implements RasterData {
@@ -1040,8 +1038,6 @@ public class TiledRasterData implements RasterData {
 	 * little result bean.
 	 *
 	 * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
-	 * @author last edited by: $Author$
-	 * @version $Revision$, $Date$
 	 *
 	 */
 	private static class MappedTile {

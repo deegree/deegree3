@@ -53,8 +53,6 @@ import org.slf4j.LoggerFactory;
  * Encapsulates columns and values for inserting one row into a database table.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: markus $
- * @version $Revision: $, $Date: $
  */
 public class InsertRow extends TransactionRow {
 

@@ -43,8 +43,6 @@ import org.deegree.commons.tom.primitive.PrimitiveValue;
  * {@link XPathNode} that represents an XML attribute node.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * @version $Revision:$, $Date:$
  */
 public class AttributeNode<P extends TypedObjectNode> implements XPathNode<PrimitiveValue> {
 

@@ -39,8 +39,6 @@ package org.deegree.rendering.r3d.opengl.tesselation;
  * The <code>TexturedVertex</code> a textured vertex.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class TexturedVertex extends Vertex {

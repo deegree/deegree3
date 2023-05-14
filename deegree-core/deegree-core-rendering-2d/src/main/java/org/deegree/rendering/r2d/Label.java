@@ -50,8 +50,6 @@ import org.deegree.style.styling.TextStyling;
  * A rectangular text label, ready to be drawn
  *
  * @author Florian Bingel
- * @author last edited by: $Author: stranger $
- * @version $Revision: $, $Date: $
  */
 
 public class Label {

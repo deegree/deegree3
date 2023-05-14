@@ -41,8 +41,6 @@ import org.deegree.commons.tom.primitive.PrimitiveValue;
  * {@link XPathNode} that represents an XML text node (with primitive type information).
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * @version $Revision:$, $Date:$
  */
 public class PrimitiveNode<P extends TypedObjectNode> implements XPathNode<PrimitiveValue> {
 

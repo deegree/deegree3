@@ -46,8 +46,6 @@ import org.deegree.commons.uom.Measure;
  * {@link PropertyType} that defines a property with a {@link Measure} value.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class MeasurePropertyType extends AbstractPropertyType {
 

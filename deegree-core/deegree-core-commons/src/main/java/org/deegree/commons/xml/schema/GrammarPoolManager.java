@@ -57,8 +57,6 @@ import org.slf4j.LoggerFactory;
  * parsing of XML schema documents over the internet.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 class GrammarPoolManager {
 

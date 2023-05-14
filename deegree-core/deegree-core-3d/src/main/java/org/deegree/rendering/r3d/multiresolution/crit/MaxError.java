@@ -43,8 +43,6 @@ import org.deegree.rendering.r3d.multiresolution.MultiresolutionMesh;
  * with an approximation error that does not exceed a given bound.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class MaxError implements LODCriterion {
 

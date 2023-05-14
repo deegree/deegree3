@@ -66,8 +66,6 @@ import org.slf4j.Logger;
  * TODO add class documentation here
  *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 31239 $, $Date: 2011-07-07 17:23:05 +0200 (Do, 07. Jul 2011) $
  */
 public abstract class AbstractISOTest {
 

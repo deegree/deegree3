@@ -130,9 +130,7 @@ import org.deegree.geometry.primitive.Polygon;
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
- * @author last edited by: $Author$
  *
- * @version. $Revision$, $Date$
  */
 public interface Geometry extends GMLObject {
 

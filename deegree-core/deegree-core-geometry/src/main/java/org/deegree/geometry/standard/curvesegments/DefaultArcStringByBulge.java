@@ -42,8 +42,6 @@ import org.deegree.geometry.primitive.segments.ArcStringByBulge;
  * Default implementation of {@link ArcStringByBulge} segments.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class DefaultArcStringByBulge implements ArcStringByBulge {
 

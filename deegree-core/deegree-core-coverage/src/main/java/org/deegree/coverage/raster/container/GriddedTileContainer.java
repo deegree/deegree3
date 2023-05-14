@@ -58,8 +58,6 @@ import org.slf4j.LoggerFactory;
  * equal-sized cells (raster tiles).
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public abstract class GriddedTileContainer implements TileContainer {
 

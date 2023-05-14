@@ -44,8 +44,6 @@ import org.deegree.cs.coordinatesystems.VerticalCRS;
  * {@link CRSRef} to a {@link VerticalCRS}
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class VerticalCRSRef extends CRSRef implements IVerticalCRS {
 

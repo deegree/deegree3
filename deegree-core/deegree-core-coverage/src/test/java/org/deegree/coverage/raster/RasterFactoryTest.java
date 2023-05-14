@@ -76,8 +76,6 @@ import org.slf4j.Logger;
  * The <code>RasterFactory</code> class TODO add class documentation here.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class RasterFactoryTest {

@@ -65,8 +65,6 @@ import org.junit.Test;
  * Tests the substitution of transformations.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class TransformationSubstitutionTest implements CRSDefines {
 

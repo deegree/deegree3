@@ -40,8 +40,6 @@ import org.deegree.commons.tom.gml.GMLObject;
  * {@link XPathNode} that represents an XML document node.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class DocumentNode implements XPathNode<GMLObject> {
 

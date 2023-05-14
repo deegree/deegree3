@@ -64,8 +64,6 @@ import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
  * An abstract Handler to write GetCapabilities documents
  *
  * @author <a href="mailto:goltz@deegree.org">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class GetCapabilitiesHelper {
 

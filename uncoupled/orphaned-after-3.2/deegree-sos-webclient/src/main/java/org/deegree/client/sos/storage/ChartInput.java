@@ -10,9 +10,7 @@ import java.util.Map;
  * Keeps the data needed for creating the chart by ChartProcessing.
  * 
  * @author <a href="mailto:neumeister@lat-lon.de">Ulrich Neumeister</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
  */
 public class ChartInput {
 

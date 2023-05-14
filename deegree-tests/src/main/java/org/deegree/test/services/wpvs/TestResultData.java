@@ -39,8 +39,6 @@ package org.deegree.test.services.wpvs;
  * The <code></code> class TODO add class documentation here.
  *
  * @author <a href="mailto:name@deegree.org">Your Name</a>
- * @author last edited by: $Author: ionita $
- * @version $Revision: $, $Date: $
  *
  */
 public class TestResultData {

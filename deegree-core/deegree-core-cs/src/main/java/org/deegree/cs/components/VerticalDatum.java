@@ -44,8 +44,6 @@ import org.deegree.cs.CRSResource;
  * vertical measurements.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class VerticalDatum extends Datum implements IVerticalDatum {

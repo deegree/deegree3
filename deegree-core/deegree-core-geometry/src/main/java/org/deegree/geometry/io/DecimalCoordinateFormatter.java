@@ -44,8 +44,6 @@ import org.deegree.cs.components.Unit;
  * {@link CoordinateFormatter} based on {@link DecimalFormat}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class DecimalCoordinateFormatter implements CoordinateFormatter {
 

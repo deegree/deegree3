@@ -54,8 +54,6 @@ import org.slf4j.LoggerFactory;
  * SOAP Authentication.
  *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class SOAPAuthentication implements CredentialsProvider {
 

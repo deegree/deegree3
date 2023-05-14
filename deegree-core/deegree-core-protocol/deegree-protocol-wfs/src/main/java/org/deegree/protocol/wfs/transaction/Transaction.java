@@ -50,8 +50,6 @@ import org.deegree.protocol.wfs.AbstractWFSRequest;
  *
  * @see TransactionAction
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class Transaction extends AbstractWFSRequest {
 

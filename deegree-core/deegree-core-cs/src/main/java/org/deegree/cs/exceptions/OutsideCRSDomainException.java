@@ -42,8 +42,6 @@ package org.deegree.cs.exceptions;
  * the domain of coordinate system in which the Geometry was defined.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class OutsideCRSDomainException extends RuntimeException {

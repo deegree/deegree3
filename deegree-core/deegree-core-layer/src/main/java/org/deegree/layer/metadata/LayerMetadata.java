@@ -54,8 +54,6 @@ import org.deegree.style.se.unevaluated.Style;
 
 /**
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: aschmitz $
- * @version $Revision: 31393 $, $Date: 2011-08-01 20:19:40 +0200 (Mon, 01 Aug 2011) $
  */
 public class LayerMetadata {
 

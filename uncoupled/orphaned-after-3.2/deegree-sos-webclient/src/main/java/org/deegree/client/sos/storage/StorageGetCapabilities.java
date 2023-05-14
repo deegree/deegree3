@@ -14,7 +14,6 @@ import org.deegree.commons.utils.Pair;
  * "Contents" is stored in a list of ObservatinOffering-objects.
  * 
  * @author <a href="mailto:neumeister@lat-lon.de">Ulrich Neumeister</a>
- * @author last edited by: $Author$
  * 
  */
 public class StorageGetCapabilities {

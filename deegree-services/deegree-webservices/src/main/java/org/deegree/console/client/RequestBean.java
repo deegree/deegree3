@@ -97,8 +97,6 @@ import org.slf4j.Logger;
  * reload problems).
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 29926 $, $Date: 2011-03-08 11:47:59 +0100 (Di, 08. Mär 2011) $
  */
 @ManagedBean
 @RequestScoped

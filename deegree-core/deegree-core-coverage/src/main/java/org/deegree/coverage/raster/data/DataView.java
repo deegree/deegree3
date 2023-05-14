@@ -48,8 +48,6 @@ import org.deegree.coverage.raster.geom.RasterRect;
  * The <code>DataView</code> class defines a view on Rasterdata.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class DataView extends RasterRect {

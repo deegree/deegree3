@@ -72,8 +72,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author <a href="mailto:apadberg@uni-bonn.de">Alexander Padberg</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: $
- * @version $Revision: $, $Date: $
  */
 public class DescribeProcessResponseXMLAdapter extends XMLAdapter {
 

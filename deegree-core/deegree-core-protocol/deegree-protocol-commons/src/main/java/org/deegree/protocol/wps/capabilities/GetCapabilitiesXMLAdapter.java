@@ -51,8 +51,6 @@ import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
  * Parser for WPS GetCapabilities requests.
  *
  * @author <a href="mailto:apadberg@uni-bonn.de">Alexander Padberg</a>
- * @author last edited by: $Author: $
- * @version $Revision: $, $Date: $
  */
 public class GetCapabilitiesXMLAdapter extends XMLAdapter {
 

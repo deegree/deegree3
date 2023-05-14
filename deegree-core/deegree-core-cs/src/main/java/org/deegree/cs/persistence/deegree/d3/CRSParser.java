@@ -55,8 +55,6 @@ import org.deegree.cs.transformations.Transformation;
  * The base interface for deegree (2 & 3) configurations.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  * @param <T>
  *
  */

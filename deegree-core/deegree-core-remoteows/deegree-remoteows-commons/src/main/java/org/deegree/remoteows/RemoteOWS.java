@@ -41,8 +41,6 @@ import org.deegree.workspace.Resource;
  * instance.
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public interface RemoteOWS extends Resource {
 

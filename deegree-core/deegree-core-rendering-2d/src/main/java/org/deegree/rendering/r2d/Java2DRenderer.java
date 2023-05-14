@@ -64,8 +64,6 @@ import org.slf4j.Logger;
  * <code>Java2DRenderer</code>
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class Java2DRenderer implements Renderer {
 

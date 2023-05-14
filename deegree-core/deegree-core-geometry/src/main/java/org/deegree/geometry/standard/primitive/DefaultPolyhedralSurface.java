@@ -50,8 +50,6 @@ import org.deegree.geometry.standard.AbstractDefaultGeometry;
  * Default implementation of {@link PolyhedralSurface}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class DefaultPolyhedralSurface extends AbstractDefaultGeometry implements PolyhedralSurface {
 

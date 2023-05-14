@@ -151,8 +151,6 @@ import org.slf4j.LoggerFactory;
  * Specification</a> 2.0.0.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class Filter200XMLDecoder {
 

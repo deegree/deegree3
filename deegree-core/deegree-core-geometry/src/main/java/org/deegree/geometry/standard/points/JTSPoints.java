@@ -54,8 +54,6 @@ import org.locationtech.jts.geom.Envelope;
  * {@link Geometry} objects.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class JTSPoints implements Points {
 

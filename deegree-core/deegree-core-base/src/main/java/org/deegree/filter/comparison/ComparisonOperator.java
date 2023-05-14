@@ -51,8 +51,6 @@ import org.deegree.filter.i18n.Messages;
  * Abstract base class for all comparison operators.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * @version $Revision:$, $Date:$
  */
 public abstract class ComparisonOperator implements Operator {
 

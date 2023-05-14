@@ -41,8 +41,6 @@ import org.deegree.workspace.standard.AbstractResourceProvider;
  * Implementations provide {@link OWS} instances.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: markus $
- * @version $Revision: $, $Date: $
  */
 public abstract class OWSProvider extends AbstractResourceProvider<OWS> {
 

@@ -66,8 +66,6 @@ import org.slf4j.Logger;
  * outsourced method because of the complexity.
  *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: lbuesching $
- * @version $Revision: 31110 $, $Date: 2011-06-28 15:37:00 +0200 (Di, 28. Jun 2011) $
  */
 public class ParseIdentificationInfo extends XMLAdapter {
 

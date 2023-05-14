@@ -63,8 +63,6 @@ import org.slf4j.Logger;
  * <code>WMSControllerBase</code>
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public abstract class WMSControllerBase implements Controller {
 

@@ -56,8 +56,6 @@ import org.deegree.geometry.primitive.segments.LineStringSegment;
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author$
- * @version $Revision$
  */
 public interface Tin extends TriangulatedSurface {
 

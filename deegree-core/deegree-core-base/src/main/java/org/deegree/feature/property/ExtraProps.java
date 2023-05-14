@@ -47,8 +47,6 @@ import org.deegree.feature.types.FeatureType;
  * the {@link FeatureType} (e.g. for storing rendering hints along with the feature).
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class ExtraProps {
 

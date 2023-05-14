@@ -48,8 +48,6 @@ import org.deegree.sqldialect.filter.UnmappableException;
  *
  * @author <a href="mailto:erben@lat-lon.de">Alexander Erben</a>
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public interface QueryService {
 

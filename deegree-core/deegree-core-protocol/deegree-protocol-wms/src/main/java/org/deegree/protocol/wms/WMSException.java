@@ -39,8 +39,6 @@ package org.deegree.protocol.wms;
  * <code>WMSException</code>
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class WMSException extends Exception {
 
@@ -50,8 +48,6 @@ public class WMSException extends Exception {
 	 * <code>MissingDimensionValue</code>
 	 *
 	 * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-	 * @author last edited by: $Author$
-	 * @version $Revision$, $Date$
 	 */
 	public static class MissingDimensionValue extends WMSException {
 
@@ -73,8 +69,6 @@ public class WMSException extends Exception {
 	 * <code>InvalidDimensionValue</code>
 	 *
 	 * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-	 * @author last edited by: $Author$
-	 * @version $Revision$, $Date$
 	 */
 	public static class InvalidDimensionValue extends WMSException {
 

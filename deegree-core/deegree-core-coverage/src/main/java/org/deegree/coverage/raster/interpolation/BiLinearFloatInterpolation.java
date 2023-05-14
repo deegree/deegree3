@@ -44,8 +44,6 @@ import org.deegree.coverage.raster.data.info.DataType;
  * This class implements a bilinear interpolation for float raster.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class BiLinearFloatInterpolation implements Interpolation {

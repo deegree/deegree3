@@ -40,8 +40,6 @@ package org.deegree.cs.exceptions;
  * problem while projecting coordinates.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 

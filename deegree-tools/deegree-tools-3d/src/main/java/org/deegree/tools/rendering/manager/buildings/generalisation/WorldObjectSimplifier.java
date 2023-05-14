@@ -65,9 +65,7 @@ import org.locationtech.jts.simplify.DouglasPeuckerSimplifier;
  * located at 0,0,0 to the 3D envelope of an object.
  *
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
- * @author last edited by: $Author$
  *
- * @version. $Revision$, $Date$
  */
 public class WorldObjectSimplifier {
 
@@ -288,8 +286,6 @@ public class WorldObjectSimplifier {
 	 * http://de.wikipedia.org/wiki/Regressionsanalyse for more information.
 	 *
 	 * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
-	 * @author last edited by: $Author$
-	 * @version $Revision$, $Date$
 	 *
 	 */
 	private class RegressionForm {

@@ -49,8 +49,6 @@ import org.deegree.protocol.wfs.getfeature.TypeName;
  * to specify a <code>BBOX</code> or a <code>FEATUREID</code> parameter.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class FilterQuery extends AdHocQuery {
 

@@ -64,8 +64,6 @@ import org.deegree.tools.rendering.manager.ModelManager;
  * The <code>TreeImporter</code> import tree definitions from a csv file.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author: rbezema $
- * @version $Revision: 17365 $, $Date: 2009-04-17 17:11:28 +0200 (Fr, 17 Apr 2009) $
  *
  */
 public class TreeManager extends ModelManager<BillBoard> {
@@ -84,8 +82,6 @@ public class TreeManager extends ModelManager<BillBoard> {
 	 * value.
 	 *
 	 * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
-	 * @author last edited by: $Author: rbezema $
-	 * @version $Revision: 17365 $, $Date: 2009-04-17 17:11:28 +0200 (Fr, 17 Apr 2009) $
 	 *
 	 */
 	private enum Column {

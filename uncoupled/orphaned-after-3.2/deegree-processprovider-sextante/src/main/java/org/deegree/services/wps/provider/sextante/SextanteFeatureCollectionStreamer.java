@@ -69,9 +69,7 @@ import es.unex.sextante.parameters.Parameter;
  * This class allows to steam a {@link FeatureCollection} for execute a process.
  * 
  * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
- * @author last edited by: $Author: pabel $
  * 
- * @version $Revision: $, $Date: $
  */
 public class SextanteFeatureCollectionStreamer {
 

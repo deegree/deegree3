@@ -57,8 +57,6 @@ import org.slf4j.LoggerFactory;
  * defined by the MultiResolutionModel.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class TextureTileAnalyzer extends GLCanvas implements GLEventListener {

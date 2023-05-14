@@ -67,8 +67,6 @@ import org.deegree.services.jaxb.metadata.ServiceProviderType;
  * TODO add class documentation here
  *
  * @author <a href="mailto:goltz@lat-lon.org">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class EbrimProfile implements ServiceProfile {
 

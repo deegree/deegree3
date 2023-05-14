@@ -52,8 +52,6 @@ import org.deegree.cs.transformations.Transformation;
  * defined to be equivalent to earths center.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 

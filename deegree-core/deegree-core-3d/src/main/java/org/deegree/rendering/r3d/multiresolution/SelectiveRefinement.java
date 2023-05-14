@@ -58,8 +58,6 @@ import org.slf4j.LoggerFactory;
  * @see LODCriterion
  * @see SpatialSelection
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$
  */
 public class SelectiveRefinement {
 

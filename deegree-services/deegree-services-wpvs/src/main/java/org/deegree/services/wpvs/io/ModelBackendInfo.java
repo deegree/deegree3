@@ -41,8 +41,6 @@ import org.deegree.geometry.Envelope;
  * The <code>ModelBackendInfo</code> class TODO add class documentation here.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class ModelBackendInfo {

@@ -52,8 +52,6 @@ import org.jaxen.saxpath.Axis;
  * XPath <code>NameStep</code>.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public abstract class MappableStep {
 

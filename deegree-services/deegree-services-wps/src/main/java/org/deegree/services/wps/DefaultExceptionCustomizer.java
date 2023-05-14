@@ -52,8 +52,6 @@ import org.deegree.commons.utils.Pair;
  * The <code>ExceptionCustomizerImpl</code> class TODO add class documentation here.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class DefaultExceptionCustomizer implements ExceptionCustomizer {

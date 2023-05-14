@@ -45,8 +45,6 @@ import org.deegree.protocol.ows.exception.OWSExceptionReport;
  * TODO add class documentation here
  *
  * @author <a href="mailto:name@deegree.org">Andreas Poth</a>
- * @author last edited by: $Author: admin $
- * @version $Revision: $, $Date: $
  */
 
 @Tool(value = "harvest metadata records and insert them in a CSW")

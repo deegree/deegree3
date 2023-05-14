@@ -43,8 +43,6 @@ import org.slf4j.Logger;
  * TODO add class documentation here
  *
  * @author <a href="mailto:goltz@lat-lon.org">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class ServiceProfileManager {
 

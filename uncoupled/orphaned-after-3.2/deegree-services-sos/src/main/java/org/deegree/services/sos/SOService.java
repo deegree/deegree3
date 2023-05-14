@@ -50,9 +50,7 @@ import org.deegree.observation.model.Offering;
  * which contain the actual observation data.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
  * 
  */
 public class SOService {

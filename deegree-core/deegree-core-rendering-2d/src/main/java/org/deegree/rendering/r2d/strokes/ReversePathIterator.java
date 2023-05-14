@@ -61,7 +61,6 @@ import java.awt.geom.IllegalPathStateException;
  * </ul>
  *
  * @author <a href="mailto:rammi@caff.de">Rammi</a>
- * @version $Revision: 1.3 $
  */
 public class ReversePathIterator implements PathIterator {
 

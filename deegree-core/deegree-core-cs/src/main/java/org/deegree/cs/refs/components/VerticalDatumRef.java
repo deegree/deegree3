@@ -44,8 +44,6 @@ import org.deegree.cs.components.VerticalDatum;
  * {@link DatumRef} to a {@link VerticalDatum}
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class VerticalDatumRef extends DatumRef implements Serializable, IVerticalDatum {
 

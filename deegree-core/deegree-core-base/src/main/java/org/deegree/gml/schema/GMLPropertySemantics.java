@@ -43,8 +43,6 @@ import org.deegree.feature.types.property.ValueRepresentation;
  * references another element).
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: markus $
- * @version $Revision: $, $Date: $
  */
 public class GMLPropertySemantics {
 

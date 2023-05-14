@@ -44,8 +44,6 @@ import org.deegree.process.jaxb.java.ComplexInputDefinition;
  * GML or a raw binary stream.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public abstract class ComplexInputImpl extends ProcessletInputImpl implements ComplexInput {
 

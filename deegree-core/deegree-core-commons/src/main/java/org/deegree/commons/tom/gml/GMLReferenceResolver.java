@@ -45,8 +45,6 @@ import org.deegree.commons.tom.ReferenceResolver;
  *
  * @see GMLReference
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public interface GMLReferenceResolver extends ReferenceResolver {
 

@@ -45,8 +45,6 @@ import org.apache.axiom.om.OMElement;
  * last expected element and there are stil child elements left.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class FixedChildIterator implements Iterable<OMElement>, Iterator<OMElement> {
 

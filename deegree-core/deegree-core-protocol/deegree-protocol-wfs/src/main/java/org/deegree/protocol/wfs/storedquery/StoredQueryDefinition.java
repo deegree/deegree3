@@ -44,8 +44,6 @@ import org.deegree.protocol.wfs.query.StoredQuery;
  * Defines the template for a {@link StoredQuery}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class StoredQueryDefinition {
 

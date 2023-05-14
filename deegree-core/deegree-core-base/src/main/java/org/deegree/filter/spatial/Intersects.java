@@ -50,8 +50,6 @@ import org.slf4j.LoggerFactory;
  * Responsible for representing and evaluating the <code>Intersects</code> operator.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * @version $Revision:$, $Date:$
  */
 public class Intersects extends SpatialOperator {
 

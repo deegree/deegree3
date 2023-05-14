@@ -49,8 +49,6 @@ import java.util.logging.Logger;
  * system class loader...
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class DriverWrapper implements Driver {
 

@@ -56,8 +56,6 @@ import org.deegree.geometry.standard.points.PointsList;
  * Contains utility methods for common tasks on {@link Geometry} objects.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class Geometries {
 

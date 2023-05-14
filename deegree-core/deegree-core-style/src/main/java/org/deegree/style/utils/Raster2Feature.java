@@ -51,8 +51,6 @@ import org.deegree.geometry.standard.points.PointsList;
  * geometry and other information about the raster as attributes.
  *
  * @author <a href="mailto:a.aiordachioaie@jacobs-university.de">Andrei Aiordachioaie</a>
- * @author last edited by: $Author: lbuesching $
- * @version $Revision: 29642 $, $Date: 2011-02-11 13:59:33 +0100 (Fri, 11 Feb 2011) $
  */
 public class Raster2Feature {
 

@@ -51,8 +51,6 @@ import java.nio.ByteBuffer;
  * returned integer values are converted with the {@link ByteBuffer} conversions methods.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class FloatColorModel extends ColorModel {

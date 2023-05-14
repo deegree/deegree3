@@ -72,8 +72,6 @@ import org.deegree.protocol.wfs.query.xml.QueryXMLAdapter;
  * Adapter between XML <code>LockFeature</code> requests and {@link LockFeature} objects.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class LockFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
 

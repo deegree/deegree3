@@ -60,8 +60,6 @@ import org.slf4j.LoggerFactory;
  * the same spatial region, but with different resolutions.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class MultiResolutionRaster extends AbstractCoverage {
 

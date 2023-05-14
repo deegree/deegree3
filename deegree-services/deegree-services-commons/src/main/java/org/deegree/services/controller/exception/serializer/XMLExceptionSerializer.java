@@ -50,8 +50,6 @@ import org.deegree.services.controller.utils.HttpResponseBuffer;
  * The <code>XMLExceptionSerializer</code> class TODO add class documentation here.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$ *
  */
 public abstract class XMLExceptionSerializer implements ExceptionSerializer {
 

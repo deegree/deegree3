@@ -63,8 +63,6 @@ import org.deegree.cs.projections.Projection;
  * </p>
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 

@@ -37,8 +37,6 @@ package org.deegree.services.exception;
 
 /**
  * @author <a href="mailto:apadberg@uni-bonn.de">Alexander Padberg</a>
- * @author last edited by: $Author: $
- * @version $Revision: $, $Date: $
  *
  */
 public class ServiceInitException extends Exception {

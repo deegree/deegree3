@@ -38,8 +38,6 @@ package org.deegree.filter.projection;
  * Marker interface for projections of queried objects.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public interface ProjectionClause {
 

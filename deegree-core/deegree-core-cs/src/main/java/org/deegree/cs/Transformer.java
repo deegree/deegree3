@@ -52,8 +52,6 @@ import org.slf4j.Logger;
  * {@link Transformation} objects for a given source CRS.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public abstract class Transformer {

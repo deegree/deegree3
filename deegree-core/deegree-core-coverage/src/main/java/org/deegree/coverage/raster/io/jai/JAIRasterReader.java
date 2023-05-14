@@ -59,9 +59,7 @@ import org.slf4j.LoggerFactory;
 /**
  * A JAI based raster reader, rb: should be refactored to use the 'new' tiling raster api.
  *
- * @version $Revision$
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
  *
  */
 public class JAIRasterReader implements RasterReader {

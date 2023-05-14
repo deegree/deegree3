@@ -68,8 +68,6 @@ import org.slf4j.Logger;
  * Some methods to work with the jaxb beans from the base layer schema.
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * @version $Revision: $, $Date: $
  */
 public final class ConfigUtils {
 

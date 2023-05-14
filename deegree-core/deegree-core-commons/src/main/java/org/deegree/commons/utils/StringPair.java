@@ -39,8 +39,6 @@ package org.deegree.commons.utils;
  * <code>StringPair</code> is a convenience class, which pairs two Strings.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class StringPair extends Pair<String, String> {

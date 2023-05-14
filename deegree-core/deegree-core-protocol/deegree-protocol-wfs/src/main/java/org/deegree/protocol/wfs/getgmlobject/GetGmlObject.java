@@ -48,8 +48,6 @@ import org.deegree.protocol.wfs.AbstractWFSRequest;
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class GetGmlObject extends AbstractWFSRequest {
 

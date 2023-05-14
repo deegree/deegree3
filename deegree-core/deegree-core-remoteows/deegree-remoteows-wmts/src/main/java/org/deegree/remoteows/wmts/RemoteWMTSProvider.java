@@ -46,8 +46,6 @@ import org.deegree.workspace.Workspace;
  * {@link RemoteOWSProvider} for {@link RemoteWMTS}.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class RemoteWMTSProvider extends RemoteOWSProvider {
 

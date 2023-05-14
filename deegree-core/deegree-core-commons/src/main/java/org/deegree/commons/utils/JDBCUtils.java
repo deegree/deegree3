@@ -45,8 +45,6 @@ import org.slf4j.Logger;
  * This class contains static utility methods for working with JDBC.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public final class JDBCUtils {
 

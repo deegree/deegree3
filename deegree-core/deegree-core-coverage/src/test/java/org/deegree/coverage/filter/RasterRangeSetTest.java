@@ -70,8 +70,6 @@ import org.junit.Test;
  * Tests filtering on rasters.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class RasterRangeSetTest {

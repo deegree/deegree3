@@ -52,7 +52,6 @@ import org.deegree.commons.tom.primitive.PrimitiveValue;
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @version $Revision$, $Date$
  */
 public interface ElementNode extends TypedObjectNode {
 

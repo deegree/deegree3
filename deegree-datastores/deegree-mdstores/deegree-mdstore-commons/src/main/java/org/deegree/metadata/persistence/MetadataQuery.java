@@ -45,8 +45,6 @@ import org.deegree.filter.sort.SortProperty;
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 30656 $, $Date: 2011-05-05 13:43:01 +0200 (Do, 05. Mai 2011) $
  */
 public class MetadataQuery {
 

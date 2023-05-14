@@ -114,8 +114,6 @@ import static org.deegree.gml.GMLVersion.GML_2;
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author:$
- * @version $Revision:$, $Date:$
  */
 public class GMLFeatureWriter extends AbstractGMLObjectWriter {
 

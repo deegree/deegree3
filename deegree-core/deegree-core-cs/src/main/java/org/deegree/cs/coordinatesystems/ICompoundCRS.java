@@ -41,8 +41,6 @@ import org.deegree.cs.components.IUnit;
  * Interface describing a CompundCRS
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public interface ICompoundCRS extends ICRS {
 

@@ -48,8 +48,6 @@ import org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureType;
  * TODO code for exporting
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class GetCapabilitiesXMLAdapter extends GetCapabilitiesXMLParser {
 

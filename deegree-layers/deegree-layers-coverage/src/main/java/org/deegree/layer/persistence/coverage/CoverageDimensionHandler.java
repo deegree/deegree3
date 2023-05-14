@@ -60,8 +60,6 @@ import org.deegree.layer.dims.DimensionInterval;
  * Responsible for creating coverage range sets from dimension values/definitions.
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * @version $Revision: $, $Date: $
  */
 class CoverageDimensionHandler {
 

@@ -65,7 +65,6 @@ import org.slf4j.LoggerFactory;
  * connection will not be freed.
  * </p>
  *
- * @version $Revision$, $Date$
  */
 public class OwsHttpResponseImpl implements OwsHttpResponse {
 

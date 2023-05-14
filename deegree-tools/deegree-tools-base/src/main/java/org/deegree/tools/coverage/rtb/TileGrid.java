@@ -47,8 +47,6 @@ import org.deegree.geometry.GeometryFactory;
  * This class represents a grid of tiles.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class TileGrid {

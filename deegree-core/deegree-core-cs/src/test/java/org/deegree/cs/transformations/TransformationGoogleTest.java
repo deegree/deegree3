@@ -51,8 +51,6 @@ import org.junit.Test;
  * Test transformations from/to epsg:31466 <-> epsg:900913.
  *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: aschmitz $
- * @version $Revision: 33360 $, $Date: 2012-06-06 16:30:28 +0200 (Mi, 06. Jun 2012) $
  *
  */
 public class TransformationGoogleTest extends TransformationAccuracy {

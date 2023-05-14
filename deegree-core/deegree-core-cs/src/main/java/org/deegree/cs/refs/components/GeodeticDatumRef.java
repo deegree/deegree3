@@ -48,8 +48,6 @@ import org.deegree.cs.transformations.helmert.Helmert;
  * {@link DatumRef} to a {@link IGeodeticDatum}
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class GeodeticDatumRef extends DatumRef implements Serializable, IGeodeticDatum {
 

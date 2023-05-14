@@ -87,9 +87,7 @@ import org.xml.sax.SAXException;
  * Handles XML Datasources, fields must have a prefix 'xml' and suffix 'DetailEntry' and/or 'HeaderEntry'
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
  * 
- * @version $Revision: $, $Date: $
  */
 public class DataTableContentProvider extends AbstractJrxmlContentProvider {
 

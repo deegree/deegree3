@@ -46,8 +46,6 @@ import org.deegree.protocol.csw.MetadataStoreException;
  * {@link ISORecord}s.
  *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: 30992 $, $Date: 2011-05-31 16:09:20 +0200 (Di, 31. Mai 2011) $
  */
 public class ListMetadataResultSet implements MetadataResultSet<ISORecord> {
 

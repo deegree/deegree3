@@ -45,8 +45,6 @@ import org.deegree.protocol.wfs.metadata.WFSFeatureType;
  * from WFS capabilities documents.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public interface WFSCapabilitiesAdapter extends OWSCapabilitiesAdapter {
 

@@ -38,8 +38,6 @@ package org.deegree.cs.projections.conic;
  * Interface describing a LambertConformalConic Projection
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public interface ILambertConformalConic extends IConicProjection {
 

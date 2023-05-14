@@ -47,8 +47,6 @@ import org.deegree.commons.xml.XPath;
  * Provides basic functionality for parsing WFS XML requests.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public abstract class AbstractWFSRequestXMLAdapter extends XMLAdapter {
 

@@ -78,8 +78,6 @@ import org.xml.sax.SAXException;
  * TODO add class documentation here
  *
  * @author <a href="mailto:goltz@deegree.org">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class ISORecordSerializeTest extends AbstractISOTest {
 

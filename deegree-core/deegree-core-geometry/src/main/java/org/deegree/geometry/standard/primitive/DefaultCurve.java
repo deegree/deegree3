@@ -65,8 +65,6 @@ import org.locationtech.jts.geom.Coordinate;
  * Default implementation of {@link Curve}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class DefaultCurve extends AbstractDefaultGeometry implements Curve {
 

@@ -38,8 +38,6 @@ package org.deegree.geometry.primitive.segments;
  * Used to define the basis functions of a {@link BSpline}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class Knot {
 

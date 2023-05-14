@@ -279,8 +279,6 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:wilden@lat-lon.de">Johannes Wilden</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class WPSClient {
 

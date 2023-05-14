@@ -68,8 +68,6 @@ import org.slf4j.LoggerFactory;
  * </ul>
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author: ionita $
- * @version $Revision: $, $Date: $
  *
  */
 public class Mercator extends CylindricalProjection implements IMercator {

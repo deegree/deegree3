@@ -77,8 +77,6 @@ import org.deegree.cs.exceptions.UnknownCRSException;
  * type.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 @Tool("Converts a raster from one type into another.")
 public class RasterConverter {

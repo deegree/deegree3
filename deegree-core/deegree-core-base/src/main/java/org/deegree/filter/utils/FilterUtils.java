@@ -43,8 +43,6 @@ import org.deegree.geometry.Geometry;
 
 /**
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class FilterUtils {
 

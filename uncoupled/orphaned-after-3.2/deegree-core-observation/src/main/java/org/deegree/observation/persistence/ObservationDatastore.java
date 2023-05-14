@@ -47,9 +47,7 @@ import org.deegree.observation.time.SamplingTime;
  * This is the interface for a storage of observations.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
  * 
  */
 public interface ObservationDatastore extends Resource {

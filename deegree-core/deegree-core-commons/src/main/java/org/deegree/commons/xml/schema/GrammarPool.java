@@ -45,8 +45,6 @@ import org.apache.xerces.util.XMLGrammarPoolImpl;
  * TODO can Grammars be parsed individually?
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 class GrammarPool extends XMLGrammarPoolImpl {
 

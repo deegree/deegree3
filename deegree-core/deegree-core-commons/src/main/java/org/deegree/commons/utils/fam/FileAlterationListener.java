@@ -41,8 +41,6 @@ import java.io.File;
  * Listener interface for the {@link FileAlterationMonitor}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public interface FileAlterationListener {
 

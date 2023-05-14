@@ -43,8 +43,6 @@ import org.w3c.dom.ls.LSInput;
  * Generic implementation of <code>LSInput</code>.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class GenericLSInput implements LSInput {
 

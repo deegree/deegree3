@@ -76,8 +76,6 @@ import org.slf4j.Logger;
 
 /**
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 @Tool(value = "adds inversDientZurDarstellungVon properties for GeoInfoDok 6.0.1 files")
 public class BackReferenceFixer {

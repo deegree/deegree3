@@ -51,8 +51,6 @@ import org.deegree.feature.types.FeatureType;
  * in feature info manager.
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * @version $Revision: $, $Date: $
  */
 public class FeatureInfoParams {
 

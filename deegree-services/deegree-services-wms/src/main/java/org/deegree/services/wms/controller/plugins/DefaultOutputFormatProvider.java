@@ -46,8 +46,6 @@ import org.deegree.rendering.r2d.context.SvgRenderContext;
 
 /**
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class DefaultOutputFormatProvider implements OutputFormatProvider {
 

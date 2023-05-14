@@ -70,8 +70,6 @@ import org.slf4j.Logger;
  * Responsible to render stroke styles.
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * @version $Revision: $, $Date: $
  */
 class Java2DStrokeRenderer {
 

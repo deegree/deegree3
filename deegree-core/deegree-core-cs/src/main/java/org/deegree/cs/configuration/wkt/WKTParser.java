@@ -96,8 +96,6 @@ import org.slf4j.Logger;
  * <a href="http://www.opengeospatial.org/standards/ct">OGC website</a>.
  *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author: ionita $
- * @version $Revision: $, $Date: $
  *
  */
 public class WKTParser {

@@ -41,8 +41,6 @@ import java.util.List;
  *
  * @see WMTSClient
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: markus $
- * @version $Revision: $, $Date: $
  */
 public class Layer {
 

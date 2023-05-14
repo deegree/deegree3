@@ -46,8 +46,6 @@ import org.deegree.geometry.primitive.patches.GriddedSurfacePatch;
  * TODO add class documentation here.
  *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class DefaultGriddedSurfacePatch implements GriddedSurfacePatch {
 

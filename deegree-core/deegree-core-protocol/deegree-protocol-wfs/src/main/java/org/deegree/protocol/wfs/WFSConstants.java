@@ -41,8 +41,6 @@ import org.deegree.commons.tom.ows.Version;
  * Important constants from the WFS specifications.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class WFSConstants {
 

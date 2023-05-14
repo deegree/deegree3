@@ -85,8 +85,6 @@ import org.slf4j.Logger;
  * <code>PostgreSQLWriter</code>
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: aschmitz $
- * @version $Revision: 30481 $, $Date: 2011-04-18 16:10:34 +0200 (Mon, 18 Apr 2011) $
  */
 public class PostgreSQLWriter {
 

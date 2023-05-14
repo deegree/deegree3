@@ -42,8 +42,6 @@ import java.util.List;
  * Helper class for building {@link PreparedStatement}s.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class StatementBuilder {
 

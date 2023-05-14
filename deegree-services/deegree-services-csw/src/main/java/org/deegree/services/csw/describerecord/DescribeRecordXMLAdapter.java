@@ -49,8 +49,6 @@ import org.deegree.services.csw.AbstractCSWRequestXMLAdapter;
  * responsible for the {@link DescribeRecord} XML-Requesthandling.
  *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: thomas $
- * @version $Revision: $, $Date: $
  */
 public class DescribeRecordXMLAdapter extends AbstractCSWRequestXMLAdapter {
 

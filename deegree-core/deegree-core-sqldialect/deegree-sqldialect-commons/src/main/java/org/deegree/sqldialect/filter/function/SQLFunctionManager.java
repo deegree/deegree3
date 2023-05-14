@@ -49,8 +49,6 @@ import org.slf4j.LoggerFactory;
  * Java SPI.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 30337 $, $Date: 2011-04-04 14:21:18 +0200 (Mo, 04. Apr 2011) $
  */
 public class SQLFunctionManager implements Initializable, Destroyable {
 

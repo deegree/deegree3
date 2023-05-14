@@ -47,8 +47,6 @@ import org.deegree.workspace.ResourceMetadata;
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: aschmitz $
- * @version $Revision: 33489 $, $Date: 2012-06-22 15:35:47 +0200 (Fri, 22 Jun 2012) $
  */
 public class GenericTileStore implements TileStore {
 

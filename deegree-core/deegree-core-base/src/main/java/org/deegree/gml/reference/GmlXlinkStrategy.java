@@ -41,8 +41,6 @@ import org.deegree.commons.tom.gml.GMLReference;
  * Controls how to export xlinks to {@link GMLObject}s.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public interface GmlXlinkStrategy {
 

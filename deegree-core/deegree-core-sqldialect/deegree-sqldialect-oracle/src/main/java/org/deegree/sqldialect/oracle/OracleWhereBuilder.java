@@ -98,8 +98,6 @@ import java.util.List;
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 class OracleWhereBuilder extends AbstractWhereBuilder {
 

@@ -51,8 +51,6 @@ import static org.deegree.geometry.utils.GeometryUtils.createFromJTS;
  * (e.g. non-linear curves)
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class WKBReader {
 

@@ -46,8 +46,6 @@ import org.deegree.client.core.utils.MessageUtils;
  * time, default are 60 minutes.
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 @ResourceDependency(library = "deegree", name = "css/outputXML.css", target = "head")
 @FacesComponent(value = "HtmlOutputXML")

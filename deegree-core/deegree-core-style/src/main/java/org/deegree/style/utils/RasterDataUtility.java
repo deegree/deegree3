@@ -56,8 +56,6 @@ import org.slf4j.LoggerFactory;
  * bands.
  *
  * @author <a href="mailto:a.aiordachioaie@jacobs-university.de">Andrei Aiordachioaie</a>
- * @author last edited by: $Author: aschmitz $
- * @version $Revision: 24704 $, $Date: 2010-06-07 10:08:59 +0200 (Mon, 07 Jun 2010) $
  */
 public class RasterDataUtility {
 

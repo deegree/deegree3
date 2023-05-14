@@ -54,8 +54,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class LoggingHttpRequestWrapper extends HttpServletRequestWrapper {
 

@@ -44,8 +44,6 @@ import org.deegree.geometry.primitive.Curve;
  * the start point of the next one.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class CurveDiscontinuity extends AbstractGeometryValidationEvent {
 

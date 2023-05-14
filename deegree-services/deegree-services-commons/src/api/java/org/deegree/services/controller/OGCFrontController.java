@@ -148,9 +148,7 @@ import org.slf4j.Logger;
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema </a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
  */
 public class OGCFrontController extends HttpServlet {
 

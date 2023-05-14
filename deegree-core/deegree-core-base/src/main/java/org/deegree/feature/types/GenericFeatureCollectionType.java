@@ -52,8 +52,6 @@ import org.deegree.feature.types.property.FeaturePropertyType;
  * arbitrary feature collection types.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * @version $Revision:$, $Date:$
  */
 public class GenericFeatureCollectionType extends GenericFeatureType implements FeatureCollectionType {
 

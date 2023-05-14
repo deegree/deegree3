@@ -46,8 +46,6 @@ import org.deegree.commons.tom.TypedObjectNode;
  * instances.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public interface ParticleConverter<T extends TypedObjectNode> {
 

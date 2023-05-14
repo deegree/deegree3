@@ -47,8 +47,6 @@ import org.deegree.services.wps.ProcessletInputs;
  *
  * @author <a href="mailto:apadberg@uni-bonn.de">Alexander Padberg</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: padberg$
- * @version $Revision$, $Date: 08.05.2008 13:54:31$
  */
 public class ExecuteRequest extends WPSRequest {
 

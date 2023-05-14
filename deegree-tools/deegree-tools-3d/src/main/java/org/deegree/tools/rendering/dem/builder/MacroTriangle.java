@@ -44,8 +44,6 @@ import javax.vecmath.Vector3f;
  * A macro triangle that consists of several "normal" triangles.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class MacroTriangle {
 

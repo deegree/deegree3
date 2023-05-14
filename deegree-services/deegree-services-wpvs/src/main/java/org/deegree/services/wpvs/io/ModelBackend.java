@@ -59,8 +59,6 @@ import org.deegree.workspace.Workspace;
  * database.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  * @param <G> the Geometry type used to create the envelope from.
  *
  */
@@ -72,8 +70,6 @@ public abstract class ModelBackend<G> implements RenderableStore {
 	 * The <code>Types</code> known to the modelbackend
 	 *
 	 * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
-	 * @author last edited by: $Author$
-	 * @version $Revision$, $Date$
 	 *
 	 */
 	public enum Type {

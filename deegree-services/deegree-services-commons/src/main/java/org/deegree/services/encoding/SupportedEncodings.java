@@ -38,8 +38,6 @@ package org.deegree.services.encoding;
  * Encapsulates informations about supported encodings.
  *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public interface SupportedEncodings<E extends Enum> {
 

@@ -39,8 +39,6 @@ package org.deegree.commons.tom;
  * Represents a lazy reference to an {@link Object}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  * @param <T> type of the referenced object
  */
 public class Reference<T extends Object> implements Object {

@@ -43,8 +43,6 @@ import org.deegree.geometry.Geometry;
  * Visitor interface for the {@link GMLObjectWalker}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public interface GMLObjectVisitor {
 

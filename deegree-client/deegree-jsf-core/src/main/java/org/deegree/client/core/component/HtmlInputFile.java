@@ -49,8 +49,6 @@ import org.deegree.client.core.utils.MessageUtils;
  * content (enctype="multipart/form-data")
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 @FacesComponent(value = "HtmlInputFile")
 public class HtmlInputFile extends UIInput implements ClientBehaviorHolder {

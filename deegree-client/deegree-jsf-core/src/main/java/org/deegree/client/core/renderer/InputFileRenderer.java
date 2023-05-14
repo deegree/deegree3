@@ -62,8 +62,6 @@ import org.slf4j.LoggerFactory;
  * <code>InputFileRenderer</code> rendering an input form element of type file.
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 @ResourceDependencies({ @ResourceDependency(library = "deegree", name = "css/inputFile.css") })
 @FacesRenderer(componentFamily = "javax.faces.Input", rendererType = "org.deegree.InputFile")

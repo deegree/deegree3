@@ -39,8 +39,6 @@ package org.deegree.filter;
  * expressions.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * @version $Revision:$, $Date:$
  */
 public class OperatorFilter implements Filter {
 

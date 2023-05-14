@@ -44,8 +44,6 @@ import org.deegree.workspace.Workspace;
  * {@link TileStoreProvider} for the {@link FileSystemTileStore}.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class FileSystemTileStoreProvider extends TileStoreProvider {
 

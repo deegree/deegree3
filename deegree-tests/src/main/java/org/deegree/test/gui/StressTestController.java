@@ -71,8 +71,6 @@ import org.jfree.data.statistics.HistogramDataset;
  * <code>StressTestController</code>
  *
  * @author <a href="mailto:ionita@deegree.org">Andrei Ionita</a>
- * @author last edited by: $Author: ionita $
- * @version $Revision: $, $Date: $
  */
 public class StressTestController extends HttpServlet {
 

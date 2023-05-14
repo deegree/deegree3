@@ -46,9 +46,7 @@ import es.unex.sextante.core.GeoAlgorithm;
  * This class wraps a {@link GeoAlgorithm} with its test data.
  * 
  * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
- * @author last edited by: $Author: pabel $
  * 
- * @version $Revision: $, $Date: $
  */
 public class GeoAlgorithmWithData {
 

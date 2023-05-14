@@ -43,8 +43,6 @@ import org.deegree.geometry.primitive.segments.CircleByCenterPoint;
  * Default implementation of {@link CircleByCenterPoint} segments.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class DefaultCircleByCenterPoint extends DefaultArcByCenterPoint implements CircleByCenterPoint {
 

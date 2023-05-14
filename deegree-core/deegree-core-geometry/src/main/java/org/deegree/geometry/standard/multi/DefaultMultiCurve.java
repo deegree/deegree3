@@ -48,8 +48,6 @@ import org.locationtech.jts.geom.MultiLineString;
  * Default implementation of {@link MultiCurve}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class DefaultMultiCurve extends DefaultMultiGeometry<Curve> implements MultiCurve<Curve> {
 

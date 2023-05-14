@@ -42,8 +42,6 @@ import org.deegree.geometry.Envelope;
  * This class defines an output grid for a WCS request.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class Grid {

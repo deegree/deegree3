@@ -50,9 +50,7 @@ import org.deegree.services.ows.OWS110ExceptionReportSerializer;
  * {@link XMLExceptionSerializer} for OWS Commons 1.1.0 <code>ExceptionReport</code> documents.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
  */
 public class SOS100ExceptionReportSerializer extends XMLExceptionSerializer {
 

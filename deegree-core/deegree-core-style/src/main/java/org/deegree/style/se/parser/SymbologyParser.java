@@ -119,8 +119,6 @@ import org.slf4j.Logger;
  * 1.0.0 part.
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: aschmitz $
- * @version $Revision: 31398 $, $Date: 2011-08-02 09:03:40 +0200 (Tue, 02 Aug 2011) $
  */
 public class SymbologyParser {
 
@@ -1382,8 +1380,6 @@ public class SymbologyParser {
 	 * <code>FilterContinuation</code>
 	 *
 	 * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-	 * @author last edited by: $Author: aschmitz $
-	 * @version $Revision: 31398 $, $Date: 2011-08-02 09:03:40 +0200 (Tue, 02 Aug 2011) $
 	 */
 	public static class FilterContinuation extends Continuation<LinkedList<Symbolizer<?>>> {
 

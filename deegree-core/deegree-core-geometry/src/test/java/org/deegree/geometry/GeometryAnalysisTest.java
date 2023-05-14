@@ -51,8 +51,6 @@ import org.junit.Test;
  * Basic test for some spatial analyis operations.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class GeometryAnalysisTest {
 

@@ -50,9 +50,7 @@ import es.unex.sextante.parameters.Parameter;
  * This class will be need to read {@link Feature} for {@link Feature} from {@link FeatureCollection} as Stream.
  * 
  * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
- * @author last edited by: $Author: pabel $
  * 
- * @version $Revision: $, $Date: $
  */
 public class SextanteFeatureCollectionStreamReader {
 

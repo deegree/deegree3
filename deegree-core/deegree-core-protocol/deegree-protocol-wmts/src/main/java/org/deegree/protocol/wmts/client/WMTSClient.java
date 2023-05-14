@@ -63,8 +63,6 @@ import org.deegree.tile.TileMatrixSet;
  * (WMTS) 1.0.0</a> protocol.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: markus $
- * @version $Revision: $, $Date: $
  */
 public class WMTSClient extends AbstractOWSClient<WMTSCapabilitiesAdapter> {
 

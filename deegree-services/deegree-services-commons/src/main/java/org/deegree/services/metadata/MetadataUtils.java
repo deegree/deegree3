@@ -65,8 +65,6 @@ import org.deegree.services.jaxb.metadata.ServiceProviderType;
  * protocol.ows.metadata from the metadata jaxb beans.
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * @version $Revision: $, $Date: $
  */
 public class MetadataUtils {
 

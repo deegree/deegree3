@@ -42,8 +42,6 @@ import org.deegree.commons.tom.gml.property.Property;
  * {@link ElementNode} that wraps a {@link Property} of a {@link GMLObject}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * @version $Revision:$, $Date:$
  */
 public class PropertyNode extends ElementNode<Property> {
 

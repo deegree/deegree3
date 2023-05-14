@@ -43,8 +43,6 @@ import org.deegree.geometry.standard.points.PointsArray;
  * Default implementation of {@link Geodesic} segments.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class DefaultGeodesic implements Geodesic {
 

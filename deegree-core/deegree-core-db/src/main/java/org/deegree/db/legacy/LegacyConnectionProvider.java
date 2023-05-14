@@ -57,8 +57,6 @@ import org.deegree.workspace.ResourceMetadata;
  * Implementation that uses the old connection pooling mechanism.
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * @version $Revision: $, $Date: $
  */
 public class LegacyConnectionProvider implements ConnectionProvider {
 

@@ -60,8 +60,6 @@ import org.locationtech.jts.geom.LinearRing;
  * Default implementation of {@link Surface}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class DefaultSurface extends AbstractDefaultGeometry implements Surface {
 

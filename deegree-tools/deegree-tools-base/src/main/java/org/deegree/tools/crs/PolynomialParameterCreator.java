@@ -59,8 +59,6 @@ import org.slf4j.LoggerFactory;
  * <code>PolynomialParameterCreator</code> allows for the calculation of a
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author: rbezema $
- * @version $Revision: 10987 $, $Date: 2008-04-09 16:49:52 +0200 (Mi, 09 Apr 2008) $
  *
  */
 public class PolynomialParameterCreator {

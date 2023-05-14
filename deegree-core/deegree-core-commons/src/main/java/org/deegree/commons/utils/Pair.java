@@ -40,8 +40,6 @@ package org.deegree.commons.utils;
  * <code>String</code>s see {@link StringPair}.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  * @param <T> the first Object of the pair
  * @param <U> the second Object of the pair
  *

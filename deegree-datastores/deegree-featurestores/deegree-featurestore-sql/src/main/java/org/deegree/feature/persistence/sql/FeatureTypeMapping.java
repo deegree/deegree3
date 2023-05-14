@@ -55,8 +55,6 @@ import org.deegree.sqldialect.SortCriterion;
  * Defines the mapping between a {@link FeatureType} and tables in a relational database.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class FeatureTypeMapping {
 

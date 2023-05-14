@@ -41,8 +41,6 @@ package org.deegree.cs.exceptions;
  * this unit.
  *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author: ionita $
- * @version $Revision: $, $Date: $
  *
  */
 public class UnknownUnitException extends RuntimeException {

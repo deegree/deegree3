@@ -75,8 +75,6 @@ import org.deegree.protocol.wfs.query.kvp.QueryKVPAdapter;
  * <p>
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class LockFeatureKVPAdapter extends QueryKVPAdapter {
 

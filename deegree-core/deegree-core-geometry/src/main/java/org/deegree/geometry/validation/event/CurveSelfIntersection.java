@@ -43,8 +43,6 @@ import org.deegree.geometry.primitive.Point;
  * {@link GeometryValidationEvent} that indicates that a {@link Curve} intersects itself.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class CurveSelfIntersection extends AbstractGeometryValidationEvent {
 

@@ -42,8 +42,6 @@ import org.deegree.commons.tom.TypedObjectNode;
  * Number with a scale.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * @version $Revision:$, $Date:$
  */
 public class Measure implements TypedObjectNode {
 

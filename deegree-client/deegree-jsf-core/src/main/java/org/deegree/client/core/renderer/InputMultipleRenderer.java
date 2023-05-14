@@ -56,8 +56,6 @@ import org.deegree.client.core.utils.RendererUtils;
  * Render a {@link HtmlInputMultiple}
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 @FacesRenderer(componentFamily = "javax.faces.Input", rendererType = "org.deegree.InputMultiple")
 public class InputMultipleRenderer extends Renderer {

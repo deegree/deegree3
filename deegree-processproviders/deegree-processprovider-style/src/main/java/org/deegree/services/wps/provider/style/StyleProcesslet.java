@@ -68,8 +68,6 @@ import com.sun.media.jai.codec.PNGEncodeParam;
  * TODO add class documentation here
  *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class StyleProcesslet implements Processlet {
 

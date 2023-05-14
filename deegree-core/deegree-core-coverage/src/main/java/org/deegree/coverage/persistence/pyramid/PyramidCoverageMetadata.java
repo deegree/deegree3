@@ -55,8 +55,6 @@ import org.deegree.workspace.standard.AbstractResourceProvider;
  * Metadata for pyramid coverages.
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * @version $Revision: $, $Date: $
  */
 public class PyramidCoverageMetadata extends AbstractResourceMetadata<Coverage> {
 

@@ -56,8 +56,6 @@ import org.deegree.services.wps.Processlet;
  *
  * @author <a href="mailto:apadberg@uni-bonn.de">Alexander Padberg</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public abstract class ProcessletInputImpl implements ProcessletInput {
 

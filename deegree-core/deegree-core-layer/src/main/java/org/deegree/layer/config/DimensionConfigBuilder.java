@@ -61,8 +61,6 @@ import org.slf4j.Logger;
  * Builds dimensions map from jaxb configuration.
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * @version $Revision: $, $Date: $
  */
 public class DimensionConfigBuilder {
 

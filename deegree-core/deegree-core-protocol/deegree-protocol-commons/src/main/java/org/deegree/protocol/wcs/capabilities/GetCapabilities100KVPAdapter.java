@@ -45,8 +45,6 @@ import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
  * This is a KVP adapter for WCS 1.0.0 GetCapabilities requests.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class GetCapabilities100KVPAdapter {
 

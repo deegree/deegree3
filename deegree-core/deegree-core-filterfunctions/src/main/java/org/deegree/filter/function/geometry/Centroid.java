@@ -55,8 +55,6 @@ import org.deegree.workspace.Workspace;
  * Returns the centroid for each input geometry. Other inputs are ignored.
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class Centroid implements FunctionProvider {
 

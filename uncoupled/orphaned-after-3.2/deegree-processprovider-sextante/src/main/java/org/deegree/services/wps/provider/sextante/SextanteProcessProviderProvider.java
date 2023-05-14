@@ -53,9 +53,7 @@ import org.slf4j.LoggerFactory;
  * {@link ProcessProviderProvider} for the {@link SextanteProcessProvider}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
  */
 public class SextanteProcessProviderProvider implements ProcessProviderProvider {
 

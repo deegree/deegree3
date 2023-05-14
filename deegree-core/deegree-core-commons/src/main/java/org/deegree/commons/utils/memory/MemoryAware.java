@@ -39,8 +39,6 @@ package org.deegree.commons.utils.memory;
  * The <code>MemoryAware</code> class TODO add class documentation here.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public interface MemoryAware {

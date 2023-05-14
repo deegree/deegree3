@@ -39,8 +39,6 @@ package org.deegree.tools.coverage.gridifier;
  * The <code>RasterLevel</code> class some simple values for each level.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class RasterLevel {
 

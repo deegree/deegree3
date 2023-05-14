@@ -47,8 +47,6 @@ import org.deegree.cs.projections.IProjection;
  * {@link CRSRef} to a {@link ProjectedCRS}
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class ProjectedCRSRef extends CRSRef implements IProjectedCRS {
 

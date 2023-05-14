@@ -55,8 +55,6 @@ import org.deegree.workspace.Workspace;
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 @ManagedBean
 @SessionScoped

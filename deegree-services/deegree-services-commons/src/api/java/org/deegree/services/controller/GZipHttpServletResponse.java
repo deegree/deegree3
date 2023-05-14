@@ -50,9 +50,7 @@ import org.slf4j.LoggerFactory;
  * {@link HttpServletResponse} that copes with gzipping the output.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: markus $
  * 
- * @version $Revision: $, $Date: $
  */
 public class GZipHttpServletResponse implements HttpServletResponse {
 

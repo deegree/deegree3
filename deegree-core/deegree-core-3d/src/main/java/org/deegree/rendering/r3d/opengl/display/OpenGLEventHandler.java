@@ -65,8 +65,6 @@ import com.sun.opengl.util.GLUT;
  * roate the scene.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class OpenGLEventHandler implements GLEventListener {

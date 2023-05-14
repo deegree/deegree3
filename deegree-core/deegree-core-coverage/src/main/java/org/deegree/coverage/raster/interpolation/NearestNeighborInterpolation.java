@@ -44,8 +44,6 @@ import org.deegree.coverage.raster.data.info.DataType;
  * {@link DataType}s.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class NearestNeighborInterpolation implements Interpolation {

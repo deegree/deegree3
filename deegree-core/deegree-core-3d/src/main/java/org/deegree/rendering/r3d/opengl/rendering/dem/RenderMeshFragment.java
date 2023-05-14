@@ -71,8 +71,6 @@ import org.slf4j.Logger;
  * @see MultiresolutionMesh
  * @see MeshFragment
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$
  */
 public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
 

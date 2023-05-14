@@ -40,8 +40,6 @@ package org.deegree.services.wps.execute;
  * an encapsulating WPS response document.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class RawDataOutput implements ResponseForm {
 

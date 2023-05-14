@@ -85,8 +85,6 @@ import org.slf4j.LoggerFactory;
  * Generates GML 2.1 representations from {@link Geometry} objects.
  *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class GML2GeometryWriter extends AbstractGMLObjectWriter implements GMLGeometryWriter {
 

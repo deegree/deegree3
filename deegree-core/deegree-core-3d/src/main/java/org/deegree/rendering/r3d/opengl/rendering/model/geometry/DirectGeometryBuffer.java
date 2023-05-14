@@ -49,8 +49,6 @@ import com.sun.opengl.util.BufferUtil;
  * normals and texture) for all buildings defined in a scene.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class DirectGeometryBuffer {

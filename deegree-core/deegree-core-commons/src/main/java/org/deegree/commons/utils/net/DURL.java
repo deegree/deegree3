@@ -54,8 +54,6 @@ import org.slf4j.Logger;
  * [D]eegree[URL]
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class DURL {
 

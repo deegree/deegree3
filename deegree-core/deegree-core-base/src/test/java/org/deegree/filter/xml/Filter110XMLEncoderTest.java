@@ -72,8 +72,6 @@ import org.slf4j.Logger;
  * Tests the correct parsing and exporting of Filter Encoding 1.1.0 documents.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * @version $Revision:$, $Date:$
  */
 public class Filter110XMLEncoderTest {
 

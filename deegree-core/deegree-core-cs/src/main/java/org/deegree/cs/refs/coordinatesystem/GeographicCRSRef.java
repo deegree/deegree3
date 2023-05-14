@@ -42,8 +42,6 @@ import org.deegree.cs.coordinatesystems.IGeographicCRS;
  * {@link CRSRef} to a {@link GeographicCRS}
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class GeographicCRSRef extends CRSRef implements IGeographicCRS {
 

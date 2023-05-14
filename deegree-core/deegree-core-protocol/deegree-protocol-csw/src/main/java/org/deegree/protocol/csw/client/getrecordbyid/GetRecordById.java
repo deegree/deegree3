@@ -50,8 +50,6 @@ import org.deegree.protocol.csw.client.AbstractCSWRequest;
  * </p>
  *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class GetRecordById extends AbstractCSWRequest {
 

@@ -226,8 +226,6 @@ import static org.deegree.services.wfs.ReferenceResolvingMode.SKIP_ALL;
  * @see AbstractOWS
  * @see OGCFrontController
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 15339 $, $Date: 2008-12-11 18:40:09 +0100 (Do, 11 Dez 2008) $
  */
 public class WebFeatureService extends AbstractOWS {
 

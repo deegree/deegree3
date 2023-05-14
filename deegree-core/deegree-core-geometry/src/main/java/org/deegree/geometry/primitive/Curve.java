@@ -53,9 +53,7 @@ import org.deegree.geometry.primitive.segments.LineStringSegment;
  * @see OrientableCurve
  * @see Ring
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
- * @author last edited by: $Author$
  *
- * @version. $Revision$, $Date$
  */
 public interface Curve extends GeometricPrimitive {
 

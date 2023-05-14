@@ -51,8 +51,6 @@ import org.deegree.commons.ows.exception.OWSException;
  * Request bean containing WMTS GetFeatureInfo values.
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * @version $Revision: $, $Date: $
  */
 public class GetFeatureInfo {
 

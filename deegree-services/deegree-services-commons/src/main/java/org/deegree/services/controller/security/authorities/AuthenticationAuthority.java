@@ -38,8 +38,6 @@ import org.deegree.services.controller.Credentials;
 
 /**
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public interface AuthenticationAuthority {
 

@@ -45,8 +45,6 @@ import org.deegree.client.core.utils.MessageUtils;
  * TODO add class documentation here
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 @ResourceDependencies({ @ResourceDependency(library = "deegree", name = "css/ajaxStatus.css"),
 		@ResourceDependency(name = "javascript/ajaxStatus.js", library = "deegree", target = "head"),

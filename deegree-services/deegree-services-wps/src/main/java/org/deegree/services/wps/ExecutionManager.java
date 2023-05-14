@@ -89,8 +89,6 @@ import org.slf4j.LoggerFactory;
  * @see WPService
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:jason.surratt@gmail.com">Jason R. Surratt</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class ExecutionManager {
 

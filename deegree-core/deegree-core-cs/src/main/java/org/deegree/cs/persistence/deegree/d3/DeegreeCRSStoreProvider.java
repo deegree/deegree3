@@ -58,8 +58,6 @@ import org.slf4j.Logger;
  * {@link DeegreeCRSStoreProvider} for the {@link DeegreeCRSStore} (deegree3!)
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class DeegreeCRSStoreProvider implements CRSStoreProvider {
 

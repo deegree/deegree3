@@ -48,8 +48,6 @@ import org.deegree.services.controller.exception.serializer.XMLExceptionSerializ
  * 1.0.0.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class WCS100ServiceExceptionReportSerializer extends XMLExceptionSerializer {

@@ -117,8 +117,6 @@ import org.w3c.dom.ls.LSInput;
  * <h4>Locking features</h4> ...
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class WFSClient extends AbstractOWSClient<WFSCapabilitiesAdapter> {
 

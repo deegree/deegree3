@@ -71,8 +71,6 @@ import org.junit.Test;
  * well as the loading of a projected crs from the default configuration.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class DeegreeCRSStoreProviderTest {

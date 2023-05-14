@@ -51,8 +51,6 @@ import org.deegree.geometry.Envelope;
  * should be loaded with a LAZY or CACHED LoadingPolicy (see {@link RasterFactory}).
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class MemoryTileContainer implements TileContainer {
 

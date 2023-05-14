@@ -106,8 +106,6 @@ import com.sun.j3d.utils.geometry.NormalGenerator;
  * The <code>J3DToCityGMLExporter</code> exports a J3D scene to citygml level 1.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class VRMLImporter implements ModelImporter {
 

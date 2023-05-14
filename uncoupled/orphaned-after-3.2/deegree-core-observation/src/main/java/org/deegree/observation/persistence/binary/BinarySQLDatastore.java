@@ -81,9 +81,7 @@ import org.slf4j.LoggerFactory;
  * number_of_records options. (e.g. if you have 10ms sampling rate: number_of_records = 100, ms_per_record=10)
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
  * 
  */
 public class BinarySQLDatastore extends SimpleObservationDatastore {

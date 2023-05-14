@@ -44,8 +44,6 @@ import org.deegree.process.jaxb.java.ProcessletOutputDefinition;
  * returned from a process as part of {@link ResponseDocument}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class RequestedOutput {
 

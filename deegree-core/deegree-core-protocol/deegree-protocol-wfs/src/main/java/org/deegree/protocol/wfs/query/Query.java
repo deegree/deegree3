@@ -46,8 +46,6 @@ import org.deegree.protocol.wfs.getpropertyvalue.GetPropertyValue;
  * @see GetFeatureWithLock
  * @see GetPropertyValue
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public abstract class Query {
 

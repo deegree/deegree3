@@ -39,8 +39,6 @@ package org.deegree.commons.tom.gml;
  * supported by GML.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: markus $
- * @version $Revision: $, $Date: $
  */
 public enum GMLObjectCategory {
 

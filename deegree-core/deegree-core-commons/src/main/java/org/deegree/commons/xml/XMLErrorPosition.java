@@ -44,8 +44,6 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
  * Encapsulates information to locate the cause {@link XMLParsingException}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * @version $Revision:$, $Date:$
  */
 class XMLErrorPosition {
 

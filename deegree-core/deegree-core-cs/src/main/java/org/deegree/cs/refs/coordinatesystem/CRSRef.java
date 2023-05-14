@@ -70,8 +70,6 @@ import org.slf4j.Logger;
  * </nl>
  *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author: ionita $
- * @version $Revision: $, $Date: $
  *
  */
 public class CRSRef extends CRSResourceRef<ICRS> implements Serializable, ICRS {

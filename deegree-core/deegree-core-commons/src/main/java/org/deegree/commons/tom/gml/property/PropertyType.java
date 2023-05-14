@@ -43,8 +43,6 @@ import org.apache.xerces.xs.XSElementDeclaration;
  *
  * @see GMLObjectType
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * @version $Revision:$, $Date:$
  */
 public interface PropertyType {
 

@@ -42,8 +42,6 @@ import java.io.OutputStream;
  * Writes back all bytes that are read into an output stream.
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class LoggingInputStream extends InputStream {
 

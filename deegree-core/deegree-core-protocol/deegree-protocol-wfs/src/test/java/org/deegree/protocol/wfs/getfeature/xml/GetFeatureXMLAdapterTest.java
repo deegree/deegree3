@@ -81,8 +81,6 @@ import org.junit.Test;
  * Test class for the GetFeatureXMLAdapter.
  *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class GetFeatureXMLAdapterTest extends TestCase {
 

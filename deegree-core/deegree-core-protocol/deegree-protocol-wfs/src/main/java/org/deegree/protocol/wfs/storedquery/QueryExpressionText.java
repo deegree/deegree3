@@ -46,8 +46,6 @@ import org.deegree.commons.xml.XMLAdapter;
  *
  * @see StoredQueryDefinition
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class QueryExpressionText extends XMLAdapter {
 

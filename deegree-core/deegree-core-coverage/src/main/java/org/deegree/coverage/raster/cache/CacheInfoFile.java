@@ -56,8 +56,6 @@ import org.slf4j.Logger;
  * on file and the width and height of the cached raster file.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class CacheInfoFile extends GridMetaInfoFile {
 

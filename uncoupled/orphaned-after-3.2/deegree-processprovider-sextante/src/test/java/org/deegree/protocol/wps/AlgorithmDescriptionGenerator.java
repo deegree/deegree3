@@ -50,9 +50,7 @@ import es.unex.sextante.parameters.Parameter;
  * This class can used for creating a description for every SEXTANTE {@link GeoAlgorithm} on the command line.
  * 
  * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
- * @author last edited by: $Author: pabel $
  * 
- * @version $Revision: $, $Date: $
  */
 public class AlgorithmDescriptionGenerator {
 

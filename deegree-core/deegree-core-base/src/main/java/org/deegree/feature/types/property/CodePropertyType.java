@@ -46,8 +46,6 @@ import org.deegree.commons.tom.ows.CodeType;
  * {@link PropertyType} that defines a property with a {@link CodeType} value.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class CodePropertyType extends AbstractPropertyType {
 

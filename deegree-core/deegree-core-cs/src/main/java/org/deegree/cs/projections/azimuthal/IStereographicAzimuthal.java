@@ -40,8 +40,6 @@ import org.deegree.cs.projections.IProjection;
  * Interface describing a StereographicAzimuthal Projection
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public interface IStereographicAzimuthal extends IProjection {
 

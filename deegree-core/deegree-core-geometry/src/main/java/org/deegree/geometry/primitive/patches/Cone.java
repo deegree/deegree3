@@ -46,8 +46,6 @@ package org.deegree.geometry.primitive.patches;
  * P4>>.
  *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public interface Cone extends GriddedSurfacePatch {
 

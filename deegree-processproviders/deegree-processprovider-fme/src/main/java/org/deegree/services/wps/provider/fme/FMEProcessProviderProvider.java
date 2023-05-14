@@ -46,8 +46,6 @@ import java.net.URL;
  * {@link ProcessProviderProvider} for the {@link FMEProcessProvider}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: goltz $
- * @version $Revision: 90 $, $Date: 2011-05-30 10:31:58 +0200 (Mo, 30 Mai 2011)
  */
 public class FMEProcessProviderProvider extends ProcessProviderProvider {
 

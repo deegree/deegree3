@@ -38,9 +38,7 @@ package org.deegree.observation.filter;
  *
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
  *
- * @version $Revision$, $Date$
  *
  */
 public interface Filter {

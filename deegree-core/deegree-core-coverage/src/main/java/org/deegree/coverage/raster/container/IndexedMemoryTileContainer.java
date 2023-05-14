@@ -52,8 +52,6 @@ import org.deegree.geometry.Envelope;
  * The <code>IndexedMemoryTileContainer</code> class uses a quad tree as a spatial index.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class IndexedMemoryTileContainer implements TileContainer {

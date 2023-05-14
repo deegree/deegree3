@@ -42,8 +42,6 @@ import org.deegree.cs.i18n.Messages;
  * his/her requested CRS is not known to the CRSPovider.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class UnknownCRSException extends Exception {
 

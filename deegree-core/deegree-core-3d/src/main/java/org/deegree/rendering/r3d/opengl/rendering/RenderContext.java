@@ -44,8 +44,6 @@ import org.deegree.rendering.r3d.ViewParams;
  * other parameters necessary to render a scene with opengl.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class RenderContext {

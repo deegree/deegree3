@@ -48,8 +48,6 @@ import org.deegree.protocol.wps.WPSRequest;
  *
  * @author <a href="mailto:apadberg@uni-bonn.de">Alexander Padberg</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: padberg$
- * @version $Revision$, $Date: 08.05.2008 14:22:05$
  */
 public class DescribeProcessRequest extends WPSRequest {
 

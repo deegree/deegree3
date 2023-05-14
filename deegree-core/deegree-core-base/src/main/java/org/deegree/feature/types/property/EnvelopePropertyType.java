@@ -46,8 +46,6 @@ import org.deegree.geometry.Envelope;
  * {@link PropertyType} that defines a property with an {@link Envelope} value.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class EnvelopePropertyType extends AbstractPropertyType {
 

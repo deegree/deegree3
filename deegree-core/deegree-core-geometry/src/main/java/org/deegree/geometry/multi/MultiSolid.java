@@ -41,9 +41,7 @@ import org.deegree.geometry.primitive.Solid;
  * Specialised aggregation type for {@link Solid} objects.
  *
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
- * @author last edited by: $Author$
  *
- * @version. $Revision$, $Date$
  */
 public interface MultiSolid extends MultiGeometry<Solid> {
 

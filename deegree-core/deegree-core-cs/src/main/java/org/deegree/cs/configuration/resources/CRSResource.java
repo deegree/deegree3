@@ -45,8 +45,6 @@ import org.deegree.cs.transformations.helmert.Helmert;
  * definitions, often a dictionary file or a database.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  * @param <T> of the resource
  *
  */

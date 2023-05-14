@@ -70,8 +70,6 @@ import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderable
  * The <code>GLViewer</code> uses the jogl engine to render dataobjects.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class GLViewer extends JFrame implements ActionListener {

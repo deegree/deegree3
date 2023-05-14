@@ -8,7 +8,6 @@ import java.util.List;
  * "Parameter".
  * 
  * @author <a href="mailto:neumeister@lat-lon.de">Ulrich Neumeister</a>
- * @author last edited by: $Author$
  * 
  */
 public class Parameter {

@@ -5,8 +5,6 @@ package org.deegree.coverage.rangeset;
  * The <code>ValueType</code> class defines simple types for single and interval values.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public enum ValueType {

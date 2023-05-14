@@ -43,8 +43,6 @@ import java.util.List;
  * The <code>RangeSet</code> models the different range possibilities in a WCS coverage.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class RangeSet {
