@@ -198,7 +198,6 @@ public abstract class ModelClass {
 	 * @throws IOException
 	 */
 	public void writeHeader(Writer out) throws IOException {
-		out.write("//$HeadURL$\n");
 		out.write("/*----------------------------------------------------------------------------\n");
 		out.write("This file is part of deegree, http://deegree.org/\n");
 		out.write("Copyright (C) 2001-2009 by:\n");

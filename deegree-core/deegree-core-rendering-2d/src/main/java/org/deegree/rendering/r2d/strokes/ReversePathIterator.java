@@ -12,9 +12,6 @@
 //                     This usage of this code is allowed without any restrictions.
 //                     No guarantees are given whatsoever.
 //
-// Latest change:      $Date: 2005/02/08 11:59:19 $
-//
-// History:	       $Log: ReversePathIterator.java,v $
 // History:	       Revision 1.3  2005/02/08 11:59:19  rammi
 // History:	       Transferred into the public domain.
 // History:	

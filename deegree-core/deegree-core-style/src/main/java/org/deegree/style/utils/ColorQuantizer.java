@@ -50,10 +50,6 @@ package org.deegree.style.utils;
  *
  * Copyright 1998-2003 Helma Software. All Rights Reserved.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
  */
 
 import java.awt.AlphaComposite;
