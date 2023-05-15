@@ -691,6 +691,10 @@ public class SQLFeatureStore implements FeatureStore {
 		}
 	}
 
+	public void detachTransaction() {
+		transaction.remove();
+	}
+
 	/**
 	 * Returns the {@link FeatureStoreCache}.
 	 * @return feature store cache, can be <code>null</code> (no cache configured)
