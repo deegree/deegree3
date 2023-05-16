@@ -19,7 +19,7 @@ update-repo-from-github-latlon-deegree3:
     - git log
     - git remote add upstream https://github.com/lat-lon/deegree3.git
     - git fetch upstream xplanbox-deegree3.5
-    - git merge --ff upstream/xplanbox-deegree3.5
+    - git reset --hard upstream/xplanbox-deegree3.5
     - git log
     - echo "Pushing..."
     - git remote set-url origin git@gitlab.opencode.de:diplanung/diplancockpit/xplan-backend/xplan-deegree.git
