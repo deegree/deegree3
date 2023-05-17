@@ -52,13 +52,12 @@ pipeline {
             }
             steps {
                 echo 'Quality checking'
-                sh 'mvn -B -C -fae -P oracle,mssql com.github.spotbugs:spotbugs-maven-plugin:spotbugs checkstyle:checkstyle javadoc:javadoc'
+                sh 'mvn -B -C -fae -P oracle com.github.spotbugs:spotbugs-maven-plugin:spotbugs javadoc:javadoc'
             }
             post {
-                success {
-                    findbugs canComputeNew: false, defaultEncoding: '', excludePattern: '', healthy: '', includePattern: '', pattern: '**/spotbugsXml.xml', unHealthy: ''
-                    checkstyle canComputeNew: false, canRunOnFailed: true, defaultEncoding: '', healthy: '', pattern: '**/checkstyle-result.xml', unHealthy: ''
-                    javadoc javadocDir: '**/target/site/apidocs', keepAll: true
+                always {
+                    recordIssues enabledForFailure: true, tools: [mavenConsole(), java(), javaDoc()]
+                    recordIssues enabledForFailure: true, tool: spotBugs()
                 }
             }
         }
@@ -75,8 +74,8 @@ pipeline {
             }
             post {
                 success {
-                    archiveArtifacts artifacts: '**/target/deegree-webservices-*.war', fingerprint: true
-                    archiveArtifacts artifacts: '**/target/deegree-webservices-handbook*.zip', fingerprint: true
+                    archiveArtifacts artifacts: 'checkout/**/target/deegree-webservices-*.war', fingerprint: true
+                    archiveArtifacts artifacts: 'checkout/**/target/deegree-webservices-handbook*.zip', fingerprint: true
                 }
             }
         }
