@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://buesching@criador.lat-lon.de/srv/svn/deegree-intern/trunk/latlon-mdstore-ebrim-eo/src/test/java/de/latlon/metadata/persistence/ebrim/eo/EbrimEOMDStoreTest.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -84,8 +83,6 @@ import org.slf4j.Logger;
  * TODO add class documentation here
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: 182 $, $Date: 2011-05-11 18:00:02 +0200 (Mi, 11. Mai 2011) $
  */
 public class EbrimEOMDStoreTest {
 

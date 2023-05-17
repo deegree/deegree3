@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2009 by:
@@ -69,8 +68,6 @@ import org.deegree.cs.transformations.TransformationFactory.DSTransform;
  * The <code>ConfigurationConverger</code> class TODO add class documentation here.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 @Tool("Export the CoordinateSystems from a given Input format to a given Output format and place the result into an output File.")

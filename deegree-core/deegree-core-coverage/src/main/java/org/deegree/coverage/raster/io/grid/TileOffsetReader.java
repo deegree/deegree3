@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2009 by:
@@ -57,8 +56,6 @@ import org.deegree.coverage.raster.io.RasterReader;
  * A simple wrapper class needed to mark the offset for a given tile in the total grid.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class TileOffsetReader implements RasterReader {

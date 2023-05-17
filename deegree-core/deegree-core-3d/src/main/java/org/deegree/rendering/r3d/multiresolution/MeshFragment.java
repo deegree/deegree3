@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -45,8 +44,6 @@ import org.deegree.rendering.r3d.multiresolution.io.MeshFragmentDataReader;
  * {@link MultiresolutionMesh} and provides access to the actual geometry data.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$
  */
 public class MeshFragment implements Comparable<MeshFragment> {
 

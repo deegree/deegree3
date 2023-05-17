@@ -60,8 +60,6 @@ import org.deegree.geometry.refs.GeometryReference;
  * version anymore. Any new version of a GML encoder should implement this interface.
  *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public interface GMLGeometryWriter {
 

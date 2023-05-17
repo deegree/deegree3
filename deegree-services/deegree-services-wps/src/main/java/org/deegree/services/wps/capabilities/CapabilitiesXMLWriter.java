@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/svn_classfile_header_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -66,8 +65,6 @@ import org.deegree.services.wps.wsdl.WSDL;
  * Responsible for the generation of WPS GetCapabilities response documents.
  *
  * @author <a href="mailto:apadberg@uni-bonn.de">Alexander Padberg</a>
- * @author last edited by: $Author: $
- * @version $Revision: $, $Date: $
  */
 public class CapabilitiesXMLWriter extends OWSCapabilitiesXMLAdapter {
 

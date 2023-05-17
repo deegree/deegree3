@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/deegree3/trunk/deegree-core/deegree-core-metadata/src/main/java/org/deegree/metadata/DCRecord.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -52,8 +51,6 @@ import org.deegree.commons.xml.XPath;
  * handles mapping of the CSW Queryable Properties to a ISO Record
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: sthomas $
- * @version $Revision: 27406 $, $Date: 2010-10-19 18:43:48 +0200 (Di, 19. Okt 2010) $
  */
 public class ISOCQPMapping {
 

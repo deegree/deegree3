@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2009 by:
@@ -42,8 +41,6 @@ package org.deegree.coverage.rangeset;
  * The <code>Interval</code> an intervall.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  * @param <T> of the values in this interval
  * @param <R> type of the Resolution
  *
@@ -70,8 +67,6 @@ public class Interval<T extends Comparable<T>, R extends Comparable<R>> {
 	 * The <code>Closure</code> of an interval
 	 *
 	 * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
-	 * @author last edited by: $Author$
-	 * @version $Revision$, $Date$
 	 *
 	 */
 	public enum Closure {

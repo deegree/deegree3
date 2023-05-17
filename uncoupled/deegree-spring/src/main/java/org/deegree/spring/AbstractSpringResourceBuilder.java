@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2013 by:
@@ -59,9 +58,7 @@ import org.springframework.context.ApplicationContext;
  * the specified {@link org.deegree.spring.ApplicationContextHolder}. 
  * 
  * @author <a href="mailto:reijer.copier@idgis.nl">Reijer Copier</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
  */
 public abstract class AbstractSpringResourceBuilder<T extends Resource> implements ResourceBuilder<T> {
 

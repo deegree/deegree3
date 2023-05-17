@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -51,8 +50,6 @@ import org.junit.runners.Parameterized.Parameters;
  * Wraps the execution of the CITE WFS 1.0.0 TestSuite as a JUnit-test suite.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 @RunWith(Parameterized.class)
 public class CiteWFS100TestSuite {

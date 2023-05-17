@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -50,7 +49,6 @@ import org.deegree.protocol.ows.exception.OWSExceptionReport;
  * connection will not be freed.
  * </p>
  *
- * @version $Revision$, $Date$
  */
 public interface OwsHttpResponse extends Closeable {
 

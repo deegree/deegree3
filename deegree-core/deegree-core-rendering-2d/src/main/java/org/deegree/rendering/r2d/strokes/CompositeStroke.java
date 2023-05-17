@@ -58,8 +58,6 @@ import java.awt.Stroke;
  *
  * @author Jerry Huxtable
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class CompositeStroke implements Stroke {
 

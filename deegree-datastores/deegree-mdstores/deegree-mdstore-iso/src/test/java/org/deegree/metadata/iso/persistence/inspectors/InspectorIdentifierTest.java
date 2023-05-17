@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-metadata/src/test/java/org/deegree/metadata/iso/persistence/inspectors/InspectorIdentifierTest.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -54,8 +53,6 @@ import org.slf4j.LoggerFactory;
  * TODO add class documentation here
  *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 30779 $, $Date: 2011-05-11 16:04:22 +0200 (Mi, 11. Mai 2011) $
  */
 public class InspectorIdentifierTest extends AbstractISOTest {
 

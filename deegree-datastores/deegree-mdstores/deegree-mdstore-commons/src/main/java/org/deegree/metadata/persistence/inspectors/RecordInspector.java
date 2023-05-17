@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-metadata/src/main/java/org/deegree/metadata/persistence/inspectors/RecordInspector.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -50,8 +49,6 @@ import org.deegree.sqldialect.SQLDialect;
  * </p>
  *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 30346 $, $Date: 2011-04-04 17:43:08 +0200 (Mo, 04. Apr 2011) $
  */
 public interface RecordInspector<T extends MetadataRecord> {
 

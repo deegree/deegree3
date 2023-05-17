@@ -25,8 +25,6 @@ import org.deegree.cs.transformations.helmert.Helmert;
  * functionality based on a defined (static) state.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public interface CRSDefines {
 

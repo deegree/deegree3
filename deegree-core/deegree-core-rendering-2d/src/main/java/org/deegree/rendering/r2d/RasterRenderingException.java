@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -38,9 +37,7 @@ package org.deegree.rendering.r2d;
 
 /**
  * @author <a href="mailto:a.aiordachioaie@jacobs-university.de">Andrei Aiordachioaie</a>
- * @author last edited by: $Author: aaiordachioaie$
  *
- * @version. $Revision$, $Date$
  */
 public class RasterRenderingException extends RuntimeException {
 

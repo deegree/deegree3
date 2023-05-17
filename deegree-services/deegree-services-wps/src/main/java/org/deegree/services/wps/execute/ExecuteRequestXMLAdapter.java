@@ -1,4 +1,3 @@
-//$Header: /deegreerepository/deegree/resources/eclipse/svn_classfile_header_template.xml,v 1.2 2007/03/06 09:44:09 bezema Exp $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -117,8 +116,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author <a href="mailto:apadberg@uni-bonn.de">Alexander Padberg</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: padberg$
- * @version $Revision$, $Date: 08.05.2008 13:53:13$
  */
 public class ExecuteRequestXMLAdapter extends OWSCommonXMLAdapter {
 

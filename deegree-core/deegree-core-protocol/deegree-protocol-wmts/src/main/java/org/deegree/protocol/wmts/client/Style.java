@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -39,8 +38,6 @@ package org.deegree.protocol.wmts.client;
  * TODO add class documentation here
  *
  * @author <a href="mailto:name@company.com">Your Name</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class Style {
 

@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-base/src/test/java/org/deegree/filter/sql/IsLikeStringTest.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -50,8 +49,6 @@ import org.junit.Test;
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching </a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 22060 $, $Date: 2010-01-20 17:59:52 +0100 (Mi, 20. Jan 2010) $
  */
 public class IsLikeStringTest extends TestCase {
 

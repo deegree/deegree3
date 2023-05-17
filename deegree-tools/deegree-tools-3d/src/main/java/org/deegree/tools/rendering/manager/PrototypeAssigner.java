@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -73,8 +72,6 @@ import org.deegree.workspace.standard.DefaultWorkspace;
  * buildings.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 @Tool("Interface to the WPVS backend for assigning prototypes to QualityLevel in a world object model.")

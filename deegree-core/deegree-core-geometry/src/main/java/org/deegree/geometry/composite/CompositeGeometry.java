@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -51,9 +50,7 @@ import org.deegree.geometry.primitive.GeometricPrimitive;
  * @param <T> type of the composited geometries
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
  *
- * @version. $Revision$, $Date$
  */
 public interface CompositeGeometry<T extends GeometricPrimitive> extends Geometry, List<T> {
 

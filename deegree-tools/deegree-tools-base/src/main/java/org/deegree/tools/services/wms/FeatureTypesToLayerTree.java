@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -70,8 +69,6 @@ import org.slf4j.Logger;
 
 /**
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 @Tool(value = "generates a WMS layer tree/configuration file from a feature type hierarchy")
 public class FeatureTypesToLayerTree {

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -42,8 +41,6 @@ package org.deegree.commons.tom;
  * @see org.deegree.feature.Feature
  * @see org.deegree.geometry.Geometry
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public interface TypedObjectNode {
 

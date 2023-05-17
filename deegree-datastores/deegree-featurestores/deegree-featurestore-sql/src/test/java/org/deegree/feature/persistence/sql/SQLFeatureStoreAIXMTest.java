@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-datastores/deegree-featurestores/deegree-featurestore-sql/src/test/java/org/deegree/feature/persistence/sql/TOPPStatesTest.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -112,8 +111,6 @@ import org.slf4j.LoggerFactory;
  * {@link SQLFeatureStore} test for peculiar aspects of mapping AIXM.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 32701 $, $Date: 2012-01-17 22:35:34 +0100 (Di, 17. Jan 2012) $
  */
 @RunWith(value = Parameterized.class)
 public class SQLFeatureStoreAIXMTest {

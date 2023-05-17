@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -47,8 +46,6 @@ import org.deegree.client.core.utils.MessageUtils;
  * time, default are 60 minutes.
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 @ResourceDependency(library = "deegree", name = "css/outputXML.css", target = "head")
 @FacesComponent(value = "HtmlOutputXML")

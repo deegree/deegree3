@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -58,8 +57,6 @@ import org.deegree.services.wps.output.ComplexOutput;
  * The <code></code> class TODO add class documentation here.
  *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class UnionProcesslet implements Processlet {

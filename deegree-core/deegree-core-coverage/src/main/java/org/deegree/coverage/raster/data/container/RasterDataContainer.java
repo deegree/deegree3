@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -43,8 +42,6 @@ import org.deegree.coverage.raster.io.RasterDataReader;
  * interface can control the loading and unloading of the raster data (i.e. caching, etc).
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public interface RasterDataContainer {
 

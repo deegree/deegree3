@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -89,8 +88,6 @@ import org.deegree.tools.coverage.gridifier.index.TileFile;
  * raster cells.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 @Tool("Converts a deegree 2 raster tree into a grid of regular, non-overlapping raster cells encoded as raw RGB blobs, suitable for the WPVS.")
 public class RasterTreeGridifier {
@@ -637,8 +634,6 @@ public class RasterTreeGridifier {
 	 * The <code>TileCache</code> implements a simple caching mechanism
 	 *
 	 * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
-	 * @author last edited by: $Author: rbezema $
-	 * @version $Revision: $, $Date: $
 	 *
 	 */
 	private static class TileCache extends LinkedHashMap<Integer, AbstractRaster> {

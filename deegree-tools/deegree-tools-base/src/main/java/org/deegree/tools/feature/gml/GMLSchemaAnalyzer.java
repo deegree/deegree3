@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -53,8 +52,6 @@ import org.deegree.tools.i18n.Messages;
  * well as information on the geometry element hierarchy.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * @version $Revision:$, $Date:$
  */
 @Tool("Prints an analysis of the feature type hierarchy defined in a GML application schema as well as information on the geometry element hierarchy.")
 public class GMLSchemaAnalyzer {

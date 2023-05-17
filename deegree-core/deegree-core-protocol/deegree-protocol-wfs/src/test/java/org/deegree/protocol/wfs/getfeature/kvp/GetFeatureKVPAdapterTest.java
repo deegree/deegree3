@@ -70,8 +70,6 @@ import org.junit.Test;
  * The <code>GetFeatureKVPAdapterTest</code> class tests the GetFeature KVP adapter.
  *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class GetFeatureKVPAdapterTest extends TestCase {
 

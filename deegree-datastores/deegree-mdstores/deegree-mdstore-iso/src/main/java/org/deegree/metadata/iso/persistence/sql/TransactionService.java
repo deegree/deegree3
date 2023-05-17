@@ -4,9 +4,7 @@ package org.deegree.metadata.iso.persistence.sql;
  * Encapsulates write access to the sql backend
  *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
  *
- * @version $Revision: $, $Date: $
  */
 import java.sql.Connection;
 

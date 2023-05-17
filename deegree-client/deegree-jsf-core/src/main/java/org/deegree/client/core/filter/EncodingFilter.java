@@ -1,4 +1,3 @@
-//$HeadURL:
 /*----------------------------------------------------------------------------
  This file is part of advregistry3 project
 
@@ -31,8 +30,6 @@ import org.slf4j.Logger;
  * 'encoding' or 'UTF-8' as default.
  *
  * @author <a href="mailto:goltz@lat-lon.org">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class EncodingFilter implements Filter {
 

@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -65,8 +64,6 @@ import org.slf4j.Logger;
  * be created and a download linked rendered.
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 @FacesRenderer(componentFamily = "javax.faces.Output", rendererType = "org.deegree.OutputXML")
 public class OutputXMLRenderer extends Renderer {

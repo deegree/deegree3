@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-metadata/src/main/java/org/deegree/metadata/persistence/MetadataResultSet.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -44,8 +43,6 @@ import org.deegree.protocol.csw.MetadataStoreException;
  * Has a corresponding {@link MetadataResultType} as content.
  *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 30829 $, $Date: 2011-05-16 18:47:27 +0200 (Mo, 16. Mai 2011) $
  */
 public interface MetadataResultSet<T extends MetadataRecord> {
 

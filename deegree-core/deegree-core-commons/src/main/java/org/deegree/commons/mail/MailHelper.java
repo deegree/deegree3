@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -58,8 +57,6 @@ import org.slf4j.LoggerFactory;
  * A helper class to create and send mail.
  *
  * @author <a href="mailto:tfr@users.sourceforge.net">Torsten Friebe </A>
- * @author last edited by: $Author$
- * @version $Revision$,$Date$
  * @see javax.mail.Message
  * @see javax.mail.internet.MimeMessage
  */

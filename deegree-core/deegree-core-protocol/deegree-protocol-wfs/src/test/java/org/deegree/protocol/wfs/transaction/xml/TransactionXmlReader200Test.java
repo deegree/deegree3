@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2012 by:
@@ -69,8 +68,6 @@ import org.junit.Test;
  * Test cases for {@link TransactionXmlReader200}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class TransactionXmlReader200Test extends TestCase {
 

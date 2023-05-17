@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -42,8 +41,6 @@ import java.io.File;
  * access to it).
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class ResourceState<T extends Resource> {
 
@@ -51,8 +48,6 @@ public class ResourceState<T extends Resource> {
 	 * Represents the lifecycle phases of a {@link Resource}.
 	 *
 	 * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
-	 * @author last edited by: $Author$
-	 * @version $Revision$, $Date$
 	 */
 	public static enum StateType {
 

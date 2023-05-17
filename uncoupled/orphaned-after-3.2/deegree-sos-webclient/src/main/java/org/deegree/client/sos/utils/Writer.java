@@ -19,7 +19,6 @@ import org.deegree.commons.utils.Pair;
  * into a PrintWriter. This will be called after an AJAX request.
  * 
  * @author <a href="mailto:neumeister@lat-lon.de">Ulrich Neumeister</a>
- * @author last edited by: $Author$
  * 
  */
 public class Writer {

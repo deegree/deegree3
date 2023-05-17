@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -79,8 +78,6 @@ import org.deegree.workspace.standard.DefaultWorkspace;
  * </ul>
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 @Tool("The DataManager inserts, updates and deletes 3d-objects in/from the WPVS backend")
@@ -90,8 +87,6 @@ public class DataManager {
 	 * The <code>Action</code> the datamanager may perform
 	 *
 	 * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
-	 * @author last edited by: $Author$
-	 * @version $Revision$, $Date$
 	 *
 	 */
 	public enum Action {

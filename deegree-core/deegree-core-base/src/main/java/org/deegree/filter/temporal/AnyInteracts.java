@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -42,8 +41,6 @@ import org.deegree.time.primitive.TimeGeometricPrimitive;
  * {@link TemporalOperator} that...
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class AnyInteracts extends TemporalOperator {
 

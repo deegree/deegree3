@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -51,8 +50,6 @@ import java.util.Map.Entry;
  * <code>CollectionUtils</code>
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class CollectionUtils {
 
@@ -284,8 +281,6 @@ public class CollectionUtils {
 	 * <code>Reducer</code>
 	 *
 	 * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-	 * @author last edited by: $Author$
-	 * @version $Revision$, $Date$
 	 * @param <T>
 	 */
 	public static interface Reducer<T> {
@@ -303,8 +298,6 @@ public class CollectionUtils {
 	 * <code>Mapper</code> gives a name to a simple function.
 	 *
 	 * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-	 * @author last edited by: $Author$
-	 * @version $Revision$, $Date$
 	 * @param <T> the return type of the function
 	 * @param <U> the argument type of the function
 	 */
@@ -351,8 +344,6 @@ public class CollectionUtils {
 
 	/**
 	 * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-	 * @author last edited by: $Author$
-	 * @version $Revision$, $Date$
 	 * @param <T>
 	 */
 	public static interface Predicate<T> {

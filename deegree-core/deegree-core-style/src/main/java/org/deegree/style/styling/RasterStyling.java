@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aschmitz@deegree.wald.intevation.de/deegree/deegree3/trunk/deegree-core/deegree-core-rendering-2d/src/main/java/org/deegree/rendering/r2d/styling/RasterStyling.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -52,8 +51,6 @@ import org.deegree.style.styling.components.UOM;
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author <a href="mailto:a.aiordachioaie@jacobs-university.de">Andrei Aiordachioaie</a>
- * @author last edited by: $Author: aschmitz $
- * @version $Revision: 30169 $, $Date: 2011-03-25 11:49:50 +0100 (Fri, 25 Mar 2011) $
  */
 public class RasterStyling implements Styling<RasterStyling> {
 
@@ -95,8 +92,6 @@ public class RasterStyling implements Styling<RasterStyling> {
 	 * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
 	 * @author <a href="mailto:a.aiordachioaie@jacobs-university.de">Andrei
 	 * Aiordachioaie</a>
-	 * @author last edited by: $Author: aschmitz $
-	 * @version $Revision: 30169 $, $Date: 2011-03-25 11:49:50 +0100 (Fri, 25 Mar 2011) $
 	 */
 	public static class ShadedRelief implements Copyable<ShadedRelief> {
 
@@ -137,8 +132,6 @@ public class RasterStyling implements Styling<RasterStyling> {
 	 *
 	 * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
 	 * @author <a href="mailto:andrei6200@gmail.com">Andrei Aiordachioaie</a>
-	 * @author last edited by: $Author: aschmitz $
-	 * @version $Revision: 30169 $, $Date: 2011-03-25 11:49:50 +0100 (Fri, 25 Mar 2011) $
 	 */
 	public static class ContrastEnhancement implements Copyable<ContrastEnhancement> {
 
@@ -174,8 +167,6 @@ public class RasterStyling implements Styling<RasterStyling> {
 	 *
 	 * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
 	 * @author <a href="mailto:andrei6200@gmail.com">Andrei Aiordachioaie</a>
-	 * @author last edited by: $Author: aschmitz $
-	 * @version $Revision: 30169 $, $Date: 2011-03-25 11:49:50 +0100 (Fri, 25 Mar 2011) $
 	 */
 	public static enum Overlap {
 

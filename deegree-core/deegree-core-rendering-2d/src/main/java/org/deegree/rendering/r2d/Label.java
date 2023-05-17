@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -51,8 +50,6 @@ import org.deegree.style.styling.TextStyling;
  * A rectangular text label, ready to be drawn
  *
  * @author Florian Bingel
- * @author last edited by: $Author: stranger $
- * @version $Revision: $, $Date: $
  */
 
 public class Label {

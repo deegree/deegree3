@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -53,8 +52,6 @@ import org.deegree.protocol.ows.exception.OWSExceptionReport;
  * {@link OwsHttpResponse} used by {@link OwsHttpClientMock}.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 class OwsHttpResponseMock implements OwsHttpResponse {
 

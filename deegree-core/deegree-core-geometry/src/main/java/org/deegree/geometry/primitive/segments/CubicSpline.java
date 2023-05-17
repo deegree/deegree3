@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -43,8 +42,6 @@ import org.deegree.geometry.primitive.Point;
  * to define a piecewise 3rd degree polynomial interpolation.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public interface CubicSpline extends CurveSegment {
 

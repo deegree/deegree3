@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/deegree3/trunk/deegree-core/deegree-core-metadata/src/main/java/org/deegree/metadata/iso/ISORecord.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -65,8 +64,6 @@ import org.deegree.metadata.iso.types.OperatesOnData;
  * {@link XPathEvaluator} implementation to evaluate {@link ISORecord}s
  *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 33080 $, $Date: 2012-03-26 14:44:44 +0200 (Mo, 26. Mär 2012) $
  */
 public class ISORecordEvaluator implements XPathEvaluator<ISORecord> {
 

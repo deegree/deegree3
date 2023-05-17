@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-base/src/main/java/org/deegree/filter/sql/PropertyNameMapping.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -47,8 +46,6 @@ import org.deegree.filter.expression.ValueReference;
  *
  * @see AbstractWhereBuilder
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 30994 $, $Date: 2011-05-31 17:20:05 +0200 (Di, 31. Mai 2011) $
  */
 public class PropertyNameMapping {
 

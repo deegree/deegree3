@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -44,8 +43,6 @@ import org.deegree.geometry.primitive.Point;
  * A {@link CurveSegment} that is defined by a base {@link Curve} and an offset vector.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * @version $Revision$
  */
 public interface OffsetCurve extends CurveSegment {
 

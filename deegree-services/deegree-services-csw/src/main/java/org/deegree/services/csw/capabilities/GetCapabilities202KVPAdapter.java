@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -47,8 +46,6 @@ import org.deegree.protocol.ows.getcapabilities.GetCapabilitiesKVPParser;
  * delegated to the deegree core module.
  *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: thomas $
- * @version $Revision: $, $Date: $
  */
 
 public class GetCapabilities202KVPAdapter {

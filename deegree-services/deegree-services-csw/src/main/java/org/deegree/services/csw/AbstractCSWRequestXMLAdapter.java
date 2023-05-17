@@ -43,8 +43,6 @@ import org.deegree.commons.xml.XMLAdapter;
  * Provides basic functionality for parsing CSW XML requests.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: thomas $
- * @version $Revision: $, $Date: $
  */
 public abstract class AbstractCSWRequestXMLAdapter extends XMLAdapter {
 

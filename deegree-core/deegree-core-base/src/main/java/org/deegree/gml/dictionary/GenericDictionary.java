@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -46,8 +45,6 @@ import org.deegree.commons.tom.gml.GMLStdProps;
  * Default implementation of {@link Dictionary}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class GenericDictionary extends GenericDefinition implements Dictionary {
 

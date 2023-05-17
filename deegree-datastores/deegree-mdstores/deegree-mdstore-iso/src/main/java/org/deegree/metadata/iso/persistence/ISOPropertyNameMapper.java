@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-metadata/src/main/java/org/deegree/metadata/iso/persistence/ISOPropertyNameMapper.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -80,8 +79,6 @@ import org.slf4j.Logger;
  * <p>
  *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 31272 $, $Date: 2011-07-13 23:10:35 +0200 (Mi, 13. Jul 2011) $
  */
 public class ISOPropertyNameMapper implements PropertyNameMapper {
 
@@ -216,8 +213,6 @@ public class ISOPropertyNameMapper implements PropertyNameMapper {
 	 * The common column names that are used in the backend for each databasetable.
 	 *
 	 * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
-	 * @author last edited by: $Author: mschneider $
-	 * @version $Revision: 31272 $, $Date: 2011-07-13 23:10:35 +0200 (Mi, 13. Jul 2011) $
 	 */
 	public enum CommonColumnNames {
 
@@ -252,8 +247,6 @@ public class ISOPropertyNameMapper implements PropertyNameMapper {
 	 * The names of the databasetables that are used in the backend.
 	 *
 	 * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
-	 * @author last edited by: $Author: mschneider $
-	 * @version $Revision: 31272 $, $Date: 2011-07-13 23:10:35 +0200 (Mi, 13. Jul 2011) $
 	 */
 	public enum DatabaseTables {
 

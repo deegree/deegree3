@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -89,8 +88,6 @@ import org.deegree.workspace.standard.DefaultWorkspace;
  * Swiss Army knife for GML/deegree application schemas.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 @Tool("Swiss Army knife for GML/deegree application schemas.")
 public class ApplicationSchemaTool {

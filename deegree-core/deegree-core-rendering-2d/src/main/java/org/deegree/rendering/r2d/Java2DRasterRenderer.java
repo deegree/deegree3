@@ -70,8 +70,6 @@ import org.slf4j.Logger;
  * <code>Java2DRasterRenderer</code>
  *
  * @author <a href="mailto:a.aiordachioaie@jacobs-university.de">Andrei Aiordachioaie</a>
- * @author last edited by: $Author: aaiordachioaie $
- * @version $Revision: 19497 $, $Date: 2009-09-11 $
  */
 public class Java2DRasterRenderer implements RasterRenderer {
 

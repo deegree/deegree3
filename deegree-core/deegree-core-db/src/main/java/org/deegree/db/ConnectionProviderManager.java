@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -55,7 +54,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
- * @version $Revision: $, $Date: $
  */
 public class ConnectionProviderManager extends DefaultResourceManager<ConnectionProvider> {
 

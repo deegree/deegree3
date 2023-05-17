@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -74,8 +73,6 @@ import org.slf4j.Logger;
  * {@link Tile} implementation for {@link RemoteWMTSTileDataLevel}.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 class RemoteWMTSTile implements Tile {
 

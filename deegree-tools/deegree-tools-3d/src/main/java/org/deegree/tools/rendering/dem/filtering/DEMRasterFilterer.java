@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -83,8 +82,6 @@ import org.slf4j.Logger;
  * The <code>DEMRasterFilterer</code> applies a filter to a dem by using multiple threads.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 @Tool("Applies a filter to a dem, which is loaded from a raster.")
@@ -459,8 +456,6 @@ public class DEMRasterFilterer {
 	 * The <code>RasterFilterer</code> applies the given filter to the original raster.
 	 *
 	 * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
-	 * @author last edited by: $Author$
-	 * @version $Revision$, $Date$
 	 *
 	 */
 	private class RasterFilterer implements Runnable {
@@ -523,8 +518,6 @@ public class DEMRasterFilterer {
 	 * them accordingly.
 	 *
 	 * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
-	 * @author last edited by: $Author$
-	 * @version $Revision$, $Date$
 	 *
 	 */
 	class RasterComparator implements Comparator<AbstractRaster> {

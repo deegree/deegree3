@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/src/main/java/org/deegree/feature/persistence/cache/FeatureStoreCache.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -49,8 +48,6 @@ import org.deegree.feature.persistence.FeatureStore;
  *
  * @see FeatureStore
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 22192 $, $Date: 2010-01-25 20:00:06 +0100 (Mo, 25 Jan 2010) $
  */
 public class SimpleFeatureStoreCache implements FeatureStoreCache {
 

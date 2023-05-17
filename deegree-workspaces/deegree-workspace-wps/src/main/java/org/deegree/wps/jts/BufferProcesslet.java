@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -64,8 +63,6 @@ import org.deegree.services.wps.output.ComplexOutput;
  * TODO add class documentation here
  *
  * @author <a href="mailto:name@deegree.org">Your Name</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class BufferProcesslet implements Processlet, GeometryHandler {
 

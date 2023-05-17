@@ -50,8 +50,6 @@ import org.deegree.geometry.Geometry;
  * implement this interface.
  *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public interface GMLGeometryReader {

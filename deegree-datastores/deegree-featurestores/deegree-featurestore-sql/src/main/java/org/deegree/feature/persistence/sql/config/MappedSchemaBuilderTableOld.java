@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-datastores/deegree-featurestores/deegree-featurestore-sql/src/main/java/org/deegree/feature/persistence/sql/config/MappedSchemaBuilderTable.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -111,8 +110,6 @@ import org.slf4j.LoggerFactory;
  * </p>
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 32459 $, $Date: 2011-11-22 17:42:19 +0100 (Di, 22. Nov 2011) $
  */
 public class MappedSchemaBuilderTableOld extends AbstractMappedSchemaBuilder {
 

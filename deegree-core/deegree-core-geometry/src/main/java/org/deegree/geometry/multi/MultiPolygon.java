@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -41,9 +40,7 @@ import org.deegree.geometry.primitive.Polygon;
  * Specialised aggregation type for {@link Polygon} objects.
  *
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
- * @author last edited by: $Author$
  *
- * @version. $Revision$, $Date$
  */
 public interface MultiPolygon extends MultiSurface<Polygon> {
 

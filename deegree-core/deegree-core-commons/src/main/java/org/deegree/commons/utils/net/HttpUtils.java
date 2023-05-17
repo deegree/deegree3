@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -99,8 +98,6 @@ import com.google.gson.JsonParser;
  * </code>
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class HttpUtils {
 
@@ -115,8 +112,6 @@ public class HttpUtils {
 	 * location.
 	 *
 	 * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-	 * @author last edited by: $Author$
-	 * @version $Revision$, $Date$
 	 * @param <T>
 	 */
 	public interface Worker<T> {

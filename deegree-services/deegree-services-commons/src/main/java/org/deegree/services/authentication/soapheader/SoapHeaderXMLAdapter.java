@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -45,8 +44,6 @@ import org.deegree.commons.xml.XPath;
  * Encapsulates the method for parsing a {@Link SoapHeader} XML request via Http-POST.
  *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class SoapHeaderXMLAdapter extends XMLAdapter {
 

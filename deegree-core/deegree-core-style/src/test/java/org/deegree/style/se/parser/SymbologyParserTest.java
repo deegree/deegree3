@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aschmitz@deegree.wald.intevation.de/deegree/deegree3/trunk/deegree-core/deegree-core-rendering-2d/src/test/java/org/deegree/rendering/r2d/se/parser/SymbologyParserTest.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -60,8 +59,6 @@ import org.slf4j.Logger;
  * <code>SymbologyParserTest</code>
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: aschmitz $
- * @version $Revision: 23463 $, $Date: 2010-04-08 14:15:03 +0200 (Thu, 08 Apr 2010) $
  */
 @RunWith(Parameterized.class)
 public class SymbologyParserTest extends TestCase {

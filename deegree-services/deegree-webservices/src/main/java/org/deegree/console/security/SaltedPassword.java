@@ -45,8 +45,6 @@ import java.util.Date;
  * value.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: markus $
- * @version $Revision: $, $Date: $
  */
 public class SaltedPassword {
 

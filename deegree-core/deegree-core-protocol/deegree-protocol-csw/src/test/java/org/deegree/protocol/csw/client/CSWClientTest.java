@@ -40,8 +40,6 @@ import org.junit.Test;
  * $HOME/.deegree-test.properties to a CSW server getCapabilities URL for this test to
  * work.
  *
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class CSWClientTest {
 

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2009 by:
@@ -71,8 +70,6 @@ import org.slf4j.Logger;
  * pixel(0,0)(0,1)(0,2)(0,3)(0,4)(0,5)(0,6)(0,7)(1,0)(1,1)(1,2)(1,3)(1,4)(1,5)(1,6)(1,7)
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class SplittedBlobReader extends GridFileReader {

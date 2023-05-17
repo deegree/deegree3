@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -53,8 +52,6 @@ import org.junit.Test;
  * Tests/documentation of weird behavior in the StaX implementation.
  *
  * @author <a href="mailto:name@deegree.org">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class StaXWeirdnessTest {
 

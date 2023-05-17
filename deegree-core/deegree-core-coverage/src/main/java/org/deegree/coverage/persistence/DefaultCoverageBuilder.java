@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -85,8 +84,6 @@ import org.slf4j.LoggerFactory;
  * Builder for file/dir based coverages.
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * @version $Revision: $, $Date: $
  */
 public class DefaultCoverageBuilder implements ResourceBuilder<Coverage> {
 
@@ -524,8 +521,6 @@ public class DefaultCoverageBuilder implements ResourceBuilder<Coverage> {
 
 	/**
 	 * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-	 * @author last edited by: $Author$
-	 * @version $Revision$, $Date$
 	 */
 	public static class QTreeInfo {
 

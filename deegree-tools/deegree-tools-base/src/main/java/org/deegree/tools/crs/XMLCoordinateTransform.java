@@ -74,8 +74,6 @@ import org.slf4j.Logger;
  * Tool for converting the GML geometries inside an XML document from one SRS to another.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 @Tool("Converts the GML geometries inside an XML document from one SRS to another.")
 public class XMLCoordinateTransform {

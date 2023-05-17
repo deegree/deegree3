@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aionita@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -40,8 +39,6 @@ package org.deegree.test.services.wpvs;
  * The <code></code> class TODO add class documentation here.
  *
  * @author <a href="mailto:name@deegree.org">Your Name</a>
- * @author last edited by: $Author: ionita $
- * @version $Revision: $, $Date: $
  *
  */
 public class TestResultData {

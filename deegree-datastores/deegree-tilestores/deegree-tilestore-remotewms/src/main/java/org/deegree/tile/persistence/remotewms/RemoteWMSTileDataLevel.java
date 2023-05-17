@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -55,8 +54,6 @@ import org.deegree.tile.TileMatrix;
  * {@link TileDataLevel} that is backed by a {@link RemoteWMSTileStore}.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 class RemoteWMSTileDataLevel implements TileDataLevel {
 

@@ -94,8 +94,6 @@ import org.slf4j.LoggerFactory;
  * </ul>
  *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class GML2GeometryReader extends AbstractGMLObjectReader implements GMLGeometryReader {
 

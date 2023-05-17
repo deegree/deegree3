@@ -95,8 +95,6 @@ import org.slf4j.LoggerFactory;
  * JSF bean that helps with creating configurations for the {@link SQLFeatureStore}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 @ManagedBean
 @SessionScoped

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -49,8 +48,6 @@ import org.deegree.commons.tom.gml.property.PropertyType;
  * {@link PropertyType} that defines a property with an {@link Object} value.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class ObjectPropertyType extends AbstractPropertyType {
 

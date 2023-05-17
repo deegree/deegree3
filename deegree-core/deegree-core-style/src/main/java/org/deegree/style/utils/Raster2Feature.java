@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aschmitz@deegree.wald.intevation.de/deegree/deegree3/trunk/deegree-core/deegree-core-rendering-2d/src/main/java/org/deegree/rendering/r2d/utils/Raster2Feature.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -52,8 +51,6 @@ import org.deegree.geometry.standard.points.PointsList;
  * geometry and other information about the raster as attributes.
  *
  * @author <a href="mailto:a.aiordachioaie@jacobs-university.de">Andrei Aiordachioaie</a>
- * @author last edited by: $Author: lbuesching $
- * @version $Revision: 29642 $, $Date: 2011-02-11 13:59:33 +0100 (Fri, 11 Feb 2011) $
  */
 public class Raster2Feature {
 

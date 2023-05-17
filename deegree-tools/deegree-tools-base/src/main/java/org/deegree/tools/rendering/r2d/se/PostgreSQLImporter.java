@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -63,8 +62,6 @@ import org.deegree.workspace.standard.DefaultWorkspace;
  * <code>PostgreSQLImporter</code>
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 @Tool(value = "This tool can be used to import SLD/SE files into a WMS styles database.")
 public class PostgreSQLImporter {

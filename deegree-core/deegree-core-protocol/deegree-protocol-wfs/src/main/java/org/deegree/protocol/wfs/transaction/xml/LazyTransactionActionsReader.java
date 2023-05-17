@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -51,8 +50,6 @@ import org.deegree.protocol.wfs.transaction.TransactionAction;
  *
  * @see TransactionXmlReader
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 class LazyTransactionActionsReader implements Iterable<TransactionAction> {
 

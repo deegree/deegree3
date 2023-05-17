@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aschmitz@deegree.wald.intevation.de/deegree/deegree3/trunk/deegree-core/deegree-core-rendering-2d/src/main/java/org/deegree/rendering/r2d/se/unevaluated/Style.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -90,8 +89,6 @@ import org.slf4j.Logger;
  * <code>Style</code>
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: aschmitz $
- * @version $Revision: 31255 $, $Date: 2011-07-12 12:08:02 +0200 (Tue, 12 Jul 2011) $
  */
 public class Style implements Copyable<Style> {
 

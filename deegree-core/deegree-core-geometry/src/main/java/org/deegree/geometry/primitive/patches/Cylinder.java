@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -42,8 +41,6 @@ package org.deegree.geometry.primitive.patches;
  * lines, keeping the cross sectional horizontal curves of a constant shape.
  *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public interface Cylinder extends GriddedSurfacePatch {
 

@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -99,8 +98,6 @@ import org.locationtech.jts.io.ParseException;
  * {@link MetadataStoreTransaction} implementation for the {@link EbrimEOMDStore}.
  *
  * @author <a href="mailto:goltz@deegree.org">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 public class EbrimEOMDStoreTransaction implements MetadataStoreTransaction {
 

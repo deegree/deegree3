@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -81,8 +80,6 @@ import org.slf4j.Logger;
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  * @param <T> of objects the tree will hold.
  *
  */
@@ -1248,8 +1245,6 @@ public class RTree<T> extends SpatialIndex<T> {
 	 * the entries have been sorted.
 	 *
 	 * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
-	 * @author last edited by: $Author$
-	 * @version $Revision$, $Date$
 	 *
 	 */
 	static class ArrayEncapsInsert<T> {
@@ -1269,8 +1264,6 @@ public class RTree<T> extends SpatialIndex<T> {
 	 * for clarity of syntax reasons.
 	 *
 	 * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
-	 * @author last edited by: $Author$
-	 * @version $Revision$, $Date$
 	 *
 	 */
 	static class TraceCell<T> {

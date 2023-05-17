@@ -1,4 +1,3 @@
-//$$HeadURL$$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -45,9 +44,6 @@ import javax.vecmath.Vector3f;
  * This class represents a <code>WPVSConfiguration</code> object.
  *
  * @author <a href="mailto:taddei@lat-lon.de">Ugo Taddei</a>
- * @author last edited by: $Author$
- *
- * $Revision$, $Date$
  *
  */
 public class WPVSConfiguration {

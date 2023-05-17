@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aschmitz@deegree.wald.intevation.de/deegree/deegree3/trunk/deegree-core/deegree-core-rendering-2d/src/main/java/org/deegree/rendering/r2d/se/parser/PostgreSQLWriter.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -86,8 +85,6 @@ import org.slf4j.Logger;
  * <code>PostgreSQLWriter</code>
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: aschmitz $
- * @version $Revision: 30481 $, $Date: 2011-04-18 16:10:34 +0200 (Mon, 18 Apr 2011) $
  */
 public class PostgreSQLWriter {
 

@@ -9,7 +9,6 @@ import org.deegree.commons.utils.Pair;
  * will be displayed in a Form later.
  * 
  * @author <a href="mailto:neumeister@lat-lon.de">Ulrich Neumeister</a>
- * @author last edited by: $Author$
  * 
  */
 public class KVPDescribeSensor {

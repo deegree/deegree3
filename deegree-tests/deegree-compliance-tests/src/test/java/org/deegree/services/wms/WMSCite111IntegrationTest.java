@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -47,8 +46,6 @@ import org.junit.runners.Parameterized.Parameters;
  * Wraps the execution of the CITE WMS 1.1.1 TestSuite as a JUnit-test.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 @RunWith(Parameterized.class)
 public class WMSCite111IntegrationTest extends AbstractCiteIntegrationTest {

@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aschmitz@wald.intevation.org/deegree/deegree3/branches/3.1/deegree-services/deegree-services-wms/src/main/java/org/deegree/services/wms/controller/ops/GetLegendGraphic.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -48,8 +47,6 @@ import org.deegree.style.StyleRef;
  * <code>GetLegendGraphic</code>
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 31688 $, $Date: 2011-08-30 15:05:12 +0200 (Tue, 30 Aug 2011) $
  */
 public class GetLegendGraphic {
 

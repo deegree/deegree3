@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -51,8 +50,6 @@ import org.deegree.coverage.raster.geom.RasterRect;
  * This interface is for abstraction of the raster loading handling.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * @version $Revision$
  *
  */
 public interface RasterReader {

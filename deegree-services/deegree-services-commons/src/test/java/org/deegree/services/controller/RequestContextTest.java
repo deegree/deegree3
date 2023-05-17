@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2013 by:
@@ -46,8 +45,6 @@ import org.mockito.Mockito;
  * Unit tests for {@link RequestContext}
  *
  * @author <a href="mailto:name@company.com">Your Name</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class RequestContextTest {
 

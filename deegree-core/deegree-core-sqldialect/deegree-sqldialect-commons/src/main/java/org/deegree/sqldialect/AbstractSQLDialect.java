@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2014 by:
@@ -40,7 +39,6 @@ package org.deegree.sqldialect;
  * accessed by deegree.
  *
  * @author <a href="mailto:wanhoff@lat-lon.de">Jeronimo Wanhoff</a>
- * @author last edited by: $Author: wanhoff $
  *
  */
 public abstract class AbstractSQLDialect implements SQLDialect {

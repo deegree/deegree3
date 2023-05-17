@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -56,8 +55,6 @@ import org.deegree.workspace.standard.DefaultResourceManagerMetadata;
  * {@link ResourceManager} for {@link OWSMetadataProvider}s.
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 public class OWSMetadataProviderManager extends DefaultResourceManager<OWSMetadataProvider> {
 

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -69,8 +68,6 @@ import de.odysseus.staxon.json.JsonXMLOutputFactory;
  * Defines the export functionality for a {@link GetRecordById} request
  *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: thomas $
- * @version $Revision: $, $Date: $
  */
 public class DefaultGetRecordByIdHandler implements GetRecordByIdHandler {
 

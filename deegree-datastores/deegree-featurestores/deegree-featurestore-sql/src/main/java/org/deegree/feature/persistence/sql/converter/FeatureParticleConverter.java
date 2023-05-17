@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-base/src/main/java/org/deegree/geometry/utils/GeometryParticleConverter.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -52,8 +51,6 @@ import org.deegree.gml.reference.FeatureReference;
  * {@link ParticleConverter} for {@link Feature} particles.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 30976 $, $Date: 2011-05-31 11:09:40 +0200 (Di, 31. Mai 2011) $
  */
 public class FeatureParticleConverter implements ParticleConverter<Feature> {
 

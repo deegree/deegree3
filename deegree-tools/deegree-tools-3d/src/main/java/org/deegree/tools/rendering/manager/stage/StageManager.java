@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -68,8 +67,6 @@ import org.deegree.tools.rendering.manager.ModelManager;
  * The <code>StageManager</code> imports stage definitions from a csv file.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class StageManager extends ModelManager<WorldRenderableObject> {
@@ -92,8 +89,6 @@ public class StageManager extends ModelManager<WorldRenderableObject> {
 	 * value.
 	 *
 	 * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
-	 * @author last edited by: $Author$
-	 * @version $Revision$, $Date$
 	 *
 	 */
 	private enum Column {

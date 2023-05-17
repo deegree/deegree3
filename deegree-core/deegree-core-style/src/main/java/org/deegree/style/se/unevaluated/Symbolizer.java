@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aschmitz@deegree.wald.intevation.de/deegree/deegree3/trunk/deegree-core/deegree-core-rendering-2d/src/main/java/org/deegree/rendering/r2d/se/unevaluated/Symbolizer.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -57,8 +56,6 @@ import org.slf4j.Logger;
  * <code>Symbolizer</code>
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: aschmitz $
- * @version $Revision: 31072 $, $Date: 2011-06-17 13:08:25 +0200 (Fri, 17 Jun 2011) $
  * @param <T>
  */
 public class Symbolizer<T extends Styling<T>> {

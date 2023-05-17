@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aschmitz@deegree.wald.intevation.de/deegree/deegree3/trunk/deegree-core/deegree-core-rendering-2d/src/main/java/org/deegree/rendering/r2d/styling/components/Mark.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -49,8 +48,6 @@ import org.deegree.style.styling.Copyable;
  * <code>Mark</code>
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: aschmitz $
- * @version $Revision: 21314 $, $Date: 2009-12-08 13:48:34 +0100 (Tue, 08 Dec 2009) $
  */
 public class Mark implements Copyable<Mark> {
 
@@ -106,8 +103,6 @@ public class Mark implements Copyable<Mark> {
 	 * <code>SimpleMark</code>
 	 *
 	 * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-	 * @author last edited by: $Author: aschmitz $
-	 * @version $Revision: 21314 $, $Date: 2009-12-08 13:48:34 +0100 (Tue, 08 Dec 2009) $
 	 */
 	public static enum SimpleMark {
 

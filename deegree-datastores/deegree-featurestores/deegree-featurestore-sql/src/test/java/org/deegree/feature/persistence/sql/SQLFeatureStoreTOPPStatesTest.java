@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -108,8 +107,6 @@ import org.slf4j.LoggerFactory;
  * Basic {@link SQLFeatureStore} test for table-based configurations.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 @RunWith(value = Parameterized.class)
 public class SQLFeatureStoreTOPPStatesTest {

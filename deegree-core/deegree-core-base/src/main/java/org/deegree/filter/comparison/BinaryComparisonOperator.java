@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -47,8 +46,6 @@ import org.deegree.filter.XPathEvaluator;
  * Abstract base class for all binary comparison operators.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author:$
- * @version $Revision:$, $Date:$
  */
 public abstract class BinaryComparisonOperator extends ComparisonOperator {
 

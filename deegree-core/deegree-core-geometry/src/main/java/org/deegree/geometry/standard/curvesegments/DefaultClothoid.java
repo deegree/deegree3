@@ -41,8 +41,6 @@ import org.deegree.geometry.primitive.segments.Clothoid;
  * Default implementation of {@link Clothoid} segments.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class DefaultClothoid implements Clothoid {
 

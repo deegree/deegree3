@@ -48,8 +48,6 @@ import org.deegree.workspace.standard.DefaultWorkspace;
  * TODO add class documentation here
  *
  * @author <a href="mailto:name@company.com">Your Name</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 @ManagedBean
 @ViewScoped

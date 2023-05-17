@@ -1,4 +1,3 @@
-//$HeadURL$
 package org.deegree.commons.tom.gml;
 
 import java.util.ArrayList;
@@ -15,8 +14,6 @@ import org.deegree.commons.tom.gml.property.PropertyType;
  * object type declarations.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * @version $Revision:$, $Date:$
  */
 public class GenericGMLObjectType implements GMLObjectType {
 

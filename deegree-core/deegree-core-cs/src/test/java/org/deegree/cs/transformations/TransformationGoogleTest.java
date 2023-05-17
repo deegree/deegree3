@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/deegree3/trunk/deegree-core/deegree-core-cs/src/main/java/org/deegree/cs/transformations/TransformationFactory.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -52,8 +51,6 @@ import org.junit.Test;
  * Test transformations from/to epsg:31466 <-> epsg:900913.
  *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: aschmitz $
- * @version $Revision: 33360 $, $Date: 2012-06-06 16:30:28 +0200 (Mi, 06. Jun 2012) $
  *
  */
 public class TransformationGoogleTest extends TransformationAccuracy {

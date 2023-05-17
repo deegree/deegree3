@@ -49,8 +49,6 @@ import org.deegree.services.wps.WPSProcess;
 
 /**
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: goerke $
- * @version $Revision: 84 $, $Date: 2011-05-30 10:31:58 +0200 (Mo, 30. Mai 2011)
  */
 public class FMEProcess implements WPSProcess {
 

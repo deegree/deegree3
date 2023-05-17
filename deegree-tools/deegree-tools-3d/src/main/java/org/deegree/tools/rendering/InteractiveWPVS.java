@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -119,8 +118,6 @@ import com.sun.opengl.util.texture.Texture;
  * navigate interactively through the scene.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus ls /Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 @Tool("Reads in a configuration document for the deegree WPVS and allows the user to interactively navigate through the scene.")
 public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyListener {

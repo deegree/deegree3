@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -58,8 +57,6 @@ import org.deegree.gml.schema.GMLSchemaInfoSet;
  * {@link AppSchema} that allows to add {@link FeatureTypes} during runtime.
  *
  * @author <a href="schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class DynamicAppSchema implements AppSchema {
 

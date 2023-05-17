@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -49,8 +48,6 @@ import org.deegree.client.core.component.HtmlExternalLink;
  * <code>ExternalLinkRenderer</code> renders a link ignoring the JSF navigation
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * @version $Revision: $, $Date: $
  */
 
 @FacesRenderer(componentFamily = "javax.faces.Command", rendererType = "org.deegree.ExternalLink")

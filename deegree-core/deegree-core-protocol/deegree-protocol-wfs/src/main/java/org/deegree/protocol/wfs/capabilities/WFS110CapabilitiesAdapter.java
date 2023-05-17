@@ -22,8 +22,6 @@ import org.deegree.protocol.wfs.metadata.WFSFeatureType;
  * href="http://www.opengeospatial.org/standards/wfs>WFS 1.1.0</a> specification.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class WFS110CapabilitiesAdapter extends OWSCommon100CapabilitiesAdapter implements WFSCapabilitiesAdapter {
 

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -89,8 +88,6 @@ import org.slf4j.Logger;
  * <li>The underlying Datum</li>
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 
@@ -113,8 +110,6 @@ public abstract class CRS extends CRSIdentifiable implements ICRS {
 	 * Simple enum defining the currently known Coordinate System types.
 	 *
 	 * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
-	 * @author last edited by: $Author: rutger $
-	 * @version $Revision: $, $Date: $
 	 */
 	public enum CRSType {
 

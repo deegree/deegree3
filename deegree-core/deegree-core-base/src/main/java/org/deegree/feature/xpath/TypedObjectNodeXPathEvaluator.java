@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -62,8 +61,6 @@ import org.slf4j.LoggerFactory;
  * {@link XPathEvaluator} implementation for {@link TypedObjectNode} graphs.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class TypedObjectNodeXPathEvaluator implements XPathEvaluator<TypedObjectNode> {
 

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -44,8 +43,6 @@ import org.deegree.workspace.ResourceMetadata;
  * <a href="http://www.opengeospatial.org/standards/wmts">Web Map Tile Services</a>.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class RemoteWMTS implements RemoteOWS {
 

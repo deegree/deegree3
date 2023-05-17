@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2011 by:
@@ -60,8 +59,6 @@ import org.junit.Test;
  * Tests for {@link GetPropertyValueKVPAdapter}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class GetPropertyValueKVPAdapterTest extends TestCase {
 

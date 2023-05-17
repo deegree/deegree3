@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2009 by:
@@ -72,8 +71,6 @@ import org.slf4j.Logger;
  * {@link #DEF_RASTER_CACHE_MEM_SIZE} and {@link #DEF_RASTER_CACHE_DISK_SIZE} to the JVM.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class RasterCache {
@@ -581,8 +578,6 @@ public class RasterCache {
 	 * read access time.
 	 *
 	 * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
-	 * @author last edited by: $Author$
-	 * @version $Revision$, $Date$
 	 *
 	 */
 	static class CacheComparator implements Comparator<CacheRasterReader>, Serializable {

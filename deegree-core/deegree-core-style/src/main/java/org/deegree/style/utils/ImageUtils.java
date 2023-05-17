@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aschmitz@deegree.wald.intevation.de/deegree/deegree3/trunk/deegree-core/deegree-core-rendering-2d/src/main/java/org/deegree/rendering/r2d/utils/ImageUtils.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -56,8 +55,6 @@ import javax.media.jai.operator.ColorQuantizerDescriptor;
 
 /**
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: aschmitz $
- * @version $Revision: 28386 $, $Date: 2010-11-25 15:38:59 +0100 (Thu, 25 Nov 2010) $
  */
 public class ImageUtils {
 

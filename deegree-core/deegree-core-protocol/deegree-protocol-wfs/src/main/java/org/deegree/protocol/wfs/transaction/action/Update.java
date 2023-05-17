@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -57,8 +56,6 @@ import org.deegree.protocol.wfs.transaction.xml.TransactionXmlReader;
  *
  * @see Transaction
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class Update extends AbstractTransactionAction {
 

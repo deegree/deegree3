@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -40,8 +39,6 @@ package org.deegree.coverage.raster.io.imageio.geotiff;
  * are in their original geotiff name, and no (opposing java conventions) in upper case.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public interface GeoTiffKey {
 

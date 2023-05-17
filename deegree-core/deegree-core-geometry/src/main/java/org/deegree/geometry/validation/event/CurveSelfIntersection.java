@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -44,8 +43,6 @@ import org.deegree.geometry.primitive.Point;
  * {@link GeometryValidationEvent} that indicates that a {@link Curve} intersects itself.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class CurveSelfIntersection extends AbstractGeometryValidationEvent {
 

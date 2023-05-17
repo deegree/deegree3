@@ -1,4 +1,3 @@
-// $HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -109,8 +108,6 @@ import org.slf4j.LoggerFactory;
  * <a href="http://ws.apache.org/commons/axiom/">AXIOM (AXis Object Model)</a>.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class XMLAdapter {
 

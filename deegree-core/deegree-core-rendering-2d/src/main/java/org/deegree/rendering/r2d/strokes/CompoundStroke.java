@@ -59,8 +59,6 @@ import java.awt.geom.Area;
  *
  * @author Jerry Huxtable
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class CompoundStroke implements Stroke {
 
@@ -103,8 +101,6 @@ public class CompoundStroke implements Stroke {
 	 * <code>Operation</code>
 	 *
 	 * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-	 * @author last edited by: $Author$
-	 * @version $Revision$, $Date$
 	 */
 	public enum Operation {
 

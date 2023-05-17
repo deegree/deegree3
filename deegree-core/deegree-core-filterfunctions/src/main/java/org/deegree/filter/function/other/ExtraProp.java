@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/src/main/java/org/deegree/filter/function/other/IDiv.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -58,8 +57,6 @@ import org.deegree.workspace.Workspace;
  * value.
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 27253 $, $Date: 2010-10-18 11:49:13 +0200 (Mo, 18. Okt 2010) $
  */
 public class ExtraProp implements FunctionProvider {
 

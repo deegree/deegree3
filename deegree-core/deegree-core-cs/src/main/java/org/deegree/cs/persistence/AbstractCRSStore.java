@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -65,7 +64,6 @@ import org.slf4j.LoggerFactory;
  * {@link CRSIdentifiable}s and instantiates a given resolver used for inverse lookup.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @version $Revision$, $Date$
  * @param <T> the type of object the parse method awaits.
  *
  */

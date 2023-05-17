@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -39,8 +38,6 @@ package org.deegree.commons.mail;
  * This exception is an application exception thrown by the mail component
  *
  * @author <a href="mailto:tfr@users.sourceforge.net">Torsten Friebe</A>
- * @author last edited by: $Author$
- * @version $Revision$,$Date$
  */
 public class SendMailException extends Exception {
 

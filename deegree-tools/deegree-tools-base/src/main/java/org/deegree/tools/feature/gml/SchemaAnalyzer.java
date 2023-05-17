@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -72,8 +71,6 @@ import org.w3c.dom.bootstrap.DOMImplementationRegistry;
  * Prints an analysis of the global element declarations in an XML schema.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * @version $Revision:$, $Date:$
  */
 @Tool("Prints an analysis of the global element declarations in an XML schema and their content models.")
 public class SchemaAnalyzer {

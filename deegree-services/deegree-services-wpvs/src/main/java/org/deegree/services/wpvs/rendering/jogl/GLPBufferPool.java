@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -55,8 +54,6 @@ import org.deegree.rendering.r3d.opengl.JOGLUtils;
  * future it will be able to pool buffers as well.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class GLPBufferPool {
@@ -195,8 +192,6 @@ public class GLPBufferPool {
 	 * texture size.
 	 *
 	 * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
-	 * @author last edited by: $Author$
-	 * @version $Revision$, $Date$
 	 *
 	 */
 	private static class PBufferSizeTest implements GLEventListener {
@@ -236,8 +231,6 @@ public class GLPBufferPool {
 	 * as a key for the pool.
 	 *
 	 * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
-	 * @author last edited by: $Author$
-	 * @version $Revision$, $Date$
 	 *
 	 */
 	private static class PBufferKey {

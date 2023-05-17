@@ -6,7 +6,6 @@ package org.deegree.client.sos.storage.components;
  * by the SOS if any parameter was wrong in the request or other errors occured.
  * 
  * @author <a href="mailto:neumeister@lat-lon.de">Ulrich Neumeister</a>
- * @author last edited by: $Author$
  * 
  */
 public class OWSException {

@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aionita@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -48,8 +47,6 @@ import javax.xml.stream.XMLStreamWriter;
  * reference ( <code>xsi:schemaLocation</code>) attribute into the first element written.
  *
  * @author <a href="mailto:aionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author: ionita $
- * @version $Revision: $, $Date: $
  */
 public class SchemaLocationXMLStreamWriter implements XMLStreamWriter {
 

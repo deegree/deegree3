@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2013 by:
@@ -49,9 +48,7 @@ import org.deegree.workspace.standard.DefaultResourceManagerMetadata;
  * a deegree workspace.
  * 
  * @author <a href="mailto:reijer.copier@idgis.nl">Reijer Copier</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
  */
 public class ApplicationContextHolderManager extends DefaultResourceManager<ApplicationContextHolder> {
 

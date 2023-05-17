@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-services/deegree-services-commons/src/main/java/org/deegree/services/controller/ows/capabilities/OWSOperation.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -82,8 +81,6 @@ import org.slf4j.LoggerFactory;
  * Provides methods for exporting
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * @version $Revision:$, $Date:$
  */
 public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
 

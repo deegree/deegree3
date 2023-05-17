@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -63,8 +62,6 @@ import org.slf4j.LoggerFactory;
  * The <code>ProjFileResource</code> reads a list of proj4 definitions from a file.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public class ProjFileResource implements CRSResource<Map<String, String>> {

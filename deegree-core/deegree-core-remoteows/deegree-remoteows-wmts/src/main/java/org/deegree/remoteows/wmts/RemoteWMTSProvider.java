@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -47,8 +46,6 @@ import org.deegree.workspace.Workspace;
  * {@link RemoteOWSProvider} for {@link RemoteWMTS}.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class RemoteWMTSProvider extends RemoteOWSProvider {
 

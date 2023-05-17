@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -46,8 +45,6 @@ import org.deegree.geometry.primitive.patches.PolygonPatch;
  * ring).
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * @version $Revision: $, $Date: $
  */
 public class InteriorRingTouchesExterior extends AbstractGeometryValidationEvent {
 

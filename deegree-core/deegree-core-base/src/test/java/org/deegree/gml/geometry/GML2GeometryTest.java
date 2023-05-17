@@ -74,8 +74,6 @@ import org.junit.Test;
  * The class tests both the {@link GML2GeometryWriter} and the {@link GML2GeometryReader}.
  *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class GML2GeometryTest extends TestCase {
 

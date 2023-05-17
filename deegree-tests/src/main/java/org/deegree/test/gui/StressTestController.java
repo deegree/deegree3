@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aionita@svn.wald.intevation.org/deegree/deegree3/tools/trunk/src/org/deegree/tools/annotations/Tool.java $
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2009 by:
@@ -72,8 +71,6 @@ import org.jfree.data.statistics.HistogramDataset;
  * <code>StressTestController</code>
  *
  * @author <a href="mailto:ionita@deegree.org">Andrei Ionita</a>
- * @author last edited by: $Author: ionita $
- * @version $Revision: $, $Date: $
  */
 public class StressTestController extends HttpServlet {
 

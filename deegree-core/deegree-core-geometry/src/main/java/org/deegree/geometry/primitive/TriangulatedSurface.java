@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -43,9 +42,7 @@ import org.deegree.geometry.primitive.patches.Triangle;
  * A {@link Surface} that consists only of {@link Triangle} patches.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
  *
- * @version. $Revision$, $Date$
  */
 public interface TriangulatedSurface extends Surface {
 

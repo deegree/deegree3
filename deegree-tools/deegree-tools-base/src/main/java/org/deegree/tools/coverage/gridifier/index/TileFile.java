@@ -50,8 +50,6 @@ import org.deegree.geometry.Envelope;
  * The <code>TileFile</code> class describes a TileFile in the filesystem rastertree.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author: rbezema $
- * @version $Revision: $, $Date: $
  *
  */
 public class TileFile {

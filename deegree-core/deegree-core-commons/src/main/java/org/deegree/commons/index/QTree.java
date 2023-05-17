@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -55,8 +54,6 @@ import org.deegree.commons.utils.Pair;
  * {@link PositionableModel}s.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  * @param <T> a positionable
  *
  */
@@ -742,8 +739,6 @@ public class QTree<T> extends SpatialIndex<T> implements Serializable {
 	 * The <code>Entry</code> class wraps an object with its envelope
 	 *
 	 * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
-	 * @author last edited by: $Author$
-	 * @version $Revision$, $Date$
 	 * @param <ET>
 	 *
 	 */

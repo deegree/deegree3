@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://sthomas@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -48,8 +47,6 @@ import org.deegree.commons.tom.ows.Version;
  * Container for, in the specification defined, static specified elements
  *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: thomas $
- * @version $Revision: $, $Date: $
  */
 public final class CSWConstants {
 
@@ -193,8 +190,6 @@ public final class CSWConstants {
 	 * <li>Transaction</li> <br>
 	 *
 	 * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
-	 * @author last edited by: $Author: thomas $
-	 * @version $Revision: $, $Date: $
 	 */
 	public enum CSWRequestType {
 
@@ -221,8 +216,6 @@ public final class CSWConstants {
 	 * <li>Filter_Capabilities</li> <br>
 	 *
 	 * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
-	 * @author last edited by: $Author: thomas $
-	 * @version $Revision: $, $Date: $
 	 */
 	public enum Sections {
 
@@ -244,8 +237,6 @@ public final class CSWConstants {
 	 * <li>validate</li> <br>
 	 *
 	 * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
-	 * @author last edited by: $Author: thomas $
-	 * @version $Revision: $, $Date: $
 	 */
 	public enum ResultType {
 
@@ -291,8 +282,6 @@ public final class CSWConstants {
 	 * <li>full</li> <br>
 	 *
 	 * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
-	 * @author last edited by: $Author: thomas $
-	 * @version $Revision: $, $Date: $
 	 */
 	public enum ReturnableElement {
 
@@ -347,8 +336,6 @@ public final class CSWConstants {
 	 * statement like an SQL statement.
 	 *
 	 * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
-	 * @author last edited by: $Author: thomas $
-	 * @version $Revision: $, $Date: $
 	 */
 	public enum ConstraintLanguage {
 
@@ -368,8 +355,6 @@ public final class CSWConstants {
 	 * <li>update</li> <br>
 	 *
 	 * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
-	 * @author last edited by: $Author: thomas $
-	 * @version $Revision: $, $Date: $
 	 */
 	public enum TransactionType {
 

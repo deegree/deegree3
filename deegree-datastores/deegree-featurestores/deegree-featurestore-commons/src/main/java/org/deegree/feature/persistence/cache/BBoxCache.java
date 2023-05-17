@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-datastores/deegree-featurestore/deegree-featurestore-commons/src/main/java/org/deegree/feature/persistence/cache/FeatureStoreCache.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -48,8 +47,6 @@ import org.deegree.geometry.Envelope;
  *
  * @see FeatureStore
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision$
  */
 public interface BBoxCache {
 

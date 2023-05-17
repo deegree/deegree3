@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -50,8 +49,6 @@ import org.deegree.time.primitive.TimePeriod;
  * {@link ElementNode} that wraps a {@link GMLObject} and it's parent.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * @version $Revision:$, $Date:$
  */
 public class GMLObjectNode<V extends GMLObject, P extends TypedObjectNode> extends ElementNode<V> {
 

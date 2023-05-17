@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -85,8 +84,6 @@ import com.sun.xml.fastinfoset.stax.StAXDocumentSerializer;
  * FAST_INFOSET to work TODO FAST_INFOSET with external vocabulary
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class BlobCodec {
 
