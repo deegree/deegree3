@@ -204,6 +204,8 @@ public class SQLFeatureStore implements FeatureStore {
 
 	private final ThreadLocal<SQLFeatureStoreTransaction> transaction = new ThreadLocal<SQLFeatureStoreTransaction>();
 
+	private boolean releaseConnectionFromExternal = false;
+
 	/**
 	 * Creates a new {@link SQLFeatureStore} for the given configuration.
 	 * @param config jaxb configuration object
@@ -693,6 +695,10 @@ public class SQLFeatureStore implements FeatureStore {
 
 	public void detachTransaction() {
 		transaction.remove();
+	}
+
+	public void releaseConnectionFromExternal(boolean releaseConnectionFromExternal) {
+		this.releaseConnectionFromExternal = releaseConnectionFromExternal;
 	}
 
 	/**
@@ -1261,7 +1267,13 @@ public class SQLFeatureStore implements FeatureStore {
 			JDBCUtils.close(rs, stmt, null, LOG);
 		}
 		else {
-			JDBCUtils.close(rs, stmt, conn, LOG);
+			if (releaseConnectionFromExternal) {
+				LOG.debug("Connection is not released! Close connection from external.");
+				JDBCUtils.close(rs, stmt, null, LOG);
+			}
+			else {
+				JDBCUtils.close(rs, stmt, conn, LOG);
+			}
 		}
 	}
 
