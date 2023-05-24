@@ -6,7 +6,7 @@ pipeline {
         disableConcurrentBuilds()
     }
     tools {
-        maven 'maven-3.8'
+        maven 'maven-3.9'
         jdk 'adoptopenjdk-jdk11'
     }
     environment {
@@ -70,7 +70,7 @@ pipeline {
             }
             steps {
                 echo 'Prepare release version ${REL_VERSION}'
-                sh 'mvn -Dresume=false -DdryRun=true -DreleaseVersion=${REL_VERSION} -DdevelopmentVersion=${DEV_VERSION} -DdeployAtEnd=true -Dgoals=deploy release:prepare -P integration-tests,oracle,handbook'
+                sh 'mvn -Dresume=false -DreleaseVersion=${REL_VERSION} -DdevelopmentVersion=${DEV_VERSION} -DdeployAtEnd=true -Dgoals=deploy release:prepare release:perform -P integration-tests,oracle,handbook'
             }
             post {
                 success {
