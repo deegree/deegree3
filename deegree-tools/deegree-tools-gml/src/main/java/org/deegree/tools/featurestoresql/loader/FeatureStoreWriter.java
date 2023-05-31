@@ -22,20 +22,19 @@
  */
 package org.deegree.tools.featurestoresql.loader;
 
-import static org.deegree.protocol.wfs.transaction.action.IDGenMode.USE_EXISTING;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.util.List;
-
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.SQLFeatureStoreTransaction;
-import org.deegree.protocol.wfs.transaction.action.IDGenMode;
 import org.slf4j.Logger;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.util.Assert;
+
+import java.util.List;
+
+import static org.deegree.protocol.wfs.transaction.action.IDGenMode.USE_EXISTING;
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Inserts Feature in the SQLFeatureStore.
@@ -76,6 +75,7 @@ public class FeatureStoreWriter implements ItemWriter<Feature> {
 		SQLFeatureStoreTransaction transaction = (SQLFeatureStoreTransaction) sqlFeatureStore.getTransaction();
 		transaction.performInsert(featureCollection, USE_EXISTING.withSkipResolveReferences(true));
 		LOG.info("Insert performed.");
+		LOG.info("Number of features processed: {}", summary.getNumberOfFeatures());
 	}
 
 }
