@@ -4,6 +4,7 @@
 :toclevels: 5
 :numbered:
 :imagesdir: images
+:icons: font
 :source-highlighter: coderay
 :title-logo-image: images/logo_deegree.png
 

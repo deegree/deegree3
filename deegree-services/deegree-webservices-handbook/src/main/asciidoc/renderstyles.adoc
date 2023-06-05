@@ -1016,7 +1016,7 @@ For the cartographic design of text, it is possible to place a rectangular box b
 To enable the rectangular box behind a text use an negative value for the `Radius` of `Halo` in the `TextSymbolizer`.
 
 .Example of regular `Halo` (`Radius` of `3.0`) on the left and rectangular `Halo` (`Radius` of `-3.0`) on the right.
-image::renderstyles_halo_regular_and_boxed.png.png[]
+image::renderstyles_halo_regular_and_boxed.png[]
 
 .Symbolizer used in previous example
 [source,xml]
