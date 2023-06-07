@@ -76,7 +76,7 @@ sections:
 
 For example, to offer a Web Feature Service, a feature store (based on a
 shapefile, database, etc) must be configured. With a rasterfile, like a
-GeoTIFF, you can configured a tile store and a coverage store to offer a
+GeoTIFF, you can configure a tile store and a coverage store to offer a
 Web Map Service.
 
 .Workspace configuration dependencies
@@ -84,38 +84,39 @@ image::workspace-configuration-dependencies.png[Workspace configuration dependen
 
 === Location of the deegree workspace directory
 
-The active deegree workspace is part of the _.deegree_ directory which
+The active deegree workspace is part of the deegree workspace directory which
 stores a few global configuration files along with the workspace. The
 location of this directory depends on your operating system.
 
-==== Linux/Solaris/Mac OS X
+==== UNIX-like/Linux/macOS
 
-On UNIX-like systems (Linux/Solaris/MacOS X), deegree's configuration
-files are located in folder _<$HOME/.deegree/_. Note that _$HOME_ is
+On UNIX-like systems (Linux/macOS), deegree's configuration
+files are located in folder _$HOME/.deegree/_. Note that _$HOME_ is
 determined by the user that started the web application container that
 runs deegree. If you started the Java Servlet container as user
 "kelvin", then the directory will be something like
 _/home/kelvin/.deegree_.
 
 TIP: In order to use a different folder for deegree's configuration files,
-you can set the system environment variable _DEEGREE_WORKSPACE_ROOT_.
-Note that the user running the web application container must have
-read/write access to this directory.
+you can set the environment variable _DEEGREE_WORKSPACE_ROOT_, for example with `export DEEGREE_WORKSPACE_ROOT=/var/lib/tomcat9/.deegree`. When using Tomcat you can also set the path by defining a Java system property and appending the `JAVA_OPTS` or `CATALINA_OPTS` environment variable with `CATALINA_OPTS=-DDEEGREE_WORKSPACE_ROOT=/var/lib/tomcat9/.deegree`.
+
+IMPORTANT: Note that the user running the web application container must have
+read/write access to this directory! Since Debian 11 you have to grant explicitly write access to the default home directory by setting `ReadWritePaths=/var/lib/tomcat9/.deegree` in _/etc/systemd/system/multi-user.target.wants/tomcat9.service_!
 
 ==== Windows
 
-On Windows, deegree's configuration files are located in folder
+On a Windows operating system, deegree's configuration files are located in folder
 _%USERPROFILE%/.deegree/_. Note that _%USERPROFILE%_ is determined
 by the user that started the web application container that runs
 deegree. If you started the Java Servlet container as user "kelvin",
 then the directory will be something like _C:\Users\kelvin\.deegree_
-or _C:\Dokumente und Einstellungen\kelvin\.deegree_.
+or _C:\Documents and Settings\kelvin\.deegree_.
 
 TIP: In order to use a different folder for deegree's configuration files,
-you can set the system environment variable _DEEGREE_WORKSPACE_ROOT_.
-Note that the user running the web application container must have
-read/write access to this directory.
+you can set the system environment variable _DEEGREE_WORKSPACE_ROOT_, for example with `set DEEGREE_WORKSPACE_ROOT=C:\Program Files\Apache Tomcat\deegree`. When using Tomcat you can also set the path by defining a Java system property and appending the `JAVA_OPTS` or `CATALINA_OPTS` environment variable with `CATALINA_OPTS=-DDEEGREE_WORKSPACE_ROOT=C:\Program Files\Apache Tomcat\deegree`.
 
+IMPORTANT: Note that the user running the web application container must have
+read/write access to this directory!
 
 [[anchor-global-configuration]]
 ==== Global configuration files and the active workspace
@@ -141,7 +142,7 @@ files exist:
 |config.apikey |Contains the key to protect the REST API
 |===
 
-Note that only a single workspace can be active at a time. The
+NOTE: Only one single workspace can be active at a time! The
 information on the active one is stored in file _webapps.properties_.
 
 TIP: Usually, you don't need to care about the three files that are located
@@ -150,7 +151,7 @@ modifies them as required (e.g. when switching to a different
 workspace). In order to create a deegree webservices setup, you will
 need to create or edit resource configuration files in the active
 workspace directory. The remaining documentation will always refer to
-files in the (active) workspace directory.
+files in the active workspace directory.
 
 TIP: When multiple deegree webservices instances run on a single machine,
 every instance can use a different workspace. The file

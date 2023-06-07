@@ -9,15 +9,15 @@ installation, including:
 
 * Microsoft Windows
 * Linux
-* MacOS
+* macOS
 
 Supported Java SE 11 versions are
 https://www.oracle.com/java/technologies/downloads/#java11[Oracle JDK 11]
 footnote:[Oracle JDK 8 and later requires a subscription from Oracle for use in production environments. Read further in https://www.oracle.com/java/java-se-subscription/[Oracle Java SE subscription].] and https://openjdk.org/projects/jdk/11/[OpenJDK 11]
 footnote:[OpenJDK binaries are provided by https://www.azul.com/downloads/#zulu[Azul Systems]
-or https://adoptium.net/[Temurin].].
+or https://adoptium.net/[Eclipse Temurin].].
 
-NOTE: Newer Java SE versions such as the LTS versions 17 are currently not supported by deegree 3.5. Please check out our wiki page https://github.com/deegree/deegree3/wiki/Java-SE-11-Support[Java 11 support] for further information.
+NOTE: Newer Java SE versions such as the LTS versions 17 are currently not supported by deegree 3.5. Please check out our wiki page https://github.com/deegree/deegree3/wiki/End-of-Life-and-Support-Matrix[End of Life and Support Matrix] for further information.
 
 === Downloading
 
