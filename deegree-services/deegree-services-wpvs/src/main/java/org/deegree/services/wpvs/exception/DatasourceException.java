@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -37,40 +36,39 @@
 package org.deegree.services.wpvs.exception;
 
 /**
- * The <code>DatasourceException</code> class signals that one of the datasources was not available to the wpvs.
- * 
+ * The <code>DatasourceException</code> class signals that one of the datasources was not
+ * available to the wpvs.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class DatasourceException extends Exception {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = -294202402824196720L;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = -294202402824196720L;
 
-    /**
-     * @param message
-     */
-    public DatasourceException( String message ) {
-        super( message );
-    }
+	/**
+	 * @param message
+	 */
+	public DatasourceException(String message) {
+		super(message);
+	}
 
-    /**
-     * @param cause
-     */
-    public DatasourceException( Throwable cause ) {
-        super( cause );
-    }
+	/**
+	 * @param cause
+	 */
+	public DatasourceException(Throwable cause) {
+		super(cause);
+	}
 
-    /**
-     * @param message
-     * @param cause
-     */
-    public DatasourceException( String message, Throwable cause ) {
-        super( message, cause );
-    }
+	/**
+	 * @param message
+	 * @param cause
+	 */
+	public DatasourceException(String message, Throwable cause) {
+		super(message, cause);
+	}
 
 }

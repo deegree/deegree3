@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -44,66 +43,63 @@ import org.deegree.process.jaxb.java.LiteralOutputDefinition.OtherUOM;
 
 /**
  * Implementation of {@link LiteralOutput}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * 
- * @version $Revision: $, $Date: $
  */
 public class LiteralOutputImpl extends ProcessletOutputImpl implements LiteralOutput {
 
-    private String value;
+	private String value;
 
-    private final String dataType;
+	private final String dataType;
 
-    private final String requestedUOM;
+	private final String requestedUOM;
 
-    public LiteralOutputImpl( LiteralOutputDefinition outputType, String requestedUOM, boolean isRequested ) {
-        super( outputType, isRequested );
-        this.requestedUOM = requestedUOM;
-        this.dataType = outputType.getDataType() != null ? outputType.getDataType().getValue() : null;
-    }
+	public LiteralOutputImpl(LiteralOutputDefinition outputType, String requestedUOM, boolean isRequested) {
+		super(outputType, isRequested);
+		this.requestedUOM = requestedUOM;
+		this.dataType = outputType.getDataType() != null ? outputType.getDataType().getValue() : null;
+	}
 
-    @Override
-    public void setValue( String value ) {
-        this.value = value;
-    }
+	@Override
+	public void setValue(String value) {
+		this.value = value;
+	}
 
-    @Override
-    public String getRequestedUOM() {
-        return requestedUOM;
-    }
+	@Override
+	public String getRequestedUOM() {
+		return requestedUOM;
+	}
 
-    /**
-     * Returns the announced literal data type from the process definition (e.g. integer, real, etc) as an URI, such as
-     * <code>http://www.w3.org/TR/xmlschema-2/#integer</code>.
-     * 
-     * @return the data type, or null if not specified in the process definition
-     */
-    public String getDataType() {
-        return this.dataType;
-    }
+	/**
+	 * Returns the announced literal data type from the process definition (e.g. integer,
+	 * real, etc) as an URI, such as
+	 * <code>http://www.w3.org/TR/xmlschema-2/#integer</code>.
+	 * @return the data type, or null if not specified in the process definition
+	 */
+	public String getDataType() {
+		return this.dataType;
+	}
 
-    /**
-     * Returns the supported UOMs (unit-of-measures) for the literal output parameter as defined in the process
-     * definition (e.g. 'meters','feet', etc).
-     * 
-     * @return the supported UOMs (array is never null, but may be empty)
-     */
-    public String[] getSupportedUOMs() {
-        List<String> supportedUOMs = new LinkedList<String>();
-        LiteralOutputDefinition definition = (LiteralOutputDefinition) this.definition;
-        if ( definition.getDefaultUOM() != null ) {
-            supportedUOMs.add( definition.getDefaultUOM().getValue() );
-        }
-        for ( OtherUOM otherUom : definition.getOtherUOM() ) {
-            supportedUOMs.add( otherUom.getValue() );
-        }
+	/**
+	 * Returns the supported UOMs (unit-of-measures) for the literal output parameter as
+	 * defined in the process definition (e.g. 'meters','feet', etc).
+	 * @return the supported UOMs (array is never null, but may be empty)
+	 */
+	public String[] getSupportedUOMs() {
+		List<String> supportedUOMs = new LinkedList<String>();
+		LiteralOutputDefinition definition = (LiteralOutputDefinition) this.definition;
+		if (definition.getDefaultUOM() != null) {
+			supportedUOMs.add(definition.getDefaultUOM().getValue());
+		}
+		for (OtherUOM otherUom : definition.getOtherUOM()) {
+			supportedUOMs.add(otherUom.getValue());
+		}
 
-        return supportedUOMs.toArray( new String[supportedUOMs.size()] );
-    }
+		return supportedUOMs.toArray(new String[supportedUOMs.size()]);
+	}
 
-    public String getValue() {
-        return this.value;
-    }
+	public String getValue() {
+		return this.value;
+	}
+
 }

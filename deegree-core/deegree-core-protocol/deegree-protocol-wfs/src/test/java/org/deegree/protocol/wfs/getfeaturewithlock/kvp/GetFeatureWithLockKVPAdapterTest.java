@@ -45,51 +45,46 @@ import org.deegree.protocol.wfs.getfeaturewithlock.GetFeatureWithLock;
 import org.junit.Test;
 
 /**
- * The <code>GetFeatureWithLockKVPAdapterTest</code> class tests the GetFeatureWithLock kvp adapter.
- * 
+ * The <code>GetFeatureWithLockKVPAdapterTest</code> class tests the GetFeatureWithLock
+ * kvp adapter.
+ *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class GetFeatureWithLockKVPAdapterTest extends TestCase {
 
-    private final String EXAMPLE1WFS110 = "wfs110/example1.kvp";
+	private final String EXAMPLE1WFS110 = "wfs110/example1.kvp";
 
-    private final String EXAMPLE1WFS200 = "wfs200/example1.kvp";
+	private final String EXAMPLE1WFS200 = "wfs200/example1.kvp";
 
-    private final String EXAMPLE2WFS200 = "wfs200/example2.kvp";
+	private final String EXAMPLE2WFS200 = "wfs200/example2.kvp";
 
-    @Test
-    public void testExample1Wfs110()
-                            throws Exception {
-        URL example1 = this.getClass().getResource( EXAMPLE1WFS110 );
-        Map<String, String> kvpMap = KVPUtils.readFileIntoMap( example1 );
+	@Test
+	public void testExample1Wfs110() throws Exception {
+		URL example1 = this.getClass().getResource(EXAMPLE1WFS110);
+		Map<String, String> kvpMap = KVPUtils.readFileIntoMap(example1);
 
-        GetFeatureWithLock getFeatureWL = GetFeatureWithLockKVPAdapter.parse( kvpMap );
-        assertEquals( new BigInteger( "60" ), getFeatureWL.getExpiryInSeconds() );
-    }
+		GetFeatureWithLock getFeatureWL = GetFeatureWithLockKVPAdapter.parse(kvpMap);
+		assertEquals(new BigInteger("60"), getFeatureWL.getExpiryInSeconds());
+	}
 
-    @Test
-    public void testExample1Wfs200()
-                            throws Exception {
-        URL example1 = this.getClass().getResource( EXAMPLE1WFS200 );
-        Map<String, String> kvpMap = KVPUtils.readFileIntoMap( example1 );
+	@Test
+	public void testExample1Wfs200() throws Exception {
+		URL example1 = this.getClass().getResource(EXAMPLE1WFS200);
+		Map<String, String> kvpMap = KVPUtils.readFileIntoMap(example1);
 
-        GetFeatureWithLock getFeatureWL = GetFeatureWithLockKVPAdapter.parse( kvpMap );
-        assertNull( getFeatureWL.getExpiryInSeconds() );
-        assertNull( getFeatureWL.getLockAll() );
-    }
+		GetFeatureWithLock getFeatureWL = GetFeatureWithLockKVPAdapter.parse(kvpMap);
+		assertNull(getFeatureWL.getExpiryInSeconds());
+		assertNull(getFeatureWL.getLockAll());
+	}
 
-    @Test
-    public void testExample2Wfs200()
-                            throws Exception {
-        URL example2 = this.getClass().getResource( EXAMPLE2WFS200 );
-        Map<String, String> kvpMap = KVPUtils.readFileIntoMap( example2 );
+	@Test
+	public void testExample2Wfs200() throws Exception {
+		URL example2 = this.getClass().getResource(EXAMPLE2WFS200);
+		Map<String, String> kvpMap = KVPUtils.readFileIntoMap(example2);
 
-        GetFeatureWithLock getFeatureWL = GetFeatureWithLockKVPAdapter.parse( kvpMap );
-        assertEquals( new BigInteger( "300" ), getFeatureWL.getExpiryInSeconds() );
-        assertFalse( getFeatureWL.getLockAll() );
-    }
+		GetFeatureWithLock getFeatureWL = GetFeatureWithLockKVPAdapter.parse(kvpMap);
+		assertEquals(new BigInteger("300"), getFeatureWL.getExpiryInSeconds());
+		assertFalse(getFeatureWL.getLockAll());
+	}
 
 }

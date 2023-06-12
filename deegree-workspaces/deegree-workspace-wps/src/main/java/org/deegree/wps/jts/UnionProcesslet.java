@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -56,65 +55,61 @@ import org.deegree.services.wps.output.ComplexOutput;
 
 /**
  * The <code></code> class TODO add class documentation here.
- * 
+ *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * 
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class UnionProcesslet implements Processlet {
 
-    @Override
-    public void destroy() {
-        // TODO Auto-generated method stub
+	@Override
+	public void destroy() {
+		// TODO Auto-generated method stub
 
-    }
+	}
 
-    @Override
-    public void init() {
-        // TODO Auto-generated method stub
+	@Override
+	public void init() {
+		// TODO Auto-generated method stub
 
-    }
+	}
 
-    @Override
-    public void process( ProcessletInputs in, ProcessletOutputs out, ProcessletExecutionInfo info )
-                            throws ProcessletException {
-        ComplexInput gmlInput1 = (ComplexInput) in.getParameter( "GMLInput1" );
-        ComplexInput gmlInput2 = (ComplexInput) in.getParameter( "GMLInput2" );
+	@Override
+	public void process(ProcessletInputs in, ProcessletOutputs out, ProcessletExecutionInfo info)
+			throws ProcessletException {
+		ComplexInput gmlInput1 = (ComplexInput) in.getParameter("GMLInput1");
+		ComplexInput gmlInput2 = (ComplexInput) in.getParameter("GMLInput2");
 
-        Geometry geometry1 = readGeometry( gmlInput1 );
-        Geometry geometry2 = readGeometry( gmlInput2 );
+		Geometry geometry1 = readGeometry(gmlInput1);
+		Geometry geometry2 = readGeometry(gmlInput2);
 
-        Geometry union = geometry1.getUnion( geometry2 );
-        ComplexOutput unionOutput = (ComplexOutput) out.getParameter( "Union" );
-        writeGeometry( unionOutput, union );
-    }
+		Geometry union = geometry1.getUnion(geometry2);
+		ComplexOutput unionOutput = (ComplexOutput) out.getParameter("Union");
+		writeGeometry(unionOutput, union);
+	}
 
-    private void writeGeometry( ComplexOutput gmlOutput, Geometry geometry )
-                            throws ProcessletException {
-        try {
-            SchemaLocationXMLStreamWriter sw = new SchemaLocationXMLStreamWriter( gmlOutput.getXMLStreamWriter(),
-                                                                    "http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/base/geometryAggregates.xsd" );
-            sw.setPrefix( "gml", GMLNS );
-            GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter( GML_31, sw );
-            gmlWriter.write( geometry );
-        } catch ( Exception e ) {
-            throw new ProcessletException( "Error exporting geometry: " + e.getMessage() );
-        }
-    }
+	private void writeGeometry(ComplexOutput gmlOutput, Geometry geometry) throws ProcessletException {
+		try {
+			SchemaLocationXMLStreamWriter sw = new SchemaLocationXMLStreamWriter(gmlOutput.getXMLStreamWriter(),
+					"http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/base/geometryAggregates.xsd");
+			sw.setPrefix("gml", GMLNS);
+			GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter(GML_31, sw);
+			gmlWriter.write(geometry);
+		}
+		catch (Exception e) {
+			throw new ProcessletException("Error exporting geometry: " + e.getMessage());
+		}
+	}
 
-    private Geometry readGeometry( ComplexInput gmlInput )
-                            throws ProcessletException {
-        try {
-            XMLStreamReader xmlReader = gmlInput.getValueAsXMLStream();
-            GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_31, xmlReader );
-            return gmlReader.readGeometry();
-        } catch ( Exception e ) {
-            throw new ProcessletException( "Error parsing parameter " + gmlInput.getIdentifier() + ": "
-                                           + e.getMessage() );
-        }
-    }
+	private Geometry readGeometry(ComplexInput gmlInput) throws ProcessletException {
+		try {
+			XMLStreamReader xmlReader = gmlInput.getValueAsXMLStream();
+			GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader(GML_31, xmlReader);
+			return gmlReader.readGeometry();
+		}
+		catch (Exception e) {
+			throw new ProcessletException(
+					"Error parsing parameter " + gmlInput.getIdentifier() + ": " + e.getMessage());
+		}
+	}
 
 }

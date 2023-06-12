@@ -46,65 +46,64 @@ import org.deegree.workspace.ResourceMetadata;
 
 /**
  * This class is responsible for building remote WMTS resources.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class RemoteWmtsBuilder implements ResourceBuilder<RemoteOWS> {
 
-    private static final int DEFAULT_CONNECTION_TIMEOUT_SECS = 5;
+	private static final int DEFAULT_CONNECTION_TIMEOUT_SECS = 5;
 
-    private static final int DEFAULT_REQUEST_TIMEOUT_SECS = 60;
+	private static final int DEFAULT_REQUEST_TIMEOUT_SECS = 60;
 
-    private RemoteWMTSConfig config;
+	private RemoteWMTSConfig config;
 
-    private ResourceMetadata<RemoteOWS> metadata;
+	private ResourceMetadata<RemoteOWS> metadata;
 
-    public RemoteWmtsBuilder( RemoteWMTSConfig config, ResourceMetadata<RemoteOWS> metadata ) {
-        this.config = config;
-        this.metadata = metadata;
-    }
+	public RemoteWmtsBuilder(RemoteWMTSConfig config, ResourceMetadata<RemoteOWS> metadata) {
+		this.config = config;
+		this.metadata = metadata;
+	}
 
-    @Override
-    public RemoteOWS build() {
-        WMTSClient client = null;
-        try {
-            client = createClient();
-        } catch ( Exception e ) {
-            String msg = "Could not create WMTS client for Remote WMTS store config at '" + metadata.getIdentifier()
-                         + "': " + e.getLocalizedMessage();
-            throw new ResourceInitException( msg, e );
-        }
-        return new RemoteWMTS( client, metadata );
-    }
+	@Override
+	public RemoteOWS build() {
+		WMTSClient client = null;
+		try {
+			client = createClient();
+		}
+		catch (Exception e) {
+			String msg = "Could not create WMTS client for Remote WMTS store config at '" + metadata.getIdentifier()
+					+ "': " + e.getLocalizedMessage();
+			throw new ResourceInitException(msg, e);
+		}
+		return new RemoteWMTS(client, metadata);
+	}
 
-    private WMTSClient createClient()
-                            throws OWSExceptionReport, XMLStreamException, IOException {
-        URL capas = metadata.getLocation().resolveToUrl( config.getCapabilitiesDocumentLocation().getLocation() );
-        OwsHttpClient httpClient = createOwsHttpClient( config );
-        return new WMTSClient( capas, httpClient );
-    }
+	private WMTSClient createClient() throws OWSExceptionReport, XMLStreamException, IOException {
+		URL capas = metadata.getLocation().resolveToUrl(config.getCapabilitiesDocumentLocation().getLocation());
+		OwsHttpClient httpClient = createOwsHttpClient(config);
+		return new WMTSClient(capas, httpClient);
+	}
 
-    private OwsHttpClient createOwsHttpClient( RemoteWMTSConfig config ) {
-        int connTimeout = DEFAULT_CONNECTION_TIMEOUT_SECS;
-        if ( config.getConnectionTimeout() != null ) {
-            connTimeout = config.getConnectionTimeout();
-        }
-        int reqTimeout = DEFAULT_REQUEST_TIMEOUT_SECS;
-        if ( config.getRequestTimeout() != null ) {
-            reqTimeout = config.getRequestTimeout();
-        }
+	private OwsHttpClient createOwsHttpClient(RemoteWMTSConfig config) {
+		int connTimeout = DEFAULT_CONNECTION_TIMEOUT_SECS;
+		if (config.getConnectionTimeout() != null) {
+			connTimeout = config.getConnectionTimeout();
+		}
+		int reqTimeout = DEFAULT_REQUEST_TIMEOUT_SECS;
+		if (config.getRequestTimeout() != null) {
+			reqTimeout = config.getRequestTimeout();
+		}
 
-        AuthenticationType type = config.getAuthentication() == null ? null : config.getAuthentication().getValue();
-        String user = null;
-        String pass = null;
-        if ( type instanceof HTTPBasicAuthenticationType ) {
-            HTTPBasicAuthenticationType basic = (HTTPBasicAuthenticationType) type;
-            user = basic.getUsername();
-            pass = basic.getPassword();
-        }
-        return new OwsHttpClientImpl( connTimeout * 1000, reqTimeout * 1000, user, pass );
-    }
+		AuthenticationType type = config.getAuthentication() == null ? null : config.getAuthentication().getValue();
+		String user = null;
+		String pass = null;
+		if (type instanceof HTTPBasicAuthenticationType) {
+			HTTPBasicAuthenticationType basic = (HTTPBasicAuthenticationType) type;
+			user = basic.getUsername();
+			pass = basic.getPassword();
+		}
+		return new OwsHttpClientImpl(connTimeout * 1000, reqTimeout * 1000, user, pass);
+	}
 
 }

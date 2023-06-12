@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -54,63 +53,61 @@ import org.deegree.workspace.ResourceIdentifier;
 
 /**
  * Memory based resource location.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class IncorporealResourceLocation<T extends Resource> extends DefaultResourceLocation<T> {
 
-    private byte[] bytes;
+	private byte[] bytes;
 
-    /**
-     * @param bytes
-     *            never <code>null</code>
-     * @param id
-     *            never <code>null</code>
-     */
-    public IncorporealResourceLocation( byte[] bytes, ResourceIdentifier<T> id ) {
-        super( null, id );
-        this.bytes = bytes;
-    }
+	/**
+	 * @param bytes never <code>null</code>
+	 * @param id never <code>null</code>
+	 */
+	public IncorporealResourceLocation(byte[] bytes, ResourceIdentifier<T> id) {
+		super(null, id);
+		this.bytes = bytes;
+	}
 
-    @Override
-    public InputStream getAsStream() {
-        return new ByteArrayInputStream( bytes );
-    }
+	@Override
+	public InputStream getAsStream() {
+		return new ByteArrayInputStream(bytes);
+	}
 
-    @Override
-    public InputStream resolve( String path ) {
-        return null;
-    }
+	@Override
+	public InputStream resolve(String path) {
+		return null;
+	}
 
-    @Override
-    public File resolveToFile( String path ) {
-        return null;
-    }
+	@Override
+	public File resolveToFile(String path) {
+		return null;
+	}
 
-    @Override
-    public URL resolveToUrl( String path ) {
-        return null;
-    }
+	@Override
+	public URL resolveToUrl(String path) {
+		return null;
+	}
 
-    @Override
-    public void deactivate() {
-        // ignore
-    }
+	@Override
+	public void deactivate() {
+		// ignore
+	}
 
-    @Override
-    public void activate() {
-        // ignore
-    }
+	@Override
+	public void activate() {
+		// ignore
+	}
 
-    @Override
-    public void setContent( InputStream in ) {
-        try {
-            bytes = IOUtils.toByteArray( in );
-        } catch ( IOException e ) {
-            throw new ResourceException( e.getLocalizedMessage(), e );
-        }
-    }
+	@Override
+	public void setContent(InputStream in) {
+		try {
+			bytes = IOUtils.toByteArray(in);
+		}
+		catch (IOException e) {
+			throw new ResourceException(e.getLocalizedMessage(), e);
+		}
+	}
 
 }

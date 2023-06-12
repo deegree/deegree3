@@ -58,31 +58,33 @@ import java.util.Map;
 
 public class GpkgTileDataLevel implements TileDataLevel {
 
-    private final TileMatrix tm;
+	private final TileMatrix tm;
 
-    private Map<Pair<Long, Long>, byte[]> tileMap;
+	private Map<Pair<Long, Long>, byte[]> tileMap;
 
-    public GpkgTileDataLevel( TileMatrix tm, Map<Pair<Long, Long>, byte[]> tileMap ) {
-        this.tm = tm;
-        this.tileMap = tileMap;
-    }
+	public GpkgTileDataLevel(TileMatrix tm, Map<Pair<Long, Long>, byte[]> tileMap) {
+		this.tm = tm;
+		this.tileMap = tileMap;
+	}
 
-    @Override
-    public TileMatrix getMetadata() {
-        return tm;
-    }
+	@Override
+	public TileMatrix getMetadata() {
+		return tm;
+	}
 
-    @Override
-    public Tile getTile( long x, long y ) {
-        Pair<Long, Long> k = new Pair<Long, Long>();
-        k.setFirst( x );
-        k.setSecond( y );
-        byte[] byteArr = tileMap.get( k );
-        return new GpkgTile( tm, byteArr );
-    }
-    @Override
-    public List<String> getStyles() {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	@Override
+	public Tile getTile(long x, long y) {
+		Pair<Long, Long> k = new Pair<Long, Long>();
+		k.setFirst(x);
+		k.setSecond(y);
+		byte[] byteArr = tileMap.get(k);
+		return new GpkgTile(tm, byteArr);
+	}
+
+	@Override
+	public List<String> getStyles() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

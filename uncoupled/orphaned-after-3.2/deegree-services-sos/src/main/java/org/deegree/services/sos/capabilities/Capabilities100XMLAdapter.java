@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -59,9 +58,7 @@ import org.deegree.services.ows.capabilities.OWSCapabilitiesXMLAdapter;
  * This is an xml adapter for SOS 1.0.0 Capabilities documents.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
  */
 public class Capabilities100XMLAdapter extends OWSCapabilitiesXMLAdapter {
 

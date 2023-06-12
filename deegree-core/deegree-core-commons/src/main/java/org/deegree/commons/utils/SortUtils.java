@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -44,63 +43,60 @@ import java.util.Map;
 
 /**
  * Determines a topological order for collections of {@link PostRelation}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class SortUtils {
 
-    /**
-     * 
-     * @param <T>
-     * @param vertices
-     * @param postRelation
-     * @return
-     */
-    public static <T> List<T> sortTopologically( Collection<T> vertices, PostRelation<T> postRelation ) {
+	/**
+	 * @param <T>
+	 * @param vertices
+	 * @param postRelation
+	 * @return
+	 */
+	public static <T> List<T> sortTopologically(Collection<T> vertices, PostRelation<T> postRelation) {
 
-        List<T> sorted = new ArrayList<T>( vertices.size() );
+		List<T> sorted = new ArrayList<T>(vertices.size());
 
-        Map<T, Integer> vertexToInEdges = new HashMap<T, Integer>();
+		Map<T, Integer> vertexToInEdges = new HashMap<T, Integer>();
 
-        for ( T vertex : vertices ) {
-            vertexToInEdges.put( vertex, 0 );
-        }
-        for ( T vertex : vertices ) {
-            List<T> post = postRelation.getPost( vertex );
-            if ( post != null ) {
-                for ( T t : post ) {
-                    int current = vertexToInEdges.get( t );
-                    vertexToInEdges.put( t, current++ );
-                }
-            }
-        }
+		for (T vertex : vertices) {
+			vertexToInEdges.put(vertex, 0);
+		}
+		for (T vertex : vertices) {
+			List<T> post = postRelation.getPost(vertex);
+			if (post != null) {
+				for (T t : post) {
+					int current = vertexToInEdges.get(t);
+					vertexToInEdges.put(t, current++);
+				}
+			}
+		}
 
-        // queue that tracks vertices with an inbound edge degree of zero
-        LinkedList<T> zeros = new LinkedList<T>();
-        for ( T vertex : vertices ) {
-            if ( vertexToInEdges.get( vertex ) == 0 ) {
-                zeros.add( vertex );
-            }
-        }
+		// queue that tracks vertices with an inbound edge degree of zero
+		LinkedList<T> zeros = new LinkedList<T>();
+		for (T vertex : vertices) {
+			if (vertexToInEdges.get(vertex) == 0) {
+				zeros.add(vertex);
+			}
+		}
 
-        while ( !zeros.isEmpty() ) {
-            T vertex = zeros.remove( 0 );
-            sorted.add( vertex );
-            List<T> post = postRelation.getPost( vertex );
-            if ( post != null ) {
-                for ( T t : post ) {
-                    int current = vertexToInEdges.get( t );
-                    if ( --current == 0 ) {
-                        zeros.add( t );
-                    }
-                    vertexToInEdges.put( t, current );
-                }
-            }
-        }
+		while (!zeros.isEmpty()) {
+			T vertex = zeros.remove(0);
+			sorted.add(vertex);
+			List<T> post = postRelation.getPost(vertex);
+			if (post != null) {
+				for (T t : post) {
+					int current = vertexToInEdges.get(t);
+					if (--current == 0) {
+						zeros.add(t);
+					}
+					vertexToInEdges.put(t, current);
+				}
+			}
+		}
 
-        return sorted;
-    }
+		return sorted;
+	}
+
 }

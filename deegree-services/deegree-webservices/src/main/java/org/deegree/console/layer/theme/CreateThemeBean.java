@@ -38,19 +38,19 @@ import org.deegree.theme.persistence.ThemeManager;
  * JSF backing bean for "Create new theme" view.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- *
  * @since 3.3
  */
 @ManagedBean
 @ViewScoped
 public class CreateThemeBean extends AbstractCreateResourceBean {
 
-    public CreateThemeBean() {
-        super( ThemeManager.class );
-    }
+	public CreateThemeBean() {
+		super(ThemeManager.class);
+	}
 
-    @Override
-    protected String getOutcome() {
-        return "/console/layer/theme/index";
-    }
+	@Override
+	protected String getOutcome() {
+		return "/console/layer/theme/index";
+	}
+
 }

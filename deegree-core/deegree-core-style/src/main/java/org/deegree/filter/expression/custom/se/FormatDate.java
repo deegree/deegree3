@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -64,108 +63,105 @@ import org.slf4j.Logger;
 
 /**
  * <code>FormatDate</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class FormatDate extends AbstractCustomExpression {
 
-    private static final QName ELEMENT_NAME = new QName( SENS, "FormatDate" );
+	private static final QName ELEMENT_NAME = new QName(SENS, "FormatDate");
 
-    private static final Logger LOG = getLogger( FormatDate.class );
+	private static final Logger LOG = getLogger(FormatDate.class);
 
-    private StringBuffer dateValue;
+	private StringBuffer dateValue;
 
-    private Continuation<StringBuffer> dateValueContn;
+	private Continuation<StringBuffer> dateValueContn;
 
-    private SimpleDateFormat formatter;
+	private SimpleDateFormat formatter;
 
-    /***/
-    public FormatDate() {
-        // just used for SPI
-    }
+	/***/
+	public FormatDate() {
+		// just used for SPI
+	}
 
-    private FormatDate( StringBuffer dateValue, Continuation<StringBuffer> dateValueContn, SimpleDateFormat formatter ) {
-        this.dateValue = dateValue;
-        this.dateValueContn = dateValueContn;
-        this.formatter = formatter;
-    }
+	private FormatDate(StringBuffer dateValue, Continuation<StringBuffer> dateValueContn, SimpleDateFormat formatter) {
+		this.dateValue = dateValue;
+		this.dateValueContn = dateValueContn;
+		this.formatter = formatter;
+	}
 
-    @Override
-    public QName getElementName() {
-        return ELEMENT_NAME;
-    }
+	@Override
+	public QName getElementName() {
+		return ELEMENT_NAME;
+	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypedObjectNode[] evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
-                            throws FilterEvaluationException {
-        StringBuffer sb = new StringBuffer( dateValue.toString().trim() );
-        if ( dateValueContn != null ) {
-            dateValueContn.evaluate( sb, (Feature) obj, (XPathEvaluator<Feature>) xpathEvaluator );
-        }
-        try {
-            DateTime value = ISO8601Converter.parseDateTime( sb.toString().trim() );
-            return new TypedObjectNode[] { new PrimitiveValue( formatter.format( value ) ) };
-        } catch ( IllegalArgumentException e ) {
-            LOG.warn( "Evaluated value could not be parsed as a date (in an argument to FormatDate)." );
-        }
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> TypedObjectNode[] evaluate(T obj, XPathEvaluator<T> xpathEvaluator) throws FilterEvaluationException {
+		StringBuffer sb = new StringBuffer(dateValue.toString().trim());
+		if (dateValueContn != null) {
+			dateValueContn.evaluate(sb, (Feature) obj, (XPathEvaluator<Feature>) xpathEvaluator);
+		}
+		try {
+			DateTime value = ISO8601Converter.parseDateTime(sb.toString().trim());
+			return new TypedObjectNode[] { new PrimitiveValue(formatter.format(value)) };
+		}
+		catch (IllegalArgumentException e) {
+			LOG.warn("Evaluated value could not be parsed as a date (in an argument to FormatDate).");
+		}
 
-        return new TypedObjectNode[] { new PrimitiveValue( sb.toString().trim() ) };
-    }
+		return new TypedObjectNode[] { new PrimitiveValue(sb.toString().trim()) };
+	}
 
-    @Override
-    public FormatDate parse( XMLStreamReader in )
-                            throws XMLStreamException {
+	@Override
+	public FormatDate parse(XMLStreamReader in) throws XMLStreamException {
 
-        StringBuffer dateValue = null;
-        Continuation<StringBuffer> dateValueContn = null;
-        SimpleDateFormat formatter = null;
+		StringBuffer dateValue = null;
+		Continuation<StringBuffer> dateValueContn = null;
+		SimpleDateFormat formatter = null;
 
-        in.require( START_ELEMENT, null, "FormatDate" );
+		in.require(START_ELEMENT, null, "FormatDate");
 
-        while ( !( in.isEndElement() && in.getLocalName().equals( "FormatDate" ) ) ) {
-            in.nextTag();
+		while (!(in.isEndElement() && in.getLocalName().equals("FormatDate"))) {
+			in.nextTag();
 
-            if ( in.getLocalName().equals( "DateValue" ) ) {
-                dateValue = new StringBuffer();
-                dateValueContn = SymbologyParser.INSTANCE.updateOrContinue( in, "DateValue", dateValue,
-                                                                            new Updater<StringBuffer>() {
-                                                                                public void update( StringBuffer obj,
-                                                                                                    String val ) {
-                                                                                    obj.append( val );
-                                                                                }
-                                                                            }, null ).second;
-            }
+			if (in.getLocalName().equals("DateValue")) {
+				dateValue = new StringBuffer();
+				dateValueContn = SymbologyParser.INSTANCE.updateOrContinue(in, "DateValue", dateValue,
+						new Updater<StringBuffer>() {
+							public void update(StringBuffer obj, String val) {
+								obj.append(val);
+							}
+						}, null).second;
+			}
 
-            if ( in.getLocalName().equals( "Pattern" ) ) {
-                String pat = in.getElementText();
-                Locale locale = Locale.getDefault();
-                if ( pat.contains( "MMM" ) ) {
-                    List<String> langs = Arrays.asList( Locale.getISOLanguages() );
-                    String code = pat.substring( pat.lastIndexOf( "MMM" ) + 3, pat.lastIndexOf( "MMM" ) + 5 );
-                    if ( langs.contains( code ) ) {
-                        pat = pat.replace( "MMM" + code, "MMM" );
-                        locale = new Locale( code );
-                    }
-                }
-                pat = pat.replace( 'D', 'd' );
-                while ( pat.indexOf( "\\" ) != -1 ) {
-                    String q = "" + pat.charAt( pat.indexOf( "\\" ) + 1 );
-                    if ( q.equals( "'" ) ) {
-                        pat = pat.replace( "\\'", "''" );
-                    } else {
-                        pat = pat.replace( "\\" + q, "'" + q + "'" );
-                    }
-                }
+			if (in.getLocalName().equals("Pattern")) {
+				String pat = in.getElementText();
+				Locale locale = Locale.getDefault();
+				if (pat.contains("MMM")) {
+					List<String> langs = Arrays.asList(Locale.getISOLanguages());
+					String code = pat.substring(pat.lastIndexOf("MMM") + 3, pat.lastIndexOf("MMM") + 5);
+					if (langs.contains(code)) {
+						pat = pat.replace("MMM" + code, "MMM");
+						locale = new Locale(code);
+					}
+				}
+				pat = pat.replace('D', 'd');
+				while (pat.indexOf("\\") != -1) {
+					String q = "" + pat.charAt(pat.indexOf("\\") + 1);
+					if (q.equals("'")) {
+						pat = pat.replace("\\'", "''");
+					}
+					else {
+						pat = pat.replace("\\" + q, "'" + q + "'");
+					}
+				}
 
-                formatter = new SimpleDateFormat( pat, locale );
-            }
-        }
+				formatter = new SimpleDateFormat(pat, locale);
+			}
+		}
 
-        in.require( END_ELEMENT, null, "FormatDate" );
-        return new FormatDate( dateValue, dateValueContn, formatter );
-    }
+		in.require(END_ELEMENT, null, "FormatDate");
+		return new FormatDate(dateValue, dateValueContn, formatter);
+	}
+
 }

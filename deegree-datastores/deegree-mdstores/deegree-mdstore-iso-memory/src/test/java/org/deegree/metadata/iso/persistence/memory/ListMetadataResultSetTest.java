@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-metadata/src/main/java/org/deegree/metadata/iso/persistence/ISOMetadataStoreProvider.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -44,60 +43,53 @@ import static org.deegree.metadata.iso.persistence.memory.GetTestRecordsUtils.ge
 import org.junit.Test;
 
 /**
- * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: 30992 $, $Date: 2011-05-31 16:09:20 +0200 (Di, 31. Mai 2011) $
  */
 public class ListMetadataResultSetTest {
 
-    @Test
-    public void testFirstElement()
-                            throws Exception {
-        ListMetadataResultSet resultSet = new ListMetadataResultSet( getAllRecords() );
-        assertTrue( resultSet.next() );
-        assertNotNull( resultSet.getRecord() );
-    }
+	@Test
+	public void testFirstElement() throws Exception {
+		ListMetadataResultSet resultSet = new ListMetadataResultSet(getAllRecords());
+		assertTrue(resultSet.next());
+		assertNotNull(resultSet.getRecord());
+	}
 
-    @Test
-    public void testNext()
-                            throws Exception {
-        ListMetadataResultSet resultSet = new ListMetadataResultSet( getAllRecords() );
-        assertTrue( resultSet.next() );
-        assertTrue( resultSet.next() );
-        assertTrue( resultSet.next() );
-        assertNotNull( resultSet.getRecord() );
-        assertTrue( resultSet.next() );
-        assertTrue( resultSet.next() );
-    }
+	@Test
+	public void testNext() throws Exception {
+		ListMetadataResultSet resultSet = new ListMetadataResultSet(getAllRecords());
+		assertTrue(resultSet.next());
+		assertTrue(resultSet.next());
+		assertTrue(resultSet.next());
+		assertNotNull(resultSet.getRecord());
+		assertTrue(resultSet.next());
+		assertTrue(resultSet.next());
+	}
 
-    @Test
-    public void testAllElements()
-                            throws Exception {
-        ListMetadataResultSet resultSet = new ListMetadataResultSet( getAllRecords() );
-        assertTrue( resultSet.next() );
-        assertNotNull( resultSet.getRecord() );
-        assertTrue( resultSet.next() );
-        assertNotNull( resultSet.getRecord() );
-        assertTrue( resultSet.next() );
-        assertNotNull( resultSet.getRecord() );
-        assertTrue( resultSet.next() );
-        assertNotNull( resultSet.getRecord() );
-        assertTrue( resultSet.next() );
-        assertNotNull( resultSet.getRecord() );
-        assertFalse( resultSet.next() );
-    }
+	@Test
+	public void testAllElements() throws Exception {
+		ListMetadataResultSet resultSet = new ListMetadataResultSet(getAllRecords());
+		assertTrue(resultSet.next());
+		assertNotNull(resultSet.getRecord());
+		assertTrue(resultSet.next());
+		assertNotNull(resultSet.getRecord());
+		assertTrue(resultSet.next());
+		assertNotNull(resultSet.getRecord());
+		assertTrue(resultSet.next());
+		assertNotNull(resultSet.getRecord());
+		assertTrue(resultSet.next());
+		assertNotNull(resultSet.getRecord());
+		assertFalse(resultSet.next());
+	}
 
-    @Test
-    public void testRemaining()
-                            throws Exception {
-        ListMetadataResultSet resultSet = new ListMetadataResultSet( getAllRecords() );
-        assertTrue( resultSet.next() );
-        assertNotNull( resultSet.getRecord() );
-        assertTrue( resultSet.next() );
-        assertNotNull( resultSet.getRecord() );
-        assertTrue( resultSet.next() );
-        assertEquals( 3, resultSet.getRemaining() );
-    }
+	@Test
+	public void testRemaining() throws Exception {
+		ListMetadataResultSet resultSet = new ListMetadataResultSet(getAllRecords());
+		assertTrue(resultSet.next());
+		assertNotNull(resultSet.getRecord());
+		assertTrue(resultSet.next());
+		assertNotNull(resultSet.getRecord());
+		assertTrue(resultSet.next());
+		assertEquals(3, resultSet.getRemaining());
+	}
+
 }

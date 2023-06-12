@@ -53,31 +53,33 @@ import org.locationtech.jts.io.ParseException;
 
 public class WKTLinearizeLoader implements WellKnownNameLoader {
 
-    private static final Logger LOG = LoggerFactory.getLogger( WKTLinearizeLoader.class );
+	private static final Logger LOG = LoggerFactory.getLogger(WKTLinearizeLoader.class);
 
-    public static final String PREFIX = "wktlin://";
+	public static final String PREFIX = "wktlin://";
 
-    @Override
-    public Shape parse( String wellKnownName, Function<String, URL> resolver ) {
-        if ( wellKnownName == null || !wellKnownName.startsWith( PREFIX ) )
-            return null;
+	@Override
+	public Shape parse(String wellKnownName, Function<String, URL> resolver) {
+		if (wellKnownName == null || !wellKnownName.startsWith(PREFIX))
+			return null;
 
-        String wkn = wellKnownName.substring( PREFIX.length() );
-        Shape s = null;
-        try {
-            EWKTReader reader = new EWKTReader();
-            Geometry geom = reader.read( wkn );
+		String wkn = wellKnownName.substring(PREFIX.length());
+		Shape s = null;
+		try {
+			EWKTReader reader = new EWKTReader();
+			Geometry geom = reader.read(wkn);
 
-            ShapeConverterLinearize converter = new ShapeConverterLinearize( false, 500 );
+			ShapeConverterLinearize converter = new ShapeConverterLinearize(false, 500);
 
-            Shape orig = converter.convert( geom );
-            AffineTransform at = AffineTransform.getScaleInstance( 1.0, -1.0 );
-            s = at.createTransformedShape( orig );
-        } catch ( ParseException ex ) {
-            LOG.warn( "Could not Parse WKT {}: {}", wkn, ex.getMessage() );
-            LOG.trace( "Exception", ex );
-        }
+			Shape orig = converter.convert(geom);
+			AffineTransform at = AffineTransform.getScaleInstance(1.0, -1.0);
+			s = at.createTransformedShape(orig);
+		}
+		catch (ParseException ex) {
+			LOG.warn("Could not Parse WKT {}: {}", wkn, ex.getMessage());
+			LOG.trace("Exception", ex);
+		}
 
-        return s;
-    }
+		return s;
+	}
+
 }

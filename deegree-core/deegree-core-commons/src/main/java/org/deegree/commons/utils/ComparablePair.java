@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -37,40 +36,35 @@ package org.deegree.commons.utils;
 
 /**
  * <code>ComparablePair</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  * @param <T>
  * @param <U>
  */
-public class ComparablePair<T extends Comparable<T>, U extends Comparable<U>> extends Pair<T, U> implements
-                                                                                                Comparable<Pair<T, U>> {
+public class ComparablePair<T extends Comparable<T>, U extends Comparable<U>> extends Pair<T, U>
+		implements Comparable<Pair<T, U>> {
 
-    /**
-     * @param first
-     *            value of the pair.
-     * @param second
-     *            value of the pair.
-     */
-    public ComparablePair( T first, U second ) {
-        super( first, second );
-    }
+	/**
+	 * @param first value of the pair.
+	 * @param second value of the pair.
+	 */
+	public ComparablePair(T first, U second) {
+		super(first, second);
+	}
 
-    /**
-     * Create a pair with null objects.
-     */
-    public ComparablePair() {
-        // nothing to do here
-    }
+	/**
+	 * Create a pair with null objects.
+	 */
+	public ComparablePair() {
+		// nothing to do here
+	}
 
-    @Override
-    public int compareTo( Pair<T, U> o ) {
-        if ( o.first.compareTo( first ) == 0 ) {
-            return second.compareTo( o.second );
-        }
-        return first.compareTo( o.first );
-    }
+	@Override
+	public int compareTo(Pair<T, U> o) {
+		if (o.first.compareTo(first) == 0) {
+			return second.compareTo(o.second);
+		}
+		return first.compareTo(o.first);
+	}
 
 }

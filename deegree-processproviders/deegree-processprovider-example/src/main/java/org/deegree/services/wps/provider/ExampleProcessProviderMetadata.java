@@ -35,21 +35,20 @@ import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
  * Resource metadata for the example process provider.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class ExampleProcessProviderMetadata extends AbstractResourceMetadata<ProcessProvider> {
 
-    public ExampleProcessProviderMetadata( Workspace workspace, ResourceLocation<ProcessProvider> location,
-                                           AbstractResourceProvider<ProcessProvider> provider ) {
-        super( workspace, location, provider );
-    }
+	public ExampleProcessProviderMetadata(Workspace workspace, ResourceLocation<ProcessProvider> location,
+			AbstractResourceProvider<ProcessProvider> provider) {
+		super(workspace, location, provider);
+	}
 
-    @Override
-    public ResourceBuilder<ProcessProvider> prepare() {
-        return new ExampleProcessProviderBuilder( this );
-    }
+	@Override
+	public ResourceBuilder<ProcessProvider> prepare() {
+		return new ExampleProcessProviderBuilder(this);
+	}
 
 }

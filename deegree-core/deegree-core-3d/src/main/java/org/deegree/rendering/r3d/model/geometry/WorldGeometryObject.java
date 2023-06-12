@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -40,45 +39,37 @@ import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r3d.model.WorldObject;
 
 /**
- * The <code>WorldRenderableObject</code> is kind of a marker class for DataObjects based on geometry quality models.
- * 
+ * The <code>WorldRenderableObject</code> is kind of a marker class for DataObjects based
+ * on geometry quality models.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class WorldGeometryObject extends WorldObject<SimpleAccessGeometry, GeometryQualityModel> {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1352860202021497685L;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1352860202021497685L;
 
-    /**
-     * Creates a new WorldGeometryObject with given number of data quality levels (LOD)
-     * 
-     * @param id
-     * @param time
-     * @param bbox
-     * 
-     * @param levels
-     */
-    public WorldGeometryObject( String id, String time, Envelope bbox, int levels ) {
-        this( id, time, bbox, new GeometryQualityModel[levels] );
-    }
+	/**
+	 * Creates a new WorldGeometryObject with given number of data quality levels (LOD)
+	 * @param id
+	 * @param time
+	 * @param bbox
+	 * @param levels
+	 */
+	public WorldGeometryObject(String id, String time, Envelope bbox, int levels) {
+		this(id, time, bbox, new GeometryQualityModel[levels]);
+	}
 
-    /**
-     * @param id
-     *            of this object
-     * @param time
-     *            this object was created in the dbase
-     * @param bbox
-     *            of this object (may not be null)
-     * @param qualityLevels
-     *            this data object may render.
-     */
-    public WorldGeometryObject( String id, String time, Envelope bbox, GeometryQualityModel[] qualityLevels ) {
-        super( id, time, bbox, qualityLevels );
-    }
+	/**
+	 * @param id of this object
+	 * @param time this object was created in the dbase
+	 * @param bbox of this object (may not be null)
+	 * @param qualityLevels this data object may render.
+	 */
+	public WorldGeometryObject(String id, String time, Envelope bbox, GeometryQualityModel[] qualityLevels) {
+		super(id, time, bbox, qualityLevels);
+	}
+
 }

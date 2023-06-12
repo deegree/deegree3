@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -41,143 +40,131 @@ import javax.media.opengl.GL;
 import org.deegree.rendering.r3d.ViewParams;
 
 /**
- * The <code>RenderContext</code> wraps the current GL context the view params and all other parameters necessary to
- * render a scene with opengl.
- * 
+ * The <code>RenderContext</code> wraps the current GL context the view params and all
+ * other parameters necessary to render a scene with opengl.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class RenderContext {
 
-    private GL context;
+	private GL context;
 
-    private final ViewParams viewParams;
+	private final ViewParams viewParams;
 
-    private float terrainScale;
+	private float terrainScale;
 
-    private int maxTextureSize;
+	private int maxTextureSize;
 
-    // the compositing texture shader programs.
-    private ShaderProgram[] ctSPrograms;
+	// the compositing texture shader programs.
+	private ShaderProgram[] ctSPrograms;
 
-    private boolean updateLOD;
+	private boolean updateLOD;
 
-    /**
-     * Construct the RenderContext with the given view parameters.
-     * 
-     * @param viewParams
-     */
-    public RenderContext( ViewParams viewParams ) {
-        this.viewParams = viewParams;
-    }
+	/**
+	 * Construct the RenderContext with the given view parameters.
+	 * @param viewParams
+	 */
+	public RenderContext(ViewParams viewParams) {
+		this.viewParams = viewParams;
+	}
 
-    /**
-     * Construct the RenderContext with the given values.
-     * 
-     * @param viewParams
-     * @param terrainScale
-     *            scaled z value of the terrain.
-     * 
-     */
-    public RenderContext( ViewParams viewParams, float terrainScale ) {
-        this.viewParams = viewParams;
-        this.terrainScale = Math.max( terrainScale, 0.001f );
-    }
+	/**
+	 * Construct the RenderContext with the given values.
+	 * @param viewParams
+	 * @param terrainScale scaled z value of the terrain.
+	 *
+	 */
+	public RenderContext(ViewParams viewParams, float terrainScale) {
+		this.viewParams = viewParams;
+		this.terrainScale = Math.max(terrainScale, 0.001f);
+	}
 
-    /**
-     * Construct the RenderContext with the given values.
-     * 
-     * @param viewParams
-     * @param terrainScale
-     *            scaled z value of the terrain.
-     * @param maxTextureSize
-     * @param compositingTextureShaderPrograms
-     *            used for assigning and rendering multiple textures to a macro triangle.
-     */
-    public RenderContext( ViewParams viewParams, float terrainScale, int maxTextureSize,
-                          ShaderProgram[] compositingTextureShaderPrograms ) {
-        this.viewParams = viewParams;
-        this.terrainScale = Math.max( terrainScale, 0.001f );
-        this.maxTextureSize = maxTextureSize;
-        this.ctSPrograms = compositingTextureShaderPrograms;
-    }
+	/**
+	 * Construct the RenderContext with the given values.
+	 * @param viewParams
+	 * @param terrainScale scaled z value of the terrain.
+	 * @param maxTextureSize
+	 * @param compositingTextureShaderPrograms used for assigning and rendering multiple
+	 * textures to a macro triangle.
+	 */
+	public RenderContext(ViewParams viewParams, float terrainScale, int maxTextureSize,
+			ShaderProgram[] compositingTextureShaderPrograms) {
+		this.viewParams = viewParams;
+		this.terrainScale = Math.max(terrainScale, 0.001f);
+		this.maxTextureSize = maxTextureSize;
+		this.ctSPrograms = compositingTextureShaderPrograms;
+	}
 
-    /**
-     * @param context
-     *            the current gl context
-     */
-    public final void setContext( GL context ) {
-        this.context = context;
-    }
+	/**
+	 * @param context the current gl context
+	 */
+	public final void setContext(GL context) {
+		this.context = context;
+	}
 
-    /**
-     * @return the gl context
-     */
-    public final GL getContext() {
-        return context;
-    }
+	/**
+	 * @return the gl context
+	 */
+	public final GL getContext() {
+		return context;
+	}
 
-    /**
-     * @return the viewParams
-     */
-    public final ViewParams getViewParams() {
-        return viewParams;
-    }
+	/**
+	 * @return the viewParams
+	 */
+	public final ViewParams getViewParams() {
+		return viewParams;
+	}
 
-    /**
-     * @return the terrainScale 0.001 or larger
-     */
-    public final float getTerrainScale() {
-        return terrainScale;
-    }
+	/**
+	 * @return the terrainScale 0.001 or larger
+	 */
+	public final float getTerrainScale() {
+		return terrainScale;
+	}
 
-    /**
-     * @param terrainScale
-     *            the terrainScale to set.
-     */
-    public final void setTerrainScale( float terrainScale ) {
-        this.terrainScale = Math.max( terrainScale, 0.001f );
-    }
+	/**
+	 * @param terrainScale the terrainScale to set.
+	 */
+	public final void setTerrainScale(float terrainScale) {
+		this.terrainScale = Math.max(terrainScale, 0.001f);
+	}
 
-    /**
-     * @return the maxTextureSize
-     */
-    public final int getMaxTextureSize() {
-        return maxTextureSize;
-    }
+	/**
+	 * @return the maxTextureSize
+	 */
+	public final int getMaxTextureSize() {
+		return maxTextureSize;
+	}
 
-    /**
-     * @param maxTextureSize
-     *            the maxTextureSize to set
-     */
-    public final void setMaxTextureSize( int maxTextureSize ) {
-        this.maxTextureSize = maxTextureSize;
-    }
+	/**
+	 * @param maxTextureSize the maxTextureSize to set
+	 */
+	public final void setMaxTextureSize(int maxTextureSize) {
+		this.maxTextureSize = maxTextureSize;
+	}
 
-    /**
-     * @param numberOfTextures
-     *            the number of textures to be blended.
-     * @return a compositing texture shader program for the given number of textures.
-     */
-    public ShaderProgram getCompositingTextureShaderProgram( int numberOfTextures ) {
-        return this.ctSPrograms[numberOfTextures - 1];
-    }
+	/**
+	 * @param numberOfTextures the number of textures to be blended.
+	 * @return a compositing texture shader program for the given number of textures.
+	 */
+	public ShaderProgram getCompositingTextureShaderProgram(int numberOfTextures) {
+		return this.ctSPrograms[numberOfTextures - 1];
+	}
 
-    /**
-     * @param updateLOD
-     *            true if updating the lod should be enabled.
-     */
-    public void setUpdateLOD( boolean updateLOD ) {
-        this.updateLOD = updateLOD;
-    }
+	/**
+	 * @param updateLOD true if updating the lod should be enabled.
+	 */
+	public void setUpdateLOD(boolean updateLOD) {
+		this.updateLOD = updateLOD;
+	}
 
-    /**
-     * @return true if the lod should be updated
-     */
-    public boolean updateLOD() {
-        return this.updateLOD;
-    }
+	/**
+	 * @return true if the lod should be updated
+	 */
+	public boolean updateLOD() {
+		return this.updateLOD;
+	}
 
 }

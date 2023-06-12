@@ -49,23 +49,25 @@ import org.slf4j.LoggerFactory;
  */
 public class GpkgDialectProvider implements SqlDialectProvider {
 
-    private static Logger LOG = LoggerFactory.getLogger( GpkgDialectProvider.class );
+	private static Logger LOG = LoggerFactory.getLogger(GpkgDialectProvider.class);
 
-    @Override
-    public boolean supportsConnection( final Connection connection ) {
-        String url;
-        try {
-            url = connection.getMetaData().getURL();
-        } catch ( Exception e ) {
-            LOG.debug( "Could not determine metadata/url of connection: {}", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-            return false;
-        }
-        return url.startsWith( "jdbc:sqlite:" );
-    }
+	@Override
+	public boolean supportsConnection(final Connection connection) {
+		String url;
+		try {
+			url = connection.getMetaData().getURL();
+		}
+		catch (Exception e) {
+			LOG.debug("Could not determine metadata/url of connection: {}", e.getLocalizedMessage());
+			LOG.trace("Stack trace:", e);
+			return false;
+		}
+		return url.startsWith("jdbc:sqlite:");
+	}
 
-    @Override
-    public SQLDialect createDialect( final Connection conn ) {
-        return new GpkgDialect();
-    }
+	@Override
+	public SQLDialect createDialect(final Connection conn) {
+		return new GpkgDialect();
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -63,91 +62,88 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Parses categorize expressions.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 class CategorizeParser {
 
-    private static final Logger LOG = LoggerFactory.getLogger( CategorizeParser.class );
+	private static final Logger LOG = LoggerFactory.getLogger(CategorizeParser.class);
 
-    static Categorize parse( XMLStreamReader in )
-                            throws XMLStreamException {
-        StringBuffer value = null;
-        Continuation<StringBuffer> contn = null;
-        boolean precedingBelongs = false;
-        List<StringBuffer> values = new ArrayList<StringBuffer>();
-        List<StringBuffer> thresholds = new ArrayList<StringBuffer>();
-        LinkedList<Continuation<StringBuffer>> valueContns = new LinkedList<Continuation<StringBuffer>>();
-        LinkedList<Continuation<StringBuffer>> thresholdContns = new LinkedList<Continuation<StringBuffer>>();
+	static Categorize parse(XMLStreamReader in) throws XMLStreamException {
+		StringBuffer value = null;
+		Continuation<StringBuffer> contn = null;
+		boolean precedingBelongs = false;
+		List<StringBuffer> values = new ArrayList<StringBuffer>();
+		List<StringBuffer> thresholds = new ArrayList<StringBuffer>();
+		LinkedList<Continuation<StringBuffer>> valueContns = new LinkedList<Continuation<StringBuffer>>();
+		LinkedList<Continuation<StringBuffer>> thresholdContns = new LinkedList<Continuation<StringBuffer>>();
 
-        in.require( START_ELEMENT, null, "Categorize" );
+		in.require(START_ELEMENT, null, "Categorize");
 
-        String belong = in.getAttributeValue( null, "thresholdsBelongTo" );
-        if ( belong == null ) {
-            belong = in.getAttributeValue( null, "threshholdsBelongTo" );
-        }
-        if ( belong != null ) {
-            precedingBelongs = belong.equals( "preceding" );
-        }
+		String belong = in.getAttributeValue(null, "thresholdsBelongTo");
+		if (belong == null) {
+			belong = in.getAttributeValue(null, "threshholdsBelongTo");
+		}
+		if (belong != null) {
+			precedingBelongs = belong.equals("preceding");
+		}
 
-        while ( !( in.isEndElement() && in.getLocalName().equals( "Categorize" ) ) ) {
-            in.nextTag();
+		while (!(in.isEndElement() && in.getLocalName().equals("Categorize"))) {
+			in.nextTag();
 
-            if ( in.getLocalName().equals( "LookupValue" ) ) {
-                value = new StringBuffer();
-                contn = SymbologyParser.INSTANCE.updateOrContinue( in, "LookupValue", value, SBUPDATER, null ).second;
-            }
+			if (in.getLocalName().equals("LookupValue")) {
+				value = new StringBuffer();
+				contn = SymbologyParser.INSTANCE.updateOrContinue(in, "LookupValue", value, SBUPDATER, null).second;
+			}
 
-            if ( in.getLocalName().equals( "Threshold" ) ) {
-                StringBuffer sb = new StringBuffer();
-                thresholdContns.add( SymbologyParser.INSTANCE.updateOrContinue( in, "Threshold", sb, SBUPDATER, null ).second );
-                thresholds.add( sb );
-            }
+			if (in.getLocalName().equals("Threshold")) {
+				StringBuffer sb = new StringBuffer();
+				thresholdContns
+					.add(SymbologyParser.INSTANCE.updateOrContinue(in, "Threshold", sb, SBUPDATER, null).second);
+				thresholds.add(sb);
+			}
 
-            if ( in.getLocalName().equals( "Value" ) ) {
-                StringBuffer sb = new StringBuffer();
-                valueContns.add( SymbologyParser.INSTANCE.updateOrContinue( in, "Value", sb, SBUPDATER, null ).second );
-                values.add( sb );
-            }
+			if (in.getLocalName().equals("Value")) {
+				StringBuffer sb = new StringBuffer();
+				valueContns.add(SymbologyParser.INSTANCE.updateOrContinue(in, "Value", sb, SBUPDATER, null).second);
+				values.add(sb);
+			}
 
-        }
-        in.require( END_ELEMENT, null, "Categorize" );
-        Pair<Color[], Float[]> lookup = buildLookupArrays( values, thresholds );
-        Color[] valuesArray = lookup.first;
-        Float[] thresholdsArray = lookup.second;
-        return new Categorize( value, contn, precedingBelongs, values, valuesArray, thresholds, thresholdsArray,
-                               valueContns, thresholdContns );
-    }
+		}
+		in.require(END_ELEMENT, null, "Categorize");
+		Pair<Color[], Float[]> lookup = buildLookupArrays(values, thresholds);
+		Color[] valuesArray = lookup.first;
+		Float[] thresholdsArray = lookup.second;
+		return new Categorize(value, contn, precedingBelongs, values, valuesArray, thresholds, thresholdsArray,
+				valueContns, thresholdContns);
+	}
 
-    /** Create the sorted lookup arrays from the StringBuffer lists */
-    private static Pair<Color[], Float[]> buildLookupArrays( List<StringBuffer> values, List<StringBuffer> thresholds ) {
-        LOG.debug( "Building look-up arrays, for binary search... " );
-        Color[] valuesArray = null;
-        Float[] thresholdsArray = null;
+	/** Create the sorted lookup arrays from the StringBuffer lists */
+	private static Pair<Color[], Float[]> buildLookupArrays(List<StringBuffer> values, List<StringBuffer> thresholds) {
+		LOG.debug("Building look-up arrays, for binary search... ");
+		Color[] valuesArray = null;
+		Float[] thresholdsArray = null;
 
-        {
-            valuesArray = new Color[values.size()];
-            List<Color> list = new ArrayList<Color>( values.size() );
-            Iterator<StringBuffer> i = values.iterator();
-            while ( i.hasNext() ) {
-                list.add( decodeWithAlpha( i.next().toString() ) );
-            }
-            valuesArray = list.toArray( valuesArray );
-        }
+		{
+			valuesArray = new Color[values.size()];
+			List<Color> list = new ArrayList<Color>(values.size());
+			Iterator<StringBuffer> i = values.iterator();
+			while (i.hasNext()) {
+				list.add(decodeWithAlpha(i.next().toString()));
+			}
+			valuesArray = list.toArray(valuesArray);
+		}
 
-        {
-            thresholdsArray = new Float[thresholds.size()];
-            List<Float> list = new ArrayList<Float>( thresholds.size() );
-            Iterator<StringBuffer> i = thresholds.iterator();
-            while ( i.hasNext() ) {
-                list.add( Float.parseFloat( i.next().toString() ) );
-            }
-            thresholdsArray = list.toArray( thresholdsArray );
-        }
-        return new Pair<Color[], Float[]>( valuesArray, thresholdsArray );
-    }
+		{
+			thresholdsArray = new Float[thresholds.size()];
+			List<Float> list = new ArrayList<Float>(thresholds.size());
+			Iterator<StringBuffer> i = thresholds.iterator();
+			while (i.hasNext()) {
+				list.add(Float.parseFloat(i.next().toString()));
+			}
+			thresholdsArray = list.toArray(thresholdsArray);
+		}
+		return new Pair<Color[], Float[]>(valuesArray, thresholdsArray);
+	}
 
 }

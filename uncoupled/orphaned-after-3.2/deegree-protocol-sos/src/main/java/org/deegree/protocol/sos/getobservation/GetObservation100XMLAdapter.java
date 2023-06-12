@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -73,9 +72,7 @@ import org.slf4j.Logger;
  * elements are parsed lazy, on request.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
  * 
  */
 public class GetObservation100XMLAdapter extends SOSRequest100XMLAdapter {
@@ -240,9 +237,7 @@ public class GetObservation100XMLAdapter extends SOSRequest100XMLAdapter {
      * <code>ResultFilterException</code> is a hack to work around missing OWSException in core.
      * 
      * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-     * @author last edited by: $Author$
      * 
-     * @version $Revision$, $Date$
      */
     public static class ResultFilterException extends XMLParsingException {
         private static final long serialVersionUID = 7363995988367835730L;

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -84,213 +83,224 @@ import org.slf4j.Logger;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 public class DbFeatureUtils {
 
-    private static final Logger LOG = getLogger( DbFeatureUtils.class );
+	private static final Logger LOG = getLogger(DbFeatureUtils.class);
 
-    private static final GeometryFactory fac = new GeometryFactory();
+	private static final GeometryFactory fac = new GeometryFactory();
 
-    /**
-     * @param ftName
-     * @param prov
-     * @param sql
-     * @return null, if an SQL error occurred
-     */
-    public static GenericFeatureType determineFeatureType( QName ftName, ConnectionProvider prov, String sql ) {
-        Connection conn = null;
-        ResultSet set = null;
-        PreparedStatement stmt = null;
-        try {
-            conn = prov.getConnection();
-            boolean isOracle = conn.getMetaData().getDriverName().contains( "Oracle" );
-            stmt = conn.prepareStatement( sql + ( isOracle ? "" : " limit 0" ) );
-            stmt.setString( 1, WKTWriter.write( fac.createEnvelope( 0, 0, 1, 1, null ) ) );
-            LOG.debug( "Determining feature type using query '{}'.", isOracle ? sql : stmt );
-            stmt.execute();
-            set = stmt.getResultSet();
-            ResultSetMetaData md = set.getMetaData();
-            LinkedList<PropertyType> ps = new LinkedList<PropertyType>();
-            for ( int i = 1; i <= md.getColumnCount(); ++i ) {
+	/**
+	 * @param ftName
+	 * @param prov
+	 * @param sql
+	 * @return null, if an SQL error occurred
+	 */
+	public static GenericFeatureType determineFeatureType(QName ftName, ConnectionProvider prov, String sql) {
+		Connection conn = null;
+		ResultSet set = null;
+		PreparedStatement stmt = null;
+		try {
+			conn = prov.getConnection();
+			boolean isOracle = conn.getMetaData().getDriverName().contains("Oracle");
+			stmt = conn.prepareStatement(sql + (isOracle ? "" : " limit 0"));
+			stmt.setString(1, WKTWriter.write(fac.createEnvelope(0, 0, 1, 1, null)));
+			LOG.debug("Determining feature type using query '{}'.", isOracle ? sql : stmt);
+			stmt.execute();
+			set = stmt.getResultSet();
+			ResultSetMetaData md = set.getMetaData();
+			LinkedList<PropertyType> ps = new LinkedList<PropertyType>();
+			for (int i = 1; i <= md.getColumnCount(); ++i) {
 
-                String name = md.getColumnLabel( i );
-                PropertyType pt;
-                int colType = md.getColumnType( i );
+				String name = md.getColumnLabel(i);
+				PropertyType pt;
+				int colType = md.getColumnType(i);
 
-                QName ptName = new QName( ftName.getNamespaceURI(), name, ftName.getPrefix() );
-                switch ( colType ) {
-                case VARCHAR:
-                case CHAR:
-                    pt = new SimplePropertyType( ptName, 0, 1, STRING, null, null );
-                    break;
-                case INTEGER:
-                case SMALLINT:
-                    pt = new SimplePropertyType( ptName, 0, 1, BaseType.INTEGER, null, null );
-                    break;
-                case BIT:
-                    pt = new SimplePropertyType( ptName, 0, 1, BOOLEAN, null, null );
-                    break;
-                case NUMERIC:
-                case DOUBLE:
-                case BIGINT:
-                case Types.DECIMAL:
-                    pt = new SimplePropertyType( ptName, 0, 1, DECIMAL, null, null );
-                    break;
-                case OTHER:
-                case BINARY:
-                case BLOB:
-                case LONGVARBINARY:
-                    pt = new GeometryPropertyType( ptName, 0, 1, null, null, GEOMETRY, DIM_2_OR_3, null );
-                    break;
-                default:
-                    LOG.error( "Unsupported data type of column '{}': '{}'", name, colType );
-                    continue;
-                }
+				QName ptName = new QName(ftName.getNamespaceURI(), name, ftName.getPrefix());
+				switch (colType) {
+					case VARCHAR:
+					case CHAR:
+						pt = new SimplePropertyType(ptName, 0, 1, STRING, null, null);
+						break;
+					case INTEGER:
+					case SMALLINT:
+						pt = new SimplePropertyType(ptName, 0, 1, BaseType.INTEGER, null, null);
+						break;
+					case BIT:
+						pt = new SimplePropertyType(ptName, 0, 1, BOOLEAN, null, null);
+						break;
+					case NUMERIC:
+					case DOUBLE:
+					case BIGINT:
+					case Types.DECIMAL:
+						pt = new SimplePropertyType(ptName, 0, 1, DECIMAL, null, null);
+						break;
+					case OTHER:
+					case BINARY:
+					case BLOB:
+					case LONGVARBINARY:
+						pt = new GeometryPropertyType(ptName, 0, 1, null, null, GEOMETRY, DIM_2_OR_3, null);
+						break;
+					default:
+						LOG.error("Unsupported data type of column '{}': '{}'", name, colType);
+						continue;
+				}
 
-                ps.add( pt );
-            }
+				ps.add(pt);
+			}
 
-            return new GenericFeatureType( ftName, ps, false );
-        } catch ( SQLException e ) {
-            LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-            return null;
-        } finally {
-            JDBCUtils.close( set );
-            JDBCUtils.close( stmt );
-            JDBCUtils.close( conn );
-        }
-    }
+			return new GenericFeatureType(ftName, ps, false);
+		}
+		catch (SQLException e) {
+			LOG.info("A DB error occurred: '{}'.", e.getLocalizedMessage());
+			LOG.trace("Stack trace:", e);
+			return null;
+		}
+		finally {
+			JDBCUtils.close(set);
+			JDBCUtils.close(stmt);
+			JDBCUtils.close(conn);
+		}
+	}
 
-    /**
-     * @param prov
-     * @return a list of all schemas with geometry tables
-     */
-    public static LinkedList<String> fetchGeometrySchemas( ConnectionProvider prov, Workspace workspace ) {
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet set = null;
-        LinkedList<String> result = new LinkedList<String>();
-        try {
-            conn = prov.getConnection();
-            try {
-                // make this configurable via argument?
-                stmt = conn.prepareStatement( "select probe_geometry_columns()" );
-                stmt.executeQuery();
-            } catch ( SQLException e ) {
-                LOG.debug( "Could not update the geometry_columns table: '{}'", e.getLocalizedMessage() );
-                LOG.trace( "Stack trace:", e );
-            } finally {
-                JDBCUtils.close( stmt );
-            }
-            stmt = conn.prepareStatement( "select distinct(f_table_schema) from geometry_columns" );
-            set = stmt.executeQuery();
-            LOG.debug( "Getting all schemas with geometry tables." );
+	/**
+	 * @param prov
+	 * @return a list of all schemas with geometry tables
+	 */
+	public static LinkedList<String> fetchGeometrySchemas(ConnectionProvider prov, Workspace workspace) {
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet set = null;
+		LinkedList<String> result = new LinkedList<String>();
+		try {
+			conn = prov.getConnection();
+			try {
+				// make this configurable via argument?
+				stmt = conn.prepareStatement("select probe_geometry_columns()");
+				stmt.executeQuery();
+			}
+			catch (SQLException e) {
+				LOG.debug("Could not update the geometry_columns table: '{}'", e.getLocalizedMessage());
+				LOG.trace("Stack trace:", e);
+			}
+			finally {
+				JDBCUtils.close(stmt);
+			}
+			stmt = conn.prepareStatement("select distinct(f_table_schema) from geometry_columns");
+			set = stmt.executeQuery();
+			LOG.debug("Getting all schemas with geometry tables.");
 
-            while ( set.next() ) {
-                result.add( set.getString( "f_table_schema" ) );
-            }
+			while (set.next()) {
+				result.add(set.getString("f_table_schema"));
+			}
 
-            return result;
-        } catch ( SQLException e ) {
-            LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-            return null;
-        } finally {
-            JDBCUtils.close( set );
-            JDBCUtils.close( stmt );
-            JDBCUtils.close( conn );
-        }
-    }
+			return result;
+		}
+		catch (SQLException e) {
+			LOG.info("A DB error occurred: '{}'.", e.getLocalizedMessage());
+			LOG.trace("Stack trace:", e);
+			return null;
+		}
+		finally {
+			JDBCUtils.close(set);
+			JDBCUtils.close(stmt);
+			JDBCUtils.close(conn);
+		}
+	}
 
-    /**
-     * @param prov
-     * @param schema
-     * @return all tables (currently only PostGIS)
-     */
-    public static LinkedList<String> fetchGeometryTables( ConnectionProvider prov, String schema ) {
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet set = null;
-        LinkedList<String> result = new LinkedList<String>();
-        try {
-            conn = prov.getConnection();
-            try {
-                // make this configurable via argument?
-                stmt = conn.prepareStatement( "select probe_geometry_columns()" );
-                stmt.executeQuery();
-            } catch ( SQLException e ) {
-                LOG.debug( "Could not update the geometry_columns table: '{}'", e.getLocalizedMessage() );
-                LOG.trace( "Stack trace:", e );
-            } finally {
-                JDBCUtils.close( stmt );
-            }
-            StringBuilder query = new StringBuilder( "select f_table_name from geometry_columns" );
-            if ( schema != null ) {
-                query.append( " where f_table_schema = ?" );
-            }
-            stmt = conn.prepareStatement( query.toString() );
-            if ( schema != null ) {
-                stmt.setString( 1, schema );
-            }
-            set = stmt.executeQuery();
-            if ( schema != null ) {
-                LOG.debug( "Getting all geometry tables for schema '{}'.", schema );
-            } else {
-                LOG.debug( "Getting all geometry tables." );
-            }
+	/**
+	 * @param prov
+	 * @param schema
+	 * @return all tables (currently only PostGIS)
+	 */
+	public static LinkedList<String> fetchGeometryTables(ConnectionProvider prov, String schema) {
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet set = null;
+		LinkedList<String> result = new LinkedList<String>();
+		try {
+			conn = prov.getConnection();
+			try {
+				// make this configurable via argument?
+				stmt = conn.prepareStatement("select probe_geometry_columns()");
+				stmt.executeQuery();
+			}
+			catch (SQLException e) {
+				LOG.debug("Could not update the geometry_columns table: '{}'", e.getLocalizedMessage());
+				LOG.trace("Stack trace:", e);
+			}
+			finally {
+				JDBCUtils.close(stmt);
+			}
+			StringBuilder query = new StringBuilder("select f_table_name from geometry_columns");
+			if (schema != null) {
+				query.append(" where f_table_schema = ?");
+			}
+			stmt = conn.prepareStatement(query.toString());
+			if (schema != null) {
+				stmt.setString(1, schema);
+			}
+			set = stmt.executeQuery();
+			if (schema != null) {
+				LOG.debug("Getting all geometry tables for schema '{}'.", schema);
+			}
+			else {
+				LOG.debug("Getting all geometry tables.");
+			}
 
-            while ( set.next() ) {
-                result.add( set.getString( "f_table_name" ) );
-            }
+			while (set.next()) {
+				result.add(set.getString("f_table_name"));
+			}
 
-            return result;
-        } catch ( SQLException e ) {
-            LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-            return null;
-        } finally {
-            JDBCUtils.close( set );
-            JDBCUtils.close( stmt );
-            JDBCUtils.close( conn );
-        }
-    }
+			return result;
+		}
+		catch (SQLException e) {
+			LOG.info("A DB error occurred: '{}'.", e.getLocalizedMessage());
+			LOG.trace("Stack trace:", e);
+			return null;
+		}
+		finally {
+			JDBCUtils.close(set);
+			JDBCUtils.close(stmt);
+			JDBCUtils.close(conn);
+		}
+	}
 
-    /**
-     * @param prov
-     * @param tableName
-     * @param tableSchema
-     * @return -2, if an error occurred (can be -1 if srid is -1 in the db, or if not found in geometry_columns
-     *         metadata)
-     */
-    public static int findSrid( ConnectionProvider prov, String tableName, String tableSchema ) {
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        try {
-            conn = prov.getConnection();
-            stmt = conn.prepareStatement( "select srid from geometry_columns where f_table_name = ? and f_table_schema = ?" );
-            stmt.setString( 1, tableName );
-            stmt.setString( 2, tableSchema );
-            rs = stmt.executeQuery();
-            if ( rs.next() ) {
-                return rs.getInt( 1 );
-            }
-            return -1;
-        } catch ( SQLException e ) {
-            LOG.info( "A DB error occurred: '{}'.", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-            return -2;
-        } finally {
-            JDBCUtils.close( rs );
-            JDBCUtils.close( stmt );
-            JDBCUtils.close( conn );
-        }
-    }
+	/**
+	 * @param prov
+	 * @param tableName
+	 * @param tableSchema
+	 * @return -2, if an error occurred (can be -1 if srid is -1 in the db, or if not
+	 * found in geometry_columns metadata)
+	 */
+	public static int findSrid(ConnectionProvider prov, String tableName, String tableSchema) {
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		try {
+			conn = prov.getConnection();
+			stmt = conn
+				.prepareStatement("select srid from geometry_columns where f_table_name = ? and f_table_schema = ?");
+			stmt.setString(1, tableName);
+			stmt.setString(2, tableSchema);
+			rs = stmt.executeQuery();
+			if (rs.next()) {
+				return rs.getInt(1);
+			}
+			return -1;
+		}
+		catch (SQLException e) {
+			LOG.info("A DB error occurred: '{}'.", e.getLocalizedMessage());
+			LOG.trace("Stack trace:", e);
+			return -2;
+		}
+		finally {
+			JDBCUtils.close(rs);
+			JDBCUtils.close(stmt);
+			JDBCUtils.close(conn);
+		}
+	}
 
 }

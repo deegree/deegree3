@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -36,23 +35,23 @@
 package org.deegree.feature.types.property;
 
 /**
- * Enum for object-valued property types that determines whether the object value can be represented in-line, remote
- * (by-reference) or both.
- * 
+ * Enum for object-valued property types that determines whether the object value can be
+ * represented in-line, remote (by-reference) or both.
+ *
  * @see FeaturePropertyType
  * @see GeometryPropertyType
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public enum ValueRepresentation {
 
-    /** Object value can only be represented as an inline value. */
-    INLINE,
-    /** Object value can only be represented as a remote value (reference). */
-    REMOTE,
-    /** Object value can be represented both as an inline value or a remote value (reference). */
-    BOTH
+	/** Object value can only be represented as an inline value. */
+	INLINE,
+	/** Object value can only be represented as a remote value (reference). */
+	REMOTE,
+	/**
+	 * Object value can be represented both as an inline value or a remote value
+	 * (reference).
+	 */
+	BOTH
+
 }

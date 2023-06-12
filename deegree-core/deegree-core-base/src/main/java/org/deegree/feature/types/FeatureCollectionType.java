@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -43,30 +42,30 @@ import org.deegree.feature.types.property.FeaturePropertyType;
 /**
  * {@link FeatureType} that defines a collection of features.
  * <p>
- * A {@link FeatureCollectionType} always has at least one member property declaration, i.e. a property used for
- * aggregating member features (e.g. <code>gml:featureMember</code> for a default GML feature collection). Additionally,
- * it may define feature array properties that allow for aggregating of multiple features in a single property element
- * (e.g. <code>gml:featureMembers</code> for a default GML feature collection).
+ * A {@link FeatureCollectionType} always has at least one member property declaration,
+ * i.e. a property used for aggregating member features (e.g.
+ * <code>gml:featureMember</code> for a default GML feature collection). Additionally, it
+ * may define feature array properties that allow for aggregating of multiple features in
+ * a single property element (e.g. <code>gml:featureMembers</code> for a default GML
+ * feature collection).
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * 
- * @version $Revision:$, $Date:$
  */
 public interface FeatureCollectionType extends FeatureType {
 
-    /**
-     * Returns the feature member property declarations.
-     * 
-     * @return feature member property declarations (in order), never <code>null</code> and contains a least one entry
-     */
-    public List<FeaturePropertyType> getMemberDeclarations();
+	/**
+	 * Returns the feature member property declarations.
+	 * @return feature member property declarations (in order), never <code>null</code>
+	 * and contains a least one entry
+	 */
+	public List<FeaturePropertyType> getMemberDeclarations();
 
-    /**
-     * Returns the feature member array property declarations.
-     * 
-     * @return feature member array property declarations (in order), may be empty, but never <code>null</code>
-     */
-    public List<ArrayPropertyType> getMemberArrayDeclarations();
+	/**
+	 * Returns the feature member array property declarations.
+	 * @return feature member array property declarations (in order), may be empty, but
+	 * never <code>null</code>
+	 */
+	public List<ArrayPropertyType> getMemberArrayDeclarations();
+
 }

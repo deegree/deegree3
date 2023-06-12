@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-base/src/main/java/org/deegree/filter/function/FunctionManager.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -46,88 +45,87 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Entry point for accessing {@link SQLFunctionProvider} instances that are registered via Java SPI.
- * 
+ * Entry point for accessing {@link SQLFunctionProvider} instances that are registered via
+ * Java SPI.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 30337 $, $Date: 2011-04-04 14:21:18 +0200 (Mo, 04. Apr 2011) $
  */
 public class SQLFunctionManager implements Initializable, Destroyable {
 
-    private static final Logger LOG = LoggerFactory.getLogger( SQLFunctionManager.class );
+	private static final Logger LOG = LoggerFactory.getLogger(SQLFunctionManager.class);
 
-    private static Map<String, SQLFunctionProvider> nameToFunction;
+	private static Map<String, SQLFunctionProvider> nameToFunction;
 
-    private static ServiceLoader<SQLFunctionProvider> functionLoader;
+	private static ServiceLoader<SQLFunctionProvider> functionLoader;
 
-    /**
-     * Returns all available {@link SQLFunctionProvider}s. Multiple functions with the same case ignored name are not
-     * allowed.
-     * 
-     * @return all available functions, keys: name, value: FunctionProvider
-     */
-    public static synchronized Map<String, SQLFunctionProvider> getFunctionProviders() {
-        if ( nameToFunction == null ) {
-            nameToFunction = new HashMap<String, SQLFunctionProvider>();
-            try {
-                for ( SQLFunctionProvider function : functionLoader ) {
-                    LOG.debug( "SQLFunction: " + function + ", name: " + function.getName() );
-                    String name = function.getName().toLowerCase();
-                    if ( nameToFunction.containsKey( name ) ) {
-                        LOG.error( "Multiple SQLFunction instances for name: '" + name + "' on classpath -- omitting '"
-                                   + function.getClass().getName() + "'." );
-                        continue;
-                    }
-                    nameToFunction.put( name, function );
-                }
-            } catch ( Exception e ) {
-                LOG.error( e.getMessage(), e );
-            }
-        }
-        return nameToFunction;
-    }
+	/**
+	 * Returns all available {@link SQLFunctionProvider}s. Multiple functions with the
+	 * same case ignored name are not allowed.
+	 * @return all available functions, keys: name, value: FunctionProvider
+	 */
+	public static synchronized Map<String, SQLFunctionProvider> getFunctionProviders() {
+		if (nameToFunction == null) {
+			nameToFunction = new HashMap<String, SQLFunctionProvider>();
+			try {
+				for (SQLFunctionProvider function : functionLoader) {
+					LOG.debug("SQLFunction: " + function + ", name: " + function.getName());
+					String name = function.getName().toLowerCase();
+					if (nameToFunction.containsKey(name)) {
+						LOG.error("Multiple SQLFunction instances for name: '" + name + "' on classpath -- omitting '"
+								+ function.getClass().getName() + "'.");
+						continue;
+					}
+					nameToFunction.put(name, function);
+				}
+			}
+			catch (Exception e) {
+				LOG.error(e.getMessage(), e);
+			}
+		}
+		return nameToFunction;
+	}
 
-    /**
-     * Returns the {@link SQLFunctionProvider} for the given name.
-     * 
-     * @param name
-     *            name of the function, must not be <code>null</code>
-     * @return custom function instance, or <code>null</code> if there is no function with this name
-     */
-    public static SQLFunctionProvider getFunctionProvider( String name ) {
-        return getFunctionProviders().get( name.toLowerCase() );
-    }
+	/**
+	 * Returns the {@link SQLFunctionProvider} for the given name.
+	 * @param name name of the function, must not be <code>null</code>
+	 * @return custom function instance, or <code>null</code> if there is no function with
+	 * this name
+	 */
+	public static SQLFunctionProvider getFunctionProvider(String name) {
+		return getFunctionProviders().get(name.toLowerCase());
+	}
 
-    @Override
-    public void destroy( Workspace workspace ) {
-        if ( functionLoader == null ) {
-            return;
-        }
-        for ( SQLFunctionProvider fp : functionLoader ) {
-            try {
-                fp.destroy();
-            } catch ( Throwable t ) {
-                LOG.error( "Destroying of SQLFunctionProvider " + fp.getName() + " failed: " + t.getMessage() );
-            }
-        }
-        functionLoader = null;
-        if ( nameToFunction != null ) {
-            nameToFunction.clear();
-        }
-        nameToFunction = null;
-    }
+	@Override
+	public void destroy(Workspace workspace) {
+		if (functionLoader == null) {
+			return;
+		}
+		for (SQLFunctionProvider fp : functionLoader) {
+			try {
+				fp.destroy();
+			}
+			catch (Throwable t) {
+				LOG.error("Destroying of SQLFunctionProvider " + fp.getName() + " failed: " + t.getMessage());
+			}
+		}
+		functionLoader = null;
+		if (nameToFunction != null) {
+			nameToFunction.clear();
+		}
+		nameToFunction = null;
+	}
 
-    @Override
-    public void init( Workspace ws ) {
-        functionLoader = ServiceLoader.load( SQLFunctionProvider.class, ws.getModuleClassLoader() );
-        for ( SQLFunctionProvider fp : functionLoader ) {
-            try {
-                fp.init( ws );
-            } catch ( Exception t ) {
-                LOG.error( "Initialization of SQLFunctionProvider " + fp.getName() + " failed: " + t.getMessage() );
-            }
-        }
-    }
+	@Override
+	public void init(Workspace ws) {
+		functionLoader = ServiceLoader.load(SQLFunctionProvider.class, ws.getModuleClassLoader());
+		for (SQLFunctionProvider fp : functionLoader) {
+			try {
+				fp.init(ws);
+			}
+			catch (Exception t) {
+				LOG.error("Initialization of SQLFunctionProvider " + fp.getName() + " failed: " + t.getMessage());
+			}
+		}
+	}
 
 }

@@ -58,54 +58,51 @@ import java.util.List;
  */
 public class GpkgWhereBuilder extends AbstractWhereBuilder {
 
-    /**
-     * Creates a new {@link GpkgWhereBuilder} instance.
-     *
-     * @param dialect
-     *                 SQL dialect
-     * @param mapper
-     *                 provides the mapping from {@link ValueReference}s to DB columns, must not be <code>null</code>
-     * @param filter
-     *                 Filter to use for generating the WHERE clause, can be <code>null</code>
-     * @param sortCrit
-     *                 criteria to use for generating the ORDER BY clause, can be <code>null</code>
-     * @param defaultSortCriteria
-     * @param allowPartialMappings
-     *                 if false, any unmappable expression will cause an {@link UnmappableException} to be thrown
-     * @throws FilterEvaluationException
-     *                 if the expression contains invalid {@link ValueReference}s
-     * @throws UnmappableException
-     *                 if allowPartialMappings is false and an expression could not be mapped to the db
-     */
-    public GpkgWhereBuilder( GpkgDialect dialect, PropertyNameMapper mapper, OperatorFilter filter,
-                             SortProperty[] sortCrit, List<SortCriterion> defaultSortCriteria, boolean allowPartialMappings )
-                            throws FilterEvaluationException,
-                            UnmappableException {
-        super( dialect, mapper, filter, sortCrit, defaultSortCriteria );
-        build( allowPartialMappings );
-    }
+	/**
+	 * Creates a new {@link GpkgWhereBuilder} instance.
+	 * @param dialect SQL dialect
+	 * @param mapper provides the mapping from {@link ValueReference}s to DB columns, must
+	 * not be <code>null</code>
+	 * @param filter Filter to use for generating the WHERE clause, can be
+	 * <code>null</code>
+	 * @param sortCrit criteria to use for generating the ORDER BY clause, can be
+	 * <code>null</code>
+	 * @param defaultSortCriteria
+	 * @param allowPartialMappings if false, any unmappable expression will cause an
+	 * {@link UnmappableException} to be thrown
+	 * @throws FilterEvaluationException if the expression contains invalid
+	 * {@link ValueReference}s
+	 * @throws UnmappableException if allowPartialMappings is false and an expression
+	 * could not be mapped to the db
+	 */
+	public GpkgWhereBuilder(GpkgDialect dialect, PropertyNameMapper mapper, OperatorFilter filter,
+			SortProperty[] sortCrit, List<SortCriterion> defaultSortCriteria, boolean allowPartialMappings)
+			throws FilterEvaluationException, UnmappableException {
+		super(dialect, mapper, filter, sortCrit, defaultSortCriteria);
+		build(allowPartialMappings);
+	}
 
-    /**
-     * Translates the given {@link PropertyIsLike} into an {@link SQLOperation}
-     *
-     * @param op comparison operator to be translated, must not be <code>null</code>
-     * @return corresponding SQL expression, never <code>null</code>
-     * @throws UnmappableException       if translation is not possible (usually due to unmappable property names)
-     * @throws FilterEvaluationException if the expression contains invalid {@link ValueReference}s
-     */
-    @Override
-    protected SQLOperation toProtoSQL( PropertyIsLike op )
-                            throws UnmappableException, FilterEvaluationException {
-        return null;
-    }
+	/**
+	 * Translates the given {@link PropertyIsLike} into an {@link SQLOperation}
+	 * @param op comparison operator to be translated, must not be <code>null</code>
+	 * @return corresponding SQL expression, never <code>null</code>
+	 * @throws UnmappableException if translation is not possible (usually due to
+	 * unmappable property names)
+	 * @throws FilterEvaluationException if the expression contains invalid
+	 * {@link ValueReference}s
+	 */
+	@Override
+	protected SQLOperation toProtoSQL(PropertyIsLike op) throws UnmappableException, FilterEvaluationException {
+		return null;
+	}
 
-    @Override
-    protected SQLOperation toProtoSQL( SpatialOperator op )
-                            throws UnmappableException, FilterEvaluationException {
-        return null;
-    }
+	@Override
+	protected SQLOperation toProtoSQL(SpatialOperator op) throws UnmappableException, FilterEvaluationException {
+		return null;
+	}
 
-    @Override
-    protected void addExpression( SQLOperationBuilder builder, SQLExpression expr, Boolean matchCase ) {
-    }
+	@Override
+	protected void addExpression(SQLOperationBuilder builder, SQLExpression expr, Boolean matchCase) {
+	}
+
 }

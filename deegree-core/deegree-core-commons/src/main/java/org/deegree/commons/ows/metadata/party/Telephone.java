@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -39,53 +38,49 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The <code>Telephone</code> bean encapsulates the corresponding GetCapabilities response metadata element.
- * 
+ * The <code>Telephone</code> bean encapsulates the corresponding GetCapabilities response
+ * metadata element.
+ *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class Telephone {
 
-    private List<String> voice;
+	private List<String> voice;
 
-    private List<String> facsimile;
+	private List<String> facsimile;
 
-    /**
-     * @param voice
-     *            the voice to set
-     */
-    public void setVoice( List<String> voice ) {
-        this.voice = voice;
-    }
+	/**
+	 * @param voice the voice to set
+	 */
+	public void setVoice(List<String> voice) {
+		this.voice = voice;
+	}
 
-    /**
-     * @param facsimile
-     *            the facsimile to set
-     */
-    public void setFacsimile( List<String> facsimile ) {
-        this.facsimile = facsimile;
-    }
+	/**
+	 * @param facsimile the facsimile to set
+	 */
+	public void setFacsimile(List<String> facsimile) {
+		this.facsimile = facsimile;
+	}
 
-    /**
-     * @return voice, may be empty but never <code>null</code>.
-     */
-    public List<String> getVoice() {
-        if ( voice == null ) {
-            voice = new ArrayList<String>();
-        }
-        return voice;
-    }
+	/**
+	 * @return voice, may be empty but never <code>null</code>.
+	 */
+	public List<String> getVoice() {
+		if (voice == null) {
+			voice = new ArrayList<String>();
+		}
+		return voice;
+	}
 
-    /**
-     * @return facsimile, may be empty but never <code>null</code>.
-     */
-    public List<String> getFacsimile() {
-        if ( facsimile == null ) {
-            facsimile = new ArrayList<String>();
-        }
-        return facsimile;
-    }
+	/**
+	 * @return facsimile, may be empty but never <code>null</code>.
+	 */
+	public List<String> getFacsimile() {
+		if (facsimile == null) {
+			facsimile = new ArrayList<String>();
+		}
+		return facsimile;
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -43,49 +42,45 @@ import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceMetadata;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class SingleLayerStore implements LayerStore {
 
-    private final Layer layer;
+	private final Layer layer;
 
-    private ResourceMetadata<LayerStore> metadata;
+	private ResourceMetadata<LayerStore> metadata;
 
-    public SingleLayerStore( Layer layer, ResourceMetadata<LayerStore> metadata ) {
-        this.layer = layer;
-        this.metadata = metadata;
-    }
+	public SingleLayerStore(Layer layer, ResourceMetadata<LayerStore> metadata) {
+		this.layer = layer;
+		this.metadata = metadata;
+	}
 
-    @Override
-    public void init() {
-        // nothing to do
-    }
+	@Override
+	public void init() {
+		// nothing to do
+	}
 
-    @Override
-    public void destroy() {
-        layer.destroy();
-    }
+	@Override
+	public void destroy() {
+		layer.destroy();
+	}
 
-    @Override
-    public List<Layer> getAll() {
-        return Collections.singletonList( get( layer.getMetadata().getName() ) );
-    }
+	@Override
+	public List<Layer> getAll() {
+		return Collections.singletonList(get(layer.getMetadata().getName()));
+	}
 
-    @Override
-    public Layer get( String identifier ) {
-        if ( layer.getMetadata().getName().equals( identifier ) ) {
-            return layer;
-        }
-        return null;
-    }
+	@Override
+	public Layer get(String identifier) {
+		if (layer.getMetadata().getName().equals(identifier)) {
+			return layer;
+		}
+		return null;
+	}
 
-    @Override
-    public ResourceMetadata<? extends Resource> getMetadata() {
-        return metadata;
-    }
+	@Override
+	public ResourceMetadata<? extends Resource> getMetadata() {
+		return metadata;
+	}
 
 }

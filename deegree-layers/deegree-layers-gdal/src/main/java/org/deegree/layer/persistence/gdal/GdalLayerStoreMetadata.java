@@ -39,27 +39,28 @@ import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
  * Resource metadata implementation for GDAL layer stores.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * 
  * @since 3.4
  */
 class GdalLayerStoreMetadata extends AbstractResourceMetadata<LayerStore> {
 
-    public GdalLayerStoreMetadata( Workspace workspace, ResourceLocation<LayerStore> location,
-                                   AbstractResourceProvider<LayerStore> provider ) {
-        super( workspace, location, provider );
-    }
+	public GdalLayerStoreMetadata(Workspace workspace, ResourceLocation<LayerStore> location,
+			AbstractResourceProvider<LayerStore> provider) {
+		super(workspace, location, provider);
+	}
 
-    @Override
-    public ResourceBuilder<LayerStore> prepare() {
-        try {
-            GDALLayers cfg;
-            cfg = (GDALLayers) JAXBUtils.unmarshall( "org.deegree.layer.persistence.gdal.jaxb", provider.getSchema(),
-                                                     location.getAsStream(), workspace );
-            return new GdalLayerStoreBuilder( cfg, workspace, this );
-        } catch ( Exception e ) {
-            throw new ResourceInitException( "Error while creating GDAL layers: " + e.getLocalizedMessage(), e );
-        }
-    }
+	@Override
+	public ResourceBuilder<LayerStore> prepare() {
+		try {
+			GDALLayers cfg;
+			cfg = (GDALLayers) JAXBUtils.unmarshall("org.deegree.layer.persistence.gdal.jaxb", provider.getSchema(),
+					location.getAsStream(), workspace);
+			return new GdalLayerStoreBuilder(cfg, workspace, this);
+		}
+		catch (Exception e) {
+			throw new ResourceInitException("Error while creating GDAL layers: " + e.getLocalizedMessage(), e);
+		}
+	}
+
 }

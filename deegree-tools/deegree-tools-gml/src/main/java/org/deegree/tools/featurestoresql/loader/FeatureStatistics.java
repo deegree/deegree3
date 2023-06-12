@@ -39,36 +39,38 @@ import org.springframework.batch.core.ItemWriteListener;
  * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  */
 public class FeatureStatistics {
-    private Map<QName, AtomicLong> counter = new TreeMap<>( Comparator.comparing( QName::getNamespaceURI ).thenComparing( QName::getLocalPart ) );
 
-    public void reset() {
-        counter.clear();
-    }
+	private Map<QName, AtomicLong> counter = new TreeMap<>(
+			Comparator.comparing(QName::getNamespaceURI).thenComparing(QName::getLocalPart));
 
-    /**
-     * @param name
-     *            type name to increment
-     */
-    public long increment( QName name ) {
-        AtomicLong cnt = counter.get( name );
-        if ( cnt == null ) {
-            cnt = new AtomicLong();
-            counter.put( name, cnt );
-        }
-        return cnt.incrementAndGet();
-    }
+	public void reset() {
+		counter.clear();
+	}
 
-    /**
-     * @param out
-     *            Consumer function that receives the output
-     */
-    public void summary( Consumer<String> out ) {
-        final long max = counter.values().stream() //
-                                .map( AtomicLong::get ) //
-                                .max( Long::compareTo )//
-                                .orElse( 1L );
-        final int len = String.valueOf( max ).length();
-        final String format = "%" + len + "d %s";
-        counter.forEach( ( k, v ) -> out.accept( String.format( format, v.get(), k.toString() ) ) );
-    }
+	/**
+	 * @param name type name to increment
+	 */
+	public long increment(QName name) {
+		AtomicLong cnt = counter.get(name);
+		if (cnt == null) {
+			cnt = new AtomicLong();
+			counter.put(name, cnt);
+		}
+		return cnt.incrementAndGet();
+	}
+
+	/**
+	 * @param out Consumer function that receives the output
+	 */
+	public void summary(Consumer<String> out) {
+		final long max = counter.values()
+			.stream() //
+			.map(AtomicLong::get) //
+			.max(Long::compareTo)//
+			.orElse(1L);
+		final int len = String.valueOf(max).length();
+		final String format = "%" + len + "d %s";
+		counter.forEach((k, v) -> out.accept(String.format(format, v.get(), k.toString())));
+	}
+
 }

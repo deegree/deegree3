@@ -59,59 +59,62 @@ import org.slf4j.Logger;
 
 /**
  * Responsible for using a renderer to evaluate and render a feature stream.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  */
 public class FeatureStreamRenderer {
 
-    private static final Logger LOG = getLogger( FeatureStreamRenderer.class );
+	private static final Logger LOG = getLogger(FeatureStreamRenderer.class);
 
-    private RenderContext context;
+	private RenderContext context;
 
-    private int maxFeatures;
+	private int maxFeatures;
 
-    private XPathEvaluator<?> evaluator;
+	private XPathEvaluator<?> evaluator;
 
-    public FeatureStreamRenderer( RenderContext context, int maxFeatures, XPathEvaluator<?> evaluator ) {
-        this.context = context;
-        this.maxFeatures = maxFeatures;
-        this.evaluator = evaluator;
-    }
+	public FeatureStreamRenderer(RenderContext context, int maxFeatures, XPathEvaluator<?> evaluator) {
+		this.context = context;
+		this.maxFeatures = maxFeatures;
+		this.evaluator = evaluator;
+	}
 
-    public void renderFeatureStream( FeatureInputStream features, Style style )
-                            throws InterruptedException {
-        int cnt = 0;
+	public void renderFeatureStream(FeatureInputStream features, Style style) throws InterruptedException {
+		int cnt = 0;
 
-        Renderer renderer = context.getVectorRenderer();
-        // TextRenderer textRenderer = context.getTextRenderer();
-        LabelRenderer labelRenderer = context.getLabelRenderer();
-        // ArrayList<Label> labelList = new ArrayList<Label>();
+		Renderer renderer = context.getVectorRenderer();
+		// TextRenderer textRenderer = context.getTextRenderer();
+		LabelRenderer labelRenderer = context.getLabelRenderer();
+		// ArrayList<Label> labelList = new ArrayList<Label>();
 
-        for ( Feature f : features ) {
-            if ( Thread.interrupted() ) {
-                throw new InterruptedException();
-            }
-            try {
-                LinkedList<Triple<Styling, LinkedList<Geometry>, String>> evalds = style.evaluate( f,
-                                                                                                   (XPathEvaluator<Feature>) evaluator );
-                for ( Triple<Styling, LinkedList<Geometry>, String> evald : evalds ) {
-                    if ( evald.first instanceof TextStyling ) {
-                        // textRenderer.render( (TextStyling) evald.first, evald.third, evald.second );
-                        // labelList.addAll(
-                        labelRenderer.createLabel( (TextStyling) evald.first, evald.third, evald.second );
-                    } else {
-                        renderer.render( evald.first, evald.second );
-                    }
-                }
-            } catch ( Throwable e ) {
-                LOG.warn( "Unable to render feature, probably a curve had multiple/non-linear segments." );
-                LOG.warn( "Error message was: {}", e.getLocalizedMessage() );
-                LOG.trace( "Stack trace:", e );
-            }
-            if ( maxFeatures > 0 && ++cnt == maxFeatures ) {
-                LOG.debug( "Reached max features of {} for layer '{}', stopping.", maxFeatures, this );
-                break;
-            }
-        }
-    }
+		for (Feature f : features) {
+			if (Thread.interrupted()) {
+				throw new InterruptedException();
+			}
+			try {
+				LinkedList<Triple<Styling, LinkedList<Geometry>, String>> evalds = style.evaluate(f,
+						(XPathEvaluator<Feature>) evaluator);
+				for (Triple<Styling, LinkedList<Geometry>, String> evald : evalds) {
+					if (evald.first instanceof TextStyling) {
+						// textRenderer.render( (TextStyling) evald.first, evald.third,
+						// evald.second );
+						// labelList.addAll(
+						labelRenderer.createLabel((TextStyling) evald.first, evald.third, evald.second);
+					}
+					else {
+						renderer.render(evald.first, evald.second);
+					}
+				}
+			}
+			catch (Throwable e) {
+				LOG.warn("Unable to render feature, probably a curve had multiple/non-linear segments.");
+				LOG.warn("Error message was: {}", e.getLocalizedMessage());
+				LOG.trace("Stack trace:", e);
+			}
+			if (maxFeatures > 0 && ++cnt == maxFeatures) {
+				LOG.debug("Reached max features of {} for layer '{}', stopping.", maxFeatures, this);
+				break;
+			}
+		}
+	}
+
 }

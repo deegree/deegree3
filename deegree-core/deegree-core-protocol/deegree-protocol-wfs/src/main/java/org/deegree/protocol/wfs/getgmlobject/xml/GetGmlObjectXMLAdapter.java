@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -50,78 +49,72 @@ import org.deegree.protocol.wfs.AbstractWFSRequestXMLAdapter;
 import org.deegree.protocol.wfs.getgmlobject.GetGmlObject;
 
 /**
- * Adapter between XML encoded <code>GetGmlObject</code> requests and {@link GetGmlObject} objects.
+ * Adapter between XML encoded <code>GetGmlObject</code> requests and {@link GetGmlObject}
+ * objects.
  * <p>
  * TODO code for exporting to XML
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class GetGmlObjectXMLAdapter extends AbstractWFSRequestXMLAdapter {
 
-    /**
-     * Parses a WFS <code>GetGmlObject</code> document into a {@link GetGmlObject} request.
-     * <p>
-     * Supported versions:
-     * <ul>
-     * <li>WFS 1.1.0</li>
-     * </ul>
-     * 
-     * @return parsed {@link GetGmlObject} request
-     * @throws XMLParsingException
-     *             if a syntax error occurs in the XML
-     * @throws MissingParameterException
-     *             if the request version is unsupported
-     * @throws InvalidParameterValueException
-     *             if a parameter contains a syntax error
-     */
-    public GetGmlObject parse() {
+	/**
+	 * Parses a WFS <code>GetGmlObject</code> document into a {@link GetGmlObject}
+	 * request.
+	 * <p>
+	 * Supported versions:
+	 * <ul>
+	 * <li>WFS 1.1.0</li>
+	 * </ul>
+	 * @return parsed {@link GetGmlObject} request
+	 * @throws XMLParsingException if a syntax error occurs in the XML
+	 * @throws MissingParameterException if the request version is unsupported
+	 * @throws InvalidParameterValueException if a parameter contains a syntax error
+	 */
+	public GetGmlObject parse() {
 
-        Version version = determineVersion110Safe();
+		Version version = determineVersion110Safe();
 
-        GetGmlObject result = null;
-        if ( VERSION_110.equals( version ) ) {
-            result = parse110();
-        } else {
-            String msg = Messages.get( "UNSUPPORTED_VERSION", version, Version.getVersionsString( VERSION_110 ) );
-            throw new InvalidParameterValueException( msg );
-        }
-        return result;
-    }
+		GetGmlObject result = null;
+		if (VERSION_110.equals(version)) {
+			result = parse110();
+		}
+		else {
+			String msg = Messages.get("UNSUPPORTED_VERSION", version, Version.getVersionsString(VERSION_110));
+			throw new InvalidParameterValueException(msg);
+		}
+		return result;
+	}
 
-    /**
-     * Parses a WFS 1.1.0 <code>GetGmlObject</code> document into a {@link GetGmlObject} request.
-     * 
-     * @return parsed {@link GetGmlObject} request
-     * @throws XMLParsingException
-     *             if a syntax error occurs in the XML
-     * @throws InvalidParameterValueException
-     *             if a parameter contains a syntax error
-     */
-    public GetGmlObject parse110()
-                            throws XMLParsingException, InvalidParameterValueException {
+	/**
+	 * Parses a WFS 1.1.0 <code>GetGmlObject</code> document into a {@link GetGmlObject}
+	 * request.
+	 * @return parsed {@link GetGmlObject} request
+	 * @throws XMLParsingException if a syntax error occurs in the XML
+	 * @throws InvalidParameterValueException if a parameter contains a syntax error
+	 */
+	public GetGmlObject parse110() throws XMLParsingException, InvalidParameterValueException {
 
-        // optional: '@handle'
-        String handle = rootElement.getAttributeValue( new QName( "handle" ) );
+		// optional: '@handle'
+		String handle = rootElement.getAttributeValue(new QName("handle"));
 
-        // optional: '@outputFormat'
-        String outputFormat = rootElement.getAttributeValue( new QName( "outputFormat" ) );
+		// optional: '@outputFormat'
+		String outputFormat = rootElement.getAttributeValue(new QName("outputFormat"));
 
-        // required: '@traverseXlinkDepth'
-        String traverseXlinkDepth = getRequiredNodeAsString( rootElement, new XPath( "@traverseXlinkDepth", nsContext ) );
+		// required: '@traverseXlinkDepth'
+		String traverseXlinkDepth = getRequiredNodeAsString(rootElement, new XPath("@traverseXlinkDepth", nsContext));
 
-        // optional: '@traverseXlinkExpiry'
-        Integer traverseXlinkExpiry = getNodeAsInt( rootElement, new XPath( "@traverseXlinkExpiry", nsContext ), -1 );
-        if ( traverseXlinkExpiry < 0 ) {
-            traverseXlinkExpiry = null;
-        }
+		// optional: '@traverseXlinkExpiry'
+		Integer traverseXlinkExpiry = getNodeAsInt(rootElement, new XPath("@traverseXlinkExpiry", nsContext), -1);
+		if (traverseXlinkExpiry < 0) {
+			traverseXlinkExpiry = null;
+		}
 
-        // required: 'ogc:GmlObjectId/@gml:id'
-        String requestedId = getRequiredNodeAsString( rootElement, new XPath( "ogc:GmlObjectId/@gml:id", nsContext ) );
+		// required: 'ogc:GmlObjectId/@gml:id'
+		String requestedId = getRequiredNodeAsString(rootElement, new XPath("ogc:GmlObjectId/@gml:id", nsContext));
 
-        return new GetGmlObject( VERSION_110, handle, requestedId, outputFormat, traverseXlinkDepth,
-                                 traverseXlinkExpiry );
-    }
+		return new GetGmlObject(VERSION_110, handle, requestedId, outputFormat, traverseXlinkDepth,
+				traverseXlinkExpiry);
+	}
+
 }

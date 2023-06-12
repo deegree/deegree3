@@ -35,96 +35,94 @@ import javax.xml.namespace.QName;
  */
 public class Summary {
 
-    private String commitFailed;
+	private String commitFailed;
 
-    private int numberOfFeatures = 0;
+	private int numberOfFeatures = 0;
 
-    private Set<String> unresolvableReferences = new HashSet<>();
+	private Set<String> unresolvableReferences = new HashSet<>();
 
-    private FeatureStatistics statistics = null;
+	private FeatureStatistics statistics = null;
 
-    /**
-     * @param increaseBy
-     *            integer to add (positive integer or null)
-     */
-    public void increaseNumberOfFeatures( int increaseBy ) {
-        this.numberOfFeatures = this.numberOfFeatures + increaseBy;
-    }
+	/**
+	 * @param increaseBy integer to add (positive integer or null)
+	 */
+	public void increaseNumberOfFeatures(int increaseBy) {
+		this.numberOfFeatures = this.numberOfFeatures + increaseBy;
+	}
 
-    /**
-     * @param increaseBy
-     *            integer to add (positive integer or null)
-     */
-    public void increaseNumberOfFeatures( QName typeName ) {
-        if ( this.statistics != null ) {
-            statistics.increment( typeName );
-        }
-        this.numberOfFeatures++;
-    }
+	/**
+	 * @param increaseBy integer to add (positive integer or null)
+	 */
+	public void increaseNumberOfFeatures(QName typeName) {
+		if (this.statistics != null) {
+			statistics.increment(typeName);
+		}
+		this.numberOfFeatures++;
+	}
 
-    /**
-     * @return the number of features processed (positive integer or null)
-     */
-    public int getNumberOfFeatures() {
-        return numberOfFeatures;
-    }
+	/**
+	 * @return the number of features processed (positive integer or null)
+	 */
+	public int getNumberOfFeatures() {
+		return numberOfFeatures;
+	}
 
-    /**
-     * @param unresolvableReferences
-     *            list of unresolvable references, may be <code>null</code>
-     */
-    public void setUnresolvableReferences( Set<String> unresolvableReferences ) {
-        this.unresolvableReferences = unresolvableReferences;
-    }
+	/**
+	 * @param unresolvableReferences list of unresolvable references, may be
+	 * <code>null</code>
+	 */
+	public void setUnresolvableReferences(Set<String> unresolvableReferences) {
+		this.unresolvableReferences = unresolvableReferences;
+	}
 
-    /**
-     * @return <code>true</code> if unresolvable references are not empty, <code>false</code> otherwise
-     */
-    public boolean hasUnresolvableReferences() {
-        return unresolvableReferences != null && !unresolvableReferences.isEmpty();
-    }
+	/**
+	 * @return <code>true</code> if unresolvable references are not empty,
+	 * <code>false</code> otherwise
+	 */
+	public boolean hasUnresolvableReferences() {
+		return unresolvableReferences != null && !unresolvableReferences.isEmpty();
+	}
 
-    /**
-     * @return list of unresolvable references, may be <code>null</code>
-     */
-    public Set<String> getUnresolvableReferences() {
-        return unresolvableReferences;
-    }
+	/**
+	 * @return list of unresolvable references, may be <code>null</code>
+	 */
+	public Set<String> getUnresolvableReferences() {
+		return unresolvableReferences;
+	}
 
-    /**
-     * @param commitFailed
-     *            the failure message of the commit
-     */
-    public void setCommitFailed( String commitFailed ) {
-        this.commitFailed = commitFailed;
-    }
+	/**
+	 * @param commitFailed the failure message of the commit
+	 */
+	public void setCommitFailed(String commitFailed) {
+		this.commitFailed = commitFailed;
+	}
 
-    /**
-     * @return <code>true</code> if the commit failed, <code>false</code> otherwise
-     */
-    public boolean isCommitFailed() {
-        return commitFailed != null;
-    }
+	/**
+	 * @return <code>true</code> if the commit failed, <code>false</code> otherwise
+	 */
+	public boolean isCommitFailed() {
+		return commitFailed != null;
+	}
 
-    /**
-     * @return the failure message of the commit
-     */
-    public String getCommitFailed() {
-        return this.commitFailed;
-    }
+	/**
+	 * @return the failure message of the commit
+	 */
+	public String getCommitFailed() {
+		return this.commitFailed;
+	}
 
-    /**
-     * @return the statistics, may be <code>null</code>
-     */
-    public FeatureStatistics getStatistics() {
-        return statistics;
-    }
+	/**
+	 * @return the statistics, may be <code>null</code>
+	 */
+	public FeatureStatistics getStatistics() {
+		return statistics;
+	}
 
-    /**
-     * @param statistics
-     *            the statistics to use inside this summary
-     */
-    public void setStatistics( FeatureStatistics statistics ) {
-        this.statistics = statistics;
-    }
+	/**
+	 * @param statistics the statistics to use inside this summary
+	 */
+	public void setStatistics(FeatureStatistics statistics) {
+		this.statistics = statistics;
+	}
+
 }

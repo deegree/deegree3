@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -72,83 +71,80 @@ import org.deegree.style.styling.components.Fill;
 
 /**
  * Renders raster legend items.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 class RasterLegendRenderer {
 
-    private static final ICRS mapcs = CRSManager.getCRSRef( "CRS:1" );
+	private static final ICRS mapcs = CRSManager.getCRSRef("CRS:1");
 
-    private RasterStyling styling;
+	private RasterStyling styling;
 
-    private GeometryFactory geofac = new GeometryFactory();
+	private GeometryFactory geofac = new GeometryFactory();
 
-    private Renderer renderer;
+	private Renderer renderer;
 
-    private RasterRenderer rasterRenderer;
+	private RasterRenderer rasterRenderer;
 
-    private TextRenderer textRenderer;
+	private TextRenderer textRenderer;
 
-    private LinkedList<String> texts;
+	private LinkedList<String> texts;
 
-    RasterLegendRenderer( RasterStyling styling, Renderer renderer, RasterRenderer rasterRenderer,
-                          TextRenderer textRenderer, LinkedList<String> texts ) {
-        this.styling = styling;
-        this.renderer = renderer;
-        this.rasterRenderer = rasterRenderer;
-        this.textRenderer = textRenderer;
-        this.texts = texts;
-    }
+	RasterLegendRenderer(RasterStyling styling, Renderer renderer, RasterRenderer rasterRenderer,
+			TextRenderer textRenderer, LinkedList<String> texts) {
+		this.styling = styling;
+		this.renderer = renderer;
+		this.rasterRenderer = rasterRenderer;
+		this.textRenderer = textRenderer;
+		this.texts = texts;
+	}
 
-    void paint( int origin, LegendOptions opts ) {
-        if ( styling.interpolate != null ) {
-            Double[] datas = styling.interpolate.getDatas();
-            int rasterHeight = ( datas.length - 1 ) * ( opts.baseHeight + 2 * opts.spacing );
-            RasterDataInfo info = new RasterDataInfo( new BandType[] { BAND_0 }, FLOAT, PIXEL );
-            int miny = origin - rasterHeight - opts.baseHeight / 2 - opts.spacing;
-            int maxy = origin - opts.baseHeight / 2 - opts.spacing;
-            Envelope bbox = geofac.createEnvelope( opts.spacing, miny, opts.baseWidth + opts.spacing, maxy, mapcs );
-            RasterGeoReference rref = new RasterGeoReference( OUTER, 1, 1, opts.spacing, miny, mapcs );
-            SimpleRaster raster = createEmptyRaster( info, bbox, rref );
+	void paint(int origin, LegendOptions opts) {
+		if (styling.interpolate != null) {
+			Double[] datas = styling.interpolate.getDatas();
+			int rasterHeight = (datas.length - 1) * (opts.baseHeight + 2 * opts.spacing);
+			RasterDataInfo info = new RasterDataInfo(new BandType[] { BAND_0 }, FLOAT, PIXEL);
+			int miny = origin - rasterHeight - opts.baseHeight / 2 - opts.spacing;
+			int maxy = origin - opts.baseHeight / 2 - opts.spacing;
+			Envelope bbox = geofac.createEnvelope(opts.spacing, miny, opts.baseWidth + opts.spacing, maxy, mapcs);
+			RasterGeoReference rref = new RasterGeoReference(OUTER, 1, 1, opts.spacing, miny, mapcs);
+			SimpleRaster raster = createEmptyRaster(info, bbox, rref);
 
-            RasterData rasterData = raster.getRasterData();
+			RasterData rasterData = raster.getRasterData();
 
-            int row = 0;
-            for ( int i = 0; i < datas.length - 1; ++i ) {
-                double a = datas[i], b = datas[i + 1];
-                double res = ( b - a ) / ( opts.baseHeight + 2 * opts.spacing );
-                for ( int y = 0; y < opts.baseHeight + 2 * opts.spacing; ++y ) {
-                    for ( int k = 0; k < opts.baseWidth; ++k ) {
-                        rasterData.setFloatSample( k, row, 0, (float) ( a + res * y ) );
-                    }
-                    ++row;
-                }
-            }
+			int row = 0;
+			for (int i = 0; i < datas.length - 1; ++i) {
+				double a = datas[i], b = datas[i + 1];
+				double res = (b - a) / (opts.baseHeight + 2 * opts.spacing);
+				for (int y = 0; y < opts.baseHeight + 2 * opts.spacing; ++y) {
+					for (int k = 0; k < opts.baseWidth; ++k) {
+						rasterData.setFloatSample(k, row, 0, (float) (a + res * y));
+					}
+					++row;
+				}
+			}
 
-            rasterRenderer.render( styling, raster );
+			rasterRenderer.render(styling, raster);
 
-            for ( String text : texts ) {
-                paintLegendText( origin, opts, text, textRenderer );
-                origin -= opts.baseHeight + 2 * opts.spacing;
-            }
-        }
-        if ( styling.categorize != null ) {
-            Iterator<String> texts = this.texts.iterator();
-            for ( Color c : styling.categorize.getColors() ) {
-                PolygonStyling s = new PolygonStyling();
-                s.fill = new Fill();
-                s.fill.color = c;
-                LinkedList<Styling> list = new LinkedList<Styling>();
-                list.add( s );
-                StandardLegendItem item = new StandardLegendItem( list, null, Polygon.class, texts.next(), renderer,
-                                                                  textRenderer );
-                item.paint( origin, opts );
-                origin -= opts.baseHeight + 2 * opts.spacing;
-            }
-        }
-    }
+			for (String text : texts) {
+				paintLegendText(origin, opts, text, textRenderer);
+				origin -= opts.baseHeight + 2 * opts.spacing;
+			}
+		}
+		if (styling.categorize != null) {
+			Iterator<String> texts = this.texts.iterator();
+			for (Color c : styling.categorize.getColors()) {
+				PolygonStyling s = new PolygonStyling();
+				s.fill = new Fill();
+				s.fill.color = c;
+				LinkedList<Styling> list = new LinkedList<Styling>();
+				list.add(s);
+				StandardLegendItem item = new StandardLegendItem(list, null, Polygon.class, texts.next(), renderer,
+						textRenderer);
+				item.paint(origin, opts);
+				origin -= opts.baseHeight + 2 * opts.spacing;
+			}
+		}
+	}
 
 }

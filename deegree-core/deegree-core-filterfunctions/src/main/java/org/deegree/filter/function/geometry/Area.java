@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -57,60 +56,57 @@ import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.Workspace;
 
 /**
- * {@link FunctionProvider} for the <code>Area</code> function (calculates the area of a {@link Surface}).
- * 
+ * {@link FunctionProvider} for the <code>Area</code> function (calculates the area of a
+ * {@link Surface}).
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class Area implements FunctionProvider {
 
-    private static final String NAME = "Area";
+	private static final String NAME = "Area";
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
+	@Override
+	public String getName() {
+		return NAME;
+	}
 
-    @Override
-    public Function create( List<Expression> params ) {
-        return new Function( NAME, params ) {
-            @Override
-            public TypedObjectNode[] evaluate( List<TypedObjectNode[]> args )
-                                    throws FilterEvaluationException {
-                TypedObjectNode[] inputs = args.get( 0 );
-                List<TypedObjectNode> areas = new ArrayList<TypedObjectNode>( inputs.length );
-                for ( TypedObjectNode input : inputs ) {
-                    Geometry geom = getGeometryValue( input );
-                    if ( geom != null && geom instanceof Surface ) {
-                        areas.add( new PrimitiveValue( ( (Surface) geom ).getArea( null ).getValue(),
-                                                       new PrimitiveType( DOUBLE ) ) );
-                    }
-                }
-                return areas.toArray( new TypedObjectNode[areas.size()] );
-            }
-        };
-    }
+	@Override
+	public Function create(List<Expression> params) {
+		return new Function(NAME, params) {
+			@Override
+			public TypedObjectNode[] evaluate(List<TypedObjectNode[]> args) throws FilterEvaluationException {
+				TypedObjectNode[] inputs = args.get(0);
+				List<TypedObjectNode> areas = new ArrayList<TypedObjectNode>(inputs.length);
+				for (TypedObjectNode input : inputs) {
+					Geometry geom = getGeometryValue(input);
+					if (geom != null && geom instanceof Surface) {
+						areas.add(new PrimitiveValue(((Surface) geom).getArea(null).getValue(),
+								new PrimitiveType(DOUBLE)));
+					}
+				}
+				return areas.toArray(new TypedObjectNode[areas.size()]);
+			}
+		};
+	}
 
-    @Override
-    public void init( Workspace ws )
-                            throws ResourceInitException {
-        // nothing to do
-    }
+	@Override
+	public void init(Workspace ws) throws ResourceInitException {
+		// nothing to do
+	}
 
-    @Override
-    public void destroy() {
-        // nothing to do
-    }
+	@Override
+	public void destroy() {
+		// nothing to do
+	}
 
-    @Override
-    public List<ParameterType> getArgs() {
-        return Collections.singletonList( GEOMETRY );
-    }
+	@Override
+	public List<ParameterType> getArgs() {
+		return Collections.singletonList(GEOMETRY);
+	}
 
-    @Override
-    public ParameterType getReturnType() {
-        return ParameterType.DOUBLE;
-    }
+	@Override
+	public ParameterType getReturnType() {
+		return ParameterType.DOUBLE;
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -40,53 +39,57 @@ import java.nio.ByteBuffer;
 
 public class Node {
 
-    public static final int SIZE = org.deegree.rendering.r3d.multiresolution.Node.SIZE;
+	public static final int SIZE = org.deegree.rendering.r3d.multiresolution.Node.SIZE;
 
-    int id;
+	int id;
 
-    int lowestOutgoingArc = -1;
+	int lowestOutgoingArc = -1;
 
-    int highestOutgoingArc = -1;
+	int highestOutgoingArc = -1;
 
-    int lowestIncomingArc = -1;
+	int lowestIncomingArc = -1;
 
-    int lastIncomingArc = -1;
+	int lastIncomingArc = -1;
 
-    Node(int id) {
-        this.id = id;
-    }
+	Node(int id) {
+		this.id = id;
+	}
 
-    int locationCode1 = -1;
-    int locationCode2 = -1;
-    int locationCode3 = -1;
-    int locationCode4 = -1;
+	int locationCode1 = -1;
 
-    private String codeToString(int code) {
-        String s = Integer.toString(code, 2);
-        return s.substring(1);
-    }
+	int locationCode2 = -1;
 
-    public String toString() {
-        String s = id + ": (";
-        if (locationCode1 != -1) {
-            s += " " + codeToString(locationCode1);
-        }
-        if (locationCode2 != -1) {
-            s += " " + codeToString(locationCode2);
-        }
-        if (locationCode3 != -1) {
-            s += " " + codeToString(locationCode3);
-        }
-        if (locationCode4 != -1) {
-            s += " " + codeToString(locationCode4);
-        }
-        s += " ), lowestOutgoingArc=" + lowestOutgoingArc + ", highestOutgoingArc="
-                + highestOutgoingArc + ", lowestIncomingArc=" + lowestIncomingArc;
-        return s;
-    }
+	int locationCode3 = -1;
 
-    void append(ByteBuffer nodesBuffer, float error, float[][] bbox) {
-        org.deegree.rendering.r3d.multiresolution.Node.store(nodesBuffer, lowestOutgoingArc, highestOutgoingArc,
-                lowestIncomingArc, bbox);
-    }
+	int locationCode4 = -1;
+
+	private String codeToString(int code) {
+		String s = Integer.toString(code, 2);
+		return s.substring(1);
+	}
+
+	public String toString() {
+		String s = id + ": (";
+		if (locationCode1 != -1) {
+			s += " " + codeToString(locationCode1);
+		}
+		if (locationCode2 != -1) {
+			s += " " + codeToString(locationCode2);
+		}
+		if (locationCode3 != -1) {
+			s += " " + codeToString(locationCode3);
+		}
+		if (locationCode4 != -1) {
+			s += " " + codeToString(locationCode4);
+		}
+		s += " ), lowestOutgoingArc=" + lowestOutgoingArc + ", highestOutgoingArc=" + highestOutgoingArc
+				+ ", lowestIncomingArc=" + lowestIncomingArc;
+		return s;
+	}
+
+	void append(ByteBuffer nodesBuffer, float error, float[][] bbox) {
+		org.deegree.rendering.r3d.multiresolution.Node.store(nodesBuffer, lowestOutgoingArc, highestOutgoingArc,
+				lowestIncomingArc, bbox);
+	}
+
 }

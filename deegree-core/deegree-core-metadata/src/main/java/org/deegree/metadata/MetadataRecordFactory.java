@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -68,134 +67,130 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Main entry point for creating {@link MetadataRecord} instances from XML representations.
- * 
- * TODO Factory concept needs reconsideration, especially with regard to plugability for different metadata formats
- * (ISO, ebRIM, ...). Ideally, this factory shouldn't have any compile-time dependencies to the concrete record types.
- * 
+ * Main entry point for creating {@link MetadataRecord} instances from XML
+ * representations.
+ *
+ * TODO Factory concept needs reconsideration, especially with regard to plugability for
+ * different metadata formats (ISO, ebRIM, ...). Ideally, this factory shouldn't have any
+ * compile-time dependencies to the concrete record types.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class MetadataRecordFactory {
 
-    private static Logger LOG = LoggerFactory.getLogger( MetadataRecordFactory.class );
+	private static Logger LOG = LoggerFactory.getLogger(MetadataRecordFactory.class);
 
-    /**
-     * Creates a {@link MetadataRecord} instance out a {@link XMLStreamReader}. The reader must point to the
-     * START_ELEMENT of the record. After reading the record the stream points to the END_ELEMENT of the record.
-     * 
-     * @param xmlStream
-     *            xmlStream must point to the START_ELEMENT of the record, must not be <code>null</code>
-     * @return a {@link MetadataRecord} instance, never <code>null</code>
-     */
-    public static MetadataRecord create( XMLStreamReader xmlStream ) {
-        if ( !xmlStream.isStartElement() ) {
-            throw new XMLParsingException( xmlStream, "XMLStreamReader does not point to a START_ELEMENT." );
-        }
-        
-        String ns = xmlStream.getNamespaceURI();
+	/**
+	 * Creates a {@link MetadataRecord} instance out a {@link XMLStreamReader}. The reader
+	 * must point to the START_ELEMENT of the record. After reading the record the stream
+	 * points to the END_ELEMENT of the record.
+	 * @param xmlStream xmlStream must point to the START_ELEMENT of the record, must not
+	 * be <code>null</code>
+	 * @return a {@link MetadataRecord} instance, never <code>null</code>
+	 */
+	public static MetadataRecord create(XMLStreamReader xmlStream) {
+		if (!xmlStream.isStartElement()) {
+			throw new XMLParsingException(xmlStream, "XMLStreamReader does not point to a START_ELEMENT.");
+		}
 
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        XMLStreamWriter writer = null;
-        XMLStreamReader recordAsXmlStream;
-        InputStream in = null;
-        try {
-            XMLOutputFactory factory = XMLOutputFactory.newInstance();
-            factory.setProperty( XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.TRUE );
-            writer = factory.createXMLStreamWriter( out );
+		String ns = xmlStream.getNamespaceURI();
 
-            writer.writeStartDocument();
-            XMLAdapter.writeElement( writer, xmlStream );
-            writer.writeEndDocument();
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		XMLStreamWriter writer = null;
+		XMLStreamReader recordAsXmlStream;
+		InputStream in = null;
+		try {
+			XMLOutputFactory factory = XMLOutputFactory.newInstance();
+			factory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.TRUE);
+			writer = factory.createXMLStreamWriter(out);
 
-            writer.close();
-            in = new ByteArrayInputStream( out.toByteArray() );
-            recordAsXmlStream = XMLInputFactory.newInstance().createXMLStreamReader( in );
-        } catch ( XMLStreamException e ) {
-            throw new XMLParsingException( xmlStream, e.getMessage() );
-        } catch ( FactoryConfigurationError e ) {
-            throw new XMLParsingException( xmlStream, e.getMessage() );
-        } finally {
-            IOUtils.closeQuietly( in );
-            IOUtils.closeQuietly( out );
-        }
-        
-        if ( ISO_RECORD_NS.equals( ns ) ) {
-            return new ISORecord( recordAsXmlStream );
-        }
-        if ( RIM_NS.equals( ns ) ) {
-            throw new UnsupportedOperationException(
-                                                     "Creating ebRIM records from XMLStreamReader is not implemented yet." );
-        }
-        if ( DC_RECORD_NS.equals( ns ) ) {
-            throw new UnsupportedOperationException( "Creating DC records from XMLStreamReader is not implemented yet." );
-        }
-        throw new IllegalArgumentException( "Unknown / unsuppported metadata namespace '" + ns + "'." );
+			writer.writeStartDocument();
+			XMLAdapter.writeElement(writer, xmlStream);
+			writer.writeEndDocument();
 
-    }
+			writer.close();
+			in = new ByteArrayInputStream(out.toByteArray());
+			recordAsXmlStream = XMLInputFactory.newInstance().createXMLStreamReader(in);
+		}
+		catch (XMLStreamException e) {
+			throw new XMLParsingException(xmlStream, e.getMessage());
+		}
+		catch (FactoryConfigurationError e) {
+			throw new XMLParsingException(xmlStream, e.getMessage());
+		}
+		finally {
+			IOUtils.closeQuietly(in);
+			IOUtils.closeQuietly(out);
+		}
 
-    /**
-     * Creates a new {@link MetadataRecord} from the given element.
-     * 
-     * @param rootEl
-     *            root element, must not be <code>null</code>
-     * @return metadata record instance, never <code>null</code>
-     * @throws IllegalArgumentException
-     *             if the metadata format is unknown / record invalid
-     */
-    public static MetadataRecord create( OMElement rootEl )
-                            throws IllegalArgumentException {
-        String ns = rootEl.getNamespace().getNamespaceURI();
-        if ( ISO_RECORD_NS.equals( ns ) ) {
-            return new ISORecord( rootEl );
-        }
-        if ( RIM_NS.equals( ns ) ) {
-            RIMType type = null;
-            try {
-                type = RIMType.valueOf( rootEl.getLocalName() );
-            } catch ( Throwable t ) {
-                throw new IllegalArgumentException( "Element '" + rootEl.getLocalName()
-                                                    + "' does not denote an ebRIM 3.0 registry object." );
-            }
-            switch ( type ) {
-            case AdhocQuery:
-                return new AdhocQuery( rootEl );
-            case Association:
-                return new Association( rootEl );
-            case Classification:
-                return new Classification( rootEl );
-            case ClassificationNode:
-                return new ClassificationNode( rootEl );
-            case ExtrinsicObject:
-                return new ExtrinsicObject( rootEl );
-            case RegistryObject:
-                return new RegistryObject( rootEl );
-            case RegistryPackage:
-                return new RegistryPackage( rootEl );
-            default:
-                LOG.warn( "Treating registry object '" + type + "' as generic registry object." );
-                return new RegistryObject( rootEl );
-            }
-        }
-        if ( DC_RECORD_NS.equals( ns ) ) {
-            throw new UnsupportedOperationException( "Creating DC records from XML is not implemented yet." );
-        }
-        throw new IllegalArgumentException( "Unknown / unsuppported metadata namespace '" + ns + "'." );
-    }
+		if (ISO_RECORD_NS.equals(ns)) {
+			return new ISORecord(recordAsXmlStream);
+		}
+		if (RIM_NS.equals(ns)) {
+			throw new UnsupportedOperationException(
+					"Creating ebRIM records from XMLStreamReader is not implemented yet.");
+		}
+		if (DC_RECORD_NS.equals(ns)) {
+			throw new UnsupportedOperationException("Creating DC records from XMLStreamReader is not implemented yet.");
+		}
+		throw new IllegalArgumentException("Unknown / unsuppported metadata namespace '" + ns + "'.");
 
-    /**
-     * Creates a new {@link MetadataRecord} from the given file.
-     * 
-     * @param file
-     *            record file, must not be <code>null</code>
-     * @return metadata record instance, never <code>null</code>
-     * @throws IllegalArgumentException
-     *             if the metadata format is unknown / record invalid
-     */
-    public static MetadataRecord create( File file )
-                            throws IllegalArgumentException {
-        return create( new XMLAdapter( file ).getRootElement() );
-    }
+	}
+
+	/**
+	 * Creates a new {@link MetadataRecord} from the given element.
+	 * @param rootEl root element, must not be <code>null</code>
+	 * @return metadata record instance, never <code>null</code>
+	 * @throws IllegalArgumentException if the metadata format is unknown / record invalid
+	 */
+	public static MetadataRecord create(OMElement rootEl) throws IllegalArgumentException {
+		String ns = rootEl.getNamespace().getNamespaceURI();
+		if (ISO_RECORD_NS.equals(ns)) {
+			return new ISORecord(rootEl);
+		}
+		if (RIM_NS.equals(ns)) {
+			RIMType type = null;
+			try {
+				type = RIMType.valueOf(rootEl.getLocalName());
+			}
+			catch (Throwable t) {
+				throw new IllegalArgumentException(
+						"Element '" + rootEl.getLocalName() + "' does not denote an ebRIM 3.0 registry object.");
+			}
+			switch (type) {
+				case AdhocQuery:
+					return new AdhocQuery(rootEl);
+				case Association:
+					return new Association(rootEl);
+				case Classification:
+					return new Classification(rootEl);
+				case ClassificationNode:
+					return new ClassificationNode(rootEl);
+				case ExtrinsicObject:
+					return new ExtrinsicObject(rootEl);
+				case RegistryObject:
+					return new RegistryObject(rootEl);
+				case RegistryPackage:
+					return new RegistryPackage(rootEl);
+				default:
+					LOG.warn("Treating registry object '" + type + "' as generic registry object.");
+					return new RegistryObject(rootEl);
+			}
+		}
+		if (DC_RECORD_NS.equals(ns)) {
+			throw new UnsupportedOperationException("Creating DC records from XML is not implemented yet.");
+		}
+		throw new IllegalArgumentException("Unknown / unsuppported metadata namespace '" + ns + "'.");
+	}
+
+	/**
+	 * Creates a new {@link MetadataRecord} from the given file.
+	 * @param file record file, must not be <code>null</code>
+	 * @return metadata record instance, never <code>null</code>
+	 * @throws IllegalArgumentException if the metadata format is unknown / record invalid
+	 */
+	public static MetadataRecord create(File file) throws IllegalArgumentException {
+		return create(new XMLAdapter(file).getRootElement());
+	}
+
 }

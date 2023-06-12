@@ -26,34 +26,31 @@ import static org.mockito.Mockito.when;
  */
 public class TemplateFeatureInfoSerializerTest {
 
-    @Test
-    public void testSerialize_DefautHtmlGfi_ShouldReturnHtml()
-                    throws Exception {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        TemplateFeatureInfoSerializer serializer = new TemplateFeatureInfoSerializer();
-        FeatureInfoParams params = createParams();
-        FeatureInfoContext context = mockContext( bos );
-        serializer.serialize( params, context );
+	@Test
+	public void testSerialize_DefautHtmlGfi_ShouldReturnHtml() throws Exception {
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		TemplateFeatureInfoSerializer serializer = new TemplateFeatureInfoSerializer();
+		FeatureInfoParams params = createParams();
+		FeatureInfoContext context = mockContext(bos);
+		serializer.serialize(params, context);
 
-        String html = bos.toString().trim();
-        assertThat( html, startsWith( "<html>" ) );
-        assertThat( html, endsWith( "</html>" ) );
-    }
+		String html = bos.toString().trim();
+		assertThat(html, startsWith("<html>"));
+		assertThat(html, endsWith("</html>"));
+	}
 
-    private FeatureInfoParams createParams()
-                    throws Exception {
-        URL resource = TemplateFeatureInfoSerializer.class.getResource( "featurecollection.gml" );
-        GMLStreamReader gmlStreamReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_32,
-                                                                                 resource );
-        Map<String, String> nsBindings = new HashMap<>();
-        FeatureCollection col = gmlStreamReader.readFeatureCollection();
-        return new FeatureInfoParams( nsBindings, col, "text/html", true, null, null, null );
-    }
+	private FeatureInfoParams createParams() throws Exception {
+		URL resource = TemplateFeatureInfoSerializer.class.getResource("featurecollection.gml");
+		GMLStreamReader gmlStreamReader = GMLInputFactory.createGMLStreamReader(GMLVersion.GML_32, resource);
+		Map<String, String> nsBindings = new HashMap<>();
+		FeatureCollection col = gmlStreamReader.readFeatureCollection();
+		return new FeatureInfoParams(nsBindings, col, "text/html", true, null, null, null);
+	}
 
-    private FeatureInfoContext mockContext( OutputStream os )
-                    throws IOException {
-        FeatureInfoContext mock = mock( FeatureInfoContext.class );
-        when( mock.getOutputStream() ).thenReturn( os );
-        return mock;
-    }
+	private FeatureInfoContext mockContext(OutputStream os) throws IOException {
+		FeatureInfoContext mock = mock(FeatureInfoContext.class);
+		when(mock.getOutputStream()).thenReturn(os);
+		return mock;
+	}
+
 }

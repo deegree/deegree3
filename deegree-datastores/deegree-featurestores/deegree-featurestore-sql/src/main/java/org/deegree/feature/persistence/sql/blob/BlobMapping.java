@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -43,100 +42,89 @@ import org.deegree.feature.persistence.sql.MappedAppSchema;
 
 /**
  * Encapsulates the BLOB mapping parameters of a {@link MappedAppSchema}.
- * 
+ *
  * @see MappedAppSchema
  * @see FeatureTypeMapping
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class BlobMapping {
 
-    private final TableName table;
+	private final TableName table;
 
-    private final ICRS storageCRS;
+	private final ICRS storageCRS;
 
-    private final BlobCodec codec;
+	private final BlobCodec codec;
 
-    /**
-     * Creates a new {@link BlobMapping} instance.
-     * 
-     * @param table
-     *            the name of the table that stores the BLOBs, must not be <code>null</code>
-     * @param storageCRS
-     *            crs used for storing geometries / envelopes, must not be <code>null</code>
-     * @param codec
-     *            the decoder / encoder used for the BLOBs, must not be <code>null</code>
-     */
-    public BlobMapping( String table, ICRS storageCRS, BlobCodec codec ) {
-        this.table = new TableName( table );
-        this.storageCRS = storageCRS;
-        this.codec = codec;
-    }
+	/**
+	 * Creates a new {@link BlobMapping} instance.
+	 * @param table the name of the table that stores the BLOBs, must not be
+	 * <code>null</code>
+	 * @param storageCRS crs used for storing geometries / envelopes, must not be
+	 * <code>null</code>
+	 * @param codec the decoder / encoder used for the BLOBs, must not be
+	 * <code>null</code>
+	 */
+	public BlobMapping(String table, ICRS storageCRS, BlobCodec codec) {
+		this.table = new TableName(table);
+		this.storageCRS = storageCRS;
+		this.codec = codec;
+	}
 
-    /**
-     * Returns the table that stores the BLOBs.
-     * 
-     * @return the table that stores the BLOBs, never <code>null</code>
-     */
-    public TableName getTable() {
-        return table;
-    }
+	/**
+	 * Returns the table that stores the BLOBs.
+	 * @return the table that stores the BLOBs, never <code>null</code>
+	 */
+	public TableName getTable() {
+		return table;
+	}
 
-    /**
-     * Returns the {@link CRS} used for storing the geometries / envelopes.
-     * 
-     * @return the crs, never <code>null</code>
-     */
-    public ICRS getCRS() {
-        return storageCRS;
-    }
+	/**
+	 * Returns the {@link CRS} used for storing the geometries / envelopes.
+	 * @return the crs, never <code>null</code>
+	 */
+	public ICRS getCRS() {
+		return storageCRS;
+	}
 
-    /**
-     * Returns the {@link BlobCodec} for encoding and decoding features / geometries.
-     * 
-     * @return the codec, never <code>null</code>
-     */
-    public BlobCodec getCodec() {
-        return codec;
-    }
+	/**
+	 * Returns the {@link BlobCodec} for encoding and decoding features / geometries.
+	 * @return the codec, never <code>null</code>
+	 */
+	public BlobCodec getCodec() {
+		return codec;
+	}
 
-    /**
-     * Returns the name of the column that stores the gml ids.
-     * 
-     * @return the name of the column, never <code>null</code>
-     */
-    public String getGMLIdColumn() {
-        return "gml_id";
-    }
+	/**
+	 * Returns the name of the column that stores the gml ids.
+	 * @return the name of the column, never <code>null</code>
+	 */
+	public String getGMLIdColumn() {
+		return "gml_id";
+	}
 
-    /**
-     * 
-     * @return
-     */
-    public String getDataColumn() {
-        return "binary_object";
-    }
+	/**
+	 * @return
+	 */
+	public String getDataColumn() {
+		return "binary_object";
+	}
 
-    /**
-     * 
-     * @return
-     */
-    public String getBBoxColumn() {
-        return "gml_bounded_by";
-    }
+	/**
+	 * @return
+	 */
+	public String getBBoxColumn() {
+		return "gml_bounded_by";
+	}
 
-    /**
-     * 
-     * @return
-     */
-    public String getTypeColumn() {
-        return "ft_type";
-    }
+	/**
+	 * @return
+	 */
+	public String getTypeColumn() {
+		return "ft_type";
+	}
 
-    public String getInternalIdColumn() {
-        return "id";
-    }
+	public String getInternalIdColumn() {
+		return "id";
+	}
+
 }

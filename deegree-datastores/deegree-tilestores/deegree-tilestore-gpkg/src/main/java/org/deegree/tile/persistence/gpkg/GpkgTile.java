@@ -64,42 +64,42 @@ import static org.slf4j.LoggerFactory.getLogger;
  */
 public class GpkgTile implements Tile {
 
-    private static final Logger LOG = getLogger( GpkgTile.class );
+	private static final Logger LOG = getLogger(GpkgTile.class);
 
-    private TileMatrix tm;
+	private TileMatrix tm;
 
-    private byte[] bytes;
+	private byte[] bytes;
 
-    public GpkgTile( TileMatrix tm, byte[] bytes ) {
-        this.tm = tm;
-        this.bytes = bytes;
-    }
+	public GpkgTile(TileMatrix tm, byte[] bytes) {
+		this.tm = tm;
+		this.bytes = bytes;
+	}
 
-    @Override
-    public BufferedImage getAsImage()
-                            throws TileIOException {
-        try {
-            return ImageIO.read( new ByteArrayInputStream( bytes ) );
-        } catch ( IOException e ) {
-            String msg = "Error decoding image from byte array: " + e.getMessage();
-            LOG.trace( msg, e );
-            throw new TileIOException( e.getMessage(), e );
-        }
-    }
+	@Override
+	public BufferedImage getAsImage() throws TileIOException {
+		try {
+			return ImageIO.read(new ByteArrayInputStream(bytes));
+		}
+		catch (IOException e) {
+			String msg = "Error decoding image from byte array: " + e.getMessage();
+			LOG.trace(msg, e);
+			throw new TileIOException(e.getMessage(), e);
+		}
+	}
 
-    @Override
-    public InputStream getAsStream() {
-        return new ByteArrayInputStream( bytes );
-    }
+	@Override
+	public InputStream getAsStream() {
+		return new ByteArrayInputStream(bytes);
+	}
 
-    @Override
-    public Envelope getEnvelope() {
-        return tm.getSpatialMetadata().getEnvelope();
-    }
+	@Override
+	public Envelope getEnvelope() {
+		return tm.getSpatialMetadata().getEnvelope();
+	}
 
-    @Override
-    public FeatureCollection getFeatures( int i, int j, int limit )
-                            throws UnsupportedOperationException {
-        throw new UnsupportedOperationException( "Feature retrieval is not supported by the GpkgTileStore." );
-    }
+	@Override
+	public FeatureCollection getFeatures(int i, int j, int limit) throws UnsupportedOperationException {
+		throw new UnsupportedOperationException("Feature retrieval is not supported by the GpkgTileStore.");
+	}
+
 }

@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Pyramid xmlns="http://www.deegree.org/datasource/coverage/pyramid" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/datasource/coverage/pyramid http://schemas.deegree.org/3.5/datasource/coverage/raster/pyramid.xsd">
+<Pyramid xmlns="http://www.deegree.org/datasource/coverage/pyramid" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/datasource/coverage/pyramid https://schemas.deegree.org/core/3.5/datasource/coverage/raster/pyramid.xsd">
   <PyramidFile>../../data/utah/raster/Satellite_Provo/Satellite_Provo.tif</PyramidFile>
 </Pyramid>

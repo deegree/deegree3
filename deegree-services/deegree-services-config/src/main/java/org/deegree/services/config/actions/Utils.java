@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -41,41 +40,37 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.Pair;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class Utils {
 
-    /**
-     * @param path
-     * @return never a null workspace, maybe a null path if none was specified
-     */
-    public static Pair<DeegreeWorkspace, String> getWorkspaceAndPath( String path ) {
-        if ( path == null || path.isEmpty() || path.equals( "/" ) ) {
-            return new Pair<DeegreeWorkspace, String>( getServiceWorkspace(), null );
-        }
+	/**
+	 * @param path
+	 * @return never a null workspace, maybe a null path if none was specified
+	 */
+	public static Pair<DeegreeWorkspace, String> getWorkspaceAndPath(String path) {
+		if (path == null || path.isEmpty() || path.equals("/")) {
+			return new Pair<DeegreeWorkspace, String>(getServiceWorkspace(), null);
+		}
 
-        if ( path.indexOf( ".." ) != -1 ) {
-            throw new SecurityException( "Do not use .. in paths." );
-        }
+		if (path.indexOf("..") != -1) {
+			throw new SecurityException("Do not use .. in paths.");
+		}
 
-        path = path.substring( 1 );
-        if ( path.indexOf( "/" ) != -1 ) {
-            String wsName = path.substring( 0, path.indexOf( "/" ) );
-            if ( DeegreeWorkspace.isWorkspace( wsName ) ) {
-                DeegreeWorkspace ws = DeegreeWorkspace.getInstance( wsName );
-                return new Pair<DeegreeWorkspace, String>( ws, path.substring( path.indexOf( "/" ) + 1 ) );
-            }
-            return new Pair<DeegreeWorkspace, String>( getServiceWorkspace(), path );
-        }
-        if ( DeegreeWorkspace.isWorkspace( path ) ) {
-            return new Pair<DeegreeWorkspace, String>( DeegreeWorkspace.getInstance( path ), null );
-        }
+		path = path.substring(1);
+		if (path.indexOf("/") != -1) {
+			String wsName = path.substring(0, path.indexOf("/"));
+			if (DeegreeWorkspace.isWorkspace(wsName)) {
+				DeegreeWorkspace ws = DeegreeWorkspace.getInstance(wsName);
+				return new Pair<DeegreeWorkspace, String>(ws, path.substring(path.indexOf("/") + 1));
+			}
+			return new Pair<DeegreeWorkspace, String>(getServiceWorkspace(), path);
+		}
+		if (DeegreeWorkspace.isWorkspace(path)) {
+			return new Pair<DeegreeWorkspace, String>(DeegreeWorkspace.getInstance(path), null);
+		}
 
-        return new Pair<DeegreeWorkspace, String>( getServiceWorkspace(), path.isEmpty() ? null : path );
-    }
+		return new Pair<DeegreeWorkspace, String>(getServiceWorkspace(), path.isEmpty() ? null : path);
+	}
 
 }

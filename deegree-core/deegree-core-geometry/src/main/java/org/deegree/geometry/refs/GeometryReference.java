@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -51,174 +50,169 @@ import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Point;
 
 /**
- * Represents a reference to the GML representation of a geometry, which is usually expressed using an
- * <code>xlink:href</code> attribute in GML (may be document-local or remote).
- * 
+ * Represents a reference to the GML representation of a geometry, which is usually
+ * expressed using an <code>xlink:href</code> attribute in GML (may be document-local or
+ * remote).
+ *
  * @param <T>
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class GeometryReference<T extends Geometry> extends GMLReference<T> implements Geometry {
 
-    /**
-     * Creates a new {@link GeometryReference} instance.
-     * 
-     * @param resolver
-     *            used for resolving the reference, must not be <code>null</code>
-     * @param uri
-     *            the geometry's uri, must not be <code>null</code>
-     * @param baseURL
-     *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
-     */
-    public GeometryReference( GMLReferenceResolver resolver, String uri, String baseURL ) {
-        super( resolver, uri, baseURL );
-    }
+	/**
+	 * Creates a new {@link GeometryReference} instance.
+	 * @param resolver used for resolving the reference, must not be <code>null</code>
+	 * @param uri the geometry's uri, must not be <code>null</code>
+	 * @param baseURL base URL for resolving the uri, may be <code>null</code> (no
+	 * resolving of relative URLs)
+	 */
+	public GeometryReference(GMLReferenceResolver resolver, String uri, String baseURL) {
+		super(resolver, uri, baseURL);
+	}
 
-    @Override
-    public boolean contains( Geometry geometry ) {
-        return getReferencedObject().contains( geometry );
-    }
+	@Override
+	public boolean contains(Geometry geometry) {
+		return getReferencedObject().contains(geometry);
+	}
 
-    @Override
-    public boolean crosses( Geometry geometry ) {
-        return getReferencedObject().crosses( geometry );
-    }
+	@Override
+	public boolean crosses(Geometry geometry) {
+		return getReferencedObject().crosses(geometry);
+	}
 
-    @Override
-    public Geometry getDifference( Geometry geometry ) {
-        return getReferencedObject().getDifference( geometry );
-    }
+	@Override
+	public Geometry getDifference(Geometry geometry) {
+		return getReferencedObject().getDifference(geometry);
+	}
 
-    @Override
-    public Measure getDistance( Geometry geometry, Unit requestedUnits ) {
-        return getReferencedObject().getDistance( geometry, requestedUnits );
-    }
+	@Override
+	public Measure getDistance(Geometry geometry, Unit requestedUnits) {
+		return getReferencedObject().getDistance(geometry, requestedUnits);
+	}
 
-    @Override
-    public boolean equals( Geometry geometry ) {
-        return getReferencedObject().equals( geometry );
-    }
+	@Override
+	public boolean equals(Geometry geometry) {
+		return getReferencedObject().equals(geometry);
+	}
 
-    @Override
-    public Geometry getBuffer( Measure distance ) {
-        return getReferencedObject().getBuffer( distance );
-    }
+	@Override
+	public Geometry getBuffer(Measure distance) {
+		return getReferencedObject().getBuffer(distance);
+	}
 
-    @Override
-    public Geometry getConvexHull() {
-        return getReferencedObject().getConvexHull();
-    }
+	@Override
+	public Geometry getConvexHull() {
+		return getReferencedObject().getConvexHull();
+	}
 
-    @Override
-    public int getCoordinateDimension() {
-        return getReferencedObject().getCoordinateDimension();
-    }
+	@Override
+	public int getCoordinateDimension() {
+		return getReferencedObject().getCoordinateDimension();
+	}
 
-    @Override
-    public ICRS getCoordinateSystem() {
-        return getReferencedObject().getCoordinateSystem();
-    }
+	@Override
+	public ICRS getCoordinateSystem() {
+		return getReferencedObject().getCoordinateSystem();
+	}
 
-    @Override
-    public Envelope getEnvelope() {
-        return getReferencedObject().getEnvelope();
-    }
+	@Override
+	public Envelope getEnvelope() {
+		return getReferencedObject().getEnvelope();
+	}
 
-    @Override
-    public GeometryType getGeometryType() {
-        return getReferencedObject().getGeometryType();
-    }
+	@Override
+	public GeometryType getGeometryType() {
+		return getReferencedObject().getGeometryType();
+	}
 
-    @Override
-    public PrecisionModel getPrecision() {
-        return getReferencedObject().getPrecision();
-    }
+	@Override
+	public PrecisionModel getPrecision() {
+		return getReferencedObject().getPrecision();
+	}
 
-    @Override
-    public Geometry getIntersection( Geometry geometry ) {
-        return getReferencedObject().getIntersection( geometry );
-    }
+	@Override
+	public Geometry getIntersection(Geometry geometry) {
+		return getReferencedObject().getIntersection(geometry);
+	}
 
-    @Override
-    public boolean intersects( Geometry geometry ) {
-        return getReferencedObject().intersects( geometry );
-    }
+	@Override
+	public boolean intersects(Geometry geometry) {
+		return getReferencedObject().intersects(geometry);
+	}
 
-    @Override
-    public boolean isDisjoint( Geometry geometry ) {
-        return getReferencedObject().isDisjoint( geometry );
-    }
+	@Override
+	public boolean isDisjoint(Geometry geometry) {
+		return getReferencedObject().isDisjoint(geometry);
+	}
 
-    @Override
-    public boolean overlaps( Geometry geometry ) {
-        return getReferencedObject().overlaps( geometry );
-    }
+	@Override
+	public boolean overlaps(Geometry geometry) {
+		return getReferencedObject().overlaps(geometry);
+	}
 
-    @Override
-    public boolean touches( Geometry geometry ) {
-        return getReferencedObject().touches( geometry );
-    }
+	@Override
+	public boolean touches(Geometry geometry) {
+		return getReferencedObject().touches(geometry);
+	}
 
-    @Override
-    public boolean isBeyond( Geometry geometry, Measure distance ) {
-        return getReferencedObject().isBeyond( geometry, distance );
-    }
+	@Override
+	public boolean isBeyond(Geometry geometry, Measure distance) {
+		return getReferencedObject().isBeyond(geometry, distance);
+	}
 
-    @Override
-    public boolean isWithin( Geometry geometry ) {
-        return getReferencedObject().isWithin( geometry );
-    }
+	@Override
+	public boolean isWithin(Geometry geometry) {
+		return getReferencedObject().isWithin(geometry);
+	}
 
-    @Override
-    public boolean isWithinDistance( Geometry geometry, Measure distance ) {
-        return getReferencedObject().isWithinDistance( geometry, distance );
-    }
+	@Override
+	public boolean isWithinDistance(Geometry geometry, Measure distance) {
+		return getReferencedObject().isWithinDistance(geometry, distance);
+	}
 
-    @Override
-    public Geometry getUnion( Geometry geometry ) {
-        return getReferencedObject().getUnion( geometry );
-    }
+	@Override
+	public Geometry getUnion(Geometry geometry) {
+		return getReferencedObject().getUnion(geometry);
+	}
 
-    @Override
-    public List<Property> getProperties() {
-        return getReferencedObject().getProperties();
-    }
+	@Override
+	public List<Property> getProperties() {
+		return getReferencedObject().getProperties();
+	}
 
-    @Override
-    public void setProperties( List<Property> props ) {
-        getReferencedObject().setProperties( props );
-    }
+	@Override
+	public void setProperties(List<Property> props) {
+		getReferencedObject().setProperties(props);
+	}
 
-    @Override
-    public Point getCentroid() {
-        return getReferencedObject().getCentroid();
-    }
+	@Override
+	public Point getCentroid() {
+		return getReferencedObject().getCentroid();
+	}
 
-    @Override
-    public void setCoordinateSystem( ICRS crs ) {
-        getReferencedObject().setCoordinateSystem( crs );
-    }
+	@Override
+	public void setCoordinateSystem(ICRS crs) {
+		getReferencedObject().setCoordinateSystem(crs);
+	}
 
-    @Override
-    public void setId( String id ) {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public void setId(String id) {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public void setPrecision( PrecisionModel pm ) {
-        getReferencedObject().setPrecision( pm );
-    }
+	@Override
+	public void setPrecision(PrecisionModel pm) {
+		getReferencedObject().setPrecision(pm);
+	}
 
-    @Override
-    public boolean isSFSCompliant() {
-        return getReferencedObject().isSFSCompliant();
-    }
+	@Override
+	public boolean isSFSCompliant() {
+		return getReferencedObject().isSFSCompliant();
+	}
 
-    @Override
-    public void setType( GMLObjectType type ) {
-        getReferencedObject().setType( type );
-    }
+	@Override
+	public void setType(GMLObjectType type) {
+		getReferencedObject().setType(type);
+	}
+
 }

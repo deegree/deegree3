@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -63,56 +62,53 @@ import org.slf4j.Logger;
 
 /**
  * Builds a tile data set map from jaxb config.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 class GdalTileDataSetMapBuilder {
 
-    private static final Logger LOG = getLogger( GdalTileDataSetMapBuilder.class );
+	private static final Logger LOG = getLogger(GdalTileDataSetMapBuilder.class);
 
-    private final GdalTileStoreJaxb cfg;
+	private final GdalTileStoreJaxb cfg;
 
-    private final GdalTileDataSetBuilder builder;
+	private final GdalTileDataSetBuilder builder;
 
-    private ResourceLocation<TileStore> location;
+	private ResourceLocation<TileStore> location;
 
-    GdalTileDataSetMapBuilder( Workspace workspace, ResourceLocation<TileStore> location, GdalTileStoreJaxb cfg ) {
-        this.location = location;
-        this.cfg = cfg;
-        builder = new GdalTileDataSetBuilder( workspace );
-    }
+	GdalTileDataSetMapBuilder(Workspace workspace, ResourceLocation<TileStore> location, GdalTileStoreJaxb cfg) {
+		this.location = location;
+		this.cfg = cfg;
+		builder = new GdalTileDataSetBuilder(workspace);
+	}
 
-    Map<String, TileDataSet> buildTileDataSetMap()
-                            throws IOException, UnknownCRSException {
+	Map<String, TileDataSet> buildTileDataSetMap() throws IOException, UnknownCRSException {
 
-        Map<String, TileDataSet> map = new HashMap<String, TileDataSet>();
-        for ( GdalTileStoreJaxb.TileDataSet tds : cfg.getTileDataSet() ) {
-            String id = tds.getIdentifier();
-            if ( id == null ) {
-                id = new File( tds.getFile() ).getName();
-            }
-            File file = location.resolveToFile( tds.getFile() );
-            if ( !file.exists() ) {
-                LOG.warn( "File {} does not exist, skipping.", file );
-                continue;
-            }
-            Dataset gdalDataset = gdal.OpenShared( file.toString() );
-            try {
-                // TODO
-                Envelope env = GdalUtils.getEnvelopeAndCrs( gdalDataset, "EPSG:28992" ).getEnvelope();
-                if ( env == null ) {
-                    throw new ResourceInitException( "No envelope information could be read via GDAL." );
-                }
-                LOG.debug( "Envelope from GDAL was {}.", env );
-                map.put( id, builder.buildTileDataSet( tds, location, env ) );
-            } finally {
-                gdalDataset.delete();
-            }
-        }
-        return map;
-    }
+		Map<String, TileDataSet> map = new HashMap<String, TileDataSet>();
+		for (GdalTileStoreJaxb.TileDataSet tds : cfg.getTileDataSet()) {
+			String id = tds.getIdentifier();
+			if (id == null) {
+				id = new File(tds.getFile()).getName();
+			}
+			File file = location.resolveToFile(tds.getFile());
+			if (!file.exists()) {
+				LOG.warn("File {} does not exist, skipping.", file);
+				continue;
+			}
+			Dataset gdalDataset = gdal.OpenShared(file.toString());
+			try {
+				// TODO
+				Envelope env = GdalUtils.getEnvelopeAndCrs(gdalDataset, "EPSG:28992").getEnvelope();
+				if (env == null) {
+					throw new ResourceInitException("No envelope information could be read via GDAL.");
+				}
+				LOG.debug("Envelope from GDAL was {}.", env);
+				map.put(id, builder.buildTileDataSet(tds, location, env));
+			}
+			finally {
+				gdalDataset.delete();
+			}
+		}
+		return map;
+	}
 
 }

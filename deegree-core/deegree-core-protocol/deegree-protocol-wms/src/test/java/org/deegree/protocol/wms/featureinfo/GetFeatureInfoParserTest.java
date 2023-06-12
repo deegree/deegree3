@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2015 by:
@@ -62,82 +61,80 @@ import org.junit.Test;
  */
 public class GetFeatureInfoParserTest {
 
-    @Test
-    public void testParse()
-                            throws Exception {
-        GetFeatureInfoParser parser = new GetFeatureInfoParser();
-        XMLStreamReader xmlStreamReader = createXmlStreamReader( "wms-1.3.0-GetFeatureInfo.xml" );
-        GetFeatureInfo getFeatureInfo = parser.parse( xmlStreamReader );
+	@Test
+	public void testParse() throws Exception {
+		GetFeatureInfoParser parser = new GetFeatureInfoParser();
+		XMLStreamReader xmlStreamReader = createXmlStreamReader("wms-1.3.0-GetFeatureInfo.xml");
+		GetFeatureInfo getFeatureInfo = parser.parse(xmlStreamReader);
 
-        assertThat( getFeatureInfo.getWidth(), is( 1024 ) );
-        assertThat( getFeatureInfo.getHeight(), is( 512 ) );
+		assertThat(getFeatureInfo.getWidth(), is(1024));
+		assertThat(getFeatureInfo.getHeight(), is(512));
 
-        assertThat( getFeatureInfo.getCoordinateSystem(), is( CRSManager.lookup( "EPSG:4326" ) ) );
-        Envelope boundingBox = getFeatureInfo.getEnvelope();
-        assertThat( boundingBox.getMin().get0(), is( -115.4 ) );
-        assertThat( boundingBox.getMin().get1(), is( 35.0 ) );
-        assertThat( boundingBox.getMax().get0(), is( -108.0 ) );
-        assertThat( boundingBox.getMax().get1(), is( 44.0 ) );
+		assertThat(getFeatureInfo.getCoordinateSystem(), is(CRSManager.lookup("EPSG:4326")));
+		Envelope boundingBox = getFeatureInfo.getEnvelope();
+		assertThat(boundingBox.getMin().get0(), is(-115.4));
+		assertThat(boundingBox.getMin().get1(), is(35.0));
+		assertThat(boundingBox.getMax().get0(), is(-108.0));
+		assertThat(boundingBox.getMax().get1(), is(44.0));
 
-        HashMap<String, List<?>> dimensions = getFeatureInfo.getDimensions();
-        assertThat( dimensions.size(), is( 0 ) );
+		HashMap<String, List<?>> dimensions = getFeatureInfo.getDimensions();
+		assertThat(dimensions.size(), is(0));
 
-        Map<String, String> parameterMap = getFeatureInfo.getParameterMap();
-        assertThat( parameterMap.size(), is( 1 ) );
-        assertThat( parameterMap.get( "EXCEPTIONS" ), is( "XML" ) );
+		Map<String, String> parameterMap = getFeatureInfo.getParameterMap();
+		assertThat(parameterMap.size(), is(1));
+		assertThat(parameterMap.get("EXCEPTIONS"), is("XML"));
 
-        assertThat( getFeatureInfo.getX(), is( 5 ) );
-        assertThat( getFeatureInfo.getY(), is( 10 ) );
-        assertThat( getFeatureInfo.getFeatureCount(), is( 42 ) );
-        assertThat( getFeatureInfo.getInfoFormat(), is( "text/html" ) );
-        assertThat( getFeatureInfo.getQueryLayers().size(), is( 2 ) );
-        assertThat( getFeatureInfo.getQueryLayers(), hasLayerRef( "counties" ) );
-        assertThat( getFeatureInfo.getQueryLayers(), hasLayerRef( "municipalities" ) );
-    }
+		assertThat(getFeatureInfo.getX(), is(5));
+		assertThat(getFeatureInfo.getY(), is(10));
+		assertThat(getFeatureInfo.getFeatureCount(), is(42));
+		assertThat(getFeatureInfo.getInfoFormat(), is("text/html"));
+		assertThat(getFeatureInfo.getQueryLayers().size(), is(2));
+		assertThat(getFeatureInfo.getQueryLayers(), hasLayerRef("counties"));
+		assertThat(getFeatureInfo.getQueryLayers(), hasLayerRef("municipalities"));
+	}
 
-    @Test
-    public void testParse_defaultValues()
-                            throws Exception {
-        GetFeatureInfoParser parser = new GetFeatureInfoParser();
-        XMLStreamReader xmlStreamReader = createXmlStreamReader( "wms-1.3.0-GetFeatureInfo_simple.xml" );
-        GetFeatureInfo getFeatureInfo = parser.parse( xmlStreamReader );
+	@Test
+	public void testParse_defaultValues() throws Exception {
+		GetFeatureInfoParser parser = new GetFeatureInfoParser();
+		XMLStreamReader xmlStreamReader = createXmlStreamReader("wms-1.3.0-GetFeatureInfo_simple.xml");
+		GetFeatureInfo getFeatureInfo = parser.parse(xmlStreamReader);
 
-        Map<String, String> parameterMap = getFeatureInfo.getParameterMap();
-        assertThat( parameterMap.size(), is( 0 ) );
+		Map<String, String> parameterMap = getFeatureInfo.getParameterMap();
+		assertThat(parameterMap.size(), is(0));
 
-        assertThat( getFeatureInfo.getX(), is( 50 ) );
-        assertThat( getFeatureInfo.getY(), is( 15 ) );
-        assertThat( getFeatureInfo.getFeatureCount(), is( 1 ) );
-        assertThat( getFeatureInfo.getInfoFormat(), is( "text/xml" ) );
-        assertThat( getFeatureInfo.getQueryLayers().size(), is( 1 ) );
-        assertThat( getFeatureInfo.getQueryLayers(), hasLayerRef( "counties" ) );
-    }
+		assertThat(getFeatureInfo.getX(), is(50));
+		assertThat(getFeatureInfo.getY(), is(15));
+		assertThat(getFeatureInfo.getFeatureCount(), is(1));
+		assertThat(getFeatureInfo.getInfoFormat(), is("text/xml"));
+		assertThat(getFeatureInfo.getQueryLayers().size(), is(1));
+		assertThat(getFeatureInfo.getQueryLayers(), hasLayerRef("counties"));
+	}
 
-    private XMLStreamReader createXmlStreamReader( String resource )
-                            throws XMLStreamException, FactoryConfigurationError {
-        InputStream getMapResource = GetFeatureInfoParserTest.class.getResourceAsStream( resource );
-        return XMLInputFactory.newInstance().createXMLStreamReader( getMapResource );
-    }
+	private XMLStreamReader createXmlStreamReader(String resource)
+			throws XMLStreamException, FactoryConfigurationError {
+		InputStream getMapResource = GetFeatureInfoParserTest.class.getResourceAsStream(resource);
+		return XMLInputFactory.newInstance().createXMLStreamReader(getMapResource);
+	}
 
-    @SuppressWarnings("unchecked")
-    private Matcher<List<LayerRef>> hasLayerRef( final String layer ) {
-        return new BaseMatcher<List<LayerRef>>() {
+	@SuppressWarnings("unchecked")
+	private Matcher<List<LayerRef>> hasLayerRef(final String layer) {
+		return new BaseMatcher<List<LayerRef>>() {
 
-            @Override
-            public boolean matches( Object item ) {
-                List<LayerRef> layers = (List<LayerRef>) item;
-                for ( LayerRef layerRef : layers ) {
-                    if ( layer.equals( layerRef.getName() ) )
-                        return true;
-                }
-                return false;
-            }
+			@Override
+			public boolean matches(Object item) {
+				List<LayerRef> layers = (List<LayerRef>) item;
+				for (LayerRef layerRef : layers) {
+					if (layer.equals(layerRef.getName()))
+						return true;
+				}
+				return false;
+			}
 
-            @Override
-            public void describeTo( Description description ) {
-                description.appendText( "List should contain a layer with name " + layer );
-            }
-        };
-    }
+			@Override
+			public void describeTo(Description description) {
+				description.appendText("List should contain a layer with name " + layer);
+			}
+		};
+	}
 
 }

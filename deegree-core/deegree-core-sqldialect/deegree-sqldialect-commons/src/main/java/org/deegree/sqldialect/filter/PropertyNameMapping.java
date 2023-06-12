@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-base/src/main/java/org/deegree/filter/sql/PropertyNameMapping.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -44,83 +43,75 @@ import org.deegree.filter.expression.ValueReference;
 
 /**
  * A {@link ValueReference} that's mapped to database column(s).
- * 
+ *
  * @see AbstractWhereBuilder
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 30994 $, $Date: 2011-05-31 17:20:05 +0200 (Di, 31. Mai 2011) $
  */
 public class PropertyNameMapping {
 
-    private final ParticleConverter<?> converter;
+	private final ParticleConverter<?> converter;
 
-    private final List<Join> joins;
+	private final List<Join> joins;
 
-    private String column;
+	private String column;
 
-    private String tableAlias;
+	private String tableAlias;
 
-    /**
-     * Creates a new {@link PropertyNameMapping} instance.
-     * 
-     * @param converter
-     *            converter, must not be <code>null</code>
-     * @param joins
-     *            joins that are required to connect the root table to the tables where the targeted SQL particles are,
-     *            can also be emtpy or <code>null</code>
-     * @param column
-     *            may be null
-     * @param tableAlias
-     *            may be null
-     */
-    public PropertyNameMapping( ParticleConverter<?> converter, List<Join> joins, String column, String tableAlias ) {
-        this.converter = converter;
-        this.column = column;
-        this.tableAlias = tableAlias;
-        if ( joins == null ) {
-            this.joins = emptyList();
-        } else {
-            this.joins = joins;
-        }
-    }
+	/**
+	 * Creates a new {@link PropertyNameMapping} instance.
+	 * @param converter converter, must not be <code>null</code>
+	 * @param joins joins that are required to connect the root table to the tables where
+	 * the targeted SQL particles are, can also be emtpy or <code>null</code>
+	 * @param column may be null
+	 * @param tableAlias may be null
+	 */
+	public PropertyNameMapping(ParticleConverter<?> converter, List<Join> joins, String column, String tableAlias) {
+		this.converter = converter;
+		this.column = column;
+		this.tableAlias = tableAlias;
+		if (joins == null) {
+			this.joins = emptyList();
+		}
+		else {
+			this.joins = joins;
+		}
+	}
 
-    /**
-     * Returns the joins that are required to connect the root table to the tables where the targeted SQL particles are
-     * stored.
-     * 
-     * @return joins, can be emtpy, but never <code>null</code>
-     */
-    public List<Join> getJoins() {
-        return joins;
-    }
+	/**
+	 * Returns the joins that are required to connect the root table to the tables where
+	 * the targeted SQL particles are stored.
+	 * @return joins, can be emtpy, but never <code>null</code>
+	 */
+	public List<Join> getJoins() {
+		return joins;
+	}
 
-    /**
-     * Returns the converter for transforming corresponding argument values to SQL argument values.
-     * 
-     * @return converter, never <code>null</code>
-     */
-    public ParticleConverter<?> getConverter() {
-        return converter;
-    }
+	/**
+	 * Returns the converter for transforming corresponding argument values to SQL
+	 * argument values.
+	 * @return converter, never <code>null</code>
+	 */
+	public ParticleConverter<?> getConverter() {
+		return converter;
+	}
 
-    public String getColumn() {
-        return column;
-    }
+	public String getColumn() {
+		return column;
+	}
 
-    public String getTableAlias() {
-        return tableAlias;
-    }
+	public String getTableAlias() {
+		return tableAlias;
+	}
 
-    @Override
-    public String toString() {
-        String s = "";
-        for ( Join join : joins ) {
-            s += join;
-            s += ",";
-        }
-        s += converter;
-        return s;
-    }
+	@Override
+	public String toString() {
+		String s = "";
+		for (Join join : joins) {
+			s += join;
+			s += ",";
+		}
+		s += converter;
+		return s;
+	}
+
 }

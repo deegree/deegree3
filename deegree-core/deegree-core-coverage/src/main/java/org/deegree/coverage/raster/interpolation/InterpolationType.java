@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -37,31 +36,29 @@ package org.deegree.coverage.raster.interpolation;
 
 /**
  * Enum for all implemented interpolation types.
- * 
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public enum InterpolationType {
-    /** bilinear interpolation */
-    BILINEAR,
-    /** nearest neighbor interpolation */
-    NEAREST_NEIGHBOR,
-    /** No interpolation */
-    NONE;
 
-    /**
-     * Get interpolation for the given string. This method is case insensitive, words can be separated with a
-     * whitespace, minus or underscore.
-     * 
-     * @param interpolation
-     * @return the interpolation
-     */
-    public static InterpolationType fromString( String interpolation ) {
-        String key = interpolation.toUpperCase();
-        key = key.replaceAll( "-", "_" );
-        key = key.replaceAll( "\\s", "_" );
-        return InterpolationType.valueOf( key );
-    }
+	/** bilinear interpolation */
+	BILINEAR,
+	/** nearest neighbor interpolation */
+	NEAREST_NEIGHBOR,
+	/** No interpolation */
+	NONE;
+
+	/**
+	 * Get interpolation for the given string. This method is case insensitive, words can
+	 * be separated with a whitespace, minus or underscore.
+	 * @param interpolation
+	 * @return the interpolation
+	 */
+	public static InterpolationType fromString(String interpolation) {
+		String key = interpolation.toUpperCase();
+		key = key.replaceAll("-", "_");
+		key = key.replaceAll("\\s", "_");
+		return InterpolationType.valueOf(key);
+	}
+
 }

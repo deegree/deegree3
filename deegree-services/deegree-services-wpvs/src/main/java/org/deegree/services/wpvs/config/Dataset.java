@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -53,275 +52,266 @@ import org.deegree.workspace.ResourceLocation;
 import org.slf4j.Logger;
 
 /**
- * The <code>DatasetWrapper</code> class defines methods for the retrieval of objects which match requested datasets
- * types and a given {@link ViewParams}.
- * 
+ * The <code>DatasetWrapper</code> class defines methods for the retrieval of objects
+ * which match requested datasets types and a given {@link ViewParams}.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * @param <CO>
- *            the constraint object.
+ * @param <CO> the constraint object.
  */
 public abstract class Dataset<CO> {
 
-    private final static Logger LOG = getLogger( Dataset.class );
+	private final static Logger LOG = getLogger(Dataset.class);
 
-    /** The geometry factory to be used */
-    protected final static GeometryFactory geomFac = new GeometryFactory();
+	/** The geometry factory to be used */
+	protected final static GeometryFactory geomFac = new GeometryFactory();
 
-    List<Pair<String, List<Constraint<CO>>>> datasourceConstraints = new LinkedList<Pair<String, List<Constraint<CO>>>>();
+	List<Pair<String, List<Constraint<CO>>>> datasourceConstraints = new LinkedList<Pair<String, List<Constraint<CO>>>>();
 
-    /**
-     * Fill the wrapper with the values from the given dataset definition.
-     * 
-     * @param sceneEnvelope
-     *            whic should be enlarged for all configured datasets, it is 3D!! in real world coordinates.
-     * @param translationToLocalCRS
-     *            which was configured
-     * @param configAdapter
-     *            to resolve urls
-     * @param dsd
-     *            containing the datasets.
-     * @return the merged scene envelope
-     */
-    public abstract Envelope fillFromDatasetDefinitions( Envelope sceneEnvelope, double[] translationToLocalCRS,
-                                                         ResourceLocation<?> location, DatasetDefinitions dsd );
+	/**
+	 * Fill the wrapper with the values from the given dataset definition.
+	 * @param sceneEnvelope whic should be enlarged for all configured datasets, it is
+	 * 3D!! in real world coordinates.
+	 * @param translationToLocalCRS which was configured
+	 * @param configAdapter to resolve urls
+	 * @param dsd containing the datasets.
+	 * @return the merged scene envelope
+	 */
+	public abstract Envelope fillFromDatasetDefinitions(Envelope sceneEnvelope, double[] translationToLocalCRS,
+			ResourceLocation<?> location, DatasetDefinitions dsd);
 
-    /**
-     * @param parentMaxPixelError
-     * @param maxPixelError
-     * @return the parent or the max pixel error if not <code>null<code>.
-     */
-    protected Double clarifyMaxPixelError( Double parentMaxPixelError, Double maxPixelError ) {
-        return ( maxPixelError == null ) ? parentMaxPixelError : maxPixelError;
-    }
+	/**
+	 * @param parentMaxPixelError
+	 * @param maxPixelError
+	 * @return the parent or the max pixel error if not <code>null<code>.
+	 */
+	protected Double clarifyMaxPixelError(Double parentMaxPixelError, Double maxPixelError) {
+		return (maxPixelError == null) ? parentMaxPixelError : maxPixelError;
+	}
 
-    /**
-     * @param name
-     *            of dataset
-     * @return true if a dataset was previously defined with the given name.
-     */
-    protected boolean isUnAmbiguous( String name ) {
-        for ( Pair<String, List<Constraint<CO>>> kv : datasourceConstraints ) {
-            if ( kv != null && kv.first != null && kv.first.equals( name ) ) {
-                return true;
-            }
-        }
-        return false;
-    }
+	/**
+	 * @param name of dataset
+	 * @return true if a dataset was previously defined with the given name.
+	 */
+	protected boolean isUnAmbiguous(String name) {
+		for (Pair<String, List<Constraint<CO>>> kv : datasourceConstraints) {
+			if (kv != null && kv.first != null && kv.first.equals(name)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
-    /**
-     * @return the number of configured datasets.
-     */
-    public int size() {
-        return datasourceConstraints.size();
-    }
+	/**
+	 * @return the number of configured datasets.
+	 */
+	public int size() {
+		return datasourceConstraints.size();
+	}
 
-    /**
-     * Add a constrained to the given name of a dataset.
-     * 
-     * @param name
-     * @param datasourceObject
-     * @param bbt
-     *            in the WPVS scene coordinate system.
-     * @return true if no previous mapping for the given name was found.
-     */
-    protected boolean addConstraint( String name, CO datasourceObject, Envelope bbt ) {
-        if ( name == null ) {
-            LOG.warn( "Name may not be null" );
-            return false;
-        }
-        List<Constraint<CO>> dsConstraints = null;
-        for ( int i = 0; i < datasourceConstraints.size() && dsConstraints == null; ++i ) {
-            Pair<String, List<Constraint<CO>>> kv = datasourceConstraints.get( i );
-            if ( kv != null && kv.first != null && kv.first.equals( name ) ) {
-                dsConstraints = kv.second;
-            }
-        }
-        Constraint<CO> newC = new Constraint<CO>( datasourceObject, bbt );
-        if ( newC.getValidEnvelope().getMin().getCoordinateDimension() != 3 ) {
-            LOG.warn( "Given envelope of datasource: " + name
-                      + " is not 3 dimensional, please configure this datasource to be 3d." );
-        }
-        if ( dsConstraints == null ) {
-            dsConstraints = new LinkedList<Constraint<CO>>();
-            dsConstraints.add( newC );
-            datasourceConstraints.add( new Pair<String, List<Constraint<CO>>>( name, dsConstraints ) );
-            return true;
-        }
-        for ( Constraint<CO> c : dsConstraints ) {
-            if ( c != null && c.equals( newC ) ) {
-                LOG.info( "Ignoring datasource it is already defined. " );
-                return false;
-            }
-            // if ( c.minScale < newC.minScale && c.maxScale > newC.maxScale ) {
-            // if ( c.validEnvelope.intersects( newC.validEnvelope ) ) {
-            // LOG.warn( "Found overlapping scales and envelopes for datasource, this may not be." );
-            // return false;
-            // }
-            // }
+	/**
+	 * Add a constrained to the given name of a dataset.
+	 * @param name
+	 * @param datasourceObject
+	 * @param bbt in the WPVS scene coordinate system.
+	 * @return true if no previous mapping for the given name was found.
+	 */
+	protected boolean addConstraint(String name, CO datasourceObject, Envelope bbt) {
+		if (name == null) {
+			LOG.warn("Name may not be null");
+			return false;
+		}
+		List<Constraint<CO>> dsConstraints = null;
+		for (int i = 0; i < datasourceConstraints.size() && dsConstraints == null; ++i) {
+			Pair<String, List<Constraint<CO>>> kv = datasourceConstraints.get(i);
+			if (kv != null && kv.first != null && kv.first.equals(name)) {
+				dsConstraints = kv.second;
+			}
+		}
+		Constraint<CO> newC = new Constraint<CO>(datasourceObject, bbt);
+		if (newC.getValidEnvelope().getMin().getCoordinateDimension() != 3) {
+			LOG.warn("Given envelope of datasource: " + name
+					+ " is not 3 dimensional, please configure this datasource to be 3d.");
+		}
+		if (dsConstraints == null) {
+			dsConstraints = new LinkedList<Constraint<CO>>();
+			dsConstraints.add(newC);
+			datasourceConstraints.add(new Pair<String, List<Constraint<CO>>>(name, dsConstraints));
+			return true;
+		}
+		for (Constraint<CO> c : dsConstraints) {
+			if (c != null && c.equals(newC)) {
+				LOG.info("Ignoring datasource it is already defined. ");
+				return false;
+			}
+			// if ( c.minScale < newC.minScale && c.maxScale > newC.maxScale ) {
+			// if ( c.validEnvelope.intersects( newC.validEnvelope ) ) {
+			// LOG.warn( "Found overlapping scales and envelopes for datasource, this may
+			// not be." );
+			// return false;
+			// }
+			// }
 
-        }
-        dsConstraints.add( newC );
-        return true;
-    }
+		}
+		dsConstraints.add(newC);
+		return true;
+	}
 
-    /**
-     * Iterates over all configured datasets and add them to the list
-     * 
-     * @return the list of matching objects, never <code>null</code>
-     */
-    public List<CO> getAllDatasourceObjects() {
-        List<CO> result = new LinkedList<CO>();
-        if ( datasourceConstraints != null && !datasourceConstraints.isEmpty() ) {
-            for ( Pair<String, List<Constraint<CO>>> kv : datasourceConstraints ) {
-                if ( kv != null && kv.second != null && !kv.second.isEmpty() ) {
-                    for ( Constraint<CO> constraint : kv.second ) {
-                        result.add( constraint.getDatasourceObject() );
-                    }
-                }
-            }
-        }
-        return result;
-    }
+	/**
+	 * Iterates over all configured datasets and add them to the list
+	 * @return the list of matching objects, never <code>null</code>
+	 */
+	public List<CO> getAllDatasourceObjects() {
+		List<CO> result = new LinkedList<CO>();
+		if (datasourceConstraints != null && !datasourceConstraints.isEmpty()) {
+			for (Pair<String, List<Constraint<CO>>> kv : datasourceConstraints) {
+				if (kv != null && kv.second != null && !kv.second.isEmpty()) {
+					for (Constraint<CO> constraint : kv.second) {
+						result.add(constraint.getDatasourceObject());
+					}
+				}
+			}
+		}
+		return result;
+	}
 
-    private List<Constraint<CO>> getDatasetsForName( String name ) {
-        for ( Pair<String, List<Constraint<CO>>> kv : datasourceConstraints ) {
-            if ( kv != null && kv.first != null && name.equals( kv.first ) ) {
-                return kv.second;
-            }
-        }
-        return null;
-    }
+	private List<Constraint<CO>> getDatasetsForName(String name) {
+		for (Pair<String, List<Constraint<CO>>> kv : datasourceConstraints) {
+			if (kv != null && kv.first != null && name.equals(kv.first)) {
+				return kv.second;
+			}
+		}
+		return null;
+	}
 
-    /**
-     * Matches the given names to the configured datasets and tests retrieves the datasources/datasets which match the
-     * names and the viewparams.
-     * 
-     * @param requestedDatasets
-     * @param viewParams
-     * @return the list of matching objects, never <code>null</code>
-     */
-    public List<CO> getMatchingDatasourceObjects( Collection<String> requestedDatasets, ViewParams viewParams ) {
-        List<CO> result = new LinkedList<CO>();
-        if ( requestedDatasets != null && !requestedDatasets.isEmpty() ) {
-            for ( String ds : requestedDatasets ) {
-                if ( ds != null ) {
-                    List<Constraint<CO>> dsConst = getDatasetsForName( ds );
-                    if ( dsConst != null && !dsConst.isEmpty() ) {
-                        for ( Constraint<CO> constraint : dsConst ) {
-                            if ( constraint.matches( viewParams ) ) {
-                                result.add( constraint.getDatasourceObject() );
-                            }
-                        }
-                    }
-                }
+	/**
+	 * Matches the given names to the configured datasets and tests retrieves the
+	 * datasources/datasets which match the names and the viewparams.
+	 * @param requestedDatasets
+	 * @param viewParams
+	 * @return the list of matching objects, never <code>null</code>
+	 */
+	public List<CO> getMatchingDatasourceObjects(Collection<String> requestedDatasets, ViewParams viewParams) {
+		List<CO> result = new LinkedList<CO>();
+		if (requestedDatasets != null && !requestedDatasets.isEmpty()) {
+			for (String ds : requestedDatasets) {
+				if (ds != null) {
+					List<Constraint<CO>> dsConst = getDatasetsForName(ds);
+					if (dsConst != null && !dsConst.isEmpty()) {
+						for (Constraint<CO> constraint : dsConst) {
+							if (constraint.matches(viewParams)) {
+								result.add(constraint.getDatasourceObject());
+							}
+						}
+					}
+				}
 
-            }
-        }
-        return result;
-    }
+			}
+		}
+		return result;
+	}
 
-    /**
-     * @return all configured and requestable titles known to this dataset type.
-     */
-    public Set<String> datasetTitles() {
-        Set<String> names = new HashSet<String>();
-        for ( Pair<String, List<Constraint<CO>>> kv : datasourceConstraints ) {
-            if ( kv != null && kv.first != null ) {
-                names.add( kv.first );
-            }
-        }
-        return names;
-    }
+	/**
+	 * @return all configured and requestable titles known to this dataset type.
+	 */
+	public Set<String> datasetTitles() {
+		Set<String> names = new HashSet<String>();
+		for (Pair<String, List<Constraint<CO>>> kv : datasourceConstraints) {
+			if (kv != null && kv.first != null) {
+				names.add(kv.first);
+			}
+		}
+		return names;
+	}
 
-    private class Constraint<DO> {
+	private class Constraint<DO> {
 
-        private final DO datasourceObject;
+		private final DO datasourceObject;
 
-        Envelope validEnvelope;
+		Envelope validEnvelope;
 
-        /**
-         * @param datasource
-         * @param createEnvelope
-         */
-        Constraint( DO datasource, Envelope createEnvelope ) {
-            this.datasourceObject = datasource;
-            validEnvelope = createEnvelope;
+		/**
+		 * @param datasource
+		 * @param createEnvelope
+		 */
+		Constraint(DO datasource, Envelope createEnvelope) {
+			this.datasourceObject = datasource;
+			validEnvelope = createEnvelope;
 
-        }
+		}
 
-        /**
-         * @return the object which is defined by this constraint.
-         */
-        public DO getDatasourceObject() {
-            return datasourceObject;
-        }
+		/**
+		 * @return the object which is defined by this constraint.
+		 */
+		public DO getDatasourceObject() {
+			return datasourceObject;
+		}
 
-        /**
-         * @param viewParams
-         * @return true if the given this constraints match the given values.
-         */
-        boolean matches( ViewParams viewParams ) {
-            if ( viewParams == null ) {
-                return true;
-            }
-            boolean result = true;
-            if ( validEnvelope.getCoordinateDimension() == 3 ) {
-                double[][] bbox = new double[][] { validEnvelope.getMin().getAsArray(),
-                                                  validEnvelope.getMax().getAsArray() };
-                result = viewParams.getViewFrustum().intersects( bbox );
-            }
-            return result;
-        }
+		/**
+		 * @param viewParams
+		 * @return true if the given this constraints match the given values.
+		 */
+		boolean matches(ViewParams viewParams) {
+			if (viewParams == null) {
+				return true;
+			}
+			boolean result = true;
+			if (validEnvelope.getCoordinateDimension() == 3) {
+				double[][] bbox = new double[][] { validEnvelope.getMin().getAsArray(),
+						validEnvelope.getMax().getAsArray() };
+				result = viewParams.getViewFrustum().intersects(bbox);
+			}
+			return result;
+		}
 
-        /**
-         * @return the validEnvelope
-         */
-        public final Envelope getValidEnvelope() {
-            return validEnvelope;
-        }
+		/**
+		 * @return the validEnvelope
+		 */
+		public final Envelope getValidEnvelope() {
+			return validEnvelope;
+		}
 
-        @SuppressWarnings("unchecked")
-        @Override
-        public boolean equals( Object other ) {
-            if ( other != null && other instanceof Constraint ) {
-                final Constraint<DO> that = (Constraint<DO>) other;
-                return this.datasourceObject.equals( that.datasourceObject )
-                       && this.validEnvelope.equals( that.validEnvelope );
-            }
-            return false;
-        }
+		@SuppressWarnings("unchecked")
+		@Override
+		public boolean equals(Object other) {
+			if (other != null && other instanceof Constraint) {
+				final Constraint<DO> that = (Constraint<DO>) other;
+				return this.datasourceObject.equals(that.datasourceObject)
+						&& this.validEnvelope.equals(that.validEnvelope);
+			}
+			return false;
+		}
 
-        /**
-         * Implementation as proposed by Joshua Block in Effective Java (Addison-Wesley 2001), which supplies an even
-         * distribution and is relatively fast. It is created from field <b>f</b> as follows:
-         * <ul>
-         * <li>boolean -- code = (f ? 0 : 1)</li>
-         * <li>byte, char, short, int -- code = (int)f</li>
-         * <li>long -- code = (int)(f ^ (f &gt;&gt;&gt;32))</li>
-         * <li>float -- code = Float.floatToIntBits(f);</li>
-         * <li>double -- long l = Double.doubleToLongBits(f); code = (int)(l ^ (l &gt;&gt;&gt; 32))</li>
-         * <li>all Objects, (where equals(&nbsp;) calls equals(&nbsp;) for this field) -- code = f.hashCode(&nbsp;)</li>
-         * <li>Array -- Apply above rules to each element</li>
-         * </ul>
-         * <p>
-         * Combining the hash code(s) computed above: result = 37 * result + code;
-         * </p>
-         * 
-         * @return (int) ( result &gt;&gt;&gt; 32 ) ^ (int) result;
-         * 
-         * @see java.lang.Object#hashCode()
-         */
-        @Override
-        public int hashCode() {
-            // the 2nd millionth prime, :-)
-            long result = 32452843;
-            result = result * 37 + datasourceObject.hashCode();
-            result = result * 37 + validEnvelope.hashCode();
-            return (int) ( result >>> 32 ) ^ (int) result;
-        }
+		/**
+		 * Implementation as proposed by Joshua Block in Effective Java (Addison-Wesley
+		 * 2001), which supplies an even distribution and is relatively fast. It is
+		 * created from field <b>f</b> as follows:
+		 * <ul>
+		 * <li>boolean -- code = (f ? 0 : 1)</li>
+		 * <li>byte, char, short, int -- code = (int)f</li>
+		 * <li>long -- code = (int)(f ^ (f &gt;&gt;&gt;32))</li>
+		 * <li>float -- code = Float.floatToIntBits(f);</li>
+		 * <li>double -- long l = Double.doubleToLongBits(f); code = (int)(l ^ (l
+		 * &gt;&gt;&gt; 32))</li>
+		 * <li>all Objects, (where equals(&nbsp;) calls equals(&nbsp;) for this field) --
+		 * code = f.hashCode(&nbsp;)</li>
+		 * <li>Array -- Apply above rules to each element</li>
+		 * </ul>
+		 * <p>
+		 * Combining the hash code(s) computed above: result = 37 * result + code;
+		 * </p>
+		 * @return (int) ( result &gt;&gt;&gt; 32 ) ^ (int) result;
+		 *
+		 * @see java.lang.Object#hashCode()
+		 */
+		@Override
+		public int hashCode() {
+			// the 2nd millionth prime, :-)
+			long result = 32452843;
+			result = result * 37 + datasourceObject.hashCode();
+			result = result * 37 + validEnvelope.hashCode();
+			return (int) (result >>> 32) ^ (int) result;
+		}
 
-    }
+	}
+
 }

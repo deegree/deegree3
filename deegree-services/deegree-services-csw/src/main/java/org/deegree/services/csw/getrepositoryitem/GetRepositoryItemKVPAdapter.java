@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -47,37 +46,37 @@ import org.deegree.protocol.i18n.Messages;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:goltz@deegree.org">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class GetRepositoryItemKVPAdapter {
 
-    private static final Version VERSION_100 = new Version( 1, 0, 0 );
+	private static final Version VERSION_100 = new Version(1, 0, 0);
 
-    public static GetRepositoryItem parse( Map<String, String> normalizedKVPParams ) {
-        Version version = Version.parseVersion( KVPUtils.getRequired( normalizedKVPParams, "VERSION" ) );
-        if ( VERSION_202.equals( version ) || VERSION_100.equals( version ) ) {
-            return new GetRepositoryItem( KVPUtils.getRequired( normalizedKVPParams, "ID" ) );
-        } else {
-            String msg = Messages.get( "UNSUPPORTED_VERSION", version, Version.getVersionsString( VERSION_202 )
-                                                                       + Version.getVersionsString( VERSION_100 ) );
-            throw new InvalidParameterValueException( msg );
-        }
-    }
+	public static GetRepositoryItem parse(Map<String, String> normalizedKVPParams) {
+		Version version = Version.parseVersion(KVPUtils.getRequired(normalizedKVPParams, "VERSION"));
+		if (VERSION_202.equals(version) || VERSION_100.equals(version)) {
+			return new GetRepositoryItem(KVPUtils.getRequired(normalizedKVPParams, "ID"));
+		}
+		else {
+			String msg = Messages.get("UNSUPPORTED_VERSION", version,
+					Version.getVersionsString(VERSION_202) + Version.getVersionsString(VERSION_100));
+			throw new InvalidParameterValueException(msg);
+		}
+	}
 
-    public static void main( String[] args ) {
-        try {
-            iii();
-        } catch ( MissingParameterException e ) {
-            // TODO: handle exception
-            System.out.println( "gecatcht" );
-        }
-    }
+	public static void main(String[] args) {
+		try {
+			iii();
+		}
+		catch (MissingParameterException e) {
+			// TODO: handle exception
+			System.out.println("gecatcht");
+		}
+	}
 
-    private static void iii() {
-        throw new MissingParameterException();
-    }
+	private static void iii() {
+		throw new MissingParameterException();
+	}
+
 }

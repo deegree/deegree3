@@ -42,42 +42,38 @@ import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.AbstractResourceMetadata;
 
 /**
- * {@link ResourceMetadata} for {@link TileMatrixSet}s derived from raster files using <a
- * href="http://www.gdal.org">GDAL</a>.
- * 
+ * {@link ResourceMetadata} for {@link TileMatrixSet}s derived from raster files using
+ * <a href="http://www.gdal.org">GDAL</a>.
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * 
  * @since 3.5
  */
 class GdalTileMatrixSetMetadata extends AbstractResourceMetadata<TileMatrixSet> {
 
-    private static final String JAXB_PACKAGE = "org.deegree.tile.tilematrixset.gdal.jaxb";
+	private static final String JAXB_PACKAGE = "org.deegree.tile.tilematrixset.gdal.jaxb";
 
-    /**
-     * Creates a new {@link GdalTileMatrixSetMetadata} instance.
-     * 
-     * @param ws
-     *            workspace that the resource belongs to, must not be <code>null</code>
-     * @param location
-     *            resource configuration, must not be <code>null</code>
-     * @param provider
-     *            resource provider, must not be <code>null</code>
-     */
-    GdalTileMatrixSetMetadata( Workspace ws, ResourceLocation<TileMatrixSet> location,
-                               GdalTileMatrixSetProvider provider ) {
-        super( ws, location, provider );
-    }
+	/**
+	 * Creates a new {@link GdalTileMatrixSetMetadata} instance.
+	 * @param ws workspace that the resource belongs to, must not be <code>null</code>
+	 * @param location resource configuration, must not be <code>null</code>
+	 * @param provider resource provider, must not be <code>null</code>
+	 */
+	GdalTileMatrixSetMetadata(Workspace ws, ResourceLocation<TileMatrixSet> location,
+			GdalTileMatrixSetProvider provider) {
+		super(ws, location, provider);
+	}
 
-    @Override
-    public ResourceBuilder<TileMatrixSet> prepare() {
-        try {
-            InputStream is = location.getAsStream();
-            URL schemaUrl = provider.getSchema();
-            GdalTileMatrixSetConfig cfg = (GdalTileMatrixSetConfig) unmarshall( JAXB_PACKAGE, schemaUrl, is, workspace );
-            return new GdalTileMatrixSetBuilder( cfg, this );
-        } catch ( Exception e ) {
-            throw new ResourceInitException( e.getLocalizedMessage(), e );
-        }
-    }
+	@Override
+	public ResourceBuilder<TileMatrixSet> prepare() {
+		try {
+			InputStream is = location.getAsStream();
+			URL schemaUrl = provider.getSchema();
+			GdalTileMatrixSetConfig cfg = (GdalTileMatrixSetConfig) unmarshall(JAXB_PACKAGE, schemaUrl, is, workspace);
+			return new GdalTileMatrixSetBuilder(cfg, this);
+		}
+		catch (Exception e) {
+			throw new ResourceInitException(e.getLocalizedMessage(), e);
+		}
+	}
 
 }

@@ -40,32 +40,30 @@ import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
  * Resource metadata for file renderable stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class FileRenderableStoreMetadata extends AbstractResourceMetadata<RenderableStore> {
 
-    private static final String CONFIG_JAXB_PACKAGE = RenderableFileStoreConfig.class.getPackage().getName();
+	private static final String CONFIG_JAXB_PACKAGE = RenderableFileStoreConfig.class.getPackage().getName();
 
-    public FileRenderableStoreMetadata( Workspace workspace, ResourceLocation<RenderableStore> location,
-                                        AbstractResourceProvider<RenderableStore> provider ) {
-        super( workspace, location, provider );
-    }
+	public FileRenderableStoreMetadata(Workspace workspace, ResourceLocation<RenderableStore> location,
+			AbstractResourceProvider<RenderableStore> provider) {
+		super(workspace, location, provider);
+	}
 
-    @Override
-    public ResourceBuilder<RenderableStore> prepare() {
-        try {
-            RenderableFileStoreConfig config = (RenderableFileStoreConfig) unmarshall( CONFIG_JAXB_PACKAGE,
-                                                                                       provider.getSchema(),
-                                                                                       location.getAsStream(),
-                                                                                       workspace );
+	@Override
+	public ResourceBuilder<RenderableStore> prepare() {
+		try {
+			RenderableFileStoreConfig config = (RenderableFileStoreConfig) unmarshall(CONFIG_JAXB_PACKAGE,
+					provider.getSchema(), location.getAsStream(), workspace);
 
-            return new FileRenderableStoreBuilder( config, this );
-        } catch ( Exception e ) {
-            throw new ResourceInitException( e.getLocalizedMessage(), e );
-        }
-    }
+			return new FileRenderableStoreBuilder(config, this);
+		}
+		catch (Exception e) {
+			throw new ResourceInitException(e.getLocalizedMessage(), e);
+		}
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2022 by:
@@ -51,32 +50,28 @@ import static org.hamcrest.MatcherAssert.assertThat;
  */
 public class WKTReaderTest {
 
-    @Test
-    public void testPoint()
-                    throws Exception {
-        Geometry geom = new WKTReader( CRSManager.lookup( "EPSG:4326" ) ).read(
-                        "POINT(5.0 18.0)" );
-        assertThat( geom, instanceOf( Point.class ) );
-        assertThat( ( (Point) geom ).get0(), is( 5.0 ) );
-        assertThat( ( (Point) geom ).get1(), is( 18.0 ) );
-    }
+	@Test
+	public void testPoint() throws Exception {
+		Geometry geom = new WKTReader(CRSManager.lookup("EPSG:4326")).read("POINT(5.0 18.0)");
+		assertThat(geom, instanceOf(Point.class));
+		assertThat(((Point) geom).get0(), is(5.0));
+		assertThat(((Point) geom).get1(), is(18.0));
+	}
 
-    @Test
-    public void testLineString()
-                    throws Exception {
-        Geometry geom = new WKTReader( CRSManager.lookup( "EPSG:4326" ) ).read(
-                        "LINESTRING(5.0 18.0,5.1 18.1,5.2 18.2,5.3 18.3)" );
-        assertThat( geom, instanceOf( LineString.class ) );
-        assertThat( ( (LineString) geom ).getEndPoint().get0(), is( 5.3 ) );
-        assertThat( ( (LineString) geom ).getEndPoint().get1(), is( 18.3 ) );
-    }
+	@Test
+	public void testLineString() throws Exception {
+		Geometry geom = new WKTReader(CRSManager.lookup("EPSG:4326"))
+			.read("LINESTRING(5.0 18.0,5.1 18.1,5.2 18.2,5.3 18.3)");
+		assertThat(geom, instanceOf(LineString.class));
+		assertThat(((LineString) geom).getEndPoint().get0(), is(5.3));
+		assertThat(((LineString) geom).getEndPoint().get1(), is(18.3));
+	}
 
-    @Test
-    public void testPolygon()
-                    throws Exception {
-        Geometry geom = new WKTReader( CRSManager.lookup( "EPSG:4326" ) ).read(
-                        "POLYGON((5.0 18.0,5.1 18.1,5.2 18.2,5.3 18.3, 5.0 18.0))" );
-        assertThat( geom, instanceOf( Polygon.class ) );
-    }
+	@Test
+	public void testPolygon() throws Exception {
+		Geometry geom = new WKTReader(CRSManager.lookup("EPSG:4326"))
+			.read("POLYGON((5.0 18.0,5.1 18.1,5.2 18.2,5.3 18.3, 5.0 18.0))");
+		assertThat(geom, instanceOf(Polygon.class));
+	}
 
 }

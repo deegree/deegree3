@@ -35,28 +35,27 @@ import org.deegree.workspace.Workspace;
 
 /**
  * This class is responsible for building a WFS.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class WfsBuilder implements ResourceBuilder<OWS> {
 
-    private ResourceMetadata<OWS> metadata;
+	private ResourceMetadata<OWS> metadata;
 
-    private Workspace workspace;
+	private Workspace workspace;
 
-    private DeegreeWFS config;
+	private DeegreeWFS config;
 
-    public WfsBuilder( ResourceMetadata<OWS> metadata, Workspace workspace, DeegreeWFS config ) {
-        this.metadata = metadata;
-        this.workspace = workspace;
-        this.config = config;
-    }
+	public WfsBuilder(ResourceMetadata<OWS> metadata, Workspace workspace, DeegreeWFS config) {
+		this.metadata = metadata;
+		this.workspace = workspace;
+		this.config = config;
+	}
 
-    @Override
-    public OWS build() {
-        return new WebFeatureService( metadata, workspace, config );
-    }
+	@Override
+	public OWS build() {
+		return new WebFeatureService(metadata, workspace, config);
+	}
 
 }

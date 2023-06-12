@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -51,14 +50,16 @@ import org.deegree.cs.projections.Projection;
  * <q>(From Snyder p.97)</q>
  * </p>
  * <p>
- * To show a region for which the greatest extent is from east to west in the temperate zones, conic projections are
- * usually preferable to cylindrical projections.
+ * To show a region for which the greatest extent is from east to west in the temperate
+ * zones, conic projections are usually preferable to cylindrical projections.
  * </p>
  * <p>
- * Normal conic projections are distinguished by the use of arcs of concentric circles for parallesl of latitude and
- * equally spaced straight radii of these circles for meridians. The angles between the meridians on the map are smaller
- * than the actual differences in longitude. The circular arcs may or may not be equally spaced, depending on the
- * projections. The polyconic projections and the oblique conic projections have characteristcs different from these.
+ * Normal conic projections are distinguished by the use of arcs of concentric circles for
+ * parallesl of latitude and equally spaced straight radii of these circles for meridians.
+ * The angles between the meridians on the map are smaller than the actual differences in
+ * longitude. The circular arcs may or may not be equally spaced, depending on the
+ * projections. The polyconic projections and the oblique conic projections have
+ * characteristcs different from these.
  * </p>
  * <p>
  * There are three important classes of conic projections:
@@ -68,119 +69,119 @@ import org.deegree.cs.projections.Projection;
  * <li>the equal area</li>
  * </ul>
  * </p>
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 
 public abstract class ConicProjection extends Projection implements IConicProjection {
-    private double firstParallelLatitude;
 
-    private double secondParallelLatitude;
+	private double firstParallelLatitude;
 
-    /**
-     * @param firstParallelLatitude
-     *            the latitude (in radians) of the first parallel. (Snyder phi_1).
-     * @param secondParallelLatitude
-     *            the latitude (in radians) of the second parallel. (Snyder phi_2).
-     * @param geographicCRS
-     * @param falseNorthing
-     * @param falseEasting
-     * @param naturalOrigin
-     * @param units
-     * @param scale
-     * @param conformal
-     * @param equalArea
-     * @param id
-     *            an identifiable instance containing information about this projection
-     */
-    public ConicProjection( double firstParallelLatitude, double secondParallelLatitude, double falseNorthing,
-                            double falseEasting, Point2d naturalOrigin, IUnit units, double scale, boolean conformal,
-                            boolean equalArea, CRSResource id ) {
-        super( falseNorthing, falseEasting, naturalOrigin, units, scale, conformal, equalArea, id );
+	private double secondParallelLatitude;
 
-        if ( Double.isNaN( firstParallelLatitude ) || firstParallelLatitude == 0
-             || Math.abs( firstParallelLatitude ) < EPS11 || firstParallelLatitude < WORLD_BOUNDS_RAD.getMinY()
-             || firstParallelLatitude > WORLD_BOUNDS_RAD.getMaxY() ) {
-            this.firstParallelLatitude = getProjectionLatitude();
-            this.secondParallelLatitude = getProjectionLatitude();
-        } else {
-            this.firstParallelLatitude = firstParallelLatitude;
-            this.secondParallelLatitude = secondParallelLatitude;
-            if ( this.secondParallelLatitude < WORLD_BOUNDS_RAD.getMinY()
-                 || this.secondParallelLatitude > WORLD_BOUNDS_RAD.getMaxY() ) {
-                this.secondParallelLatitude = Double.NaN;
-            }
-        }
-    }
+	/**
+	 * @param firstParallelLatitude the latitude (in radians) of the first parallel.
+	 * (Snyder phi_1).
+	 * @param secondParallelLatitude the latitude (in radians) of the second parallel.
+	 * (Snyder phi_2).
+	 * @param geographicCRS
+	 * @param falseNorthing
+	 * @param falseEasting
+	 * @param naturalOrigin
+	 * @param units
+	 * @param scale
+	 * @param conformal
+	 * @param equalArea
+	 * @param id an identifiable instance containing information about this projection
+	 */
+	public ConicProjection(double firstParallelLatitude, double secondParallelLatitude, double falseNorthing,
+			double falseEasting, Point2d naturalOrigin, IUnit units, double scale, boolean conformal, boolean equalArea,
+			CRSResource id) {
+		super(falseNorthing, falseEasting, naturalOrigin, units, scale, conformal, equalArea, id);
 
-    /**
-     * @return the latitude of the first parallel which is the intersection of the earth with the cone or the
-     *         projectionLatitude if the cone is tangential with earth (e.g. one standard parallel).
-     */
-    public final double getFirstParallelLatitude() {
-        return firstParallelLatitude;
-    }
+		if (Double.isNaN(firstParallelLatitude) || firstParallelLatitude == 0 || Math.abs(firstParallelLatitude) < EPS11
+				|| firstParallelLatitude < WORLD_BOUNDS_RAD.getMinY()
+				|| firstParallelLatitude > WORLD_BOUNDS_RAD.getMaxY()) {
+			this.firstParallelLatitude = getProjectionLatitude();
+			this.secondParallelLatitude = getProjectionLatitude();
+		}
+		else {
+			this.firstParallelLatitude = firstParallelLatitude;
+			this.secondParallelLatitude = secondParallelLatitude;
+			if (this.secondParallelLatitude < WORLD_BOUNDS_RAD.getMinY()
+					|| this.secondParallelLatitude > WORLD_BOUNDS_RAD.getMaxY()) {
+				this.secondParallelLatitude = Double.NaN;
+			}
+		}
+	}
 
-    /**
-     * @return the latitude of the first parallel which is the intersection of the earth with the cone or the
-     *         projectionLatitude if the cone is tangential with earth (e.g. one standard parallel).
-     */
-    public final double getSecondParallelLatitude() {
-        return secondParallelLatitude;
-    }
+	/**
+	 * @return the latitude of the first parallel which is the intersection of the earth
+	 * with the cone or the projectionLatitude if the cone is tangential with earth (e.g.
+	 * one standard parallel).
+	 */
+	public final double getFirstParallelLatitude() {
+		return firstParallelLatitude;
+	}
 
-    @Override
-    public boolean equals( Object other ) {
-        if ( other != null && other instanceof ConicProjection ) {
-            final ConicProjection that = (ConicProjection) other;
-            return super.equals( other )
-                   && ( Double.isNaN( this.firstParallelLatitude ) ? Double.isNaN( that.firstParallelLatitude )
-                                                                  : Math.abs( this.firstParallelLatitude
-                                                                              - that.firstParallelLatitude ) < EPS11 )
-                   && ( Double.isNaN( this.secondParallelLatitude ) ? Double.isNaN( that.secondParallelLatitude )
-                                                                   : Math.abs( this.secondParallelLatitude
-                                                                               - that.secondParallelLatitude ) < EPS11 );
-        }
-        return false;
-    }
+	/**
+	 * @return the latitude of the first parallel which is the intersection of the earth
+	 * with the cone or the projectionLatitude if the cone is tangential with earth (e.g.
+	 * one standard parallel).
+	 */
+	public final double getSecondParallelLatitude() {
+		return secondParallelLatitude;
+	}
 
-    /**
-     * Implementation as proposed by Joshua Block in Effective Java (Addison-Wesley 2001), which supplies an even
-     * distribution and is relatively fast. It is created from field <b>f</b> as follows:
-     * <ul>
-     * <li>boolean -- code = (f ? 0 : 1)</li>
-     * <li>byte, char, short, int -- code = (int)f</li>
-     * <li>long -- code = (int)(f ^ (f &gt;&gt;&gt;32))</li>
-     * <li>float -- code = Float.floatToIntBits(f);</li>
-     * <li>double -- long l = Double.doubleToLongBits(f); code = (int)(l ^ (l &gt;&gt;&gt; 32))</li>
-     * <li>all Objects, (where equals(&nbsp;) calls equals(&nbsp;) for this field) -- code = f.hashCode(&nbsp;)</li>
-     * <li>Array -- Apply above rules to each element</li>
-     * </ul>
-     * <p>
-     * Combining the hash code(s) computed above: result = 37 * result + code;
-     * </p>
-     * 
-     * @return (int) ( result >>> 32 ) ^ (int) result;
-     * 
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-        // the 2nd millionth prime, :-)
-        long code = 32452843;
-        code = code * 37 + super.hashCode();
+	@Override
+	public boolean equals(Object other) {
+		if (other != null && other instanceof ConicProjection) {
+			final ConicProjection that = (ConicProjection) other;
+			return super.equals(other)
+					&& (Double.isNaN(this.firstParallelLatitude) ? Double.isNaN(that.firstParallelLatitude)
+							: Math.abs(this.firstParallelLatitude - that.firstParallelLatitude) < EPS11)
+					&& (Double.isNaN(this.secondParallelLatitude) ? Double.isNaN(that.secondParallelLatitude)
+							: Math.abs(this.secondParallelLatitude - that.secondParallelLatitude) < EPS11);
+		}
+		return false;
+	}
 
-        long tmp = Double.doubleToLongBits( firstParallelLatitude );
-        code = code * 37 + (int) ( tmp ^ ( tmp >>> 32 ) );
+	/**
+	 * Implementation as proposed by Joshua Block in Effective Java (Addison-Wesley 2001),
+	 * which supplies an even distribution and is relatively fast. It is created from
+	 * field <b>f</b> as follows:
+	 * <ul>
+	 * <li>boolean -- code = (f ? 0 : 1)</li>
+	 * <li>byte, char, short, int -- code = (int)f</li>
+	 * <li>long -- code = (int)(f ^ (f &gt;&gt;&gt;32))</li>
+	 * <li>float -- code = Float.floatToIntBits(f);</li>
+	 * <li>double -- long l = Double.doubleToLongBits(f); code = (int)(l ^ (l &gt;&gt;&gt;
+	 * 32))</li>
+	 * <li>all Objects, (where equals(&nbsp;) calls equals(&nbsp;) for this field) -- code
+	 * = f.hashCode(&nbsp;)</li>
+	 * <li>Array -- Apply above rules to each element</li>
+	 * </ul>
+	 * <p>
+	 * Combining the hash code(s) computed above: result = 37 * result + code;
+	 * </p>
+	 * @return (int) ( result >>> 32 ) ^ (int) result;
+	 *
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		// the 2nd millionth prime, :-)
+		long code = 32452843;
+		code = code * 37 + super.hashCode();
 
-        tmp = Double.doubleToLongBits( secondParallelLatitude );
-        code = code * 37 + (int) ( tmp ^ ( tmp >>> 32 ) );
+		long tmp = Double.doubleToLongBits(firstParallelLatitude);
+		code = code * 37 + (int) (tmp ^ (tmp >>> 32));
 
-        return (int) ( code >>> 32 ) ^ (int) code;
-    }
+		tmp = Double.doubleToLongBits(secondParallelLatitude);
+		code = code * 37 + (int) (tmp ^ (tmp >>> 32));
+
+		return (int) (code >>> 32) ^ (int) code;
+	}
+
 }

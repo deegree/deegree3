@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -43,83 +42,81 @@ import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.filter.Expression;
 
 /**
- * Implementations of this class provide {@link Expression}s with custom XML encoding (i.e. they use a non-standard
- * element substitutable for the standard <code>ogc:expression</code> element).
- * 
+ * Implementations of this class provide {@link Expression}s with custom XML encoding
+ * (i.e. they use a non-standard element substitutable for the standard
+ * <code>ogc:expression</code> element).
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface CustomExpression extends Expression {
 
-    /**
-     * Returns the element name used for encoding this expression.
-     * 
-     * @return the element name of the expression, never <code>null</code>
-     */
-    public QName getElementName();
+	/**
+	 * Returns the element name used for encoding this expression.
+	 * @return the element name of the expression, never <code>null</code>
+	 */
+	public QName getElementName();
 
-    /**
-     * Returns the object representation for the given <code>ogc:Function</code> element event (Filter Encoding 1.0.0)
-     * that the cursor of the given {@link XMLStreamReader} points at.
-     * <p>
-     * <ul>
-     * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;ogc:function&gt;)</li>
-     * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/ogc:function&gt;)</li>
-     * </ul>
-     * </p>
-     * 
-     * @param xmlStream
-     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;ogc:Function&gt;), points at the
-     *            corresponding <code>END_ELEMENT</code> event (&lt;/ogc:Function&gt;) afterwards
-     * @return corresponding {@link Expression} object
-     * @throws XMLParsingException
-     *             if the element is not a valid "ogc:Function" element
-     * @throws XMLStreamException
-     */
-    public CustomExpression parse100( XMLStreamReader xmlStream )
-                            throws XMLStreamException;
+	/**
+	 * Returns the object representation for the given <code>ogc:Function</code> element
+	 * event (Filter Encoding 1.0.0) that the cursor of the given {@link XMLStreamReader}
+	 * points at.
+	 * <p>
+	 * <ul>
+	 * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event
+	 * (&lt;ogc:function&gt;)</li>
+	 * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code>
+	 * event (&lt;/ogc:function&gt;)</li>
+	 * </ul>
+	 * </p>
+	 * @param xmlStream cursor must point at the <code>START_ELEMENT</code> event
+	 * (&lt;ogc:Function&gt;), points at the corresponding <code>END_ELEMENT</code> event
+	 * (&lt;/ogc:Function&gt;) afterwards
+	 * @return corresponding {@link Expression} object
+	 * @throws XMLParsingException if the element is not a valid "ogc:Function" element
+	 * @throws XMLStreamException
+	 */
+	public CustomExpression parse100(XMLStreamReader xmlStream) throws XMLStreamException;
 
-    /**
-     * Returns the object representation for the given <code>ogc:Function</code> element event (Filter Encoding 1.1.0)
-     * that the cursor of the given {@link XMLStreamReader} points at.
-     * <p>
-     * <ul>
-     * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;ogc:function&gt;)</li>
-     * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/ogc:function&gt;)</li>
-     * </ul>
-     * </p>
-     * 
-     * @param xmlStream
-     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;ogc:Function&gt;), points at the
-     *            corresponding <code>END_ELEMENT</code> event (&lt;/ogc:Function&gt;) afterwards
-     * @return corresponding {@link Expression} object
-     * @throws XMLParsingException
-     *             if the element is not a valid "ogc:Function" element
-     * @throws XMLStreamException
-     */
-    public CustomExpression parse110( XMLStreamReader xmlStream )
-                            throws XMLStreamException;
+	/**
+	 * Returns the object representation for the given <code>ogc:Function</code> element
+	 * event (Filter Encoding 1.1.0) that the cursor of the given {@link XMLStreamReader}
+	 * points at.
+	 * <p>
+	 * <ul>
+	 * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event
+	 * (&lt;ogc:function&gt;)</li>
+	 * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code>
+	 * event (&lt;/ogc:function&gt;)</li>
+	 * </ul>
+	 * </p>
+	 * @param xmlStream cursor must point at the <code>START_ELEMENT</code> event
+	 * (&lt;ogc:Function&gt;), points at the corresponding <code>END_ELEMENT</code> event
+	 * (&lt;/ogc:Function&gt;) afterwards
+	 * @return corresponding {@link Expression} object
+	 * @throws XMLParsingException if the element is not a valid "ogc:Function" element
+	 * @throws XMLStreamException
+	 */
+	public CustomExpression parse110(XMLStreamReader xmlStream) throws XMLStreamException;
 
-    /**
-     * Returns the object representation for the given <code>ogc:Function</code> element event (Filter Encoding 2.0.0)
-     * that the cursor of the given {@link XMLStreamReader} points at.
-     * <p>
-     * <ul>
-     * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;ogc:function&gt;)</li>
-     * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/ogc:function&gt;)</li>
-     * </ul>
-     * </p>
-     * 
-     * @param xmlStream
-     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;ogc:Function&gt;), points at the
-     *            corresponding <code>END_ELEMENT</code> event (&lt;/ogc:Function&gt;) afterwards
-     * @return corresponding {@link Expression} object
-     * @throws XMLParsingException
-     *             if the element is not a valid "ogc:Function" element
-     * @throws XMLStreamException
-     */
-    public CustomExpression parse200( XMLStreamReader xmlStream )
-                            throws XMLStreamException;
+	/**
+	 * Returns the object representation for the given <code>ogc:Function</code> element
+	 * event (Filter Encoding 2.0.0) that the cursor of the given {@link XMLStreamReader}
+	 * points at.
+	 * <p>
+	 * <ul>
+	 * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event
+	 * (&lt;ogc:function&gt;)</li>
+	 * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code>
+	 * event (&lt;/ogc:function&gt;)</li>
+	 * </ul>
+	 * </p>
+	 * @param xmlStream cursor must point at the <code>START_ELEMENT</code> event
+	 * (&lt;ogc:Function&gt;), points at the corresponding <code>END_ELEMENT</code> event
+	 * (&lt;/ogc:Function&gt;) afterwards
+	 * @return corresponding {@link Expression} object
+	 * @throws XMLParsingException if the element is not a valid "ogc:Function" element
+	 * @throws XMLStreamException
+	 */
+	public CustomExpression parse200(XMLStreamReader xmlStream) throws XMLStreamException;
+
 }

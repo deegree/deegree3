@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -49,340 +48,328 @@ import java.util.Map.Entry;
 
 /**
  * <code>CollectionUtils</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class CollectionUtils {
 
-    /**
-     * Use like this: System.out.println(map(List<double[]> object, DOUBLE_PRINTER)) Unfortunately, a generic version
-     * for all primitive-arrays is not possible...
-     */
-    public static final Mapper<String, double[]> DOUBLE_PRINTER = new Mapper<String, double[]>() {
-        @Override
-        public String apply( double[] u ) {
-            return Arrays.toString( u );
-        }
-    };
+	/**
+	 * Use like this: System.out.println(map(List<double[]> object, DOUBLE_PRINTER))
+	 * Unfortunately, a generic version for all primitive-arrays is not possible...
+	 */
+	public static final Mapper<String, double[]> DOUBLE_PRINTER = new Mapper<String, double[]>() {
+		@Override
+		public String apply(double[] u) {
+			return Arrays.toString(u);
+		}
+	};
 
-    /**
-     * Maps objects to its #toString result, or to null if null. A constant would do here, but compiler warnings would
-     * the be result.
-     */
-    public static <T> Mapper<String, T> getToStringMapper() {
-        return new Mapper<String, T>() {
-            @Override
-            public String apply( T u ) {
-                return u == null ? null : u.toString();
-            }
-        };
-    }
+	/**
+	 * Maps objects to its #toString result, or to null if null. A constant would do here,
+	 * but compiler warnings would the be result.
+	 */
+	public static <T> Mapper<String, T> getToStringMapper() {
+		return new Mapper<String, T>() {
+			@Override
+			public String apply(T u) {
+				return u == null ? null : u.toString();
+			}
+		};
+	}
 
-    /**
-     * @param delim
-     * @return a reducer that joins a string list
-     */
-    public static Reducer<String> getStringJoiner( final String delim ) {
-        return new Reducer<String>() {
-            @Override
-            public String reduce( String t1, String t2 ) {
-                return t1 + delim + t2;
-            }
-        };
-    }
+	/**
+	 * @param delim
+	 * @return a reducer that joins a string list
+	 */
+	public static Reducer<String> getStringJoiner(final String delim) {
+		return new Reducer<String>() {
+			@Override
+			public String reduce(String t1, String t2) {
+				return t1 + delim + t2;
+			}
+		};
+	}
 
-    /**
-     * @param <T>
-     * @return a mapper to output an object array
-     * */
-    public static <T> Mapper<String, T[]> getArrayPrinter() {
-        return new Mapper<String, T[]>() {
-            @Override
-            public String apply( T[] u ) {
-                return Arrays.toString( u );
-            }
-        };
-    }
+	/**
+	 * @param <T>
+	 * @return a mapper to output an object array
+	 */
+	public static <T> Mapper<String, T[]> getArrayPrinter() {
+		return new Mapper<String, T[]>() {
+			@Override
+			public String apply(T[] u) {
+				return Arrays.toString(u);
+			}
+		};
+	}
 
-    /**
-     * @param <T>
-     * @param c
-     * @return a list of booleans, true if u instanceof c
-     */
-    public static <T> Mapper<Boolean, T> getInstanceofMapper( final Class<?> c ) {
-        return new Mapper<Boolean, T>() {
-            @Override
-            public Boolean apply( T u ) {
-                return c.isInstance( u );
-            }
-        };
-    }
+	/**
+	 * @param <T>
+	 * @param c
+	 * @return a list of booleans, true if u instanceof c
+	 */
+	public static <T> Mapper<Boolean, T> getInstanceofMapper(final Class<?> c) {
+		return new Mapper<Boolean, T>() {
+			@Override
+			public Boolean apply(T u) {
+				return c.isInstance(u);
+			}
+		};
+	}
 
-    /***/
-    public static final Reducer<Boolean> AND = new Reducer<Boolean>() {
-        @Override
-        public Boolean reduce( Boolean t1, Boolean t2 ) {
-            return t1 && t2;
-        }
-    };
+	/***/
+	public static final Reducer<Boolean> AND = new Reducer<Boolean>() {
+		@Override
+		public Boolean reduce(Boolean t1, Boolean t2) {
+			return t1 && t2;
+		}
+	};
 
-    /**
-     * Keeps and returns the original list.
-     * 
-     * @param <T>
-     * @param list
-     * @return removes any duplicates in the list. Keeps the first occurrence of duplicates.
-     */
-    public static <T> List<T> removeDuplicates( List<T> list ) {
-        HashSet<T> set = new HashSet<T>( list.size() );
-        ListIterator<T> i = list.listIterator();
-        while ( i.hasNext() ) {
-            T cur = i.next();
-            if ( set.contains( cur ) ) {
-                i.remove();
-            } else {
-                set.add( cur );
-            }
-        }
+	/**
+	 * Keeps and returns the original list.
+	 * @param <T>
+	 * @param list
+	 * @return removes any duplicates in the list. Keeps the first occurrence of
+	 * duplicates.
+	 */
+	public static <T> List<T> removeDuplicates(List<T> list) {
+		HashSet<T> set = new HashSet<T>(list.size());
+		ListIterator<T> i = list.listIterator();
+		while (i.hasNext()) {
+			T cur = i.next();
+			if (set.contains(cur)) {
+				i.remove();
+			}
+			else {
+				set.add(cur);
+			}
+		}
 
-        return list;
-    }
+		return list;
+	}
 
-    /**
-     * Adds all elements from col2 to col1, if they're not already contained. Keep in mind that this will be expensive
-     * for lists.
-     * 
-     * @param <T>
-     * @param col1
-     * @param col2
-     */
-    public static <T> void addAllUncontained( Collection<T> col1, Collection<T> col2 ) {
-        for ( T t : col2 ) {
-            if ( !col1.contains( t ) ) {
-                col1.add( t );
-            }
-        }
-    }
+	/**
+	 * Adds all elements from col2 to col1, if they're not already contained. Keep in mind
+	 * that this will be expensive for lists.
+	 * @param <T>
+	 * @param col1
+	 * @param col2
+	 */
+	public static <T> void addAllUncontained(Collection<T> col1, Collection<T> col2) {
+		for (T t : col2) {
+			if (!col1.contains(t)) {
+				col1.add(t);
+			}
+		}
+	}
 
-    /**
-     * This indirection is useful in case you use ComparablePairs instead of normal ones and want to unzip.
-     * 
-     * @param <T>
-     * @param <U>
-     * @param col
-     * @return two separate lists
-     */
-    public static <T, U> Pair<ArrayList<T>, ArrayList<U>> unzipPair( Collection<Pair<T, U>> col ) {
-        ArrayList<T> list1 = new ArrayList<T>( col.size() );
-        ArrayList<U> list2 = new ArrayList<U>( col.size() );
-        for ( Pair<T, U> pair : col ) {
-            list1.add( pair.first );
-            list2.add( pair.second );
-        }
-        return new Pair<ArrayList<T>, ArrayList<U>>( list1, list2 );
-    }
+	/**
+	 * This indirection is useful in case you use ComparablePairs instead of normal ones
+	 * and want to unzip.
+	 * @param <T>
+	 * @param <U>
+	 * @param col
+	 * @return two separate lists
+	 */
+	public static <T, U> Pair<ArrayList<T>, ArrayList<U>> unzipPair(Collection<Pair<T, U>> col) {
+		ArrayList<T> list1 = new ArrayList<T>(col.size());
+		ArrayList<U> list2 = new ArrayList<U>(col.size());
+		for (Pair<T, U> pair : col) {
+			list1.add(pair.first);
+			list2.add(pair.second);
+		}
+		return new Pair<ArrayList<T>, ArrayList<U>>(list1, list2);
+	}
 
-    /**
-     * @param <T>
-     * @param <U>
-     * @param <V>
-     * @param col
-     * @return three separate lists
-     */
-    public static <T, U, V> Triple<ArrayList<T>, ArrayList<U>, ArrayList<V>> unzip( Collection<Triple<T, U, V>> col ) {
-        ArrayList<T> list1 = new ArrayList<T>( col.size() );
-        ArrayList<U> list2 = new ArrayList<U>( col.size() );
-        ArrayList<V> list3 = new ArrayList<V>( col.size() );
-        for ( Triple<T, U, V> pair : col ) {
-            list1.add( pair.first );
-            list2.add( pair.second );
-            list3.add( pair.third );
-        }
-        return new Triple<ArrayList<T>, ArrayList<U>, ArrayList<V>>( list1, list2, list3 );
-    }
+	/**
+	 * @param <T>
+	 * @param <U>
+	 * @param <V>
+	 * @param col
+	 * @return three separate lists
+	 */
+	public static <T, U, V> Triple<ArrayList<T>, ArrayList<U>, ArrayList<V>> unzip(Collection<Triple<T, U, V>> col) {
+		ArrayList<T> list1 = new ArrayList<T>(col.size());
+		ArrayList<U> list2 = new ArrayList<U>(col.size());
+		ArrayList<V> list3 = new ArrayList<V>(col.size());
+		for (Triple<T, U, V> pair : col) {
+			list1.add(pair.first);
+			list2.add(pair.second);
+			list3.add(pair.third);
+		}
+		return new Triple<ArrayList<T>, ArrayList<U>, ArrayList<V>>(list1, list2, list3);
+	}
 
-    /**
-     * @param <T>
-     * @param <U>
-     * @param map
-     * @return two separate lists
-     */
-    public static <T, U> Pair<ArrayList<T>, ArrayList<U>> unzip( Map<T, U> map ) {
-        ArrayList<T> list1 = new ArrayList<T>( map.size() );
-        ArrayList<U> list2 = new ArrayList<U>( map.size() );
+	/**
+	 * @param <T>
+	 * @param <U>
+	 * @param map
+	 * @return two separate lists
+	 */
+	public static <T, U> Pair<ArrayList<T>, ArrayList<U>> unzip(Map<T, U> map) {
+		ArrayList<T> list1 = new ArrayList<T>(map.size());
+		ArrayList<U> list2 = new ArrayList<U>(map.size());
 
-        for ( Entry<T, U> e : map.entrySet() ) {
-            list1.add( e.getKey() );
-            list2.add( e.getValue() );
-        }
+		for (Entry<T, U> e : map.entrySet()) {
+			list1.add(e.getKey());
+			list2.add(e.getValue());
+		}
 
-        return new Pair<ArrayList<T>, ArrayList<U>>( list1, list2 );
-    }
+		return new Pair<ArrayList<T>, ArrayList<U>>(list1, list2);
+	}
 
-    /**
-     * Wraps a for loop and the creation of a new list.
-     * 
-     * @param <T>
-     * @param <U>
-     * @param col
-     * @param mapper
-     * @return a list where the mapper has been applied to each element in the map
-     */
-    public static <T, U> LinkedList<T> map( U[] col, Mapper<T, U> mapper ) {
-        LinkedList<T> list = new LinkedList<T>();
+	/**
+	 * Wraps a for loop and the creation of a new list.
+	 * @param <T>
+	 * @param <U>
+	 * @param col
+	 * @param mapper
+	 * @return a list where the mapper has been applied to each element in the map
+	 */
+	public static <T, U> LinkedList<T> map(U[] col, Mapper<T, U> mapper) {
+		LinkedList<T> list = new LinkedList<T>();
 
-        for ( U u : col ) {
-            list.add( mapper.apply( u ) );
-        }
+		for (U u : col) {
+			list.add(mapper.apply(u));
+		}
 
-        return list;
-    }
+		return list;
+	}
 
-    /**
-     * Wraps a for loop and the creation of a new list.
-     * 
-     * @param <T>
-     * @param <U>
-     * @param col
-     * @param mapper
-     * @return a list where the mapper has been applied to each element in the map
-     */
-    public static <T, U> LinkedList<T> map( Collection<U> col, Mapper<T, U> mapper ) {
-        LinkedList<T> list = new LinkedList<T>();
+	/**
+	 * Wraps a for loop and the creation of a new list.
+	 * @param <T>
+	 * @param <U>
+	 * @param col
+	 * @param mapper
+	 * @return a list where the mapper has been applied to each element in the map
+	 */
+	public static <T, U> LinkedList<T> map(Collection<U> col, Mapper<T, U> mapper) {
+		LinkedList<T> list = new LinkedList<T>();
 
-        for ( U u : col ) {
-            list.add( mapper.apply( u ) );
-        }
+		for (U u : col) {
+			list.add(mapper.apply(u));
+		}
 
-        return list;
-    }
+		return list;
+	}
 
-    /**
-     * @param <T>
-     * @param identity
-     * @param col
-     * @param reducer
-     * @return the folded value
-     */
-    public static <T> T reduce( T identity, Collection<T> col, Reducer<T> reducer ) {
-        if ( col.isEmpty() ) {
-            return identity;
-        }
+	/**
+	 * @param <T>
+	 * @param identity
+	 * @param col
+	 * @param reducer
+	 * @return the folded value
+	 */
+	public static <T> T reduce(T identity, Collection<T> col, Reducer<T> reducer) {
+		if (col.isEmpty()) {
+			return identity;
+		}
 
-        Iterator<T> i = col.iterator();
+		Iterator<T> i = col.iterator();
 
-        T acc = i.next();
+		T acc = i.next();
 
-        while ( i.hasNext() ) {
-            acc = reducer.reduce( acc, i.next() );
-        }
+		while (i.hasNext()) {
+			acc = reducer.reduce(acc, i.next());
+		}
 
-        return acc;
-    }
+		return acc;
+	}
 
-    /**
-     * <code>Reducer</code>
-     * 
-     * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-     * @author last edited by: $Author$
-     * 
-     * @version $Revision$, $Date$
-     * @param <T>
-     */
-    public static interface Reducer<T> {
-        /**
-         * @param t1
-         * @param t2
-         * @return the folded value
-         */
-        public T reduce( T t1, T t2 );
-    }
+	/**
+	 * <code>Reducer</code>
+	 *
+	 * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+	 * @param <T>
+	 */
+	public static interface Reducer<T> {
 
-    /**
-     * <code>Mapper</code> gives a name to a simple function.
-     * 
-     * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-     * @author last edited by: $Author$
-     * 
-     * @version $Revision$, $Date$
-     * @param <T>
-     *            the return type of the function
-     * @param <U>
-     *            the argument type of the function
-     */
-    public static interface Mapper<T, U> {
-        /**
-         * @param u
-         * @return an implementation defined value
-         */
-        public T apply( U u );
-    }
+		/**
+		 * @param t1
+		 * @param t2
+		 * @return the folded value
+		 */
+		public T reduce(T t1, T t2);
 
-    /**
-     * @param <T>
-     * @param col
-     * @return a list without null elements
-     */
-    public static <T> ArrayList<T> clearNulls( Collection<T> col ) {
-        ArrayList<T> list = new ArrayList<T>( col.size() );
+	}
 
-        for ( T t : col ) {
-            if ( t != null ) {
-                list.add( t );
-            }
-        }
+	/**
+	 * <code>Mapper</code> gives a name to a simple function.
+	 *
+	 * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+	 * @param <T> the return type of the function
+	 * @param <U> the argument type of the function
+	 */
+	public static interface Mapper<T, U> {
 
-        return list;
-    }
+		/**
+		 * @param u
+		 * @return an implementation defined value
+		 */
+		public T apply(U u);
 
-    /**
-     * Removed null elements in-place.
-     * 
-     * @param <T>
-     * @param col
-     */
-    public static <T> void clearNulls( List<T> col ) {
-        ListIterator<T> iter = col.listIterator();
-        while ( iter.hasNext() ) {
-            if ( iter.next() == null ) {
-                iter.remove();
-            }
-        }
-    }
+	}
 
-    /**
-     * 
-     * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-     * @author last edited by: $Author$
-     * 
-     * @version $Revision$, $Date$
-     * @param <T>
-     */
-    public static interface Predicate<T> {
-        /**
-         * @param t
-         * @return whether the predicate applies
-         */
-        public boolean applies( T t );
-    }
+	/**
+	 * @param <T>
+	 * @param col
+	 * @return a list without null elements
+	 */
+	public static <T> ArrayList<T> clearNulls(Collection<T> col) {
+		ArrayList<T> list = new ArrayList<T>(col.size());
 
-    /**
-     * @param <T>
-     * @param col
-     * @param pred
-     * @return a list of values which the predicate applies to
-     */
-    public static <T> List<T> filter( Collection<T> col, Predicate<T> pred ) {
-        ArrayList<T> list = new ArrayList<T>( col.size() );
-        for ( T t : col ) {
-            if ( pred.applies( t ) ) {
-                list.add( t );
-            }
-        }
-        return list;
-    }
+		for (T t : col) {
+			if (t != null) {
+				list.add(t);
+			}
+		}
+
+		return list;
+	}
+
+	/**
+	 * Removed null elements in-place.
+	 * @param <T>
+	 * @param col
+	 */
+	public static <T> void clearNulls(List<T> col) {
+		ListIterator<T> iter = col.listIterator();
+		while (iter.hasNext()) {
+			if (iter.next() == null) {
+				iter.remove();
+			}
+		}
+	}
+
+	/**
+	 * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+	 * @param <T>
+	 */
+	public static interface Predicate<T> {
+
+		/**
+		 * @param t
+		 * @return whether the predicate applies
+		 */
+		public boolean applies(T t);
+
+	}
+
+	/**
+	 * @param <T>
+	 * @param col
+	 * @param pred
+	 * @return a list of values which the predicate applies to
+	 */
+	public static <T> List<T> filter(Collection<T> col, Predicate<T> pred) {
+		ArrayList<T> list = new ArrayList<T>(col.size());
+		for (T t : col) {
+			if (pred.applies(t)) {
+				list.add(t);
+			}
+		}
+		return list;
+	}
 
 }

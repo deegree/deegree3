@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -61,68 +60,63 @@ import org.deegree.services.wms.controller.exceptions.ExceptionsManager;
 
 /**
  * <code>WMSController111</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class WMSController111 extends WMSControllerBase {
 
-    /**
-     * @param exceptionsManager
-     *            used to serialize exceptions, never <code>null</code>
-     */
-    public WMSController111( ExceptionsManager exceptionsManager ) {
-        super( exceptionsManager );
-        EXCEPTION_DEFAULT = "application/vnd.ogc.se_xml";
-        EXCEPTION_BLANK = "application/vnd.ogc.se_blank";
-        EXCEPTION_INIMAGE = "application/vnd.ogc.se_inimage";
+	/**
+	 * @param exceptionsManager used to serialize exceptions, never <code>null</code>
+	 */
+	public WMSController111(ExceptionsManager exceptionsManager) {
+		super(exceptionsManager);
+		EXCEPTION_DEFAULT = "application/vnd.ogc.se_xml";
+		EXCEPTION_BLANK = "application/vnd.ogc.se_blank";
+		EXCEPTION_INIMAGE = "application/vnd.ogc.se_inimage";
 
-        exceptionSerializer = new WMS111ExceptionReportSerializer();
+		exceptionSerializer = new WMS111ExceptionReportSerializer();
 
-        EXCEPTION_MIME = EXCEPTION_DEFAULT;
-    }
+		EXCEPTION_MIME = EXCEPTION_DEFAULT;
+	}
 
-    @Override
-    public void sendException( OWSException ex, HttpResponseBuffer response, WMSController controller )
-                            throws ServletException {
-        Map<String, String> headers = new HashMap<String, String>();
-        headers.put( "Content-Disposition", "inline; filename=\"exception.xml\"" );
-        controller.sendException( headers, exceptionSerializer, ex, response );
-    }
+	@Override
+	public void sendException(OWSException ex, HttpResponseBuffer response, WMSController controller)
+			throws ServletException {
+		Map<String, String> headers = new HashMap<String, String>();
+		headers.put("Content-Disposition", "inline; filename=\"exception.xml\"");
+		controller.sendException(headers, exceptionSerializer, ex, response);
+	}
 
-    @Override
-    public void throwSRSException( String name )
-                            throws OWSException {
-        throw new OWSException( get( "WMS.INVALID_SRS", name ), INVALID_SRS );
-    }
+	@Override
+	public void throwSRSException(String name) throws OWSException {
+		throw new OWSException(get("WMS.INVALID_SRS", name), INVALID_SRS);
+	}
 
-    @Override
-    protected void exportCapas( String getUrl, String postUrl, MapService service, HttpResponseBuffer response,
-                                ServiceIdentification identification, ServiceProvider provider,
-                                Map<String, String> customParameters, WMSController controller,
-                                OWSMetadataProvider metadata )
-                            throws IOException, OWSException {
-        response.setContentType( "application/vnd.ogc.wms_xml" );
-        String userAgent = OGCFrontController.getContext().getUserAgent();
+	@Override
+	protected void exportCapas(String getUrl, String postUrl, MapService service, HttpResponseBuffer response,
+			ServiceIdentification identification, ServiceProvider provider, Map<String, String> customParameters,
+			WMSController controller, OWSMetadataProvider metadata) throws IOException, OWSException {
+		response.setContentType("application/vnd.ogc.wms_xml");
+		String userAgent = OGCFrontController.getContext().getUserAgent();
 
-        if ( userAgent != null && userAgent.toLowerCase().contains( "mozilla" ) ) {
-            response.setContentType( "application/xml" );
-        }
+		if (userAgent != null && userAgent.toLowerCase().contains("mozilla")) {
+			response.setContentType("application/xml");
+		}
 
-        response.addHeader( "Content-Disposition", "inline; filename=\"capabilities.xml\"" );
-        try {
-            XMLStreamWriter xmlWriter = response.getXMLWriter();
-            new Capabilities111XMLAdapter( identification, provider, metadata, getUrl, postUrl, service, controller ).export( xmlWriter );
-        } catch ( XMLStreamException e ) {
-            throw new IOException( e );
-        }
-    }
+		response.addHeader("Content-Disposition", "inline; filename=\"capabilities.xml\"");
+		try {
+			XMLStreamWriter xmlWriter = response.getXMLWriter();
+			new Capabilities111XMLAdapter(identification, provider, metadata, getUrl, postUrl, service, controller)
+				.export(xmlWriter);
+		}
+		catch (XMLStreamException e) {
+			throw new IOException(e);
+		}
+	}
 
-    @Override
-    protected Version getVersion() {
-        return WMSConstants.VERSION_111;
-    }
+	@Override
+	protected Version getVersion() {
+		return WMSConstants.VERSION_111;
+	}
 
 }

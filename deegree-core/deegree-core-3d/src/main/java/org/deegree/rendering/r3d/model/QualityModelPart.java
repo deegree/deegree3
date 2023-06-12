@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -42,14 +41,12 @@ import org.deegree.commons.utils.memory.MemoryAware;
 
 /**
  * The <code>RenderableQualityModelPart</code> class TODO add class documentation here.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
- * 
+ *
  */
 public interface QualityModelPart extends MemoryAware, Serializable {
 
-    // marker interface
+	// marker interface
 
 }

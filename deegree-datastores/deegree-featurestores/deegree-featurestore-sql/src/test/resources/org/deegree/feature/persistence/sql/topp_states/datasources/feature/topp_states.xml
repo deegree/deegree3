@@ -1,6 +1,6 @@
 <SQLFeatureStore xmlns:topp="http://www.openplans.org/topp" xmlns="http://www.deegree.org/datasource/feature/sql" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 
-  xsi:schemaLocation="http://www.deegree.org/datasource/feature/sql http://schemas.deegree.org/3.5/datasource/feature/sql/sql.xsd">
+  xsi:schemaLocation="http://www.deegree.org/datasource/feature/sql https://schemas.deegree.org/core/3.5/datasource/feature/sql/sql.xsd">
   <JDBCConnId>deegree-test</JDBCConnId>
   <FeatureType table="states" name="topp:states">
     <FIDMapping>

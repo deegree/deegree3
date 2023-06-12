@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -45,22 +44,20 @@ import org.deegree.geometry.Envelope;
 
 /**
  * {@link PropertyType} that defines a property with an {@link Envelope} value.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * 
- * @version $Revision: $, $Date: $
  */
 public class EnvelopePropertyType extends AbstractPropertyType {
 
-    public EnvelopePropertyType( QName name, int minOccurs, int maxOccurs, XSElementDeclaration elDecl,
-                                 List<PropertyType> substitutions ) {
-        super( name, minOccurs, maxOccurs, elDecl, substitutions );
-    }
+	public EnvelopePropertyType(QName name, int minOccurs, int maxOccurs, XSElementDeclaration elDecl,
+			List<PropertyType> substitutions) {
+		super(name, minOccurs, maxOccurs, elDecl, substitutions);
+	}
 
-    @Override
-    public String toString() {
-        String s = "- envelope property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs;
-        return s;
-    }
+	@Override
+	public String toString() {
+		String s = "- envelope property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs;
+		return s;
+	}
+
 }

@@ -45,25 +45,23 @@ import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
  */
 public class GpkgTileStoreMetadata extends AbstractResourceMetadata<TileStore> {
 
-    public GpkgTileStoreMetadata( Workspace workspace, ResourceLocation<TileStore> location,
-                                  AbstractResourceProvider<TileStore> provider ) {
-        super( workspace, location, provider );
-    }
+	public GpkgTileStoreMetadata(Workspace workspace, ResourceLocation<TileStore> location,
+			AbstractResourceProvider<TileStore> provider) {
+		super(workspace, location, provider);
+	}
 
-    @Override
-    public ResourceBuilder<TileStore> prepare() {
-        try {
-            org.deegree.tile.persistence.gpkg.jaxb.GpkgTileStoreJAXB cfg = (org.deegree.tile.persistence.gpkg.jaxb.GpkgTileStoreJAXB) unmarshall(
-                                    "org.deegree.tile.persistence.gpkg.jaxb",
-                                    provider.getSchema(),
-                                    location.getAsStream(),
-                                    workspace );
+	@Override
+	public ResourceBuilder<TileStore> prepare() {
+		try {
+			org.deegree.tile.persistence.gpkg.jaxb.GpkgTileStoreJAXB cfg = (org.deegree.tile.persistence.gpkg.jaxb.GpkgTileStoreJAXB) unmarshall(
+					"org.deegree.tile.persistence.gpkg.jaxb", provider.getSchema(), location.getAsStream(), workspace);
 
-            return new GpkgTileStoreBuilder( cfg, this );
-        } catch ( Exception e ) {
-            throw new ResourceInitException( "Unable to prepare resource " + getIdentifier() + ": "
-                                             + e.getLocalizedMessage(), e );
-        }
-    }
+			return new GpkgTileStoreBuilder(cfg, this);
+		}
+		catch (Exception e) {
+			throw new ResourceInitException(
+					"Unable to prepare resource " + getIdentifier() + ": " + e.getLocalizedMessage(), e);
+		}
+	}
 
 }

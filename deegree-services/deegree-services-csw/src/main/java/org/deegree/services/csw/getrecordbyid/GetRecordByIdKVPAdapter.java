@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -54,78 +53,74 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Encapsulates the method for parsing a {@link GetRecordById} KVP request via Http-GET.
- * 
+ *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: thomas $
- * 
- * @version $Revision: $, $Date: $
  */
 public class GetRecordByIdKVPAdapter {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GetRecordByIdKVPAdapter.class );
+	private static final Logger LOG = LoggerFactory.getLogger(GetRecordByIdKVPAdapter.class);
 
-    /**
-     * Parses the {@link GetRecordById} kvp request and decides which version has to parse because of the requested
-     * version
-     * 
-     * @param normalizedKVPParams
-     *            that are requested containing all mandatory and optional parts regarding CSW spec
-     * @return {@link GetRecordById}
-     * @throws MetadataStoreException
-     */
-    public static GetRecordById parse( Map<String, String> normalizedKVPParams, String defaultOutputFormat,
-                                       String defaultOuputSchema ) {
-        Version version = Version.parseVersion( KVPUtils.getRequired( normalizedKVPParams, "VERSION" ) );
-        GetRecordById result = null;
+	/**
+	 * Parses the {@link GetRecordById} kvp request and decides which version has to parse
+	 * because of the requested version
+	 * @param normalizedKVPParams that are requested containing all mandatory and optional
+	 * parts regarding CSW spec
+	 * @return {@link GetRecordById}
+	 * @throws MetadataStoreException
+	 */
+	public static GetRecordById parse(Map<String, String> normalizedKVPParams, String defaultOutputFormat,
+			String defaultOuputSchema) {
+		Version version = Version.parseVersion(KVPUtils.getRequired(normalizedKVPParams, "VERSION"));
+		GetRecordById result = null;
 
-        if ( VERSION_202.equals( version ) ) {
-            result = parse202( VERSION_202, normalizedKVPParams, defaultOutputFormat, defaultOuputSchema );
+		if (VERSION_202.equals(version)) {
+			result = parse202(VERSION_202, normalizedKVPParams, defaultOutputFormat, defaultOuputSchema);
 
-        } else {
-            String msg = Messages.get( "UNSUPPORTED_VERSION", version, Version.getVersionsString( VERSION_202 ) );
-            throw new InvalidParameterValueException( msg );
-        }
-        return result;
-    }
+		}
+		else {
+			String msg = Messages.get("UNSUPPORTED_VERSION", version, Version.getVersionsString(VERSION_202));
+			throw new InvalidParameterValueException(msg);
+		}
+		return result;
+	}
 
-    /**
-     * Parses the {@link GetRecordById} request on the basis of CSW version 2.0.2
-     * 
-     * @param version202
-     *            at is requested, 2.0.2
-     * @param normalizedKVPParams
-     *            that are requested containing all mandatory and optional parts regarding CSW spec
-     * @return {@link GetRecordById}
-     * @throws MetadataStoreException
-     */
-    private static GetRecordById parse202( Version version202, Map<String, String> normalizedKVPParams,
-                                           String defaultOutputFormat, String defaultOuputSchema ) {
+	/**
+	 * Parses the {@link GetRecordById} request on the basis of CSW version 2.0.2
+	 * @param version202 at is requested, 2.0.2
+	 * @param normalizedKVPParams that are requested containing all mandatory and optional
+	 * parts regarding CSW spec
+	 * @return {@link GetRecordById}
+	 * @throws MetadataStoreException
+	 */
+	private static GetRecordById parse202(Version version202, Map<String, String> normalizedKVPParams,
+			String defaultOutputFormat, String defaultOuputSchema) {
 
-        // outputFormat (optional)
-        String outputFormat = KVPUtils.getDefault( normalizedKVPParams, "outputFormat", defaultOutputFormat );
+		// outputFormat (optional)
+		String outputFormat = KVPUtils.getDefault(normalizedKVPParams, "outputFormat", defaultOutputFormat);
 
-        String elementSetNameString = KVPUtils.getDefault( normalizedKVPParams, "ELEMENTSETNAME",
-                                                           ReturnableElement.summary.name() );
+		String elementSetNameString = KVPUtils.getDefault(normalizedKVPParams, "ELEMENTSETNAME",
+				ReturnableElement.summary.name());
 
-        ReturnableElement elementSetName = ReturnableElement.determineReturnableElement( elementSetNameString );
+		ReturnableElement elementSetName = ReturnableElement.determineReturnableElement(elementSetNameString);
 
-        // outputSchema String
-        String outputSchemaString = KVPUtils.getDefault( normalizedKVPParams, "OUTPUTSCHEMA", defaultOuputSchema );
-        URI outputSchema = URI.create( outputSchemaString );
+		// outputSchema String
+		String outputSchemaString = KVPUtils.getDefault(normalizedKVPParams, "OUTPUTSCHEMA", defaultOuputSchema);
+		URI outputSchema = URI.create(outputSchemaString);
 
-        // elementName List<String>
-        List<String> id = new ArrayList<String>();
-        List<String> tmpIds = KVPUtils.splitAll( normalizedKVPParams, "ID" );
-        if ( tmpIds.size() == 0 ) {
-            String msg = "No ID provided, please check the mandatory parameter 'id'. ";
-            LOG.info( msg );
-            throw new MissingParameterException( msg );
-        }
-        for ( String tmpId : tmpIds ) {
-            if ( !id.contains( tmpId ) ) {
-                id.add( tmpId );
-            }
-        }
-        return new GetRecordById( version202, outputFormat, elementSetName, outputSchema, id, null );
-    }
+		// elementName List<String>
+		List<String> id = new ArrayList<String>();
+		List<String> tmpIds = KVPUtils.splitAll(normalizedKVPParams, "ID");
+		if (tmpIds.size() == 0) {
+			String msg = "No ID provided, please check the mandatory parameter 'id'. ";
+			LOG.info(msg);
+			throw new MissingParameterException(msg);
+		}
+		for (String tmpId : tmpIds) {
+			if (!id.contains(tmpId)) {
+				id.add(tmpId);
+			}
+		}
+		return new GetRecordById(version202, outputFormat, elementSetName, outputSchema, id, null);
+	}
+
 }

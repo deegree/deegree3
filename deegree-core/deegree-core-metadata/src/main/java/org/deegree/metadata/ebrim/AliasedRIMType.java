@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -45,60 +44,58 @@ import javax.xml.namespace.QName;
 
 /**
  * {@link RIMType} with (query) alias.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class AliasedRIMType {
 
-    private final RIMType type;
+	private final RIMType type;
 
-    private final String alias;
+	private final String alias;
 
-    private AliasedRIMType( String name, String alias ) {
-        type = RIMType.valueOf( name );
-        this.alias = alias;
-    }
+	private AliasedRIMType(String name, String alias) {
+		type = RIMType.valueOf(name);
+		this.alias = alias;
+	}
 
-    public RIMType getType() {
-        return type;
-    }
+	public RIMType getType() {
+		return type;
+	}
 
-    public String getAlias() {
-        return alias;
-    }
+	public String getAlias() {
+		return alias;
+	}
 
-    /**
-     * Returns {@link AliasedRIMType}s for the given qualified name.
-     * 
-     * @param name
-     *            qualified name of a {@link RIMType} with optional aliases, separated by underscores
-     * @return aliased registry object types, never <code>null</code> and contains at least a single entry
-     * @throws IllegalArgumentException
-     *             if the input name does not refer to a known {@link RIMType}
-     */
-    public static List<AliasedRIMType> valueOf( QName name )
-                            throws IllegalArgumentException {
-        List<AliasedRIMType> values = null;
-        String[] tokens = split( name.getLocalPart(), "_" );
-        if ( tokens.length > 1 ) {
-            String unaliasedName = tokens [0];
-            values = new ArrayList<AliasedRIMType>( tokens.length - 1 );
-            for ( int i = 1; i < tokens.length; i++ ) {
-                String alias = tokens[i];
-                values.add( new AliasedRIMType( unaliasedName, alias ) );
-            }
-        } else {
-            String unaliasedName = name.getLocalPart();
-            values = Collections.singletonList( new AliasedRIMType( unaliasedName, unaliasedName ) );
-        }
-        return values;
-    }
+	/**
+	 * Returns {@link AliasedRIMType}s for the given qualified name.
+	 * @param name qualified name of a {@link RIMType} with optional aliases, separated by
+	 * underscores
+	 * @return aliased registry object types, never <code>null</code> and contains at
+	 * least a single entry
+	 * @throws IllegalArgumentException if the input name does not refer to a known
+	 * {@link RIMType}
+	 */
+	public static List<AliasedRIMType> valueOf(QName name) throws IllegalArgumentException {
+		List<AliasedRIMType> values = null;
+		String[] tokens = split(name.getLocalPart(), "_");
+		if (tokens.length > 1) {
+			String unaliasedName = tokens[0];
+			values = new ArrayList<AliasedRIMType>(tokens.length - 1);
+			for (int i = 1; i < tokens.length; i++) {
+				String alias = tokens[i];
+				values.add(new AliasedRIMType(unaliasedName, alias));
+			}
+		}
+		else {
+			String unaliasedName = name.getLocalPart();
+			values = Collections.singletonList(new AliasedRIMType(unaliasedName, unaliasedName));
+		}
+		return values;
+	}
 
-    @Override
-    public String toString() {
-        return "{type=" + type + ", alias=" + alias + "}";
-    }
+	@Override
+	public String toString() {
+		return "{type=" + type + ", alias=" + alias + "}";
+	}
+
 }

@@ -9,7 +9,6 @@ import org.apache.axiom.om.OMElement;
  * Helper class for Observation class containing the contents of XML element "BoundedBy".
  * 
  * @author <a href="mailto:neumeister@lat-lon.de">Ulrich Neumeister</a>
- * @author last edited by: $Author$
  *
  */
 public class BoundedBy {

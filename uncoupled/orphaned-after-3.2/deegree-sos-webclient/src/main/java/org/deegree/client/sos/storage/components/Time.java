@@ -10,7 +10,6 @@ import org.apache.axiom.om.OMElement;
  * XML element "Time".
  * 
  * @author <a href="mailto:neumeister@lat-lon.de">Ulrich Neumeister</a>
- * @author last edited by: $Author$
  * 
  */
 public class Time {

@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-metadata/src/main/java/org/deegree/metadata/iso/persistence/inspectors/FIInspector.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -61,132 +60,126 @@ import org.deegree.sqldialect.SQLDialect;
 import org.slf4j.Logger;
 
 /**
- * Inspects whether the fileIdentifier should be set when inserting a metadata or not and what consequences should
- * occur.
- * 
+ * Inspects whether the fileIdentifier should be set when inserting a metadata or not and
+ * what consequences should occur.
+ *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: lbuesching $
- * 
- * @version $Revision: 30865 $, $Date: 2011-05-19 13:41:37 +0200 (Do, 19. Mai 2011) $
  */
 public class FIInspector implements RecordInspector<ISORecord> {
 
-    private static final Logger LOG = getLogger( FIInspector.class );
+	private static final Logger LOG = getLogger(FIInspector.class);
 
-    private final FileIdentifierInspector config;
+	private final FileIdentifierInspector config;
 
-    private final NamespaceBindings nsContext = new NamespaceBindings();
+	private final NamespaceBindings nsContext = new NamespaceBindings();
 
-    public FIInspector( FileIdentifierInspector inspector ) {
-        this.config = inspector;
-        nsContext.addNamespace( "srv", "http://www.isotc211.org/2005/srv" );
-        nsContext.addNamespace( "gmd", "http://www.isotc211.org/2005/gmd" );
-        nsContext.addNamespace( "gco", "http://www.isotc211.org/2005/gco" );
-        nsContext.addNamespace( SDS_PREFIX, SDS_NS );
-    }
+	public FIInspector(FileIdentifierInspector inspector) {
+		this.config = inspector;
+		nsContext.addNamespace("srv", "http://www.isotc211.org/2005/srv");
+		nsContext.addNamespace("gmd", "http://www.isotc211.org/2005/gmd");
+		nsContext.addNamespace("gco", "http://www.isotc211.org/2005/gco");
+		nsContext.addNamespace(SDS_PREFIX, SDS_NS);
+	}
 
-    /**
-     * 
-     * @param fi
-     *            the fileIdentifier that should be determined for one metadata, can be <Code>null</Code>.
-     * @param rsList
-     *            the list of resourceIdentifier, not <Code>null</Code>.
-     * @param id
-     *            the id-attribute, can be <Code>null<Code>.
-     * @param uuid
-     *            the uuid-attribure, can be <Code>null</Code>.
-     * @return the new fileIdentifier.
-     */
-    private List<String> determineFileIdentifier( Connection conn, String[] fi, List<String> rsList, String id,
-                                                  String uuid, SQLDialect dialect )
-                            throws MetadataInspectorException {
-        List<String> idList = new ArrayList<String>();
-        if ( fi.length != 0 ) {
-            for ( String f : fi ) {
-                LOG.debug( Messages.getMessage( "INFO_FI_AVAILABLE", f.trim() ) );
-                idList.add( f.trim() );
-            }
-            return idList;
-        }
-        if ( config != null && !config.isRejectEmpty() ) {
-            if ( rsList.size() == 0 && id == null && uuid == null ) {
-                LOG.debug( Messages.getMessage( "INFO_FI_GENERATE_NEW" ) );
-                idList.add( new IdUtils( conn, dialect ).generateUUID() );
-                LOG.debug( Messages.getMessage( "INFO_FI_NEW", idList ) );
-            } else {
-                if ( rsList.size() == 0 && id != null ) {
-                    LOG.debug( Messages.getMessage( "INFO_FI_DEFAULT_ID", id ) );
-                    idList.add( id );
-                } else if ( rsList.size() == 0 && uuid != null ) {
-                    LOG.debug( Messages.getMessage( "INFO_FI_DEFAULT_UUID", uuid ) );
-                    idList.add( uuid );
-                } else {
-                    LOG.debug( Messages.getMessage( "INFO_FI_DEFAULT_RSID", rsList.get( 0 ) ) );
-                    idList.add( rsList.get( 0 ) );
-                }
-            }
-            return idList;
-        }
-        if ( rsList.size() == 0 ) {
-            String msg = Messages.getMessage( "ERROR_REJECT_FI" );
-            LOG.debug( msg );
-            throw new MetadataInspectorException( msg );
-        }
-        LOG.debug( Messages.getMessage( "INFO_FI_DEFAULT_RSID", rsList.get( 0 ) ) );
-        idList.add( rsList.get( 0 ) );
-        return idList;
+	/**
+	 * @param fi the fileIdentifier that should be determined for one metadata, can be
+	 * <Code>null</Code>.
+	 * @param rsList the list of resourceIdentifier, not <Code>null</Code>.
+	 * @param id the id-attribute, can be <Code>null<Code>.
+	 *
+	@param uuid
+	 *            the uuid-attribure, can be <Code>null</Code>.
+	 * @return the new fileIdentifier.
+	 */
+	private List<String> determineFileIdentifier(Connection conn, String[] fi, List<String> rsList, String id,
+			String uuid, SQLDialect dialect) throws MetadataInspectorException {
+		List<String> idList = new ArrayList<String>();
+		if (fi.length != 0) {
+			for (String f : fi) {
+				LOG.debug(Messages.getMessage("INFO_FI_AVAILABLE", f.trim()));
+				idList.add(f.trim());
+			}
+			return idList;
+		}
+		if (config != null && !config.isRejectEmpty()) {
+			if (rsList.size() == 0 && id == null && uuid == null) {
+				LOG.debug(Messages.getMessage("INFO_FI_GENERATE_NEW"));
+				idList.add(new IdUtils(conn, dialect).generateUUID());
+				LOG.debug(Messages.getMessage("INFO_FI_NEW", idList));
+			}
+			else {
+				if (rsList.size() == 0 && id != null) {
+					LOG.debug(Messages.getMessage("INFO_FI_DEFAULT_ID", id));
+					idList.add(id);
+				}
+				else if (rsList.size() == 0 && uuid != null) {
+					LOG.debug(Messages.getMessage("INFO_FI_DEFAULT_UUID", uuid));
+					idList.add(uuid);
+				}
+				else {
+					LOG.debug(Messages.getMessage("INFO_FI_DEFAULT_RSID", rsList.get(0)));
+					idList.add(rsList.get(0));
+				}
+			}
+			return idList;
+		}
+		if (rsList.size() == 0) {
+			String msg = Messages.getMessage("ERROR_REJECT_FI");
+			LOG.debug(msg);
+			throw new MetadataInspectorException(msg);
+		}
+		LOG.debug(Messages.getMessage("INFO_FI_DEFAULT_RSID", rsList.get(0)));
+		idList.add(rsList.get(0));
+		return idList;
 
-    }
+	}
 
-    @Override
-    public ISORecord inspect( ISORecord record, Connection conn, SQLDialect dialect )
-                            throws MetadataInspectorException {
+	@Override
+	public ISORecord inspect(ISORecord record, Connection conn, SQLDialect dialect) throws MetadataInspectorException {
 
-        XMLAdapter a = new XMLAdapter( record.getAsOMElement() );
-        OMElement rootEl = record.getAsOMElement();
+		XMLAdapter a = new XMLAdapter(record.getAsOMElement());
+		OMElement rootEl = record.getAsOMElement();
 
-        String[] fileIdentifierString = a.getNodesAsStrings( rootEl,
-                                                             new XPath( "./gmd:fileIdentifier/gco:CharacterString",
-                                                                        nsContext ) );
+		String[] fileIdentifierString = a.getNodesAsStrings(rootEl,
+				new XPath("./gmd:fileIdentifier/gco:CharacterString", nsContext));
 
-        String identificationInfoXPathExpr = "./gmd:identificationInfo/srv:SV_ServiceIdentification | ./gmd:identificationInfo/gmd:MD_DataIdentification"
-                                             + " | ./gmd:identificationInfo/sds:SV_ServiceIdentification";
-        OMElement identificationInfo = a.getElement( rootEl, new XPath( identificationInfoXPathExpr, nsContext ) );
-        String dataIdentificationId = identificationInfo.getAttributeValue( new QName( "id" ) );
-        String dataIdentificationUuId = identificationInfo.getAttributeValue( new QName( "uuid" ) );
-        List<OMElement> identifier = a.getElements( identificationInfo,
-                                                    new XPath( "./gmd:citation/gmd:CI_Citation/gmd:identifier",
-                                                               nsContext ) );
-        List<String> resourceIdentifierList = new ArrayList<String>();
-        for ( OMElement resourceElement : identifier ) {
-            String resourceIdentifier = a.getNodeAsString( resourceElement,
-                                                           new XPath(
-                                                                      "./gmd:MD_Identifier/gmd:code/gco:CharacterString | ./gmd:RS_Identifier/gmd:code/gco:CharacterString",
-                                                                      nsContext ), null );
-            LOG.debug( "resourceIdentifier: '" + resourceIdentifier + "' " );
-            resourceIdentifierList.add( resourceIdentifier );
+		String identificationInfoXPathExpr = "./gmd:identificationInfo/srv:SV_ServiceIdentification | ./gmd:identificationInfo/gmd:MD_DataIdentification"
+				+ " | ./gmd:identificationInfo/sds:SV_ServiceIdentification";
+		OMElement identificationInfo = a.getElement(rootEl, new XPath(identificationInfoXPathExpr, nsContext));
+		String dataIdentificationId = identificationInfo.getAttributeValue(new QName("id"));
+		String dataIdentificationUuId = identificationInfo.getAttributeValue(new QName("uuid"));
+		List<OMElement> identifier = a.getElements(identificationInfo,
+				new XPath("./gmd:citation/gmd:CI_Citation/gmd:identifier", nsContext));
+		List<String> resourceIdentifierList = new ArrayList<String>();
+		for (OMElement resourceElement : identifier) {
+			String resourceIdentifier = a.getNodeAsString(resourceElement, new XPath(
+					"./gmd:MD_Identifier/gmd:code/gco:CharacterString | ./gmd:RS_Identifier/gmd:code/gco:CharacterString",
+					nsContext), null);
+			LOG.debug("resourceIdentifier: '" + resourceIdentifier + "' ");
+			resourceIdentifierList.add(resourceIdentifier);
 
-        }
+		}
 
-        List<String> idList = determineFileIdentifier( conn, fileIdentifierString, resourceIdentifierList,
-                                                       dataIdentificationId, dataIdentificationUuId, dialect );
-        if ( !idList.isEmpty() && fileIdentifierString.length == 0 ) {
-            for ( String id : idList ) {
-                OMElement firstElement = rootEl.getFirstElement();
-                firstElement.insertSiblingBefore( createFileIdentifierElement( id ) );
-            }
-        }
-        return record;
-    }
+		List<String> idList = determineFileIdentifier(conn, fileIdentifierString, resourceIdentifierList,
+				dataIdentificationId, dataIdentificationUuId, dialect);
+		if (!idList.isEmpty() && fileIdentifierString.length == 0) {
+			for (String id : idList) {
+				OMElement firstElement = rootEl.getFirstElement();
+				firstElement.insertSiblingBefore(createFileIdentifierElement(id));
+			}
+		}
+		return record;
+	}
 
-    private OMElement createFileIdentifierElement( String id ) {
-        OMFactory factory = OMAbstractFactory.getOMFactory();
-        OMNamespace namespaceGMD = factory.createOMNamespace( "http://www.isotc211.org/2005/gmd", "gmd" );
-        OMNamespace namespaceGCO = factory.createOMNamespace( "http://www.isotc211.org/2005/gco", "gco" );
-        OMElement omFileIdentifier = factory.createOMElement( "fileIdentifier", namespaceGMD );
-        OMElement omFileCharacterString = factory.createOMElement( "CharacterString", namespaceGCO );
-        omFileIdentifier.addChild( omFileCharacterString );
-        omFileCharacterString.setText( id );
-        return omFileIdentifier;
-    }
+	private OMElement createFileIdentifierElement(String id) {
+		OMFactory factory = OMAbstractFactory.getOMFactory();
+		OMNamespace namespaceGMD = factory.createOMNamespace("http://www.isotc211.org/2005/gmd", "gmd");
+		OMNamespace namespaceGCO = factory.createOMNamespace("http://www.isotc211.org/2005/gco", "gco");
+		OMElement omFileIdentifier = factory.createOMElement("fileIdentifier", namespaceGMD);
+		OMElement omFileCharacterString = factory.createOMElement("CharacterString", namespaceGCO);
+		omFileIdentifier.addChild(omFileCharacterString);
+		omFileCharacterString.setText(id);
+		return omFileIdentifier;
+	}
+
 }

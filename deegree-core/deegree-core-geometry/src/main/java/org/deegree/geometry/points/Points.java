@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -42,72 +41,68 @@ import org.deegree.geometry.primitive.Point;
 import org.locationtech.jts.geom.CoordinateSequence;
 
 /**
- * Encapsulates a sequence of {@link Point}s that each may be uniquely identifiable or not.
+ * Encapsulates a sequence of {@link Point}s that each may be uniquely identifiable or
+ * not.
  * <p>
- * The motivation for this interface is to allow more compact and efficient representations than using lists or arrays
- * of {@link Point} objects. This is essential, as geometries are usually build from many points, e.g. a detailed
- * {@link LineString} may consist of tens or hundreds thousands of points.
+ * The motivation for this interface is to allow more compact and efficient
+ * representations than using lists or arrays of {@link Point} objects. This is essential,
+ * as geometries are usually build from many points, e.g. a detailed {@link LineString}
+ * may consist of tens or hundreds thousands of points.
  * </p>
  * <p>
- * Note that this interface extends JTS <code>CoordinateSequence</code> interface, so it's possible to use it for the
- * efficient construction of JTS geometries.
+ * Note that this interface extends JTS <code>CoordinateSequence</code> interface, so it's
+ * possible to use it for the efficient construction of JTS geometries.
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface Points extends Iterable<Point>, CoordinateSequence {
 
-    /**
-     * Returns the coordinate dimension, i.e. the dimension of the space that the points are embedded in.
-     * 
-     * @return the coordinate dimension
-     */
-    @Override
-    public int getDimension();
+	/**
+	 * Returns the coordinate dimension, i.e. the dimension of the space that the points
+	 * are embedded in.
+	 * @return the coordinate dimension
+	 */
+	@Override
+	public int getDimension();
 
-    /**
-     * Returns the number of represented {@link Point}s.
-     * 
-     * @return the number of points
-     */
-    @Override
-    public int size();
+	/**
+	 * Returns the number of represented {@link Point}s.
+	 * @return the number of points
+	 */
+	@Override
+	public int size();
 
-    /**
-     * Returns the {@link Point} at the specified position.
-     * <p>
-     * NOTE: It is generally more expensive to use this method than to access a {@link Point} by iterating over this
-     * object, because a new {@link Point} object may have to be created (depending on the implementation).
-     * 
-     * @param i
-     * @return the point at the specified position
-     */
-    public Point get( int i );
+	/**
+	 * Returns the {@link Point} at the specified position.
+	 * <p>
+	 * NOTE: It is generally more expensive to use this method than to access a
+	 * {@link Point} by iterating over this object, because a new {@link Point} object may
+	 * have to be created (depending on the implementation).
+	 * @param i
+	 * @return the point at the specified position
+	 */
+	public Point get(int i);
 
-    /**
-     * Returns the first point of the sequence.
-     * 
-     * @return the first point
-     */
-    public Point getStartPoint();
+	/**
+	 * Returns the first point of the sequence.
+	 * @return the first point
+	 */
+	public Point getStartPoint();
 
-    /**
-     * Returns the last point of the sequence.
-     * 
-     * @return the last point
-     */
-    public Point getEndPoint();
+	/**
+	 * Returns the last point of the sequence.
+	 * @return the last point
+	 */
+	public Point getEndPoint();
 
-    /**
-     * Returns all coordinates of the contained {@link Point}s as an array.
-     * <p>
-     * NOTE: This method should be avoided, as it may involve expensive operations.
-     * </p>
-     * 
-     * @return coordinates as a one-dimensional array
-     */
-    public double[] getAsArray();
+	/**
+	 * Returns all coordinates of the contained {@link Point}s as an array.
+	 * <p>
+	 * NOTE: This method should be avoided, as it may involve expensive operations.
+	 * </p>
+	 * @return coordinates as a one-dimensional array
+	 */
+	public double[] getAsArray();
+
 }

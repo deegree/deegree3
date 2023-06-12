@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -44,75 +43,69 @@ import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 
 /**
  * Defines the mapping between feature ids and a relational model.
- * 
+ *
  * @see FeatureTypeMapping
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: markus $
- * 
- * @version $Revision: $, $Date: $
  */
 public class FIDMapping {
 
-    private final String prefix;
+	private final String prefix;
 
-    private final String delimiter;
+	private final String delimiter;
 
-    private final List<Pair<SQLIdentifier, BaseType>> columns;
+	private final List<Pair<SQLIdentifier, BaseType>> columns;
 
-    private final IDGenerator generator;
+	private final IDGenerator generator;
 
-    /**
-     * Creates a new {@link FIDMapping} instance.
-     * 
-     * @param prefix
-     *            static prefix for all feature ids, must not be <code>null</code> (but can be empty)
-     * @param delimiter
-     *            delimiter that separates the values of the individual columns, must not be <code>null</code> (but can
-     *            be empty)
-     * @param columns
-     *            database columns that the feature ids are mapped to, must not be <code>null</code> (and contain at
-     *            least one entry)
-     * @param generator
-     *            generator for determining new ids, can be <code>null</code> (in this case, no inserts are possible)
-     */
-    public FIDMapping( String prefix, String delimiter, List<Pair<SQLIdentifier, BaseType>> columns,
-                       IDGenerator generator ) {
-        this.prefix = prefix;
-        this.delimiter = delimiter;
-        this.columns = columns;
-        this.generator = generator;
-    }
+	/**
+	 * Creates a new {@link FIDMapping} instance.
+	 * @param prefix static prefix for all feature ids, must not be <code>null</code> (but
+	 * can be empty)
+	 * @param delimiter delimiter that separates the values of the individual columns,
+	 * must not be <code>null</code> (but can be empty)
+	 * @param columns database columns that the feature ids are mapped to, must not be
+	 * <code>null</code> (and contain at least one entry)
+	 * @param generator generator for determining new ids, can be <code>null</code> (in
+	 * this case, no inserts are possible)
+	 */
+	public FIDMapping(String prefix, String delimiter, List<Pair<SQLIdentifier, BaseType>> columns,
+			IDGenerator generator) {
+		this.prefix = prefix;
+		this.delimiter = delimiter;
+		this.columns = columns;
+		this.generator = generator;
+	}
 
-    public String getPrefix() {
-        return prefix;
-    }
+	public String getPrefix() {
+		return prefix;
+	}
 
-    public String getDelimiter() {
-        return delimiter;
-    }
+	public String getDelimiter() {
+		return delimiter;
+	}
 
-    public List<Pair<SQLIdentifier, BaseType>> getColumns() {
-        return columns;
-    }
+	public List<Pair<SQLIdentifier, BaseType>> getColumns() {
+		return columns;
+	}
 
-    public IDGenerator getIdGenerator() {
-        return generator;
-    }
+	public IDGenerator getIdGenerator() {
+		return generator;
+	}
 
-    @Deprecated
-    public String getColumn() {
-        if ( columns.size() == 0 ) {
-            throw new IllegalArgumentException();
-        }
-        return columns.get( 0 ).first.toString();
-    }
+	@Deprecated
+	public String getColumn() {
+		if (columns.size() == 0) {
+			throw new IllegalArgumentException();
+		}
+		return columns.get(0).first.toString();
+	}
 
-    @Deprecated
-    public BaseType getColumnType() {
-        if ( columns.size() == 0 ) {
-            throw new IllegalArgumentException();
-        }
-        return columns.get( 0 ).second;
-    }
+	@Deprecated
+	public BaseType getColumnType() {
+		if (columns.size() == 0) {
+			throw new IllegalArgumentException();
+		}
+		return columns.get(0).second;
+	}
+
 }

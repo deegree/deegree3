@@ -40,10 +40,10 @@ import org.deegree.time.TimeObject;
 
 public interface TimePrimitive extends TimeObject {
 
-    /**
-     * Returns all time objects related to this {@link TimePrimitive}.
-     *
-     * @return all related time objects, can be empty, but never <code>null</code>
-     */
-    List<RelatedTime> getRelatedTimes();
+	/**
+	 * Returns all time objects related to this {@link TimePrimitive}.
+	 * @return all related time objects, can be empty, but never <code>null</code>
+	 */
+	List<RelatedTime> getRelatedTimes();
+
 }

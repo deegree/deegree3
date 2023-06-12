@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aschmitz@wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -61,89 +60,92 @@ import org.deegree.style.se.unevaluated.Style;
 import org.slf4j.Logger;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 public class FeatureLayerData implements LayerData {
 
-    private static final Logger LOG = getLogger( FeatureLayerData.class );
+	private static final Logger LOG = getLogger(FeatureLayerData.class);
 
-    private int maxFeatures;
+	private int maxFeatures;
 
-    private final Style style;
+	private final Style style;
 
-    private XPathEvaluator<?> evaluator;
+	private XPathEvaluator<?> evaluator;
 
-    private final List<Query> queries;
+	private final List<Query> queries;
 
-    private final FeatureStore featureStore;
+	private final FeatureStore featureStore;
 
-    public FeatureLayerData( List<Query> queries, FeatureStore featureStore, int maxFeatures, Style style, QName ftName ) {
-        this.queries = queries;
-        this.featureStore = featureStore;
-        this.maxFeatures = maxFeatures;
-        this.style = style;
-        Map<String, QName> bindings = new HashMap<String, QName>();
-        Set<QName> validNames = AppSchemas.collectProperyNames( featureStore.getSchema(), ftName );
-        for ( QName name : validNames ) {
-            bindings.put( name.getLocalPart(), name );
-        }
-        evaluator = new TypedObjectNodeXPathEvaluator( bindings );
-    }
+	public FeatureLayerData(List<Query> queries, FeatureStore featureStore, int maxFeatures, Style style,
+			QName ftName) {
+		this.queries = queries;
+		this.featureStore = featureStore;
+		this.maxFeatures = maxFeatures;
+		this.style = style;
+		Map<String, QName> bindings = new HashMap<String, QName>();
+		Set<QName> validNames = AppSchemas.collectProperyNames(featureStore.getSchema(), ftName);
+		for (QName name : validNames) {
+			bindings.put(name.getLocalPart(), name);
+		}
+		evaluator = new TypedObjectNodeXPathEvaluator(bindings);
+	}
 
-    @Override
-    public void render( RenderContext context ) throws InterruptedException {
-        FeatureInputStream features = null;
-        try {
-            // TODO Should this always be done on this level? What about queueSize value?
-            features = featureStore.query( queries.toArray( new Query[queries.size()] ) );
-            features = new ThreadedFeatureInputStream( features, 100 );
+	@Override
+	public void render(RenderContext context) throws InterruptedException {
+		FeatureInputStream features = null;
+		try {
+			// TODO Should this always be done on this level? What about queueSize value?
+			features = featureStore.query(queries.toArray(new Query[queries.size()]));
+			features = new ThreadedFeatureInputStream(features, 100);
 
-            FeatureStreamRenderer renderer = new FeatureStreamRenderer( context, maxFeatures, evaluator );
-            renderer.renderFeatureStream( features, style );
-        } catch ( InterruptedException e ) {
-            throw e;
-        } catch ( FilterEvaluationException e ) {
-            LOG.warn( "A filter could not be evaluated. The error was '{}'.", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-        } catch ( Throwable e ) {
-            LOG.warn( "Data could not be fetched from the feature store. The error was '{}'.", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-        } finally {
-            if ( features != null ) {
-                features.close();
-            }
-        }
-    }
+			FeatureStreamRenderer renderer = new FeatureStreamRenderer(context, maxFeatures, evaluator);
+			renderer.renderFeatureStream(features, style);
+		}
+		catch (InterruptedException e) {
+			throw e;
+		}
+		catch (FilterEvaluationException e) {
+			LOG.warn("A filter could not be evaluated. The error was '{}'.", e.getLocalizedMessage());
+			LOG.trace("Stack trace:", e);
+		}
+		catch (Throwable e) {
+			LOG.warn("Data could not be fetched from the feature store. The error was '{}'.", e.getLocalizedMessage());
+			LOG.trace("Stack trace:", e);
+		}
+		finally {
+			if (features != null) {
+				features.close();
+			}
+		}
+	}
 
-    private static FeatureCollection clearDuplicates( FeatureInputStream rs ) {
-        FeatureCollection col = null;
-        try {
-            col = new GenericFeatureCollection();
-            for ( Feature f : rs ) {
-                if ( !col.contains( f ) ) {
-                    col.add( f );
-                }
-            }
-        } finally {
-            rs.close();
-        }
-        return col;
-    }
+	private static FeatureCollection clearDuplicates(FeatureInputStream rs) {
+		FeatureCollection col = null;
+		try {
+			col = new GenericFeatureCollection();
+			for (Feature f : rs) {
+				if (!col.contains(f)) {
+					col.add(f);
+				}
+			}
+		}
+		finally {
+			rs.close();
+		}
+		return col;
+	}
 
-    @Override
-    public FeatureCollection info() {
-        FeatureCollection col = null;
-        try {
-            col = clearDuplicates( featureStore.query( queries.toArray( new Query[queries.size()] ) ) );
-        } catch ( Throwable e ) {
-            LOG.warn( "Data could not be fetched from the feature store. The error was '{}'.", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-        }
-        return col;
-    }
+	@Override
+	public FeatureCollection info() {
+		FeatureCollection col = null;
+		try {
+			col = clearDuplicates(featureStore.query(queries.toArray(new Query[queries.size()])));
+		}
+		catch (Throwable e) {
+			LOG.warn("Data could not be fetched from the feature store. The error was '{}'.", e.getLocalizedMessage());
+			LOG.trace("Stack trace:", e);
+		}
+		return col;
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -52,149 +51,134 @@ import org.deegree.cs.i18n.Messages;
 import org.deegree.cs.transformations.Transformation;
 
 /**
- * The <code>GeographicCoordinateSystem</code> (in epsg aka Geodetic CRS) is a two dimensional crs with axis of lat-lon.
- * 
+ * The <code>GeographicCoordinateSystem</code> (in epsg aka Geodetic CRS) is a two
+ * dimensional crs with axis of lat-lon.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 
 public class GeographicCRS extends CRS implements IGeographicCRS {
 
-    /**
-     * A geographic coordinate system using WGS84 datum. This coordinate system use
-     * <var>longitude</var>/<var>latitude</var> axis with latitude values increasing north and longitude values
-     * increasing east. Angular units are degrees and prime meridian is Greenwich.
-     */
-    public static final GeographicCRS WGS84 = new GeographicCRS(
-                                                                 GeodeticDatum.WGS84,
-                                                                 new Axis[] {
-                                                                             new Axis( Unit.DEGREE, "lon", Axis.AO_EAST ),
-                                                                             new Axis( Unit.DEGREE, "lat",
-                                                                                       Axis.AO_NORTH ) },
-                                                                 new CRSCodeType[] {
-                                                                                    new EPSGCode( 4326 ),
-                                                                                    new CRSCodeType( "crs:84" ),
-                                                                                    new CRSCodeType( "urn:ogc:def:crs:ogc:1.3:crs84" ),
-                                                                                    new CRSCodeType( "wgs84(dd)" ),
-                                                                                    new CRSCodeType( "urn:ogc:def:crs:EPSG::4326" )},
-                                                                 new String[] { "WGS 84" }, null, null, null );
+	/**
+	 * A geographic coordinate system using WGS84 datum. This coordinate system use
+	 * <var>longitude</var>/<var>latitude</var> axis with latitude values increasing north
+	 * and longitude values increasing east. Angular units are degrees and prime meridian
+	 * is Greenwich.
+	 */
+	public static final GeographicCRS WGS84 = new GeographicCRS(GeodeticDatum.WGS84,
+			new Axis[] { new Axis(Unit.DEGREE, "lon", Axis.AO_EAST), new Axis(Unit.DEGREE, "lat", Axis.AO_NORTH) },
+			new CRSCodeType[] { new EPSGCode(4326), new CRSCodeType("crs:84"),
+					new CRSCodeType("urn:ogc:def:crs:ogc:1.3:crs84"), new CRSCodeType("wgs84(dd)"),
+					new CRSCodeType("urn:ogc:def:crs:EPSG::4326") },
+			new String[] { "WGS 84" }, null, null, null);
 
-    /**
-     * A geographic coordinate system using WGS84 datum. This coordinate system use
-     * <var>longitude</var>/<var>latitude</var> axis with latitude values increasing north and longitude values
-     * increasing east. Angular units are degrees and prime meridian is Greenwich.
-     */
-    public static final GeographicCRS WGS84_YX = new GeographicCRS( GeodeticDatum.WGS84,
-                                                                    new Axis[] {
-                                                                                new Axis( Unit.DEGREE, "lat",
-                                                                                          Axis.AO_NORTH ),
-                                                                                new Axis( Unit.DEGREE, "lon",
-                                                                                          Axis.AO_EAST ) },
-                                                                    new EPSGCode( 4326 ), "WGS 84" );
+	/**
+	 * A geographic coordinate system using WGS84 datum. This coordinate system use
+	 * <var>longitude</var>/<var>latitude</var> axis with latitude values increasing north
+	 * and longitude values increasing east. Angular units are degrees and prime meridian
+	 * is Greenwich.
+	 */
+	public static final GeographicCRS WGS84_YX = new GeographicCRS(GeodeticDatum.WGS84,
+			new Axis[] { new Axis(Unit.DEGREE, "lat", Axis.AO_NORTH), new Axis(Unit.DEGREE, "lon", Axis.AO_EAST) },
+			new EPSGCode(4326), "WGS 84");
 
-    /**
-     * @param datum
-     * @param axisOrder
-     * @param identity
-     * @throws IllegalArgumentException
-     *             if the axisOrder.length != 2.
-     */
-    public GeographicCRS( IGeodeticDatum datum, IAxis[] axisOrder, CRSResource identity )
-                            throws IllegalArgumentException {
-        this( null, datum, axisOrder, identity );
-    }
+	/**
+	 * @param datum
+	 * @param axisOrder
+	 * @param identity
+	 * @throws IllegalArgumentException if the axisOrder.length != 2.
+	 */
+	public GeographicCRS(IGeodeticDatum datum, IAxis[] axisOrder, CRSResource identity)
+			throws IllegalArgumentException {
+		this(null, datum, axisOrder, identity);
+	}
 
-    /**
-     * @param datum
-     * @param axisOrder
-     * @param codes
-     * @param names
-     * @param versions
-     * @param descriptions
-     * @param areasOfUse
-     * @throws IllegalArgumentException
-     *             if the axisOrder.length != 2.
-     */
-    public GeographicCRS( IGeodeticDatum datum, IAxis[] axisOrder, CRSCodeType[] codes, String[] names,
-                          String[] versions, String[] descriptions, String[] areasOfUse )
-                            throws IllegalArgumentException {
-        super( datum, axisOrder, codes, names, versions, descriptions, areasOfUse );
-        if ( axisOrder.length != 2 ) {
-            throw new IllegalArgumentException( Messages.getMessage( "CRS_COORDINATESYSTEMS_WRONG_AXIS_DIM",
-                                                                     "Geographic", "2" ) );
-        }
-    }
+	/**
+	 * @param datum
+	 * @param axisOrder
+	 * @param codes
+	 * @param names
+	 * @param versions
+	 * @param descriptions
+	 * @param areasOfUse
+	 * @throws IllegalArgumentException if the axisOrder.length != 2.
+	 */
+	public GeographicCRS(IGeodeticDatum datum, IAxis[] axisOrder, CRSCodeType[] codes, String[] names,
+			String[] versions, String[] descriptions, String[] areasOfUse) throws IllegalArgumentException {
+		super(datum, axisOrder, codes, names, versions, descriptions, areasOfUse);
+		if (axisOrder.length != 2) {
+			throw new IllegalArgumentException(
+					Messages.getMessage("CRS_COORDINATESYSTEMS_WRONG_AXIS_DIM", "Geographic", "2"));
+		}
+	}
 
-    /**
-     * @param datum
-     * @param axisOrder
-     * @param codes
-     */
-    public GeographicCRS( IGeodeticDatum datum, IAxis[] axisOrder, CRSCodeType[] codes ) {
-        this( datum, axisOrder, codes, null, null, null, null );
-    }
+	/**
+	 * @param datum
+	 * @param axisOrder
+	 * @param codes
+	 */
+	public GeographicCRS(IGeodeticDatum datum, IAxis[] axisOrder, CRSCodeType[] codes) {
+		this(datum, axisOrder, codes, null, null, null, null);
+	}
 
-    /**
-     * @param datum
-     * @param axisOrder
-     * @param code
-     * @param name
-     * @param version
-     * @param description
-     * @param areaOfUse
-     */
-    public GeographicCRS( IGeodeticDatum datum, IAxis[] axisOrder, CRSCodeType code, String name, String version,
-                          String description, String areaOfUse ) {
-        this( datum, axisOrder, new CRSCodeType[] { code }, new String[] { name }, new String[] { version },
-              new String[] { description }, new String[] { areaOfUse } );
-    }
+	/**
+	 * @param datum
+	 * @param axisOrder
+	 * @param code
+	 * @param name
+	 * @param version
+	 * @param description
+	 * @param areaOfUse
+	 */
+	public GeographicCRS(IGeodeticDatum datum, IAxis[] axisOrder, CRSCodeType code, String name, String version,
+			String description, String areaOfUse) {
+		this(datum, axisOrder, new CRSCodeType[] { code }, new String[] { name }, new String[] { version },
+				new String[] { description }, new String[] { areaOfUse });
+	}
 
-    /**
-     * @param datum
-     * @param axisOrder
-     * @param code
-     * @param name
-     */
-    public GeographicCRS( IGeodeticDatum datum, IAxis[] axisOrder, CRSCodeType code, String name ) {
-        this( datum, axisOrder, new CRSCodeType[] { code }, new String[] { name }, null, null, null );
-    }
+	/**
+	 * @param datum
+	 * @param axisOrder
+	 * @param code
+	 * @param name
+	 */
+	public GeographicCRS(IGeodeticDatum datum, IAxis[] axisOrder, CRSCodeType code, String name) {
+		this(datum, axisOrder, new CRSCodeType[] { code }, new String[] { name }, null, null, null);
+	}
 
-    /**
-     * @param datum
-     * @param axisOrder
-     * @param code
-     */
-    public GeographicCRS( IGeodeticDatum datum, IAxis[] axisOrder, CRSCodeType code ) {
-        this( datum, axisOrder, new CRSCodeType[] { code }, null, null, null, null );
-    }
+	/**
+	 * @param datum
+	 * @param axisOrder
+	 * @param code
+	 */
+	public GeographicCRS(IGeodeticDatum datum, IAxis[] axisOrder, CRSCodeType code) {
+		this(datum, axisOrder, new CRSCodeType[] { code }, null, null, null, null);
+	}
 
-    /**
-     * @param transformations
-     * @param usedDatum
-     * @param axisOrder
-     * @param id
-     */
-    public GeographicCRS( List<Transformation> transformations, IGeodeticDatum usedDatum, IAxis[] axisOrder,
-                          CRSResource id ) {
-        super( transformations, usedDatum, axisOrder, id );
-        if ( axisOrder.length != 2 ) {
-            throw new IllegalArgumentException( Messages.getMessage( "CRS_COORDINATESYSTEMS_WRONG_AXIS_DIM",
-                                                                     "Geographic", "2" ) );
-        }
-    }
+	/**
+	 * @param transformations
+	 * @param usedDatum
+	 * @param axisOrder
+	 * @param id
+	 */
+	public GeographicCRS(List<Transformation> transformations, IGeodeticDatum usedDatum, IAxis[] axisOrder,
+			CRSResource id) {
+		super(transformations, usedDatum, axisOrder, id);
+		if (axisOrder.length != 2) {
+			throw new IllegalArgumentException(
+					Messages.getMessage("CRS_COORDINATESYSTEMS_WRONG_AXIS_DIM", "Geographic", "2"));
+		}
+	}
 
-    @Override
-    public int getDimension() {
-        return 2;
-    }
+	@Override
+	public int getDimension() {
+		return 2;
+	}
 
-    @Override
-    public CRSType getType() {
-        return GEOGRAPHIC;
-    }
+	@Override
+	public CRSType getType() {
+		return GEOGRAPHIC;
+	}
 
 }

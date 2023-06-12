@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -54,193 +53,185 @@ import org.deegree.geometry.standard.AbstractDefaultGeometry;
 
 /**
  * Default implementation of {@link CompositeSurface}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class DefaultCompositeSurface extends AbstractDefaultGeometry implements CompositeSurface {
 
-    private List<Surface> memberSurfaces;
+	private List<Surface> memberSurfaces;
 
-    /**
-     * Creates a new {@link DefaultCompositeSurface} from the given parameters.
-     * 
-     * @param id
-     *            identifier, may be null
-     * @param crs
-     *            coordinate reference system, may be null
-     * @param pm
-     *            precision model, may be null
-     * @param memberSurfaces
-     *            surfaces that constitute the composited surface, the surfaces must join in pairs on common boundary
-     *            curves and must, when considered as
-     */
-    public DefaultCompositeSurface( String id, ICRS crs, PrecisionModel pm, List<Surface> memberSurfaces ) {
-        super( id, crs, pm );
-        this.memberSurfaces = memberSurfaces;
-    }
+	/**
+	 * Creates a new {@link DefaultCompositeSurface} from the given parameters.
+	 * @param id identifier, may be null
+	 * @param crs coordinate reference system, may be null
+	 * @param pm precision model, may be null
+	 * @param memberSurfaces surfaces that constitute the composited surface, the surfaces
+	 * must join in pairs on common boundary curves and must, when considered as
+	 */
+	public DefaultCompositeSurface(String id, ICRS crs, PrecisionModel pm, List<Surface> memberSurfaces) {
+		super(id, crs, pm);
+		this.memberSurfaces = memberSurfaces;
+	}
 
-    @Override
-    public int getCoordinateDimension() {
-        return memberSurfaces.get( 0 ).getCoordinateDimension();
-    }
+	@Override
+	public int getCoordinateDimension() {
+		return memberSurfaces.get(0).getCoordinateDimension();
+	}
 
-    @Override
-    public GeometryType getGeometryType() {
-        return GeometryType.PRIMITIVE_GEOMETRY;
-    }
+	@Override
+	public GeometryType getGeometryType() {
+		return GeometryType.PRIMITIVE_GEOMETRY;
+	}
 
-    @Override
-    public PrimitiveType getPrimitiveType() {
-        return PrimitiveType.Surface;
-    }
+	@Override
+	public PrimitiveType getPrimitiveType() {
+		return PrimitiveType.Surface;
+	}
 
-    @Override
-    public SurfaceType getSurfaceType() {
-        return SurfaceType.CompositeSurface;
-    }
+	@Override
+	public SurfaceType getSurfaceType() {
+		return SurfaceType.CompositeSurface;
+	}
 
-    @Override
-    public Measure getArea( Unit requestedBaseUnit ) {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Measure getArea(Unit requestedBaseUnit) {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public Measure getPerimeter( Unit requestedUnit ) {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Measure getPerimeter(Unit requestedUnit) {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public Point getCentroid() {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	@Override
+	public Point getCentroid() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    @Override
-    public List<SurfacePatch> getPatches() {
-        List<SurfacePatch> allPatches = new LinkedList<SurfacePatch>();
-        for ( Surface member : memberSurfaces ) {
-            allPatches.addAll( member.getPatches() );
-        }
-        return allPatches;
-    }
+	@Override
+	public List<SurfacePatch> getPatches() {
+		List<SurfacePatch> allPatches = new LinkedList<SurfacePatch>();
+		for (Surface member : memberSurfaces) {
+			allPatches.addAll(member.getPatches());
+		}
+		return allPatches;
+	}
 
-    
-    @Override
-    protected org.locationtech.jts.geom.MultiPolygon buildJTSGeometry() {
-        org.locationtech.jts.geom.Polygon [] jtsMembers = new org.locationtech.jts.geom.Polygon[size()];
-        int i = 0;
-        for ( Surface geometry : memberSurfaces ) {
-            jtsMembers[i++] = (org.locationtech.jts.geom.Polygon) getAsDefaultGeometry( geometry ).getJTSGeometry();
-        }
-        return jtsFactory.createMultiPolygon( jtsMembers );
-    }    
+	@Override
+	protected org.locationtech.jts.geom.MultiPolygon buildJTSGeometry() {
+		org.locationtech.jts.geom.Polygon[] jtsMembers = new org.locationtech.jts.geom.Polygon[size()];
+		int i = 0;
+		for (Surface geometry : memberSurfaces) {
+			jtsMembers[i++] = (org.locationtech.jts.geom.Polygon) getAsDefaultGeometry(geometry).getJTSGeometry();
+		}
+		return jtsFactory.createMultiPolygon(jtsMembers);
+	}
 
-    // -----------------------------------------------------------------------
-    // delegate methods for List<Surface>
-    // -----------------------------------------------------------------------
+	// -----------------------------------------------------------------------
+	// delegate methods for List<Surface>
+	// -----------------------------------------------------------------------
 
-    public void add( int index, Surface element ) {
-        memberSurfaces.add( index, element );
-    }
+	public void add(int index, Surface element) {
+		memberSurfaces.add(index, element);
+	}
 
-    public boolean add( Surface e ) {
-        return memberSurfaces.add( e );
-    }
+	public boolean add(Surface e) {
+		return memberSurfaces.add(e);
+	}
 
-    public boolean addAll( Collection<? extends Surface> c ) {
-        return memberSurfaces.addAll( c );
-    }
+	public boolean addAll(Collection<? extends Surface> c) {
+		return memberSurfaces.addAll(c);
+	}
 
-    public boolean addAll( int index, Collection<? extends Surface> c ) {
-        return memberSurfaces.addAll( index, c );
-    }
+	public boolean addAll(int index, Collection<? extends Surface> c) {
+		return memberSurfaces.addAll(index, c);
+	}
 
-    public void clear() {
-        memberSurfaces.clear();
-    }
+	public void clear() {
+		memberSurfaces.clear();
+	}
 
-    public boolean contains( Object o ) {
-        return memberSurfaces.contains( o );
-    }
+	public boolean contains(Object o) {
+		return memberSurfaces.contains(o);
+	}
 
-    public boolean containsAll( Collection<?> c ) {
-        return memberSurfaces.containsAll( c );
-    }
+	public boolean containsAll(Collection<?> c) {
+		return memberSurfaces.containsAll(c);
+	}
 
-    public Surface get( int index ) {
-        return memberSurfaces.get( index );
-    }
+	public Surface get(int index) {
+		return memberSurfaces.get(index);
+	}
 
-    public int indexOf( Object o ) {
-        return memberSurfaces.indexOf( o );
-    }
+	public int indexOf(Object o) {
+		return memberSurfaces.indexOf(o);
+	}
 
-    public boolean isEmpty() {
-        return memberSurfaces.isEmpty();
-    }
+	public boolean isEmpty() {
+		return memberSurfaces.isEmpty();
+	}
 
-    public Iterator<Surface> iterator() {
-        return memberSurfaces.iterator();
-    }
+	public Iterator<Surface> iterator() {
+		return memberSurfaces.iterator();
+	}
 
-    public int lastIndexOf( Object o ) {
-        return memberSurfaces.lastIndexOf( o );
-    }
+	public int lastIndexOf(Object o) {
+		return memberSurfaces.lastIndexOf(o);
+	}
 
-    public ListIterator<Surface> listIterator() {
-        return memberSurfaces.listIterator();
-    }
+	public ListIterator<Surface> listIterator() {
+		return memberSurfaces.listIterator();
+	}
 
-    public ListIterator<Surface> listIterator( int index ) {
-        return memberSurfaces.listIterator( index );
-    }
+	public ListIterator<Surface> listIterator(int index) {
+		return memberSurfaces.listIterator(index);
+	}
 
-    public Surface remove( int index ) {
-        return memberSurfaces.remove( index );
-    }
+	public Surface remove(int index) {
+		return memberSurfaces.remove(index);
+	}
 
-    public boolean remove( Object o ) {
-        return memberSurfaces.remove( o );
-    }
+	public boolean remove(Object o) {
+		return memberSurfaces.remove(o);
+	}
 
-    public boolean removeAll( Collection<?> c ) {
-        return memberSurfaces.removeAll( c );
-    }
+	public boolean removeAll(Collection<?> c) {
+		return memberSurfaces.removeAll(c);
+	}
 
-    public boolean retainAll( Collection<?> c ) {
-        return memberSurfaces.retainAll( c );
-    }
+	public boolean retainAll(Collection<?> c) {
+		return memberSurfaces.retainAll(c);
+	}
 
-    public Surface set( int index, Surface element ) {
-        return memberSurfaces.set( index, element );
-    }
+	public Surface set(int index, Surface element) {
+		return memberSurfaces.set(index, element);
+	}
 
-    public int size() {
-        return memberSurfaces.size();
-    }
+	public int size() {
+		return memberSurfaces.size();
+	}
 
-    public List<Surface> subList( int fromIndex, int toIndex ) {
-        return memberSurfaces.subList( fromIndex, toIndex );
-    }
+	public List<Surface> subList(int fromIndex, int toIndex) {
+		return memberSurfaces.subList(fromIndex, toIndex);
+	}
 
-    public Object[] toArray() {
-        return memberSurfaces.toArray();
-    }
+	public Object[] toArray() {
+		return memberSurfaces.toArray();
+	}
 
-    public <T> T[] toArray( T[] a ) {
-        return memberSurfaces.toArray( a );
-    }
+	public <T> T[] toArray(T[] a) {
+		return memberSurfaces.toArray(a);
+	}
 
-    @Override
-    public Points getExteriorRingCoordinates() {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Points getExteriorRingCoordinates() {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public List<Points> getInteriorRingsCoordinates() {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public List<Points> getInteriorRingsCoordinates() {
+		throw new UnsupportedOperationException();
+	}
+
 }

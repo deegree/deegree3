@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -39,58 +38,54 @@ import org.deegree.cs.CRSResource;
 
 /**
  * Interface describing a Ellipsoid
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public interface IEllipsoid extends CRSResource {
 
-    /**
-     * @return the eccentricity.
-     */
-    double getEccentricity();
+	/**
+	 * @return the eccentricity.
+	 */
+	double getEccentricity();
 
-    /**
-     * @return the squared eccentricity of the ellipsoid-
-     */
-    double getSquaredEccentricity();
+	/**
+	 * @return the squared eccentricity of the ellipsoid-
+	 */
+	double getSquaredEccentricity();
 
-    /**
-     * @return the flattening.
-     */
-    double getFlattening();
+	/**
+	 * @return the flattening.
+	 */
+	double getFlattening();
 
-    /**
-     * @return the inverseFlattening.
-     */
-    double getInverseFlattening();
+	/**
+	 * @return the inverseFlattening.
+	 */
+	double getInverseFlattening();
 
-    /**
-     * @return the semiMajorAxis.
-     */
-    double getSemiMajorAxis();
+	/**
+	 * @return the semiMajorAxis.
+	 */
+	double getSemiMajorAxis();
 
-    /**
-     * @return the semiMinorAxis.
-     */
-    double getSemiMinorAxis();
+	/**
+	 * @return the semiMinorAxis.
+	 */
+	double getSemiMinorAxis();
 
-    /**
-     * @return the units.
-     */
-    IUnit getUnits();
+	/**
+	 * @return the units.
+	 */
+	IUnit getUnits();
 
-    /**
-     * 
-     * @param units
-     */
-    void setUnits( IUnit units );
+	/**
+	 * @param units
+	 */
+	void setUnits(IUnit units);
 
-    /**
-     * @return true if this ellipsoid has no eccentricity.
-     */
-    boolean isSphere();
+	/**
+	 * @return true if this ellipsoid has no eccentricity.
+	 */
+	boolean isSphere();
 
 }

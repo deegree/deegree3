@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -42,34 +41,28 @@ import org.deegree.commons.tom.ows.StringOrRef;
 
 /**
  * Base interface for all GML definition objects.
- * 
+ *
  * @see Dictionary
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface Definition extends GMLObject {
 
-    /**
-     * Returns the description.
-     * 
-     * @return the description, can be <code>null</code>
-     */
-    public StringOrRef getDescription();
+	/**
+	 * Returns the description.
+	 * @return the description, can be <code>null</code>
+	 */
+	public StringOrRef getDescription();
 
-    /**
-     * Returns the names.
-     * 
-     * @return the names, can be empty, but never <code>null</code>
-     */
-    public CodeType[] getNames();
-    
-    /**
-     * Returns the standard GML properties (e.g. <code>gml:name</code>).
-     * 
-     * @return the standard GML properties, may be <code><null</code>
-     */
-    public GMLStdProps getGMLProperties();        
+	/**
+	 * Returns the names.
+	 * @return the names, can be empty, but never <code>null</code>
+	 */
+	public CodeType[] getNames();
+
+	/**
+	 * Returns the standard GML properties (e.g. <code>gml:name</code>).
+	 * @return the standard GML properties, may be <code><null</code>
+	 */
+	public GMLStdProps getGMLProperties();
+
 }

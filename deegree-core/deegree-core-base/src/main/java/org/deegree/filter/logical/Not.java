@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -41,44 +40,41 @@ import org.deegree.filter.XPathEvaluator;
 
 /**
  * TODO add documentation here
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * 
- * @version $Revision:$, $Date:$
  */
 public class Not extends LogicalOperator {
 
-    private Operator param;
+	private Operator param;
 
-    public Not( Operator param ) {
-        this.param = param;
-    }
+	public Not(Operator param) {
+		this.param = param;
+	}
 
-    public Operator getParameter() {
-        return param;
-    }
+	public Operator getParameter() {
+		return param;
+	}
 
-    @Override
-    public SubType getSubType() {
-        return SubType.NOT;
-    }
+	@Override
+	public SubType getSubType() {
+		return SubType.NOT;
+	}
 
-    @Override
-    public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
-                            throws FilterEvaluationException {
-        return !param.evaluate( obj, xpathEvaluator );
-    }
+	@Override
+	public <T> boolean evaluate(T obj, XPathEvaluator<T> xpathEvaluator) throws FilterEvaluationException {
+		return !param.evaluate(obj, xpathEvaluator);
+	}
 
-    @Override
-    public String toString( String indent ) {
-        String s = indent + "-Not\n";
-        s += param.toString( indent + "  " );
-        return s;
-    }
+	@Override
+	public String toString(String indent) {
+		String s = indent + "-Not\n";
+		s += param.toString(indent + "  ");
+		return s;
+	}
 
-    @Override
-    public Operator[] getParams() {
-        return new Operator[] { param };
-    }
+	@Override
+	public Operator[] getParams() {
+		return new Operator[] { param };
+	}
+
 }

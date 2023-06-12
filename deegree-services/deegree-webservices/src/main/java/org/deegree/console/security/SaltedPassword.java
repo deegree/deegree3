@@ -41,84 +41,83 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 
 /**
- * Encapsulates a salt value and the hash of a password that has been salted with the same value.
- * 
+ * Encapsulates a salt value and the hash of a password that has been salted with the same
+ * value.
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: markus $
- * 
- * @version $Revision: $, $Date: $
  */
 public class SaltedPassword {
 
-    private static final String HASH_ALGORITHM_ID = "SHA-256";
+	private static final String HASH_ALGORITHM_ID = "SHA-256";
 
-    private static final String CHARSET = "UTF-8";
+	private static final String CHARSET = "UTF-8";
 
-    private final byte[] saltedAndHashedPassword;
+	private final byte[] saltedAndHashedPassword;
 
-    private final byte[] salt;
+	private final byte[] salt;
 
-    public SaltedPassword( byte[] saltedAndHashedPassword, byte[] salt ) {
-        this.saltedAndHashedPassword = saltedAndHashedPassword;
-        this.salt = salt;
-    }
+	public SaltedPassword(byte[] saltedAndHashedPassword, byte[] salt) {
+		this.saltedAndHashedPassword = saltedAndHashedPassword;
+		this.salt = salt;
+	}
 
-    public SaltedPassword( String plainPassword, byte[] salt ) throws UnsupportedEncodingException,
-                            NoSuchAlgorithmException {
-        byte[] plainPasswordBinary = plainPassword.getBytes( CHARSET );
-        byte[] saltedAndHashedPassword = getHashedAndSaltedPassword( plainPasswordBinary, salt );
-        this.saltedAndHashedPassword = saltedAndHashedPassword;
-        this.salt = salt;
-    }
+	public SaltedPassword(String plainPassword, byte[] salt)
+			throws UnsupportedEncodingException, NoSuchAlgorithmException {
+		byte[] plainPasswordBinary = plainPassword.getBytes(CHARSET);
+		byte[] saltedAndHashedPassword = getHashedAndSaltedPassword(plainPasswordBinary, salt);
+		this.saltedAndHashedPassword = saltedAndHashedPassword;
+		this.salt = salt;
+	}
 
-    public SaltedPassword( String plainPassword ) throws UnsupportedEncodingException, NoSuchAlgorithmException {
-        this( plainPassword, getNewSalt() );
-    }
+	public SaltedPassword(String plainPassword) throws UnsupportedEncodingException, NoSuchAlgorithmException {
+		this(plainPassword, getNewSalt());
+	}
 
-    private byte[] getHashedAndSaltedPassword( byte[] plainPassword, byte[] salt )
-                            throws NoSuchAlgorithmException, UnsupportedEncodingException {
-        MessageDigest md = MessageDigest.getInstance( HASH_ALGORITHM_ID );
-        md.update( plainPassword );
-        md.update( salt );
-        byte[] mdbytes = md.digest();
-        return mdbytes;
-    }
+	private byte[] getHashedAndSaltedPassword(byte[] plainPassword, byte[] salt)
+			throws NoSuchAlgorithmException, UnsupportedEncodingException {
+		MessageDigest md = MessageDigest.getInstance(HASH_ALGORITHM_ID);
+		md.update(plainPassword);
+		md.update(salt);
+		byte[] mdbytes = md.digest();
+		return mdbytes;
+	}
 
-    public byte[] getSaltedAndHashedPassword() {
-        return saltedAndHashedPassword;
-    }
+	public byte[] getSaltedAndHashedPassword() {
+		return saltedAndHashedPassword;
+	}
 
-    public byte[] getSalt() {
-        return salt;
-    }
+	public byte[] getSalt() {
+		return salt;
+	}
 
-    @Override
-    public boolean equals( Object o ) {
-        if ( o == null ) {
-            return false;
-        }
-        if ( !( o instanceof SaltedPassword ) ) {
-            return false;
-        }
-        SaltedPassword that = (SaltedPassword) o;
-        return equalsBytewise( this.saltedAndHashedPassword, that.saltedAndHashedPassword );
-    }
+	@Override
+	public boolean equals(Object o) {
+		if (o == null) {
+			return false;
+		}
+		if (!(o instanceof SaltedPassword)) {
+			return false;
+		}
+		SaltedPassword that = (SaltedPassword) o;
+		return equalsBytewise(this.saltedAndHashedPassword, that.saltedAndHashedPassword);
+	}
 
-    private boolean equalsBytewise( byte[] bytes1, byte[] bytes2 ) {
-        if ( bytes1.length != bytes2.length ) {
-            return false;
-        }
-        for ( int i = 0; i < bytes1.length; i++ ) {
-            if ( bytes1[i] != bytes2[i] ) {
-                return false;
-            }
-        }
-        return true;
-    }
+	private boolean equalsBytewise(byte[] bytes1, byte[] bytes2) {
+		if (bytes1.length != bytes2.length) {
+			return false;
+		}
+		for (int i = 0; i < bytes1.length; i++) {
+			if (bytes1[i] != bytes2[i]) {
+				return false;
+			}
+		}
+		return true;
+	}
 
-    private static byte[] getNewSalt() {
-        ByteBuffer byteBuffer = ByteBuffer.allocate( Long.SIZE / 8 );
-        byteBuffer.putLong( new Date().getTime() );
-        return byteBuffer.array();
-    }
+	private static byte[] getNewSalt() {
+		ByteBuffer byteBuffer = ByteBuffer.allocate(Long.SIZE / 8);
+		byteBuffer.putLong(new Date().getTime());
+		return byteBuffer.array();
+	}
+
 }

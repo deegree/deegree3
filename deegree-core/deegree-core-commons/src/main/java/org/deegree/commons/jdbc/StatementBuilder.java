@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -41,24 +40,22 @@ import java.util.List;
 
 /**
  * Helper class for building {@link PreparedStatement}s.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class StatementBuilder {
 
-    private final StringBuilder sql = new StringBuilder();
+	private final StringBuilder sql = new StringBuilder();
 
-    private final List<Object> args = new ArrayList<Object>();
+	private final List<Object> args = new ArrayList<Object>();
 
-    public void appendSQL( String sql ) {
-        this.sql.append( sql );
-    }
+	public void appendSQL(String sql) {
+		this.sql.append(sql);
+	}
 
-    public void appendArgument( String sql, Object arg ) {
-        this.sql.append( sql );
-        args.add( arg );
-    }
+	public void appendArgument(String sql, Object arg) {
+		this.sql.append(sql);
+		args.add(arg);
+	}
+
 }

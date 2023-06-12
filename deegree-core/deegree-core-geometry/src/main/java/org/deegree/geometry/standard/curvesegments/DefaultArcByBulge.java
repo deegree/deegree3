@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -45,94 +44,89 @@ import org.deegree.geometry.standard.points.PointsList;
 
 /**
  * Default implementation of {@link ArcByBulge} segments.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class DefaultArcByBulge implements ArcByBulge {
 
-    private final Points controlPoints;
+	private final Points controlPoints;
 
-    private final double bulge;
+	private final double bulge;
 
-    private final Point normal;
+	private final Point normal;
 
-    /**
-     * Creates a new <code>DefaultArcByBulge</code> instance from the given parameters.
-     * 
-     * @param p1
-     *            first control point
-     * @param p2
-     *            second control point
-     * @param bulge
-     * @param normal
-     */
-    public DefaultArcByBulge( Point p1, Point p2, double bulge, Point normal ) {
-        controlPoints = new PointsArray( p1, p2 );
-        this.bulge = bulge;
-        this.normal = normal;
-    }
+	/**
+	 * Creates a new <code>DefaultArcByBulge</code> instance from the given parameters.
+	 * @param p1 first control point
+	 * @param p2 second control point
+	 * @param bulge
+	 * @param normal
+	 */
+	public DefaultArcByBulge(Point p1, Point p2, double bulge, Point normal) {
+		controlPoints = new PointsArray(p1, p2);
+		this.bulge = bulge;
+		this.normal = normal;
+	}
 
-    @Override
-    public Point getPoint1() {
-        return controlPoints.get( 0 );
-    }
+	@Override
+	public Point getPoint1() {
+		return controlPoints.get(0);
+	}
 
-    @Override
-    public Point getPoint2() {
-        return controlPoints.get( 1 );
-    }
+	@Override
+	public Point getPoint2() {
+		return controlPoints.get(1);
+	}
 
-    @Override
-    public double getBulge() {
-        return bulge;
-    }
+	@Override
+	public double getBulge() {
+		return bulge;
+	}
 
-    @Override
-    public Point getNormal() {
-        return normal;
-    }
+	@Override
+	public Point getNormal() {
+		return normal;
+	}
 
-    @Override
-    public double[] getBulges() {
-        return new double[] { bulge };
-    }
+	@Override
+	public double[] getBulges() {
+		return new double[] { bulge };
+	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public Points getNormals() {
-        return new PointsList( Collections.singletonList( normal ) );
-    }
+	@SuppressWarnings("unchecked")
+	@Override
+	public Points getNormals() {
+		return new PointsList(Collections.singletonList(normal));
+	}
 
-    @Override
-    public int getNumArcs() {
-        return 1;
-    }
+	@Override
+	public int getNumArcs() {
+		return 1;
+	}
 
-    @Override
-    public int getCoordinateDimension() {
-        return controlPoints.get( 0 ).getCoordinateDimension();
-    }
+	@Override
+	public int getCoordinateDimension() {
+		return controlPoints.get(0).getCoordinateDimension();
+	}
 
-    @Override
-    public Points getControlPoints() {
-        return controlPoints;
-    }
+	@Override
+	public Points getControlPoints() {
+		return controlPoints;
+	}
 
-    @Override
-    public Point getStartPoint() {
-        return controlPoints.get( 0 );
-    }
+	@Override
+	public Point getStartPoint() {
+		return controlPoints.get(0);
+	}
 
-    @Override
-    public Point getEndPoint() {
-        return controlPoints.get( 1 );
-    }
+	@Override
+	public Point getEndPoint() {
+		return controlPoints.get(1);
+	}
 
-    @Override
-    public CurveSegmentType getSegmentType() {
-        return CurveSegmentType.ARC_BY_BULGE;
-    }
+	@Override
+	public CurveSegmentType getSegmentType() {
+		return CurveSegmentType.ARC_BY_BULGE;
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -106,222 +105,215 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Basic {@link SQLFeatureStore} test for table-based configurations.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 @RunWith(value = Parameterized.class)
 public class SQLFeatureStoreTOPPStatesTest {
 
-    private static Logger LOG = LoggerFactory.getLogger( SQLFeatureStoreTOPPStatesTest.class );
+	private static Logger LOG = LoggerFactory.getLogger(SQLFeatureStoreTOPPStatesTest.class);
 
-    private static final QName TOPP_STATES = QName.valueOf( "{http://www.openplans.org/topp}states" );
+	private static final QName TOPP_STATES = QName.valueOf("{http://www.openplans.org/topp}states");
 
-    private static final QName STATE_NAME = QName.valueOf( "{http://www.openplans.org/topp}STATE_NAME" );
+	private static final QName STATE_NAME = QName.valueOf("{http://www.openplans.org/topp}STATE_NAME");
 
-    private static final QName STATE_FIPS = QName.valueOf( "{http://www.openplans.org/topp}STATE_FIPS" );
+	private static final QName STATE_FIPS = QName.valueOf("{http://www.openplans.org/topp}STATE_FIPS");
 
-    private static final QName SAMP_POP = QName.valueOf( "{http://www.openplans.org/topp}SAMP_POP" );
+	private static final QName SAMP_POP = QName.valueOf("{http://www.openplans.org/topp}SAMP_POP");
 
-    private final TestDBProperties settings;
+	private final TestDBProperties settings;
 
-    private Workspace ws;
+	private Workspace ws;
 
-    private SQLDialect dialect;
+	private SQLDialect dialect;
 
-    private SQLFeatureStore fs;
+	private SQLFeatureStore fs;
 
-    private PreparedResources prepared;
+	private PreparedResources prepared;
 
-    public SQLFeatureStoreTOPPStatesTest( TestDBProperties settings ) {
-        this.settings = settings;
-    }
+	public SQLFeatureStoreTOPPStatesTest(TestDBProperties settings) {
+		this.settings = settings;
+	}
 
-    @Before
-    public void setUp()
-                            throws Throwable {
+	@Before
+	public void setUp() throws Throwable {
 
-        initWorkspace();
-        ws.init( new DefaultResourceIdentifier<ConnectionProvider>( ConnectionProviderProvider.class, "admin" ),
-                 prepared );
-        ConnectionProvider prov = ws.getResource( ConnectionProviderProvider.class, "admin" );
-        dialect = prov.getDialect();
+		initWorkspace();
+		ws.init(new DefaultResourceIdentifier<ConnectionProvider>(ConnectionProviderProvider.class, "admin"), prepared);
+		ConnectionProvider prov = ws.getResource(ConnectionProviderProvider.class, "admin");
+		dialect = prov.getDialect();
 
-        createDB();
-        ws.init( new DefaultResourceIdentifier<ConnectionProvider>( ConnectionProviderProvider.class, "deegree-test" ),
-                 prepared );
-        createTables();
-        fs = (SQLFeatureStore) ws.init( new DefaultResourceIdentifier<FeatureStore>( FeatureStoreProvider.class,
-                                                                                     "topp_states" ), prepared );
+		createDB();
+		ws.init(new DefaultResourceIdentifier<ConnectionProvider>(ConnectionProviderProvider.class, "deegree-test"),
+				prepared);
+		createTables();
+		fs = (SQLFeatureStore) ws
+			.init(new DefaultResourceIdentifier<FeatureStore>(FeatureStoreProvider.class, "topp_states"), prepared);
 
-        populateStore();
-    }
+		populateStore();
+	}
 
-    private void populateStore()
-                            throws Throwable {
-        URL datasetURL = SQLFeatureStoreTOPPStatesTest.class.getResource( "topp_states/data/states.xml" );
-        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_2, datasetURL );
-        gmlReader.setApplicationSchema( fs.getSchema() );
-        FeatureCollection fc = gmlReader.readFeatureCollection();
-        Assert.assertEquals( 49, fc.size() );
-        gmlReader.close();
+	private void populateStore() throws Throwable {
+		URL datasetURL = SQLFeatureStoreTOPPStatesTest.class.getResource("topp_states/data/states.xml");
+		GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader(GML_2, datasetURL);
+		gmlReader.setApplicationSchema(fs.getSchema());
+		FeatureCollection fc = gmlReader.readFeatureCollection();
+		Assert.assertEquals(49, fc.size());
+		gmlReader.close();
 
-        FeatureStoreTransaction ta = fs.acquireTransaction();
-        try {
-            List<String> fids = ta.performInsert( fc, GENERATE_NEW );
-            Assert.assertEquals( 49, fids.size() );
-            ta.commit();
-        } catch ( Throwable t ) {
-            ta.rollback();
-            throw t;
-        }
-    }
+		FeatureStoreTransaction ta = fs.acquireTransaction();
+		try {
+			List<String> fids = ta.performInsert(fc, GENERATE_NEW);
+			Assert.assertEquals(49, fids.size());
+			ta.commit();
+		}
+		catch (Throwable t) {
+			ta.rollback();
+			throw t;
+		}
+	}
 
-    private void initWorkspace()
-                            throws ResourceInitException, URISyntaxException {
-        URL url = SQLFeatureStoreTOPPStatesTest.class.getResource( "/org/deegree/feature/persistence/sql/topp_states/" );
-        File dir = new File( url.toURI() );
-        ws = new DefaultWorkspace( dir );
+	private void initWorkspace() throws ResourceInitException, URISyntaxException {
+		URL url = SQLFeatureStoreTOPPStatesTest.class.getResource("/org/deegree/feature/persistence/sql/topp_states/");
+		File dir = new File(url.toURI());
+		ws = new DefaultWorkspace(dir);
 
-        ws.startup();
+		ws.startup();
 
-        ResourceLocation<ConnectionProvider> loc = getSyntheticProvider( "deegree-test", settings.getUrl(),
-                                                                         settings.getUser(), settings.getPass() );
-        ws.getLocationHandler().addExtraResource( loc );
-        loc = getSyntheticProvider( "admin", settings.getAdminUrl(), settings.getAdminUser(), settings.getAdminPass() );
-        ws.getLocationHandler().addExtraResource( loc );
-        ws.startup();
-        prepared = ws.prepare();
-    }
+		ResourceLocation<ConnectionProvider> loc = getSyntheticProvider("deegree-test", settings.getUrl(),
+				settings.getUser(), settings.getPass());
+		ws.getLocationHandler().addExtraResource(loc);
+		loc = getSyntheticProvider("admin", settings.getAdminUrl(), settings.getAdminUser(), settings.getAdminPass());
+		ws.getLocationHandler().addExtraResource(loc);
+		ws.startup();
+		prepared = ws.prepare();
+	}
 
-    private void createDB()
-                            throws SQLException {
-        ConnectionProvider prov = ws.getResource( ConnectionProviderProvider.class, "admin" );
-        Connection adminConn = prov.getConnection();
-        try {
-            dialect.createDB( adminConn, settings.getDbName() );
-        } finally {
-            adminConn.close();
-        }
-    }
+	private void createDB() throws SQLException {
+		ConnectionProvider prov = ws.getResource(ConnectionProviderProvider.class, "admin");
+		Connection adminConn = prov.getConnection();
+		try {
+			dialect.createDB(adminConn, settings.getDbName());
+		}
+		finally {
+			adminConn.close();
+		}
+	}
 
-    private void createTables()
-                            throws Exception {
+	private void createTables() throws Exception {
 
-        // read application schema
-        URL schemaUrl = SQLFeatureStoreTOPPStatesTest.class.getResource( "topp_states/schema/states.xsd" );
-        GMLAppSchemaReader decoder = new GMLAppSchemaReader( null, null, schemaUrl.toString() );
-        AppSchema appSchema = decoder.extractAppSchema();
+		// read application schema
+		URL schemaUrl = SQLFeatureStoreTOPPStatesTest.class.getResource("topp_states/schema/states.xsd");
+		GMLAppSchemaReader decoder = new GMLAppSchemaReader(null, null, schemaUrl.toString());
+		AppSchema appSchema = decoder.extractAppSchema();
 
-        // map application schema
-        ICRS crs = CRSManager.getCRSRef( "EPSG:4326" );
-        GeometryStorageParams storageParams = new GeometryStorageParams( crs, dialect.getUndefinedSrid(), DIM_2 );
-        AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, storageParams,
-                                                      dialect.getMaxTableNameLength(), false, true );
-        MappedAppSchema mappedSchema = mapper.getMappedSchema();
+		// map application schema
+		ICRS crs = CRSManager.getCRSRef("EPSG:4326");
+		GeometryStorageParams storageParams = new GeometryStorageParams(crs, dialect.getUndefinedSrid(), DIM_2);
+		AppSchemaMapper mapper = new AppSchemaMapper(appSchema, false, true, storageParams,
+				dialect.getMaxTableNameLength(), false, true);
+		MappedAppSchema mappedSchema = mapper.getMappedSchema();
 
-        // create tables
-        String[] ddl = DDLCreator.newInstance( mappedSchema, dialect ).getDDL();
+		// create tables
+		String[] ddl = DDLCreator.newInstance(mappedSchema, dialect).getDDL();
 
-        ConnectionProvider prov = ws.getResource( ConnectionProviderProvider.class, "deegree-test" );
-        Connection conn = prov.getConnection();
-        Statement stmt = null;
-        try {
-            stmt = conn.createStatement();
-            for ( String sql : ddl ) {
-                stmt.execute( sql );
-            }
-        } finally {
-            stmt.close();
-            conn.close();
-        }
-    }
+		ConnectionProvider prov = ws.getResource(ConnectionProviderProvider.class, "deegree-test");
+		Connection conn = prov.getConnection();
+		Statement stmt = null;
+		try {
+			stmt = conn.createStatement();
+			for (String sql : ddl) {
+				stmt.execute(sql);
+			}
+		}
+		finally {
+			stmt.close();
+			conn.close();
+		}
+	}
 
-    @After
-    public void tearDown()
-                            throws Exception {
-        ConnectionProvider prov = ws.getResource( ConnectionProviderProvider.class, "admin" );
-        ConnectionProvider dtest = ws.getResource( ConnectionProviderProvider.class, "deegree-test" );
-        fs.destroy();
-        dtest.destroy();
-        Connection adminConn = prov.getConnection();
-        try {
-            dialect.dropDB( adminConn, settings.getDbName() );
-        } finally {
-            adminConn.close();
-        }
-        ws.destroy();
-    }
+	@After
+	public void tearDown() throws Exception {
+		ConnectionProvider prov = ws.getResource(ConnectionProviderProvider.class, "admin");
+		ConnectionProvider dtest = ws.getResource(ConnectionProviderProvider.class, "deegree-test");
+		fs.destroy();
+		dtest.destroy();
+		Connection adminConn = prov.getConnection();
+		try {
+			dialect.dropDB(adminConn, settings.getDbName());
+		}
+		finally {
+			adminConn.close();
+		}
+		ws.destroy();
+	}
 
-    @Test
-    public void testSchema() {
-        Assert.assertEquals( 1, fs.getSchema().getFeatureTypes().length );
-        FeatureType ft = fs.getSchema().getFeatureTypes()[0];
-        Assert.assertEquals( TOPP_STATES, ft.getName() );
-        Assert.assertEquals( 23, ft.getPropertyDeclarations().size() );
-    }
+	@Test
+	public void testSchema() {
+		Assert.assertEquals(1, fs.getSchema().getFeatureTypes().length);
+		FeatureType ft = fs.getSchema().getFeatureTypes()[0];
+		Assert.assertEquals(TOPP_STATES, ft.getName());
+		Assert.assertEquals(23, ft.getPropertyDeclarations().size());
+	}
 
-    @Test
-    public void queryByStateName()
-                            throws FeatureStoreException, FilterEvaluationException {
-        ValueReference propName = new ValueReference( STATE_NAME );
-        Literal literal = new Literal( "Illinois" );
-        PropertyIsEqualTo oper = new PropertyIsEqualTo( propName, literal, false, null );
-        Filter filter = new OperatorFilter( oper );
-        Query query = new Query( TOPP_STATES, filter, -1, -1, -1 );
-        FeatureCollection fc = fs.query( query ).toCollection();
-        Assert.assertEquals( 1, fc.size() );
+	@Test
+	public void queryByStateName() throws FeatureStoreException, FilterEvaluationException {
+		ValueReference propName = new ValueReference(STATE_NAME);
+		Literal literal = new Literal("Illinois");
+		PropertyIsEqualTo oper = new PropertyIsEqualTo(propName, literal, false, null);
+		Filter filter = new OperatorFilter(oper);
+		Query query = new Query(TOPP_STATES, filter, -1, -1, -1);
+		FeatureCollection fc = fs.query(query).toCollection();
+		Assert.assertEquals(1, fc.size());
 
-        Feature f = fc.iterator().next();
-        Assert.assertEquals( 23, ( f.getProperties().size() ) );
+		Feature f = fc.iterator().next();
+		Assert.assertEquals(23, (f.getProperties().size()));
 
-        assertEquals( "Illinois", getPropertyValue( f, STATE_NAME ).getAsText() );
-        assertEquals( STRING, getPropertyValue( f, STATE_NAME ).getType().getBaseType() );
-        assertEquals( "17", getPropertyValue( f, STATE_FIPS ).getAsText() );
-        assertEquals( STRING, getPropertyValue( f, STATE_FIPS ).getType().getBaseType() );
-        assertEquals( 1747776.0, ( (Double) getPropertyValue( f, SAMP_POP ).getValue() ), 0.001 );
-        assertEquals( DOUBLE, getPropertyValue( f, SAMP_POP ).getType().getBaseType() );
-    }
+		assertEquals("Illinois", getPropertyValue(f, STATE_NAME).getAsText());
+		assertEquals(STRING, getPropertyValue(f, STATE_NAME).getType().getBaseType());
+		assertEquals("17", getPropertyValue(f, STATE_FIPS).getAsText());
+		assertEquals(STRING, getPropertyValue(f, STATE_FIPS).getType().getBaseType());
+		assertEquals(1747776.0, ((Double) getPropertyValue(f, SAMP_POP).getValue()), 0.001);
+		assertEquals(DOUBLE, getPropertyValue(f, SAMP_POP).getType().getBaseType());
+	}
 
-    @Test
-    public void queryByBBOX()
-                            throws FeatureStoreException, FilterEvaluationException, UnknownCRSException {
+	@Test
+	public void queryByBBOX() throws FeatureStoreException, FilterEvaluationException, UnknownCRSException {
 
-        BBOX oper = new BBOX( new GeometryFactory().createEnvelope( -75.102613, 40.212597, -72.361859, 41.512517,
-                                                                    CRSManager.lookup( "EPSG:4326" ) ) );
-        Filter filter = new OperatorFilter( oper );
-        Query query = new Query( TOPP_STATES, filter, -1, -1, -1 );
-        FeatureCollection fc = fs.query( query ).toCollection();
-        Assert.assertEquals( 4, fc.size() );
+		BBOX oper = new BBOX(new GeometryFactory().createEnvelope(-75.102613, 40.212597, -72.361859, 41.512517,
+				CRSManager.lookup("EPSG:4326")));
+		Filter filter = new OperatorFilter(oper);
+		Query query = new Query(TOPP_STATES, filter, -1, -1, -1);
+		FeatureCollection fc = fs.query(query).toCollection();
+		Assert.assertEquals(4, fc.size());
 
-        Set<String> stateNames = new HashSet<String>();
-        for ( Feature f : fc ) {
-            stateNames.add( getPropertyValue( f, STATE_NAME ).getAsText() );
-        }
+		Set<String> stateNames = new HashSet<String>();
+		for (Feature f : fc) {
+			stateNames.add(getPropertyValue(f, STATE_NAME).getAsText());
+		}
 
-        Assert.assertTrue( stateNames.contains( "New York" ) );
-        Assert.assertTrue( stateNames.contains( "Pennsylvania" ) );
-        Assert.assertTrue( stateNames.contains( "Connecticut" ) );
-        Assert.assertTrue( stateNames.contains( "New Jersey" ) );
-    }
+		Assert.assertTrue(stateNames.contains("New York"));
+		Assert.assertTrue(stateNames.contains("Pennsylvania"));
+		Assert.assertTrue(stateNames.contains("Connecticut"));
+		Assert.assertTrue(stateNames.contains("New Jersey"));
+	}
 
-    private PrimitiveValue getPropertyValue( Feature f, QName propName ) {
-        return (PrimitiveValue) f.getProperties( propName ).get( 0 ).getValue();
-    }
+	private PrimitiveValue getPropertyValue(Feature f, QName propName) {
+		return (PrimitiveValue) f.getProperties(propName).get(0).getValue();
+	}
 
-    @Parameters
-    public static Collection<TestDBProperties[]> data()
-                            throws IllegalArgumentException, IOException {
-        List<TestDBProperties[]> settings = new ArrayList<TestDBProperties[]>();
-        try {
-            for ( TestDBProperties testDBSettings : TestDBProperties.getAll() ) {
-                settings.add( new TestDBProperties[] { testDBSettings } );
-            }
-        } catch ( Throwable t ) {
-            LOG.error( "Access to test databases not configured properly: " + t.getMessage() );
-        }
-        return settings;
-    }
+	@Parameters
+	public static Collection<TestDBProperties[]> data() throws IllegalArgumentException, IOException {
+		List<TestDBProperties[]> settings = new ArrayList<TestDBProperties[]>();
+		try {
+			for (TestDBProperties testDBSettings : TestDBProperties.getAll()) {
+				settings.add(new TestDBProperties[] { testDBSettings });
+			}
+		}
+		catch (Throwable t) {
+			LOG.error("Access to test databases not configured properly: " + t.getMessage());
+		}
+		return settings;
+	}
+
 }

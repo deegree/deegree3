@@ -39,29 +39,31 @@ package org.deegree.sqldialect.oracle.sdo;
 
 /**
  * Holder for a native representation of Oracle Geometries in plain Java types
- * 
+ *
  * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  */
 public class SDOGeometry {
-    public int gtype;
 
-    public int srid;
+	public int gtype;
 
-    public double point[];
+	public int srid;
 
-    public int[] elem_info;
+	public double point[];
 
-    public double[] ordinates;
+	public int[] elem_info;
 
-    public SDOGeometry( int gtype, int srid, double point[], int[] elem_info, double[] ordinates ) {
-        this.gtype = gtype;
-        this.srid = srid;
-        this.point = point;
-        this.elem_info = elem_info;
-        this.ordinates = ordinates;
-    }
+	public double[] ordinates;
 
-    public SDOGeometry() {
+	public SDOGeometry(int gtype, int srid, double point[], int[] elem_info, double[] ordinates) {
+		this.gtype = gtype;
+		this.srid = srid;
+		this.point = point;
+		this.elem_info = elem_info;
+		this.ordinates = ordinates;
+	}
 
-    }
+	public SDOGeometry() {
+
+	}
+
 }

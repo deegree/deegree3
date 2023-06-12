@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -38,29 +37,24 @@ package org.deegree.commons.tom.gml;
 import org.deegree.commons.tom.ReferenceResolver;
 
 /**
- * Implementations provide the functionality to retrieve {@link GMLObject} instances by their URI (which may be document
- * local or remote).
+ * Implementations provide the functionality to retrieve {@link GMLObject} instances by
+ * their URI (which may be document local or remote).
  * <p>
  * A local reference is always constructed as <code># + id</code>.
  * </p>
- * 
+ *
  * @see GMLReference
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface GMLReferenceResolver extends ReferenceResolver {
 
-    /**
-     * Returns the {@link GMLObject} that is referenced by the given URI.
-     * 
-     * @param uri
-     *            URI that identifies the object, must not be <code>null</code>
-     * @param baseURL
-     *            optional baseURL for resolving URIs that are relative URLs, may be <code>null</code>
-     * @return the referenced object or <code>null</code> if no such object exists
-     */
-    public GMLObject getObject( String uri, String baseURL );
+	/**
+	 * Returns the {@link GMLObject} that is referenced by the given URI.
+	 * @param uri URI that identifies the object, must not be <code>null</code>
+	 * @param baseURL optional baseURL for resolving URIs that are relative URLs, may be
+	 * <code>null</code>
+	 * @return the referenced object or <code>null</code> if no such object exists
+	 */
+	public GMLObject getObject(String uri, String baseURL);
+
 }

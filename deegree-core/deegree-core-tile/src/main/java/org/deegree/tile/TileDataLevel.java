@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -44,34 +43,28 @@ import java.util.List;
 
 /**
  * A single level of a {@link TileDataSet}.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 public interface TileDataLevel {
 
-    /**
-     * Returns the tile matrix, which describes the extent of data, size of tiles etc.
-     * 
-     * @return matrix metadata, never <code>null</code>
-     */
-    TileMatrix getMetadata();
+	/**
+	 * Returns the tile matrix, which describes the extent of data, size of tiles etc.
+	 * @return matrix metadata, never <code>null</code>
+	 */
+	TileMatrix getMetadata();
 
-    /**
-     * Retrieves a single tile.
-     * 
-     * @param x
-     *            column index of the tile, counting from zero
-     * @param y
-     *            row index of the tile, counting from zero
-     * @return the tile at x/y or <code>null</code> if there is no such tile
-     */
-    Tile getTile( long x, long y );
-    
-    /**
-     * Returns styles set in the TileStore.
-     */
-    List<String> getStyles();
+	/**
+	 * Retrieves a single tile.
+	 * @param x column index of the tile, counting from zero
+	 * @param y row index of the tile, counting from zero
+	 * @return the tile at x/y or <code>null</code> if there is no such tile
+	 */
+	Tile getTile(long x, long y);
+
+	/**
+	 * Returns styles set in the TileStore.
+	 */
+	List<String> getStyles();
+
 }

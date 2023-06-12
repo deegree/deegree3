@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -42,41 +41,38 @@ import org.deegree.commons.xml.XPath;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.org">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class ClassificationNode extends RegistryObject {
 
-    public ClassificationNode( XMLStreamReader xmlReader ) {
-        super( xmlReader );
-    }
+	public ClassificationNode(XMLStreamReader xmlReader) {
+		super(xmlReader);
+	}
 
-    public ClassificationNode( OMElement record ) {
-        super( record );
-    }
+	public ClassificationNode(OMElement record) {
+		super(record);
+	}
 
-    /**
-     * @return the parent
-     */
-    public String getParent() {
-        return adapter.getNodeAsString( adapter.getRootElement(), new XPath( "./@parent", ns ), null );
-    }
+	/**
+	 * @return the parent
+	 */
+	public String getParent() {
+		return adapter.getNodeAsString(adapter.getRootElement(), new XPath("./@parent", ns), null);
+	}
 
-    /**
-     * @return the code
-     */
-    public String getCode() {
-        return adapter.getNodeAsString( adapter.getRootElement(), new XPath( "./@code", ns ), null );
-    }
+	/**
+	 * @return the code
+	 */
+	public String getCode() {
+		return adapter.getNodeAsString(adapter.getRootElement(), new XPath("./@code", ns), null);
+	}
 
-    /**
-     * @return the path
-     */
-    public String getPath() {
-        return adapter.getNodeAsString( adapter.getRootElement(), new XPath( "./@path", ns ), null );
-    }
+	/**
+	 * @return the path
+	 */
+	public String getPath() {
+		return adapter.getNodeAsString(adapter.getRootElement(), new XPath("./@path", ns), null);
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-metadata/src/main/java/org/deegree/metadata/persistence/MetadataResultSet.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -42,46 +41,38 @@ import org.deegree.protocol.csw.MetadataStoreException;
 
 /**
  * Has a corresponding {@link MetadataResultType} as content.
- * 
+ *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 30829 $, $Date: 2011-05-16 18:47:27 +0200 (Mo, 16. Mai 2011) $
  */
 public interface MetadataResultSet<T extends MetadataRecord> {
 
-    /**
-     * Must be invoked after using to close underlying resources, e.g. SQL {@link ResultSet}s.
-     */
-    public void close()
-                            throws MetadataStoreException;
+	/**
+	 * Must be invoked after using to close underlying resources, e.g. SQL
+	 * {@link ResultSet}s.
+	 */
+	public void close() throws MetadataStoreException;
 
-    /**
-     * Moves the cursor down one row from its current position. A ResultSet cursor is initially positioned before the
-     * first row; the first call to the method next makes the first row the current row; the second call makes the
-     * second row the current row, and so on.
-     * 
-     * @return true, if the cursor was moved down one row, false otherwise (no rows left)
-     */
-    public boolean next()
-                            throws MetadataStoreException;
+	/**
+	 * Moves the cursor down one row from its current position. A ResultSet cursor is
+	 * initially positioned before the first row; the first call to the method next makes
+	 * the first row the current row; the second call makes the second row the current
+	 * row, and so on.
+	 * @return true, if the cursor was moved down one row, false otherwise (no rows left)
+	 */
+	public boolean next() throws MetadataStoreException;
 
-    public void skip( int rows )
-                            throws MetadataStoreException;
+	public void skip(int rows) throws MetadataStoreException;
 
-    /**
-     * 
-     * @return
-     * @throws MetadataStoreException
-     */
-    public int getRemaining()
-                            throws MetadataStoreException;
+	/**
+	 * @return
+	 * @throws MetadataStoreException
+	 */
+	public int getRemaining() throws MetadataStoreException;
 
-    /**
-     * Returns the {@link MetadataRecord} at the current cursor position.
-     * 
-     * @return record at the current position, never <code>null</code>
-     */
-    public T getRecord()
-                            throws MetadataStoreException;
+	/**
+	 * Returns the {@link MetadataRecord} at the current cursor position.
+	 * @return record at the current position, never <code>null</code>
+	 */
+	public T getRecord() throws MetadataStoreException;
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -43,61 +42,53 @@ import org.deegree.protocol.wfs.transaction.TransactionActionType;
 
 /**
  * Represents a WFS <code>Delete</code> operation (part of a {@link Transaction} request).
- * 
+ *
  * @see Transaction
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class Delete extends AbstractTransactionAction {
 
-    private final QName ftName;
+	private final QName ftName;
 
-    private final Filter filter;
+	private final Filter filter;
 
-    /**
-     * Creates a new {@link Delete} instance.
-     * 
-     * @param handle
-     *            identifier for the operation, can be <code>null</code>
-     * @param typeName
-     *            name of the targeted feature type, must not be <code>null</code>
-     * @param filter
-     *            selects the feature instances to be deleted, must not be <code>null</code>
-     */
-    public Delete( String handle, QName typeName, Filter filter ) {
-        super( handle );
-        this.ftName = typeName;
-        this.filter = filter;
-    }
+	/**
+	 * Creates a new {@link Delete} instance.
+	 * @param handle identifier for the operation, can be <code>null</code>
+	 * @param typeName name of the targeted feature type, must not be <code>null</code>
+	 * @param filter selects the feature instances to be deleted, must not be
+	 * <code>null</code>
+	 */
+	public Delete(String handle, QName typeName, Filter filter) {
+		super(handle);
+		this.ftName = typeName;
+		this.filter = filter;
+	}
 
-    /**
-     * Always returns {@link TransactionActionType#DELETE}.
-     * 
-     * @return {@link TransactionActionType#DELETE}
-     */
-    @Override
-    public TransactionActionType getType() {
-        return TransactionActionType.DELETE;
-    }
+	/**
+	 * Always returns {@link TransactionActionType#DELETE}.
+	 * @return {@link TransactionActionType#DELETE}
+	 */
+	@Override
+	public TransactionActionType getType() {
+		return TransactionActionType.DELETE;
+	}
 
-    /**
-     * Returns the name of the targeted feature type.
-     * 
-     * @return the name of the targeted feature type, never <code>null</code>
-     */
-    public QName getTypeName() {
-        return ftName;
-    }
+	/**
+	 * Returns the name of the targeted feature type.
+	 * @return the name of the targeted feature type, never <code>null</code>
+	 */
+	public QName getTypeName() {
+		return ftName;
+	}
 
-    /**
-     * Return the filter that determines the feature instances to be deleted.
-     * 
-     * @return the filter that determines the feature instances to be deleted, never <code>null</code>
-     */
-    public Filter getFilter() {
-        return filter;
-    }
+	/**
+	 * Return the filter that determines the feature instances to be deleted.
+	 * @return the filter that determines the feature instances to be deleted, never
+	 * <code>null</code>
+	 */
+	public Filter getFilter() {
+		return filter;
+	}
+
 }

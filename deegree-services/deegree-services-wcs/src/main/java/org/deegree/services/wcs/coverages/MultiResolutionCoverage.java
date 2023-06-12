@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -49,54 +48,51 @@ import org.deegree.services.wcs.model.CoverageResult;
 
 /**
  * This is a Coverage implementation for multi-resolution raster.
- * 
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class MultiResolutionCoverage extends WCSCoverage {
 
-    /**
-     * @param id
-     * @param name
-     * @param raster
-     * @param options
-     */
-    public MultiResolutionCoverage( String id, String name, MultiResolutionRaster raster, CoverageOptions options ) {
-        this( id, name, raster, options, null );
-    }
+	/**
+	 * @param id
+	 * @param name
+	 * @param raster
+	 * @param options
+	 */
+	public MultiResolutionCoverage(String id, String name, MultiResolutionRaster raster, CoverageOptions options) {
+		this(id, name, raster, options, null);
+	}
 
-    /**
-     * @param id
-     * @param name
-     * @param raster
-     * @param options
-     * @param rangeSet
-     */
-    public MultiResolutionCoverage( String id, String name, MultiResolutionRaster raster, CoverageOptions options,
-                                    RangeSet rangeSet ) {
-        super( id, name, raster, options, rangeSet );
-    }
+	/**
+	 * @param id
+	 * @param name
+	 * @param raster
+	 * @param options
+	 * @param rangeSet
+	 */
+	public MultiResolutionCoverage(String id, String name, MultiResolutionRaster raster, CoverageOptions options,
+			RangeSet rangeSet) {
+		super(id, name, raster, options, rangeSet);
+	}
 
-    @Override
-    public CoverageResult getCoverageResult( Envelope env, Grid grid, String format, String interpolation,
-                                             RangeSet requestedRangeset )
-                            throws WCServiceException {
-        AbstractRaster rasterLevel = ( (MultiResolutionRaster) coverage ).getRaster( grid.getResolution() );
+	@Override
+	public CoverageResult getCoverageResult(Envelope env, Grid grid, String format, String interpolation,
+			RangeSet requestedRangeset) throws WCServiceException {
+		AbstractRaster rasterLevel = ((MultiResolutionRaster) coverage).getRaster(grid.getResolution());
 
-        AbstractRaster result;
-        try {
-            result = CoverageTransform.transform( rasterLevel, env, grid, interpolation );
-        } catch ( TransformationException e ) {
-            throw new RuntimeException( "error while transforming raster result: " + e.getMessage(), e );
-        }
-        if ( requestedRangeset != null ) {
-            RasterFilter filter = new RasterFilter( result );
-            result = filter.apply( getRangeSet(), requestedRangeset );
-        }
-        return new SimpleRasterResult( result, format );
-    }
+		AbstractRaster result;
+		try {
+			result = CoverageTransform.transform(rasterLevel, env, grid, interpolation);
+		}
+		catch (TransformationException e) {
+			throw new RuntimeException("error while transforming raster result: " + e.getMessage(), e);
+		}
+		if (requestedRangeset != null) {
+			RasterFilter filter = new RasterFilter(result);
+			result = filter.apply(getRangeSet(), requestedRangeset);
+		}
+		return new SimpleRasterResult(result, format);
+	}
 
 }

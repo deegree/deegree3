@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -41,36 +40,38 @@ import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.data.info.DataType;
 
 /**
- * This class implements a simple nearest neighbor interpolation. It works with all {@link DataType}s.
+ * This class implements a simple nearest neighbor interpolation. It works with all
+ * {@link DataType}s.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- *
- * @version $Revision$, $Date$
  *
  */
 public class NearestNeighborInterpolation implements Interpolation {
-    private RasterData raster;
 
-    /**
-     * Create a new nearest neighbor interpolation for given {@link RasterData}.
-     *
-     * @param rasterData
-     */
-    public NearestNeighborInterpolation( RasterData rasterData ) {
-        raster = rasterData;
-    }
+	private RasterData raster;
 
-    public final byte[] getPixel( float x, float y, byte[] result ) {
-        try {
-            raster.getPixel( (int) ( x + 0.5f ), (int) ( y + 0.5f ), result );
-        } catch ( IndexOutOfBoundsException ex ) {
-            raster.getNullPixel( result );
-        } catch ( IllegalArgumentException ex ) {
-            raster.getNullPixel( result );
-        } catch ( BufferUnderflowException ex ) {
-            raster.getNullPixel( result );
-        }
-        return result;
-    }
+	/**
+	 * Create a new nearest neighbor interpolation for given {@link RasterData}.
+	 * @param rasterData
+	 */
+	public NearestNeighborInterpolation(RasterData rasterData) {
+		raster = rasterData;
+	}
+
+	public final byte[] getPixel(float x, float y, byte[] result) {
+		try {
+			raster.getPixel((int) (x + 0.5f), (int) (y + 0.5f), result);
+		}
+		catch (IndexOutOfBoundsException ex) {
+			raster.getNullPixel(result);
+		}
+		catch (IllegalArgumentException ex) {
+			raster.getNullPixel(result);
+		}
+		catch (BufferUnderflowException ex) {
+			raster.getNullPixel(result);
+		}
+		return result;
+	}
+
 }

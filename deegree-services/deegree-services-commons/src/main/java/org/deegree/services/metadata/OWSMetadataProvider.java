@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -53,66 +52,58 @@ import org.deegree.services.OWS;
 import org.deegree.workspace.Resource;
 
 /**
- * Implementations provide metadata that {@link OWS} instances can use in their <code>GetCapabilities</code> responses.
- * 
+ * Implementations provide metadata that {@link OWS} instances can use in their
+ * <code>GetCapabilities</code> responses.
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 public interface OWSMetadataProvider extends Resource {
 
-    /**
-     * Returns the {@link ServiceIdentification} metadata.
-     * 
-     * @return service identification bean, possibly <code>null</code>
-     */
-    ServiceIdentification getServiceIdentification();
+	/**
+	 * Returns the {@link ServiceIdentification} metadata.
+	 * @return service identification bean, possibly <code>null</code>
+	 */
+	ServiceIdentification getServiceIdentification();
 
-    /**
-     * Returns the {@link ServiceProvider} metadata.
-     * 
-     * @return service provider bean, possibly <code>null</code>
-     */
-    ServiceProvider getServiceProvider();
+	/**
+	 * Returns the {@link ServiceProvider} metadata.
+	 * @return service provider bean, possibly <code>null</code>
+	 */
+	ServiceProvider getServiceProvider();
 
-    /**
-     * Returns the <code>ExtendedCapabilities</code> sections.
-     * 
-     * @return mapping from protocol version string (may be "default") to a list of extended capabilities (represented
-     *         as DOM tree), possibly <code>null</code>
-     */
-    Map<String, List<OMElement>> getExtendedCapabilities();
+	/**
+	 * Returns the <code>ExtendedCapabilities</code> sections.
+	 * @return mapping from protocol version string (may be "default") to a list of
+	 * extended capabilities (represented as DOM tree), possibly <code>null</code>
+	 */
+	Map<String, List<OMElement>> getExtendedCapabilities();
 
-    /**
-     * Returns {@link DatasetMetadata} for all datasets.
-     * 
-     * @return list of dataset metadata, possibly <code>null</code>
-     */
-    List<DatasetMetadata> getDatasetMetadata();
+	/**
+	 * Returns {@link DatasetMetadata} for all datasets.
+	 * @return list of dataset metadata, possibly <code>null</code>
+	 */
+	List<DatasetMetadata> getDatasetMetadata();
 
-    /**
-     * @return a mapping from metadata authority name to authority url
-     */
-    Map<String, String> getExternalMetadataAuthorities();
+	/**
+	 * @return a mapping from metadata authority name to authority url
+	 */
+	Map<String, String> getExternalMetadataAuthorities();
 
-    /**
-     * Returns data metadata for the specified dataset.
-     * 
-     * @param name
-     *            for layers, a qname with only a local name is used, for feature types its qname
-     * @return metadata, possibly <code>null</code> (no metadata available)
-     */
-    DatasetMetadata getDatasetMetadata( QName name );
+	/**
+	 * Returns data metadata for the specified dataset.
+	 * @param name for layers, a qname with only a local name is used, for feature types
+	 * its qname
+	 * @return metadata, possibly <code>null</code> (no metadata available)
+	 */
+	DatasetMetadata getDatasetMetadata(QName name);
 
-    /**
-     * Returns a list of data metadata for the specified dataset.
-     * 
-     * @param name
-     *            for layers, a qname with only a local name is used, for feature types its qname
-     * @return metadata, may be empty but never <code>null</code> (no metadata available)
-     */
-    List<DatasetMetadata> getAllDatasetMetadata( QName name );
-    
+	/**
+	 * Returns a list of data metadata for the specified dataset.
+	 * @param name for layers, a qname with only a local name is used, for feature types
+	 * its qname
+	 * @return metadata, may be empty but never <code>null</code> (no metadata available)
+	 */
+	List<DatasetMetadata> getAllDatasetMetadata(QName name);
+
 }

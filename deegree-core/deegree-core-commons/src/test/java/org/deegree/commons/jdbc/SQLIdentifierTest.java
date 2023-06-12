@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2014 by:
@@ -42,44 +41,43 @@ import org.junit.Test;
  * Test cases for creation of {@link SQLIdentifier}s
  *
  * @author <a href="mailto:wanhoff@lat-lon.de">Jeronimo Wanhoff</a>
- * @author last edited by: $Author: wanhoff $
  *
  */
 public class SQLIdentifierTest {
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testGetNameWithNullIdentifier() {
-        new SQLIdentifier( null );
-    }
+	@Test(expected = IllegalArgumentException.class)
+	public void testGetNameWithNullIdentifier() {
+		new SQLIdentifier(null);
+	}
 
-    @Test
-    public void testGetNameWithEscapedColumnName() {
-        String expected = "\"column\"";
-        SQLIdentifier actual = new SQLIdentifier( expected );
-        Assert.assertEquals( expected, actual.getName() );
-    }
+	@Test
+	public void testGetNameWithEscapedColumnName() {
+		String expected = "\"column\"";
+		SQLIdentifier actual = new SQLIdentifier(expected);
+		Assert.assertEquals(expected, actual.getName());
+	}
 
-    @Test
-    public void testGetNameWithoutEscapedColumnName() {
-        String expected = "column";
-        SQLIdentifier actual = new SQLIdentifier( expected );
-        Assert.assertEquals( expected, actual.getName() );
-    }
+	@Test
+	public void testGetNameWithoutEscapedColumnName() {
+		String expected = "column";
+		SQLIdentifier actual = new SQLIdentifier(expected);
+		Assert.assertEquals(expected, actual.getName());
+	}
 
-    @Test
-    public void testGetNameWithEscapedTableAndColumnName() {
-        String identifier = "\"table.column\"";
-        String expected = "\"column\"";
-        SQLIdentifier actual = new SQLIdentifier( identifier );
-        Assert.assertEquals( expected, actual.getName() );
-    }
+	@Test
+	public void testGetNameWithEscapedTableAndColumnName() {
+		String identifier = "\"table.column\"";
+		String expected = "\"column\"";
+		SQLIdentifier actual = new SQLIdentifier(identifier);
+		Assert.assertEquals(expected, actual.getName());
+	}
 
-    @Test
-    public void testGetNameWithoutEscapedTableAndColumnName() {
-        String identifier = "table.column";
-        String expected = "column";
-        SQLIdentifier actual = new SQLIdentifier( identifier );
-        Assert.assertEquals( expected, actual.getName() );
-    }
+	@Test
+	public void testGetNameWithoutEscapedTableAndColumnName() {
+		String identifier = "table.column";
+		String expected = "column";
+		SQLIdentifier actual = new SQLIdentifier(identifier);
+		Assert.assertEquals(expected, actual.getName());
+	}
 
 }

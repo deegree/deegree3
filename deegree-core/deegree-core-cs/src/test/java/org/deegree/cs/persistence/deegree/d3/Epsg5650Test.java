@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2015 by:
@@ -60,48 +59,50 @@ import org.junit.Test;
  */
 public class Epsg5650Test {
 
-    @Test
-    public void testEPSG5650_EastingHasPrefix_NorthingIsEqual()
-                            throws Exception {
-        CRSStore defaultStore = new CRSManager().create( CRSManager.class.getResource( "default.xml" ) );
-        assertNotNull( defaultStore );
-        assertTrue( defaultStore instanceof DeegreeCRSStore );
-        DeegreeCRSStore dStore = (DeegreeCRSStore) defaultStore;
+	@Test
+	public void testEPSG5650_EastingHasPrefix_NorthingIsEqual() throws Exception {
+		CRSStore defaultStore = new CRSManager().create(CRSManager.class.getResource("default.xml"));
+		assertNotNull(defaultStore);
+		assertTrue(defaultStore instanceof DeegreeCRSStore);
+		DeegreeCRSStore dStore = (DeegreeCRSStore) defaultStore;
 
-        ICRS epsg4326 = dStore.getCRSByCode( new CRSCodeType( "epsg:4326" ) );
-        ICRS epsg5650 = dStore.getCRSByCode( new CRSCodeType( "epsg:5650" ) );
-        ICRS epsg25833 = dStore.getCRSByCode( new CRSCodeType( "epsg:25833" ) );
+		ICRS epsg4326 = dStore.getCRSByCode(new CRSCodeType("epsg:4326"));
+		ICRS epsg5650 = dStore.getCRSByCode(new CRSCodeType("epsg:5650"));
+		ICRS epsg25833 = dStore.getCRSByCode(new CRSCodeType("epsg:25833"));
 
-        List<Point3d> pointsToTransform = pointList( 13.1396484375, 53.2177734375 );
+		List<Point3d> pointsToTransform = pointList(13.1396484375, 53.2177734375);
 
-        CoordinateTransformer transformerToEpsg25833 = new CoordinateTransformer( epsg25833 );
-        Point3d resultIn25833 = transformerToEpsg25833.transform( epsg4326, pointsToTransform ).get( 0 );
+		CoordinateTransformer transformerToEpsg25833 = new CoordinateTransformer(epsg25833);
+		Point3d resultIn25833 = transformerToEpsg25833.transform(epsg4326, pointsToTransform).get(0);
 
-        CoordinateTransformer transformerToEpsg5650 = new CoordinateTransformer( epsg5650 );
-        Point3d resultIn5650 = transformerToEpsg5650.transform( epsg4326, pointsToTransform ).get( 0 );
+		CoordinateTransformer transformerToEpsg5650 = new CoordinateTransformer(epsg5650);
+		Point3d resultIn5650 = transformerToEpsg5650.transform(epsg4326, pointsToTransform).get(0);
 
-        assertThat( resultIn5650.y, isCloseTo( resultIn25833.y, DEGREE_EPSILON ) );
-        assertThat( resultIn5650.x - 33000000, isCloseTo( resultIn25833.x, DEGREE_EPSILON ) );
-    }
+		assertThat(resultIn5650.y, isCloseTo(resultIn25833.y, DEGREE_EPSILON));
+		assertThat(resultIn5650.x - 33000000, isCloseTo(resultIn25833.x, DEGREE_EPSILON));
+	}
 
-    private List<Point3d> pointList( double x, double y ) {
-        return Collections.singletonList( new Point3d( x, y, 0 ) );
-    }
+	private List<Point3d> pointList(double x, double y) {
+		return Collections.singletonList(new Point3d(x, y, 0));
+	}
 
-    private Matcher<Double> isCloseTo( final double expected, final double epsilonD ) {
-        return new BaseMatcher<Double>() {
+	private Matcher<Double> isCloseTo(final double expected, final double epsilonD) {
+		return new BaseMatcher<Double>() {
 
-            @Override
-            public boolean matches( Object item ) {
-                double actual = (Double) item;
-                return Math.abs( ( actual - expected ) ) <= epsilonD;
-            }
+			@Override
+			public boolean matches(Object item) {
+				double actual = (Double) item;
+				return Math.abs((actual - expected)) <= epsilonD;
+			}
 
-            @Override
-            public void describeTo( Description description ) {
-                description.appendText( "Expected is the value " ).appendValue( expected ).appendText( " +/- " ).appendValue( epsilonD );
-            }
-        };
-    }
+			@Override
+			public void describeTo(Description description) {
+				description.appendText("Expected is the value ")
+					.appendValue(expected)
+					.appendText(" +/- ")
+					.appendValue(epsilonD);
+			}
+		};
+	}
 
 }

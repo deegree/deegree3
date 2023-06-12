@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -40,102 +39,92 @@ import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 
 /**
- * Name or code with an (optional) authority. If the codeSpace attribute is present, its value shall reference a
- * dictionary, thesaurus, or authority for the name or code, such as the organisation who assigned the value, or the
- * dictionary from which it is taken.
- * 
+ * Name or code with an (optional) authority. If the codeSpace attribute is present, its
+ * value shall reference a dictionary, thesaurus, or authority for the name or code, such
+ * as the organisation who assigned the value, or the dictionary from which it is taken.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * 
- * @version $Revision: $, $Date: $
  */
 public class CodeType implements TypedObjectNode {
 
-    private String code;
+	private String code;
 
-    private String codeSpace;
+	private String codeSpace;
 
-    /**
-     * Returns a new {@link CodeType} instance without authority.
-     * 
-     * @param code
-     *            code value, not null
-     * @throws InvalidParameterValueException
-     *             if code is null
-     */
-    public CodeType( String code ) throws InvalidParameterValueException {
-        if ( code == null ) {
-            throw new InvalidParameterValueException( "code cannot be null" );
-        }
-        this.code = code;
-    }
+	/**
+	 * Returns a new {@link CodeType} instance without authority.
+	 * @param code code value, not null
+	 * @throws InvalidParameterValueException if code is null
+	 */
+	public CodeType(String code) throws InvalidParameterValueException {
+		if (code == null) {
+			throw new InvalidParameterValueException("code cannot be null");
+		}
+		this.code = code;
+	}
 
-    /**
-     * Returns a new {@link CodeType} instance with optional authority.
-     * 
-     * @param code
-     *            code value, not null
-     * @param codeSpace
-     *            authority, may be null
-     * @throws InvalidParameterValueException
-     *             if code is null
-     */
-    public CodeType( String code, String codeSpace ) throws InvalidParameterValueException {
-        if ( code == null ) {
-            throw new InvalidParameterValueException( "code cannot be null" );
-        }
-        this.code = code;
-        this.codeSpace = codeSpace;
-    }
+	/**
+	 * Returns a new {@link CodeType} instance with optional authority.
+	 * @param code code value, not null
+	 * @param codeSpace authority, may be null
+	 * @throws InvalidParameterValueException if code is null
+	 */
+	public CodeType(String code, String codeSpace) throws InvalidParameterValueException {
+		if (code == null) {
+			throw new InvalidParameterValueException("code cannot be null");
+		}
+		this.code = code;
+		this.codeSpace = codeSpace;
+	}
 
-    /**
-     * Returns the code value.
-     * 
-     * @return the code value, never null
-     */
-    public String getCode() {
-        return code;
-    }
+	/**
+	 * Returns the code value.
+	 * @return the code value, never null
+	 */
+	public String getCode() {
+		return code;
+	}
 
-    /**
-     * Returns the authority of the code.
-     * 
-     * @return the authority of the code or null if unspecified
-     */
-    public String getCodeSpace() {
-        return codeSpace;
-    }
+	/**
+	 * Returns the authority of the code.
+	 * @return the authority of the code or null if unspecified
+	 */
+	public String getCodeSpace() {
+		return codeSpace;
+	}
 
-    /**
-     * @return the code (codeSpaces are ignored for now because the filter model needs #toString...)
-     */
-    @Override
-    public String toString() {
-        return code;
-    }
+	/**
+	 * @return the code (codeSpaces are ignored for now because the filter model needs
+	 * #toString...)
+	 */
+	@Override
+	public String toString() {
+		return code;
+	}
 
-    @Override
-    public int hashCode() {
-        long code = 32452843;
-        code = code * 37 + this.code.hashCode();
-        if ( codeSpace != null ) {
-            code = code * 37 + codeSpace.hashCode();
-        }
-        return (int) ( code >>> 32 ) ^ (int) code;
-    }
+	@Override
+	public int hashCode() {
+		long code = 32452843;
+		code = code * 37 + this.code.hashCode();
+		if (codeSpace != null) {
+			code = code * 37 + codeSpace.hashCode();
+		}
+		return (int) (code >>> 32) ^ (int) code;
+	}
 
-    @Override
-    public boolean equals( Object o ) {
-        if ( !( o instanceof CodeType ) ) {
-            return false;
-        }
-        CodeType that = (CodeType) o;
-        if ( !code.equals( that.code ) ) {
-            return false;
-        }
-        if ( codeSpace != null ) {
-            return codeSpace.equals( that.codeSpace );
-        }
-        return that.codeSpace == null;
-    }
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof CodeType)) {
+			return false;
+		}
+		CodeType that = (CodeType) o;
+		if (!code.equals(that.code)) {
+			return false;
+		}
+		if (codeSpace != null) {
+			return codeSpace.equals(that.codeSpace);
+		}
+		return that.codeSpace == null;
+	}
+
 }

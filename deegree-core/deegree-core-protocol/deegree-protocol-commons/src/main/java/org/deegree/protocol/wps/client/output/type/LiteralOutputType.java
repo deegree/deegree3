@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -41,55 +40,50 @@ import org.deegree.protocol.wps.client.param.ValueWithRef;
 
 /**
  * {@link OutputType} that defines a literal output.
- * 
+ *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class LiteralOutputType extends OutputType {
 
-    private ValueWithRef dataType;
+	private ValueWithRef dataType;
 
-    private ValueWithRef defaultUom;
+	private ValueWithRef defaultUom;
 
-    private ValueWithRef[] supportedUoms;
+	private ValueWithRef[] supportedUoms;
 
-    public LiteralOutputType( CodeType id, LanguageString outputTitle, LanguageString outputAbstract,
-                              ValueWithRef dataType, ValueWithRef defaultUom, ValueWithRef[] supportedUoms ) {
-        super( id, outputTitle, outputAbstract );
-        this.dataType = dataType;
-        this.defaultUom = defaultUom;
-        this.supportedUoms = supportedUoms;
-    }
+	public LiteralOutputType(CodeType id, LanguageString outputTitle, LanguageString outputAbstract,
+			ValueWithRef dataType, ValueWithRef defaultUom, ValueWithRef[] supportedUoms) {
+		super(id, outputTitle, outputAbstract);
+		this.dataType = dataType;
+		this.defaultUom = defaultUom;
+		this.supportedUoms = supportedUoms;
+	}
 
-    @Override
-    public Type getType() {
-        return Type.LITERAL;
-    }
+	@Override
+	public Type getType() {
+		return Type.LITERAL;
+	}
 
-    /**
-     * 
-     * @return the data type as {@link ValueWithRef} for this literal
-     */
-    public ValueWithRef getDataType() {
-        return dataType;
-    }
+	/**
+	 * @return the data type as {@link ValueWithRef} for this literal
+	 */
+	public ValueWithRef getDataType() {
+		return dataType;
+	}
 
-    /**
-     * 
-     * @return the default unit-of-measure used, as {@link ValueWithRef}
-     */
-    public ValueWithRef getDefaultUom() {
-        return defaultUom;
-    }
+	/**
+	 * @return the default unit-of-measure used, as {@link ValueWithRef}
+	 */
+	public ValueWithRef getDefaultUom() {
+		return defaultUom;
+	}
 
-    /**
-     * 
-     * @return the supported units-of-measure used, as an array of {@link ValueWithRef}
-     */
-    public ValueWithRef[] getSupportedUoms() {
-        return supportedUoms;
-    }
+	/**
+	 * @return the supported units-of-measure used, as an array of {@link ValueWithRef}
+	 */
+	public ValueWithRef[] getSupportedUoms() {
+		return supportedUoms;
+	}
+
 }

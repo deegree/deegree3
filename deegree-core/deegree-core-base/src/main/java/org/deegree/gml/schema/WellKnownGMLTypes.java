@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -52,79 +51,76 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Defines well-known {@link FeatureType}s from the GML / OGC core schemas to support GML processing without schema
- * assistance.
- * 
+ * Defines well-known {@link FeatureType}s from the GML / OGC core schemas to support GML
+ * processing without schema assistance.
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class WellKnownGMLTypes {
 
-    private static final Logger LOG = LoggerFactory.getLogger( WellKnownGMLTypes.class );
+	private static final Logger LOG = LoggerFactory.getLogger(WellKnownGMLTypes.class);
 
-    private static final String WFS_NS = "http://www.opengis.net/wfs";
+	private static final String WFS_NS = "http://www.opengis.net/wfs";
 
-    private static final Map<QName, FeatureCollectionType> elNameToFt = new HashMap<QName, FeatureCollectionType>();
+	private static final Map<QName, FeatureCollectionType> elNameToFt = new HashMap<QName, FeatureCollectionType>();
 
-    /** gml:FeatureCollection (from GML 3.1.1 core schemas) */
-    public static final FeatureCollectionType GML311_FEATURECOLLECTION;
+	/** gml:FeatureCollection (from GML 3.1.1 core schemas) */
+	public static final FeatureCollectionType GML311_FEATURECOLLECTION;
 
-    /** gml:FeatureCollection (from GML 3.2.1 core schemas) */
-    public static final FeatureCollectionType GML321_FEATURECOLLECTION;
+	/** gml:FeatureCollection (from GML 3.2.1 core schemas) */
+	public static final FeatureCollectionType GML321_FEATURECOLLECTION;
 
-    /** wfs:FeatureCollection (from WFS 1.1.0 schemas) */
-    public static final FeatureCollectionType WFS110_FEATURECOLLECTION;
+	/** wfs:FeatureCollection (from WFS 1.1.0 schemas) */
+	public static final FeatureCollectionType WFS110_FEATURECOLLECTION;
 
-    /** ll:FeatureCollection (used by deegree 2 WMS for GetFeatureInfo responses) */
-    public static final FeatureCollectionType D2_WMS_FEATURECOLLECTION;
+	/** ll:FeatureCollection (used by deegree 2 WMS for GetFeatureInfo responses) */
+	public static final FeatureCollectionType D2_WMS_FEATURECOLLECTION;
 
-    static {
-        // "gml:FeatureCollection" (GML 3.1)
-        QName name = new QName( GMLNS, "FeatureCollection", "gml" );
-        GML311_FEATURECOLLECTION = extractFcCollectionType( "http://schemas.opengis.net/gml/3.1.1/base/feature.xsd",
-                                                            GML_31, name );
-        elNameToFt.put( name, GML311_FEATURECOLLECTION );
+	static {
+		// "gml:FeatureCollection" (GML 3.1)
+		QName name = new QName(GMLNS, "FeatureCollection", "gml");
+		GML311_FEATURECOLLECTION = extractFcCollectionType("http://schemas.opengis.net/gml/3.1.1/base/feature.xsd",
+				GML_31, name);
+		elNameToFt.put(name, GML311_FEATURECOLLECTION);
 
-        // "gml:FeatureCollection" (GML 3.2)
-        name = new QName( GML3_2_NS, "FeatureCollection", "gml" );
-        GML321_FEATURECOLLECTION = extractFcCollectionType( "http://schemas.opengis.net/gml/3.2.1/deprecatedTypes.xsd",
-                                                            GML_32, name );
-        elNameToFt.put( name, GML321_FEATURECOLLECTION );
+		// "gml:FeatureCollection" (GML 3.2)
+		name = new QName(GML3_2_NS, "FeatureCollection", "gml");
+		GML321_FEATURECOLLECTION = extractFcCollectionType("http://schemas.opengis.net/gml/3.2.1/deprecatedTypes.xsd",
+				GML_32, name);
+		elNameToFt.put(name, GML321_FEATURECOLLECTION);
 
-        // "wfs:FeatureCollection" (WFS 1.1.0)
-        name = new QName( WFS_NS, "FeatureCollection", "wfs" );
-        WFS110_FEATURECOLLECTION = extractFcCollectionType( WellKnownGMLTypes.class.getResource( "wfs110.xsd" ).toString(),
-                                                            GML_31, name );
-        elNameToFt.put( name, WFS110_FEATURECOLLECTION );
+		// "wfs:FeatureCollection" (WFS 1.1.0)
+		name = new QName(WFS_NS, "FeatureCollection", "wfs");
+		WFS110_FEATURECOLLECTION = extractFcCollectionType(WellKnownGMLTypes.class.getResource("wfs110.xsd").toString(),
+				GML_31, name);
+		elNameToFt.put(name, WFS110_FEATURECOLLECTION);
 
-        // "ll:FeatureCollection" (deegree 2 WMS GetFeatureInfo)
-        name = new QName( "http://www.lat-lon.de", "FeatureCollection", "ll" );
-        D2_WMS_FEATURECOLLECTION = extractFcCollectionType( WellKnownGMLTypes.class.getResource( "latlon-fc.xsd" ).toString(),
-                                                            GML_31, name );
-        elNameToFt.put( name, D2_WMS_FEATURECOLLECTION );
-    }
+		// "ll:FeatureCollection" (deegree 2 WMS GetFeatureInfo)
+		name = new QName("http://www.lat-lon.de", "FeatureCollection", "ll");
+		D2_WMS_FEATURECOLLECTION = extractFcCollectionType(
+				WellKnownGMLTypes.class.getResource("latlon-fc.xsd").toString(), GML_31, name);
+		elNameToFt.put(name, D2_WMS_FEATURECOLLECTION);
+	}
 
-    private static FeatureCollectionType extractFcCollectionType( String url, GMLVersion version, QName elName ) {
-        GMLAppSchemaReader schemaReader = null;
-        try {
-            schemaReader = new GMLAppSchemaReader( version, null, url );
-        } catch ( Exception e ) {
-            LOG.error( e.getMessage(), e );
-        }
-        return (FeatureCollectionType) schemaReader.extractAppSchema().getFeatureType( elName );
-    }
+	private static FeatureCollectionType extractFcCollectionType(String url, GMLVersion version, QName elName) {
+		GMLAppSchemaReader schemaReader = null;
+		try {
+			schemaReader = new GMLAppSchemaReader(version, null, url);
+		}
+		catch (Exception e) {
+			LOG.error(e.getMessage(), e);
+		}
+		return (FeatureCollectionType) schemaReader.extractAppSchema().getFeatureType(elName);
+	}
 
-    /**
-     * Looks up the well-known {@link FeatureCollectionType} for the given qualified name.
-     * 
-     * @param elName
-     *            qualified element name, must not be <code>null</code>
-     * @return well-known feature collection type, can be <code>null</code> (no such type)
-     */
-    public static FeatureCollectionType getType( QName elName ) {
-        return elNameToFt.get( elName );
-    }
+	/**
+	 * Looks up the well-known {@link FeatureCollectionType} for the given qualified name.
+	 * @param elName qualified element name, must not be <code>null</code>
+	 * @return well-known feature collection type, can be <code>null</code> (no such type)
+	 */
+	public static FeatureCollectionType getType(QName elName) {
+		return elNameToFt.get(elName);
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aschmitz@deegree.wald.intevation.de/deegree/deegree3/trunk/deegree-core/deegree-core-rendering-2d/src/main/java/org/deegree/rendering/r2d/se/unevaluated/Symbolizer.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -55,218 +54,223 @@ import org.slf4j.Logger;
 
 /**
  * <code>Symbolizer</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: aschmitz $
- * 
- * @version $Revision: 31072 $, $Date: 2011-06-17 13:08:25 +0200 (Fri, 17 Jun 2011) $
  * @param <T>
  */
 public class Symbolizer<T extends Styling<T>> {
 
-    private static final Logger LOG = getLogger( Symbolizer.class );
+	private static final Logger LOG = getLogger(Symbolizer.class);
 
-    private T evaluated;
+	private T evaluated;
 
-    private T base;
+	private T base;
 
-    // TODO improve the caching, eg. implement a real cache with a limit etc.
-    // NOTE: Using a synchronized map here is strictly necessary (race condition), RB / MS
-    // private Map<String, T> cache = new ConcurrentHashMap<String, T>();
+	// TODO improve the caching, eg. implement a real cache with a limit etc.
+	// NOTE: Using a synchronized map here is strictly necessary (race condition), RB / MS
+	// private Map<String, T> cache = new ConcurrentHashMap<String, T>();
 
-    private Continuation<T> next;
+	private Continuation<T> next;
 
-    private Expression geometry;
+	private Expression geometry;
 
-    private String name;
+	private String name;
 
-    private String file;
+	private String file;
 
-    private final int line;
+	private final int line;
 
-    private final int col;
+	private final int col;
 
-    /**
-     * @param evaluated
-     * @param geometry
-     * @param name
-     * @param file
-     * @param line
-     * @param col
-     */
-    public Symbolizer( T evaluated, Expression geometry, String name, String file, int line, int col ) {
-        this( null, null, geometry, name, file, line, col );
-        this.evaluated = evaluated;
-    }
+	/**
+	 * @param evaluated
+	 * @param geometry
+	 * @param name
+	 * @param file
+	 * @param line
+	 * @param col
+	 */
+	public Symbolizer(T evaluated, Expression geometry, String name, String file, int line, int col) {
+		this(null, null, geometry, name, file, line, col);
+		this.evaluated = evaluated;
+	}
 
-    /**
-     * @param base
-     * @param next
-     * @param geometry
-     * @param name
-     * @param file
-     * @param line
-     * @param col
-     */
-    public Symbolizer( T base, Continuation<T> next, Expression geometry, String name, String file, int line, int col ) {
-        if ( geometry == null ) {
-            LOG.debug( "In file '{}', line {}, column {}: no geometry property defined, using first geometry property as default.",
-                       new Object[] { file, line, col } );
-        }
-        this.base = base;
-        this.next = next;
-        this.geometry = geometry;
-        this.name = name;
-        this.file = file;
-        this.line = line;
-        this.col = col;
-    }
+	/**
+	 * @param base
+	 * @param next
+	 * @param geometry
+	 * @param name
+	 * @param file
+	 * @param line
+	 * @param col
+	 */
+	public Symbolizer(T base, Continuation<T> next, Expression geometry, String name, String file, int line, int col) {
+		if (geometry == null) {
+			LOG.debug(
+					"In file '{}', line {}, column {}: no geometry property defined, using first geometry property as default.",
+					new Object[] { file, line, col });
+		}
+		this.base = base;
+		this.next = next;
+		this.geometry = geometry;
+		this.name = name;
+		this.file = file;
+		this.line = line;
+		this.col = col;
+	}
 
-    /**
-     * @return the name of the symbolizer
-     */
-    public String getName() {
-        return name;
-    }
+	/**
+	 * @return the name of the symbolizer
+	 */
+	public String getName() {
+		return name;
+	}
 
-    /**
-     * @return whether the symbolizer is already evaluated
-     */
-    public boolean isEvaluated() {
-        return evaluated != null;
-    }
+	/**
+	 * @return whether the symbolizer is already evaluated
+	 */
+	public boolean isEvaluated() {
+		return evaluated != null;
+	}
 
-    private Geometry tryGeometry( TypedObjectNode p ) {
-        return p instanceof Geometry ? (Geometry) p : null;
-    }
+	private Geometry tryGeometry(TypedObjectNode p) {
+		return p instanceof Geometry ? (Geometry) p : null;
+	}
 
-    private Geometry tryProperty( TypedObjectNode n ) {
-        if ( n instanceof Property ) {
-            TypedObjectNode val = ( (Property) n ).getValue();
-            if ( val instanceof Geometry ) {
-                return (Geometry) val;
-            }
-            return tryCustomXML( val );
-        }
-        return null;
-    }
+	private Geometry tryProperty(TypedObjectNode n) {
+		if (n instanceof Property) {
+			TypedObjectNode val = ((Property) n).getValue();
+			if (val instanceof Geometry) {
+				return (Geometry) val;
+			}
+			return tryCustomXML(val);
+		}
+		return null;
+	}
 
-    private Geometry tryCustomXML( TypedObjectNode n ) {
-        if ( n instanceof GenericXMLElement ) {
-            GenericXMLElement elem = (GenericXMLElement) n;
-            if ( elem.getChildren().isEmpty() ) {
-                LOG.warn( "The geometry expression in file '{}', line {}, column {} evaluated"
-                          + " to a custom property with no children.", new Object[] { file, line, col } );
-                return null;
-            }
-            TypedObjectNode maybeGeom = elem.getChildren().get( 0 );
-            if ( maybeGeom instanceof Geometry ) {
-                return (Geometry) maybeGeom;
-            }
-            return tryProperty( maybeGeom );
-        }
-        return null;
-    }
+	private Geometry tryCustomXML(TypedObjectNode n) {
+		if (n instanceof GenericXMLElement) {
+			GenericXMLElement elem = (GenericXMLElement) n;
+			if (elem.getChildren().isEmpty()) {
+				LOG.warn("The geometry expression in file '{}', line {}, column {} evaluated"
+						+ " to a custom property with no children.", new Object[] { file, line, col });
+				return null;
+			}
+			TypedObjectNode maybeGeom = elem.getChildren().get(0);
+			if (maybeGeom instanceof Geometry) {
+				return (Geometry) maybeGeom;
+			}
+			return tryProperty(maybeGeom);
+		}
+		return null;
+	}
 
-    /**
-     * @param f
-     * @return the styling with the geometries, p.second may be null if no geoms were found
-     */
-    public Pair<T, LinkedList<Geometry>> evaluate( Feature f, XPathEvaluator<Feature> evaluator ) {
-        LinkedList<Geometry> geoms = new LinkedList<Geometry>();
-        if ( geometry != null && evaluator != null ) {
-            try {
-                TypedObjectNode[] os = geometry.evaluate( f, evaluator );
+	/**
+	 * @param f
+	 * @return the styling with the geometries, p.second may be null if no geoms were
+	 * found
+	 */
+	public Pair<T, LinkedList<Geometry>> evaluate(Feature f, XPathEvaluator<Feature> evaluator) {
+		LinkedList<Geometry> geoms = new LinkedList<Geometry>();
+		if (geometry != null && evaluator != null) {
+			try {
+				TypedObjectNode[] os = geometry.evaluate(f, evaluator);
 
-                if ( os.length == 0 ) {
-                    LOG.warn( "The geometry expression in file '{}', line {}, column {} evaluated to nothing.",
-                              new Object[] { file, line, col } );
-                } else {
-                    for ( TypedObjectNode node : os ) {
-                        Geometry geom = null;
-                        geom = tryGeometry( node );
-                        if ( geom == null ) {
-                            geom = tryProperty( node );
-                        }
-                        if ( geom == null ) {
-                            geom = tryCustomXML( node );
-                        }
-                        if ( geom != null ) {
-                            geoms.add( geom );
-                        } else {
-                            LOG.warn( "The geometry expression in file '{}', line {}, column {} "
-                                                              + "evaluated to something where no geometry"
-                                                              + " could be found. Actual type was '{}'.",
-                                      new Object[] { file, line, col, node.getClass() } );
-                        }
-                    }
-                    if ( geoms.isEmpty() ) {
-                        LOG.warn( "The geometry expression in file '{}', line {}, column {} "
-                                  + "evaluated to no geometry could be found.", new Object[] { file, line, col } );
-                    }
-                }
-            } catch ( FilterEvaluationException e ) {
-                LOG.warn( "Could not evaluate a geometry expression in file '{}', line {}, column {}: {}.",
-                          new Object[] { file, line, col, e.getLocalizedMessage() } );
-                LOG.trace( "Stack trace:", e );
-            }
-        } else if ( f != null ) {
-            List<Property> gs = f.getGeometryProperties();
-            if ( !gs.isEmpty() ) {
-                for ( Property p : gs ) {
-                    if ( p.getValue() instanceof Geometry ) {
-                        geoms.add( (Geometry) p.getValue() );
-                    }
-                }
-            } else {
-                LOG.warn( "Style was applied to a feature without a geometry." );
-            }
-        }
+				if (os.length == 0) {
+					LOG.warn("The geometry expression in file '{}', line {}, column {} evaluated to nothing.",
+							new Object[] { file, line, col });
+				}
+				else {
+					for (TypedObjectNode node : os) {
+						Geometry geom = null;
+						geom = tryGeometry(node);
+						if (geom == null) {
+							geom = tryProperty(node);
+						}
+						if (geom == null) {
+							geom = tryCustomXML(node);
+						}
+						if (geom != null) {
+							geoms.add(geom);
+						}
+						else {
+							LOG.warn(
+									"The geometry expression in file '{}', line {}, column {} "
+											+ "evaluated to something where no geometry"
+											+ " could be found. Actual type was '{}'.",
+									new Object[] { file, line, col, node.getClass() });
+						}
+					}
+					if (geoms.isEmpty()) {
+						LOG.warn("The geometry expression in file '{}', line {}, column {} "
+								+ "evaluated to no geometry could be found.", new Object[] { file, line, col });
+					}
+				}
+			}
+			catch (FilterEvaluationException e) {
+				LOG.warn("Could not evaluate a geometry expression in file '{}', line {}, column {}: {}.",
+						new Object[] { file, line, col, e.getLocalizedMessage() });
+				LOG.trace("Stack trace:", e);
+			}
+		}
+		else if (f != null) {
+			List<Property> gs = f.getGeometryProperties();
+			if (!gs.isEmpty()) {
+				for (Property p : gs) {
+					if (p.getValue() instanceof Geometry) {
+						geoms.add((Geometry) p.getValue());
+					}
+				}
+			}
+			else {
+				LOG.warn("Style was applied to a feature without a geometry.");
+			}
+		}
 
-        if ( f == null ) {
-            return new Pair<T, LinkedList<Geometry>>( evaluated == null ? base.copy() : evaluated.copy(), geoms );
-        }
+		if (f == null) {
+			return new Pair<T, LinkedList<Geometry>>(evaluated == null ? base.copy() : evaluated.copy(), geoms);
+		}
 
-        // String id = f.getId();
-        // if ( id != null && cache.containsKey( id ) ) {
-        // return new Pair<T, LinkedList<Geometry>>( cache.get( id ), geoms );
-        // }
+		// String id = f.getId();
+		// if ( id != null && cache.containsKey( id ) ) {
+		// return new Pair<T, LinkedList<Geometry>>( cache.get( id ), geoms );
+		// }
 
-        if ( evaluated != null ) {
-            Pair<T, LinkedList<Geometry>> pair = new Pair<T, LinkedList<Geometry>>( evaluated, geoms );
-            // if ( id != null ) {
-            // cache.put( id, pair.first );
-            // }
-            return pair;
-        }
+		if (evaluated != null) {
+			Pair<T, LinkedList<Geometry>> pair = new Pair<T, LinkedList<Geometry>>(evaluated, geoms);
+			// if ( id != null ) {
+			// cache.put( id, pair.first );
+			// }
+			return pair;
+		}
 
-        T evald = base.copy();
-        Pair<T, LinkedList<Geometry>> pair = new Pair<T, LinkedList<Geometry>>( evald, geoms );
-        if ( next == null ) {
-            LOG.warn( "Something wrong with SE/SLD parsing. No continuation found, and no evaluated style." );
-            return pair;
-        }
+		T evald = base.copy();
+		Pair<T, LinkedList<Geometry>> pair = new Pair<T, LinkedList<Geometry>>(evald, geoms);
+		if (next == null) {
+			LOG.warn("Something wrong with SE/SLD parsing. No continuation found, and no evaluated style.");
+			return pair;
+		}
 
-        next.evaluate( evald, f, evaluator );
-        // if ( id != null ) {
-        // cache.put( id, pair.first );
-        // }
+		next.evaluate(evald, f, evaluator);
+		// if ( id != null ) {
+		// cache.put( id, pair.first );
+		// }
 
-        return pair;
-    }
+		return pair;
+	}
 
-    /**
-     * @return the base object or the evaluated one, if already available
-     */
-    public T getBase() {
-        return evaluated == null ? base : evaluated;
-    }
+	/**
+	 * @return the base object or the evaluated one, if already available
+	 */
+	public T getBase() {
+		return evaluated == null ? base : evaluated;
+	}
 
-    /**
-     * @return may be null, in which case a default geometry would be used when evaluating
-     */
-    public Expression getGeometryExpression() {
-        return geometry;
-    }
+	/**
+	 * @return may be null, in which case a default geometry would be used when evaluating
+	 */
+	public Expression getGeometryExpression() {
+		return geometry;
+	}
 
 }

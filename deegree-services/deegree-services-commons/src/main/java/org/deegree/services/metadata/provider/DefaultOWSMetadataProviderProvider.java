@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -48,30 +47,30 @@ import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
 
 /**
- * {@link OWSMetadataProviderProvider} implementation that retrieves the provided metadata from XML files.
- * 
+ * {@link OWSMetadataProviderProvider} implementation that retrieves the provided metadata
+ * from XML files.
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 public class DefaultOWSMetadataProviderProvider extends OWSMetadataProviderProvider {
 
-    private static final URL CONFIG_SCHEMA = DefaultOWSMetadataProviderProvider.class.getResource( "/META-INF/schemas/services/metadata/metadata.xsd" );
+	private static final URL CONFIG_SCHEMA = DefaultOWSMetadataProviderProvider.class
+		.getResource("/META-INF/schemas/services/metadata/metadata.xsd");
 
-    @Override
-    public String getNamespace() {
-        return "http://www.deegree.org/services/metadata";
-    }
+	@Override
+	public String getNamespace() {
+		return "http://www.deegree.org/services/metadata";
+	}
 
-    @Override
-    public URL getSchema() {
-        return CONFIG_SCHEMA;
-    }
+	@Override
+	public URL getSchema() {
+		return CONFIG_SCHEMA;
+	}
 
-    @Override
-    public ResourceMetadata<OWSMetadataProvider> createFromLocation( Workspace workspace,
-                                                                     ResourceLocation<OWSMetadataProvider> location ) {
-        return new DefaultOwsMetadataProviderMetadata( workspace, location, this );
-    }
+	@Override
+	public ResourceMetadata<OWSMetadataProvider> createFromLocation(Workspace workspace,
+			ResourceLocation<OWSMetadataProvider> location) {
+		return new DefaultOwsMetadataProviderMetadata(workspace, location, this);
+	}
+
 }

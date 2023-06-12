@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -48,47 +47,47 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Can be used to obtain and log more detailed error messages related to resource initialization.
- * 
+ * Can be used to obtain and log more detailed error messages related to resource
+ * initialization.
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class ErrorHandler {
 
-    private Map<ResourceIdentifier<? extends Resource>, List<String>> errors;
+	private Map<ResourceIdentifier<? extends Resource>, List<String>> errors;
 
-    public ErrorHandler() {
-        errors = new HashMap<ResourceIdentifier<? extends Resource>, List<String>>();
-    }
+	public ErrorHandler() {
+		errors = new HashMap<ResourceIdentifier<? extends Resource>, List<String>>();
+	}
 
-    public void registerError( ResourceIdentifier<? extends Resource> id, String error ) {
-        List<String> list = errors.get( id );
-        if ( list == null ) {
-            list = new ArrayList<String>();
-            errors.put( id, list );
-        }
-        list.add( error );
-    }
+	public void registerError(ResourceIdentifier<? extends Resource> id, String error) {
+		List<String> list = errors.get(id);
+		if (list == null) {
+			list = new ArrayList<String>();
+			errors.put(id, list);
+		}
+		list.add(error);
+	}
 
-    public List<String> getErrors( ResourceIdentifier<? extends Resource> id ) {
-        List<String> list = errors.get( id );
-        if ( list == null ) {
-            return Collections.emptyList();
-        }
-        return list;
-    }
+	public List<String> getErrors(ResourceIdentifier<? extends Resource> id) {
+		List<String> list = errors.get(id);
+		if (list == null) {
+			return Collections.emptyList();
+		}
+		return list;
+	}
 
-    public void clear() {
-        errors.clear();
-    }
+	public void clear() {
+		errors.clear();
+	}
 
-    public void clear( ResourceIdentifier<? extends Resource> id ) {
-        errors.remove( id );
-    }
+	public void clear(ResourceIdentifier<? extends Resource> id) {
+		errors.remove(id);
+	}
 
-    public boolean hasErrors() {
-        return !errors.isEmpty();
-    }
+	public boolean hasErrors() {
+		return !errors.isEmpty();
+	}
 
 }

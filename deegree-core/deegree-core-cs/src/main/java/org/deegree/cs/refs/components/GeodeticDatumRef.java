@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -47,59 +46,52 @@ import org.deegree.cs.transformations.helmert.Helmert;
 
 /**
  * {@link DatumRef} to a {@link IGeodeticDatum}
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class GeodeticDatumRef extends DatumRef implements Serializable, IGeodeticDatum {
 
-    private static final long serialVersionUID = 7188015467664337955L;
+	private static final long serialVersionUID = 7188015467664337955L;
 
-    /**
-     * Creates a reference to a {@link IGeodeticDatum}
-     * 
-     * @param resolver
-     *            used for resolving the reference, must not be <code>null</code>
-     * @param uri
-     *            the object's uri, must not be <code>null</code>
-     * @param baseURL
-     *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
-     */
-    public GeodeticDatumRef( ReferenceResolver resolver, String uri, String baseURL ) {
-        super( resolver, uri, baseURL );
-    }
+	/**
+	 * Creates a reference to a {@link IGeodeticDatum}
+	 * @param resolver used for resolving the reference, must not be <code>null</code>
+	 * @param uri the object's uri, must not be <code>null</code>
+	 * @param baseURL base URL for resolving the uri, may be <code>null</code> (no
+	 * resolving of relative URLs)
+	 */
+	public GeodeticDatumRef(ReferenceResolver resolver, String uri, String baseURL) {
+		super(resolver, uri, baseURL);
+	}
 
-    public IEllipsoid getEllipsoid() {
-        return getReferencedObject().getEllipsoid();
-    }
+	public IEllipsoid getEllipsoid() {
+		return getReferencedObject().getEllipsoid();
+	}
 
-    public IPrimeMeridian getPrimeMeridian() {
-        return getReferencedObject().getPrimeMeridian();
-    }
+	public IPrimeMeridian getPrimeMeridian() {
+		return getReferencedObject().getPrimeMeridian();
+	}
 
-    public void setPrimeMeridian( IPrimeMeridian primeMeridian ) {
-        getReferencedObject().setPrimeMeridian( primeMeridian );
-    }
+	public void setPrimeMeridian(IPrimeMeridian primeMeridian) {
+		getReferencedObject().setPrimeMeridian(primeMeridian);
+	}
 
-    public Helmert getWGS84Conversion() {
-        return getReferencedObject().getWGS84Conversion();
-    }
+	public Helmert getWGS84Conversion() {
+		return getReferencedObject().getWGS84Conversion();
+	}
 
-    public void setToWGS84( Helmert toWGS84Conversion ) {
-        getReferencedObject().setToWGS84( toWGS84Conversion );
-    }
+	public void setToWGS84(Helmert toWGS84Conversion) {
+		getReferencedObject().setToWGS84(toWGS84Conversion);
+	}
 
-    @Override
-    public boolean equals( Object obj ) {
-        return super.equals( obj ) ? true : getReferencedObject().equals( obj );
-    }
+	@Override
+	public boolean equals(Object obj) {
+		return super.equals(obj) ? true : getReferencedObject().equals(obj);
+	}
 
-    @Override
-    public GeodeticDatum getReferencedObject()
-                            throws ReferenceResolvingException {
-        return (GeodeticDatum) super.getReferencedObject();
-    }
+	@Override
+	public GeodeticDatum getReferencedObject() throws ReferenceResolvingException {
+		return (GeodeticDatum) super.getReferencedObject();
+	}
 
 }

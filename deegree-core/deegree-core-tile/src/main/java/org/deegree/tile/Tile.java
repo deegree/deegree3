@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -49,62 +48,51 @@ import org.deegree.geometry.Envelope;
 /**
  * A single tile of a {@link TileDataLevel}.
  * <p>
- * For streaming purposes, implementations are required to not load the data in memory, but to generate it upon request.
+ * For streaming purposes, implementations are required to not load the data in memory,
+ * but to generate it upon request.
  * </p>
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 public interface Tile {
 
-    /**
-     * This method must generate the image only upon request. It should not hold a reference to the data after creating
-     * it, caching is done on a different level.
-     * 
-     * @return the tile as image, never <code>null</code>
-     * @throws TileIOException
-     *             if generation of the image failed
-     */
-    BufferedImage getAsImage()
-                            throws TileIOException;
+	/**
+	 * This method must generate the image only upon request. It should not hold a
+	 * reference to the data after creating it, caching is done on a different level.
+	 * @return the tile as image, never <code>null</code>
+	 * @throws TileIOException if generation of the image failed
+	 */
+	BufferedImage getAsImage() throws TileIOException;
 
-    /**
-     * This method provides direct access to the encoded tile image.
-     * <p>
-     * Implementations must be able to generate a new stream each time this method is called. Stream must be closed by
-     * user.
-     * </p>
-     * 
-     * @return the tile as stream, never <code>null</code>
-     * @throws TileIOException
-     *             if accessing the encoded tile image failed
-     */
-    InputStream getAsStream()
-                            throws TileIOException;
+	/**
+	 * This method provides direct access to the encoded tile image.
+	 * <p>
+	 * Implementations must be able to generate a new stream each time this method is
+	 * called. Stream must be closed by user.
+	 * </p>
+	 * @return the tile as stream, never <code>null</code>
+	 * @throws TileIOException if accessing the encoded tile image failed
+	 */
+	InputStream getAsStream() throws TileIOException;
 
-    /**
-     * Returns the envelope of the tile data, specified from the outer bounds of the border pixels.
-     * 
-     * @return the envelope, never <code>null</code>
-     */
-    Envelope getEnvelope();
+	/**
+	 * Returns the envelope of the tile data, specified from the outer bounds of the
+	 * border pixels.
+	 * @return the envelope, never <code>null</code>
+	 */
+	Envelope getEnvelope();
 
-    /**
-     * Retrieves the features located at a particular pixel position of the specified tile.
-     * 
-     * @param i
-     *            column index of pixel within the tile, counted from left, starting at zero
-     * @param j
-     *            row index of pixel within the tile, counted from top, starting at zero
-     * @param limit
-     *            maximum number of features to return
-     * @return features located at the specified position, can be empty or <code>null</code>
-     * @throws UnsupportedOperationException
-     *             if the implementation does not support retrieving of features
-     */
-    FeatureCollection getFeatures( int i, int j, int limit )
-                            throws UnsupportedOperationException;
+	/**
+	 * Retrieves the features located at a particular pixel position of the specified
+	 * tile.
+	 * @param i column index of pixel within the tile, counted from left, starting at zero
+	 * @param j row index of pixel within the tile, counted from top, starting at zero
+	 * @param limit maximum number of features to return
+	 * @return features located at the specified position, can be empty or
+	 * <code>null</code>
+	 * @throws UnsupportedOperationException if the implementation does not support
+	 * retrieving of features
+	 */
+	FeatureCollection getFeatures(int i, int j, int limit) throws UnsupportedOperationException;
 
 }

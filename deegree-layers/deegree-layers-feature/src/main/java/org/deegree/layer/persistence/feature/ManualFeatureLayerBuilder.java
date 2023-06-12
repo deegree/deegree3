@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -69,59 +68,57 @@ import org.deegree.workspace.Workspace;
 
 /**
  * Builds feature layers that are manually configured.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 class ManualFeatureLayerBuilder {
 
-    private FeatureLayers lays;
+	private FeatureLayers lays;
 
-    private ResourceMetadata<LayerStore> metadata;
+	private ResourceMetadata<LayerStore> metadata;
 
-    private FeatureStore store;
+	private FeatureStore store;
 
-    private Workspace workspace;
+	private Workspace workspace;
 
-    ManualFeatureLayerBuilder( FeatureLayers lays, ResourceMetadata<LayerStore> metadata, FeatureStore store,
-                               Workspace workspace ) {
-        this.lays = lays;
-        this.metadata = metadata;
-        this.store = store;
-        this.workspace = workspace;
-    }
+	ManualFeatureLayerBuilder(FeatureLayers lays, ResourceMetadata<LayerStore> metadata, FeatureStore store,
+			Workspace workspace) {
+		this.lays = lays;
+		this.metadata = metadata;
+		this.store = store;
+		this.workspace = workspace;
+	}
 
-    MultipleLayerStore buildFeatureLayers()
-                            throws XMLStreamException, URISyntaxException, FeatureStoreException {
-        Map<String, Layer> map = new LinkedHashMap<String, Layer>();
-        int index = -1;
-        for ( FeatureLayerType lay : lays.getFeatureLayer() ) {
-            ++index;
-            QName featureType = lay.getFeatureType();
+	MultipleLayerStore buildFeatureLayers() throws XMLStreamException, URISyntaxException, FeatureStoreException {
+		Map<String, Layer> map = new LinkedHashMap<String, Layer>();
+		int index = -1;
+		for (FeatureLayerType lay : lays.getFeatureLayer()) {
+			++index;
+			QName featureType = lay.getFeatureType();
 
-            // these methods do not use the dom elements but reparse the configuration file using StAX due to bugs
-            // in jaxb/woodstox when using multiple jaxb:dom bindings and DOMSources for XMLStreamReaders
-            OperatorFilter filter = QueryOptionsParser.parseFilter( index, metadata.getLocation().getAsStream() );
-            List<SortProperty> sortBy = QueryOptionsParser.parseSortBy( index, metadata.getLocation().getAsStream() );
-            List<SortProperty> sortByFeatureInfo = sortBy;
-            if ( sortBy != null && lay.getSortBy().isReverseFeatureInfo() ) {
-                sortByFeatureInfo = new ArrayList<SortProperty>();
-                for ( SortProperty prop : sortBy ) {
-                    sortByFeatureInfo.add( new SortProperty( prop.getSortProperty(), !prop.getSortOrder() ) );
-                }
-            }
+			// these methods do not use the dom elements but reparse the configuration
+			// file using StAX due to bugs
+			// in jaxb/woodstox when using multiple jaxb:dom bindings and DOMSources for
+			// XMLStreamReaders
+			OperatorFilter filter = QueryOptionsParser.parseFilter(index, metadata.getLocation().getAsStream());
+			List<SortProperty> sortBy = QueryOptionsParser.parseSortBy(index, metadata.getLocation().getAsStream());
+			List<SortProperty> sortByFeatureInfo = sortBy;
+			if (sortBy != null && lay.getSortBy().isReverseFeatureInfo()) {
+				sortByFeatureInfo = new ArrayList<SortProperty>();
+				for (SortProperty prop : sortBy) {
+					sortByFeatureInfo.add(new SortProperty(prop.getSortProperty(), !prop.getSortOrder()));
+				}
+			}
 
-            LayerMetadata md = LayerMetadataBuilder.buildMetadata( lay, featureType, store );
+			LayerMetadata md = LayerMetadataBuilder.buildMetadata(lay, featureType, store);
 
-            Pair<Map<String, Style>, Map<String, Style>> p = parseStyles( workspace, lay.getName(), lay.getStyleRef() );
-            md.setStyles( p.first );
-            md.setLegendStyles( p.second );
-            Layer l = new FeatureLayer( md, store, featureType, filter, sortBy, sortByFeatureInfo );
-            map.put( lay.getName(), l );
-        }
-        return new MultipleLayerStore( map, metadata );
-    }
+			Pair<Map<String, Style>, Map<String, Style>> p = parseStyles(workspace, lay.getName(), lay.getStyleRef());
+			md.setStyles(p.first);
+			md.setLegendStyles(p.second);
+			Layer l = new FeatureLayer(md, store, featureType, filter, sortBy, sortByFeatureInfo);
+			map.put(lay.getName(), l);
+		}
+		return new MultipleLayerStore(map, metadata);
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -42,35 +41,32 @@ import javax.xml.namespace.QName;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class ConfiguredElementName {
 
-    private QName name;
+	private QName name;
 
-    private List<String> xPaths = new ArrayList<String>();
+	private List<String> xPaths = new ArrayList<String>();
 
-    public ConfiguredElementName( QName name, List<String> xPaths ) {
-        this.name = name;
-        this.xPaths.addAll( xPaths );
-    }
+	public ConfiguredElementName(QName name, List<String> xPaths) {
+		this.name = name;
+		this.xPaths.addAll(xPaths);
+	}
 
-    /**
-     * @return the name
-     */
-    public QName getName() {
-        return name;
-    }
+	/**
+	 * @return the name
+	 */
+	public QName getName() {
+		return name;
+	}
 
-    /**
-     * @return the xPaths
-     */
-    public List<String> getxPaths() {
-        return xPaths;
-    }
+	/**
+	 * @return the xPaths
+	 */
+	public List<String> getxPaths() {
+		return xPaths;
+	}
 
 }

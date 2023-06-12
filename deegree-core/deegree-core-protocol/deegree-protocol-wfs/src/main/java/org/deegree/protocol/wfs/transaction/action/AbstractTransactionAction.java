@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -40,41 +39,35 @@ import org.deegree.protocol.wfs.transaction.TransactionAction;
 
 /**
  * Abstract base class for implementations of {@link TransactionAction}.
- * 
+ *
  * @see TransactionAction
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public abstract class AbstractTransactionAction implements TransactionAction {
 
-    private final String handle;
+	private final String handle;
 
-    /**
-     * Creates a new {@link AbstractTransactionAction} with an optional handle.
-     * 
-     * @param handle
-     *            identifier for the operation, may be <code>null</code>
-     */
-    protected AbstractTransactionAction( String handle ) {
-        this.handle = handle;
-    }
+	/**
+	 * Creates a new {@link AbstractTransactionAction} with an optional handle.
+	 * @param handle identifier for the operation, may be <code>null</code>
+	 */
+	protected AbstractTransactionAction(String handle) {
+		this.handle = handle;
+	}
 
-    /**
-     * Returns the type of operation. Use this to safely determine the subtype of {@link AbstractTransactionOperation}.
-     * 
-     * @return type of operation, never <code>null</code>
-     */
-    public abstract TransactionActionType getType();
+	/**
+	 * Returns the type of operation. Use this to safely determine the subtype of
+	 * {@link AbstractTransactionOperation}.
+	 * @return type of operation, never <code>null</code>
+	 */
+	public abstract TransactionActionType getType();
 
-    /**
-     * Returns the idenfifier of the operation.
-     * 
-     * @return the idenfifier of the operation, or <code>null</code> if it is unspecified
-     */
-    public String getHandle() {
-        return handle;
-    }
+	/**
+	 * Returns the idenfifier of the operation.
+	 * @return the idenfifier of the operation, or <code>null</code> if it is unspecified
+	 */
+	public String getHandle() {
+		return handle;
+	}
+
 }

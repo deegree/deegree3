@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -56,173 +55,139 @@ import org.deegree.protocol.wps.client.input.XMLInput;
  * <p>
  * NOTE: This class is not thread-safe.
  * </p>
- * 
+ *
  * @see Process
  * @see ProcessExecution
  * @see RawProcessExecution
- * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 class AbstractProcessExecution {
 
-    /** Associated WPS client instance. */
-    protected final WPSClient client;
+	/** Associated WPS client instance. */
+	protected final WPSClient client;
 
-    /** Associated process instance. */
-    protected final Process process;
+	/** Associated process instance. */
+	protected final Process process;
 
-    /** List of inputs, may be empty, but never <code>null</code> */
-    protected final List<ExecutionInput> inputs = new ArrayList<ExecutionInput>();
+	/** List of inputs, may be empty, but never <code>null</code> */
+	protected final List<ExecutionInput> inputs = new ArrayList<ExecutionInput>();
 
-    /**
-     * Creates a new {@link AbstractProcessExecution} instance.
-     * 
-     * @param client
-     *            associated WPS client instance, must not be <code>null</code>
-     * @param process
-     *            associated process instance, must not be <code>null</code>
-     */
-    protected AbstractProcessExecution( WPSClient client, Process process ) {
-        this.client = client;
-        this.process = process;
-    }
+	/**
+	 * Creates a new {@link AbstractProcessExecution} instance.
+	 * @param client associated WPS client instance, must not be <code>null</code>
+	 * @param process associated process instance, must not be <code>null</code>
+	 */
+	protected AbstractProcessExecution(WPSClient client, Process process) {
+		this.client = client;
+		this.process = process;
+	}
 
-    /**
-     * Adds a literal input parameter.
-     * 
-     * @param id
-     *            identifier of the input parameter, must not be <code>null</code>
-     * @param idCodeSpace
-     *            codespace of the parameter identifier, may be <code>null</code> (for identifiers without codespace)
-     * @param value
-     *            value of the literal input, must not be <code>null</code>
-     * @param type
-     *            data type in which the value should be considered, may be <code>null</code> (this means it matches the
-     *            data type as defined by the process description)
-     * @param uom
-     *            unit of measure of the value, may be <code>null</code> (this means it matches the data type as defined
-     *            by the process description)
-     */
-    public void addLiteralInput( String id, String idCodeSpace, String value, String type, String uom ) {
-        inputs.add( new LiteralInput( new CodeType( id, idCodeSpace ), value, type, uom ) );
-    }
+	/**
+	 * Adds a literal input parameter.
+	 * @param id identifier of the input parameter, must not be <code>null</code>
+	 * @param idCodeSpace codespace of the parameter identifier, may be <code>null</code>
+	 * (for identifiers without codespace)
+	 * @param value value of the literal input, must not be <code>null</code>
+	 * @param type data type in which the value should be considered, may be
+	 * <code>null</code> (this means it matches the data type as defined by the process
+	 * description)
+	 * @param uom unit of measure of the value, may be <code>null</code> (this means it
+	 * matches the data type as defined by the process description)
+	 */
+	public void addLiteralInput(String id, String idCodeSpace, String value, String type, String uom) {
+		inputs.add(new LiteralInput(new CodeType(id, idCodeSpace), value, type, uom));
+	}
 
-    /**
-     * Adds a bounding box input parameter.
-     * 
-     * @param id
-     *            identifier of the input parameter, must not be <code>null</code>
-     * @param idCodeSpace
-     *            codespace of the parameter identifier, may be <code>null</code> (for identifiers without codespace)
-     * @param lower
-     *            coordinates of the lower point, must not be <code>null</code>
-     * @param upper
-     *            coordinates of the upper point, must not be <code>null</code> and length must match lower point
-     * @param crs
-     *            coordinate system, may be <code>null</code> (indicates that the default crs from the parameter
-     *            description applies)
-     */
-    public void addBBoxInput( String id, String idCodeSpace, double[] lower, double[] upper, String crs ) {
-        inputs.add( new BBoxInput( new CodeType( id, idCodeSpace ), lower, upper, crs ) );
-    }
+	/**
+	 * Adds a bounding box input parameter.
+	 * @param id identifier of the input parameter, must not be <code>null</code>
+	 * @param idCodeSpace codespace of the parameter identifier, may be <code>null</code>
+	 * (for identifiers without codespace)
+	 * @param lower coordinates of the lower point, must not be <code>null</code>
+	 * @param upper coordinates of the upper point, must not be <code>null</code> and
+	 * length must match lower point
+	 * @param crs coordinate system, may be <code>null</code> (indicates that the default
+	 * crs from the parameter description applies)
+	 */
+	public void addBBoxInput(String id, String idCodeSpace, double[] lower, double[] upper, String crs) {
+		inputs.add(new BBoxInput(new CodeType(id, idCodeSpace), lower, upper, crs));
+	}
 
-    /**
-     * Adds an XML-valued complex input parameter.
-     * 
-     * @param id
-     *            identifier of the input parameter, must not be <code>null</code>
-     * @param idCodeSpace
-     *            codespace of the parameter identifier, may be <code>null</code> (for identifiers without codespace)
-     * @param uri
-     *            {@link URL} reference to the xml resource, must not be <code>null</code>
-     * @param byRef
-     *            if true, the parameter will be passed by reference to the server, otherwise it will be nested in the
-     *            Execute request. If true, the url needs to be web-accessible (e.g. not a file URL)
-     * @param mimeType
-     *            mime type, may be <code>null</code> (indicates that the default mime type from the parameter
-     *            description applies)
-     * @param encoding
-     *            encoding, may be <code>null</code> (indicates that the default encoding from the parameter description
-     *            applies)
-     * @param schema
-     *            schema, may be <code>null</code> (indicates that the default schema from the parameter description
-     *            applies)
-     */
-    public void addXMLInput( String id, String idCodeSpace, URI uri, boolean byRef, String mimeType, String encoding,
-                             String schema ) {
-        inputs.add( new XMLInput( new CodeType( id, idCodeSpace ), uri, byRef, mimeType, encoding, schema ) );
-    }
+	/**
+	 * Adds an XML-valued complex input parameter.
+	 * @param id identifier of the input parameter, must not be <code>null</code>
+	 * @param idCodeSpace codespace of the parameter identifier, may be <code>null</code>
+	 * (for identifiers without codespace)
+	 * @param uri {@link URL} reference to the xml resource, must not be <code>null</code>
+	 * @param byRef if true, the parameter will be passed by reference to the server,
+	 * otherwise it will be nested in the Execute request. If true, the url needs to be
+	 * web-accessible (e.g. not a file URL)
+	 * @param mimeType mime type, may be <code>null</code> (indicates that the default
+	 * mime type from the parameter description applies)
+	 * @param encoding encoding, may be <code>null</code> (indicates that the default
+	 * encoding from the parameter description applies)
+	 * @param schema schema, may be <code>null</code> (indicates that the default schema
+	 * from the parameter description applies)
+	 */
+	public void addXMLInput(String id, String idCodeSpace, URI uri, boolean byRef, String mimeType, String encoding,
+			String schema) {
+		inputs.add(new XMLInput(new CodeType(id, idCodeSpace), uri, byRef, mimeType, encoding, schema));
+	}
 
-    /**
-     * Adds an XML-valued complex input parameter.
-     * 
-     * @param id
-     *            identifier of the input parameter, must not be <code>null</code>
-     * @param idCodeSpace
-     *            codespace of the parameter identifier, may be <code>null</code> (for identifiers without codespace)
-     * @param reader
-     *            {@link XMLStreamReader} to the xml data, must not be <code>null</code> and point to the START_ELEMENT
-     *            event
-     * @param mimeType
-     *            mime type, may be <code>null</code> (indicates that the default mime type from the parameter
-     *            description applies)
-     * @param encoding
-     *            encoding, may be <code>null</code> (indicates that the default encoding from the parameter description
-     *            applies)
-     * @param schema
-     *            schema, may be <code>null</code> (indicates that the default schema from the parameter description
-     *            applies)
-     */
-    public void addXMLInput( String id, String idCodeSpace, XMLStreamReader reader, String mimeType, String encoding,
-                             String schema ) {
-        inputs.add( new XMLInput( new CodeType( id, idCodeSpace ), reader, mimeType, encoding, schema ) );
-    }
+	/**
+	 * Adds an XML-valued complex input parameter.
+	 * @param id identifier of the input parameter, must not be <code>null</code>
+	 * @param idCodeSpace codespace of the parameter identifier, may be <code>null</code>
+	 * (for identifiers without codespace)
+	 * @param reader {@link XMLStreamReader} to the xml data, must not be
+	 * <code>null</code> and point to the START_ELEMENT event
+	 * @param mimeType mime type, may be <code>null</code> (indicates that the default
+	 * mime type from the parameter description applies)
+	 * @param encoding encoding, may be <code>null</code> (indicates that the default
+	 * encoding from the parameter description applies)
+	 * @param schema schema, may be <code>null</code> (indicates that the default schema
+	 * from the parameter description applies)
+	 */
+	public void addXMLInput(String id, String idCodeSpace, XMLStreamReader reader, String mimeType, String encoding,
+			String schema) {
+		inputs.add(new XMLInput(new CodeType(id, idCodeSpace), reader, mimeType, encoding, schema));
+	}
 
-    /**
-     * Adds a binary-valued complex input parameter.
-     * 
-     * @param id
-     *            identifier of the input parameter, must not be <code>null</code>
-     * @param idCodeSpace
-     *            codespace of the parameter identifier, may be <code>null</code> (for identifiers without codespace)
-     * @param uri
-     *            {@link URL} reference to the binary resource, must not be <code>null</code> (and must not be
-     *            web-accessible)
-     * @param byRef
-     *            if true, the parameter will be passed by reference to the server, otherwise it will be nested in the
-     *            Execute request. If true, the url needs to be web-accessible (e.g. not a file URL)
-     * @param mimeType
-     *            mime type, may be <code>null</code> (indicates that the default mime type from the parameter
-     *            description applies)
-     * @param encoding
-     *            encoding, may be <code>null</code> (indicates that the default encoding from the parameter description
-     *            applies)
-     */
-    public void addBinaryInput( String id, String idCodeSpace, URI uri, boolean byRef, String mimeType, String encoding ) {
-        inputs.add( new BinaryInput( new CodeType( id, idCodeSpace ), uri, byRef, mimeType, encoding ) );
-    }
+	/**
+	 * Adds a binary-valued complex input parameter.
+	 * @param id identifier of the input parameter, must not be <code>null</code>
+	 * @param idCodeSpace codespace of the parameter identifier, may be <code>null</code>
+	 * (for identifiers without codespace)
+	 * @param uri {@link URL} reference to the binary resource, must not be
+	 * <code>null</code> (and must not be web-accessible)
+	 * @param byRef if true, the parameter will be passed by reference to the server,
+	 * otherwise it will be nested in the Execute request. If true, the url needs to be
+	 * web-accessible (e.g. not a file URL)
+	 * @param mimeType mime type, may be <code>null</code> (indicates that the default
+	 * mime type from the parameter description applies)
+	 * @param encoding encoding, may be <code>null</code> (indicates that the default
+	 * encoding from the parameter description applies)
+	 */
+	public void addBinaryInput(String id, String idCodeSpace, URI uri, boolean byRef, String mimeType,
+			String encoding) {
+		inputs.add(new BinaryInput(new CodeType(id, idCodeSpace), uri, byRef, mimeType, encoding));
+	}
 
-    /**
-     * Adds a binary-valued complex input parameter.
-     * 
-     * @param id
-     *            identifier of the input parameter, must not be <code>null</code>
-     * @param idCodeSpace
-     *            codespace of the parameter identifier, may be <code>null</code> (for identifiers without codespace)
-     * @param inputStream
-     *            input stream to the binary data, must not be <code>null</code>
-     * @param mimeType
-     *            mime type, may be <code>null</code> (indicates that the default mime type from the parameter
-     *            description applies)
-     * @param encoding
-     *            encoding, may be <code>null</code> (indicates that the default encoding from the parameter description
-     *            applies)
-     */
-    public void addBinaryInput( String id, String idCodeSpace, InputStream inputStream, String mimeType, String encoding ) {
-        inputs.add( new BinaryInput( new CodeType( id, idCodeSpace ), inputStream, mimeType, encoding ) );
-    }
+	/**
+	 * Adds a binary-valued complex input parameter.
+	 * @param id identifier of the input parameter, must not be <code>null</code>
+	 * @param idCodeSpace codespace of the parameter identifier, may be <code>null</code>
+	 * (for identifiers without codespace)
+	 * @param inputStream input stream to the binary data, must not be <code>null</code>
+	 * @param mimeType mime type, may be <code>null</code> (indicates that the default
+	 * mime type from the parameter description applies)
+	 * @param encoding encoding, may be <code>null</code> (indicates that the default
+	 * encoding from the parameter description applies)
+	 */
+	public void addBinaryInput(String id, String idCodeSpace, InputStream inputStream, String mimeType,
+			String encoding) {
+		inputs.add(new BinaryInput(new CodeType(id, idCodeSpace), inputStream, mimeType, encoding));
+	}
+
 }

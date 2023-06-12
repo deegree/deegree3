@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -36,5 +35,7 @@
 package org.deegree.geometry.linearization;
 
 public interface LinearizationCriterion {
-    // at the moment this is just a marker interface
+
+	// at the moment this is just a marker interface
+
 }

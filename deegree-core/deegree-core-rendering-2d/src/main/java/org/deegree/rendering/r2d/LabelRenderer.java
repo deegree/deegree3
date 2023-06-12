@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -47,46 +46,35 @@ import org.deegree.rendering.r2d.Label;
 
 /**
  * <code>LabelRenderer</code>
- * 
+ *
  * @author Florian Bingel
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface LabelRenderer {
 
-    void createLabel( TextStyling styling, String text, Collection<Geometry> geoms );
-    
-    void createLabel( TextStyling styling, String text, Geometry geom );
-    
-    /**
-     * Render a text styling with a string and a geometry.
-     * 
-     * @param styling
-     * @param text
-     * @param geom
-     */
-    Label createLabel( TextStyling styling, Font font, String text, Point p );
-    
-    
-    /**
-     * Render a text styling with a string and a geometry.
-     * 
-     * @param styling
-     * @param text
-     * @param geom
-     */
-    void render( List<Label> pLables );
-    void render( Label label );
+	void createLabel(TextStyling styling, String text, Collection<Geometry> geoms);
 
-    void render();
+	void createLabel(TextStyling styling, String text, Geometry geom);
 
-    List<Label> getLabels();
+	/**
+	 * Render a text styling with a string and a geometry.
+	 * @param styling
+	 * @param text
+	 * @param geom
+	 */
+	Label createLabel(TextStyling styling, Font font, String text, Point p);
 
+	/**
+	 * Render a text styling with a string and a geometry.
+	 * @param styling
+	 * @param text
+	 * @param geom
+	 */
+	void render(List<Label> pLables);
+
+	void render(Label label);
+
+	void render();
+
+	List<Label> getLabels();
 
 }
-
-
-
-
-

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -42,35 +41,29 @@ import org.deegree.geometry.primitive.Point;
 
 /**
  * A {@link CurveSegment} that is defined by a base {@link Curve} and an offset vector.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$
  */
 public interface OffsetCurve extends CurveSegment {
 
-    /**
-     * Returns the {@link Curve} that the curve segment's definition is based on.
-     * 
-     * @return the <code>Curve</code> used as the base geometry
-     */
-    public Curve getBaseCurve();
+	/**
+	 * Returns the {@link Curve} that the curve segment's definition is based on.
+	 * @return the <code>Curve</code> used as the base geometry
+	 */
+	public Curve getBaseCurve();
 
-    /**
-     * Returns the distance from the base {@link Curve}.
-     * 
-     * @param uom
-     *            units-of-measure that the distance shall be expressed as, or null for units of the underlying
-     *            coordinate system
-     * @return the distance in the the requested uom
-     */
-    public Measure getDistance( Unit uom );
+	/**
+	 * Returns the distance from the base {@link Curve}.
+	 * @param uom units-of-measure that the distance shall be expressed as, or null for
+	 * units of the underlying coordinate system
+	 * @return the distance in the the requested uom
+	 */
+	public Measure getDistance(Unit uom);
 
-    /**
-     * Returns the direction of the offset from the base {@link Curve}.
-     * 
-     * @return the direction of the offset (to be understood as an offset vector)
-     */
-    public Point getDirection();
+	/**
+	 * Returns the direction of the offset from the base {@link Curve}.
+	 * @return the direction of the offset (to be understood as an offset vector)
+	 */
+	public Point getDirection();
+
 }

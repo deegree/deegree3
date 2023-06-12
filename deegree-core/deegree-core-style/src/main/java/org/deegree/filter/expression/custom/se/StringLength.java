@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -55,65 +54,61 @@ import org.deegree.style.se.unevaluated.Continuation;
 
 /**
  * <code>StringLength</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class StringLength extends AbstractCustomExpression {
 
-    private static final QName ELEMENT_NAME = new QName( SENS, "StringLength" );
+	private static final QName ELEMENT_NAME = new QName(SENS, "StringLength");
 
-    private StringBuffer value;
+	private StringBuffer value;
 
-    private Continuation<StringBuffer> contn;
+	private Continuation<StringBuffer> contn;
 
-    /**
-     * 
-     */
-    public StringLength() {
-        // just used for SPI
-    }
+	/**
+	 *
+	 */
+	public StringLength() {
+		// just used for SPI
+	}
 
-    private StringLength( StringBuffer value, Continuation<StringBuffer> contn ) {
-        this.value = value;
-        this.contn = contn;
-    }
+	private StringLength(StringBuffer value, Continuation<StringBuffer> contn) {
+		this.value = value;
+		this.contn = contn;
+	}
 
-    @Override
-    public QName getElementName() {
-        return ELEMENT_NAME;
-    }
+	@Override
+	public QName getElementName() {
+		return ELEMENT_NAME;
+	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypedObjectNode[] evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
-                            throws FilterEvaluationException {
-        StringBuffer sb = new StringBuffer( value.toString().trim() );
-        if ( contn != null ) {
-            contn.evaluate( sb, (Feature) obj, (XPathEvaluator<Feature>) xpathEvaluator );
-        }
-        return new TypedObjectNode[] { new PrimitiveValue( sb.length() + "" ) };
-    }
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> TypedObjectNode[] evaluate(T obj, XPathEvaluator<T> xpathEvaluator) throws FilterEvaluationException {
+		StringBuffer sb = new StringBuffer(value.toString().trim());
+		if (contn != null) {
+			contn.evaluate(sb, (Feature) obj, (XPathEvaluator<Feature>) xpathEvaluator);
+		}
+		return new TypedObjectNode[] { new PrimitiveValue(sb.length() + "") };
+	}
 
-    @Override
-    public StringLength parse( XMLStreamReader in )
-                            throws XMLStreamException {
+	@Override
+	public StringLength parse(XMLStreamReader in) throws XMLStreamException {
 
-        StringBuffer value = null;
-        Continuation<StringBuffer> contn = null;
+		StringBuffer value = null;
+		Continuation<StringBuffer> contn = null;
 
-        in.require( START_ELEMENT, null, "StringLength" );
-        while ( !( in.isEndElement() && in.getLocalName().equals( "StringLength" ) ) ) {
-            in.nextTag();
+		in.require(START_ELEMENT, null, "StringLength");
+		while (!(in.isEndElement() && in.getLocalName().equals("StringLength"))) {
+			in.nextTag();
 
-            if ( in.getLocalName().equals( "StringValue" ) ) {
-                value = new StringBuffer();
-                contn = SymbologyParser.INSTANCE.updateOrContinue( in, "StringValue", value, SBUPDATER, null ).second;
-            }
-        }
-        in.require( END_ELEMENT, null, "StringLength" );
-        return new StringLength( value, contn );
-    }
+			if (in.getLocalName().equals("StringValue")) {
+				value = new StringBuffer();
+				contn = SymbologyParser.INSTANCE.updateOrContinue(in, "StringValue", value, SBUPDATER, null).second;
+			}
+		}
+		in.require(END_ELEMENT, null, "StringLength");
+		return new StringLength(value, contn);
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -56,173 +55,164 @@ import org.deegree.protocol.ows.OWSCommonXMLAdapter;
  * </ul>
  * </p>
  * <p>
- * Additionally evaluates the <code>language</code> attribute for requests to multilingual services according to OWS
- * Common change request OGC 08-016r2. This is used by the WPS Specification 1.0.0.
+ * Additionally evaluates the <code>language</code> attribute for requests to multilingual
+ * services according to OWS Common change request OGC 08-016r2. This is used by the WPS
+ * Specification 1.0.0.
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * 
- * @version $Revision:$, $Date:$
  */
 public class GetCapabilitiesXMLParser extends OWSCommonXMLAdapter {
 
-    /**
-     * Create a new {@link GetCapabilitiesXMLParser} without an XML source.
-     */
-    public GetCapabilitiesXMLParser() {
-        //
-    }
+	/**
+	 * Create a new {@link GetCapabilitiesXMLParser} without an XML source.
+	 */
+	public GetCapabilitiesXMLParser() {
+		//
+	}
 
-    /**
-     * Create a new {@link GetCapabilitiesXMLParser} for the given root element.
-     * 
-     * @param rootElement
-     *            the root element of the GetCapabilities request
-     */
-    public GetCapabilitiesXMLParser( OMElement rootElement ) {
-        this.setRootElement( rootElement );
-    }
+	/**
+	 * Create a new {@link GetCapabilitiesXMLParser} for the given root element.
+	 * @param rootElement the root element of the GetCapabilities request
+	 */
+	public GetCapabilitiesXMLParser(OMElement rootElement) {
+		this.setRootElement(rootElement);
+	}
 
-    /**
-     * Parses an OWS 1.0.0 <code>GetCapabilitiesType</code> into a {@link GetCapabilities} object.
-     * 
-     * @return <code>GetCapabilities</code> object corresponding to the input document
-     * @throws XMLParsingException
-     *             if the document contains syntactic or semantic errors
-     */
-    public GetCapabilities parse100()
-                            throws XMLParsingException {
+	/**
+	 * Parses an OWS 1.0.0 <code>GetCapabilitiesType</code> into a {@link GetCapabilities}
+	 * object.
+	 * @return <code>GetCapabilities</code> object corresponding to the input document
+	 * @throws XMLParsingException if the document contains syntactic or semantic errors
+	 */
+	public GetCapabilities parse100() throws XMLParsingException {
 
-        // @updateSequence (optional)
-        String updateSequence = rootElement.getAttributeValue( new QName( "updateSequence" ) );
+		// @updateSequence (optional)
+		String updateSequence = rootElement.getAttributeValue(new QName("updateSequence"));
 
-        // ows:AcceptVersions (optional)
-        String[] versions = getNodesAsStrings( rootElement, new XPath( "ows:AcceptVersions/ows:Version/text()",
-                                                                       nsContext ) );
+		// ows:AcceptVersions (optional)
+		String[] versions = getNodesAsStrings(rootElement,
+				new XPath("ows:AcceptVersions/ows:Version/text()", nsContext));
 
-        // ows:Sections (optional)
-        List<String> sections = parseSections( OWS_PREFIX );
+		// ows:Sections (optional)
+		List<String> sections = parseSections(OWS_PREFIX);
 
-        // ows:AcceptFormats (optional)
-        List<OMElement> formatElements = getElements( rootElement, new XPath( "ows:AcceptFormats/ows:OutputFormat",
-                                                                              nsContext ) );
-        List<String> formats = new ArrayList<String>( formatElements.size() );
-        for ( OMElement formatElement : formatElements ) {
-            formats.add( formatElement.getText() );
-        }
+		// ows:AcceptFormats (optional)
+		List<OMElement> formatElements = getElements(rootElement,
+				new XPath("ows:AcceptFormats/ows:OutputFormat", nsContext));
+		List<String> formats = new ArrayList<String>(formatElements.size());
+		for (OMElement formatElement : formatElements) {
+			formats.add(formatElement.getText());
+		}
 
-        // @language (optional)
-        List<String> languages = null;
-        String languageString = rootElement.getAttributeValue( new QName( "language" ) );
-        if ( languageString != null ) {
-            languages = Arrays.asList( languageString.split( "," ) );
-        }
+		// @language (optional)
+		List<String> languages = null;
+		String languageString = rootElement.getAttributeValue(new QName("language"));
+		if (languageString != null) {
+			languages = Arrays.asList(languageString.split(","));
+		}
 
-        return new GetCapabilities( null, Arrays.asList( versions ), sections, formats, updateSequence, languages );
-    }
+		return new GetCapabilities(null, Arrays.asList(versions), sections, formats, updateSequence, languages);
+	}
 
-    /**
-     * Parses an OWS 1.1.0 <code>GetCapabilitiesType</code> into a {@link GetCapabilities} object.
-     * 
-     * @return <code>GetCapabilities</code> object corresponding to the input document
-     * @throws XMLParsingException
-     *             if the document contains syntactic or semantic errors
-     */
-    public GetCapabilities parse110()
-                            throws XMLParsingException {
+	/**
+	 * Parses an OWS 1.1.0 <code>GetCapabilitiesType</code> into a {@link GetCapabilities}
+	 * object.
+	 * @return <code>GetCapabilities</code> object corresponding to the input document
+	 * @throws XMLParsingException if the document contains syntactic or semantic errors
+	 */
+	public GetCapabilities parse110() throws XMLParsingException {
 
-        // @updateSequence (optional)
-        String updateSequence = rootElement.getAttributeValue( new QName( "updateSequence" ) );
+		// @updateSequence (optional)
+		String updateSequence = rootElement.getAttributeValue(new QName("updateSequence"));
 
-        // ows110:AcceptVersions (optional)
-        String[] versions = getNodesAsStrings( rootElement, new XPath( "ows110:AcceptVersions/ows110:Version/text()",
-                                                                       nsContext ) );
+		// ows110:AcceptVersions (optional)
+		String[] versions = getNodesAsStrings(rootElement,
+				new XPath("ows110:AcceptVersions/ows110:Version/text()", nsContext));
 
-        // ows110:Sections (optional)
-        List<String> sections = parseSections( OWS110_PREFIX );
+		// ows110:Sections (optional)
+		List<String> sections = parseSections(OWS110_PREFIX);
 
-        // ows110:AcceptFormats (optional)
-        List<OMElement> formatElements = getElements( rootElement,
-                                                      new XPath( "ows110:AcceptFormats/ows110:OutputFormat", nsContext ) );
-        List<String> formats = new ArrayList<String>( formatElements.size() );
-        for ( OMElement formatElement : formatElements ) {
-            formats.add( formatElement.getText() );
-        }
+		// ows110:AcceptFormats (optional)
+		List<OMElement> formatElements = getElements(rootElement,
+				new XPath("ows110:AcceptFormats/ows110:OutputFormat", nsContext));
+		List<String> formats = new ArrayList<String>(formatElements.size());
+		for (OMElement formatElement : formatElements) {
+			formats.add(formatElement.getText());
+		}
 
-        // @language (optional)
-        List<String> languages = null;
-        String languageString = rootElement.getAttributeValue( new QName( "language" ) );
-        if ( languageString != null ) {
-            languages = Arrays.asList( languageString.split( "," ) );
-        }
+		// @language (optional)
+		List<String> languages = null;
+		String languageString = rootElement.getAttributeValue(new QName("language"));
+		if (languageString != null) {
+			languages = Arrays.asList(languageString.split(","));
+		}
 
-        return new GetCapabilities( null, Arrays.asList( versions ), sections, formats, updateSequence, languages );
-    }
+		return new GetCapabilities(null, Arrays.asList(versions), sections, formats, updateSequence, languages);
+	}
 
-    /**
-     * Parses an OWS 2.0.0 <code>GetCapabilitiesType</code> into a {@link GetCapabilities} object.
-     * 
-     * @return <code>GetCapabilities</code> object corresponding to the input document
-     * @throws XMLParsingException
-     *             if the document contains syntactic or semantic errors
-     */
-    public GetCapabilities parse200()
-                            throws XMLParsingException {
-        // @updateSequence (optional)
-        String updateSequence = rootElement.getAttributeValue( new QName( "updateSequence" ) );
-        // ows200:AcceptVersions (optional)
-        String[] versions = getNodesAsStrings( rootElement, new XPath( "ows200:AcceptVersions/ows200:Version/text()",
-                                                                       nsContext ) );
-        // ows200:Sections (optional)
-        List<String> sections = parseSections( OWS200_PREFIX );
-        // ows200:AcceptFormats (optional)
-        List<String> formats = parse200Formats();
-        // ows200:AcceptLanguages (optional)
-        List<String> languages = parse200Languages();
-        return new GetCapabilities( null, Arrays.asList( versions ), sections, formats, updateSequence, languages );
-    }
+	/**
+	 * Parses an OWS 2.0.0 <code>GetCapabilitiesType</code> into a {@link GetCapabilities}
+	 * object.
+	 * @return <code>GetCapabilities</code> object corresponding to the input document
+	 * @throws XMLParsingException if the document contains syntactic or semantic errors
+	 */
+	public GetCapabilities parse200() throws XMLParsingException {
+		// @updateSequence (optional)
+		String updateSequence = rootElement.getAttributeValue(new QName("updateSequence"));
+		// ows200:AcceptVersions (optional)
+		String[] versions = getNodesAsStrings(rootElement,
+				new XPath("ows200:AcceptVersions/ows200:Version/text()", nsContext));
+		// ows200:Sections (optional)
+		List<String> sections = parseSections(OWS200_PREFIX);
+		// ows200:AcceptFormats (optional)
+		List<String> formats = parse200Formats();
+		// ows200:AcceptLanguages (optional)
+		List<String> languages = parse200Languages();
+		return new GetCapabilities(null, Arrays.asList(versions), sections, formats, updateSequence, languages);
+	}
 
-    /**
-     * @return all parsed Sections
-     */
-    private List<String> parseSections( String nsPrefix ) {
-        // The spec defines that all sections shall be returned if the element is omitted,
-        // but only the required sections if the client sends an empty sections element.
-        // Therefore we set All explicit if the element is omitted.
-        OMElement sectionsElement = getElement( rootElement, new XPath( nsPrefix + ":Sections", nsContext ) );
-        List<OMElement> sectionElements = getElements( rootElement, new XPath( nsPrefix + ":Sections/" + nsPrefix
-                                                                               + ":Section", nsContext ) );
-        List<String> sections = new ArrayList<String>( sectionElements.size() );
-        if ( sectionsElement == null && sectionElements.size() == 0 ) {
-            sections.add( "All" );
-        } else {
-            for ( OMElement sectionElement : sectionElements ) {
-                sections.add( sectionElement.getText() );
-            }
-        }
-        return sections;
-    }
+	/**
+	 * @return all parsed Sections
+	 */
+	private List<String> parseSections(String nsPrefix) {
+		// The spec defines that all sections shall be returned if the element is omitted,
+		// but only the required sections if the client sends an empty sections element.
+		// Therefore we set All explicit if the element is omitted.
+		OMElement sectionsElement = getElement(rootElement, new XPath(nsPrefix + ":Sections", nsContext));
+		List<OMElement> sectionElements = getElements(rootElement,
+				new XPath(nsPrefix + ":Sections/" + nsPrefix + ":Section", nsContext));
+		List<String> sections = new ArrayList<String>(sectionElements.size());
+		if (sectionsElement == null && sectionElements.size() == 0) {
+			sections.add("All");
+		}
+		else {
+			for (OMElement sectionElement : sectionElements) {
+				sections.add(sectionElement.getText());
+			}
+		}
+		return sections;
+	}
 
-    private List<String> parse200Formats() {
-        List<OMElement> formatElements = getElements( rootElement,
-                                                      new XPath( "ows200:AcceptFormats/ows200:OutputFormat", nsContext ) );
-        List<String> formats = new ArrayList<String>( formatElements.size() );
-        for ( OMElement formatElement : formatElements ) {
-            formats.add( formatElement.getText() );
-        }
-        return formats;
-    }
+	private List<String> parse200Formats() {
+		List<OMElement> formatElements = getElements(rootElement,
+				new XPath("ows200:AcceptFormats/ows200:OutputFormat", nsContext));
+		List<String> formats = new ArrayList<String>(formatElements.size());
+		for (OMElement formatElement : formatElements) {
+			formats.add(formatElement.getText());
+		}
+		return formats;
+	}
 
-    private List<String> parse200Languages() {
-        List<OMElement> languageElements = getElements( rootElement,
-                                                        new XPath( "ows200:AcceptLanguages/ows200:Language", nsContext ) );
-        List<String> languages = new ArrayList<String>();
-        for ( OMElement languageElement : languageElements ) {
-            String language = languageElement.getText();
-            languages.add( language );
-        }
-        return languages;
-    }
+	private List<String> parse200Languages() {
+		List<OMElement> languageElements = getElements(rootElement,
+				new XPath("ows200:AcceptLanguages/ows200:Language", nsContext));
+		List<String> languages = new ArrayList<String>();
+		for (OMElement languageElement : languageElements) {
+			String language = languageElement.getText();
+			languages.add(language);
+		}
+		return languages;
+	}
 
 }

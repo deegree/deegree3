@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-metadata/src/test/java/org/deegree/metadata/iso/persistence/ISOTestbed.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -45,15 +44,12 @@ import org.junit.runners.Suite.SuiteClasses;
 
 /**
  * Testsuite for all the ISO testCases.
- * 
+ *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: lbuesching $
- * 
- * @version $Revision: 30725 $, $Date: 2011-05-09 15:04:20 +0200 (Mo, 09. Mai 2011) $
  */
 @RunWith(Suite.class)
-@SuiteClasses({ InspectorIdentifierTest.class, ParseISOTest.class, InspectorCouplingTest.class,
-               AnyTextHelperTest.class, ISORecordSerializeTest.class, ISOMetadatStoreTransactionTest.class })
+@SuiteClasses({ InspectorIdentifierTest.class, ParseISOTest.class, InspectorCouplingTest.class, AnyTextHelperTest.class,
+		ISORecordSerializeTest.class, ISOMetadatStoreTransactionTest.class })
 public class ISOTestbed {
 
 }

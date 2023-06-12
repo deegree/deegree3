@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -39,17 +38,13 @@ import org.deegree.workspace.standard.DefaultResourceManager;
 import org.deegree.workspace.standard.DefaultResourceManagerMetadata;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class RemoteOWSManager extends DefaultResourceManager<RemoteOWS> {
 
-    public RemoteOWSManager() {
-        super( new DefaultResourceManagerMetadata<RemoteOWS>( RemoteOWSProvider.class, "remote OWS stores",
-                                                              "datasources/remoteows" ) );
-    }
+	public RemoteOWSManager() {
+		super(new DefaultResourceManagerMetadata<RemoteOWS>(RemoteOWSProvider.class, "remote OWS stores",
+				"datasources/remoteows"));
+	}
 
 }

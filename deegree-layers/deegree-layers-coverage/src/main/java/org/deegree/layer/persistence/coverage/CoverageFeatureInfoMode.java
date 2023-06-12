@@ -42,5 +42,7 @@
 package org.deegree.layer.persistence.coverage;
 
 public enum CoverageFeatureInfoMode {
-                                     INTERPOLATION, POINT
+
+	INTERPOLATION, POINT
+
 }

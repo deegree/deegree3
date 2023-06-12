@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -64,124 +63,128 @@ import org.slf4j.Logger;
 
 /**
  * Used to transform, linearize, clip and fix geometry orientation for rendering.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 class GeometryHelper {
 
-    private static final Logger LOG = getLogger( GeometryHelper.class );
+	private static final Logger LOG = getLogger(GeometryHelper.class);
 
-    private static final GeometryLinearizer linearizer = new GeometryLinearizer();
+	private static final GeometryLinearizer linearizer = new GeometryLinearizer();
 
-    private GeometryTransformer transformer;
+	private GeometryTransformer transformer;
 
-    private AffineTransform worldToScreen;
+	private AffineTransform worldToScreen;
 
-    GeometryHelper( Envelope bbox, int width, AffineTransform worldToScreen ) {
-        this.worldToScreen = worldToScreen;
-        try {
-            if ( bbox.getCoordinateSystem() != null && ( !bbox.getCoordinateSystem().getAlias().equals( "CRS:1" ) ) ) {
-                transformer = new GeometryTransformer( bbox.getCoordinateSystem() );
-            }
-        } catch ( Throwable e ) {
-            LOG.debug( "Stack trace:", e );
-            LOG.warn( "Setting up the renderer yielded an exception when setting up internal transformer. This may lead to problems." );
-        }
-    }
+	GeometryHelper(Envelope bbox, int width, AffineTransform worldToScreen) {
+		this.worldToScreen = worldToScreen;
+		try {
+			if (bbox.getCoordinateSystem() != null && (!bbox.getCoordinateSystem().getAlias().equals("CRS:1"))) {
+				transformer = new GeometryTransformer(bbox.getCoordinateSystem());
+			}
+		}
+		catch (Throwable e) {
+			LOG.debug("Stack trace:", e);
+			LOG.warn(
+					"Setting up the renderer yielded an exception when setting up internal transformer. This may lead to problems.");
+		}
+	}
 
-    Double fromCurve( Curve curve, boolean close ) {
-        Double line = new Double();
+	Double fromCurve(Curve curve, boolean close) {
+		Double line = new Double();
 
-        // TODO use error criterion
-        ICRS crs = curve.getCoordinateSystem();
-        curve = linearizer.linearize( curve, new NumPointsCriterion( 100 ) );
-        curve.setCoordinateSystem( crs );
-        Points points = curve.getControlPoints();
-        Iterator<Point> iter = points.iterator();
-        Point p = iter.next();
-        double x = p.get0(), y = p.get1();
-        line.moveTo( x, y );
-        while ( iter.hasNext() ) {
-            p = iter.next();
-            if ( iter.hasNext() ) {
-                line.lineTo( p.get0(), p.get1() );
-            } else {
-                if ( close && isZero( x - p.get0() ) && isZero( y - p.get1() ) ) {
-                    line.closePath();
-                } else {
-                    line.lineTo( p.get0(), p.get1() );
-                }
-            }
-        }
+		// TODO use error criterion
+		ICRS crs = curve.getCoordinateSystem();
+		curve = linearizer.linearize(curve, new NumPointsCriterion(100));
+		curve.setCoordinateSystem(crs);
+		Points points = curve.getControlPoints();
+		Iterator<Point> iter = points.iterator();
+		Point p = iter.next();
+		double x = p.get0(), y = p.get1();
+		line.moveTo(x, y);
+		while (iter.hasNext()) {
+			p = iter.next();
+			if (iter.hasNext()) {
+				line.lineTo(p.get0(), p.get1());
+			}
+			else {
+				if (close && isZero(x - p.get0()) && isZero(y - p.get1())) {
+					line.closePath();
+				}
+				else {
+					line.lineTo(p.get0(), p.get1());
+				}
+			}
+		}
 
-        line.transform( worldToScreen );
+		line.transform(worldToScreen);
 
-        return line;
-    }
+		return line;
+	}
 
-    <T extends Geometry> T transform( T g ) {
-        if ( g == null ) {
-            LOG.warn( "Trying to transform null geometry." );
-            return null;
-        }
-        if ( g.getCoordinateSystem() == null ) {
-            LOG.warn( "Geometry of type '{}' had null coordinate system.", g.getClass().getSimpleName() );
-            return g;
-        }
-        if ( transformer != null ) {
-            ICRS crs = null;
-            try {
-                crs = ( (Geometry) g ).getCoordinateSystem();
-                if ( transformer.getTargetCRS().equals( crs ) ) {
-                    return g;
-                }
-                T g2 = transformer.transform( g );
-                if ( g2 == null ) {
-                    LOG.warn( "Geometry transformer returned null for geometry of type {}, crs was {}.",
-                              g.getClass().getSimpleName(), crs );
-                    return g;
-                }
-                return g2;
-            } catch ( IllegalArgumentException e ) {
-                T g2 = transformLinearized( g );
+	<T extends Geometry> T transform(T g) {
+		if (g == null) {
+			LOG.warn("Trying to transform null geometry.");
+			return null;
+		}
+		if (g.getCoordinateSystem() == null) {
+			LOG.warn("Geometry of type '{}' had null coordinate system.", g.getClass().getSimpleName());
+			return g;
+		}
+		if (transformer != null) {
+			ICRS crs = null;
+			try {
+				crs = ((Geometry) g).getCoordinateSystem();
+				if (transformer.getTargetCRS().equals(crs)) {
+					return g;
+				}
+				T g2 = transformer.transform(g);
+				if (g2 == null) {
+					LOG.warn("Geometry transformer returned null for geometry of type {}, crs was {}.",
+							g.getClass().getSimpleName(), crs);
+					return g;
+				}
+				return g2;
+			}
+			catch (IllegalArgumentException e) {
+				T g2 = transformLinearized(g);
 
-                if ( g2 != null ) {
-                    return g2;
-                }
+				if (g2 != null) {
+					return g2;
+				}
 
-                LOG.debug( "Stack trace:", e );
-                LOG.warn( "Could not transform geometry of type '{}' before rendering, "
-                          + "this may lead to problems. CRS was {}.", g.getClass().getSimpleName(), crs );
-            } catch ( TransformationException e ) {
-                LOG.debug( "Stack trace:", e );
-                LOG.warn( "Could not transform geometry of type '{}' before rendering, "
-                          + "this may lead to problems. CRS was {}.", g.getClass().getSimpleName(), crs );
-            } catch ( UnknownCRSException e ) {
-                LOG.debug( "Stack trace:", e );
-                LOG.warn( "Could not transform geometry of type '{}' before rendering, "
-                          + "this may lead to problems. CRS was {}.", g.getClass().getSimpleName(), crs );
-            }
-        }
-        return g;
-    }
+				LOG.debug("Stack trace:", e);
+				LOG.warn("Could not transform geometry of type '{}' before rendering, "
+						+ "this may lead to problems. CRS was {}.", g.getClass().getSimpleName(), crs);
+			}
+			catch (TransformationException e) {
+				LOG.debug("Stack trace:", e);
+				LOG.warn("Could not transform geometry of type '{}' before rendering, "
+						+ "this may lead to problems. CRS was {}.", g.getClass().getSimpleName(), crs);
+			}
+			catch (UnknownCRSException e) {
+				LOG.debug("Stack trace:", e);
+				LOG.warn("Could not transform geometry of type '{}' before rendering, "
+						+ "this may lead to problems. CRS was {}.", g.getClass().getSimpleName(), crs);
+			}
+		}
+		return g;
+	}
 
-    private <T extends Geometry> T transformLinearized( T g ) {
-        if ( g instanceof Surface ) {
-            @SuppressWarnings("unchecked")
-            T g2 = (T) transform( linearizer.linearize( (Surface) g, new NumPointsCriterion( 100 ) ) );
-            g2.setCoordinateSystem( g.getCoordinateSystem() );
-            return g2;
-        }
-        if ( g instanceof Curve ) {
-            @SuppressWarnings("unchecked")
-            T g2 = (T) transform( linearizer.linearize( (Curve) g, new NumPointsCriterion( 100 ) ) );
-            g2.setCoordinateSystem( g.getCoordinateSystem() );
-            return g2;
-        }
-        return null;
-    }
+	private <T extends Geometry> T transformLinearized(T g) {
+		if (g instanceof Surface) {
+			@SuppressWarnings("unchecked")
+			T g2 = (T) transform(linearizer.linearize((Surface) g, new NumPointsCriterion(100)));
+			g2.setCoordinateSystem(g.getCoordinateSystem());
+			return g2;
+		}
+		if (g instanceof Curve) {
+			@SuppressWarnings("unchecked")
+			T g2 = (T) transform(linearizer.linearize((Curve) g, new NumPointsCriterion(100)));
+			g2.setCoordinateSystem(g.getCoordinateSystem());
+			return g2;
+		}
+		return null;
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -39,26 +38,23 @@ import java.awt.Color;
 
 /**
  * <code>ColorUtils</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class ColorUtils {
 
-    /**
-     * Decodes color strings like ff0022, ff00ff00, #ccff4321.
-     * 
-     * @param s
-     * @return a new color object with alpha decoded properly
-     */
-    public static final Color decodeWithAlpha( final String s ) {
-        if ( s.startsWith( "#" ) ) {
-            // I mean, why can you not decode #ffffffff as int -1? Why do I need a long for this 4 byte value?
-            return new Color( Long.decode( s ).intValue(), s.length() > 8 );
-        }
-        return new Color( Integer.decode( "#" + s ), s.length() > 7 );
-    }
+	/**
+	 * Decodes color strings like ff0022, ff00ff00, #ccff4321.
+	 * @param s
+	 * @return a new color object with alpha decoded properly
+	 */
+	public static final Color decodeWithAlpha(final String s) {
+		if (s.startsWith("#")) {
+			// I mean, why can you not decode #ffffffff as int -1? Why do I need a long
+			// for this 4 byte value?
+			return new Color(Long.decode(s).intValue(), s.length() > 8);
+		}
+		return new Color(Integer.decode("#" + s), s.length() > 7);
+	}
 
 }

@@ -51,67 +51,67 @@ import org.deegree.workspace.Workspace;
 
 /**
  * This class is responsible for building remote WMS themes.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class RemoteWmsThemeBuilder implements ResourceBuilder<Theme> {
 
-    private ResourceMetadata<Theme> metadata;
+	private ResourceMetadata<Theme> metadata;
 
-    private Workspace workspace;
+	private Workspace workspace;
 
-    private RemoteWMSThemes cfg;
+	private RemoteWMSThemes cfg;
 
-    public RemoteWmsThemeBuilder( ResourceMetadata<Theme> metadata, Workspace workspace, RemoteWMSThemes cfg ) {
-        this.metadata = metadata;
-        this.workspace = workspace;
-        this.cfg = cfg;
-    }
+	public RemoteWmsThemeBuilder(ResourceMetadata<Theme> metadata, Workspace workspace, RemoteWMSThemes cfg) {
+		this.metadata = metadata;
+		this.workspace = workspace;
+		this.cfg = cfg;
+	}
 
-    @Override
-    public Theme build() {
-        try {
-            String id = cfg.getRemoteWMSId();
+	@Override
+	public Theme build() {
+		try {
+			String id = cfg.getRemoteWMSId();
 
-            String lid = cfg.getLayerStoreId();
-            LayerStore store = workspace.getResource( LayerStoreProvider.class, lid );
-            if ( store == null ) {
-                throw new ResourceInitException( "The layer store with id " + lid + " was not available." );
-            }
+			String lid = cfg.getLayerStoreId();
+			LayerStore store = workspace.getResource(LayerStoreProvider.class, lid);
+			if (store == null) {
+				throw new ResourceInitException("The layer store with id " + lid + " was not available.");
+			}
 
-            RemoteOWS ows = workspace.getResource( RemoteOWSProvider.class, id );
-            if ( !( ows instanceof RemoteWMS ) ) {
-                throw new ResourceInitException( "The remote OWS store with id " + id
-                                                 + " was not of type WMS or was not available." );
-            }
+			RemoteOWS ows = workspace.getResource(RemoteOWSProvider.class, id);
+			if (!(ows instanceof RemoteWMS)) {
+				throw new ResourceInitException(
+						"The remote OWS store with id " + id + " was not of type WMS or was not available.");
+			}
 
-            WMSClient client = ( (RemoteWMS) ows ).getClient();
-            Tree<LayerMetadata> tree = client.getLayerTree();
+			WMSClient client = ((RemoteWMS) ows).getClient();
+			Tree<LayerMetadata> tree = client.getLayerTree();
 
-            Theme theme = buildTheme( tree, store );
-            aggregateSpatialMetadata( theme );
-            return theme;
-        } catch ( Exception e ) {
-            throw new ResourceInitException( "Could not parse remote WMS theme config.", e );
-        }
-    }
+			Theme theme = buildTheme(tree, store);
+			aggregateSpatialMetadata(theme);
+			return theme;
+		}
+		catch (Exception e) {
+			throw new ResourceInitException("Could not parse remote WMS theme config.", e);
+		}
+	}
 
-    private Theme buildTheme( Tree<LayerMetadata> tree, LayerStore store ) {
-        List<Theme> thms = new ArrayList<Theme>();
-        List<Layer> lays = new ArrayList<Layer>();
-        if ( tree.value.getName() != null ) {
-            Layer l = store.get( tree.value.getName() );
-            if ( l != null ) {
-                lays.add( l );
-            }
-        }
-        Theme thm = new StandardTheme( tree.value, thms, lays, metadata );
-        for ( Tree<LayerMetadata> child : tree.children ) {
-            thms.add( buildTheme( child, store ) );
-        }
-        return thm;
-    }
+	private Theme buildTheme(Tree<LayerMetadata> tree, LayerStore store) {
+		List<Theme> thms = new ArrayList<Theme>();
+		List<Layer> lays = new ArrayList<Layer>();
+		if (tree.value.getName() != null) {
+			Layer l = store.get(tree.value.getName());
+			if (l != null) {
+				lays.add(l);
+			}
+		}
+		Theme thm = new StandardTheme(tree.value, thms, lays, metadata);
+		for (Tree<LayerMetadata> child : tree.children) {
+			thms.add(buildTheme(child, store));
+		}
+		return thm;
+	}
 
 }

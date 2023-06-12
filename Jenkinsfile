@@ -3,14 +3,19 @@ pipeline {
         label 'openjdk11bot'
     }
     options { 
-        disableConcurrentBuilds() 
+        disableConcurrentBuilds()
     }
     tools {
-        maven 'maven-3.8'
+        maven 'maven-3.9'
         jdk 'adoptopenjdk-jdk11'
     }
     environment {
         MAVEN_OPTS='-Djava.awt.headless=true -Xmx4096m'
+    }
+    parameters {
+          string name: 'REL_VERSION', defaultValue: "3.5.x", description: 'Next release version'
+          string name: 'DEV_VERSION', defaultValue: "3.5.x-SNAPSHOT", description: 'Next snapshot version'
+          booleanParam name: 'PERFORM_RELEASE', defaultValue: false, description: 'Perform release build (on main branch only)'
     }
     stages {
         stage ('Initialize') {
@@ -26,14 +31,14 @@ pipeline {
         }
         stage ('Build') {
             steps {
-               echo 'Unit testing'
-               sh 'mvn -B -C -Poracle,mssql clean test-compile'
+               echo 'Building'
+               sh 'mvn -B -C -P oracle clean test-compile'
             }
         }
-        stage ('Integration Test') {
+        stage ('Test') {
             steps {
-                echo 'Integration testing'
-                sh 'mvn -B -C -Pintegration-tests,oracle,mssql install'
+                echo 'Testing'
+                sh 'mvn -B -C -P integration-tests,oracle install'
             }
             post {
                 always {
@@ -43,60 +48,35 @@ pipeline {
         }
         stage ('Quality Checks') {
             when {
-                branch 'master'
-            }
-            steps {
-                echo 'Quality checking'
-                sh 'mvn -B -C -fae -Poracle,mssql com.github.spotbugs:spotbugs-maven-plugin:spotbugs checkstyle:checkstyle javadoc:javadoc'
-            }
-            post {
-                success {
-                    findbugs canComputeNew: false, defaultEncoding: '', excludePattern: '', healthy: '', includePattern: '', pattern: '**/spotbugsXml.xml', unHealthy: ''
-                    checkstyle canComputeNew: false, canRunOnFailed: true, defaultEncoding: '', healthy: '', pattern: '**/checkstyle-result.xml', unHealthy: ''
-                }
-            }
-        }
-        stage ('Acceptance Test') {
-            when {
                 branch 'main'
             }
             steps {
-                echo 'Preparing test harness: TEAM Engine'
-                echo 'Download and start TEAM Engine'
-                echo 'Start SUT deegree webapp with test configuration'
-                echo 'Run FAT'
+                echo 'Quality checking'
+                sh 'mvn -B -C -fae -P oracle com.github.spotbugs:spotbugs-maven-plugin:spotbugs javadoc:javadoc'
             }
             post {
-                success {
-                    echo 'FAT passed successfully'
+                always {
+                    recordIssues enabledForFailure: true, tools: [mavenConsole(), java(), javaDoc()]
+                    recordIssues enabledForFailure: true, tool: spotBugs()
                 }
             }
         }
         stage ('Release') {
             when {
-                branch 'main'
+                allOf{
+                    triggeredBy cause: "UserIdCause", detail: "tmc"
+                    expression { return params.PERFORM_RELEASE }
+                }
             }
             steps {
-                echo 'Prepare release version...'
-                echo 'Build and publish documentation'
-                sh 'mvn -pl :deegree-webservices-handbook -Phandbook install'
-                echo 'Build docker image...'
+                echo 'Prepare release version ${REL_VERSION}'
+                sh 'mvn -Dresume=false -DreleaseVersion=${REL_VERSION} -DdevelopmentVersion=${DEV_VERSION} -DdeployAtEnd=true -Dgoals=deploy release:prepare release:perform -P integration-tests,oracle,handbook'
             }
             post {
                 success {
-                    // post release on github
-                    archiveArtifacts artifacts: '**/target/deegree-webservices-*.war', fingerprint: true
+                    archiveArtifacts artifacts: 'checkout/**/target/deegree-webservices-*.war', fingerprint: true
+                    archiveArtifacts artifacts: 'checkout/**/target/deegree-webservices-handbook*.zip', fingerprint: true
                 }
-            }
-        }
-        stage ('Deploy PROD') {
-            when {
-                branch 'main'
-            }
-            // install current release version on demo.deegree.org
-            steps {
-                echo 'Deploying to demo.deegree.org...'
-                echo 'Running smoke tests...'
             }
         }
     }

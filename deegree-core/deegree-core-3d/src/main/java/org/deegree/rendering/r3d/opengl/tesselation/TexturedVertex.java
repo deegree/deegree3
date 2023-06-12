@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -38,98 +37,88 @@ package org.deegree.rendering.r3d.opengl.tesselation;
 
 /**
  * The <code>TexturedVertex</code> a textured vertex.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class TexturedVertex extends Vertex {
 
-    float tex_u;
+	float tex_u;
 
-    float tex_v;
+	float tex_v;
 
-    /**
-     * Construct a textured vertex and calculate it's values from the given vertices
-     * 
-     * @param coordinates
-     *            of the vertex may not be <code>null</code> and must have a length of 3
-     */
-    TexturedVertex( double[] coordinates, TexturedVertex[] otherVertices, float[] weights ) {
-        super( coordinates, otherVertices, weights );
-        // checked in super class:
-        // otherVertices != null && weights != null && otherVertices.length == weights.length ) {
-        calcTexCoords( otherVertices, weights );
-    }
+	/**
+	 * Construct a textured vertex and calculate it's values from the given vertices
+	 * @param coordinates of the vertex may not be <code>null</code> and must have a
+	 * length of 3
+	 */
+	TexturedVertex(double[] coordinates, TexturedVertex[] otherVertices, float[] weights) {
+		super(coordinates, otherVertices, weights);
+		// checked in super class:
+		// otherVertices != null && weights != null && otherVertices.length ==
+		// weights.length ) {
+		calcTexCoords(otherVertices, weights);
+	}
 
-    /**
-     * Use the weights to calculate the u/v coordinates of this vertex
-     * 
-     * @param otherVertices
-     *            used to create this vertex
-     * @param weights
-     *            adding up to 1
-     */
-    private void calcTexCoords( TexturedVertex[] otherVertices, float[] weights ) {
-        // add with weights
-        tex_u = 0;
-        tex_v = 0;
-        for ( int i = 0; i < otherVertices.length; ++i ) {
-            TexturedVertex v = otherVertices[i];
-            if ( v != null ) {
-                float w = weights[i];
-                tex_u += v.tex_u * w;
-                tex_v += v.tex_v * w;
-            }
-        }
-    }
+	/**
+	 * Use the weights to calculate the u/v coordinates of this vertex
+	 * @param otherVertices used to create this vertex
+	 * @param weights adding up to 1
+	 */
+	private void calcTexCoords(TexturedVertex[] otherVertices, float[] weights) {
+		// add with weights
+		tex_u = 0;
+		tex_v = 0;
+		for (int i = 0; i < otherVertices.length; ++i) {
+			TexturedVertex v = otherVertices[i];
+			if (v != null) {
+				float w = weights[i];
+				tex_u += v.tex_u * w;
+				tex_v += v.tex_v * w;
+			}
+		}
+	}
 
-    /**
-     * Construct a textured vertex with a white color and a 1,0,0 normal.
-     * 
-     * @param coordinates
-     *            of the vertex may not be <code>null</code> and must have a length of 3
-     * @param textureCoordinates
-     *            of the vertex may not be <code>null</code> and must have a length of 2
-     */
-    TexturedVertex( float[] coordinates, float[] textureCoordinates ) {
-        this( coordinates, new float[] { 1, 0, 0 }, textureCoordinates );
-    }
+	/**
+	 * Construct a textured vertex with a white color and a 1,0,0 normal.
+	 * @param coordinates of the vertex may not be <code>null</code> and must have a
+	 * length of 3
+	 * @param textureCoordinates of the vertex may not be <code>null</code> and must have
+	 * a length of 2
+	 */
+	TexturedVertex(float[] coordinates, float[] textureCoordinates) {
+		this(coordinates, new float[] { 1, 0, 0 }, textureCoordinates);
+	}
 
-    /**
-     * Construct a textured vertex with given color and normal.
-     * 
-     * @param coordinates
-     *            of the vertex may not be <code>null</code> and must have a length of 3
-     * @param normal
-     *            if <code>null</code> 1,0,0 will be used.
-     * @param textureCoordinates
-     *            of the vertex may not be <code>null</code> and must have a length of 2
-     */
-    public TexturedVertex( float[] coordinates, float[] normal, float[] textureCoordinates ) {
-        super( coordinates, normal );
-        if ( textureCoordinates == null || textureCoordinates.length != 2 ) {
-            throw new IllegalArgumentException( "Only 2d texture coordinates are supported." );
-        }
-        tex_u = textureCoordinates[0];
-        tex_v = textureCoordinates[1];
-    }
+	/**
+	 * Construct a textured vertex with given color and normal.
+	 * @param coordinates of the vertex may not be <code>null</code> and must have a
+	 * length of 3
+	 * @param normal if <code>null</code> 1,0,0 will be used.
+	 * @param textureCoordinates of the vertex may not be <code>null</code> and must have
+	 * a length of 2
+	 */
+	public TexturedVertex(float[] coordinates, float[] normal, float[] textureCoordinates) {
+		super(coordinates, normal);
+		if (textureCoordinates == null || textureCoordinates.length != 2) {
+			throw new IllegalArgumentException("Only 2d texture coordinates are supported.");
+		}
+		tex_u = textureCoordinates[0];
+		tex_v = textureCoordinates[1];
+	}
 
-    /**
-     * 
-     * @return the u and v (x,y) texture coordinates of this vertex.
-     */
-    public float[] getTextureCoords() {
-        return new float[] { tex_u, tex_v };
-    }
+	/**
+	 * @return the u and v (x,y) texture coordinates of this vertex.
+	 */
+	public float[] getTextureCoords() {
+		return new float[] { tex_u, tex_v };
+	}
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder( super.toString() );
-        sb.append( "\ntex_coords:\t" ).append( tex_u ).append( "," ).append( tex_v );
-        return sb.toString();
-    }
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder(super.toString());
+		sb.append("\ntex_coords:\t").append(tex_u).append(",").append(tex_v);
+		return sb.toString();
+	}
+
 }

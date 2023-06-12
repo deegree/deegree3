@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aschmitz@wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -58,126 +57,125 @@ import org.deegree.style.se.unevaluated.Style;
 import org.slf4j.Logger;
 
 /**
- *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- *
- * @version $Revision: $, $Date: $
  */
 public class CoverageLayer extends AbstractLayer {
 
-    private static final Logger LOG = getLogger( CoverageLayer.class );
+	private static final Logger LOG = getLogger(CoverageLayer.class);
 
-    private final AbstractRaster raster;
+	private final AbstractRaster raster;
 
-    private final MultiResolutionRaster multiraster;
+	private final MultiResolutionRaster multiraster;
 
-    private final CoverageDimensionHandler dimensionHandler;
+	private final CoverageDimensionHandler dimensionHandler;
 
-    private final CoverageFeatureInfoMode featureInfoMode;
+	private final CoverageFeatureInfoMode featureInfoMode;
 
-    public CoverageLayer( LayerMetadata md, AbstractRaster raster, MultiResolutionRaster multiraster, CoverageFeatureInfoMode featureInfoMode ) {
-        super( md );
-        this.raster = raster;
-        this.multiraster = multiraster;
-        this.featureInfoMode = featureInfoMode != null ? featureInfoMode : CoverageFeatureInfoMode.INTERPOLATION;
-        dimensionHandler = new CoverageDimensionHandler( md.getDimensions() );
-    }
+	public CoverageLayer(LayerMetadata md, AbstractRaster raster, MultiResolutionRaster multiraster,
+			CoverageFeatureInfoMode featureInfoMode) {
+		super(md);
+		this.raster = raster;
+		this.multiraster = multiraster;
+		this.featureInfoMode = featureInfoMode != null ? featureInfoMode : CoverageFeatureInfoMode.INTERPOLATION;
+		dimensionHandler = new CoverageDimensionHandler(md.getDimensions());
+	}
 
-    public CoverageLayer( LayerMetadata md, AbstractRaster raster, MultiResolutionRaster multiraster ) {
-        this(md, raster, multiraster, null);
-    }
+	public CoverageLayer(LayerMetadata md, AbstractRaster raster, MultiResolutionRaster multiraster) {
+		this(md, raster, multiraster, null);
+	}
 
-    @Override
-    public CoverageLayerData mapQuery( LayerQuery query, List<String> headers )
-                            throws OWSException {
-        try {
-            Envelope bbox = query.getEnvelope();
-            RangeSet filter = dimensionHandler.getDimensionFilter( query.getDimensions(), headers );
-            Style style = resolveStyleRef( query.getStyle() );
-            // handle SLD/SE scale settings
-            style = style == null ? null : style.filter( query.getScale() );
+	@Override
+	public CoverageLayerData mapQuery(LayerQuery query, List<String> headers) throws OWSException {
+		try {
+			Envelope bbox = query.getEnvelope();
+			RangeSet filter = dimensionHandler.getDimensionFilter(query.getDimensions(), headers);
+			Style style = resolveStyleRef(query.getStyle());
+			// handle SLD/SE scale settings
+			style = style == null ? null : style.filter(query.getScale());
 
-            Interpolation fromRequest = query.getRenderingOptions().getInterpolation( getMetadata().getName() );
-            InterpolationType interpol = determineInterpolation( fromRequest );
+			Interpolation fromRequest = query.getRenderingOptions().getInterpolation(getMetadata().getName());
+			InterpolationType interpol = determineInterpolation(fromRequest);
 
-            AbstractRaster raster = this.raster;
-            if ( raster == null ) {
-                raster = multiraster.getRaster( query.getResolution() );
-            }
+			AbstractRaster raster = this.raster;
+			if (raster == null) {
+				raster = multiraster.getRaster(query.getResolution());
+			}
 
-            return new CoverageLayerData( raster, bbox, query.getWidth(), query.getHeight(), interpol, filter, style,
-                                          getMetadata().getFeatureTypes().get( 0 ), featureInfoMode );
-        } catch ( OWSException e ) {
-            throw e;
-        } catch ( Throwable e ) {
-            LOG.warn( "Unable to prepare rendering of raster layer: {}", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-        }
-        return null;
-    }
+			return new CoverageLayerData(raster, bbox, query.getWidth(), query.getHeight(), interpol, filter, style,
+					getMetadata().getFeatureTypes().get(0), featureInfoMode);
+		}
+		catch (OWSException e) {
+			throw e;
+		}
+		catch (Throwable e) {
+			LOG.warn("Unable to prepare rendering of raster layer: {}", e.getLocalizedMessage());
+			LOG.trace("Stack trace:", e);
+		}
+		return null;
+	}
 
-    private InterpolationType determineInterpolation( Interpolation fromRequest ) {
-        InterpolationType interpol = NEAREST_NEIGHBOR;
-        if ( fromRequest != null ) {
-            switch ( fromRequest ) {
-            case BICUBIC:
-                LOG.warn( "Raster API does not support bicubic interpolation, using bilinear instead." );
-            case BILINEAR:
-                interpol = BILINEAR;
-                break;
-            case NEARESTNEIGHBOR:
-            case NEARESTNEIGHBOUR:
-                interpol = NEAREST_NEIGHBOR;
-                break;
-            }
-        }
-        return interpol;
-    }
+	private InterpolationType determineInterpolation(Interpolation fromRequest) {
+		InterpolationType interpol = NEAREST_NEIGHBOR;
+		if (fromRequest != null) {
+			switch (fromRequest) {
+				case BICUBIC:
+					LOG.warn("Raster API does not support bicubic interpolation, using bilinear instead.");
+				case BILINEAR:
+					interpol = BILINEAR;
+					break;
+				case NEARESTNEIGHBOR:
+				case NEARESTNEIGHBOUR:
+					interpol = NEAREST_NEIGHBOR;
+					break;
+			}
+		}
+		return interpol;
+	}
 
-    @Override
-    public CoverageLayerData infoQuery( LayerQuery query, List<String> headers )
-                            throws OWSException {
-        try {
-            int layerRadius = -1;
-            if ( getMetadata().getMapOptions() != null ) {
-                layerRadius = getMetadata().getMapOptions().getFeatureInfoRadius();
-            }
-            final Envelope bbox = query.calcClickBox( layerRadius > -1 ? layerRadius : query.getLayerRadius() );
+	@Override
+	public CoverageLayerData infoQuery(LayerQuery query, List<String> headers) throws OWSException {
+		try {
+			int layerRadius = -1;
+			if (getMetadata().getMapOptions() != null) {
+				layerRadius = getMetadata().getMapOptions().getFeatureInfoRadius();
+			}
+			final Envelope bbox = query.calcClickBox(layerRadius > -1 ? layerRadius : query.getLayerRadius());
 
-            RangeSet filter = dimensionHandler.getDimensionFilter( query.getDimensions(), headers );
+			RangeSet filter = dimensionHandler.getDimensionFilter(query.getDimensions(), headers);
 
-            StyleRef ref = query.getStyle();
-            if ( !ref.isResolved() ) {
-                ref.resolve( getMetadata().getStyles().get( ref.getName() ) );
-            }
-            Style style = ref.getStyle();
-            // handle SLD/SE scale settings
-            style = style == null ? null : style.filter( query.getScale() );
+			StyleRef ref = query.getStyle();
+			if (!ref.isResolved()) {
+				ref.resolve(getMetadata().getStyles().get(ref.getName()));
+			}
+			Style style = ref.getStyle();
+			// handle SLD/SE scale settings
+			style = style == null ? null : style.filter(query.getScale());
 
-            AbstractRaster raster = this.raster;
-            if ( raster == null ) {
-                raster = multiraster.getRaster( query.getResolution() );
-            }
+			AbstractRaster raster = this.raster;
+			if (raster == null) {
+				raster = multiraster.getRaster(query.getResolution());
+			}
 
-            return new CoverageLayerData( raster, bbox, query.getWidth(), query.getHeight(),
-                                          InterpolationType.NEAREST_NEIGHBOR, filter, style,
-                                          getMetadata().getFeatureTypes().get( 0 ), dimensionHandler, featureInfoMode,
-                                          query.getX(), query.getY(), getFeatureInfoDecimalPlaces() );
+			return new CoverageLayerData(raster, bbox, query.getWidth(), query.getHeight(),
+					InterpolationType.NEAREST_NEIGHBOR, filter, style, getMetadata().getFeatureTypes().get(0),
+					dimensionHandler, featureInfoMode, query.getX(), query.getY(), getFeatureInfoDecimalPlaces());
 
-        } catch ( OWSException e ) {
-            throw e;
-        } catch ( Throwable e ) {
-            LOG.warn( "Unable to prepare feature info of raster layer: {}", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-        }
-        return null;
-    }
+		}
+		catch (OWSException e) {
+			throw e;
+		}
+		catch (Throwable e) {
+			LOG.warn("Unable to prepare feature info of raster layer: {}", e.getLocalizedMessage());
+			LOG.trace("Stack trace:", e);
+		}
+		return null;
+	}
 
-    private Integer getFeatureInfoDecimalPlaces() {
-        return Optional.of( getMetadata() ) //
-                .map( LayerMetadata::getMapOptions ) //
-                .map( MapOptions::getFeatureInfoDecimalPlaces ) //
-                .orElse( null );
-    }
+	private Integer getFeatureInfoDecimalPlaces() {
+		return Optional.of(getMetadata()) //
+			.map(LayerMetadata::getMapOptions) //
+			.map(MapOptions::getFeatureInfoDecimalPlaces) //
+			.orElse(null);
+	}
+
 }

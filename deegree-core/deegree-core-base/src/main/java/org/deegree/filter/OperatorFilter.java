@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -36,58 +35,54 @@
 package org.deegree.filter;
 
 /**
- * {@link Filter} that selects objects that test positively against {@link Operator}-based expressions.
- * 
+ * {@link Filter} that selects objects that test positively against {@link Operator}-based
+ * expressions.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * 
- * @version $Revision:$, $Date:$
  */
 public class OperatorFilter implements Filter {
 
-    private Operator rootOperator;
+	private Operator rootOperator;
 
-    /**
-     * Creates a new {@link OperatorFilter}.
-     * 
-     * @param rootOperator
-     *            root operator that defines the test expression, must not be <code>null</code>
-     * @throws NullPointerException
-     */
-    public OperatorFilter( Operator rootOperator ) {
-        this.rootOperator = rootOperator;
-        if ( rootOperator == null ) {
-            throw new NullPointerException();
-        }
-    }
+	/**
+	 * Creates a new {@link OperatorFilter}.
+	 * @param rootOperator root operator that defines the test expression, must not be
+	 * <code>null</code>
+	 * @throws NullPointerException
+	 */
+	public OperatorFilter(Operator rootOperator) {
+		this.rootOperator = rootOperator;
+		if (rootOperator == null) {
+			throw new NullPointerException();
+		}
+	}
 
-    /**
-     * Always returns {@link Filter.Type#OPERATOR_FILTER} (for {@link OperatorFilter} instances).
-     * 
-     * @return {@link Filter.Type#OPERATOR_FILTER}
-     */
-    @Override
-    public Type getType() {
-        return Type.OPERATOR_FILTER;
-    }
+	/**
+	 * Always returns {@link Filter.Type#OPERATOR_FILTER} (for {@link OperatorFilter}
+	 * instances).
+	 * @return {@link Filter.Type#OPERATOR_FILTER}
+	 */
+	@Override
+	public Type getType() {
+		return Type.OPERATOR_FILTER;
+	}
 
-    /**
-     * Returns the root {@link Operator} of the test expression.
-     * 
-     * @return the root operator
-     */
-    public Operator getOperator() {
-        return rootOperator;
-    }
+	/**
+	 * Returns the root {@link Operator} of the test expression.
+	 * @return the root operator
+	 */
+	public Operator getOperator() {
+		return rootOperator;
+	}
 
-    @Override
-    public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
-                            throws FilterEvaluationException {
-        return rootOperator.evaluate( obj, xpathEvaluator );
-    }
+	@Override
+	public <T> boolean evaluate(T obj, XPathEvaluator<T> xpathEvaluator) throws FilterEvaluationException {
+		return rootOperator.evaluate(obj, xpathEvaluator);
+	}
 
-    @Override
-    public String toString() {
-        return rootOperator.toString( "" );
-    }
+	@Override
+	public String toString() {
+		return rootOperator.toString("");
+	}
+
 }

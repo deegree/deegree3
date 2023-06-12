@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -45,50 +44,47 @@ import org.deegree.feature.Feature;
 
 /**
  * <code>OddEven</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class OddEven {
 
-    private String name;
+	private String name;
 
-    private boolean odd;
+	private boolean odd;
 
-    /**
-     * @param name
-     * @param odd
-     */
-    public OddEven( String name, boolean odd ) {
-        this.name = name;
-        this.odd = odd;
-    }
+	/**
+	 * @param name
+	 * @param odd
+	 */
+	public OddEven(String name, boolean odd) {
+		this.name = name;
+		this.odd = odd;
+	}
 
-    /**
-     * @param sb
-     * @param defs
-     * @param obj
-     * @param idx
-     * @param geometries
-     */
-    public void eval( StringBuilder sb, HashMap<String, Object> defs, Object obj, int idx, boolean geometries ) {
-        if ( idx % 2 == 0 ^ odd ) {
-            return;
-        }
+	/**
+	 * @param sb
+	 * @param defs
+	 * @param obj
+	 * @param idx
+	 * @param geometries
+	 */
+	public void eval(StringBuilder sb, HashMap<String, Object> defs, Object obj, int idx, boolean geometries) {
+		if (idx % 2 == 0 ^ odd) {
+			return;
+		}
 
-        if ( obj instanceof Feature ) {
-            new FeatureTemplateCall( name, singletonList( "*" ), false ).eval( sb, defs, obj, geometries );
-        }
-        if ( obj instanceof Property ) {
-            new PropertyTemplateCall( name, singletonList( "*" ), false ).eval( sb, defs, obj, geometries );
-        }
-    }
+		if (obj instanceof Feature) {
+			new FeatureTemplateCall(name, singletonList("*"), false).eval(sb, defs, obj, geometries);
+		}
+		if (obj instanceof Property) {
+			new PropertyTemplateCall(name, singletonList("*"), false).eval(sb, defs, obj, geometries);
+		}
+	}
 
-    @Override
-    public String toString() {
-        return generateToString( this );
-    }
+	@Override
+	public String toString() {
+		return generateToString(this);
+	}
 
 }

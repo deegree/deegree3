@@ -34,29 +34,28 @@ import org.deegree.workspace.Workspace;
 
 /**
  * This class is responsible for building java process providers.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class JavaProcessProviderBuilder implements ResourceBuilder<ProcessProvider> {
 
-    private ProcessDefinition config;
+	private ProcessDefinition config;
 
-    private ResourceMetadata<ProcessProvider> metadata;
+	private ResourceMetadata<ProcessProvider> metadata;
 
-    private Workspace workspace;
+	private Workspace workspace;
 
-    public JavaProcessProviderBuilder( ProcessDefinition config, ResourceMetadata<ProcessProvider> metadata,
-                                       Workspace workspace ) {
-        this.config = config;
-        this.metadata = metadata;
-        this.workspace = workspace;
-    }
+	public JavaProcessProviderBuilder(ProcessDefinition config, ResourceMetadata<ProcessProvider> metadata,
+			Workspace workspace) {
+		this.config = config;
+		this.metadata = metadata;
+		this.workspace = workspace;
+	}
 
-    @Override
-    public ProcessProvider build() {
-        return new JavaProcessProvider( config, workspace, metadata );
-    }
+	@Override
+	public ProcessProvider build() {
+		return new JavaProcessProvider(config, workspace, metadata);
+	}
 
 }

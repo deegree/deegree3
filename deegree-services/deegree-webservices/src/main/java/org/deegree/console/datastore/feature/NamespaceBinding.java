@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -37,43 +36,41 @@ package org.deegree.console.datastore.feature;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class NamespaceBinding implements Comparable<NamespaceBinding> {
 
-    private String prefix;
+	private String prefix;
 
-    private String namespace;
+	private String namespace;
 
-    NamespaceBinding( String prefix, String namespace ) {
-        this.prefix = prefix;
-        this.namespace = namespace;
-    }
+	NamespaceBinding(String prefix, String namespace) {
+		this.prefix = prefix;
+		this.namespace = namespace;
+	}
 
-    public String getPrefix() {
-        return prefix;
-    }
+	public String getPrefix() {
+		return prefix;
+	}
 
-    public String getNamespace() {
-        return namespace;
-    }
+	public String getNamespace() {
+		return namespace;
+	}
 
-    @Override
-    public int compareTo( NamespaceBinding that ) {
-        return this.prefix.compareTo( that.prefix );
-    }
+	@Override
+	public int compareTo(NamespaceBinding that) {
+		return this.prefix.compareTo(that.prefix);
+	}
 
-    @Override
-    public boolean equals( Object that ) {
-        return toString().equals( that.toString() );
-    }
+	@Override
+	public boolean equals(Object that) {
+		return toString().equals(that.toString());
+	}
 
-    @Override
-    public String toString() {
-        return prefix + "=" + namespace;
-    }
+	@Override
+	public String toString() {
+		return prefix + "=" + namespace;
+	}
+
 }

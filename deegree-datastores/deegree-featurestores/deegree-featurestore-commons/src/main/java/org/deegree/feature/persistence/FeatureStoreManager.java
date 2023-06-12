@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -41,9 +40,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence;
 
-import java.io.File;
-import java.io.IOException;
-
 import org.deegree.feature.persistence.cache.BBoxCache;
 import org.deegree.feature.persistence.cache.BBoxPropertiesCache;
 import org.deegree.workspace.Workspace;
@@ -53,43 +49,100 @@ import org.deegree.workspace.standard.DefaultWorkspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Responsible for finding feature store resources.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 public class FeatureStoreManager extends DefaultResourceManager<FeatureStore> {
 
-    private static Logger LOG = LoggerFactory.getLogger( FeatureStoreManager.class );
+	private static Logger LOG = LoggerFactory.getLogger(FeatureStoreManager.class);
 
-    private static final String BBOX_CACHE_FILE = "bbox_cache.properties";
+	private static final String BBOX_CACHE_FILE = "bbox_cache.properties";
 
-    private BBoxPropertiesCache bboxCache;
+	private static final String BBOX_CACHE_FEATURESTOE_FILE = "bbox_cache_%s.properties";
 
-    public FeatureStoreManager() {
-        super( new DefaultResourceManagerMetadata<FeatureStore>( FeatureStoreProvider.class, "feature stores",
-                                                                 "datasources/feature" ) );
-    }
+	private BBoxPropertiesCache bboxCache;
 
-    @Override
-    public void startup( Workspace workspace ) {
-        try {
-            if ( workspace instanceof DefaultWorkspace ) {
-                File dir = new File( ( (DefaultWorkspace) workspace ).getLocation(), getMetadata().getWorkspacePath() );
-                bboxCache = new BBoxPropertiesCache( new File( dir, BBOX_CACHE_FILE ) );
-            }
-            // else?
-        } catch ( IOException e ) {
-            LOG.error( "Unable to initialize global envelope cache: " + e.getMessage(), e );
-        }
-        super.startup( workspace );
-    }
+	private final Map<String, BBoxPropertiesCache> customBboxCaches = new HashMap<>();
 
-    public BBoxCache getBBoxCache() {
-        return bboxCache;
-    }
+	private Workspace workspace;
+
+	public FeatureStoreManager() {
+		super(new DefaultResourceManagerMetadata<>(FeatureStoreProvider.class, "feature stores",
+				"datasources/feature"));
+	}
+
+	@Override
+	public void startup(Workspace workspace) {
+		this.workspace = workspace;
+		super.startup(workspace);
+	}
+
+	/**
+	 * Returns the bbox_cache.properties file (which is created if not existing). As there
+	 * may be feature store specific bbox_cache_FEATURESTOE_ID.properties file the method
+	 * getBBoxCache( String featureStoreId ) should be used.
+	 */
+	public BBoxCache getBBoxCache() {
+		return getOrCreateBBoxCache();
+	}
+
+	/**
+	 * Returns the feature store specific bbox_cache_FEATURESTOE_ID.properties if
+	 * existing, if not the bbox_cache.properties file is returned (which is created if
+	 * not existing).
+	 * @param featureStoreId
+	 * @return
+	 */
+	public BBoxCache getBBoxCache(String featureStoreId) {
+		if (customBboxCaches.containsValue(featureStoreId)) {
+			return customBboxCaches.get(featureStoreId);
+		}
+		BBoxPropertiesCache customBBoxCache = getCustomBBoxCache(featureStoreId);
+		if (customBBoxCache != null) {
+			customBboxCaches.put(featureStoreId, customBBoxCache);
+			return customBBoxCache;
+		}
+		return getOrCreateBBoxCache();
+	}
+
+	private BBoxPropertiesCache getOrCreateBBoxCache() {
+		try {
+			if (bboxCache == null) {
+				File dir = new File(((DefaultWorkspace) workspace).getLocation(), getMetadata().getWorkspacePath());
+				File propsFile = new File(dir, BBOX_CACHE_FILE);
+				bboxCache = new BBoxPropertiesCache(propsFile);
+			}
+		}
+		catch (IOException e) {
+			LOG.error("Unable to initialize envelope cache {}: {}", BBOX_CACHE_FILE, e.getMessage());
+			LOG.trace(e.getMessage(), e);
+		}
+		return bboxCache;
+	}
+
+	private BBoxPropertiesCache getCustomBBoxCache(String featureStoreId) {
+		try {
+			if (workspace instanceof DefaultWorkspace) {
+				File dir = new File(((DefaultWorkspace) workspace).getLocation(), getMetadata().getWorkspacePath());
+				File propsFile = new File(dir, String.format(BBOX_CACHE_FEATURESTOE_FILE, featureStoreId));
+				if (propsFile.exists()) {
+					return new BBoxPropertiesCache(propsFile);
+				}
+			}
+		}
+		catch (IOException e) {
+			LOG.error("Unable to initialize envelope cache for feature store with id {}: {}", featureStoreId,
+					e.getMessage());
+			LOG.trace(e.getMessage(), e);
+		}
+		return null;
+	}
 
 }

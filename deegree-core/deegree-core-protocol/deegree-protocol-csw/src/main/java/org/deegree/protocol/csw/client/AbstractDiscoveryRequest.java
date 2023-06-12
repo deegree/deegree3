@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -40,47 +39,44 @@ import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class AbstractDiscoveryRequest extends AbstractCSWRequest {
 
-    private final ReturnableElement elementSetName;
+	private final ReturnableElement elementSetName;
 
-    private final String outputFormat;
+	private final String outputFormat;
 
-    private final String outputSchema;
+	private final String outputSchema;
 
-    public AbstractDiscoveryRequest( Version version, ReturnableElement elementSetName, String outputFormat,
-                                     String outputSchema ) {
-        super( version );
-        this.elementSetName = elementSetName;
-        this.outputFormat = outputFormat;
-        this.outputSchema = outputSchema;
-    }
+	public AbstractDiscoveryRequest(Version version, ReturnableElement elementSetName, String outputFormat,
+			String outputSchema) {
+		super(version);
+		this.elementSetName = elementSetName;
+		this.outputFormat = outputFormat;
+		this.outputSchema = outputSchema;
+	}
 
-    /**
-     * 
-     * @return
-     */
-    public ReturnableElement getElementSetName() {
-        return elementSetName;
-    }
+	/**
+	 * @return
+	 */
+	public ReturnableElement getElementSetName() {
+		return elementSetName;
+	}
 
-    /**
-     * @return the outputFormat
-     */
-    public String getOutputFormat() {
-        return outputFormat;
-    }
+	/**
+	 * @return the outputFormat
+	 */
+	public String getOutputFormat() {
+		return outputFormat;
+	}
 
-    /**
-     * @return the outputSchema
-     */
-    public String getOutputSchema() {
-        return outputSchema;
-    }
+	/**
+	 * @return the outputSchema
+	 */
+	public String getOutputSchema() {
+		return outputSchema;
+	}
+
 }

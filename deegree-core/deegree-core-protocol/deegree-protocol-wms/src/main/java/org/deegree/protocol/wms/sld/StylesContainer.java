@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2014 by:
@@ -42,49 +41,44 @@ import org.deegree.commons.utils.Pair;
 
 /**
  * Encapsulates styles parsed from SLD.
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
 public class StylesContainer {
 
-    private final List<StyleContainer> styles = new ArrayList<StyleContainer>();
+	private final List<StyleContainer> styles = new ArrayList<StyleContainer>();
 
-    private final List<Pair<String, List<?>>> dimensions = new ArrayList<Pair<String, List<?>>>();
+	private final List<Pair<String, List<?>>> dimensions = new ArrayList<Pair<String, List<?>>>();
 
-    /**
-     * Add a new {@link StyleContainer}.
-     * 
-     * @param style
-     *            to add, never <code>null</code>
-     */
-    public void addStyle( StyleContainer style ) {
-        styles.add( style );
-    }
+	/**
+	 * Add a new {@link StyleContainer}.
+	 * @param style to add, never <code>null</code>
+	 */
+	public void addStyle(StyleContainer style) {
+		styles.add(style);
+	}
 
-    /**
-     * Adds a new dimension.
-     * 
-     * @param name
-     *            the name of the dimension, never <code>null</code>
-     * @param values
-     *            the values of the dimension, never <code>null</code>
-     */
-    public void addDimensionValue( String name, List<?> values ) {
-        dimensions.add( new Pair<String, List<?>>( name, values ) );
-    }
+	/**
+	 * Adds a new dimension.
+	 * @param name the name of the dimension, never <code>null</code>
+	 * @param values the values of the dimension, never <code>null</code>
+	 */
+	public void addDimensionValue(String name, List<?> values) {
+		dimensions.add(new Pair<String, List<?>>(name, values));
+	}
 
-    /**
-     * @return the dimensions parsed from SLD, never <code>null</code> (but may be empty)
-     */
-    public List<Pair<String, List<?>>> getDimensions() {
-        return dimensions;
-    }
+	/**
+	 * @return the dimensions parsed from SLD, never <code>null</code> (but may be empty)
+	 */
+	public List<Pair<String, List<?>>> getDimensions() {
+		return dimensions;
+	}
 
-    /**
-     * @return the styles parsed from SLD, never <code>null</code>
-     */
-    public List<StyleContainer> getStyles() {
-        return styles;
-    }
+	/**
+	 * @return the styles parsed from SLD, never <code>null</code>
+	 */
+	public List<StyleContainer> getStyles() {
+		return styles;
+	}
 
 }

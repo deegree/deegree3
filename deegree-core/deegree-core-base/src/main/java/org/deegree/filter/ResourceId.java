@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -39,52 +38,43 @@ import org.deegree.commons.tom.datetime.DateTime;
 
 /**
  * Identifies a resource within an {@link IdFilter}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class ResourceId {
 
-    private final String rid;
+	private final String rid;
 
-    private final String previousRid;
+	private final String previousRid;
 
-    private final String version;
+	private final String version;
 
-    private final DateTime startDate;
+	private final DateTime startDate;
 
-    private final DateTime endDate;
+	private final DateTime endDate;
 
-    /**
-     * Creates a new {@link ResourceId} instance.
-     * 
-     * @param rid
-     *            the id of the selected resource, must not be <code>null</code>
-     * @param previousRid
-     *            TODO
-     * @param version
-     *            TODO
-     * @param startDate
-     *            TODO
-     * @param endDate
-     *            TODO
-     */
-    public ResourceId( String rid, String previousRid, String version, DateTime startDate, DateTime endDate ) {
-        this.rid = rid;
-        this.previousRid = previousRid;
-        this.version = version;
-        this.startDate = startDate;
-        this.endDate = endDate;
-    }
+	/**
+	 * Creates a new {@link ResourceId} instance.
+	 * @param rid the id of the selected resource, must not be <code>null</code>
+	 * @param previousRid TODO
+	 * @param version TODO
+	 * @param startDate TODO
+	 * @param endDate TODO
+	 */
+	public ResourceId(String rid, String previousRid, String version, DateTime startDate, DateTime endDate) {
+		this.rid = rid;
+		this.previousRid = previousRid;
+		this.version = version;
+		this.startDate = startDate;
+		this.endDate = endDate;
+	}
 
-    /**
-     * Returns the id of the resource that shall be selected.
-     * 
-     * @return the id of the resource, never <code>null</code>
-     */
-    public String getRid() {
-        return rid;
-    }
+	/**
+	 * Returns the id of the resource that shall be selected.
+	 * @return the id of the resource, never <code>null</code>
+	 */
+	public String getRid() {
+		return rid;
+	}
+
 }

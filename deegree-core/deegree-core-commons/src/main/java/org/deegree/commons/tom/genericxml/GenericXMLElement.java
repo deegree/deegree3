@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -51,117 +50,117 @@ import java.util.Map;
 import static org.deegree.commons.tom.primitive.BaseType.BOOLEAN;
 
 /**
- * {@link TypedObjectNode} that represents a generic XML element with associated XML schema type information.
+ * {@link TypedObjectNode} that represents a generic XML element with associated XML
+ * schema type information.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class GenericXMLElement implements ElementNode {
 
-    private final QName name;
+	private final QName name;
 
-    private final XSElementDeclaration xsType;
+	private final XSElementDeclaration xsType;
 
-    private final PropertyType propertyType;
+	private final PropertyType propertyType;
 
-    private Map<QName, PrimitiveValue> attrs;
+	private Map<QName, PrimitiveValue> attrs;
 
-    private List<TypedObjectNode> children;
+	private List<TypedObjectNode> children;
 
-    public GenericXMLElement( QName name, Map<QName, PrimitiveValue> attrs,
-                              List<TypedObjectNode> children ) {
-        this( name, (PropertyType) null, attrs, children );
-    }
+	public GenericXMLElement(QName name, Map<QName, PrimitiveValue> attrs, List<TypedObjectNode> children) {
+		this(name, (PropertyType) null, attrs, children);
+	}
 
-    public GenericXMLElement( QName name, XSElementDeclaration xsType, Map<QName, PrimitiveValue> attrs,
-                              List<TypedObjectNode> children ) {
-        this.name = name;
-        this.xsType = xsType;
-        this.propertyType = null;
-        this.attrs = attrs;
-        this.children = children;
-    }
+	public GenericXMLElement(QName name, XSElementDeclaration xsType, Map<QName, PrimitiveValue> attrs,
+			List<TypedObjectNode> children) {
+		this.name = name;
+		this.xsType = xsType;
+		this.propertyType = null;
+		this.attrs = attrs;
+		this.children = children;
+	}
 
-    public GenericXMLElement( QName name, PropertyType propertyType, Map<QName, PrimitiveValue> attrs,
-                              List<TypedObjectNode> children ) {
-        this.name = name;
-        this.xsType = propertyType != null ? propertyType.getElementDecl() : null;
-        this.propertyType = propertyType;
-        this.attrs = attrs;
-        this.children = children;
-    }
+	public GenericXMLElement(QName name, PropertyType propertyType, Map<QName, PrimitiveValue> attrs,
+			List<TypedObjectNode> children) {
+		this.name = name;
+		this.xsType = propertyType != null ? propertyType.getElementDecl() : null;
+		this.propertyType = propertyType;
+		this.attrs = attrs;
+		this.children = children;
+	}
 
-    @Override
-    public QName getName() {
-        return name;
-    }
+	@Override
+	public QName getName() {
+		return name;
+	}
 
-    @Override
-    public XSElementDeclaration getXSType() {
-        return xsType;
-    }
+	@Override
+	public XSElementDeclaration getXSType() {
+		return xsType;
+	}
 
-    public boolean isNilled() {
-        if ( attrs != null ) {
-            PrimitiveValue pv = attrs.get( new QName( CommonNamespaces.XSINS, "nil" ) );
-            if ( pv != null && pv.getType().getBaseType() == BOOLEAN && pv.getValue() != null ) {
-                return (Boolean) pv.getValue();
-            }
-        }
-        return false;
-    }
+	public boolean isNilled() {
+		if (attrs != null) {
+			PrimitiveValue pv = attrs.get(new QName(CommonNamespaces.XSINS, "nil"));
+			if (pv != null && pv.getType().getBaseType() == BOOLEAN && pv.getValue() != null) {
+				return (Boolean) pv.getValue();
+			}
+		}
+		return false;
+	}
 
-    public Map<QName, PrimitiveValue> getAttributes() {
-        return attrs;
-    }
+	public Map<QName, PrimitiveValue> getAttributes() {
+		return attrs;
+	}
 
-    public List<TypedObjectNode> getChildren() {
-        return children;
-    }
+	public List<TypedObjectNode> getChildren() {
+		return children;
+	}
 
-    public PrimitiveValue getValue() {
-        for ( TypedObjectNode child : children ) {
-            if ( child instanceof PrimitiveValue ) {
-                return (PrimitiveValue) child;
-            }
-        }
-        return null;
-    }
+	public PrimitiveValue getValue() {
+		for (TypedObjectNode child : children) {
+			if (child instanceof PrimitiveValue) {
+				return (PrimitiveValue) child;
+			}
+		}
+		return null;
+	}
 
-    public void setAttribute( QName name, PrimitiveValue value ) {
-        if ( attrs == null ) {
-            attrs = new LinkedHashMap<QName, PrimitiveValue>();
-        }
-        attrs.put( name, value );
-    }
+	public void setAttribute(QName name, PrimitiveValue value) {
+		if (attrs == null) {
+			attrs = new LinkedHashMap<QName, PrimitiveValue>();
+		}
+		attrs.put(name, value);
+	}
 
-    public void addChild( TypedObjectNode node ) {
-        if ( children == null ) {
-            children = new ArrayList<TypedObjectNode>();
-        }
-        children.add( node );
-    }
+	public void addChild(TypedObjectNode node) {
+		if (children == null) {
+			children = new ArrayList<TypedObjectNode>();
+		}
+		children.add(node);
+	}
 
-    public void setChildren( List<TypedObjectNode> newChildren ) {
-        this.children = newChildren;
-    }
+	public void setChildren(List<TypedObjectNode> newChildren) {
+		this.children = newChildren;
+	}
 
-    /**
-     * @return the declaration of this {@link GenericXMLElement}, <code>null</code> if not known
-     */
-    public PropertyType getPropertyType() {
-        return propertyType;
-    }
+	/**
+	 * @return the declaration of this {@link GenericXMLElement}, <code>null</code> if not
+	 * known
+	 */
+	public PropertyType getPropertyType() {
+		return propertyType;
+	}
 
-    @Override
-    public String toString() {
-        StringBuilder s = new StringBuilder();
-        if ( children != null ) {
-            for ( TypedObjectNode child : children ) {
-                s.append( child.toString() );
-            }
-        }
-        return s.toString();
-    }
+	@Override
+	public String toString() {
+		StringBuilder s = new StringBuilder();
+		if (children != null) {
+			for (TypedObjectNode child : children) {
+				s.append(child.toString());
+			}
+		}
+		return s.toString();
+	}
+
 }

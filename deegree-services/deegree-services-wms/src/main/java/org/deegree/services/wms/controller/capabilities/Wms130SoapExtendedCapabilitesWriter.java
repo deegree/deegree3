@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2015 by:
@@ -55,110 +54,102 @@ import org.deegree.services.encoding.SupportedEncodings;
 
 /**
  * Writes soap wms support as extended capabilities.
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
 public class Wms130SoapExtendedCapabilitesWriter {
 
-    private static final String SOAPWMS_XSD_LOCATION = "http://schemas.deegree.org/3.5/extensions/services/wms/soapwms.xsd";
+	private static final String SOAPWMS_XSD_LOCATION = "https://schemas.deegree.org/core/3.5/extensions/services/wms/soapwms.xsd";
 
-    public static final String SOAPWMS_NS = "http://schemas.deegree.org/extensions/services/wms/1.3.0";
+	public static final String SOAPWMS_NS = "https://schemas.deegree.org/extensions/services/wms/1.3.0";
 
-    public static final String SOAPWMS_PREFIX = "soapwms";
+	public static final String SOAPWMS_PREFIX = "soapwms";
 
-    /**
-     * Writes soap support as extended capabilities.
-     * 
-     * @param writer
-     *            to write in, never <code>null</code>
-     * @param postUrl
-     *            the url used as endpoint, never <code>null</code>
-     * @throws XMLStreamException
-     */
-    public void writeSoapWmsExtendedCapabilites( XMLStreamWriter writer, String postUrl,
-                                                 SupportedEncodings supportedEncodings )
-                            throws XMLStreamException {
-        if ( soapEncodingIsSupportedForAtLeastOneRequestType( supportedEncodings ) ) {
-            writer.setPrefix( SOAPWMS_PREFIX, SOAPWMS_NS );
-            writer.writeStartElement( SOAPWMS_NS, "ExtendedCapabilities" );
-            writer.writeNamespace( SOAPWMS_PREFIX, SOAPWMS_NS );
-            writer.writeNamespace( WMS_PREFIX, WMSNS );
-            writer.writeNamespace( XSI_PREFIX, XSINS );
-            writer.writeNamespace( XLINK_PREFIX, XLNNS );
+	/**
+	 * Writes soap support as extended capabilities.
+	 * @param writer to write in, never <code>null</code>
+	 * @param postUrl the url used as endpoint, never <code>null</code>
+	 * @throws XMLStreamException
+	 */
+	public void writeSoapWmsExtendedCapabilites(XMLStreamWriter writer, String postUrl,
+			SupportedEncodings supportedEncodings) throws XMLStreamException {
+		if (soapEncodingIsSupportedForAtLeastOneRequestType(supportedEncodings)) {
+			writer.setPrefix(SOAPWMS_PREFIX, SOAPWMS_NS);
+			writer.writeStartElement(SOAPWMS_NS, "ExtendedCapabilities");
+			writer.writeNamespace(SOAPWMS_PREFIX, SOAPWMS_NS);
+			writer.writeNamespace(WMS_PREFIX, WMSNS);
+			writer.writeNamespace(XSI_PREFIX, XSINS);
+			writer.writeNamespace(XLINK_PREFIX, XLNNS);
 
-            writer.writeAttribute( XSINS, "schemaLocation", SOAPWMS_NS + " " + SOAPWMS_XSD_LOCATION );
+			writer.writeAttribute(XSINS, "schemaLocation", SOAPWMS_NS + " " + SOAPWMS_XSD_LOCATION);
 
-            writer.writeStartElement( SOAPWMS_NS, "SOAP" );
+			writer.writeStartElement(SOAPWMS_NS, "SOAP");
 
-            writeOnlineResource( writer, postUrl );
-            writeSoapVersionConstraint( writer );
-            writeSupportedOperations( writer, supportedEncodings );
+			writeOnlineResource(writer, postUrl);
+			writeSoapVersionConstraint(writer);
+			writeSupportedOperations(writer, supportedEncodings);
 
-            writer.writeEndElement();
-            writer.writeEndElement();
-        }
-    }
+			writer.writeEndElement();
+			writer.writeEndElement();
+		}
+	}
 
-    private void writeOnlineResource( XMLStreamWriter writer, String postUrl )
-                            throws XMLStreamException {
-        writer.writeStartElement( WMSNS, "OnlineResource" );
-        writer.writeAttribute( XLNNS, "type", "simple" );
-        writer.writeAttribute( XLNNS, "href", postUrl );
-        writer.writeEndElement();
-    }
+	private void writeOnlineResource(XMLStreamWriter writer, String postUrl) throws XMLStreamException {
+		writer.writeStartElement(WMSNS, "OnlineResource");
+		writer.writeAttribute(XLNNS, "type", "simple");
+		writer.writeAttribute(XLNNS, "href", postUrl);
+		writer.writeEndElement();
+	}
 
-    private void writeSoapVersionConstraint( XMLStreamWriter writer )
-                            throws XMLStreamException {
-        writer.writeStartElement( SOAPWMS_NS, "Constraint" );
-        writer.writeAttribute( "name", "SOAPVersion" );
-        writeValue( writer, "1.1" );
-        writeValue( writer, "1.2" );
-        writer.writeEndElement();
-    }
+	private void writeSoapVersionConstraint(XMLStreamWriter writer) throws XMLStreamException {
+		writer.writeStartElement(SOAPWMS_NS, "Constraint");
+		writer.writeAttribute("name", "SOAPVersion");
+		writeValue(writer, "1.1");
+		writeValue(writer, "1.2");
+		writer.writeEndElement();
+	}
 
-    private void writeSupportedOperations( XMLStreamWriter writer, SupportedEncodings supportedEncodings )
-                            throws XMLStreamException {
-        writer.writeStartElement( SOAPWMS_NS, "SupportedOperations" );
-        if ( isGetCapabilitiesSupported( supportedEncodings ) )
-            writeOperation( writer, "GetCapabilities" );
-        if ( isGetMapSupported( supportedEncodings ) )
-            writeOperation( writer, "GetMap" );
-        if ( isGetFeatureInfoSupported( supportedEncodings ) )
-            writeOperation( writer, "GetFeatureInfo" );
-        writer.writeEndElement();
-    }
+	private void writeSupportedOperations(XMLStreamWriter writer, SupportedEncodings supportedEncodings)
+			throws XMLStreamException {
+		writer.writeStartElement(SOAPWMS_NS, "SupportedOperations");
+		if (isGetCapabilitiesSupported(supportedEncodings))
+			writeOperation(writer, "GetCapabilities");
+		if (isGetMapSupported(supportedEncodings))
+			writeOperation(writer, "GetMap");
+		if (isGetFeatureInfoSupported(supportedEncodings))
+			writeOperation(writer, "GetFeatureInfo");
+		writer.writeEndElement();
+	}
 
-    private void writeValue( XMLStreamWriter writer, String value )
-                            throws XMLStreamException {
-        writer.writeStartElement( SOAPWMS_NS, "Value" );
-        writer.writeCharacters( value );
-        writer.writeEndElement();
-    }
+	private void writeValue(XMLStreamWriter writer, String value) throws XMLStreamException {
+		writer.writeStartElement(SOAPWMS_NS, "Value");
+		writer.writeCharacters(value);
+		writer.writeEndElement();
+	}
 
-    private void writeOperation( XMLStreamWriter writer, String operationName )
-                            throws XMLStreamException {
-        writer.writeStartElement( SOAPWMS_NS, "Operation" );
-        writer.writeAttribute( "name", operationName );
-        writer.writeEndElement();
-    }
+	private void writeOperation(XMLStreamWriter writer, String operationName) throws XMLStreamException {
+		writer.writeStartElement(SOAPWMS_NS, "Operation");
+		writer.writeAttribute("name", operationName);
+		writer.writeEndElement();
+	}
 
-    private boolean isGetCapabilitiesSupported( SupportedEncodings supportedEncodings ) {
-        return supportedEncodings.isEncodingSupported( GetCapabilities, "SOAP" )
-               || supportedEncodings.isEncodingSupported( capabilities, "SOAP" );
-    }
+	private boolean isGetCapabilitiesSupported(SupportedEncodings supportedEncodings) {
+		return supportedEncodings.isEncodingSupported(GetCapabilities, "SOAP")
+				|| supportedEncodings.isEncodingSupported(capabilities, "SOAP");
+	}
 
-    private boolean isGetMapSupported( SupportedEncodings supportedEncodings ) {
-        return supportedEncodings.isEncodingSupported( GetMap, "SOAP" )
-               || supportedEncodings.isEncodingSupported( map, "SOAP" );
-    }
+	private boolean isGetMapSupported(SupportedEncodings supportedEncodings) {
+		return supportedEncodings.isEncodingSupported(GetMap, "SOAP")
+				|| supportedEncodings.isEncodingSupported(map, "SOAP");
+	}
 
-    private boolean isGetFeatureInfoSupported( SupportedEncodings supportedEncodings ) {
-        return supportedEncodings.isEncodingSupported( GetFeatureInfo, "SOAP" );
-    }
+	private boolean isGetFeatureInfoSupported(SupportedEncodings supportedEncodings) {
+		return supportedEncodings.isEncodingSupported(GetFeatureInfo, "SOAP");
+	}
 
-    private boolean soapEncodingIsSupportedForAtLeastOneRequestType( SupportedEncodings supportedEncodings ) {
-        return isGetCapabilitiesSupported( supportedEncodings ) || isGetMapSupported( supportedEncodings )
-               || isGetFeatureInfoSupported( supportedEncodings );
-    }
+	private boolean soapEncodingIsSupportedForAtLeastOneRequestType(SupportedEncodings supportedEncodings) {
+		return isGetCapabilitiesSupported(supportedEncodings) || isGetMapSupported(supportedEncodings)
+				|| isGetFeatureInfoSupported(supportedEncodings);
+	}
 
 }

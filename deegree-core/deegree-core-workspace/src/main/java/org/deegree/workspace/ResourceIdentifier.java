@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -42,24 +41,25 @@
 package org.deegree.workspace;
 
 /**
- * Uniquely identifies a resource in the workspace. Needs to be comparable to other identifiers.
- * 
+ * Uniquely identifies a resource in the workspace. Needs to be comparable to other
+ * identifiers.
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public interface ResourceIdentifier<T extends Resource> extends Comparable<ResourceIdentifier<T>> {
 
-    /**
-     * @return the 'local' part of the id, typically the base name of the configuration file. Never <code>null</code>
-     */
-    String getId();
+	/**
+	 * @return the 'local' part of the id, typically the base name of the configuration
+	 * file. Never <code>null</code>
+	 */
+	String getId();
 
-    /**
-     * This must be the base provider class for the type of resource, not the actual implementation.
-     * 
-     * @return the provider class qualifying the resource, never <code>null</code>
-     */
-    Class<? extends ResourceProvider<T>> getProvider();
+	/**
+	 * This must be the base provider class for the type of resource, not the actual
+	 * implementation.
+	 * @return the provider class qualifying the resource, never <code>null</code>
+	 */
+	Class<? extends ResourceProvider<T>> getProvider();
 
 }

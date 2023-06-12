@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -41,150 +40,147 @@ import java.util.Calendar;
 
 /**
  * Represents a temporal duration (e.g. <code>xs:duration</code>).
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class Duration {
 
-    private final int years;
+	private final int years;
 
-    private final int months;
+	private final int months;
 
-    private final int days;
+	private final int days;
 
-    private final int hours;
+	private final int hours;
 
-    private final int minutes;
+	private final int minutes;
 
-    private final int seconds;
+	private final int seconds;
 
-    /**
-     * Creates a new {@link Duration} instance.
-     * 
-     * @param years
-     * @param months
-     * @param days
-     * @param hours
-     * @param minutes
-     * @param seconds
-     */
-    public Duration( int years, int months, int days, int hours, int minutes, int seconds ) {
-        this.years = years;
-        this.months = months;
-        this.days = days;
-        this.hours = hours;
-        this.minutes = minutes;
-        this.seconds = seconds;
-    }
+	/**
+	 * Creates a new {@link Duration} instance.
+	 * @param years
+	 * @param months
+	 * @param days
+	 * @param hours
+	 * @param minutes
+	 * @param seconds
+	 */
+	public Duration(int years, int months, int days, int hours, int minutes, int seconds) {
+		this.years = years;
+		this.months = months;
+		this.days = days;
+		this.hours = hours;
+		this.minutes = minutes;
+		this.seconds = seconds;
+	}
 
-    /**
-     * @return the days
-     */
-    public int getDays() {
-        return days;
-    }
+	/**
+	 * @return the days
+	 */
+	public int getDays() {
+		return days;
+	}
 
-    /**
-     * @return the hours
-     */
-    public int getHours() {
-        return hours;
-    }
+	/**
+	 * @return the hours
+	 */
+	public int getHours() {
+		return hours;
+	}
 
-    /**
-     * @return the minutes
-     */
-    public int getMinutes() {
-        return minutes;
-    }
+	/**
+	 * @return the minutes
+	 */
+	public int getMinutes() {
+		return minutes;
+	}
 
-    /**
-     * @return the months
-     */
-    public int getMonths() {
-        return months;
-    }
+	/**
+	 * @return the months
+	 */
+	public int getMonths() {
+		return months;
+	}
 
-    /**
-     * @return the seconds
-     */
-    public int getSeconds() {
-        return seconds;
-    }
+	/**
+	 * @return the seconds
+	 */
+	public int getSeconds() {
+		return seconds;
+	}
 
-    /**
-     * @return the years
-     */
-    public int getYears() {
-        return years;
-    }
+	/**
+	 * @return the years
+	 */
+	public int getYears() {
+		return years;
+	}
 
-    /**
-     * Returns the point in time that is at the beginning of this duration (relative to the given {@link DateTime}.
-     * 
-     * @param end
-     *            end of the duration interval, must not be <code>null</code>
-     * @return the point in time that marks the begin of the duration interval, never <code>null</code>
-     */
-    public DateTime getBegin( DateTime end ) {
-        Calendar before = Calendar.getInstance( end.getCalendar().getTimeZone() );
-        before.setTime( end.getDate() );
-        before.add( Calendar.YEAR, -years );
-        before.add( Calendar.MONTH, -months );
-        before.add( Calendar.DAY_OF_MONTH, -days );
-        before.add( Calendar.HOUR_OF_DAY, -hours );
-        before.add( Calendar.MINUTE, -minutes );
-        before.add( Calendar.SECOND, -seconds );
-        return new DateTime( before, end.isTimeZoneUnknown() );
-    }
+	/**
+	 * Returns the point in time that is at the beginning of this duration (relative to
+	 * the given {@link DateTime}.
+	 * @param end end of the duration interval, must not be <code>null</code>
+	 * @return the point in time that marks the begin of the duration interval, never
+	 * <code>null</code>
+	 */
+	public DateTime getBegin(DateTime end) {
+		Calendar before = Calendar.getInstance(end.getCalendar().getTimeZone());
+		before.setTime(end.getDate());
+		before.add(Calendar.YEAR, -years);
+		before.add(Calendar.MONTH, -months);
+		before.add(Calendar.DAY_OF_MONTH, -days);
+		before.add(Calendar.HOUR_OF_DAY, -hours);
+		before.add(Calendar.MINUTE, -minutes);
+		before.add(Calendar.SECOND, -seconds);
+		return new DateTime(before, end.isTimeZoneUnknown());
+	}
 
-    /**
-     * Returns the point in time that is at the end of this duration (relative to the given {@link DateTime}.
-     * 
-     * @param begin
-     *            begin of the duration interval, must not be <code>null</code>
-     * @return the point in time that marks the end of the duration interval, never <code>null</code>
-     */
-    public DateTime getEnd( DateTime begin ) {
-        Calendar after = Calendar.getInstance( begin.getCalendar().getTimeZone() );
-        after.setTime( begin.getDate() );
-        after.add( Calendar.YEAR, years );
-        after.add( Calendar.MONTH, months );
-        after.add( Calendar.DAY_OF_MONTH, days );
-        after.add( Calendar.HOUR_OF_DAY, hours );
-        after.add( Calendar.MINUTE, minutes );
-        after.add( Calendar.SECOND, seconds );
-        return new DateTime( after, begin.isTimeZoneUnknown() );
-    }
+	/**
+	 * Returns the point in time that is at the end of this duration (relative to the
+	 * given {@link DateTime}.
+	 * @param begin begin of the duration interval, must not be <code>null</code>
+	 * @return the point in time that marks the end of the duration interval, never
+	 * <code>null</code>
+	 */
+	public DateTime getEnd(DateTime begin) {
+		Calendar after = Calendar.getInstance(begin.getCalendar().getTimeZone());
+		after.setTime(begin.getDate());
+		after.add(Calendar.YEAR, years);
+		after.add(Calendar.MONTH, months);
+		after.add(Calendar.DAY_OF_MONTH, days);
+		after.add(Calendar.HOUR_OF_DAY, hours);
+		after.add(Calendar.MINUTE, minutes);
+		after.add(Calendar.SECOND, seconds);
+		return new DateTime(after, begin.isTimeZoneUnknown());
+	}
 
-    @Override
-    public boolean equals( Object obj ) {
-        if ( obj == null || !( obj instanceof Duration ) ) {
-            return false;
-        }
-        Duration that = (Duration) obj;
-        return this.years == that.years && this.months == that.months && this.days == that.days
-               && this.hours == that.hours && this.minutes == that.minutes && this.seconds == that.seconds;
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null || !(obj instanceof Duration)) {
+			return false;
+		}
+		Duration that = (Duration) obj;
+		return this.years == that.years && this.months == that.months && this.days == that.days
+				&& this.hours == that.hours && this.minutes == that.minutes && this.seconds == that.seconds;
+	}
 
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 31 * hash + this.years;
-        hash = 31 * hash + this.months;
-        hash = 31 * hash + this.days;
-        hash = 31 * hash + this.hours;
-        hash = 31 * hash + this.minutes;
-        hash = 31 * hash + this.seconds;
-        return hash;
-    }
+	@Override
+	public int hashCode() {
+		int hash = 7;
+		hash = 31 * hash + this.years;
+		hash = 31 * hash + this.months;
+		hash = 31 * hash + this.days;
+		hash = 31 * hash + this.hours;
+		hash = 31 * hash + this.minutes;
+		hash = 31 * hash + this.seconds;
+		return hash;
+	}
 
-    @Override
-    public String toString() {
-        return formatDuration( this );
-    }
+	@Override
+	public String toString() {
+		return formatDuration(this);
+	}
+
 }

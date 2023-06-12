@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -41,95 +40,83 @@ import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
 
 /**
- * {@link GeometryValidationEvent} that indicates that a planar surface patch (={@link PolygonPatch}) has two holes (interior
- * rings) that intersect.
- * 
+ * {@link GeometryValidationEvent} that indicates that a planar surface patch
+ * (={@link PolygonPatch}) has two holes (interior rings) that intersect.
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * 
- * @version $Revision: $, $Date: $
  */
 public class InteriorRingsIntersect extends AbstractGeometryValidationEvent {
 
-    private final PolygonPatch patch;
+	private final PolygonPatch patch;
 
-    private final int ring1Idx;
+	private final int ring1Idx;
 
-    private final int ring2Idx;
+	private final int ring2Idx;
 
-    private final Point location;
+	private final Point location;
 
-    private final boolean singlePoint;
+	private final boolean singlePoint;
 
-    /**
-     * Creates a new {@link InteriorRingsIntersect} instance.
-     * 
-     * @param patch
-     *            affected patch, never <code>null</code>
-     * @param ring1Idx
-     *            index of the first interior ring affected (starting at 0)
-     * @param ring2Idx
-     *            index of the second interior ring affected (starting at 0)
-     * @param location
-     *            location of the intersection, may be <code>null</code>
-     * @param singlePoint
-     *            <code>true</code> if the intersection is just a single point, <code>false</code> otherwise
-     * @param geometryParticleHierarchy
-     *            list of affected geometry particles (that the patch is part of), must not be <code>null</code>
-     */
-    public InteriorRingsIntersect( PolygonPatch patch, int ring1Idx, int ring2Idx, Point location, boolean singlePoint,
-                                   List<Object> geometryParticleHierarchy ) {
-        super( geometryParticleHierarchy );
-        this.patch = patch;
-        this.ring1Idx = ring1Idx;
-        this.ring2Idx = ring2Idx;
-        this.location = location;
-        this.singlePoint = singlePoint;
-    }
+	/**
+	 * Creates a new {@link InteriorRingsIntersect} instance.
+	 * @param patch affected patch, never <code>null</code>
+	 * @param ring1Idx index of the first interior ring affected (starting at 0)
+	 * @param ring2Idx index of the second interior ring affected (starting at 0)
+	 * @param location location of the intersection, may be <code>null</code>
+	 * @param singlePoint <code>true</code> if the intersection is just a single point,
+	 * <code>false</code> otherwise
+	 * @param geometryParticleHierarchy list of affected geometry particles (that the
+	 * patch is part of), must not be <code>null</code>
+	 */
+	public InteriorRingsIntersect(PolygonPatch patch, int ring1Idx, int ring2Idx, Point location, boolean singlePoint,
+			List<Object> geometryParticleHierarchy) {
+		super(geometryParticleHierarchy);
+		this.patch = patch;
+		this.ring1Idx = ring1Idx;
+		this.ring2Idx = ring2Idx;
+		this.location = location;
+		this.singlePoint = singlePoint;
+	}
 
-    /**
-     * Returns the affected {@link PolygonPatch} geometry.
-     * 
-     * @return affected patch, never <code>null</code>
-     */
-    public PolygonPatch getPatch() {
-        return patch;
-    }
+	/**
+	 * Returns the affected {@link PolygonPatch} geometry.
+	 * @return affected patch, never <code>null</code>
+	 */
+	public PolygonPatch getPatch() {
+		return patch;
+	}
 
-    /**
-     * Returns the index of the first affected interior ring.
-     * 
-     * @return index of the first affected interior ring (starting at 0)
-     */
-    public int getRing1Idx() {
-        return ring1Idx;
-    }
+	/**
+	 * Returns the index of the first affected interior ring.
+	 * @return index of the first affected interior ring (starting at 0)
+	 */
+	public int getRing1Idx() {
+		return ring1Idx;
+	}
 
-    /**
-     * Returns the index of the second affected interior ring.
-     * 
-     * @return index of the second affected interior ring (starting at 0)
-     */
-    public int getRing2Idx() {
-        return ring2Idx;
-    }
+	/**
+	 * Returns the index of the second affected interior ring.
+	 * @return index of the second affected interior ring (starting at 0)
+	 */
+	public int getRing2Idx() {
+		return ring2Idx;
+	}
 
-    /**
-     * Returns the location of the intersection.
-     * 
-     * @return location of intersection, may be <code>null</code>
-     */
-    public Point getLocation() {
-        return location;
-    }
+	/**
+	 * Returns the location of the intersection.
+	 * @return location of intersection, may be <code>null</code>
+	 */
+	public Point getLocation() {
+		return location;
+	}
 
-    /**
-     * Returns whether the intersection is just a single point.
-     * 
-     * @return <code>true</code> if the intersection is just a single point, <code>false</code> otherwise
-     */
-    public boolean isSinglePoint() {
-        return singlePoint;
-    }
+	/**
+	 * Returns whether the intersection is just a single point.
+	 * @return <code>true</code> if the intersection is just a single point,
+	 * <code>false</code> otherwise
+	 */
+	public boolean isSinglePoint() {
+		return singlePoint;
+	}
 
 }

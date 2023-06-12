@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -49,40 +48,37 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.Pair;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class Delete {
 
-    public static void delete( String path, HttpServletResponse resp )
-                            throws IOException {
+	public static void delete(String path, HttpServletResponse resp) throws IOException {
 
-        Pair<DeegreeWorkspace, String> p = getWorkspaceAndPath( path );
+		Pair<DeegreeWorkspace, String> p = getWorkspaceAndPath(path);
 
-        resp.setContentType( "text/plain" );
+		resp.setContentType("text/plain");
 
-        if ( p.second == null ) {
-            File dir = p.first.getLocation();
-            if ( !deleteQuietly( dir ) ) {
-                IOUtils.write( "Workspace deletion unsuccessful.\n", resp.getOutputStream() );
-            } else {
-                IOUtils.write( "Workspace deleted.\n", resp.getOutputStream() );
-            }
-            unregisterWorkspace( p.first.getName() );
-            return;
-        }
-        File fileOrDir = new File( p.first.getLocation(), p.second );
-        if ( !fileOrDir.exists() ) {
-            resp.setStatus( 404 );
-        }
-        if ( !deleteQuietly( fileOrDir ) ) {
-            IOUtils.write( "Deletion unsuccessful.\n", resp.getOutputStream() );
-        } else {
-            IOUtils.write( fileOrDir.getName() + " deleted.\n", resp.getOutputStream() );
-        }
-    }
+		if (p.second == null) {
+			File dir = p.first.getLocation();
+			if (!deleteQuietly(dir)) {
+				IOUtils.write("Workspace deletion unsuccessful.\n", resp.getOutputStream());
+			}
+			else {
+				IOUtils.write("Workspace deleted.\n", resp.getOutputStream());
+			}
+			unregisterWorkspace(p.first.getName());
+			return;
+		}
+		File fileOrDir = new File(p.first.getLocation(), p.second);
+		if (!fileOrDir.exists()) {
+			resp.setStatus(404);
+		}
+		if (!deleteQuietly(fileOrDir)) {
+			IOUtils.write("Deletion unsuccessful.\n", resp.getOutputStream());
+		}
+		else {
+			IOUtils.write(fileOrDir.getName() + " deleted.\n", resp.getOutputStream());
+		}
+	}
 
 }

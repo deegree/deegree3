@@ -57,21 +57,22 @@ import java.net.URL;
 
 public class GpkgTileStoreProvider extends TileStoreProvider {
 
-    private static final URL SCHEMA = GpkgTileStoreProvider.class.getResource(
-                            "/META-INF/schemas/datasource/tile/gpkg/geopackage.xsd" );
+	private static final URL SCHEMA = GpkgTileStoreProvider.class
+		.getResource("/META-INF/schemas/datasource/tile/gpkg/geopackage.xsd");
 
-    @Override
-    public String getNamespace() {
-        return "http://www.deegree.org/datasource/tile/gpkg";
-    }
+	@Override
+	public String getNamespace() {
+		return "http://www.deegree.org/datasource/tile/gpkg";
+	}
 
-    @Override
-    public ResourceMetadata<TileStore> createFromLocation( Workspace workspace, ResourceLocation<TileStore> location ) {
-        return new GpkgTileStoreMetadata( workspace, location, this );
-    }
+	@Override
+	public ResourceMetadata<TileStore> createFromLocation(Workspace workspace, ResourceLocation<TileStore> location) {
+		return new GpkgTileStoreMetadata(workspace, location, this);
+	}
 
-    @Override
-    public URL getSchema() {
-        return SCHEMA;
-    }
+	@Override
+	public URL getSchema() {
+		return SCHEMA;
+	}
+
 }

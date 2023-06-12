@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -61,39 +60,37 @@ import org.junit.Test;
 
 /**
  * <code>GeoTIFFTileStoreTest</code>
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 
 public class GeoTIFFTileStoreTest {
 
-    @Test
-    public void testGetTiles()
-                            throws ResourceInitException, IOException, TileIOException {
-//        File file = new File( "/stick/merged.tif" );
-//        assumeTrue( file.exists() );
-//        TileStore ts = new GeoTIFFTileStore( Collections.singletonList( new Pair<File, String>( file, null ) ) );
-//        ts.init( null );
-//        Envelope envelope = ts.getMetadata( "merged" ).getEnvelope();
-//        TileDataSet set = ts.getTileDataSet( "merged" );
-//        double res = 0;
-//        for ( TileDataLevel tm : set.getTileDataLevels() ) {
-//            res = Math.max( tm.getMetadata().getResolution(), res );
-//        }
-//
-//        Iterator<Tile> i = ts.getTiles( "merged", envelope, res );
-//        int cnt = 0;
-//        long t1 = System.currentTimeMillis();
-//        while ( i.hasNext() ) {
-//            ++cnt;
-//            BufferedImage img = i.next().getAsImage();
-//            assertNotNull( "A tile resulted in null image.", img );
-//        }
-//        double secs = ( System.currentTimeMillis() - t1 ) / 1000d;
-//        System.out.println( "Took " + secs + " seconds to fetch " + cnt + " tile images." );
-    }
+	@Test
+	public void testGetTiles() throws ResourceInitException, IOException, TileIOException {
+		// File file = new File( "/stick/merged.tif" );
+		// assumeTrue( file.exists() );
+		// TileStore ts = new GeoTIFFTileStore( Collections.singletonList( new Pair<File,
+		// String>( file, null ) ) );
+		// ts.init( null );
+		// Envelope envelope = ts.getMetadata( "merged" ).getEnvelope();
+		// TileDataSet set = ts.getTileDataSet( "merged" );
+		// double res = 0;
+		// for ( TileDataLevel tm : set.getTileDataLevels() ) {
+		// res = Math.max( tm.getMetadata().getResolution(), res );
+		// }
+		//
+		// Iterator<Tile> i = ts.getTiles( "merged", envelope, res );
+		// int cnt = 0;
+		// long t1 = System.currentTimeMillis();
+		// while ( i.hasNext() ) {
+		// ++cnt;
+		// BufferedImage img = i.next().getAsImage();
+		// assertNotNull( "A tile resulted in null image.", img );
+		// }
+		// double secs = ( System.currentTimeMillis() - t1 ) / 1000d;
+		// System.out.println( "Took " + secs + " seconds to fetch " + cnt + " tile
+		// images." );
+	}
 
 }

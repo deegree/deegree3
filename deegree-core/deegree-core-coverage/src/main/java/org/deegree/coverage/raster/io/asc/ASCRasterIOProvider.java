@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2009 by:
@@ -47,46 +46,45 @@ import org.deegree.coverage.raster.io.RasterWriter;
 
 /**
  * The <code>XYZRasterIOProvider</code> class defines the access to esri grid files
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class ASCRasterIOProvider implements RasterIOProvider {
 
-    /**
-     * Supported formats
-     */
-    final static Set<String> FORMATS = new HashSet<String>();
-    static {
-        FORMATS.add( "asc" );
-        FORMATS.add( "grd" );
-    }
+	/**
+	 * Supported formats
+	 */
+	final static Set<String> FORMATS = new HashSet<String>();
+	static {
+		FORMATS.add("asc");
+		FORMATS.add("grd");
+	}
 
-    @Override
-    public RasterReader getRasterReader( String type ) {
-        if ( type != null && FORMATS.contains( type.toLowerCase() ) ) {
-            return new ASCReader();
-        }
-        return null;
-    }
+	@Override
+	public RasterReader getRasterReader(String type) {
+		if (type != null && FORMATS.contains(type.toLowerCase())) {
+			return new ASCReader();
+		}
+		return null;
+	}
 
-    @Override
-    public Set<String> getRasterReaderFormats() {
-        return new HashSet<String>( ASCRasterIOProvider.FORMATS );
-    }
+	@Override
+	public Set<String> getRasterReaderFormats() {
+		return new HashSet<String>(ASCRasterIOProvider.FORMATS);
+	}
 
-    @Override
-    public RasterWriter getRasterWriter( String type ) {
-        if ( type != null && FORMATS.contains( type.toLowerCase() ) ) {
-            return new ASCWriter();
-        }
-        return null;
-    }
+	@Override
+	public RasterWriter getRasterWriter(String type) {
+		if (type != null && FORMATS.contains(type.toLowerCase())) {
+			return new ASCWriter();
+		}
+		return null;
+	}
 
-    @Override
-    public Set<String> getRasterWriterFormats() {
-        return new HashSet<String>( ASCRasterIOProvider.FORMATS );
-    }
+	@Override
+	public Set<String> getRasterWriterFormats() {
+		return new HashSet<String>(ASCRasterIOProvider.FORMATS);
+	}
+
 }

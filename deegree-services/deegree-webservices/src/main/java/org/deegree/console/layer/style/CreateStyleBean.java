@@ -38,19 +38,19 @@ import org.deegree.style.persistence.StyleStoreManager;
  * JSF backing bean for "Create new style" view.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- *
  * @since 3.3
  */
 @ManagedBean
 @ViewScoped
 public class CreateStyleBean extends AbstractCreateResourceBean {
 
-    public CreateStyleBean() {
-        super( StyleStoreManager.class );
-    }
+	public CreateStyleBean() {
+		super(StyleStoreManager.class);
+	}
 
-    @Override
-    protected String getOutcome() {
-        return "/console/layer/style/index";
-    }
+	@Override
+	protected String getOutcome() {
+		return "/console/layer/style/index";
+	}
+
 }

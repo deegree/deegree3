@@ -31,13 +31,12 @@ import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
  * The SPI provider class for layer stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public abstract class LayerStoreProvider extends AbstractResourceProvider<LayerStore> {
 
-    // specifies type parameter
+	// specifies type parameter
 
 }

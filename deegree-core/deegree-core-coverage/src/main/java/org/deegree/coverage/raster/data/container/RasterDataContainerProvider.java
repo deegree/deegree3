@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -39,25 +38,23 @@ import java.util.ServiceLoader;
 
 import org.deegree.coverage.raster.data.container.RasterDataContainerFactory.LoadingPolicy;
 
-
 /**
- * This interface is for all classes that provide {@link RasterDataContainer}. A RasterDataContainer can implement lazy
- * loading or caching of raster data. The implemented provider will be used by the new Java 6 ServiceLoader.
+ * This interface is for all classes that provide {@link RasterDataContainer}. A
+ * RasterDataContainer can implement lazy loading or caching of raster data. The
+ * implemented provider will be used by the new Java 6 ServiceLoader.
  *
  * @see ServiceLoader
- *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- *
- * @version $Revision$, $Date$
  *
  */
 public interface RasterDataContainerProvider {
-    /**
-     * Returns a new RasterDataContainer for given type or null, if the implementation doesn't provide this type.
-     *
-     * @param type
-     * @return a RasterDataContainer for given type or null
-     */
-    RasterDataContainer getRasterDataContainer( LoadingPolicy type );
+
+	/**
+	 * Returns a new RasterDataContainer for given type or null, if the implementation
+	 * doesn't provide this type.
+	 * @param type
+	 * @return a RasterDataContainer for given type or null
+	 */
+	RasterDataContainer getRasterDataContainer(LoadingPolicy type);
+
 }

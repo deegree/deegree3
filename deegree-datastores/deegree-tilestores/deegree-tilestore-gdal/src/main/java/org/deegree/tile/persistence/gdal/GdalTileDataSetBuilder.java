@@ -47,49 +47,49 @@ import org.deegree.workspace.Workspace;
 
 /**
  * Builds tile data sets from jaxb config beans.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * 
  * @since 3.4
  */
 class GdalTileDataSetBuilder {
 
-    private final Workspace workspace;
+	private final Workspace workspace;
 
-    GdalTileDataSetBuilder( Workspace workspace ) {
-        this.workspace = workspace;
-    }
+	GdalTileDataSetBuilder(Workspace workspace) {
+		this.workspace = workspace;
+	}
 
-    TileDataSet buildTileDataSet( GdalTileStoreJaxb.TileDataSet cfg, ResourceLocation<TileStore> location,
-                                  Envelope gdalEnvelope ) throws IOException {
-        String filename = cfg.getFile();
-        String imageFormat = cfg.getImageFormat();
-        String tmsId = cfg.getTileMatrixSetId();
-        File file = location.resolveToFile( filename );
-        TileMatrixSet tms = workspace.getResource( TileMatrixSetProvider.class, tmsId );
-        GdalSettings gdalSettings = workspace.getInitializable( GdalSettings.class );
-        gdalSettings.getDatasetPool().addDataset( file, tms.getSpatialMetadata().getCoordinateSystems().get( 0 ) );
-        List<TileDataLevel> levels = new ArrayList<TileDataLevel>();
-        double datasetMinX = gdalEnvelope.getMin().get0();
-        double matrixMinX = tms.getSpatialMetadata().getEnvelope().getMin().get0();
-        double datasetToMatrixOffsetX = datasetMinX - matrixMinX;
-        double datasetMaxY = gdalEnvelope.getMax().get1();
-        double matrixMaxY = tms.getSpatialMetadata().getEnvelope().getMax().get1();
-        double datasetToMatrixOffsetY = matrixMaxY - datasetMaxY;
-        for ( TileMatrix tm : tms.getTileMatrices() ) {
-            int xMin = (int) Math.floor( datasetToMatrixOffsetX / tm.getTileWidth() );
-            int yMin = (int) Math.floor( datasetToMatrixOffsetY / tm.getTileHeight() );
-            int xMax = (int) Math.floor( ( datasetToMatrixOffsetX + gdalEnvelope.getSpan0() ) / tm.getTileWidth() );
-            int yMax = (int) Math.floor( ( datasetToMatrixOffsetY + gdalEnvelope.getSpan1() ) / tm.getTileHeight() );
-            try {
-                levels.add( new GdalTileDataLevel( tm, file.getCanonicalFile(), xMin, yMin, xMax, yMax, imageFormat,
-                                                   gdalSettings ) );
-            } catch ( Exception e ) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-        return new DefaultTileDataSet( levels, tms, imageFormat );
-    }
+	TileDataSet buildTileDataSet(GdalTileStoreJaxb.TileDataSet cfg, ResourceLocation<TileStore> location,
+			Envelope gdalEnvelope) throws IOException {
+		String filename = cfg.getFile();
+		String imageFormat = cfg.getImageFormat();
+		String tmsId = cfg.getTileMatrixSetId();
+		File file = location.resolveToFile(filename);
+		TileMatrixSet tms = workspace.getResource(TileMatrixSetProvider.class, tmsId);
+		GdalSettings gdalSettings = workspace.getInitializable(GdalSettings.class);
+		gdalSettings.getDatasetPool().addDataset(file, tms.getSpatialMetadata().getCoordinateSystems().get(0));
+		List<TileDataLevel> levels = new ArrayList<TileDataLevel>();
+		double datasetMinX = gdalEnvelope.getMin().get0();
+		double matrixMinX = tms.getSpatialMetadata().getEnvelope().getMin().get0();
+		double datasetToMatrixOffsetX = datasetMinX - matrixMinX;
+		double datasetMaxY = gdalEnvelope.getMax().get1();
+		double matrixMaxY = tms.getSpatialMetadata().getEnvelope().getMax().get1();
+		double datasetToMatrixOffsetY = matrixMaxY - datasetMaxY;
+		for (TileMatrix tm : tms.getTileMatrices()) {
+			int xMin = (int) Math.floor(datasetToMatrixOffsetX / tm.getTileWidth());
+			int yMin = (int) Math.floor(datasetToMatrixOffsetY / tm.getTileHeight());
+			int xMax = (int) Math.floor((datasetToMatrixOffsetX + gdalEnvelope.getSpan0()) / tm.getTileWidth());
+			int yMax = (int) Math.floor((datasetToMatrixOffsetY + gdalEnvelope.getSpan1()) / tm.getTileHeight());
+			try {
+				levels.add(new GdalTileDataLevel(tm, file.getCanonicalFile(), xMin, yMin, xMax, yMax, imageFormat,
+						gdalSettings));
+			}
+			catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return new DefaultTileDataSet(levels, tms, imageFormat);
+	}
 
 }

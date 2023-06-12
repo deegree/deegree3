@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -41,37 +40,31 @@ import org.deegree.geometry.primitive.Point;
  * An {@link ArcStringByBulge} that consists of a single arc only.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- *
- * @version $Revision$, $Date$
  */
 public interface ArcByBulge extends ArcStringByBulge {
 
-    /**
-     * Returns the first control point.
-     *
-     * @return the first control point
-     */
-    public Point getPoint1();
+	/**
+	 * Returns the first control point.
+	 * @return the first control point
+	 */
+	public Point getPoint1();
 
-    /**
-     * Returns the second control point.
-     *
-     * @return the second control point
-     */
-    public Point getPoint2();
+	/**
+	 * Returns the second control point.
+	 * @return the second control point
+	 */
+	public Point getPoint2();
 
-    /**
-     * Returns the single bulge value.
-     *
-     * @return the bulge value
-     */
-    public double getBulge();
+	/**
+	 * Returns the single bulge value.
+	 * @return the bulge value
+	 */
+	public double getBulge();
 
-    /**
-     * Returns the single normal vector for the bulge.
-     *
-     * @return the bulge's normal vector
-     */
-    public Point getNormal();
+	/**
+	 * Returns the single normal vector for the bulge.
+	 * @return the bulge's normal vector
+	 */
+	public Point getNormal();
+
 }

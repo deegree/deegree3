@@ -1,4 +1,3 @@
-//$HeadURL: http://svn.wald.intevation.org/svn/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -49,9 +48,7 @@ import es.unex.sextante.rasterWrappers.GridExtent;
  * TODO add class documentation here
  * 
  * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
- * @author last edited by: $Author: pabel $
  * 
- * @version $Revision: $, $Date: $
  */
 import javax.swing.JDialog;
 
@@ -60,9 +57,7 @@ import javax.swing.JDialog;
  * {@link IRasterLayer} or {@link ITable}.
  * 
  * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
- * @author last edited by: $Author: pabel $
  * 
- * @version $Revision: $, $Date: $
  */
 public class OutputFactoryExt extends OutputFactory {
 

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2015 by:
@@ -56,103 +55,104 @@ import org.junit.Test;
  */
 public class BeforeOperatorTest {
 
-    private final BeforeOperator before = new BeforeOperator();
+	private final BeforeOperator before = new BeforeOperator();
 
-    @Test
-    public void evaluateInstantInstant() {
-        assertFalse( before.evaluate( instant( "2014-01-01" ), instant( "2014-01-01" ) ) );
-        assertFalse( before.evaluate( instant( "2014-01-01T00:00:01" ), instant( "2014-01-01T00:00:01" ) ) );
-        assertFalse( before.evaluate( instant( "2014-01-01T00:00:01.000" ), instant( "2014-01-01T00:00:01.000" ) ) );
+	@Test
+	public void evaluateInstantInstant() {
+		assertFalse(before.evaluate(instant("2014-01-01"), instant("2014-01-01")));
+		assertFalse(before.evaluate(instant("2014-01-01T00:00:01"), instant("2014-01-01T00:00:01")));
+		assertFalse(before.evaluate(instant("2014-01-01T00:00:01.000"), instant("2014-01-01T00:00:01.000")));
 
-        assertFalse( before.evaluate( instant( "2015-01-01" ), instant( "2014-01-01" ) ) );
-        assertFalse( before.evaluate( instant( "2014-01-01T00:00:02" ), instant( "2014-01-01T00:00:01" ) ) );
-        assertFalse( before.evaluate( instant( "2014-01-01T00:00:01.001" ), instant( "2014-01-01T00:00:01.000" ) ) );
-        assertFalse( before.evaluate( null, null ) );
-        assertFalse( before.evaluate( instant( "2014-01-01T00:00:01" ), instant( "2014-01-01T00:00:01" ) ) );
-        assertFalse( before.evaluate( instant( "INDETERMINATE" ), instant( "INDETERMINATE" ) ) );
-        assertFalse( before.evaluate( instant( "2014-01-01T00:00:02" ), instant( "2014-01-01T00:00:01" ) ) );
-        assertFalse( before.evaluate( instant( "INDETERMINATE" ), instant( "2014-01-01T00:00:01" ) ) );
-        assertFalse( before.evaluate( instant( "2014-01-01T00:00:01" ), instant( "INDETERMINATE" ) ) );
-        assertFalse( before.evaluate( null, instant( "2014-01-01T00:00:01" ) ) );
-        assertFalse( before.evaluate( instant( "2014-01-01T00:00:01" ), null ) );
+		assertFalse(before.evaluate(instant("2015-01-01"), instant("2014-01-01")));
+		assertFalse(before.evaluate(instant("2014-01-01T00:00:02"), instant("2014-01-01T00:00:01")));
+		assertFalse(before.evaluate(instant("2014-01-01T00:00:01.001"), instant("2014-01-01T00:00:01.000")));
+		assertFalse(before.evaluate(null, null));
+		assertFalse(before.evaluate(instant("2014-01-01T00:00:01"), instant("2014-01-01T00:00:01")));
+		assertFalse(before.evaluate(instant("INDETERMINATE"), instant("INDETERMINATE")));
+		assertFalse(before.evaluate(instant("2014-01-01T00:00:02"), instant("2014-01-01T00:00:01")));
+		assertFalse(before.evaluate(instant("INDETERMINATE"), instant("2014-01-01T00:00:01")));
+		assertFalse(before.evaluate(instant("2014-01-01T00:00:01"), instant("INDETERMINATE")));
+		assertFalse(before.evaluate(null, instant("2014-01-01T00:00:01")));
+		assertFalse(before.evaluate(instant("2014-01-01T00:00:01"), null));
 
-        assertTrue( before.evaluate( instant( "2014-01-01" ), instant( "2015-01-01" ) ) );
-        assertTrue( before.evaluate( instant( "2014-01-01T00:00:01" ), instant( "2014-01-01T00:00:02" ) ) );
-        assertTrue( before.evaluate( instant( "2014-01-01T00:00:01.000" ), instant( "2014-01-01T00:00:01.001" ) ) );
-    }
+		assertTrue(before.evaluate(instant("2014-01-01"), instant("2015-01-01")));
+		assertTrue(before.evaluate(instant("2014-01-01T00:00:01"), instant("2014-01-01T00:00:02")));
+		assertTrue(before.evaluate(instant("2014-01-01T00:00:01.000"), instant("2014-01-01T00:00:01.001")));
+	}
 
-    @Test
-    public void evaluateInstantPeriod() {
-        assertFalse( before.evaluate( instant( "2014-01-01T00:00:01" ),
-                                      period( "2014-01-01T00:00:01", "2014-01-01T00:00:01" ) ) );
-        assertFalse( before.evaluate( instant( "2014-01-01T00:00:01" ),
-                                      period( "2014-01-01T00:00:01", "2014-01-01T00:00:03" ) ) );
-        assertFalse( before.evaluate( instant( "2014-01-01T00:00:02" ),
-                                      period( "2014-01-01T00:00:01", "2014-01-01T00:00:03" ) ) );
-        assertFalse( before.evaluate( instant( "2014-01-01T00:00:03" ),
-                                      period( "2014-01-01T00:00:01", "2014-01-01T00:00:03" ) ) );
-        assertFalse( before.evaluate( instant( "2014-01-01T00:00:04" ),
-                                      period( "2014-01-01T00:00:01", "2014-01-01T00:00:03" ) ) );
+	@Test
+	public void evaluateInstantPeriod() {
+		assertFalse(
+				before.evaluate(instant("2014-01-01T00:00:01"), period("2014-01-01T00:00:01", "2014-01-01T00:00:01")));
+		assertFalse(
+				before.evaluate(instant("2014-01-01T00:00:01"), period("2014-01-01T00:00:01", "2014-01-01T00:00:03")));
+		assertFalse(
+				before.evaluate(instant("2014-01-01T00:00:02"), period("2014-01-01T00:00:01", "2014-01-01T00:00:03")));
+		assertFalse(
+				before.evaluate(instant("2014-01-01T00:00:03"), period("2014-01-01T00:00:01", "2014-01-01T00:00:03")));
+		assertFalse(
+				before.evaluate(instant("2014-01-01T00:00:04"), period("2014-01-01T00:00:01", "2014-01-01T00:00:03")));
 
-        assertTrue( before.evaluate( instant( "2014-01-01T00:00:00" ),
-                                     period( "2014-01-01T00:00:01", "2014-01-01T00:00:03" ) ) );
-    }
+		assertTrue(
+				before.evaluate(instant("2014-01-01T00:00:00"), period("2014-01-01T00:00:01", "2014-01-01T00:00:03")));
+	}
 
-    @Test
-    public void evaluatePeriodInstant() {
-        assertFalse( before.evaluate( period( "2014-01-01T00:00:01", "2014-01-01T00:00:01" ),
-                                      instant( "2014-01-01T00:00:01" ) ) );
-        assertFalse( before.evaluate( period( "2014-01-01T00:00:01", "2014-01-01T00:00:03" ),
-                                      instant( "2014-01-01T00:00:00" ) ) );
-        assertFalse( before.evaluate( period( "2014-01-01T00:00:01", "2014-01-01T00:00:03" ),
-                                      instant( "2014-01-01T00:00:01" ) ) );
-        assertFalse( before.evaluate( period( "2014-01-01T00:00:01", "2014-01-01T00:00:03" ),
-                                      instant( "2014-01-01T00:00:02" ) ) );
-        assertFalse( before.evaluate( period( "2014-01-01T00:00:01", "2014-01-01T00:00:03" ),
-                                      instant( "2014-01-01T00:00:03" ) ) );
+	@Test
+	public void evaluatePeriodInstant() {
+		assertFalse(
+				before.evaluate(period("2014-01-01T00:00:01", "2014-01-01T00:00:01"), instant("2014-01-01T00:00:01")));
+		assertFalse(
+				before.evaluate(period("2014-01-01T00:00:01", "2014-01-01T00:00:03"), instant("2014-01-01T00:00:00")));
+		assertFalse(
+				before.evaluate(period("2014-01-01T00:00:01", "2014-01-01T00:00:03"), instant("2014-01-01T00:00:01")));
+		assertFalse(
+				before.evaluate(period("2014-01-01T00:00:01", "2014-01-01T00:00:03"), instant("2014-01-01T00:00:02")));
+		assertFalse(
+				before.evaluate(period("2014-01-01T00:00:01", "2014-01-01T00:00:03"), instant("2014-01-01T00:00:03")));
 
-        assertTrue( before.evaluate( period( "2014-01-01T00:00:01", "2014-01-01T00:00:03" ),
-                                     instant( "2014-01-01T00:00:04" ) ) );
-    }
+		assertTrue(
+				before.evaluate(period("2014-01-01T00:00:01", "2014-01-01T00:00:03"), instant("2014-01-01T00:00:04")));
+	}
 
-    @Test
-    public void evaluatePeriodPeriod() {
-        assertFalse( before.evaluate( period( "2014-01-01T00:00:01", "2014-01-01T00:00:01" ),
-                                      period( "2014-01-01T00:00:01", "2014-01-01T00:00:01" ) ) );
-        assertFalse( before.evaluate( period( "2014-01-01T00:00:01", "2014-01-01T00:00:02" ),
-                                      period( "2014-01-01T00:00:01", "2014-01-01T00:00:02" ) ) );
+	@Test
+	public void evaluatePeriodPeriod() {
+		assertFalse(before.evaluate(period("2014-01-01T00:00:01", "2014-01-01T00:00:01"),
+				period("2014-01-01T00:00:01", "2014-01-01T00:00:01")));
+		assertFalse(before.evaluate(period("2014-01-01T00:00:01", "2014-01-01T00:00:02"),
+				period("2014-01-01T00:00:01", "2014-01-01T00:00:02")));
 
-        assertFalse( before.evaluate( period( "2014-01-01T00:00:02", "2014-01-01T00:00:03" ),
-                                      period( "2014-01-01T00:00:00", "2014-01-01T00:00:01" ) ) );
-        assertFalse( before.evaluate( period( "2014-01-01T00:00:02", "2014-01-01T00:00:03" ),
-                                      period( "2014-01-01T00:00:01", "2014-01-01T00:00:02" ) ) );
-        assertFalse( before.evaluate( period( "2014-01-01T00:00:02", "2014-01-01T00:00:03" ),
-                                      period( "2014-01-01T00:00:02", "2014-01-01T00:00:03" ) ) );
-        assertFalse( before.evaluate( period( "2014-01-01T00:00:02", "2014-01-01T00:00:03" ),
-                                      period( "2014-01-01T00:00:03", "2014-01-01T00:00:03" ) ) );
+		assertFalse(before.evaluate(period("2014-01-01T00:00:02", "2014-01-01T00:00:03"),
+				period("2014-01-01T00:00:00", "2014-01-01T00:00:01")));
+		assertFalse(before.evaluate(period("2014-01-01T00:00:02", "2014-01-01T00:00:03"),
+				period("2014-01-01T00:00:01", "2014-01-01T00:00:02")));
+		assertFalse(before.evaluate(period("2014-01-01T00:00:02", "2014-01-01T00:00:03"),
+				period("2014-01-01T00:00:02", "2014-01-01T00:00:03")));
+		assertFalse(before.evaluate(period("2014-01-01T00:00:02", "2014-01-01T00:00:03"),
+				period("2014-01-01T00:00:03", "2014-01-01T00:00:03")));
 
-        assertTrue( before.evaluate( period( "2014-01-01T00:00:01", "2014-01-01T00:00:02" ),
-                                     period( "2014-01-01T00:00:03", "2014-01-01T00:00:04" ) ) );
-    }
+		assertTrue(before.evaluate(period("2014-01-01T00:00:01", "2014-01-01T00:00:02"),
+				period("2014-01-01T00:00:03", "2014-01-01T00:00:04")));
+	}
 
-    private TimeInstant instant( final String s ) {
-        final List<Property> props = emptyList();
-        final List<RelatedTime> relatedTimes = emptyList();
-        TimePosition pos = null;
-        if ( "INDETERMINATE".equals( s ) ) {
-            pos = new TimePosition( null, null, UNKNOWN, "" );
-        } else {
-            pos = new TimePosition( null, null, null, s );
-        }
-        return new GenericTimeInstant( null, props, relatedTimes, null, pos );
-    }
+	private TimeInstant instant(final String s) {
+		final List<Property> props = emptyList();
+		final List<RelatedTime> relatedTimes = emptyList();
+		TimePosition pos = null;
+		if ("INDETERMINATE".equals(s)) {
+			pos = new TimePosition(null, null, UNKNOWN, "");
+		}
+		else {
+			pos = new TimePosition(null, null, null, s);
+		}
+		return new GenericTimeInstant(null, props, relatedTimes, null, pos);
+	}
 
-    private TimePeriod period( final String t1, final String t2 ) {
-        final TimeInstant begin = instant( t1 );
-        final TimeInstant end = instant( t2 );
-        final List<Property> props = emptyList();
-        final List<RelatedTime> relatedTimes = emptyList();
-        return new GenericTimePeriod( null, props, relatedTimes, null, begin, end );
-    }
+	private TimePeriod period(final String t1, final String t2) {
+		final TimeInstant begin = instant(t1);
+		final TimeInstant end = instant(t2);
+		final List<Property> props = emptyList();
+		final List<RelatedTime> relatedTimes = emptyList();
+		return new GenericTimePeriod(null, props, relatedTimes, null, begin, end);
+	}
 
 }

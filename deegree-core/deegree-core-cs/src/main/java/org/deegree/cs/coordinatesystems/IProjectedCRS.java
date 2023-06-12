@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -42,50 +41,41 @@ import org.deegree.cs.projections.IProjection;
 
 /**
  * Interface describing a ProjectedCRS
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public interface IProjectedCRS extends ICRS {
 
-    /**
-     * @return the underlyingCRS.
-     */
-    IGeographicCRS getGeographicCRS();
+	/**
+	 * @return the underlyingCRS.
+	 */
+	IGeographicCRS getGeographicCRS();
 
-    /**
-     * @return the projection.
-     */
-    IProjection getProjection();
+	/**
+	 * @return the projection.
+	 */
+	IProjection getProjection();
 
-    /**
-     * The actual transform method doing a projection from geographic coordinates to map coordinates.
-     * 
-     * @param lambda
-     *            the longitude
-     * @param phi
-     *            the latitude
-     * @return the projected Point or Point(Double.NAN, Double.NAN) if an error occurred.
-     * @throws ProjectionException
-     *             if the given lamba and phi coordinates could not be projected to x and y.
-     */
-    public Point2d doProjection( double lambda, double phi )
-                            throws ProjectionException;
+	/**
+	 * The actual transform method doing a projection from geographic coordinates to map
+	 * coordinates.
+	 * @param lambda the longitude
+	 * @param phi the latitude
+	 * @return the projected Point or Point(Double.NAN, Double.NAN) if an error occurred.
+	 * @throws ProjectionException if the given lamba and phi coordinates could not be
+	 * projected to x and y.
+	 */
+	public Point2d doProjection(double lambda, double phi) throws ProjectionException;
 
-    /**
-     * Do an inverse projection from projected (map) coordinates to geographic coordinates.
-     * 
-     * @param x
-     *            coordinate on the map
-     * @param y
-     *            coordinate on the map
-     * @return the projected Point with x = lambda and y = phi;
-     * @throws ProjectionException
-     *             if the given x and y coordinates could not be inverted to lambda and phi.
-     */
-    public Point2d doInverseProjection( double x, double y )
-                            throws ProjectionException;
+	/**
+	 * Do an inverse projection from projected (map) coordinates to geographic
+	 * coordinates.
+	 * @param x coordinate on the map
+	 * @param y coordinate on the map
+	 * @return the projected Point with x = lambda and y = phi;
+	 * @throws ProjectionException if the given x and y coordinates could not be inverted
+	 * to lambda and phi.
+	 */
+	public Point2d doInverseProjection(double x, double y) throws ProjectionException;
 
 }

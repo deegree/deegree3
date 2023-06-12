@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2009 by:
@@ -44,78 +43,76 @@ import org.junit.Test;
 
 /**
  * The <code>RasterRect</code> class TODO add class documentation here.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class RasterRectTest {
 
-    @Test
-    public void intersectionOverlap() {
-        RasterRect first = new RasterRect( 2, 2, 2, 2 );
-        RasterRect second = new RasterRect( 1, 3, 4, 5 );
-        RasterRect result = RasterRect.intersection( first, second );
-        Assert.assertEquals( 2, result.x );
-        Assert.assertEquals( 3, result.y );
-        Assert.assertEquals( 2, result.width );
-        Assert.assertEquals( 1, result.height );
-    }
+	@Test
+	public void intersectionOverlap() {
+		RasterRect first = new RasterRect(2, 2, 2, 2);
+		RasterRect second = new RasterRect(1, 3, 4, 5);
+		RasterRect result = RasterRect.intersection(first, second);
+		Assert.assertEquals(2, result.x);
+		Assert.assertEquals(3, result.y);
+		Assert.assertEquals(2, result.width);
+		Assert.assertEquals(1, result.height);
+	}
 
-    @Test
-    public void intersectionTotal() {
-        RasterRect first = new RasterRect( 2, 2, 4, 4 );
-        RasterRect second = new RasterRect( 3, 3, 2, 2 );
-        RasterRect result = RasterRect.intersection( first, second );
-        Assert.assertEquals( 3, result.x );
-        Assert.assertEquals( 3, result.y );
-        Assert.assertEquals( 2, result.width );
-        Assert.assertEquals( 2, result.height );
-    }
+	@Test
+	public void intersectionTotal() {
+		RasterRect first = new RasterRect(2, 2, 4, 4);
+		RasterRect second = new RasterRect(3, 3, 2, 2);
+		RasterRect result = RasterRect.intersection(first, second);
+		Assert.assertEquals(3, result.x);
+		Assert.assertEquals(3, result.y);
+		Assert.assertEquals(2, result.width);
+		Assert.assertEquals(2, result.height);
+	}
 
-    @Test
-    public void intersectionTotal2() {
-        RasterRect first = new RasterRect( 3, 3, 2, 2 );
-        RasterRect second = new RasterRect( 2, 2, 4, 4 );
-        RasterRect result = RasterRect.intersection( first, second );
-        Assert.assertEquals( 3, result.x );
-        Assert.assertEquals( 3, result.y );
-        Assert.assertEquals( 2, result.width );
-        Assert.assertEquals( 2, result.height );
-    }
+	@Test
+	public void intersectionTotal2() {
+		RasterRect first = new RasterRect(3, 3, 2, 2);
+		RasterRect second = new RasterRect(2, 2, 4, 4);
+		RasterRect result = RasterRect.intersection(first, second);
+		Assert.assertEquals(3, result.x);
+		Assert.assertEquals(3, result.y);
+		Assert.assertEquals(2, result.width);
+		Assert.assertEquals(2, result.height);
+	}
 
-    @Test
-    public void outsideLeft() {
-        RasterRect first = new RasterRect( 2, 2, 2, 2 );
-        RasterRect second = new RasterRect( 0, 3, 1, 5 );
-        RasterRect result = RasterRect.intersection( first, second );
+	@Test
+	public void outsideLeft() {
+		RasterRect first = new RasterRect(2, 2, 2, 2);
+		RasterRect second = new RasterRect(0, 3, 1, 5);
+		RasterRect result = RasterRect.intersection(first, second);
 
-        Assert.assertNull( result );
-    }
+		Assert.assertNull(result);
+	}
 
-    @Test
-    public void outsideRight() {
-        RasterRect first = new RasterRect( 2, 2, 2, 2 );
-        RasterRect second = new RasterRect( 5, 3, 1, 5 );
-        RasterRect result = RasterRect.intersection( first, second );
-        Assert.assertNull( result );
-    }
+	@Test
+	public void outsideRight() {
+		RasterRect first = new RasterRect(2, 2, 2, 2);
+		RasterRect second = new RasterRect(5, 3, 1, 5);
+		RasterRect result = RasterRect.intersection(first, second);
+		Assert.assertNull(result);
+	}
 
-    @Test
-    public void outsideTop() {
-        RasterRect first = new RasterRect( 2, 2, 2, 2 );
-        RasterRect second = new RasterRect( 2, 0, 5, 2 );
-        RasterRect result = RasterRect.intersection( first, second );
-        Assert.assertNull( result );
-    }
+	@Test
+	public void outsideTop() {
+		RasterRect first = new RasterRect(2, 2, 2, 2);
+		RasterRect second = new RasterRect(2, 0, 5, 2);
+		RasterRect result = RasterRect.intersection(first, second);
+		Assert.assertNull(result);
+	}
 
-    @Test
-    public void outsideBottom() {
-        RasterRect first = new RasterRect( 2, 2, 2, 2 );
-        RasterRect second = new RasterRect( 2, 5, 5, 2 );
-        RasterRect result = RasterRect.intersection( first, second );
-        Assert.assertNull( result );
-    }
+	@Test
+	public void outsideBottom() {
+		RasterRect first = new RasterRect(2, 2, 2, 2);
+		RasterRect second = new RasterRect(2, 5, 5, 2);
+		RasterRect result = RasterRect.intersection(first, second);
+		Assert.assertNull(result);
+	}
 
 }

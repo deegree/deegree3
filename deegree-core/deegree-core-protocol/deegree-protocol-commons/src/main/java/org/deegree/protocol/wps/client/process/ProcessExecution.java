@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -73,337 +72,315 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Represents an execution context for a {@link Process} that uses the <code>ResponseDocument</code> output mode.
+ * Represents an execution context for a {@link Process} that uses the
+ * <code>ResponseDocument</code> output mode.
  * <p>
  * NOTE: This class is not thread-safe.
  * </p>
- * 
+ *
  * @see Process
  * @see RawProcessExecution
- * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class ProcessExecution extends AbstractProcessExecution {
 
-    private static Logger LOG = LoggerFactory.getLogger( ProcessExecution.class );
+	private static Logger LOG = LoggerFactory.getLogger(ProcessExecution.class);
 
-    private final List<OutputFormat> outputDefs = new ArrayList<OutputFormat>();
+	private final List<OutputFormat> outputDefs = new ArrayList<OutputFormat>();
 
-    private ResponseFormat responseFormat;
+	private ResponseFormat responseFormat;
 
-    private ExecutionResponse lastResponse;
+	private ExecutionResponse lastResponse;
 
-    /**
-     * Creates a new {@link ProcessExecution} instance.
-     * 
-     * @param client
-     *            associated WPS client instance, must not be <code>null</code>
-     * @param process
-     *            associated process instance, must not be <code>null</code>
-     */
-    ProcessExecution( WPSClient client, Process process ) {
-        super( client, process );
-    }
+	/**
+	 * Creates a new {@link ProcessExecution} instance.
+	 * @param client associated WPS client instance, must not be <code>null</code>
+	 * @param process associated process instance, must not be <code>null</code>
+	 */
+	ProcessExecution(WPSClient client, Process process) {
+		super(client, process);
+	}
 
-    /**
-     * Adds the specified parameter to the list of explicitly requested output parameters.
-     * <p>
-     * Calling this method sets the <code>ResponseForm</code> to <code>ResponseDocument</code>.
-     * </p>
-     * 
-     * @param id
-     *            identifier of the output parameter, must not be <code>null</code>
-     * @param idCodeSpace
-     *            codespace of the parameter identifier, may be <code>null</code> (for identifiers without codespace)
-     * @param uom
-     *            requested unit of measure, may be <code>null</code> (indicates that the default mime type from the
-     *            parameter description applies). This parameter only applies for literal outputs.
-     * @param asRef
-     *            if true, the output should be returned by the process as a reference, otherwise it will be embedded in
-     *            the response document
-     * @param mimeType
-     *            requested mime type, may be <code>null</code> (indicates that the default mime type from the parameter
-     *            description applies)
-     * @param encoding
-     *            requested encoding, may be <code>null</code> (indicates that the default encoding from the parameter
-     *            description applies)
-     * @param schema
-     *            requested schema, may be <code>null</code> (indicates that the default schema from the parameter
-     *            description applies)
-     */
-    public void addOutput( String id, String idCodeSpace, String uom, boolean asRef, String mimeType, String encoding,
-                           String schema ) {
-        outputDefs.add( new OutputFormat( new CodeType( id ), uom, asRef, mimeType, encoding, schema ) );
-    }
+	/**
+	 * Adds the specified parameter to the list of explicitly requested output parameters.
+	 * <p>
+	 * Calling this method sets the <code>ResponseForm</code> to
+	 * <code>ResponseDocument</code>.
+	 * </p>
+	 * @param id identifier of the output parameter, must not be <code>null</code>
+	 * @param idCodeSpace codespace of the parameter identifier, may be <code>null</code>
+	 * (for identifiers without codespace)
+	 * @param uom requested unit of measure, may be <code>null</code> (indicates that the
+	 * default mime type from the parameter description applies). This parameter only
+	 * applies for literal outputs.
+	 * @param asRef if true, the output should be returned by the process as a reference,
+	 * otherwise it will be embedded in the response document
+	 * @param mimeType requested mime type, may be <code>null</code> (indicates that the
+	 * default mime type from the parameter description applies)
+	 * @param encoding requested encoding, may be <code>null</code> (indicates that the
+	 * default encoding from the parameter description applies)
+	 * @param schema requested schema, may be <code>null</code> (indicates that the
+	 * default schema from the parameter description applies)
+	 */
+	public void addOutput(String id, String idCodeSpace, String uom, boolean asRef, String mimeType, String encoding,
+			String schema) {
+		outputDefs.add(new OutputFormat(new CodeType(id), uom, asRef, mimeType, encoding, schema));
+	}
 
-    /**
-     * Executes the process and returns the outputs.
-     * 
-     * @return process outputs, never <code>null</code>
-     * @throws IOException
-     *             if a communication/network problem occured
-     * @throws OWSException
-     *             if the server replied with an exception
-     * @throws XMLStreamException
-     */
-    public ExecutionOutputs execute()
-                            throws OWSExceptionReport, IOException, XMLStreamException {
+	/**
+	 * Executes the process and returns the outputs.
+	 * @return process outputs, never <code>null</code>
+	 * @throws IOException if a communication/network problem occured
+	 * @throws OWSException if the server replied with an exception
+	 * @throws XMLStreamException
+	 */
+	public ExecutionOutputs execute() throws OWSExceptionReport, IOException, XMLStreamException {
 
-        lastResponse = sendExecute( false );
-        OWSExceptionReport report = lastResponse.getStatus().getExceptionReport();
-        if ( report != null ) {
-            throw report;
-        }
-        return lastResponse.getOutputs();
-    }
+		lastResponse = sendExecute(false);
+		OWSExceptionReport report = lastResponse.getStatus().getExceptionReport();
+		if (report != null) {
+			throw report;
+		}
+		return lastResponse.getOutputs();
+	}
 
-    /**
-     * Executes the process asynchronously.
-     * <p>
-     * This method issues the <code>Execute</code> request against the server and returns immediately.
-     * </p>
-     * 
-     * @throws IOException
-     *             if a communication/network problem occured
-     * @throws OWSException
-     *             if the server replied with an exception
-     * @throws XMLStreamException
-     */
-    public void executeAsync()
-                            throws OWSExceptionReport, IOException, XMLStreamException {
+	/**
+	 * Executes the process asynchronously.
+	 * <p>
+	 * This method issues the <code>Execute</code> request against the server and returns
+	 * immediately.
+	 * </p>
+	 * @throws IOException if a communication/network problem occured
+	 * @throws OWSException if the server replied with an exception
+	 * @throws XMLStreamException
+	 */
+	public void executeAsync() throws OWSExceptionReport, IOException, XMLStreamException {
 
-        // needed, because ResponseDocument must be set in any case for async mode
-        if ( outputDefs.isEmpty() ) {
-            for ( OutputType output : process.getOutputTypes() ) {
-                OutputFormat outputDef = new OutputFormat( output.getId(), null, false, null, null, null );
-                outputDefs.add( outputDef );
-            }
-        }
-        lastResponse = sendExecute( true );
-    }
+		// needed, because ResponseDocument must be set in any case for async mode
+		if (outputDefs.isEmpty()) {
+			for (OutputType output : process.getOutputTypes()) {
+				OutputFormat outputDef = new OutputFormat(output.getId(), null, false, null, null, null);
+				outputDefs.add(outputDef);
+			}
+		}
+		lastResponse = sendExecute(true);
+	}
 
-    /**
-     * Returns the outputs of the process execution.
-     * 
-     * @return the outputs of the process execution, or <code>null</code> if the current state is not
-     *         {@link ExecutionState#SUCCEEDED}
-     * @throws OWSExceptionReport
-     *             if the server replied with an exception
-     */
-    public ExecutionOutputs getOutputs()
-                            throws OWSExceptionReport {
-        if ( lastResponse == null ) {
-            return null;
-        }
-        OWSExceptionReport report = lastResponse.getStatus().getExceptionReport();
-        if ( report != null ) {
-            throw report;
-        }
-        return lastResponse.getOutputs();
-    }
+	/**
+	 * Returns the outputs of the process execution.
+	 * @return the outputs of the process execution, or <code>null</code> if the current
+	 * state is not {@link ExecutionState#SUCCEEDED}
+	 * @throws OWSExceptionReport if the server replied with an exception
+	 */
+	public ExecutionOutputs getOutputs() throws OWSExceptionReport {
+		if (lastResponse == null) {
+			return null;
+		}
+		OWSExceptionReport report = lastResponse.getStatus().getExceptionReport();
+		if (report != null) {
+			throw report;
+		}
+		return lastResponse.getOutputs();
+	}
 
-    /**
-     * Returns the current state of the execution.
-     * 
-     * @return state of the execution, or <code>null</code> if the execution has not been started yet
-     * @throws OWSExceptionReport
-     *             if the server replied with an exception
-     * @throws IOException
-     *             if a communication/network problem occured
-     * @throws XMLStreamException
-     */
-    public ExecutionState getState()
-                            throws OWSExceptionReport, IOException, XMLStreamException {
-        if ( lastResponse == null ) {
-            return null;
-        }
-        if ( lastResponse.getStatus().getState() != ExecutionState.SUCCEEDED
-             && lastResponse.getStatus().getState() != ExecutionState.FAILED ) {
-            URL statusLocation = lastResponse.getStatusLocation();
-            if ( statusLocation == null ) {
-                throw new RuntimeException( "Cannot update status. No statusLocation provided." );
-            }
-            LOG.debug( "Polling response document from status location: " + statusLocation );
-            XMLInputFactory inFactory = XMLInputFactory.newInstance();
-            InputStream is = statusLocation.openStream();
-            XMLStreamReader xmlReader = inFactory.createXMLStreamReader( is );
-            XMLStreamUtils.nextElement( xmlReader );
-            if ( OWSExceptionReader.isExceptionReport( xmlReader.getName() ) ) {
-                throw OWSExceptionReader.parseExceptionReport( xmlReader );
-            }
-            ExecuteResponse100Reader reader = new ExecuteResponse100Reader( xmlReader );
-            lastResponse = reader.parse100();
-        }
-        return lastResponse.getStatus().getState();
-    }
+	/**
+	 * Returns the current state of the execution.
+	 * @return state of the execution, or <code>null</code> if the execution has not been
+	 * started yet
+	 * @throws OWSExceptionReport if the server replied with an exception
+	 * @throws IOException if a communication/network problem occured
+	 * @throws XMLStreamException
+	 */
+	public ExecutionState getState() throws OWSExceptionReport, IOException, XMLStreamException {
+		if (lastResponse == null) {
+			return null;
+		}
+		if (lastResponse.getStatus().getState() != ExecutionState.SUCCEEDED
+				&& lastResponse.getStatus().getState() != ExecutionState.FAILED) {
+			URL statusLocation = lastResponse.getStatusLocation();
+			if (statusLocation == null) {
+				throw new RuntimeException("Cannot update status. No statusLocation provided.");
+			}
+			LOG.debug("Polling response document from status location: " + statusLocation);
+			XMLInputFactory inFactory = XMLInputFactory.newInstance();
+			InputStream is = statusLocation.openStream();
+			XMLStreamReader xmlReader = inFactory.createXMLStreamReader(is);
+			XMLStreamUtils.nextElement(xmlReader);
+			if (OWSExceptionReader.isExceptionReport(xmlReader.getName())) {
+				throw OWSExceptionReader.parseExceptionReport(xmlReader);
+			}
+			ExecuteResponse100Reader reader = new ExecuteResponse100Reader(xmlReader);
+			lastResponse = reader.parse100();
+		}
+		return lastResponse.getStatus().getState();
+	}
 
-    /**
-     * Returns the status message.
-     * 
-     * @return status message, or <code>null</code> if the execution has not been started yet or no status message
-     *         available
-     */
-    public String getStatusMessage() {
-        if ( lastResponse == null ) {
-            return null;
-        }
-        return lastResponse.getStatus().getStatusMessage();
-    }
+	/**
+	 * Returns the status message.
+	 * @return status message, or <code>null</code> if the execution has not been started
+	 * yet or no status message available
+	 */
+	public String getStatusMessage() {
+		if (lastResponse == null) {
+			return null;
+		}
+		return lastResponse.getStatus().getStatusMessage();
+	}
 
-    /**
-     * Returns the web-accessible URL for retrieving the execute response.
-     * <p>
-     * For asynchronous operation, this URL may provide access to a dynamic document that's changing until the process
-     * is finished.
-     * </p>
-     * 
-     * @return web-accessible URL, or <code>null</code> if the execution has not been started yet or no status location
-     *         is available
-     */
-    public URL getStatusLocation() {
-        if ( lastResponse == null ) {
-            return null;
-        }
-        return lastResponse.getStatusLocation();
-    }
+	/**
+	 * Returns the web-accessible URL for retrieving the execute response.
+	 * <p>
+	 * For asynchronous operation, this URL may provide access to a dynamic document
+	 * that's changing until the process is finished.
+	 * </p>
+	 * @return web-accessible URL, or <code>null</code> if the execution has not been
+	 * started yet or no status location is available
+	 */
+	public URL getStatusLocation() {
+		if (lastResponse == null) {
+			return null;
+		}
+		return lastResponse.getStatusLocation();
+	}
 
-    /**
-     * Returns the percentage of the process that has been completed.
-     * 
-     * @return the completed percentage of the process, or <code>null</code> if the execution has not been started yet
-     *         or no completion percentage provided by the process
-     */
-    public Integer getPercentCompleted() {
-        if ( lastResponse == null ) {
-            return null;
-        }
-        return lastResponse.getStatus().getPercentCompleted();
-    }
+	/**
+	 * Returns the percentage of the process that has been completed.
+	 * @return the completed percentage of the process, or <code>null</code> if the
+	 * execution has not been started yet or no completion percentage provided by the
+	 * process
+	 */
+	public Integer getPercentCompleted() {
+		if (lastResponse == null) {
+			return null;
+		}
+		return lastResponse.getStatus().getPercentCompleted();
+	}
 
-    /**
-     * Returns the creation time for the process execution as reported by the server.
-     * 
-     * @return creation time, or <code>null</code> if the execution has not been started yet
-     */
-    public String getCreationTime() {
-        if ( lastResponse == null ) {
-            return null;
-        }
-        return lastResponse.getStatus().getCreationTime();
-    }
+	/**
+	 * Returns the creation time for the process execution as reported by the server.
+	 * @return creation time, or <code>null</code> if the execution has not been started
+	 * yet
+	 */
+	public String getCreationTime() {
+		if (lastResponse == null) {
+			return null;
+		}
+		return lastResponse.getStatus().getCreationTime();
+	}
 
-    /**
-     * Returns the exception report.
-     * <p>
-     * NOTE: An exception report is only available if state is {@link ExecutionState#FAILED}.
-     * </p>
-     * 
-     * @return an exception report in case the execution failed, <code>null</code> otherwise
-     */
-    public OWSExceptionReport getExceptionReport() {
-        if ( lastResponse == null ) {
-            return null;
-        }
-        return lastResponse.getStatus().getExceptionReport();
-    }
+	/**
+	 * Returns the exception report.
+	 * <p>
+	 * NOTE: An exception report is only available if state is
+	 * {@link ExecutionState#FAILED}.
+	 * </p>
+	 * @return an exception report in case the execution failed, <code>null</code>
+	 * otherwise
+	 */
+	public OWSExceptionReport getExceptionReport() {
+		if (lastResponse == null) {
+			return null;
+		}
+		return lastResponse.getStatus().getExceptionReport();
+	}
 
-    private ExecutionResponse sendExecute( boolean async )
-                            throws OWSExceptionReport, XMLStreamException, IOException {
+	private ExecutionResponse sendExecute(boolean async) throws OWSExceptionReport, XMLStreamException, IOException {
 
-        responseFormat = new ResponseFormat( false, async, false, async, outputDefs );
+		responseFormat = new ResponseFormat(false, async, false, async, outputDefs);
 
-        // TODO what if server only supports Get?
-        URL url = client.getExecuteURL( true );
+		// TODO what if server only supports Get?
+		URL url = client.getExecuteURL(true);
 
-        URLConnection conn = url.openConnection();
-        conn.setDoOutput( true );
-        conn.setUseCaches( false );
-        // TODO does this need configurability?
-        conn.setRequestProperty( "Content-Type", "application/xml" );
+		URLConnection conn = url.openConnection();
+		conn.setDoOutput(true);
+		conn.setUseCaches(false);
+		// TODO does this need configurability?
+		conn.setRequestProperty("Content-Type", "application/xml");
 
-        XMLOutputFactory outFactory = XMLOutputFactory.newInstance();
+		XMLOutputFactory outFactory = XMLOutputFactory.newInstance();
 
-        OutputStream os = conn.getOutputStream();
-        XMLInputFactory inFactory = XMLInputFactory.newInstance();
+		OutputStream os = conn.getOutputStream();
+		XMLInputFactory inFactory = XMLInputFactory.newInstance();
 
-        if ( LOG.isDebugEnabled() ) {
-            File logFile = File.createTempFile( "wpsclient", "request.xml" );
-            XMLStreamWriter logWriter = outFactory.createXMLStreamWriter( new FileOutputStream( logFile ), "UTF-8" );
-            ExecuteRequest100Writer executer = new ExecuteRequest100Writer( logWriter );
-            executer.write100( process.getId(), inputs, responseFormat );
-            logWriter.close();
-            LOG.debug( "WPS request can be found at " + logFile );
+		if (LOG.isDebugEnabled()) {
+			File logFile = File.createTempFile("wpsclient", "request.xml");
+			XMLStreamWriter logWriter = outFactory.createXMLStreamWriter(new FileOutputStream(logFile), "UTF-8");
+			ExecuteRequest100Writer executer = new ExecuteRequest100Writer(logWriter);
+			executer.write100(process.getId(), inputs, responseFormat);
+			logWriter.close();
+			LOG.debug("WPS request can be found at " + logFile);
 
-            InputStream is = new FileInputStream( logFile );
-            byte[] buffer = new byte[1024];
-            int read = 0;
-            while ( ( read = is.read( buffer ) ) != -1 ) {
-                os.write( buffer, 0, read );
-            }
-            is.close();
-            os.close();
-        } else {
-            XMLStreamWriter writer = outFactory.createXMLStreamWriter( os, "UTF-8" );
-            ExecuteRequest100Writer executer = new ExecuteRequest100Writer( writer );
-            executer.write100( process.getId(), inputs, responseFormat );
-            writer.close();
-        }
+			InputStream is = new FileInputStream(logFile);
+			byte[] buffer = new byte[1024];
+			int read = 0;
+			while ((read = is.read(buffer)) != -1) {
+				os.write(buffer, 0, read);
+			}
+			is.close();
+			os.close();
+		}
+		else {
+			XMLStreamWriter writer = outFactory.createXMLStreamWriter(os, "UTF-8");
+			ExecuteRequest100Writer executer = new ExecuteRequest100Writer(writer);
+			executer.write100(process.getId(), inputs, responseFormat);
+			writer.close();
+		}
 
-        InputStream responseStream;
-        
-        // avoid java.io.IOException if server returned HTTP error code, rather get the OWSException
-        if(conn instanceof HttpURLConnection) {
-            HttpURLConnection httpConn = (HttpURLConnection) conn;
+		InputStream responseStream;
 
-            int responseCode = httpConn.getResponseCode();
-            LOG.debug(String.format("WPS request returned response code: %d", responseCode));
+		// avoid java.io.IOException if server returned HTTP error code, rather get the
+		// OWSException
+		if (conn instanceof HttpURLConnection) {
+			HttpURLConnection httpConn = (HttpURLConnection) conn;
 
-            // See if we have an error - if so, process the error stream. If
-            // not, get the input stream
-            responseStream = httpConn.getErrorStream();
-            if (responseStream == null) {
-                responseStream = httpConn.getInputStream();
-            }
-        } 
-        // revert to previous default behaviour if we don't have an HTTP connection
-        else {
-            responseStream = conn.getInputStream();
-        }
+			int responseCode = httpConn.getResponseCode();
+			LOG.debug(String.format("WPS request returned response code: %d", responseCode));
 
-        if ( LOG.isDebugEnabled() ) {
-            File logFile = File.createTempFile( "wpsclient", "response" );
-            OutputStream logStream = new FileOutputStream( logFile );
+			// See if we have an error - if so, process the error stream. If
+			// not, get the input stream
+			responseStream = httpConn.getErrorStream();
+			if (responseStream == null) {
+				responseStream = httpConn.getInputStream();
+			}
+		}
+		// revert to previous default behaviour if we don't have an HTTP connection
+		else {
+			responseStream = conn.getInputStream();
+		}
 
-            byte[] buffer = new byte[1024];
-            int read = 0;
-            while ( ( read = responseStream.read( buffer ) ) != -1 ) {
-                logStream.write( buffer, 0, read );
-            }
-            logStream.close();
+		if (LOG.isDebugEnabled()) {
+			File logFile = File.createTempFile("wpsclient", "response");
+			OutputStream logStream = new FileOutputStream(logFile);
 
-            responseStream = new FileInputStream( logFile );
-            LOG.debug( "WPS response can be found at " + logFile );
-        }
+			byte[] buffer = new byte[1024];
+			int read = 0;
+			while ((read = responseStream.read(buffer)) != -1) {
+				logStream.write(buffer, 0, read);
+			}
+			logStream.close();
 
-        // String outputContent = conn.getContentType();
-        // TODO determine XML reader encoding based on mime type
-        XMLStreamReader reader = inFactory.createXMLStreamReader( responseStream );
-        XMLStreamUtils.nextElement( reader );
-        if ( OWSExceptionReader.isExceptionReport( reader.getName() ) ) {
-            throw OWSExceptionReader.parseExceptionReport( reader );
-        }
-        if ( new QName( WPSConstants.WPS_100_NS, "ExecuteResponse" ).equals( reader.getName() ) ) {
-            ExecuteResponse100Reader responseReader = new ExecuteResponse100Reader( reader );
-            lastResponse = responseReader.parse100();
-            reader.close();
+			responseStream = new FileInputStream(logFile);
+			LOG.debug("WPS response can be found at " + logFile);
+		}
 
-        } else {
-            throw new RuntimeException( "Unexpected Execute response: root element is '" + reader.getName() + "'" );
-        }
-        return lastResponse;
-    }
+		// String outputContent = conn.getContentType();
+		// TODO determine XML reader encoding based on mime type
+		XMLStreamReader reader = inFactory.createXMLStreamReader(responseStream);
+		XMLStreamUtils.nextElement(reader);
+		if (OWSExceptionReader.isExceptionReport(reader.getName())) {
+			throw OWSExceptionReader.parseExceptionReport(reader);
+		}
+		if (new QName(WPSConstants.WPS_100_NS, "ExecuteResponse").equals(reader.getName())) {
+			ExecuteResponse100Reader responseReader = new ExecuteResponse100Reader(reader);
+			lastResponse = responseReader.parse100();
+			reader.close();
+
+		}
+		else {
+			throw new RuntimeException("Unexpected Execute response: root element is '" + reader.getName() + "'");
+		}
+		return lastResponse;
+	}
+
 }

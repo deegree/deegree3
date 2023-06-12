@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -48,50 +47,44 @@ import org.junit.Test;
 
 /**
  * <code>StereographicAlternativeTest</code> tests the transverse mercator projection.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class TransverseMercatorTest extends ProjectionBase {
 
-    private static final TransverseMercator projection_25832 = new TransverseMercator( true,
+	private static final TransverseMercator projection_25832 = new TransverseMercator(true,
 
-    0, 500000.0, new Point2d( Math.toRadians( 9 ), 0 ), Unit.METRE, 0.9996 );
+			0, 500000.0, new Point2d(Math.toRadians(9), 0), Unit.METRE, 0.9996);
 
-    /**
-     * reference point created with proj4 command : <code>
-     * proj -f "%.5f" +proj=tmerc +ellps=GRS80 +lon_0=9 +lat_0=0 +k=0.9996 +x_0=500000
-     * 6.610765 53.235916
-     * 340545.99617007 5901178.79904923
-     *  </code>
-     * 
-     * @throws ProjectionException
-     */
-    @Test
-    public void testAccuracy()
-                            throws ProjectionException {
+	/**
+	 * reference point created with proj4 command : <code>
+	 * proj -f "%.5f" +proj=tmerc +ellps=GRS80 +lon_0=9 +lat_0=0 +k=0.9996 +x_0=500000
+	 * 6.610765 53.235916
+	 * 340545.99617007 5901178.79904923
+	 *  </code>
+	 * @throws ProjectionException
+	 */
+	@Test
+	public void testAccuracy() throws ProjectionException {
 
-        Point2d sourcePoint = new Point2d( Math.toRadians( 6.610765 ), Math.toRadians( 53.235916 ) );
-        Point2d targetPoint = new Point2d( 340545.99617007, 5901178.79904923 );
+		Point2d sourcePoint = new Point2d(Math.toRadians(6.610765), Math.toRadians(53.235916));
+		Point2d targetPoint = new Point2d(340545.99617007, 5901178.79904923);
 
-        doForwardAndInverse( projection_25832, geographic_4258, sourcePoint, targetPoint );
+		doForwardAndInverse(projection_25832, geographic_4258, sourcePoint, targetPoint);
 
-    }
+	}
 
-    /**
-     * tests the consistency of the {@link LambertConformalConic} projection.
-     */
-    @Test
-    public void testConsistency() {
-        consistencyTest( projection_25832, 0, 500000, new Point2d( Math.toRadians( 9 ), 0 ), Unit.METRE, 0.9996, true,
-                         false, "transverseMercator" );
-        assertEquals( true, projection_25832.getHemisphere() );
-        // should be 32 zone.
-        assertEquals( 32, projection_25832.getZoneFromNearestMeridian( Math.toRadians( 9 ) ) );
-    }
+	/**
+	 * tests the consistency of the {@link LambertConformalConic} projection.
+	 */
+	@Test
+	public void testConsistency() {
+		consistencyTest(projection_25832, 0, 500000, new Point2d(Math.toRadians(9), 0), Unit.METRE, 0.9996, true, false,
+				"transverseMercator");
+		assertEquals(true, projection_25832.getHemisphere());
+		// should be 32 zone.
+		assertEquals(32, projection_25832.getZoneFromNearestMeridian(Math.toRadians(9)));
+	}
 
 }

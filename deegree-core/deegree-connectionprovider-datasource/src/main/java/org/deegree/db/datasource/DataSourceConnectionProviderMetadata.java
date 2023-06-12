@@ -56,32 +56,31 @@ import org.slf4j.Logger;
 
 /**
  * {@link ConnectionProviderMetadata} for the {@link DataSourceConnectionProvider}.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * 
  * @since 3.4
  */
 class DataSourceConnectionProviderMetadata extends AbstractResourceMetadata<ConnectionProvider> {
 
-    private static final Logger LOG = getLogger( DataSourceConnectionProviderMetadata.class );
+	private static final Logger LOG = getLogger(DataSourceConnectionProviderMetadata.class);
 
-    private static final String JAXB_PACKAGE = "org.deegree.db.datasource.jaxb";
+	private static final String JAXB_PACKAGE = "org.deegree.db.datasource.jaxb";
 
-    DataSourceConnectionProviderMetadata( final Workspace workspace,
-                                          final ResourceLocation<ConnectionProvider> location,
-                                          final ConnectionProviderProvider provider ) {
-        super( workspace, location, provider );
-    }
+	DataSourceConnectionProviderMetadata(final Workspace workspace, final ResourceLocation<ConnectionProvider> location,
+			final ConnectionProviderProvider provider) {
+		super(workspace, location, provider);
+	}
 
-    @Override
-    public ResourceBuilder<ConnectionProvider> prepare() {
-        try {
-            final Object cfg = unmarshall( JAXB_PACKAGE, SCHEMA_URL, location.getAsStream(), workspace );
-            return new DataSourceConnectionProviderBuilder( (DataSourceConnectionProvider) cfg, this, workspace );
-        } catch ( Exception e ) {
-            LOG.error( e.getLocalizedMessage(), e );
-            throw new ResourceInitException( e.getLocalizedMessage(), e );
-        }
-    }
+	@Override
+	public ResourceBuilder<ConnectionProvider> prepare() {
+		try {
+			final Object cfg = unmarshall(JAXB_PACKAGE, SCHEMA_URL, location.getAsStream(), workspace);
+			return new DataSourceConnectionProviderBuilder((DataSourceConnectionProvider) cfg, this, workspace);
+		}
+		catch (Exception e) {
+			LOG.error(e.getLocalizedMessage(), e);
+			throw new ResourceInitException(e.getLocalizedMessage(), e);
+		}
+	}
 
 }

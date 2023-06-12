@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -47,37 +46,30 @@ import org.deegree.workspace.Resource;
 
 /**
  * Describes what a style store resource can do.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 public interface StyleStore extends Resource {
 
-    /**
-     * @param styleName
-     *            if null, the default style will be returned
-     */
-    Style getStyle( String styleName );
+	/**
+	 * @param styleName if null, the default style will be returned
+	 */
+	Style getStyle(String styleName);
 
-    /**
-     * @param layerName
-     *            if null, the first matching style will be returned
-     * @param styleName
-     *            if null, the default style will be returned
-     */
-    Style getStyle( String layerName, String styleName );
+	/**
+	 * @param layerName if null, the first matching style will be returned
+	 * @param styleName if null, the default style will be returned
+	 */
+	Style getStyle(String layerName, String styleName);
 
-    /**
-     * @param layerName
-     *            if null, equivalent with #getAll()
-     */
-    List<Style> getAll( String layerName );
+	/**
+	 * @param layerName if null, equivalent with #getAll()
+	 */
+	List<Style> getAll(String layerName);
 
-    /**
-     * @return all styles known to the style store
-     */
-    List<Style> getAll();
+	/**
+	 * @return all styles known to the style store
+	 */
+	List<Style> getAll();
 
 }

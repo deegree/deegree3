@@ -59,72 +59,68 @@ import java.awt.geom.Area;
  *
  * @author Jerry Huxtable
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- *
- * @version $Revision$, $Date$
  */
 public class CompoundStroke implements Stroke {
 
-    private Stroke stroke1, stroke2;
+	private Stroke stroke1, stroke2;
 
-    private Operation operation;
+	private Operation operation;
 
-    /**
-     * @param stroke1
-     * @param stroke2
-     * @param operation
-     */
-    public CompoundStroke( Stroke stroke1, Stroke stroke2, Operation operation ) {
-        this.stroke1 = stroke1;
-        this.stroke2 = stroke2;
-        this.operation = operation;
-    }
+	/**
+	 * @param stroke1
+	 * @param stroke2
+	 * @param operation
+	 */
+	public CompoundStroke(Stroke stroke1, Stroke stroke2, Operation operation) {
+		this.stroke1 = stroke1;
+		this.stroke2 = stroke2;
+		this.operation = operation;
+	}
 
-    public Shape createStrokedShape( Shape shape ) {
-        Area area1 = new Area( stroke1.createStrokedShape( shape ) );
-        Area area2 = new Area( stroke2.createStrokedShape( shape ) );
-        switch ( operation ) {
-        case ADD:
-            area1.add( area2 );
-            break;
-        case SUBSTRACT:
-            area1.subtract( area2 );
-            break;
-        case INTERSECT:
-            area1.intersect( area2 );
-            break;
-        case DIFFERENCE:
-            area1.exclusiveOr( area2 );
-            break;
-        }
-        return area1;
-    }
+	public Shape createStrokedShape(Shape shape) {
+		Area area1 = new Area(stroke1.createStrokedShape(shape));
+		Area area2 = new Area(stroke2.createStrokedShape(shape));
+		switch (operation) {
+			case ADD:
+				area1.add(area2);
+				break;
+			case SUBSTRACT:
+				area1.subtract(area2);
+				break;
+			case INTERSECT:
+				area1.intersect(area2);
+				break;
+			case DIFFERENCE:
+				area1.exclusiveOr(area2);
+				break;
+		}
+		return area1;
+	}
 
-    /**
-     * <code>Operation</code>
-     *
-     * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-     * @author last edited by: $Author$
-     *
-     * @version $Revision$, $Date$
-     */
-    public enum Operation {
-        /**
-         *
-         */
-        ADD,
-        /**
-         *
-         */
-        SUBSTRACT,
-        /**
-         *
-         */
-        INTERSECT,
-        /**
-         *
-         */
-        DIFFERENCE
-    }
+	/**
+	 * <code>Operation</code>
+	 *
+	 * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+	 */
+	public enum Operation {
+
+		/**
+		 *
+		 */
+		ADD,
+		/**
+		 *
+		 */
+		SUBSTRACT,
+		/**
+		 *
+		 */
+		INTERSECT,
+		/**
+		 *
+		 */
+		DIFFERENCE
+
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -52,66 +51,64 @@ import org.deegree.commons.utils.kvp.InvalidParameterValueException;
  * </ul>
  * </p>
  * <p>
- * Additionally evaluates the <code>LANGUAGE</code> parameter for multilingual services according to OWS Common change
- * request OGC 08-016r2. This is used by the WPS Specification 1.0.0.
+ * Additionally evaluates the <code>LANGUAGE</code> parameter for multilingual services
+ * according to OWS Common change request OGC 08-016r2. This is used by the WPS
+ * Specification 1.0.0.
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * 
- * @version $Revision:$, $Date:$
  */
 public class GetCapabilitiesKVPParser {
 
-    /**
-     * Parses a normalized (upper-cased keys) KVP-map as an {@link GetCapabilities} request.
-     * <p>
-     * NOTE: The parameters "SERVICE" and "REQUEST" are not evaluated. It is assumed that the caller already checked
-     * them.
-     * 
-     * @param kvpParams
-     *            normalized KVP-map; keys must be uppercase, each key only has one associated value
-     * @return {@link GetCapabilities} request
-     * @throws InvalidParameterValueException
-     *             if a parameter (e.g. ACCEPTVERSIONS) contains a syntactical error
-     */
-    public static GetCapabilities parse( Map<String, String> kvpParams )
-                            throws InvalidParameterValueException {
+	/**
+	 * Parses a normalized (upper-cased keys) KVP-map as an {@link GetCapabilities}
+	 * request.
+	 * <p>
+	 * NOTE: The parameters "SERVICE" and "REQUEST" are not evaluated. It is assumed that
+	 * the caller already checked them.
+	 * @param kvpParams normalized KVP-map; keys must be uppercase, each key only has one
+	 * associated value
+	 * @return {@link GetCapabilities} request
+	 * @throws InvalidParameterValueException if a parameter (e.g. ACCEPTVERSIONS)
+	 * contains a syntactical error
+	 */
+	public static GetCapabilities parse(Map<String, String> kvpParams) throws InvalidParameterValueException {
 
-        // VERSION (optional)
-        String version = kvpParams.get( "VERSION" );
+		// VERSION (optional)
+		String version = kvpParams.get("VERSION");
 
-        // ACCEPTVERSIONS (optional)
-        List<String> acceptVersions = null;
-        String acceptVersionsString = kvpParams.get( "ACCEPTVERSIONS" );
-        if ( acceptVersionsString != null ) {
-            acceptVersions = Arrays.asList( acceptVersionsString.split( "," ) );
-        }
+		// ACCEPTVERSIONS (optional)
+		List<String> acceptVersions = null;
+		String acceptVersionsString = kvpParams.get("ACCEPTVERSIONS");
+		if (acceptVersionsString != null) {
+			acceptVersions = Arrays.asList(acceptVersionsString.split(","));
+		}
 
-        // SECTIONS (optional)
-        List<String> sections = null;
-        String sectionsString = kvpParams.get( "SECTIONS" );
-        if ( sectionsString != null ) {
-            sections = Arrays.asList( sectionsString.split( "," ) );
-        }
+		// SECTIONS (optional)
+		List<String> sections = null;
+		String sectionsString = kvpParams.get("SECTIONS");
+		if (sectionsString != null) {
+			sections = Arrays.asList(sectionsString.split(","));
+		}
 
-        // ACCEPTFORMATS (optional)
-        List<String> acceptFormats = null;
-        String acceptFormatsString = kvpParams.get( "ACCEPTFORMATS" );
-        if ( acceptFormatsString != null ) {
-            acceptFormats = Arrays.asList( acceptFormatsString.split( "," ) );
-        }
+		// ACCEPTFORMATS (optional)
+		List<String> acceptFormats = null;
+		String acceptFormatsString = kvpParams.get("ACCEPTFORMATS");
+		if (acceptFormatsString != null) {
+			acceptFormats = Arrays.asList(acceptFormatsString.split(","));
+		}
 
-        // UPDATESEQUENCE (optional)
-        String updateSequence = kvpParams.get( "UPDATESEQUENCE" );
+		// UPDATESEQUENCE (optional)
+		String updateSequence = kvpParams.get("UPDATESEQUENCE");
 
-        // LANGUAGE (optional)
-        List<String> languages = null;
-        String languagesString = kvpParams.get( "LANGUAGE" );
-        if ( languagesString != null ) {
-            languages = Arrays.asList( languagesString.split( "," ) );
-        }
+		// LANGUAGE (optional)
+		List<String> languages = null;
+		String languagesString = kvpParams.get("LANGUAGE");
+		if (languagesString != null) {
+			languages = Arrays.asList(languagesString.split(","));
+		}
 
-        return new GetCapabilities( version, acceptVersions, sections, acceptFormats, updateSequence, languages );
-    }
+		return new GetCapabilities(version, acceptVersions, sections, acceptFormats, updateSequence, languages);
+	}
+
 }

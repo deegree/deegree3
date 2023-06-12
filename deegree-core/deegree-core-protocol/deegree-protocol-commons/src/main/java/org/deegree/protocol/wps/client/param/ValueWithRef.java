@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -40,54 +39,46 @@ import org.deegree.protocol.wps.client.output.type.LiteralOutputType;
 
 /**
  * Encapsulates a value and an optional reference.
- * 
+ *
  * @see LiteralInputType
  * @see LiteralOutputType
- * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class ValueWithRef {
 
-    private String value;
+	private String value;
 
-    private String ref;
+	private String ref;
 
-    /**
-     * Creates a new {@link ValueWithRef} instance.
-     * 
-     * @param value
-     *            value, must not be <code>null</code>
-     * @param ref
-     *            reference, can be <code>null</code>
-     */
-    public ValueWithRef( String value, String ref ) {
-        this.value = value;
-        this.ref = ref;
-    }
+	/**
+	 * Creates a new {@link ValueWithRef} instance.
+	 * @param value value, must not be <code>null</code>
+	 * @param ref reference, can be <code>null</code>
+	 */
+	public ValueWithRef(String value, String ref) {
+		this.value = value;
+		this.ref = ref;
+	}
 
-    /**
-     * Returns the value.
-     * 
-     * @return the value, never <code>null</code>
-     */
-    public String getValue() {
-        return value;
-    }
+	/**
+	 * Returns the value.
+	 * @return the value, never <code>null</code>
+	 */
+	public String getValue() {
+		return value;
+	}
 
-    /**
-     * Returns the reference.
-     * 
-     * @return the reference, may be <code>null</code>
-     */
-    public String getRef() {
-        return ref;
-    }
+	/**
+	 * Returns the reference.
+	 * @return the reference, may be <code>null</code>
+	 */
+	public String getRef() {
+		return ref;
+	}
 
-    @Override
-    public String toString() {
-        return value + ": " + ref;
-    }
+	@Override
+	public String toString() {
+		return value + ": " + ref;
+	}
+
 }

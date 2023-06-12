@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-base/src/main/java/org/deegree/filter/sql/DBField.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -37,65 +36,63 @@ package org.deegree.sqldialect.filter;
 
 /**
  * The <code></code> class TODO add class documentation here.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: aschmitz $
- * 
- * @version $Revision: 29163 $, $Date: 2011-01-11 11:39:42 +0100 (Di, 11. Jan 2011) $
  */
 public class DBField implements MappingExpression {
 
-    private String schema;
+	private String schema;
 
-    private String table;
+	private String table;
 
-    private String column;
+	private String column;
 
-    private String alias;
+	private String alias;
 
-    public DBField( String schema, String table, String column ) {
-        this.schema = schema;
-        this.table = table;
-        this.column = column;
-    }
+	public DBField(String schema, String table, String column) {
+		this.schema = schema;
+		this.table = table;
+		this.column = column;
+	}
 
-    public DBField( String table, String column ) {
-        this.table = table;
-        this.column = column;
-    }
+	public DBField(String table, String column) {
+		this.table = table;
+		this.column = column;
+	}
 
-    public DBField( String column ) {
-        this.column = column;
-    }
+	public DBField(String column) {
+		this.column = column;
+	}
 
-    public String getSchema() {
-        return schema;
-    }
+	public String getSchema() {
+		return schema;
+	}
 
-    public String getTable() {
-        return table;
-    }
+	public String getTable() {
+		return table;
+	}
 
-    public void setAlias( String alias ) {
-        this.alias = alias;
-    }
+	public void setAlias(String alias) {
+		this.alias = alias;
+	}
 
-    public String getAlias() {
-        return alias;
-    }
+	public String getAlias() {
+		return alias;
+	}
 
-    public String getColumn() {
-        return column;
-    }
+	public String getColumn() {
+		return column;
+	}
 
-    @Override
-    public String toString() {
-        if ( schema != null ) {
-            return schema + "." + table + "." + column;
-        }
-        if ( table != null ) {
-            return table + "." + column;
-        }
-        return column;
-    }
+	@Override
+	public String toString() {
+		if (schema != null) {
+			return schema + "." + table + "." + column;
+		}
+		if (table != null) {
+			return table + "." + column;
+		}
+		return column;
+	}
+
 }

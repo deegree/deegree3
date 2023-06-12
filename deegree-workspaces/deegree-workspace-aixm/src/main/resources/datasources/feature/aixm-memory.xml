@@ -1,6 +1,6 @@
 <MemoryFeatureStore xmlns="http://www.deegree.org/datasource/feature/memory"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/datasource/feature/memory http://schemas.deegree.org/3.5/datasource/feature/memory/memory.xsd">
+  xsi:schemaLocation="http://www.deegree.org/datasource/feature/memory https://schemas.deegree.org/core/3.5/datasource/feature/memory/memory.xsd">
 
   <!-- Namespace bindings to be used (0...n) -->
   <NamespaceHint prefix="aixm" namespaceURI="http://www.aixm.aero/schema/5.1" />

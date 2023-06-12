@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -67,224 +66,218 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Defines the export functionality for a {@link Transaction} request
- * 
+ *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: thomas $
- * 
- * @version $Revision: $, $Date: $
  */
 public class TransactionHandler {
 
-    private static final Logger LOG = LoggerFactory.getLogger( TransactionHandler.class );
+	private static final Logger LOG = LoggerFactory.getLogger(TransactionHandler.class);
 
-    /**
-     * 
-     * Preprocessing for the export of a {@link Transaction} request
-     * 
-     * @param trans
-     * @param response
-     * @throws XMLStreamException
-     * @throws OWSException
-     * @throws IOException
-     */
-    public void doTransaction( Transaction trans, HttpResponseBuffer response, MetadataStore<?> store )
-                            throws XMLStreamException, OWSException, IOException {
+	/**
+	 *
+	 * Preprocessing for the export of a {@link Transaction} request
+	 * @param trans
+	 * @param response
+	 * @throws XMLStreamException
+	 * @throws OWSException
+	 * @throws IOException
+	 */
+	public void doTransaction(Transaction trans, HttpResponseBuffer response, MetadataStore<?> store)
+			throws XMLStreamException, OWSException, IOException {
 
-        LOG.debug( "doTransaction: " + trans );
+		LOG.debug("doTransaction: " + trans);
 
-        Version version = trans.getVersion();
+		Version version = trans.getVersion();
 
-        response.setContentType( "application/xml; charset=UTF-8" );
+		response.setContentType("application/xml; charset=UTF-8");
 
-        // to be sure of a valid response
-        String schemaLocation = "";
-        if ( version.equals( VERSION_202 ) ) {
-            schemaLocation = CSW_202_NS + " " + CSW_202_PUBLICATION_SCHEMA;
-        }
+		// to be sure of a valid response
+		String schemaLocation = "";
+		if (version.equals(VERSION_202)) {
+			schemaLocation = CSW_202_NS + " " + CSW_202_PUBLICATION_SCHEMA;
+		}
 
-        XMLStreamWriter xmlWriter = getXMLResponseWriter( response, schemaLocation );
-        try {
-            doTransaction( xmlWriter, trans, version, store );
-        } catch ( MetadataStoreException e ) {
-            throw new OWSException( e.getMessage(), OWSException.NO_APPLICABLE_CODE );
-        }
-        xmlWriter.flush();
-    }
+		XMLStreamWriter xmlWriter = getXMLResponseWriter(response, schemaLocation);
+		try {
+			doTransaction(xmlWriter, trans, version, store);
+		}
+		catch (MetadataStoreException e) {
+			throw new OWSException(e.getMessage(), OWSException.NO_APPLICABLE_CODE);
+		}
+		xmlWriter.flush();
+	}
 
-    /**
-     * Exports the correct recognized request and determines to which version it should delegate the request.
-     * 
-     * @param xmlWriter
-     * @param transaction
-     *            request from the client
-     * @param version
-     * @throws XMLStreamException
-     * @throws OWSException
-     * @throws MetadataStoreException
-     */
-    private void doTransaction( XMLStreamWriter xmlWriter, Transaction transaction, Version version,
-                                MetadataStore<?> store )
-                            throws XMLStreamException, OWSException, MetadataStoreException {
+	/**
+	 * Exports the correct recognized request and determines to which version it should
+	 * delegate the request.
+	 * @param xmlWriter
+	 * @param transaction request from the client
+	 * @param version
+	 * @throws XMLStreamException
+	 * @throws OWSException
+	 * @throws MetadataStoreException
+	 */
+	private void doTransaction(XMLStreamWriter xmlWriter, Transaction transaction, Version version,
+			MetadataStore<?> store) throws XMLStreamException, OWSException, MetadataStoreException {
 
-        if ( VERSION_202.equals( version ) ) {
-            export202( xmlWriter, transaction, store );
-        } else {
-            throw new OWSException( "Version '" + version + "' is not supported.", OWSException.INVALID_PARAMETER_VALUE );
-        }
-    }
+		if (VERSION_202.equals(version)) {
+			export202(xmlWriter, transaction, store);
+		}
+		else {
+			throw new OWSException("Version '" + version + "' is not supported.", OWSException.INVALID_PARAMETER_VALUE);
+		}
+	}
 
-    /**
-     * Exporthandling for the version 2.0.2. <br>
-     * Here it is determined which of the transaction actions are handled. First there is the handling with the
-     * database. After that in the case of the INSERT action the output should generate a brief representation of the
-     * inserted records.
-     * 
-     * @param writer
-     * @param transaction
-     *            request
-     * @throws XMLStreamException
-     * @throws OWSException
-     * @throws MetadataStoreException
-     */
-    private void export202( XMLStreamWriter writer, Transaction transaction, MetadataStore<?> store )
-                            throws OWSException, XMLStreamException, MetadataStoreException {
-        Version version = new Version( 2, 0, 2 );
+	/**
+	 * Exporthandling for the version 2.0.2. <br>
+	 * Here it is determined which of the transaction actions are handled. First there is
+	 * the handling with the database. After that in the case of the INSERT action the
+	 * output should generate a brief representation of the inserted records.
+	 * @param writer
+	 * @param transaction request
+	 * @throws XMLStreamException
+	 * @throws OWSException
+	 * @throws MetadataStoreException
+	 */
+	private void export202(XMLStreamWriter writer, Transaction transaction, MetadataStore<?> store)
+			throws OWSException, XMLStreamException, MetadataStoreException {
+		Version version = new Version(2, 0, 2);
 
-        int insertCount = 0;
-        int updateCount = 0;
-        int deleteCount = 0;
+		int insertCount = 0;
+		int updateCount = 0;
+		int deleteCount = 0;
 
-        writer.setDefaultNamespace( CSW_202_NS );
-        writer.writeStartElement( CSW_202_NS, "TransactionResponse" );
-        writer.writeDefaultNamespace( CSW_202_NS );
-        writer.writeAttribute( "version", version.toString() );
+		writer.setDefaultNamespace(CSW_202_NS);
+		writer.writeStartElement(CSW_202_NS, "TransactionResponse");
+		writer.writeDefaultNamespace(CSW_202_NS);
+		writer.writeAttribute("version", version.toString());
 
-        writer.writeStartElement( CSW_202_NS, "TransactionSummary" );
-        if ( transaction.getRequestId() != null ) {
-            writer.writeAttribute( "requestId", transaction.getRequestId() );
-        }
+		writer.writeStartElement(CSW_202_NS, "TransactionSummary");
+		if (transaction.getRequestId() != null) {
+			writer.writeAttribute("requestId", transaction.getRequestId());
+		}
 
-        MetadataStoreTransaction ta = store.acquireTransaction();
+		MetadataStoreTransaction ta = store.acquireTransaction();
 
-        List<String> insertHandles = new ArrayList<String>();
-        List<List<String>> insertIds = new ArrayList<List<String>>();
+		List<String> insertHandles = new ArrayList<String>();
+		List<List<String>> insertIds = new ArrayList<List<String>>();
 
-        String currentHandle = null;
+		String currentHandle = null;
 
-        try {
-            for ( TransactionOperation transact : transaction.getOperations() ) {
-                currentHandle = transact.getHandle();
-                switch ( transact.getType() ) {
-                case INSERT:
-                    List<String> ids = doInsert( ta, (InsertOperation) transact );
-                    insertHandles.add( transact.getHandle() );
-                    insertIds.add( ids );
-                    insertCount += ids.size();
-                    break;
-                case UPDATE:
-                    updateCount = doUpdate( ta, (UpdateOperation) transact );
-                    break;
-                case DELETE:
-                    deleteCount = doDelete( ta, (DeleteOperation) transact );
-                    break;
-                }
-            }
-            ta.commit();
-        } catch ( Throwable e ) {
-            ta.rollback();
-            if ( currentHandle != null ) {
-                String msg = "Transaction operation '" + currentHandle + "' failed: " + e.getMessage();
-                throw new OWSException( msg, OWSException.NO_APPLICABLE_CODE );
-            }
-            throw new OWSException( e.getMessage(), e, OWSException.NO_APPLICABLE_CODE );
-        }
+		try {
+			for (TransactionOperation transact : transaction.getOperations()) {
+				currentHandle = transact.getHandle();
+				switch (transact.getType()) {
+					case INSERT:
+						List<String> ids = doInsert(ta, (InsertOperation) transact);
+						insertHandles.add(transact.getHandle());
+						insertIds.add(ids);
+						insertCount += ids.size();
+						break;
+					case UPDATE:
+						updateCount = doUpdate(ta, (UpdateOperation) transact);
+						break;
+					case DELETE:
+						deleteCount = doDelete(ta, (DeleteOperation) transact);
+						break;
+				}
+			}
+			ta.commit();
+		}
+		catch (Throwable e) {
+			ta.rollback();
+			if (currentHandle != null) {
+				String msg = "Transaction operation '" + currentHandle + "' failed: " + e.getMessage();
+				throw new OWSException(msg, OWSException.NO_APPLICABLE_CODE);
+			}
+			throw new OWSException(e.getMessage(), e, OWSException.NO_APPLICABLE_CODE);
+		}
 
-        writer.writeStartElement( CSW_202_NS, "totalInserted" );
-        writer.writeCharacters( Integer.toString( insertCount ) );
-        writer.writeEndElement();// totalInserted
+		writer.writeStartElement(CSW_202_NS, "totalInserted");
+		writer.writeCharacters(Integer.toString(insertCount));
+		writer.writeEndElement();// totalInserted
 
-        writer.writeStartElement( CSW_202_NS, "totalUpdated" );
-        writer.writeCharacters( Integer.toString( updateCount ) );
-        writer.writeEndElement();// totalUpdated
+		writer.writeStartElement(CSW_202_NS, "totalUpdated");
+		writer.writeCharacters(Integer.toString(updateCount));
+		writer.writeEndElement();// totalUpdated
 
-        writer.writeStartElement( CSW_202_NS, "totalDeleted" );
-        writer.writeCharacters( Integer.toString( deleteCount ) );
-        writer.writeEndElement();// totalDeleted
+		writer.writeStartElement(CSW_202_NS, "totalDeleted");
+		writer.writeCharacters(Integer.toString(deleteCount));
+		writer.writeEndElement();// totalDeleted
 
-        writer.writeEndElement();// TransactionSummary
+		writer.writeEndElement();// TransactionSummary
 
-        if ( insertCount > 0 ) {
-            for ( int i = 0; i < insertHandles.size(); i++ ) {
-                String handle = insertHandles.get( i );
-                List<String> ids = insertIds.get( i );
-                writer.writeStartElement( CSW_202_NS, "InsertResult" );
-                if ( handle != null ) {
-                    writer.writeAttribute( "handleRef", handle );
-                }
-                MetadataResultSet<?> rs = store.getRecordById( ids, null );
-                try {
-                    while ( rs.next() ) {
-                        DCRecord dc = rs.getRecord().toDublinCore();
-                        dc.serialize( writer, ReturnableElement.brief );
-                    }
-                } finally {
-                    if ( rs != null ) {
-                        rs.close();
-                    }
-                }
-                writer.writeEndElement();// InsertResult
-            }
-        }
+		if (insertCount > 0) {
+			for (int i = 0; i < insertHandles.size(); i++) {
+				String handle = insertHandles.get(i);
+				List<String> ids = insertIds.get(i);
+				writer.writeStartElement(CSW_202_NS, "InsertResult");
+				if (handle != null) {
+					writer.writeAttribute("handleRef", handle);
+				}
+				MetadataResultSet<?> rs = store.getRecordById(ids, null);
+				try {
+					while (rs.next()) {
+						DCRecord dc = rs.getRecord().toDublinCore();
+						dc.serialize(writer, ReturnableElement.brief);
+					}
+				}
+				finally {
+					if (rs != null) {
+						rs.close();
+					}
+				}
+				writer.writeEndElement();// InsertResult
+			}
+		}
 
-        writer.writeEndElement();// TransactionResponse
-        writer.writeEndDocument();
+		writer.writeEndElement();// TransactionResponse
+		writer.writeEndDocument();
 
-    }
+	}
 
-    private int doDelete( MetadataStoreTransaction ta, DeleteOperation delete )
-                            throws MetadataStoreException {
-        int i = ta.performDelete( delete );
-        LOG.info( "Delete done!" );
-        return i;
-    }
+	private int doDelete(MetadataStoreTransaction ta, DeleteOperation delete) throws MetadataStoreException {
+		int i = ta.performDelete(delete);
+		LOG.info("Delete done!");
+		return i;
+	}
 
-    private int doUpdate( MetadataStoreTransaction ta, UpdateOperation update )
-                            throws MetadataStoreException, MetadataInspectorException {
-        int i = ta.performUpdate( update );
-        LOG.info( "Update done!" );
-        return i;
-    }
+	private int doUpdate(MetadataStoreTransaction ta, UpdateOperation update)
+			throws MetadataStoreException, MetadataInspectorException {
+		int i = ta.performUpdate(update);
+		LOG.info("Update done!");
+		return i;
+	}
 
-    private List<String> doInsert( MetadataStoreTransaction ta, InsertOperation insert )
-                            throws MetadataStoreException, OWSException, MetadataInspectorException {
-        // TODO the first element determines the metadataStore
-        // String uri = insert.getElements().get( 0 ).getNamespace().getNamespaceURI();
-        // String localName = insert.getElements().get( 0 ).getLocalName();
-        // String prefix = insert.getElements().get( 0 ).getNamespace().getPrefix();
+	private List<String> doInsert(MetadataStoreTransaction ta, InsertOperation insert)
+			throws MetadataStoreException, OWSException, MetadataInspectorException {
+		// TODO the first element determines the metadataStore
+		// String uri = insert.getElements().get( 0 ).getNamespace().getNamespaceURI();
+		// String localName = insert.getElements().get( 0 ).getLocalName();
+		// String prefix = insert.getElements().get( 0 ).getNamespace().getPrefix();
 
-        List<String> ids = ta.performInsert( insert );
-        LOG.debug( "inserted metadata: " + ids );
-        LOG.info( "Insert done!" );
-        return ids;
-    }
+		List<String> ids = ta.performInsert(insert);
+		LOG.debug("inserted metadata: " + ids);
+		LOG.info("Insert done!");
+		return ids;
+	}
 
-    /**
-     * Returns an <code>XMLStreamWriter</code> for writing an XML response document.
-     * 
-     * @param writer
-     *            writer to write the XML to, must not be null
-     * @param schemaLocation
-     *            allows to specify a value for the 'xsi:schemaLocation' attribute in the root element, must not be null
-     * @return {@link XMLStreamWriter}
-     * @throws XMLStreamException
-     * @throws IOException
-     */
-    static XMLStreamWriter getXMLResponseWriter( HttpResponseBuffer writer, String schemaLocation )
-                            throws XMLStreamException, IOException {
+	/**
+	 * Returns an <code>XMLStreamWriter</code> for writing an XML response document.
+	 * @param writer writer to write the XML to, must not be null
+	 * @param schemaLocation allows to specify a value for the 'xsi:schemaLocation'
+	 * attribute in the root element, must not be null
+	 * @return {@link XMLStreamWriter}
+	 * @throws XMLStreamException
+	 * @throws IOException
+	 */
+	static XMLStreamWriter getXMLResponseWriter(HttpResponseBuffer writer, String schemaLocation)
+			throws XMLStreamException, IOException {
 
-        if ( schemaLocation.equals( "" ) ) {
-            return writer.getXMLWriter();
-        }
-        return new SchemaLocationXMLStreamWriter( writer.getXMLWriter(), schemaLocation );
-    }
+		if (schemaLocation.equals("")) {
+			return writer.getXMLWriter();
+		}
+		return new SchemaLocationXMLStreamWriter(writer.getXMLWriter(), schemaLocation);
+	}
+
 }

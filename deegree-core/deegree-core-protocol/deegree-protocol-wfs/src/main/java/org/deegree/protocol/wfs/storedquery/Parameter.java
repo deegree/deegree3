@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -44,50 +43,48 @@ import org.deegree.commons.tom.ows.LanguageString;
 
 /**
  * A parameter definition in a {@link StoredQueryDefinition}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class Parameter {
 
-    private final String name;
+	private final String name;
 
-    private final QName type;
+	private final QName type;
 
-    private final List<LanguageString> titles;
+	private final List<LanguageString> titles;
 
-    private final List<LanguageString> abstracts;
+	private final List<LanguageString> abstracts;
 
-    private final List<OMElement> metadata;
+	private final List<OMElement> metadata;
 
-    public Parameter( String name, QName type, List<LanguageString> titles, List<LanguageString> abstracts,
-               List<OMElement> metadata ) {
-        this.name = name;
-        this.type = type;
-        this.titles = titles;
-        this.abstracts = abstracts;
-        this.metadata = metadata;
-    }
+	public Parameter(String name, QName type, List<LanguageString> titles, List<LanguageString> abstracts,
+			List<OMElement> metadata) {
+		this.name = name;
+		this.type = type;
+		this.titles = titles;
+		this.abstracts = abstracts;
+		this.metadata = metadata;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public QName getType() {
-        return type;
-    }
+	public QName getType() {
+		return type;
+	}
 
-    public List<LanguageString> getTitles() {
-        return titles;
-    }
+	public List<LanguageString> getTitles() {
+		return titles;
+	}
 
-    public List<LanguageString> getAbstracts() {
-        return abstracts;
-    }
+	public List<LanguageString> getAbstracts() {
+		return abstracts;
+	}
 
-    public List<OMElement> getMetadata() {
-        return metadata;
-    }
+	public List<OMElement> getMetadata() {
+		return metadata;
+	}
+
 }

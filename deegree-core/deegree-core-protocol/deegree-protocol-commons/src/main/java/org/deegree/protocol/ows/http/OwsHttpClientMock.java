@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -43,40 +42,35 @@ import org.deegree.commons.utils.io.StreamBufferStore;
 
 /**
  * Easy mocking for {@link OwsHttpClient}.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class OwsHttpClientMock implements OwsHttpClient {
 
-    private OwsHttpResponse response;
+	private OwsHttpResponse response;
 
-    @Override
-    public OwsHttpResponse doGet( URL endPoint, Map<String, String> params, Map<String, String> headers )
-                            throws IOException {
-        return response;
-    }
+	@Override
+	public OwsHttpResponse doGet(URL endPoint, Map<String, String> params, Map<String, String> headers)
+			throws IOException {
+		return response;
+	}
 
-    @Override
-    public OwsHttpResponse doPost( URL endPoint, String contentType, StreamBufferStore body, Map<String, String> headers )
-                            throws IOException {
-        return response;
-    }
+	@Override
+	public OwsHttpResponse doPost(URL endPoint, String contentType, StreamBufferStore body, Map<String, String> headers)
+			throws IOException {
+		return response;
+	}
 
-    /**
-     * Sets the {@link OwsHttpResponse} that will be returned by the next call to {@link #doGet(URL, Map, Map)} or
-     * {@link #doPost(URL, String, StreamBufferStore, Map)}.
-     * 
-     * @param responseBody
-     *            source of the response body, must not be <code>null</code>
-     * @param contentType
-     *            content-type header, may be <code>null</code>
-     * @param httpStatus
-     *            HTTP response status, usually 200 (OK)
-     */
-    public void setResponse( URL responseBody, String contentType, int httpStatus ) {
-        this.response = new OwsHttpResponseMock( responseBody, contentType, httpStatus );
-    }
+	/**
+	 * Sets the {@link OwsHttpResponse} that will be returned by the next call to
+	 * {@link #doGet(URL, Map, Map)} or
+	 * {@link #doPost(URL, String, StreamBufferStore, Map)}.
+	 * @param responseBody source of the response body, must not be <code>null</code>
+	 * @param contentType content-type header, may be <code>null</code>
+	 * @param httpStatus HTTP response status, usually 200 (OK)
+	 */
+	public void setResponse(URL responseBody, String contentType, int httpStatus) {
+		this.response = new OwsHttpResponseMock(responseBody, contentType, httpStatus);
+	}
+
 }

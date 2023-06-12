@@ -40,84 +40,69 @@ import org.deegree.time.primitive.TimePositionOrInstant;
  * A temporal position that implements ISO 19108 TM_Position.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- *
  * @since 3.4
  */
 public class TimePosition implements TimePositionOrInstant {
 
-    private final String frame;
+	private final String frame;
 
-    private final String calendarEraName;
+	private final String calendarEraName;
 
-    private final IndeterminateValue indeterminatePosition;
+	private final IndeterminateValue indeterminatePosition;
 
-    private final String value;
+	private final String value;
 
-    /**
-     * Creates a new {@link TimePosition} instance.
-     *
-     * @param frame
-     *            temporal reference system, can be <code>null</code> (default)
-     * @param calendarEraName
-     *            name of the calendar era, can be <code>null</code> (unspecified)
-     * @param indeterminatePosition
-     *            type of inexactness, can be <code>null</code> (value is exact)
-     * @param value
-     *            encoded time value, must not be <code>null</code>
-     */
-    public TimePosition( final String frame, final String calendarEraName,
-                         final IndeterminateValue indeterminatePosition, final String value ) {
-        this.frame = frame;
-        this.calendarEraName = calendarEraName;
-        this.indeterminatePosition = indeterminatePosition;
-        this.value = value;
-    }
+	/**
+	 * Creates a new {@link TimePosition} instance.
+	 * @param frame temporal reference system, can be <code>null</code> (default)
+	 * @param calendarEraName name of the calendar era, can be <code>null</code>
+	 * (unspecified)
+	 * @param indeterminatePosition type of inexactness, can be <code>null</code> (value
+	 * is exact)
+	 * @param value encoded time value, must not be <code>null</code>
+	 */
+	public TimePosition(final String frame, final String calendarEraName,
+			final IndeterminateValue indeterminatePosition, final String value) {
+		this.frame = frame;
+		this.calendarEraName = calendarEraName;
+		this.indeterminatePosition = indeterminatePosition;
+		this.value = value;
+	}
 
-    /**
-     * Returns the temporal reference system.
-     *
-     * @return temporal reference system, can be <code>null</code> (Gregorian calendar with UTC)
-     */
-    public String getFrame() {
-        return frame;
-    }
+	/**
+	 * Returns the temporal reference system.
+	 * @return temporal reference system, can be <code>null</code> (Gregorian calendar
+	 * with UTC)
+	 */
+	public String getFrame() {
+		return frame;
+	}
 
-    /**
-     * Returns the name of the calendar era.
-     *
-     * @return name of the calendar era, can be <code>null</code>
-     */
-    public String getCalendarEraName() {
-        return calendarEraName;
-    }
+	/**
+	 * Returns the name of the calendar era.
+	 * @return name of the calendar era, can be <code>null</code>
+	 */
+	public String getCalendarEraName() {
+		return calendarEraName;
+	}
 
-    /**
-     * Returns the type of inexactness.
-     *
-     * @return type of inexactness, can be <code>null</code> (value is exact)
-     */
-    public IndeterminateValue getIndeterminatePosition() {
-        return indeterminatePosition;
-    }
+	/**
+	 * Returns the type of inexactness.
+	 * @return type of inexactness, can be <code>null</code> (value is exact)
+	 */
+	public IndeterminateValue getIndeterminatePosition() {
+		return indeterminatePosition;
+	}
 
-    /*
-     * Returns the encoded time value.
-     * <p>
-     * Any of the following XML schema simple types can be used for encoding:
-     * <ul>
-     * <li>date</li>
-     * <li>gYearMonth</li>
-     * <li>gYear</li>
-     * <li>time</li>
-     * <li>dateTime</li>
-     * <li>anyURI</li>
-     * <li>decimal</li>
-     * </ul>
-     * </p>
-     *
-     * @return encoded time value, never <code>null</code>
-     */
-    public String getValue() {
-        return value;
-    }
+	/*
+	 * Returns the encoded time value. <p> Any of the following XML schema simple types
+	 * can be used for encoding: <ul> <li>date</li> <li>gYearMonth</li> <li>gYear</li>
+	 * <li>time</li> <li>dateTime</li> <li>anyURI</li> <li>decimal</li> </ul> </p>
+	 *
+	 * @return encoded time value, never <code>null</code>
+	 */
+	public String getValue() {
+		return value;
+	}
+
 }

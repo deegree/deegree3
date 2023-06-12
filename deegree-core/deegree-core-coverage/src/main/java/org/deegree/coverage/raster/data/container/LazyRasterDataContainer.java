@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -43,74 +42,70 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This class implements a RasterDataContainer that loads the data on first access.
- * 
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class LazyRasterDataContainer implements RasterDataContainer, RasterDataContainerProvider {
 
-    private RasterDataReader reader;
+	private RasterDataReader reader;
 
-    private RasterData raster;
+	private RasterData raster;
 
-    private boolean rasterLoaded = false;
+	private boolean rasterLoaded = false;
 
-    private static Logger log = LoggerFactory.getLogger( LazyRasterDataContainer.class );
+	private static Logger log = LoggerFactory.getLogger(LazyRasterDataContainer.class);
 
-    /**
-     * Creates an empty LazyRasterDataContainer that loads the raster on demand and stores the raster data in memory.
-     */
-    public LazyRasterDataContainer() {
-        // empty consturctor
-    }
+	/**
+	 * Creates an empty LazyRasterDataContainer that loads the raster on demand and stores
+	 * the raster data in memory.
+	 */
+	public LazyRasterDataContainer() {
+		// empty consturctor
+	}
 
-    /**
-     * Creates a RasterDataContainer that loads the data on first access.
-     * 
-     * @param reader
-     *            RasterReader for the raster source
-     */
-    public LazyRasterDataContainer( RasterDataReader reader ) {
-        this.reader = reader;
-    }
+	/**
+	 * Creates a RasterDataContainer that loads the data on first access.
+	 * @param reader RasterReader for the raster source
+	 */
+	public LazyRasterDataContainer(RasterDataReader reader) {
+		this.reader = reader;
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.model.raster.RasterDataContainer#getRasterData()
-     */
-    public synchronized RasterData getRasterData() {
-        if ( !rasterLoaded ) {
-            if ( log.isDebugEnabled() ) {
-                log.debug( "reading: " + this.toString() );
-            }
-            raster = reader.read();
-            rasterLoaded = true;
-        }
-        return raster;
-    }
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see org.deegree.model.raster.RasterDataContainer#getRasterData()
+	 */
+	public synchronized RasterData getRasterData() {
+		if (!rasterLoaded) {
+			if (log.isDebugEnabled()) {
+				log.debug("reading: " + this.toString());
+			}
+			raster = reader.read();
+			rasterLoaded = true;
+		}
+		return raster;
+	}
 
-    @Override
-    public RasterData getReadOnlyRasterData() {
-        return getRasterData().asReadOnly();
-    }
+	@Override
+	public RasterData getReadOnlyRasterData() {
+		return getRasterData().asReadOnly();
+	}
 
-    public synchronized void setRasterDataReader( RasterDataReader reader ) {
-        this.rasterLoaded = false;
-        this.raster = null;
-        reader.close();
-        this.reader = reader;
-    }
+	public synchronized void setRasterDataReader(RasterDataReader reader) {
+		this.rasterLoaded = false;
+		this.raster = null;
+		reader.close();
+		this.reader = reader;
+	}
 
-    public RasterDataContainer getRasterDataContainer( LoadingPolicy type ) {
-        if ( type == LoadingPolicy.LAZY ) {
-            // the service loader caches provider instances, so return a new instance
-            return new LazyRasterDataContainer();
-        }
-        return null;
-    }
+	public RasterDataContainer getRasterDataContainer(LoadingPolicy type) {
+		if (type == LoadingPolicy.LAZY) {
+			// the service loader caches provider instances, so return a new instance
+			return new LazyRasterDataContainer();
+		}
+		return null;
+	}
 
 }

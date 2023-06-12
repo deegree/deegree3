@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -46,71 +45,71 @@ import org.slf4j.LoggerFactory;
 /**
  * Manages temporary file system resources for deegree.
  * <p>
- * This class ensures that each running deegree application (e.g. a service webapp or a command line application) uses a
- * separate directory for storing temporary resources. For webapps, the webapp context name is used to build a unique
- * directory.
+ * This class ensures that each running deegree application (e.g. a service webapp or a
+ * command line application) uses a separate directory for storing temporary resources.
+ * For webapps, the webapp context name is used to build a unique directory.
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class TempFileManager {
 
-    private static final Logger LOG = LoggerFactory.getLogger( TempFileManager.class );
+	private static final Logger LOG = LoggerFactory.getLogger(TempFileManager.class);
 
-    private static File baseDir;
+	private static File baseDir;
 
-    /**
-     * Initializes the {@link TempFileManager} to use the given String for creating unique temporary file names.
-     * 
-     * @param contextId
-     *            string to use for the unique file names, must not be <code>null</code>
-     */
-    public static synchronized void init( String contextId ) {
-        if ( baseDir != null ) {
-            String msg = "Cannot initialize TempResourceManager for context '" + contextId + "'. Already initialized";
-            throw new RuntimeException( msg );
-        }
-        // encode it, so no invalid characters are used for the directory name
-        try {
-            // quirk to get nicer looking names for the common contextId=webapp case
-            if ( contextId.startsWith( "/" ) && contextId.length() > 1 ) {
-                contextId = contextId.substring( 1 );
-            }
-            String safeName = URLEncoder.encode( contextId, "UTF-8" );
-            String tmpDir = System.getProperty( "java.io.tmpdir" );
-            baseDir = new File( tmpDir, "deegree-" + safeName );
-            if ( !baseDir.exists() ) {
-                baseDir.mkdir();
-            } else if ( !baseDir.isDirectory() ) {
-                String msg = "'" + baseDir + "' does not denote a directory. Please delete it and restart.";
-                throw new RuntimeException( msg );
-            }
-        } catch ( UnsupportedEncodingException e ) {
-            LOG.error( "Internal error: Cannot encode '" + contextId + "' for creating unique tempdir." );
-        }
-        LOG.info( "Using '" + baseDir + "' for storing temporary files." );
-    }
+	/**
+	 * Initializes the {@link TempFileManager} to use the given String for creating unique
+	 * temporary file names.
+	 * @param contextId string to use for the unique file names, must not be
+	 * <code>null</code>
+	 */
+	public static synchronized void init(String contextId) {
+		if (baseDir != null) {
+			String msg = "Cannot initialize TempResourceManager for context '" + contextId + "'. Already initialized";
+			throw new RuntimeException(msg);
+		}
+		// encode it, so no invalid characters are used for the directory name
+		try {
+			// quirk to get nicer looking names for the common contextId=webapp case
+			if (contextId.startsWith("/") && contextId.length() > 1) {
+				contextId = contextId.substring(1);
+			}
+			String safeName = URLEncoder.encode(contextId, "UTF-8");
+			String tmpDir = System.getProperty("java.io.tmpdir");
+			baseDir = new File(tmpDir, "deegree-" + safeName);
+			if (!baseDir.exists()) {
+				baseDir.mkdir();
+			}
+			else if (!baseDir.isDirectory()) {
+				String msg = "'" + baseDir + "' does not denote a directory. Please delete it and restart.";
+				throw new RuntimeException(msg);
+			}
+		}
+		catch (UnsupportedEncodingException e) {
+			LOG.error("Internal error: Cannot encode '" + contextId + "' for creating unique tempdir.");
+		}
+		LOG.info("Using '" + baseDir + "' for storing temporary files.");
+	}
 
-    /**
-     * Initializes the {@link TempFileManager} to use a random String for creating unique temporary file names.
-     */
-    public static synchronized void init() {
-        String contextId = UUID.randomUUID().toString();
-        init( contextId );
-    }
+	/**
+	 * Initializes the {@link TempFileManager} to use a random String for creating unique
+	 * temporary file names.
+	 */
+	public static synchronized void init() {
+		String contextId = UUID.randomUUID().toString();
+		init(contextId);
+	}
 
-    /**
-     * Returns the base directory to be used for storing temporary files.
-     * 
-     * @return the base directory, never <code>null</code>
-     */
-    public static synchronized File getBaseDir() {
-        if ( baseDir == null ) {
-            init();
-        }
-        return baseDir;
-    }
+	/**
+	 * Returns the base directory to be used for storing temporary files.
+	 * @return the base directory, never <code>null</code>
+	 */
+	public static synchronized File getBaseDir() {
+		if (baseDir == null) {
+			init();
+		}
+		return baseDir;
+	}
+
 }

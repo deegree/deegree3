@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -49,100 +48,99 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class ResourceProviderMetadata {
 
-    private static Logger LOG = LoggerFactory.getLogger( ResourceProviderMetadata.class );
+	private static Logger LOG = LoggerFactory.getLogger(ResourceProviderMetadata.class);
 
-    private String wizardView = "/console/jsf/wizard";
+	private String wizardView = "/console/jsf/wizard";
 
-    private final Map<String, ConfigExample> exampleNameToExample = new HashMap<String, ConfigExample>();
+	private final Map<String, ConfigExample> exampleNameToExample = new HashMap<String, ConfigExample>();
 
-    private String name;
+	private String name;
 
-    private static final Map<String, ResourceProviderMetadata> rpClassNameToMd = new HashMap<String, ResourceProviderMetadata>();
+	private static final Map<String, ResourceProviderMetadata> rpClassNameToMd = new HashMap<String, ResourceProviderMetadata>();
 
-    private ResourceProviderMetadata( ResourceProvider<?> rp ) {
-        String className = rp.getClass().getName();
-        name = rp.getClass().getSimpleName();
-        URL url = rp.getClass().getResource( "/META-INF/console/resourceprovider/" + className );
-        if ( url != null ) {
-            LOG.debug( "Loading resource provider metadata from '" + url + "'" );
-            Properties props = new Properties();
-            InputStream is = null;
-            try {
-                is = url.openStream();
-                props.load( is );
-                if ( props.containsKey( "name" ) ) {
-                    name = props.getProperty( "name" ).trim();
-                }
-                if ( props.containsKey( "wizard" ) ) {
-                    wizardView = props.getProperty( "wizard" ).trim();
-                }
-                int i = 1;
-                while ( true ) {
-                    final String examplePrefix = "example" + i++ + "_";
-                    String exampleLocation = props.getProperty( examplePrefix + "location" );
-                    if ( exampleLocation == null ) {
-                        break;
-                    }
-                    exampleLocation = exampleLocation.trim();
-                    final URL exampleUrl = this.getClass().getResource( exampleLocation );
-                    if ( exampleUrl == null ) {
-                        LOG.error( "Configuration example file '" + exampleLocation + "' is missing on classpath." );
-                        continue;
-                    }
-                    final String exampleName = getExampleDisplayName( props, examplePrefix, exampleLocation );
-                    String exampleDescription = null;
-                    if ( props.containsKey( examplePrefix + "description" ) ) {
-                        exampleDescription = props.getProperty( examplePrefix + "description" ).trim();
-                    }
-                    ConfigExample example = new ConfigExample( exampleUrl, exampleName, exampleDescription );
-                    exampleNameToExample.put( exampleName, example );
-                }
-            } catch ( IOException e ) {
-                LOG.error( e.getMessage(), e );
-            } finally {
-                closeQuietly( is );
-            }
-        }
-    }
+	private ResourceProviderMetadata(ResourceProvider<?> rp) {
+		String className = rp.getClass().getName();
+		name = rp.getClass().getSimpleName();
+		URL url = rp.getClass().getResource("/META-INF/console/resourceprovider/" + className);
+		if (url != null) {
+			LOG.debug("Loading resource provider metadata from '" + url + "'");
+			Properties props = new Properties();
+			InputStream is = null;
+			try {
+				is = url.openStream();
+				props.load(is);
+				if (props.containsKey("name")) {
+					name = props.getProperty("name").trim();
+				}
+				if (props.containsKey("wizard")) {
+					wizardView = props.getProperty("wizard").trim();
+				}
+				int i = 1;
+				while (true) {
+					final String examplePrefix = "example" + i++ + "_";
+					String exampleLocation = props.getProperty(examplePrefix + "location");
+					if (exampleLocation == null) {
+						break;
+					}
+					exampleLocation = exampleLocation.trim();
+					final URL exampleUrl = this.getClass().getResource(exampleLocation);
+					if (exampleUrl == null) {
+						LOG.error("Configuration example file '" + exampleLocation + "' is missing on classpath.");
+						continue;
+					}
+					final String exampleName = getExampleDisplayName(props, examplePrefix, exampleLocation);
+					String exampleDescription = null;
+					if (props.containsKey(examplePrefix + "description")) {
+						exampleDescription = props.getProperty(examplePrefix + "description").trim();
+					}
+					ConfigExample example = new ConfigExample(exampleUrl, exampleName, exampleDescription);
+					exampleNameToExample.put(exampleName, example);
+				}
+			}
+			catch (IOException e) {
+				LOG.error(e.getMessage(), e);
+			}
+			finally {
+				closeQuietly(is);
+			}
+		}
+	}
 
-    private String getExampleDisplayName( final Properties props, final String examplePrefix,
-                                          final String exampleLocation ) {
-        if ( props.containsKey( examplePrefix + "name" ) ) {
-            return props.getProperty( examplePrefix + "name" ).trim();
-        }        
-        final int fileNameStart = exampleLocation.lastIndexOf( "/" ) + 1;
-        String exampleName = exampleLocation.substring( fileNameStart );
-        final int fileNameEnd = exampleName.lastIndexOf( '.' );
-        if ( fileNameEnd != -1 ) {
-            exampleName = exampleName.substring( 0, fileNameEnd );
-        }
-        return exampleName;
-    }
+	private String getExampleDisplayName(final Properties props, final String examplePrefix,
+			final String exampleLocation) {
+		if (props.containsKey(examplePrefix + "name")) {
+			return props.getProperty(examplePrefix + "name").trim();
+		}
+		final int fileNameStart = exampleLocation.lastIndexOf("/") + 1;
+		String exampleName = exampleLocation.substring(fileNameStart);
+		final int fileNameEnd = exampleName.lastIndexOf('.');
+		if (fileNameEnd != -1) {
+			exampleName = exampleName.substring(0, fileNameEnd);
+		}
+		return exampleName;
+	}
 
-    public static synchronized ResourceProviderMetadata getMetadata( ResourceProvider<?> rp ) {
-        if ( !rpClassNameToMd.containsKey( rp.getClass().getName() ) ) {
-            rpClassNameToMd.put( rp.getClass().getName(), new ResourceProviderMetadata( rp ) );
-        }
-        return rpClassNameToMd.get( rp.getClass().getName() );
-    }
+	public static synchronized ResourceProviderMetadata getMetadata(ResourceProvider<?> rp) {
+		if (!rpClassNameToMd.containsKey(rp.getClass().getName())) {
+			rpClassNameToMd.put(rp.getClass().getName(), new ResourceProviderMetadata(rp));
+		}
+		return rpClassNameToMd.get(rp.getClass().getName());
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public Map<String, ConfigExample> getExamples() {
-        return exampleNameToExample;
-    }
+	public Map<String, ConfigExample> getExamples() {
+		return exampleNameToExample;
+	}
 
-    public String getConfigWizardView() {
-        return wizardView;
-    }
+	public String getConfigWizardView() {
+		return wizardView;
+	}
+
 }

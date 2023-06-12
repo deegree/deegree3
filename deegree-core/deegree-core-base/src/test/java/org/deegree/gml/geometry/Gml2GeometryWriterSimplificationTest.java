@@ -66,91 +66,85 @@ import org.junit.Test;
 
 /**
  * Tests for {@link Geometry} simplification in {@link GML2GeometryWriter}.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * 
  * @since 3.4
  */
 public class Gml2GeometryWriterSimplificationTest {
 
-    private final static String SCHEMA_LOCATION = "http://schemas.opengis.net/gml/2.1.2/geometry.xsd";
+	private final static String SCHEMA_LOCATION = "http://schemas.opengis.net/gml/2.1.2/geometry.xsd";
 
-    XMLMemoryStreamWriter memoryWriter;
+	XMLMemoryStreamWriter memoryWriter;
 
-    GML2GeometryWriter gmlWriterWithoutSimplification;
+	GML2GeometryWriter gmlWriterWithoutSimplification;
 
-    GML2GeometryWriter gmlWriterWithSimplification;
+	GML2GeometryWriter gmlWriterWithSimplification;
 
-    @Before
-    public void setup()
-                            throws XMLStreamException, FactoryConfigurationError {
-        gmlWriterWithoutSimplification = getGmlWriterWithoutSimplification();
-        memoryWriter = new XMLMemoryStreamWriter();
-        gmlWriterWithSimplification = getGmlWriterWithSimplification();
-    }
+	@Before
+	public void setup() throws XMLStreamException, FactoryConfigurationError {
+		gmlWriterWithoutSimplification = getGmlWriterWithoutSimplification();
+		memoryWriter = new XMLMemoryStreamWriter();
+		gmlWriterWithSimplification = getGmlWriterWithSimplification();
+	}
 
-    private GML2GeometryWriter getGmlWriterWithoutSimplification()
-                            throws XMLStreamException, FactoryConfigurationError {
-        XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( new ByteArrayOutputStream() );
-        GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter( GML_2, xmlWriter );
-        return new GML2GeometryWriter( gmlWriter );
-    }
+	private GML2GeometryWriter getGmlWriterWithoutSimplification()
+			throws XMLStreamException, FactoryConfigurationError {
+		XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter(new ByteArrayOutputStream());
+		GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter(GML_2, xmlWriter);
+		return new GML2GeometryWriter(gmlWriter);
+	}
 
-    private GML2GeometryWriter getGmlWriterWithSimplification()
-                            throws XMLStreamException {
-        XMLStreamWriter writer = memoryWriter.getXMLStreamWriter();
-        GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter( GML_2, writer );
-        LinearizationCriterion crit = new MaxErrorCriterion( 0.1, 1000 );
-        SFSProfiler simplifier = new SFSProfiler( crit );
-        gmlWriter.setGeometrySimplifier( simplifier );
-        return new GML2GeometryWriter( gmlWriter );
-    }
+	private GML2GeometryWriter getGmlWriterWithSimplification() throws XMLStreamException {
+		XMLStreamWriter writer = memoryWriter.getXMLStreamWriter();
+		GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter(GML_2, writer);
+		LinearizationCriterion crit = new MaxErrorCriterion(0.1, 1000);
+		SFSProfiler simplifier = new SFSProfiler(crit);
+		gmlWriter.setGeometrySimplifier(simplifier);
+		return new GML2GeometryWriter(gmlWriter);
+	}
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testCurveWithArcsNoSimplification()
-                            throws XMLParsingException, XMLStreamException, UnknownCRSException,
-                            TransformationException {
-        Geometry geom = readGml31Geometry( "../misc/geometry/Curve.gml" );
-        gmlWriterWithoutSimplification.export( geom );
-    }
+	@Test(expected = IllegalArgumentException.class)
+	public void testCurveWithArcsNoSimplification()
+			throws XMLParsingException, XMLStreamException, UnknownCRSException, TransformationException {
+		Geometry geom = readGml31Geometry("../misc/geometry/Curve.gml");
+		gmlWriterWithoutSimplification.export(geom);
+	}
 
-    @Test
-    public void testCurveWithArcsWithSimplification()
-                            throws XMLParsingException, XMLStreamException, UnknownCRSException,
-                            TransformationException {
-        Geometry geom = readGml31Geometry( "../misc/geometry/Curve.gml" );
-        gmlWriterWithSimplification.export( geom );
-        XMLAssert.assertValidity( memoryWriter.getReader(), SCHEMA_LOCATION );
-    }
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void testSurfaceNoSimplification()
-                            throws XMLParsingException, XMLStreamException, UnknownCRSException,
-                            TransformationException {
-        Geometry geom = readGml31Geometry( "../misc/geometry/Surface.gml" );
-        gmlWriterWithoutSimplification.export( geom );
-    }
-    
-    @Test
-    public void testSurfaceWithSimplification()
-                            throws XMLParsingException, XMLStreamException, UnknownCRSException,
-                            TransformationException {
-        Geometry geom = readGml31Geometry( "../misc/geometry/Surface.gml" );
-        gmlWriterWithSimplification.export( geom );
-        XMLAssert.assertValidity( memoryWriter.getReader(), SCHEMA_LOCATION );
-    }
+	@Test
+	public void testCurveWithArcsWithSimplification()
+			throws XMLParsingException, XMLStreamException, UnknownCRSException, TransformationException {
+		Geometry geom = readGml31Geometry("../misc/geometry/Curve.gml");
+		gmlWriterWithSimplification.export(geom);
+		XMLAssert.assertValidity(memoryWriter.getReader(), SCHEMA_LOCATION);
+	}
 
-    private Geometry readGml31Geometry( final String resourceName ) {
-        Geometry geometry = null;
-        try {
-            final InputStream is = Gml2GeometryWriterSimplificationTest.class.getResourceAsStream( resourceName );
-            final XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( is );
-            final GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_31, xmlReader );
-            geometry = gmlReader.readGeometry();
-        } catch ( Exception e ) {
-            Assert.fail( "Creation of geometry failed." );
-        }
-        return geometry;
-    }
+	@Test(expected = IllegalArgumentException.class)
+	public void testSurfaceNoSimplification()
+			throws XMLParsingException, XMLStreamException, UnknownCRSException, TransformationException {
+		Geometry geom = readGml31Geometry("../misc/geometry/Surface.gml");
+		gmlWriterWithoutSimplification.export(geom);
+	}
+
+	@Test
+	public void testSurfaceWithSimplification()
+			throws XMLParsingException, XMLStreamException, UnknownCRSException, TransformationException {
+		Geometry geom = readGml31Geometry("../misc/geometry/Surface.gml");
+		gmlWriterWithSimplification.export(geom);
+		XMLAssert.assertValidity(memoryWriter.getReader(), SCHEMA_LOCATION);
+	}
+
+	private Geometry readGml31Geometry(final String resourceName) {
+		Geometry geometry = null;
+		try {
+			final InputStream is = Gml2GeometryWriterSimplificationTest.class.getResourceAsStream(resourceName);
+			final XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader(is);
+			final GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader(GML_31, xmlReader);
+			geometry = gmlReader.readGeometry();
+		}
+		catch (Exception e) {
+			Assert.fail("Creation of geometry failed.");
+		}
+		return geometry;
+	}
 
 }

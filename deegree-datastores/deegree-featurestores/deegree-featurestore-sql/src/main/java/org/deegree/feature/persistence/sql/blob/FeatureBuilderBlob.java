@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/src/main/java/org/deegree/feature/persistence/postgis/FeatureBuilder.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -50,91 +49,81 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Builds {@link Feature} instances from SQL result set rows (BLOB/hybrid mode).
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 25480 $, $Date: 2010-07-22 19:36:56 +0200 (Do, 22. Jul 2010) $
  */
 public class FeatureBuilderBlob implements FeatureBuilder {
 
-    private static final Logger LOG = LoggerFactory.getLogger( FeatureBuilderBlob.class );
+	private static final Logger LOG = LoggerFactory.getLogger(FeatureBuilderBlob.class);
 
-    private final SQLFeatureStore fs;
+	private final SQLFeatureStore fs;
 
-    private final BlobMapping blobMapping;
+	private final BlobMapping blobMapping;
 
-    private final BlobCodec codec;
+	private final BlobCodec codec;
 
-    private final ICRS crs;
+	private final ICRS crs;
 
-    private TypeName[] typeNames;
+	private TypeName[] typeNames;
 
-    /**
-     * Creates a new {@link FeatureBuilderBlob} instance.
-     * 
-     * @param fs
-     *            feature store, must not be <code>null</code>
-     * @param blobMapping
-     *            blob mapping parameters, must not be <code>null</code>
-     */
-    public FeatureBuilderBlob( SQLFeatureStore fs, BlobMapping blobMapping ) {
-        this( fs, blobMapping, null );
-    }
+	/**
+	 * Creates a new {@link FeatureBuilderBlob} instance.
+	 * @param fs feature store, must not be <code>null</code>
+	 * @param blobMapping blob mapping parameters, must not be <code>null</code>
+	 */
+	public FeatureBuilderBlob(SQLFeatureStore fs, BlobMapping blobMapping) {
+		this(fs, blobMapping, null);
+	}
 
-    /**
-     * Creates a new {@link FeatureBuilderBlob} instance.
-     *
-     * @param fs
-     *            feature store, must not be <code>null</code>
-     * @param blobMapping
-     *            blob mapping parameters, must not be <code>null</code>
-     * @param typeNames
-     *            list of requested type names, if {@link #buildFeature(ResultSet)} is invoked and a feature is not in
-     *            this list an exception is thrown
-     */
-    public FeatureBuilderBlob( SQLFeatureStore fs, BlobMapping blobMapping, TypeName[] typeNames ) {
-        this.fs = fs;
-        this.blobMapping = blobMapping;
-        this.codec = blobMapping.getCodec();
-        this.crs = blobMapping.getCRS();
-        this.typeNames = typeNames;
-    }
-    
-    @Override
-    public List<String> getInitialSelectList() {
-        List<String> columns = new ArrayList<String>();
-        columns.add( blobMapping.getGMLIdColumn() );
-        columns.add( blobMapping.getDataColumn() );
-        return columns;
-    }
+	/**
+	 * Creates a new {@link FeatureBuilderBlob} instance.
+	 * @param fs feature store, must not be <code>null</code>
+	 * @param blobMapping blob mapping parameters, must not be <code>null</code>
+	 * @param typeNames list of requested type names, if {@link #buildFeature(ResultSet)}
+	 * is invoked and a feature is not in this list an exception is thrown
+	 */
+	public FeatureBuilderBlob(SQLFeatureStore fs, BlobMapping blobMapping, TypeName[] typeNames) {
+		this.fs = fs;
+		this.blobMapping = blobMapping;
+		this.codec = blobMapping.getCodec();
+		this.crs = blobMapping.getCRS();
+		this.typeNames = typeNames;
+	}
 
-    @Override
-    public Feature buildFeature( ResultSet rs )
-                            throws SQLException {
-        Feature feature = null;
-        try {
-            String gmlId = rs.getString( 1 );
-            if ( fs.getCache() != null ) {
-                feature = (Feature) fs.getCache().get( gmlId );
-            }
-            if ( feature == null ) {
-                LOG.debug( "Recreating object '" + gmlId + "' from db (BLOB/hybrid mode)." );
-                feature = (Feature) codec.decode( rs.getBinaryStream( 2 ), fs.getNamespaceContext(), fs.getSchema(),
-                                                  crs, fs.getResolver() );
-                if ( fs.getCache() != null ) {
-                    fs.getCache().add( feature );
-                }
-            } else {
-                LOG.debug( "Cache hit." );
-            }
-            fs.checkIfFeatureTypIsRequested( typeNames, feature.getType() );
-        } catch ( Exception e ) {
-            String msg = "Cannot recreate feature from result set: " + e.getMessage();
-            throw new SQLException( msg, e );
-        }
-        return feature;
-    }
-    
-    
+	@Override
+	public List<String> getInitialSelectList() {
+		List<String> columns = new ArrayList<String>();
+		columns.add(blobMapping.getGMLIdColumn());
+		columns.add(blobMapping.getDataColumn());
+		return columns;
+	}
+
+	@Override
+	public Feature buildFeature(ResultSet rs) throws SQLException {
+		Feature feature = null;
+		try {
+			String gmlId = rs.getString(1);
+			if (fs.getCache() != null) {
+				feature = (Feature) fs.getCache().get(gmlId);
+			}
+			if (feature == null) {
+				LOG.debug("Recreating object '" + gmlId + "' from db (BLOB/hybrid mode).");
+				feature = (Feature) codec.decode(rs.getBinaryStream(2), fs.getNamespaceContext(), fs.getSchema(), crs,
+						fs.getResolver());
+				if (fs.getCache() != null) {
+					fs.getCache().add(feature);
+				}
+			}
+			else {
+				LOG.debug("Cache hit.");
+			}
+			fs.checkIfFeatureTypIsRequested(typeNames, feature.getType());
+		}
+		catch (Exception e) {
+			String msg = "Cannot recreate feature from result set: " + e.getMessage();
+			throw new SQLException(msg, e);
+		}
+		return feature;
+	}
+
 }

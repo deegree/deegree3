@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2009 by:
@@ -54,109 +53,95 @@ import org.deegree.cs.transformations.Transformation;
 
 /**
  * The base interface for deegree (2 & 3) configurations.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  * @param <T>
- * 
+ *
  */
 public interface CRSParser<T> extends org.deegree.cs.configuration.resources.CRSResource<T> {
 
-    /**
-     * @param crsDefintion
-     *            to be parsed
-     * @return an instance of the given crs or <code>null</code> if the crsDefinition is <code>null</code> or could not
-     *         be mapped to a valid type.
-     * @throws CRSConfigurationException
-     *             if something went wrong while constructing the crs.
-     */
-    public abstract ICRS parseCoordinateSystem( T crsDefintion )
-                            throws CRSConfigurationException;
+	/**
+	 * @param crsDefintion to be parsed
+	 * @return an instance of the given crs or <code>null</code> if the crsDefinition is
+	 * <code>null</code> or could not be mapped to a valid type.
+	 * @throws CRSConfigurationException if something went wrong while constructing the
+	 * crs.
+	 */
+	public abstract ICRS parseCoordinateSystem(T crsDefintion) throws CRSConfigurationException;
 
-    /**
-     * @return the version of the root element of the empty string if no version attribute was found in the root
-     *         element.
-     * @throws CRSConfigurationException
-     *             if the root element is empty
-     */
-    public abstract String getVersion()
-                            throws CRSConfigurationException;
+	/**
+	 * @return the version of the root element of the empty string if no version attribute
+	 * was found in the root element.
+	 * @throws CRSConfigurationException if the root element is empty
+	 */
+	public abstract String getVersion() throws CRSConfigurationException;
 
-    /**
-     * Retrieves a transformation from the resource.
-     * 
-     * @param transformationDefinition
-     * @return the parsed transformation or <code>null</code> if no transformation could be parsed.
-     */
-    public abstract Transformation parseTransformation( T transformationDefinition );
+	/**
+	 * Retrieves a transformation from the resource.
+	 * @param transformationDefinition
+	 * @return the parsed transformation or <code>null</code> if no transformation could
+	 * be parsed.
+	 */
+	public abstract Transformation parseTransformation(T transformationDefinition);
 
-    /**
-     * @param datumID
-     * @return the
-     * @throws CRSConfigurationException
-     */
-    public abstract IGeodeticDatum getGeodeticDatumForId( String datumID )
-                            throws CRSConfigurationException;
+	/**
+	 * @param datumID
+	 * @return the
+	 * @throws CRSConfigurationException
+	 */
+	public abstract IGeodeticDatum getGeodeticDatumForId(String datumID) throws CRSConfigurationException;
 
-    /**
-     * @param meridianID
-     *            the id to search for.
-     * @return the primeMeridian with given id or <code>null</code>
-     * @throws CRSConfigurationException
-     *             if the longitude was not set or the units could not be parsed.
-     */
-    public abstract IPrimeMeridian getPrimeMeridianForId( String meridianID )
-                            throws CRSConfigurationException;
+	/**
+	 * @param meridianID the id to search for.
+	 * @return the primeMeridian with given id or <code>null</code>
+	 * @throws CRSConfigurationException if the longitude was not set or the units could
+	 * not be parsed.
+	 */
+	public abstract IPrimeMeridian getPrimeMeridianForId(String meridianID) throws CRSConfigurationException;
 
-    /**
-     * Tries to find a cached ellipsoid, if not found, the config will be checked.
-     * 
-     * @param ellipsoidID
-     * @return an ellipsoid or <code>null</code> if no ellipsoid with given id was found, or the id was
-     *         <code>null</code> or empty.
-     * @throws CRSConfigurationException
-     *             if something went wrong.
-     */
-    public abstract IEllipsoid getEllipsoidForId( String ellipsoidID )
-                            throws CRSConfigurationException;
+	/**
+	 * Tries to find a cached ellipsoid, if not found, the config will be checked.
+	 * @param ellipsoidID
+	 * @return an ellipsoid or <code>null</code> if no ellipsoid with given id was found,
+	 * or the id was <code>null</code> or empty.
+	 * @throws CRSConfigurationException if something went wrong.
+	 */
+	public abstract IEllipsoid getEllipsoidForId(String ellipsoidID) throws CRSConfigurationException;
 
-    /**
-     * Gets the Element for the given id and heuristically check the localname of the resulting root Element. This
-     * version supports following local names (see schema): <code>
-     * <ul>
-     * <li>ellipsoid</li>
-     * <li>geodeticDatum</li>
-     * <li>projectedCRS</li>
-     * <li>geographicCRS</li>
-     * <li>compoundCRS</li>
-     * <li>geocentricCRS</li>
-     * <li>primeMeridian</li>
-     * <li>wgs84Transformation</li>
-     * </ul>
-     * </code>
-     * 
-     * @param id
-     *            to look for.
-     * @return the instantiated {@link CRSIdentifiable} or <code>null</code> if it could not be parsed.
-     */
-    public abstract CRSResource parseIdentifiableObject( String id );
+	/**
+	 * Gets the Element for the given id and heuristically check the localname of the
+	 * resulting root Element. This version supports following local names (see schema):
+	 * <code>
+	 * <ul>
+	 * <li>ellipsoid</li>
+	 * <li>geodeticDatum</li>
+	 * <li>projectedCRS</li>
+	 * <li>geographicCRS</li>
+	 * <li>compoundCRS</li>
+	 * <li>geocentricCRS</li>
+	 * <li>primeMeridian</li>
+	 * <li>wgs84Transformation</li>
+	 * </ul>
+	 * </code>
+	 * @param id to look for.
+	 * @return the instantiated {@link CRSIdentifiable} or <code>null</code> if it could
+	 * not be parsed.
+	 */
+	public abstract CRSResource parseIdentifiableObject(String id);
 
-    /**
-     * 
-     * @return all available codetypes, each sole array should reference the ids of one single crs.
-     * @throws CRSConfigurationException
-     */
-    public abstract List<CRSCodeType[]> getAvailableCRSCodes()
-                            throws CRSConfigurationException;
+	/**
+	 * @return all available codetypes, each sole array should reference the ids of one
+	 * single crs.
+	 * @throws CRSConfigurationException
+	 */
+	public abstract List<CRSCodeType[]> getAvailableCRSCodes() throws CRSConfigurationException;
 
-    /**
-     * @param projectionId
-     *            of the projection
-     * @param underlyingCRS
-     *            of the projection
-     * @return the projection denoted by the given id, or <code>null</code> if no such projection could be loaded.
-     */
-    public abstract IProjection getProjectionForId( String projectionId, GeographicCRS underlyingCRS );
+	/**
+	 * @param projectionId of the projection
+	 * @param underlyingCRS of the projection
+	 * @return the projection denoted by the given id, or <code>null</code> if no such
+	 * projection could be loaded.
+	 */
+	public abstract IProjection getProjectionForId(String projectionId, GeographicCRS underlyingCRS);
 
 }

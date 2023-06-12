@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -49,80 +48,73 @@ import org.deegree.geometry.standard.AbstractDefaultGeometry;
 
 /**
  * Default implementation of {@link PolyhedralSurface}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class DefaultPolyhedralSurface extends AbstractDefaultGeometry implements PolyhedralSurface {
 
-    private List<PolygonPatch> patches;
+	private List<PolygonPatch> patches;
 
-    /**
-     * Creates a new {@link DefaultPolyhedralSurface} instance from the given parameters.
-     * 
-     * @param id
-     *            identifier, may be null
-     * @param crs
-     *            coordinate reference system, may be null
-     * @param pm
-     *            precision model, may be null
-     * @param patches
-     *            patches that constitute the surface
-     */
-    public DefaultPolyhedralSurface( String id, ICRS crs, PrecisionModel pm, List<PolygonPatch> patches ) {
-        super( id, crs, pm );
-        this.patches = patches;
-    }
+	/**
+	 * Creates a new {@link DefaultPolyhedralSurface} instance from the given parameters.
+	 * @param id identifier, may be null
+	 * @param crs coordinate reference system, may be null
+	 * @param pm precision model, may be null
+	 * @param patches patches that constitute the surface
+	 */
+	public DefaultPolyhedralSurface(String id, ICRS crs, PrecisionModel pm, List<PolygonPatch> patches) {
+		super(id, crs, pm);
+		this.patches = patches;
+	}
 
-    @Override
-    public int getCoordinateDimension() {
-        return patches.get( 0 ).getCoordinateDimension();
-    }
+	@Override
+	public int getCoordinateDimension() {
+		return patches.get(0).getCoordinateDimension();
+	}
 
-    @Override
-    public Measure getArea( Unit requestedBaseUnit ) {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Measure getArea(Unit requestedBaseUnit) {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public Point getCentroid() {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Point getCentroid() {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public List<PolygonPatch> getPatches() {
-        return patches;
-    }
+	@Override
+	public List<PolygonPatch> getPatches() {
+		return patches;
+	}
 
-    @Override
-    public Measure getPerimeter( Unit requestedUnit ) {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Measure getPerimeter(Unit requestedUnit) {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public PrimitiveType getPrimitiveType() {
-        return PrimitiveType.Surface;
-    }
+	@Override
+	public PrimitiveType getPrimitiveType() {
+		return PrimitiveType.Surface;
+	}
 
-    @Override
-    public SurfaceType getSurfaceType() {
-        return SurfaceType.PolyhedralSurface;
-    }
+	@Override
+	public SurfaceType getSurfaceType() {
+		return SurfaceType.PolyhedralSurface;
+	}
 
-    @Override
-    public GeometryType getGeometryType() {
-        return GeometryType.PRIMITIVE_GEOMETRY;
-    }
+	@Override
+	public GeometryType getGeometryType() {
+		return GeometryType.PRIMITIVE_GEOMETRY;
+	}
 
-    @Override
-    public Points getExteriorRingCoordinates() {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Points getExteriorRingCoordinates() {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public List<Points> getInteriorRingsCoordinates() {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public List<Points> getInteriorRingsCoordinates() {
+		throw new UnsupportedOperationException();
+	}
+
 }

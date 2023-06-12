@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -44,35 +43,32 @@ import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 
 /**
  * This is a KVP adapter for WCS 1.0.0 GetCapabilities requests.
- * 
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class GetCapabilities100KVPAdapter {
 
-    /**
-     * @param kvpParams
-     * @return {@link GetCapabilities} request
-     * @throws InvalidParameterValueException
-     *             if VERSION parameter contains a syntactical error
-     */
-    public static GetCapabilities parse( Map<String, String> kvpParams )
-                            throws InvalidParameterValueException {
+	/**
+	 * @param kvpParams
+	 * @return {@link GetCapabilities} request
+	 * @throws InvalidParameterValueException if VERSION parameter contains a syntactical
+	 * error
+	 */
+	public static GetCapabilities parse(Map<String, String> kvpParams) throws InvalidParameterValueException {
 
-        // VERSION (optional)
-        String version = kvpParams.get( "VERSION" );
-        if ( version == null || version.length() == 0 ) {
-            version = "1.0.0";
-        }
+		// VERSION (optional)
+		String version = kvpParams.get("VERSION");
+		if (version == null || version.length() == 0) {
+			version = "1.0.0";
+		}
 
-        // SECTION (optional)
-        List<String> sections = KVPUtils.splitAll( kvpParams, "SECTION" );
+		// SECTION (optional)
+		List<String> sections = KVPUtils.splitAll(kvpParams, "SECTION");
 
-        // UPDATESEQUENCE (optional)
-        String updateSequence = KVPUtils.getDefault( kvpParams, "UPDATESEQUENCE", "" );
+		// UPDATESEQUENCE (optional)
+		String updateSequence = KVPUtils.getDefault(kvpParams, "UPDATESEQUENCE", "");
 
-        return new GetCapabilities( version, sections, null, updateSequence, null );
-    }
+		return new GetCapabilities(version, sections, null, updateSequence, null);
+	}
+
 }

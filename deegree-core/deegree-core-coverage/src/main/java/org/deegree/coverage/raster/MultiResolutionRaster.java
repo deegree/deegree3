@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -57,152 +56,144 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class represents a collection of {@link AbstractRaster} instances that describe the same spatial region, but
- * with different resolutions.
- * 
+ * This class represents a collection of {@link AbstractRaster} instances that describe
+ * the same spatial region, but with different resolutions.
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class MultiResolutionRaster extends AbstractCoverage {
 
-    private static final Logger LOG = LoggerFactory.getLogger( MultiResolutionRaster.class );
+	private static final Logger LOG = LoggerFactory.getLogger(MultiResolutionRaster.class);
 
-    private List<AbstractRaster> resolutions = new LinkedList<AbstractRaster>();
+	private List<AbstractRaster> resolutions = new LinkedList<AbstractRaster>();
 
-    private ResolutionInfo resolutionInfo;
+	private ResolutionInfo resolutionInfo;
 
-    private ResourceMetadata<Coverage> metadata;
+	private ResourceMetadata<Coverage> metadata;
 
-    /**
-     * Create an empty multi resolution raster.
-     */
-    public MultiResolutionRaster( ResourceMetadata<Coverage> metadata ) {
-        this.metadata = metadata;
-        this.resolutionInfo = new ResolutionInfo();
-    }
+	/**
+	 * Create an empty multi resolution raster.
+	 */
+	public MultiResolutionRaster(ResourceMetadata<Coverage> metadata) {
+		this.metadata = metadata;
+		this.resolutionInfo = new ResolutionInfo();
+	}
 
-    /**
-     * Adds a raster to the MultiResolution Pyramid
-     * 
-     * @param raster
-     *            raster to be added to the MultiResolutionRaster
-     */
-    public void addRaster( AbstractRaster raster ) {
-        if ( raster != null ) {
-            resolutions.add( raster );
-            List<SampleResolution> nativeResolutions = this.resolutionInfo.getNativeResolutions();
-            SampleResolution rasterRes = raster.getResolutionInfo().getNativeResolutions().get( 0 );
-            nativeResolutions.add( rasterRes );
-            Comparator<AbstractRaster> comp = new Comparator<AbstractRaster>() {
-                public int compare( AbstractRaster a1, AbstractRaster a2 ) {
-                    double r1 = Math.abs( a1.getResolutionInfo().getNativeResolutions().get( 0 ).getResolution( 0 ) );
-                    double r2 = Math.abs( a2.getResolutionInfo().getNativeResolutions().get( 0 ).getResolution( 0 ) );
-                    return Double.valueOf( r1 ).compareTo( r2 );
-                }
-            };
-            Collections.sort( resolutions, comp );
-        } else {
-            LOG.error( "Could not add raster to multiresolution raster because null." );
-        }
-    }
+	/**
+	 * Adds a raster to the MultiResolution Pyramid
+	 * @param raster raster to be added to the MultiResolutionRaster
+	 */
+	public void addRaster(AbstractRaster raster) {
+		if (raster != null) {
+			resolutions.add(raster);
+			List<SampleResolution> nativeResolutions = this.resolutionInfo.getNativeResolutions();
+			SampleResolution rasterRes = raster.getResolutionInfo().getNativeResolutions().get(0);
+			nativeResolutions.add(rasterRes);
+			Comparator<AbstractRaster> comp = new Comparator<AbstractRaster>() {
+				public int compare(AbstractRaster a1, AbstractRaster a2) {
+					double r1 = Math.abs(a1.getResolutionInfo().getNativeResolutions().get(0).getResolution(0));
+					double r2 = Math.abs(a2.getResolutionInfo().getNativeResolutions().get(0).getResolution(0));
+					return Double.valueOf(r1).compareTo(r2);
+				}
+			};
+			Collections.sort(resolutions, comp);
+		}
+		else {
+			LOG.error("Could not add raster to multiresolution raster because null.");
+		}
+	}
 
-    /**
-     * Returns the best-fitting raster for a given resolution.
-     * 
-     * This method tries to return the optimal raster for the requested resolution. It returns the next best resolution
-     * (lower resolution value) if available, otherwise it returns the next raster with a higher resolution value.
-     * 
-     * @param res
-     *            resolution in world units per pixel
-     * @return raster for resolution or <code>null</code> if no rasters were defined
-     */
-    public AbstractRaster getRaster( double res ) {
-        Iterator<AbstractRaster> iter = resolutions.iterator();
-        AbstractRaster prevRaster = null;
-        if ( iter.hasNext() ) {
-            prevRaster = iter.next();
-            boolean found = false;
-            while ( !found && iter.hasNext() ) {
-                AbstractRaster curRaster = iter.next();
-                if ( curRaster.getRasterReference().getResolutionX() > res ) {
-                    found = true;
-                } else {
-                    prevRaster = curRaster;
-                }
-            }
-        }
-        return prevRaster;
-    }
+	/**
+	 * Returns the best-fitting raster for a given resolution.
+	 *
+	 * This method tries to return the optimal raster for the requested resolution. It
+	 * returns the next best resolution (lower resolution value) if available, otherwise
+	 * it returns the next raster with a higher resolution value.
+	 * @param res resolution in world units per pixel
+	 * @return raster for resolution or <code>null</code> if no rasters were defined
+	 */
+	public AbstractRaster getRaster(double res) {
+		Iterator<AbstractRaster> iter = resolutions.iterator();
+		AbstractRaster prevRaster = null;
+		if (iter.hasNext()) {
+			prevRaster = iter.next();
+			boolean found = false;
+			while (!found && iter.hasNext()) {
+				AbstractRaster curRaster = iter.next();
+				if (curRaster.getRasterReference().getResolutionX() > res) {
+					found = true;
+				}
+				else {
+					prevRaster = curRaster;
+				}
+			}
+		}
+		return prevRaster;
+	}
 
-    @Override
-    public Envelope getEnvelope() {
-        // return envelope of highest resolution.
-        // envelopes of other resolutions can be larger due to padding of tiles
-        if ( !resolutions.isEmpty() && resolutions.get( 0 ) != null ) {
-            return resolutions.get( 0 ).getEnvelope();
-        }
-        return null;
-    }
+	@Override
+	public Envelope getEnvelope() {
+		// return envelope of highest resolution.
+		// envelopes of other resolutions can be larger due to padding of tiles
+		if (!resolutions.isEmpty() && resolutions.get(0) != null) {
+			return resolutions.get(0).getEnvelope();
+		}
+		return null;
+	}
 
-    /**
-     * Returns a subset of the raster for a given resolution.
-     * 
-     * The matching raster is selected using {@link #getRaster(double)}.
-     * 
-     * @see #getRaster(double)
-     * 
-     * @param envelope
-     *            envelope of the subset
-     * @param resolution
-     *            resolution in world units per pixel
-     * @return subset of the best-fitting raster
-     */
-    public AbstractRaster getSubset( Envelope envelope, double resolution ) {
-        AbstractRaster raster = getRaster( resolution );
-        return raster.getSubRaster( envelope );
-    }
+	/**
+	 * Returns a subset of the raster for a given resolution.
+	 *
+	 * The matching raster is selected using {@link #getRaster(double)}.
+	 *
+	 * @see #getRaster(double)
+	 * @param envelope envelope of the subset
+	 * @param resolution resolution in world units per pixel
+	 * @return subset of the best-fitting raster
+	 */
+	public AbstractRaster getSubset(Envelope envelope, double resolution) {
+		AbstractRaster raster = getRaster(resolution);
+		return raster.getSubRaster(envelope);
+	}
 
-    /**
-     * Returns a list with the highest resolution of every level. The list is sorted ascending (from highest to lowest
-     * resolution).
-     * 
-     * @return a list of all resolutions
-     */
-    public List<Double> getResolutions() {
-        List<Double> res = new ArrayList<Double>( resolutions.size() );
-        for ( AbstractRaster level : resolutions ) {
-            RasterGeoReference renv = level.getRasterReference();
-            res.add( min( abs( renv.getResolutionX() ), abs( renv.getResolutionY() ) ) );
-        }
-        return res;
-    }
+	/**
+	 * Returns a list with the highest resolution of every level. The list is sorted
+	 * ascending (from highest to lowest resolution).
+	 * @return a list of all resolutions
+	 */
+	public List<Double> getResolutions() {
+		List<Double> res = new ArrayList<Double>(resolutions.size());
+		for (AbstractRaster level : resolutions) {
+			RasterGeoReference renv = level.getRasterReference();
+			res.add(min(abs(renv.getResolutionX()), abs(renv.getResolutionY())));
+		}
+		return res;
+	}
 
-    @Override
-    public AbstractRaster getAsRaster( Envelope spatialExtent, SampleResolution resolution,
-                                       InterpolationType interpolation ) {
-        double res = resolution.getResolution( 0 );
-        AbstractRaster raster = getRaster( res );
-        if ( raster == null ) {
-            return resolutions.get( resolutions.size() - 1 );
-        }
-        return raster.getAsRaster( spatialExtent, resolution, interpolation );
-    }
+	@Override
+	public AbstractRaster getAsRaster(Envelope spatialExtent, SampleResolution resolution,
+			InterpolationType interpolation) {
+		double res = resolution.getResolution(0);
+		AbstractRaster raster = getRaster(res);
+		if (raster == null) {
+			return resolutions.get(resolutions.size() - 1);
+		}
+		return raster.getAsRaster(spatialExtent, resolution, interpolation);
+	}
 
-    @Override
-    public ResolutionInfo getResolutionInfo() {
-        return this.resolutionInfo;
-    }
+	@Override
+	public ResolutionInfo getResolutionInfo() {
+		return this.resolutionInfo;
+	}
 
-    @Override
-    public ResourceMetadata<? extends Resource> getMetadata() {
-        return metadata;
-    }
+	@Override
+	public ResourceMetadata<? extends Resource> getMetadata() {
+		return metadata;
+	}
 
-    @Override
-    public void init() {
-        // nothing to do
-    }
+	@Override
+	public void init() {
+		// nothing to do
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -41,36 +40,34 @@ import org.deegree.filter.MatchAction;
 
 /**
  * TODO add documentation here
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * 
- * @version $Revision:$, $Date:$
  */
 public class PropertyIsGreaterThan extends BinaryComparisonOperator {
 
-    public PropertyIsGreaterThan( Expression param1, Expression param2, Boolean matchCase, MatchAction matchAction ) {
-        super( param1, param2, matchCase, matchAction );
-    }
+	public PropertyIsGreaterThan(Expression param1, Expression param2, Boolean matchCase, MatchAction matchAction) {
+		super(param1, param2, matchCase, matchAction);
+	}
 
-    @Override
-    public SubType getSubType() {
-        return SubType.PROPERTY_IS_GREATER_THAN;
-    }
+	@Override
+	public SubType getSubType() {
+		return SubType.PROPERTY_IS_GREATER_THAN;
+	}
 
-    @Override
-    protected boolean compare( PrimitiveValue param1, PrimitiveValue param2 ) {
-        if ( ( param1 ).compareTo( param2 ) > 0 ) {
-            return true;
-        }
-        return false;
-    }
+	@Override
+	protected boolean compare(PrimitiveValue param1, PrimitiveValue param2) {
+		if ((param1).compareTo(param2) > 0) {
+			return true;
+		}
+		return false;
+	}
 
-    @Override
-    public String toString( String indent ) {
-        String s = indent + "-PropertyIsGreaterThan\n";
-        s += param1.toString( indent + "  " );
-        s += param2.toString( indent + "  " );
-        return s;
-    }
+	@Override
+	public String toString(String indent) {
+		String s = indent + "-PropertyIsGreaterThan\n";
+		s += param1.toString(indent + "  ");
+		s += param2.toString(indent + "  ");
+		return s;
+	}
+
 }

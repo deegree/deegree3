@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -41,22 +40,22 @@ import org.deegree.filter.Operator;
  * TODO add documentation here
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- *
- * @version $Revision:$, $Date:$
  */
 public abstract class LogicalOperator implements Operator {
 
-    public enum SubType {
-        AND, OR, NOT;
-    }
+	public enum SubType {
 
-    @Override
-    public Type getType () {
-        return Type.LOGICAL;
-    }
-    
-    public abstract Operator[] getParams ();
+		AND, OR, NOT;
 
-    public abstract SubType getSubType ();
+	}
+
+	@Override
+	public Type getType() {
+		return Type.LOGICAL;
+	}
+
+	public abstract Operator[] getParams();
+
+	public abstract SubType getSubType();
+
 }

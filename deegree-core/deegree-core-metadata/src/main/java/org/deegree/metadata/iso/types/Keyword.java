@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -38,58 +37,53 @@ package org.deegree.metadata.iso.types;
 import java.util.List;
 
 /**
- * Keyword representation for records. This class encapsulates the data for representation only. <br>
- * In ISO profile this class encapsulates the keywords, whereas in DC profile the subjects are encapsulates in this
- * class.
- * 
+ * Keyword representation for records. This class encapsulates the data for representation
+ * only. <br>
+ * In ISO profile this class encapsulates the keywords, whereas in DC profile the subjects
+ * are encapsulates in this class.
+ *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class Keyword {
 
-    private String keywordType;
+	private String keywordType;
 
-    private List<String> keywords;
+	private List<String> keywords;
 
-    private String thesaurus;
+	private String thesaurus;
 
-    /**
-     * Creates a new {@link Keyword} instance.
-     * 
-     * @param keywordType
-     *            a group of similar keywords. It's defined in a codeList {discipline, place, stratum, theme, temporal}
-     * @param keywords
-     *            topic of the content of the resource
-     * @param thesaurus
-     *            of the keywords
-     */
-    public Keyword( String keywordType, List<String> keywords, String thesaurus ) {
-        this.keywordType = keywordType;
-        this.keywords = keywords;
-        this.thesaurus = thesaurus;
-    }
+	/**
+	 * Creates a new {@link Keyword} instance.
+	 * @param keywordType a group of similar keywords. It's defined in a codeList
+	 * {discipline, place, stratum, theme, temporal}
+	 * @param keywords topic of the content of the resource
+	 * @param thesaurus of the keywords
+	 */
+	public Keyword(String keywordType, List<String> keywords, String thesaurus) {
+		this.keywordType = keywordType;
+		this.keywords = keywords;
+		this.thesaurus = thesaurus;
+	}
 
-    /**
-     * @return the keywordType
-     */
-    public String getKeywordType() {
-        return keywordType;
-    }
+	/**
+	 * @return the keywordType
+	 */
+	public String getKeywordType() {
+		return keywordType;
+	}
 
-    /**
-     * @return the keywords
-     */
-    public List<String> getKeywords() {
-        return keywords;
-    }
+	/**
+	 * @return the keywords
+	 */
+	public List<String> getKeywords() {
+		return keywords;
+	}
 
-    /**
-     * @return the thesaurus
-     */
-    public String getThesaurus() {
-        return thesaurus;
-    }
+	/**
+	 * @return the thesaurus
+	 */
+	public String getThesaurus() {
+		return thesaurus;
+	}
 
 }

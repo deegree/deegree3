@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -42,15 +41,13 @@ import org.deegree.geometry.Geometry;
 
 /**
  * {@link ParticleConverter} for {@link Geometry} particles.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface GeometryParticleConverter extends ParticleConverter<Geometry> {
 
-    public String getSrid();
+	public String getSrid();
 
-    public ICRS getCrs();
+	public ICRS getCrs();
+
 }

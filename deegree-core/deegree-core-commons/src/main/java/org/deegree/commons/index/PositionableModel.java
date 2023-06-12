@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -37,39 +36,38 @@
 package org.deegree.commons.index;
 
 /**
- * The <code>PositionableModel</code> defines methods on an object model for getting scene position and size
- * information.
- * 
+ * The <code>PositionableModel</code> defines methods on an object model for getting scene
+ * position and size information.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
- * 
+ *
  */
 public interface PositionableModel {
 
-    /**
-     * @return the position of the implementing class.
-     */
-    public float[] getPosition();
+	/**
+	 * @return the position of the implementing class.
+	 */
+	public float[] getPosition();
 
-    /**
-     * @return the boundingbox of the model with float[0][0-3] the min, float[1][0-3] the max.
-     */
-    public float[] getModelBBox();
+	/**
+	 * @return the boundingbox of the model with float[0][0-3] the min, float[1][0-3] the
+	 * max.
+	 */
+	public float[] getModelBBox();
 
-    /**
-     * @return a scalar which is represents the 'error' of this positionable.
-     */
-    public float getErrorScalar();
+	/**
+	 * @return a scalar which is represents the 'error' of this positionable.
+	 */
+	public float getErrorScalar();
 
-    /**
-     * @return a scalar which represents the 'height' of this positionable.
-     */
-    public float getObjectHeight();
+	/**
+	 * @return a scalar which represents the 'height' of this positionable.
+	 */
+	public float getObjectHeight();
 
-    /**
-     * @return a scalar which represents the 'groundlevel' of this positionable.
-     */
-    public float getGroundLevel();
+	/**
+	 * @return a scalar which represents the 'groundlevel' of this positionable.
+	 */
+	public float getGroundLevel();
 
 }

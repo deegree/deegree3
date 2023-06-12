@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2014 by:
@@ -36,29 +35,29 @@
 package org.deegree.sqldialect;
 
 /**
- * Implementations provide the vendor-specific behavior for a spatial DBMS so it can be accessed by deegree.
+ * Implementations provide the vendor-specific behavior for a spatial DBMS so it can be
+ * accessed by deegree.
  *
  * @author <a href="mailto:wanhoff@lat-lon.de">Jeronimo Wanhoff</a>
- * @author last edited by: $Author: wanhoff $
  *
  */
 public abstract class AbstractSQLDialect implements SQLDialect {
 
-    private char defaultEscapeChar = Character.UNASSIGNED;
+	private char defaultEscapeChar = Character.UNASSIGNED;
 
-    @Override
-    public char getLeadingEscapeChar() {
-        return defaultEscapeChar;
-    }
+	@Override
+	public char getLeadingEscapeChar() {
+		return defaultEscapeChar;
+	}
 
-    @Override
-    public char getTailingEscapeChar() {
-        return defaultEscapeChar;
-    }
+	@Override
+	public char getTailingEscapeChar() {
+		return defaultEscapeChar;
+	}
 
-    @Override
-    public boolean isRowLimitingCapable() {
-        return true;
-    }
+	@Override
+	public boolean isRowLimitingCapable() {
+		return true;
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -36,58 +35,53 @@
 package org.deegree.metadata.iso.types;
 
 /**
- * Specifies the tightly coupled dataset relation in ISO profile 1.0. This is defined in OGC 07-045 document.
- * 
+ * Specifies the tightly coupled dataset relation in ISO profile 1.0. This is defined in
+ * OGC 07-045 document.
+ *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class OperatesOnData {
 
-    private final String operatesOnId;
+	private final String operatesOnId;
 
-    private final String operatesOnIdentifier;
+	private final String operatesOnIdentifier;
 
-    private final String operationName;
+	private final String operationName;
 
-    /**
-     * Creates a new {@link OperatesOnData} instance.
-     * 
-     * @param scopedName
-     * 
-     * @param operatesOnIdentifier
-     *            identifier of a tightly coupled dataset on which the service operates on.
-     * 
-     * @param operatesOnName
-     *            name of an operation with which the service operates on a tightly coupled dataset.
-     * 
-     */
-    public OperatesOnData( String operatesOnId, String operatesOnIdentifier, String operatesOnName ) {
-        this.operatesOnId = operatesOnId;
-        this.operatesOnIdentifier = operatesOnIdentifier;
-        this.operationName = operatesOnName;
-    }
+	/**
+	 * Creates a new {@link OperatesOnData} instance.
+	 * @param scopedName
+	 * @param operatesOnIdentifier identifier of a tightly coupled dataset on which the
+	 * service operates on.
+	 * @param operatesOnName name of an operation with which the service operates on a
+	 * tightly coupled dataset.
+	 *
+	 */
+	public OperatesOnData(String operatesOnId, String operatesOnIdentifier, String operatesOnName) {
+		this.operatesOnId = operatesOnId;
+		this.operatesOnIdentifier = operatesOnIdentifier;
+		this.operationName = operatesOnName;
+	}
 
-    /**
-     * @return the operatesOn
-     */
-    public String getOperatesOnId() {
-        return operatesOnId;
-    }
+	/**
+	 * @return the operatesOn
+	 */
+	public String getOperatesOnId() {
+		return operatesOnId;
+	}
 
-    /**
-     * @return the operatesOnIdentifier
-     */
-    public String getOperatesOnIdentifier() {
-        return operatesOnIdentifier;
-    }
+	/**
+	 * @return the operatesOnIdentifier
+	 */
+	public String getOperatesOnIdentifier() {
+		return operatesOnIdentifier;
+	}
 
-    /**
-     * @return the operatesOnName
-     */
-    public String getOperatesOnName() {
-        return operationName;
-    }
+	/**
+	 * @return the operatesOnName
+	 */
+	public String getOperatesOnName() {
+		return operationName;
+	}
 
 }

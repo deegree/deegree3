@@ -43,45 +43,41 @@ import org.deegree.workspace.standard.DefaultResourceIdentifier;
 
 /**
  * {@link ResourceMetadata} for {@link MergingTileStore}.
- * 
+ *
  * @author <a href="mailto:Reijer.Copier@idgis.nl">Reijer Copier</a>
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * 
  * @since 3.4
  */
 class MergingTileStoreMetadata extends AbstractResourceMetadata<TileStore> {
 
-    private static final String JAXB_NAMESPACE = "org.deegree.tile.persistence.merge.jaxb";
+	private static final String JAXB_NAMESPACE = "org.deegree.tile.persistence.merge.jaxb";
 
-    /**
-     * Creates a new {@link MergingTileStoreMetadata} instance.
-     * 
-     * @param ws
-     *            workspace, must not be <code>null</code>
-     * @param location
-     *            resource location, must not be <code>null</code>
-     * @param provider
-     *            provider, must not be <code>null</code>
-     */
-    MergingTileStoreMetadata( Workspace ws, ResourceLocation<TileStore> location, MergingTileStoreProvider provider ) {
-        super( ws, location, provider );
-    }
+	/**
+	 * Creates a new {@link MergingTileStoreMetadata} instance.
+	 * @param ws workspace, must not be <code>null</code>
+	 * @param location resource location, must not be <code>null</code>
+	 * @param provider provider, must not be <code>null</code>
+	 */
+	MergingTileStoreMetadata(Workspace ws, ResourceLocation<TileStore> location, MergingTileStoreProvider provider) {
+		super(ws, location, provider);
+	}
 
-    @Override
-    public ResourceBuilder<TileStore> prepare() {
-        try {
-            org.deegree.tile.persistence.merge.jaxb.MergingTileStore cfg;
-            cfg = (org.deegree.tile.persistence.merge.jaxb.MergingTileStore) unmarshall( JAXB_NAMESPACE,
-                                                                                         provider.getSchema(),
-                                                                                         location.getAsStream(),
-                                                                                         workspace );
-            dependencies.add( new DefaultResourceIdentifier<TileMatrixSet>( TileMatrixSetProvider.class, cfg.getTileMatrixSetId() ) );
-            for ( String tileStoreId : cfg.getTileStoreId() ) {
-                dependencies.add( new DefaultResourceIdentifier<TileStore>( TileStoreProvider.class, tileStoreId ) );
-            }
-            return new MergingTileStoreBuilder( cfg, this, workspace );
-        } catch ( Exception e ) {
-            throw new ResourceInitException( "Could not prepare MergingTileStore: " + e.getLocalizedMessage(), e );
-        }
-    }
+	@Override
+	public ResourceBuilder<TileStore> prepare() {
+		try {
+			org.deegree.tile.persistence.merge.jaxb.MergingTileStore cfg;
+			cfg = (org.deegree.tile.persistence.merge.jaxb.MergingTileStore) unmarshall(JAXB_NAMESPACE,
+					provider.getSchema(), location.getAsStream(), workspace);
+			dependencies.add(new DefaultResourceIdentifier<TileMatrixSet>(TileMatrixSetProvider.class,
+					cfg.getTileMatrixSetId()));
+			for (String tileStoreId : cfg.getTileStoreId()) {
+				dependencies.add(new DefaultResourceIdentifier<TileStore>(TileStoreProvider.class, tileStoreId));
+			}
+			return new MergingTileStoreBuilder(cfg, this, workspace);
+		}
+		catch (Exception e) {
+			throw new ResourceInitException("Could not prepare MergingTileStore: " + e.getLocalizedMessage(), e);
+		}
+	}
+
 }

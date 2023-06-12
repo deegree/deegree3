@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -42,28 +41,25 @@ import java.util.Map;
 
 /**
  * <code>GetFeatureInfoSchema</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class GetFeatureInfoSchema {
 
-    private String[] layers;
+	private String[] layers;
 
-    /**
-     * @param map
-     */
-    public GetFeatureInfoSchema( Map<String, String> map ) {
-        layers = map.get( "LAYERS" ).split( "," );
-    }
+	/**
+	 * @param map
+	 */
+	public GetFeatureInfoSchema(Map<String, String> map) {
+		layers = map.get("LAYERS").split(",");
+	}
 
-    /**
-     * @return the requested layers
-     */
-    public String[] getLayers() {
-        return copyOf( layers, layers.length );
-    }
+	/**
+	 * @return the requested layers
+	 */
+	public String[] getLayers() {
+		return copyOf(layers, layers.length);
+	}
 
 }

@@ -40,9 +40,7 @@ import org.jfree.ui.RectangleInsets;
  * needed to create the XYDataset for the chart. In the end, a BufferedImage will be created from the chart.
  * 
  * @author <a href="mailto:neumeister@lat-lon.de">Ulrich Neumeister</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
  */
 public class ChartProcessing {
 

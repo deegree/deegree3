@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -44,52 +43,50 @@ import org.deegree.cs.components.IVerticalDatum;
 import org.deegree.cs.components.VerticalDatum;
 
 /**
- * The <code>VerticalCRS</code> represents a crs based on one axis only, typically this crs is used as an extension on
- * an already present crs, and adds a 'heightaxis' to the original crs.
- * 
+ * The <code>VerticalCRS</code> represents a crs based on one axis only, typically this
+ * crs is used as an extension on an already present crs, and adds a 'heightaxis' to the
+ * original crs.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class VerticalCRS extends CRS implements IVerticalCRS {
 
-    /**
-     * @param datum
-     * @param axisOrder
-     * @param identity
-     */
-    public VerticalCRS( IVerticalDatum datum, IAxis[] axisOrder, CRSResource identity ) {
-        super( datum, axisOrder, identity );
-        checkForNullObject( axisOrder, "VerticalCRS", "axisOrder" );
-        if ( axisOrder.length != 1 ) {
-            throw new IllegalArgumentException( "A vertical crs can only be 1 dimensional." );
-        }
-    }
+	/**
+	 * @param datum
+	 * @param axisOrder
+	 * @param identity
+	 */
+	public VerticalCRS(IVerticalDatum datum, IAxis[] axisOrder, CRSResource identity) {
+		super(datum, axisOrder, identity);
+		checkForNullObject(axisOrder, "VerticalCRS", "axisOrder");
+		if (axisOrder.length != 1) {
+			throw new IllegalArgumentException("A vertical crs can only be 1 dimensional.");
+		}
+	}
 
-    @Override
-    public int getDimension() {
-        return 1;
-    }
+	@Override
+	public int getDimension() {
+		return 1;
+	}
 
-    @Override
-    public CRSType getType() {
-        return VERTICAL;
-    }
+	@Override
+	public CRSType getType() {
+		return VERTICAL;
+	}
 
-    /**
-     * @return the vertical datum of this crs
-     */
-    public VerticalDatum getVerticalDatum() {
-        return (VerticalDatum) super.getDatum();
-    }
+	/**
+	 * @return the vertical datum of this crs
+	 */
+	public VerticalDatum getVerticalDatum() {
+		return (VerticalDatum) super.getDatum();
+	}
 
-    /**
-     * @return the axis of this vertical crs.
-     */
-    public IAxis getVerticalAxis() {
-        return getAxis()[0];
-    }
+	/**
+	 * @return the axis of this vertical crs.
+	 */
+	public IAxis getVerticalAxis() {
+		return getAxis()[0];
+	}
+
 }

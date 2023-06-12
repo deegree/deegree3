@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -43,83 +42,78 @@ import org.deegree.commons.utils.nio.PooledByteBuffer;
 
 /**
  * The <code>MeshFragmentData</code> holds the fragment data.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class MeshFragmentData {
 
-    private int numTriangles;
+	private int numTriangles;
 
-    private final PooledByteBuffer rawBuffer;
+	private final PooledByteBuffer rawBuffer;
 
-    private final FloatBuffer vertexBuffer;
+	private final FloatBuffer vertexBuffer;
 
-    private final Buffer indexBuffer;
+	private final Buffer indexBuffer;
 
-    private final Buffer normalsBuffer;
+	private final Buffer normalsBuffer;
 
-    /**
-     * Construct from the given rawbuffer.
-     * 
-     * @param rawBuffer
-     * @param vertexBuffer
-     * @param normalsBuffer
-     * @param indexBuffer
-     */
-    public MeshFragmentData( PooledByteBuffer rawBuffer, FloatBuffer vertexBuffer, Buffer normalsBuffer,
-                             Buffer indexBuffer ) {
-        this.rawBuffer = rawBuffer;
-        this.vertexBuffer = vertexBuffer;
-        this.normalsBuffer = normalsBuffer;
-        this.indexBuffer = indexBuffer;
-        this.numTriangles = indexBuffer.capacity() / 3;
-    }
+	/**
+	 * Construct from the given rawbuffer.
+	 * @param rawBuffer
+	 * @param vertexBuffer
+	 * @param normalsBuffer
+	 * @param indexBuffer
+	 */
+	public MeshFragmentData(PooledByteBuffer rawBuffer, FloatBuffer vertexBuffer, Buffer normalsBuffer,
+			Buffer indexBuffer) {
+		this.rawBuffer = rawBuffer;
+		this.vertexBuffer = vertexBuffer;
+		this.normalsBuffer = normalsBuffer;
+		this.indexBuffer = indexBuffer;
+		this.numTriangles = indexBuffer.capacity() / 3;
+	}
 
-    /**
-     * @return the number of triangles
-     */
-    public int getNumTriangles() {
-        return numTriangles;
-    }
+	/**
+	 * @return the number of triangles
+	 */
+	public int getNumTriangles() {
+		return numTriangles;
+	}
 
-    /**
-     * 
-     * @return the vertices.
-     */
-    public FloatBuffer getVertices() {
-        return vertexBuffer;
-    }
+	/**
+	 * @return the vertices.
+	 */
+	public FloatBuffer getVertices() {
+		return vertexBuffer;
+	}
 
-    /**
-     * Returns the buffer that contains the vertices of the triangles.
-     * <p>
-     * The returned buffer can be (depending on the number of vertices in the fragment):
-     * <ul>
-     * <li>a <code>ByteBuffer</code></li>
-     * <li>a <code>ShortBuffer</code></li>
-     * <li>an <code>IntBuffer</code></li>
-     * </ul>
-     * 
-     * @return buffer the contains the triangles (as vertex indexes)
-     */
-    public Buffer getTriangles() {
-        return indexBuffer;
-    }
+	/**
+	 * Returns the buffer that contains the vertices of the triangles.
+	 * <p>
+	 * The returned buffer can be (depending on the number of vertices in the fragment):
+	 * <ul>
+	 * <li>a <code>ByteBuffer</code></li>
+	 * <li>a <code>ShortBuffer</code></li>
+	 * <li>an <code>IntBuffer</code></li>
+	 * </ul>
+	 * @return buffer the contains the triangles (as vertex indexes)
+	 */
+	public Buffer getTriangles() {
+		return indexBuffer;
+	}
 
-    /**
-     * @return the normal buffer
-     */
-    public Buffer getNormals() {
-        return normalsBuffer;
-    }
+	/**
+	 * @return the normal buffer
+	 */
+	public Buffer getNormals() {
+		return normalsBuffer;
+	}
 
-    /**
-     * free the pooled buffer.
-     */
-    public void freeBuffers() {
-        rawBuffer.free();
-    }
+	/**
+	 * free the pooled buffer.
+	 */
+	public void freeBuffers() {
+		rawBuffer.free();
+	}
+
 }

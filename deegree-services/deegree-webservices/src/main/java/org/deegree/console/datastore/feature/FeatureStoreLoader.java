@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -61,97 +60,96 @@ import org.deegree.protocol.wfs.transaction.action.IDGenMode;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 @ManagedBean
 @RequestScoped
 public class FeatureStoreLoader implements Serializable {
 
-    private static final long serialVersionUID = 5091506903775758089L;
+	private static final long serialVersionUID = 5091506903775758089L;
 
-    private final FeatureStore fs;
+	private final FeatureStore fs;
 
-    private GMLVersion gmlVersion = GML_32;
+	private GMLVersion gmlVersion = GML_32;
 
-    private IDGenMode idGenMode = GENERATE_NEW;
+	private IDGenMode idGenMode = GENERATE_NEW;
 
-    private String url = "";
+	private String url = "";
 
-    FeatureStoreLoader( FeatureStore fs ) {
-        this.fs = fs;
-        if ( fs.getSchema().getGMLSchema() != null ) {
-            gmlVersion = fs.getSchema().getGMLSchema().getVersion();
-        }
-    }
+	FeatureStoreLoader(FeatureStore fs) {
+		this.fs = fs;
+		if (fs.getSchema().getGMLSchema() != null) {
+			gmlVersion = fs.getSchema().getGMLSchema().getVersion();
+		}
+	}
 
-    public String getGmlVersion() {
-        return gmlVersion.name();
-    }
+	public String getGmlVersion() {
+		return gmlVersion.name();
+	}
 
-    public void setGmlVersion( String gmlVersion ) {
-        this.gmlVersion = GMLVersion.valueOf( gmlVersion );
-    }
+	public void setGmlVersion(String gmlVersion) {
+		this.gmlVersion = GMLVersion.valueOf(gmlVersion);
+	}
 
-    public String[] getAvailableGmlVersions() {
-        String[] gmlVersions = new String[GMLVersion.values().length];
-        int i = 0;
-        for ( GMLVersion version : GMLVersion.values() ) {
-            gmlVersions[i++] = version.name();
-        }
-        return gmlVersions;
-    }
+	public String[] getAvailableGmlVersions() {
+		String[] gmlVersions = new String[GMLVersion.values().length];
+		int i = 0;
+		for (GMLVersion version : GMLVersion.values()) {
+			gmlVersions[i++] = version.name();
+		}
+		return gmlVersions;
+	}
 
-    public IDGenMode getIdGenMode() {
-        return idGenMode;
-    }
+	public IDGenMode getIdGenMode() {
+		return idGenMode;
+	}
 
-    public void setIdGenMode( IDGenMode idGenMode ) {
-        this.idGenMode = idGenMode;
-    }
+	public void setIdGenMode(IDGenMode idGenMode) {
+		this.idGenMode = idGenMode;
+	}
 
-    public IDGenMode[] getAvailableIdGenModes() {
-        return new IDGenMode[] { GENERATE_NEW, USE_EXISTING };
-    }
+	public IDGenMode[] getAvailableIdGenModes() {
+		return new IDGenMode[] { GENERATE_NEW, USE_EXISTING };
+	}
 
-    public String getUrl() {
-        return url;
-    }
+	public String getUrl() {
+		return url;
+	}
 
-    public void setUrl( String url ) {
-        this.url = url;
-    }
+	public void setUrl(String url) {
+		this.url = url;
+	}
 
-    public void importData()
-                            throws Throwable {
-        List<String> fids = null;
-        FeatureStoreTransaction ta = null;
-        try {
-            GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader( gmlVersion, new URL( url ) );
-            gmlStream.setApplicationSchema( fs.getSchema() );
-            FeatureCollection fc = gmlStream.readFeatureCollection();
-            gmlStream.getIdContext().resolveLocalRefs();
-            gmlStream.close();
-            ta = fs.acquireTransaction();
-            fids = ta.performInsert( fc, idGenMode );
-            ta.commit();
-        } catch ( Throwable t ) {
-            if ( ta != null ) {
-                try {
-                    ta.rollback();
-                } catch ( FeatureStoreException e ) {
-                    e.printStackTrace();
-                }
-            }
-            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "GML import failed: " + t.getMessage(), null );
-            FacesContext.getCurrentInstance().addMessage( null, fm );
-            return;
-        }
+	public void importData() throws Throwable {
+		List<String> fids = null;
+		FeatureStoreTransaction ta = null;
+		try {
+			GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader(gmlVersion, new URL(url));
+			gmlStream.setApplicationSchema(fs.getSchema());
+			FeatureCollection fc = gmlStream.readFeatureCollection();
+			gmlStream.getIdContext().resolveLocalRefs();
+			gmlStream.close();
+			ta = fs.acquireTransaction();
+			fids = ta.performInsert(fc, idGenMode);
+			ta.commit();
+		}
+		catch (Throwable t) {
+			if (ta != null) {
+				try {
+					ta.rollback();
+				}
+				catch (FeatureStoreException e) {
+					e.printStackTrace();
+				}
+			}
+			FacesMessage fm = new FacesMessage(SEVERITY_ERROR, "GML import failed: " + t.getMessage(), null);
+			FacesContext.getCurrentInstance().addMessage(null, fm);
+			return;
+		}
 
-        FacesMessage fm = new FacesMessage( SEVERITY_INFO, "Imported " + fids.size() + " features", null );
-        FacesContext.getCurrentInstance().addMessage( null, fm );
-    }
+		FacesMessage fm = new FacesMessage(SEVERITY_INFO, "Imported " + fids.size() + " features", null);
+		FacesContext.getCurrentInstance().addMessage(null, fm);
+	}
+
 }

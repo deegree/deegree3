@@ -59,31 +59,33 @@ import org.slf4j.Logger;
 
 /**
  * <code>ImageSerializerGeoTiff</code>
- * 
+ *
  * @author <a href="mailto:niklasch@grit.de">Sebastian Niklasch</a>
  */
 
 public class ImageSerializerGeoTiff implements ImageSerializer {
-    private static final Logger LOG = getLogger( ImageSerializerGeoTiff.class );
 
-    private String formatName = "tiff";
+	private static final Logger LOG = getLogger(ImageSerializerGeoTiff.class);
 
-    @Override
-    public void serialize( RenderingInfo rinfo, BufferedImage img, OutputStream out )
-                            throws IOException {
-        if ( rinfo != null && rinfo.getEnvelope() != null ) {
-            long ts, te;
-            RasterGeoReference geoRef = create( OriginLocation.OUTER, rinfo.getEnvelope(), img.getWidth(),
-                                                img.getHeight() );
+	private String formatName = "tiff";
 
-            ts = System.currentTimeMillis();
-            GeoTiffWriter.save( img, geoRef, out );
-            te = System.currentTimeMillis();
+	@Override
+	public void serialize(RenderingInfo rinfo, BufferedImage img, OutputStream out) throws IOException {
+		if (rinfo != null && rinfo.getEnvelope() != null) {
+			long ts, te;
+			RasterGeoReference geoRef = create(OriginLocation.OUTER, rinfo.getEnvelope(), img.getWidth(),
+					img.getHeight());
 
-            LOG.debug( "Encoding into {} duration {} ms", formatName, te - ts );
-        } else {
-            LOG.debug( "Rendering without spatial information, because no envelope is availible. Using ImageIO" );
-            write( img, formatName, out );
-        }
-    }
+			ts = System.currentTimeMillis();
+			GeoTiffWriter.save(img, geoRef, out);
+			te = System.currentTimeMillis();
+
+			LOG.debug("Encoding into {} duration {} ms", formatName, te - ts);
+		}
+		else {
+			LOG.debug("Rendering without spatial information, because no envelope is availible. Using ImageIO");
+			write(img, formatName, out);
+		}
+	}
+
 }

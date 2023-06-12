@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -37,29 +36,25 @@
 package org.deegree.cs.exceptions;
 
 /**
- * The <code>ProjectionException</code> class can be thrown if the projection runs into a problem while projecting
- * coordinates.
- * 
+ * The <code>ProjectionException</code> class can be thrown if the projection runs into a
+ * problem while projecting coordinates.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 
 public class ProjectionException extends CRSException {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = -6763536693500423010L;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = -6763536693500423010L;
 
-    /**
-     * @param string
-     */
-    public ProjectionException( String string ) {
-        super( string );
-    }
+	/**
+	 * @param string
+	 */
+	public ProjectionException(String string) {
+		super(string);
+	}
 
 }

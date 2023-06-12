@@ -2,7 +2,7 @@
 <OracleGeoraster
 	xmlns="http://www.deegree.org/datasource/coverage/oraclegeoraster"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.deegree.org/datasource/coverage/oraclegeoraster http://schemas.deegree.org/3.5/datasource/coverage/oraclegeoraster/oraclegeoraster.xsd">
+	xsi:schemaLocation="http://www.deegree.org/datasource/coverage/oraclegeoraster https://schemas.deegree.org/core/3.5/datasource/coverage/oraclegeoraster/oraclegeoraster.xsd">
 	<JDBCConnId>oracle</JDBCConnId>
 	<StorageCRS>EPSG:31468</StorageCRS>
 	

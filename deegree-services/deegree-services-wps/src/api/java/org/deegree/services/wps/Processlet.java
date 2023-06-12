@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -54,8 +53,8 @@ package org.deegree.services.wps;
  * </p>
  * <p>
  * A deegree WPS process consists of a Java class implementing the {@link Processlet} interface and an XML configuration
- * file that has to validate against <a href="http://schemas.deegree.org/3.5/wps/process_definition.xsd">
- * http://schemas.deegree.org/3.5/wps/process_definition.xsd</a>). Besides the definition of metadata, the XML
+ * file that has to validate against <a href="https://schemas.deegree.org/core/3.5/wps/process_definition.xsd">
+ * https://schemas.deegree.org/core/3.5/wps/process_definition.xsd</a>). Besides the definition of metadata, the XML
  * configuration file references the implementation class with its fully qualified class name.
  * </p>
  * <p>
@@ -100,9 +99,7 @@ package org.deegree.services.wps;
  * 
  * @author <a href="mailto:apadberg@uni-bonn.de">Alexander Padberg</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
  */
 public interface Processlet {
 

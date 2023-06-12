@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -44,73 +43,64 @@ import org.deegree.cs.coordinatesystems.ICompoundCRS;
 
 /**
  * {@link CRSRef} to a {@link CompoundCRS}
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class CompoundCRSRef extends CRSRef implements ICompoundCRS {
 
-    private static final long serialVersionUID = -3414397045382059732L;
+	private static final long serialVersionUID = -3414397045382059732L;
 
-    /**
-     * Creates a reference to a {@link CompoundCRS}
-     * 
-     * @param resolver
-     *            used for resolving the reference, must not be <code>null</code>
-     * @param uri
-     *            the object's uri, must not be <code>null</code>
-     * @param baseURL
-     *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
-     */
-    public CompoundCRSRef( ReferenceResolver resolver, String uri, String baseURL ) {
-        super( resolver, uri, baseURL );
-    }
+	/**
+	 * Creates a reference to a {@link CompoundCRS}
+	 * @param resolver used for resolving the reference, must not be <code>null</code>
+	 * @param uri the object's uri, must not be <code>null</code>
+	 * @param baseURL base URL for resolving the uri, may be <code>null</code> (no
+	 * resolving of relative URLs)
+	 */
+	public CompoundCRSRef(ReferenceResolver resolver, String uri, String baseURL) {
+		super(resolver, uri, baseURL);
+	}
 
-    /**
-     * Creates a new {@link CompoundCRSRef} instance with a coordinate reference system name.
-     * 
-     * @param resolver
-     *            used for resolving the reference, must not be <code>null</code>
-     * @param uri
-     *            the object's uri, must not be <code>null</code>
-     * @param baseURL
-     *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
-     * @param crsName
-     *            name of the crs (identification string) or null
-     * @param forceXY
-     *            true if the axis order of the coordinate system should be x/y (EAST/NORTH; WEST/SOUTH); false id the
-     *            defined axis order should be taken
-     */
+	/**
+	 * Creates a new {@link CompoundCRSRef} instance with a coordinate reference system
+	 * name.
+	 * @param resolver used for resolving the reference, must not be <code>null</code>
+	 * @param uri the object's uri, must not be <code>null</code>
+	 * @param baseURL base URL for resolving the uri, may be <code>null</code> (no
+	 * resolving of relative URLs)
+	 * @param crsName name of the crs (identification string) or null
+	 * @param forceXY true if the axis order of the coordinate system should be x/y
+	 * (EAST/NORTH; WEST/SOUTH); false id the defined axis order should be taken
+	 */
 
-    public CompoundCRSRef( ReferenceResolver resolver, String uri, String baseURL, boolean forceXY ) {
-        super( resolver, uri, baseURL, forceXY );
-    }
+	public CompoundCRSRef(ReferenceResolver resolver, String uri, String baseURL, boolean forceXY) {
+		super(resolver, uri, baseURL, forceXY);
+	}
 
-    public IAxis getHeightAxis() {
-        return getReferencedObject().getHeightAxis();
-    }
+	public IAxis getHeightAxis() {
+		return getReferencedObject().getHeightAxis();
+	}
 
-    public IUnit getHeightUnits() {
-        return getReferencedObject().getHeightUnits();
-    }
+	public IUnit getHeightUnits() {
+		return getReferencedObject().getHeightUnits();
+	}
 
-    public ICRS getUnderlyingCRS() {
-        return getReferencedObject().getUnderlyingCRS();
-    }
+	public ICRS getUnderlyingCRS() {
+		return getReferencedObject().getUnderlyingCRS();
+	}
 
-    public double getDefaultHeight() {
-        return getReferencedObject().getDefaultHeight();
-    }
+	public double getDefaultHeight() {
+		return getReferencedObject().getDefaultHeight();
+	}
 
-    @Override
-    public boolean equals( Object obj ) {
-        return super.equals( obj ) ? true : getReferencedObject().equals( obj );
-    }
+	@Override
+	public boolean equals(Object obj) {
+		return super.equals(obj) ? true : getReferencedObject().equals(obj);
+	}
 
-    @Override
-    public CompoundCRS getReferencedObject() {
-        return (CompoundCRS) super.getReferencedObject();
-    }
+	@Override
+	public CompoundCRS getReferencedObject() {
+		return (CompoundCRS) super.getReferencedObject();
+	}
+
 }

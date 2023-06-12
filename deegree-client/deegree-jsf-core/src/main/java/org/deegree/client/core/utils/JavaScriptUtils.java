@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -39,35 +38,32 @@ import java.util.Map;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public final class JavaScriptUtils {
 
-    public static String getAjaxRequest( Map<String, String> options, String srcId ) {
-        if ( options != null && options.size() > 0 ) {
-            StringBuilder sb = new StringBuilder();
-            sb.append( '{' );
-            int i = 1;
-            for ( String key : options.keySet() ) {
-                sb.append( "'" );
-                sb.append( key );
-                sb.append( "':" );
-                sb.append( "'" );
-                sb.append( options.get( key ) );
-                sb.append( "'" );
-                if ( i != options.size() ) {
-                    sb.append( ',' );
-                }
-                i++;
-            }
-            sb.append( '}' );
-            return "jsf.ajax.request('" + srcId + "', event, " + sb.toString() + ");";
-        }
-        return "jsf.ajax.request('" + srcId + "', event);";
-    }
+	public static String getAjaxRequest(Map<String, String> options, String srcId) {
+		if (options != null && options.size() > 0) {
+			StringBuilder sb = new StringBuilder();
+			sb.append('{');
+			int i = 1;
+			for (String key : options.keySet()) {
+				sb.append("'");
+				sb.append(key);
+				sb.append("':");
+				sb.append("'");
+				sb.append(options.get(key));
+				sb.append("'");
+				if (i != options.size()) {
+					sb.append(',');
+				}
+				i++;
+			}
+			sb.append('}');
+			return "jsf.ajax.request('" + srcId + "', event, " + sb.toString() + ");";
+		}
+		return "jsf.ajax.request('" + srcId + "', event);";
+	}
 
 }

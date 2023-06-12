@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://svn.wald.intevation.org/deegree/deegree3/branches/tiling/deegree-datastores/deegree-tilestores/deegree-tilestore-filesystem/src/main/java/org/deegree/tile/persistence/filesystem/FileSystemTileStore.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -45,74 +44,68 @@ import org.deegree.workspace.ResourceMetadata;
 
 /**
  * Generic implementation of {@link TileStore}.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: aschmitz $
- * 
- * @version $Revision: 33489 $, $Date: 2012-06-22 15:35:47 +0200 (Fri, 22 Jun 2012) $
  */
 public class GenericTileStore implements TileStore {
 
-    private final Map<String, TileDataSet> tileDataSets;
+	private final Map<String, TileDataSet> tileDataSets;
 
-    private ResourceMetadata<TileStore> metadata;
+	private ResourceMetadata<TileStore> metadata;
 
-    /**
-     * Creates a new {@link GenericTileStore} instance.
-     * 
-     * @param tileDataSets
-     *            the tile data sets to serve, must not be <code>null</code>
-     * @param metadata
-     *            resource metadata, must not be <code>null</code>
-     */
-    public GenericTileStore( Map<String, TileDataSet> tileDataSets, ResourceMetadata<TileStore> metadata ) {
-        this.tileDataSets = tileDataSets;
-        this.metadata = metadata;
-    }
+	/**
+	 * Creates a new {@link GenericTileStore} instance.
+	 * @param tileDataSets the tile data sets to serve, must not be <code>null</code>
+	 * @param metadata resource metadata, must not be <code>null</code>
+	 */
+	public GenericTileStore(Map<String, TileDataSet> tileDataSets, ResourceMetadata<TileStore> metadata) {
+		this.tileDataSets = tileDataSets;
+		this.metadata = metadata;
+	}
 
-    @Override
-    public Collection<String> getTileDataSetIds() {
-        return tileDataSets.keySet();
-    }
+	@Override
+	public Collection<String> getTileDataSetIds() {
+		return tileDataSets.keySet();
+	}
 
-    @Override
-    public void init() {
-        // nothing to init
-    }
+	@Override
+	public void init() {
+		// nothing to init
+	}
 
-    @Override
-    public void destroy() {
-        // nothing to destroy
-    }
+	@Override
+	public void destroy() {
+		// nothing to destroy
+	}
 
-    @Override
-    public Iterator<Tile> getTiles( String id, Envelope envelope, double resolution ) {
-        return tileDataSets.get( id ).getTiles( envelope, resolution );
-    }
+	@Override
+	public Iterator<Tile> getTiles(String id, Envelope envelope, double resolution) {
+		return tileDataSets.get(id).getTiles(envelope, resolution);
+	}
 
-    @Override
-    public TileDataSet getTileDataSet( String id ) {
-        return tileDataSets.get( id );
-    }
+	@Override
+	public TileDataSet getTileDataSet(String id) {
+		return tileDataSets.get(id);
+	}
 
-    @Override
-    public Tile getTile( String tmsId, String tileMatrix, int x, int y ) {
-        TileDataLevel tm = tileDataSets.get( tmsId ).getTileDataLevel( tileMatrix );
-        if ( tm == null ) {
-            return null;
-        }
-        return tm.getTile( x, y );
-    }
+	@Override
+	public Tile getTile(String tmsId, String tileMatrix, int x, int y) {
+		TileDataLevel tm = tileDataSets.get(tmsId).getTileDataLevel(tileMatrix);
+		if (tm == null) {
+			return null;
+		}
+		return tm.getTile(x, y);
+	}
 
-    @Override
-    public TileStoreTransaction acquireTransaction( String id ) {
-        throw new UnsupportedOperationException( "Transactions are not supported by this tile store." );
-    }
+	@Override
+	public TileStoreTransaction acquireTransaction(String id) {
+		throw new UnsupportedOperationException("Transactions are not supported by this tile store.");
+	}
 
-    @Override
-    public ResourceMetadata<TileStore> getMetadata() {
-        return metadata;
-    }
+	@Override
+	public ResourceMetadata<TileStore> getMetadata() {
+		return metadata;
+	}
 
 }

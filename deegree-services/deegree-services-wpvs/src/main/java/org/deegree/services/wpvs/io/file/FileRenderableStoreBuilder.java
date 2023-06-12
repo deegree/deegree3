@@ -44,83 +44,85 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This class is responsible for building file renderable stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class FileRenderableStoreBuilder implements ResourceBuilder<RenderableStore> {
 
-    private static final Logger LOG = LoggerFactory.getLogger( FileRenderableStoreBuilder.class );
+	private static final Logger LOG = LoggerFactory.getLogger(FileRenderableStoreBuilder.class);
 
-    private RenderableFileStoreConfig config;
+	private RenderableFileStoreConfig config;
 
-    private ResourceMetadata<RenderableStore> metadata;
+	private ResourceMetadata<RenderableStore> metadata;
 
-    public FileRenderableStoreBuilder( RenderableFileStoreConfig config, ResourceMetadata<RenderableStore> metadata ) {
-        this.config = config;
-        this.metadata = metadata;
-    }
+	public FileRenderableStoreBuilder(RenderableFileStoreConfig config, ResourceMetadata<RenderableStore> metadata) {
+		this.config = config;
+		this.metadata = metadata;
+	}
 
-    @Override
-    public RenderableStore build() {
-        RenderableStore rs = null;
-        try {
+	@Override
+	public RenderableStore build() {
+		RenderableStore rs = null;
+		try {
 
-            String entityFileName = config.getEntityFile();
-            if ( entityFileName == null ) {
-                throw new IllegalArgumentException( "Entityfile must be set to a valid billboard/entity backend file." );
-            }
+			String entityFileName = config.getEntityFile();
+			if (entityFileName == null) {
+				throw new IllegalArgumentException("Entityfile must be set to a valid billboard/entity backend file.");
+			}
 
-            File entityFile = resolveFile( entityFileName, true,
-                                           "Entityfile must be set to a valid billboard/entity backend file." );
-            if ( config.isIsBillboard() ) {
-                rs = new FileBackend( entityFile, metadata );
-            } else {
-                String prototypeFileName = config.getPrototypeFile();
-                File prototypeFile = null;
-                if ( prototypeFileName != null ) {
-                    prototypeFile = resolveFile( prototypeFileName, false, null );
-                }
-                rs = new FileBackend( entityFile, prototypeFile, metadata );
-            }
+			File entityFile = resolveFile(entityFileName, true,
+					"Entityfile must be set to a valid billboard/entity backend file.");
+			if (config.isIsBillboard()) {
+				rs = new FileBackend(entityFile, metadata);
+			}
+			else {
+				String prototypeFileName = config.getPrototypeFile();
+				File prototypeFile = null;
+				if (prototypeFileName != null) {
+					prototypeFile = resolveFile(prototypeFileName, false, null);
+				}
+				rs = new FileBackend(entityFile, prototypeFile, metadata);
+			}
 
-            // instantiate the texture dir
-            List<String> tDirs = config.getTextureDirectory();
-            for ( String tDir : tDirs ) {
-                if ( tDir != null ) {
-                    File tD = resolveFile( tDir, false, null );
-                    TexturePool.addTexturesFromDirectory( tD );
-                }
-            }
+			// instantiate the texture dir
+			List<String> tDirs = config.getTextureDirectory();
+			for (String tDir : tDirs) {
+				if (tDir != null) {
+					File tD = resolveFile(tDir, false, null);
+					TexturePool.addTexturesFromDirectory(tD);
+				}
+			}
 
-        } catch ( Exception e ) {
-            throw new ResourceInitException( "Could not instantiate a file renderable store: "
-                                             + e.getLocalizedMessage(), e );
-        }
-        return rs;
-    }
+		}
+		catch (Exception e) {
+			throw new ResourceInitException("Could not instantiate a file renderable store: " + e.getLocalizedMessage(),
+					e);
+		}
+		return rs;
+	}
 
-    private File resolveFile( String fileName, boolean required, String msg ) {
-        URI resolve = resolveURI( fileName );
-        if ( resolve == null ) {
-            if ( required ) {
-                throw new IllegalArgumentException( msg );
-            }
-            return null;
-        }
-        return new File( resolve );
-    }
+	private File resolveFile(String fileName, boolean required, String msg) {
+		URI resolve = resolveURI(fileName);
+		if (resolve == null) {
+			if (required) {
+				throw new IllegalArgumentException(msg);
+			}
+			return null;
+		}
+		return new File(resolve);
+	}
 
-    private URI resolveURI( String fileName ) {
-        URI resolve = null;
-        try {
-            URL url = metadata.getLocation().resolveToUrl( fileName );
-            resolve = url.toURI();
-        } catch ( URISyntaxException e ) {
-            LOG.warn( "Error while resolving url for file: " + fileName + "." );
-        }
-        return resolve;
-    }
+	private URI resolveURI(String fileName) {
+		URI resolve = null;
+		try {
+			URL url = metadata.getLocation().resolveToUrl(fileName);
+			resolve = url.toURI();
+		}
+		catch (URISyntaxException e) {
+			LOG.warn("Error while resolving url for file: " + fileName + ".");
+		}
+		return resolve;
+	}
 
 }

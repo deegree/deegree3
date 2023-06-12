@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -43,24 +42,21 @@ import org.deegree.cs.configuration.resources.XMLResource;
 import org.deegree.cs.coordinatesystems.ICRS;
 
 /**
- * 
+ *
  * An interface enhancing the capabilities of an xml resource.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface GMLResource extends XMLResource {
 
-    /**
-     * @return the available crs ids of this gml resource.
-     */
-    public List<CRSCodeType[]> getAvailableCRSIds();
+	/**
+	 * @return the available crs ids of this gml resource.
+	 */
+	public List<CRSCodeType[]> getAvailableCRSIds();
 
-    /**
-     * @return the list of coordinate systems.
-     */
-    public List<ICRS> getAvailableCRSs();
+	/**
+	 * @return the list of coordinate systems.
+	 */
+	public List<ICRS> getAvailableCRSs();
 
 }

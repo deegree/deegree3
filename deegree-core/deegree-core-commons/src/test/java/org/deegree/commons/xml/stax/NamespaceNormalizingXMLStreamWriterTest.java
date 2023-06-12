@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -52,69 +51,65 @@ import org.junit.Test;
 
 /**
  * Tests for the {@link NamespaceNormalizingXMLStreamWriter}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class NamespaceNormalizingXMLStreamWriterTest {
 
-    @Test
-    public void testNormalizeDefaultNamespace()
-                            throws XMLStreamException {
+	@Test
+	public void testNormalizeDefaultNamespace() throws XMLStreamException {
 
-        String input = "<a xmlns=\"http://www.deegree.org/app\">Hello</a>";
-        XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( new StringReader( input ) );
-        XMLStreamUtils.skipStartDocument( reader );
+		String input = "<a xmlns=\"http://www.deegree.org/app\">Hello</a>";
+		XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new StringReader(input));
+		XMLStreamUtils.skipStartDocument(reader);
 
-        StringWriter output = new StringWriter();
-        XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter( output );
-        NamespaceBindings nsBindings = new NamespaceBindings();
-        nsBindings.addNamespace( "app", "http://www.deegree.org/app" );
-        writer = new NamespaceNormalizingXMLStreamWriter( writer, nsBindings );
+		StringWriter output = new StringWriter();
+		XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter(output);
+		NamespaceBindings nsBindings = new NamespaceBindings();
+		nsBindings.addNamespace("app", "http://www.deegree.org/app");
+		writer = new NamespaceNormalizingXMLStreamWriter(writer, nsBindings);
 
-        XMLAdapter.writeElement( writer, reader );
-        writer.close();
-        assertEquals( "<app:a xmlns:app=\"http://www.deegree.org/app\">Hello</app:a>", output.toString() );
-    }
+		XMLAdapter.writeElement(writer, reader);
+		writer.close();
+		assertEquals("<app:a xmlns:app=\"http://www.deegree.org/app\">Hello</app:a>", output.toString());
+	}
 
-    @Test
-    public void testNormalizeNonDefaultNamespace()
-                            throws XMLStreamException {
+	@Test
+	public void testNormalizeNonDefaultNamespace() throws XMLStreamException {
 
-        String input = "<app:a xmlns:app=\"http://www.deegree.org/app\">Hello</app:a>";
-        XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( new StringReader( input ) );
-        XMLStreamUtils.skipStartDocument( reader );
+		String input = "<app:a xmlns:app=\"http://www.deegree.org/app\">Hello</app:a>";
+		XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new StringReader(input));
+		XMLStreamUtils.skipStartDocument(reader);
 
-        StringWriter output = new StringWriter();
-        XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter( output );
-        NamespaceBindings nsBindings = new NamespaceBindings();
-        nsBindings.addNamespace( "", "http://www.deegree.org/app" );
-        writer = new NamespaceNormalizingXMLStreamWriter( writer, nsBindings );
+		StringWriter output = new StringWriter();
+		XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter(output);
+		NamespaceBindings nsBindings = new NamespaceBindings();
+		nsBindings.addNamespace("", "http://www.deegree.org/app");
+		writer = new NamespaceNormalizingXMLStreamWriter(writer, nsBindings);
 
-        XMLAdapter.writeElement( writer, reader );
-        writer.close();
-        assertEquals( "<a xmlns=\"http://www.deegree.org/app\">Hello</a>", output.toString() );
-    }
+		XMLAdapter.writeElement(writer, reader);
+		writer.close();
+		assertEquals("<a xmlns=\"http://www.deegree.org/app\">Hello</a>", output.toString());
+	}
 
-    @Test
-    public void testNormalizeNestedElementAndAttribute()
-                            throws XMLStreamException {
+	@Test
+	public void testNormalizeNestedElementAndAttribute() throws XMLStreamException {
 
-        String input = "<a xmlns=\"http://www.deegree.org/app\"><b xmlns:app=\"http://www.deegree.org/app\" app:attr=\"attribute\">Hello</b></a>";
-        XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( new StringReader( input ) );
-        XMLStreamUtils.skipStartDocument( reader );
+		String input = "<a xmlns=\"http://www.deegree.org/app\"><b xmlns:app=\"http://www.deegree.org/app\" app:attr=\"attribute\">Hello</b></a>";
+		XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new StringReader(input));
+		XMLStreamUtils.skipStartDocument(reader);
 
-        StringWriter output = new StringWriter();
-        XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter( output );
-        NamespaceBindings nsBindings = new NamespaceBindings();
-        nsBindings.addNamespace( "app", "http://www.deegree.org/app" );
-        writer = new NamespaceNormalizingXMLStreamWriter( writer, nsBindings );
+		StringWriter output = new StringWriter();
+		XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter(output);
+		NamespaceBindings nsBindings = new NamespaceBindings();
+		nsBindings.addNamespace("app", "http://www.deegree.org/app");
+		writer = new NamespaceNormalizingXMLStreamWriter(writer, nsBindings);
 
-        XMLAdapter.writeElement( writer, reader );
-        writer.close();
-        assertEquals( "<app:a xmlns:app=\"http://www.deegree.org/app\"><app:b app:attr=\"attribute\">Hello</app:b></app:a>",
-                      output.toString() );
-    }
+		XMLAdapter.writeElement(writer, reader);
+		writer.close();
+		assertEquals(
+				"<app:a xmlns:app=\"http://www.deegree.org/app\"><app:b app:attr=\"attribute\">Hello</app:b></app:a>",
+				output.toString());
+	}
+
 }

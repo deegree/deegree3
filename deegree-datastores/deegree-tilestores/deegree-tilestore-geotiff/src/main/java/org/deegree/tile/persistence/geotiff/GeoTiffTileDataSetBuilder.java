@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -59,51 +58,48 @@ import org.deegree.workspace.Workspace;
 
 /**
  * Builds tile data sets from jaxb config beans.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 class GeoTiffTileDataSetBuilder {
 
-    private Workspace workspace;
+	private Workspace workspace;
 
-    GeoTiffTileDataSetBuilder( Workspace workspace ) {
-        this.workspace = workspace;
-    }
+	GeoTiffTileDataSetBuilder(Workspace workspace) {
+		this.workspace = workspace;
+	}
 
-    TileDataSet buildTileDataSet( GeoTIFFTileStoreJAXB.TileDataSet cfg, ResourceLocation<TileStore> location,
-                                  Envelope envelope ) {
-        String filename = cfg.getFile();
-        String format = cfg.getImageFormat();
-        String tmsId = cfg.getTileMatrixSetId();
-        int maxActive = getMaxActive( cfg );
+	TileDataSet buildTileDataSet(GeoTIFFTileStoreJAXB.TileDataSet cfg, ResourceLocation<TileStore> location,
+			Envelope envelope) {
+		String filename = cfg.getFile();
+		String format = cfg.getImageFormat();
+		String tmsId = cfg.getTileMatrixSetId();
+		int maxActive = getMaxActive(cfg);
 
-        File file = location.resolveToFile( filename );
+		File file = location.resolveToFile(filename);
 
-        TileMatrixSet tms = workspace.getResource( TileMatrixSetProvider.class, tmsId );
+		TileMatrixSet tms = workspace.getResource(TileMatrixSetProvider.class, tmsId);
 
-        List<TileDataLevel> levels = new ArrayList<TileDataLevel>();
-        double x = envelope.getMin().get0() - tms.getSpatialMetadata().getEnvelope().getMin().get0();
-        double y = envelope.getMax().get1() - tms.getSpatialMetadata().getEnvelope().getMax().get1();
+		List<TileDataLevel> levels = new ArrayList<TileDataLevel>();
+		double x = envelope.getMin().get0() - tms.getSpatialMetadata().getEnvelope().getMin().get0();
+		double y = envelope.getMax().get1() - tms.getSpatialMetadata().getEnvelope().getMax().get1();
 
-        int idx = 0;
-        for ( TileMatrix tm : tms.getTileMatrices() ) {
-            int xoff = (int) Math.round( x / tm.getTileWidth() );
-            int yoff = (int) Math.round( y / tm.getTileHeight() );
-            int numx = (int) Math.ceil( envelope.getSpan0() / tm.getTileWidth() );
-            int numy = (int) Math.ceil( envelope.getSpan1() / tm.getTileHeight() );
-            levels.add( new GeoTIFFTileDataLevel( tm, file, idx++, xoff, yoff, numx, numy, maxActive ) );
-        }
+		int idx = 0;
+		for (TileMatrix tm : tms.getTileMatrices()) {
+			int xoff = (int) Math.round(x / tm.getTileWidth());
+			int yoff = (int) Math.round(y / tm.getTileHeight());
+			int numx = (int) Math.ceil(envelope.getSpan0() / tm.getTileWidth());
+			int numy = (int) Math.ceil(envelope.getSpan1() / tm.getTileHeight());
+			levels.add(new GeoTIFFTileDataLevel(tm, file, idx++, xoff, yoff, numx, numy, maxActive));
+		}
 
-        return new DefaultTileDataSet( levels, tms, format );
-    }
+		return new DefaultTileDataSet(levels, tms, format);
+	}
 
-    private int getMaxActive( GeoTIFFTileStoreJAXB.TileDataSet cfg ) {
-        if ( cfg.getAccessConfig() != null && cfg.getAccessConfig().getMaxActive() != null )
-            return cfg.getAccessConfig().getMaxActive().intValue();
-        return 8;
-    }
+	private int getMaxActive(GeoTIFFTileStoreJAXB.TileDataSet cfg) {
+		if (cfg.getAccessConfig() != null && cfg.getAccessConfig().getMaxActive() != null)
+			return cfg.getAccessConfig().getMaxActive().intValue();
+		return 8;
+	}
 
 }

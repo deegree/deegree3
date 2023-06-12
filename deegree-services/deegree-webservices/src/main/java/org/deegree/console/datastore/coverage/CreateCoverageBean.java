@@ -37,20 +37,19 @@ import org.deegree.coverage.persistence.CoverageManager;
  * JSF backing bean for "Create new coverage" view.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- *
  * @since 3.3
  */
 @ManagedBean
 @ViewScoped
 public class CreateCoverageBean extends AbstractCreateResourceBean {
 
-    public CreateCoverageBean() {
-        super( CoverageManager.class );
-    }
+	public CreateCoverageBean() {
+		super(CoverageManager.class);
+	}
 
-    @Override
-    protected String getOutcome() {
-        return "/console/datastore/coverage/index";
-    }
+	@Override
+	protected String getOutcome() {
+		return "/console/datastore/coverage/index";
+	}
 
 }

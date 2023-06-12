@@ -51,122 +51,124 @@ import org.deegree.workspace.standard.DefaultWorkspace;
  * JSF backing bean for views of type "Create new XYZ resource".
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- *
  * @since 3.4
  */
 @ManagedBean
 @ViewScoped
 public abstract class AbstractCreateResourceBean {
 
-    private String id;
+	private String id;
 
-    private String type;
+	private String type;
 
-    private String configTemplate;
+	private String configTemplate;
 
-    private List<String> configTemplates;
+	private List<String> configTemplates;
 
-    private transient ResourceManagerMetadata metadata;
+	private transient ResourceManagerMetadata metadata;
 
-    private File resourceDir;
+	private File resourceDir;
 
-    protected AbstractCreateResourceBean() {
-        // required by JSF
-    }
+	protected AbstractCreateResourceBean() {
+		// required by JSF
+	}
 
-    protected AbstractCreateResourceBean( Class<? extends ResourceManager<?>> resourceMgrClass ) {
-        ResourceManager<?> mgr = getWorkspace().getResourceManager( resourceMgrClass );
-        metadata = ResourceManagerMetadata.getMetadata( mgr, getWorkspace() );
-        File wsDir = ( (DefaultWorkspace) getWorkspace() ).getLocation();
-        resourceDir = new File( wsDir, mgr.getMetadata().getWorkspacePath() );
-        if ( !getTypes().isEmpty() ) {
-            type = getTypes().get( 0 );
-            changeType( null );
-        }
-    }
+	protected AbstractCreateResourceBean(Class<? extends ResourceManager<?>> resourceMgrClass) {
+		ResourceManager<?> mgr = getWorkspace().getResourceManager(resourceMgrClass);
+		metadata = ResourceManagerMetadata.getMetadata(mgr, getWorkspace());
+		File wsDir = ((DefaultWorkspace) getWorkspace()).getLocation();
+		resourceDir = new File(wsDir, mgr.getMetadata().getWorkspacePath());
+		if (!getTypes().isEmpty()) {
+			type = getTypes().get(0);
+			changeType(null);
+		}
+	}
 
-    public String getId() {
-        return id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public void setId( final String id ) {
-        this.id = id;
-    }
+	public void setId(final String id) {
+		this.id = id;
+	}
 
-    public String getType() {
-        return type;
-    }
+	public String getType() {
+		return type;
+	}
 
-    public void setType( String type ) {
-        this.type = type;
-    }
+	public void setType(String type) {
+		this.type = type;
+	}
 
-    public void changeType( AjaxBehaviorEvent event ) {
-        ResourceProvider<?> provider = metadata.getProvider( type );
-        ResourceProviderMetadata md = ResourceProviderMetadata.getMetadata( provider );
-        configTemplates = new ArrayList<String>( md.getExamples().keySet() );
-        if ( configTemplates.isEmpty() ) {
-            configTemplate = null;
-        } else {
-            configTemplate = configTemplates.get( 0 );
-        }
-    }
+	public void changeType(AjaxBehaviorEvent event) {
+		ResourceProvider<?> provider = metadata.getProvider(type);
+		ResourceProviderMetadata md = ResourceProviderMetadata.getMetadata(provider);
+		configTemplates = new ArrayList<String>(md.getExamples().keySet());
+		if (configTemplates.isEmpty()) {
+			configTemplate = null;
+		}
+		else {
+			configTemplate = configTemplates.get(0);
+		}
+	}
 
-    public List<String> getTypes() {
-        return metadata.getProviderNames();
-    }
+	public List<String> getTypes() {
+		return metadata.getProviderNames();
+	}
 
-    public String getConfigTemplate() {
-        return configTemplate;
-    }
+	public String getConfigTemplate() {
+		return configTemplate;
+	}
 
-    public void setConfigTemplate( String configTemplate ) {
-        this.configTemplate = configTemplate;
-    }
+	public void setConfigTemplate(String configTemplate) {
+		this.configTemplate = configTemplate;
+	}
 
-    public List<String> getConfigTemplates() {
-        return configTemplates;
-    }
+	public List<String> getConfigTemplates() {
+		return configTemplates;
+	}
 
-    public String create() {
-        ResourceProvider<?> provider = metadata.getProvider( type );
-        if ( provider == null ) {
-            provider = metadata.getProviders().get( 0 );
-        }
-        ResourceProviderMetadata md = ResourceProviderMetadata.getMetadata( provider );
-        final Map<String, ConfigExample> examples = md.getExamples();
-        if ( examples == null || !examples.containsKey( configTemplate ) ) {
-            JsfUtils.indicateException( "Creating resource", "Internal error: Example template missing!?" );
-            return getOutcome();
-        }
-        URL templateURL = md.getExamples().get( configTemplate ).getContentLocation();
-        try {
-            URL schemaURL = null;
-            if ( provider != null && provider instanceof AbstractResourceProvider<?> ) {
-                schemaURL = ( (AbstractResourceProvider<?>) provider ).getSchema();
-            }
-            File resourceFile = new File( resourceDir, id + ".xml" );
-            if ( resourceFile.exists() ) {
-                JsfUtils.indicateException( "Creating resource", "Resource with this identifier already exists!" );
-                return getOutcome();
-            }
-            StringBuilder sb = new StringBuilder( "/console/generic/xmleditor?faces-redirect=true" );
-            sb.append( "&id=" ).append( id );
-            sb.append( "&schemaUrl=" );
-            if ( schemaURL != null ) {
-                sb.append( schemaURL.toString() );
-            }
-            sb.append( "&resourceProviderClass=" ).append( metadata.getManager().getMetadata().getProviderClass().getCanonicalName() );
-            sb.append( "&nextView=" ).append( getOutcome() );
-            sb.append( "&emptyTemplate=" ).append( templateURL );
+	public String create() {
+		ResourceProvider<?> provider = metadata.getProvider(type);
+		if (provider == null) {
+			provider = metadata.getProviders().get(0);
+		}
+		ResourceProviderMetadata md = ResourceProviderMetadata.getMetadata(provider);
+		final Map<String, ConfigExample> examples = md.getExamples();
+		if (examples == null || !examples.containsKey(configTemplate)) {
+			JsfUtils.indicateException("Creating resource", "Internal error: Example template missing!?");
+			return getOutcome();
+		}
+		URL templateURL = md.getExamples().get(configTemplate).getContentLocation();
+		try {
+			URL schemaURL = null;
+			if (provider != null && provider instanceof AbstractResourceProvider<?>) {
+				schemaURL = ((AbstractResourceProvider<?>) provider).getSchema();
+			}
+			File resourceFile = new File(resourceDir, id + ".xml");
+			if (resourceFile.exists()) {
+				JsfUtils.indicateException("Creating resource", "Resource with this identifier already exists!");
+				return getOutcome();
+			}
+			StringBuilder sb = new StringBuilder("/console/generic/xmleditor?faces-redirect=true");
+			sb.append("&id=").append(id);
+			sb.append("&schemaUrl=");
+			if (schemaURL != null) {
+				sb.append(schemaURL.toString());
+			}
+			sb.append("&resourceProviderClass=")
+				.append(metadata.getManager().getMetadata().getProviderClass().getCanonicalName());
+			sb.append("&nextView=").append(getOutcome());
+			sb.append("&emptyTemplate=").append(templateURL);
 
-            return sb.toString();
-        } catch ( Exception t ) {
-            JsfUtils.indicateException( "Creating resource", t );
-        }
-        return getOutcome();
-    }
+			return sb.toString();
+		}
+		catch (Exception t) {
+			JsfUtils.indicateException("Creating resource", t);
+		}
+		return getOutcome();
+	}
 
-    protected abstract String getOutcome();
+	protected abstract String getOutcome();
 
 }

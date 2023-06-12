@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2022 by:
@@ -82,181 +81,175 @@ import org.slf4j.LoggerFactory;
  */
 public class CsvFeatureWriter {
 
-    private static final Logger LOG = LoggerFactory.getLogger( CsvFeatureWriter.class );
+	private static final Logger LOG = LoggerFactory.getLogger(CsvFeatureWriter.class);
 
-    public static final String CRS = "CRS";
+	public static final String CRS = "CRS";
 
-    private final CSVPrinter csvPrinter;
+	private final CSVPrinter csvPrinter;
 
-    private final ICRS requestedCRS;
+	private final ICRS requestedCRS;
 
-    private final FeatureType featureType;
+	private final FeatureType featureType;
 
-    private final List<QName> propertyNames;
+	private final List<QName> propertyNames;
 
-    public CsvFeatureWriter( Writer writer, ICRS requestedCRS, FeatureType featureType ) throws IOException {
-        this.propertyNames = findPropertyNamesToOutput( featureType );
-        this.csvPrinter = new CSVPrinter( writer, DEFAULT.withHeader( createHeaders() ) );
-        this.requestedCRS = requestedCRS;
-        this.featureType = featureType;
-    }
+	public CsvFeatureWriter(Writer writer, ICRS requestedCRS, FeatureType featureType) throws IOException {
+		this.propertyNames = findPropertyNamesToOutput(featureType);
+		this.csvPrinter = new CSVPrinter(writer, DEFAULT.withHeader(createHeaders()));
+		this.requestedCRS = requestedCRS;
+		this.featureType = featureType;
+	}
 
-    /**
-     * Writes a new Feature into the FeatureCollection.
-     *
-     * @param feature
-     *            the feature to write, never <code>null</code>
-     * @throws IOException
-     *             if GeoJSON could no be written
-     * @throws TransformationException
-     *             if a geometry to export cannot be transformed to CRS:84
-     * @throws UnknownCRSException
-     *             if the CRS of the geometry is not supported
-     */
-    public void write( Feature feature )
-                            throws IOException {
-        QName featureName = feature.getName();
-        LOG.debug( "Exporting Feature {} with ID {}", featureName, feature.getId() );
-        try {
-            List<String> record = createRecord( feature );
-            csvPrinter.printRecord( record );
-        } catch ( IOException e ) {
-            LOG.debug( "Export of feature with ID " + feature.getId() + " failed", e );
-            throw e;
-        } catch ( TransformationException | UnknownCRSException e ) {
-            LOG.debug( "Export of feature with ID " + feature.getId() + " failed", e );
-            throw new IOException( "Could not write Feature as CSV Entry.", e );
-        }
-    }
+	/**
+	 * Writes a new Feature into the FeatureCollection.
+	 * @param feature the feature to write, never <code>null</code>
+	 * @throws IOException if GeoJSON could no be written
+	 * @throws TransformationException if a geometry to export cannot be transformed to
+	 * CRS:84
+	 * @throws UnknownCRSException if the CRS of the geometry is not supported
+	 */
+	public void write(Feature feature) throws IOException {
+		QName featureName = feature.getName();
+		LOG.debug("Exporting Feature {} with ID {}", featureName, feature.getId());
+		try {
+			List<String> record = createRecord(feature);
+			csvPrinter.printRecord(record);
+		}
+		catch (IOException e) {
+			LOG.debug("Export of feature with ID " + feature.getId() + " failed", e);
+			throw e;
+		}
+		catch (TransformationException | UnknownCRSException e) {
+			LOG.debug("Export of feature with ID " + feature.getId() + " failed", e);
+			throw new IOException("Could not write Feature as CSV Entry.", e);
+		}
+	}
 
-    private List<String> createRecord( Feature feature )
-                            throws TransformationException,
-                            UnknownCRSException,
-                            IOException {
-        List<String> csvEntry = new ArrayList<>();
-        for ( QName propertyName : propertyNames ) {
-            List<Property> properties = feature.getProperties( propertyName );
-            if ( properties.isEmpty() ) {
-                csvEntry.add( null );
-            } else {
-                csvEntry.add( export( propertyName, properties ) );
-            }
-        }
-        csvEntry.add( crsAsString() );
-        return csvEntry;
-    }
+	private List<String> createRecord(Feature feature)
+			throws TransformationException, UnknownCRSException, IOException {
+		List<String> csvEntry = new ArrayList<>();
+		for (QName propertyName : propertyNames) {
+			List<Property> properties = feature.getProperties(propertyName);
+			if (properties.isEmpty()) {
+				csvEntry.add(null);
+			}
+			else {
+				csvEntry.add(export(propertyName, properties));
+			}
+		}
+		csvEntry.add(crsAsString());
+		return csvEntry;
+	}
 
-    private List<QName> findPropertyNamesToOutput( FeatureType featureType ) {
-        return featureType.getPropertyDeclarations().stream().filter( p -> isSupportedProperty( p ) ).map( p -> p.getName() ).collect( Collectors.toList() );
-    }
+	private List<QName> findPropertyNamesToOutput(FeatureType featureType) {
+		return featureType.getPropertyDeclarations()
+			.stream()
+			.filter(p -> isSupportedProperty(p))
+			.map(p -> p.getName())
+			.collect(Collectors.toList());
+	}
 
-    private boolean isSupportedProperty( PropertyType p ) {
-        if ( p instanceof CustomPropertyType ) {
-            return ( (CustomPropertyType) p ).getXSDValueType().getContentType() == XSComplexTypeDefinition.CONTENTTYPE_SIMPLE;
-        }
-        boolean isSupportedProperty = p instanceof CodePropertyType || p instanceof EnvelopePropertyType
-                                      || p instanceof MeasurePropertyType || p instanceof LengthPropertyType
-                                      || p instanceof FeaturePropertyType || p instanceof GeometryPropertyType
-                                      || p instanceof SimplePropertyType || p instanceof StringOrRef;
-        if ( !isSupportedProperty )
-            LOG.warn( "Property with name " + p.getName() + " cannot be exported as CSV" );
-        return isSupportedProperty;
-    }
+	private boolean isSupportedProperty(PropertyType p) {
+		if (p instanceof CustomPropertyType) {
+			return ((CustomPropertyType) p).getXSDValueType()
+				.getContentType() == XSComplexTypeDefinition.CONTENTTYPE_SIMPLE;
+		}
+		boolean isSupportedProperty = p instanceof CodePropertyType || p instanceof EnvelopePropertyType
+				|| p instanceof MeasurePropertyType || p instanceof LengthPropertyType
+				|| p instanceof FeaturePropertyType || p instanceof GeometryPropertyType
+				|| p instanceof SimplePropertyType || p instanceof StringOrRef;
+		if (!isSupportedProperty)
+			LOG.warn("Property with name " + p.getName() + " cannot be exported as CSV");
+		return isSupportedProperty;
+	}
 
-    private String[] createHeaders() {
-        List<String> headers = propertyNames.stream().map( name -> name.toString() ).collect( Collectors.toList() );
-        headers.add( CRS );
-        return headers.toArray( new String[headers.size()] );
-    }
+	private String[] createHeaders() {
+		List<String> headers = propertyNames.stream().map(name -> name.toString()).collect(Collectors.toList());
+		headers.add(CRS);
+		return headers.toArray(new String[headers.size()]);
+	}
 
-    private String crsAsString() {
-        if ( requestedCRS != null ) {
-            return requestedCRS.getAlias();
-        }
-        return null;
-    }
+	private String crsAsString() {
+		if (requestedCRS != null) {
+			return requestedCRS.getAlias();
+		}
+		return null;
+	}
 
-    private String export( QName propertyName, List<Property> properties )
-                            throws TransformationException,
-                            UnknownCRSException,
-                            IOException {
-        StringBuilder sb = new StringBuilder();
-        int propertyIndex = 0;
-        for ( Property property : properties ) {
-            String propertyAsString = propertyAsString( propertyName, property );
-            if ( propertyAsString != null ) {
-                if ( propertyIndex > 0 )
-                    sb.append( " | " );
-                sb.append( propertyAsString.replace( "\n", "" ) );
-            }
-            propertyIndex++;
-        }
-        if ( sb.length() == 0 )
-            return null;
-        return sb.toString();
-    }
+	private String export(QName propertyName, List<Property> properties)
+			throws TransformationException, UnknownCRSException, IOException {
+		StringBuilder sb = new StringBuilder();
+		int propertyIndex = 0;
+		for (Property property : properties) {
+			String propertyAsString = propertyAsString(propertyName, property);
+			if (propertyAsString != null) {
+				if (propertyIndex > 0)
+					sb.append(" | ");
+				sb.append(propertyAsString.replace("\n", ""));
+			}
+			propertyIndex++;
+		}
+		if (sb.length() == 0)
+			return null;
+		return sb.toString();
+	}
 
-    private String propertyAsString( QName propertyName, Property property )
-                            throws TransformationException,
-                            UnknownCRSException,
-                            IOException {
-        if ( property instanceof SimpleProperty ) {
-            return export( property.getValue() );
-        } else if ( property instanceof FeatureReference ) {
-            return ( (FeatureReference) property ).getURI();
-        } else if ( property instanceof Geometry ) {
-            return export( (Geometry) property );
-        } else if ( property instanceof GenericProperty ) {
-            return export( property.getValue() );
-        }
-        throw new IOException( "Unhandled property type '" + property.getClass() + "' (property name " + propertyName
-                               + " )" );
-    }
+	private String propertyAsString(QName propertyName, Property property)
+			throws TransformationException, UnknownCRSException, IOException {
+		if (property instanceof SimpleProperty) {
+			return export(property.getValue());
+		}
+		else if (property instanceof FeatureReference) {
+			return ((FeatureReference) property).getURI();
+		}
+		else if (property instanceof Geometry) {
+			return export((Geometry) property);
+		}
+		else if (property instanceof GenericProperty) {
+			return export(property.getValue());
+		}
+		throw new IOException(
+				"Unhandled property type '" + property.getClass() + "' (property name " + propertyName + " )");
+	}
 
-    private String export( Geometry geometry )
-                            throws UnknownCRSException,
-                            TransformationException {
-        Geometry geom = transformGeometryIfRequired( geometry );
-        return WKTWriter.write( geom );
-    }
+	private String export(Geometry geometry) throws UnknownCRSException, TransformationException {
+		Geometry geom = transformGeometryIfRequired(geometry);
+		return WKTWriter.write(geom);
+	}
 
-    private String export( TypedObjectNode node )
-                            throws TransformationException,
-                            UnknownCRSException,
-                            IOException {
-        if ( node == null ) {
-            return null;
-        }
-        if ( node instanceof PrimitiveValue ) {
-            return export( (PrimitiveValue) node );
-        }
-        if ( node instanceof Geometry ) {
-            return export( (Geometry) node );
-        }
-        if ( node instanceof GenericXMLElement ) {
-            return export( ( (GenericXMLElement) node ).getValue() );
-        }
-        if ( node instanceof FeatureReference ) {
-            return ( (FeatureReference) node ).getURI();
-        }
-        throw new IOException( "Unhandled node type '" + node.getClass() );
-    }
+	private String export(TypedObjectNode node) throws TransformationException, UnknownCRSException, IOException {
+		if (node == null) {
+			return null;
+		}
+		if (node instanceof PrimitiveValue) {
+			return export((PrimitiveValue) node);
+		}
+		if (node instanceof Geometry) {
+			return export((Geometry) node);
+		}
+		if (node instanceof GenericXMLElement) {
+			return export(((GenericXMLElement) node).getValue());
+		}
+		if (node instanceof FeatureReference) {
+			return ((FeatureReference) node).getURI();
+		}
+		throw new IOException("Unhandled node type '" + node.getClass());
+	}
 
-    private String export( PrimitiveValue value ) {
-        if ( value == null ) {
-            return null;
-        }
-        return value.getAsText();
-    }
+	private String export(PrimitiveValue value) {
+		if (value == null) {
+			return null;
+		}
+		return value.getAsText();
+	}
 
-    private Geometry transformGeometryIfRequired( Geometry geometry )
-                            throws UnknownCRSException,
-                            TransformationException {
-        if ( requestedCRS == null || requestedCRS.equals( geometry.getCoordinateSystem() ) ) {
-            return geometry;
-        }
-        GeometryTransformer geometryTransformer = new GeometryTransformer( requestedCRS );
-        return geometryTransformer.transform( geometry );
-    }
+	private Geometry transformGeometryIfRequired(Geometry geometry)
+			throws UnknownCRSException, TransformationException {
+		if (requestedCRS == null || requestedCRS.equals(geometry.getCoordinateSystem())) {
+			return geometry;
+		}
+		GeometryTransformer geometryTransformer = new GeometryTransformer(requestedCRS);
+		return geometryTransformer.transform(geometry);
+	}
 
 }

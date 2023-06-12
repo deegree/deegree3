@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -63,325 +62,322 @@ import org.slf4j.LoggerFactory;
 
 /**
  * {@link Lock} implementation that is based on an SQL database.
- * 
+ *
  * @see DefaultLockManager
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 class DefaultLock implements Lock {
 
-    private static final Logger LOG = LoggerFactory.getLogger( DefaultLock.class );
+	private static final Logger LOG = LoggerFactory.getLogger(DefaultLock.class);
 
-    private final DefaultLockManager manager;
+	private final DefaultLockManager manager;
 
-    private final String id;
+	private final String id;
 
-    private final Date acquired;
+	private final Date acquired;
 
-    private Date expires;
+	private Date expires;
 
-    private final int numFailed;
+	private final int numFailed;
 
-    private int numLocked;
+	private int numLocked;
 
-    private ConnectionProvider connection;
+	private ConnectionProvider connection;
 
-    /**
-     * Creates a new {@link DefaultLock} instance.
-     * 
-     * @param manager
-     *            corresponding {@link DefaultLockManager} instance, must not be null
-     * @param jdbcConnId
-     *            id of the JDBC connection, must not be null
-     * @param id
-     *            lock id, must not be null
-     * @param acquired
-     *            time that the lock has been acquired, never null
-     * @param expires
-     *            time that the lock will expire, never null
-     * @param numLocked
-     *            number of locked features
-     * @param numFailed
-     *            number of features that have been requested to be locked, but which couldn't
-     */
-    DefaultLock( DefaultLockManager manager, ConnectionProvider connection, String id, Date acquired, Date expires,
-                 int numLocked, int numFailed ) {
-        this.manager = manager;
-        this.connection = connection;
-        this.id = id;
-        this.acquired = acquired;
-        this.expires = expires;
-        this.numLocked = numLocked;
-        this.numFailed = numFailed;
-    }
+	/**
+	 * Creates a new {@link DefaultLock} instance.
+	 * @param manager corresponding {@link DefaultLockManager} instance, must not be null
+	 * @param jdbcConnId id of the JDBC connection, must not be null
+	 * @param id lock id, must not be null
+	 * @param acquired time that the lock has been acquired, never null
+	 * @param expires time that the lock will expire, never null
+	 * @param numLocked number of locked features
+	 * @param numFailed number of features that have been requested to be locked, but
+	 * which couldn't
+	 */
+	DefaultLock(DefaultLockManager manager, ConnectionProvider connection, String id, Date acquired, Date expires,
+			int numLocked, int numFailed) {
+		this.manager = manager;
+		this.connection = connection;
+		this.id = id;
+		this.acquired = acquired;
+		this.expires = expires;
+		this.numLocked = numLocked;
+		this.numFailed = numFailed;
+	}
 
-    @Override
-    public String getId() {
-        return id;
-    }
+	@Override
+	public String getId() {
+		return id;
+	}
 
-    @Override
-    public long getAcquistionDate() {
-        return acquired.getTime();
-    }
+	@Override
+	public long getAcquistionDate() {
+		return acquired.getTime();
+	}
 
-    @Override
-    public void setExpiryDate( long expiryDate )
-                            throws FeatureStoreException {
-        synchronized ( manager ) {
-            Connection conn = null;
-            PreparedStatement stmt = null;
-            ResultSet rs = null;
-            try {
-                conn = connection.getConnection();
-                conn.setAutoCommit( false );
-                stmt = conn.prepareStatement( "UPDATE LOCKS SET EXPIRES=? WHERE ID=?" );
-                stmt.setTimestamp( 1, new Timestamp( expiryDate ) );
-                stmt.setString( 2, id );
-                if ( stmt.executeUpdate() != 1 ) {
-                    String msg = "Could not reset expiry date for lock with id " + id;
-                    throw new FeatureStoreException( msg );
-                }
-                expires = new Date( expiryDate );
-                conn.commit();
-            } catch ( SQLException e ) {
-                rollbackQuietly( conn );
-                String msg = "Could not reset expiry date for lock with id " + id;
-                LOG.debug( msg, e );
-                throw new FeatureStoreException( msg, e );
-            } finally {
-                close( rs, stmt, conn, LOG );
-            }
-        }
-    }
+	@Override
+	public void setExpiryDate(long expiryDate) throws FeatureStoreException {
+		synchronized (manager) {
+			Connection conn = null;
+			PreparedStatement stmt = null;
+			ResultSet rs = null;
+			try {
+				conn = connection.getConnection();
+				conn.setAutoCommit(false);
+				stmt = conn.prepareStatement("UPDATE LOCKS SET EXPIRES=? WHERE ID=?");
+				stmt.setTimestamp(1, new Timestamp(expiryDate));
+				stmt.setString(2, id);
+				if (stmt.executeUpdate() != 1) {
+					String msg = "Could not reset expiry date for lock with id " + id;
+					throw new FeatureStoreException(msg);
+				}
+				expires = new Date(expiryDate);
+				conn.commit();
+			}
+			catch (SQLException e) {
+				rollbackQuietly(conn);
+				String msg = "Could not reset expiry date for lock with id " + id;
+				LOG.debug(msg, e);
+				throw new FeatureStoreException(msg, e);
+			}
+			finally {
+				close(rs, stmt, conn, LOG);
+			}
+		}
+	}
 
-    @Override
-    public int getNumLocked() {
-        return numLocked;
-    }
+	@Override
+	public int getNumLocked() {
+		return numLocked;
+	}
 
-    @Override
-    public int getNumFailedToLock() {
-        return numFailed;
-    }
+	@Override
+	public int getNumFailedToLock() {
+		return numFailed;
+	}
 
-    @Override
-    public CloseableIterator<String> getLockedFeatures()
-                            throws FeatureStoreException {
+	@Override
+	public CloseableIterator<String> getLockedFeatures() throws FeatureStoreException {
 
-        CloseableIterator<String> fidIter = null;
-        synchronized ( manager ) {
-            manager.releaseExpiredLocks();
-            Connection conn = null;
-            PreparedStatement stmt = null;
-            ResultSet rs = null;
-            try {
-                conn = connection.getConnection();
-                stmt = conn.prepareStatement( "SELECT FID FROM LOCKED_FIDS WHERE LOCK_ID=?" );
-                stmt.setString( 1, id );
-                rs = stmt.executeQuery();
+		CloseableIterator<String> fidIter = null;
+		synchronized (manager) {
+			manager.releaseExpiredLocks();
+			Connection conn = null;
+			PreparedStatement stmt = null;
+			ResultSet rs = null;
+			try {
+				conn = connection.getConnection();
+				stmt = conn.prepareStatement("SELECT FID FROM LOCKED_FIDS WHERE LOCK_ID=?");
+				stmt.setString(1, id);
+				rs = stmt.executeQuery();
 
-                fidIter = new ResultSetIterator<String>( rs, conn, stmt ) {
-                    @Override
-                    protected String createElement( ResultSet rs )
-                                            throws SQLException {
-                        return rs.getString( 1 );
-                    }
-                };
-            } catch ( SQLException e ) {
-                close( rs, stmt, conn, LOG );
-                String msg = "Could not retrieve ids of locked features: " + e.getMessage();
-                LOG.debug( msg, e );
-                throw new FeatureStoreException( msg, e );
-            }
-        }
-        return fidIter;
-    }
+				fidIter = new ResultSetIterator<String>(rs, conn, stmt) {
+					@Override
+					protected String createElement(ResultSet rs) throws SQLException {
+						return rs.getString(1);
+					}
+				};
+			}
+			catch (SQLException e) {
+				close(rs, stmt, conn, LOG);
+				String msg = "Could not retrieve ids of locked features: " + e.getMessage();
+				LOG.debug(msg, e);
+				throw new FeatureStoreException(msg, e);
+			}
+		}
+		return fidIter;
+	}
 
-    @Override
-    public CloseableIterator<String> getFailedToLockFeatures()
-                            throws FeatureStoreException {
-        CloseableIterator<String> fidIter = null;
-        synchronized ( manager ) {
-            manager.releaseExpiredLocks();
-            Connection conn = null;
-            PreparedStatement stmt = null;
-            ResultSet rs = null;
-            try {
-                conn = connection.getConnection();
-                stmt = conn.prepareStatement( "SELECT FID FROM LOCK_FAILED_FIDS WHERE LOCK_ID=?" );
-                stmt.setString( 1, id );
-                rs = stmt.executeQuery();
+	@Override
+	public CloseableIterator<String> getFailedToLockFeatures() throws FeatureStoreException {
+		CloseableIterator<String> fidIter = null;
+		synchronized (manager) {
+			manager.releaseExpiredLocks();
+			Connection conn = null;
+			PreparedStatement stmt = null;
+			ResultSet rs = null;
+			try {
+				conn = connection.getConnection();
+				stmt = conn.prepareStatement("SELECT FID FROM LOCK_FAILED_FIDS WHERE LOCK_ID=?");
+				stmt.setString(1, id);
+				rs = stmt.executeQuery();
 
-                fidIter = new ResultSetIterator<String>( rs, conn, stmt ) {
-                    @Override
-                    protected String createElement( ResultSet rs )
-                                            throws SQLException {
-                        return rs.getString( 1 );
-                    }
-                };
-            } catch ( SQLException e ) {
-                close( rs, stmt, conn, LOG );
-                String msg = "Could not retrieve ids of failed to lock features: " + e.getMessage();
-                LOG.debug( msg, e );
-                throw new FeatureStoreException( msg, e );
-            }
-        }
-        return fidIter;
-    }
+				fidIter = new ResultSetIterator<String>(rs, conn, stmt) {
+					@Override
+					protected String createElement(ResultSet rs) throws SQLException {
+						return rs.getString(1);
+					}
+				};
+			}
+			catch (SQLException e) {
+				close(rs, stmt, conn, LOG);
+				String msg = "Could not retrieve ids of failed to lock features: " + e.getMessage();
+				LOG.debug(msg, e);
+				throw new FeatureStoreException(msg, e);
+			}
+		}
+		return fidIter;
+	}
 
-    @Override
-    public boolean isLocked( String fid )
-                            throws FeatureStoreException {
-        boolean isLocked = false;
-        synchronized ( manager ) {
-            manager.releaseExpiredLocks();
-            Connection conn = null;
-            PreparedStatement stmt = null;
-            ResultSet rs = null;
-            try {
-                conn = connection.getConnection();
-                stmt = conn.prepareStatement( "SELECT COUNT(*) FROM LOCKED_FIDS WHERE FID=? AND LOCK_ID=?" );
-                stmt.setString( 1, fid );
-                stmt.setString( 2, id );
-                rs = stmt.executeQuery();
-                rs.next();
-                int count = rs.getInt( 1 );
-                isLocked = count > 0;
-            } catch ( SQLException e ) {
-                String msg = "Could not retrieve active locks: " + e.getMessage();
-                LOG.debug( msg, e );
-                throw new RuntimeException( msg, e );
-            } finally {
-                close( rs, stmt, conn, LOG );
-            }
-        }
-        return isLocked;
-    }
+	@Override
+	public boolean isLocked(String fid) throws FeatureStoreException {
+		boolean isLocked = false;
+		synchronized (manager) {
+			manager.releaseExpiredLocks();
+			Connection conn = null;
+			PreparedStatement stmt = null;
+			ResultSet rs = null;
+			try {
+				conn = connection.getConnection();
+				stmt = conn.prepareStatement("SELECT COUNT(*) FROM LOCKED_FIDS WHERE FID=? AND LOCK_ID=?");
+				stmt.setString(1, fid);
+				stmt.setString(2, id);
+				rs = stmt.executeQuery();
+				rs.next();
+				int count = rs.getInt(1);
+				isLocked = count > 0;
+			}
+			catch (SQLException e) {
+				String msg = "Could not retrieve active locks: " + e.getMessage();
+				LOG.debug(msg, e);
+				throw new RuntimeException(msg, e);
+			}
+			finally {
+				close(rs, stmt, conn, LOG);
+			}
+		}
+		return isLocked;
+	}
 
-    @Override
-    public void release()
-                            throws FeatureStoreException {
-        synchronized ( manager ) {
-            Connection conn = null;
-            PreparedStatement stmt = null;
-            try {
-                // delete entries from LOCKED_FIDS table
-                conn = connection.getConnection();
-                stmt = conn.prepareStatement( "DELETE FROM LOCKED_FIDS WHERE LOCK_ID=?" );
-                stmt.setString( 1, id );
-                stmt.execute();
-                stmt.close();
+	@Override
+	public void release() throws FeatureStoreException {
+		synchronized (manager) {
+			Connection conn = null;
+			PreparedStatement stmt = null;
+			try {
+				// delete entries from LOCKED_FIDS table
+				conn = connection.getConnection();
+				stmt = conn.prepareStatement("DELETE FROM LOCKED_FIDS WHERE LOCK_ID=?");
+				stmt.setString(1, id);
+				stmt.execute();
+				stmt.close();
 
-                // delete entries from LOCK_FAILED_FIDS table
-                stmt = conn.prepareStatement( "DELETE FROM LOCK_FAILED_FIDS WHERE LOCK_ID=?" );
-                stmt.setString( 1, id );
-                stmt.execute();
-                stmt.close();
+				// delete entries from LOCK_FAILED_FIDS table
+				stmt = conn.prepareStatement("DELETE FROM LOCK_FAILED_FIDS WHERE LOCK_ID=?");
+				stmt.setString(1, id);
+				stmt.execute();
+				stmt.close();
 
-                // delete entry from LOCK table
-                stmt = conn.prepareStatement( "DELETE FROM LOCKS WHERE ID=?" );
-                stmt.setString( 1, id );
-                stmt.execute();
+				// delete entry from LOCK table
+				stmt = conn.prepareStatement("DELETE FROM LOCKS WHERE ID=?");
+				stmt.setString(1, id);
+				stmt.execute();
 
-                conn.commit();
-            } catch ( SQLException e ) {
-                throw new FeatureStoreException( e.getMessage(), e );
-            } finally {
-                close( null, stmt, conn, LOG );
-            }
-        }
-    }
+				conn.commit();
+			}
+			catch (SQLException e) {
+				throw new FeatureStoreException(e.getMessage(), e);
+			}
+			finally {
+				close(null, stmt, conn, LOG);
+			}
+		}
+	}
 
-    @Override
-    public void release( String fid )
-                            throws FeatureStoreException {
+	@Override
+	public void release(String fid) throws FeatureStoreException {
 
-        synchronized ( manager ) {
-            if ( isLocked( fid ) ) {
-                Connection conn = null;
-                PreparedStatement stmt = null;
-                ResultSet rs = null;
-                try {
-                    conn = connection.getConnection();
-                    stmt = conn.prepareStatement( "DELETE FROM LOCKED_FIDS WHERE FID=?" );
-                    stmt.setString( 1, fid );
-                    stmt.executeUpdate();
-                    conn.commit();
-                    --numLocked;
-                } catch ( SQLException e ) {
-                    String msg = "Could not release locked feature: " + e.getMessage();
-                    LOG.debug( msg, e );
-                    throw new RuntimeException( msg, e );
-                } finally {
-                    close( rs, stmt, conn, LOG );
-                }
-            }
-        }
-    }
+		synchronized (manager) {
+			if (isLocked(fid)) {
+				Connection conn = null;
+				PreparedStatement stmt = null;
+				ResultSet rs = null;
+				try {
+					conn = connection.getConnection();
+					stmt = conn.prepareStatement("DELETE FROM LOCKED_FIDS WHERE FID=?");
+					stmt.setString(1, fid);
+					stmt.executeUpdate();
+					conn.commit();
+					--numLocked;
+				}
+				catch (SQLException e) {
+					String msg = "Could not release locked feature: " + e.getMessage();
+					LOG.debug(msg, e);
+					throw new RuntimeException(msg, e);
+				}
+				finally {
+					close(rs, stmt, conn, LOG);
+				}
+			}
+		}
+	}
 
-    @Override
-    public void release( QName ftName, Filter filter )
-                            throws FeatureStoreException {
+	@Override
+	public void release(QName ftName, Filter filter) throws FeatureStoreException {
 
-        synchronized ( this ) {
+		synchronized (this) {
 
-            Query query = new Query( new TypeName[] { new TypeName( ftName, null ) }, filter, null, null, null );
+			Query query = new Query(new TypeName[] { new TypeName(ftName, null) }, filter, null, null, null);
 
-            Connection conn = null;
-            PreparedStatement stmt = null;
-            ResultSet rs = null;
-            try {
-                // TODO don't actually fetch the feature collection, but only the fids of the features
-                FeatureCollection fc = manager.getStore().query( query ).toCollection();
+			Connection conn = null;
+			PreparedStatement stmt = null;
+			ResultSet rs = null;
+			try {
+				// TODO don't actually fetch the feature collection, but only the fids of
+				// the features
+				FeatureCollection fc = manager.getStore().query(query).toCollection();
 
-                conn = connection.getConnection();
-                conn.setAutoCommit( false );
+				conn = connection.getConnection();
+				conn.setAutoCommit(false);
 
-                // delete entries in LOCKED_FIDS table
-                stmt = conn.prepareStatement( "DELETE FROM LOCKED_FIDS WHERE FID=? AND LOCK_ID=?" );
+				// delete entries in LOCKED_FIDS table
+				stmt = conn.prepareStatement("DELETE FROM LOCKED_FIDS WHERE FID=? AND LOCK_ID=?");
 
-                for ( Feature feature : fc ) {
-                    String fid = feature.getId();
-                    stmt.setString( 1, fid );
-                    stmt.setString( 2, id );
-                    int deleted = stmt.executeUpdate();
-                    if ( deleted != 1 ) {
-                        LOG.error( "Internal error. Locked fid entry has not actually been removed from LOCKED_FIDS." );
-                    }
-                }
-                conn.commit();
-            } catch ( SQLException e ) {
-                try {
-                    if ( conn != null ) {
-                        conn.rollback();
-                    }
-                } catch ( SQLException e1 ) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                }
-                throw new FeatureStoreException( e.getMessage(), e );
-            } catch ( FilterEvaluationException e ) {
-                LOG.debug( "Stack trace:", e );
-                throw new FeatureStoreException( e );
-            } finally {
-                try {
-                    if ( conn != null ) {
-                        conn.setAutoCommit( true );
-                    }
-                } catch ( SQLException e ) {
-                    e.printStackTrace();
-                }
-                close( rs, stmt, conn, LOG );
-            }
-        }
-    }
+				for (Feature feature : fc) {
+					String fid = feature.getId();
+					stmt.setString(1, fid);
+					stmt.setString(2, id);
+					int deleted = stmt.executeUpdate();
+					if (deleted != 1) {
+						LOG.error("Internal error. Locked fid entry has not actually been removed from LOCKED_FIDS.");
+					}
+				}
+				conn.commit();
+			}
+			catch (SQLException e) {
+				try {
+					if (conn != null) {
+						conn.rollback();
+					}
+				}
+				catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				throw new FeatureStoreException(e.getMessage(), e);
+			}
+			catch (FilterEvaluationException e) {
+				LOG.debug("Stack trace:", e);
+				throw new FeatureStoreException(e);
+			}
+			finally {
+				try {
+					if (conn != null) {
+						conn.setAutoCommit(true);
+					}
+				}
+				catch (SQLException e) {
+					e.printStackTrace();
+				}
+				close(rs, stmt, conn, LOG);
+			}
+		}
+	}
 
-    @Override
-    public String toString() {
-        return "{id=" + id + ",acquired=" + acquired + ",expires=" + expires + "}";
-    }
+	@Override
+	public String toString() {
+		return "{id=" + id + ",acquired=" + acquired + ",expires=" + expires + "}";
+	}
+
 }

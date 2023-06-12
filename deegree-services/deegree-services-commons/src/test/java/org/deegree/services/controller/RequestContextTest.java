@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2013 by:
@@ -44,69 +43,66 @@ import org.mockito.Mockito;
 
 /**
  * Unit tests for {@link RequestContext}
- * 
+ *
  * @author <a href="mailto:name@company.com">Your Name</a>
- * @author last edited by: $Author: schneider $
- * 
- * @version $Revision: $, $Date: $
  */
 public class RequestContextTest {
 
-    @Test
-    public void testGetServiceUrlWithoutServiceIdPathInfo() {
-        HttpServletRequest request = mockHttpRequest( "http://localhost:8080/deegree-webservices/services",
-                                                      "/services", null );
-        RequestContext requestContext = new RequestContext( request, null, null, null );
-        Assert.assertEquals( "http://localhost:8080/deegree-webservices/services", requestContext.getServiceUrl() );
-    }
+	@Test
+	public void testGetServiceUrlWithoutServiceIdPathInfo() {
+		HttpServletRequest request = mockHttpRequest("http://localhost:8080/deegree-webservices/services", "/services",
+				null);
+		RequestContext requestContext = new RequestContext(request, null, null, null);
+		Assert.assertEquals("http://localhost:8080/deegree-webservices/services", requestContext.getServiceUrl());
+	}
 
-    @Test
-    public void testGetServiceUrlWithServiceIdPathInfo() {
-        HttpServletRequest request = mockHttpRequest( "http://localhost:8080/deegree-webservices/services/inspire/ad/wfs",
-                                                      "/services", "/inspire/ad/wfs" );
-        RequestContext requestContext = new RequestContext( request, null, null, null );
-        Assert.assertEquals( "http://localhost:8080/deegree-webservices/services/inspire/ad/wfs",
-                             requestContext.getServiceUrl() );
-    }
+	@Test
+	public void testGetServiceUrlWithServiceIdPathInfo() {
+		HttpServletRequest request = mockHttpRequest(
+				"http://localhost:8080/deegree-webservices/services/inspire/ad/wfs", "/services", "/inspire/ad/wfs");
+		RequestContext requestContext = new RequestContext(request, null, null, null);
+		Assert.assertEquals("http://localhost:8080/deegree-webservices/services/inspire/ad/wfs",
+				requestContext.getServiceUrl());
+	}
 
-    @Test
-    public void testGetServiceUrlHardcodedWithoutServiceIdPathInfo() {
-        HttpServletRequest request = mockHttpRequest( "http://localhost:8080/deegree-webservices/services",
-                                                      "/services", null );
-        RequestContext requestContext = new RequestContext( request, null, "http://mygeoportal.com/ows", null );
-        Assert.assertEquals( "http://mygeoportal.com/ows", requestContext.getServiceUrl() );
-    }
+	@Test
+	public void testGetServiceUrlHardcodedWithoutServiceIdPathInfo() {
+		HttpServletRequest request = mockHttpRequest("http://localhost:8080/deegree-webservices/services", "/services",
+				null);
+		RequestContext requestContext = new RequestContext(request, null, "http://mygeoportal.com/ows", null);
+		Assert.assertEquals("http://mygeoportal.com/ows", requestContext.getServiceUrl());
+	}
 
-    @Test
-    public void testGetServiceUrlHardcodedWithServiceIdPathInfo() {
-        HttpServletRequest request = mockHttpRequest( "http://localhost:8080/deegree-webservices/services/inspire/ad/wfs",
-                                                      "/services", "/inspire/ad/wfs" );
-        RequestContext requestContext = new RequestContext( request, null, "http://mygeoportal.com/ows", null );
-        Assert.assertEquals( "http://mygeoportal.com/ows/inspire/ad/wfs", requestContext.getServiceUrl() );
-    }
+	@Test
+	public void testGetServiceUrlHardcodedWithServiceIdPathInfo() {
+		HttpServletRequest request = mockHttpRequest(
+				"http://localhost:8080/deegree-webservices/services/inspire/ad/wfs", "/services", "/inspire/ad/wfs");
+		RequestContext requestContext = new RequestContext(request, null, "http://mygeoportal.com/ows", null);
+		Assert.assertEquals("http://mygeoportal.com/ows/inspire/ad/wfs", requestContext.getServiceUrl());
+	}
 
-    @Test
-    public void testGetResourcesUrl() {
-        HttpServletRequest request = mockHttpRequest( "http://localhost:8080/deegree-webservices/services",
-                                                      "/services", null );
-        RequestContext requestContext = new RequestContext( request, null, null, null );
-        Assert.assertEquals( "http://localhost:8080/deegree-webservices/resources", requestContext.getResourcesUrl() );
-    }
+	@Test
+	public void testGetResourcesUrl() {
+		HttpServletRequest request = mockHttpRequest("http://localhost:8080/deegree-webservices/services", "/services",
+				null);
+		RequestContext requestContext = new RequestContext(request, null, null, null);
+		Assert.assertEquals("http://localhost:8080/deegree-webservices/resources", requestContext.getResourcesUrl());
+	}
 
-    @Test
-    public void testGetResourcesUrlHardcoded() {
-        HttpServletRequest request = mockHttpRequest( "http://localhost:8080/deegree-webservices/services",
-                                                      "/services", null );
-        RequestContext requestContext = new RequestContext( request, null, null, "http://mygeoportal.com/rest" );
-        Assert.assertEquals( "http://mygeoportal.com/rest", requestContext.getResourcesUrl() );
-    }
+	@Test
+	public void testGetResourcesUrlHardcoded() {
+		HttpServletRequest request = mockHttpRequest("http://localhost:8080/deegree-webservices/services", "/services",
+				null);
+		RequestContext requestContext = new RequestContext(request, null, null, "http://mygeoportal.com/rest");
+		Assert.assertEquals("http://mygeoportal.com/rest", requestContext.getResourcesUrl());
+	}
 
-    private HttpServletRequest mockHttpRequest( String requestUrl, String servletPath, String pathInfo ) {
-        HttpServletRequest mock = Mockito.mock( HttpServletRequest.class );
-        Mockito.when( mock.getRequestURL() ).thenReturn( new StringBuffer( requestUrl ) );
-        Mockito.when( mock.getServletPath() ).thenReturn( servletPath );
-        Mockito.when( mock.getPathInfo() ).thenReturn( pathInfo );
-        return mock;
-    }
+	private HttpServletRequest mockHttpRequest(String requestUrl, String servletPath, String pathInfo) {
+		HttpServletRequest mock = Mockito.mock(HttpServletRequest.class);
+		Mockito.when(mock.getRequestURL()).thenReturn(new StringBuffer(requestUrl));
+		Mockito.when(mock.getServletPath()).thenReturn(servletPath);
+		Mockito.when(mock.getPathInfo()).thenReturn(pathInfo);
+		return mock;
+	}
 
 }

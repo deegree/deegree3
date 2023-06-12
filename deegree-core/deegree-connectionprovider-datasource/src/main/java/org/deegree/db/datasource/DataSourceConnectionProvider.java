@@ -59,85 +59,83 @@ import org.slf4j.Logger;
  * {@link ConnectionProvider} based on <code>javax.sql.DataSource</code>.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- *
  * @since 3.4
  */
 class DataSourceConnectionProvider implements ConnectionProvider {
 
-    private static final Logger LOG = getLogger( DataSourceConnectionProvider.class );
+	private static final Logger LOG = getLogger(DataSourceConnectionProvider.class);
 
-    private final DataSourceConnectionProviderMetadata resourceMetadata;
+	private final DataSourceConnectionProviderMetadata resourceMetadata;
 
-    private final DataSource ds;
+	private final DataSource ds;
 
-    private final SQLDialect dialect;
+	private final SQLDialect dialect;
 
-    private final Method destroyMethod;
+	private final Method destroyMethod;
 
-    /**
-     * Creates a new {@link DataSourceConnectionProvider} instance.
-     *
-     * @param resourceMetadata
-     *            metadata, must not be <code>null</code>
-     * @param ds
-     *            data source, must not be <code>null</code>
-     * @param dialect
-     *            SQL dialect, can be <code>null</code>
-     * @param destroyMethod
-     *            data source method for destroying the data source on shutdown, can be <code>null</code>
-     */
-    DataSourceConnectionProvider( final DataSourceConnectionProviderMetadata resourceMetadata, final DataSource ds,
-                                  final SQLDialect dialect, final Method destroyMethod ) {
-        this.resourceMetadata = resourceMetadata;
-        this.ds = ds;
-        this.dialect = dialect;
-        this.destroyMethod = destroyMethod;
-    }
+	/**
+	 * Creates a new {@link DataSourceConnectionProvider} instance.
+	 * @param resourceMetadata metadata, must not be <code>null</code>
+	 * @param ds data source, must not be <code>null</code>
+	 * @param dialect SQL dialect, can be <code>null</code>
+	 * @param destroyMethod data source method for destroying the data source on shutdown,
+	 * can be <code>null</code>
+	 */
+	DataSourceConnectionProvider(final DataSourceConnectionProviderMetadata resourceMetadata, final DataSource ds,
+			final SQLDialect dialect, final Method destroyMethod) {
+		this.resourceMetadata = resourceMetadata;
+		this.ds = ds;
+		this.dialect = dialect;
+		this.destroyMethod = destroyMethod;
+	}
 
-    @Override
-    public ResourceMetadata<? extends Resource> getMetadata() {
-        return resourceMetadata;
-    }
+	@Override
+	public ResourceMetadata<? extends Resource> getMetadata() {
+		return resourceMetadata;
+	}
 
-    @Override
-    public void init() {
-        // nothing to do
-    }
+	@Override
+	public void init() {
+		// nothing to do
+	}
 
-    @Override
-    public Connection getConnection() {
-        try {
-            return ds.getConnection();
-        } catch ( SQLException e ) {
-            String msg = "Unable to retrieve JDBC connection from DataSource: " + e.getLocalizedMessage();
-            LOG.error( msg );
-            throw new ResourceException( msg, e );
-        }
-    }
+	@Override
+	public Connection getConnection() {
+		try {
+			return ds.getConnection();
+		}
+		catch (SQLException e) {
+			String msg = "Unable to retrieve JDBC connection from DataSource: " + e.getLocalizedMessage();
+			LOG.error(msg);
+			throw new ResourceException(msg, e);
+		}
+	}
 
-    @Override
-    public void destroy() {
-        if ( destroyMethod != null ) {
-            LOG.info("Closing connection pool {}", resourceMetadata.getIdentifier());
-            try {
-                destroyMethod.invoke( ds );
-            } catch ( Exception e ) {
-                LOG.error( "Error destroying DataSource instance: {}", e.getLocalizedMessage() );
-            }
-        } else {
-            LOG.warn( "Unable to close connection pool {}. Check the DataSource configuration if the attribute "
-                      + "'destroyMethod' is configured.", resourceMetadata.getIdentifier() );
-        }
-    }
+	@Override
+	public void destroy() {
+		if (destroyMethod != null) {
+			LOG.info("Closing connection pool {}", resourceMetadata.getIdentifier());
+			try {
+				destroyMethod.invoke(ds);
+			}
+			catch (Exception e) {
+				LOG.error("Error destroying DataSource instance: {}", e.getLocalizedMessage());
+			}
+		}
+		else {
+			LOG.warn("Unable to close connection pool {}. Check the DataSource configuration if the attribute "
+					+ "'destroyMethod' is configured.", resourceMetadata.getIdentifier());
+		}
+	}
 
-    @Override
-    public SQLDialect getDialect() {
-        return dialect;
-    }
+	@Override
+	public SQLDialect getDialect() {
+		return dialect;
+	}
 
-    @Override
-    public void invalidate( Connection conn ) {
-        // nothing to do
-    }
+	@Override
+	public void invalidate(Connection conn) {
+		// nothing to do
+	}
 
 }

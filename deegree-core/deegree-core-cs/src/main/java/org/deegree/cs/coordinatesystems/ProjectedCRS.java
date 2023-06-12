@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -51,213 +50,197 @@ import org.deegree.cs.refs.coordinatesystem.CRSRef;
 import org.deegree.cs.transformations.Transformation;
 
 /**
- * A <code>ProjectedCRS</code> is a coordinatesystem defined with a projection and a geographic crs. It allows for
- * transformation between projected coordinates (mostly in meters) and the lat/lon coordinates of the geographic crs and
- * vice versa.
- * 
+ * A <code>ProjectedCRS</code> is a coordinatesystem defined with a projection and a
+ * geographic crs. It allows for transformation between projected coordinates (mostly in
+ * meters) and the lat/lon coordinates of the geographic crs and vice versa.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 
 public class ProjectedCRS extends CRS implements IProjectedCRS {
 
-    private final IGeographicCRS underlyingCRS;
+	private final IGeographicCRS underlyingCRS;
 
-    private IProjection projection;
+	private IProjection projection;
 
-    /**
-     * @param projection
-     *            the projection which converts coordinates from this ProjectedCRS into the underlying GeographicCRS and
-     *            vice versa.
-     * @param axisOrder
-     *            of this projection.
-     * @param identity
-     */
-    public ProjectedCRS( IProjection projection, IGeographicCRS geographicCRS, IAxis[] axisOrder, CRSResource identity ) {
-        this( null, geographicCRS, projection, axisOrder, identity );
-    }
+	/**
+	 * @param projection the projection which converts coordinates from this ProjectedCRS
+	 * into the underlying GeographicCRS and vice versa.
+	 * @param axisOrder of this projection.
+	 * @param identity
+	 */
+	public ProjectedCRS(IProjection projection, IGeographicCRS geographicCRS, IAxis[] axisOrder, CRSResource identity) {
+		this(null, geographicCRS, projection, axisOrder, identity);
+	}
 
-    /**
-     * @param projection
-     *            the projection which converts coordinates from this ProjectedCRS into the underlying GeographicCRS and
-     *            vice versa.
-     * @param axisOrder
-     *            of this projection.
-     * @param codes
-     * @param names
-     * @param versions
-     * @param descriptions
-     * @param areasOfUse
-     */
-    public ProjectedCRS( IProjection projection, IGeographicCRS geographicCRS, IAxis[] axisOrder, CRSCodeType[] codes,
-                         String[] names, String[] versions, String[] descriptions, String[] areasOfUse ) {
-        super( geographicCRS.getGeodeticDatum(), axisOrder, codes, names, versions, descriptions, areasOfUse );
-        this.underlyingCRS = geographicCRS;
-        this.projection = projection;
-    }
+	/**
+	 * @param projection the projection which converts coordinates from this ProjectedCRS
+	 * into the underlying GeographicCRS and vice versa.
+	 * @param axisOrder of this projection.
+	 * @param codes
+	 * @param names
+	 * @param versions
+	 * @param descriptions
+	 * @param areasOfUse
+	 */
+	public ProjectedCRS(IProjection projection, IGeographicCRS geographicCRS, IAxis[] axisOrder, CRSCodeType[] codes,
+			String[] names, String[] versions, String[] descriptions, String[] areasOfUse) {
+		super(geographicCRS.getGeodeticDatum(), axisOrder, codes, names, versions, descriptions, areasOfUse);
+		this.underlyingCRS = geographicCRS;
+		this.projection = projection;
+	}
 
-    /**
-     * 
-     * @param projection
-     *            the projection which converts coordinates from this ProjectedCRS into the underlying GeographicCRS and
-     *            vice versa.
-     * @param axisOrder
-     *            of this projection.
-     * @param codes
-     */
-    public ProjectedCRS( IProjection projection, IGeographicCRS geographicCRS, IAxis[] axisOrder, CRSCodeType[] codes ) {
-        this( projection, geographicCRS, axisOrder, codes, null, null, null, null );
-    }
+	/**
+	 * @param projection the projection which converts coordinates from this ProjectedCRS
+	 * into the underlying GeographicCRS and vice versa.
+	 * @param axisOrder of this projection.
+	 * @param codes
+	 */
+	public ProjectedCRS(IProjection projection, IGeographicCRS geographicCRS, IAxis[] axisOrder, CRSCodeType[] codes) {
+		this(projection, geographicCRS, axisOrder, codes, null, null, null, null);
+	}
 
-    /**
-     * @param projection
-     *            the projection which converts coordinates from this ProjectedCRS into the underlying GeographicCRS and
-     *            vice versa.
-     * @param axisOrder
-     *            of this projection.
-     * @param code
-     * @param name
-     * @param version
-     * @param description
-     * @param areaOfUse
-     */
-    public ProjectedCRS( IProjection projection, IGeographicCRS geographicCRS, IAxis[] axisOrder, CRSCodeType code,
-                         String name, String version, String description, String areaOfUse ) {
-        this( projection, geographicCRS, axisOrder, new CRSCodeType[] { code }, new String[] { name },
-              new String[] { version }, new String[] { description }, new String[] { areaOfUse } );
-    }
+	/**
+	 * @param projection the projection which converts coordinates from this ProjectedCRS
+	 * into the underlying GeographicCRS and vice versa.
+	 * @param axisOrder of this projection.
+	 * @param code
+	 * @param name
+	 * @param version
+	 * @param description
+	 * @param areaOfUse
+	 */
+	public ProjectedCRS(IProjection projection, IGeographicCRS geographicCRS, IAxis[] axisOrder, CRSCodeType code,
+			String name, String version, String description, String areaOfUse) {
+		this(projection, geographicCRS, axisOrder, new CRSCodeType[] { code }, new String[] { name },
+				new String[] { version }, new String[] { description }, new String[] { areaOfUse });
+	}
 
-    /**
-     * 
-     * @param projection
-     *            the projection which converts coordinates from this ProjectedCRS into the underlying GeographicCRS and
-     *            vice versa.
-     * @param axisOrder
-     *            of this projection.
-     * @param code
-     */
-    public ProjectedCRS( IProjection projection, IGeographicCRS geographicCRS, IAxis[] axisOrder, CRSCodeType code ) {
-        this( projection, geographicCRS, axisOrder, code, null, null, null, null );
-    }
+	/**
+	 * @param projection the projection which converts coordinates from this ProjectedCRS
+	 * into the underlying GeographicCRS and vice versa.
+	 * @param axisOrder of this projection.
+	 * @param code
+	 */
+	public ProjectedCRS(IProjection projection, IGeographicCRS geographicCRS, IAxis[] axisOrder, CRSCodeType code) {
+		this(projection, geographicCRS, axisOrder, code, null, null, null, null);
+	}
 
-    /**
-     * @param transformations
-     *            to use instead of the helmert transformation.
-     * @param projection
-     *            the projection which converts coordinates from this ProjectedCRS into the underlying GeographicCRS and
-     *            vice versa.
-     * @param axisOrder
-     *            of this projection.
-     * @param identity
-     */
-    public ProjectedCRS( List<Transformation> transformations, IGeographicCRS geographicCRS, IProjection projection,
-                         IAxis[] axisOrder, CRSResource identity ) {
-        super( transformations, geographicCRS.getGeodeticDatum(), axisOrder, identity );
-        this.underlyingCRS = geographicCRS;
-        this.projection = projection;
-    }
+	/**
+	 * @param transformations to use instead of the helmert transformation.
+	 * @param projection the projection which converts coordinates from this ProjectedCRS
+	 * into the underlying GeographicCRS and vice versa.
+	 * @param axisOrder of this projection.
+	 * @param identity
+	 */
+	public ProjectedCRS(List<Transformation> transformations, IGeographicCRS geographicCRS, IProjection projection,
+			IAxis[] axisOrder, CRSResource identity) {
+		super(transformations, geographicCRS.getGeodeticDatum(), axisOrder, identity);
+		this.underlyingCRS = geographicCRS;
+		this.projection = projection;
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.cs.coordinatesystems.CoordinateSystem#getDimension()
-     */
-    @Override
-    public int getDimension() {
-        return getAxis().length;
-    }
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see org.deegree.cs.coordinatesystems.CoordinateSystem#getDimension()
+	 */
+	@Override
+	public int getDimension() {
+		return getAxis().length;
+	}
 
-    public final IGeographicCRS getGeographicCRS() {
-        return underlyingCRS;
-    }
+	public final IGeographicCRS getGeographicCRS() {
+		return underlyingCRS;
+	}
 
-    @Override
-    public final CRSType getType() {
-        return PROJECTED;
-    }
+	@Override
+	public final CRSType getType() {
+		return PROJECTED;
+	}
 
-    public final IProjection getProjection() {
-        return projection;
-    }
+	public final IProjection getProjection() {
+		return projection;
+	}
 
-    public Point2d doProjection( double lambda, double phi )
-                            throws ProjectionException {
-        return projection.doProjection( this.underlyingCRS, lambda, phi );
-    }
+	public Point2d doProjection(double lambda, double phi) throws ProjectionException {
+		return projection.doProjection(this.underlyingCRS, lambda, phi);
+	}
 
-    public Point2d doInverseProjection( double x, double y )
-                            throws ProjectionException {
-        return projection.doInverseProjection( this.underlyingCRS, x, y );
-    }
+	public Point2d doInverseProjection(double x, double y) throws ProjectionException {
+		return projection.doInverseProjection(this.underlyingCRS, x, y);
+	}
 
-    @Override
-    public boolean equals( Object other ) {
-        if ( other != null && other instanceof ICRS && this.getType().equals( ( (ICRS) other ).getType() ) ) {
-            final ProjectedCRS that;
-            if ( other instanceof CRSRef ) {
-                that = (ProjectedCRS) ( (CRSRef) other ).getReferencedObject();
-            } else {
-                that = (ProjectedCRS) other;
-            }
-            return super.equals( that ) && this.projection.equals( that.projection );
-        }
-        return false;
-    }
+	@Override
+	public boolean equals(Object other) {
+		if (other != null && other instanceof ICRS && this.getType().equals(((ICRS) other).getType())) {
+			final ProjectedCRS that;
+			if (other instanceof CRSRef) {
+				that = (ProjectedCRS) ((CRSRef) other).getReferencedObject();
+			}
+			else {
+				that = (ProjectedCRS) other;
+			}
+			return super.equals(that) && this.projection.equals(that.projection);
+		}
+		return false;
+	}
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder( super.toString() );
-        sb.append( "\n - Projection: " ).append( projection );
-        return sb.toString();
-    }
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder(super.toString());
+		sb.append("\n - Projection: ").append(projection);
+		return sb.toString();
+	}
 
-    /**
-     * Implementation as proposed by Joshua Block in Effective Java (Addison-Wesley 2001), which supplies an even
-     * distribution and is relatively fast. It is created from field <b>f</b> as follows:
-     * <ul>
-     * <li>boolean -- code = (f ? 0 : 1)</li>
-     * <li>byte, char, short, int -- code = (int)f</li>
-     * <li>long -- code = (int)(f ^ (f &gt;&gt;&gt;32))</li>
-     * <li>float -- code = Float.floatToIntBits(f);</li>
-     * <li>double -- long l = Double.doubleToLongBits(f); code = (int)(l ^ (l &gt;&gt;&gt; 32))</li>
-     * <li>all Objects, (where equals(&nbsp;) calls equals(&nbsp;) for this field) -- code = f.hashCode(&nbsp;)</li>
-     * <li>Array -- Apply above rules to each element</li>
-     * </ul>
-     * <p>
-     * Combining the hash code(s) computed above: result = 37 * result + code;
-     * </p>
-     * 
-     * @return (int) ( result >>> 32 ) ^ (int) result;
-     * 
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-        // the 2nd millionth prime, :-)
-        long code = 32452843;
-        code = code * 37 + super.hashCode();
-        if ( projection != null ) {
-            code = code * 37 + projection.hashCode();
-        }
+	/**
+	 * Implementation as proposed by Joshua Block in Effective Java (Addison-Wesley 2001),
+	 * which supplies an even distribution and is relatively fast. It is created from
+	 * field <b>f</b> as follows:
+	 * <ul>
+	 * <li>boolean -- code = (f ? 0 : 1)</li>
+	 * <li>byte, char, short, int -- code = (int)f</li>
+	 * <li>long -- code = (int)(f ^ (f &gt;&gt;&gt;32))</li>
+	 * <li>float -- code = Float.floatToIntBits(f);</li>
+	 * <li>double -- long l = Double.doubleToLongBits(f); code = (int)(l ^ (l &gt;&gt;&gt;
+	 * 32))</li>
+	 * <li>all Objects, (where equals(&nbsp;) calls equals(&nbsp;) for this field) -- code
+	 * = f.hashCode(&nbsp;)</li>
+	 * <li>Array -- Apply above rules to each element</li>
+	 * </ul>
+	 * <p>
+	 * Combining the hash code(s) computed above: result = 37 * result + code;
+	 * </p>
+	 * @return (int) ( result >>> 32 ) ^ (int) result;
+	 *
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		// the 2nd millionth prime, :-)
+		long code = 32452843;
+		code = code * 37 + super.hashCode();
+		if (projection != null) {
+			code = code * 37 + projection.hashCode();
+		}
 
-        return (int) ( code >>> 32 ) ^ (int) code;
-    }
+		return (int) (code >>> 32) ^ (int) code;
+	}
 
-    @Override
-    public boolean equalsWithFlippedAxis( Object other ) {
-        if ( other != null && other instanceof ICRS && this.getType().equals( ( (ICRS) other ).getType() ) ) {
-            final ProjectedCRS that;
-            if ( other instanceof CRSRef ) {
-                that = (ProjectedCRS) ( (CRSRef) other ).getReferencedObject();
-            } else {
-                that = (ProjectedCRS) other;
-            }
-            return super.equalsWithFlippedAxis( that ) && this.projection.equals( that.projection );
-        }
-        return false;
-    }
+	@Override
+	public boolean equalsWithFlippedAxis(Object other) {
+		if (other != null && other instanceof ICRS && this.getType().equals(((ICRS) other).getType())) {
+			final ProjectedCRS that;
+			if (other instanceof CRSRef) {
+				that = (ProjectedCRS) ((CRSRef) other).getReferencedObject();
+			}
+			else {
+				that = (ProjectedCRS) other;
+			}
+			return super.equalsWithFlippedAxis(that) && this.projection.equals(that.projection);
+		}
+		return false;
+	}
+
 }

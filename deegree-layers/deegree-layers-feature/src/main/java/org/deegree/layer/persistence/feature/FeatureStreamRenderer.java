@@ -44,13 +44,15 @@ import org.deegree.filter.XPathEvaluator;
 import org.deegree.rendering.r2d.context.RenderContext;
 
 /**
- * FeatureStreamRenderer has been moved to {@link org.deegree.layer.persistence.FeatureStreamRenderer}
- * 
+ * FeatureStreamRenderer has been moved to
+ * {@link org.deegree.layer.persistence.FeatureStreamRenderer}
+ *
  * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  */
 class FeatureStreamRenderer extends org.deegree.layer.persistence.FeatureStreamRenderer {
 
-    public FeatureStreamRenderer( RenderContext context, int maxFeatures, XPathEvaluator<?> evaluator ) {
-        super( context, maxFeatures, evaluator );
-    }
+	public FeatureStreamRenderer(RenderContext context, int maxFeatures, XPathEvaluator<?> evaluator) {
+		super(context, maxFeatures, evaluator);
+	}
+
 }

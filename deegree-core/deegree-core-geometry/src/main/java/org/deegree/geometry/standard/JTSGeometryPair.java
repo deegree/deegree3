@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -42,30 +41,26 @@ import org.locationtech.jts.geom.Geometry;
 
 /**
  * Stores a pair of JTS geometries.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class JTSGeometryPair extends Pair<Geometry, Geometry> {
 
-    private JTSGeometryPair( Geometry first, Geometry second ) {
-        super( first, second );
-    }
+	private JTSGeometryPair(Geometry first, Geometry second) {
+		super(first, second);
+	}
 
-    /**
-     * Creates a "compatible" pair of JTS geometries from an {@link AbstractDefaultGeometry} and a second
-     * {@link Geometry} instance.
-     * 
-     * @param geom1
-     * @param geom2
-     * @return
-     */
-    public static JTSGeometryPair createCompatiblePair( AbstractDefaultGeometry geom1,
-                                                        org.deegree.geometry.Geometry geom2 ) {
-        return new JTSGeometryPair( geom1.getJTSGeometry(),
-                                    AbstractDefaultGeometry.getAsDefaultGeometry( geom2 ).getJTSGeometry() );
-    }
+	/**
+	 * Creates a "compatible" pair of JTS geometries from an
+	 * {@link AbstractDefaultGeometry} and a second {@link Geometry} instance.
+	 * @param geom1
+	 * @param geom2
+	 * @return
+	 */
+	public static JTSGeometryPair createCompatiblePair(AbstractDefaultGeometry geom1,
+			org.deegree.geometry.Geometry geom2) {
+		return new JTSGeometryPair(geom1.getJTSGeometry(),
+				AbstractDefaultGeometry.getAsDefaultGeometry(geom2).getJTSGeometry());
+	}
 
 }

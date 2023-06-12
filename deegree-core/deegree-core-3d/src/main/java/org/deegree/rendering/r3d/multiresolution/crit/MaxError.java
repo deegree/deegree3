@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -40,37 +39,33 @@ import org.deegree.rendering.r3d.multiresolution.Arc;
 import org.deegree.rendering.r3d.multiresolution.MultiresolutionMesh;
 
 /**
- * {@link LODCriterion} that requests the smallest LOD in a {@link MultiresolutionMesh} with an approximation error that
- * does not exceed a given bound.
- * 
+ * {@link LODCriterion} that requests the smallest LOD in a {@link MultiresolutionMesh}
+ * with an approximation error that does not exceed a given bound.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class MaxError implements LODCriterion {
 
-    private float c;
+	private float c;
 
-    /**
-     * Creates a new {@link MaxError} instance.
-     * 
-     * @param maxTolerableError
-     *            the maximum tolerable error for the LOD (in world units)
-     */
-    public MaxError( float maxTolerableError ) {
-        this.c = maxTolerableError;
-    }
+	/**
+	 * Creates a new {@link MaxError} instance.
+	 * @param maxTolerableError the maximum tolerable error for the LOD (in world units)
+	 */
+	public MaxError(float maxTolerableError) {
+		this.c = maxTolerableError;
+	}
 
-    /**
-     * Returns true, iff the geometric error associated with the arc is greater than the maximum tolerable error.
-     * 
-     * @param arc
-     *            arc to be checked
-     * @return true, iff the arc's geometric error is greater than the maximum tolerable error
-     */
-    @Override
-    public boolean needsRefinement( Arc arc ) {
-        return arc.geometricError > c;
-    }
+	/**
+	 * Returns true, iff the geometric error associated with the arc is greater than the
+	 * maximum tolerable error.
+	 * @param arc arc to be checked
+	 * @return true, iff the arc's geometric error is greater than the maximum tolerable
+	 * error
+	 */
+	@Override
+	public boolean needsRefinement(Arc arc) {
+		return arc.geometricError > c;
+	}
+
 }

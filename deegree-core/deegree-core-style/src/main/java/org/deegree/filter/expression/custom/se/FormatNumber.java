@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -58,102 +57,99 @@ import org.deegree.style.se.unevaluated.Continuation;
 
 /**
  * <code>FormatNumber</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class FormatNumber extends AbstractCustomExpression {
 
-    private static final QName ELEMENT_NAME = new QName( SENS, "FormatNumber" );
+	private static final QName ELEMENT_NAME = new QName(SENS, "FormatNumber");
 
-    private StringBuffer numericValue;
+	private StringBuffer numericValue;
 
-    private Continuation<StringBuffer> numericValueContn;
+	private Continuation<StringBuffer> numericValueContn;
 
-    private DecimalFormat pattern, negativePattern;
+	private DecimalFormat pattern, negativePattern;
 
-    /***/
-    public FormatNumber() {
-        // just used for SPI
-    }
+	/***/
+	public FormatNumber() {
+		// just used for SPI
+	}
 
-    private FormatNumber( StringBuffer numericValue, Continuation<StringBuffer> numericValueContn,
-                          DecimalFormat pattern, DecimalFormat negativePattern ) {
-        this.numericValue = numericValue;
-        this.numericValueContn = numericValueContn;
-        this.pattern = pattern;
-        this.negativePattern = negativePattern;
-    }
+	private FormatNumber(StringBuffer numericValue, Continuation<StringBuffer> numericValueContn, DecimalFormat pattern,
+			DecimalFormat negativePattern) {
+		this.numericValue = numericValue;
+		this.numericValueContn = numericValueContn;
+		this.pattern = pattern;
+		this.negativePattern = negativePattern;
+	}
 
-    @Override
-    public QName getElementName() {
-        return ELEMENT_NAME;
-    }
+	@Override
+	public QName getElementName() {
+		return ELEMENT_NAME;
+	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypedObjectNode[] evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
-                            throws FilterEvaluationException {
-        double nr;
-        if ( numericValueContn != null ) {
-            StringBuffer sb = new StringBuffer();
-            sb.append( numericValue );
-            numericValueContn.evaluate( sb, (Feature) obj, (XPathEvaluator<Feature>) xpathEvaluator );
-            nr = parseDouble( sb.toString() );
-        } else {
-            nr = parseDouble( numericValue.toString() );
-        }
-        if ( nr < 0 && negativePattern != null ) {
-            return new TypedObjectNode[] { new PrimitiveValue( negativePattern.format( nr ) ) };
-        }
-        return new TypedObjectNode[] { new PrimitiveValue( pattern.format( nr ) ) };
-    }
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> TypedObjectNode[] evaluate(T obj, XPathEvaluator<T> xpathEvaluator) throws FilterEvaluationException {
+		double nr;
+		if (numericValueContn != null) {
+			StringBuffer sb = new StringBuffer();
+			sb.append(numericValue);
+			numericValueContn.evaluate(sb, (Feature) obj, (XPathEvaluator<Feature>) xpathEvaluator);
+			nr = parseDouble(sb.toString());
+		}
+		else {
+			nr = parseDouble(numericValue.toString());
+		}
+		if (nr < 0 && negativePattern != null) {
+			return new TypedObjectNode[] { new PrimitiveValue(negativePattern.format(nr)) };
+		}
+		return new TypedObjectNode[] { new PrimitiveValue(pattern.format(nr)) };
+	}
 
-    @Override
-    public FormatNumber parse( XMLStreamReader in )
-                            throws XMLStreamException {
+	@Override
+	public FormatNumber parse(XMLStreamReader in) throws XMLStreamException {
 
-        StringBuffer numericValue = null;
-        Continuation<StringBuffer> numericValueContn = null;
-        DecimalFormat pattern, negativePattern;
+		StringBuffer numericValue = null;
+		Continuation<StringBuffer> numericValueContn = null;
+		DecimalFormat pattern, negativePattern;
 
-        in.require( START_ELEMENT, null, "FormatNumber" );
+		in.require(START_ELEMENT, null, "FormatNumber");
 
-        String decimalPoint = in.getAttributeValue( null, "decimalPoint" );
-        decimalPoint = decimalPoint == null ? "." : decimalPoint;
-        String groupingSeparator = in.getAttributeValue( null, "groupingSeparator" );
-        groupingSeparator = groupingSeparator == null ? "," : groupingSeparator;
+		String decimalPoint = in.getAttributeValue(null, "decimalPoint");
+		decimalPoint = decimalPoint == null ? "." : decimalPoint;
+		String groupingSeparator = in.getAttributeValue(null, "groupingSeparator");
+		groupingSeparator = groupingSeparator == null ? "," : groupingSeparator;
 
-        String pat = "", neg = null;
+		String pat = "", neg = null;
 
-        while ( !( in.isEndElement() && in.getLocalName().equals( "FormatNumber" ) ) ) {
-            in.nextTag();
+		while (!(in.isEndElement() && in.getLocalName().equals("FormatNumber"))) {
+			in.nextTag();
 
-            if ( in.getLocalName().equals( "NumericValue" ) ) {
-                numericValue = new StringBuffer();
-                numericValueContn = SymbologyParser.INSTANCE.updateOrContinue( in, "NumericValue", numericValue,
-                                                                               SBUPDATER, null ).second;
-            }
+			if (in.getLocalName().equals("NumericValue")) {
+				numericValue = new StringBuffer();
+				numericValueContn = SymbologyParser.INSTANCE.updateOrContinue(in, "NumericValue", numericValue,
+						SBUPDATER, null).second;
+			}
 
-            if ( in.getLocalName().equals( "Pattern" ) ) {
-                pat = in.getElementText();
-            }
+			if (in.getLocalName().equals("Pattern")) {
+				pat = in.getElementText();
+			}
 
-            if ( in.getLocalName().equals( "NegativePattern" ) ) {
-                neg = in.getElementText();
-            }
-        }
+			if (in.getLocalName().equals("NegativePattern")) {
+				neg = in.getElementText();
+			}
+		}
 
-        if ( neg == null ) {
-            neg = "-" + pat;
-        }
+		if (neg == null) {
+			neg = "-" + pat;
+		}
 
-        pattern = new DecimalFormat( pat );
-        negativePattern = new DecimalFormat( neg );
+		pattern = new DecimalFormat(pat);
+		negativePattern = new DecimalFormat(neg);
 
-        in.require( END_ELEMENT, null, "FormatNumber" );
-        return new FormatNumber( numericValue, numericValueContn, pattern, negativePattern );
-    }
+		in.require(END_ELEMENT, null, "FormatNumber");
+		return new FormatNumber(numericValue, numericValueContn, pattern, negativePattern);
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -40,44 +39,40 @@ import org.deegree.commons.tom.ows.LanguageString;
 
 /**
  * {@link OutputType} that defines a bounding box output.
- * 
+ *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class BBoxOutputType extends OutputType {
 
-    private String defaultCrs;
+	private String defaultCrs;
 
-    private String[] supportedCrs;
+	private String[] supportedCrs;
 
-    public BBoxOutputType( CodeType id, LanguageString outputTitle, LanguageString outputAbstract, String defaultCrs,
-                           String[] supportedCrs ) {
-        super( id, outputTitle, outputAbstract );
-        this.defaultCrs = defaultCrs;
-        this.supportedCrs = supportedCrs;
-    }
+	public BBoxOutputType(CodeType id, LanguageString outputTitle, LanguageString outputAbstract, String defaultCrs,
+			String[] supportedCrs) {
+		super(id, outputTitle, outputAbstract);
+		this.defaultCrs = defaultCrs;
+		this.supportedCrs = supportedCrs;
+	}
 
-    @Override
-    public Type getType() {
-        return Type.BBOX;
-    }
+	@Override
+	public Type getType() {
+		return Type.BBOX;
+	}
 
-    /**
-     * 
-     * @return the default CRS used
-     */
-    public String getDefaultCrs() {
-        return defaultCrs;
-    }
+	/**
+	 * @return the default CRS used
+	 */
+	public String getDefaultCrs() {
+		return defaultCrs;
+	}
 
-    /**
-     * 
-     * @return the supported CRSs
-     */
-    public String[] getSupportedCrs() {
-        return supportedCrs;
-    }
+	/**
+	 * @return the supported CRSs
+	 */
+	public String[] getSupportedCrs() {
+		return supportedCrs;
+	}
+
 }

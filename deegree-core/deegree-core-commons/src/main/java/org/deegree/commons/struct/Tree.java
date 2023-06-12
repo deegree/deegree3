@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aschmitz@wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -41,44 +40,40 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 public class Tree<T> {
 
-    public List<Tree<T>> children = new ArrayList<Tree<T>>();
+	public List<Tree<T>> children = new ArrayList<Tree<T>>();
 
-    public T value;
+	public T value;
 
-    private static <T> void dfsFlat( List<T> list, Tree<T> t ) {
-        list.add( t.value );
-        for ( Tree<T> c : t.children ) {
-            dfsFlat( list, c );
-        }
-    }
+	private static <T> void dfsFlat(List<T> list, Tree<T> t) {
+		list.add(t.value);
+		for (Tree<T> c : t.children) {
+			dfsFlat(list, c);
+		}
+	}
 
-    public List<T> flattenDepthFirst() {
-        List<T> list = new ArrayList<T>();
-        dfsFlat( list, this );
-        return list;
-    }
+	public List<T> flattenDepthFirst() {
+		List<T> list = new ArrayList<T>();
+		dfsFlat(list, this);
+		return list;
+	}
 
-    public String toString( int indent ) {
-        StringBuilder sb = new StringBuilder();
-        sb.append( repeat( indent, " " ) + " - " + value + "\n" );
-        indent += 2;
-        for ( Tree<T> c : children ) {
-            sb.append( c.toString( indent ) );
-        }
-        return sb.toString();
-    }
+	public String toString(int indent) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(repeat(indent, " ") + " - " + value + "\n");
+		indent += 2;
+		for (Tree<T> c : children) {
+			sb.append(c.toString(indent));
+		}
+		return sb.toString();
+	}
 
-    @Override
-    public String toString() {
-        return toString( 0 );
-    }
+	@Override
+	public String toString() {
+		return toString(0);
+	}
 
 }

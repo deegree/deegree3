@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -47,87 +46,86 @@ import org.slf4j.Logger;
 
 /**
  * Encapsulates columns and values for updating one row in a database table.
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.org">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class UpdateRow extends TransactionRow {
 
-    private static final Logger LOG = getLogger( UpdateRow.class );
+	private static final Logger LOG = getLogger(UpdateRow.class);
 
-    private String whereClause;
+	private String whereClause;
 
-    public UpdateRow( TableName table ) {
-        super( table );
-    }
+	public UpdateRow(TableName table) {
+		super(table);
+	}
 
-    /**
-     * @param whereClause
-     *            the whereClause to set, without 'WHERE' in the beginning
-     */
-    public void setWhereClause( String whereClause ) {
-        this.whereClause = whereClause;
-    }
+	/**
+	 * @param whereClause the whereClause to set, without 'WHERE' in the beginning
+	 */
+	public void setWhereClause(String whereClause) {
+		this.whereClause = whereClause;
+	}
 
-    /**
-     * @return the whereClause
-     */
-    public String getWhereClause() {
-        return whereClause;
-    }
+	/**
+	 * @return the whereClause
+	 */
+	public String getWhereClause() {
+		return whereClause;
+	}
 
-    @Override
-    public String getSql() {
-        StringBuilder sql = new StringBuilder( "UPDATE " + table + " SET " );
-        boolean first = true;
-        for ( SQLIdentifier column : columnToLiteral.keySet() ) {
-            if ( !first ) {
-                sql.append( ',' );
-            } else {
-                first = false;
-            }
-            sql.append( column );
-            sql.append( " = " );
-            sql.append( columnToLiteral.get( column ) );
-        }
-        sql.append( " WHERE " ).append( whereClause );
-        return sql.toString();
-    }
+	@Override
+	public String getSql() {
+		StringBuilder sql = new StringBuilder("UPDATE " + table + " SET ");
+		boolean first = true;
+		for (SQLIdentifier column : columnToLiteral.keySet()) {
+			if (!first) {
+				sql.append(',');
+			}
+			else {
+				first = false;
+			}
+			sql.append(column);
+			sql.append(" = ");
+			sql.append(columnToLiteral.get(column));
+		}
+		sql.append(" WHERE ").append(whereClause);
+		return sql.toString();
+	}
 
-    @Override
-    public String toString() {
-        return getSql();
-    }
+	@Override
+	public String toString() {
+		return getSql();
+	}
 
-    public void performUpdate( Connection conn )
-                            throws SQLException {
-        if ( LOG.isDebugEnabled() ) {
-            LOG.debug( "Updating: " + this );
-        }
+	public void performUpdate(Connection conn) throws SQLException {
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("Updating: " + this);
+		}
 
-        String sql = getSql();
-        PreparedStatement stmt = null;
-        stmt = conn.prepareStatement( sql );
+		String sql = getSql();
+		PreparedStatement stmt = null;
+		stmt = conn.prepareStatement(sql);
 
-        int columnId = 1;
-        for ( Entry<SQLIdentifier, Object> entry : columnToObject.entrySet() ) {
-            if ( entry.getValue() != null ) {
-                LOG.debug( "- Argument " + entry.getKey() + " = " + entry.getValue() + " ("
-                           + entry.getValue().getClass() + ")" );
-                if ( entry.getValue() instanceof ParticleConversion<?> ) {
-                    ParticleConversion<?> conversion = (ParticleConversion<?>) entry.getValue();
-                    conversion.setParticle( stmt, columnId++ );
-                } else {
-                    stmt.setObject( columnId++, entry.getValue() );
-                }
-            } else {
-                LOG.debug( "- Argument " + entry.getKey() + " = NULL" );
-                stmt.setObject( columnId++, null );
-            }
-        }
-        stmt.execute();
-        stmt.close();
-    }
+		int columnId = 1;
+		for (Entry<SQLIdentifier, Object> entry : columnToObject.entrySet()) {
+			if (entry.getValue() != null) {
+				LOG.debug("- Argument " + entry.getKey() + " = " + entry.getValue() + " (" + entry.getValue().getClass()
+						+ ")");
+				if (entry.getValue() instanceof ParticleConversion<?>) {
+					ParticleConversion<?> conversion = (ParticleConversion<?>) entry.getValue();
+					conversion.setParticle(stmt, columnId++);
+				}
+				else {
+					stmt.setObject(columnId++, entry.getValue());
+				}
+			}
+			else {
+				LOG.debug("- Argument " + entry.getKey() + " = NULL");
+				stmt.setObject(columnId++, null);
+			}
+		}
+		stmt.execute();
+		stmt.close();
+	}
+
 }

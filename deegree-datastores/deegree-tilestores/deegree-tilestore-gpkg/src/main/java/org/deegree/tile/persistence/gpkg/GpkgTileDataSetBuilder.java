@@ -60,65 +60,65 @@ import java.util.*;
  */
 class GpkgTileDataSetBuilder {
 
-    private final org.deegree.tile.persistence.gpkg.jaxb.GpkgTileStoreJAXB cfg;
+	private final org.deegree.tile.persistence.gpkg.jaxb.GpkgTileStoreJAXB cfg;
 
-    private String format;
+	private String format;
 
-    private String identifier;
+	private String identifier;
 
-    private TileMatrixSet tms;
+	private TileMatrixSet tms;
 
-    GpkgTileDataSetBuilder( org.deegree.tile.persistence.gpkg.jaxb.GpkgTileStoreJAXB cfg, TileMatrixSet tms ) {
-        this.cfg = cfg;
-        this.tms = tms;
-        this.format = cfg.getTileDataSet().getImageFormat();
-        this.identifier = cfg.getTileDataSet().getIdentifier();
-    }
+	GpkgTileDataSetBuilder(org.deegree.tile.persistence.gpkg.jaxb.GpkgTileStoreJAXB cfg, TileMatrixSet tms) {
+		this.cfg = cfg;
+		this.tms = tms;
+		this.format = cfg.getTileDataSet().getImageFormat();
+		this.identifier = cfg.getTileDataSet().getIdentifier();
+	}
 
-    Map<String, TileDataSet> extractTileDataSets()
-                            throws ResourceInitException {
-        Map<String, TileDataSet> tileDataSet = new HashMap<String, TileDataSet>();
-        tileDataSet.put( identifier, buildTileDataSet() );
-        return tileDataSet;
-    }
+	Map<String, TileDataSet> extractTileDataSets() throws ResourceInitException {
+		Map<String, TileDataSet> tileDataSet = new HashMap<String, TileDataSet>();
+		tileDataSet.put(identifier, buildTileDataSet());
+		return tileDataSet;
+	}
 
-    public TileDataSet buildTileDataSet()
-                            throws ResourceInitException {
-        List<TileDataLevel> list = new ArrayList<TileDataLevel>();
-        for ( TileMatrix tm : tms.getTileMatrices() ) {
-            String idTm = tm.getIdentifier();
-            Map<Pair<Long, Long>, byte[]> ts = getTileData( idTm );
-            TileDataLevel tdl = new GpkgTileDataLevel( tm, ts );
-            list.add( tdl );
-        }
- //       if ( format == null ) {
- //           format = "image/jpg";
- //       }
-        return new DefaultTileDataSet( list, tms, format );
-    }
+	public TileDataSet buildTileDataSet() throws ResourceInitException {
+		List<TileDataLevel> list = new ArrayList<TileDataLevel>();
+		for (TileMatrix tm : tms.getTileMatrices()) {
+			String idTm = tm.getIdentifier();
+			Map<Pair<Long, Long>, byte[]> ts = getTileData(idTm);
+			TileDataLevel tdl = new GpkgTileDataLevel(tm, ts);
+			list.add(tdl);
+		}
+		// if ( format == null ) {
+		// format = "image/jpg";
+		// }
+		return new DefaultTileDataSet(list, tms, format);
+	}
 
-    public Map<Pair<Long, Long>, byte[]> getTileData( String id ) {
-        Map<Pair<Long, Long>, byte[]> mapTile = new LinkedHashMap<Pair<Long, Long>, byte[]>();
-        try {
-            LegacyConnectionProvider connProvider = new LegacyConnectionProvider( "jdbc:sqlite:/" + cfg.getTileDataSet().getFile(), "",
-                                                                                  "", false, null );
-            Connection conn = connProvider.getConnection();
-            Statement stmt = conn.createStatement();
-            String table = cfg.getTileDataSet().getTileMapping().getTable();
-            String query = "select * from " + table + " where zoom_level = " + id;
-            ResultSet rs = stmt.executeQuery( query );
-            while ( rs.next() ) {
-                long row = rs.getLong( 4 );
-                long column = rs.getLong( 3 );
-                byte[] imgBytes = rs.getBytes( 5 );
-                Pair<Long, Long> keyTile = new Pair<Long, Long>();
-                keyTile.setFirst( row );
-                keyTile.setSecond( column );
-                mapTile.put( keyTile, imgBytes );
-            }
-        } catch ( SQLException e ) {
-            e.printStackTrace();
-        }
-        return mapTile;
-    }
+	public Map<Pair<Long, Long>, byte[]> getTileData(String id) {
+		Map<Pair<Long, Long>, byte[]> mapTile = new LinkedHashMap<Pair<Long, Long>, byte[]>();
+		try {
+			LegacyConnectionProvider connProvider = new LegacyConnectionProvider(
+					"jdbc:sqlite:/" + cfg.getTileDataSet().getFile(), "", "", false, null);
+			Connection conn = connProvider.getConnection();
+			Statement stmt = conn.createStatement();
+			String table = cfg.getTileDataSet().getTileMapping().getTable();
+			String query = "select * from " + table + " where zoom_level = " + id;
+			ResultSet rs = stmt.executeQuery(query);
+			while (rs.next()) {
+				long row = rs.getLong(4);
+				long column = rs.getLong(3);
+				byte[] imgBytes = rs.getBytes(5);
+				Pair<Long, Long> keyTile = new Pair<Long, Long>();
+				keyTile.setFirst(row);
+				keyTile.setSecond(column);
+				mapTile.put(keyTile, imgBytes);
+			}
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return mapTile;
+	}
+
 }

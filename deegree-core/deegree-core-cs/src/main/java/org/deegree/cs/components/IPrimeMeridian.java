@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -39,48 +38,46 @@ import org.deegree.cs.CRSResource;
 
 /**
  * Interface describing a PrimeMeridian
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public interface IPrimeMeridian extends CRSResource {
 
-    /**
-     * @return the longitude value relative to the Greenwich Meridian. The longitude is expressed in this objects
-     *         angular units.
-     */
-    double getLongitude();
+	/**
+	 * @return the longitude value relative to the Greenwich Meridian. The longitude is
+	 * expressed in this objects angular units.
+	 */
+	double getLongitude();
 
-    /**
-     * @param targetUnit
-     *            The unit in which to express longitude.
-     * @return the longitude value relative to the Greenwich Meridian, expressed in the specified units. This
-     *         convenience method make easier to obtains longitude in degrees (<code>getLongitude(Unit.DEGREE)</code>),
-     *         no matter the underlying angular unit of this prime meridian.
-     */
-    double getLongitude( final IUnit targetUnit );
+	/**
+	 * @param targetUnit The unit in which to express longitude.
+	 * @return the longitude value relative to the Greenwich Meridian, expressed in the
+	 * specified units. This convenience method make easier to obtains longitude in
+	 * degrees (<code>getLongitude(Unit.DEGREE)</code>), no matter the underlying angular
+	 * unit of this prime meridian.
+	 */
+	double getLongitude(final IUnit targetUnit);
 
-    /**
-     * @return the longitude value relative to the Greenwich Meridian, expressed in the radians.
-     */
-    double getLongitudeAsRadian();
+	/**
+	 * @return the longitude value relative to the Greenwich Meridian, expressed in the
+	 * radians.
+	 */
+	double getLongitudeAsRadian();
 
-    /**
-     * @return the angular unit.
-     */
-    IUnit getAngularUnit();
+	/**
+	 * @return the angular unit.
+	 */
+	IUnit getAngularUnit();
 
-    /**
-     * @param units
-     *            to be used
-     */
-    void setAngularUnit( IUnit units );
+	/**
+	 * @param units to be used
+	 */
+	void setAngularUnit(IUnit units);
 
-    /**
-     * @param lon
-     * @param degree
-     */
-    void setLongitude( double lon, IUnit degree );
+	/**
+	 * @param lon
+	 * @param degree
+	 */
+	void setLongitude(double lon, IUnit degree);
+
 }

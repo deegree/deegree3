@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -39,35 +38,30 @@ import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.io.RasterDataReader;
 
 /**
- * This interface is for abstraction of RasterData providers. Implementations of this interface can control the loading
- * and unloading of the raster data (i.e. caching, etc).
- * 
+ * This interface is for abstraction of RasterData providers. Implementations of this
+ * interface can control the loading and unloading of the raster data (i.e. caching, etc).
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface RasterDataContainer {
 
-    /**
-     * Sets the source of the raster data.
-     * 
-     * @param reader
-     *            the raster data reader for this container
-     */
-    public void setRasterDataReader( RasterDataReader reader );
+	/**
+	 * Sets the source of the raster data.
+	 * @param reader the raster data reader for this container
+	 */
+	public void setRasterDataReader(RasterDataReader reader);
 
-    /**
-     * Returns the RasterData
-     * 
-     * @return RasterData
-     */
-    public RasterData getRasterData();
+	/**
+	 * Returns the RasterData
+	 * @return RasterData
+	 */
+	public RasterData getRasterData();
 
-    /**
-     * Returns the RasterData as a read-only copy. Only a read-only RasterData supports thread-safe read operations.
-     * 
-     * @return RasterData
-     */
-    public RasterData getReadOnlyRasterData();
+	/**
+	 * Returns the RasterData as a read-only copy. Only a read-only RasterData supports
+	 * thread-safe read operations.
+	 * @return RasterData
+	 */
+	public RasterData getReadOnlyRasterData();
+
 }

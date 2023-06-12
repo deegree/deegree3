@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -40,60 +39,53 @@ import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimensi
 
 /**
  * Encapsulates the storage parameters for geometries.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class GeometryStorageParams {
 
-    private final ICRS crs;
+	private final ICRS crs;
 
-    private final String srid;
+	private final String srid;
 
-    private final CoordinateDimension dim;
+	private final CoordinateDimension dim;
 
-    /**
-     * Creates a new {@link GeometryStorageParams} instance.
-     * 
-     * @param crs
-     *            coordinate reference system used for stored geometries or <code>null</code> (unspecified)
-     * @param srid
-     *            spatial reference identifier (database code), must not be <code>null</code>
-     * @param dim
-     *            dimensionality of coordinates, must not be <code>null</code>
-     */
-    public GeometryStorageParams( ICRS crs, String srid, CoordinateDimension dim ) {
-        this.crs = crs;
-        this.srid = srid;
-        this.dim = dim;
-    }
+	/**
+	 * Creates a new {@link GeometryStorageParams} instance.
+	 * @param crs coordinate reference system used for stored geometries or
+	 * <code>null</code> (unspecified)
+	 * @param srid spatial reference identifier (database code), must not be
+	 * <code>null</code>
+	 * @param dim dimensionality of coordinates, must not be <code>null</code>
+	 */
+	public GeometryStorageParams(ICRS crs, String srid, CoordinateDimension dim) {
+		this.crs = crs;
+		this.srid = srid;
+		this.dim = dim;
+	}
 
-    /**
-     * Returns the coordinate reference system for stored geometries.
-     * 
-     * @return coordinate reference system, can be <code>null</code> (unspecified)
-     */
-    public ICRS getCrs() {
-        return crs;
-    }
+	/**
+	 * Returns the coordinate reference system for stored geometries.
+	 * @return coordinate reference system, can be <code>null</code> (unspecified)
+	 */
+	public ICRS getCrs() {
+		return crs;
+	}
 
-    /**
-     * Returns the spatial reference identifier (database code).
-     * 
-     * @return spatial reference identifier, never <code>null</code>
-     */
-    public String getSrid() {
-        return srid;
-    }
+	/**
+	 * Returns the spatial reference identifier (database code).
+	 * @return spatial reference identifier, never <code>null</code>
+	 */
+	public String getSrid() {
+		return srid;
+	}
 
-    /**
-     * Returns the coordinate dimension.
-     * 
-     * @return coordinate dimension, never <code>null</code>
-     */
-    public CoordinateDimension getDim() {
-        return dim;
-    }
+	/**
+	 * Returns the coordinate dimension.
+	 * @return coordinate dimension, never <code>null</code>
+	 */
+	public CoordinateDimension getDim() {
+		return dim;
+	}
+
 }

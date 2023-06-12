@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -41,42 +40,41 @@ import org.deegree.filter.MatchAction;
 
 /**
  * TODO add documentation here
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * 
- * @version $Revision:$, $Date:$
  */
 public class PropertyIsEqualTo extends BinaryComparisonOperator {
 
-    public PropertyIsEqualTo( Expression param1, Expression param2, Boolean matchCase, MatchAction matchAction ) {
-        super( param1, param2, matchCase, matchAction );
-    }
+	public PropertyIsEqualTo(Expression param1, Expression param2, Boolean matchCase, MatchAction matchAction) {
+		super(param1, param2, matchCase, matchAction);
+	}
 
-    @Override
-    public SubType getSubType() {
-        return SubType.PROPERTY_IS_EQUAL_TO;
-    }
+	@Override
+	public SubType getSubType() {
+		return SubType.PROPERTY_IS_EQUAL_TO;
+	}
 
-    @Override
-    protected boolean compare( PrimitiveValue param1, PrimitiveValue param2 ) {
-        if ( !matchCase ) {
-            if ( param1.toString().equalsIgnoreCase( param2.toString() ) ) {
-                return true;
-            }
-        } else {
-            if ( param1.equals( param2 ) ) {
-                return true;
-            }
-        }
-        return false;
-    }
+	@Override
+	protected boolean compare(PrimitiveValue param1, PrimitiveValue param2) {
+		if (!matchCase) {
+			if (param1.toString().equalsIgnoreCase(param2.toString())) {
+				return true;
+			}
+		}
+		else {
+			if (param1.equals(param2)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
-    @Override
-    public String toString( String indent ) {
-        String s = indent + "-PropertyIsEqualTo\n";
-        s += param1.toString( indent + "  " );
-        s += param2.toString( indent + "  " );
-        return s;
-    }
+	@Override
+	public String toString(String indent) {
+		String s = indent + "-PropertyIsEqualTo\n";
+		s += param1.toString(indent + "  ");
+		s += param2.toString(indent + "  ");
+		return s;
+	}
+
 }

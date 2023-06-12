@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -44,94 +43,87 @@ import org.deegree.geometry.Envelope;
 
 /**
  * Defines the resolution(s) of a sample.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class SampleResolution implements Serializable {
 
-    private static final long serialVersionUID = 8741054911757029539L;
+	private static final long serialVersionUID = 8741054911757029539L;
 
-    private final double[] resolutions;
+	private final double[] resolutions;
 
-    /**
-     * @param resolutions
-     */
-    public SampleResolution( double[] resolutions ) {
-        if ( resolutions == null ) {
-            this.resolutions = new double[0];
-        } else {
-            this.resolutions = Arrays.copyOf( resolutions, resolutions.length );
-        }
-    }
+	/**
+	 * @param resolutions
+	 */
+	public SampleResolution(double[] resolutions) {
+		if (resolutions == null) {
+			this.resolutions = new double[0];
+		}
+		else {
+			this.resolutions = Arrays.copyOf(resolutions, resolutions.length);
+		}
+	}
 
-    /**
-     * Returns the resolution (in coordinate system units) of the sample domain for the given dimension (crs-axis).
-     * 
-     * @param dim
-     *            the 'crs-axis' to get the dimension for
-     * @return the resolution of the sample domain of the given dimension.
-     */
-    public double getResolution( int dim ) {
-        return resolutions[dim];
-    }
+	/**
+	 * Returns the resolution (in coordinate system units) of the sample domain for the
+	 * given dimension (crs-axis).
+	 * @param dim the 'crs-axis' to get the dimension for
+	 * @return the resolution of the sample domain of the given dimension.
+	 */
+	public double getResolution(int dim) {
+		return resolutions[dim];
+	}
 
-    /**
-     * Create a raster reference for the given envelope from this resolution.
-     * 
-     * @param location
-     *            of the origin of the raster reference, if <code>null</code> center will be assumed.
-     * @param envelope
-     *            the envelope to create a raster reference for.
-     * 
-     * @return the raster reference with sample resolutions and the origin fitting the given envelope, if no resolutions
-     *         were known, <code>null</code> will be returned;
-     */
-    public RasterGeoReference createGeoReference( OriginLocation location, Envelope envelope ) {
-        if ( resolutions == null ) {
-            return null;
-        }
-        return RasterGeoReference.create( location == null ? OriginLocation.CENTER : location, envelope,
-                                          resolutions[0], resolutions[1] );
-    }
+	/**
+	 * Create a raster reference for the given envelope from this resolution.
+	 * @param location of the origin of the raster reference, if <code>null</code> center
+	 * will be assumed.
+	 * @param envelope the envelope to create a raster reference for.
+	 * @return the raster reference with sample resolutions and the origin fitting the
+	 * given envelope, if no resolutions were known, <code>null</code> will be returned;
+	 */
+	public RasterGeoReference createGeoReference(OriginLocation location, Envelope envelope) {
+		if (resolutions == null) {
+			return null;
+		}
+		return RasterGeoReference.create(location == null ? OriginLocation.CENTER : location, envelope, resolutions[0],
+				resolutions[1]);
+	}
 
-    @Override
-    public boolean equals( Object other ) {
-        if ( other != null && other instanceof SampleResolution ) {
-            final SampleResolution that = (SampleResolution) other;
-            return resMatch( that.resolutions );
-        }
-        return false;
-    }
+	@Override
+	public boolean equals(Object other) {
+		if (other != null && other instanceof SampleResolution) {
+			final SampleResolution that = (SampleResolution) other;
+			return resMatch(that.resolutions);
+		}
+		return false;
+	}
 
-    /**
-     * 
-     * @param otherRes
-     * @return true if the given resolutions are equal within an epsilon of 1E-8
-     */
-    private boolean resMatch( double[] otherRes ) {
-        if ( this.resolutions.length != otherRes.length ) {
-            return false;
-        }
-        // length checked.
-        for ( int i = 0; i < resolutions.length; ++i ) {
-            if ( Math.abs( resolutions[i] - otherRes[i] ) > 1E-8 ) {
-                return false;
-            }
-        }
-        return true;
-    }
+	/**
+	 * @param otherRes
+	 * @return true if the given resolutions are equal within an epsilon of 1E-8
+	 */
+	private boolean resMatch(double[] otherRes) {
+		if (this.resolutions.length != otherRes.length) {
+			return false;
+		}
+		// length checked.
+		for (int i = 0; i < resolutions.length; ++i) {
+			if (Math.abs(resolutions[i] - otherRes[i]) > 1E-8) {
+				return false;
+			}
+		}
+		return true;
+	}
 
-    @Override
-    public int hashCode() {
-        return Arrays.hashCode( resolutions );
-    }
+	@Override
+	public int hashCode() {
+		return Arrays.hashCode(resolutions);
+	}
 
-    @Override
-    public String toString() {
-        return Arrays.toString( resolutions );
-    }
+	@Override
+	public String toString() {
+		return Arrays.toString(resolutions);
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -47,115 +46,103 @@ import org.deegree.services.wpvs.io.ModelBackend;
 import org.deegree.services.wpvs.io.ModelBackend.Type;
 
 /**
- * The <code>ModelManager</code> class defines a simple interface for inserting, deleting and updating different kind of
- * data models into the WPVS.
- * 
+ * The <code>ModelManager</code> class defines a simple interface for inserting, deleting
+ * and updating different kind of data models into the WPVS.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
- * @param <FB>
- *            The type of the filebackend.
- * 
+ * @param <FB> The type of the filebackend.
+ *
  */
 public abstract class ModelManager<FB extends PositionableModel> {
 
-    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( ModelManager.class );
+	private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ModelManager.class);
 
-    /**
-     * A backend using a database
-     */
-    private final ModelBackend<?> modelBackend;
+	/**
+	 * A backend using a database
+	 */
+	private final ModelBackend<?> modelBackend;
 
-    /**
-     * The place to store textures.
-     */
-    protected final File textureDir;
+	/**
+	 * The place to store textures.
+	 */
+	protected final File textureDir;
 
-    /**
-     * The translation to the origin of the WPVS scene.
-     */
-    protected final double[] wpvsTranslationVector;
+	/**
+	 * The translation to the origin of the WPVS scene.
+	 */
+	protected final double[] wpvsTranslationVector;
 
-    /**
-     * @param textureDir
-     * @param modelBackend
-     * @param wpvsTranslationVector
-     *            2d vector to the origin of the wpvs scene
-     */
-    protected ModelManager( String textureDir, ModelBackend<?> modelBackend, double[] wpvsTranslationVector ) {
-        if ( textureDir != null ) {
-            File f = new File( textureDir );
-            if ( !f.exists() ) {
-                LOG.warn( "Given texture directory does not exist, not checking referenes in billboards." );
-                f = null;
-            }
-            this.textureDir = f;
-        } else {
-            this.textureDir = null;
-        }
+	/**
+	 * @param textureDir
+	 * @param modelBackend
+	 * @param wpvsTranslationVector 2d vector to the origin of the wpvs scene
+	 */
+	protected ModelManager(String textureDir, ModelBackend<?> modelBackend, double[] wpvsTranslationVector) {
+		if (textureDir != null) {
+			File f = new File(textureDir);
+			if (!f.exists()) {
+				LOG.warn("Given texture directory does not exist, not checking referenes in billboards.");
+				f = null;
+			}
+			this.textureDir = f;
+		}
+		else {
+			this.textureDir = null;
+		}
 
-        this.modelBackend = modelBackend;
-        this.wpvsTranslationVector = wpvsTranslationVector;
+		this.modelBackend = modelBackend;
+		this.wpvsTranslationVector = wpvsTranslationVector;
 
-    }
+	}
 
-    /**
-     * Imports the data from the given file.
-     * 
-     * @param uuid
-     *            the file in an expected format.
-     * @param objectType
-     *            to be deleted
-     * @param qualityLevel
-     *            the qualitylevel to be deleted, if -1 the object will be deleted from the backend.
-     * @param sqlWhere
-     *            defining a where clause on elements to be deleted.
-     * 
-     * @return the number of imported objects
-     * @throws IOException
-     * 
-     */
-    public BackendResult delete( String uuid, Type objectType, int qualityLevel, String sqlWhere )
-                            throws IOException {
-        return modelBackend.delete( uuid, objectType, qualityLevel, sqlWhere );
-    }
+	/**
+	 * Imports the data from the given file.
+	 * @param uuid the file in an expected format.
+	 * @param objectType to be deleted
+	 * @param qualityLevel the qualitylevel to be deleted, if -1 the object will be
+	 * deleted from the backend.
+	 * @param sqlWhere defining a where clause on elements to be deleted.
+	 * @return the number of imported objects
+	 * @throws IOException
+	 *
+	 */
+	public BackendResult delete(String uuid, Type objectType, int qualityLevel, String sqlWhere) throws IOException {
+		return modelBackend.delete(uuid, objectType, qualityLevel, sqlWhere);
+	}
 
-    /**
-     * Imports the data from the given file.
-     * 
-     * @param f
-     *            the file in an expected format.
-     * @param commandLine
-     *            program parameters only necessary for a given instance object will be available in the commandline.
-     * @return the number of imported objects
-     * @throws FileNotFoundException
-     * @throws IOException
-     * 
-     */
-    public abstract BackendResult importFromFile( File f, CommandLine commandLine )
-                            throws FileNotFoundException, IOException;
+	/**
+	 * Imports the data from the given file.
+	 * @param f the file in an expected format.
+	 * @param commandLine program parameters only necessary for a given instance object
+	 * will be available in the commandline.
+	 * @return the number of imported objects
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 *
+	 */
+	public abstract BackendResult importFromFile(File f, CommandLine commandLine)
+			throws FileNotFoundException, IOException;
 
-    /**
-     * @return the modelBackend
-     */
-    public final ModelBackend<?> getDbBackend() {
-        return modelBackend;
-    }
+	/**
+	 * @return the modelBackend
+	 */
+	public final ModelBackend<?> getDbBackend() {
+		return modelBackend;
+	}
 
-    /**
-     * @return the textureDir
-     */
-    public final File getTextureDir() {
-        return textureDir;
-    }
+	/**
+	 * @return the textureDir
+	 */
+	public final File getTextureDir() {
+		return textureDir;
+	}
 
-    /**
-     * @throws IOException
-     * 
-     */
-    public void flush()
-                            throws IOException {
-        modelBackend.flush();
-    }
+	/**
+	 * @throws IOException
+	 *
+	 */
+	public void flush() throws IOException {
+		modelBackend.flush();
+	}
 
 }

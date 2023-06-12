@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -47,54 +46,51 @@ import org.deegree.client.core.component.HtmlExternalLink;
 
 /**
  * <code>ExternalLinkRenderer</code> renders a link ignoring the JSF navigation
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 
 @FacesRenderer(componentFamily = "javax.faces.Command", rendererType = "org.deegree.ExternalLink")
 public class ExternalLinkRenderer extends Renderer {
 
-    @Override
-    public void encodeBegin( FacesContext context, UIComponent component )
-                            throws IOException {
-        ResponseWriter responseWriter = context.getResponseWriter();
-        if ( component instanceof HtmlExternalLink ) {
-            HtmlExternalLink command = (HtmlExternalLink) component;
-            String clientId = command.getClientId();
+	@Override
+	public void encodeBegin(FacesContext context, UIComponent component) throws IOException {
+		ResponseWriter responseWriter = context.getResponseWriter();
+		if (component instanceof HtmlExternalLink) {
+			HtmlExternalLink command = (HtmlExternalLink) component;
+			String clientId = command.getClientId();
 
-            responseWriter.startElement( "a", null );
-            responseWriter.writeAttribute( "id", clientId, "id" );
-            responseWriter.writeAttribute( "name", clientId, "clientId" );
-            String href = command.getHref();
-            responseWriter.writeAttribute( "href", href, null );
+			responseWriter.startElement("a", null);
+			responseWriter.writeAttribute("id", clientId, "id");
+			responseWriter.writeAttribute("name", clientId, "clientId");
+			String href = command.getHref();
+			responseWriter.writeAttribute("href", href, null);
 
-            String styleClass = command.getStyleClass();
-            if ( styleClass != null ) {
-                responseWriter.writeAttribute( "class", styleClass, "styleClass" );
-            }
+			String styleClass = command.getStyleClass();
+			if (styleClass != null) {
+				responseWriter.writeAttribute("class", styleClass, "styleClass");
+			}
 
-            String style = command.getStyle();
-            if ( style != null ) {
-                responseWriter.writeAttribute( "style", style, "style" );
-            }
-            String target = command.getTarget();
-            if ( target != null ) {
-                responseWriter.writeAttribute( "target", target, "target" );
-            }
+			String style = command.getStyle();
+			if (style != null) {
+				responseWriter.writeAttribute("style", style, "style");
+			}
+			String target = command.getTarget();
+			if (target != null) {
+				responseWriter.writeAttribute("target", target, "target");
+			}
 
-            String onclick = command.getOnclick();
-            if ( onclick != null ) {
-                responseWriter.writeAttribute( "onClick", onclick, "onclick" );
-            }
+			String onclick = command.getOnclick();
+			if (onclick != null) {
+				responseWriter.writeAttribute("onClick", onclick, "onclick");
+			}
 
-            String title = command.getTitle();
-            responseWriter.writeText( title != null ? title : ( href != null ? href : "" ), null );
+			String title = command.getTitle();
+			responseWriter.writeText(title != null ? title : (href != null ? href : ""), null);
 
-            responseWriter.endElement( "a" );
-            responseWriter.flush();
-        }
-    }
+			responseWriter.endElement("a");
+			responseWriter.flush();
+		}
+	}
+
 }

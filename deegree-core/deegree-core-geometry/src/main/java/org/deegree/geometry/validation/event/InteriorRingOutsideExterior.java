@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -40,52 +39,45 @@ import java.util.List;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
 
 /**
- * {@link GeometryValidationEvent} that indicates that a planar surface patch (={@link PolygonPatch}) has a hole (interior ring)
- * that is completely located outside it's shell (exterior ring)
- * 
+ * {@link GeometryValidationEvent} that indicates that a planar surface patch
+ * (={@link PolygonPatch}) has a hole (interior ring) that is completely located outside
+ * it's shell (exterior ring)
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * 
- * @version $Revision: $, $Date: $
  */
 public class InteriorRingOutsideExterior extends AbstractGeometryValidationEvent {
 
-    private final PolygonPatch patch;
+	private final PolygonPatch patch;
 
-    private final int ringIdx;
+	private final int ringIdx;
 
-    /**
-     * Creates a new {@link InteriorRingOutsideExterior} instance.
-     * 
-     * @param patch
-     *            affected patch, never <code>null</code>
-     * @param ringIdx
-     *            index of the affected inner ring
-     * @param geometryParticleHierarchy
-     *            list of affected geometry particles (that the patch is part of), must not be <code>null</code>
-     */
-    public InteriorRingOutsideExterior( PolygonPatch patch, int ringIdx, List<Object> geometryParticleHierarchy ) {
-        super( geometryParticleHierarchy );
-        this.patch = patch;
-        this.ringIdx = ringIdx;
-    }
+	/**
+	 * Creates a new {@link InteriorRingOutsideExterior} instance.
+	 * @param patch affected patch, never <code>null</code>
+	 * @param ringIdx index of the affected inner ring
+	 * @param geometryParticleHierarchy list of affected geometry particles (that the
+	 * patch is part of), must not be <code>null</code>
+	 */
+	public InteriorRingOutsideExterior(PolygonPatch patch, int ringIdx, List<Object> geometryParticleHierarchy) {
+		super(geometryParticleHierarchy);
+		this.patch = patch;
+		this.ringIdx = ringIdx;
+	}
 
-    /**
-     * Returns the affected {@link PolygonPatch} geometry.
-     * 
-     * @return affected patch, never <code>null</code>
-     */
-    public PolygonPatch getPatch() {
-        return patch;
-    }
+	/**
+	 * Returns the affected {@link PolygonPatch} geometry.
+	 * @return affected patch, never <code>null</code>
+	 */
+	public PolygonPatch getPatch() {
+		return patch;
+	}
 
-    /**
-     * Returns the index of the affected interior ring (starting at 0).
-     * 
-     * @return index of the affected interior ring
-     */
-    public int getRingIdx() {
-        return ringIdx;
-    }
+	/**
+	 * Returns the index of the affected interior ring (starting at 0).
+	 * @return index of the affected interior ring
+	 */
+	public int getRingIdx() {
+		return ringIdx;
+	}
 
 }

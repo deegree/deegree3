@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -36,29 +35,28 @@
 package org.deegree.commons.tom.gml;
 
 /**
- * Enum for discriminating between the different categories objects and object types supported by GML.
+ * Enum for discriminating between the different categories objects and object types
+ * supported by GML.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: markus $
- *
- * @version $Revision: $, $Date: $
  */
 public enum GMLObjectCategory {
 
-    /** Coordinate reference system */
-    CRS,
-    /** Feature (geospatial data object) */
-    FEATURE,
-    /** Geometry */
-    GEOMETRY,
-    /** Time Object */
-    TIME_OBJECT,
-    /** Time Slice */
-    TIME_SLICE,
-    /** Topology */
-    TOPOLOGY,
-    /** Style */
-    STYLE,
-    /** Value */
-    VALUE;
+	/** Coordinate reference system */
+	CRS,
+	/** Feature (geospatial data object) */
+	FEATURE,
+	/** Geometry */
+	GEOMETRY,
+	/** Time Object */
+	TIME_OBJECT,
+	/** Time Slice */
+	TIME_SLICE,
+	/** Topology */
+	TOPOLOGY,
+	/** Style */
+	STYLE,
+	/** Value */
+	VALUE;
+
 }

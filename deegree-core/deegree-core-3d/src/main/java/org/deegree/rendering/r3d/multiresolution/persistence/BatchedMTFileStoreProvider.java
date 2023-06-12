@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -43,31 +42,29 @@ import org.deegree.workspace.Workspace;
 
 /**
  * The <code></code> class TODO add class documentation here.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class BatchedMTFileStoreProvider extends BatchedMTStoreProvider {
 
-    private static final String CONFIG_NS = "http://www.deegree.org/datasource/3d/batchedmt/file";
+	private static final String CONFIG_NS = "http://www.deegree.org/datasource/3d/batchedmt/file";
 
-    private static final URL CONFIG_SCHEMA = BatchedMTFileStoreProvider.class.getResource( "/META-INF/schemas/datasource/3d/batchedmt/file.xsd" );
+	private static final URL CONFIG_SCHEMA = BatchedMTFileStoreProvider.class
+		.getResource("/META-INF/schemas/datasource/3d/batchedmt/file.xsd");
 
-    public String getNamespace() {
-        return CONFIG_NS;
-    }
+	public String getNamespace() {
+		return CONFIG_NS;
+	}
 
-    @Override
-    public URL getSchema() {
-        return CONFIG_SCHEMA;
-    }
+	@Override
+	public URL getSchema() {
+		return CONFIG_SCHEMA;
+	}
 
-    @Override
-    public ResourceMetadata<BatchedMTStore> createFromLocation( Workspace workspace,
-                                                                ResourceLocation<BatchedMTStore> location ) {
-        return new BatchedMTFileStoreMetadata( workspace, location, this );
-    }
+	@Override
+	public ResourceMetadata<BatchedMTStore> createFromLocation(Workspace workspace,
+			ResourceLocation<BatchedMTStore> location) {
+		return new BatchedMTFileStoreMetadata(workspace, location, this);
+	}
 
 }

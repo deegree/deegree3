@@ -46,40 +46,41 @@ import org.deegree.workspace.standard.DefaultResourceIdentifier;
 
 /**
  * Resource metadata implementation for WCS services.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class WcsMetadata extends AbstractResourceMetadata<OWS> {
 
-    public WcsMetadata( Workspace workspace, ResourceLocation<OWS> location, AbstractResourceProvider<OWS> provider ) {
-        super( workspace, location, provider );
-    }
+	public WcsMetadata(Workspace workspace, ResourceLocation<OWS> location, AbstractResourceProvider<OWS> provider) {
+		super(workspace, location, provider);
+	}
 
-    @Override
-    public ResourceBuilder<OWS> prepare() {
-        try {
-            DeegreeWCS cfg = (DeegreeWCS) JAXBUtils.unmarshall( "org.deegree.services.jaxb.wcs", provider.getSchema(),
-                                                                location.getAsStream(), workspace );
+	@Override
+	public ResourceBuilder<OWS> prepare() {
+		try {
+			DeegreeWCS cfg = (DeegreeWCS) JAXBUtils.unmarshall("org.deegree.services.jaxb.wcs", provider.getSchema(),
+					location.getAsStream(), workspace);
 
-            for ( org.deegree.services.jaxb.wcs.ServiceConfiguration.Coverage cov : cfg.getServiceConfiguration().getCoverage() ) {
-                String id = cov.getCoverageStoreId();
-                dependencies.add( new DefaultResourceIdentifier<Coverage>( CoverageProvider.class, id ) );
-            }
-            
-            OWSMetadataProviderManager mmgr = workspace.getResourceManager( OWSMetadataProviderManager.class );
-            for ( ResourceMetadata<OWSMetadataProvider> md : mmgr.getResourceMetadata() ) {
-                ResourceIdentifier<OWSMetadataProvider> mdId = md.getIdentifier();
-                if ( mdId.getId().equals( getIdentifier().getId() + "_metadata" ) ) {
-                    softDependencies.add( mdId );
-                }
-            }
+			for (org.deegree.services.jaxb.wcs.ServiceConfiguration.Coverage cov : cfg.getServiceConfiguration()
+				.getCoverage()) {
+				String id = cov.getCoverageStoreId();
+				dependencies.add(new DefaultResourceIdentifier<Coverage>(CoverageProvider.class, id));
+			}
 
-            return new WcsBuilder( this, workspace, cfg );
-        } catch ( Exception e ) {
-            throw new ResourceInitException( e.getLocalizedMessage(), e );
-        }
-    }
+			OWSMetadataProviderManager mmgr = workspace.getResourceManager(OWSMetadataProviderManager.class);
+			for (ResourceMetadata<OWSMetadataProvider> md : mmgr.getResourceMetadata()) {
+				ResourceIdentifier<OWSMetadataProvider> mdId = md.getIdentifier();
+				if (mdId.getId().equals(getIdentifier().getId() + "_metadata")) {
+					softDependencies.add(mdId);
+				}
+			}
+
+			return new WcsBuilder(this, workspace, cfg);
+		}
+		catch (Exception e) {
+			throw new ResourceInitException(e.getLocalizedMessage(), e);
+		}
+	}
 
 }

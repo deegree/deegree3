@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -43,37 +42,36 @@ import org.slf4j.Logger;
 
 /**
  * <code>Value</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class Value {
 
-    private static final Logger LOG = getLogger( Value.class );
+	private static final Logger LOG = getLogger(Value.class);
 
-    /**
-     * @param sb
-     * @param o
-     */
-    public void eval( StringBuilder sb, Object o ) {
-        if ( o instanceof Property ) {
-            try {
-                sb.append( ( (Property) o ).getValue() );
-            } catch ( UnsupportedOperationException e ) {
-                LOG.error( "The error '{}' occurred while converting a property to a string, "
-                           + "probably the WKT writer cannot convert a geometry.", e.getLocalizedMessage() );
-                LOG.debug( "Stack trace:", e );
-            }
-        } else {
-            LOG.warn( "Trying to get value while current object is a feature." );
-        }
-    }
+	/**
+	 * @param sb
+	 * @param o
+	 */
+	public void eval(StringBuilder sb, Object o) {
+		if (o instanceof Property) {
+			try {
+				sb.append(((Property) o).getValue());
+			}
+			catch (UnsupportedOperationException e) {
+				LOG.error("The error '{}' occurred while converting a property to a string, "
+						+ "probably the WKT writer cannot convert a geometry.", e.getLocalizedMessage());
+				LOG.debug("Stack trace:", e);
+			}
+		}
+		else {
+			LOG.warn("Trying to get value while current object is a feature.");
+		}
+	}
 
-    @Override
-    public String toString() {
-        return generateToString( this );
-    }
+	@Override
+	public String toString() {
+		return generateToString(this);
+	}
 
 }

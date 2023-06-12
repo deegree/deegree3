@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -35,40 +34,37 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.geometry.primitive;
 
-
 /**
- * An <code>OrientableSurface</code> consists of a wrapped base {@link Surface} and an additional orientation.
+ * An <code>OrientableSurface</code> consists of a wrapped base {@link Surface} and an
+ * additional orientation.
  * <p>
- * If the orientation is *not* reversed, then the <code>OrientableSurfacec</code> is identical to the base curve. If the
- * orientation is reversed, then the OrientableSurface is a reference to a surface with an up-normal that reverses the
- * direction for this OrientableSurface, the sense of "the top of the surface".
+ * If the orientation is *not* reversed, then the <code>OrientableSurfacec</code> is
+ * identical to the base curve. If the orientation is reversed, then the OrientableSurface
+ * is a reference to a surface with an up-normal that reverses the direction for this
+ * OrientableSurface, the sense of "the top of the surface".
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- *
- * @version $Revision$, $Date$
  */
 public interface OrientableSurface extends Surface {
 
-    /**
-     * Must always return {@link Surface.SurfaceType#OrientableSurface}.
-     *
-     * @return {@link Surface.SurfaceType#OrientableSurface}
-     */
-    @Override
-    public SurfaceType getSurfaceType();
+	/**
+	 * Must always return {@link Surface.SurfaceType#OrientableSurface}.
+	 * @return {@link Surface.SurfaceType#OrientableSurface}
+	 */
+	@Override
+	public SurfaceType getSurfaceType();
 
-    /**
-     * Returns whether the orientation of this surface is reversed compared to the base surface.
-     *
-     * @return true, if the orientation is reversed, false otherwise
-     */
-    public boolean isReversed();
+	/**
+	 * Returns whether the orientation of this surface is reversed compared to the base
+	 * surface.
+	 * @return true, if the orientation is reversed, false otherwise
+	 */
+	public boolean isReversed();
 
-    /**
-     * Returns the {@link Surface} that this <code>OrientableSurface</code> is based on.
-     *
-     * @return the base surface
-     */
-    public Surface getBaseSurface();
+	/**
+	 * Returns the {@link Surface} that this <code>OrientableSurface</code> is based on.
+	 * @return the base surface
+	 */
+	public Surface getBaseSurface();
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -41,18 +40,15 @@ import org.deegree.geometry.primitive.patches.PolygonPatch;
  * A {@link Surface} that consists only of {@link PolygonPatch} patches.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
  *
- * @version. $Revision$, $Date$
  */
 public interface PolyhedralSurface extends Surface {
 
-    /**
-     * Must always return {@link Surface.SurfaceType#PolyhedralSurface}.
-     *
-     * @return {@link Surface.SurfaceType#PolyhedralSurface}
-     */
-    @Override
-    public SurfaceType getSurfaceType();
+	/**
+	 * Must always return {@link Surface.SurfaceType#PolyhedralSurface}.
+	 * @return {@link Surface.SurfaceType#PolyhedralSurface}
+	 */
+	@Override
+	public SurfaceType getSurfaceType();
 
 }

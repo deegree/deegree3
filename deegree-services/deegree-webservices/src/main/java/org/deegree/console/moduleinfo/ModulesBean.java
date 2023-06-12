@@ -45,52 +45,54 @@ import org.deegree.console.workspace.WorkspaceBean;
 
 /**
  * Backing bean for modules view.
- * 
+ *
  * @since 3.3
  */
 @ManagedBean
 @RequestScoped
 public class ModulesBean implements Serializable {
 
-    private static final long serialVersionUID = 147824864885285227L;
+	private static final long serialVersionUID = 147824864885285227L;
 
-    private String baseVersion;
+	private String baseVersion;
 
-    private List<String> internalModules = new ArrayList<String>();
+	private List<String> internalModules = new ArrayList<String>();
 
-    public ModulesBean() {
-        for ( ModuleInfo info : getModulesInfo() ) {
-            if ( baseVersion == null ) {
-                baseVersion = info.getVersion();
-            }
-            internalModules.add( info.toString() );
-        }
-    }
+	public ModulesBean() {
+		for (ModuleInfo info : getModulesInfo()) {
+			if (baseVersion == null) {
+				baseVersion = info.getVersion();
+			}
+			internalModules.add(info.toString());
+		}
+	}
 
-    public String getBaseVersion() {
-        return baseVersion;
-    }
+	public String getBaseVersion() {
+		return baseVersion;
+	}
 
-    public List<String> getInternalModules() {
-        return internalModules;
-    }
+	public List<String> getInternalModules() {
+		return internalModules;
+	}
 
-    public List<String> getWorkspaceModules() {
-        ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-        WorkspaceBean wsBean = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) );
-        if ( wsBean == null ) {
-            return Collections.emptyList();
-        }
+	public List<String> getWorkspaceModules() {
+		ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
+		WorkspaceBean wsBean = ((WorkspaceBean) ctx.getApplicationMap().get("workspace"));
+		if (wsBean == null) {
+			return Collections.emptyList();
+		}
 
-        List<String> wsModules = new ArrayList<String>();
-        try {
-            for ( ModuleInfo info : wsBean.getActiveWorkspace().getModulesInfo() ) {
-                wsModules.add( info.toString() );
-            }
-        } catch ( IOException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return wsModules;
-    }
+		List<String> wsModules = new ArrayList<String>();
+		try {
+			for (ModuleInfo info : wsBean.getActiveWorkspace().getModulesInfo()) {
+				wsModules.add(info.toString());
+			}
+		}
+		catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return wsModules;
+	}
+
 }

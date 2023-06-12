@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -40,84 +39,81 @@ import org.deegree.protocol.wps.WPSConstants.ExecutionState;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class ExecutionStatus {
 
-    private ExecutionState state;
+	private ExecutionState state;
 
-    private String statusMsg;
+	private String statusMsg;
 
-    private Integer percent;
+	private Integer percent;
 
-    private String creationTime;
+	private String creationTime;
 
-    private OWSExceptionReport exceptionReport;
+	private OWSExceptionReport exceptionReport;
 
-    /**
-     * @param state
-     * @param statusMsg
-     * @param percent
-     * @param creationTime
-     * @param exceptionReport
-     */
-    public ExecutionStatus( ExecutionState state, String statusMsg, Integer percent, String creationTime,
-                            OWSExceptionReport exceptionReport ) {
-        this.state = state;
-        this.statusMsg = statusMsg;
-        this.percent = percent;
-        this.creationTime = creationTime;
-        this.exceptionReport = exceptionReport;
-    }
+	/**
+	 * @param state
+	 * @param statusMsg
+	 * @param percent
+	 * @param creationTime
+	 * @param exceptionReport
+	 */
+	public ExecutionStatus(ExecutionState state, String statusMsg, Integer percent, String creationTime,
+			OWSExceptionReport exceptionReport) {
+		this.state = state;
+		this.statusMsg = statusMsg;
+		this.percent = percent;
+		this.creationTime = creationTime;
+		this.exceptionReport = exceptionReport;
+	}
 
-    /**
-     * Returns the current state of the execution.
-     * 
-     * @return state of the execution, never <code>null</code>
-     */
-    public ExecutionState getState() {
-        return state;
-    }
+	/**
+	 * Returns the current state of the execution.
+	 * @return state of the execution, never <code>null</code>
+	 */
+	public ExecutionState getState() {
+		return state;
+	}
 
-    /**
-     * Returns the status message.
-     * 
-     * @return status message, may be <code>null</code> (no status message available)
-     */
-    public String getStatusMessage() {
-        return statusMsg;
-    }
+	/**
+	 * Returns the status message.
+	 * @return status message, may be <code>null</code> (no status message available)
+	 */
+	public String getStatusMessage() {
+		return statusMsg;
+	}
 
-    /**
-     * Returns the percentage of the process that has been completed.
-     * 
-     * @return the completed percentage of the process, may be <code>null</code> (no completion percentage available)
-     */
-    public Integer getPercentCompleted() {
-        return percent;
-    }
+	/**
+	 * Returns the percentage of the process that has been completed.
+	 * @return the completed percentage of the process, may be <code>null</code> (no
+	 * completion percentage available)
+	 */
+	public Integer getPercentCompleted() {
+		return percent;
+	}
 
-    /**
-     * @return creation time of the process execution, can be <code>null</code>
-     */
-    public String getCreationTime() {
-        return creationTime;
-    }
+	/**
+	 * @return creation time of the process execution, can be <code>null</code>
+	 */
+	public String getCreationTime() {
+		return creationTime;
+	}
 
-    /**
-     * Returns the exception report.
-     * <p>
-     * NOTE: An exception report is only available if state is {@link ExecutionState#FAILED}.
-     * </p>
-     * 
-     * @return an exception report in case the execution failed, <code>null</code> otherwise
-     */
-    public OWSExceptionReport getExceptionReport() {
-        return exceptionReport;
-    }
+	/**
+	 * Returns the exception report.
+	 * <p>
+	 * NOTE: An exception report is only available if state is
+	 * {@link ExecutionState#FAILED}.
+	 * </p>
+	 * @return an exception report in case the execution failed, <code>null</code>
+	 * otherwise
+	 */
+	public OWSExceptionReport getExceptionReport() {
+		return exceptionReport;
+	}
+
 }

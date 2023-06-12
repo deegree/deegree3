@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aschmitz@deegree.wald.intevation.de/deegree/deegree3/trunk/deegree-datastores/deegree-featurestore/deegree-featurestore-shape/src/main/java/org/deegree/feature/persistence/shape/ShapeFeatureStore.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -107,9 +106,7 @@ import com.google.gson.JsonObject;
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
  * 
- * @version $Revision: 30411 $, $Date: 2011-04-11 19:37:01 +0200 (Mon, 11 Apr 2011) $
  */
 public class GeoCouchFeatureStore implements FeatureStore {
 

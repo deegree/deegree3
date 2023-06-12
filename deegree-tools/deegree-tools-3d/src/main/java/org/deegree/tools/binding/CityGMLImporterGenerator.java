@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -52,177 +51,173 @@ import org.deegree.gml.schema.GMLAppSchemaReader;
 import org.deegree.tools.rendering.manager.buildings.importers.ModelImporter;
 
 /**
- * {@link ModelImporter} that reads a CityGML element (namespace <code>http://www.opengis.net/citygml/1.0</code>) file
- * and creates a WPVS representation from it.
+ * {@link ModelImporter} that reads a CityGML element (namespace
+ * <code>http://www.opengis.net/citygml/1.0</code>) file and creates a WPVS representation
+ * from it.
  * <p>
- * NOTE: Currently, only <code>Building</code> elements on the first level of the collection are imported. All other
- * CityGML features else is ignored.
+ * NOTE: Currently, only <code>Building</code> elements on the first level of the
+ * collection are imported. All other CityGML features else is ignored.
  * </p>
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class CityGMLImporterGenerator {
 
-    public static void main( String[] arg )
-                            throws ClassCastException, ClassNotFoundException, InstantiationException,
-                            IllegalAccessException, IOException {
-        String schemaURL = "file:/home/rutger/workspace/schemas/citygml/profiles/base/1.0/CityGML.xsd";
-        GMLAppSchemaReader adapter = new GMLAppSchemaReader( GMLVersion.GML_31, null, schemaURL );
-        AppSchema schema = adapter.extractAppSchema();
-        // FeatureType[] fts = schema.getFeatureTypes();
-        // Assert.assertEquals( 54, fts.length );
-        // List<QName> ftNames = new ArrayList<QName>( 54 );
-        FeatureType[] roots = schema.getRootFeatureTypes();
-        // HashMap<String, GeometryClass> geomClasses = new HashMap<String, GeometryClass>();
-        HashMap<QName, FeatureClass> featClasses = new HashMap<QName, FeatureClass>();
-        if ( roots != null && roots.length > 0 ) {
-            for ( FeatureType ft : roots ) {
-                createClassHierarchy( schema, ft, null, featClasses );
-            }
-        }
-        // Iterator<GeometryClass> it = geomClasses.values().iterator();
-        // System.out.println( "found geomtry classes: \n" );
-        // while ( it.hasNext() ) {
-        // GeometryClass next = it.next();
-        // System.out.println( " - " + next.toString() );
-        // List<GeometryPropertyType> geomProps = next.geomProps;
-        // for ( GeometryPropertyType gp : geomProps ) {
-        // System.out.println( " | - " + gp.getName() );
-        // }
-        // System.out.println();
-        // }
+	public static void main(String[] arg) throws ClassCastException, ClassNotFoundException, InstantiationException,
+			IllegalAccessException, IOException {
+		String schemaURL = "file:/home/rutger/workspace/schemas/citygml/profiles/base/1.0/CityGML.xsd";
+		GMLAppSchemaReader adapter = new GMLAppSchemaReader(GMLVersion.GML_31, null, schemaURL);
+		AppSchema schema = adapter.extractAppSchema();
+		// FeatureType[] fts = schema.getFeatureTypes();
+		// Assert.assertEquals( 54, fts.length );
+		// List<QName> ftNames = new ArrayList<QName>( 54 );
+		FeatureType[] roots = schema.getRootFeatureTypes();
+		// HashMap<String, GeometryClass> geomClasses = new HashMap<String,
+		// GeometryClass>();
+		HashMap<QName, FeatureClass> featClasses = new HashMap<QName, FeatureClass>();
+		if (roots != null && roots.length > 0) {
+			for (FeatureType ft : roots) {
+				createClassHierarchy(schema, ft, null, featClasses);
+			}
+		}
+		// Iterator<GeometryClass> it = geomClasses.values().iterator();
+		// System.out.println( "found geomtry classes: \n" );
+		// while ( it.hasNext() ) {
+		// GeometryClass next = it.next();
+		// System.out.println( " - " + next.toString() );
+		// List<GeometryPropertyType> geomProps = next.geomProps;
+		// for ( GeometryPropertyType gp : geomProps ) {
+		// System.out.println( " | - " + gp.getName() );
+		// }
+		// System.out.println();
+		// }
 
-        Iterator<FeatureClass> fit = featClasses.values().iterator();
-        System.out.println( "found feature classes: \n" );
-        while ( fit.hasNext() ) {
-            FeatureClass next = fit.next();
-            System.out.println( " - " + next.toString() );
-        }
-        // for ( GeometryClass geomClass : geomClasses.values() ) {
-        // createGeometryFile( geomClass, geomClasses, featClasses );
-        // }
-        if ( roots != null && roots.length > 0 ) {
-            for ( FeatureType ft : roots ) {
-                createClasses( schema, ft, featClasses );
-            }
-        }
+		Iterator<FeatureClass> fit = featClasses.values().iterator();
+		System.out.println("found feature classes: \n");
+		while (fit.hasNext()) {
+			FeatureClass next = fit.next();
+			System.out.println(" - " + next.toString());
+		}
+		// for ( GeometryClass geomClass : geomClasses.values() ) {
+		// createGeometryFile( geomClass, geomClasses, featClasses );
+		// }
+		if (roots != null && roots.length > 0) {
+			for (FeatureType ft : roots) {
+				createClasses(schema, ft, featClasses);
+			}
+		}
 
-    }
+	}
 
-    private static void createClassHierarchy( AppSchema schema, FeatureType currentType, FeatureClass parent,
-                                              HashMap<QName, FeatureClass> featClasses )
-                            throws IOException {
-        FeatureClass newClass = null;
-        if ( currentType != null ) {
-            if ( parent != null ) {
-                newClass = new FeatureClass( currentType, parent );
-            } else {
-                newClass = new RootFeature( currentType );
-            }
-            featClasses.put( currentType.getName(), newClass );
-        }
+	private static void createClassHierarchy(AppSchema schema, FeatureType currentType, FeatureClass parent,
+			HashMap<QName, FeatureClass> featClasses) throws IOException {
+		FeatureClass newClass = null;
+		if (currentType != null) {
+			if (parent != null) {
+				newClass = new FeatureClass(currentType, parent);
+			}
+			else {
+				newClass = new RootFeature(currentType);
+			}
+			featClasses.put(currentType.getName(), newClass);
+		}
 
-        FeatureType[] directSubtypes = schema.getDirectSubtypes( currentType );
+		FeatureType[] directSubtypes = schema.getDirectSubtypes(currentType);
 
-        if ( directSubtypes != null && directSubtypes.length > 0 ) {
-            for ( FeatureType dft : directSubtypes ) {
-                if ( dft != null ) {
-                    createClassHierarchy( schema, dft, newClass, featClasses );
-                }
-            }
-        }
-    }
+		if (directSubtypes != null && directSubtypes.length > 0) {
+			for (FeatureType dft : directSubtypes) {
+				if (dft != null) {
+					createClassHierarchy(schema, dft, newClass, featClasses);
+				}
+			}
+		}
+	}
 
-    private static void createClasses( AppSchema schema, FeatureType root,
-                                       HashMap<QName, FeatureClass> featClasses )
-                            throws IOException {
-        if ( root != null ) {
-            createFeatureFile( root, featClasses );
-        }
-        FeatureType[] directSubtypes = schema.getDirectSubtypes( root );
+	private static void createClasses(AppSchema schema, FeatureType root, HashMap<QName, FeatureClass> featClasses)
+			throws IOException {
+		if (root != null) {
+			createFeatureFile(root, featClasses);
+		}
+		FeatureType[] directSubtypes = schema.getDirectSubtypes(root);
 
-        if ( directSubtypes != null && directSubtypes.length > 0 ) {
-            for ( FeatureType dft : directSubtypes ) {
-                if ( dft != null ) {
-                    createClasses( schema, dft, featClasses );
-                }
-            }
-        }
-    }
+		if (directSubtypes != null && directSubtypes.length > 0) {
+			for (FeatureType dft : directSubtypes) {
+				if (dft != null) {
+					createClasses(schema, dft, featClasses);
+				}
+			}
+		}
+	}
 
-    /**
-     * @param featClasses
-     * @param geomClasses
-     * @param qn
-     * @throws IOException
-     */
-    private static void createFeatureFile( FeatureType newClass, HashMap<QName, FeatureClass> featClasses )
-                            throws IOException {
+	/**
+	 * @param featClasses
+	 * @param geomClasses
+	 * @param qn
+	 * @throws IOException
+	 */
+	private static void createFeatureFile(FeatureType newClass, HashMap<QName, FeatureClass> featClasses)
+			throws IOException {
 
-        QName qn = newClass.getName();
-        FeatureClass featureClass = featClasses.get( qn );
-        File f = createFile( featureClass );
-        writeNewFile( f, featureClass, featClasses );
-    }
+		QName qn = newClass.getName();
+		FeatureClass featureClass = featClasses.get(qn);
+		File f = createFile(featureClass);
+		writeNewFile(f, featureClass, featClasses);
+	}
 
-    private static File createFile( ModelClass featureClass )
-                            throws IOException {
-        File dir = new File( featureClass.getPackageDir() );
+	private static File createFile(ModelClass featureClass) throws IOException {
+		File dir = new File(featureClass.getPackageDir());
 
-        if ( !dir.exists() ) {
-            boolean mkdir = dir.mkdirs();
-            if ( !mkdir ) {
-                throw new IOException( "Could not create dir: " + dir.getAbsolutePath() );
-            }
-        }
-        File f = new File( featureClass.getClassLocation() );
-        if ( f.exists() ) {
-            System.out.println( "File f: " + f.getAbsolutePath() + " already exists, overwriting..." );
-            boolean delete = f.delete();
-            if ( !delete ) {
-                throw new IOException( "Could not delete file: " + f.getAbsolutePath() );
-            }
-        }
-        boolean newFile = f.createNewFile();
-        if ( !newFile ) {
-            throw new IOException( "Could not create new file: " + f.getAbsolutePath() );
-        }
-        return f;
-    }
+		if (!dir.exists()) {
+			boolean mkdir = dir.mkdirs();
+			if (!mkdir) {
+				throw new IOException("Could not create dir: " + dir.getAbsolutePath());
+			}
+		}
+		File f = new File(featureClass.getClassLocation());
+		if (f.exists()) {
+			System.out.println("File f: " + f.getAbsolutePath() + " already exists, overwriting...");
+			boolean delete = f.delete();
+			if (!delete) {
+				throw new IOException("Could not delete file: " + f.getAbsolutePath());
+			}
+		}
+		boolean newFile = f.createNewFile();
+		if (!newFile) {
+			throw new IOException("Could not create new file: " + f.getAbsolutePath());
+		}
+		return f;
+	}
 
-    /**
-     * @param f
-     * @param localPart
-     * @param string
-     * @param t
-     * @throws IOException
-     */
-    private static void writeNewFile( File f, ModelClass newClass, HashMap<QName, FeatureClass> featClasses )
-                            throws IOException {
-        BufferedWriter out = new BufferedWriter( new FileWriter( f ) );
-        newClass.writeHeader( out );
-        newClass.writePackage( out );
-        out.newLine();
-        newClass.writeImports( out, featClasses );
-        out.newLine();
-        newClass.writeClassDoc( out );
-        newClass.writeClassStart( out );
-        newClass.writeFields( out );
-        newClass.writeMethods( out, featClasses );
-        out.write( "}\n" );
-        out.close();
-    }
+	/**
+	 * @param f
+	 * @param localPart
+	 * @param string
+	 * @param t
+	 * @throws IOException
+	 */
+	private static void writeNewFile(File f, ModelClass newClass, HashMap<QName, FeatureClass> featClasses)
+			throws IOException {
+		BufferedWriter out = new BufferedWriter(new FileWriter(f));
+		newClass.writeHeader(out);
+		newClass.writePackage(out);
+		out.newLine();
+		newClass.writeImports(out, featClasses);
+		out.newLine();
+		newClass.writeClassDoc(out);
+		newClass.writeClassStart(out);
+		newClass.writeFields(out);
+		newClass.writeMethods(out, featClasses);
+		out.write("}\n");
+		out.close();
+	}
 
-    /**
-     * @param namespaceURI
-     * @return
-     */
-    static String getPackageName( String namespaceURI ) {
-        String packageName = namespaceURI.substring( "http://www.opengis.net/citygml/".length() );
-        return packageName.replace( "1.0", "" );
-    }
+	/**
+	 * @param namespaceURI
+	 * @return
+	 */
+	static String getPackageName(String namespaceURI) {
+		String packageName = namespaceURI.substring("http://www.opengis.net/citygml/".length());
+		return packageName.replace("1.0", "");
+	}
 
 }

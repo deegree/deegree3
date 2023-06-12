@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -40,34 +39,32 @@ import org.deegree.commons.tom.primitive.PrimitiveValue;
 
 /**
  * {@link XPathNode} that represents an XML text node (with primitive type information).
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * 
- * @version $Revision:$, $Date:$
  */
 public class PrimitiveNode<P extends TypedObjectNode> implements XPathNode<PrimitiveValue> {
 
-    private ElementNode<P> parent;
+	private ElementNode<P> parent;
 
-    private PrimitiveValue value;
+	private PrimitiveValue value;
 
-    public PrimitiveNode( ElementNode<P> parent, PrimitiveValue value ) {
-        this.parent = parent;
-        this.value = value;
-    }
+	public PrimitiveNode(ElementNode<P> parent, PrimitiveValue value) {
+		this.parent = parent;
+		this.value = value;
+	}
 
-    @Override
-    public boolean isElement() {
-        return false;
-    }
+	@Override
+	public boolean isElement() {
+		return false;
+	}
 
-    @Override
-    public ElementNode<P> getParent() {
-        return parent;
-    }
+	@Override
+	public ElementNode<P> getParent() {
+		return parent;
+	}
 
-    public PrimitiveValue getValue() {
-        return value;
-    }
+	public PrimitiveValue getValue() {
+		return value;
+	}
+
 }

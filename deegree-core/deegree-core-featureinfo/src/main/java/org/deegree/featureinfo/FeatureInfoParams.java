@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -48,86 +47,85 @@ import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.types.FeatureType;
 
 /**
- * Collections information about feature info requests. Used to produce serialized output in feature info manager.
- * 
+ * Collections information about feature info requests. Used to produce serialized output
+ * in feature info manager.
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 public class FeatureInfoParams {
 
-    private Map<String, String> nsBindings;
+	private Map<String, String> nsBindings;
 
-    private FeatureCollection featureCollection;
+	private FeatureCollection featureCollection;
 
-    private String format;
+	private String format;
 
-    private boolean withGeometries;
+	private boolean withGeometries;
 
-    private String schemaLocation;
+	private String schemaLocation;
 
-    private FeatureType featureType;
+	private FeatureType featureType;
 
-    private ICRS crs;
+	private ICRS crs;
 
-    public FeatureInfoParams( Map<String, String> nsBindings, FeatureCollection col, String format,
-                              boolean withGeometries, String schemaLocation, FeatureType type, ICRS crs ) {
-        this.nsBindings = nsBindings;
-        this.featureCollection = col;
-        this.format = format;
-        this.withGeometries = withGeometries;
-        this.schemaLocation = schemaLocation;
-        this.featureType = type;
-        this.crs = crs;
-    }
+	public FeatureInfoParams(Map<String, String> nsBindings, FeatureCollection col, String format,
+			boolean withGeometries, String schemaLocation, FeatureType type, ICRS crs) {
+		this.nsBindings = nsBindings;
+		this.featureCollection = col;
+		this.format = format;
+		this.withGeometries = withGeometries;
+		this.schemaLocation = schemaLocation;
+		this.featureType = type;
+		this.crs = crs;
+	}
 
-    /**
-     * @return the nsBindings
-     */
-    public Map<String, String> getNsBindings() {
-        return nsBindings;
-    }
+	/**
+	 * @return the nsBindings
+	 */
+	public Map<String, String> getNsBindings() {
+		return nsBindings;
+	}
 
-    /**
-     * @return the featureCollection
-     */
-    public FeatureCollection getFeatureCollection() {
-        return featureCollection;
-    }
+	/**
+	 * @return the featureCollection
+	 */
+	public FeatureCollection getFeatureCollection() {
+		return featureCollection;
+	}
 
-    /**
-     * @return the format
-     */
-    public String getFormat() {
-        return format;
-    }
+	/**
+	 * @return the format
+	 */
+	public String getFormat() {
+		return format;
+	}
 
-    /**
-     * @return the withGeometries
-     */
-    public boolean isWithGeometries() {
-        return withGeometries;
-    }
+	/**
+	 * @return the withGeometries
+	 */
+	public boolean isWithGeometries() {
+		return withGeometries;
+	}
 
-    /**
-     * @return the schemaLocation
-     */
-    public String getSchemaLocation() {
-        return schemaLocation;
-    }
+	/**
+	 * @return the schemaLocation
+	 */
+	public String getSchemaLocation() {
+		return schemaLocation;
+	}
 
-    /**
-     * @return the featureType
-     */
-    public FeatureType getFeatureType() {
-        return featureType;
-    }
+	/**
+	 * @return the featureType
+	 */
+	public FeatureType getFeatureType() {
+		return featureType;
+	}
 
-    /**
-     * @return the crs
-     */
-    public ICRS getCrs() {
-        return crs;
-    }
+	/**
+	 * @return the crs
+	 */
+	public ICRS getCrs() {
+		return crs;
+	}
+
 }

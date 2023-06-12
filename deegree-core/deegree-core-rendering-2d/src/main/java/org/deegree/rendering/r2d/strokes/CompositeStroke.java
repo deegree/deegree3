@@ -58,23 +58,22 @@ import java.awt.Stroke;
  *
  * @author Jerry Huxtable
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- *
- * @version $Revision$, $Date$
  */
 public class CompositeStroke implements Stroke {
-    private Stroke stroke1, stroke2;
 
-    /**
-     * @param stroke1
-     * @param stroke2
-     */
-    public CompositeStroke( Stroke stroke1, Stroke stroke2 ) {
-        this.stroke1 = stroke1;
-        this.stroke2 = stroke2;
-    }
+	private Stroke stroke1, stroke2;
 
-    public Shape createStrokedShape( Shape shape ) {
-        return stroke2.createStrokedShape( stroke1.createStrokedShape( shape ) );
-    }
+	/**
+	 * @param stroke1
+	 * @param stroke2
+	 */
+	public CompositeStroke(Stroke stroke1, Stroke stroke2) {
+		this.stroke1 = stroke1;
+		this.stroke2 = stroke2;
+	}
+
+	public Shape createStrokedShape(Shape shape) {
+		return stroke2.createStrokedShape(stroke1.createStrokedShape(shape));
+	}
+
 }

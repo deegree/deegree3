@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -44,112 +43,96 @@ import org.deegree.filter.Filter;
 
 /**
  * Represents a lock of a {@link LockManager}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface Lock {
 
-    /**
-     * Returns the lock identifier.
-     * 
-     * @return the lock identifier
-     */
-    public String getId();
+	/**
+	 * Returns the lock identifier.
+	 * @return the lock identifier
+	 */
+	public String getId();
 
-    /**
-     * Returns the date (milliseconds since 1970-01-01 00:00 UTC) when the lock has been acquired.
-     * 
-     * @return milliseconds (since 1970-01-01 00:00 UTC)
-     */
-    public long getAcquistionDate();
+	/**
+	 * Returns the date (milliseconds since 1970-01-01 00:00 UTC) when the lock has been
+	 * acquired.
+	 * @return milliseconds (since 1970-01-01 00:00 UTC)
+	 */
+	public long getAcquistionDate();
 
-    /**
-     * Sets the date (milliseconds since 1970-01-01 00:00 UTC) when the lock expires.
-     * 
-     * @param expiryDate
-     *            milliseconds since 1970-01-01 00:00 UTC when the lock expires
-     */
-    public void setExpiryDate( long expiryDate ) throws FeatureStoreException;
+	/**
+	 * Sets the date (milliseconds since 1970-01-01 00:00 UTC) when the lock expires.
+	 * @param expiryDate milliseconds since 1970-01-01 00:00 UTC when the lock expires
+	 */
+	public void setExpiryDate(long expiryDate) throws FeatureStoreException;
 
-    /**
-     * Returns the number of locked features.
-     * 
-     * @return the number of locked features
-     */
-    public int getNumLocked();
+	/**
+	 * Returns the number of locked features.
+	 * @return the number of locked features
+	 */
+	public int getNumLocked();
 
-    /**
-     * Returns the number of features that have been requested to be locked, but which couldn't.
-     * 
-     * @return the number of features that have been requested to be locked, but which couldn't
-     */
-    public int getNumFailedToLock();
+	/**
+	 * Returns the number of features that have been requested to be locked, but which
+	 * couldn't.
+	 * @return the number of features that have been requested to be locked, but which
+	 * couldn't
+	 */
+	public int getNumFailedToLock();
 
-    /**
-     * Returns the ids of all locked features.
-     * <p>
-     * NOTE: The caller <b>must</b> invoke {@link CloseableIterator#close()} after it's not needed anymore -- otherwise,
-     * backing resources (such as database connections) may not be freed.
-     * </p>
-     * 
-     * @return an iterator for all locked feature ids
-     * @throws FeatureStoreException
-     */
-    public CloseableIterator<String> getLockedFeatures()
-                            throws FeatureStoreException;
+	/**
+	 * Returns the ids of all locked features.
+	 * <p>
+	 * NOTE: The caller <b>must</b> invoke {@link CloseableIterator#close()} after it's
+	 * not needed anymore -- otherwise, backing resources (such as database connections)
+	 * may not be freed.
+	 * </p>
+	 * @return an iterator for all locked feature ids
+	 * @throws FeatureStoreException
+	 */
+	public CloseableIterator<String> getLockedFeatures() throws FeatureStoreException;
 
-    /**
-     * Returns the ids of all features that have been requested to be locked, but which couldn't.
-     * <p>
-     * NOTE: The caller <b>must</b> invoke {@link CloseableIterator#close()} after it's not needed anymore -- otherwise,
-     * backing resources (such as database connections) may not be freed.
-     * </p>
-     * 
-     * @return an iterator for all locked feature ids
-     * @throws FeatureStoreException
-     */
-    public CloseableIterator<String> getFailedToLockFeatures()
-                            throws FeatureStoreException;
+	/**
+	 * Returns the ids of all features that have been requested to be locked, but which
+	 * couldn't.
+	 * <p>
+	 * NOTE: The caller <b>must</b> invoke {@link CloseableIterator#close()} after it's
+	 * not needed anymore -- otherwise, backing resources (such as database connections)
+	 * may not be freed.
+	 * </p>
+	 * @return an iterator for all locked feature ids
+	 * @throws FeatureStoreException
+	 */
+	public CloseableIterator<String> getFailedToLockFeatures() throws FeatureStoreException;
 
-    /**
-     * Returns whether this {@link Lock} involves the specified feature.
-     * 
-     * @param fid
-     *            id of the feature
-     * @return true, if the feature is involved, false otherwise
-     * @throws FeatureStoreException
-     */
-    public boolean isLocked( String fid )
-                            throws FeatureStoreException;
+	/**
+	 * Returns whether this {@link Lock} involves the specified feature.
+	 * @param fid id of the feature
+	 * @return true, if the feature is involved, false otherwise
+	 * @throws FeatureStoreException
+	 */
+	public boolean isLocked(String fid) throws FeatureStoreException;
 
-    /**
-     * Releases all locked features (invalidates the lock).
-     * 
-     * @throws FeatureStoreException
-     */
-    public void release()
-                            throws FeatureStoreException;
+	/**
+	 * Releases all locked features (invalidates the lock).
+	 * @throws FeatureStoreException
+	 */
+	public void release() throws FeatureStoreException;
 
-    /**
-     * Releases the specified feature from the lock (if it was locked).
-     * 
-     * @param fid
-     *            id of the feature
-     * @throws FeatureStoreException
-     */
-    public void release( String fid )
-                            throws FeatureStoreException;
+	/**
+	 * Releases the specified feature from the lock (if it was locked).
+	 * @param fid id of the feature
+	 * @throws FeatureStoreException
+	 */
+	public void release(String fid) throws FeatureStoreException;
 
-    /**
-     * Releases the specified features from the lock.
-     * 
-     * @param ftName
-     * @param filter
-     * @throws FeatureStoreException
-     */
-    public void release( QName ftName, Filter filter )
-                            throws FeatureStoreException;
+	/**
+	 * Releases the specified features from the lock.
+	 * @param ftName
+	 * @param filter
+	 * @throws FeatureStoreException
+	 */
+	public void release(QName ftName, Filter filter) throws FeatureStoreException;
+
 }

@@ -5,7 +5,6 @@ package org.deegree.client.sos.storage.components;
  * "Field".
  * 
  * @author <a href="mailto:neumeister@lat-lon.de">Ulrich Neumeister</a>
- * @author last edited by: $Author$
  * 
  */
 public class Field {

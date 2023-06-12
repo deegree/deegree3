@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -45,31 +44,30 @@ import org.junit.runners.Parameterized.Parameters;
 
 /**
  * Wraps the execution of the CITE WMS 1.3.0 TestSuite as a JUnit-test.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 @RunWith(Parameterized.class)
 public class WMSCite130IntegrationTest extends AbstractCiteIntegrationTest {
 
-    private String testLabel = "WMS130";
+	private String testLabel = "WMS130";
 
-    @Parameters
-    public static Collection getResultSnippets() throws Exception {
-        return getResultSnippets( "/citewms130/ctl/" , "capabilities-url" , "wms?request=GetCapabilities&service=WMS&version=1.3.0");
-    }
+	@Parameters
+	public static Collection getResultSnippets() throws Exception {
+		return getResultSnippets("/citewms130/ctl/", "capabilities-url",
+				"wms?request=GetCapabilities&service=WMS&version=1.3.0");
+	}
 
-    public WMSCite130IntegrationTest( String testLabel, String resultSnippet ) {
-        this.testLabel = testLabel;
-        this.resultSnippet = resultSnippet;
-    }
+	public WMSCite130IntegrationTest(String testLabel, String resultSnippet) {
+		this.testLabel = testLabel;
+		this.resultSnippet = resultSnippet;
+	}
 
-    @Test
-    public void singleTest() {
-        if ( resultSnippet.contains( "Failed" ) ) {
-            throw new RuntimeException( "Test '" + testLabel + "' failed." );
-        }
-    }
+	@Test
+	public void singleTest() {
+		if (resultSnippet.contains("Failed")) {
+			throw new RuntimeException("Test '" + testLabel + "' failed.");
+		}
+	}
+
 }

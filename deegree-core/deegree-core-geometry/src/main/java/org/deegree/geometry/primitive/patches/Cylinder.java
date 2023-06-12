@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -37,24 +36,21 @@
 package org.deegree.geometry.primitive.patches;
 
 /**
- * The <code>Cylinder</code> class represents (according to the GML-3.1 spec) a gridded surface given as a
- * family of circles whose positions vary along a set of parallel lines, keeping the cross sectional horizontal
- * curves of a constant shape.
+ * The <code>Cylinder</code> class represents (according to the GML-3.1 spec) a gridded
+ * surface given as a family of circles whose positions vary along a set of parallel
+ * lines, keeping the cross sectional horizontal curves of a constant shape.
  *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author$
- *
- * @version $Revision$, $Date$
  */
 public interface Cylinder extends GriddedSurfacePatch {
 
-    // nothing new here, this interface is only necessary for a type-based differentiation
+	// nothing new here, this interface is only necessary for a type-based differentiation
 
-    /**
-     * Must always return {@link GriddedSurfacePatch.GriddedSurfaceType#CYLINDER}.
-     *
-     * @return {@link GriddedSurfacePatch.GriddedSurfaceType#CYLINDER}
-     */
-    @Override
-    public GriddedSurfaceType getGriddedSurfaceType();
+	/**
+	 * Must always return {@link GriddedSurfacePatch.GriddedSurfaceType#CYLINDER}.
+	 * @return {@link GriddedSurfacePatch.GriddedSurfaceType#CYLINDER}
+	 */
+	@Override
+	public GriddedSurfaceType getGriddedSurfaceType();
+
 }

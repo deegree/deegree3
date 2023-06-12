@@ -46,46 +46,47 @@ import org.deegree.workspace.standard.DefaultResourceIdentifier;
 
 /**
  * Resource metadata implementation for coverage layer stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class CoverageLayerStoreMetadata extends AbstractResourceMetadata<LayerStore> {
 
-    public CoverageLayerStoreMetadata( Workspace workspace, ResourceLocation<LayerStore> location,
-                                       AbstractResourceProvider<LayerStore> provider ) {
-        super( workspace, location, provider );
-    }
+	public CoverageLayerStoreMetadata(Workspace workspace, ResourceLocation<LayerStore> location,
+			AbstractResourceProvider<LayerStore> provider) {
+		super(workspace, location, provider);
+	}
 
-    @Override
-    public ResourceBuilder<LayerStore> prepare() {
-        try {
-            CoverageLayers cfg;
-            cfg = (CoverageLayers) JAXBUtils.unmarshall( "org.deegree.layer.persistence.coverage.jaxb",
-                                                         provider.getSchema(), location.getAsStream(), workspace );
+	@Override
+	public ResourceBuilder<LayerStore> prepare() {
+		try {
+			CoverageLayers cfg;
+			cfg = (CoverageLayers) JAXBUtils.unmarshall("org.deegree.layer.persistence.coverage.jaxb",
+					provider.getSchema(), location.getAsStream(), workspace);
 
-            if ( cfg.getAutoLayers() != null ) {
-                String cid = cfg.getAutoLayers().getCoverageStoreId();
-                if ( cid != null ) {
-                    dependencies.add( new DefaultResourceIdentifier<Coverage>( CoverageProvider.class, cid ) );
-                }
-                String sid = cfg.getAutoLayers().getStyleStoreId();
-                if ( sid != null ) {
-                    dependencies.add( new DefaultResourceIdentifier<StyleStore>( StyleStoreProvider.class, sid ) );
-                }
-            } else {
-                dependencies.add( new DefaultResourceIdentifier<Coverage>( CoverageProvider.class,
-                                                                           cfg.getCoverageStoreId() ) );
-                for ( CoverageLayerType lay : cfg.getCoverageLayer() ) {
-                    dependencies.addAll( ConfigUtils.getStyleDeps( lay.getStyleRef() ) );
-                }
-            }
+			if (cfg.getAutoLayers() != null) {
+				String cid = cfg.getAutoLayers().getCoverageStoreId();
+				if (cid != null) {
+					dependencies.add(new DefaultResourceIdentifier<Coverage>(CoverageProvider.class, cid));
+				}
+				String sid = cfg.getAutoLayers().getStyleStoreId();
+				if (sid != null) {
+					dependencies.add(new DefaultResourceIdentifier<StyleStore>(StyleStoreProvider.class, sid));
+				}
+			}
+			else {
+				dependencies
+					.add(new DefaultResourceIdentifier<Coverage>(CoverageProvider.class, cfg.getCoverageStoreId()));
+				for (CoverageLayerType lay : cfg.getCoverageLayer()) {
+					dependencies.addAll(ConfigUtils.getStyleDeps(lay.getStyleRef()));
+				}
+			}
 
-            return new CoverageLayerStoreBuilder( cfg, workspace, this );
-        } catch ( Exception e ) {
-            throw new ResourceInitException( "Error while creating coverage layers: " + e.getLocalizedMessage(), e );
-        }
-    }
+			return new CoverageLayerStoreBuilder(cfg, workspace, this);
+		}
+		catch (Exception e) {
+			throw new ResourceInitException("Error while creating coverage layers: " + e.getLocalizedMessage(), e);
+		}
+	}
 
 }

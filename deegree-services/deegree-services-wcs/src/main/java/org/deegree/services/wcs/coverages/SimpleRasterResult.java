@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -45,42 +44,38 @@ import org.deegree.services.wcs.model.CoverageResult;
 
 /**
  * This is a container for coverage results.
- * 
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class SimpleRasterResult implements CoverageResult {
 
-    private final AbstractRaster result;
+	private final AbstractRaster result;
 
-    private final String format;
+	private final String format;
 
-    /**
-     * @param result
-     * @param format
-     *            the output format (tiff, jpeg, etc.)
-     */
-    public SimpleRasterResult( AbstractRaster result, String format ) {
-        this.result = result;
-        this.format = format;
-    }
+	/**
+	 * @param result
+	 * @param format the output format (tiff, jpeg, etc.)
+	 */
+	public SimpleRasterResult(AbstractRaster result, String format) {
+		this.result = result;
+		this.format = format;
+	}
 
-    @Override
-    public void write( OutputStream out )
-                            throws IOException {
-        RasterIOOptions options = new RasterIOOptions();
+	@Override
+	public void write(OutputStream out) throws IOException {
+		RasterIOOptions options = new RasterIOOptions();
 
-        // lets fake GeoTiff until we have a real GeoTiff writer (TODO)
-        if ( format.equalsIgnoreCase( "GeoTiff" ) ) {
-            options.add( RasterIOOptions.OPT_FORMAT, "tiff" );
-        } else {
-            options.add( RasterIOOptions.OPT_FORMAT, format );
-        }
-        RasterFactory.saveRasterToStream( result, out, options );
+		// lets fake GeoTiff until we have a real GeoTiff writer (TODO)
+		if (format.equalsIgnoreCase("GeoTiff")) {
+			options.add(RasterIOOptions.OPT_FORMAT, "tiff");
+		}
+		else {
+			options.add(RasterIOOptions.OPT_FORMAT, format);
+		}
+		RasterFactory.saveRasterToStream(result, out, options);
 
-    }
+	}
 
 }

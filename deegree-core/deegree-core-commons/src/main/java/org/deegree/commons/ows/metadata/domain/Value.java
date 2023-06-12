@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -38,40 +37,38 @@ package org.deegree.commons.ows.metadata.domain;
 /**
  * A single value.
  * <p>
- * Data model has been designed to capture the expressiveness of all OWS specifications and versions and was verified
- * against the following specifications:
+ * Data model has been designed to capture the expressiveness of all OWS specifications
+ * and versions and was verified against the following specifications:
  * <ul>
  * <li>OWS Common 2.0</li>
  * </ul>
  * </p>
  * <p>
- * From OWS Common 2.0: <cite>A single value, encoded as a string. This type can be used for one value, for a spacing
- * between allowed values, or for the default value of a parameter.</cite>
+ * From OWS Common 2.0: <cite>A single value, encoded as a string. This type can be used
+ * for one value, for a spacing between allowed values, or for the default value of a
+ * parameter.</cite>
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class Value implements Values {
 
-    private String value;
+	private String value;
 
-    /**
-     * Creates a new {@link Value} instance.
-     * 
-     * @param value
-     */
-    public Value( String value ) {
-        this.value = value;
-    }
+	/**
+	 * Creates a new {@link Value} instance.
+	 * @param value
+	 */
+	public Value(String value) {
+		this.value = value;
+	}
 
-    public String getValue() {
-        return value;
-    }
+	public String getValue() {
+		return value;
+	}
 
-    public void setValue( String value ) {
-        this.value = value;
-    }
+	public void setValue(String value) {
+		this.value = value;
+	}
+
 }

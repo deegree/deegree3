@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2015 by:
@@ -61,62 +60,56 @@ import static org.xmlunit.matchers.EvaluateXPathMatcher.hasXPath;
  */
 public class StoredQueryDefinition200EncoderTest {
 
-    @Test
-    public void testExport()
-                    throws Exception {
-        String storedQueryResource = "storedQuery.xml";
-        StoredQueryDefinition queryDefinition = parseStoredQueryDefinition( storedQueryResource );
+	@Test
+	public void testExport() throws Exception {
+		String storedQueryResource = "storedQuery.xml";
+		StoredQueryDefinition queryDefinition = parseStoredQueryDefinition(storedQueryResource);
 
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter( stream );
-        StoredQueryDefinition200Encoder.export( queryDefinition, writer );
-        writer.close();
+		ByteArrayOutputStream stream = new ByteArrayOutputStream();
+		XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter(stream);
+		StoredQueryDefinition200Encoder.export(queryDefinition, writer);
+		writer.close();
 
-        String actual = stream.toString( UTF_8 );
-        assertThat( actual,
-                    hasXPath(
-                                    "/wfs:StoredQueryDefinition/wfs:QueryExpressionText/wfs:Query/@typeNames",
-                                    is( "cp:CadastralParcel" ) ).withNamespaceContext( nsContext() ) );
-        assertThat( actual,
-                    hasXPath( "/wfs:StoredQueryDefinition/wfs:Parameter/@name", is( "label" ) ).withNamespaceContext(
-                                    nsContext() ) );
-        assertThat( actual, CompareMatcher.isSimilarTo(
-                        IOUtils.toString( getClass().getResourceAsStream( storedQueryResource ),
-                                          UTF_8 ) ).ignoreWhitespace() );
-    }
+		String actual = stream.toString(UTF_8);
+		assertThat(actual, hasXPath("/wfs:StoredQueryDefinition/wfs:QueryExpressionText/wfs:Query/@typeNames",
+				is("cp:CadastralParcel"))
+			.withNamespaceContext(nsContext()));
+		assertThat(actual, hasXPath("/wfs:StoredQueryDefinition/wfs:Parameter/@name", is("label"))
+			.withNamespaceContext(nsContext()));
+		assertThat(actual,
+				CompareMatcher.isSimilarTo(IOUtils.toString(getClass().getResourceAsStream(storedQueryResource), UTF_8))
+					.ignoreWhitespace());
+	}
 
-    @Test
-    public void testExport_ServedFeatureTypes()
-                    throws Exception {
-        String storedQueryResource = "storedQuery.xml";
-        StoredQueryDefinition queryDefinition = parseStoredQueryDefinition( storedQueryResource );
-        QueryExpressionText queryExpressionText = queryDefinition.getQueryExpressionTextEls().get( 0 );
-        queryExpressionText.getReturnFeatureTypes().clear();
-        queryExpressionText.getReturnFeatureTypes().add( new QName( "${deegreewfs:ServedFeatureTypes}" ) );
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter( stream );
-        StoredQueryDefinition200Encoder.export( queryDefinition, writer );
-        writer.close();
+	@Test
+	public void testExport_ServedFeatureTypes() throws Exception {
+		String storedQueryResource = "storedQuery.xml";
+		StoredQueryDefinition queryDefinition = parseStoredQueryDefinition(storedQueryResource);
+		QueryExpressionText queryExpressionText = queryDefinition.getQueryExpressionTextEls().get(0);
+		queryExpressionText.getReturnFeatureTypes().clear();
+		queryExpressionText.getReturnFeatureTypes().add(new QName("${deegreewfs:ServedFeatureTypes}"));
+		ByteArrayOutputStream stream = new ByteArrayOutputStream();
+		XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter(stream);
+		StoredQueryDefinition200Encoder.export(queryDefinition, writer);
+		writer.close();
 
-        String actual = stream.toString( UTF_8 );
-        assertThat( actual,
-                    hasXPath(
-                                    "/wfs:StoredQueryDefinition/wfs:QueryExpressionText/@returnFeatureTypes",
-                                    is( "${deegreewfs:ServedFeatureTypes}" ) ).withNamespaceContext( nsContext() ) );
-    }
+		String actual = stream.toString(UTF_8);
+		assertThat(actual, hasXPath("/wfs:StoredQueryDefinition/wfs:QueryExpressionText/@returnFeatureTypes",
+				is("${deegreewfs:ServedFeatureTypes}"))
+			.withNamespaceContext(nsContext()));
+	}
 
-    private StoredQueryDefinition parseStoredQueryDefinition( String resource )
-                    throws IOException {
-        InputStream storedQueryResource = StoredQueryDefinition200EncoderTest.class.getResourceAsStream( resource );
-        StoredQueryDefinitionXMLAdapter storedQueryXMLAdapter = new StoredQueryDefinitionXMLAdapter();
-        storedQueryXMLAdapter.load( storedQueryResource );
-        StoredQueryDefinition queryDefinition = storedQueryXMLAdapter.parse();
-        storedQueryResource.close();
-        return queryDefinition;
-    }
+	private StoredQueryDefinition parseStoredQueryDefinition(String resource) throws IOException {
+		InputStream storedQueryResource = StoredQueryDefinition200EncoderTest.class.getResourceAsStream(resource);
+		StoredQueryDefinitionXMLAdapter storedQueryXMLAdapter = new StoredQueryDefinitionXMLAdapter();
+		storedQueryXMLAdapter.load(storedQueryResource);
+		StoredQueryDefinition queryDefinition = storedQueryXMLAdapter.parse();
+		storedQueryResource.close();
+		return queryDefinition;
+	}
 
-    private Map<String, String> nsContext() {
-        return Collections.singletonMap( "wfs", WFS_200_NS );
-    }
+	private Map<String, String> nsContext() {
+		return Collections.singletonMap("wfs", WFS_200_NS);
+	}
 
 }

@@ -52,60 +52,61 @@ import org.deegree.workspace.standard.DefaultResourceIdentifier;
 
 /**
  * Resource metadata implementation for WFS.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class WfsMetadata extends AbstractResourceMetadata<OWS> {
 
-    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.services.jaxb.wfs";
+	private static final String CONFIG_JAXB_PACKAGE = "org.deegree.services.jaxb.wfs";
 
-    public WfsMetadata( Workspace workspace, ResourceLocation<OWS> location, AbstractResourceProvider<OWS> provider ) {
-        super( workspace, location, provider );
-    }
+	public WfsMetadata(Workspace workspace, ResourceLocation<OWS> location, AbstractResourceProvider<OWS> provider) {
+		super(workspace, location, provider);
+	}
 
-    @Override
-    public ResourceBuilder<OWS> prepare() {
-        try {
-            DeegreeWFS cfg = (DeegreeWFS) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, provider.getSchema(),
-                                                                location.getAsStream(), workspace );
+	@Override
+	public ResourceBuilder<OWS> prepare() {
+		try {
+			DeegreeWFS cfg = (DeegreeWFS) JAXBUtils.unmarshall(CONFIG_JAXB_PACKAGE, provider.getSchema(),
+					location.getAsStream(), workspace);
 
-            List<String> list = cfg.getFeatureStoreId();
-            if ( list != null && !list.isEmpty() ) {
-                for ( String id : list ) {
-                    dependencies.add( new DefaultResourceIdentifier<FeatureStore>( FeatureStoreProvider.class, id ) );
-                }
-            } else {
-                FeatureStoreManager fmgr = workspace.getResourceManager( FeatureStoreManager.class );
-                for ( ResourceMetadata<FeatureStore> md : fmgr.getResourceMetadata() ) {
-                    softDependencies.add( md.getIdentifier() );
-                }
-            }
+			List<String> list = cfg.getFeatureStoreId();
+			if (list != null && !list.isEmpty()) {
+				for (String id : list) {
+					dependencies.add(new DefaultResourceIdentifier<FeatureStore>(FeatureStoreProvider.class, id));
+				}
+			}
+			else {
+				FeatureStoreManager fmgr = workspace.getResourceManager(FeatureStoreManager.class);
+				for (ResourceMetadata<FeatureStore> md : fmgr.getResourceMetadata()) {
+					softDependencies.add(md.getIdentifier());
+				}
+			}
 
-            OwsManager mgr = workspace.getResourceManager( OwsManager.class );
-            Collection<ResourceMetadata<OWS>> mds = mgr.getResourceMetadata();
-            for ( ResourceMetadata<OWS> md : mds ) {
-                OWSProvider prov = (OWSProvider) md.getProvider();
-                for ( String name : prov.getImplementationMetadata().getImplementedServiceName() ) {
-                    if ( name.equalsIgnoreCase( "CSW" ) ) {
-                        softDependencies.add( md.getIdentifier() );
-                    }
-                }
-            }
+			OwsManager mgr = workspace.getResourceManager(OwsManager.class);
+			Collection<ResourceMetadata<OWS>> mds = mgr.getResourceMetadata();
+			for (ResourceMetadata<OWS> md : mds) {
+				OWSProvider prov = (OWSProvider) md.getProvider();
+				for (String name : prov.getImplementationMetadata().getImplementedServiceName()) {
+					if (name.equalsIgnoreCase("CSW")) {
+						softDependencies.add(md.getIdentifier());
+					}
+				}
+			}
 
-            OWSMetadataProviderManager mmgr = workspace.getResourceManager( OWSMetadataProviderManager.class );
-            for ( ResourceMetadata<OWSMetadataProvider> md : mmgr.getResourceMetadata() ) {
-                ResourceIdentifier<OWSMetadataProvider> id = md.getIdentifier();
-                if ( id.getId().equals( getIdentifier().getId() + "_metadata" ) ) {
-                    softDependencies.add( id );
-                }
-            }
+			OWSMetadataProviderManager mmgr = workspace.getResourceManager(OWSMetadataProviderManager.class);
+			for (ResourceMetadata<OWSMetadataProvider> md : mmgr.getResourceMetadata()) {
+				ResourceIdentifier<OWSMetadataProvider> id = md.getIdentifier();
+				if (id.getId().equals(getIdentifier().getId() + "_metadata")) {
+					softDependencies.add(id);
+				}
+			}
 
-            return new WfsBuilder( this, workspace, cfg );
-        } catch ( Exception e ) {
-            throw new ResourceInitException( e.getLocalizedMessage(), e );
-        }
-    }
+			return new WfsBuilder(this, workspace, cfg);
+		}
+		catch (Exception e) {
+			throw new ResourceInitException(e.getLocalizedMessage(), e);
+		}
+	}
 
 }

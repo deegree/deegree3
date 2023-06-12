@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -47,41 +46,39 @@ import org.deegree.workspace.ResourceMetadata;
 
 /**
  * The <code></code> class TODO add class documentation here.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class BatchedMTFileStore implements BatchedMTStore {
 
-    private MultiresolutionMesh mesh;
+	private MultiresolutionMesh mesh;
 
-    private ResourceMetadata<BatchedMTStore> metadata;
+	private ResourceMetadata<BatchedMTStore> metadata;
 
-    public BatchedMTFileStore( URL dir, int maxDirectMemBytes, ResourceMetadata<BatchedMTStore> metadata )
-                            throws IOException, URISyntaxException {
-        this.metadata = metadata;
-        DirectByteBufferPool pool = new DirectByteBufferPool( maxDirectMemBytes, "TODO" );
-        mesh = new MultiresolutionMesh( new File( dir.toURI() ), pool );
-    }
+	public BatchedMTFileStore(URL dir, int maxDirectMemBytes, ResourceMetadata<BatchedMTStore> metadata)
+			throws IOException, URISyntaxException {
+		this.metadata = metadata;
+		DirectByteBufferPool pool = new DirectByteBufferPool(maxDirectMemBytes, "TODO");
+		mesh = new MultiresolutionMesh(new File(dir.toURI()), pool);
+	}
 
-    @Override
-    public MultiresolutionMesh getMesh() {
-        return mesh;
-    }
+	@Override
+	public MultiresolutionMesh getMesh() {
+		return mesh;
+	}
 
-    public void destroy() {
-        // nothing to cleanup
-    }
+	public void destroy() {
+		// nothing to cleanup
+	}
 
-    @Override
-    public ResourceMetadata<? extends Resource> getMetadata() {
-        return metadata;
-    }
+	@Override
+	public ResourceMetadata<? extends Resource> getMetadata() {
+		return metadata;
+	}
 
-    @Override
-    public void init() {
-        // nothing to init
-    }
+	@Override
+	public void init() {
+		// nothing to init
+	}
+
 }

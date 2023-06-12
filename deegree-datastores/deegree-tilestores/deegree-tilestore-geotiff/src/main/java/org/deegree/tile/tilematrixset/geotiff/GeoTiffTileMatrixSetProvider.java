@@ -37,29 +37,29 @@ import org.deegree.workspace.Workspace;
 
 /**
  * This class is the tile matrix set provider for GeoTIFF tile matrices.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class GeoTiffTileMatrixSetProvider extends TileMatrixSetProvider {
 
-    private static final URL SCHEMA_URL = GeoTiffTileMatrixSetProvider.class.getResource( "/META-INF/schemas/datasource/tile/tilematrixset/geotiff/geotiff.xsd" );
+	private static final URL SCHEMA_URL = GeoTiffTileMatrixSetProvider.class
+		.getResource("/META-INF/schemas/datasource/tile/tilematrixset/geotiff/geotiff.xsd");
 
-    @Override
-    public String getNamespace() {
-        return "http://www.deegree.org/datasource/tile/tilematrixset/geotiff";
-    }
+	@Override
+	public String getNamespace() {
+		return "http://www.deegree.org/datasource/tile/tilematrixset/geotiff";
+	}
 
-    @Override
-    public ResourceMetadata<TileMatrixSet> createFromLocation( Workspace workspace,
-                                                               ResourceLocation<TileMatrixSet> location ) {
-        return new GeoTiffTileMatrixSetMetadata( workspace, location, this );
-    }
+	@Override
+	public ResourceMetadata<TileMatrixSet> createFromLocation(Workspace workspace,
+			ResourceLocation<TileMatrixSet> location) {
+		return new GeoTiffTileMatrixSetMetadata(workspace, location, this);
+	}
 
-    @Override
-    public URL getSchema() {
-        return SCHEMA_URL;
-    }
+	@Override
+	public URL getSchema() {
+		return SCHEMA_URL;
+	}
 
 }

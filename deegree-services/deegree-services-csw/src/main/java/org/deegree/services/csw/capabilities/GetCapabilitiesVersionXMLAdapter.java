@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -39,35 +38,30 @@ import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilitiesXMLParser;
 
 /**
- * Encapsulates the method for parsing a XML request via Http-POST. Due to the fact that the GetCapabilities operation
- * is common OWS specific for all webservices the parsing is delegated to the deegree core module.
- * 
- * 
+ * Encapsulates the method for parsing a XML request via Http-POST. Due to the fact that
+ * the GetCapabilities operation is common OWS specific for all webservices the parsing is
+ * delegated to the deegree core module.
+ *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: thomas $
- * 
- * @version $Revision: $, $Date: $
  */
 public class GetCapabilitiesVersionXMLAdapter extends GetCapabilitiesXMLParser {
 
-    /**
-     * Parses an incoming XML request via Http-POST
-     * 
-     * @param version
-     *            that is parsed from the request in the GetCapabilities
-     * @return {@link GetCapabilities} request
-     */
-    public GetCapabilities parse() {
-        GetCapabilities request = null;
-        // if ( version != null ) {
-        // // @version present -> treat as CSW [version] request
-        //
-        // request = new GetCapabilities( version );
-        // } else {
-        // else treat as OWS 1.0.0
-        request = parse100();
-        // }
-        return request;
-    }
+	/**
+	 * Parses an incoming XML request via Http-POST
+	 * @param version that is parsed from the request in the GetCapabilities
+	 * @return {@link GetCapabilities} request
+	 */
+	public GetCapabilities parse() {
+		GetCapabilities request = null;
+		// if ( version != null ) {
+		// // @version present -> treat as CSW [version] request
+		//
+		// request = new GetCapabilities( version );
+		// } else {
+		// else treat as OWS 1.0.0
+		request = parse100();
+		// }
+		return request;
+	}
 
 }

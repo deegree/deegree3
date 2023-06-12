@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -50,50 +49,46 @@ import org.deegree.protocol.ows.http.OwsHttpResponse;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class TransactionResponse extends XMLAdapter {
 
-    private final OwsHttpResponse response;
+	private final OwsHttpResponse response;
 
-    static {
-        nsContext.addNamespace( CSW_202_PREFIX, CSW_202_NS );
-    }
+	static {
+		nsContext.addNamespace(CSW_202_PREFIX, CSW_202_NS);
+	}
 
-    public OwsHttpResponse getResponse() {
-        return response;
-    }
+	public OwsHttpResponse getResponse() {
+		return response;
+	}
 
-    public TransactionResponse( OwsHttpResponse response ) throws XMLProcessingException, OWSExceptionReport,
-                            XMLStreamException {
-        this.response = response;
-        this.load( response.getAsXMLStream() );
-    }
+	public TransactionResponse(OwsHttpResponse response)
+			throws XMLProcessingException, OWSExceptionReport, XMLStreamException {
+		this.response = response;
+		this.load(response.getAsXMLStream());
+	}
 
-    public int getNumberOfRecordsInserted() {
-        return getNodeAsInt( getRootElement(), getXPath( "totalInserted" ), 0 );
-    }
+	public int getNumberOfRecordsInserted() {
+		return getNodeAsInt(getRootElement(), getXPath("totalInserted"), 0);
+	}
 
-    public int getNumberOfRecordsUpdated() {
-        return getNodeAsInt( getRootElement(), getXPath( "totalUpdated" ), 0 );
-    }
+	public int getNumberOfRecordsUpdated() {
+		return getNodeAsInt(getRootElement(), getXPath("totalUpdated"), 0);
+	}
 
-    public int getNumberOfRecordsDeleted() {
-        return getNodeAsInt( getRootElement(), getXPath( "totalDeleted" ), 0 );
-    }
+	public int getNumberOfRecordsDeleted() {
+		return getNodeAsInt(getRootElement(), getXPath("totalDeleted"), 0);
+	}
 
-    private XPath getXPath( String attribute ) {
-        return new XPath( "//" + CSW_202_PREFIX + ":TransactionResponse/" + CSW_202_PREFIX + ":TransactionSummary/"
-                          + CSW_202_PREFIX + ":" + attribute, nsContext );
-    }
+	private XPath getXPath(String attribute) {
+		return new XPath("//" + CSW_202_PREFIX + ":TransactionResponse/" + CSW_202_PREFIX + ":TransactionSummary/"
+				+ CSW_202_PREFIX + ":" + attribute, nsContext);
+	}
 
-    public void close()
-                            throws IOException {
-        response.close();
-    }
+	public void close() throws IOException {
+		response.close();
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -62,56 +61,53 @@ import org.slf4j.Logger;
 
 /**
  * <code>CategorizeTest</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class CategorizeTest extends TestCase {
 
-    private static final Logger LOG = getLogger( CategorizeTest.class );
+	private static final Logger LOG = getLogger(CategorizeTest.class);
 
-    private static Categorize cat = null;
+	private static Categorize cat = null;
 
-    @BeforeClass
-    private void loadCategorizeFromXml()
-                            throws URISyntaxException, XMLStreamException, FileNotFoundException {
-        URI uri = SymbologyParserTest.class.getResource( "setest17.xml" ).toURI();
-        LOG.debug( "Loading resource: {}", uri );
-        File f = new File( uri );
-        final XMLInputFactory fac = XMLInputFactory.newInstance();
-        XMLStreamReader in = fac.createXMLStreamReader( f.toString(), new FileInputStream( f ) );
-        in.next();
-        if ( in.getEventType() == XMLStreamConstants.START_DOCUMENT ) {
-            in.nextTag();
-        }
-        in.require( XMLStreamConstants.START_ELEMENT, null, "RasterSymbolizer" );
-        Symbolizer<RasterStyling> symb = SymbologyParser.INSTANCE.parseRasterSymbolizer( in, null );
-        RasterStyling rs = symb.getBase();
-        cat = rs.categorize;
-    }
+	@BeforeClass
+	private void loadCategorizeFromXml() throws URISyntaxException, XMLStreamException, FileNotFoundException {
+		URI uri = SymbologyParserTest.class.getResource("setest17.xml").toURI();
+		LOG.debug("Loading resource: {}", uri);
+		File f = new File(uri);
+		final XMLInputFactory fac = XMLInputFactory.newInstance();
+		XMLStreamReader in = fac.createXMLStreamReader(f.toString(), new FileInputStream(f));
+		in.next();
+		if (in.getEventType() == XMLStreamConstants.START_DOCUMENT) {
+			in.nextTag();
+		}
+		in.require(XMLStreamConstants.START_ELEMENT, null, "RasterSymbolizer");
+		Symbolizer<RasterStyling> symb = SymbologyParser.INSTANCE.parseRasterSymbolizer(in, null);
+		RasterStyling rs = symb.getBase();
+		cat = rs.categorize;
+	}
 
-    @Test
-    public void testCategorize() throws FileNotFoundException, URISyntaxException, XMLStreamException {
-        loadCategorizeFromXml();
-//        cat.buildLookupArrays();
-        LOG.debug( "Categorize: {}", cat );
-        test( -1 );
-        test( -0.5 );
-        test( 0 );
-        test( 0.5 );
-        test( 0.75);
-        test(1);
-        test(2);
-    }
+	@Test
+	public void testCategorize() throws FileNotFoundException, URISyntaxException, XMLStreamException {
+		loadCategorizeFromXml();
+		// cat.buildLookupArrays();
+		LOG.debug("Categorize: {}", cat);
+		test(-1);
+		test(-0.5);
+		test(0);
+		test(0.5);
+		test(0.75);
+		test(1);
+		test(2);
+	}
 
-    private void test( double x ) {
-        LOG.debug( "Testing lookup({})", x );
-        String x1 = cat.lookup( x ).toString();
-        String x2 = cat.lookup2( x ).toString();
-        LOG.debug( "Lookup1: {}, Lookup2: {}", x1, x2);
-        LOG.debug( "------------------" );
-//        assertEquals( x1, x2 );
-    }
+	private void test(double x) {
+		LOG.debug("Testing lookup({})", x);
+		String x1 = cat.lookup(x).toString();
+		String x2 = cat.lookup2(x).toString();
+		LOG.debug("Lookup1: {}, Lookup2: {}", x1, x2);
+		LOG.debug("------------------");
+		// assertEquals( x1, x2 );
+	}
+
 }

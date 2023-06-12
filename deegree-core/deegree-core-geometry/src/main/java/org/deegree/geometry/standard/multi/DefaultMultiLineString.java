@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -45,51 +44,45 @@ import org.deegree.geometry.primitive.LineString;
 
 /**
  * Default implementation of {@link MultiLineString}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class DefaultMultiLineString extends DefaultMultiGeometry<LineString> implements MultiLineString {
 
-    /**
-     * Creates a new {@link DefaultMultiLineString} from the given parameters.
-     * 
-     * @param id
-     *            identifier, may be null
-     * @param crs
-     *            coordinate reference system, may be null
-     * @param pm
-     *            precision model, may be null
-     * @param members
-     */
-    public DefaultMultiLineString( String id, ICRS crs, PrecisionModel pm, List<LineString> members ) {
-        super( id, crs, pm, members );
-    }
+	/**
+	 * Creates a new {@link DefaultMultiLineString} from the given parameters.
+	 * @param id identifier, may be null
+	 * @param crs coordinate reference system, may be null
+	 * @param pm precision model, may be null
+	 * @param members
+	 */
+	public DefaultMultiLineString(String id, ICRS crs, PrecisionModel pm, List<LineString> members) {
+		super(id, crs, pm, members);
+	}
 
-    @Override
-    public double getLength() {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public double getLength() {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public MultiGeometryType getMultiGeometryType() {
-        return MultiGeometryType.MULTI_LINE_STRING;
-    }
-    
-    @Override
-    public boolean isSFSCompliant() {
-        return true;
-    }
+	@Override
+	public MultiGeometryType getMultiGeometryType() {
+		return MultiGeometryType.MULTI_LINE_STRING;
+	}
 
-    @Override
-    protected org.locationtech.jts.geom.MultiLineString buildJTSGeometry() {
-        org.locationtech.jts.geom.LineString[] jtsMembers = new org.locationtech.jts.geom.LineString[size()];
-        int i = 0;
-        for ( Curve geometry : members ) {
-            jtsMembers[i++] = (org.locationtech.jts.geom.LineString) getAsDefaultGeometry( geometry ).getJTSGeometry();
-        }
-        return jtsFactory.createMultiLineString( jtsMembers );
-    }
+	@Override
+	public boolean isSFSCompliant() {
+		return true;
+	}
+
+	@Override
+	protected org.locationtech.jts.geom.MultiLineString buildJTSGeometry() {
+		org.locationtech.jts.geom.LineString[] jtsMembers = new org.locationtech.jts.geom.LineString[size()];
+		int i = 0;
+		for (Curve geometry : members) {
+			jtsMembers[i++] = (org.locationtech.jts.geom.LineString) getAsDefaultGeometry(geometry).getJTSGeometry();
+		}
+		return jtsFactory.createMultiLineString(jtsMembers);
+	}
+
 }

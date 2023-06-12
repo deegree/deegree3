@@ -39,26 +39,25 @@ package org.deegree.sqldialect.oracle.sdo;
 
 /**
  * Inspector interface to allow inspection of Geometries
- * 
+ *
  * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  */
 public interface SDOInspector {
 
-    /**
-     * Inspect SDO before conversion to oracle object
-     * 
-     * @param holder
-     */
-    default void fromGeometry( SDOGeometry geom ) {
-        // do nothing by default
-    }
+	/**
+	 * Inspect SDO before conversion to oracle object
+	 * @param holder
+	 */
+	default void fromGeometry(SDOGeometry geom) {
+		// do nothing by default
+	}
 
-    /**
-     * Inspect SDO before conversion to geometry object
-     * 
-     * @param holder
-     */
-    default void toGeometry( SDOGeometry geom ) {
-        // do nothing by default
-    }
+	/**
+	 * Inspect SDO before conversion to geometry object
+	 * @param holder
+	 */
+	default void toGeometry(SDOGeometry geom) {
+		// do nothing by default
+	}
+
 }

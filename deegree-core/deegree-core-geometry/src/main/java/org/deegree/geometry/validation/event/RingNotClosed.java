@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -40,38 +39,32 @@ import java.util.List;
 import org.deegree.geometry.primitive.Ring;
 
 /**
- * {@link GeometryValidationEvent} that indicates that a {@link Ring} is not closed, i.e. the start point is not identical to
- * the end point.
- * 
+ * {@link GeometryValidationEvent} that indicates that a {@link Ring} is not closed, i.e.
+ * the start point is not identical to the end point.
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * 
- * @version $Revision: $, $Date: $
  */
 public class RingNotClosed extends AbstractGeometryValidationEvent {
 
-    private final Ring ring;
+	private final Ring ring;
 
-    /**
-     * Creates a new {@link RingNotClosed} instance.
-     * 
-     * @param ring
-     *            affected {@link Ring} geometry, must not be <code>null</code>
-     * @param geometryParticleHierarchy
-     *            list of affected geometry particles (that the ring is part of), must not be <code>null</code>
-     */
-    public RingNotClosed( Ring ring, List<Object> geometryParticleHierarchy ) {
-        super( geometryParticleHierarchy );
-        this.ring = ring;
-    }
+	/**
+	 * Creates a new {@link RingNotClosed} instance.
+	 * @param ring affected {@link Ring} geometry, must not be <code>null</code>
+	 * @param geometryParticleHierarchy list of affected geometry particles (that the ring
+	 * is part of), must not be <code>null</code>
+	 */
+	public RingNotClosed(Ring ring, List<Object> geometryParticleHierarchy) {
+		super(geometryParticleHierarchy);
+		this.ring = ring;
+	}
 
-    /**
-     * Returns the affected {@link Ring} geometry.
-     * 
-     * @return affected ring, never <code>null</code>
-     */
-    public Ring getRing() {
-        return ring;
-    }
+	/**
+	 * Returns the affected {@link Ring} geometry.
+	 * @return affected ring, never <code>null</code>
+	 */
+	public Ring getRing() {
+		return ring;
+	}
 
 }

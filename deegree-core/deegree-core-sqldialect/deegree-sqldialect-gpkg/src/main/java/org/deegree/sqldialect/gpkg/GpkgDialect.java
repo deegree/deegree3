@@ -67,120 +67,120 @@ import java.util.List;
  */
 public class GpkgDialect implements SQLDialect {
 
-    private static Logger LOG = LoggerFactory.getLogger( GpkgDialect.class );
-    private char defaultEscapeChar = Character.UNASSIGNED;
+	private static Logger LOG = LoggerFactory.getLogger(GpkgDialect.class);
 
-    @Override
-    public int getMaxColumnNameLength() {
-        return 2000;
-    }
+	private char defaultEscapeChar = Character.UNASSIGNED;
 
-    @Override
-    public int getMaxTableNameLength() {
-        return 2000;
-    }
+	@Override
+	public int getMaxColumnNameLength() {
+		return 2000;
+	}
 
-    public String getDefaultSchema() {
-        return "main";
-    }
+	@Override
+	public int getMaxTableNameLength() {
+		return 2000;
+	}
 
-    public String stringPlus() {
-        return "||";
-    }
+	public String getDefaultSchema() {
+		return "main";
+	}
 
-    public String stringIndex( String pattern, String string ) {
-        return "INSTR(" + string + "," + pattern + ")";
-    }
+	public String stringPlus() {
+		return "||";
+	}
 
-    public String cast( String expr, String type ) {
-        return "CAST(" + expr + " AS " + type + ")";
-    }
+	public String stringIndex(String pattern, String string) {
+		return "INSTR(" + string + "," + pattern + ")";
+	}
 
-    @Override
-    public String geometryMetadata( TableName qTable, String column, boolean isGeographical ) {
-        return null;
-    }
+	public String cast(String expr, String type) {
+		return "CAST(" + expr + " AS " + type + ")";
+	}
 
-    @Override
-    public AbstractWhereBuilder getWhereBuilder( PropertyNameMapper mapper, OperatorFilter filter,
-                                                 SortProperty[] sortCrit, List<SortCriterion> defaultSortCriteria,
-                                                 boolean allowPartialMappings )
-                            throws UnmappableException, FilterEvaluationException {
-        return new GpkgWhereBuilder( this, mapper, filter, sortCrit, defaultSortCriteria, allowPartialMappings );
-    }
+	@Override
+	public String geometryMetadata(TableName qTable, String column, boolean isGeographical) {
+		return null;
+	}
 
-    @Override
-    public String getUndefinedSrid() {
-        return "-1";
-    }
+	@Override
+	public AbstractWhereBuilder getWhereBuilder(PropertyNameMapper mapper, OperatorFilter filter,
+			SortProperty[] sortCrit, List<SortCriterion> defaultSortCriteria, boolean allowPartialMappings)
+			throws UnmappableException, FilterEvaluationException {
+		return new GpkgWhereBuilder(this, mapper, filter, sortCrit, defaultSortCriteria, allowPartialMappings);
+	}
 
-    @Override
-    public String getBBoxAggregateSnippet( String column ) {
-        return null;
-    }
+	@Override
+	public String getUndefinedSrid() {
+		return "-1";
+	}
 
-    @Override
-    public Envelope getBBoxAggregateValue( ResultSet rs, int colIdx, ICRS crs )
-                            throws SQLException {
-        return null;
-    }
+	@Override
+	public String getBBoxAggregateSnippet(String column) {
+		return null;
+	}
 
-    @Override
-    public GeometryParticleConverter getGeometryConverter( String column, ICRS crs, String srid, boolean is2D ) {
-        return new GpkgGeometryConverter( column, crs, srid );
-    }
+	@Override
+	public Envelope getBBoxAggregateValue(ResultSet rs, int colIdx, ICRS crs) throws SQLException {
+		return null;
+	}
 
-    @Override
-    public PrimitiveParticleConverter getPrimitiveConverter( String column, PrimitiveType pt ) {
-        return new DefaultPrimitiveConverter( pt, column );
-    }
+	@Override
+	public GeometryParticleConverter getGeometryConverter(String column, ICRS crs, String srid, boolean is2D) {
+		return new GpkgGeometryConverter(column, crs, srid);
+	}
 
-    @Override
-    public void createDB( Connection adminConn, String dbName )
-                            throws SQLException {
-    }
+	@Override
+	public PrimitiveParticleConverter getPrimitiveConverter(String column, PrimitiveType pt) {
+		return new DefaultPrimitiveConverter(pt, column);
+	}
 
-    @Override
-    public void dropDB( Connection adminConn, String dbName )
-                            throws SQLException {
-    }
+	@Override
+	public void createDB(Connection adminConn, String dbName) throws SQLException {
+	}
 
-    @Override
-    public void createAutoColumn( StringBuffer currentStmt, List<StringBuffer> additionalSmts, SQLIdentifier column,
-                                  SQLIdentifier table ) {
-        currentStmt.append( column );
-    }
+	@Override
+	public void dropDB(Connection adminConn, String dbName) throws SQLException {
+	}
 
-    @Override
-    public ResultSet getTableColumnMetadata( DatabaseMetaData md, TableName qTable )
-                            throws SQLException {
-        String schema = qTable.getSchema() != null ? qTable.getSchema() : getDefaultSchema();
-        String table = qTable.getTable();
-        return md.getColumns( null, schema.toLowerCase(), table.toLowerCase(), null );
-    }
+	@Override
+	public void createAutoColumn(StringBuffer currentStmt, List<StringBuffer> additionalSmts, SQLIdentifier column,
+			SQLIdentifier table) {
+		currentStmt.append(column);
+	}
 
-    @Override
-    public boolean requiresTransactionForCursorMode() {
-        return false;
-    }
+	@Override
+	public ResultSet getTableColumnMetadata(DatabaseMetaData md, TableName qTable) throws SQLException {
+		String schema = qTable.getSchema() != null ? qTable.getSchema() : getDefaultSchema();
+		String table = qTable.getTable();
+		return md.getColumns(null, schema.toLowerCase(), table.toLowerCase(), null);
+	}
 
-    @Override
-    public String getSelectSequenceNextVal( String sequence ) {
-        return null;
-    }
-    @Override
-    public boolean isRowLimitingCapable() {
-        // TODO Auto-generated method stub
-        return true;
-    }
-    @Override
-    public char getTailingEscapeChar() {
-        // TODO Auto-generated method stub
-        return defaultEscapeChar;
-    }
-    @Override
-    public char getLeadingEscapeChar() {
-        // TODO Auto-generated method stub
-        return defaultEscapeChar;
-    }
+	@Override
+	public boolean requiresTransactionForCursorMode() {
+		return false;
+	}
+
+	@Override
+	public String getSelectSequenceNextVal(String sequence) {
+		return null;
+	}
+
+	@Override
+	public boolean isRowLimitingCapable() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Override
+	public char getTailingEscapeChar() {
+		// TODO Auto-generated method stub
+		return defaultEscapeChar;
+	}
+
+	@Override
+	public char getLeadingEscapeChar() {
+		// TODO Auto-generated method stub
+		return defaultEscapeChar;
+	}
+
 }

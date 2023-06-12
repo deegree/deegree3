@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -58,78 +57,76 @@ import org.slf4j.Logger;
 import org.locationtech.jts.io.ParseException;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class GeometryFromWKT implements FunctionProvider {
 
-    static final Logger LOG = getLogger( GeometryFromWKT.class );
+	static final Logger LOG = getLogger(GeometryFromWKT.class);
 
-    private static final String NAME = "GeometryFromWKT";
+	private static final String NAME = "GeometryFromWKT";
 
-    private static final List<ParameterType> INPUTS = new ArrayList<ParameterType>( 2 );
+	private static final List<ParameterType> INPUTS = new ArrayList<ParameterType>(2);
 
-    static {
-        INPUTS.add( STRING );
-        INPUTS.add( STRING );
-    }
+	static {
+		INPUTS.add(STRING);
+		INPUTS.add(STRING);
+	}
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
+	@Override
+	public String getName() {
+		return NAME;
+	}
 
-    @Override
-    public List<ParameterType> getArgs() {
-        return INPUTS;
-    }
+	@Override
+	public List<ParameterType> getArgs() {
+		return INPUTS;
+	}
 
-    @Override
-    public ParameterType getReturnType() {
-        return GEOMETRY;
-    }
+	@Override
+	public ParameterType getReturnType() {
+		return GEOMETRY;
+	}
 
-    @Override
-    public Function create( List<Expression> params ) {
-        return new Function( NAME, params ) {
+	@Override
+	public Function create(List<Expression> params) {
+		return new Function(NAME, params) {
 
-            @Override
-            public <T> TypedObjectNode[] evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
-                                    throws FilterEvaluationException {
-                TypedObjectNode[] crs = getParams()[0].evaluate( obj, xpathEvaluator );
-                TypedObjectNode[] geom = getParams()[1].evaluate( obj, xpathEvaluator );
-                if ( crs.length != 1 ) {
-                    throw new FilterEvaluationException( "The GeometryFromWKT function's first argument must "
-                                                         + "evaluate to exactly one value." );
-                }
-                if ( geom.length != 1 ) {
-                    throw new FilterEvaluationException( "The GeometryFromWKT function's second argument must "
-                                                         + "evaluate to exactly one value." );
-                }
-                ICRS srs = CRSManager.getCRSRef( crs[0].toString() );
-                String wkt = geom[0].toString();
-                WKTReader reader = new WKTReader( srs );
-                try {
-                    return new TypedObjectNode[] { reader.read( wkt ) };
-                } catch ( ParseException e ) {
-                    LOG.trace( "Stack trace:", e );
-                    throw new FilterEvaluationException( "GeometryFromWKT error while parsing WKT: "
-                                                         + e.getLocalizedMessage() );
-                }
-            }
-        };
-    }
+			@Override
+			public <T> TypedObjectNode[] evaluate(T obj, XPathEvaluator<T> xpathEvaluator)
+					throws FilterEvaluationException {
+				TypedObjectNode[] crs = getParams()[0].evaluate(obj, xpathEvaluator);
+				TypedObjectNode[] geom = getParams()[1].evaluate(obj, xpathEvaluator);
+				if (crs.length != 1) {
+					throw new FilterEvaluationException(
+							"The GeometryFromWKT function's first argument must " + "evaluate to exactly one value.");
+				}
+				if (geom.length != 1) {
+					throw new FilterEvaluationException(
+							"The GeometryFromWKT function's second argument must " + "evaluate to exactly one value.");
+				}
+				ICRS srs = CRSManager.getCRSRef(crs[0].toString());
+				String wkt = geom[0].toString();
+				WKTReader reader = new WKTReader(srs);
+				try {
+					return new TypedObjectNode[] { reader.read(wkt) };
+				}
+				catch (ParseException e) {
+					LOG.trace("Stack trace:", e);
+					throw new FilterEvaluationException(
+							"GeometryFromWKT error while parsing WKT: " + e.getLocalizedMessage());
+				}
+			}
+		};
+	}
 
-    @Override
-    public void init( Workspace ws ) {
-        // nothing to do
-    }
+	@Override
+	public void init(Workspace ws) {
+		// nothing to do
+	}
 
-    @Override
-    public void destroy() {
-        // nothing to do
-    }
+	@Override
+	public void destroy() {
+		// nothing to do
+	}
+
 }

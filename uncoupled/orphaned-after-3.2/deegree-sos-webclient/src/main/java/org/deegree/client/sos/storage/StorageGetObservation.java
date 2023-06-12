@@ -9,7 +9,6 @@ import org.deegree.client.sos.storage.components.Observation;
  * O&M-data is stored in a list of Observation-objects.
  * 
  * @author <a href="mailto:neumeister@lat-lon.de">Ulrich Neumeister</a>
- * @author last edited by: $Author$
  * 
  */
 public class StorageGetObservation {

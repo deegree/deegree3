@@ -46,82 +46,78 @@ import org.deegree.geometry.primitive.segments.Knot;
  * Default implementation of {@link Bezier} segments.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- *
- * @version $Revision$, $Date$
  */
 public class DefaultBezier implements Bezier {
 
-    private Points controlPoints;
+	private Points controlPoints;
 
-    private int polynomialDegree;
+	private int polynomialDegree;
 
-    private List<Knot> knots;
+	private List<Knot> knots;
 
-    /**
-     * Creates a new <code>DefaultBezier</code> instance from the given parameters.
-     *
-     * @param controlPoints
-     *            interpolation points
-     * @param polynomialDegree
-     * @param knot1
-     * @param knot2
-     */
-    public DefaultBezier( Points controlPoints, int polynomialDegree, Knot knot1, Knot knot2 ) {
-        this.controlPoints = controlPoints;
-        this.polynomialDegree = polynomialDegree;
-        knots = new ArrayList<Knot>( 2 );
-        knots.add( knot1 );
-        knots.add( knot2 );
-    }
+	/**
+	 * Creates a new <code>DefaultBezier</code> instance from the given parameters.
+	 * @param controlPoints interpolation points
+	 * @param polynomialDegree
+	 * @param knot1
+	 * @param knot2
+	 */
+	public DefaultBezier(Points controlPoints, int polynomialDegree, Knot knot1, Knot knot2) {
+		this.controlPoints = controlPoints;
+		this.polynomialDegree = polynomialDegree;
+		knots = new ArrayList<Knot>(2);
+		knots.add(knot1);
+		knots.add(knot2);
+	}
 
-    @Override
-    public Knot getKnot1() {
-        return knots.get( 0 );
-    }
+	@Override
+	public Knot getKnot1() {
+		return knots.get(0);
+	}
 
-    @Override
-    public Knot getKnot2() {
-        return knots.get( 1 );
-    }
+	@Override
+	public Knot getKnot2() {
+		return knots.get(1);
+	}
 
-    @Override
-    public int getCoordinateDimension() {
-        return controlPoints.get( 0 ).getCoordinateDimension();
-    }
+	@Override
+	public int getCoordinateDimension() {
+		return controlPoints.get(0).getCoordinateDimension();
+	}
 
-    @Override
-    public Points getControlPoints() {
-        return controlPoints;
-    }
+	@Override
+	public Points getControlPoints() {
+		return controlPoints;
+	}
 
-    @Override
-    public int getPolynomialDegree() {
-        return polynomialDegree;
-    }
+	@Override
+	public int getPolynomialDegree() {
+		return polynomialDegree;
+	}
 
-    @Override
-    public List<Knot> getKnots() {
-        return knots;
-    }
+	@Override
+	public List<Knot> getKnots() {
+		return knots;
+	}
 
-    @Override
-    public Point getStartPoint() {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Point getStartPoint() {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public Point getEndPoint() {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Point getEndPoint() {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public CurveSegmentType getSegmentType() {
-        return CurveSegmentType.BEZIER;
-    }
+	@Override
+	public CurveSegmentType getSegmentType() {
+		return CurveSegmentType.BEZIER;
+	}
 
-    @Override
-    public boolean isPolynomial() {
-        return true;
-    }
+	@Override
+	public boolean isPolynomial() {
+		return true;
+	}
+
 }

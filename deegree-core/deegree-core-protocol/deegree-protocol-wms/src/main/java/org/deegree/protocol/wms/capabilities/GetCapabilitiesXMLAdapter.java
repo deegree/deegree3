@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -43,40 +42,40 @@ import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilitiesXMLParser;
 
 /**
- * Adapter between XML encoded <code>GetCapabilities</code> requests (WMS) and {@link GetCapabilities} objects.
- * 
+ * Adapter between XML encoded <code>GetCapabilities</code> requests (WMS) and
+ * {@link GetCapabilities} objects.
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
 public class GetCapabilitiesXMLAdapter extends GetCapabilitiesXMLParser {
 
-    /**
-     * Parses a WMS <code>GetCapabilities</code> document into a {@link GetCapabilities} request.
-     * <p>
-     * Supported versions:
-     * <ul>
-     * <li>1.3.0 (OWS 2.0.0)</li>
-     * </ul>
-     * 
-     * @param version
-     *            specifies the request version, may be <code>null</code> (version attribute is evaluated then)
-     * @return parsed {@link GetCapabilities} request, never <code>null</code>
-     * @throws IllegalArgumentException
-     *             if version is not supported
-     */
-    public GetCapabilities parse( Version version ) {
-        Version wmsVersion = detectVersion( version );
-        if ( VERSION_130.equals( wmsVersion ) )
-            return parse200();
-        throw new IllegalArgumentException( "Cannot parse Caapbilities request: Unsupported Version" );
+	/**
+	 * Parses a WMS <code>GetCapabilities</code> document into a {@link GetCapabilities}
+	 * request.
+	 * <p>
+	 * Supported versions:
+	 * <ul>
+	 * <li>1.3.0 (OWS 2.0.0)</li>
+	 * </ul>
+	 * @param version specifies the request version, may be <code>null</code> (version
+	 * attribute is evaluated then)
+	 * @return parsed {@link GetCapabilities} request, never <code>null</code>
+	 * @throws IllegalArgumentException if version is not supported
+	 */
+	public GetCapabilities parse(Version version) {
+		Version wmsVersion = detectVersion(version);
+		if (VERSION_130.equals(wmsVersion))
+			return parse200();
+		throw new IllegalArgumentException("Cannot parse Caapbilities request: Unsupported Version");
 
-    }
+	}
 
-    private Version detectVersion( Version version ) {
-        if ( version != null )
-            return version;
-        else if ( CommonNamespaces.OWS_20_NS.equals( getRootElement().getNamespace().getNamespaceURI() ) )
-            return VERSION_130;
-        return null;
-    }
+	private Version detectVersion(Version version) {
+		if (version != null)
+			return version;
+		else if (CommonNamespaces.OWS_20_NS.equals(getRootElement().getNamespace().getNamespaceURI()))
+			return VERSION_130;
+		return null;
+	}
 
 }

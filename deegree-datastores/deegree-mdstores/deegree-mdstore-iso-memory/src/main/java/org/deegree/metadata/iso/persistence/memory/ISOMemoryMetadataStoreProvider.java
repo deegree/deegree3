@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-metadata/src/main/java/org/deegree/metadata/iso/persistence/ISOMetadataStoreProvider.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -48,44 +47,40 @@ import org.deegree.workspace.Workspace;
 
 /**
  * {@link MetadataStoreProvider} for the {@link ISOMemoryMetadataStore}.
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: 30800 $, $Date: 2011-05-12 16:49:44 +0200 (Do, 12. Mai 2011) $
  */
 public class ISOMemoryMetadataStoreProvider extends MetadataStoreProvider {
 
-    private final static String CONFIG_NAMESPACE = "http://www.deegree.org/datasource/metadata/iso19139/memory";
+	private final static String CONFIG_NAMESPACE = "http://www.deegree.org/datasource/metadata/iso19139/memory";
 
-    private final static URL CONFIG_SCHEMA = ISOMemoryMetadataStore.class.getResource( "/META-INF/schemas/datasource/metadata/iso19139/memory/memory.xsd" );
+	private final static URL CONFIG_SCHEMA = ISOMemoryMetadataStore.class
+		.getResource("/META-INF/schemas/datasource/metadata/iso19139/memory/memory.xsd");
 
-    @Override
-    public String[] getCreateStatements( SQLDialect dbType )
-                            throws IOException {
-        return new String[0];
-    }
+	@Override
+	public String[] getCreateStatements(SQLDialect dbType) throws IOException {
+		return new String[0];
+	}
 
-    @Override
-    public String[] getDropStatements( SQLDialect dbType )
-                            throws IOException {
-        return new String[0];
-    }
+	@Override
+	public String[] getDropStatements(SQLDialect dbType) throws IOException {
+		return new String[0];
+	}
 
-    @Override
-    public String getNamespace() {
-        return CONFIG_NAMESPACE;
-    }
+	@Override
+	public String getNamespace() {
+		return CONFIG_NAMESPACE;
+	}
 
-    @Override
-    public ResourceMetadata<MetadataStore<? extends MetadataRecord>> createFromLocation( Workspace workspace,
-                                                                                         ResourceLocation<MetadataStore<? extends MetadataRecord>> location ) {
-        return new IsoMemoryMetadataStoreMetadata( workspace, location, this );
-    }
+	@Override
+	public ResourceMetadata<MetadataStore<? extends MetadataRecord>> createFromLocation(Workspace workspace,
+			ResourceLocation<MetadataStore<? extends MetadataRecord>> location) {
+		return new IsoMemoryMetadataStoreMetadata(workspace, location, this);
+	}
 
-    @Override
-    public URL getSchema() {
-        return CONFIG_SCHEMA;
-    }
+	@Override
+	public URL getSchema() {
+		return CONFIG_SCHEMA;
+	}
 
 }

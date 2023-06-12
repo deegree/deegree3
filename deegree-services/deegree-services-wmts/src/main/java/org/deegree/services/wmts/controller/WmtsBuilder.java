@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -55,51 +54,48 @@ import org.slf4j.Logger;
 
 /**
  * Responsible for extracting/parsing WMTS jaxb config beans.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 
 class WmtsBuilder {
 
-    private static final Logger LOG = getLogger( WmtsBuilder.class );
+	private static final Logger LOG = getLogger(WmtsBuilder.class);
 
-    private String metadataUrlTemplate;
+	private String metadataUrlTemplate;
 
-    private ArrayList<Theme> themes;
+	private ArrayList<Theme> themes;
 
-    private FeatureInfoFormatsType featureInfoConf;
+	private FeatureInfoFormatsType featureInfoConf;
 
-    WmtsBuilder( Workspace workspace, DeegreeWMTS conf ) {
-        this.metadataUrlTemplate = conf.getMetadataURLTemplate();
+	WmtsBuilder(Workspace workspace, DeegreeWMTS conf) {
+		this.metadataUrlTemplate = conf.getMetadataURLTemplate();
 
-        themes = new ArrayList<Theme>();
+		themes = new ArrayList<Theme>();
 
-        List<String> ids = conf.getServiceConfiguration().getThemeId();
-        for ( String id : ids ) {
-            Theme t = workspace.getResource( ThemeProvider.class, id );
-            if ( t == null ) {
-                LOG.warn( "Theme with id {} was not available.", id );
-                continue;
-            }
-            themes.add( t );
-        }
+		List<String> ids = conf.getServiceConfiguration().getThemeId();
+		for (String id : ids) {
+			Theme t = workspace.getResource(ThemeProvider.class, id);
+			if (t == null) {
+				LOG.warn("Theme with id {} was not available.", id);
+				continue;
+			}
+			themes.add(t);
+		}
 
-        featureInfoConf = conf.getFeatureInfoFormats();
-    }
+		featureInfoConf = conf.getFeatureInfoFormats();
+	}
 
-    String getMetadataUrlTemplate() {
-        return metadataUrlTemplate;
-    }
+	String getMetadataUrlTemplate() {
+		return metadataUrlTemplate;
+	}
 
-    List<Theme> getThemes() {
-        return themes;
-    }
+	List<Theme> getThemes() {
+		return themes;
+	}
 
-    FeatureInfoFormatsType getFeatureInfoFormatsConf() {
-        return featureInfoConf;
-    }
+	FeatureInfoFormatsType getFeatureInfoFormatsConf() {
+		return featureInfoConf;
+	}
 
 }

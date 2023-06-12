@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -41,46 +40,47 @@ import org.deegree.coverage.raster.data.RasterData;
 
 /**
  * This class implements a bilinear interpolation for byte raster.
- * 
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 
 public class BiLinearByteInterpolation implements Interpolation {
-    private RasterData raster;
 
-    private byte[] window = new byte[4];
+	private RasterData raster;
 
-    /**
-     * Create a new bilinear interpolation for given byte {@link RasterData}.
-     * 
-     * @param rasterData
-     */
-    public BiLinearByteInterpolation( RasterData rasterData ) {
-        raster = rasterData;
-    }
+	private byte[] window = new byte[4];
 
-    public final byte[] getPixel( float x, float y, byte[] result ) {
-        try {
-            float xfrac = Math.abs( x - (int) x );
-            float yfrac = Math.abs( y - (int) y );
-            for ( int b = 0; b < raster.getBands(); b++ ) {
-                raster.getBytes( (int) x, (int) y, 2, 2, b, window );
-                // (x & 0xFF) converts between signed bytes to unsigned values
-                float h1 = ( window[0] & 0xFF ) + ( ( window[1] & 0xFF ) - ( window[0] & 0xFF ) ) * xfrac;
-                float h2 = ( window[2] & 0xFF ) + ( ( window[3] & 0xFF ) - ( window[2] & 0xFF ) ) * xfrac;
-                result[b] = (byte) ( ( (char) ( h1 + ( h2 - h1 ) * yfrac ) ) & 0xFF );
-            }
-        } catch ( IndexOutOfBoundsException ex ) {
-            raster.getNullPixel( result );
-        } catch ( IllegalArgumentException ex ) {
-            raster.getNullPixel( result );
-        } catch ( BufferUnderflowException ex ) {
-            raster.getNullPixel( result );
-        }
-        return result;
-    }
+	/**
+	 * Create a new bilinear interpolation for given byte {@link RasterData}.
+	 * @param rasterData
+	 */
+	public BiLinearByteInterpolation(RasterData rasterData) {
+		raster = rasterData;
+	}
+
+	public final byte[] getPixel(float x, float y, byte[] result) {
+		try {
+			float xfrac = Math.abs(x - (int) x);
+			float yfrac = Math.abs(y - (int) y);
+			for (int b = 0; b < raster.getBands(); b++) {
+				raster.getBytes((int) x, (int) y, 2, 2, b, window);
+				// (x & 0xFF) converts between signed bytes to unsigned values
+				float h1 = (window[0] & 0xFF) + ((window[1] & 0xFF) - (window[0] & 0xFF)) * xfrac;
+				float h2 = (window[2] & 0xFF) + ((window[3] & 0xFF) - (window[2] & 0xFF)) * xfrac;
+				result[b] = (byte) (((char) (h1 + (h2 - h1) * yfrac)) & 0xFF);
+			}
+		}
+		catch (IndexOutOfBoundsException ex) {
+			raster.getNullPixel(result);
+		}
+		catch (IllegalArgumentException ex) {
+			raster.getNullPixel(result);
+		}
+		catch (BufferUnderflowException ex) {
+			raster.getNullPixel(result);
+		}
+		return result;
+	}
+
 }

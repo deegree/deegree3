@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -54,74 +53,70 @@ import org.deegree.workspace.Workspace;
 
 /**
  * {@link MetadataStoreProvider} for {@link EbrimEOMDStore}s
- * 
+ *
  * @author <a href="mailto:goltz@deegree.org">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class EbrimEOMDStoreProvider extends MetadataStoreProvider {
 
-    private static final String CONFIG_NS = "http://www.deegree.org/datasource/metadata/ebrim/eo";
+	private static final String CONFIG_NS = "http://www.deegree.org/datasource/metadata/ebrim/eo";
 
-    private static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/metadata/ebrim/eo/ebrim-eo.xsd";
+	private static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/metadata/ebrim/eo/ebrim-eo.xsd";
 
-    // TODO : don't copy
-    private List<String> readStatements( BufferedReader reader )
-                            throws IOException {
-        List<String> stmts = new ArrayList<String>();
-        String currentStmt = "";
-        String line = null;
-        while ( ( line = reader.readLine() ) != null ) {
-            if ( line.startsWith( "--" ) || line.trim().isEmpty() ) {
-                // skip
-            } else if ( line.contains( ";" ) ) {
-                currentStmt += line.substring( 0, line.indexOf( ';' ) );
-                stmts.add( currentStmt );
-                currentStmt = "";
-            } else {
-                currentStmt += line + "\n";
-            }
-        }
-        return stmts;
-    }
+	// TODO : don't copy
+	private List<String> readStatements(BufferedReader reader) throws IOException {
+		List<String> stmts = new ArrayList<String>();
+		String currentStmt = "";
+		String line = null;
+		while ((line = reader.readLine()) != null) {
+			if (line.startsWith("--") || line.trim().isEmpty()) {
+				// skip
+			}
+			else if (line.contains(";")) {
+				currentStmt += line.substring(0, line.indexOf(';'));
+				stmts.add(currentStmt);
+				currentStmt = "";
+			}
+			else {
+				currentStmt += line + "\n";
+			}
+		}
+		return stmts;
+	}
 
-    @Override
-    public String[] getCreateStatements( SQLDialect dbType )
-                            throws UnsupportedEncodingException, IOException {
-        List<String> creates = new ArrayList<String>();
-        if ( dbType instanceof PostGISDialect ) {
-            URL script = EbrimEOMDStoreProvider.class.getResource( "postgis/create.sql" );
-            creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
-        }
-        return creates.toArray( new String[creates.size()] );
-    }
+	@Override
+	public String[] getCreateStatements(SQLDialect dbType) throws UnsupportedEncodingException, IOException {
+		List<String> creates = new ArrayList<String>();
+		if (dbType instanceof PostGISDialect) {
+			URL script = EbrimEOMDStoreProvider.class.getResource("postgis/create.sql");
+			creates.addAll(readStatements(new BufferedReader(new InputStreamReader(script.openStream(), "UTF-8"))));
+		}
+		return creates.toArray(new String[creates.size()]);
+	}
 
-    @Override
-    public String[] getDropStatements( SQLDialect dbType )
-                            throws UnsupportedEncodingException, IOException {
-        List<String> creates = new ArrayList<String>();
-        if ( dbType instanceof PostGISDialect ) {
-            URL script = EbrimEOMDStoreProvider.class.getResource( "postgis/drop.sql" );
-            creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
-        }
-        return creates.toArray( new String[creates.size()] );
-    }
+	@Override
+	public String[] getDropStatements(SQLDialect dbType) throws UnsupportedEncodingException, IOException {
+		List<String> creates = new ArrayList<String>();
+		if (dbType instanceof PostGISDialect) {
+			URL script = EbrimEOMDStoreProvider.class.getResource("postgis/drop.sql");
+			creates.addAll(readStatements(new BufferedReader(new InputStreamReader(script.openStream(), "UTF-8"))));
+		}
+		return creates.toArray(new String[creates.size()]);
+	}
 
-    @Override
-    public String getNamespace() {
-        return CONFIG_NS;
-    }
+	@Override
+	public String getNamespace() {
+		return CONFIG_NS;
+	}
 
-    @Override
-    public ResourceMetadata<MetadataStore<? extends MetadataRecord>> createFromLocation( Workspace workspace,
-                                                                                         ResourceLocation<MetadataStore<? extends MetadataRecord>> location ) {
-        return new EbrimEOMDStoreMetadata( workspace, location, this );
-    }
+	@Override
+	public ResourceMetadata<MetadataStore<? extends MetadataRecord>> createFromLocation(Workspace workspace,
+			ResourceLocation<MetadataStore<? extends MetadataRecord>> location) {
+		return new EbrimEOMDStoreMetadata(workspace, location, this);
+	}
 
-    @Override
-    public URL getSchema() {
-        return EbrimEOMDStoreProvider.class.getResource( CONFIG_SCHEMA );
-    }
+	@Override
+	public URL getSchema() {
+		return EbrimEOMDStoreProvider.class.getResource(CONFIG_SCHEMA);
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -47,150 +46,138 @@ import org.deegree.geometry.Envelope;
 
 /**
  * This TileContainer keeps all tiles (AbstractRaster) in memory.
- * 
- * Use this container for tiles with a few thousand or less tiles. The AbstractRaster should be loaded with a LAZY or
- * CACHED LoadingPolicy (see {@link RasterFactory}).
- * 
+ *
+ * Use this container for tiles with a few thousand or less tiles. The AbstractRaster
+ * should be loaded with a LAZY or CACHED LoadingPolicy (see {@link RasterFactory}).
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class MemoryTileContainer implements TileContainer {
 
-    private List<AbstractRaster> tiles = new ArrayList<AbstractRaster>();
+	private List<AbstractRaster> tiles = new ArrayList<AbstractRaster>();
 
-    private RasterGeoReference rasterReference;
+	private RasterGeoReference rasterReference;
 
-    private Envelope envelope;
+	private Envelope envelope;
 
-    private RasterDataInfo rdi;
+	private RasterDataInfo rdi;
 
-    private ResolutionInfo resolutionInfo;
+	private ResolutionInfo resolutionInfo;
 
-    /**
-     * @param geoRasterRef
-     *            of this tile container
-     * @param envelope
-     *            of this tile container.
-     * @param rasterDataInfo
-     */
-    public MemoryTileContainer( RasterGeoReference geoRasterRef, Envelope envelope, RasterDataInfo rasterDataInfo ) {
-        this.envelope = envelope;
-        this.rasterReference = geoRasterRef;
-        this.rdi = rasterDataInfo;
-    }
+	/**
+	 * @param geoRasterRef of this tile container
+	 * @param envelope of this tile container.
+	 * @param rasterDataInfo
+	 */
+	public MemoryTileContainer(RasterGeoReference geoRasterRef, Envelope envelope, RasterDataInfo rasterDataInfo) {
+		this.envelope = envelope;
+		this.rasterReference = geoRasterRef;
+		this.rdi = rasterDataInfo;
+	}
 
-    /**
-     * Creates a MemoryTileContainer with no tiles.
-     * 
-     * @param geoRasterRef
-     *            of this tile container
-     * @param envelope
-     *            of this tile container.
-     */
-    public MemoryTileContainer( RasterGeoReference geoRasterRef, Envelope envelope ) {
-        this( geoRasterRef, envelope, null );
+	/**
+	 * Creates a MemoryTileContainer with no tiles.
+	 * @param geoRasterRef of this tile container
+	 * @param envelope of this tile container.
+	 */
+	public MemoryTileContainer(RasterGeoReference geoRasterRef, Envelope envelope) {
+		this(geoRasterRef, envelope, null);
 
-    }
+	}
 
-    /**
-     * Creates a MemoryTileContainer with given tiles.
-     * 
-     * @param abstractRasters
-     *            one or more tiles
-     */
-    public MemoryTileContainer( AbstractRaster... abstractRasters ) {
-        if ( abstractRasters != null ) {
-            for ( AbstractRaster raster : abstractRasters ) {
-                if ( raster != null ) {
-                    addTile( raster );
-                }
-            }
-        }
-    }
+	/**
+	 * Creates a MemoryTileContainer with given tiles.
+	 * @param abstractRasters one or more tiles
+	 */
+	public MemoryTileContainer(AbstractRaster... abstractRasters) {
+		if (abstractRasters != null) {
+			for (AbstractRaster raster : abstractRasters) {
+				if (raster != null) {
+					addTile(raster);
+				}
+			}
+		}
+	}
 
-    /**
-     * Creates a MemoryTileContainer with given tiles.
-     * 
-     * @param abstractRasters
-     *            one or more tiles
-     */
-    public MemoryTileContainer( List<AbstractRaster> abstractRasters ) {
-        if ( abstractRasters != null ) {
-            for ( AbstractRaster raster : abstractRasters ) {
-                addTile( raster );
-            }
-        }
-    }
+	/**
+	 * Creates a MemoryTileContainer with given tiles.
+	 * @param abstractRasters one or more tiles
+	 */
+	public MemoryTileContainer(List<AbstractRaster> abstractRasters) {
+		if (abstractRasters != null) {
+			for (AbstractRaster raster : abstractRasters) {
+				addTile(raster);
+			}
+		}
+	}
 
-    /**
-     * Adds a new tile to the container.
-     * 
-     * @param raster
-     *            new tile
-     */
-    public synchronized void addTile( AbstractRaster raster ) {
-        if ( raster != null ) {
-            if ( this.envelope == null ) {
-                this.envelope = raster.getEnvelope();
-            } else {
-                this.envelope = this.envelope.merge( raster.getEnvelope() );
-            }
-            if ( this.rasterReference == null ) {
-                this.rasterReference = raster.getRasterReference();
-            } else {
-                this.rasterReference = RasterGeoReference.merger( this.rasterReference, raster.getRasterReference() );
-            }
-            if ( this.rdi == null ) {
-                this.rdi = raster.getRasterDataInfo();
-            }
-            if ( this.resolutionInfo == null ) {
-                this.resolutionInfo = raster.getResolutionInfo();
-            }
-            tiles.add( raster );
-        }
-    }
+	/**
+	 * Adds a new tile to the container.
+	 * @param raster new tile
+	 */
+	public synchronized void addTile(AbstractRaster raster) {
+		if (raster != null) {
+			if (this.envelope == null) {
+				this.envelope = raster.getEnvelope();
+			}
+			else {
+				this.envelope = this.envelope.merge(raster.getEnvelope());
+			}
+			if (this.rasterReference == null) {
+				this.rasterReference = raster.getRasterReference();
+			}
+			else {
+				this.rasterReference = RasterGeoReference.merger(this.rasterReference, raster.getRasterReference());
+			}
+			if (this.rdi == null) {
+				this.rdi = raster.getRasterDataInfo();
+			}
+			if (this.resolutionInfo == null) {
+				this.resolutionInfo = raster.getResolutionInfo();
+			}
+			tiles.add(raster);
+		}
+	}
 
-    public List<AbstractRaster> getTiles( Envelope env ) {
-        List<AbstractRaster> result = new ArrayList<AbstractRaster>();
-        for ( AbstractRaster r : tiles ) {
-            if ( env.intersects( r.getEnvelope() ) ) {
-                result.add( r );
-            }
-        }
-        return result;
-    }
+	public List<AbstractRaster> getTiles(Envelope env) {
+		List<AbstractRaster> result = new ArrayList<AbstractRaster>();
+		for (AbstractRaster r : tiles) {
+			if (env.intersects(r.getEnvelope())) {
+				result.add(r);
+			}
+		}
+		return result;
+	}
 
-    public Envelope getEnvelope() {
-        return envelope;
-    }
+	public Envelope getEnvelope() {
+		return envelope;
+	}
 
-    public RasterGeoReference getRasterReference() {
-        return rasterReference;
-    }
+	public RasterGeoReference getRasterReference() {
+		return rasterReference;
+	}
 
-    @Override
-    public String toString() {
-        StringBuilder result = new StringBuilder();
-        for ( AbstractRaster r : tiles ) {
-            result.append( r.toString() );
-            result.append( "\n\t" );
-        }
-        if ( result.length() > 0 ) {
-            result.delete( result.length() - 3, result.length() );
-        }
-        return result.toString();
-    }
+	@Override
+	public String toString() {
+		StringBuilder result = new StringBuilder();
+		for (AbstractRaster r : tiles) {
+			result.append(r.toString());
+			result.append("\n\t");
+		}
+		if (result.length() > 0) {
+			result.delete(result.length() - 3, result.length());
+		}
+		return result.toString();
+	}
 
-    @Override
-    public RasterDataInfo getRasterDataInfo() {
-        return rdi;
-    }
+	@Override
+	public RasterDataInfo getRasterDataInfo() {
+		return rdi;
+	}
 
-    @Override
-    public ResolutionInfo getResolutionInfo() {
-        return resolutionInfo;
-    }
+	@Override
+	public ResolutionInfo getResolutionInfo() {
+		return resolutionInfo;
+	}
 
 }

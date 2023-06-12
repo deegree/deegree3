@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -40,24 +39,22 @@ import org.deegree.rendering.r3d.multiresolution.Arc;
 import org.deegree.rendering.r3d.multiresolution.MultiresolutionMesh;
 
 /**
- * {@link LODCriterion} that requests the coarsest LOD available in a {@link MultiresolutionMesh}.
- * 
+ * {@link LODCriterion} that requests the coarsest LOD available in a
+ * {@link MultiresolutionMesh}.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class Coarsest implements LODCriterion {
 
-    /**
-     * Always returns false, so no refinements are applied -> the resulting LOD is the coarsest available.
-     * 
-     * @param arc
-     *            arc to be checked
-     * @return always false
-     */
-    @Override
-    public boolean needsRefinement( Arc arc ) {
-        return false;
-    }
+	/**
+	 * Always returns false, so no refinements are applied -> the resulting LOD is the
+	 * coarsest available.
+	 * @param arc arc to be checked
+	 * @return always false
+	 */
+	@Override
+	public boolean needsRefinement(Arc arc) {
+		return false;
+	}
+
 }

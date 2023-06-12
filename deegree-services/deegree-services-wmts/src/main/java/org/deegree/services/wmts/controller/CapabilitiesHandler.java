@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -62,46 +61,42 @@ import org.deegree.workspace.Workspace;
 
 /**
  * Responsible for handling capabilities requests.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 
 class CapabilitiesHandler {
 
-    private ServiceIdentification identification;
+	private ServiceIdentification identification;
 
-    private ServiceProvider provider;
+	private ServiceProvider provider;
 
-    private String metadataUrlTemplate;
+	private String metadataUrlTemplate;
 
-    private List<Theme> themes;
+	private List<Theme> themes;
 
-    private FeatureInfoManager mgr;
+	private FeatureInfoManager mgr;
 
-    CapabilitiesHandler( DeegreeServicesMetadataType mainMetadataConf, Workspace workspace, String metadataUrlTemplate,
-                         String wmtsId, List<Theme> themes, FeatureInfoManager mgr ) {
-        this.themes = themes;
-        this.mgr = mgr;
-        identification = convertFromJAXB( mainMetadataConf.getServiceIdentification() );
-        provider = convertFromJAXB( mainMetadataConf.getServiceProvider() );
+	CapabilitiesHandler(DeegreeServicesMetadataType mainMetadataConf, Workspace workspace, String metadataUrlTemplate,
+			String wmtsId, List<Theme> themes, FeatureInfoManager mgr) {
+		this.themes = themes;
+		this.mgr = mgr;
+		identification = convertFromJAXB(mainMetadataConf.getServiceIdentification());
+		provider = convertFromJAXB(mainMetadataConf.getServiceProvider());
 
-        OWSMetadataProvider metadata = workspace.getResource( OWSMetadataProviderProvider.class, wmtsId + "_metadata" );
-        if ( metadata != null ) {
-            identification = metadata.getServiceIdentification();
-            provider = metadata.getServiceProvider();
-        }
+		OWSMetadataProvider metadata = workspace.getResource(OWSMetadataProviderProvider.class, wmtsId + "_metadata");
+		if (metadata != null) {
+			identification = metadata.getServiceIdentification();
+			provider = metadata.getServiceProvider();
+		}
 
-        this.metadataUrlTemplate = metadataUrlTemplate;
-    }
+		this.metadataUrlTemplate = metadataUrlTemplate;
+	}
 
-    void handleGetCapabilities( Map<String, String> map, XMLStreamWriter writer )
-                            throws XMLStreamException {
-        // GetCapabilities gc =
-        GetCapabilitiesKVPParser.parse( map );
-        new WMTSCapabilitiesWriter( writer, identification, provider, themes, metadataUrlTemplate, mgr ).export100();
-    }
+	void handleGetCapabilities(Map<String, String> map, XMLStreamWriter writer) throws XMLStreamException {
+		// GetCapabilities gc =
+		GetCapabilitiesKVPParser.parse(map);
+		new WMTSCapabilitiesWriter(writer, identification, provider, themes, metadataUrlTemplate, mgr).export100();
+	}
 
 }

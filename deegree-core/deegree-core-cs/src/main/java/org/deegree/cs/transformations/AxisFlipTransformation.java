@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -45,37 +44,33 @@ import org.deegree.cs.exceptions.TransformationException;
 
 /**
  * Transformation means flipping of the first and second axis!
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.org">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class AxisFlipTransformation extends Transformation {
 
-    public AxisFlipTransformation( ICRS sourceCRS, ICRS targetCRS, CRSResource id ) {
-        super( sourceCRS, targetCRS, id );
-    }
+	public AxisFlipTransformation(ICRS sourceCRS, ICRS targetCRS, CRSResource id) {
+		super(sourceCRS, targetCRS, id);
+	}
 
-    @Override
-    public String getImplementationName() {
-        return "AxisFlipTransformation";
-    }
+	@Override
+	public String getImplementationName() {
+		return "AxisFlipTransformation";
+	}
 
-    @Override
-    public List<Point3d> doTransform( List<Point3d> srcPts )
-                            throws TransformationException {
-        for ( Point3d p : srcPts ) {
-            double tmpX = p.x;
-            p.x = p.y;
-            p.y = tmpX;
-        }
-        return srcPts;
-    }
+	@Override
+	public List<Point3d> doTransform(List<Point3d> srcPts) throws TransformationException {
+		for (Point3d p : srcPts) {
+			double tmpX = p.x;
+			p.x = p.y;
+			p.y = tmpX;
+		}
+		return srcPts;
+	}
 
-    @Override
-    public boolean isIdentity() {
-        return false;
-    }
+	@Override
+	public boolean isIdentity() {
+		return false;
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -41,27 +40,33 @@ import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.StringOrRef;
 
 /**
- * Version-agnostic representation of the standard properties that any {@link GMLObject} allows for.
+ * Version-agnostic representation of the standard properties that any {@link GMLObject}
+ * allows for.
  * <p>
  * The following properties exist (description taken from GML 3.1.1/3.2.1 schemas):
  * <ul>
- * <li><b><code>gml:metaDataProperty</code></b>: Contains or refers to a metadata package that contains metadata
- * properties. Has been deprecated in GML 3.2.1.</li>
- * <li><b><code>gml:description</code></b>: The value of this property is a text description of the object.
- * gml:description uses gml:StringOrRefType as its content model, so it may contain a simple text string content, or
- * carry a reference to an external description. The use of gml:description to reference an external description has
- * been deprecated and replaced by the gml:descriptionReference property.</li>
- * <li><b><code>gml:descriptionReference</code></b>: The value of this property is a remote text description of the
- * object. The xlink:href attribute of the gml:descriptionReference property references the external description.</li>
- * <li><b><code>gml:identifier</code></b>: Often, a special identifier is assigned to an object by the maintaining
- * authority with the intention that it is used in references to the object For such cases, the codeSpace shall be
- * provided. That identifier is usually unique either globally or within an application domain. gml:identifier is a
- * pre-defined property for such identifiers.</li>
- * <li><b><code>gml:name</code></b>: The gml:name property provides a label or identifier for the object, commonly a
- * descriptive name. An object may have several names, typically assigned by different authorities. gml:name uses the
- * gml:CodeType content model. The authority for a name is indicated by the value of its (optional) codeSpace attribute.
- * The name may or may not be unique, as determined by the rules of the organization responsible for the codeSpace. In
- * common usage there will be one name per authority, so a processing application may select the name from its preferred
+ * <li><b><code>gml:metaDataProperty</code></b>: Contains or refers to a metadata package
+ * that contains metadata properties. Has been deprecated in GML 3.2.1.</li>
+ * <li><b><code>gml:description</code></b>: The value of this property is a text
+ * description of the object. gml:description uses gml:StringOrRefType as its content
+ * model, so it may contain a simple text string content, or carry a reference to an
+ * external description. The use of gml:description to reference an external description
+ * has been deprecated and replaced by the gml:descriptionReference property.</li>
+ * <li><b><code>gml:descriptionReference</code></b>: The value of this property is a
+ * remote text description of the object. The xlink:href attribute of the
+ * gml:descriptionReference property references the external description.</li>
+ * <li><b><code>gml:identifier</code></b>: Often, a special identifier is assigned to an
+ * object by the maintaining authority with the intention that it is used in references to
+ * the object For such cases, the codeSpace shall be provided. That identifier is usually
+ * unique either globally or within an application domain. gml:identifier is a pre-defined
+ * property for such identifiers.</li>
+ * <li><b><code>gml:name</code></b>: The gml:name property provides a label or identifier
+ * for the object, commonly a descriptive name. An object may have several names,
+ * typically assigned by different authorities. gml:name uses the gml:CodeType content
+ * model. The authority for a name is indicated by the value of its (optional) codeSpace
+ * attribute. The name may or may not be unique, as determined by the rules of the
+ * organization responsible for the codeSpace. In common usage there will be one name per
+ * authority, so a processing application may select the name from its preferred
  * codeSpace.</li>
  * </ul>
  * </p>
@@ -111,42 +116,35 @@ import org.deegree.commons.tom.ows.StringOrRef;
  * </tr>
  * </table>
  * </p>
- * 
+ *
  * @see Feature
  * @see Geometry
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * 
- * @version $Revision: $, $Date: $
  */
 public interface GMLStdProps {
 
-    /**
-     * Returns the metadata values.
-     * 
-     * @return the metadata values, may be empty, but never <code>null</code>
-     */
-    public TypedObjectNode[] getMetadata();
+	/**
+	 * Returns the metadata values.
+	 * @return the metadata values, may be empty, but never <code>null</code>
+	 */
+	public TypedObjectNode[] getMetadata();
 
-    /**
-     * Returns the description.
-     * 
-     * @return the description, may be <code>null</code>
-     */
-    public StringOrRef getDescription();
+	/**
+	 * Returns the description.
+	 * @return the description, may be <code>null</code>
+	 */
+	public StringOrRef getDescription();
 
-    /**
-     * Returns the identifier.
-     * 
-     * @return the identifier, may be <code>null</code>
-     */
-    public CodeType getIdentifier();
+	/**
+	 * Returns the identifier.
+	 * @return the identifier, may be <code>null</code>
+	 */
+	public CodeType getIdentifier();
 
-    /**
-     * Returns the names.
-     * 
-     * @return the names, may be empty, but never <code>null</code>
-     */
-    public CodeType[] getNames();
+	/**
+	 * Returns the names.
+	 * @return the names, may be empty, but never <code>null</code>
+	 */
+	public CodeType[] getNames();
+
 }

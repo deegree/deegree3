@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -60,152 +59,152 @@ import org.slf4j.LoggerFactory;
 
 /**
  * {@link XPathEvaluator} implementation for {@link TypedObjectNode} graphs.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class TypedObjectNodeXPathEvaluator implements XPathEvaluator<TypedObjectNode> {
 
-    private static Logger LOG = LoggerFactory.getLogger( TypedObjectNodeXPathEvaluator.class );
+	private static Logger LOG = LoggerFactory.getLogger(TypedObjectNodeXPathEvaluator.class);
 
-    private Map<String, QName> bindings;
+	private Map<String, QName> bindings;
 
-    public TypedObjectNodeXPathEvaluator() {
-        // default constructor
-    }
+	public TypedObjectNodeXPathEvaluator() {
+		// default constructor
+	}
 
-    /**
-     * @param bindings
-     *            a mapping from local name to qname to use for repairing broken filters, may be null
-     */
-    public TypedObjectNodeXPathEvaluator( Map<String, QName> bindings ) {
-        this.bindings = bindings;
-    }
+	/**
+	 * @param bindings a mapping from local name to qname to use for repairing broken
+	 * filters, may be null
+	 */
+	public TypedObjectNodeXPathEvaluator(Map<String, QName> bindings) {
+		this.bindings = bindings;
+	}
 
-    @Override
-    public TypedObjectNode[] eval( TypedObjectNode particle, ValueReference path )
-                            throws FilterEvaluationException {
-        if ( particle instanceof GMLObject ) {
-            return eval( (GMLObject) particle, path );
-        }
-        if ( particle instanceof ElementNode ) {
-            return eval( (ElementNode) particle, path );
-        }
-        throw new FilterEvaluationException( "Evaluation of XPath expressions on '" + particle.getClass()
-                                             + "' is not supported." );
-    }
+	@Override
+	public TypedObjectNode[] eval(TypedObjectNode particle, ValueReference path) throws FilterEvaluationException {
+		if (particle instanceof GMLObject) {
+			return eval((GMLObject) particle, path);
+		}
+		if (particle instanceof ElementNode) {
+			return eval((ElementNode) particle, path);
+		}
+		throw new FilterEvaluationException(
+				"Evaluation of XPath expressions on '" + particle.getClass() + "' is not supported.");
+	}
 
-    public TypedObjectNode[] eval( GMLObject context, ValueReference propName )
-                            throws FilterEvaluationException {
+	public TypedObjectNode[] eval(GMLObject context, ValueReference propName) throws FilterEvaluationException {
 
-        // simple property with just a simple element step?
-        QName simplePropName = propName.getAsQName();
-        if ( bindings != null && simplePropName != null
-             && ( simplePropName.getNamespaceURI() == null || simplePropName.getNamespaceURI().isEmpty() ) ) {
-            QName altName = bindings.get( simplePropName.getLocalPart() );
-            if ( altName != null ) {
-                LOG.debug( "Repairing namespace binding for property {}", simplePropName.getLocalPart() );
-                simplePropName = altName;
-            }
-        }
-        if ( simplePropName != null && context instanceof Feature ) {
-            List<Property> props = context.getProperties( simplePropName );
-            TypedObjectNode[] propArray = new TypedObjectNode[props.size()];
-            return props.toArray( propArray );
-        }
+		// simple property with just a simple element step?
+		QName simplePropName = propName.getAsQName();
+		if (bindings != null && simplePropName != null
+				&& (simplePropName.getNamespaceURI() == null || simplePropName.getNamespaceURI().isEmpty())) {
+			QName altName = bindings.get(simplePropName.getLocalPart());
+			if (altName != null) {
+				LOG.debug("Repairing namespace binding for property {}", simplePropName.getLocalPart());
+				simplePropName = altName;
+			}
+		}
+		if (simplePropName != null && context instanceof Feature) {
+			List<Property> props = context.getProperties(simplePropName);
+			TypedObjectNode[] propArray = new TypedObjectNode[props.size()];
+			return props.toArray(propArray);
+		}
 
-        TypedObjectNode[] resultValues = null;
-        try {
-            synchronized ( context ) {
-                XPath xpath = new GMLObjectXPath( propName.getAsText(), context );
-                xpath.setNamespaceContext( propName.getNsContext() );
-                List<?> selectedNodes;
-                selectedNodes = xpath.selectNodes( new GMLObjectNode<GMLObject, GMLObject>( null, context ) );
-                resultValues = new TypedObjectNode[selectedNodes.size()];
-                int i = 0;
-                for ( Object node : selectedNodes ) {
-                    if ( node instanceof XPathNode<?> ) {
-                        resultValues[i++] = ( (XPathNode<?>) node ).getValue();
-                    } else if ( node instanceof String || node instanceof Double || node instanceof Boolean ) {
-                        resultValues[i++] = new PrimitiveValue( node );
-                    } else {
-                        throw new RuntimeException( "Internal error. Encountered unexpected value of type '"
-                                                    + node.getClass().getName() + "' (=" + node
-                                                    + ") during XPath-evaluation." );
-                    }
-                }
-            }
-        } catch ( JaxenException e ) {
-            e.printStackTrace();
-            throw new FilterEvaluationException( e.getMessage() );
-        }
-        return resultValues;
-    }
+		TypedObjectNode[] resultValues = null;
+		try {
+			synchronized (context) {
+				XPath xpath = new GMLObjectXPath(propName.getAsText(), context);
+				xpath.setNamespaceContext(propName.getNsContext());
+				List<?> selectedNodes;
+				selectedNodes = xpath.selectNodes(new GMLObjectNode<GMLObject, GMLObject>(null, context));
+				resultValues = new TypedObjectNode[selectedNodes.size()];
+				int i = 0;
+				for (Object node : selectedNodes) {
+					if (node instanceof XPathNode<?>) {
+						resultValues[i++] = ((XPathNode<?>) node).getValue();
+					}
+					else if (node instanceof String || node instanceof Double || node instanceof Boolean) {
+						resultValues[i++] = new PrimitiveValue(node);
+					}
+					else {
+						throw new RuntimeException("Internal error. Encountered unexpected value of type '"
+								+ node.getClass().getName() + "' (=" + node + ") during XPath-evaluation.");
+					}
+				}
+			}
+		}
+		catch (JaxenException e) {
+			e.printStackTrace();
+			throw new FilterEvaluationException(e.getMessage());
+		}
+		return resultValues;
+	}
 
-    public TypedObjectNode[] eval( ElementNode element, ValueReference propName )
-                            throws FilterEvaluationException {
+	public TypedObjectNode[] eval(ElementNode element, ValueReference propName) throws FilterEvaluationException {
 
-        TypedObjectNode[] resultValues = null;
-        try {
-            XPath xpath = new GMLObjectXPath( propName.getAsText(), null );
-            xpath.setNamespaceContext( propName.getNsContext() );
-            List<?> selectedNodes;
-            selectedNodes = xpath.selectNodes( new XMLElementNode( null, element ) );
-            resultValues = new TypedObjectNode[selectedNodes.size()];
-            int i = 0;
-            for ( Object node : selectedNodes ) {
-                if ( node instanceof XPathNode<?> ) {
-                    resultValues[i++] = ( (XPathNode<?>) node ).getValue();
-                } else if ( node instanceof String || node instanceof Double || node instanceof Boolean ) {
-                    resultValues[i++] = new PrimitiveValue( node );
-                } else {
-                    throw new RuntimeException( "Internal error. Encountered unexpected value of type '"
-                                                + node.getClass().getName() + "' (=" + node
-                                                + ") during XPath-evaluation." );
-                }
-            }
-        } catch ( JaxenException e ) {
-            throw new FilterEvaluationException( e.getMessage() );
-        }
-        return resultValues;
-    }
+		TypedObjectNode[] resultValues = null;
+		try {
+			XPath xpath = new GMLObjectXPath(propName.getAsText(), null);
+			xpath.setNamespaceContext(propName.getNsContext());
+			List<?> selectedNodes;
+			selectedNodes = xpath.selectNodes(new XMLElementNode(null, element));
+			resultValues = new TypedObjectNode[selectedNodes.size()];
+			int i = 0;
+			for (Object node : selectedNodes) {
+				if (node instanceof XPathNode<?>) {
+					resultValues[i++] = ((XPathNode<?>) node).getValue();
+				}
+				else if (node instanceof String || node instanceof Double || node instanceof Boolean) {
+					resultValues[i++] = new PrimitiveValue(node);
+				}
+				else {
+					throw new RuntimeException("Internal error. Encountered unexpected value of type '"
+							+ node.getClass().getName() + "' (=" + node + ") during XPath-evaluation.");
+				}
+			}
+		}
+		catch (JaxenException e) {
+			throw new FilterEvaluationException(e.getMessage());
+		}
+		return resultValues;
+	}
 
-    public TypedObjectNode[] eval( Property element, ValueReference propName )
-                            throws FilterEvaluationException {
+	public TypedObjectNode[] eval(Property element, ValueReference propName) throws FilterEvaluationException {
 
-        TypedObjectNode[] resultValues = null;
-        try {
-            XPath xpath = new GMLObjectXPath( propName.getAsText(), null );
-            xpath.setNamespaceContext( propName.getNsContext() );
-            List<?> selectedNodes;
-            selectedNodes = xpath.selectNodes( new PropertyNode( null, element ) );
-            resultValues = new TypedObjectNode[selectedNodes.size()];
-            int i = 0;
-            for ( Object node : selectedNodes ) {
-                if ( node instanceof XPathNode<?> ) {
-                    resultValues[i++] = ( (XPathNode<?>) node ).getValue();
-                } else if ( node instanceof String || node instanceof Double || node instanceof Boolean ) {
-                    resultValues[i++] = new PrimitiveValue( node );
-                } else {
-                    throw new RuntimeException( "Internal error. Encountered unexpected value of type '"
-                                                + node.getClass().getName() + "' (=" + node
-                                                + ") during XPath-evaluation." );
-                }
-            }
-        } catch ( JaxenException e ) {
-            throw new FilterEvaluationException( e.getMessage() );
-        }
-        return resultValues;
-    }
+		TypedObjectNode[] resultValues = null;
+		try {
+			XPath xpath = new GMLObjectXPath(propName.getAsText(), null);
+			xpath.setNamespaceContext(propName.getNsContext());
+			List<?> selectedNodes;
+			selectedNodes = xpath.selectNodes(new PropertyNode(null, element));
+			resultValues = new TypedObjectNode[selectedNodes.size()];
+			int i = 0;
+			for (Object node : selectedNodes) {
+				if (node instanceof XPathNode<?>) {
+					resultValues[i++] = ((XPathNode<?>) node).getValue();
+				}
+				else if (node instanceof String || node instanceof Double || node instanceof Boolean) {
+					resultValues[i++] = new PrimitiveValue(node);
+				}
+				else {
+					throw new RuntimeException("Internal error. Encountered unexpected value of type '"
+							+ node.getClass().getName() + "' (=" + node + ") during XPath-evaluation.");
+				}
+			}
+		}
+		catch (JaxenException e) {
+			throw new FilterEvaluationException(e.getMessage());
+		}
+		return resultValues;
+	}
 
-    @Override
-    public String getId( TypedObjectNode context ) {
-        if ( context instanceof GMLObject ) {
-            return ( (GMLObject) context ).getId();
-        }
-        // TODO implement fallback to generic gml:id attribute
-        return null;
-    }
+	@Override
+	public String getId(TypedObjectNode context) {
+		if (context instanceof GMLObject) {
+			return ((GMLObject) context).getId();
+		}
+		// TODO implement fallback to generic gml:id attribute
+		return null;
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -44,52 +43,48 @@ package org.deegree.workspace;
 import java.util.Set;
 
 /**
- * The resource metadata objects are the central objects, as they can be used to determine dependency chains and are the
- * originating object for creating resources.
- * 
+ * The resource metadata objects are the central objects, as they can be used to determine
+ * dependency chains and are the originating object for creating resources.
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public interface ResourceMetadata<T extends Resource> {
 
-    /**
-     * @return the location, never <code>null</code>
-     */
-    ResourceLocation<T> getLocation();
+	/**
+	 * @return the location, never <code>null</code>
+	 */
+	ResourceLocation<T> getLocation();
 
-    /**
-     * Must be used to determine dependencies needed to build this resource. Must return a builder object that can be
-     * used to actually build a resource.
-     * 
-     * @return the builder, never <code>null</code>
-     */
-    ResourceBuilder<T> prepare();
+	/**
+	 * Must be used to determine dependencies needed to build this resource. Must return a
+	 * builder object that can be used to actually build a resource.
+	 * @return the builder, never <code>null</code>
+	 */
+	ResourceBuilder<T> prepare();
 
-    /**
-     * @return the identifier, never <code>null</code>
-     */
-    ResourceIdentifier<T> getIdentifier();
+	/**
+	 * @return the identifier, never <code>null</code>
+	 */
+	ResourceIdentifier<T> getIdentifier();
 
-    /**
-     * Initialization of the resource connected to this metadata will not be attempted unless all dependencies are
-     * available.
-     * 
-     * @return a set of dependencies, may be empty but never <code>null</code>
-     */
-    Set<ResourceIdentifier<? extends Resource>> getDependencies();
+	/**
+	 * Initialization of the resource connected to this metadata will not be attempted
+	 * unless all dependencies are available.
+	 * @return a set of dependencies, may be empty but never <code>null</code>
+	 */
+	Set<ResourceIdentifier<? extends Resource>> getDependencies();
 
-    /**
-     * Soft dependencies are dependencies that must be initialized before the resource connected to this metadata, but
-     * may also be missing.
-     * 
-     * @return a set of dependencies, may be empty but never <code>null</code>
-     */
-    Set<ResourceIdentifier<? extends Resource>> getSoftDependencies();
+	/**
+	 * Soft dependencies are dependencies that must be initialized before the resource
+	 * connected to this metadata, but may also be missing.
+	 * @return a set of dependencies, may be empty but never <code>null</code>
+	 */
+	Set<ResourceIdentifier<? extends Resource>> getSoftDependencies();
 
-    /**
-     * @return the actual resource provider used by this resource, never <code>null</code>
-     */
-    ResourceProvider<T> getProvider();
+	/**
+	 * @return the actual resource provider used by this resource, never <code>null</code>
+	 */
+	ResourceProvider<T> getProvider();
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -47,109 +46,98 @@ import org.deegree.services.wcs.model.CoverageOptions;
 import org.deegree.services.wcs.model.CoverageResult;
 
 /**
- * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 public abstract class WCSCoverage {
 
-    /**
-     * The output envelopes in different coordinate systems, is synchronized
-     */
-    public final Set<Envelope> responseEnvelopes = Collections.synchronizedSet( new HashSet<Envelope>() );
+	/**
+	 * The output envelopes in different coordinate systems, is synchronized
+	 */
+	public final Set<Envelope> responseEnvelopes = Collections.synchronizedSet(new HashSet<Envelope>());
 
-    /**
-     * The real coverage
-     */
-    protected final org.deegree.coverage.AbstractCoverage coverage;
+	/**
+	 * The real coverage
+	 */
+	protected final org.deegree.coverage.AbstractCoverage coverage;
 
-    private final CoverageOptions coverageOptions;
+	private final CoverageOptions coverageOptions;
 
-    private RangeSet rangeSet;
+	private RangeSet rangeSet;
 
-    private final String name;
+	private final String name;
 
-    private String label;
+	private String label;
 
-    /**
-     * @param name
-     * @param label
-     * @param coverage
-     * @param options
-     *            of this coverage
-     * @param rangeSet
-     */
-    public WCSCoverage( String name, String label, org.deegree.coverage.AbstractCoverage coverage,
-                        CoverageOptions options, RangeSet rangeSet ) {
-        this.name = name;
-        this.label = label;
-        this.coverage = coverage;
-        this.coverageOptions = options;
-        this.rangeSet = rangeSet;
-    }
+	/**
+	 * @param name
+	 * @param label
+	 * @param coverage
+	 * @param options of this coverage
+	 * @param rangeSet
+	 */
+	public WCSCoverage(String name, String label, org.deegree.coverage.AbstractCoverage coverage,
+			CoverageOptions options, RangeSet rangeSet) {
+		this.name = name;
+		this.label = label;
+		this.coverage = coverage;
+		this.coverageOptions = options;
+		this.rangeSet = rangeSet;
+	}
 
-    /**
-     * @return short unique name
-     */
-    public String getName() {
-        return name;
-    }
+	/**
+	 * @return short unique name
+	 */
+	public String getName() {
+		return name;
+	}
 
-    /**
-     * @return human readable label
-     */
-    public String getLabel() {
-        return label;
-    }
+	/**
+	 * @return human readable label
+	 */
+	public String getLabel() {
+		return label;
+	}
 
-    /**
-     * @return the supported options for this coverage (like interpolation, etc)
-     */
-    public CoverageOptions getCoverageOptions() {
-        return coverageOptions;
-    }
+	/**
+	 * @return the supported options for this coverage (like interpolation, etc)
+	 */
+	public CoverageOptions getCoverageOptions() {
+		return coverageOptions;
+	}
 
-    /**
-     * @return the range set of this coverage.
-     */
-    public RangeSet getRangeSet() {
-        return rangeSet;
-    }
+	/**
+	 * @return the range set of this coverage.
+	 */
+	public RangeSet getRangeSet() {
+		return rangeSet;
+	}
 
-    /**
-     * @return the envelope
-     */
-    public Envelope getEnvelope() {
-        return coverage.getEnvelope();
-    }
+	/**
+	 * @return the envelope
+	 */
+	public Envelope getEnvelope() {
+		return coverage.getEnvelope();
+	}
 
-    /**
-     * Query the Coverage for a subset.
-     * 
-     * @param env
-     *            the requested envelope
-     * @param grid
-     *            grid format of the output
-     * @param format
-     *            the output format
-     * @param interpolation
-     *            the interpolation method
-     * @param rangeset
-     *            the requested range set.
-     * @return the subset
-     * @throws WCServiceException
-     */
-    public abstract CoverageResult getCoverageResult( Envelope env, Grid grid, String format, String interpolation,
-                                                      RangeSet rangeset )
-                            throws WCServiceException;
+	/**
+	 * Query the Coverage for a subset.
+	 * @param env the requested envelope
+	 * @param grid grid format of the output
+	 * @param format the output format
+	 * @param interpolation the interpolation method
+	 * @param rangeset the requested range set.
+	 * @return the subset
+	 * @throws WCServiceException
+	 */
+	public abstract CoverageResult getCoverageResult(Envelope env, Grid grid, String format, String interpolation,
+			RangeSet rangeset) throws WCServiceException;
 
-    /**
-     * @param configuredRS
-     */
-    public void setRangeSet( RangeSet configuredRS ) {
-        this.rangeSet = configuredRS;
-    }
+	/**
+	 * @param configuredRS
+	 */
+	public void setRangeSet(RangeSet configuredRS) {
+		this.rangeSet = configuredRS;
+	}
+
 }

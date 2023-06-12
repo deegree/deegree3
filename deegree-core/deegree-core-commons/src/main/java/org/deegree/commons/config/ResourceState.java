@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -38,126 +37,113 @@ package org.deegree.commons.config;
 import java.io.File;
 
 /**
- * Encapsulates information on the state of a managed {@link Resource} (and provides access to it).
- * 
+ * Encapsulates information on the state of a managed {@link Resource} (and provides
+ * access to it).
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class ResourceState<T extends Resource> {
 
-    /**
-     * Represents the lifecycle phases of a {@link Resource}.
-     * 
-     * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
-     * @author last edited by: $Author$
-     * 
-     * @version $Revision$, $Date$
-     */
-    public static enum StateType {
-        /** Resource is deactivated */
-        deactivated,
-        /** Resource has been created, but not initialized yet */
-        created,
-        /** Resource has been successfully initialized */
-        init_ok,
-        /** Error occured during initialization */
-        init_error,
-        /** Resource has been destroyed */
-        destroyed
-    }
+	/**
+	 * Represents the lifecycle phases of a {@link Resource}.
+	 *
+	 * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+	 */
+	public static enum StateType {
 
-    private final StateType type;
+		/** Resource is deactivated */
+		deactivated,
+		/** Resource has been created, but not initialized yet */
+		created,
+		/** Resource has been successfully initialized */
+		init_ok,
+		/** Error occured during initialization */
+		init_error,
+		/** Resource has been destroyed */
+		destroyed
 
-    private final ResourceInitException lastException;
+	}
 
-    private final String id;
+	private final StateType type;
 
-    private final File configLocation;
+	private final ResourceInitException lastException;
 
-    private final T resource;
+	private final String id;
 
-    private final ResourceProvider provider;
+	private final File configLocation;
 
-    /**
-     * Creates a new {@link ResourceState} instance.
-     * 
-     * @param id
-     *            resource identifier, never <code>null</code>
-     * @param configLocation
-     *            config file location, can be <code>null</code>
-     * @param type
-     *            state type, must not be <code>null</code>
-     * @param resource
-     *            actual resource object, can be <code>null</code>
-     * @param lastException
-     *            exception that occurred during the last state change of the resource, can be <code>null</code> (no
-     *            exception)
-     */
-    public ResourceState( String id, File configLocation, ResourceProvider provider, StateType type, T resource,
-                          ResourceInitException lastException ) {
-        this.id = id;
-        this.configLocation = configLocation;
-        this.provider = provider;
-        this.type = type;
-        this.resource = resource;
-        this.lastException = lastException;
-    }
+	private final T resource;
 
-    /**
-     * Returns an identifier that uniquely identifies the resource among all resources that are managed by the
-     * corresponding {@link ResourceManager}.
-     * 
-     * @return identifier of the resource, never <code>null</code>
-     */
-    public String getId() {
-        return id;
-    }
+	private final ResourceProvider provider;
 
-    public File getConfigLocation() {
-        return configLocation;
-    }
+	/**
+	 * Creates a new {@link ResourceState} instance.
+	 * @param id resource identifier, never <code>null</code>
+	 * @param configLocation config file location, can be <code>null</code>
+	 * @param type state type, must not be <code>null</code>
+	 * @param resource actual resource object, can be <code>null</code>
+	 * @param lastException exception that occurred during the last state change of the
+	 * resource, can be <code>null</code> (no exception)
+	 */
+	public ResourceState(String id, File configLocation, ResourceProvider provider, StateType type, T resource,
+			ResourceInitException lastException) {
+		this.id = id;
+		this.configLocation = configLocation;
+		this.provider = provider;
+		this.type = type;
+		this.resource = resource;
+		this.lastException = lastException;
+	}
 
-    /**
-     * Returns the {@link ResourceProvider} responsible for this resource.
-     * 
-     * @return resource provider, can be <code>null</code> (no suitable resource provider available)
-     */
-    public ResourceProvider getProvider() {
-        return provider;
-    }
+	/**
+	 * Returns an identifier that uniquely identifies the resource among all resources
+	 * that are managed by the corresponding {@link ResourceManager}.
+	 * @return identifier of the resource, never <code>null</code>
+	 */
+	public String getId() {
+		return id;
+	}
 
-    /**
-     * Returns the state type.
-     * 
-     * @return the state type, never <code>null</code>
-     */
-    public StateType getType() {
-        return type;
-    }
+	public File getConfigLocation() {
+		return configLocation;
+	}
 
-    /**
-     * Returns the actual resource.
-     * 
-     * @return resource, can be <code>null</code>
-     */
-    public T getResource() {
-        return resource;
-    }
+	/**
+	 * Returns the {@link ResourceProvider} responsible for this resource.
+	 * @return resource provider, can be <code>null</code> (no suitable resource provider
+	 * available)
+	 */
+	public ResourceProvider getProvider() {
+		return provider;
+	}
 
-    /**
-     * Returns the exception that occurred during the last state change of the resource.
-     * 
-     * @return the last exception, can be <code>null</code>
-     */
-    public ResourceInitException getLastException() {
-        return lastException;
-    }
+	/**
+	 * Returns the state type.
+	 * @return the state type, never <code>null</code>
+	 */
+	public StateType getType() {
+		return type;
+	}
 
-    @Override
-    public String toString() {
-        return "ResourceState: " + id + " (" + type + ")";
-    }
+	/**
+	 * Returns the actual resource.
+	 * @return resource, can be <code>null</code>
+	 */
+	public T getResource() {
+		return resource;
+	}
+
+	/**
+	 * Returns the exception that occurred during the last state change of the resource.
+	 * @return the last exception, can be <code>null</code>
+	 */
+	public ResourceInitException getLastException() {
+		return lastException;
+	}
+
+	@Override
+	public String toString() {
+		return "ResourceState: " + id + " (" + type + ")";
+	}
 
 }

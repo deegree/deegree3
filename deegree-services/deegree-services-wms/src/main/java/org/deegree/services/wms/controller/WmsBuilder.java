@@ -35,28 +35,27 @@ import org.deegree.workspace.Workspace;
 
 /**
  * This class is responsible for building WMS services.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class WmsBuilder implements ResourceBuilder<OWS> {
 
-    private ResourceMetadata<OWS> metadata;
+	private ResourceMetadata<OWS> metadata;
 
-    private Workspace workspace;
+	private Workspace workspace;
 
-    private DeegreeWMS config;
+	private DeegreeWMS config;
 
-    public WmsBuilder( ResourceMetadata<OWS> metadata, Workspace workspace, DeegreeWMS config ) {
-        this.metadata = metadata;
-        this.workspace = workspace;
-        this.config = config;
-    }
+	public WmsBuilder(ResourceMetadata<OWS> metadata, Workspace workspace, DeegreeWMS config) {
+		this.metadata = metadata;
+		this.workspace = workspace;
+		this.config = config;
+	}
 
-    @Override
-    public OWS build() {
-        return new WMSController( metadata, workspace, config );
-    }
+	@Override
+	public OWS build() {
+		return new WMSController(metadata, workspace, config);
+	}
 
 }

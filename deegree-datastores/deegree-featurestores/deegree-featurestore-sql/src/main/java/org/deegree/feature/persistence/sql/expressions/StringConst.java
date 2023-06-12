@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -37,25 +36,22 @@ package org.deegree.feature.persistence.sql.expressions;
 
 import org.deegree.sqldialect.filter.MappingExpression;
 
-
 /**
  * The <code></code> class TODO add class documentation here.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class StringConst implements MappingExpression {
 
-    private String s;
+	private String s;
 
-    public StringConst( String s ) {
-        this.s = s;
-    }
+	public StringConst(String s) {
+		this.s = s;
+	}
 
-    @Override
-    public String toString() {
-        return "'" + s + "'";
-    }
+	@Override
+	public String toString() {
+		return "'" + s + "'";
+	}
+
 }

@@ -57,120 +57,117 @@ import org.slf4j.LoggerFactory;
  */
 public class GpkgGeometryConverter implements GeometryParticleConverter {
 
-    private static Logger LOG = LoggerFactory.getLogger( GpkgGeometryConverter.class );
+	private static Logger LOG = LoggerFactory.getLogger(GpkgGeometryConverter.class);
 
-    private final String column;
+	private final String column;
 
-    private final ICRS crs;
+	private final ICRS crs;
 
-    private final String srid;
+	private final String srid;
 
-    /**
-     * Creates a new {@link GpkgGeometryConverter} instance.
-     *
-     * @param column (unqualified) column that stores the geometry, must not be <code>null</code>
-     * @param crs    CRS of the stored geometries, can be <code>null</code>
-     * @param srid   PostGIS spatial reference identifier, must not be <code>null</code>
-     */
-    public GpkgGeometryConverter( String column, ICRS crs, String srid ) {
-        this.column = column;
-        this.crs = crs;
-        this.srid = srid;
-    }
+	/**
+	 * Creates a new {@link GpkgGeometryConverter} instance.
+	 * @param column (unqualified) column that stores the geometry, must not be
+	 * <code>null</code>
+	 * @param crs CRS of the stored geometries, can be <code>null</code>
+	 * @param srid PostGIS spatial reference identifier, must not be <code>null</code>
+	 */
+	public GpkgGeometryConverter(String column, ICRS crs, String srid) {
+		this.column = column;
+		this.crs = crs;
+		this.srid = srid;
+	}
 
-    @Override
-    public String getSelectSnippet( String tableAlias ) {
-        if ( tableAlias != null ) {
-            return tableAlias + "." + column;
-        }
-        return column;
-    }
+	@Override
+	public String getSelectSnippet(String tableAlias) {
+		if (tableAlias != null) {
+			return tableAlias + "." + column;
+		}
+		return column;
+	}
 
-    @Override
-    public String getSetSnippet( Geometry particle ) {
-        return null;
-    }
+	@Override
+	public String getSetSnippet(Geometry particle) {
+		return null;
+	}
 
-    @Override
-    public Geometry toParticle( ResultSet rs, int colIndex )
-                            throws SQLException {
-        ByteBuffer bb = ByteBuffer.wrap( rs.getBytes( colIndex ) );
-        if ( bb == null ) {
-            return null;
-        }
-        try {
-            int[] header = parseGpkgHeader( bb );
-            int headerLength = header[0];
-            int endian = header[1];
-            return parseGpkgGeometry( bb, headerLength, endian );
-        } catch ( Throwable t ) {
-            throw new IllegalArgumentException( t.getMessage(), t );
-        }
-    }
+	@Override
+	public Geometry toParticle(ResultSet rs, int colIndex) throws SQLException {
+		ByteBuffer bb = ByteBuffer.wrap(rs.getBytes(colIndex));
+		if (bb == null) {
+			return null;
+		}
+		try {
+			int[] header = parseGpkgHeader(bb);
+			int headerLength = header[0];
+			int endian = header[1];
+			return parseGpkgGeometry(bb, headerLength, endian);
+		}
+		catch (Throwable t) {
+			throw new IllegalArgumentException(t.getMessage(), t);
+		}
+	}
 
-    private int[] parseGpkgHeader( ByteBuffer pgb )
-                            throws Exception {
-        byte bytes = pgb.get( 3 );
-        int endian = bytes & 0x01;
-        int headerLength = getFlags( bytes );
-        return new int[] { headerLength, endian };
-    }
+	private int[] parseGpkgHeader(ByteBuffer pgb) throws Exception {
+		byte bytes = pgb.get(3);
+		int endian = bytes & 0x01;
+		int headerLength = getFlags(bytes);
+		return new int[] { headerLength, endian };
+	}
 
-    private int getFlags( byte bytes )
-                            throws Exception {
-        int flags = ( bytes & 0x0E ) >> 1;
-        return getHeaderLength( flags );
-    }
+	private int getFlags(byte bytes) throws Exception {
+		int flags = (bytes & 0x0E) >> 1;
+		return getHeaderLength(flags);
+	}
 
-    @SuppressWarnings("unchecked")
-    private int getHeaderLength( int flag )
-                            throws Exception {
-        Map<Integer, Integer> eb = new HashMap();
-        eb.put( 0, 8 );
-        eb.put( 1, 40 );
-        eb.put( 2, 56 );
-        eb.put( 3, 56 );
-        eb.put( 4, 72 );
+	@SuppressWarnings("unchecked")
+	private int getHeaderLength(int flag) throws Exception {
+		Map<Integer, Integer> eb = new HashMap();
+		eb.put(0, 8);
+		eb.put(1, 40);
+		eb.put(2, 56);
+		eb.put(3, 56);
+		eb.put(4, 72);
 
-        int envelopeLength = 0;
-        try {
-            envelopeLength = eb.get( flag );
-        } catch ( Exception e ) {
-            System.out.println( "Invalid envelope code value:" + flag );
-        }
-        return envelopeLength;
-    }
+		int envelopeLength = 0;
+		try {
+			envelopeLength = eb.get(flag);
+		}
+		catch (Exception e) {
+			System.out.println("Invalid envelope code value:" + flag);
+		}
+		return envelopeLength;
+	}
 
-    private Geometry parseGpkgGeometry( ByteBuffer byb, int headerLength, int endian )
-                            throws Exception {
-        WKBReader wkbReader = new WKBReader();
-        if ( endian == 0 )
-            byb.order( ByteOrder.BIG_ENDIAN );
-        else {
-            byb.order( ByteOrder.LITTLE_ENDIAN );
-        }
-        byte[] wkb = new byte[byb.capacity() - headerLength];
-        byb.position( headerLength );
-        byb.get( wkb, 0, wkb.length );
-        Geometry gpkgGeom = wkbReader.read( wkb, crs );
-        if ( gpkgGeom == null ) {
-            throw new Exception( "Unable to parse the GeoPackage geometry" );
-        }
-        return gpkgGeom;
-    }
+	private Geometry parseGpkgGeometry(ByteBuffer byb, int headerLength, int endian) throws Exception {
+		WKBReader wkbReader = new WKBReader();
+		if (endian == 0)
+			byb.order(ByteOrder.BIG_ENDIAN);
+		else {
+			byb.order(ByteOrder.LITTLE_ENDIAN);
+		}
+		byte[] wkb = new byte[byb.capacity() - headerLength];
+		byb.position(headerLength);
+		byb.get(wkb, 0, wkb.length);
+		Geometry gpkgGeom = wkbReader.read(wkb, crs);
+		if (gpkgGeom == null) {
+			throw new Exception("Unable to parse the GeoPackage geometry");
+		}
+		return gpkgGeom;
+	}
 
-    @Override
-    public void setParticle( PreparedStatement stmt, Geometry particle, int paramIndex )
-                            throws SQLException {
-    }
+	@Override
+	public void setParticle(PreparedStatement stmt, Geometry particle, int paramIndex) throws SQLException {
+	}
 
-    @Override
-    public String getSrid() {
-        return srid;
-    }
+	@Override
+	public String getSrid() {
+		return srid;
+	}
 
-    @Override
-    public ICRS getCrs() {
-        return crs;
-    }
+	@Override
+	public ICRS getCrs() {
+		return crs;
+	}
+
 }

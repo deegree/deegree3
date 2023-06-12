@@ -8,17 +8,18 @@ import static org.junit.Assert.assertEquals;
 
 public class DeegreeWorkspaceTest {
 
-    @Test
-    public void getWorkspaceRootFromProps() {
-        System.setProperty(DeegreeWorkspace.VAR_WORKSPACE_ROOT, "/user/path/to/where");
-        String pathtoworkspaceroot = DeegreeWorkspace.getWorkspaceRoot();
-        assertEquals( "/user/path/to/where", pathtoworkspaceroot);
-        System.clearProperty(DeegreeWorkspace.VAR_WORKSPACE_ROOT);
-    }
+	@Test
+	public void getWorkspaceRootFromProps() {
+		System.setProperty(DeegreeWorkspace.VAR_WORKSPACE_ROOT, "/user/path/to/where");
+		String pathtoworkspaceroot = DeegreeWorkspace.getWorkspaceRoot();
+		assertEquals("/user/path/to/where", pathtoworkspaceroot);
+		System.clearProperty(DeegreeWorkspace.VAR_WORKSPACE_ROOT);
+	}
 
-    @Test
-    public void getWorkspaceRootFromEnv() {
-        String pathtoworkspaceroot = DeegreeWorkspace.getWorkspaceRoot();
-        assertThat(pathtoworkspaceroot, containsString(".deegree"));
-    }
+	@Test
+	public void getWorkspaceRootFromEnv() {
+		String pathtoworkspaceroot = DeegreeWorkspace.getWorkspaceRoot();
+		assertThat(pathtoworkspaceroot, containsString(".deegree"));
+	}
+
 }

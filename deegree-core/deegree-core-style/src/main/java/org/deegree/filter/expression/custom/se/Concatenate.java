@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -58,73 +57,70 @@ import org.deegree.style.se.unevaluated.Continuation;
 
 /**
  * <code>Concatenate</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class Concatenate extends AbstractCustomExpression {
 
-    private static final QName ELEMENT_NAME = new QName( SENS, "Concatenate" );
+	private static final QName ELEMENT_NAME = new QName(SENS, "Concatenate");
 
-    private LinkedList<StringBuffer> values;
+	private LinkedList<StringBuffer> values;
 
-    private LinkedList<Continuation<StringBuffer>> valueContns;
+	private LinkedList<Continuation<StringBuffer>> valueContns;
 
-    /***/
-    public Concatenate() {
-        // just used for SPI
-    }
+	/***/
+	public Concatenate() {
+		// just used for SPI
+	}
 
-    private Concatenate( LinkedList<StringBuffer> values, LinkedList<Continuation<StringBuffer>> valueContns ) {
-        this.values = values;
-        this.valueContns = valueContns;
-    }
+	private Concatenate(LinkedList<StringBuffer> values, LinkedList<Continuation<StringBuffer>> valueContns) {
+		this.values = values;
+		this.valueContns = valueContns;
+	}
 
-    @Override
-    public QName getElementName() {
-        return ELEMENT_NAME;
-    }
+	@Override
+	public QName getElementName() {
+		return ELEMENT_NAME;
+	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypedObjectNode[] evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
-                            throws FilterEvaluationException {
-        StringBuffer res = new StringBuffer();
-        Iterator<StringBuffer> sbs = values.iterator();
-        Iterator<Continuation<StringBuffer>> contns = valueContns.iterator();
-        while ( sbs.hasNext() && contns.hasNext() ) {
-            StringBuffer sb = new StringBuffer( sbs.next().toString().trim() );
-            Continuation<StringBuffer> contn = contns.next();
-            if ( contn != null ) {
-                contn.evaluate( sb, (Feature) obj, (XPathEvaluator<Feature>) xpathEvaluator );
-            }
-            res.append( sb.toString() );
-        }
-        return new TypedObjectNode[] { new PrimitiveValue( res.toString().trim() ) };
-    }
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> TypedObjectNode[] evaluate(T obj, XPathEvaluator<T> xpathEvaluator) throws FilterEvaluationException {
+		StringBuffer res = new StringBuffer();
+		Iterator<StringBuffer> sbs = values.iterator();
+		Iterator<Continuation<StringBuffer>> contns = valueContns.iterator();
+		while (sbs.hasNext() && contns.hasNext()) {
+			StringBuffer sb = new StringBuffer(sbs.next().toString().trim());
+			Continuation<StringBuffer> contn = contns.next();
+			if (contn != null) {
+				contn.evaluate(sb, (Feature) obj, (XPathEvaluator<Feature>) xpathEvaluator);
+			}
+			res.append(sb.toString());
+		}
+		return new TypedObjectNode[] { new PrimitiveValue(res.toString().trim()) };
+	}
 
-    @Override
-    public Concatenate parse( XMLStreamReader in )
-                            throws XMLStreamException {
+	@Override
+	public Concatenate parse(XMLStreamReader in) throws XMLStreamException {
 
-        LinkedList<StringBuffer> values = new LinkedList<StringBuffer>();
-        LinkedList<Continuation<StringBuffer>> valueContns = new LinkedList<Continuation<StringBuffer>>();
+		LinkedList<StringBuffer> values = new LinkedList<StringBuffer>();
+		LinkedList<Continuation<StringBuffer>> valueContns = new LinkedList<Continuation<StringBuffer>>();
 
-        in.require( START_ELEMENT, null, "Concatenate" );
+		in.require(START_ELEMENT, null, "Concatenate");
 
-        while ( !( in.isEndElement() && in.getLocalName().equals( "Concatenate" ) ) ) {
-            in.nextTag();
+		while (!(in.isEndElement() && in.getLocalName().equals("Concatenate"))) {
+			in.nextTag();
 
-            if ( in.getLocalName().equals( "StringValue" ) ) {
-                StringBuffer sb = new StringBuffer();
-                valueContns.add( SymbologyParser.INSTANCE.updateOrContinue( in, "StringValue", sb, SBUPDATER, null ).second );
-                values.add( sb );
-            }
-        }
+			if (in.getLocalName().equals("StringValue")) {
+				StringBuffer sb = new StringBuffer();
+				valueContns
+					.add(SymbologyParser.INSTANCE.updateOrContinue(in, "StringValue", sb, SBUPDATER, null).second);
+				values.add(sb);
+			}
+		}
 
-        in.require( END_ELEMENT, null, "Concatenate" );
-        return new Concatenate( values, valueContns );
-    }
+		in.require(END_ELEMENT, null, "Concatenate");
+		return new Concatenate(values, valueContns);
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -52,93 +51,87 @@ import org.locationtech.jts.geom.LinearRing;
 
 /**
  * Default implementation of {@link Polygon}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class DefaultPolygon extends DefaultSurface implements Polygon {
 
-    private Ring exteriorRing;
+	private Ring exteriorRing;
 
-    private List<Ring> interiorRings;
+	private List<Ring> interiorRings;
 
-    private Envelope envelope;
+	private Envelope envelope;
 
-    /**
-     * Creates a new {@link DefaultPolygon} instance from the given parameters.
-     * 
-     * @param id
-     *            identifier, may be null
-     * @param crs
-     *            coordinate reference system, may be null
-     * @param pm
-     *            precision model, may be null
-     * @param interiorRings
-     *            list of rings that define the inner boundaries, may be empty or null
-     */
-    public DefaultPolygon( String id, ICRS crs, PrecisionModel pm, Ring exteriorRing, List<Ring> interiorRings ) {
-        super( id, crs, pm, createPatchList( exteriorRing, interiorRings ) );
-        this.exteriorRing = exteriorRing;
-        this.interiorRings = interiorRings;
-        if ( interiorRings == null ) {
-            this.interiorRings = Collections.emptyList();
-        }
-    }
+	/**
+	 * Creates a new {@link DefaultPolygon} instance from the given parameters.
+	 * @param id identifier, may be null
+	 * @param crs coordinate reference system, may be null
+	 * @param pm precision model, may be null
+	 * @param interiorRings list of rings that define the inner boundaries, may be empty
+	 * or null
+	 */
+	public DefaultPolygon(String id, ICRS crs, PrecisionModel pm, Ring exteriorRing, List<Ring> interiorRings) {
+		super(id, crs, pm, createPatchList(exteriorRing, interiorRings));
+		this.exteriorRing = exteriorRing;
+		this.interiorRings = interiorRings;
+		if (interiorRings == null) {
+			this.interiorRings = Collections.emptyList();
+		}
+	}
 
-    private static List<PolygonPatch> createPatchList( Ring exteriorRing, List<Ring> interiorRings ) {
-        List<PolygonPatch> patches = new ArrayList<PolygonPatch>( 1 );
-        patches.add( new DefaultPolygonPatch( exteriorRing, interiorRings ) );
-        return patches;
-    }
+	private static List<PolygonPatch> createPatchList(Ring exteriorRing, List<Ring> interiorRings) {
+		List<PolygonPatch> patches = new ArrayList<PolygonPatch>(1);
+		patches.add(new DefaultPolygonPatch(exteriorRing, interiorRings));
+		return patches;
+	}
 
-    @Override
-    public Ring getExteriorRing() {
-        return exteriorRing;
-    }
+	@Override
+	public Ring getExteriorRing() {
+		return exteriorRing;
+	}
 
-    @Override
-    public List<Ring> getInteriorRings() {
-        return interiorRings;
-    }
+	@Override
+	public List<Ring> getInteriorRings() {
+		return interiorRings;
+	}
 
-    @Override
-    public SurfaceType getSurfaceType() {
-        return SurfaceType.Polygon;
-    }
+	@Override
+	public SurfaceType getSurfaceType() {
+		return SurfaceType.Polygon;
+	}
 
-    @Override
-    public List<PolygonPatch> getPatches() {
-        return (List<PolygonPatch>) patches;
-    }
+	@Override
+	public List<PolygonPatch> getPatches() {
+		return (List<PolygonPatch>) patches;
+	}
 
-    @Override
-    public boolean isSFSCompliant() {
-        if ( exteriorRing == null || exteriorRing.getRingType() != RingType.LinearRing ) {
-            return false;
-        }
-        if ( interiorRings != null ) {
-            for ( Ring interiorRing : interiorRings ) {
-                if ( interiorRing.getRingType() != RingType.LinearRing ) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
+	@Override
+	public boolean isSFSCompliant() {
+		if (exteriorRing == null || exteriorRing.getRingType() != RingType.LinearRing) {
+			return false;
+		}
+		if (interiorRings != null) {
+			for (Ring interiorRing : interiorRings) {
+				if (interiorRing.getRingType() != RingType.LinearRing) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
 
-    @Override
-    protected org.locationtech.jts.geom.Geometry buildJTSGeometry() {
-        LinearRing shell = (LinearRing) getAsDefaultGeometry( exteriorRing ).getJTSGeometry();
-        LinearRing[] holes = null;
-        if ( interiorRings != null ) {
-            holes = new LinearRing[interiorRings.size()];
-            int i = 0;
-            for ( Ring ring : interiorRings ) {
-                holes[i++] = (LinearRing) getAsDefaultGeometry( ring ).getJTSGeometry();
-            }
-        }
-        return jtsFactory.createPolygon( shell, holes );
-    }
+	@Override
+	protected org.locationtech.jts.geom.Geometry buildJTSGeometry() {
+		LinearRing shell = (LinearRing) getAsDefaultGeometry(exteriorRing).getJTSGeometry();
+		LinearRing[] holes = null;
+		if (interiorRings != null) {
+			holes = new LinearRing[interiorRings.size()];
+			int i = 0;
+			for (Ring ring : interiorRings) {
+				holes[i++] = (LinearRing) getAsDefaultGeometry(ring).getJTSGeometry();
+			}
+		}
+		return jtsFactory.createPolygon(shell, holes);
+	}
+
 }

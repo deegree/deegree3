@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-base/src/main/java/org/deegree/filter/sql/expression/SQLColumn.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -46,98 +45,97 @@ import org.deegree.geometry.utils.GeometryParticleConverter;
 
 /**
  * {@link SQLExpression} that represents a table column.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: aschmitz $
- * 
- * @version $Revision: 30988 $, $Date: 2011-05-31 15:09:31 +0200 (Di, 31. Mai 2011) $
  */
 public class SQLColumn implements SQLExpression {
 
-    private final String table;
+	private final String table;
 
-    private final String column;
+	private final String column;
 
-    private PrimitiveType pt;
+	private PrimitiveType pt;
 
-    private ParticleConverter<?> converter;
+	private ParticleConverter<?> converter;
 
-    private boolean isConcatenated;
+	private boolean isConcatenated;
 
-    private boolean isSpatial;
+	private boolean isSpatial;
 
-    private String srid;
+	private String srid;
 
-    private ICRS crs;
+	private ICRS crs;
 
-    public SQLColumn( String tableAlias, String column, ParticleConverter<?> converter ) {
-        this.table = tableAlias;
-        this.column = column;
-        this.converter = converter;
-        if ( converter instanceof PrimitiveParticleConverter ) {
-            pt = ( (PrimitiveParticleConverter) converter ).getType();
-            isConcatenated = ( (PrimitiveParticleConverter) converter ).isConcatenated();
-        } else if ( converter instanceof GeometryParticleConverter ) {
-            isSpatial = true;
-            srid = ( (GeometryParticleConverter) converter ).getSrid();
-            crs = ( (GeometryParticleConverter) converter ).getCrs();
-        }
-    }
+	public SQLColumn(String tableAlias, String column, ParticleConverter<?> converter) {
+		this.table = tableAlias;
+		this.column = column;
+		this.converter = converter;
+		if (converter instanceof PrimitiveParticleConverter) {
+			pt = ((PrimitiveParticleConverter) converter).getType();
+			isConcatenated = ((PrimitiveParticleConverter) converter).isConcatenated();
+		}
+		else if (converter instanceof GeometryParticleConverter) {
+			isSpatial = true;
+			srid = ((GeometryParticleConverter) converter).getSrid();
+			crs = ((GeometryParticleConverter) converter).getCrs();
+		}
+	}
 
-    @Override
-    public ICRS getCRS() {
-        return crs;
-    }
+	@Override
+	public ICRS getCRS() {
+		return crs;
+	}
 
-    @Override
-    public String getSRID() {
-        return srid;
-    }
+	@Override
+	public String getSRID() {
+		return srid;
+	}
 
-    @Override
-    public PrimitiveType getPrimitiveType() {
-        return pt;
-    }
+	@Override
+	public PrimitiveType getPrimitiveType() {
+		return pt;
+	}
 
-    @Override
-    public void cast( SQLExpression expr ) {
-        ParticleConverter<?> converter = expr.getConverter();
-        if ( !( converter instanceof PrimitiveParticleConverter )
-             || ( (PrimitiveParticleConverter) converter ).getType().getBaseType() != this.pt.getBaseType() ) {
-            throw new UnsupportedOperationException( "Column type casts are not implemented yet." );
-        }
-    }
+	@Override
+	public void cast(SQLExpression expr) {
+		ParticleConverter<?> converter = expr.getConverter();
+		if (!(converter instanceof PrimitiveParticleConverter)
+				|| ((PrimitiveParticleConverter) converter).getType().getBaseType() != this.pt.getBaseType()) {
+			throw new UnsupportedOperationException("Column type casts are not implemented yet.");
+		}
+	}
 
-    @Override
-    public ParticleConverter<?> getConverter() {
-        return converter;
-    }
+	@Override
+	public ParticleConverter<?> getConverter() {
+		return converter;
+	}
 
-    @Override
-    public boolean isSpatial() {
-        return isSpatial;
-    }
+	@Override
+	public boolean isSpatial() {
+		return isSpatial;
+	}
 
-    @Override
-    public boolean isMultiValued() {
-        return isConcatenated;
-    }
+	@Override
+	public boolean isMultiValued() {
+		return isConcatenated;
+	}
 
-    @Override
-    public String toString() {
-        return table == null ? column : ( table + "." + column );
-    }
+	@Override
+	public String toString() {
+		return table == null ? column : (table + "." + column);
+	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<SQLArgument> getArguments() {
-        return Collections.EMPTY_LIST;
-    }
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<SQLArgument> getArguments() {
+		return Collections.EMPTY_LIST;
+	}
 
-    @Override
-    public StringBuilder getSQL() {
-        StringBuilder sb = new StringBuilder();
-        sb.append( table == null ? column : ( table + "." + column ) );
-        return sb;
-    }
+	@Override
+	public StringBuilder getSQL() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(table == null ? column : (table + "." + column));
+		return sb;
+	}
+
 }

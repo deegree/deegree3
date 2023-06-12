@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -70,336 +69,325 @@ import org.deegree.services.wcs.model.CoverageOptions;
 
 /**
  * This is an XMLAdapter for the CoverageDescription of the WCS 1.0.0 spec.
- * 
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class CoverageDescription100XMLAdapter extends XMLAdapter {
 
-    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( CoverageDescription100XMLAdapter.class );
+	private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory
+		.getLogger(CoverageDescription100XMLAdapter.class);
 
-    private static final String GML_PREFIX = "gml";
+	private static final String GML_PREFIX = "gml";
 
-    private static final String GML_NS = "http://www.opengis.net/gml";
+	private static final String GML_NS = "http://www.opengis.net/gml";
 
-    /**
-     * @param writer
-     * @param coverages
-     * @param updateSequence
-     * @throws XMLStreamException
-     */
-    public static void export( XMLStreamWriter writer, List<WCSCoverage> coverages, int updateSequence )
-                            throws XMLStreamException {
+	/**
+	 * @param writer
+	 * @param coverages
+	 * @param updateSequence
+	 * @throws XMLStreamException
+	 */
+	public static void export(XMLStreamWriter writer, List<WCSCoverage> coverages, int updateSequence)
+			throws XMLStreamException {
 
-        writer.setDefaultNamespace( WCS_100_NS );
-        writer.writeStartElement( WCS_100_NS, "CoverageDescription" );
-        writer.writeAttribute( "version", VERSION_100.toString() );
-        writer.writeAttribute( "updateSequence", Integer.toString( updateSequence ) );
-        writer.writeDefaultNamespace( WCS_100_NS );
-        writer.writeNamespace( GML_PREFIX, GML_NS );
-        writer.writeNamespace( XSI_PREFIX, XSINS );
-        writer.writeNamespace( XLINK_PREFIX, XLN_NS );
-        writer.writeAttribute( XSINS, "schemaLocation", WCS_100_NS + " " + WCS_100_SCHEMA );
+		writer.setDefaultNamespace(WCS_100_NS);
+		writer.writeStartElement(WCS_100_NS, "CoverageDescription");
+		writer.writeAttribute("version", VERSION_100.toString());
+		writer.writeAttribute("updateSequence", Integer.toString(updateSequence));
+		writer.writeDefaultNamespace(WCS_100_NS);
+		writer.writeNamespace(GML_PREFIX, GML_NS);
+		writer.writeNamespace(XSI_PREFIX, XSINS);
+		writer.writeNamespace(XLINK_PREFIX, XLN_NS);
+		writer.writeAttribute(XSINS, "schemaLocation", WCS_100_NS + " " + WCS_100_SCHEMA);
 
-        for ( WCSCoverage coverage : coverages ) {
-            exportCoverageOffering( writer, coverage );
-        }
+		for (WCSCoverage coverage : coverages) {
+			exportCoverageOffering(writer, coverage);
+		}
 
-        writer.writeEndElement(); // CoverageDescription
-        writer.writeEndDocument();
-    }
+		writer.writeEndElement(); // CoverageDescription
+		writer.writeEndDocument();
+	}
 
-    private static void exportCoverageOffering( XMLStreamWriter writer, WCSCoverage coverage )
-                            throws XMLStreamException {
-        writer.writeStartElement( WCS_100_NS, "CoverageOffering" );
-        exportBriefCoverageData( writer, coverage );
-        exportDomainSet( writer, coverage );
-        exportRangeSet( writer, coverage );
-        exportSupportedCRSs( writer, coverage );
-        exportSupportedFormats( writer, coverage.getCoverageOptions() );
-        exportSupportedInterpolations( writer, coverage.getCoverageOptions() );
-        writer.writeEndElement(); // CoverageOffering
-    }
+	private static void exportCoverageOffering(XMLStreamWriter writer, WCSCoverage coverage) throws XMLStreamException {
+		writer.writeStartElement(WCS_100_NS, "CoverageOffering");
+		exportBriefCoverageData(writer, coverage);
+		exportDomainSet(writer, coverage);
+		exportRangeSet(writer, coverage);
+		exportSupportedCRSs(writer, coverage);
+		exportSupportedFormats(writer, coverage.getCoverageOptions());
+		exportSupportedInterpolations(writer, coverage.getCoverageOptions());
+		writer.writeEndElement(); // CoverageOffering
+	}
 
-    private static void exportSupportedCRSs( XMLStreamWriter writer, WCSCoverage coverage )
-                            throws XMLStreamException {
-        writer.writeStartElement( WCS_100_NS, "supportedCRSs" );
+	private static void exportSupportedCRSs(XMLStreamWriter writer, WCSCoverage coverage) throws XMLStreamException {
+		writer.writeStartElement(WCS_100_NS, "supportedCRSs");
 
-        CoverageOptions options = coverage.getCoverageOptions();
-        for ( String crs : options.getCRSs() ) {
-            writeElement( writer, WCS_100_NS, "requestResponseCRSs", crs );
-        }
-        String nativeCRS = coverage.getEnvelope().getCoordinateSystem().getAlias();
-        writeElement( writer, WCS_100_NS, "nativeCRSs", nativeCRS );
-        writer.writeEndElement(); // supportedCRSs
-    }
+		CoverageOptions options = coverage.getCoverageOptions();
+		for (String crs : options.getCRSs()) {
+			writeElement(writer, WCS_100_NS, "requestResponseCRSs", crs);
+		}
+		String nativeCRS = coverage.getEnvelope().getCoordinateSystem().getAlias();
+		writeElement(writer, WCS_100_NS, "nativeCRSs", nativeCRS);
+		writer.writeEndElement(); // supportedCRSs
+	}
 
-    private static void exportSupportedFormats( XMLStreamWriter writer, CoverageOptions options )
-                            throws XMLStreamException {
-        writer.writeStartElement( WCS_100_NS, "supportedFormats" );
-        if ( options.getNativeFormat() != null ) {
-            writer.writeAttribute( "nativeFormat", options.getNativeFormat() );
-        }
-        boolean hadGeoTIFF = false;
-        for ( String format : options.getOutputFormats() ) {
-            if ( "GeoTIFF".equals( format ) ) {
-                hadGeoTIFF = true;
-            }
-            writeElement( writer, WCS_100_NS, "formats", format );
-        }
-        if ( !hadGeoTIFF ) {
-            // needed according to 03-065r6 section 8.3.5 SupportedFormats
-            writeElement( writer, WCS_100_NS, "formats", "GeoTIFF" );
-        }
+	private static void exportSupportedFormats(XMLStreamWriter writer, CoverageOptions options)
+			throws XMLStreamException {
+		writer.writeStartElement(WCS_100_NS, "supportedFormats");
+		if (options.getNativeFormat() != null) {
+			writer.writeAttribute("nativeFormat", options.getNativeFormat());
+		}
+		boolean hadGeoTIFF = false;
+		for (String format : options.getOutputFormats()) {
+			if ("GeoTIFF".equals(format)) {
+				hadGeoTIFF = true;
+			}
+			writeElement(writer, WCS_100_NS, "formats", format);
+		}
+		if (!hadGeoTIFF) {
+			// needed according to 03-065r6 section 8.3.5 SupportedFormats
+			writeElement(writer, WCS_100_NS, "formats", "GeoTIFF");
+		}
 
-        writer.writeEndElement(); // supportedFormats
-    }
+		writer.writeEndElement(); // supportedFormats
+	}
 
-    private static void exportSupportedInterpolations( XMLStreamWriter writer, CoverageOptions options )
-                            throws XMLStreamException {
-        writer.writeStartElement( WCS_100_NS, "supportedInterpolations" );
-        for ( InterpolationType interpolation : options.getInterpolations() ) {
-            writeElement( writer, WCS_100_NS, "interpolationMethod",
-                          WCSConstants.InterpolationMethod.map( interpolation ).getProtocolName( VERSION_100 ) );
-        }
-        writer.writeEndElement(); // supportedFormats
-    }
+	private static void exportSupportedInterpolations(XMLStreamWriter writer, CoverageOptions options)
+			throws XMLStreamException {
+		writer.writeStartElement(WCS_100_NS, "supportedInterpolations");
+		for (InterpolationType interpolation : options.getInterpolations()) {
+			writeElement(writer, WCS_100_NS, "interpolationMethod",
+					WCSConstants.InterpolationMethod.map(interpolation).getProtocolName(VERSION_100));
+		}
+		writer.writeEndElement(); // supportedFormats
+	}
 
-    private static void exportDomainSet( XMLStreamWriter writer, WCSCoverage coverage )
-                            throws XMLStreamException {
-        writer.writeStartElement( WCS_100_NS, "domainSet" );
-        writer.writeStartElement( WCS_100_NS, "spatialDomain" );
-        Envelope origEnv = coverage.getEnvelope();
+	private static void exportDomainSet(XMLStreamWriter writer, WCSCoverage coverage) throws XMLStreamException {
+		writer.writeStartElement(WCS_100_NS, "domainSet");
+		writer.writeStartElement(WCS_100_NS, "spatialDomain");
+		Envelope origEnv = coverage.getEnvelope();
 
-        // rb: what about temporal domain sets?
+		// rb: what about temporal domain sets?
 
-        // first do default
-        exportGMLEnvelope( writer, origEnv );
+		// first do default
+		exportGMLEnvelope(writer, origEnv);
 
-        for ( Envelope env : coverage.responseEnvelopes ) {
-            if ( env != null ) {
-                exportGMLEnvelope( writer, env );
-            }
-        }
+		for (Envelope env : coverage.responseEnvelopes) {
+			if (env != null) {
+				exportGMLEnvelope(writer, env);
+			}
+		}
 
-        // export grid?
-        // export polygon?
+		// export grid?
+		// export polygon?
 
-        writer.writeEndElement(); // spatialDomain
-        writer.writeEndElement(); // domainSet
-    }
+		writer.writeEndElement(); // spatialDomain
+		writer.writeEndElement(); // domainSet
+	}
 
-    /**
-     * Export the range set from the given coverage.
-     * 
-     * @param writer
-     * @param coverage
-     * @throws XMLStreamException
-     */
-    protected static void exportRangeSet( XMLStreamWriter writer, WCSCoverage coverage )
-                            throws XMLStreamException {
-        writer.writeStartElement( WCS_100_NS, "rangeSet" );
-        writer.writeStartElement( WCS_100_NS, "RangeSet" );
-        writer.writeAttribute( "refSys", coverage.getEnvelope().getCoordinateSystem().getAlias() );
-        RangeSet rs = coverage.getRangeSet();
-        if ( rs == null ) {
-            LOG.info( "No range sets defined for requested coverage, creating a default one from the coverage parameters." );
-            writeElement( writer, WCS_100_NS, "name", coverage.getName() );
-            writeElement( writer, WCS_100_NS, "label", coverage.getLabel() );
-        } else {
-            writeElement( writer, WCS_100_NS, "name", rs.getName() );
-            writeElement( writer, WCS_100_NS, "label", rs.getLabel() );
-            // write the axis descriptions
-            exportAxisDescriptions( writer, rs.getAxisDescriptions() );
-            exportNullValues( writer, rs.getNullValue() );
-        }
+	/**
+	 * Export the range set from the given coverage.
+	 * @param writer
+	 * @param coverage
+	 * @throws XMLStreamException
+	 */
+	protected static void exportRangeSet(XMLStreamWriter writer, WCSCoverage coverage) throws XMLStreamException {
+		writer.writeStartElement(WCS_100_NS, "rangeSet");
+		writer.writeStartElement(WCS_100_NS, "RangeSet");
+		writer.writeAttribute("refSys", coverage.getEnvelope().getCoordinateSystem().getAlias());
+		RangeSet rs = coverage.getRangeSet();
+		if (rs == null) {
+			LOG.info(
+					"No range sets defined for requested coverage, creating a default one from the coverage parameters.");
+			writeElement(writer, WCS_100_NS, "name", coverage.getName());
+			writeElement(writer, WCS_100_NS, "label", coverage.getLabel());
+		}
+		else {
+			writeElement(writer, WCS_100_NS, "name", rs.getName());
+			writeElement(writer, WCS_100_NS, "label", rs.getLabel());
+			// write the axis descriptions
+			exportAxisDescriptions(writer, rs.getAxisDescriptions());
+			exportNullValues(writer, rs.getNullValue());
+		}
 
-        writer.writeEndElement(); // RangeSet
-        writer.writeEndElement(); // rangeSet
-    }
+		writer.writeEndElement(); // RangeSet
+		writer.writeEndElement(); // rangeSet
+	}
 
-    /**
-     * @param writer
-     * @param nullValue
-     * @throws XMLStreamException
-     */
-    protected static void exportNullValues( XMLStreamWriter writer, SingleValue<?> nullValue )
-                            throws XMLStreamException {
-        if ( nullValue != null ) {
-            writer.writeStartElement( WCS_100_NS, "nullValues" );
-            exportSingleValueType( writer, nullValue, "singleValue" );
-            writer.writeEndElement();// WCS_100_NS, "nullValues" );
-        }
+	/**
+	 * @param writer
+	 * @param nullValue
+	 * @throws XMLStreamException
+	 */
+	protected static void exportNullValues(XMLStreamWriter writer, SingleValue<?> nullValue) throws XMLStreamException {
+		if (nullValue != null) {
+			writer.writeStartElement(WCS_100_NS, "nullValues");
+			exportSingleValueType(writer, nullValue, "singleValue");
+			writer.writeEndElement();// WCS_100_NS, "nullValues" );
+		}
 
-    }
+	}
 
-    /**
-     * @param writer
-     * @param singleValue
-     * @param elementName
-     * @throws XMLStreamException
-     */
-    protected static void exportSingleValueType( XMLStreamWriter writer, SingleValue<?> singleValue, String elementName )
-                            throws XMLStreamException {
-        if ( singleValue != null ) {
-            String type = ( singleValue.type == ValueType.Void ) ? ValueType.String.toString()
-                                                                : singleValue.type.toString();
-            writeElement( writer, WCS_100_NS, elementName, singleValue.value.toString(), WCS_100_NS, WCS_100_PRE,
-                          "type", type, true );
-        }
-    }
+	/**
+	 * @param writer
+	 * @param singleValue
+	 * @param elementName
+	 * @throws XMLStreamException
+	 */
+	protected static void exportSingleValueType(XMLStreamWriter writer, SingleValue<?> singleValue, String elementName)
+			throws XMLStreamException {
+		if (singleValue != null) {
+			String type = (singleValue.type == ValueType.Void) ? ValueType.String.toString()
+					: singleValue.type.toString();
+			writeElement(writer, WCS_100_NS, elementName, singleValue.value.toString(), WCS_100_NS, WCS_100_PRE, "type",
+					type, true);
+		}
+	}
 
-    /**
-     * @param writer
-     * @param axisDescriptions
-     * @throws XMLStreamException
-     */
-    protected static void exportAxisDescriptions( XMLStreamWriter writer, List<AxisSubset> axisDescriptions )
-                            throws XMLStreamException {
-        if ( !axisDescriptions.isEmpty() ) {
-            for ( AxisSubset ass : axisDescriptions ) {
-                if ( ass != null ) {
-                    writer.writeStartElement( WCS_100_NS, "axisDescription" );
-                    writer.writeStartElement( WCS_100_NS, "AxisDescription" );
-                    writeElement( writer, WCS_100_NS, "name", ass.getName() );
-                    writeElement( writer, WCS_100_NS, "label", ass.getLabel() );
+	/**
+	 * @param writer
+	 * @param axisDescriptions
+	 * @throws XMLStreamException
+	 */
+	protected static void exportAxisDescriptions(XMLStreamWriter writer, List<AxisSubset> axisDescriptions)
+			throws XMLStreamException {
+		if (!axisDescriptions.isEmpty()) {
+			for (AxisSubset ass : axisDescriptions) {
+				if (ass != null) {
+					writer.writeStartElement(WCS_100_NS, "axisDescription");
+					writer.writeStartElement(WCS_100_NS, "AxisDescription");
+					writeElement(writer, WCS_100_NS, "name", ass.getName());
+					writeElement(writer, WCS_100_NS, "label", ass.getLabel());
 
-                    writer.writeStartElement( WCS_100_NS, "values" );
+					writer.writeStartElement(WCS_100_NS, "values");
 
-                    exportIntervals( writer, ass.getIntervals() );
-                    if ( ass.getSingleValues() != null ) {
-                        for ( SingleValue<?> sv : ass.getSingleValues() ) {
-                            exportSingleValueType( writer, sv, "singleValue" );
-                        }
-                    }
-                    writer.writeEndElement();// WCS_100_NS, "values" );
+					exportIntervals(writer, ass.getIntervals());
+					if (ass.getSingleValues() != null) {
+						for (SingleValue<?> sv : ass.getSingleValues()) {
+							exportSingleValueType(writer, sv, "singleValue");
+						}
+					}
+					writer.writeEndElement();// WCS_100_NS, "values" );
 
-                    writer.writeEndElement();// WCS_100_NS, "AxisDescription" );
-                    writer.writeEndElement();// WCS_100_NS, "axisDescription" );
-                }
-            }
-        }
-    }
+					writer.writeEndElement();// WCS_100_NS, "AxisDescription" );
+					writer.writeEndElement();// WCS_100_NS, "axisDescription" );
+				}
+			}
+		}
+	}
 
-    /**
-     * Export a list of intervals.
-     * 
-     * @param writer
-     * @param intervals
-     * @throws XMLStreamException
-     */
-    protected static void exportIntervals( XMLStreamWriter writer, List<Interval<?, ?>> intervals )
-                            throws XMLStreamException {
-        if ( intervals != null && !intervals.isEmpty() ) {
-            for ( Interval<?, ?> interval : intervals ) {
-                exportInterval( writer, interval );
-            }
-        }
+	/**
+	 * Export a list of intervals.
+	 * @param writer
+	 * @param intervals
+	 * @throws XMLStreamException
+	 */
+	protected static void exportIntervals(XMLStreamWriter writer, List<Interval<?, ?>> intervals)
+			throws XMLStreamException {
+		if (intervals != null && !intervals.isEmpty()) {
+			for (Interval<?, ?> interval : intervals) {
+				exportInterval(writer, interval);
+			}
+		}
 
-    }
+	}
 
-    /**
-     * @param writer
-     * @param interval
-     * @throws XMLStreamException
-     */
-    protected static void exportInterval( XMLStreamWriter writer, Interval<?, ?> interval )
-                            throws XMLStreamException {
-        if ( interval != null ) {
-            writer.writeStartElement( WCS_100_NS, "interval" );
-            writer.writeNamespace( WCS_100_PRE, WCS_100_NS );
-            if ( interval.getSemantic() != null ) {
-                writer.writeAttribute( WCS_100_PRE, WCS_100_NS, "semantic", interval.getSemantic() );
-            }
+	/**
+	 * @param writer
+	 * @param interval
+	 * @throws XMLStreamException
+	 */
+	protected static void exportInterval(XMLStreamWriter writer, Interval<?, ?> interval) throws XMLStreamException {
+		if (interval != null) {
+			writer.writeStartElement(WCS_100_NS, "interval");
+			writer.writeNamespace(WCS_100_PRE, WCS_100_NS);
+			if (interval.getSemantic() != null) {
+				writer.writeAttribute(WCS_100_PRE, WCS_100_NS, "semantic", interval.getSemantic());
+			}
 
-            writer.writeAttribute( "atomic", interval.isAtomic() ? "true" : "false" );
-            Closure closure = interval.getClosure();
-            writer.writeAttribute( WCS_100_PRE, WCS_100_NS, "closure", closure.name().replaceAll( "_", "-" ) );
+			writer.writeAttribute("atomic", interval.isAtomic() ? "true" : "false");
+			Closure closure = interval.getClosure();
+			writer.writeAttribute(WCS_100_PRE, WCS_100_NS, "closure", closure.name().replaceAll("_", "-"));
 
-            exportSingleValueType( writer, interval.getMin(), "min" );
-            exportSingleValueType( writer, interval.getMax(), "max" );
-            exportSingleValueType( writer, interval.getSpacing(), "res" );
+			exportSingleValueType(writer, interval.getMin(), "min");
+			exportSingleValueType(writer, interval.getMax(), "max");
+			exportSingleValueType(writer, interval.getSpacing(), "res");
 
-            writer.writeEndElement();// WCS_100_NS, "interval" );
-        }
-    }
+			writer.writeEndElement();// WCS_100_NS, "interval" );
+		}
+	}
 
-    /**
-     * Writes common base data of the coverage like name, lable, lonLatEnvelope.
-     * 
-     * @param writer
-     * @param coverage
-     * @throws XMLStreamException
-     */
-    public static void exportBriefCoverageData( XMLStreamWriter writer, WCSCoverage coverage )
-                            throws XMLStreamException {
+	/**
+	 * Writes common base data of the coverage like name, lable, lonLatEnvelope.
+	 * @param writer
+	 * @param coverage
+	 * @throws XMLStreamException
+	 */
+	public static void exportBriefCoverageData(XMLStreamWriter writer, WCSCoverage coverage) throws XMLStreamException {
 
-        // metadataLink [0,n]
-        // -> some metadata from
-        // -> @gml:AssociationAttributeGroup
-        // -> @about optional
-        // -> gml:_MetaData element [0,n]
-        // description [0,1]
-        // name [1]
-        writeElement( writer, WCS_100_NS, "name", coverage.getName() );
-        // -> @codeSpace optional
-        // label [1]
-        writeElement( writer, WCS_100_NS, "label", coverage.getLabel() );
-        // keywords [0,n]
-        // -> keyword [1, n]
-        // -> type [0,1]
+		// metadataLink [0,n]
+		// -> some metadata from
+		// -> @gml:AssociationAttributeGroup
+		// -> @about optional
+		// -> gml:_MetaData element [0,n]
+		// description [0,1]
+		// name [1]
+		writeElement(writer, WCS_100_NS, "name", coverage.getName());
+		// -> @codeSpace optional
+		// label [1]
+		writeElement(writer, WCS_100_NS, "label", coverage.getLabel());
+		// keywords [0,n]
+		// -> keyword [1, n]
+		// -> type [0,1]
 
-        exportLonLatEnvelope( writer, coverage.getEnvelope() );
+		exportLonLatEnvelope(writer, coverage.getEnvelope());
 
-        // keywords [0,n]
-        // -> keyword [1, n]
-        // -> type [0,1]
+		// keywords [0,n]
+		// -> keyword [1, n]
+		// -> type [0,1]
 
-    }
+	}
 
-    private static void exportLonLatEnvelope( XMLStreamWriter writer, Envelope envelope )
-                            throws XMLStreamException {
-        try {
-            ICRS wgs84 = CRSManager.lookup( "EPSG:4326" );
-            GeometryTransformer transformer = new GeometryTransformer( wgs84 );
-            Envelope lonLatEnv = (Envelope) transformer.transform( envelope );
+	private static void exportLonLatEnvelope(XMLStreamWriter writer, Envelope envelope) throws XMLStreamException {
+		try {
+			ICRS wgs84 = CRSManager.lookup("EPSG:4326");
+			GeometryTransformer transformer = new GeometryTransformer(wgs84);
+			Envelope lonLatEnv = (Envelope) transformer.transform(envelope);
 
-            writer.writeStartElement( WCS_100_NS, "lonLatEnvelope" );
-            // @srsName urn:ogc:def:crs:OGC:1.3:CRS84
-            writer.writeAttribute( "srsName", "urn:ogc:def:crs:OGC:1.3:CRS84" );
-            exportGMLPos( writer, lonLatEnv.getMin().get0(), lonLatEnv.getMin().get1() );
-            exportGMLPos( writer, lonLatEnv.getMax().get0(), lonLatEnv.getMax().get1() );
-            writer.writeEndElement(); // lonLatEnvelope
-        } catch ( UnknownCRSException e ) {
-            e.printStackTrace();
-            return;
-        } catch ( TransformationException e ) {
-            e.printStackTrace();
-            return;
-        }
-    }
+			writer.writeStartElement(WCS_100_NS, "lonLatEnvelope");
+			// @srsName urn:ogc:def:crs:OGC:1.3:CRS84
+			writer.writeAttribute("srsName", "urn:ogc:def:crs:OGC:1.3:CRS84");
+			exportGMLPos(writer, lonLatEnv.getMin().get0(), lonLatEnv.getMin().get1());
+			exportGMLPos(writer, lonLatEnv.getMax().get0(), lonLatEnv.getMax().get1());
+			writer.writeEndElement(); // lonLatEnvelope
+		}
+		catch (UnknownCRSException e) {
+			e.printStackTrace();
+			return;
+		}
+		catch (TransformationException e) {
+			e.printStackTrace();
+			return;
+		}
+	}
 
-    private static void exportGMLPos( XMLStreamWriter writer, double... values )
-                            throws XMLStreamException {
-        writer.writeStartElement( GML_NS, "pos" );
-        writer.writeNamespace( GML_PREFIX, GML_NS );
-        writer.writeAttribute( "dimension", Integer.toString( values.length ) );
-        writer.writeCharacters( ArrayUtils.join( " ", values ) );
-        writer.writeEndElement(); // pos
-    }
+	private static void exportGMLPos(XMLStreamWriter writer, double... values) throws XMLStreamException {
+		writer.writeStartElement(GML_NS, "pos");
+		writer.writeNamespace(GML_PREFIX, GML_NS);
+		writer.writeAttribute("dimension", Integer.toString(values.length));
+		writer.writeCharacters(ArrayUtils.join(" ", values));
+		writer.writeEndElement(); // pos
+	}
 
-    private static void exportGMLEnvelope( XMLStreamWriter writer, Envelope envelope )
-                            throws XMLStreamException {
-        writer.writeStartElement( GML_NS, "Envelope" );
-        writer.writeNamespace( GML_PREFIX, GML_NS );
-        writer.writeAttribute( "srsName", envelope.getCoordinateSystem().getAlias() );
+	private static void exportGMLEnvelope(XMLStreamWriter writer, Envelope envelope) throws XMLStreamException {
+		writer.writeStartElement(GML_NS, "Envelope");
+		writer.writeNamespace(GML_PREFIX, GML_NS);
+		writer.writeAttribute("srsName", envelope.getCoordinateSystem().getAlias());
 
-        exportGMLPos( writer, envelope.getMin().get0(), envelope.getMin().get1() );
-        exportGMLPos( writer, envelope.getMax().get0(), envelope.getMax().get1() );
-        writer.writeEndElement(); // Envelope
-    }
+		exportGMLPos(writer, envelope.getMin().get0(), envelope.getMin().get1());
+		exportGMLPos(writer, envelope.getMax().get0(), envelope.getMax().get1());
+		writer.writeEndElement(); // Envelope
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -66,100 +65,101 @@ import org.deegree.protocol.wfs.getfeature.TypeName;
 
 /**
  * Builds feature store queries for feature layers.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 class QueryBuilder {
 
-    private FeatureStore featureStore;
+	private FeatureStore featureStore;
 
-    private OperatorFilter filter;
+	private OperatorFilter filter;
 
-    private QName ftName;
+	private QName ftName;
 
-    private Envelope bbox;
+	private Envelope bbox;
 
-    private LayerQuery query;
+	private LayerQuery query;
 
-    private ValueReference geomProp;
+	private ValueReference geomProp;
 
-    private SortProperty[] sortBy;
+	private SortProperty[] sortBy;
 
-    private String layerName;
+	private String layerName;
 
-    QueryBuilder( FeatureStore featureStore, OperatorFilter filter, QName ftName, Envelope bbox, LayerQuery query,
-                  ValueReference geomProp, SortProperty[] sortBy, String layerName ) {
-        this.featureStore = featureStore;
-        this.filter = filter;
-        this.ftName = ftName;
-        this.bbox = bbox;
-        this.query = query;
-        this.geomProp = geomProp;
-        this.sortBy = sortBy;
-        this.layerName = layerName;
-    }
+	QueryBuilder(FeatureStore featureStore, OperatorFilter filter, QName ftName, Envelope bbox, LayerQuery query,
+			ValueReference geomProp, SortProperty[] sortBy, String layerName) {
+		this.featureStore = featureStore;
+		this.filter = filter;
+		this.ftName = ftName;
+		this.bbox = bbox;
+		this.query = query;
+		this.geomProp = geomProp;
+		this.sortBy = sortBy;
+		this.layerName = layerName;
+	}
 
-    List<Query> buildMapQueries() {
-        List<Query> queries = new ArrayList<Query>();
-        Integer maxFeats = query.getRenderingOptions().getMaxFeatures( layerName );
-        final int maxFeatures = maxFeats == null ? -1 : maxFeats;
-        if ( ftName == null && featureStore != null ) {
-            final Filter filter2 = filter;
-            queries.addAll( map( featureStore.getSchema().getFeatureTypes( null, false, false ),
-                                 new Mapper<Query, FeatureType>() {
-                                     @Override
-                                     public Query apply( FeatureType u ) {
-                                         Filter fil = addBBoxConstraint( bbox, filter2, geomProp, true );
-                                         return createQuery( u.getName(), fil, round( query.getScale() ), maxFeatures,
-                                                             query.getResolution(), sortBy );
-                                     }
-                                 } ) );
-        } else {
-            Query fquery = createQuery( ftName, addBBoxConstraint( bbox, filter, geomProp, true ),
-                                        round( query.getScale() ), maxFeatures, query.getResolution(), sortBy );
-            queries.add( fquery );
-        }
+	List<Query> buildMapQueries() {
+		List<Query> queries = new ArrayList<Query>();
+		Integer maxFeats = query.getRenderingOptions().getMaxFeatures(layerName);
+		final int maxFeatures = maxFeats == null ? -1 : maxFeats;
+		if (ftName == null && featureStore != null) {
+			final Filter filter2 = filter;
+			queries.addAll(
+					map(featureStore.getSchema().getFeatureTypes(null, false, false), new Mapper<Query, FeatureType>() {
+						@Override
+						public Query apply(FeatureType u) {
+							Filter fil = addBBoxConstraint(bbox, filter2, geomProp, true);
+							return createQuery(u.getName(), fil, round(query.getScale()), maxFeatures,
+									query.getResolution(), sortBy);
+						}
+					}));
+		}
+		else {
+			Query fquery = createQuery(ftName, addBBoxConstraint(bbox, filter, geomProp, true), round(query.getScale()),
+					maxFeatures, query.getResolution(), sortBy);
+			queries.add(fquery);
+		}
 
-        return queries;
-    }
+		return queries;
+	}
 
-    List<Query> buildInfoQueries() {
-        List<Query> queries = new ArrayList<Query>();
-        if ( ftName == null ) {
-            queries.addAll( map( featureStore.getSchema().getFeatureTypes( null, false, false ),
-                                 new Mapper<Query, FeatureType>() {
-                                     @Override
-                                     public Query apply( FeatureType u ) {
-                                         Filter f;
-                                         if ( filter == null ) {
-                                             f = buildFilter( null, u, bbox );
-                                         } else {
-                                             f = buildFilter( ( (OperatorFilter) filter ).getOperator(), u, bbox );
-                                         }
-                                         return createQuery( u.getName(), f, -1, query.getFeatureCount(), -1, sortBy );
-                                     }
-                                 } ) );
-            clearNulls( queries );
-        } else {
-            Filter f;
-            if ( filter == null ) {
-                f = buildFilter( null, featureStore.getSchema().getFeatureType( ftName ), bbox );
-            } else {
-                f = buildFilter( ( (OperatorFilter) filter ).getOperator(),
-                                 featureStore.getSchema().getFeatureType( ftName ), bbox );
-            }
-            queries.add( createQuery( ftName, f, -1, query.getFeatureCount(), -1, sortBy ) );
-        }
-        return queries;
-    }
+	List<Query> buildInfoQueries() {
+		List<Query> queries = new ArrayList<Query>();
+		if (ftName == null) {
+			queries.addAll(
+					map(featureStore.getSchema().getFeatureTypes(null, false, false), new Mapper<Query, FeatureType>() {
+						@Override
+						public Query apply(FeatureType u) {
+							Filter f;
+							if (filter == null) {
+								f = buildFilter(null, u, bbox);
+							}
+							else {
+								f = buildFilter(((OperatorFilter) filter).getOperator(), u, bbox);
+							}
+							return createQuery(u.getName(), f, -1, query.getFeatureCount(), -1, sortBy);
+						}
+					}));
+			clearNulls(queries);
+		}
+		else {
+			Filter f;
+			if (filter == null) {
+				f = buildFilter(null, featureStore.getSchema().getFeatureType(ftName), bbox);
+			}
+			else {
+				f = buildFilter(((OperatorFilter) filter).getOperator(),
+						featureStore.getSchema().getFeatureType(ftName), bbox);
+			}
+			queries.add(createQuery(ftName, f, -1, query.getFeatureCount(), -1, sortBy));
+		}
+		return queries;
+	}
 
-    static Query createQuery( QName ftName, Filter filter, int scale, int maxFeatures, double resolution,
-                              SortProperty[] sort ) {
-        TypeName[] typeNames = new TypeName[] { new TypeName( ftName, null ) };
-        return new Query( typeNames, filter, sort, scale, maxFeatures, resolution );
-    }
+	static Query createQuery(QName ftName, Filter filter, int scale, int maxFeatures, double resolution,
+			SortProperty[] sort) {
+		TypeName[] typeNames = new TypeName[] { new TypeName(ftName, null) };
+		return new Query(typeNames, filter, sort, scale, maxFeatures, resolution);
+	}
 
 }

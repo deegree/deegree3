@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -44,14 +43,15 @@ import org.deegree.commons.tom.gml.property.PropertyType;
 
 public class LengthPropertyType extends MeasurePropertyType {
 
-    public LengthPropertyType( QName name, int minOccurs, int maxOccurs, XSElementDeclaration elDecl,
-                               List<PropertyType> substitutions ) {
-        super( name, minOccurs, maxOccurs, elDecl, substitutions );
-    }
+	public LengthPropertyType(QName name, int minOccurs, int maxOccurs, XSElementDeclaration elDecl,
+			List<PropertyType> substitutions) {
+		super(name, minOccurs, maxOccurs, elDecl, substitutions);
+	}
 
-    @Override
-    public String toString() {
-        String s = "- length property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs;
-        return s;
-    }
+	@Override
+	public String toString() {
+		String s = "- length property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs;
+		return s;
+	}
+
 }

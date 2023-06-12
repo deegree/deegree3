@@ -61,99 +61,105 @@ import static java.util.Collections.singletonList;
  */
 public class GpkgTileStoreBuilder implements ResourceBuilder<TileStore> {
 
-    private org.deegree.tile.persistence.gpkg.jaxb.GpkgTileStoreJAXB cfg;
+	private org.deegree.tile.persistence.gpkg.jaxb.GpkgTileStoreJAXB cfg;
 
-    private ResourceMetadata<TileStore> metadata;
+	private ResourceMetadata<TileStore> metadata;
 
-    private String table;
+	private String table;
 
-    private Connection conn = null;
+	private Connection conn = null;
 
-    private List<TileMatrix> matrices;
+	private List<TileMatrix> matrices;
 
-    private final GeometryFactory fac = new GeometryFactory();
+	private final GeometryFactory fac = new GeometryFactory();
 
-    public GpkgTileStoreBuilder( org.deegree.tile.persistence.gpkg.jaxb.GpkgTileStoreJAXB cfg,
-                                 ResourceMetadata<TileStore> metadata ) {
-        this.cfg = cfg;
-        this.metadata = metadata;
-    }
+	public GpkgTileStoreBuilder(org.deegree.tile.persistence.gpkg.jaxb.GpkgTileStoreJAXB cfg,
+			ResourceMetadata<TileStore> metadata) {
+		this.cfg = cfg;
+		this.metadata = metadata;
+	}
 
-    @Override
-    public TileStore build() {
-        try {
-            table = cfg.getTileDataSet().getTileMapping().getTable();
-            String id;
-            LegacyConnectionProvider connProvider = new LegacyConnectionProvider( "jdbc:sqlite:/" + cfg.getTileDataSet().getFile(), "",
-                                                                                  "", false, null );
-            conn = connProvider.getConnection();
-            TileMatrix tm;
-            matrices = new ArrayList<TileMatrix>();
-            try {
-                Statement stmt = conn.createStatement();
-                String query = "select * from gpkg_tile_matrix where table_name = '" + table + "'";
-                ResultSet rs = stmt.executeQuery( query );
-                if ( rs == null ) {
-                    throw new ResourceInitException(
-                                            "No information could be read from gpkg_tile_matrix table. Please add the table to the GeoPackage." );
-                }
-                SpatialMetadata sm = getTileMatrixSet().getSpatialMetadata();
-                while ( rs.next() ) {
-                    id = rs.getString( 2 );
-                    long numx = rs.getLong( 3 );
-                    long numy = rs.getLong( 4 );
-                    long tileWidth = rs.getLong( 5 );
-                    long tsx = rs.getLong( 7 );
-                    long tsy = rs.getLong( 8 );
-                    double res = (double) ( tsx / tileWidth );
-                    tm = new TileMatrix( id, sm, tsx, tsy, res, numx, numy );
-                    matrices.add( tm );
-                }
-            } catch ( SQLException e ) {
-                e.printStackTrace();
-            }
-            GpkgTileDataSetBuilder builder = new GpkgTileDataSetBuilder( cfg, getTileMatrixSet() );
-            Map<String, TileDataSet> map = builder.extractTileDataSets();
-            return new GenericTileStore( map, metadata );
-        } catch ( Exception e ) {
-            throw new ResourceInitException( "Error when parsing configuration: " + e.getLocalizedMessage(), e );
-        }
-    }
+	@Override
+	public TileStore build() {
+		try {
+			table = cfg.getTileDataSet().getTileMapping().getTable();
+			String id;
+			LegacyConnectionProvider connProvider = new LegacyConnectionProvider(
+					"jdbc:sqlite:/" + cfg.getTileDataSet().getFile(), "", "", false, null);
+			conn = connProvider.getConnection();
+			TileMatrix tm;
+			matrices = new ArrayList<TileMatrix>();
+			try {
+				Statement stmt = conn.createStatement();
+				String query = "select * from gpkg_tile_matrix where table_name = '" + table + "'";
+				ResultSet rs = stmt.executeQuery(query);
+				if (rs == null) {
+					throw new ResourceInitException(
+							"No information could be read from gpkg_tile_matrix table. Please add the table to the GeoPackage.");
+				}
+				SpatialMetadata sm = getTileMatrixSet().getSpatialMetadata();
+				while (rs.next()) {
+					id = rs.getString(2);
+					long numx = rs.getLong(3);
+					long numy = rs.getLong(4);
+					long tileWidth = rs.getLong(5);
+					long tsx = rs.getLong(7);
+					long tsy = rs.getLong(8);
+					double res = (double) (tsx / tileWidth);
+					tm = new TileMatrix(id, sm, tsx, tsy, res, numx, numy);
+					matrices.add(tm);
+				}
+			}
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+			GpkgTileDataSetBuilder builder = new GpkgTileDataSetBuilder(cfg, getTileMatrixSet());
+			Map<String, TileDataSet> map = builder.extractTileDataSets();
+			return new GenericTileStore(map, metadata);
+		}
+		catch (Exception e) {
+			throw new ResourceInitException("Error when parsing configuration: " + e.getLocalizedMessage(), e);
+		}
+	}
 
-    public TileMatrixSet getTileMatrixSet() {
-        String id = null;
-        SpatialMetadata spatialMetadata = null;
-        try {
-            Statement stmt = conn.createStatement();
-            String query = "select * from gpkg_tile_matrix_set where table_name = '" + table + "'";
-            ResultSet rs = stmt.executeQuery( query );
-            if ( rs == null ) {
-                throw new ResourceInitException(
-                                        "No information could be read from gpkg_tile_matrix_set table. Please add the table to the GeoPackage." );
-            }
-            id = rs.getString( 1 );
-            ICRS srs = CRSManager.lookup( "EPSG:" + rs.getString( 2 ) );
-            if ( srs == null ) {
-                throw new ResourceInitException(
-                                        "No SRS information could be read from GeoPackage. Please add one to the GeoPackage." );
-            }
-            double minx = rs.getDouble( 3 );
-            double miny = rs.getDouble( 4 );
-            double maxx = rs.getDouble( 5 );
-            double maxy = rs.getDouble( 6 );
-            Envelope env = fac.createEnvelope( minx, miny, maxx, maxy, srs );
-            if ( env == null ) {
-                throw new ResourceInitException(
-                                        "No envelope information could be read from GeoPackage. Please add one to the GeoPackage." );
-            }
-            spatialMetadata = new SpatialMetadata( env, singletonList( env.getCoordinateSystem() ) );
-        } catch ( SQLException e ) {
-            e.printStackTrace();
-        } catch ( UnknownCRSException e ) {
-            e.printStackTrace();
-        } catch ( ResourceInitException e ) {
-            e.printStackTrace();
-        }
-        return new TileMatrixSet( id, null, matrices, spatialMetadata, null );
-    }
+	public TileMatrixSet getTileMatrixSet() {
+		String id = null;
+		SpatialMetadata spatialMetadata = null;
+		try {
+			Statement stmt = conn.createStatement();
+			String query = "select * from gpkg_tile_matrix_set where table_name = '" + table + "'";
+			ResultSet rs = stmt.executeQuery(query);
+			if (rs == null) {
+				throw new ResourceInitException(
+						"No information could be read from gpkg_tile_matrix_set table. Please add the table to the GeoPackage.");
+			}
+			id = rs.getString(1);
+			ICRS srs = CRSManager.lookup("EPSG:" + rs.getString(2));
+			if (srs == null) {
+				throw new ResourceInitException(
+						"No SRS information could be read from GeoPackage. Please add one to the GeoPackage.");
+			}
+			double minx = rs.getDouble(3);
+			double miny = rs.getDouble(4);
+			double maxx = rs.getDouble(5);
+			double maxy = rs.getDouble(6);
+			Envelope env = fac.createEnvelope(minx, miny, maxx, maxy, srs);
+			if (env == null) {
+				throw new ResourceInitException(
+						"No envelope information could be read from GeoPackage. Please add one to the GeoPackage.");
+			}
+			spatialMetadata = new SpatialMetadata(env, singletonList(env.getCoordinateSystem()));
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		catch (UnknownCRSException e) {
+			e.printStackTrace();
+		}
+		catch (ResourceInitException e) {
+			e.printStackTrace();
+		}
+		return new TileMatrixSet(id, null, matrices, spatialMetadata, null);
+	}
+
 }

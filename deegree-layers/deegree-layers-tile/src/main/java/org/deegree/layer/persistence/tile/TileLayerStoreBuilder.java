@@ -41,34 +41,33 @@ import org.deegree.workspace.Workspace;
 
 /**
  * This class is responsible for building tile layer stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class TileLayerStoreBuilder implements ResourceBuilder<LayerStore> {
 
-    private TileLayers cfg;
+	private TileLayers cfg;
 
-    private ResourceMetadata<LayerStore> metadata;
+	private ResourceMetadata<LayerStore> metadata;
 
-    private Workspace workspace;
+	private Workspace workspace;
 
-    public TileLayerStoreBuilder( TileLayers cfg, ResourceMetadata<LayerStore> metadata, Workspace workspace ) {
-        this.cfg = cfg;
-        this.metadata = metadata;
-        this.workspace = workspace;
-    }
+	public TileLayerStoreBuilder(TileLayers cfg, ResourceMetadata<LayerStore> metadata, Workspace workspace) {
+		this.cfg = cfg;
+		this.metadata = metadata;
+		this.workspace = workspace;
+	}
 
-    @Override
-    public LayerStore build() {
-        Map<String, Layer> map = new HashMap<String, Layer>();
-        TileLayerBuilder builder = new TileLayerBuilder( workspace );
-        for ( TileLayerType lay : cfg.getTileLayer() ) {
-            TileLayer l = builder.createLayer( lay );
-            map.put( l.getMetadata().getName(), l );
-        }
-        return new MultipleLayerStore( map, metadata );
-    }
+	@Override
+	public LayerStore build() {
+		Map<String, Layer> map = new HashMap<String, Layer>();
+		TileLayerBuilder builder = new TileLayerBuilder(workspace);
+		for (TileLayerType lay : cfg.getTileLayer()) {
+			TileLayer l = builder.createLayer(lay);
+			map.put(l.getMetadata().getName(), l);
+		}
+		return new MultipleLayerStore(map, metadata);
+	}
 
 }

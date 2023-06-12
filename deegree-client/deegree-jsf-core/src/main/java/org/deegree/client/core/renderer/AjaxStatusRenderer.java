@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -49,106 +48,104 @@ import com.sun.faces.renderkit.html_basic.HtmlBasicRenderer;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 @FacesRenderer(componentFamily = "org.deegre.Status", rendererType = "org.deegree.AjaxStatus")
 public class AjaxStatusRenderer extends HtmlBasicRenderer {
 
-    @Override
-    public void encodeBegin( FacesContext context, UIComponent component )
-                            throws IOException {
-        ResponseWriter writer = context.getResponseWriter();
-        String clientId = component.getClientId();
-        HtmlAjaxStatus ajaxStatus = (HtmlAjaxStatus) component;
-        boolean isModal = ajaxStatus.getModal();
-        UIComponent forComponent = getForComponent( context, ajaxStatus.getFor(), component );
+	@Override
+	public void encodeBegin(FacesContext context, UIComponent component) throws IOException {
+		ResponseWriter writer = context.getResponseWriter();
+		String clientId = component.getClientId();
+		HtmlAjaxStatus ajaxStatus = (HtmlAjaxStatus) component;
+		boolean isModal = ajaxStatus.getModal();
+		UIComponent forComponent = getForComponent(context, ajaxStatus.getFor(), component);
 
-        String forId = forComponent != null ? "'" + forComponent.getClientId() + "'" : null;
-        String jsToRegister = "registerAjaxStatus('" + clientId + "', " + isModal + ", " + forId + ");";
+		String forId = forComponent != null ? "'" + forComponent.getClientId() + "'" : null;
+		String jsToRegister = "registerAjaxStatus('" + clientId + "', " + isModal + ", " + forId + ");";
 
-        // seems
-        Resource js = context.getApplication().getResourceHandler().createResource( "ajaxStatus.js",
-                                                                                    "deegree/javascript" );
+		// seems
+		Resource js = context.getApplication()
+			.getResourceHandler()
+			.createResource("ajaxStatus.js", "deegree/javascript");
 
-        writer.startElement( "script", component );
-        writer.writeAttribute( "type", "text/javascript", "type" );
-        writer.writeAttribute( "src", js.getRequestPath(), null );
-        writer.writeText( jsToRegister, null );
-        writer.endElement( "script" );
+		writer.startElement("script", component);
+		writer.writeAttribute("type", "text/javascript", "type");
+		writer.writeAttribute("src", js.getRequestPath(), null);
+		writer.writeText(jsToRegister, null);
+		writer.endElement("script");
 
-        writer.startElement( "span", component );
-        writer.writeAttribute( "id", clientId, "id" );
-        writer.writeAttribute( "name", clientId, "id" );
+		writer.startElement("span", component);
+		writer.writeAttribute("id", clientId, "id");
+		writer.writeAttribute("name", clientId, "id");
 
-        if ( ajaxStatus.getStyleClass() != null )
-            writer.writeAttribute( "class", ajaxStatus.getStyleClass(), "id" );
-        writer.writeAttribute( "style", "display: none;" + ajaxStatus.getStyle(), "id" );
+		if (ajaxStatus.getStyleClass() != null)
+			writer.writeAttribute("class", ajaxStatus.getStyleClass(), "id");
+		writer.writeAttribute("style", "display: none;" + ajaxStatus.getStyle(), "id");
 
-        String text = ajaxStatus.getText();
-        if ( isModal ) {
-            writer.startElement( "div", null );
-            writer.writeAttribute( "id", "PLEASEWAIT", null );
-            writer.startElement( "div", null );
-            writer.writeAttribute( "class", "curved", null );
+		String text = ajaxStatus.getText();
+		if (isModal) {
+			writer.startElement("div", null);
+			writer.writeAttribute("id", "PLEASEWAIT", null);
+			writer.startElement("div", null);
+			writer.writeAttribute("class", "curved", null);
 
-            writer.startElement( "b", null );
-            writer.writeAttribute( "class", "b1", null );
-            writer.endElement( "b" );
-            writer.startElement( "b", null );
-            writer.writeAttribute( "class", "b2", null );
-            writer.endElement( "b" );
-            writer.startElement( "b", null );
-            writer.writeAttribute( "class", "b3", null );
-            writer.endElement( "b" );
-            writer.startElement( "b", null );
-            writer.writeAttribute( "class", "b4", null );
-            writer.endElement( "b" );
+			writer.startElement("b", null);
+			writer.writeAttribute("class", "b1", null);
+			writer.endElement("b");
+			writer.startElement("b", null);
+			writer.writeAttribute("class", "b2", null);
+			writer.endElement("b");
+			writer.startElement("b", null);
+			writer.writeAttribute("class", "b3", null);
+			writer.endElement("b");
+			writer.startElement("b", null);
+			writer.writeAttribute("class", "b4", null);
+			writer.endElement("b");
 
-            writer.startElement( "div", null );
-            writer.writeAttribute( "class", "boxcontent", null );
-            writer.startElement( "img", null );
+			writer.startElement("div", null);
+			writer.writeAttribute("class", "boxcontent", null);
+			writer.startElement("img", null);
 
-            Resource resource = context.getApplication().getResourceHandler().createResource( "ajaxStatusLoader.gif",
-                                                                                              "deegree/images" );
-            writer.writeAttribute( "src", resource.getRequestPath(), null );
-            writer.endElement( "img" );
-            writer.startElement( "p", null );
-            writer.writeText( text, null );
-            writer.endElement( "p" );
-            writer.endElement( "div" );
-            writer.startElement( "b", null );
-            writer.writeAttribute( "class", "b4", null );
-            writer.endElement( "b" );
-            writer.startElement( "b", null );
-            writer.writeAttribute( "class", "b3", null );
-            writer.endElement( "b" );
-            writer.startElement( "b", null );
-            writer.writeAttribute( "class", "b2", null );
-            writer.endElement( "b" );
-            writer.startElement( "b", null );
-            writer.writeAttribute( "class", "b1", null );
-            writer.endElement( "b" );
+			Resource resource = context.getApplication()
+				.getResourceHandler()
+				.createResource("ajaxStatusLoader.gif", "deegree/images");
+			writer.writeAttribute("src", resource.getRequestPath(), null);
+			writer.endElement("img");
+			writer.startElement("p", null);
+			writer.writeText(text, null);
+			writer.endElement("p");
+			writer.endElement("div");
+			writer.startElement("b", null);
+			writer.writeAttribute("class", "b4", null);
+			writer.endElement("b");
+			writer.startElement("b", null);
+			writer.writeAttribute("class", "b3", null);
+			writer.endElement("b");
+			writer.startElement("b", null);
+			writer.writeAttribute("class", "b2", null);
+			writer.endElement("b");
+			writer.startElement("b", null);
+			writer.writeAttribute("class", "b1", null);
+			writer.endElement("b");
 
-            writer.endElement( "div" );
-            writer.endElement( "div" );
+			writer.endElement("div");
+			writer.endElement("div");
 
-            writer.startElement( "div", null );
-            writer.writeAttribute( "id", "PLEASEWAIT_BG", null );
-            writer.endElement( "div" );
-        } else {
-            writer.writeText( text, null );
-        }
-    }
+			writer.startElement("div", null);
+			writer.writeAttribute("id", "PLEASEWAIT_BG", null);
+			writer.endElement("div");
+		}
+		else {
+			writer.writeText(text, null);
+		}
+	}
 
-    @Override
-    public void encodeEnd( FacesContext context, UIComponent component )
-                            throws IOException {
-        ResponseWriter writer = context.getResponseWriter();
-        writer.endElement( "span" );
-    }
+	@Override
+	public void encodeEnd(FacesContext context, UIComponent component) throws IOException {
+		ResponseWriter writer = context.getResponseWriter();
+		writer.endElement("span");
+	}
 
 }

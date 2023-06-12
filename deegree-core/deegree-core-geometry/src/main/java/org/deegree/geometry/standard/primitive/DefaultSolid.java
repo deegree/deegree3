@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -48,96 +47,90 @@ import org.deegree.geometry.standard.AbstractDefaultGeometry;
 
 /**
  * Default implementation of {@link Solid}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class DefaultSolid extends AbstractDefaultGeometry implements Solid {
 
-    private Surface exteriorSurface;
+	private Surface exteriorSurface;
 
-    private List<Surface> interiorSurfaces;
+	private List<Surface> interiorSurfaces;
 
-    /**
-     * Creates a new {@link DefaultSolid} instance from the given parameters.
-     * 
-     * @param id
-     *            identifier, may be null
-     * @param crs
-     *            coordinate reference system, may be null
-     * @param pm
-     *            precision model, may be null
-     * @param exteriorSurface
-     *            the exterior surface (shell) of the solid, may be null
-     * @param interiorSurfaces
-     *            the interior surfaces of the solid, may be null or empty
-     */
-    public DefaultSolid( String id, ICRS crs, PrecisionModel pm, Surface exteriorSurface,
-                         List<Surface> interiorSurfaces ) {
-        super( id, crs, pm );
-        this.exteriorSurface = exteriorSurface;
-        this.interiorSurfaces = interiorSurfaces;
-    }
+	/**
+	 * Creates a new {@link DefaultSolid} instance from the given parameters.
+	 * @param id identifier, may be null
+	 * @param crs coordinate reference system, may be null
+	 * @param pm precision model, may be null
+	 * @param exteriorSurface the exterior surface (shell) of the solid, may be null
+	 * @param interiorSurfaces the interior surfaces of the solid, may be null or empty
+	 */
+	public DefaultSolid(String id, ICRS crs, PrecisionModel pm, Surface exteriorSurface,
+			List<Surface> interiorSurfaces) {
+		super(id, crs, pm);
+		this.exteriorSurface = exteriorSurface;
+		this.interiorSurfaces = interiorSurfaces;
+	}
 
-    @Override
-    public int getCoordinateDimension() {
-        return exteriorSurface.getCoordinateDimension();
-    }
+	@Override
+	public int getCoordinateDimension() {
+		return exteriorSurface.getCoordinateDimension();
+	}
 
-    @Override
-    public Surface getExteriorSurface() {
-        return exteriorSurface;
-    }
+	@Override
+	public Surface getExteriorSurface() {
+		return exteriorSurface;
+	}
 
-    @Override
-    public List<Surface> getInteriorSurfaces() {
-        return interiorSurfaces;
-    }
+	@Override
+	public List<Surface> getInteriorSurfaces() {
+		return interiorSurfaces;
+	}
 
-    @Override
-    public PrimitiveType getPrimitiveType() {
-        return PrimitiveType.Solid;
-    }
+	@Override
+	public PrimitiveType getPrimitiveType() {
+		return PrimitiveType.Solid;
+	}
 
-    @Override
-    public SolidType getSolidType() {
-        return SolidType.Solid;
-    }
+	@Override
+	public SolidType getSolidType() {
+		return SolidType.Solid;
+	}
 
-    @Override
-    public GeometryType getGeometryType() {
-        return GeometryType.PRIMITIVE_GEOMETRY;
-    }
+	@Override
+	public GeometryType getGeometryType() {
+		return GeometryType.PRIMITIVE_GEOMETRY;
+	}
 
-    @Override
-    public Measure getArea( Unit requestedBaseUnit ) {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Measure getArea(Unit requestedBaseUnit) {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public Measure getVolume( Unit requestedBaseUnit ) {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Measure getVolume(Unit requestedBaseUnit) {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public synchronized Envelope getEnvelope() {
-        if ( env == null ) {
-            if ( exteriorSurface != null ) {
-                env = exteriorSurface.getEnvelope();
-            } else {
-                for ( Surface interiorSurface : interiorSurfaces ) {
-                    Envelope intEnv = interiorSurface.getEnvelope();
-                    if ( env == null ) {
-                        env = intEnv;
-                    } else {
-                        env = env.merge( intEnv );
-                    }
-                }
-            }
+	@Override
+	public synchronized Envelope getEnvelope() {
+		if (env == null) {
+			if (exteriorSurface != null) {
+				env = exteriorSurface.getEnvelope();
+			}
+			else {
+				for (Surface interiorSurface : interiorSurfaces) {
+					Envelope intEnv = interiorSurface.getEnvelope();
+					if (env == null) {
+						env = intEnv;
+					}
+					else {
+						env = env.merge(intEnv);
+					}
+				}
+			}
 
-        }
-        return env;
-    }
+		}
+		return env;
+	}
+
 }

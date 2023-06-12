@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -55,75 +54,71 @@ import org.deegree.style.se.unevaluated.Continuation;
 
 /**
  * <code>ChangeCase</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class ChangeCase extends AbstractCustomExpression {
 
-    private static final QName ELEMENT_NAME = new QName( SENS, "ChangeCase" );
+	private static final QName ELEMENT_NAME = new QName(SENS, "ChangeCase");
 
-    private StringBuffer value;
+	private StringBuffer value;
 
-    private Continuation<StringBuffer> contn;
+	private Continuation<StringBuffer> contn;
 
-    private boolean toupper;
+	private boolean toupper;
 
-    /***/
-    public ChangeCase() {
-        // just used for SPI
-    }
+	/***/
+	public ChangeCase() {
+		// just used for SPI
+	}
 
-    private ChangeCase( StringBuffer value, Continuation<StringBuffer> contn, boolean toupper ) {
-        this.value = value;
-        this.contn = contn;
-        this.toupper = toupper;
-    }
+	private ChangeCase(StringBuffer value, Continuation<StringBuffer> contn, boolean toupper) {
+		this.value = value;
+		this.contn = contn;
+		this.toupper = toupper;
+	}
 
-    @Override
-    public QName getElementName() {
-        return ELEMENT_NAME;
-    }
+	@Override
+	public QName getElementName() {
+		return ELEMENT_NAME;
+	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypedObjectNode[] evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
-                            throws FilterEvaluationException {
-        StringBuffer sb = new StringBuffer( value.toString().trim() );
-        if ( contn != null ) {
-            contn.evaluate( sb, (Feature) obj, (XPathEvaluator<Feature>) xpathEvaluator );
-        }
-        return new TypedObjectNode[] { new PrimitiveValue( toupper ? sb.toString().toUpperCase()
-                                                                  : sb.toString().toLowerCase() ) };
-    }
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> TypedObjectNode[] evaluate(T obj, XPathEvaluator<T> xpathEvaluator) throws FilterEvaluationException {
+		StringBuffer sb = new StringBuffer(value.toString().trim());
+		if (contn != null) {
+			contn.evaluate(sb, (Feature) obj, (XPathEvaluator<Feature>) xpathEvaluator);
+		}
+		return new TypedObjectNode[] {
+				new PrimitiveValue(toupper ? sb.toString().toUpperCase() : sb.toString().toLowerCase()) };
+	}
 
-    @Override
-    public ChangeCase parse( XMLStreamReader in )
-                            throws XMLStreamException {
+	@Override
+	public ChangeCase parse(XMLStreamReader in) throws XMLStreamException {
 
-        StringBuffer value = null;
-        Continuation<StringBuffer> contn = null;
-        boolean toupper = true;
+		StringBuffer value = null;
+		Continuation<StringBuffer> contn = null;
+		boolean toupper = true;
 
-        in.require( START_ELEMENT, null, "ChangeCase" );
+		in.require(START_ELEMENT, null, "ChangeCase");
 
-        String dir = in.getAttributeValue( null, "direction" );
-        if ( dir != null ) {
-            toupper = dir.equals( "toUpper" );
-        }
+		String dir = in.getAttributeValue(null, "direction");
+		if (dir != null) {
+			toupper = dir.equals("toUpper");
+		}
 
-        while ( !( in.isEndElement() && in.getLocalName().equals( "ChangeCase" ) ) ) {
-            in.nextTag();
+		while (!(in.isEndElement() && in.getLocalName().equals("ChangeCase"))) {
+			in.nextTag();
 
-            if ( in.getLocalName().equals( "StringValue" ) ) {
-                value = new StringBuffer();
-                contn = SymbologyParser.INSTANCE.updateOrContinue( in, "StringValue", value, SBUPDATER, null ).second;
-            }
+			if (in.getLocalName().equals("StringValue")) {
+				value = new StringBuffer();
+				contn = SymbologyParser.INSTANCE.updateOrContinue(in, "StringValue", value, SBUPDATER, null).second;
+			}
 
-        }
-        in.require( END_ELEMENT, null, "ChangeCase" );
-        return new ChangeCase( value, contn, toupper );
-    }
+		}
+		in.require(END_ELEMENT, null, "ChangeCase");
+		return new ChangeCase(value, contn, toupper);
+	}
+
 }

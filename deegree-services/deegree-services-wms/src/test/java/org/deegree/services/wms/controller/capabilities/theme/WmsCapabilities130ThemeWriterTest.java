@@ -92,192 +92,188 @@ import org.mockito.Mockito;
 
 /**
  * Unit tests for {@link WmsCapabilities130ThemeWriter}.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * 
  * @since 3.3
  */
 public class WmsCapabilities130ThemeWriterTest {
 
-    private static final String SCHEMA_URL = "http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd";
+	private static final String SCHEMA_URL = "http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd";
 
-    private final WmsCapabilities130ThemeWriter themeWriter = new WmsCapabilities130ThemeWriter( null, null, null );
+	private final WmsCapabilities130ThemeWriter themeWriter = new WmsCapabilities130ThemeWriter(null, null, null);
 
-    @Test
-    public void writeThemeMinimal()
-                            throws Exception {
-        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        final XMLStreamWriter writer = newInstance().createXMLStreamWriter( bos );
-        writer.writeStartElement( "Layer" );
-        writer.writeNamespace( "", WMSNS );
-        writer.writeNamespace( "xlink", XLNNS );
-        XMLAdapter.writeElement( writer, "Title", "Container" );
-        final LayerMetadata layerMetadata = createLayerMetadataMinimal();
-        layerMetadata.setQueryable( false );
-        final DatasetMetadata datasetMetadata = createDatasetMetadataMinimal();
-        final DoublePair scaleDenominators = new DoublePair( 0.0, 999999.9 );
-        final Map<String, String> authorityNameToUrl = emptyMap();
-        themeWriter.writeTheme( writer, layerMetadata, datasetMetadata, authorityNameToUrl, scaleDenominators, null );
-        writer.writeEndElement();
-        writer.flush();
-        bos.close();
+	@Test
+	public void writeThemeMinimal() throws Exception {
+		final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		final XMLStreamWriter writer = newInstance().createXMLStreamWriter(bos);
+		writer.writeStartElement("Layer");
+		writer.writeNamespace("", WMSNS);
+		writer.writeNamespace("xlink", XLNNS);
+		XMLAdapter.writeElement(writer, "Title", "Container");
+		final LayerMetadata layerMetadata = createLayerMetadataMinimal();
+		layerMetadata.setQueryable(false);
+		final DatasetMetadata datasetMetadata = createDatasetMetadataMinimal();
+		final DoublePair scaleDenominators = new DoublePair(0.0, 999999.9);
+		final Map<String, String> authorityNameToUrl = emptyMap();
+		themeWriter.writeTheme(writer, layerMetadata, datasetMetadata, authorityNameToUrl, scaleDenominators, null);
+		writer.writeEndElement();
+		writer.flush();
+		bos.close();
 
-        String expected = IOUtils.toString(
-                        WmsCapabilities130ThemeWriterTest.class.getResourceAsStream( "wms130_layer_minimal.xml" ),
-                        UTF_8 );
-        String actual = bos.toString();
-        assertThat( actual, isSimilarTo( expected ).ignoreWhitespace().ignoreElementContentWhitespace() );
-    }
+		String expected = IOUtils
+			.toString(WmsCapabilities130ThemeWriterTest.class.getResourceAsStream("wms130_layer_minimal.xml"), UTF_8);
+		String actual = bos.toString();
+		assertThat(actual, isSimilarTo(expected).ignoreWhitespace().ignoreElementContentWhitespace());
+	}
 
-    @Test
-    public void writeThemeFull()
-                            throws Exception {
-        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        final XMLStreamWriter writer = newInstance().createXMLStreamWriter( bos );
-        writer.writeStartElement( "Layer" );
-        writer.writeNamespace( "", WMSNS );
-        writer.writeNamespace( "xlink", XLNNS );
-        XMLAdapter.writeElement( writer, "Title", "Container" );
-        final LayerMetadata layerMetadata = createLayerMetadata();
-        final DatasetMetadata datasetMetadata = createDatasetMetadataFull();
-        final DoublePair scaleDenominators = new DoublePair( 0.0, 999999.9 );
-        final Map<String, String> authorityNameToUrl = createAuthorityNameToUrlMap();
-        themeWriter.writeTheme( writer, layerMetadata, datasetMetadata, authorityNameToUrl, scaleDenominators, null );
-        writer.writeEndElement();
-        writer.flush();
-        bos.close();
+	@Test
+	public void writeThemeFull() throws Exception {
+		final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		final XMLStreamWriter writer = newInstance().createXMLStreamWriter(bos);
+		writer.writeStartElement("Layer");
+		writer.writeNamespace("", WMSNS);
+		writer.writeNamespace("xlink", XLNNS);
+		XMLAdapter.writeElement(writer, "Title", "Container");
+		final LayerMetadata layerMetadata = createLayerMetadata();
+		final DatasetMetadata datasetMetadata = createDatasetMetadataFull();
+		final DoublePair scaleDenominators = new DoublePair(0.0, 999999.9);
+		final Map<String, String> authorityNameToUrl = createAuthorityNameToUrlMap();
+		themeWriter.writeTheme(writer, layerMetadata, datasetMetadata, authorityNameToUrl, scaleDenominators, null);
+		writer.writeEndElement();
+		writer.flush();
+		bos.close();
 
-        String expected = IOUtils.toString(
-                        WmsCapabilities130ThemeWriterTest.class.getResourceAsStream( "wms130_layer_full.xml" ), UTF_8 );
-        String actual = bos.toString();
-        assertThat( actual, isSimilarTo( expected ).ignoreWhitespace().ignoreElementContentWhitespace() );
-    }
+		String expected = IOUtils
+			.toString(WmsCapabilities130ThemeWriterTest.class.getResourceAsStream("wms130_layer_full.xml"), UTF_8);
+		String actual = bos.toString();
+		assertThat(actual, isSimilarTo(expected).ignoreWhitespace().ignoreElementContentWhitespace());
+	}
 
-    @Test
-    public void testWriteThemeMultipleMetadataUrls()
-                            throws Exception {
-        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        final XMLStreamWriter writer = newInstance().createXMLStreamWriter( bos );
-        writer.writeStartElement( "Layer" );
-        writer.writeNamespace( "", WMSNS );
-        writer.writeNamespace( "xlink", XLNNS );
-        XMLAdapter.writeElement( writer, "Title", "Container" );
-        final LayerMetadata layerMetadata = createLayerMetadata();
+	@Test
+	public void testWriteThemeMultipleMetadataUrls() throws Exception {
+		final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		final XMLStreamWriter writer = newInstance().createXMLStreamWriter(bos);
+		writer.writeStartElement("Layer");
+		writer.writeNamespace("", WMSNS);
+		writer.writeNamespace("xlink", XLNNS);
+		XMLAdapter.writeElement(writer, "Title", "Container");
+		final LayerMetadata layerMetadata = createLayerMetadata();
 
-        String mdurlTemplate = "http://md.url.org/template";
-        OWSMetadataProvider provider = Mockito.mock( OWSMetadataProvider.class );
-        List<DatasetMetadata> mds = new ArrayList<DatasetMetadata>();
-        mds.add( createDatasetMetadata( "http://url1", "http://url2" ) );
-        mds.add( createDatasetMetadata( "http://url3" ) );
-        when( provider.getAllDatasetMetadata( Mockito.any( QName.class ) ) ).thenReturn( mds );
-        
-        WmsCapabilities130ThemeWriter themeWriter = new WmsCapabilities130ThemeWriter( provider, null, mdurlTemplate );
+		String mdurlTemplate = "http://md.url.org/template";
+		OWSMetadataProvider provider = Mockito.mock(OWSMetadataProvider.class);
+		List<DatasetMetadata> mds = new ArrayList<DatasetMetadata>();
+		mds.add(createDatasetMetadata("http://url1", "http://url2"));
+		mds.add(createDatasetMetadata("http://url3"));
+		when(provider.getAllDatasetMetadata(Mockito.any(QName.class))).thenReturn(mds);
 
-        Theme theme = new StandardTheme( layerMetadata, Collections.<Theme> emptyList(),
-                                         Collections.<Layer> emptyList(), null );
-        themeWriter.writeTheme( writer, theme );
-        writer.writeEndElement();
-        writer.flush();
-        bos.close();
+		WmsCapabilities130ThemeWriter themeWriter = new WmsCapabilities130ThemeWriter(provider, null, mdurlTemplate);
 
-        String expected = IOUtils.toString( WmsCapabilities130ThemeWriterTest.class.getResourceAsStream(
-                        "wms130_layer_multipleMetadataUrls.xml" ), UTF_8 );
-        String actual = bos.toString();
-        assertThat( actual, isSimilarTo( expected ).ignoreWhitespace().ignoreElementContentWhitespace() );
-    }
+		Theme theme = new StandardTheme(layerMetadata, Collections.<Theme>emptyList(), Collections.<Layer>emptyList(),
+				null);
+		themeWriter.writeTheme(writer, theme);
+		writer.writeEndElement();
+		writer.flush();
+		bos.close();
 
-    private DatasetMetadata createDatasetMetadataMinimal() {
-        final QName name = new QName( "SimpleTheme" );
-        final List<LanguageString> titles = emptyList();
-        final List<LanguageString> abstracts = emptyList();
-        final List<Pair<List<LanguageString>, CodeType>> keywords = new ArrayList<Pair<List<LanguageString>, CodeType>>();
-        final List<MetadataUrl> metadataUrls = null;
-        final List<ExternalIdentifier> externalIds = null;
-        final List<UrlWithFormat> dataUrls = null;
-        final List<UrlWithFormat> featureListUrls = null;
-        final Attribution attribution = null;
-        final List<ExtendedDescription> extendedDescriptions = null;
-        return new DatasetMetadata( name, titles, abstracts, keywords, metadataUrls, externalIds, dataUrls,
-                                    featureListUrls, attribution, extendedDescriptions );
-    }
+		String expected = IOUtils.toString(
+				WmsCapabilities130ThemeWriterTest.class.getResourceAsStream("wms130_layer_multipleMetadataUrls.xml"),
+				UTF_8);
+		String actual = bos.toString();
+		assertThat(actual, isSimilarTo(expected).ignoreWhitespace().ignoreElementContentWhitespace());
+	}
 
-    private DatasetMetadata createDatasetMetadataFull() {
-        final QName name = new QName( "SimpleTheme" );
-        final List<LanguageString> titles = singletonList( new LanguageString( "SimpleTheme Title", null ) );
-        final List<LanguageString> abstracts = singletonList( new LanguageString( "SimpleTheme Abstract", null ) );
-        final List<Pair<List<LanguageString>, CodeType>> keywords = new ArrayList<Pair<List<LanguageString>, CodeType>>();
-        final List<LanguageString> keywordsList1 = new ArrayList<LanguageString>();
-        keywordsList1.add( new LanguageString( "keyword1", null ) );
-        keywordsList1.add( new LanguageString( "keyword2", null ) );
-        keywordsList1.add( new LanguageString( "keyword3", null ) );
-        final CodeType code1 = new CodeType( "code", "codeSpace" );
-        final Pair<List<LanguageString>, CodeType> keywords1 = new Pair<List<LanguageString>, CodeType>( keywordsList1,
-                                                                                                         code1 );
-        keywords.add( keywords1 );
-        final List<MetadataUrl> metadataUrls = new ArrayList<MetadataUrl>();
-        metadataUrls.add( new MetadataUrl( "http://www.url.net", null, null ) );
-        metadataUrls.add( new MetadataUrl( "http://www.url2.net", null, null ) );
-        final List<ExternalIdentifier> externalIds = new ArrayList<ExternalIdentifier>();
-        externalIds.add( new ExternalIdentifier( "extid1", "authority1" ) );
-        externalIds.add( new ExternalIdentifier( "extid2", "authority2" ) );
-        final List<UrlWithFormat> dataUrls = new ArrayList<UrlWithFormat>();
-        dataUrls.add( new UrlWithFormat( "http://data1.url", "text/xml" ) );
-        dataUrls.add( new UrlWithFormat( "http://data2.url", "text/plain" ) );
-        final List<UrlWithFormat> featureListUrls = new ArrayList<UrlWithFormat>();
-        featureListUrls.add( new UrlWithFormat( "http://featurelist1.url", "text/xml" ) );
-        featureListUrls.add( new UrlWithFormat( "http://featurelist2.url", "text/plain" ) );
-        final LogoUrl logoUrl = new LogoUrl( "http://logo.url", "image/png", 64, 32 );
-        final Attribution attribution = new Attribution( "AttributionTitle", "http://attribution.url", logoUrl );
-        final List<ExtendedDescription> extendedDescriptions = Collections.emptyList();
-        return new DatasetMetadata( name, titles, abstracts, keywords, metadataUrls, externalIds, dataUrls,
-                                    featureListUrls, attribution, extendedDescriptions );
-    }
+	private DatasetMetadata createDatasetMetadataMinimal() {
+		final QName name = new QName("SimpleTheme");
+		final List<LanguageString> titles = emptyList();
+		final List<LanguageString> abstracts = emptyList();
+		final List<Pair<List<LanguageString>, CodeType>> keywords = new ArrayList<Pair<List<LanguageString>, CodeType>>();
+		final List<MetadataUrl> metadataUrls = null;
+		final List<ExternalIdentifier> externalIds = null;
+		final List<UrlWithFormat> dataUrls = null;
+		final List<UrlWithFormat> featureListUrls = null;
+		final Attribution attribution = null;
+		final List<ExtendedDescription> extendedDescriptions = null;
+		return new DatasetMetadata(name, titles, abstracts, keywords, metadataUrls, externalIds, dataUrls,
+				featureListUrls, attribution, extendedDescriptions);
+	}
 
-    private Map<String, String> createAuthorityNameToUrlMap() {
-        final Map<String, String> authorityNameToUrl = new LinkedHashMap<String, String>();
-        authorityNameToUrl.put( "authority1", "http://whatever.authority1.com" );
-        authorityNameToUrl.put( "authority2", "http://whatever.authority2.com" );
-        return authorityNameToUrl;
-    }
+	private DatasetMetadata createDatasetMetadataFull() {
+		final QName name = new QName("SimpleTheme");
+		final List<LanguageString> titles = singletonList(new LanguageString("SimpleTheme Title", null));
+		final List<LanguageString> abstracts = singletonList(new LanguageString("SimpleTheme Abstract", null));
+		final List<Pair<List<LanguageString>, CodeType>> keywords = new ArrayList<Pair<List<LanguageString>, CodeType>>();
+		final List<LanguageString> keywordsList1 = new ArrayList<LanguageString>();
+		keywordsList1.add(new LanguageString("keyword1", null));
+		keywordsList1.add(new LanguageString("keyword2", null));
+		keywordsList1.add(new LanguageString("keyword3", null));
+		final CodeType code1 = new CodeType("code", "codeSpace");
+		final Pair<List<LanguageString>, CodeType> keywords1 = new Pair<List<LanguageString>, CodeType>(keywordsList1,
+				code1);
+		keywords.add(keywords1);
+		final List<MetadataUrl> metadataUrls = new ArrayList<MetadataUrl>();
+		metadataUrls.add(new MetadataUrl("http://www.url.net", null, null));
+		metadataUrls.add(new MetadataUrl("http://www.url2.net", null, null));
+		final List<ExternalIdentifier> externalIds = new ArrayList<ExternalIdentifier>();
+		externalIds.add(new ExternalIdentifier("extid1", "authority1"));
+		externalIds.add(new ExternalIdentifier("extid2", "authority2"));
+		final List<UrlWithFormat> dataUrls = new ArrayList<UrlWithFormat>();
+		dataUrls.add(new UrlWithFormat("http://data1.url", "text/xml"));
+		dataUrls.add(new UrlWithFormat("http://data2.url", "text/plain"));
+		final List<UrlWithFormat> featureListUrls = new ArrayList<UrlWithFormat>();
+		featureListUrls.add(new UrlWithFormat("http://featurelist1.url", "text/xml"));
+		featureListUrls.add(new UrlWithFormat("http://featurelist2.url", "text/plain"));
+		final LogoUrl logoUrl = new LogoUrl("http://logo.url", "image/png", 64, 32);
+		final Attribution attribution = new Attribution("AttributionTitle", "http://attribution.url", logoUrl);
+		final List<ExtendedDescription> extendedDescriptions = Collections.emptyList();
+		return new DatasetMetadata(name, titles, abstracts, keywords, metadataUrls, externalIds, dataUrls,
+				featureListUrls, attribution, extendedDescriptions);
+	}
 
-    private LayerMetadata createLayerMetadataMinimal() {
-        final List<LanguageString> titles = emptyList();
-        final Description description = new Description( "SimpleTheme", titles, null, null );
-        final SpatialMetadata spatialMetadata = null;
-        return new LayerMetadata( "SimpleTheme", description, spatialMetadata );
-    }
+	private Map<String, String> createAuthorityNameToUrlMap() {
+		final Map<String, String> authorityNameToUrl = new LinkedHashMap<String, String>();
+		authorityNameToUrl.put("authority1", "http://whatever.authority1.com");
+		authorityNameToUrl.put("authority2", "http://whatever.authority2.com");
+		return authorityNameToUrl;
+	}
 
-    private LayerMetadata createLayerMetadata() {
-        final Description description = new Description( "SimpleTheme", null, null, null );
-        final ICRS epsg28992 = CRSManager.getCRSRef( "EPSG:28992" );
-        final ICRS epsg25832 = CRSManager.getCRSRef( "EPSG:25832" );
-        final double[] min = new double[] { -59874.0, 249043.0 };
-        final double[] max = new double[] { 316878.0, 885500.0 };
-        final Envelope envelope = new GeometryFactory().createEnvelope( min, max, epsg28992 );
-        final List<ICRS> crsList = new ArrayList<ICRS>();
-        crsList.add( epsg28992 );
-        crsList.add( epsg25832 );
-        final SpatialMetadata spatialMetadata = new SpatialMetadata( envelope, crsList );
-        final LayerMetadata themeMetadata = new LayerMetadata( "SimpleTheme", description, spatialMetadata );
-        themeMetadata.setCascaded( 5 );
-        return themeMetadata;
-    }
+	private LayerMetadata createLayerMetadataMinimal() {
+		final List<LanguageString> titles = emptyList();
+		final Description description = new Description("SimpleTheme", titles, null, null);
+		final SpatialMetadata spatialMetadata = null;
+		return new LayerMetadata("SimpleTheme", description, spatialMetadata);
+	}
 
-    private DatasetMetadata createDatasetMetadata( String... urls ) {
-        List<LanguageString> titles = new ArrayList<LanguageString>();
-        List<LanguageString> abstracts = new ArrayList<LanguageString>();
-        List<Pair<List<LanguageString>, CodeType>> keywords = new ArrayList<Pair<List<LanguageString>, CodeType>>();
-        List<MetadataUrl> metadataUrls = new ArrayList<MetadataUrl>();
-        List<ExternalIdentifier> externalIds = new ArrayList<ExternalIdentifier>();
-        List<UrlWithFormat> dataUrls = new ArrayList<UrlWithFormat>();
-        List<UrlWithFormat> featureListUrls = new ArrayList<UrlWithFormat>();
-        Attribution attribution = null;
-        for ( String url : urls ) {
-            metadataUrls.add( new MetadataUrl( url, "ISO19115:2003", "application/xml" ) );
-        }
-        List<ExtendedDescription> extendedDescriptions = null;
-        return new DatasetMetadata( new QName( "provider" ), titles, abstracts, keywords, metadataUrls, externalIds,
-                                    dataUrls, featureListUrls, attribution, extendedDescriptions );
-    }
+	private LayerMetadata createLayerMetadata() {
+		final Description description = new Description("SimpleTheme", null, null, null);
+		final ICRS epsg28992 = CRSManager.getCRSRef("EPSG:28992");
+		final ICRS epsg25832 = CRSManager.getCRSRef("EPSG:25832");
+		final double[] min = new double[] { -59874.0, 249043.0 };
+		final double[] max = new double[] { 316878.0, 885500.0 };
+		final Envelope envelope = new GeometryFactory().createEnvelope(min, max, epsg28992);
+		final List<ICRS> crsList = new ArrayList<ICRS>();
+		crsList.add(epsg28992);
+		crsList.add(epsg25832);
+		final SpatialMetadata spatialMetadata = new SpatialMetadata(envelope, crsList);
+		final LayerMetadata themeMetadata = new LayerMetadata("SimpleTheme", description, spatialMetadata);
+		themeMetadata.setCascaded(5);
+		return themeMetadata;
+	}
+
+	private DatasetMetadata createDatasetMetadata(String... urls) {
+		List<LanguageString> titles = new ArrayList<LanguageString>();
+		List<LanguageString> abstracts = new ArrayList<LanguageString>();
+		List<Pair<List<LanguageString>, CodeType>> keywords = new ArrayList<Pair<List<LanguageString>, CodeType>>();
+		List<MetadataUrl> metadataUrls = new ArrayList<MetadataUrl>();
+		List<ExternalIdentifier> externalIds = new ArrayList<ExternalIdentifier>();
+		List<UrlWithFormat> dataUrls = new ArrayList<UrlWithFormat>();
+		List<UrlWithFormat> featureListUrls = new ArrayList<UrlWithFormat>();
+		Attribution attribution = null;
+		for (String url : urls) {
+			metadataUrls.add(new MetadataUrl(url, "ISO19115:2003", "application/xml"));
+		}
+		List<ExtendedDescription> extendedDescriptions = null;
+		return new DatasetMetadata(new QName("provider"), titles, abstracts, keywords, metadataUrls, externalIds,
+				dataUrls, featureListUrls, attribution, extendedDescriptions);
+	}
 
 }

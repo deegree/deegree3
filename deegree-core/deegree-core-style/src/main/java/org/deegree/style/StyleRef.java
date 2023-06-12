@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aschmitz@wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -39,53 +38,49 @@ import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.style.se.unevaluated.Style;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 public class StyleRef {
 
-    private String name;
+	private String name;
 
-    private Style style;
+	private Style style;
 
-    public StyleRef( String name ) {
-        this.name = name;
-    }
+	public StyleRef(String name) {
+		this.name = name;
+	}
 
-    public StyleRef( Style style ) {
-        this.style = style;
-        this.name = style.getName();
-    }
+	public StyleRef(Style style) {
+		this.style = style;
+		this.name = style.getName();
+	}
 
-    public boolean isResolved() {
-        return style != null;
-    }
+	public boolean isResolved() {
+		return style != null;
+	}
 
-    public Style getStyle() {
-        return style;
-    }
+	public Style getStyle() {
+		return style;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void resolve( Style style ) {
-        this.style = style;
-    }
+	public void resolve(Style style) {
+		this.style = style;
+	}
 
-    @Override
-    public String toString() {
-        return name;
-    }
+	@Override
+	public String toString() {
+		return name;
+	}
 
-    public static final Mapper<StyleRef, String> FROM_NAMES = new Mapper<StyleRef, String>() {
-        @Override
-        public StyleRef apply( String u ) {
-            return new StyleRef( u );
-        }
-    };
+	public static final Mapper<StyleRef, String> FROM_NAMES = new Mapper<StyleRef, String>() {
+		@Override
+		public StyleRef apply(String u) {
+			return new StyleRef(u);
+		}
+	};
 
 }

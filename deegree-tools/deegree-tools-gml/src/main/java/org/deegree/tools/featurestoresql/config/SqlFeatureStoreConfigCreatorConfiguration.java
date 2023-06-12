@@ -43,54 +43,61 @@ import org.springframework.context.annotation.Configuration;
 @EnableBatchProcessing
 public class SqlFeatureStoreConfigCreatorConfiguration {
 
-    @Autowired
-    private JobBuilderFactory jobBuilderFactory;
+	@Autowired
+	private JobBuilderFactory jobBuilderFactory;
 
-    @Autowired
-    private StepBuilderFactory stepBuilderFactory;
+	@Autowired
+	private StepBuilderFactory stepBuilderFactory;
 
-    @StepScope
-    @Bean
-    public LoadParameter parseJobParameter( @Value("#{jobParameters[schemaUrl]}") String schemaUrl,
-                                            @Value("#{jobParameters[format]}") String format,
-                                            @Value("#{jobParameters[srid]}") String srid,
-                                            @Value("#{jobParameters[idtype]}") String idtype,
-                                            @Value("#{jobParameters[mapping]}") String mapping,
-                                            @Value("#{jobParameters[dialect]}") String dialect,
-                                            @Value("#{jobParameters[cycledepth]}") String depth,
-                                            @Value("#{jobParameters[listOfPropertiesWithPrimitiveHref]}") String listOfPropertiesWithPrimitiveHref,
-                                            @Value("#{jobParameters[referenceData]}") String referenceData,
-                                            @Value("#{jobParameters[useRefDataProps]}") String useRefDataProps ) {
-        return new LoadParameterBuilder().setSchemaUrl( schemaUrl ).setFormat( format ).setSrid( srid ).setIdType(
-                        idtype ).setMappingType( mapping ).setDialect( dialect ).setDepth(
-                        depth ).setListOfPropertiesWithPrimitiveHref(
-                        listOfPropertiesWithPrimitiveHref ).setReferenceData(
-                        referenceData ).setuseRefDataProps(
-                        useRefDataProps ).build();
-    }
+	@StepScope
+	@Bean
+	public LoadParameter parseJobParameter(@Value("#{jobParameters[schemaUrl]}") String schemaUrl,
+			@Value("#{jobParameters[format]}") String format, @Value("#{jobParameters[srid]}") String srid,
+			@Value("#{jobParameters[idtype]}") String idtype, @Value("#{jobParameters[mapping]}") String mapping,
+			@Value("#{jobParameters[dialect]}") String dialect, @Value("#{jobParameters[cycledepth]}") String depth,
+			@Value("#{jobParameters[listOfPropertiesWithPrimitiveHref]}") String listOfPropertiesWithPrimitiveHref,
+			@Value("#{jobParameters[referenceData]}") String referenceData,
+			@Value("#{jobParameters[useRefDataProps]}") String useRefDataProps) {
+		return new LoadParameterBuilder().setSchemaUrl(schemaUrl)
+			.setFormat(format)
+			.setSrid(srid)
+			.setIdType(idtype)
+			.setMappingType(mapping)
+			.setDialect(dialect)
+			.setDepth(depth)
+			.setListOfPropertiesWithPrimitiveHref(listOfPropertiesWithPrimitiveHref)
+			.setReferenceData(referenceData)
+			.setuseRefDataProps(useRefDataProps)
+			.build();
+	}
 
-    @StepScope
-    @Bean
-    public AppSchemaReader appSchemaReader( LoadParameter loadParameter ) {
-        return new AppSchemaReader( loadParameter.getSchemaUrl() );
-    }
+	@StepScope
+	@Bean
+	public AppSchemaReader appSchemaReader(LoadParameter loadParameter) {
+		return new AppSchemaReader(loadParameter.getSchemaUrl());
+	}
 
-    @StepScope
-    @Bean
-    public FeatureStoreConfigWriter featureStoreConfigWriter( LoadParameter loadParameter ) {
-        return new FeatureStoreConfigWriter( loadParameter );
-    }
+	@StepScope
+	@Bean
+	public FeatureStoreConfigWriter featureStoreConfigWriter(LoadParameter loadParameter) {
+		return new FeatureStoreConfigWriter(loadParameter);
+	}
 
-    @Bean
-    public Step step( AppSchemaReader appSchemaReader, FeatureStoreConfigWriter featureStoreConfigWriter ) {
-        return stepBuilderFactory.get( "featureStoreConfigLoaderStep" ).<AppSchema, AppSchema>chunk( 1 ).reader(
-                        appSchemaReader ).writer( featureStoreConfigWriter ).build();
-    }
+	@Bean
+	public Step step(AppSchemaReader appSchemaReader, FeatureStoreConfigWriter featureStoreConfigWriter) {
+		return stepBuilderFactory.get("featureStoreConfigLoaderStep")
+			.<AppSchema, AppSchema>chunk(1)
+			.reader(appSchemaReader)
+			.writer(featureStoreConfigWriter)
+			.build();
+	}
 
-    @Bean
-    public Job job( Step step ) {
-        return jobBuilderFactory.get( "featureStoreConfigLoaderJob" ).incrementer( new RunIdIncrementer() ).start(
-                        step ).build();
-    }
+	@Bean
+	public Job job(Step step) {
+		return jobBuilderFactory.get("featureStoreConfigLoaderJob")
+			.incrementer(new RunIdIncrementer())
+			.start(step)
+			.build();
+	}
 
 }

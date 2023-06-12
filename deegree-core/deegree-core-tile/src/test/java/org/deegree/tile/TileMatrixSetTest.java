@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -59,59 +58,58 @@ import org.junit.Test;
 
 /**
  * <code>TileMatrixSetTest</code>
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 public class TileMatrixSetTest extends TestCase {
 
-    private TileDataSet tms;
+	private TileDataSet tms;
 
-    private Envelope env;
+	private Envelope env;
 
-    @Override
-    @Before
-    public void setUp() {
-        GeometryFactory fac = new GeometryFactory();
-        ICRS crs;
-        try {
-            crs = CRSManager.lookup( "EPSG:4326" );
-            env = fac.createEnvelope( -10, -10, 10, 10, crs );
-            SpatialMetadata smd = new SpatialMetadata( env, Collections.singletonList( crs ) );
-            TileMatrix md = new TileMatrix( "someid", smd, 256, 256, 1, 1, 1 );
-            TileDataLevel tm = mock( TileDataLevel.class );
-            Tile t = mock( Tile.class );
+	@Override
+	@Before
+	public void setUp() {
+		GeometryFactory fac = new GeometryFactory();
+		ICRS crs;
+		try {
+			crs = CRSManager.lookup("EPSG:4326");
+			env = fac.createEnvelope(-10, -10, 10, 10, crs);
+			SpatialMetadata smd = new SpatialMetadata(env, Collections.singletonList(crs));
+			TileMatrix md = new TileMatrix("someid", smd, 256, 256, 1, 1, 1);
+			TileDataLevel tm = mock(TileDataLevel.class);
+			Tile t = mock(Tile.class);
 
-            tm.getMetadata();
-            tm.getTile( 0, 0 );
-            when( tm.getMetadata() ).thenReturn( md );
-            when( tm.getTile( 0, 0 ) ).thenReturn( t );
+			tm.getMetadata();
+			tm.getTile(0, 0);
+			when(tm.getMetadata()).thenReturn(md);
+			when(tm.getTile(0, 0)).thenReturn(t);
 
-            TileMatrixSet metadata = new TileMatrixSet( "default", null, Collections.singletonList( md ), smd, null );
-            tms = new DefaultTileDataSet( Collections.singletonList( tm ), metadata, "image/png" );
-        } catch ( UnknownCRSException e ) {
-            throw new RuntimeException( e );
-        }
-    }
+			TileMatrixSet metadata = new TileMatrixSet("default", null, Collections.singletonList(md), smd, null);
+			tms = new DefaultTileDataSet(Collections.singletonList(tm), metadata, "image/png");
+		}
+		catch (UnknownCRSException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-    /**
-     * Test method for {@link org.deegree.tile.TileDataSet#getTiles(org.deegree.geometry.Envelope, double)}.
-     */
-    @Test
-    public void testGetTiles() {
-        Iterator<Tile> iter = tms.getTiles( env, 1 );
-        assertNotNull( iter.next() );
-    }
+	/**
+	 * Test method for
+	 * {@link org.deegree.tile.TileDataSet#getTiles(org.deegree.geometry.Envelope, double)}.
+	 */
+	@Test
+	public void testGetTiles() {
+		Iterator<Tile> iter = tms.getTiles(env, 1);
+		assertNotNull(iter.next());
+	}
 
-    /**
-     * Test method for {@link org.deegree.tile.TileDataSet#getTileDataLevels()}.
-     */
-    @Test
-    public void testGetTileMatrices() {
-        assertNotNull( tms.getTileDataLevels() );
-        assertEquals( tms.getTileDataLevels().size(), 1 );
-    }
+	/**
+	 * Test method for {@link org.deegree.tile.TileDataSet#getTileDataLevels()}.
+	 */
+	@Test
+	public void testGetTileMatrices() {
+		assertNotNull(tms.getTileDataLevels());
+		assertEquals(tms.getTileDataLevels().size(), 1);
+	}
 
 }

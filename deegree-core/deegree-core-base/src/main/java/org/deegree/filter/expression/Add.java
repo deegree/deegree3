@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -47,72 +46,70 @@ import org.deegree.filter.XPathEvaluator;
 
 /**
  * TODO add documentation here
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * 
- * @version $Revision:$, $Date:$
  */
 public class Add implements Expression {
 
-    private Expression param1;
+	private Expression param1;
 
-    private Expression param2;
+	private Expression param2;
 
-    public Add( Expression param1, Expression param2 ) {
-        this.param1 = param1;
-        this.param2 = param2;
-    }
+	public Add(Expression param1, Expression param2) {
+		this.param1 = param1;
+		this.param2 = param2;
+	}
 
-    public Expression getParameter1() {
-        return param1;
-    }
+	public Expression getParameter1() {
+		return param1;
+	}
 
-    public Expression getParameter2() {
-        return param2;
-    }
+	public Expression getParameter2() {
+		return param2;
+	}
 
-    @Override
-    public Type getType() {
-        return Type.ADD;
-    }
+	@Override
+	public Type getType() {
+		return Type.ADD;
+	}
 
-    @Override
-    public <T> TypedObjectNode[] evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
-                            throws FilterEvaluationException {
+	@Override
+	public <T> TypedObjectNode[] evaluate(T obj, XPathEvaluator<T> xpathEvaluator) throws FilterEvaluationException {
 
-        TypedObjectNode[] values1 = param1.evaluate( obj, xpathEvaluator );
-        TypedObjectNode[] values2 = param2.evaluate( obj, xpathEvaluator );
+		TypedObjectNode[] values1 = param1.evaluate(obj, xpathEvaluator);
+		TypedObjectNode[] values2 = param2.evaluate(obj, xpathEvaluator);
 
-        List<TypedObjectNode> resultValues = new ArrayList<TypedObjectNode>( values1.length * values2.length );
-        for ( TypedObjectNode value1 : values1 ) {
-            if ( value1 != null ) {
-                try {
-                    BigDecimal bd1 = new BigDecimal( value1.toString() );
-                    for ( TypedObjectNode value2 : values2 ) {
-                        if ( value2 != null ) {
-                            BigDecimal bd2 = new BigDecimal( value2.toString() );
-                            resultValues.add( new PrimitiveValue( bd1.add( bd2 ) ) );
-                        }
-                    }
-                } catch ( NumberFormatException e ) {
-                    // nothing to do
-                }
-            }
-        }
-        return resultValues.toArray( new TypedObjectNode[resultValues.size()] );
-    }
+		List<TypedObjectNode> resultValues = new ArrayList<TypedObjectNode>(values1.length * values2.length);
+		for (TypedObjectNode value1 : values1) {
+			if (value1 != null) {
+				try {
+					BigDecimal bd1 = new BigDecimal(value1.toString());
+					for (TypedObjectNode value2 : values2) {
+						if (value2 != null) {
+							BigDecimal bd2 = new BigDecimal(value2.toString());
+							resultValues.add(new PrimitiveValue(bd1.add(bd2)));
+						}
+					}
+				}
+				catch (NumberFormatException e) {
+					// nothing to do
+				}
+			}
+		}
+		return resultValues.toArray(new TypedObjectNode[resultValues.size()]);
+	}
 
-    @Override
-    public String toString( String indent ) {
-        String s = indent + "-Add\n";
-        s += param1.toString( indent + "  " );
-        s += param2.toString( indent + "  " );
-        return s;
-    }
+	@Override
+	public String toString(String indent) {
+		String s = indent + "-Add\n";
+		s += param1.toString(indent + "  ");
+		s += param2.toString(indent + "  ");
+		return s;
+	}
 
-    @Override
-    public Expression[] getParams() {
-        return new Expression[] { param1, param2 };
-    }
+	@Override
+	public Expression[] getParams() {
+		return new Expression[] { param1, param2 };
+	}
+
 }

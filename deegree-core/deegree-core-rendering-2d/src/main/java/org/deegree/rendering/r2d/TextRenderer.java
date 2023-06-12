@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -42,28 +41,24 @@ import org.deegree.style.styling.TextStyling;
 
 /**
  * <code>TextRenderer</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface TextRenderer {
 
-    /**
-     * Render a text styling with a string and a geometry.
-     * 
-     * @param styling
-     * @param text
-     * @param geom
-     */
-    void render( TextStyling styling, String text, Geometry geom );
+	/**
+	 * Render a text styling with a string and a geometry.
+	 * @param styling
+	 * @param text
+	 * @param geom
+	 */
+	void render(TextStyling styling, String text, Geometry geom);
 
-    /**
-     * @param styling
-     * @param text
-     * @param geoms
-     */
-    void render( TextStyling styling, String text, Collection<Geometry> geoms );
+	/**
+	 * @param styling
+	 * @param text
+	 * @param geoms
+	 */
+	void render(TextStyling styling, String text, Collection<Geometry> geoms);
 
 }

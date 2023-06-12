@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -43,25 +42,20 @@ import org.deegree.cs.exceptions.CRSStoreException;
 import org.deegree.workspace.Workspace;
 
 /**
- * Base interface for all {@link CRSStoreProvider} which must have an default constructor to be loaded by the
- * {@link ServiceLoader}.
- * 
+ * Base interface for all {@link CRSStoreProvider} which must have an default constructor
+ * to be loaded by the {@link ServiceLoader}.
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public interface CRSStoreProvider extends ResourceProvider {
 
-    /**
-     * Creates a new {@link CRSStore} instance from the given configuration document.
-     * 
-     * @param configURL
-     *            location of the configuration document, must not be <code>null</code>
-     * @param workspace
-     * @return new crs store instance, configured, not initialized yet
-     */
-    public CRSStore getCRSStore( URL configURL, Workspace workspace )
-                            throws CRSStoreException;
+	/**
+	 * Creates a new {@link CRSStore} instance from the given configuration document.
+	 * @param configURL location of the configuration document, must not be
+	 * <code>null</code>
+	 * @param workspace
+	 * @return new crs store instance, configured, not initialized yet
+	 */
+	public CRSStore getCRSStore(URL configURL, Workspace workspace) throws CRSStoreException;
 
 }

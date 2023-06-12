@@ -33,27 +33,27 @@ import org.deegree.commons.gdal.pool.KeyedResourceFactory;
 
 /**
  * Used by {@link GdalDatasetThreadPoolCache} to create new {@link GdalDataset} instances.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * 
  * @since 3.4
  */
 class GdalDatasetFactory implements KeyedResourceFactory<GdalDataset> {
 
-    private final GdalDatasetPool pool;
+	private final GdalDatasetPool pool;
 
-    GdalDatasetFactory( GdalDatasetPool pool ) {
-        this.pool = pool;
-    }
+	GdalDatasetFactory(GdalDatasetPool pool) {
+		this.pool = pool;
+	}
 
-    @Override
-    public GdalDataset create( final String key ) {
-        final File file = new File( key );
-        try {
-            return new GdalDataset( file, pool.getCrs( file ) );
-        } catch ( Exception e ) {
-            throw new RuntimeException( e.getMessage() );
-        }
-    }
+	@Override
+	public GdalDataset create(final String key) {
+		final File file = new File(key);
+		try {
+			return new GdalDataset(file, pool.getCrs(file));
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e.getMessage());
+		}
+	}
 
 }

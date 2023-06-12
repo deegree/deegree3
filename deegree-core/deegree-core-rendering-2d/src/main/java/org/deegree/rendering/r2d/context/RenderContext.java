@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -46,36 +45,32 @@ import org.deegree.rendering.r2d.LabelRenderer;
 import org.deegree.rendering.r2d.TileRenderer;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface RenderContext {
 
-    Renderer getVectorRenderer();
+	Renderer getVectorRenderer();
 
-    TextRenderer getTextRenderer();
-    
-    LabelRenderer getLabelRenderer();
+	TextRenderer getTextRenderer();
 
-    RasterRenderer getRasterRenderer();
+	LabelRenderer getLabelRenderer();
 
-    TileRenderer getTileRenderer();
-    
-    /**
-     * To be called after all Renderings are done, to render and maybe optimize the labels.
-     */
-    void optimizeAndDrawLabels();
+	RasterRenderer getRasterRenderer();
 
-    void paintImage( BufferedImage img );
+	TileRenderer getTileRenderer();
 
-    void paintCopyright( Copyright copyright, int mapHeight );
+	/**
+	 * To be called after all Renderings are done, to render and maybe optimize the
+	 * labels.
+	 */
+	void optimizeAndDrawLabels();
 
-    boolean close()
-                            throws IOException;
+	void paintImage(BufferedImage img);
 
-    void applyOptions( MapOptions options );
+	void paintCopyright(Copyright copyright, int mapHeight);
+
+	boolean close() throws IOException;
+
+	void applyOptions(MapOptions options);
 
 }

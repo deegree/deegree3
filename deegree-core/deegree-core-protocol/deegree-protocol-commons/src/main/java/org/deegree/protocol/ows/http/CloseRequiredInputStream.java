@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -40,85 +39,73 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * {@link InputStream} that needs to be closed after reading so the underlying resource (e.g. an HTTP connection) will
- * be closed.
- * 
+ * {@link InputStream} that needs to be closed after reading so the underlying resource
+ * (e.g. an HTTP connection) will be closed.
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class CloseRequiredInputStream extends InputStream {
 
-    private final Closeable cleanupResource;
+	private final Closeable cleanupResource;
 
-    private final InputStream is;
+	private final InputStream is;
 
-    /**
-     * Creates a new {@link CloseRequiredInputStream} instance.
-     * 
-     * @param cleanupResource
-     *            resource that needs to be closed, can be <code>null</code>
-     * @param is
-     *            input stream, must not be <code>null</code>
-     */
-    public CloseRequiredInputStream( Closeable cleanupResource, InputStream is ) {
-        this.cleanupResource = cleanupResource;
-        this.is = is;
-    }
+	/**
+	 * Creates a new {@link CloseRequiredInputStream} instance.
+	 * @param cleanupResource resource that needs to be closed, can be <code>null</code>
+	 * @param is input stream, must not be <code>null</code>
+	 */
+	public CloseRequiredInputStream(Closeable cleanupResource, InputStream is) {
+		this.cleanupResource = cleanupResource;
+		this.is = is;
+	}
 
-    @Override
-    public int available()
-                            throws IOException {
-        return is.available();
-    }
+	@Override
+	public int available() throws IOException {
+		return is.available();
+	}
 
-    @Override
-    public void close()
-                            throws IOException {
-        is.close();
-        if ( cleanupResource != null ) {
-            cleanupResource.close();
-        }
-    }
+	@Override
+	public void close() throws IOException {
+		is.close();
+		if (cleanupResource != null) {
+			cleanupResource.close();
+		}
+	}
 
-    @Override
-    public void mark( int readLimit ) {
-        is.mark( readLimit );
-    }
+	@Override
+	public void mark(int readLimit) {
+		is.mark(readLimit);
+	}
 
-    @Override
-    public boolean markSupported() {
-        return is.markSupported();
-    }
+	@Override
+	public boolean markSupported() {
+		return is.markSupported();
+	}
 
-    @Override
-    public int read()
-                            throws IOException {
-        return is.read();
-    }
+	@Override
+	public int read() throws IOException {
+		return is.read();
+	}
 
-    @Override
-    public int read( byte[] b )
-                            throws IOException {
-        return is.read( b );
-    }
+	@Override
+	public int read(byte[] b) throws IOException {
+		return is.read(b);
+	}
 
-    @Override
-    public int read( byte[] b, int off, int len )
-                            throws IOException {
-        return is.read( b, off, len );
-    }
+	@Override
+	public int read(byte[] b, int off, int len) throws IOException {
+		return is.read(b, off, len);
+	}
 
-    @Override
-    public void reset()
-                            throws IOException {
-        is.reset();
-    }
+	@Override
+	public void reset() throws IOException {
+		is.reset();
+	}
 
-    @Override
-    public long skip( long n )
-                            throws IOException {
-        return is.skip( n );
-    }
+	@Override
+	public long skip(long n) throws IOException {
+		return is.skip(n);
+	}
+
 }

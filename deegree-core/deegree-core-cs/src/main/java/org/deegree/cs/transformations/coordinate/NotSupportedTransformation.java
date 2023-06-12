@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -48,53 +47,48 @@ import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.transformations.Transformation;
 
 /**
- * The <code>NotSupportedTransformation</code> class simply wraps the source and target crs. This transformation doesn't
- * do anything, it only provides an opportunity to create a transformation chain, without losing the source and target
- * information as well as the causality of actually having to implement anything. Note that incoming points are returned
- * immediately.
- * 
+ * The <code>NotSupportedTransformation</code> class simply wraps the source and target
+ * crs. This transformation doesn't do anything, it only provides an opportunity to create
+ * a transformation chain, without losing the source and target information as well as the
+ * causality of actually having to implement anything. Note that incoming points are
+ * returned immediately.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class NotSupportedTransformation extends Transformation {
 
-    /**
-     * @param sourceCRS
-     * @param targetCRS
-     * @param id
-     */
-    public NotSupportedTransformation( ICRS sourceCRS, ICRS targetCRS, CRSResource id ) {
-        super( sourceCRS, targetCRS, id );
-    }
+	/**
+	 * @param sourceCRS
+	 * @param targetCRS
+	 * @param id
+	 */
+	public NotSupportedTransformation(ICRS sourceCRS, ICRS targetCRS, CRSResource id) {
+		super(sourceCRS, targetCRS, id);
+	}
 
-    /**
-     * @param sourceCRS
-     * @param targetCRS
-     */
-    public NotSupportedTransformation( ICRS sourceCRS, ICRS targetCRS ) {
-        this( sourceCRS, targetCRS,
-              new CRSIdentifiable( CRSCodeType.valueOf( createFromTo( sourceCRS.getCode().toString(),
-                                                                      targetCRS.getCode().toString() ) ) ) );
-    }
+	/**
+	 * @param sourceCRS
+	 * @param targetCRS
+	 */
+	public NotSupportedTransformation(ICRS sourceCRS, ICRS targetCRS) {
+		this(sourceCRS, targetCRS, new CRSIdentifiable(
+				CRSCodeType.valueOf(createFromTo(sourceCRS.getCode().toString(), targetCRS.getCode().toString()))));
+	}
 
-    @Override
-    public String getImplementationName() {
-        return "NotSupportedTransformation";
-    }
+	@Override
+	public String getImplementationName() {
+		return "NotSupportedTransformation";
+	}
 
-    @Override
-    public List<Point3d> doTransform( List<Point3d> srcPts )
-                            throws TransformationException {
-        return srcPts;
-    }
+	@Override
+	public List<Point3d> doTransform(List<Point3d> srcPts) throws TransformationException {
+		return srcPts;
+	}
 
-    @Override
-    public boolean isIdentity() {
-        return false;
-    }
+	@Override
+	public boolean isIdentity() {
+		return false;
+	}
 
 }

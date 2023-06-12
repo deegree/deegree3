@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -45,126 +44,124 @@ import org.deegree.rendering.r3d.opengl.rendering.model.prototype.PrototypePool;
 import org.deegree.rendering.r3d.opengl.rendering.model.prototype.PrototypeReference;
 
 /**
- * The <code>RenderableQualityModel</code> defines the basis for a QualityModel of a Renderable object. It holds a set
- * of geometries or a reference to a prototype, never both.
- * 
+ * The <code>RenderableQualityModel</code> defines the basis for a QualityModel of a
+ * Renderable object. It holds a set of geometries or a reference to a prototype, never
+ * both.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class RenderableQualityModel extends QualityModel<RenderableQualityModelPart> implements JOGLRenderable {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 4351593641629010871L;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 4351593641629010871L;
 
-    /**
-     * Creates a GeometryQualityModel with an empty list of geometry patches
-     * 
-     */
-    public RenderableQualityModel() {
-        super();
-    }
+	/**
+	 * Creates a GeometryQualityModel with an empty list of geometry patches
+	 *
+	 */
+	public RenderableQualityModel() {
+		super();
+	}
 
-    /**
-     * Creates a GeometryQualityModel with the given geometry patches
-     * 
-     * @param qualityModelParts
-     */
-    public RenderableQualityModel( ArrayList<RenderableQualityModelPart> qualityModelParts ) {
-        super( qualityModelParts );
-    }
+	/**
+	 * Creates a GeometryQualityModel with the given geometry patches
+	 * @param qualityModelParts
+	 */
+	public RenderableQualityModel(ArrayList<RenderableQualityModelPart> qualityModelParts) {
+		super(qualityModelParts);
+	}
 
-    /**
-     * Creates a GeometryQualityModel with the given geometry patch
-     * 
-     * @param geometryPatch
-     */
-    public RenderableQualityModel( RenderableQualityModelPart geometryPatch ) {
-        super( geometryPatch );
-    }
+	/**
+	 * Creates a GeometryQualityModel with the given geometry patch
+	 * @param geometryPatch
+	 */
+	public RenderableQualityModel(RenderableQualityModelPart geometryPatch) {
+		super(geometryPatch);
+	}
 
-    /**
-     * @param prototypeReference
-     */
-    public RenderableQualityModel( PrototypeReference prototypeReference ) {
-        super( prototypeReference );
-    }
+	/**
+	 * @param prototypeReference
+	 */
+	public RenderableQualityModel(PrototypeReference prototypeReference) {
+		super(prototypeReference);
+	}
 
-    @Override
-    public void render( RenderContext glRenderContext ) {
-        this.renderPrepared( glRenderContext, null );
-    }
+	@Override
+	public void render(RenderContext glRenderContext) {
+		this.renderPrepared(glRenderContext, null);
+	}
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder( "RenderableQualitModel:" );
-        if ( prototype != null ) {
-            sb.append( "\nPrototype: " );
-            sb.append( prototype.toString() );
-        } else {
-            if ( qualityModelParts != null && qualityModelParts.size() > 0 ) {
-                for ( RenderableQualityModelPart data : qualityModelParts ) {
-                    sb.append( "\nQualityModelPart: " );
-                    if ( data != null ) {
-                        sb.append( data.toString() );
-                    }
-                }
-            }
-        }
-        return sb.toString();
-    }
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder("RenderableQualitModel:");
+		if (prototype != null) {
+			sb.append("\nPrototype: ");
+			sb.append(prototype.toString());
+		}
+		else {
+			if (qualityModelParts != null && qualityModelParts.size() > 0) {
+				for (RenderableQualityModelPart data : qualityModelParts) {
+					sb.append("\nQualityModelPart: ");
+					if (data != null) {
+						sb.append(data.toString());
+					}
+				}
+			}
+		}
+		return sb.toString();
+	}
 
-    /**
-     * @return the number of ordinates in each quality model part.
-     */
-    public int getOrdinateCount() {
-        int result = 0;
-        if ( qualityModelParts != null && !qualityModelParts.isEmpty() ) {
-            for ( RenderableQualityModelPart rqmp : qualityModelParts ) {
-                if ( rqmp != null ) {
-                    result += rqmp.getOrdinateCount();
-                }
-            }
-        }
-        return result;
-    }
+	/**
+	 * @return the number of ordinates in each quality model part.
+	 */
+	public int getOrdinateCount() {
+		int result = 0;
+		if (qualityModelParts != null && !qualityModelParts.isEmpty()) {
+			for (RenderableQualityModelPart rqmp : qualityModelParts) {
+				if (rqmp != null) {
+					result += rqmp.getOrdinateCount();
+				}
+			}
+		}
+		return result;
+	}
 
-    /**
-     * @return the number of texture ordinates in each quality model part.
-     */
-    public int getTextureOrdinateCount() {
-        int result = 0;
-        if ( qualityModelParts != null && !qualityModelParts.isEmpty() ) {
-            for ( RenderableQualityModelPart rqmp : qualityModelParts ) {
-                if ( rqmp != null ) {
-                    result += rqmp.getTextureOrdinateCount();
-                }
-            }
-        }
-        return result;
-    }
+	/**
+	 * @return the number of texture ordinates in each quality model part.
+	 */
+	public int getTextureOrdinateCount() {
+		int result = 0;
+		if (qualityModelParts != null && !qualityModelParts.isEmpty()) {
+			for (RenderableQualityModelPart rqmp : qualityModelParts) {
+				if (rqmp != null) {
+					result += rqmp.getTextureOrdinateCount();
+				}
+			}
+		}
+		return result;
+	}
 
-    /**
-     * @param glRenderContext
-     * @param geomBuffer
-     */
-    public void renderPrepared( RenderContext glRenderContext, DirectGeometryBuffer geomBuffer ) {
-        if ( prototype != null ) {
-            PrototypePool.render( glRenderContext, prototype, geomBuffer );
-        } else {
-            // no prototype to render, trying geometries
-            if ( qualityModelParts != null && qualityModelParts.size() > 0 ) {
-                for ( RenderableQualityModelPart data : qualityModelParts ) {
-                    if ( data != null ) {
-                        data.renderPrepared( glRenderContext, geomBuffer );
-                    }
-                }
-            }
-        }
-    }
+	/**
+	 * @param glRenderContext
+	 * @param geomBuffer
+	 */
+	public void renderPrepared(RenderContext glRenderContext, DirectGeometryBuffer geomBuffer) {
+		if (prototype != null) {
+			PrototypePool.render(glRenderContext, prototype, geomBuffer);
+		}
+		else {
+			// no prototype to render, trying geometries
+			if (qualityModelParts != null && qualityModelParts.size() > 0) {
+				for (RenderableQualityModelPart data : qualityModelParts) {
+					if (data != null) {
+						data.renderPrepared(glRenderContext, geomBuffer);
+					}
+				}
+			}
+		}
+	}
+
 }

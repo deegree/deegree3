@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -50,97 +49,92 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Encapsulates a storage location and it's URL for storing a response document or an output parameter of the
- * {@link ProcessManager} as a web-accessible resource.
+ * Encapsulates a storage location and it's URL for storing a response document or an
+ * output parameter of the {@link ProcessManager} as a web-accessible resource.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- *
- * @version $Revision: $, $Date: $
  */
 public abstract class StorageLocation {
 
-    private static final Logger LOG = LoggerFactory.getLogger( StorageLocation.class );
+	private static final Logger LOG = LoggerFactory.getLogger(StorageLocation.class);
 
-    protected String id;
+	protected String id;
 
-    protected File file;
+	protected File file;
 
-    protected String mimeType;
+	protected String mimeType;
 
-    protected StorageLocation( File file, String id, String mimeType ) {
-        this.file = file;
-        this.id = id;
-        this.mimeType = mimeType;
-    }
+	protected StorageLocation(File file, String id, String mimeType) {
+		this.file = file;
+		this.id = id;
+		this.mimeType = mimeType;
+	}
 
-    /**
-     * Returns the sink for writing the resource contents.
-     *
-     * @return the sink for writing the resource contents
-     * @throws FileNotFoundException
-     */
-    public OutputStream getOutputStream()
-                            throws FileNotFoundException {
-        return new FileOutputStream( file );
-    }
+	/**
+	 * Returns the sink for writing the resource contents.
+	 * @return the sink for writing the resource contents
+	 * @throws FileNotFoundException
+	 */
+	public OutputStream getOutputStream() throws FileNotFoundException {
+		return new FileOutputStream(file);
+	}
 
-    public String getId() {
-        return id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public String getMimeType() {
-        return mimeType;
-    }
+	public String getMimeType() {
+		return mimeType;
+	}
 
-    public File getFile() {
-        return file;
-    }
+	public File getFile() {
+		return file;
+	}
 
-    /**
-     * Returns the URL that can be used to access the resource via the web.
-     *
-     * @return the URL that can be used to access the resource via the web
-     */
-    public abstract String getWebURL();
+	/**
+	 * Returns the URL that can be used to access the resource via the web.
+	 * @return the URL that can be used to access the resource via the web
+	 */
+	public abstract String getWebURL();
 
-    public void sendResource ( HttpResponseBuffer response) {
-        try {
-            response.setContentType( getMimeType() );
-            response.setContentLength( (int) getLength() );
-            OutputStream os = response.getOutputStream();
-            InputStream is = getInputStream();
-            byte[] buffer = new byte[4096];
-            int numBytes = -1;
-            while ( ( numBytes = is.read( buffer ) ) != -1 ) {
-                os.write( buffer, 0, numBytes );
-            }
-            os.flush();
-        } catch ( IOException e ) {
-            LOG.debug( "Error sending resource to client.", e );
-        }
-    }
+	public void sendResource(HttpResponseBuffer response) {
+		try {
+			response.setContentType(getMimeType());
+			response.setContentLength((int) getLength());
+			OutputStream os = response.getOutputStream();
+			InputStream is = getInputStream();
+			byte[] buffer = new byte[4096];
+			int numBytes = -1;
+			while ((numBytes = is.read(buffer)) != -1) {
+				os.write(buffer, 0, numBytes);
+			}
+			os.flush();
+		}
+		catch (IOException e) {
+			LOG.debug("Error sending resource to client.", e);
+		}
+	}
 
-    /**
-     * @return
-     */
-    public long getLength() {
-        return file.length();
-    }
+	/**
+	 * @return
+	 */
+	public long getLength() {
+		return file.length();
+	}
 
-    public InputStream getInputStream()
-                            throws FileNotFoundException {
-        return new FileInputStream( file );
-    }
+	public InputStream getInputStream() throws FileNotFoundException {
+		return new FileInputStream(file);
+	}
 
-    public int hashCode() {
-        return file.getName().hashCode();
-    }
+	public int hashCode() {
+		return file.getName().hashCode();
+	}
 
-    public boolean equals( Object o ) {
-        if ( !( o instanceof StorageLocation ) ) {
-            return false;
-        }
-        return ( (StorageLocation) o ).file.getName().equals( file.getName() );
-    }
+	public boolean equals(Object o) {
+		if (!(o instanceof StorageLocation)) {
+			return false;
+		}
+		return ((StorageLocation) o).file.getName().equals(file.getName());
+	}
+
 }

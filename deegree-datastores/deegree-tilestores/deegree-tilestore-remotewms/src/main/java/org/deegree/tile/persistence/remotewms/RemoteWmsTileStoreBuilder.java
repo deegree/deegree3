@@ -43,44 +43,43 @@ import org.deegree.workspace.Workspace;
 
 /**
  * This class is responsible for building remote wms tile stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class RemoteWmsTileStoreBuilder implements ResourceBuilder<TileStore> {
 
-    private RemoteWMSTileStoreJAXB config;
+	private RemoteWMSTileStoreJAXB config;
 
-    private ResourceMetadata<TileStore> metadata;
+	private ResourceMetadata<TileStore> metadata;
 
-    private Workspace workspace;
+	private Workspace workspace;
 
-    public RemoteWmsTileStoreBuilder( RemoteWMSTileStoreJAXB config, ResourceMetadata<TileStore> metadata,
-                                      Workspace workspace ) {
-        this.config = config;
-        this.metadata = metadata;
-        this.workspace = workspace;
-    }
+	public RemoteWmsTileStoreBuilder(RemoteWMSTileStoreJAXB config, ResourceMetadata<TileStore> metadata,
+			Workspace workspace) {
+		this.config = config;
+		this.metadata = metadata;
+		this.workspace = workspace;
+	}
 
-    @Override
-    public TileStore build() {
-        try {
-            String wmsId = config.getRemoteWMSId();
-            RemoteOWS wms = workspace.getResource( RemoteOWSProvider.class, wmsId );
-            if ( !( wms instanceof RemoteWMS ) ) {
-                throw new ResourceInitException( "The remote wms id " + wmsId
-                                                 + " must correspond to a WMS instance (was "
-                                                 + wms.getClass().getSimpleName() + ")" );
-            }
+	@Override
+	public TileStore build() {
+		try {
+			String wmsId = config.getRemoteWMSId();
+			RemoteOWS wms = workspace.getResource(RemoteOWSProvider.class, wmsId);
+			if (!(wms instanceof RemoteWMS)) {
+				throw new ResourceInitException("The remote wms id " + wmsId
+						+ " must correspond to a WMS instance (was " + wms.getClass().getSimpleName() + ")");
+			}
 
-            TileDataSetBuilder builder = new TileDataSetBuilder( config, (RemoteWMS) wms, workspace );
-            Map<String, TileDataSet> map = builder.extractTileDataSets();
-            return new GenericTileStore( map, metadata );
-        } catch ( Exception e ) {
-            String msg = "Unable to create RemoteWMSTileStore: " + e.getMessage();
-            throw new ResourceInitException( msg, e );
-        }
-    }
+			TileDataSetBuilder builder = new TileDataSetBuilder(config, (RemoteWMS) wms, workspace);
+			Map<String, TileDataSet> map = builder.extractTileDataSets();
+			return new GenericTileStore(map, metadata);
+		}
+		catch (Exception e) {
+			String msg = "Unable to create RemoteWMSTileStore: " + e.getMessage();
+			throw new ResourceInitException(msg, e);
+		}
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -50,70 +49,66 @@ import org.deegree.rendering.r2d.TextRenderer;
 import org.deegree.style.styling.RasterStyling;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class RasterLegendItem implements LegendItem {
 
-    private RasterStyling styling;
+	private RasterStyling styling;
 
-    private LinkedList<String> texts = new LinkedList<String>();
+	private LinkedList<String> texts = new LinkedList<String>();
 
-    private RasterLegendRenderer renderer;
+	private RasterLegendRenderer renderer;
 
-    public RasterLegendItem( RasterStyling styling, Renderer renderer, RasterRenderer rasterRenderer,
-                             TextRenderer textRenderer ) {
-        this.styling = styling;
-        if ( styling.interpolate != null ) {
-            for ( Double d : styling.interpolate.getDatas() ) {
-                texts.add( d.toString() );
-            }
-        }
-        if ( styling.categorize != null ) {
-            Float[] values = styling.categorize.getThreshholds();
-            boolean prec = styling.categorize.getPrecedingBelongs();
-            texts.add( ( prec ? "< " : "<= " ) + values[0] );
-            for ( int i = 0; i < values.length - 1; ++i ) {
-                texts.add( values[i] + ( prec ? " < " : " <= " ) + values[i + 1] );
-            }
-            texts.add( ( prec ? ">= " : "> " ) + values[values.length - 1] );
-        }
-        this.renderer = new RasterLegendRenderer( styling, renderer, rasterRenderer, textRenderer, texts );
-    }
+	public RasterLegendItem(RasterStyling styling, Renderer renderer, RasterRenderer rasterRenderer,
+			TextRenderer textRenderer) {
+		this.styling = styling;
+		if (styling.interpolate != null) {
+			for (Double d : styling.interpolate.getDatas()) {
+				texts.add(d.toString());
+			}
+		}
+		if (styling.categorize != null) {
+			Float[] values = styling.categorize.getThreshholds();
+			boolean prec = styling.categorize.getPrecedingBelongs();
+			texts.add((prec ? "< " : "<= ") + values[0]);
+			for (int i = 0; i < values.length - 1; ++i) {
+				texts.add(values[i] + (prec ? " < " : " <= ") + values[i + 1]);
+			}
+			texts.add((prec ? ">= " : "> ") + values[values.length - 1]);
+		}
+		this.renderer = new RasterLegendRenderer(styling, renderer, rasterRenderer, textRenderer, texts);
+	}
 
-    @Override
-    public int getHeight() {
-        if ( styling.interpolate != null ) {
-            return styling.interpolate.getDatas().length;
-        }
-        if ( styling.categorize != null ) {
-            return styling.categorize.getThreshholds().length + 1;
-        }
-        return 0;
-    }
+	@Override
+	public int getHeight() {
+		if (styling.interpolate != null) {
+			return styling.interpolate.getDatas().length;
+		}
+		if (styling.categorize != null) {
+			return styling.categorize.getThreshholds().length + 1;
+		}
+		return 0;
+	}
 
-    @Override
-    public int getMaxWidth( LegendOptions opts ) {
-        int res = 2 * opts.spacing + opts.baseWidth;
+	@Override
+	public int getMaxWidth(LegendOptions opts) {
+		int res = 2 * opts.spacing + opts.baseWidth;
 
-        Font font = new Font( "Arial", PLAIN, opts.textSize );
+		Font font = new Font("Arial", PLAIN, opts.textSize);
 
-        for ( String text : texts ) {
-            if ( text != null && text.length() > 0 ) {
-                TextLayout layout = new TextLayout( text, font, new FontRenderContext( new AffineTransform(), true,
-                                                                                       false ) );
-                res = (int) max( layout.getBounds().getWidth() + ( 2 * opts.baseWidth ), res );
-            }
-        }
-        return res;
-    }
+		for (String text : texts) {
+			if (text != null && text.length() > 0) {
+				TextLayout layout = new TextLayout(text, font,
+						new FontRenderContext(new AffineTransform(), true, false));
+				res = (int) max(layout.getBounds().getWidth() + (2 * opts.baseWidth), res);
+			}
+		}
+		return res;
+	}
 
-    @Override
-    public void paint( int origin, LegendOptions opts ) {
-        renderer.paint( origin, opts );
-    }
+	@Override
+	public void paint(int origin, LegendOptions opts) {
+		renderer.paint(origin, opts);
+	}
 
 }

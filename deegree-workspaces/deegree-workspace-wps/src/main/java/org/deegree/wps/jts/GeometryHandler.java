@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -40,25 +39,20 @@ import java.util.Map;
 import org.deegree.geometry.Geometry;
 
 /**
- * The <code>GeometryHandler</code> interface establishes the contract for applying a process operation to a geometry
- * and parameters.
- * 
+ * The <code>GeometryHandler</code> interface establishes the contract for applying a
+ * process operation to a geometry and parameters.
+ *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * 
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 public interface GeometryHandler {
 
-    /**
-     * Applies a process operation to the given geometry and parameters
-     * 
-     * @param inputGeometry
-     * @param params
-     * @return
-     */
-    Geometry process( Geometry inputGeometry, Map<String, Object> params );
+	/**
+	 * Applies a process operation to the given geometry and parameters
+	 * @param inputGeometry
+	 * @param params
+	 * @return
+	 */
+	Geometry process(Geometry inputGeometry, Map<String, Object> params);
 
 }

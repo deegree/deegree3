@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2009 by:
@@ -43,90 +42,88 @@ import java.util.HashMap;
 import org.deegree.coverage.rangeset.RangeSet;
 
 /**
- * The <code>SupplementProperties</code> class can be used to add supplement data (like name, label or any kind of
- * object) to a coverage.
- * 
+ * The <code>SupplementProperties</code> class can be used to add supplement data (like
+ * name, label or any kind of object) to a coverage.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class SupplementProperties extends HashMap<String, Object> {
 
-    /**
-     * the name key
-     */
-    public final static String NAME = "name";
+	/**
+	 * the name key
+	 */
+	public final static String NAME = "name";
 
-    /**
-     * the label key
-     */
-    public final static String LABEL = "label";
+	/**
+	 * the label key
+	 */
+	public final static String LABEL = "label";
 
-    /**
-     * the rangeset key
-     */
-    public final static String RANGESET = "rangeset";
+	/**
+	 * the rangeset key
+	 */
+	public final static String RANGESET = "rangeset";
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -5778613664306283101L;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = -5778613664306283101L;
 
-    /**
-     * @param name
-     *            to set.
-     * @return the old name value of null if no previous name was set.
-     */
-    public String setName( String name ) {
-        return (String) super.put( NAME, name );
-    }
+	/**
+	 * @param name to set.
+	 * @return the old name value of null if no previous name was set.
+	 */
+	public String setName(String name) {
+		return (String) super.put(NAME, name);
+	}
 
-    /**
-     * @param label
-     *            describing the coverage
-     * @return the old name value of null if no previous name was set.
-     */
-    public String setLabel( String label ) {
-        return (String) super.put( LABEL, label );
-    }
+	/**
+	 * @param label describing the coverage
+	 * @return the old name value of null if no previous name was set.
+	 */
+	public String setLabel(String label) {
+		return (String) super.put(LABEL, label);
+	}
 
-    /**
-     * @return the name of the coverage
-     */
-    public String getName() {
-        return (String) super.get( NAME );
-    }
+	/**
+	 * @return the name of the coverage
+	 */
+	public String getName() {
+		return (String) super.get(NAME);
+	}
 
-    /**
-     * @return the label of the coverage
-     */
-    public String getLabel() {
-        return (String) super.get( LABEL );
-    }
+	/**
+	 * @return the label of the coverage
+	 */
+	public String getLabel() {
+		return (String) super.get(LABEL);
+	}
 
-    /**
-     * @return the {@link RangeSet} associated with the given raster.
-     */
-    public RangeSet getRangeset() {
-        return (RangeSet) super.get( RANGESET );
-    }
+	/**
+	 * @return the {@link RangeSet} associated with the given raster.
+	 */
+	public RangeSet getRangeset() {
+		return (RangeSet) super.get(RANGESET);
+	}
 
-    /**
-     * Overridden, because of the keys which are assumed to have special objects assigned to them.
-     */
-    @Override
-    public Object put( String key, Object value ) {
-        if ( LABEL.equals( key ) || NAME.equals( key ) ) {
-            if ( !( value instanceof String ) ) {
-                return super.put( key, value.toString() );
-            }
-        } else if ( RANGESET.equals( key ) ) {
-            if ( !( value instanceof RangeSet ) ) {
-                return null;
-            }
-        }
-        return super.put( key, value );
-    }
+	/**
+	 * Overridden, because of the keys which are assumed to have special objects assigned
+	 * to them.
+	 */
+	@Override
+	public Object put(String key, Object value) {
+		if (LABEL.equals(key) || NAME.equals(key)) {
+			if (!(value instanceof String)) {
+				return super.put(key, value.toString());
+			}
+		}
+		else if (RANGESET.equals(key)) {
+			if (!(value instanceof RangeSet)) {
+				return null;
+			}
+		}
+		return super.put(key, value);
+	}
 
 }

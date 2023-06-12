@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -37,57 +36,51 @@ package org.deegree.geometry.primitive.segments;
 
 /**
  * Used to define the basis functions of a {@link BSpline}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class Knot {
 
-    private double value;
+	private double value;
 
-    private int multiplicity;
+	private int multiplicity;
 
-    private double weight;
+	private double weight;
 
-    /**
-     * Creates a new {@link Knot} instance.
-     * 
-     * @param value
-     * @param multiplicity
-     * @param weight
-     */
-    public Knot( double value, int multiplicity, double weight ) {
-        this.value = value;
-        this.multiplicity = multiplicity;
-        this.weight = weight;
-    }
+	/**
+	 * Creates a new {@link Knot} instance.
+	 * @param value
+	 * @param multiplicity
+	 * @param weight
+	 */
+	public Knot(double value, int multiplicity, double weight) {
+		this.value = value;
+		this.multiplicity = multiplicity;
+		this.weight = weight;
+	}
 
-    /**
-     * Returns the knot's value.
-     * 
-     * @return the knot's value
-     */
-    public double getValue() {
-        return value;
-    }
+	/**
+	 * Returns the knot's value.
+	 * @return the knot's value
+	 */
+	public double getValue() {
+		return value;
+	}
 
-    /**
-     * Returns the knot's multiplicity.
-     * 
-     * @return the knot's multiplicity
-     */    
-    public int getMultiplicity() {
-        return multiplicity;
-    }
+	/**
+	 * Returns the knot's multiplicity.
+	 * @return the knot's multiplicity
+	 */
+	public int getMultiplicity() {
+		return multiplicity;
+	}
 
-    /**
-     * Returns the knot's weight.
-     * 
-     * @return the knot's weight
-     */    
-    public double getWeight() {
-        return weight;
-    }
+	/**
+	 * Returns the knot's weight.
+	 * @return the knot's weight
+	 */
+	public double getWeight() {
+		return weight;
+	}
+
 }

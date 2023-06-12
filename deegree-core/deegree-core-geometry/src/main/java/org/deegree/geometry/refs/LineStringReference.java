@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -43,28 +42,23 @@ import org.deegree.geometry.primitive.LineString;
  * The <code></code> class TODO add class documentation here.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- *
- * @version $Revision$, $Date$
  */
 public class LineStringReference extends CurveReference<LineString> implements LineString {
 
-    /**
-     * Creates a new {@link LineStringReference} instance.
-     * 
-     * @param resolver
-     *            used for resolving the reference, must not be <code>null</code>
-     * @param uri
-     *            the geometry's uri, must not be <code>null</code>
-     * @param baseURL
-     *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
-     */
-    public LineStringReference( GMLReferenceResolver resolver, String uri, String baseURL ) {
-        super( resolver, uri, baseURL );
-    }
+	/**
+	 * Creates a new {@link LineStringReference} instance.
+	 * @param resolver used for resolving the reference, must not be <code>null</code>
+	 * @param uri the geometry's uri, must not be <code>null</code>
+	 * @param baseURL base URL for resolving the uri, may be <code>null</code> (no
+	 * resolving of relative URLs)
+	 */
+	public LineStringReference(GMLReferenceResolver resolver, String uri, String baseURL) {
+		super(resolver, uri, baseURL);
+	}
 
-    @Override
-    public CurveType getCurveType() {
-        return CurveType.LineString;
-    }
+	@Override
+	public CurveType getCurveType() {
+		return CurveType.LineString;
+	}
+
 }

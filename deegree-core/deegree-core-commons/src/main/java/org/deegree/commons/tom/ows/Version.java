@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -38,150 +37,145 @@ package org.deegree.commons.tom.ows;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 
 /**
- * Version of an OWS operation or specification. Comparability of <code>Version</code> objects simplifies tasks like
- * version negotiation.
+ * Version of an OWS operation or specification. Comparability of <code>Version</code>
+ * objects simplifies tasks like version negotiation.
  * <p>
  * Description from <code>owsCommon.xsd</code>, version 1.1.0:
- * 
- * The string value shall contain one x.y.z "version" value (e.g., "2.1.3"). A version number shall contain three
- * non-negative integers separated by decimal points, in the form "x.y.z". The integers y and z shall not exceed 99.
+ *
+ * The string value shall contain one x.y.z "version" value (e.g., "2.1.3"). A version
+ * number shall contain three non-negative integers separated by decimal points, in the
+ * form "x.y.z". The integers y and z shall not exceed 99.
  * <p>
- * Each version shall be for the Implementation Specification (document) and the associated XML Schemas to which
- * requested operations will conform. An Implementation Specification version normally specifies XML Schemas against
- * which an XML encoded operation response must conform and should be validated.
- * 
+ * Each version shall be for the Implementation Specification (document) and the
+ * associated XML Schemas to which requested operations will conform. An Implementation
+ * Specification version normally specifies XML Schemas against which an XML encoded
+ * operation response must conform and should be validated.
+ *
  * @see Comparable
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * 
- * @version $Revision:$, $Date:$
  */
 public class Version implements Comparable<Version> {
 
-    private int x;
+	private int x;
 
-    private int y;
+	private int y;
 
-    private int z;
+	private int z;
 
-    /**
-     * Constructs a <code>Version</code> for an OWS operation.
-     * 
-     * @param x
-     *            major version. Must be a positive integer.
-     * @param y
-     *            minor version. Must be between 0 and 99.
-     * @param z
-     *            minor sub version. Must be between 0 and 99.
-     * @throws InvalidParameterValueException
-     *             if a parameters exceed the allowed range
-     */
-    public Version( int x, int y, int z ) throws InvalidParameterValueException {
+	/**
+	 * Constructs a <code>Version</code> for an OWS operation.
+	 * @param x major version. Must be a positive integer.
+	 * @param y minor version. Must be between 0 and 99.
+	 * @param z minor sub version. Must be between 0 and 99.
+	 * @throws InvalidParameterValueException if a parameters exceed the allowed range
+	 */
+	public Version(int x, int y, int z) throws InvalidParameterValueException {
 
-        if ( x < 0 || y < 0 || z < 0 || y > 99 || z > 99 ) {
-            String msg = x + "." + y + "." + z + " is not a valid OGC/OWS version value.";
-            throw new InvalidParameterValueException( msg );
-        }
+		if (x < 0 || y < 0 || z < 0 || y > 99 || z > 99) {
+			String msg = x + "." + y + "." + z + " is not a valid OGC/OWS version value.";
+			throw new InvalidParameterValueException(msg);
+		}
 
-        this.x = x;
-        this.y = y;
-        this.z = z;
-    }
+		this.x = x;
+		this.y = y;
+		this.z = z;
+	}
 
-    /**
-     * Parses the string argument as a <code>Version</code>.
-     * <p>
-     * The string value shall contain one x.y.z "version" value (e.g., "2.1.3"). A version number shall contain three
-     * non-negative integers separated by decimal points, in the form "x.y.z". The integers y and z shall not exceed 99.
-     * 
-     * @param s
-     *            a <code>String</code> containing the <code>Version</code> representation to be parsed
-     * @return a corresponding <code>Version</code> object
-     * @throws InvalidParameterValueException
-     *             if the string does not contain a parsable <code>Version</code>
-     */
-    public static Version parseVersion( String s )
-                            throws InvalidParameterValueException {
-        String[] parts = s.split( "\\." );
-        if ( parts.length != 3 ) {
-            String msg = "String '" + s + " is not a valid OGC/OWS version value.";
-            throw new InvalidParameterValueException( msg );
-        }
+	/**
+	 * Parses the string argument as a <code>Version</code>.
+	 * <p>
+	 * The string value shall contain one x.y.z "version" value (e.g., "2.1.3"). A version
+	 * number shall contain three non-negative integers separated by decimal points, in
+	 * the form "x.y.z". The integers y and z shall not exceed 99.
+	 * @param s a <code>String</code> containing the <code>Version</code> representation
+	 * to be parsed
+	 * @return a corresponding <code>Version</code> object
+	 * @throws InvalidParameterValueException if the string does not contain a parsable
+	 * <code>Version</code>
+	 */
+	public static Version parseVersion(String s) throws InvalidParameterValueException {
+		String[] parts = s.split("\\.");
+		if (parts.length != 3) {
+			String msg = "String '" + s + " is not a valid OGC/OWS version value.";
+			throw new InvalidParameterValueException(msg);
+		}
 
-        int x = -1;
-        int y = -1;
-        int z = -1;
+		int x = -1;
+		int y = -1;
+		int z = -1;
 
-        try {
-            x = Integer.parseInt( parts[0] );
-            y = Integer.parseInt( parts[1] );
-            z = Integer.parseInt( parts[2] );
-        } catch ( NumberFormatException e ) {
-            String msg = "String '" + s + " is not a valid OGC/OWS version value.";
-            throw new InvalidParameterValueException( msg );
-        }
-        return new Version( x, y, z );
-    }
+		try {
+			x = Integer.parseInt(parts[0]);
+			y = Integer.parseInt(parts[1]);
+			z = Integer.parseInt(parts[2]);
+		}
+		catch (NumberFormatException e) {
+			String msg = "String '" + s + " is not a valid OGC/OWS version value.";
+			throw new InvalidParameterValueException(msg);
+		}
+		return new Version(x, y, z);
+	}
 
-    public int compareTo( Version version ) {
-        if ( this.x > version.x ) {
-            return 1;
-        } else if ( this.x < version.x ) {
-            return -1;
-        }
-        if ( this.y > version.y ) {
-            return 1;
-        } else if ( this.y < version.y ) {
-            return -1;
-        }
-        if ( this.z > version.z ) {
-            return 1;
-        } else if ( this.z < version.z ) {
-            return -1;
-        }
-        return 0;
-    }
+	public int compareTo(Version version) {
+		if (this.x > version.x) {
+			return 1;
+		}
+		else if (this.x < version.x) {
+			return -1;
+		}
+		if (this.y > version.y) {
+			return 1;
+		}
+		else if (this.y < version.y) {
+			return -1;
+		}
+		if (this.z > version.z) {
+			return 1;
+		}
+		else if (this.z < version.z) {
+			return -1;
+		}
+		return 0;
+	}
 
-    @Override
-    public int hashCode() {
-        // note: 7, 11 and 13 are prime numbers
-        int hash = 7 * ( x + 1 );
-        hash *= 11 * ( y + 1 );
-        hash *= 13 * ( z + 1 );
-        return hash;
-    }
+	@Override
+	public int hashCode() {
+		// note: 7, 11 and 13 are prime numbers
+		int hash = 7 * (x + 1);
+		hash *= 11 * (y + 1);
+		hash *= 13 * (z + 1);
+		return hash;
+	}
 
-    @Override
-    public boolean equals( Object obj ) {
-        if ( !( obj instanceof Version ) ) {
-            return false;
-        }
-        Version that = (Version) obj;
-        return this.x == that.x && this.y == that.y && this.z == that.z;
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof Version)) {
+			return false;
+		}
+		Version that = (Version) obj;
+		return this.x == that.x && this.y == that.y && this.z == that.z;
+	}
 
-    @Override
-    public String toString() {
-        return x + "." + y + "." + z;
-    }
+	@Override
+	public String toString() {
+		return x + "." + y + "." + z;
+	}
 
-    /**
-     * Returns a formatted string for presenting a series of versions to a human.
-     * 
-     * @param versions
-     *            versions to be listed
-     * @return formatted, human-readable string
-     */
-    public static String getVersionsString( Version... versions ) {
-        int i = 0;
-        StringBuilder s = new StringBuilder();
-        for ( Version version : versions ) {
-            s.append( "'" ).append( version ).append( "'" );
-            if ( i++ != versions.length - 1 ) {
-                s.append( ", " );
-            }
-        }
-        return s.toString();
-    }
+	/**
+	 * Returns a formatted string for presenting a series of versions to a human.
+	 * @param versions versions to be listed
+	 * @return formatted, human-readable string
+	 */
+	public static String getVersionsString(Version... versions) {
+		int i = 0;
+		StringBuilder s = new StringBuilder();
+		for (Version version : versions) {
+			s.append("'").append(version).append("'");
+			if (i++ != versions.length - 1) {
+				s.append(", ");
+			}
+		}
+		return s.toString();
+	}
+
 }

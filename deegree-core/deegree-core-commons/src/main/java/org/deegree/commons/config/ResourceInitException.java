@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -37,29 +36,26 @@ package org.deegree.commons.config;
 
 /**
  * Indicates that a {@link Resource} could not be initialized properly.
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class ResourceInitException extends Exception {
 
-    private static final long serialVersionUID = 1048911724231688270L;
+	private static final long serialVersionUID = 1048911724231688270L;
 
-    /**
-     * @param msg
-     * @param cause
-     */
-    public ResourceInitException( String msg, Throwable cause ) {
-        super( msg, cause );
-    }
+	/**
+	 * @param msg
+	 * @param cause
+	 */
+	public ResourceInitException(String msg, Throwable cause) {
+		super(msg, cause);
+	}
 
-    /**
-     * @param msg
-     */
-    public ResourceInitException( String msg ) {
-        super( msg );
-    }
+	/**
+	 * @param msg
+	 */
+	public ResourceInitException(String msg) {
+		super(msg);
+	}
 
 }

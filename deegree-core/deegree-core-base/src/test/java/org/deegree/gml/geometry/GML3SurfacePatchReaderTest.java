@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -59,97 +58,90 @@ import org.deegree.gml.GMLVersion;
 import org.junit.Test;
 
 /**
- * Tests that check the correct parsing of GML 3.1.1 surface patches, i.e. of elements that are substitutable for
- * <code>gml:_SurfacePatch</code>.
- * 
+ * Tests that check the correct parsing of GML 3.1.1 surface patches, i.e. of elements
+ * that are substitutable for <code>gml:_SurfacePatch</code>.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * 
- * @version $Revision:$, $Date:$
  */
 public class GML3SurfacePatchReaderTest {
 
-    @Test
-    public void parsePolygonPatch()
-                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
-                            UnknownCRSException {
-        XMLStreamReaderWrapper parser = getParser( "PolygonPatch.gml" );
-        PolygonPatch patch = (PolygonPatch) getPatchParser().parseSurfacePatch( parser,
-                                                                                CRSManager.getCRSRef( "EPSG:4326" ) );
-        Assert.assertEquals( 2.0, patch.getExteriorRing().getStartPoint().get0() );
-        Assert.assertEquals( 0.0, patch.getExteriorRing().getStartPoint().get1() );
-        Assert.assertEquals( 2.0, patch.getExteriorRing().getEndPoint().get0() );
-        Assert.assertEquals( 0.0, patch.getExteriorRing().getEndPoint().get1() );
-        Assert.assertEquals( 2, patch.getInteriorRings().size() );
-    }
+	@Test
+	public void parsePolygonPatch() throws XMLStreamException, FactoryConfigurationError, IOException,
+			XMLParsingException, UnknownCRSException {
+		XMLStreamReaderWrapper parser = getParser("PolygonPatch.gml");
+		PolygonPatch patch = (PolygonPatch) getPatchParser().parseSurfacePatch(parser,
+				CRSManager.getCRSRef("EPSG:4326"));
+		Assert.assertEquals(2.0, patch.getExteriorRing().getStartPoint().get0());
+		Assert.assertEquals(0.0, patch.getExteriorRing().getStartPoint().get1());
+		Assert.assertEquals(2.0, patch.getExteriorRing().getEndPoint().get0());
+		Assert.assertEquals(0.0, patch.getExteriorRing().getEndPoint().get1());
+		Assert.assertEquals(2, patch.getInteriorRings().size());
+	}
 
-    @Test
-    public void parseTriangle()
-                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
-                            UnknownCRSException {
-        XMLStreamReaderWrapper parser = getParser( "Triangle.gml" );
-        Triangle patch = (Triangle) getPatchParser().parseSurfacePatch( parser, CRSManager.getCRSRef( "EPSG:4326" ) );
-        Assert.assertEquals( 4, patch.getExteriorRing().getControlPoints().size() );
-    }
+	@Test
+	public void parseTriangle() throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
+			UnknownCRSException {
+		XMLStreamReaderWrapper parser = getParser("Triangle.gml");
+		Triangle patch = (Triangle) getPatchParser().parseSurfacePatch(parser, CRSManager.getCRSRef("EPSG:4326"));
+		Assert.assertEquals(4, patch.getExteriorRing().getControlPoints().size());
+	}
 
-    @Test
-    public void parseRectangle()
-                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
-                            UnknownCRSException {
-        XMLStreamReaderWrapper parser = getParser( "Rectangle.gml" );
-        Rectangle patch = (Rectangle) getPatchParser().parseSurfacePatch( parser, CRSManager.getCRSRef( "EPSG:4326" ) );
-        Assert.assertEquals( 5, patch.getExteriorRing().getControlPoints().size() );
-    }
+	@Test
+	public void parseRectangle() throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
+			UnknownCRSException {
+		XMLStreamReaderWrapper parser = getParser("Rectangle.gml");
+		Rectangle patch = (Rectangle) getPatchParser().parseSurfacePatch(parser, CRSManager.getCRSRef("EPSG:4326"));
+		Assert.assertEquals(5, patch.getExteriorRing().getControlPoints().size());
+	}
 
-    @Test
-    public void parseCone()
-                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
-                            UnknownCRSException {
-        XMLStreamReaderWrapper parser = getParser( "Cone.gml" );
-        Cone patch = (Cone) getPatchParser().parseSurfacePatch( parser, CRSManager.getCRSRef( "EPSG:4326" ) );
-        Assert.assertEquals( 3, patch.getNumColumns() );
-        Assert.assertEquals( 2, patch.getNumRows() );
-    }
+	@Test
+	public void parseCone() throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
+			UnknownCRSException {
+		XMLStreamReaderWrapper parser = getParser("Cone.gml");
+		Cone patch = (Cone) getPatchParser().parseSurfacePatch(parser, CRSManager.getCRSRef("EPSG:4326"));
+		Assert.assertEquals(3, patch.getNumColumns());
+		Assert.assertEquals(2, patch.getNumRows());
+	}
 
-    @Test
-    public void parseCylinder()
-                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
-                            UnknownCRSException {
-        XMLStreamReaderWrapper parser = getParser( "Cylinder.gml" );
-        Cylinder patch = (Cylinder) getPatchParser().parseSurfacePatch( parser, CRSManager.getCRSRef( "EPSG:4326" ) );
-        Assert.assertEquals( 3, patch.getNumColumns() );
-        Assert.assertEquals( 2, patch.getNumRows() );
-    }
+	@Test
+	public void parseCylinder() throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
+			UnknownCRSException {
+		XMLStreamReaderWrapper parser = getParser("Cylinder.gml");
+		Cylinder patch = (Cylinder) getPatchParser().parseSurfacePatch(parser, CRSManager.getCRSRef("EPSG:4326"));
+		Assert.assertEquals(3, patch.getNumColumns());
+		Assert.assertEquals(2, patch.getNumRows());
+	}
 
-    @Test
-    public void parseSphere()
-                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
-                            UnknownCRSException {
-        XMLStreamReaderWrapper parser = getParser( "Sphere.gml" );
-        Sphere patch = (Sphere) getPatchParser().parseSurfacePatch( parser, CRSManager.getCRSRef( "EPSG:4326" ) );
-        Assert.assertEquals( 3, patch.getNumColumns() );
-        Assert.assertEquals( 2, patch.getNumRows() );
-    }
+	@Test
+	public void parseSphere() throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
+			UnknownCRSException {
+		XMLStreamReaderWrapper parser = getParser("Sphere.gml");
+		Sphere patch = (Sphere) getPatchParser().parseSurfacePatch(parser, CRSManager.getCRSRef("EPSG:4326"));
+		Assert.assertEquals(3, patch.getNumColumns());
+		Assert.assertEquals(2, patch.getNumRows());
+	}
 
-    private XMLStreamReaderWrapper getParser( String fileName )
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
-        XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       GML3SurfacePatchReaderTest.class.getResource( "../misc/geometry/patches/"
-                                                                                                                     + fileName ) );
-        xmlReader.nextTag();
-        return xmlReader;
-    }
+	private XMLStreamReaderWrapper getParser(String fileName)
+			throws XMLStreamException, FactoryConfigurationError, IOException {
+		XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
+				GML3SurfacePatchReaderTest.class.getResource("../misc/geometry/patches/" + fileName));
+		xmlReader.nextTag();
+		return xmlReader;
+	}
 
-    private GML3SurfacePatchReader getPatchParser() {
+	private GML3SurfacePatchReader getPatchParser() {
 
-        XMLStreamReader xmlStream = null;
-        GMLStreamReader gmlStream = null;
-        try {
-            // TODO yes, this is evil (null XMLStreamReader). Get rid of this method and deprecated constructor.
-            gmlStream = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, xmlStream );
-        } catch ( XMLStreamException e ) {
-            // should never happen
-        }
-        return ( (GML3GeometryReader) gmlStream.getGeometryReader() ).getSurfacePatchReader();
-    }
+		XMLStreamReader xmlStream = null;
+		GMLStreamReader gmlStream = null;
+		try {
+			// TODO yes, this is evil (null XMLStreamReader). Get rid of this method and
+			// deprecated constructor.
+			gmlStream = GMLInputFactory.createGMLStreamReader(GMLVersion.GML_31, xmlStream);
+		}
+		catch (XMLStreamException e) {
+			// should never happen
+		}
+		return ((GML3GeometryReader) gmlStream.getGeometryReader()).getSurfacePatchReader();
+	}
+
 }

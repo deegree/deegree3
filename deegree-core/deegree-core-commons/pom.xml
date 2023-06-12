@@ -39,8 +39,8 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.woodstox</groupId>
-      <artifactId>woodstox-core-lgpl</artifactId>
+      <groupId>com.fasterxml.woodstox</groupId>
+      <artifactId>woodstox-core</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.ws.commons.axiom</groupId>

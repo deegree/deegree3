@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -51,67 +50,66 @@ import org.deegree.workspace.ResourceMetadata;
 
 /**
  * Style store resource implementation for SE style stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class SEStyleStore implements StyleStore {
 
-    private Style style;
+	private Style style;
 
-    private ResourceMetadata<StyleStore> metadata;
+	private ResourceMetadata<StyleStore> metadata;
 
-    public SEStyleStore( Style style, ResourceMetadata<StyleStore> metadata ) {
-        this.style = style;
-        this.metadata = metadata;
-    }
+	public SEStyleStore(Style style, ResourceMetadata<StyleStore> metadata) {
+		this.style = style;
+		this.metadata = metadata;
+	}
 
-    @Override
-    public void init() {
-        // nothing to do
-    }
+	@Override
+	public void init() {
+		// nothing to do
+	}
 
-    @Override
-    public void destroy() {
-        // nothing to do
-    }
+	@Override
+	public void destroy() {
+		// nothing to do
+	}
 
-    @Override
-    public Style getStyle( String styleName ) {
-        if ( styleName != null && style.getName().equals( styleName ) ) {
-            return style;
-        }
-        if ( styleName == null ) {
-            return style;
-        }
-        return null;
-    }
+	@Override
+	public Style getStyle(String styleName) {
+		if (styleName != null && style.getName().equals(styleName)) {
+			return style;
+		}
+		if (styleName == null) {
+			return style;
+		}
+		return null;
+	}
 
-    @Override
-    public Style getStyle( String layerName, String styleName ) {
-        if ( styleName != null && style.getName().equals( styleName ) ) {
-            return style;
-        }
-        if ( styleName == null ) {
-            return style;
-        }
-        return null;
-    }
+	@Override
+	public Style getStyle(String layerName, String styleName) {
+		if (styleName != null && style.getName().equals(styleName)) {
+			return style;
+		}
+		if (styleName == null) {
+			return style;
+		}
+		return null;
+	}
 
-    @Override
-    public List<Style> getAll( String layerName ) {
-        return singletonList( style );
-    }
+	@Override
+	public List<Style> getAll(String layerName) {
+		return singletonList(style);
+	}
 
-    @Override
-    public List<Style> getAll() {
-        return singletonList( style );
-    }
+	@Override
+	public List<Style> getAll() {
+		return singletonList(style);
+	}
 
-    @Override
-    public ResourceMetadata<? extends Resource> getMetadata() {
-        return metadata;
-    }
+	@Override
+	public ResourceMetadata<? extends Resource> getMetadata() {
+		return metadata;
+	}
 
 }

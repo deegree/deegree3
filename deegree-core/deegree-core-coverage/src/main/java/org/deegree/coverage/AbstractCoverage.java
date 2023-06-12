@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -41,172 +40,162 @@ import org.deegree.geometry.GeometryFactory;
 
 /**
  * This class represents an abstract coverage.
- * 
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public abstract class AbstractCoverage implements Coverage {
 
-    private GeometryFactory geomFactory = new GeometryFactory();
+	private GeometryFactory geomFactory = new GeometryFactory();
 
-    private ICRS crs;
+	private ICRS crs;
 
-    private Envelope envelope;
+	private Envelope envelope;
 
-    private SupplementProperties supplementProperties;
+	private SupplementProperties supplementProperties;
 
-    /**
-     * Instantiate an AbstractCoverage with no envelope and no rangeset.
-     */
-    public AbstractCoverage() {
-        this( null, null );
-    }
+	/**
+	 * Instantiate an AbstractCoverage with no envelope and no rangeset.
+	 */
+	public AbstractCoverage() {
+		this(null, null);
+	}
 
-    /**
-     * Instantiate an AbstractCoverage with given envelope.
-     * 
-     * @param envelope
-     *            The envelope of the coverage.
-     */
-    public AbstractCoverage( Envelope envelope ) {
-        this( envelope, null );
-    }
+	/**
+	 * Instantiate an AbstractCoverage with given envelope.
+	 * @param envelope The envelope of the coverage.
+	 */
+	public AbstractCoverage(Envelope envelope) {
+		this(envelope, null);
+	}
 
-    /**
-     * Instantiate an AbstractCoverage with given envelope, rangeset and {@link SupplementProperties}.
-     * 
-     * @param envelope
-     *            The envelope of the coverage.
-     * @param supplementProperties
-     *            allows the possibility to add general objects to this Coverage.
-     */
-    public AbstractCoverage( Envelope envelope, SupplementProperties supplementProperties ) {
-        setEnvelope( envelope );
-        this.supplementProperties = supplementProperties;
-        if ( this.supplementProperties == null ) {
-            this.supplementProperties = new SupplementProperties();
-        }
+	/**
+	 * Instantiate an AbstractCoverage with given envelope, rangeset and
+	 * {@link SupplementProperties}.
+	 * @param envelope The envelope of the coverage.
+	 * @param supplementProperties allows the possibility to add general objects to this
+	 * Coverage.
+	 */
+	public AbstractCoverage(Envelope envelope, SupplementProperties supplementProperties) {
+		setEnvelope(envelope);
+		this.supplementProperties = supplementProperties;
+		if (this.supplementProperties == null) {
+			this.supplementProperties = new SupplementProperties();
+		}
 
-    }
+	}
 
-    /**
-     * @return GeometryFactory for creation of envelopes, etc.
-     */
-    protected GeometryFactory getGeometryFactory() {
-        return geomFactory;
-    }
+	/**
+	 * @return GeometryFactory for creation of envelopes, etc.
+	 */
+	protected GeometryFactory getGeometryFactory() {
+		return geomFactory;
+	}
 
-    /**
-     * @return The envelope of the coverage.
-     */
-    public Envelope getEnvelope() {
-        return envelope;
-    }
+	/**
+	 * @return The envelope of the coverage.
+	 */
+	public Envelope getEnvelope() {
+		return envelope;
+	}
 
-    /**
-     * @param envelope
-     *            New envelope for the coverage.
-     */
-    protected void setEnvelope( Envelope envelope ) {
-        if ( envelope != null && envelope.getCoordinateSystem() != null ) {
-            setCoordinateSystem( envelope.getCoordinateSystem() );
-        }
-        this.envelope = envelope;
-    }
+	/**
+	 * @param envelope New envelope for the coverage.
+	 */
+	protected void setEnvelope(Envelope envelope) {
+		if (envelope != null && envelope.getCoordinateSystem() != null) {
+			setCoordinateSystem(envelope.getCoordinateSystem());
+		}
+		this.envelope = envelope;
+	}
 
-    /**
-     * Extend the envelope of the coverage.
-     * 
-     * The new envelope of the coverage will contain the old and the given envelope.
-     * 
-     * @param envelope
-     *            Envelope to add.
-     */
-    protected void extendEnvelope( Envelope envelope ) {
-        if ( this.envelope == null ) {
-            this.envelope = envelope;
-        } else {
-            this.envelope = this.envelope.merge( envelope );
-        }
-    }
+	/**
+	 * Extend the envelope of the coverage.
+	 *
+	 * The new envelope of the coverage will contain the old and the given envelope.
+	 * @param envelope Envelope to add.
+	 */
+	protected void extendEnvelope(Envelope envelope) {
+		if (this.envelope == null) {
+			this.envelope = envelope;
+		}
+		else {
+			this.envelope = this.envelope.merge(envelope);
+		}
+	}
 
-    /**
-     * @return the coordinate system of the raster
-     */
-    public ICRS getCoordinateSystem() {
-        return crs;
-    }
+	/**
+	 * @return the coordinate system of the raster
+	 */
+	public ICRS getCoordinateSystem() {
+		return crs;
+	}
 
-    /**
-     * @param crs
-     */
-    public void setCoordinateSystem( ICRS crs ) {
-        this.crs = crs;
-        if ( envelope != null ) {
-            // rb: this is not correct, the values of the envelope should be converted to the given crs, shouldn't they.
-            this.envelope = geomFactory.createEnvelope( envelope.getMin().getAsArray(), envelope.getMax().getAsArray(),
-                                                        crs );
-        }
-    }
+	/**
+	 * @param crs
+	 */
+	public void setCoordinateSystem(ICRS crs) {
+		this.crs = crs;
+		if (envelope != null) {
+			// rb: this is not correct, the values of the envelope should be converted to
+			// the given crs, shouldn't they.
+			this.envelope = geomFactory.createEnvelope(envelope.getMin().getAsArray(), envelope.getMax().getAsArray(),
+					crs);
+		}
+	}
 
-    /**
-     * @return the name
-     */
-    public String getName() {
-        return supplementProperties.getName();
-    }
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return supplementProperties.getName();
+	}
 
-    /**
-     * @param name
-     *            the name to set
-     */
-    public void setName( String name ) {
-        supplementProperties.setName( name );
-    }
+	/**
+	 * @param name the name to set
+	 */
+	public void setName(String name) {
+		supplementProperties.setName(name);
+	}
 
-    /**
-     * @return the label
-     */
-    public String getLabel() {
-        return supplementProperties.getLabel();
-    }
+	/**
+	 * @return the label
+	 */
+	public String getLabel() {
+		return supplementProperties.getLabel();
+	}
 
-    /**
-     * @param label
-     *            the label to set
-     */
-    public void setLabel( String label ) {
-        supplementProperties.setLabel( label );
-    }
+	/**
+	 * @param label the label to set
+	 */
+	public void setLabel(String label) {
+		supplementProperties.setLabel(label);
+	}
 
-    /**
-     * @return the supplementProperties
-     */
-    public final SupplementProperties getSupplementProperties() {
-        return supplementProperties;
-    }
+	/**
+	 * @return the supplementProperties
+	 */
+	public final SupplementProperties getSupplementProperties() {
+		return supplementProperties;
+	}
 
-    /**
-     * @param supplementProperties
-     *            the supplementProperties to set
-     */
-    public final void setSupplementProperties( SupplementProperties supplementProperties ) {
-        this.supplementProperties.clear();
-        if ( supplementProperties != null ) {
-            this.supplementProperties.putAll( supplementProperties );
-        }
-    }
+	/**
+	 * @param supplementProperties the supplementProperties to set
+	 */
+	public final void setSupplementProperties(SupplementProperties supplementProperties) {
+		this.supplementProperties.clear();
+		if (supplementProperties != null) {
+			this.supplementProperties.putAll(supplementProperties);
+		}
+	}
 
-    @Override
-    public void init() {
-        // nothing to do
-    }
+	@Override
+	public void init() {
+		// nothing to do
+	}
 
-    @Override
-    public void destroy() {
-        // nothing to do
-    }
+	@Override
+	public void destroy() {
+		// nothing to do
+	}
 
 }

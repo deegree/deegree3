@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/svn_classfile_header_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -64,199 +63,196 @@ import org.deegree.services.wps.wsdl.WSDL;
 
 /**
  * Responsible for the generation of WPS GetCapabilities response documents.
- * 
+ *
  * @author <a href="mailto:apadberg@uni-bonn.de">Alexander Padberg</a>
- * @author last edited by: $Author: $
- * 
- * @version $Revision: $, $Date: $
  */
 public class CapabilitiesXMLWriter extends OWSCapabilitiesXMLAdapter {
 
-    private static final String OGC_NS = "http://www.opengis.net/ogc";
+	private static final String OGC_NS = "http://www.opengis.net/ogc";
 
-    private static final String OGC_PREFIX = "ogc";
+	private static final String OGC_PREFIX = "ogc";
 
-    private static final String OWS_NS = "http://www.opengis.net/ows/1.1";
+	private static final String OWS_NS = "http://www.opengis.net/ows/1.1";
 
-    private static final String OWS_PREFIX = "ows";
+	private static final String OWS_PREFIX = "ows";
 
-    private static final String WPS_NS = "http://www.opengis.net/wps/1.0.0";
+	private static final String WPS_NS = "http://www.opengis.net/wps/1.0.0";
 
-    private static final String WPS_PREFIX = "wps";
+	private static final String WPS_PREFIX = "wps";
 
-    private static final String GML_PREFIX = "gml";
+	private static final String GML_PREFIX = "gml";
 
-    private static final String GML_NS = "http://www.opengis.net/gml";
+	private static final String GML_NS = "http://www.opengis.net/gml";
 
-    private static final String XSI_NS = "http://www.w3.org/2001/XMLSchema-instance";
+	private static final String XSI_NS = "http://www.w3.org/2001/XMLSchema-instance";
 
-    private CapabilitiesXMLWriter() {
-        // avoid instantiation
-    }
+	private CapabilitiesXMLWriter() {
+		// avoid instantiation
+	}
 
-    /**
-     * @param writer
-     * @param processes
-     * @param serviceMetadata
-     * @param serviceWSDLURL
-     *            location of a WSDL document which describes the entire service, may be null
-     * @throws XMLStreamException
-     */
-    public static void export100( XMLStreamWriter writer, Map<CodeType, WPSProcess> processes,
-                                  DeegreeServicesMetadataType serviceMetadata, WSDL serviceWSDL )
-                            throws XMLStreamException {
+	/**
+	 * @param writer
+	 * @param processes
+	 * @param serviceMetadata
+	 * @param serviceWSDLURL location of a WSDL document which describes the entire
+	 * service, may be null
+	 * @throws XMLStreamException
+	 */
+	public static void export100(XMLStreamWriter writer, Map<CodeType, WPSProcess> processes,
+			DeegreeServicesMetadataType serviceMetadata, WSDL serviceWSDL) throws XMLStreamException {
 
-        writer.writeStartElement( WPS_PREFIX, "Capabilities", WPS_NS );
-        writer.writeNamespace( WPS_PREFIX, WPS_NS );
-        writer.writeNamespace( OWS_PREFIX, OWS_NS );
-        writer.writeNamespace( OGC_PREFIX, OGC_NS );
-        writer.writeNamespace( GML_PREFIX, GML_NS );
-        writer.writeNamespace( "xlink", XLN_NS );
-        writer.writeNamespace( "xsi", XSI_NS );
-        writer.writeAttribute( "service", "WPS" );
-        writer.writeAttribute( "version", "1.0.0" );
-        writer.writeAttribute( "xml:lang", "en" );
-        writer.writeAttribute( XSI_NS, "schemaLocation",
-                               "http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsGetCapabilities_response.xsd" );
+		writer.writeStartElement(WPS_PREFIX, "Capabilities", WPS_NS);
+		writer.writeNamespace(WPS_PREFIX, WPS_NS);
+		writer.writeNamespace(OWS_PREFIX, OWS_NS);
+		writer.writeNamespace(OGC_PREFIX, OGC_NS);
+		writer.writeNamespace(GML_PREFIX, GML_NS);
+		writer.writeNamespace("xlink", XLN_NS);
+		writer.writeNamespace("xsi", XSI_NS);
+		writer.writeAttribute("service", "WPS");
+		writer.writeAttribute("version", "1.0.0");
+		writer.writeAttribute("xml:lang", "en");
+		writer.writeAttribute(XSI_NS, "schemaLocation",
+				"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsGetCapabilities_response.xsd");
 
-        exportServiceIdentification( writer, serviceMetadata.getServiceIdentification() );
-        exportServiceProvider110( writer, serviceMetadata.getServiceProvider() );
-        exportOperationsMetadata( writer );
+		exportServiceIdentification(writer, serviceMetadata.getServiceIdentification());
+		exportServiceProvider110(writer, serviceMetadata.getServiceProvider());
+		exportOperationsMetadata(writer);
 
-        exportProcessOfferings( writer, processes );
-        exportLanguages( writer );
+		exportProcessOfferings(writer, processes);
+		exportLanguages(writer);
 
-        if ( serviceWSDL.exists() ) {
-            writer.writeStartElement( WPS_NS, "WSDL" );
-            writer.writeAttribute( "xlink:href", serviceWSDL.getRestURL() );
-            writer.writeEndElement();
-        }
+		if (serviceWSDL.exists()) {
+			writer.writeStartElement(WPS_NS, "WSDL");
+			writer.writeAttribute("xlink:href", serviceWSDL.getRestURL());
+			writer.writeEndElement();
+		}
 
-        writer.writeEndElement(); // Capabilities
-    }
+		writer.writeEndElement(); // Capabilities
+	}
 
-    private static void exportProcessOfferings( XMLStreamWriter writer, Map<CodeType, WPSProcess> processes )
-                            throws XMLStreamException {
+	private static void exportProcessOfferings(XMLStreamWriter writer, Map<CodeType, WPSProcess> processes)
+			throws XMLStreamException {
 
-        writer.writeStartElement( WPS_NS, "ProcessOfferings" );
-        for ( WPSProcess process : processes.values() ) {
-            ProcessDefinition processDef = process.getDescription();
-            writer.writeStartElement( WPS_NS, "Process" );
-            writer.writeAttribute( WPS_NS, "processVersion", processDef.getProcessVersion() );
+		writer.writeStartElement(WPS_NS, "ProcessOfferings");
+		for (WPSProcess process : processes.values()) {
+			ProcessDefinition processDef = process.getDescription();
+			writer.writeStartElement(WPS_NS, "Process");
+			writer.writeAttribute(WPS_NS, "processVersion", processDef.getProcessVersion());
 
-            // "ows:Identifier" (minOccurs="1", maxOccurs="1")
-            writer.writeStartElement( OWS_NS, "Identifier" );
-            if ( processDef.getIdentifier().getCodeSpace() != null ) {
-                writer.writeAttribute( "codeSpace", processDef.getIdentifier().getCodeSpace() );
-            }
-            writer.writeCharacters( processDef.getIdentifier().getValue() );
-            writer.writeEndElement();
+			// "ows:Identifier" (minOccurs="1", maxOccurs="1")
+			writer.writeStartElement(OWS_NS, "Identifier");
+			if (processDef.getIdentifier().getCodeSpace() != null) {
+				writer.writeAttribute("codeSpace", processDef.getIdentifier().getCodeSpace());
+			}
+			writer.writeCharacters(processDef.getIdentifier().getValue());
+			writer.writeEndElement();
 
-            // "ows:Title" (minOccurs="1", maxOccurs="1")
-            if ( processDef.getTitle() != null ) {
-                writer.writeStartElement( OWS_NS, "Title" );
-                if ( processDef.getTitle().getLang() != null ) {
-                    writer.writeAttribute( "xml:lang", processDef.getTitle().getLang() );
-                }
-                writer.writeCharacters( processDef.getTitle().getValue() );
-                writer.writeEndElement();
-            }
+			// "ows:Title" (minOccurs="1", maxOccurs="1")
+			if (processDef.getTitle() != null) {
+				writer.writeStartElement(OWS_NS, "Title");
+				if (processDef.getTitle().getLang() != null) {
+					writer.writeAttribute("xml:lang", processDef.getTitle().getLang());
+				}
+				writer.writeCharacters(processDef.getTitle().getValue());
+				writer.writeEndElement();
+			}
 
-            // "ows:Abstract" (minOccurs="0", maxOccurs="1")
-            if ( processDef.getAbstract() != null ) {
-                writer.writeStartElement( OWS_NS, "Abstract" );
-                if ( processDef.getAbstract().getLang() != null ) {
-                    writer.writeAttribute( "xml:lang", processDef.getAbstract().getLang() );
-                }
-                writer.writeCharacters( processDef.getAbstract().getValue() );
-                writer.writeEndElement();
-            }
+			// "ows:Abstract" (minOccurs="0", maxOccurs="1")
+			if (processDef.getAbstract() != null) {
+				writer.writeStartElement(OWS_NS, "Abstract");
+				if (processDef.getAbstract().getLang() != null) {
+					writer.writeAttribute("xml:lang", processDef.getAbstract().getLang());
+				}
+				writer.writeCharacters(processDef.getAbstract().getValue());
+				writer.writeEndElement();
+			}
 
-            // "ows:Metadata" (minOccurs="0", maxOccurs="unbounded")
-            if ( processDef.getMetadata() != null ) {
-                for ( Metadata metadata : processDef.getMetadata() ) {
-                    writer.writeStartElement( OWS_NS, "Metadata" );
-                    if ( metadata.getAbout() != null ) {
-                        writer.writeAttribute( "about", metadata.getAbout() );
-                    }
-                    if ( metadata.getHref() != null ) {
-                        writer.writeAttribute( XLN_NS, "href", metadata.getHref() );
-                    }
-                    writer.writeEndElement();
-                }
-            }
+			// "ows:Metadata" (minOccurs="0", maxOccurs="unbounded")
+			if (processDef.getMetadata() != null) {
+				for (Metadata metadata : processDef.getMetadata()) {
+					writer.writeStartElement(OWS_NS, "Metadata");
+					if (metadata.getAbout() != null) {
+						writer.writeAttribute("about", metadata.getAbout());
+					}
+					if (metadata.getHref() != null) {
+						writer.writeAttribute(XLN_NS, "href", metadata.getHref());
+					}
+					writer.writeEndElement();
+				}
+			}
 
-            // "wps:Profile" (minOccurs="0", maxOccurs="unbounded")
-            if ( processDef.getProfile() != null ) {
-                for ( String profile : processDef.getProfile() ) {
-                    writeElement( writer, WPS_NS, "Profile", profile );
-                }
-            }
+			// "wps:Profile" (minOccurs="0", maxOccurs="unbounded")
+			if (processDef.getProfile() != null) {
+				for (String profile : processDef.getProfile()) {
+					writeElement(writer, WPS_NS, "Profile", profile);
+				}
+			}
 
-            // "wps:WSDL" (minOccurs="0", maxOccurs="unbounded")
-            if ( processDef.getWSDL() != null ) {
-                writeElement( writer, WPS_NS, "WSDL", XLN_NS, "href", processDef.getWSDL() );
-            }
+			// "wps:WSDL" (minOccurs="0", maxOccurs="unbounded")
+			if (processDef.getWSDL() != null) {
+				writeElement(writer, WPS_NS, "WSDL", XLN_NS, "href", processDef.getWSDL());
+			}
 
-            writer.writeEndElement(); // Process
-        }
-        writer.writeEndElement(); // ProcessOfferings
-    }
+			writer.writeEndElement(); // Process
+		}
+		writer.writeEndElement(); // ProcessOfferings
+	}
 
-    private static void exportOperationsMetadata( XMLStreamWriter writer )
-                            throws XMLStreamException {
+	private static void exportOperationsMetadata(XMLStreamWriter writer) throws XMLStreamException {
 
-        List<Operation> operations = new LinkedList<Operation>();
+		List<Operation> operations = new LinkedList<Operation>();
 
-        List<DCP> dcps = null;
-        try {
-            DCP dcp = new DCP( new URL( OGCFrontController.getHttpGetURL() ),
-                               new URL( OGCFrontController.getHttpPostURL() ) );
-            dcps = Collections.singletonList( dcp );
-        } catch ( MalformedURLException e ) {
-            // should never happen
-        }
+		List<DCP> dcps = null;
+		try {
+			DCP dcp = new DCP(new URL(OGCFrontController.getHttpGetURL()),
+					new URL(OGCFrontController.getHttpPostURL()));
+			dcps = Collections.singletonList(dcp);
+		}
+		catch (MalformedURLException e) {
+			// should never happen
+		}
 
-        List<Domain> params = new ArrayList<Domain>();
-        List<Domain> constraints = new ArrayList<Domain>();
-        List<OMElement> mdEls = new ArrayList<OMElement>();
+		List<Domain> params = new ArrayList<Domain>();
+		List<Domain> constraints = new ArrayList<Domain>();
+		List<OMElement> mdEls = new ArrayList<OMElement>();
 
-        operations.add( new Operation( "GetCapabilities", dcps, params, constraints, mdEls ) );
-        operations.add( new Operation( "DescribeProcess", dcps, params, constraints, mdEls ) );
-        operations.add( new Operation( "Execute", dcps, params, constraints, mdEls ) );
+		operations.add(new Operation("GetCapabilities", dcps, params, constraints, mdEls));
+		operations.add(new Operation("DescribeProcess", dcps, params, constraints, mdEls));
+		operations.add(new Operation("Execute", dcps, params, constraints, mdEls));
 
-        OperationsMetadata operationsMd = new OperationsMetadata( operations, params, constraints, null );
+		OperationsMetadata operationsMd = new OperationsMetadata(operations, params, constraints, null);
 
-        exportOperationsMetadata110( writer, operationsMd );
-    }
+		exportOperationsMetadata110(writer, operationsMd);
+	}
 
-    private static void exportServiceIdentification( XMLStreamWriter writer, ServiceIdentificationType ident )
-                            throws XMLStreamException {
-        writer.writeStartElement( OWS_NS, "ServiceIdentification" );
-        if ( ident == null ) {
-            writeElement( writer, OWS_NS, "Title", "deegree 3 WPS" );
-            writeElement( writer, OWS_NS, "Abstract", "deegree 3 WPS implementation" );
-        } else {
-            List<String> title = ident.getTitle();
-            writeElement( writer, OWS_NS, "Title", title.isEmpty() ? "deegree 3 WPS" : title.get( 0 ) );
-            List<String> _abstract = ident.getAbstract();
-            writeElement( writer, OWS_NS, "Abstract",
-                          _abstract.isEmpty() ? "deegree 3 WPS implementation" : _abstract.get( 0 ) );
-        }
-        writeElement( writer, OWS_NS, "ServiceType", "WPS" );
-        writeElement( writer, OWS_NS, "ServiceTypeVersion", "1.0.0" );
-        writer.writeEndElement();
-    }
+	private static void exportServiceIdentification(XMLStreamWriter writer, ServiceIdentificationType ident)
+			throws XMLStreamException {
+		writer.writeStartElement(OWS_NS, "ServiceIdentification");
+		if (ident == null) {
+			writeElement(writer, OWS_NS, "Title", "deegree 3 WPS");
+			writeElement(writer, OWS_NS, "Abstract", "deegree 3 WPS implementation");
+		}
+		else {
+			List<String> title = ident.getTitle();
+			writeElement(writer, OWS_NS, "Title", title.isEmpty() ? "deegree 3 WPS" : title.get(0));
+			List<String> _abstract = ident.getAbstract();
+			writeElement(writer, OWS_NS, "Abstract",
+					_abstract.isEmpty() ? "deegree 3 WPS implementation" : _abstract.get(0));
+		}
+		writeElement(writer, OWS_NS, "ServiceType", "WPS");
+		writeElement(writer, OWS_NS, "ServiceTypeVersion", "1.0.0");
+		writer.writeEndElement();
+	}
 
-    private static void exportLanguages( XMLStreamWriter writer )
-                            throws XMLStreamException {
-        writer.writeStartElement( WPS_NS, "Languages" );
-        writer.writeStartElement( WPS_NS, "Default" );
-        writeElement( writer, OWS_NS, "Language", "en" );
-        writer.writeEndElement(); // Default
-        writer.writeStartElement( WPS_NS, "Supported" );
-        writeElement( writer, OWS_NS, "Language", "en" );
-        writer.writeEndElement(); // Supported
-        writer.writeEndElement(); // Languages
-    }
+	private static void exportLanguages(XMLStreamWriter writer) throws XMLStreamException {
+		writer.writeStartElement(WPS_NS, "Languages");
+		writer.writeStartElement(WPS_NS, "Default");
+		writeElement(writer, OWS_NS, "Language", "en");
+		writer.writeEndElement(); // Default
+		writer.writeStartElement(WPS_NS, "Supported");
+		writeElement(writer, OWS_NS, "Language", "en");
+		writer.writeEndElement(); // Supported
+		writer.writeEndElement(); // Languages
+	}
+
 }

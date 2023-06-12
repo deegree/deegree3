@@ -53,49 +53,45 @@ import org.locationtech.jts.io.ParseException;
 
 /**
  * Test cases for {@link GeometryClipper}.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * 
  * @since 3.3
  */
 public class GeometryClipperTest {
 
-    private GeometryClipper clipper;
+	private GeometryClipper clipper;
 
-    @Before
-    public void setup() {
-        final Envelope viewPort = new GeometryFactory().createEnvelope( 0, 0, 1, 1, null );
-        final int width = 1024;
-        clipper = new GeometryClipper( viewPort, width );
-    }
+	@Before
+	public void setup() {
+		final Envelope viewPort = new GeometryFactory().createEnvelope(0, 0, 1, 1, null);
+		final int width = 1024;
+		clipper = new GeometryClipper(viewPort, width);
+	}
 
-    @Test
-    public void clipGeometryDistinctToViewport()
-                            throws ParseException {
-        final String wkt = "POLYGON ((2 0,3 0,3 3,0 3,0 2,2 2,2 0))";
-        final Geometry geometryDistinct = new WKTReader( null ).read( wkt );
-        final Geometry clippedGeometry = clipper.clipGeometry( geometryDistinct );
-        assertTrue( clippedGeometry == null );
-    }
+	@Test
+	public void clipGeometryDistinctToViewport() throws ParseException {
+		final String wkt = "POLYGON ((2 0,3 0,3 3,0 3,0 2,2 2,2 0))";
+		final Geometry geometryDistinct = new WKTReader(null).read(wkt);
+		final Geometry clippedGeometry = clipper.clipGeometry(geometryDistinct);
+		assertTrue(clippedGeometry == null);
+	}
 
-    @Test
-    public void clipGeometryPartiallyIntersectingViewport()
-                            throws ParseException {
-        final String wkt = "POLYGON ((0 0,3 0,3 3,0 3,0 2,2 2,0 0))";
-        final Geometry geometryDistinct = new WKTReader( null ).read( wkt );
-        final Geometry clippedGeometry = clipper.clipGeometry( geometryDistinct );
-        assertTrue( clippedGeometry != null );
-        assertTrue( !geometryDistinct.equals( clippedGeometry ) );
-    }
+	@Test
+	public void clipGeometryPartiallyIntersectingViewport() throws ParseException {
+		final String wkt = "POLYGON ((0 0,3 0,3 3,0 3,0 2,2 2,0 0))";
+		final Geometry geometryDistinct = new WKTReader(null).read(wkt);
+		final Geometry clippedGeometry = clipper.clipGeometry(geometryDistinct);
+		assertTrue(clippedGeometry != null);
+		assertTrue(!geometryDistinct.equals(clippedGeometry));
+	}
 
-    @Test
-    public void clipGeometryContainedInViewport()
-                            throws ParseException {
-        final String wkt = "POLYGON ((0.0 0.0,0.3 0.0,0.3 0.3,0.0 0.3,0.0 0.2,0.2 0.2,0.0 0.0))";
-        final Geometry geometryDistinct = new WKTReader( null ).read( wkt );
-        final Geometry clippedGeometry = clipper.clipGeometry( geometryDistinct );
-        assertTrue( clippedGeometry != null );
-        assertTrue( geometryDistinct.equals( clippedGeometry ) );
-    }
+	@Test
+	public void clipGeometryContainedInViewport() throws ParseException {
+		final String wkt = "POLYGON ((0.0 0.0,0.3 0.0,0.3 0.3,0.0 0.3,0.0 0.2,0.2 0.2,0.0 0.0))";
+		final Geometry geometryDistinct = new WKTReader(null).read(wkt);
+		final Geometry clippedGeometry = clipper.clipGeometry(geometryDistinct);
+		assertTrue(clippedGeometry != null);
+		assertTrue(geometryDistinct.equals(clippedGeometry));
+	}
 
 }

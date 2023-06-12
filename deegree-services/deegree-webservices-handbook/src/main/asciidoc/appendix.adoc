@@ -54,4 +54,9 @@ f
 |deegree.rendering.svg-to-shape.previous |java.lang.Boolean |false |Enables the behavior of previously used versions when scaling SVG graphics for the rendering of strokes
 
 |deegree.rendering.graphicstroke.svg-as-mark |java.lang.Boolean |false |Enables the previous behavior of rendering SVG graphics in `GraphicStroke`/`OnlineResource` like a Mark with the color of the `Stroke` instead of a rendered graphic.
+
+|deegree.gml.property.simple.trim |java.lang.Boolean |true |When deegree reads GML data, by default (`true`) simple property values get their leading and trailing whitespace characters removed.
+
+|deegree.config.apikey.warn-when-disabled |java.lang.Boolean |true |Log warning if security on REST api is disabled by specifying `*` in _config.apikey_.
+
 |===

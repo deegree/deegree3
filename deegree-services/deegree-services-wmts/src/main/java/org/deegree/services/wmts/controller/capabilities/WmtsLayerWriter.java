@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -62,72 +61,67 @@ import org.deegree.tile.TileMatrixSet;
 
 /**
  * Responsible to write out layer capability section.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 public class WmtsLayerWriter extends OWSCapabilitiesXMLAdapter {
 
-    private final FeatureInfoManager mgr;
+	private final FeatureInfoManager mgr;
 
-    private final XMLStreamWriter writer;
+	private final XMLStreamWriter writer;
 
-    private final WMTSCapabilitiesWriter capWriter;
+	private final WMTSCapabilitiesWriter capWriter;
 
-    WmtsLayerWriter( FeatureInfoManager mgr, XMLStreamWriter writer, WMTSCapabilitiesWriter capWriter ) {
-        this.mgr = mgr;
-        this.writer = writer;
-        this.capWriter = capWriter;
-    }
+	WmtsLayerWriter(FeatureInfoManager mgr, XMLStreamWriter writer, WMTSCapabilitiesWriter capWriter) {
+		this.mgr = mgr;
+		this.writer = writer;
+		this.capWriter = capWriter;
+	}
 
-    void writeLayers( List<Theme> themes, Set<TileMatrixSet> matrixSets )
-                            throws XMLStreamException {
-        for ( Theme t : themes ) {
-            for ( Layer l : Themes.getAllLayers( t ) ) {
-                if ( l instanceof TileLayer ) {
-                    exportLayer( matrixSets, (TileLayer) l );
-                }
-            }
-        }
-    }
+	void writeLayers(List<Theme> themes, Set<TileMatrixSet> matrixSets) throws XMLStreamException {
+		for (Theme t : themes) {
+			for (Layer l : Themes.getAllLayers(t)) {
+				if (l instanceof TileLayer) {
+					exportLayer(matrixSets, (TileLayer) l);
+				}
+			}
+		}
+	}
 
-    private void exportLayer( Set<TileMatrixSet> matrixSets, TileLayer tl )
-                            throws XMLStreamException {
-        LayerMetadata md = tl.getMetadata();
-        for ( TileDataSet tds : tl.getTileDataSets() ) {
-            matrixSets.add( tds.getTileMatrixSet() );
-        }
+	private void exportLayer(Set<TileMatrixSet> matrixSets, TileLayer tl) throws XMLStreamException {
+		LayerMetadata md = tl.getMetadata();
+		for (TileDataSet tds : tl.getTileDataSets()) {
+			matrixSets.add(tds.getTileMatrixSet());
+		}
 
-        writer.writeStartElement( WMTSNS, "Layer" );
+		writer.writeStartElement(WMTSNS, "Layer");
 
-        capWriter.exportMetadata( md, false, null, tl.getMetadata().getSpatialMetadata().getEnvelope() );
-        writer.writeStartElement( WMTSNS, "Style" );
-        writeElement( writer, OWS110_NS, "Identifier", "default" );
-        writer.writeEndElement();
-        List<String> fmts = new ArrayList<String>();
-        for ( TileDataSet tds : tl.getTileDataSets() ) {
-            String fmt = tds.getNativeImageFormat();
-            if ( !fmts.contains( fmt ) ) {
-                fmts.add( fmt );
-            }
-        }
-        for ( String fmt : fmts ) {
-            writeElement( writer, WMTSNS, "Format", fmt );
-        }
-        if ( md.isQueryable() ) {
-            for ( String fmt : mgr.getSupportedFormats() ) {
-                writeElement( writer, WMTSNS, "InfoFormat", fmt );
-            }
-        }
-        for ( TileDataSet tds : tl.getTileDataSets() ) {
-            writer.writeStartElement( WMTSNS, "TileMatrixSetLink" );
-            writeElement( writer, WMTSNS, "TileMatrixSet", tds.getTileMatrixSet().getIdentifier() );
-            writer.writeEndElement();
-        }
+		capWriter.exportMetadata(md, false, null, tl.getMetadata().getSpatialMetadata().getEnvelope());
+		writer.writeStartElement(WMTSNS, "Style");
+		writeElement(writer, OWS110_NS, "Identifier", "default");
+		writer.writeEndElement();
+		List<String> fmts = new ArrayList<String>();
+		for (TileDataSet tds : tl.getTileDataSets()) {
+			String fmt = tds.getNativeImageFormat();
+			if (!fmts.contains(fmt)) {
+				fmts.add(fmt);
+			}
+		}
+		for (String fmt : fmts) {
+			writeElement(writer, WMTSNS, "Format", fmt);
+		}
+		if (md.isQueryable()) {
+			for (String fmt : mgr.getSupportedFormats()) {
+				writeElement(writer, WMTSNS, "InfoFormat", fmt);
+			}
+		}
+		for (TileDataSet tds : tl.getTileDataSets()) {
+			writer.writeStartElement(WMTSNS, "TileMatrixSetLink");
+			writeElement(writer, WMTSNS, "TileMatrixSet", tds.getTileMatrixSet().getIdentifier());
+			writer.writeEndElement();
+		}
 
-        writer.writeEndElement();
-    }
+		writer.writeEndElement();
+	}
 
 }

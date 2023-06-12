@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -48,47 +47,44 @@ import org.deegree.services.controller.utils.HttpResponseBuffer;
 
 /**
  * {@link XMLExceptionSerializer} for pre-OWS <code>ExceptionReports</code>.
- * 
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class PreOWSExceptionReportSerializer extends XMLExceptionSerializer {
 
-    private final String mimeType;
+	private final String mimeType;
 
-    public PreOWSExceptionReportSerializer( String mimeType ) {
-        this.mimeType = mimeType;
-    }
+	public PreOWSExceptionReportSerializer(String mimeType) {
+		this.mimeType = mimeType;
+	}
 
-    @Override
-    public void serializeException( HttpResponseBuffer response, OWSException exception )
-                            throws IOException, XMLStreamException {
+	@Override
+	public void serializeException(HttpResponseBuffer response, OWSException exception)
+			throws IOException, XMLStreamException {
 
-        response.reset();
-        response.setCharacterEncoding( "UTF-8" );
-        response.setContentType( mimeType );
-        setExceptionStatusCode( response, exception );
-        serializeExceptionToXML( response.getXMLWriter(), exception );
-    }
+		response.reset();
+		response.setCharacterEncoding("UTF-8");
+		response.setContentType(mimeType);
+		setExceptionStatusCode(response, exception);
+		serializeExceptionToXML(response.getXMLWriter(), exception);
+	}
 
-    @Override
-    public void serializeExceptionToXML( XMLStreamWriter writer, OWSException ex )
-                            throws XMLStreamException {
-        if ( ex == null || writer == null ) {
-            return;
-        }
-        writer.setDefaultNamespace( OGCNS );
-        writer.writeStartElement( OGCNS, "ServiceExceptionReport" );
-        writer.writeDefaultNamespace( OGCNS );
-        writer.writeStartElement( OGCNS, "ServiceException" );
-        writer.writeAttribute( "code", ex.getExceptionCode() );
-        if ( ex.getLocator() != null && !"".equals( ex.getLocator().trim() ) ) {
-            writer.writeAttribute( "locator", ex.getLocator() );
-        }
-        writer.writeCharacters( ex.getMessage() != null ? ex.getMessage() : "not available" );
-        writer.writeEndElement(); // ServiceException
-        writer.writeEndElement(); // ServiceExceptionReport
-    }
+	@Override
+	public void serializeExceptionToXML(XMLStreamWriter writer, OWSException ex) throws XMLStreamException {
+		if (ex == null || writer == null) {
+			return;
+		}
+		writer.setDefaultNamespace(OGCNS);
+		writer.writeStartElement(OGCNS, "ServiceExceptionReport");
+		writer.writeDefaultNamespace(OGCNS);
+		writer.writeStartElement(OGCNS, "ServiceException");
+		writer.writeAttribute("code", ex.getExceptionCode());
+		if (ex.getLocator() != null && !"".equals(ex.getLocator().trim())) {
+			writer.writeAttribute("locator", ex.getLocator());
+		}
+		writer.writeCharacters(ex.getMessage() != null ? ex.getMessage() : "not available");
+		writer.writeEndElement(); // ServiceException
+		writer.writeEndElement(); // ServiceExceptionReport
+	}
+
 }

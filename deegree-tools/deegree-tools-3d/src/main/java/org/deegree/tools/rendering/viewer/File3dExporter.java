@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -49,56 +48,56 @@ import org.slf4j.Logger;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class File3dExporter {
-    private static final Logger LOG = getLogger( File3dExporter.class );
 
-    /**
-     * Shows an export dialog to the user.
-     */
-    public static boolean save( GLViewer parent, WorldRenderableObject toExport ) {
+	private static final Logger LOG = getLogger(File3dExporter.class);
 
-        Export3DFile exportEvaluater = new Export3DFile( parent );
-        // find the scene graph to export
-        // Enumeration<Node> en = rotationGroup.getAllChildren();
-        if ( toExport == null ) {
-            parent.showExceptionDialog( "Could not get the scene to export." );
-            return false;
-        }
+	/**
+	 * Shows an export dialog to the user.
+	 */
+	public static boolean save(GLViewer parent, WorldRenderableObject toExport) {
 
-        // if ( toExport == null ) {
-        // showExceptionDialog( "Could not get the scene to export." );
-        // return;
-        // }
-        StringBuilder sb = exportEvaluater.exportBranchgroup( toExport );
-        if ( sb.length() == 0 ) {
-            parent.showExceptionDialog( "Exporting failed, see error log for details." );
-            return false;
-        }
-        JFileChooser chooser = parent.createFileChooser( null );
-        int result = chooser.showSaveDialog( parent );
-        if ( JFileChooser.APPROVE_OPTION == result ) {
-            File f = chooser.getSelectedFile();
-            FileFilter ff = chooser.getFileFilter();
-            if ( ff instanceof ViewerFileFilter ) {
-                parent.getPreferences().put( GLViewer.LAST_EXTENSION, ( (ViewerFileFilter) ff ).getExtension( f ) );
-                parent.getPreferences().put( GLViewer.OPEN_KEY, f.getParent() );
-            }
-            try {
-                FileWriter output = new FileWriter( f );
-                output.write( sb.toString() );
-                output.flush();
-                output.close();
-            } catch ( IOException e ) {
-                LOG.error( e.getMessage(), e );
-                parent.showExceptionDialog( "Exporting failed, see error log for details." );
-            }
-        }
-        return true;
-    }
+		Export3DFile exportEvaluater = new Export3DFile(parent);
+		// find the scene graph to export
+		// Enumeration<Node> en = rotationGroup.getAllChildren();
+		if (toExport == null) {
+			parent.showExceptionDialog("Could not get the scene to export.");
+			return false;
+		}
+
+		// if ( toExport == null ) {
+		// showExceptionDialog( "Could not get the scene to export." );
+		// return;
+		// }
+		StringBuilder sb = exportEvaluater.exportBranchgroup(toExport);
+		if (sb.length() == 0) {
+			parent.showExceptionDialog("Exporting failed, see error log for details.");
+			return false;
+		}
+		JFileChooser chooser = parent.createFileChooser(null);
+		int result = chooser.showSaveDialog(parent);
+		if (JFileChooser.APPROVE_OPTION == result) {
+			File f = chooser.getSelectedFile();
+			FileFilter ff = chooser.getFileFilter();
+			if (ff instanceof ViewerFileFilter) {
+				parent.getPreferences().put(GLViewer.LAST_EXTENSION, ((ViewerFileFilter) ff).getExtension(f));
+				parent.getPreferences().put(GLViewer.OPEN_KEY, f.getParent());
+			}
+			try {
+				FileWriter output = new FileWriter(f);
+				output.write(sb.toString());
+				output.flush();
+				output.close();
+			}
+			catch (IOException e) {
+				LOG.error(e.getMessage(), e);
+				parent.showExceptionDialog("Exporting failed, see error log for details.");
+			}
+		}
+		return true;
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -47,100 +46,92 @@ import org.deegree.commons.xml.XPath;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.org">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class RegistryPackage extends RegistryObject {
 
-    private Map<String, List<ExtrinsicObject>> extrinsicObjects = new HashMap<String, List<ExtrinsicObject>>();
+	private Map<String, List<ExtrinsicObject>> extrinsicObjects = new HashMap<String, List<ExtrinsicObject>>();
 
-    private List<Association> associations;
+	private List<Association> associations;
 
-    private List<Classification> classifications;
+	private List<Classification> classifications;
 
-    private List<ClassificationNode> classificationNodes;
+	private List<ClassificationNode> classificationNodes;
 
-    public RegistryPackage( XMLStreamReader xmlReader ) {
-        super( xmlReader );
-    }
+	public RegistryPackage(XMLStreamReader xmlReader) {
+		super(xmlReader);
+	}
 
-    public RegistryPackage( OMElement asOMElement ) {
-        super( asOMElement );
-    }
+	public RegistryPackage(OMElement asOMElement) {
+		super(asOMElement);
+	}
 
-    private XPath getEOPath( String type ) {
-        return new XPath( "./rim:RegistryObjectList/rim:ExtrinsicObject[@objectType='" + type + "']", ns );
-    }
+	private XPath getEOPath(String type) {
+		return new XPath("./rim:RegistryObjectList/rim:ExtrinsicObject[@objectType='" + type + "']", ns);
+	}
 
-    public List<ExtrinsicObject> getExtrinsicObjects( String type ) {
-        if ( !extrinsicObjects.containsKey( type ) ) {
-            List<ExtrinsicObject> eos = new ArrayList<ExtrinsicObject>();
-            List<OMElement> eoElems = adapter.getElements( adapter.getRootElement(), getEOPath( type ) );
-            for ( OMElement eoElem : eoElems ) {
-                eos.add( new ExtrinsicObject( eoElem ) );
-            }
-            extrinsicObjects.put( type, eos );
-        }
+	public List<ExtrinsicObject> getExtrinsicObjects(String type) {
+		if (!extrinsicObjects.containsKey(type)) {
+			List<ExtrinsicObject> eos = new ArrayList<ExtrinsicObject>();
+			List<OMElement> eoElems = adapter.getElements(adapter.getRootElement(), getEOPath(type));
+			for (OMElement eoElem : eoElems) {
+				eos.add(new ExtrinsicObject(eoElem));
+			}
+			extrinsicObjects.put(type, eos);
+		}
 
-        return extrinsicObjects.get( type );
-    }
+		return extrinsicObjects.get(type);
+	}
 
-    /**
-     * @return the associations
-     */
-    public List<Association> getAssociations() {
-        if ( associations == null ) {
-            List<OMElement> associationElements = adapter.getElements( adapter.getRootElement(),
-                                                                       new XPath(
-                                                                                  "./rim:RegistryObjectList/rim:Association",
-                                                                                  ns ) );
+	/**
+	 * @return the associations
+	 */
+	public List<Association> getAssociations() {
+		if (associations == null) {
+			List<OMElement> associationElements = adapter.getElements(adapter.getRootElement(),
+					new XPath("./rim:RegistryObjectList/rim:Association", ns));
 
-            associations = new ArrayList<Association>();
-            for ( OMElement associationElem : associationElements ) {
-                associations.add( new Association( associationElem ) );
-            }
-        }
-        return associations;
-    }
+			associations = new ArrayList<Association>();
+			for (OMElement associationElem : associationElements) {
+				associations.add(new Association(associationElem));
+			}
+		}
+		return associations;
+	}
 
-    /**
-     * @return the classifications
-     */
-    public List<Classification> getClassifications() {
-        if ( classifications == null ) {
-            List<OMElement> classificationElems = adapter.getElements( adapter.getRootElement(),
-                                                                       new XPath(
-                                                                                  "./rim:RegistryObjectList/rim:Classification",
-                                                                                  ns ) );
-            classifications = new ArrayList<Classification>();
-            for ( OMElement classificationElem : classificationElems ) {
-                classifications.add( new Classification( classificationElem ) );
-            }
+	/**
+	 * @return the classifications
+	 */
+	public List<Classification> getClassifications() {
+		if (classifications == null) {
+			List<OMElement> classificationElems = adapter.getElements(adapter.getRootElement(),
+					new XPath("./rim:RegistryObjectList/rim:Classification", ns));
+			classifications = new ArrayList<Classification>();
+			for (OMElement classificationElem : classificationElems) {
+				classifications.add(new Classification(classificationElem));
+			}
 
-        }
-        return classifications;
-    }
+		}
+		return classifications;
+	}
 
-    /**
-     * @return
-     */
-    public List<ClassificationNode> getClassificationNodes() {
-        if ( classificationNodes == null ) {
-            // ALL classifictionNodes are parsed -> they can be childs of ClassificationNode or ClassificationScheme
-            // (...)
-            List<OMElement> classNodeElems = adapter.getElements( adapter.getRootElement(),
-                                                                  new XPath(
-                                                                             "./rim:RegistryObjectList//rim:ClassificationNode",
-                                                                             ns ) );
-            classificationNodes = new ArrayList<ClassificationNode>();
-            for ( OMElement classNodeElem : classNodeElems ) {
-                classificationNodes.add( new ClassificationNode( classNodeElem ) );
-            }
-        }
-        return classificationNodes;
-    }
+	/**
+	 * @return
+	 */
+	public List<ClassificationNode> getClassificationNodes() {
+		if (classificationNodes == null) {
+			// ALL classifictionNodes are parsed -> they can be childs of
+			// ClassificationNode or ClassificationScheme
+			// (...)
+			List<OMElement> classNodeElems = adapter.getElements(adapter.getRootElement(),
+					new XPath("./rim:RegistryObjectList//rim:ClassificationNode", ns));
+			classificationNodes = new ArrayList<ClassificationNode>();
+			for (OMElement classNodeElem : classNodeElems) {
+				classificationNodes.add(new ClassificationNode(classNodeElem));
+			}
+		}
+		return classificationNodes;
+	}
 
 }

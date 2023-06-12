@@ -38,20 +38,19 @@ import org.deegree.metadata.persistence.MetadataStoreManager;
  * JSF backing bean for "Create new metadata store" view.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- *
  * @since 3.3
  */
 @ManagedBean
 @ViewScoped
 public class CreateMetadataStoreBean extends AbstractCreateResourceBean {
 
-    public CreateMetadataStoreBean() {
-        super( MetadataStoreManager.class );
-    }
+	public CreateMetadataStoreBean() {
+		super(MetadataStoreManager.class);
+	}
 
-    @Override
-    protected String getOutcome() {
-        return "/console/datastore/metadata/index";
-    }
+	@Override
+	protected String getOutcome() {
+		return "/console/datastore/metadata/index";
+	}
 
 }

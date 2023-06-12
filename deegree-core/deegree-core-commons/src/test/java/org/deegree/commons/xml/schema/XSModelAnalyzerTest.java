@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -55,153 +54,146 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Tests for the {@link XMLSchemaInfoSet}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * 
- * @version $Revision:$, $Date:$
  */
 public class XSModelAnalyzerTest {
 
-    private static Logger LOG = LoggerFactory.getLogger( XSModelAnalyzerTest.class );
+	private static Logger LOG = LoggerFactory.getLogger(XSModelAnalyzerTest.class);
 
-    /**
-     * Check the correct determining of substitutable elements.
-     * 
-     * @throws ClassCastException
-     * @throws ClassNotFoundException
-     * @throws InstantiationException
-     * @throws IllegalAccessException
-     */
-    @Test
-    public void testConcreteFeatureElements()
-                            throws ClassCastException, ClassNotFoundException, InstantiationException,
-                            IllegalAccessException {
+	/**
+	 * Check the correct determining of substitutable elements.
+	 * @throws ClassCastException
+	 * @throws ClassNotFoundException
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 */
+	@Test
+	public void testConcreteFeatureElements()
+			throws ClassCastException, ClassNotFoundException, InstantiationException, IllegalAccessException {
 
-        XMLSchemaInfoSet analyzer = new XMLSchemaInfoSet(
-                                                          XSModelAnalyzerTest.class.getResource( "Philosopher.xsd" ).toString() );
-        QName abstractFeatureElementName = new QName( "http://www.opengis.net/gml", "_Feature" );
-        List<XSElementDeclaration> concreteFeatureElements = analyzer.getSubstitutions( abstractFeatureElementName,
-                                                                                        null, true, true );
-        assertEquals( 14, concreteFeatureElements.size() );
-    }
+		XMLSchemaInfoSet analyzer = new XMLSchemaInfoSet(
+				XSModelAnalyzerTest.class.getResource("Philosopher.xsd").toString());
+		QName abstractFeatureElementName = new QName("http://www.opengis.net/gml", "_Feature");
+		List<XSElementDeclaration> concreteFeatureElements = analyzer.getSubstitutions(abstractFeatureElementName, null,
+				true, true);
+		assertEquals(14, concreteFeatureElements.size());
+	}
 
-    /**
-     * Check the correct determining of substitutable elements.
-     * 
-     * @throws ClassCastException
-     * @throws ClassNotFoundException
-     * @throws InstantiationException
-     * @throws IllegalAccessException
-     */
-    @Test
-    public void testConcreteFeatureElements2()
-                            throws ClassCastException, ClassNotFoundException, InstantiationException,
-                            IllegalAccessException {
+	/**
+	 * Check the correct determining of substitutable elements.
+	 * @throws ClassCastException
+	 * @throws ClassNotFoundException
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 */
+	@Test
+	public void testConcreteFeatureElements2()
+			throws ClassCastException, ClassNotFoundException, InstantiationException, IllegalAccessException {
 
-        String schemaURL = XSModelAnalyzerTest.class.getResource( "Philosopher.xsd" ).toString();
-        String schemaURL2 = "http://schemas.opengis.net/wfs/1.1.0/wfs.xsd";
+		String schemaURL = XSModelAnalyzerTest.class.getResource("Philosopher.xsd").toString();
+		String schemaURL2 = "http://schemas.opengis.net/wfs/1.1.0/wfs.xsd";
 
-        XMLSchemaInfoSet analyzer = new XMLSchemaInfoSet( schemaURL, schemaURL2 );
-        analyzer.getXSModel();
-        XSElementDeclaration a = analyzer.getElementDecl( "Philosopher", "http://www.deegree.org/app" );
-        XSElementDeclaration b = analyzer.getElementDecl( "FeatureCollection", "http://www.opengis.net/wfs" );
-        LOG.debug( "" + a.getSubstitutionGroupAffiliation() );
-        LOG.debug( "" + b.getSubstitutionGroupAffiliation().getSubstitutionGroupAffiliation() );
+		XMLSchemaInfoSet analyzer = new XMLSchemaInfoSet(schemaURL, schemaURL2);
+		analyzer.getXSModel();
+		XSElementDeclaration a = analyzer.getElementDecl("Philosopher", "http://www.deegree.org/app");
+		XSElementDeclaration b = analyzer.getElementDecl("FeatureCollection", "http://www.opengis.net/wfs");
+		LOG.debug("" + a.getSubstitutionGroupAffiliation());
+		LOG.debug("" + b.getSubstitutionGroupAffiliation().getSubstitutionGroupAffiliation());
 
-        QName abstractFeatureElementName = new QName( "http://www.opengis.net/gml", "_Feature" );
-        analyzer.getSubstitutions( abstractFeatureElementName, null, true, true );
-    }
+		QName abstractFeatureElementName = new QName("http://www.opengis.net/gml", "_Feature");
+		analyzer.getSubstitutions(abstractFeatureElementName, null, true, true);
+	}
 
-    // @Test
-    public void testGML311SF()
-                            throws ClassCastException, ClassNotFoundException, InstantiationException,
-                            IllegalAccessException {
+	// @Test
+	public void testGML311SF()
+			throws ClassCastException, ClassNotFoundException, InstantiationException, IllegalAccessException {
 
-        XMLSchemaInfoSet analyzer = new XMLSchemaInfoSet( "http://schemas.opengis.net/gml/2.1.2/geometry.xsd" );
-        QName abstractFeatureElementName = new QName( "http://www.opengis.net/gml", "_Geometry" );
-        List<XSElementDeclaration> geometryElements = analyzer.getSubstitutions( abstractFeatureElementName, null,
-                                                                                 true, false );
+		XMLSchemaInfoSet analyzer = new XMLSchemaInfoSet("http://schemas.opengis.net/gml/2.1.2/geometry.xsd");
+		QName abstractFeatureElementName = new QName("http://www.opengis.net/gml", "_Geometry");
+		List<XSElementDeclaration> geometryElements = analyzer.getSubstitutions(abstractFeatureElementName, null, true,
+				false);
 
-        for ( XSElementDeclaration decl : geometryElements ) {
+		for (XSElementDeclaration decl : geometryElements) {
 
-            XSComplexTypeDefinition typeDef = (XSComplexTypeDefinition) decl.getTypeDefinition();
-            LOG.debug( "element: " + decl.getName() + ", type: " + typeDef.getName() );
+			XSComplexTypeDefinition typeDef = (XSComplexTypeDefinition) decl.getTypeDefinition();
+			LOG.debug("element: " + decl.getName() + ", type: " + typeDef.getName());
 
-            switch ( typeDef.getContentType() ) {
-            case XSComplexTypeDefinition.CONTENTTYPE_ELEMENT:
-                LOG.debug( "CONTENTTYPE_ELEMENT" );
-                XSParticle particle = typeDef.getParticle();
-                XSTerm term = particle.getTerm();
-                switch ( term.getType() ) {
-                case XSConstants.MODEL_GROUP:
-                    traverse( (XSModelGroup) term );
-                    break;
-                }
-            }
-        }
-    }
+			switch (typeDef.getContentType()) {
+				case XSComplexTypeDefinition.CONTENTTYPE_ELEMENT:
+					LOG.debug("CONTENTTYPE_ELEMENT");
+					XSParticle particle = typeDef.getParticle();
+					XSTerm term = particle.getTerm();
+					switch (term.getType()) {
+						case XSConstants.MODEL_GROUP:
+							traverse((XSModelGroup) term);
+							break;
+					}
+			}
+		}
+	}
 
-    private void traverse( XSModelGroup modelGroup ) {
+	private void traverse(XSModelGroup modelGroup) {
 
-        switch ( modelGroup.getCompositor() ) {
-        case XSModelGroup.COMPOSITOR_ALL: {
-            LOG.debug( "Unhandled model group: COMPOSITOR_ALL" );
-            break;
-        }
-        case XSModelGroup.COMPOSITOR_CHOICE: {
-            XSObjectList choice = modelGroup.getParticles();
-            for ( int i = 0; i < choice.getLength(); i++ ) {
-                XSParticle particle2 = (XSParticle) choice.item( i );
-                switch ( particle2.getTerm().getType() ) {
-                case XSConstants.ELEMENT_DECLARATION: {
-                    XSElementDeclaration elementDecl2 = (XSElementDeclaration) particle2.getTerm();
-                    int minOccurs2 = particle2.getMinOccurs();
-                    int maxOccurs2 = particle2.getMaxOccursUnbounded() ? -1 : particle2.getMaxOccurs();
-                    QName elementName = new QName( elementDecl2.getNamespace(), elementDecl2.getName() );
-                    LOG.debug( "- property: " + elementName + ", min: " + minOccurs2 + ", max: " + maxOccurs2 );
-                    break;
-                }
-                case XSConstants.WILDCARD: {
-                    LOG.debug( "Unhandled particle: WILDCARD" );
-                    break;
-                }
-                case XSConstants.MODEL_GROUP: {
-                    traverse( (XSModelGroup) particle2.getTerm() );
-                    break;
-                }
-                }
-            }
-            break;
-        }
-        case XSModelGroup.COMPOSITOR_SEQUENCE: {
-            LOG.debug( "Found sequence." );
-            XSObjectList sequence = modelGroup.getParticles();
-            for ( int i = 0; i < sequence.getLength(); i++ ) {
-                XSParticle particle2 = (XSParticle) sequence.item( i );
-                switch ( particle2.getTerm().getType() ) {
-                case XSConstants.ELEMENT_DECLARATION: {
-                    XSElementDeclaration elementDecl2 = (XSElementDeclaration) particle2.getTerm();
-                    int minOccurs2 = particle2.getMinOccurs();
-                    int maxOccurs2 = particle2.getMaxOccursUnbounded() ? -1 : particle2.getMaxOccurs();
-                    QName elementName = new QName( elementDecl2.getNamespace(), elementDecl2.getName() );
-                    LOG.debug( "- property: " + elementName + ", min: " + minOccurs2 + ", max: " + maxOccurs2 );
-                    break;
-                }
-                case XSConstants.WILDCARD: {
-                    LOG.debug( "Unhandled particle: WILDCARD" );
-                    break;
-                }
-                case XSConstants.MODEL_GROUP: {
-                    traverse( (XSModelGroup) particle2.getTerm() );
-                    break;
-                }
-                }
-            }
-        }
-        default: {
-            Assert.fail();
-        }
-        }
-    }
+		switch (modelGroup.getCompositor()) {
+			case XSModelGroup.COMPOSITOR_ALL: {
+				LOG.debug("Unhandled model group: COMPOSITOR_ALL");
+				break;
+			}
+			case XSModelGroup.COMPOSITOR_CHOICE: {
+				XSObjectList choice = modelGroup.getParticles();
+				for (int i = 0; i < choice.getLength(); i++) {
+					XSParticle particle2 = (XSParticle) choice.item(i);
+					switch (particle2.getTerm().getType()) {
+						case XSConstants.ELEMENT_DECLARATION: {
+							XSElementDeclaration elementDecl2 = (XSElementDeclaration) particle2.getTerm();
+							int minOccurs2 = particle2.getMinOccurs();
+							int maxOccurs2 = particle2.getMaxOccursUnbounded() ? -1 : particle2.getMaxOccurs();
+							QName elementName = new QName(elementDecl2.getNamespace(), elementDecl2.getName());
+							LOG.debug("- property: " + elementName + ", min: " + minOccurs2 + ", max: " + maxOccurs2);
+							break;
+						}
+						case XSConstants.WILDCARD: {
+							LOG.debug("Unhandled particle: WILDCARD");
+							break;
+						}
+						case XSConstants.MODEL_GROUP: {
+							traverse((XSModelGroup) particle2.getTerm());
+							break;
+						}
+					}
+				}
+				break;
+			}
+			case XSModelGroup.COMPOSITOR_SEQUENCE: {
+				LOG.debug("Found sequence.");
+				XSObjectList sequence = modelGroup.getParticles();
+				for (int i = 0; i < sequence.getLength(); i++) {
+					XSParticle particle2 = (XSParticle) sequence.item(i);
+					switch (particle2.getTerm().getType()) {
+						case XSConstants.ELEMENT_DECLARATION: {
+							XSElementDeclaration elementDecl2 = (XSElementDeclaration) particle2.getTerm();
+							int minOccurs2 = particle2.getMinOccurs();
+							int maxOccurs2 = particle2.getMaxOccursUnbounded() ? -1 : particle2.getMaxOccurs();
+							QName elementName = new QName(elementDecl2.getNamespace(), elementDecl2.getName());
+							LOG.debug("- property: " + elementName + ", min: " + minOccurs2 + ", max: " + maxOccurs2);
+							break;
+						}
+						case XSConstants.WILDCARD: {
+							LOG.debug("Unhandled particle: WILDCARD");
+							break;
+						}
+						case XSConstants.MODEL_GROUP: {
+							traverse((XSModelGroup) particle2.getTerm());
+							break;
+						}
+					}
+				}
+			}
+			default: {
+				Assert.fail();
+			}
+		}
+	}
+
 }

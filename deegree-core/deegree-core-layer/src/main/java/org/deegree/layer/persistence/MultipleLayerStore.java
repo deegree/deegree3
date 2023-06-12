@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aschmitz@wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -44,48 +43,44 @@ import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceMetadata;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 public class MultipleLayerStore implements LayerStore {
 
-    private Map<String, Layer> map;
+	private Map<String, Layer> map;
 
-    private ResourceMetadata<LayerStore> metadata;
+	private ResourceMetadata<LayerStore> metadata;
 
-    public MultipleLayerStore( Map<String, Layer> map, ResourceMetadata<LayerStore> metadata ) {
-        this.map = map;
-        this.metadata = metadata;
-    }
+	public MultipleLayerStore(Map<String, Layer> map, ResourceMetadata<LayerStore> metadata) {
+		this.map = map;
+		this.metadata = metadata;
+	}
 
-    @Override
-    public void init() {
-        // nothing to do
-    }
+	@Override
+	public void init() {
+		// nothing to do
+	}
 
-    @Override
-    public void destroy() {
-        for ( Layer l : map.values() ) {
-            l.destroy();
-        }
-    }
+	@Override
+	public void destroy() {
+		for (Layer l : map.values()) {
+			l.destroy();
+		}
+	}
 
-    @Override
-    public List<Layer> getAll() {
-        return new ArrayList<Layer>( map.values() );
-    }
+	@Override
+	public List<Layer> getAll() {
+		return new ArrayList<Layer>(map.values());
+	}
 
-    @Override
-    public Layer get( String identifier ) {
-        return map.get( identifier );
-    }
+	@Override
+	public Layer get(String identifier) {
+		return map.get(identifier);
+	}
 
-    @Override
-    public ResourceMetadata<? extends Resource> getMetadata() {
-        return metadata;
-    }
+	@Override
+	public ResourceMetadata<? extends Resource> getMetadata() {
+		return metadata;
+	}
 
 }

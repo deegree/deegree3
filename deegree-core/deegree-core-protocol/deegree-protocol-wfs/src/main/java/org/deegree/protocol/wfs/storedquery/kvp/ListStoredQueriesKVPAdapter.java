@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -49,40 +48,36 @@ import org.deegree.protocol.wfs.AbstractWFSRequestKVPAdapter;
 import org.deegree.protocol.wfs.storedquery.ListStoredQueries;
 
 /**
- * Adapter between KVP <code>ListStoredQueries</code> requests and {@link ListStoredQueries} objects.
+ * Adapter between KVP <code>ListStoredQueries</code> requests and
+ * {@link ListStoredQueries} objects.
  * <p>
  * Supported versions:
  * <ul>
  * <li>WFS 2.0.0</li>
  * </ul>
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class ListStoredQueriesKVPAdapter extends AbstractWFSRequestKVPAdapter {
 
-    /**
-     * Parses a normalized KVP-map as a WFS {@link ListStoredQueries} request.
-     * 
-     * @param kvpParams
-     *            normalized KVP-map; keys must be uppercase, each key only has one associated value
-     * @return parsed {@link ListStoredQueries} request
-     * @throws MissingParameterException
-     *             if the request version is unsupported
-     * @throws InvalidParameterValueException
-     *             if a parameter contains a syntax error
-     */
-    public static ListStoredQueries parse( Map<String, String> kvpParams )
-                            throws MissingParameterException, InvalidParameterValueException {
+	/**
+	 * Parses a normalized KVP-map as a WFS {@link ListStoredQueries} request.
+	 * @param kvpParams normalized KVP-map; keys must be uppercase, each key only has one
+	 * associated value
+	 * @return parsed {@link ListStoredQueries} request
+	 * @throws MissingParameterException if the request version is unsupported
+	 * @throws InvalidParameterValueException if a parameter contains a syntax error
+	 */
+	public static ListStoredQueries parse(Map<String, String> kvpParams)
+			throws MissingParameterException, InvalidParameterValueException {
 
-        Version version = Version.parseVersion( KVPUtils.getRequired( kvpParams, "VERSION" ) );
-        if ( !( VERSION_200.equals( version ) ) ) {
-            String msg = Messages.get( "UNSUPPORTED_VERSION", version, Version.getVersionsString( VERSION_200 ) );
-            throw new InvalidParameterValueException( msg );
-        }
-        return new ListStoredQueries( version, null );
-    }
+		Version version = Version.parseVersion(KVPUtils.getRequired(kvpParams, "VERSION"));
+		if (!(VERSION_200.equals(version))) {
+			String msg = Messages.get("UNSUPPORTED_VERSION", version, Version.getVersionsString(VERSION_200));
+			throw new InvalidParameterValueException(msg);
+		}
+		return new ListStoredQueries(version, null);
+	}
+
 }

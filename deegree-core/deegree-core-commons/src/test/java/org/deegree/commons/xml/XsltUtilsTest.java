@@ -18,36 +18,34 @@ import org.junit.Test;
  */
 public class XsltUtilsTest {
 
-    @Test
-    public void verifyXslt_20_ImplementationIsAvailable() {
-        TransformerFactory factory = TransformerFactory.newInstance();
-        assertThat( factory, is( instanceOf( net.sf.saxon.TransformerFactoryImpl.class ) ) );
-    }
+	@Test
+	public void verifyXslt_20_ImplementationIsAvailable() {
+		TransformerFactory factory = TransformerFactory.newInstance();
+		assertThat(factory, is(instanceOf(net.sf.saxon.TransformerFactoryImpl.class)));
+	}
 
-    @Test
-    public void testXslt10()
-                            throws Exception {
-        InputStream docToTransform = XsltUtilsTest.class.getResourceAsStream( "feature.gml" );
-        URL xslt = XsltUtilsTest.class.getResource( "featureToHtml-Xslt10.xslt" );
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        XsltUtils.transform( docToTransform, xslt, bos );
-        bos.close();
+	@Test
+	public void testXslt10() throws Exception {
+		InputStream docToTransform = XsltUtilsTest.class.getResourceAsStream("feature.gml");
+		URL xslt = XsltUtilsTest.class.getResource("featureToHtml-Xslt10.xslt");
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		XsltUtils.transform(docToTransform, xslt, bos);
+		bos.close();
 
-        assertThat( bos.toString(), containsString( "Identifier: i1 Name: feature name 1 Props: 1a, 1b" ) );
-        assertThat( bos.toString(), containsString( "Identifier: i2 Name: feature name 2 Props: 2a, 2b, 2c" ) );
-    }
+		assertThat(bos.toString(), containsString("Identifier: i1 Name: feature name 1 Props: 1a, 1b"));
+		assertThat(bos.toString(), containsString("Identifier: i2 Name: feature name 2 Props: 2a, 2b, 2c"));
+	}
 
-    @Test
-    public void testXslt20()
-                            throws Exception {
-        InputStream docToTransform = XsltUtilsTest.class.getResourceAsStream( "feature.gml" );
-        URL xslt = XsltUtilsTest.class.getResource( "featureToHtml-Xslt20.xslt" );
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        XsltUtils.transform( docToTransform, xslt, bos );
-        bos.close();
+	@Test
+	public void testXslt20() throws Exception {
+		InputStream docToTransform = XsltUtilsTest.class.getResourceAsStream("feature.gml");
+		URL xslt = XsltUtilsTest.class.getResource("featureToHtml-Xslt20.xslt");
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		XsltUtils.transform(docToTransform, xslt, bos);
+		bos.close();
 
-        assertThat( bos.toString(), containsString( "Identifier: i1 Name: feature name 1 Props: 1a, 1b" ) );
-        assertThat( bos.toString(), containsString( "Identifier: i2 Name: feature name 2 Props: 2a, 2b, 2c" ) );
-    }
+		assertThat(bos.toString(), containsString("Identifier: i1 Name: feature name 1 Props: 1a, 1b"));
+		assertThat(bos.toString(), containsString("Identifier: i2 Name: feature name 2 Props: 2a, 2b, 2c"));
+	}
 
 }

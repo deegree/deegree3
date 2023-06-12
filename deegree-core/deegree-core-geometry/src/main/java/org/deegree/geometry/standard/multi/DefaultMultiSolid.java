@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -46,34 +45,28 @@ import org.deegree.geometry.primitive.Solid;
  * Default implementation of {@link MultiSolid}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- *
- * @version $Revision$, $Date$
  */
 public class DefaultMultiSolid extends DefaultMultiGeometry<Solid> implements MultiSolid {
 
-    /**
-     * Creates a new {@link DefaultMultiSolid} from the given parameters.
-     *
-     * @param id
-     *            identifier, may be null
-     * @param crs
-     *            coordinate reference system, may be null
-     * @param pm
-     *            precision model, may be null
-     * @param members
-     */
-    public DefaultMultiSolid( String id, ICRS crs, PrecisionModel pm, List<Solid> members ) {
-        super( id, crs, pm, members );
-    }
+	/**
+	 * Creates a new {@link DefaultMultiSolid} from the given parameters.
+	 * @param id identifier, may be null
+	 * @param crs coordinate reference system, may be null
+	 * @param pm precision model, may be null
+	 * @param members
+	 */
+	public DefaultMultiSolid(String id, ICRS crs, PrecisionModel pm, List<Solid> members) {
+		super(id, crs, pm, members);
+	}
 
-    @Override
-    public double getVolume() {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public double getVolume() {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public MultiGeometryType getMultiGeometryType() {
-        return MultiGeometryType.MULTI_SOLID;
-    }
+	@Override
+	public MultiGeometryType getMultiGeometryType() {
+		return MultiGeometryType.MULTI_SOLID;
+	}
+
 }

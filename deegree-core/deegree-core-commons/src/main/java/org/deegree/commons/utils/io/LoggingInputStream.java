@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -41,68 +40,60 @@ import java.io.OutputStream;
 
 /**
  * Writes back all bytes that are read into an output stream.
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class LoggingInputStream extends InputStream {
 
-    private InputStream in;
+	private InputStream in;
 
-    private OutputStream out;
+	private OutputStream out;
 
-    /**
-     * @param in
-     * @param out
-     */
-    public LoggingInputStream( InputStream in, OutputStream out ) {
-        this.in = in;
-        this.out = out;
-    }
+	/**
+	 * @param in
+	 * @param out
+	 */
+	public LoggingInputStream(InputStream in, OutputStream out) {
+		this.in = in;
+		this.out = out;
+	}
 
-    @Override
-    public int available()
-                            throws IOException {
-        return in.available();
-    }
+	@Override
+	public int available() throws IOException {
+		return in.available();
+	}
 
-    @Override
-    public int read()
-                            throws IOException {
-        int read = in.read();
-        if ( read > 0 ) {
-            out.write( read );
-        }
-        return read;
-    }
+	@Override
+	public int read() throws IOException {
+		int read = in.read();
+		if (read > 0) {
+			out.write(read);
+		}
+		return read;
+	}
 
-    @Override
-    public int read( byte[] bs )
-                            throws IOException {
-        int read = in.read( bs );
-        if ( read > 0 ) {
-            out.write( bs, 0, read );
-        }
-        return read;
-    }
+	@Override
+	public int read(byte[] bs) throws IOException {
+		int read = in.read(bs);
+		if (read > 0) {
+			out.write(bs, 0, read);
+		}
+		return read;
+	}
 
-    @Override
-    public int read( byte[] bs, int off, int len )
-                            throws IOException {
-        int read = in.read( bs, off, len );
-        if ( read > 0 ) {
-            out.write( bs, off, off + read );
-        }
-        return read;
-    }
+	@Override
+	public int read(byte[] bs, int off, int len) throws IOException {
+		int read = in.read(bs, off, len);
+		if (read > 0) {
+			out.write(bs, off, off + read);
+		}
+		return read;
+	}
 
-    @Override
-    public void close()
-                            throws IOException {
-        in.close();
-        out.close();
-    }
+	@Override
+	public void close() throws IOException {
+		in.close();
+		out.close();
+	}
 
 }

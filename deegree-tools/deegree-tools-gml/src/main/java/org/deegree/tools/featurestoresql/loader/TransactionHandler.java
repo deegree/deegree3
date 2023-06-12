@@ -21,6 +21,7 @@
  */
 package org.deegree.tools.featurestoresql.loader;
 
+import static java.util.Collections.emptySet;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.batch.core.ExitStatus.COMPLETED;
 import static org.springframework.batch.core.ExitStatus.FAILED;
@@ -44,95 +45,104 @@ import org.springframework.util.Assert;
  */
 public class TransactionHandler implements StepExecutionListener {
 
-    private static final Logger LOG = getLogger( TransactionHandler.class );
+	private static final Logger LOG = getLogger(TransactionHandler.class);
 
-    private final Summary summary;
+	private final Summary summary;
 
-    private SQLFeatureStore sqlFeatureStore;
+	private SQLFeatureStore sqlFeatureStore;
 
-    private SQLFeatureStoreTransaction featureStoreTransaction;
+	private SQLFeatureStoreTransaction featureStoreTransaction;
 
-    /**
-     * @param sqlFeatureStore
-     *            used for transactions, never <code>null</code>
-     * @param summary
-     *            writing the report, never <code>null</code>
-     */
-    public TransactionHandler( SQLFeatureStore sqlFeatureStore, Summary summary ) {
-        this.summary = summary;
-        Assert.notNull( sqlFeatureStore, "sqlFeatureStore  must not be null" );
-        this.sqlFeatureStore = sqlFeatureStore;
-    }
+	/**
+	 * @param sqlFeatureStore used for transactions, never <code>null</code>
+	 * @param summary writing the report, never <code>null</code>
+	 */
+	public TransactionHandler(SQLFeatureStore sqlFeatureStore, Summary summary) {
+		this.summary = summary;
+		Assert.notNull(sqlFeatureStore, "sqlFeatureStore  must not be null");
+		this.sqlFeatureStore = sqlFeatureStore;
+	}
 
-    @Override
-    public void beforeStep( StepExecution stepExecution ) {
-        try {
-            this.featureStoreTransaction = (SQLFeatureStoreTransaction) this.sqlFeatureStore.acquireTransaction();
-            LOG.info( "Acquired transaction." );
-        } catch ( Exception e ) {
-            LOG.error( "Transaction could not acquired!", e );
-            throw new RuntimeException( "Transaction could not acquired!", e );
-        }
-    }
+	@Override
+	public void beforeStep(StepExecution stepExecution) {
+		try {
+			this.featureStoreTransaction = (SQLFeatureStoreTransaction) this.sqlFeatureStore.acquireTransaction();
+			LOG.info("Acquired transaction.");
+		}
+		catch (Exception e) {
+			LOG.error("Transaction could not acquired!", e);
+			throw new RuntimeException("Transaction could not acquired!", e);
+		}
+	}
 
-    @Override
-    public ExitStatus afterStep( StepExecution stepExecution ) {
-        if ( featureStoreTransaction != null )
-            return checkReferencesAndCommitOrRollback( stepExecution );
-        return FAILED;
-    }
+	@Override
+	public ExitStatus afterStep(StepExecution stepExecution) {
+		if (featureStoreTransaction != null)
+			return checkReferencesAndCommitOrRollback(stepExecution);
+		return FAILED;
+	}
 
-    private ExitStatus checkReferencesAndCommitOrRollback( StepExecution stepExecution ) {
-        FeatureReferenceCheckResult featureReferenceCheckResult = checkReferences( stepExecution );
-        if ( featureReferenceCheckResult.isValid() ) {
-            return commitOrRollback( stepExecution, featureStoreTransaction );
-        } else {
-            summary.setUnresolvableReferences( featureReferenceCheckResult.getUnresolvableReferences()  );
-            logResult( featureReferenceCheckResult );
-            rollback();
-            return new ExitStatus( "FAILED", "Unresolvable References!" );
-        }
-    }
+	private ExitStatus checkReferencesAndCommitOrRollback(StepExecution stepExecution) {
+		FeatureReferenceCheckResult featureReferenceCheckResult = checkReferences(stepExecution);
+		if (featureReferenceCheckResult.isValid()) {
+			return commitOrRollback(stepExecution, featureStoreTransaction);
+		}
+		else {
+			summary.setUnresolvableReferences(featureReferenceCheckResult.getUnresolvableReferences());
+			logResult(featureReferenceCheckResult);
+			rollback();
+			return new ExitStatus("FAILED", "Unresolvable References!");
+		}
+	}
 
-    private FeatureReferenceCheckResult checkReferences( StepExecution stepExecution ) {
-        List<String> featureIds = (List<String>) stepExecution.getExecutionContext().get( FeatureReferencesParser.FEATURE_IDS );
-        List<String> referenceIds = (List<String>) stepExecution.getExecutionContext().get( FeatureReferencesParser.REFERENCE_IDS );
-        FeatureReferenceChecker featureReferenceChecker = new FeatureReferenceChecker();
-        return featureReferenceChecker.checkReferences( featureIds, referenceIds );
-    }
+	private FeatureReferenceCheckResult checkReferences(StepExecution stepExecution) {
+		List<String> featureIds = (List<String>) stepExecution.getExecutionContext()
+			.get(FeatureReferencesParser.FEATURE_IDS);
+		List<String> referenceIds = (List<String>) stepExecution.getExecutionContext()
+			.get(FeatureReferencesParser.REFERENCE_IDS);
+		if (featureIds == null || referenceIds == null) {
+			LOG.warn("The reference check is skipped during this operation");
+			return new FeatureReferenceCheckResult(emptySet());
+		}
+		FeatureReferenceChecker featureReferenceChecker = new FeatureReferenceChecker();
+		return featureReferenceChecker.checkReferences(featureIds, referenceIds);
+	}
 
-    private ExitStatus commitOrRollback( StepExecution stepExecution, SQLFeatureStoreTransaction transaction ) {
-        try {
-            ExitStatus exitStatus = stepExecution.getExitStatus();
-            if ( COMPLETED.equals( exitStatus ) ) {
-                LOG.info( "Commit transaction." );
-                transaction.commit();
-            } else {
-                LOG.info( "Rollback transaction." );
-                transaction.rollback();
-            }
-            return exitStatus;
-        } catch ( FeatureStoreException e ) {
-            summary.setCommitFailed( e.getMessage() );
-            LOG.error( "Could not commit/rollback the transaction.", e );
-            return FAILED;
-        }
-    }
+	private ExitStatus commitOrRollback(StepExecution stepExecution, SQLFeatureStoreTransaction transaction) {
+		try {
+			ExitStatus exitStatus = stepExecution.getExitStatus();
+			if (COMPLETED.equals(exitStatus)) {
+				LOG.info("Commit transaction.");
+				transaction.commit();
+			}
+			else {
+				LOG.info("Rollback transaction.");
+				transaction.rollback();
+			}
+			return exitStatus;
+		}
+		catch (FeatureStoreException e) {
+			summary.setCommitFailed(e.getMessage());
+			LOG.error("Could not commit/rollback the transaction.", e);
+			return FAILED;
+		}
+	}
 
-    private void rollback() {
-        try {
-            LOG.info( "Rollback transaction." );
-            featureStoreTransaction.rollback();
-        } catch ( FeatureStoreException e ) {
-            LOG.error( "Could not rollback the transaction.", e );
-        }
-    }
+	private void rollback() {
+		try {
+			LOG.info("Rollback transaction.");
+			featureStoreTransaction.rollback();
+		}
+		catch (FeatureStoreException e) {
+			LOG.error("Could not rollback the transaction.", e);
+		}
+	}
 
-    private void logResult( FeatureReferenceCheckResult featureReferenceCheckResult ) {
-        Set<String> unresolvableReferences = featureReferenceCheckResult.getUnresolvableReferences();
-        LOG.info( "Unresolvable references detected:" );
-        for ( String unresolvableReference : unresolvableReferences )
-            LOG.info( "   - {}", unresolvableReference );
-    }
+	private void logResult(FeatureReferenceCheckResult featureReferenceCheckResult) {
+		Set<String> unresolvableReferences = featureReferenceCheckResult.getUnresolvableReferences();
+		LOG.info("Unresolvable references detected:");
+		for (String unresolvableReference : unresolvableReferences)
+			LOG.info("   - {}", unresolvableReference);
+	}
 
 }

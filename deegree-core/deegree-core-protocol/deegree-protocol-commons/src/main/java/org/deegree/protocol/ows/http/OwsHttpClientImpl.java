@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -59,161 +58,166 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Default implementation of {@link OwsHttpClient}.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class OwsHttpClientImpl implements OwsHttpClient {
 
-    private static final Logger LOG = LoggerFactory.getLogger( OwsHttpClientImpl.class );
+	private static final Logger LOG = LoggerFactory.getLogger(OwsHttpClientImpl.class);
 
-    private static final int DEFAULT_CONNECTION_TIMEOUT_MILLIS = 5 * 1000;
+	private static final int DEFAULT_CONNECTION_TIMEOUT_MILLIS = 5 * 1000;
 
-    private static final int DEFAULT_READ_TIMEOUT_MILLIS = 30 * 1000;
+	private static final int DEFAULT_READ_TIMEOUT_MILLIS = 30 * 1000;
 
-    private final String user;
+	private final String user;
 
-    private final String pass;
+	private final String pass;
 
-    private final int connectionTimeoutMillis;
+	private final int connectionTimeoutMillis;
 
-    private final int readTimeoutMillis;
+	private final int readTimeoutMillis;
 
-    /**
-     * Creates a new {@link OwsHttpClientImpl} instance.
-     * 
-     * @param connectionTimeoutMillis
-     *            timeout for establishing the connection, not applied if zero or negative
-     * @param readTimeoutMillis
-     *            timeout for reading from the connection, not applied if zero or negative
-     * @param httpBasicUser
-     *            user name for http basic authentication, can be <code>null</code> (no authentication)
-     * @param httpBasicPass
-     *            password for http basic authentication, can be <code>null</code> (no authentication)
-     */
-    public OwsHttpClientImpl( int connectionTimeoutMillis, int readTimeoutMillis, String httpBasicUser,
-                              String httpBasicPass ) {
-        if ( connectionTimeoutMillis > 0 ) {
-            this.connectionTimeoutMillis = connectionTimeoutMillis;
-        } else {
-            this.connectionTimeoutMillis = DEFAULT_CONNECTION_TIMEOUT_MILLIS;
-        }
-        if ( readTimeoutMillis > 0 ) {
-            this.readTimeoutMillis = readTimeoutMillis;
-        } else {
-            this.readTimeoutMillis = DEFAULT_READ_TIMEOUT_MILLIS;
-        }
-        this.user = httpBasicUser;
-        this.pass = httpBasicPass;
-    }
+	/**
+	 * Creates a new {@link OwsHttpClientImpl} instance.
+	 * @param connectionTimeoutMillis timeout for establishing the connection, not applied
+	 * if zero or negative
+	 * @param readTimeoutMillis timeout for reading from the connection, not applied if
+	 * zero or negative
+	 * @param httpBasicUser user name for http basic authentication, can be
+	 * <code>null</code> (no authentication)
+	 * @param httpBasicPass password for http basic authentication, can be
+	 * <code>null</code> (no authentication)
+	 */
+	public OwsHttpClientImpl(int connectionTimeoutMillis, int readTimeoutMillis, String httpBasicUser,
+			String httpBasicPass) {
+		if (connectionTimeoutMillis > 0) {
+			this.connectionTimeoutMillis = connectionTimeoutMillis;
+		}
+		else {
+			this.connectionTimeoutMillis = DEFAULT_CONNECTION_TIMEOUT_MILLIS;
+		}
+		if (readTimeoutMillis > 0) {
+			this.readTimeoutMillis = readTimeoutMillis;
+		}
+		else {
+			this.readTimeoutMillis = DEFAULT_READ_TIMEOUT_MILLIS;
+		}
+		this.user = httpBasicUser;
+		this.pass = httpBasicPass;
+	}
 
-    /**
-     * Creates a new {@link OwsHttpClientImpl} instance without HTTP authentication and default timeouts.
-     */
-    public OwsHttpClientImpl() {
-        this( DEFAULT_CONNECTION_TIMEOUT_MILLIS, DEFAULT_READ_TIMEOUT_MILLIS, null, null );
-    }
+	/**
+	 * Creates a new {@link OwsHttpClientImpl} instance without HTTP authentication and
+	 * default timeouts.
+	 */
+	public OwsHttpClientImpl() {
+		this(DEFAULT_CONNECTION_TIMEOUT_MILLIS, DEFAULT_READ_TIMEOUT_MILLIS, null, null);
+	}
 
-    @Override
-    public OwsHttpResponse doGet( URL endPoint, Map<String, String> params, Map<String, String> headers )
-                            throws IOException {
+	@Override
+	public OwsHttpResponse doGet(URL endPoint, Map<String, String> params, Map<String, String> headers)
+			throws IOException {
 
-        OwsHttpResponseImpl response = null;
-        URI query = null;
-        try {
-            URL normalizedEndpointUrl = normalizeGetUrl( endPoint );
-            StringBuilder sb = new StringBuilder( normalizedEndpointUrl.toString() );
-            boolean first = true;
-            if ( params != null ) {
-                for ( Entry<String, String> param : params.entrySet() ) {
-                    if ( !first ) {
-                        sb.append( '&' );
-                    } else {
-                        first = false;
-                    }
-                    sb.append( URLEncoder.encode( param.getKey(), "UTF-8" ) );
-                    sb.append( '=' );
-                    sb.append( URLEncoder.encode( param.getValue(), "UTF-8" ) );
-                }
-            }
+		OwsHttpResponseImpl response = null;
+		URI query = null;
+		try {
+			URL normalizedEndpointUrl = normalizeGetUrl(endPoint);
+			StringBuilder sb = new StringBuilder(normalizedEndpointUrl.toString());
+			boolean first = true;
+			if (params != null) {
+				for (Entry<String, String> param : params.entrySet()) {
+					if (!first) {
+						sb.append('&');
+					}
+					else {
+						first = false;
+					}
+					sb.append(URLEncoder.encode(param.getKey(), "UTF-8"));
+					sb.append('=');
+					sb.append(URLEncoder.encode(param.getValue(), "UTF-8"));
+				}
+			}
 
-            query = new URI( sb.toString() );
-            HttpGet httpGet = new HttpGet( query );
-            DefaultHttpClient httpClient = getInitializedHttpClient( endPoint );
-            LOG.debug( "Performing GET request: " + query );
-            HttpResponse httpResponse = httpClient.execute( httpGet );
-            response = new OwsHttpResponseImpl( httpResponse, httpClient.getConnectionManager(), sb.toString() );
-        } catch ( Throwable e ) {
-            e.printStackTrace();
-            String msg = "Error performing GET request on '" + query + "': " + e.getMessage();
-            throw new IOException( msg );
-        }
-        return response;
-    }
+			query = new URI(sb.toString());
+			HttpGet httpGet = new HttpGet(query);
+			DefaultHttpClient httpClient = getInitializedHttpClient(endPoint);
+			LOG.debug("Performing GET request: " + query);
+			HttpResponse httpResponse = httpClient.execute(httpGet);
+			response = new OwsHttpResponseImpl(httpResponse, httpClient.getConnectionManager(), sb.toString());
+		}
+		catch (Throwable e) {
+			e.printStackTrace();
+			String msg = "Error performing GET request on '" + query + "': " + e.getMessage();
+			throw new IOException(msg);
+		}
+		return response;
+	}
 
-    @Override
-    public OwsHttpResponse doPost( URL endPoint, String contentType, StreamBufferStore body, Map<String, String> headers )
-                            throws IOException {
+	@Override
+	public OwsHttpResponse doPost(URL endPoint, String contentType, StreamBufferStore body, Map<String, String> headers)
+			throws IOException {
 
-        OwsHttpResponse response = null;
-        try {
-            HttpPost httpPost = new HttpPost( endPoint.toURI() );
-            DefaultHttpClient httpClient = getInitializedHttpClient( endPoint );
-            LOG.debug( "Performing POST request on " + endPoint );
-            LOG.debug( "post size: " + body.size() );
-            InputStreamEntity entity = new InputStreamEntity( body.getInputStream(), (long) body.size() );
-            entity.setContentType( contentType );
-            httpPost.setEntity( entity );
-            HttpResponse httpResponse = httpClient.execute( httpPost );
-            response = new OwsHttpResponseImpl( httpResponse, httpClient.getConnectionManager(), endPoint.toString() );
-        } catch ( Throwable e ) {
-            String msg = "Error performing POST request on '" + endPoint + "': " + e.getMessage();
-            throw new IOException( msg );
-        }
-        return response;
-    }
+		OwsHttpResponse response = null;
+		try {
+			HttpPost httpPost = new HttpPost(endPoint.toURI());
+			DefaultHttpClient httpClient = getInitializedHttpClient(endPoint);
+			LOG.debug("Performing POST request on " + endPoint);
+			LOG.debug("post size: " + body.size());
+			InputStreamEntity entity = new InputStreamEntity(body.getInputStream(), (long) body.size());
+			entity.setContentType(contentType);
+			httpPost.setEntity(entity);
+			HttpResponse httpResponse = httpClient.execute(httpPost);
+			response = new OwsHttpResponseImpl(httpResponse, httpClient.getConnectionManager(), endPoint.toString());
+		}
+		catch (Throwable e) {
+			String msg = "Error performing POST request on '" + endPoint + "': " + e.getMessage();
+			throw new IOException(msg);
+		}
+		return response;
+	}
 
-    private DefaultHttpClient getInitializedHttpClient( URL url ) {
-        DefaultHttpClient client = new DefaultHttpClient();
-        setTimeouts( client );
-        setProxies( url, client );
-        setCredentials( url, client );
-        return client;
-    }
+	private DefaultHttpClient getInitializedHttpClient(URL url) {
+		DefaultHttpClient client = new DefaultHttpClient();
+		setTimeouts(client);
+		setProxies(url, client);
+		setCredentials(url, client);
+		return client;
+	}
 
-    private void setProxies( URL url, DefaultHttpClient client ) {
-        String host = url.getHost();
-        String protocol = url.getProtocol().toLowerCase();
-        handleProxies( protocol, client, host );
-    }
+	private void setProxies(URL url, DefaultHttpClient client) {
+		String host = url.getHost();
+		String protocol = url.getProtocol().toLowerCase();
+		handleProxies(protocol, client, host);
+	}
 
-    private void setTimeouts( DefaultHttpClient client ) {
-        HttpConnectionParams.setConnectionTimeout( client.getParams(), connectionTimeoutMillis );
-        HttpConnectionParams.setSoTimeout( client.getParams(), readTimeoutMillis );
-    }
+	private void setTimeouts(DefaultHttpClient client) {
+		HttpConnectionParams.setConnectionTimeout(client.getParams(), connectionTimeoutMillis);
+		HttpConnectionParams.setSoTimeout(client.getParams(), readTimeoutMillis);
+	}
 
-    private void setCredentials( URL url, DefaultHttpClient client ) {
-        if ( user != null ) {
-            client.getCredentialsProvider().setCredentials( new AuthScope( url.getHost(), url.getPort() ),
-                                                            new UsernamePasswordCredentials( user, pass ) );
-        }
-    }
+	private void setCredentials(URL url, DefaultHttpClient client) {
+		if (user != null) {
+			client.getCredentialsProvider()
+				.setCredentials(new AuthScope(url.getHost(), url.getPort()),
+						new UsernamePasswordCredentials(user, pass));
+		}
+	}
 
-    protected URL normalizeGetUrl( URL url )
-                            throws MalformedURLException {
-        // TODO: this method does not work. url.getQuery is the query part not the base url
-        String s = url.toString();
-        if ( url.getQuery() != null ) {
-            if ( !s.endsWith( "&" ) && ( !s.endsWith( "?" ) && s.length() == 1 ) ) {
-                s += "&";
-            }
-        } else {
-            if ( !s.endsWith( "?" ) ) {
-                s += "?";
-            }
-        }
-        return new URL( s );
-    }
+	protected URL normalizeGetUrl(URL url) throws MalformedURLException {
+		// TODO: this method does not work. url.getQuery is the query part not the base
+		// url
+		String s = url.toString();
+		if (url.getQuery() != null) {
+			if (!s.endsWith("&") && (!s.endsWith("?") && s.length() == 1)) {
+				s += "&";
+			}
+		}
+		else {
+			if (!s.endsWith("?")) {
+				s += "?";
+			}
+		}
+		return new URL(s);
+	}
+
 }

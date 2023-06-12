@@ -53,39 +53,38 @@ import org.deegree.time.primitive.TimeInstant;
 
 public class GmlTimeInstantReader extends AbstractGmlTimeGeometricPrimitiveReader {
 
-    public GmlTimeInstantReader( final GMLStreamReader gmlStreamReader ) {
-        super( gmlStreamReader );
-    }
+	public GmlTimeInstantReader(final GMLStreamReader gmlStreamReader) {
+		super(gmlStreamReader);
+	}
 
-    /**
-     * Consumes the given <code>gml:TimeInstant</code> element event.
-     * <ul>
-     * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event
-     * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event</li>
-     * </ul>
-     *
-     * @param xmlStream
-     *            must not be <code>null</code>
-     * @return corresponding {@link TimeInstant} object, never <code>null</code>
-     * @throws XMLStreamException
-     */
-    public TimeInstant read( final XMLStreamReader xmlStream )
-                            throws XMLStreamException {
-        final String gmlId = parseGmlId( xmlStream );
-        // <attribute name="frame" type="anyURI" default="#ISO-8601"/>
-        final String frame = getAttributeValue( xmlStream, FRAME );
-        final List<Property> props = readGmlStandardProperties( xmlStream );
-        // <element name="relatedTime" type="gml:RelatedTimeType" minOccurs="0" maxOccurs="unbounded"/>
-        final List<RelatedTime> relatedTimes = readRelatedTimes( xmlStream );
-        // <element name="timePosition" type="gml:TimePositionType">
-        final TimePosition timePosition = readRequiredTimePosition( xmlStream );
-        nextElement( xmlStream );
-        return new GenericTimeInstant( gmlId, props, relatedTimes, frame, timePosition );
-    }
+	/**
+	 * Consumes the given <code>gml:TimeInstant</code> element event.
+	 * <ul>
+	 * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event
+	 * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code>
+	 * event</li>
+	 * </ul>
+	 * @param xmlStream must not be <code>null</code>
+	 * @return corresponding {@link TimeInstant} object, never <code>null</code>
+	 * @throws XMLStreamException
+	 */
+	public TimeInstant read(final XMLStreamReader xmlStream) throws XMLStreamException {
+		final String gmlId = parseGmlId(xmlStream);
+		// <attribute name="frame" type="anyURI" default="#ISO-8601"/>
+		final String frame = getAttributeValue(xmlStream, FRAME);
+		final List<Property> props = readGmlStandardProperties(xmlStream);
+		// <element name="relatedTime" type="gml:RelatedTimeType" minOccurs="0"
+		// maxOccurs="unbounded"/>
+		final List<RelatedTime> relatedTimes = readRelatedTimes(xmlStream);
+		// <element name="timePosition" type="gml:TimePositionType">
+		final TimePosition timePosition = readRequiredTimePosition(xmlStream);
+		nextElement(xmlStream);
+		return new GenericTimeInstant(gmlId, props, relatedTimes, frame, timePosition);
+	}
 
-    private TimePosition readRequiredTimePosition( XMLStreamReader xmlStream )
-                            throws XMLStreamException {
-        requireStartElement( xmlStream, new QName( gmlNs, "timePosition" ) );
-        return new GmlTimePositionTypeReader().read( xmlStream );
-    }
+	private TimePosition readRequiredTimePosition(XMLStreamReader xmlStream) throws XMLStreamException {
+		requireStartElement(xmlStream, new QName(gmlNs, "timePosition"));
+		return new GmlTimePositionTypeReader().read(xmlStream);
+	}
+
 }

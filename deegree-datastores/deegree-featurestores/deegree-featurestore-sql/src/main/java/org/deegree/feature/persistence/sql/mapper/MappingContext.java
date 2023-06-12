@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -38,42 +37,41 @@ package org.deegree.feature.persistence.sql.mapper;
 import org.deegree.feature.types.FeatureType;
 
 /**
- * Represents a specific position during the mapping of a {@link FeatureType} to a relational model (tables, columns).
- * 
+ * Represents a specific position during the mapping of a {@link FeatureType} to a
+ * relational model (tables, columns).
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
-public class MappingContext {    
-    
-    private final String table;
-    
-    private final String idColumn;
+public class MappingContext {
 
-    private final String column;
+	private final String table;
 
-    MappingContext( String table, String idColumn ) {
-        this.table = table;
-        this.column = "";
-        this.idColumn = idColumn;
-    }
+	private final String idColumn;
 
-    MappingContext( String table, String idColumn, String column ) {
-        this.table = table;
-        this.column = column;
-        this.idColumn = idColumn;
-    }
+	private final String column;
 
-    public String getTable() {
-        return table;
-    }
+	MappingContext(String table, String idColumn) {
+		this.table = table;
+		this.column = "";
+		this.idColumn = idColumn;
+	}
 
-    public String getColumn() {
-        return column;
-    }
-    
-    public String getIdColumn () {
-        return idColumn;
-    }
+	MappingContext(String table, String idColumn, String column) {
+		this.table = table;
+		this.column = column;
+		this.idColumn = idColumn;
+	}
+
+	public String getTable() {
+		return table;
+	}
+
+	public String getColumn() {
+		return column;
+	}
+
+	public String getIdColumn() {
+		return idColumn;
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-metadata/src/main/java/org/deegree/metadata/iso/persistence/ISOMetadataStoreProvider.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -54,113 +53,107 @@ import org.deegree.workspace.ResourceMetadata;
 
 /**
  * {@link MetadataStore} implementation for accessing ISO 19115 records kept in memory.
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: 30992 $, $Date: 2011-05-31 16:09:20 +0200 (Di, 31. Mai 2011) $
  */
 public class ISOMemoryMetadataStore implements MetadataStore<ISORecord> {
 
-    private final StoredISORecords storedIsoRecords;
+	private final StoredISORecords storedIsoRecords;
 
-    private MetadataStoreTransaction activeTransaction = null;
+	private MetadataStoreTransaction activeTransaction = null;
 
-    private final File insertDirectory;
+	private final File insertDirectory;
 
-    private ResourceMetadata<MetadataStore<? extends MetadataRecord>> metadata;
+	private ResourceMetadata<MetadataStore<? extends MetadataRecord>> metadata;
 
-    /**
-     * 
-     * @param recordDirectories
-     *            never <code>null</code> but may be empty when no directories exists
-     * @param transactionalDirectory
-     *            directory to store inserted records, can be <code>null</code> if transactions are not allowed
-     * @throws IOException
-     */
-    public ISOMemoryMetadataStore( List<File> recordDirectories, File transactionalDirectory,
-                                   ResourceMetadata<MetadataStore<? extends MetadataRecord>> metadata )
-                            throws IOException {
-        this.insertDirectory = transactionalDirectory;
-        this.metadata = metadata;
-        storedIsoRecords = new StoredISORecords( recordDirectories );
-    }
+	/**
+	 * @param recordDirectories never <code>null</code> but may be empty when no
+	 * directories exists
+	 * @param transactionalDirectory directory to store inserted records, can be
+	 * <code>null</code> if transactions are not allowed
+	 * @throws IOException
+	 */
+	public ISOMemoryMetadataStore(List<File> recordDirectories, File transactionalDirectory,
+			ResourceMetadata<MetadataStore<? extends MetadataRecord>> metadata) throws IOException {
+		this.insertDirectory = transactionalDirectory;
+		this.metadata = metadata;
+		storedIsoRecords = new StoredISORecords(recordDirectories);
+	}
 
-    @Override
-    public void destroy() {
-        // nothing to do
-    }
+	@Override
+	public void destroy() {
+		// nothing to do
+	}
 
-    @Override
-    public void init() {
-        // nothing to do
-    }
+	@Override
+	public void init() {
+		// nothing to do
+	}
 
-    @Override
-    public MetadataResultSet<ISORecord> getRecords( MetadataQuery query )
-                            throws MetadataStoreException {
-        try {
-            return storedIsoRecords.getRecords( query );
-        } catch ( FilterEvaluationException e ) {
-            throw new MetadataStoreException( e );
-        }
-    }
+	@Override
+	public MetadataResultSet<ISORecord> getRecords(MetadataQuery query) throws MetadataStoreException {
+		try {
+			return storedIsoRecords.getRecords(query);
+		}
+		catch (FilterEvaluationException e) {
+			throw new MetadataStoreException(e);
+		}
+	}
 
-    @Override
-    public int getRecordCount( MetadataQuery query )
-                            throws MetadataStoreException {
-        try {
-            List<ISORecord> records = storedIsoRecords.getRecords( query.getFilter() );
-            return records.size();
-        } catch ( FilterEvaluationException e ) {
-            throw new MetadataStoreException( e );
-        }
-    }
+	@Override
+	public int getRecordCount(MetadataQuery query) throws MetadataStoreException {
+		try {
+			List<ISORecord> records = storedIsoRecords.getRecords(query.getFilter());
+			return records.size();
+		}
+		catch (FilterEvaluationException e) {
+			throw new MetadataStoreException(e);
+		}
+	}
 
-    @Override
-    public MetadataResultSet<ISORecord> getRecordById( List<String> idList, QName[] recordTypeNames )
-                            throws MetadataStoreException {
-        return storedIsoRecords.getRecordById( idList );
-    }
+	@Override
+	public MetadataResultSet<ISORecord> getRecordById(List<String> idList, QName[] recordTypeNames)
+			throws MetadataStoreException {
+		return storedIsoRecords.getRecordById(idList);
+	}
 
-    @Override
-    public MetadataStoreTransaction acquireTransaction()
-                            throws MetadataStoreException {
-        // only one transaction per time is accepted!
-        while ( isTransactionActive() ) {
-            // wait until active transaction is released!
-        }
-        activeTransaction = new ISOMemoryMetadataStoreTransaction( this, storedIsoRecords, insertDirectory );
-        return activeTransaction;
-    }
+	@Override
+	public MetadataStoreTransaction acquireTransaction() throws MetadataStoreException {
+		// only one transaction per time is accepted!
+		while (isTransactionActive()) {
+			// wait until active transaction is released!
+		}
+		activeTransaction = new ISOMemoryMetadataStoreTransaction(this, storedIsoRecords, insertDirectory);
+		return activeTransaction;
+	}
 
-    private boolean isTransactionActive() {
-        return activeTransaction != null;
-    }
+	private boolean isTransactionActive() {
+		return activeTransaction != null;
+	}
 
-    /**
-     * @returns <code>null</code>, cause no JDBC connection is required
-     */
-    @Override
-    public String getConnId() {
-        return null;
-    }
+	/**
+	 * @returns <code>null</code>, cause no JDBC connection is required
+	 */
+	@Override
+	public String getConnId() {
+		return null;
+	}
 
-    @Override
-    public String getType() {
-        return "iso";
-    }
+	@Override
+	public String getType() {
+		return "iso";
+	}
 
-    /**
-     * Release the active transaction if existing.
-     */
-    public void releaseTransaction() {
-        activeTransaction = null;
-    }
+	/**
+	 * Release the active transaction if existing.
+	 */
+	public void releaseTransaction() {
+		activeTransaction = null;
+	}
 
-    @Override
-    public ResourceMetadata<? extends Resource> getMetadata() {
-        return metadata;
-    }
+	@Override
+	public ResourceMetadata<? extends Resource> getMetadata() {
+		return metadata;
+	}
 
 }

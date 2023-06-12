@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -57,103 +56,100 @@ import org.deegree.style.styling.TextStyling;
 import org.slf4j.Logger;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class Legends {
 
-    private static final Logger LOG = getLogger( Legends.class );
+	private static final Logger LOG = getLogger(Legends.class);
 
-    private static final GeometryFactory geofac = new GeometryFactory();
+	private static final GeometryFactory geofac = new GeometryFactory();
 
-    private LegendOptions opts;
+	private LegendOptions opts;
 
-    private LegendBuilder builder;
+	private LegendBuilder builder;
 
-    /**
-     * New legend renderer with default legend options
-     */
-    public Legends() {
-        opts = new LegendOptions();
-        builder = new LegendBuilder( opts );
-    }
+	/**
+	 * New legend renderer with default legend options
+	 */
+	public Legends() {
+		opts = new LegendOptions();
+		builder = new LegendBuilder(opts);
+	}
 
-    /**
-     * @param opts
-     */
-    public Legends( LegendOptions opts ) {
-        this.opts = opts;
-        builder = new LegendBuilder( opts );
-    }
+	/**
+	 * @param opts
+	 */
+	public Legends(LegendOptions opts) {
+		this.opts = opts;
+		builder = new LegendBuilder(opts);
+	}
 
-    public LegendOptions getLegendOptions() {
-        return opts;
-    }
+	public LegendOptions getLegendOptions() {
+		return opts;
+	}
 
-    public static void paintLegendText( int origin, LegendOptions opts, String text, TextRenderer textRenderer ) {
-        TextStyling textStyling = new TextStyling();
-        textStyling.font = new org.deegree.style.styling.components.Font();
-        textStyling.font.fontFamily.add( 0, "Arial" );
-        textStyling.font.fontSize = opts.textSize;
-        textStyling.anchorPointX = 0;
-        textStyling.anchorPointY = 0.5;
-        textStyling.uom = Metre;
+	public static void paintLegendText(int origin, LegendOptions opts, String text, TextRenderer textRenderer) {
+		TextStyling textStyling = new TextStyling();
+		textStyling.font = new org.deegree.style.styling.components.Font();
+		textStyling.font.fontFamily.add(0, "Arial");
+		textStyling.font.fontSize = opts.textSize;
+		textStyling.anchorPointX = 0;
+		textStyling.anchorPointY = 0.5;
+		textStyling.uom = Metre;
 
-        if ( text != null && text.length() > 0 ) {
-            textRenderer.render( textStyling, text, geofac.createPoint( null, opts.baseWidth + opts.spacing * 2,
-                                                                        origin - opts.baseHeight / 2 - opts.spacing,
-                                                                        CRSManager.getCRSRef( "CRS:1" ) ) );
-        }
-    }
+		if (text != null && text.length() > 0) {
+			textRenderer.render(textStyling, text, geofac.createPoint(null, opts.baseWidth + opts.spacing * 2,
+					origin - opts.baseHeight / 2 - opts.spacing, CRSManager.getCRSRef("CRS:1")));
+		}
+	}
 
-    public List<LegendItem> prepareLegend( Style style, Graphics2D g, int width, int height ) {
-        return builder.prepareLegend( style, g, width, height );
-    }
+	public List<LegendItem> prepareLegend(Style style, Graphics2D g, int width, int height) {
+		return builder.prepareLegend(style, g, width, height);
+	}
 
-    /**
-     * @param style
-     * @param width
-     * @param height
-     * @param g
-     */
-    public void paintLegend( Style style, int width, int height, Graphics2D g ) {
-        URL url = style.getLegendURL();
-        File file = style.getLegendFile();
-        if ( url == null && file != null ) {
-            try {
-                url = file.toURI().toURL();
-            } catch ( MalformedURLException e ) {
-                // nothing to do
-            }
-        }
-        if ( url != null ) {
-            try {
-                BufferedImage legend = ImageIO.read( url );
-                g.drawImage( legend, 0, 0, width, height, null );
-                g.dispose();
-                return;
-            } catch ( IOException e ) {
-                LOG.warn( "Legend file {} could not be read, using dynamic legend: {}", file, e.getLocalizedMessage() );
-                LOG.trace( "Stack trace:", e );
-            }
-        }
-        List<LegendItem> items = prepareLegend( style, g, width, height );
-        int rowHeight = 2 * opts.spacing + opts.baseHeight;
-        int pos = getLegendSize( style ).second;
+	/**
+	 * @param style
+	 * @param width
+	 * @param height
+	 * @param g
+	 */
+	public void paintLegend(Style style, int width, int height, Graphics2D g) {
+		URL url = style.getLegendURL();
+		File file = style.getLegendFile();
+		if (url == null && file != null) {
+			try {
+				url = file.toURI().toURL();
+			}
+			catch (MalformedURLException e) {
+				// nothing to do
+			}
+		}
+		if (url != null) {
+			try {
+				BufferedImage legend = ImageIO.read(url);
+				g.drawImage(legend, 0, 0, width, height, null);
+				g.dispose();
+				return;
+			}
+			catch (IOException e) {
+				LOG.warn("Legend file {} could not be read, using dynamic legend: {}", file, e.getLocalizedMessage());
+				LOG.trace("Stack trace:", e);
+			}
+		}
+		List<LegendItem> items = prepareLegend(style, g, width, height);
+		int rowHeight = 2 * opts.spacing + opts.baseHeight;
+		int pos = getLegendSize(style).second;
 
-        for ( LegendItem item : items ) {
-            item.paint( pos, opts );
-            pos -= rowHeight * item.getHeight();
-        }
+		for (LegendItem item : items) {
+			item.paint(pos, opts);
+			pos -= rowHeight * item.getHeight();
+		}
 
-        g.dispose();
-    }
+		g.dispose();
+	}
 
-    public Pair<Integer, Integer> getLegendSize( Style style ) {
-        return builder.getLegendSize( style );
-    }
+	public Pair<Integer, Integer> getLegendSize(Style style) {
+		return builder.getLegendSize(style);
+	}
 
 }

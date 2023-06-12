@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -44,32 +43,28 @@ import org.deegree.protocol.wfs.AbstractWFSRequestKVPAdapter;
 import org.deegree.protocol.wfs.transaction.Transaction;
 
 /**
- * Adapter between KVP encoded <code>Transaction</code> requests and {@link Transaction} objects.
- * 
+ * Adapter between KVP encoded <code>Transaction</code> requests and {@link Transaction}
+ * objects.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class TransactionKVPAdapter extends AbstractWFSRequestKVPAdapter {
 
-    /**
-     * Parses a normalized KVP-map as a WFS {@link Transaction} request.
-     * <p>
-     * Supported versions:
-     * <ul>
-     * </ul>
-     * 
-     * @param kvpParams
-     *            normalized KVP-map; keys must be uppercase, each key only has one associated value
-     * @return parsed {@link Transaction} request
-     * @throws MissingParameterException
-     *             if the request version is unsupported
-     * @throws InvalidParameterValueException
-     *             if a parameter contains a syntax error
-     */
-    public static Transaction parse( Map<String, String> kvpParams )
-                            throws MissingParameterException, InvalidParameterValueException {
-        throw new UnsupportedOperationException();
-    }
+	/**
+	 * Parses a normalized KVP-map as a WFS {@link Transaction} request.
+	 * <p>
+	 * Supported versions:
+	 * <ul>
+	 * </ul>
+	 * @param kvpParams normalized KVP-map; keys must be uppercase, each key only has one
+	 * associated value
+	 * @return parsed {@link Transaction} request
+	 * @throws MissingParameterException if the request version is unsupported
+	 * @throws InvalidParameterValueException if a parameter contains a syntax error
+	 */
+	public static Transaction parse(Map<String, String> kvpParams)
+			throws MissingParameterException, InvalidParameterValueException {
+		throw new UnsupportedOperationException();
+	}
+
 }

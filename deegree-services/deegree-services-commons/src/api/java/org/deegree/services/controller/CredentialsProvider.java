@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -49,9 +48,7 @@ import org.deegree.services.authentication.SecurityException;
  * Provides the methods used for the authorization procedure.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
  */
 public interface CredentialsProvider {
 

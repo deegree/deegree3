@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -62,70 +61,70 @@ import org.slf4j.Logger;
 
 /**
  * A layer implementation based on a list of tile data sets.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  */
 
 public class TileLayer extends AbstractLayer {
 
-    private static final Logger LOG = getLogger( TileLayer.class );
+	private static final Logger LOG = getLogger(TileLayer.class);
 
-    // maps tile matrix set ids to tile data sets
-    private final Map<String, TileDataSet> tileDataSets = new LinkedHashMap<String, TileDataSet>();
+	// maps tile matrix set ids to tile data sets
+	private final Map<String, TileDataSet> tileDataSets = new LinkedHashMap<String, TileDataSet>();
 
-    // maps crs to tile matrix set ids
-    private final Map<ICRS, String> coordinateSystems = new LinkedHashMap<ICRS, String>();
+	// maps crs to tile matrix set ids
+	private final Map<ICRS, String> coordinateSystems = new LinkedHashMap<ICRS, String>();
 
-    public TileLayer( LayerMetadata md, List<TileDataSet> datasets ) {
-        super( md );
-        for ( TileDataSet tds : datasets ) {
-            coordinateSystems.put( tds.getTileMatrixSet().getSpatialMetadata().getCoordinateSystems().get( 0 ),
-                                   tds.getTileMatrixSet().getIdentifier() );
-            tileDataSets.put( tds.getTileMatrixSet().getIdentifier(), tds );
-        }
-    }
+	public TileLayer(LayerMetadata md, List<TileDataSet> datasets) {
+		super(md);
+		for (TileDataSet tds : datasets) {
+			coordinateSystems.put(tds.getTileMatrixSet().getSpatialMetadata().getCoordinateSystems().get(0),
+					tds.getTileMatrixSet().getIdentifier());
+			tileDataSets.put(tds.getTileMatrixSet().getIdentifier(), tds);
+		}
+	}
 
-    @Override
-    public TileLayerData mapQuery( LayerQuery query, List<String> headers )
-                            throws OWSException {
-        Envelope env = query.getEnvelope();
-        ICRS crs = env.getCoordinateSystem();
+	@Override
+	public TileLayerData mapQuery(LayerQuery query, List<String> headers) throws OWSException {
+		Envelope env = query.getEnvelope();
+		ICRS crs = env.getCoordinateSystem();
 
-        String tds = coordinateSystems.get( crs );
-        if ( tds == null ) {
-            String msg = "Tile layer " + getMetadata().getName() + " does not offer the coordinate system "
-                                    + crs.getAlias();
-            LOG.debug( msg );
-            throw new OWSException( msg, OWSException.INVALID_CRS );
-        }
-        TileDataSet data = tileDataSets.get( tds );
+		String tds = coordinateSystems.get(crs);
+		if (tds == null) {
+			String msg = "Tile layer " + getMetadata().getName() + " does not offer the coordinate system "
+					+ crs.getAlias();
+			LOG.debug(msg);
+			throw new OWSException(msg, OWSException.INVALID_CRS);
+		}
+		TileDataSet data = tileDataSets.get(tds);
 
-        Iterator<Tile> tiles = data.getTiles( env, query.getResolution() );
-        return new TileLayerData( tiles );
-    }
+		Iterator<Tile> tiles = data.getTiles(env, query.getResolution());
+		return new TileLayerData(tiles);
+	}
 
-    @Override
-    public LayerData infoQuery( LayerQuery query, List<String> headers )
-                            throws OWSException {
-        return null;
-    }
+	@Override
+	public LayerData infoQuery(LayerQuery query, List<String> headers) throws OWSException {
+		return null;
+	}
 
-    /**
-     * @return the tile data set this layer has been configured with wrt the tile matrix set
-     */
-    public TileDataSet getTileDataSet( String tileMatrixSet ) {
-        return tileDataSets.get( tileMatrixSet );
-    }
+	/**
+	 * @return the tile data set this layer has been configured with wrt the tile matrix
+	 * set
+	 */
+	public TileDataSet getTileDataSet(String tileMatrixSet) {
+		return tileDataSets.get(tileMatrixSet);
+	}
 
-    /**
-     * @return all tile data sets this layer has been configured with
-     */
-    public Collection<TileDataSet> getTileDataSets() {
-        return tileDataSets.values();
-    }
+	/**
+	 * @return all tile data sets this layer has been configured with
+	 */
+	public Collection<TileDataSet> getTileDataSets() {
+		return tileDataSets.values();
+	}
 
-    @Override
-    public boolean isStyleApplicable( StyleRef style ) {
-        return true;
-    }
+	@Override
+	public boolean isStyleApplicable(StyleRef style) {
+		return true;
+	}
+
 }

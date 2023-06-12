@@ -42,21 +42,21 @@ import org.deegree.workspace.standard.AbstractResourceMetadata;
 import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
- * {@link org.deegree.workspace.ResourceMetadata} providing the {@link FMEProcessProviderBuilder}.
+ * {@link org.deegree.workspace.ResourceMetadata} providing the
+ * {@link FMEProcessProviderBuilder}.
  *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz </a>
  */
 public class FMEProcessMetadata extends AbstractResourceMetadata<ProcessProvider> {
 
-    public FMEProcessMetadata( Workspace workspace,
-                               ResourceLocation<ProcessProvider> location,
-                               AbstractResourceProvider<ProcessProvider> provider ) {
-        super( workspace, location, provider );
-    }
+	public FMEProcessMetadata(Workspace workspace, ResourceLocation<ProcessProvider> location,
+			AbstractResourceProvider<ProcessProvider> provider) {
+		super(workspace, location, provider);
+	}
 
-    @Override
-    public ResourceBuilder<ProcessProvider> prepare() {
-        return new FMEProcessProviderBuilder( workspace, location, provider );
-    }
+	@Override
+	public ResourceBuilder<ProcessProvider> prepare() {
+		return new FMEProcessProviderBuilder(workspace, location, provider);
+	}
 
 }

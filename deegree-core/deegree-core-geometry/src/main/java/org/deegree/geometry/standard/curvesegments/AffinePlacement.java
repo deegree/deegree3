@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -39,80 +38,72 @@ import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
 
 /**
- * Defines a transformation from a constructive parameter space to the coordinate space of the coordinate reference
- * system being used.
+ * Defines a transformation from a constructive parameter space to the coordinate space of
+ * the coordinate reference system being used.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- *
- * @version $Revision$, $Date$
  */
 public class AffinePlacement {
 
-    private Point location;
+	private Point location;
 
-    private Points refDirections;
+	private Points refDirections;
 
-    private int inDimension;
+	private int inDimension;
 
-    private int outDimension;
+	private int outDimension;
 
-    /**
-     * Creates a new <code>AffinePlacement</code> from the given parameters.
-     *
-     * @param location
-     *            the target of the parameter space origin
-     * @param refDirections
-     *            the target directions for the coordinate basis vectors of the parameter space
-     * @param inDimension
-     *            the dimension of the constructive parameter space
-     * @param outDimension
-     *            the dimension of the coordinate space
-     */
-    public AffinePlacement( Point location, Points refDirections, int inDimension, int outDimension ) {
-        this.location = location;
-        this.refDirections = refDirections;
-        this.inDimension = inDimension;
-        this.outDimension = outDimension;
-    }
+	/**
+	 * Creates a new <code>AffinePlacement</code> from the given parameters.
+	 * @param location the target of the parameter space origin
+	 * @param refDirections the target directions for the coordinate basis vectors of the
+	 * parameter space
+	 * @param inDimension the dimension of the constructive parameter space
+	 * @param outDimension the dimension of the coordinate space
+	 */
+	public AffinePlacement(Point location, Points refDirections, int inDimension, int outDimension) {
+		this.location = location;
+		this.refDirections = refDirections;
+		this.inDimension = inDimension;
+		this.outDimension = outDimension;
+	}
 
-    /**
-     * Returns the target of the parameter space origin.
-     *
-     * @return the target of the parameter space origin
-     */
-    public Point getLocation() {
-        return location;
-    }
+	/**
+	 * Returns the target of the parameter space origin.
+	 * @return the target of the parameter space origin
+	 */
+	public Point getLocation() {
+		return location;
+	}
 
-    /**
-     * Returns the target directions for the coordinate basis vectors of the parameter space.
-     * <p>
-     * The number of directions is equal to the <code>inDimension</code>. The dimension of the directions is equal to
-     * the <code>outDimension</code>.
-     * </p>
-     *
-     * @return the target directions
-     */
-    public Points getRefDirections() {
-        return refDirections;
-    }
+	/**
+	 * Returns the target directions for the coordinate basis vectors of the parameter
+	 * space.
+	 * <p>
+	 * The number of directions is equal to the <code>inDimension</code>. The dimension of
+	 * the directions is equal to the <code>outDimension</code>.
+	 * </p>
+	 * @return the target directions
+	 */
+	public Points getRefDirections() {
+		return refDirections;
+	}
 
-    /**
-     * Returns the <code>inDimension</code>, i.e. the dimension of the constructive parameter space.
-     *
-     * @return the <code>inDimension</code>
-     */
-    public int getInDimension() {
-        return inDimension;
-    }
+	/**
+	 * Returns the <code>inDimension</code>, i.e. the dimension of the constructive
+	 * parameter space.
+	 * @return the <code>inDimension</code>
+	 */
+	public int getInDimension() {
+		return inDimension;
+	}
 
-    /**
-     * Returns the <code>outDimension</code>, i.e. the dimension of the coordinate space.
-     *
-     * @return the <code>outDimension</code>
-     */
-    public int getOutDimension() {
-        return outDimension;
-    }
+	/**
+	 * Returns the <code>outDimension</code>, i.e. the dimension of the coordinate space.
+	 * @return the <code>outDimension</code>
+	 */
+	public int getOutDimension() {
+		return outDimension;
+	}
+
 }

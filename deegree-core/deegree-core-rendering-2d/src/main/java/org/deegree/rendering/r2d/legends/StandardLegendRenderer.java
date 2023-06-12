@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -74,135 +73,134 @@ import org.deegree.style.styling.Styling;
 
 /**
  * Renders standard legend items.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 class StandardLegendRenderer {
 
-    private GeometryFactory geofac = new GeometryFactory();
+	private GeometryFactory geofac = new GeometryFactory();
 
-    private static final ICRS mapcs = CRSManager.getCRSRef( "CRS:1" );
+	private static final ICRS mapcs = CRSManager.getCRSRef("CRS:1");
 
-    private Class<?> ruleType;
+	private Class<?> ruleType;
 
-    private LinkedList<Styling> stylings;
+	private LinkedList<Styling> stylings;
 
-    private String text;
+	private String text;
 
-    private Renderer renderer;
+	private Renderer renderer;
 
-    private TextRenderer textRenderer;
+	private TextRenderer textRenderer;
 
-    private Continuation<LinkedList<Symbolizer<?>>> rule;
+	private Continuation<LinkedList<Symbolizer<?>>> rule;
 
-    StandardLegendRenderer( Class<?> ruleType, LinkedList<Styling> stylings, String text, Renderer renderer,
-                            TextRenderer textRenderer, Continuation<LinkedList<Symbolizer<?>>> rule ) {
-        this.ruleType = ruleType;
-        this.stylings = stylings;
-        this.text = text;
-        this.renderer = renderer;
-        this.textRenderer = textRenderer;
-        this.rule = rule;
-    }
+	StandardLegendRenderer(Class<?> ruleType, LinkedList<Styling> stylings, String text, Renderer renderer,
+			TextRenderer textRenderer, Continuation<LinkedList<Symbolizer<?>>> rule) {
+		this.ruleType = ruleType;
+		this.stylings = stylings;
+		this.text = text;
+		this.renderer = renderer;
+		this.textRenderer = textRenderer;
+		this.rule = rule;
+	}
 
-    void paint( int origin, LegendOptions opts ) {
-        Mapper<Boolean, Styling> pointStylingMapper = CollectionUtils.<Styling> getInstanceofMapper( PointStyling.class );
-        Mapper<Boolean, Styling> lineStylingMapper = CollectionUtils.<Styling> getInstanceofMapper( LineStyling.class );
+	void paint(int origin, LegendOptions opts) {
+		Mapper<Boolean, Styling> pointStylingMapper = CollectionUtils.<Styling>getInstanceofMapper(PointStyling.class);
+		Mapper<Boolean, Styling> lineStylingMapper = CollectionUtils.<Styling>getInstanceofMapper(LineStyling.class);
 
-        boolean isPoint = ruleType.equals( Point.class ) || reduce( true, map( stylings, pointStylingMapper ), AND );
-        boolean isLine = ruleType.equals( LineString.class ) || reduce( true, map( stylings, lineStylingMapper ), AND );
+		boolean isPoint = ruleType.equals(Point.class) || reduce(true, map(stylings, pointStylingMapper), AND);
+		boolean isLine = ruleType.equals(LineString.class) || reduce(true, map(stylings, lineStylingMapper), AND);
 
-        Geometry geom;
-        if ( isPoint ) {
-            geom = geofac.createPoint( null, opts.spacing + opts.baseWidth / 2, origin - opts.spacing - opts.baseHeight
-                                                                                / 2, mapcs );
-        } else if ( isLine ) {
-            geom = getLegendLine( opts.spacing, origin - opts.spacing, opts.baseWidth, opts.baseHeight );
-        } else {
-            // something better?
-            geom = getLegendRect( opts.spacing, origin - opts.spacing, opts.baseWidth, opts.baseHeight );
-        }
+		Geometry geom;
+		if (isPoint) {
+			geom = geofac.createPoint(null, opts.spacing + opts.baseWidth / 2,
+					origin - opts.spacing - opts.baseHeight / 2, mapcs);
+		}
+		else if (isLine) {
+			geom = getLegendLine(opts.spacing, origin - opts.spacing, opts.baseWidth, opts.baseHeight);
+		}
+		else {
+			// something better?
+			geom = getLegendRect(opts.spacing, origin - opts.spacing, opts.baseWidth, opts.baseHeight);
+		}
 
-        paintLegendText( origin, opts, text, textRenderer );
+		paintLegendText(origin, opts, text, textRenderer);
 
-        // normalize symbol sizes
-        double maxSize = 0;
-        if ( isPoint ) {
-            for ( Styling s : stylings ) {
-                if ( s instanceof PointStyling ) {
-                    maxSize = max( ( (PointStyling) s ).graphic.size, maxSize );
-                }
-            }
-        }
+		// normalize symbol sizes
+		double maxSize = 0;
+		if (isPoint) {
+			for (Styling s : stylings) {
+				if (s instanceof PointStyling) {
+					maxSize = max(((PointStyling) s).graphic.size, maxSize);
+				}
+			}
+		}
 
-        if ( rule == null ) {
-            for ( Styling s : stylings ) {
-                renderer.render( s, geom );
-            }
-            return;
-        }
+		if (rule == null) {
+			for (Styling s : stylings) {
+				renderer.render(s, geom);
+			}
+			return;
+		}
 
-        paintRule( isPoint, maxSize, opts, geom );
-    }
+		paintRule(isPoint, maxSize, opts, geom);
+	}
 
-    private void paintRule( boolean isPoint, double maxSize, LegendOptions opts, Geometry geom ) {
-        LinkedList<Symbolizer<?>> syms = new LinkedList<Symbolizer<?>>();
-        rule.evaluate( syms, null, null );
+	private void paintRule(boolean isPoint, double maxSize, LegendOptions opts, Geometry geom) {
+		LinkedList<Symbolizer<?>> syms = new LinkedList<Symbolizer<?>>();
+		rule.evaluate(syms, null, null);
 
-        Iterator<Styling> bases = stylings.iterator();
-        for ( Symbolizer<?> s : syms ) {
-            Styling styling = bases.next();
-            Pair<?, LinkedList<Geometry>> evald = s.evaluate( null, null );
-            if ( evald.second.isEmpty() ) {
-                // normalize relative point symbol sizes
-                if ( styling instanceof PointStyling && isPoint ) {
-                    PointStyling ps = ( (PointStyling) styling ).copy();
-                    ps.uom = Metre;
-                    ps.graphic.size = ps.graphic.size / maxSize * min( opts.baseWidth, opts.baseHeight );
-                    styling = ps;
-                }
-                renderer.render( styling, geom );
-            } else {
-                for ( Geometry gm : evald.second ) {
-                    if ( gm == null ) {
-                        gm = geom;
-                    }
-                    renderer.render( (Styling) evald.first, gm );
-                }
-            }
-        }
-    }
+		Iterator<Styling> bases = stylings.iterator();
+		for (Symbolizer<?> s : syms) {
+			Styling styling = bases.next();
+			Pair<?, LinkedList<Geometry>> evald = s.evaluate(null, null);
+			if (evald.second.isEmpty()) {
+				// normalize relative point symbol sizes
+				if (styling instanceof PointStyling && isPoint) {
+					PointStyling ps = ((PointStyling) styling).copy();
+					ps.uom = Metre;
+					ps.graphic.size = ps.graphic.size / maxSize * min(opts.baseWidth, opts.baseHeight);
+					styling = ps;
+				}
+				renderer.render(styling, geom);
+			}
+			else {
+				for (Geometry gm : evald.second) {
+					if (gm == null) {
+						gm = geom;
+					}
+					renderer.render((Styling) evald.first, gm);
+				}
+			}
+		}
+	}
 
-    private Polygon getLegendRect( int xpos, int ypos, int xsize, int ysize ) {
-        Point p1 = geofac.createPoint( null, xpos, ypos, mapcs );
-        Point p2 = geofac.createPoint( null, xpos + xsize, ypos, mapcs );
-        Point p3 = geofac.createPoint( null, xpos + xsize, ypos - ysize, mapcs );
-        Point p4 = geofac.createPoint( null, xpos, ypos - ysize, mapcs );
-        List<Point> ps = new ArrayList<Point>( 5 );
-        ps.add( p1 );
-        ps.add( p2 );
-        ps.add( p3 );
-        ps.add( p4 );
-        ps.add( p1 );
+	private Polygon getLegendRect(int xpos, int ypos, int xsize, int ysize) {
+		Point p1 = geofac.createPoint(null, xpos, ypos, mapcs);
+		Point p2 = geofac.createPoint(null, xpos + xsize, ypos, mapcs);
+		Point p3 = geofac.createPoint(null, xpos + xsize, ypos - ysize, mapcs);
+		Point p4 = geofac.createPoint(null, xpos, ypos - ysize, mapcs);
+		List<Point> ps = new ArrayList<Point>(5);
+		ps.add(p1);
+		ps.add(p2);
+		ps.add(p3);
+		ps.add(p4);
+		ps.add(p1);
 
-        return geofac.createPolygon( null, mapcs, geofac.createLinearRing( null, null, geofac.createPoints( ps ) ),
-                                     null );
-    }
+		return geofac.createPolygon(null, mapcs, geofac.createLinearRing(null, null, geofac.createPoints(ps)), null);
+	}
 
-    private LineString getLegendLine( int xpos, int ypos, int xsz, int ysz ) {
-        Point p1 = geofac.createPoint( null, xpos, ypos - ysz, mapcs );
-        Point p2 = geofac.createPoint( null, xpos + xsz / 3, ypos - ysz / 3, mapcs );
-        Point p3 = geofac.createPoint( null, xpos + xsz / 3 * 2, ypos - ysz / 3 * 2, mapcs );
-        Point p4 = geofac.createPoint( null, xpos + xsz, ypos, mapcs );
-        List<Point> ps = new ArrayList<Point>( 4 );
-        ps.add( p1 );
-        ps.add( p2 );
-        ps.add( p3 );
-        ps.add( p4 );
-        return geofac.createLineString( null, mapcs, geofac.createPoints( ps ) );
-    }
+	private LineString getLegendLine(int xpos, int ypos, int xsz, int ysz) {
+		Point p1 = geofac.createPoint(null, xpos, ypos - ysz, mapcs);
+		Point p2 = geofac.createPoint(null, xpos + xsz / 3, ypos - ysz / 3, mapcs);
+		Point p3 = geofac.createPoint(null, xpos + xsz / 3 * 2, ypos - ysz / 3 * 2, mapcs);
+		Point p4 = geofac.createPoint(null, xpos + xsz, ypos, mapcs);
+		List<Point> ps = new ArrayList<Point>(4);
+		ps.add(p1);
+		ps.add(p2);
+		ps.add(p3);
+		ps.add(p4);
+		return geofac.createLineString(null, mapcs, geofac.createPoints(ps));
+	}
 
 }

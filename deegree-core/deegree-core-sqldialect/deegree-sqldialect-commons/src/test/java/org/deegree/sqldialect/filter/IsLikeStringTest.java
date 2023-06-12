@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-base/src/test/java/org/deegree/filter/sql/IsLikeStringTest.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -42,88 +41,81 @@ import org.deegree.sqldialect.filter.islike.IsLikeString;
 import org.junit.Test;
 
 /**
- * Test class for SQL generation of some weird combinations of wildCard and escapeChar (in PropertyIsLike expressions).
+ * Test class for SQL generation of some weird combinations of wildCard and escapeChar (in
+ * PropertyIsLike expressions).
  * <p>
- * If you think, that the arguments in the assertions may be broken, consider the necessary escaping for Java as well.
- * 
+ * If you think, that the arguments in the assertions may be broken, consider the
+ * necessary escaping for Java as well.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching </a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 22060 $, $Date: 2010-01-20 17:59:52 +0100 (Mi, 20. Jan 2010) $
  */
 public class IsLikeStringTest extends TestCase {
 
-    @Test
-    public void testLiteral1()
-                            throws Exception {
-        String wildCard = "*";
-        String singleChar = "#";
-        String escape = "!";
-        String inputString = "*Sartre*";
-        IsLikeString specialString = new IsLikeString( inputString, wildCard, singleChar, escape );
-        String output = specialString.toSQL();
-        assertEquals( "%Sartre%", output );
-    }
+	@Test
+	public void testLiteral1() throws Exception {
+		String wildCard = "*";
+		String singleChar = "#";
+		String escape = "!";
+		String inputString = "*Sartre*";
+		IsLikeString specialString = new IsLikeString(inputString, wildCard, singleChar, escape);
+		String output = specialString.toSQL();
+		assertEquals("%Sartre%", output);
+	}
 
-    @Test
-    public void testLiteral2()
-                            throws Exception {
-        String wildCard = "%";
-        String singleChar = "_";
-        String escape = "\\";
-        String inputString = "%Sar\\%\\_tre%";
-        IsLikeString specialString = new IsLikeString( inputString, wildCard, singleChar, escape );
-        String output = specialString.toSQL();
-        assertEquals( "%Sar\\%\\_tre%", output );
-    }
+	@Test
+	public void testLiteral2() throws Exception {
+		String wildCard = "%";
+		String singleChar = "_";
+		String escape = "\\";
+		String inputString = "%Sar\\%\\_tre%";
+		IsLikeString specialString = new IsLikeString(inputString, wildCard, singleChar, escape);
+		String output = specialString.toSQL();
+		assertEquals("%Sar\\%\\_tre%", output);
+	}
 
-    @Test
-    public void testLiteral3()
-                            throws Exception {
-        String wildCard = "?";
-        String singleChar = "_";
-        String escape = "\\";
-        String inputString = "%Sar\\tre_";
-        IsLikeString specialString = new IsLikeString( inputString, wildCard, singleChar, escape );
-        String output = specialString.toSQL();
-        assertEquals( "\\%Sartre_", output );
-    }
+	@Test
+	public void testLiteral3() throws Exception {
+		String wildCard = "?";
+		String singleChar = "_";
+		String escape = "\\";
+		String inputString = "%Sar\\tre_";
+		IsLikeString specialString = new IsLikeString(inputString, wildCard, singleChar, escape);
+		String output = specialString.toSQL();
+		assertEquals("\\%Sartre_", output);
+	}
 
-    @Test
-    public void testLiteral4()
-                            throws Exception {
-        String wildCard = "%";
-        String singleChar = "*";
-        String escape = "_";
-        String inputString = "*Sartre%";
-        IsLikeString specialString = new IsLikeString( inputString, wildCard, singleChar, escape );
-        String output = specialString.toSQL();
-        assertEquals( "_Sartre%", output );
-    }
+	@Test
+	public void testLiteral4() throws Exception {
+		String wildCard = "%";
+		String singleChar = "*";
+		String escape = "_";
+		String inputString = "*Sartre%";
+		IsLikeString specialString = new IsLikeString(inputString, wildCard, singleChar, escape);
+		String output = specialString.toSQL();
+		assertEquals("_Sartre%", output);
+	}
 
-    @Test
-    public void testLiteral5()
-                            throws Exception {
-        String wildCard = "?";
-        String singleChar = "*";
-        String escape = "\\";
-        String inputString = "*Paul_Sartre*";
-        IsLikeString specialString = new IsLikeString( inputString, wildCard, singleChar, escape );
-        String output = specialString.toSQL();
-        assertEquals( "_Paul\\_Sartre_", output );
-    }
+	@Test
+	public void testLiteral5() throws Exception {
+		String wildCard = "?";
+		String singleChar = "*";
+		String escape = "\\";
+		String inputString = "*Paul_Sartre*";
+		IsLikeString specialString = new IsLikeString(inputString, wildCard, singleChar, escape);
+		String output = specialString.toSQL();
+		assertEquals("_Paul\\_Sartre_", output);
+	}
 
-    @Test
-    public void testLiteral7()
-                            throws Exception {
-        String wildCard = "%";
-        String singleChar = "*";
-        String escape = "_";
-        String inputString = "Sartre's";
-        IsLikeString specialString = new IsLikeString( inputString, wildCard, singleChar, escape );
-        String output = specialString.toSQL();
-        assertEquals( "Sartre''s", output );
-    }
-    
+	@Test
+	public void testLiteral7() throws Exception {
+		String wildCard = "%";
+		String singleChar = "*";
+		String escape = "_";
+		String inputString = "Sartre's";
+		IsLikeString specialString = new IsLikeString(inputString, wildCard, singleChar, escape);
+		String output = specialString.toSQL();
+		assertEquals("Sartre''s", output);
+	}
+
 }

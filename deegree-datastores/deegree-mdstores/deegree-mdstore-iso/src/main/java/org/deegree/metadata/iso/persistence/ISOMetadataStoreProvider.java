@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-metadata/src/main/java/org/deegree/metadata/iso/persistence/ISOMetadataStoreProvider.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -54,92 +53,94 @@ import org.deegree.workspace.Workspace;
 
 /**
  * {@link MetadataStoreProvider} for the {@link ISOMetadataStore}.
- * 
+ *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: lbuesching $
- * 
- * @version $Revision: 30800 $, $Date: 2011-05-12 16:49:44 +0200 (Do, 12. Mai 2011) $
  */
 public class ISOMetadataStoreProvider extends MetadataStoreProvider {
 
-    @Override
-    public String[] getCreateStatements( SQLDialect dbType )
-                            throws UnsupportedEncodingException, IOException {
-        List<String> creates = new ArrayList<String>();
-        if ( dbType.getClass().getSimpleName().equals( "MSSQLDialect" ) ) {
-            URL script = ISOMetadataStoreProvider.class.getResource( "mssql/create.sql" );
-            creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
-            script = ISOMetadataStoreProvider.class.getResource( "mssql/create_inspire.sql" );
-            creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
-        } else if ( dbType instanceof PostGISDialect ) {
-            URL script = ISOMetadataStoreProvider.class.getResource( "postgis/create.sql" );
-            creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
-            script = ISOMetadataStoreProvider.class.getResource( "postgis/create_inspire.sql" );
-            creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
-        } else if ( dbType.getClass().getSimpleName().equals( "OracleDialect" ) ) {
-            URL script = ISOMetadataStoreProvider.class.getResource( "oracle/create.sql" );
-            creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
-            script = ISOMetadataStoreProvider.class.getResource( "oracle/create_inspire.sql" );
-            creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
-        }
-        return creates.toArray( new String[creates.size()] );
-    }
+	@Override
+	public String[] getCreateStatements(SQLDialect dbType) throws UnsupportedEncodingException, IOException {
+		List<String> creates = new ArrayList<String>();
+		if (dbType.getClass().getSimpleName().equals("MSSQLDialect")) {
+			URL script = ISOMetadataStoreProvider.class.getResource("mssql/create.sql");
+			creates.addAll(readStatements(new BufferedReader(new InputStreamReader(script.openStream(), "UTF-8"))));
+			script = ISOMetadataStoreProvider.class.getResource("mssql/create_inspire.sql");
+			creates.addAll(readStatements(new BufferedReader(new InputStreamReader(script.openStream(), "UTF-8"))));
+		}
+		else if (dbType instanceof PostGISDialect) {
+			URL script = ISOMetadataStoreProvider.class.getResource("postgis/create.sql");
+			creates.addAll(readStatements(new BufferedReader(new InputStreamReader(script.openStream(), "UTF-8"))));
+			script = ISOMetadataStoreProvider.class.getResource("postgis/create_inspire.sql");
+			creates.addAll(readStatements(new BufferedReader(new InputStreamReader(script.openStream(), "UTF-8"))));
+		}
+		else if (dbType.getClass().getSimpleName().equals("OracleDialect")) {
+			URL script = ISOMetadataStoreProvider.class.getResource("oracle/create.sql");
+			creates.addAll(readStatements(new BufferedReader(new InputStreamReader(script.openStream(), "UTF-8"))));
+			script = ISOMetadataStoreProvider.class.getResource("oracle/create_inspire.sql");
+			creates.addAll(readStatements(new BufferedReader(new InputStreamReader(script.openStream(), "UTF-8"))));
+		}
+		return creates.toArray(new String[creates.size()]);
+	}
 
-    @Override
-    public String[] getDropStatements( SQLDialect dbType )
-                            throws UnsupportedEncodingException, IOException {
-        List<String> creates = new ArrayList<String>();
-        if ( dbType.getClass().getSimpleName().equals( "MSSQLDialect" ) ) {
-            URL script = ISOMetadataStoreProvider.class.getResource( "mssql/drop_inspire.sql" );
-            creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
-            script = ISOMetadataStoreProvider.class.getResource( "mssql/drop.sql" );
-            creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
-        } else if ( dbType instanceof PostGISDialect ) {
-            URL script = ISOMetadataStoreProvider.class.getResource( "postgis/drop_inspire.sql" );
-            creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
-            script = ISOMetadataStoreProvider.class.getResource( "postgis/drop.sql" );
-            creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
-        } else if ( dbType.getClass().getSimpleName().equals( "OracleDialect" ) ) {
-            URL script = ISOMetadataStoreProvider.class.getResource( "oracle/drop.sql" );
-            creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
-            script = ISOMetadataStoreProvider.class.getResource( "oracle/drop.sql" );
-            creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
-        }
-        return creates.toArray( new String[creates.size()] );
-    }
+	@Override
+	public String[] getDropStatements(SQLDialect dbType) throws UnsupportedEncodingException, IOException {
+		List<String> creates = new ArrayList<String>();
+		if (dbType.getClass().getSimpleName().equals("MSSQLDialect")) {
+			URL script = ISOMetadataStoreProvider.class.getResource("mssql/drop_inspire.sql");
+			creates.addAll(readStatements(new BufferedReader(new InputStreamReader(script.openStream(), "UTF-8"))));
+			script = ISOMetadataStoreProvider.class.getResource("mssql/drop.sql");
+			creates.addAll(readStatements(new BufferedReader(new InputStreamReader(script.openStream(), "UTF-8"))));
+		}
+		else if (dbType instanceof PostGISDialect) {
+			URL script = ISOMetadataStoreProvider.class.getResource("postgis/drop_inspire.sql");
+			creates.addAll(readStatements(new BufferedReader(new InputStreamReader(script.openStream(), "UTF-8"))));
+			script = ISOMetadataStoreProvider.class.getResource("postgis/drop.sql");
+			creates.addAll(readStatements(new BufferedReader(new InputStreamReader(script.openStream(), "UTF-8"))));
+		}
+		else if (dbType.getClass().getSimpleName().equals("OracleDialect")) {
+			URL script = ISOMetadataStoreProvider.class.getResource("oracle/drop.sql");
+			creates.addAll(readStatements(new BufferedReader(new InputStreamReader(script.openStream(), "UTF-8"))));
+			script = ISOMetadataStoreProvider.class.getResource("oracle/drop.sql");
+			creates.addAll(readStatements(new BufferedReader(new InputStreamReader(script.openStream(), "UTF-8"))));
+		}
+		return creates.toArray(new String[creates.size()]);
+	}
 
-    private List<String> readStatements( BufferedReader reader )
-                            throws IOException {
-        List<String> stmts = new ArrayList<String>();
-        String currentStmt = "";
-        String line = null;
-        while ( ( line = reader.readLine() ) != null ) {
-            if ( line.startsWith( "--" ) || line.trim().isEmpty() ) {
-                // skip
-            } else if ( line.contains( ";" ) ) {
-                currentStmt += line.substring( 0, line.indexOf( ';' ) );
-                stmts.add( currentStmt );
-                currentStmt = "";
-            } else {
-                currentStmt += line + "\n";
-            }
-        }
-        return stmts;
-    }
+	private List<String> readStatements(BufferedReader reader) throws IOException {
+		List<String> stmts = new ArrayList<String>();
+		String currentStmt = "";
+		String line = null;
+		while ((line = reader.readLine()) != null) {
+			if (line.startsWith("--") || line.trim().isEmpty()) {
+				// skip
+			}
+			else if (line.contains(";")) {
+				currentStmt += line.substring(0, line.indexOf(';'));
+				stmts.add(currentStmt);
+				currentStmt = "";
+			}
+			else {
+				currentStmt += line + "\n";
+			}
+		}
+		return stmts;
+	}
 
-    @Override
-    public String getNamespace() {
-        return "http://www.deegree.org/datasource/metadata/iso19115";
-    }
+	@Override
+	public String getNamespace() {
+		return "http://www.deegree.org/datasource/metadata/iso19115";
+	}
 
-    @Override
-    public ResourceMetadata<MetadataStore<? extends MetadataRecord>> createFromLocation( Workspace workspace,
-                                                                                         ResourceLocation<MetadataStore<? extends MetadataRecord>> location ) {
-        return new IsoMetadataStoreMetadata( workspace, location, this );
-    }
+	@Override
+	public ResourceMetadata<MetadataStore<? extends MetadataRecord>> createFromLocation(Workspace workspace,
+			ResourceLocation<MetadataStore<? extends MetadataRecord>> location) {
+		return new IsoMetadataStoreMetadata(workspace, location, this);
+	}
 
-    @Override
-    public URL getSchema() {
-        return ISOMetadataStoreProvider.class.getResource( "/META-INF/schemas/datasource/metadata/iso19115/iso19115.xsd" );
-    }
+	@Override
+	public URL getSchema() {
+		return ISOMetadataStoreProvider.class
+			.getResource("/META-INF/schemas/datasource/metadata/iso19115/iso19115.xsd");
+	}
+
 }

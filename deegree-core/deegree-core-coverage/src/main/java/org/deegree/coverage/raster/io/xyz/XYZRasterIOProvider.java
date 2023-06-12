@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2009 by:
@@ -47,48 +46,47 @@ import org.deegree.coverage.raster.io.RasterWriter;
 
 /**
  * The <code>XYZRasterIOProvider</code> class defines the access to xyz files
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class XYZRasterIOProvider implements RasterIOProvider {
 
-    /** a key for the RasterIO options */
-    public final static String XYZ_SEPARATOR = "xyz_separator";
+	/** a key for the RasterIO options */
+	public final static String XYZ_SEPARATOR = "xyz_separator";
 
-    /**
-     * Supported formats
-     */
-    final static Set<String> FORMATS = new HashSet<String>();
-    static {
-        FORMATS.add( "xyz" );
-    }
+	/**
+	 * Supported formats
+	 */
+	final static Set<String> FORMATS = new HashSet<String>();
+	static {
+		FORMATS.add("xyz");
+	}
 
-    @Override
-    public RasterReader getRasterReader( String type ) {
-        if ( type != null && FORMATS.contains( type.toLowerCase() ) ) {
-            return new XYZReader();
-        }
-        return null;
-    }
+	@Override
+	public RasterReader getRasterReader(String type) {
+		if (type != null && FORMATS.contains(type.toLowerCase())) {
+			return new XYZReader();
+		}
+		return null;
+	}
 
-    @Override
-    public Set<String> getRasterReaderFormats() {
-        return new HashSet<String>( XYZRasterIOProvider.FORMATS );
-    }
+	@Override
+	public Set<String> getRasterReaderFormats() {
+		return new HashSet<String>(XYZRasterIOProvider.FORMATS);
+	}
 
-    @Override
-    public RasterWriter getRasterWriter( String type ) {
-        if ( type != null && FORMATS.contains( type.toLowerCase() ) ) {
-            return new XYZWriter();
-        }
-        return null;
-    }
+	@Override
+	public RasterWriter getRasterWriter(String type) {
+		if (type != null && FORMATS.contains(type.toLowerCase())) {
+			return new XYZWriter();
+		}
+		return null;
+	}
 
-    @Override
-    public Set<String> getRasterWriterFormats() {
-        return new HashSet<String>( XYZRasterIOProvider.FORMATS );
-    }
+	@Override
+	public Set<String> getRasterWriterFormats() {
+		return new HashSet<String>(XYZRasterIOProvider.FORMATS);
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -51,9 +50,7 @@ import org.slf4j.LoggerFactory;
  * Entry point for creating and retrieving {@link ObservationStore} providers and instances.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
  */
 public class ObservationStoreManager extends AbstractResourceManager<ObservationDatastore> {
 

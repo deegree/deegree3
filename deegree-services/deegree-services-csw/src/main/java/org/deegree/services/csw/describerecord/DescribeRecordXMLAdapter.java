@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -46,65 +45,63 @@ import org.deegree.protocol.i18n.Messages;
 import org.deegree.services.csw.AbstractCSWRequestXMLAdapter;
 
 /**
- * Encapsulates the method for parsing a XML request via Http-POST. So this class is responsible for the
- * {@link DescribeRecord} XML-Requesthandling.
- * 
+ * Encapsulates the method for parsing a XML request via Http-POST. So this class is
+ * responsible for the {@link DescribeRecord} XML-Requesthandling.
+ *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: thomas $
- * 
- * @version $Revision: $, $Date: $
  */
 public class DescribeRecordXMLAdapter extends AbstractCSWRequestXMLAdapter {
 
-    /**
-     * Parses the {@link DescribeRecord} XML request.
-     * 
-     * @param version
-     * @return {@link DescribeRecord}
-     */
-    public DescribeRecord parse( Version version ) {
+	/**
+	 * Parses the {@link DescribeRecord} XML request.
+	 * @param version
+	 * @return {@link DescribeRecord}
+	 */
+	public DescribeRecord parse(Version version) {
 
-        if ( version == null ) {
-            version = Version.parseVersion( getRequiredNodeAsString( rootElement, new XPath( "@version", nsContext ) ) );
-        }
+		if (version == null) {
+			version = Version.parseVersion(getRequiredNodeAsString(rootElement, new XPath("@version", nsContext)));
+		}
 
-        DescribeRecord result = null;
+		DescribeRecord result = null;
 
-        if ( VERSION_202.equals( version ) ) {
-            result = parse202();
-        } else {
-            String msg = Messages.get( "UNSUPPORTED_VERSION", version, Version.getVersionsString( VERSION_202 ) );
-            throw new InvalidParameterValueException( msg );
-        }
+		if (VERSION_202.equals(version)) {
+			result = parse202();
+		}
+		else {
+			String msg = Messages.get("UNSUPPORTED_VERSION", version, Version.getVersionsString(VERSION_202));
+			throw new InvalidParameterValueException(msg);
+		}
 
-        return result;
+		return result;
 
-    }
+	}
 
-    /**
-     * Parses the {@link DescribeRecord} XML request in the concrete CSW 2.0.2 version style.
-     * 
-     * @version CSW 2.0.2
-     * @return {@link DescribeRecord}
-     */
-    private DescribeRecord parse202() {
+	/**
+	 * Parses the {@link DescribeRecord} XML request in the concrete CSW 2.0.2 version
+	 * style.
+	 *
+	 * @version CSW 2.0.2
+	 * @return {@link DescribeRecord}
+	 */
+	private DescribeRecord parse202() {
 
-        // optional: '@outputFormat'
-        String outputFormat = rootElement.getAttributeValue( new QName( "outputFormat" ) );
-        if ( outputFormat == null ) {
-            outputFormat = "application/xml";
-        }
+		// optional: '@outputFormat'
+		String outputFormat = rootElement.getAttributeValue(new QName("outputFormat"));
+		if (outputFormat == null) {
+			outputFormat = "application/xml";
+		}
 
-        // optional: '@schemaLanguage'
-        String schemaLanguage = rootElement.getAttributeValue( new QName( "schemaLanguage" ) );
-        if ( schemaLanguage == null ) {
-            schemaLanguage = "http://www.w3.org/XML/Schema";
-        }
+		// optional: '@schemaLanguage'
+		String schemaLanguage = rootElement.getAttributeValue(new QName("schemaLanguage"));
+		if (schemaLanguage == null) {
+			schemaLanguage = "http://www.w3.org/XML/Schema";
+		}
 
-        // 'TypeName' elements (minOccurs=0, maxOccurs=unbounded)
-        QName[] typeNames = getNodesAsQNames( rootElement, new XPath( "csw:TypeName", nsContext ) );
+		// 'TypeName' elements (minOccurs=0, maxOccurs=unbounded)
+		QName[] typeNames = getNodesAsQNames(rootElement, new XPath("csw:TypeName", nsContext));
 
-        return new DescribeRecord( VERSION_202, null, typeNames, outputFormat, schemaLanguage );
-    }
+		return new DescribeRecord(VERSION_202, null, typeNames, outputFormat, schemaLanguage);
+	}
 
 }

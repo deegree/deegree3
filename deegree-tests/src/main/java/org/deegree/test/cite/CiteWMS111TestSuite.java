@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -49,83 +48,78 @@ import org.junit.runners.Parameterized.Parameters;
 
 /**
  * <code>CiteWMS111TestSuite</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 @RunWith(Parameterized.class)
 public class CiteWMS111TestSuite {
 
-    private static String CITE_SCRIPT_PROP = "cite.script";
+	private static String CITE_SCRIPT_PROP = "cite.script";
 
-    private String testLabel;
+	private String testLabel;
 
-    private String resultSnippet;
+	private String resultSnippet;
 
-    public CiteWMS111TestSuite( String testLabel, String resultSnippet ) {
-        this.testLabel = testLabel;
-        this.resultSnippet = resultSnippet;
-    }
+	public CiteWMS111TestSuite(String testLabel, String resultSnippet) {
+		this.testLabel = testLabel;
+		this.resultSnippet = resultSnippet;
+	}
 
-    @Parameters
-    public static Collection getResultSnippets()
-                            throws Exception {
+	@Parameters
+	public static Collection getResultSnippets() throws Exception {
 
-        CiteWrapper wrapper = new CiteWrapper( System.getProperty( CITE_SCRIPT_PROP ) );
-        wrapper.execute();
-        String out = wrapper.getOutput();
-        String err = wrapper.getError();
+		CiteWrapper wrapper = new CiteWrapper(System.getProperty(CITE_SCRIPT_PROP));
+		wrapper.execute();
+		String out = wrapper.getOutput();
+		String err = wrapper.getError();
 
-        System.out.println( out );
-        if ( !err.isEmpty() ) {
-            System.out.println( "Standard error messages: " + err );
-        }
+		System.out.println(out);
+		if (!err.isEmpty()) {
+			System.out.println("Standard error messages: " + err);
+		}
 
-        return getResultSnippets( out );
-    }
+		return getResultSnippets(out);
+	}
 
-    private static Collection getResultSnippets( String out )
-                            throws IOException {
+	private static Collection getResultSnippets(String out) throws IOException {
 
-        List resultSnippets = new ArrayList();
+		List resultSnippets = new ArrayList();
 
-        BufferedReader reader = new BufferedReader( new StringReader( out ) );
-        List<String> lines = new ArrayList<String>();
-        String line = null;
-        while ( ( line = reader.readLine() ) != null ) {
-            lines.add( line );
-        }
+		BufferedReader reader = new BufferedReader(new StringReader(out));
+		List<String> lines = new ArrayList<String>();
+		String line = null;
+		while ((line = reader.readLine()) != null) {
+			lines.add(line);
+		}
 
-        int currentLine = 0;
-        while ( currentLine < lines.size() ) {
-            String trimmed = lines.get( currentLine++ ).trim();
-            if ( trimmed.startsWith( "Testing" ) && !trimmed.startsWith( "Testing suite" ) ) {
-                String s = trimmed.substring( 8 );
-                String caseId = s.substring( 0, s.indexOf( ' ' ) );
-                String result = findCorrespondingResult( lines, currentLine, caseId );
-                resultSnippets.add( new Object[] { caseId, result } );
-            }
-        }
-        return resultSnippets;
-    }
+		int currentLine = 0;
+		while (currentLine < lines.size()) {
+			String trimmed = lines.get(currentLine++).trim();
+			if (trimmed.startsWith("Testing") && !trimmed.startsWith("Testing suite")) {
+				String s = trimmed.substring(8);
+				String caseId = s.substring(0, s.indexOf(' '));
+				String result = findCorrespondingResult(lines, currentLine, caseId);
+				resultSnippets.add(new Object[] { caseId, result });
+			}
+		}
+		return resultSnippets;
+	}
 
-    private static String findCorrespondingResult( List<String> lines, int currentLine, String caseId ) {
-        while ( currentLine < lines.size() ) {
-            String trimmed = lines.get( currentLine++ ).trim();
-            if ( trimmed.startsWith( "Test " + caseId ) ) {
-                return trimmed;
-            }
-        }
-        throw new RuntimeException( "Error parsing CITE result log." );
-    }
+	private static String findCorrespondingResult(List<String> lines, int currentLine, String caseId) {
+		while (currentLine < lines.size()) {
+			String trimmed = lines.get(currentLine++).trim();
+			if (trimmed.startsWith("Test " + caseId)) {
+				return trimmed;
+			}
+		}
+		throw new RuntimeException("Error parsing CITE result log.");
+	}
 
-    @Test
-    public void singleTest() {
-        if ( resultSnippet.contains( "Failed" ) ) {
-            throw new RuntimeException( "Test '" + testLabel + "' failed." );
-        }
-    }
+	@Test
+	public void singleTest() {
+		if (resultSnippet.contains("Failed")) {
+			throw new RuntimeException("Test '" + testLabel + "' failed.");
+		}
+	}
 
 }

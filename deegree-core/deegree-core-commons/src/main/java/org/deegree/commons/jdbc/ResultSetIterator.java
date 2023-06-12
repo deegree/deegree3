@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -50,127 +49,124 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Abstract base class for easy implementation of {@link CloseableIterator}s that are backed by an SQL result set.
- * 
+ * Abstract base class for easy implementation of {@link CloseableIterator}s that are
+ * backed by an SQL result set.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
- * @param <T>
- *            type of the iterated objects
+ * @param <T> type of the iterated objects
  */
 public abstract class ResultSetIterator<T> implements CloseableIterator<T> {
 
-    private static final Logger LOG = LoggerFactory.getLogger( ResultSetIterator.class );
+	private static final Logger LOG = LoggerFactory.getLogger(ResultSetIterator.class);
 
-    private boolean currentRowRead = true;
+	private boolean currentRowRead = true;
 
-    private final ResultSet rs;
+	private final ResultSet rs;
 
-    private final Connection conn;
+	private final Connection conn;
 
-    private final Statement stmt;
+	private final Statement stmt;
 
-    /**
-     * Creates a new {@link ResultSetIterator} instance.
-     * 
-     * @param rs
-     *            result set that the iterator uses to build the elements, must not be <code>null</code>
-     * @param conn
-     *            connection that was used to obtain the result set, must not be <code>null</code>
-     * @param stmt
-     *            statement that was used to obtain the result set, must not be <code>null</code>
-     */
-    protected ResultSetIterator( ResultSet rs, Connection conn, Statement stmt ) {
-        this.rs = rs;
-        this.conn = conn;
-        this.stmt = stmt;
-    }
+	/**
+	 * Creates a new {@link ResultSetIterator} instance.
+	 * @param rs result set that the iterator uses to build the elements, must not be
+	 * <code>null</code>
+	 * @param conn connection that was used to obtain the result set, must not be
+	 * <code>null</code>
+	 * @param stmt statement that was used to obtain the result set, must not be
+	 * <code>null</code>
+	 */
+	protected ResultSetIterator(ResultSet rs, Connection conn, Statement stmt) {
+		this.rs = rs;
+		this.conn = conn;
+		this.stmt = stmt;
+	}
 
-    @Override
-    public void close() {
-        LOG.debug( "Closing JDBC ResultSet, Statement and Connection" );
-        JDBCUtils.close( rs, stmt, conn, LOG );
-    }
+	@Override
+	public void close() {
+		LOG.debug("Closing JDBC ResultSet, Statement and Connection");
+		JDBCUtils.close(rs, stmt, conn, LOG);
+	}
 
-    @Override
-    public boolean hasNext() {
-        if ( !currentRowRead ) {
-            return true;
-        }
-        try {
-            if ( rs.next() ) {
-                currentRowRead = false;
-                return true;
-            }
-        } catch ( SQLException e ) {
-            // try to close everything
-            close();
-            // wrap as unchecked exception
-            throw new RuntimeException( e.getMessage(), e );
-        }
-        return false;
-    }
+	@Override
+	public boolean hasNext() {
+		if (!currentRowRead) {
+			return true;
+		}
+		try {
+			if (rs.next()) {
+				currentRowRead = false;
+				return true;
+			}
+		}
+		catch (SQLException e) {
+			// try to close everything
+			close();
+			// wrap as unchecked exception
+			throw new RuntimeException(e.getMessage(), e);
+		}
+		return false;
+	}
 
-    @Override
-    public T next() {
-        if ( !hasNext() ) {
-            throw new NoSuchElementException();
-        }
-        currentRowRead = true;
-        T element;
-        try {
-            element = createElement( rs );
-        } catch ( SQLException e ) {
-            // try to close everything
-            close();
-            // wrap as unchecked exception
-            throw new RuntimeException( e.getMessage(), e );
-        }
-        return element;
-    }
+	@Override
+	public T next() {
+		if (!hasNext()) {
+			throw new NoSuchElementException();
+		}
+		currentRowRead = true;
+		T element;
+		try {
+			element = createElement(rs);
+		}
+		catch (SQLException e) {
+			// try to close everything
+			close();
+			// wrap as unchecked exception
+			throw new RuntimeException(e.getMessage(), e);
+		}
+		return element;
+	}
 
-    /**
-     * Invoked to create the next element in the iteration sequence from the {@link ResultSet} (usually from one row).
-     * 
-     * @param rs
-     *            result set that is used to build the element, this is never <code>null</code>
-     * @return new element from the iteration sequence
-     * @throws SQLException
-     *             if the accessing of the result set or element creation fails
-     */
-    protected abstract T createElement( ResultSet rs )
-                            throws SQLException;
+	/**
+	 * Invoked to create the next element in the iteration sequence from the
+	 * {@link ResultSet} (usually from one row).
+	 * @param rs result set that is used to build the element, this is never
+	 * <code>null</code>
+	 * @return new element from the iteration sequence
+	 * @throws SQLException if the accessing of the result set or element creation fails
+	 */
+	protected abstract T createElement(ResultSet rs) throws SQLException;
 
-    @Override
-    public void remove() {
-        try {
-            rs.deleteRow();
-        } catch ( SQLException e ) {
-            // try to close everything
-            close();
-            // wrap as unchecked exception
-            throw new RuntimeException( e.getMessage(), e );
-        }
-    }
+	@Override
+	public void remove() {
+		try {
+			rs.deleteRow();
+		}
+		catch (SQLException e) {
+			// try to close everything
+			close();
+			// wrap as unchecked exception
+			throw new RuntimeException(e.getMessage(), e);
+		}
+	}
 
-    @Override
-    public List<T> getAsListAndClose() {
-        LinkedList<T> list = new LinkedList<T>();
-        while ( hasNext() ) {
-            list.add( next() );
-        }
-        close();
-        return list;
-    }
+	@Override
+	public List<T> getAsListAndClose() {
+		LinkedList<T> list = new LinkedList<T>();
+		while (hasNext()) {
+			list.add(next());
+		}
+		close();
+		return list;
+	}
 
-    @Override
-    public Collection<T> getAsCollectionAndClose( Collection<T> collection ) {
-        while ( hasNext() ) {
-            collection.add( next() );
-        }
-        close();
-        return collection;
-    }
+	@Override
+	public Collection<T> getAsCollectionAndClose(Collection<T> collection) {
+		while (hasNext()) {
+			collection.add(next());
+		}
+		close();
+		return collection;
+	}
+
 }

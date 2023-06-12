@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -53,102 +52,97 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Allows the representation of arbitrary {@link Feature}s.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * 
- * @version $Revision:$, $Date:$
  */
 public class GenericFeature extends AbstractFeature {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GenericFeature.class );
+	private static final Logger LOG = LoggerFactory.getLogger(GenericFeature.class);
 
-    private List<Property> props;
+	private List<Property> props;
 
-    /**
-     * Creates a new {@link GenericFeature} instance.
-     * 
-     * @param ft
-     *            feature type, must not be <code>null</code>
-     * @param fid
-     *            feature id or <code>null</code> if the feature is anonymous (discouraged for most use cases)
-     * @param props
-     *            properties of the feature
-     * @param extraProps
-     *            extra properties, may be <code>null</code>
-     */
-    public GenericFeature( FeatureType ft, String fid, List<Property> props, ExtraProps extraProps ) {
-        super( fid, ft, extraProps );
-        this.props = new ArrayList<Property>( props );
-    }
+	/**
+	 * Creates a new {@link GenericFeature} instance.
+	 * @param ft feature type, must not be <code>null</code>
+	 * @param fid feature id or <code>null</code> if the feature is anonymous (discouraged
+	 * for most use cases)
+	 * @param props properties of the feature
+	 * @param extraProps extra properties, may be <code>null</code>
+	 */
+	public GenericFeature(FeatureType ft, String fid, List<Property> props, ExtraProps extraProps) {
+		super(fid, ft, extraProps);
+		this.props = new ArrayList<Property>(props);
+	}
 
-    @Override
-    public List<Property> getProperties() {
-        return props;
-    }
+	@Override
+	public List<Property> getProperties() {
+		return props;
+	}
 
-    @Override
-    public void setProperties( List<Property> props )
-                            throws IllegalArgumentException {
-        this.props = new ArrayList<Property>( props );
-    }
+	@Override
+	public void setProperties(List<Property> props) throws IllegalArgumentException {
+		this.props = new ArrayList<Property>(props);
+	}
 
-    @Override
-    public void setPropertyValue( QName propName, int occurrence, TypedObjectNode value ) {
+	@Override
+	public void setPropertyValue(QName propName, int occurrence, TypedObjectNode value) {
 
-        LOG.debug( "Setting property value for " + occurrence + ". " + propName + " property" );
+		LOG.debug("Setting property value for " + occurrence + ". " + propName + " property");
 
-        // check if change would violate minOccurs/maxOccurs constraint
-        int current = getProperties( propName ).size();
-        PropertyType pt = getType().getPropertyDeclaration( propName );
-        if ( value == null ) {
-            // null means remove
-            if ( current - 1 < pt.getMinOccurs() ) {
-                String msg = "Cannot remove property '" + propName + "' from feature '" + getName()
-                             + ": property must be present at least " + pt.getMinOccurs() + " time(s).";
-                throw new IllegalArgumentException( msg );
-            }
-        } else {
-            // TODO checks about maxOccurs (and check occurence)
-        }
+		// check if change would violate minOccurs/maxOccurs constraint
+		int current = getProperties(propName).size();
+		PropertyType pt = getType().getPropertyDeclaration(propName);
+		if (value == null) {
+			// null means remove
+			if (current - 1 < pt.getMinOccurs()) {
+				String msg = "Cannot remove property '" + propName + "' from feature '" + getName()
+						+ ": property must be present at least " + pt.getMinOccurs() + " time(s).";
+				throw new IllegalArgumentException(msg);
+			}
+		}
+		else {
+			// TODO checks about maxOccurs (and check occurence)
+		}
 
-        int num = 0;
-        for ( int i = 0; i < props.size(); i++ ) {
-            Property prop = props.get( i );
-            // TODO this is not sufficient (prop name must not be equal to prop type name)
-            if ( prop.getName().equals( propName ) ) {
-                if ( num++ == occurrence ) {
-                    if ( value != null ) {
-                        props.set( i, new GenericProperty( pt, propName, value ) );
-                    } else {
-                        props.remove( i );
-                    }
-                    LOG.debug( "Yep." );
-                    break;
-                }
-            }
-        }
-    }
+		int num = 0;
+		for (int i = 0; i < props.size(); i++) {
+			Property prop = props.get(i);
+			// TODO this is not sufficient (prop name must not be equal to prop type name)
+			if (prop.getName().equals(propName)) {
+				if (num++ == occurrence) {
+					if (value != null) {
+						props.set(i, new GenericProperty(pt, propName, value));
+					}
+					else {
+						props.remove(i);
+					}
+					LOG.debug("Yep.");
+					break;
+				}
+			}
+		}
+	}
 
-    @Override
-    public List<Property> getProperties( QName propName ) {
-        List<Property> namedProps = new ArrayList<Property>( props.size() );
-        for ( Property property : props ) {
-            if ( propName.equals( property.getName() ) ) {
-                namedProps.add( property );
-            }
-        }
-        return namedProps;
-    }
+	@Override
+	public List<Property> getProperties(QName propName) {
+		List<Property> namedProps = new ArrayList<Property>(props.size());
+		for (Property property : props) {
+			if (propName.equals(property.getName())) {
+				namedProps.add(property);
+			}
+		}
+		return namedProps;
+	}
 
-    @Override
-    public List<Property> getGeometryProperties() {
-        List<Property> geoProps = new ArrayList<Property>( props.size() );
-        for ( Property property : props ) {
-            if ( property.getValue() instanceof Geometry && !( property.getValue() instanceof Envelope ) ) {
-                geoProps.add( property );
-            }
-        }
-        return geoProps;
-    }
+	@Override
+	public List<Property> getGeometryProperties() {
+		List<Property> geoProps = new ArrayList<Property>(props.size());
+		for (Property property : props) {
+			if (property.getValue() instanceof Geometry && !(property.getValue() instanceof Envelope)) {
+				geoProps.add(property);
+			}
+		}
+		return geoProps;
+	}
+
 }

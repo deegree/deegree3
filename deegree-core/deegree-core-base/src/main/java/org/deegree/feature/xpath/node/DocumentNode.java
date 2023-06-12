@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -39,35 +38,33 @@ import org.deegree.commons.tom.gml.GMLObject;
 
 /**
  * {@link XPathNode} that represents an XML document node.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class DocumentNode implements XPathNode<GMLObject> {
 
-    private final GMLObjectNode<GMLObject, ? extends GMLObject> rootNode;
+	private final GMLObjectNode<GMLObject, ? extends GMLObject> rootNode;
 
-    public DocumentNode( GMLObjectNode<GMLObject, ? extends GMLObject> rootNode ) {
-        this.rootNode = rootNode;
-    }
+	public DocumentNode(GMLObjectNode<GMLObject, ? extends GMLObject> rootNode) {
+		this.rootNode = rootNode;
+	}
 
-    public boolean isElement() {
-        return false;
-    }
+	public boolean isElement() {
+		return false;
+	}
 
-    @Override
-    public XPathNode<? extends GMLObject> getParent() {
-        return null;
-    }
+	@Override
+	public XPathNode<? extends GMLObject> getParent() {
+		return null;
+	}
 
-    public GMLObjectNode<GMLObject, ? extends GMLObject> getRootNode() {
-        return rootNode;
-    }
+	public GMLObjectNode<GMLObject, ? extends GMLObject> getRootNode() {
+		return rootNode;
+	}
 
-    @Override
-    public GMLObject getValue() {
-        return rootNode.getValue();
-    }
+	@Override
+	public GMLObject getValue() {
+		return rootNode.getValue();
+	}
+
 }

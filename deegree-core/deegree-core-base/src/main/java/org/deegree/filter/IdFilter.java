@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -43,96 +42,87 @@ import java.util.Set;
 
 /**
  * {@link Filter} that matches resources by {@link ResourceId}s.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * 
- * @version $Revision:$, $Date:$
  */
 public class IdFilter implements Filter {
 
-    private final List<ResourceId> selectedIds;
+	private final List<ResourceId> selectedIds;
 
-    private final Set<String> stringIds = new LinkedHashSet<String>();
+	private final Set<String> stringIds = new LinkedHashSet<String>();
 
-    /**
-     * Creates a new {@link IdFilter} that selects the resources with the given ids.
-     * 
-     * @param ids
-     *            ids of the resources that the filter will selects, must not be <code>null</code>
-     */
-    public IdFilter( String... selectedIds ) {
-        this.selectedIds = new ArrayList<ResourceId>( selectedIds.length );
-        for ( String id : selectedIds ) {
-            this.selectedIds.add( new ResourceId( id, null, null, null, null ) );
-            stringIds.add( id );
-        }
-    }
+	/**
+	 * Creates a new {@link IdFilter} that selects the resources with the given ids.
+	 * @param ids ids of the resources that the filter will selects, must not be
+	 * <code>null</code>
+	 */
+	public IdFilter(String... selectedIds) {
+		this.selectedIds = new ArrayList<ResourceId>(selectedIds.length);
+		for (String id : selectedIds) {
+			this.selectedIds.add(new ResourceId(id, null, null, null, null));
+			stringIds.add(id);
+		}
+	}
 
-    /**
-     * Creates a new {@link IdFilter} that selects the resources with the given ids.
-     * 
-     * @param ids
-     *            ids of the resources that the filter will selects, must not be <code>null</code>
-     */
-    public IdFilter( Collection<String> selectedIds ) {
-        this.selectedIds = new ArrayList<ResourceId>( selectedIds.size() );
-        for ( String id : selectedIds ) {
-            this.selectedIds.add( new ResourceId( id, null, null, null, null ) );
-            stringIds.add( id );
-        }
-    }
+	/**
+	 * Creates a new {@link IdFilter} that selects the resources with the given ids.
+	 * @param ids ids of the resources that the filter will selects, must not be
+	 * <code>null</code>
+	 */
+	public IdFilter(Collection<String> selectedIds) {
+		this.selectedIds = new ArrayList<ResourceId>(selectedIds.size());
+		for (String id : selectedIds) {
+			this.selectedIds.add(new ResourceId(id, null, null, null, null));
+			stringIds.add(id);
+		}
+	}
 
-    /**
-     * Creates a new {@link IdFilter} that selects the resources with the given ids.
-     * 
-     * @param selectedIds
-     *            ids of the resources that the filter will selects, must not be <code>null</code>
-     */
-    public IdFilter( List<ResourceId> selectedIds ) {
-        this.selectedIds = selectedIds;
-        for ( ResourceId id : selectedIds ) {
-            stringIds.add( id.getRid() );
-        }
-    }
+	/**
+	 * Creates a new {@link IdFilter} that selects the resources with the given ids.
+	 * @param selectedIds ids of the resources that the filter will selects, must not be
+	 * <code>null</code>
+	 */
+	public IdFilter(List<ResourceId> selectedIds) {
+		this.selectedIds = selectedIds;
+		for (ResourceId id : selectedIds) {
+			stringIds.add(id.getRid());
+		}
+	}
 
-    /**
-     * Always returns {@link Filter.Type#ID_FILTER} (for {@link IdFilter} instances).
-     * 
-     * @return {@link Filter.Type#ID_FILTER}
-     */
-    @Override
-    public Type getType() {
-        return Type.ID_FILTER;
-    }
+	/**
+	 * Always returns {@link Filter.Type#ID_FILTER} (for {@link IdFilter} instances).
+	 * @return {@link Filter.Type#ID_FILTER}
+	 */
+	@Override
+	public Type getType() {
+		return Type.ID_FILTER;
+	}
 
-    /**
-     * Returns the ids of the resources that this filter selects.
-     * 
-     * @return the ids of the resources that this filter selects
-     */
-    public List<ResourceId> getSelectedIds() {
-        return selectedIds;
-    }
+	/**
+	 * Returns the ids of the resources that this filter selects.
+	 * @return the ids of the resources that this filter selects
+	 */
+	public List<ResourceId> getSelectedIds() {
+		return selectedIds;
+	}
 
-    /**
-     * Returns the ids of the objects that this filter matches.
-     * 
-     * @return the ids of the objects that this filter matches
-     * @deprecated use {@link #getSelectedIds()} instead
-     */
-    public Set<String> getMatchingIds() {
-        return stringIds;
-    }
+	/**
+	 * Returns the ids of the objects that this filter matches.
+	 * @return the ids of the objects that this filter matches
+	 * @deprecated use {@link #getSelectedIds()} instead
+	 */
+	public Set<String> getMatchingIds() {
+		return stringIds;
+	}
 
-    @Override
-    public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
-                            throws FilterEvaluationException {
+	@Override
+	public <T> boolean evaluate(T obj, XPathEvaluator<T> xpathEvaluator) throws FilterEvaluationException {
 
-        String id = xpathEvaluator.getId( obj );
-        if ( id != null ) {
-            return stringIds.contains( id );
-        }
-        return false;
-    }
+		String id = xpathEvaluator.getId(obj);
+		if (id != null) {
+			return stringIds.contains(id);
+		}
+		return false;
+	}
+
 }

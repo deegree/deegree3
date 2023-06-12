@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -45,70 +44,68 @@ import org.deegree.geometry.primitive.patches.Cone;
 
 /**
  * TODO add class documentation here.
- * 
+ *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class DefaultCone implements Cone {
 
-    private List<Points> grid;
+	private List<Points> grid;
 
-    private int rows;
+	private int rows;
 
-    private int columns;
+	private int columns;
 
-    public DefaultCone( List<Points> grid ) {
-        this.grid = grid;
-        this.rows = getNumRows();
-        this.columns = getNumColumns();
-    }
+	public DefaultCone(List<Points> grid) {
+		this.grid = grid;
+		this.rows = getNumRows();
+		this.columns = getNumColumns();
+	}
 
-    public DefaultCone( List<Points> grid, int rows, int columns ) {
-        this.grid = grid;
-        this.rows = rows;
-        this.columns = columns;
-    }
+	public DefaultCone(List<Points> grid, int rows, int columns) {
+		this.grid = grid;
+		this.rows = rows;
+		this.columns = columns;
+	}
 
-    @Override
-    public GriddedSurfaceType getGriddedSurfaceType() {
-        return GriddedSurfaceType.CONE;
-    }
+	@Override
+	public GriddedSurfaceType getGriddedSurfaceType() {
+		return GriddedSurfaceType.CONE;
+	}
 
-    @Override
-    public int getNumColumns() {
-        return grid.get( 0 ).size();
-    }
+	@Override
+	public int getNumColumns() {
+		return grid.get(0).size();
+	}
 
-    @Override
-    public int getNumRows() {
-        return grid.size();
-    }
+	@Override
+	public int getNumRows() {
+		return grid.size();
+	}
 
-    @Override
-    public Points getRow( int rownum ) {
-        return grid.get( rownum );
-    }
+	@Override
+	public Points getRow(int rownum) {
+		return grid.get(rownum);
+	}
 
-    @Override
-    public List<Points> getRows() {
-        return grid;
-    }
+	@Override
+	public List<Points> getRows() {
+		return grid;
+	}
 
-    @Override
-    public Measure getArea( Unit requestedBaseUnit ) {
-        // TODO
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Measure getArea(Unit requestedBaseUnit) {
+		// TODO
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public SurfacePatchType getSurfacePatchType() {
-        return SurfacePatchType.GRIDDED_SURFACE_PATCH;
-    }
+	@Override
+	public SurfacePatchType getSurfacePatchType() {
+		return SurfacePatchType.GRIDDED_SURFACE_PATCH;
+	}
 
-    @Override
-    public int getCoordinateDimension() {
-        return grid.get( 0 ).getDimension();
-    }
+	@Override
+	public int getCoordinateDimension() {
+		return grid.get(0).getDimension();
+	}
+
 }

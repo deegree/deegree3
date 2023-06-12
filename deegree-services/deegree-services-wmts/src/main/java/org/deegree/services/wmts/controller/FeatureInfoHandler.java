@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -62,81 +61,82 @@ import org.deegree.workspace.Workspace;
 
 /**
  * Responsible for handling GetFeatureInfo requests.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 class FeatureInfoHandler {
 
-    private FeatureInfoManager featureInfoManager;
+	private FeatureInfoManager featureInfoManager;
 
-    private Map<String, TileLayer> layers;
+	private Map<String, TileLayer> layers;
 
-    FeatureInfoHandler( FeatureInfoFormatsType conf, ResourceLocation<?> location, Workspace workspace,
-                        List<Theme> themes ) throws ResourceInitException {
-        featureInfoManager = FeatureInfoManagerBuilder.buildFeatureInfoManager( conf, location, workspace );
+	FeatureInfoHandler(FeatureInfoFormatsType conf, ResourceLocation<?> location, Workspace workspace,
+			List<Theme> themes) throws ResourceInitException {
+		featureInfoManager = FeatureInfoManagerBuilder.buildFeatureInfoManager(conf, location, workspace);
 
-        layers = new HashMap<String, TileLayer>();
-        for ( Theme theme : themes ) {
-            for ( Layer l : Themes.getAllLayers( theme ) ) {
-                if ( l instanceof TileLayer ) {
-                    layers.put( l.getMetadata().getName(), ( (TileLayer) l ) );
-                }
-            }
-        }
-    }
+		layers = new HashMap<String, TileLayer>();
+		for (Theme theme : themes) {
+			for (Layer l : Themes.getAllLayers(theme)) {
+				if (l instanceof TileLayer) {
+					layers.put(l.getMetadata().getName(), ((TileLayer) l));
+				}
+			}
+		}
+	}
 
-    void getFeatureInfo( Map<String, String> map, HttpResponseBuffer response )
-                            throws OWSException, IOException, XMLStreamException {
-        GetFeatureInfo gfi = new GetFeatureInfo( map );
-        TileLayer l = checkLayerConfigured( gfi );
-        checkLayerFeatureInfoEnabled( gfi, l );
-        FeatureInfoFetcher fetcher = new FeatureInfoFetcher( l, gfi );
-        fetcher.fetch( featureInfoManager, response );
-    }
+	void getFeatureInfo(Map<String, String> map, HttpResponseBuffer response)
+			throws OWSException, IOException, XMLStreamException {
+		GetFeatureInfo gfi = new GetFeatureInfo(map);
+		TileLayer l = checkLayerConfigured(gfi);
+		checkLayerFeatureInfoEnabled(gfi, l);
+		FeatureInfoFetcher fetcher = new FeatureInfoFetcher(l, gfi);
+		fetcher.fetch(featureInfoManager, response);
+	}
 
-    private TileLayer checkLayerConfigured( GetFeatureInfo gfi )
-                            throws OWSException {
-        TileLayer l = layers.get( gfi.getLayer() );
-        if ( l == null ) {
-            throw new OWSException( "No layer with name '" + gfi.getLayer() + "' configured.", INVALID_PARAMETER_VALUE, "layer" );
-        }
+	private TileLayer checkLayerConfigured(GetFeatureInfo gfi) throws OWSException {
+		TileLayer l = layers.get(gfi.getLayer());
+		if (l == null) {
+			throw new OWSException("No layer with name '" + gfi.getLayer() + "' configured.", INVALID_PARAMETER_VALUE,
+					"layer");
+		}
 
-        String infoFormat = gfi.getInfoFormat();
-        if ( !featureInfoManager.getSupportedFormats().contains( infoFormat ) ) {
-            throw new OWSException( "FeatureInfo format '" + infoFormat + "' is unknown.", INVALID_PARAMETER_VALUE, "infoFormat" );
-        }
-        TileDataSet tds = l.getTileDataSet( gfi.getTileMatrixSet() );
-        if ( tds == null ) {
-            throw new OWSException( "The TileMatrixSet parameter value of '" + gfi.getTileMatrixSet() + "' is not valid.", INVALID_PARAMETER_VALUE, "tileMatrixSet" );
-        }
-        TileDataLevel tdl = tds.getTileDataLevel( gfi.getTileMatrix() );
-        if ( tdl == null ) {
-            throw new OWSException( "The TileMatrix parameter value of '" + gfi.getTileMatrix() + "' is not valid.", INVALID_PARAMETER_VALUE, "tileMatrix" );
-        }
-        double width = tdl.getMetadata().getTilePixelsX();
-        double height = tdl.getMetadata().getTilePixelsY();
-        if ( gfi.getI() >= width || gfi.getI() < 0 ) {
-            throw new OWSException( "The I parameter does not fit in the image dimension.", "TileOutOfRange", "I" );
-        }
-        if ( gfi.getJ() >= height || gfi.getJ() < 0 ) {
-            throw new OWSException( "The J parameter does not fit in the image dimension.", "TileOutOfRange", "J" );
-        }
-        return l;
-    }
+		String infoFormat = gfi.getInfoFormat();
+		if (!featureInfoManager.getSupportedFormats().contains(infoFormat)) {
+			throw new OWSException("FeatureInfo format '" + infoFormat + "' is unknown.", INVALID_PARAMETER_VALUE,
+					"infoFormat");
+		}
+		TileDataSet tds = l.getTileDataSet(gfi.getTileMatrixSet());
+		if (tds == null) {
+			throw new OWSException(
+					"The TileMatrixSet parameter value of '" + gfi.getTileMatrixSet() + "' is not valid.",
+					INVALID_PARAMETER_VALUE, "tileMatrixSet");
+		}
+		TileDataLevel tdl = tds.getTileDataLevel(gfi.getTileMatrix());
+		if (tdl == null) {
+			throw new OWSException("The TileMatrix parameter value of '" + gfi.getTileMatrix() + "' is not valid.",
+					INVALID_PARAMETER_VALUE, "tileMatrix");
+		}
+		double width = tdl.getMetadata().getTilePixelsX();
+		double height = tdl.getMetadata().getTilePixelsY();
+		if (gfi.getI() >= width || gfi.getI() < 0) {
+			throw new OWSException("The I parameter does not fit in the image dimension.", "TileOutOfRange", "I");
+		}
+		if (gfi.getJ() >= height || gfi.getJ() < 0) {
+			throw new OWSException("The J parameter does not fit in the image dimension.", "TileOutOfRange", "J");
+		}
+		return l;
+	}
 
-    private void checkLayerFeatureInfoEnabled( GetFeatureInfo gfi, TileLayer l )
-                            throws OWSException {
-        if ( !l.getMetadata().isQueryable() ) {
-            throw new OWSException( "Layer '" + gfi.getLayer() + "' not configured for FeatureInfo.",
-                                    OPERATION_NOT_SUPPORTED );
-        }
-    }
+	private void checkLayerFeatureInfoEnabled(GetFeatureInfo gfi, TileLayer l) throws OWSException {
+		if (!l.getMetadata().isQueryable()) {
+			throw new OWSException("Layer '" + gfi.getLayer() + "' not configured for FeatureInfo.",
+					OPERATION_NOT_SUPPORTED);
+		}
+	}
 
-    public FeatureInfoManager getManager() {
-        return featureInfoManager;
-    }
+	public FeatureInfoManager getManager() {
+		return featureInfoManager;
+	}
+
 }

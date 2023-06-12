@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -38,38 +37,39 @@ package org.deegree.commons.ows.metadata.domain;
 /**
  * Specifies which of the boundary values are included in a {@link Range}.
  * <p>
- * Data model has been designed to capture the expressiveness of all OWS specifications and versions and was verified
- * against the following specifications:
+ * Data model has been designed to capture the expressiveness of all OWS specifications
+ * and versions and was verified against the following specifications:
  * <ul>
  * <li>OWS Common 2.0</li>
  * </ul>
  * </p>
  * <p>
- * From OWS Common 2.0: <cite>Specifies which of the minimum and maximum values are included in the range. Note that
- * plus and minus infinity are considered closed bounds.</cite>
+ * From OWS Common 2.0: <cite>Specifies which of the minimum and maximum values are
+ * included in the range. Note that plus and minus infinity are considered closed
+ * bounds.</cite>
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public enum RangeClosure {
 
-    /**
-     * Minimum and maximum values are included.
-     */
-    CLOSED,
-    /**
-     * Minimum and maximum values are NOT included.
-     */
-    OPEN,
-    /**
-     * Minimum value is NOT included in this range, and the specified maximum value IS included.
-     */
-    OPEN_CLOSED,
-    /**
-     * Minimum value IS included in this range, and the specified maximum value is NOT included.
-     */
-    CLOSED_OPEN
+	/**
+	 * Minimum and maximum values are included.
+	 */
+	CLOSED,
+	/**
+	 * Minimum and maximum values are NOT included.
+	 */
+	OPEN,
+	/**
+	 * Minimum value is NOT included in this range, and the specified maximum value IS
+	 * included.
+	 */
+	OPEN_CLOSED,
+	/**
+	 * Minimum value IS included in this range, and the specified maximum value is NOT
+	 * included.
+	 */
+	CLOSED_OPEN
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -57,60 +56,58 @@ import org.deegree.time.primitive.TimePeriod;
  * {@link Iterator} over property nodes of a feature node.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- *
- * @version $Revision:$, $Date:$
  */
 class PropertyNodeIterator implements Iterator<PropertyNode> {
 
-    private GMLObjectNode<GMLObject, GMLObject> parent;
+	private GMLObjectNode<GMLObject, GMLObject> parent;
 
-    private Iterator<Property> propertyIter;
+	private Iterator<Property> propertyIter;
 
-    PropertyNodeIterator( final GMLObjectNode<GMLObject, GMLObject> parent ) {
-        this.parent = parent;
-        final GMLObject object = parent.getValue();
-        final List<Property> props = new ArrayList<Property>();
-        if ( object.getProperties() != null ) {
-            props.addAll( object.getProperties() );
-        }
-        if ( object instanceof TimeInstant ) {
-            final TimePosition position = ( (TimeInstant) object ).getPosition();
-            props.add( new TimePositionAdapter().getAsXMLElement( new QName( GML3_2_NS, "timePosition" ), position ) );
-        } else if ( object instanceof TimePeriod ) {
-            final TimePosition beginPosition = ( (TimePeriod) object ).getBeginPosition();
-            if ( beginPosition != null ) {
-                props.add( new TimePositionAdapter().getAsXMLElement( new QName( GML3_2_NS, "beginPosition" ),
-                                                                      beginPosition ) );
-            }
-            final TimePosition endPosition = ( (TimePeriod) object ).getEndPosition();
-            if ( endPosition != null ) {
-                props.add( new TimePositionAdapter().getAsXMLElement( new QName( GML3_2_NS, "endPosition" ),
-                                                                      endPosition ) );
-            }
-        }
-        propertyIter = props.iterator();
-    }
+	PropertyNodeIterator(final GMLObjectNode<GMLObject, GMLObject> parent) {
+		this.parent = parent;
+		final GMLObject object = parent.getValue();
+		final List<Property> props = new ArrayList<Property>();
+		if (object.getProperties() != null) {
+			props.addAll(object.getProperties());
+		}
+		if (object instanceof TimeInstant) {
+			final TimePosition position = ((TimeInstant) object).getPosition();
+			props.add(new TimePositionAdapter().getAsXMLElement(new QName(GML3_2_NS, "timePosition"), position));
+		}
+		else if (object instanceof TimePeriod) {
+			final TimePosition beginPosition = ((TimePeriod) object).getBeginPosition();
+			if (beginPosition != null) {
+				props.add(new TimePositionAdapter().getAsXMLElement(new QName(GML3_2_NS, "beginPosition"),
+						beginPosition));
+			}
+			final TimePosition endPosition = ((TimePeriod) object).getEndPosition();
+			if (endPosition != null) {
+				props.add(new TimePositionAdapter().getAsXMLElement(new QName(GML3_2_NS, "endPosition"), endPosition));
+			}
+		}
+		propertyIter = props.iterator();
+	}
 
-    @Override
-    public boolean hasNext() {
-        return propertyIter != null && propertyIter.hasNext();
-    }
+	@Override
+	public boolean hasNext() {
+		return propertyIter != null && propertyIter.hasNext();
+	}
 
-    @Override
-    public PropertyNode next() {
-        if ( !hasNext() ) {
-            throw new NoSuchElementException();
-        }
-        Property prop = null;
-        if ( propertyIter != null && propertyIter.hasNext() ) {
-            prop = propertyIter.next();
-        }
-        return new PropertyNode( parent, prop );
-    }
+	@Override
+	public PropertyNode next() {
+		if (!hasNext()) {
+			throw new NoSuchElementException();
+		}
+		Property prop = null;
+		if (propertyIter != null && propertyIter.hasNext()) {
+			prop = propertyIter.next();
+		}
+		return new PropertyNode(parent, prop);
+	}
 
-    @Override
-    public void remove() {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public void remove() {
+		throw new UnsupportedOperationException();
+	}
+
 }

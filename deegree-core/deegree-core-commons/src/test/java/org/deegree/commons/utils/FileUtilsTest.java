@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -42,53 +41,53 @@ import java.io.File;
 import org.junit.Test;
 
 /**
- * 
- * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$ }
  */
 public class FileUtilsTest {
 
-    /**
-     * Test method for {@link org.deegree.commons.utils.FileUtils#getBasename(java.io.File)}.
-     */
-    @Test
-    public void testGetBasename() {
-        // this tests don't work on windows (backslash!)
-        // assertEquals( "/tmp/foo", FileUtils.getBasename( new File( "/tmp/foo.txt" ) ) );
-        // assertEquals( "/tmp/foo", FileUtils.getBasename( new File( "/tmp/foo" ) ) );
-        // assertEquals( "../foo", FileUtils.getBasename( new File( "../foo.txt" ) ) );
-        // assertEquals( "/tmp", FileUtils.getBasename( new File( "/tmp/" ) ) );
-        // assertEquals( "/tmp.dir/foo", FileUtils.getBasename( new File( "/tmp.dir/foo" ) ) );
-        // assertEquals( "", FileUtils.getBasename( new File( "" ) ) );
-    }
+	/**
+	 * Test method for
+	 * {@link org.deegree.commons.utils.FileUtils#getBasename(java.io.File)}.
+	 */
+	@Test
+	public void testGetBasename() {
+		// this tests don't work on windows (backslash!)
+		// assertEquals( "/tmp/foo", FileUtils.getBasename( new File( "/tmp/foo.txt" ) )
+		// );
+		// assertEquals( "/tmp/foo", FileUtils.getBasename( new File( "/tmp/foo" ) ) );
+		// assertEquals( "../foo", FileUtils.getBasename( new File( "../foo.txt" ) ) );
+		// assertEquals( "/tmp", FileUtils.getBasename( new File( "/tmp/" ) ) );
+		// assertEquals( "/tmp.dir/foo", FileUtils.getBasename( new File( "/tmp.dir/foo" )
+		// ) );
+		// assertEquals( "", FileUtils.getBasename( new File( "" ) ) );
+	}
 
-    /**
-     * Test method for {@link org.deegree.commons.utils.FileUtils#getFileExtension(java.io.File)}.
-     */
-    @Test
-    public void testGetFileExtension() {
-        assertEquals( "txt", FileUtils.getFileExtension( new File( "/tmp/foo.txt" ) ) );
-        assertEquals( "txt", FileUtils.getFileExtension( new File( "/tmp/foo.bar.txt" ) ) );
-        assertEquals( "", FileUtils.getFileExtension( new File( "/tmp/foo.bar." ) ) );
-        assertEquals( "", FileUtils.getFileExtension( new File( "/tmp/foo" ) ) );
-        assertEquals( "", FileUtils.getFileExtension( new File( "/tmp.dir/foo" ) ) );
-        assertEquals( "", FileUtils.getFileExtension( new File( "" ) ) );
-    }
+	/**
+	 * Test method for
+	 * {@link org.deegree.commons.utils.FileUtils#getFileExtension(java.io.File)}.
+	 */
+	@Test
+	public void testGetFileExtension() {
+		assertEquals("txt", FileUtils.getFileExtension(new File("/tmp/foo.txt")));
+		assertEquals("txt", FileUtils.getFileExtension(new File("/tmp/foo.bar.txt")));
+		assertEquals("", FileUtils.getFileExtension(new File("/tmp/foo.bar.")));
+		assertEquals("", FileUtils.getFileExtension(new File("/tmp/foo")));
+		assertEquals("", FileUtils.getFileExtension(new File("/tmp.dir/foo")));
+		assertEquals("", FileUtils.getFileExtension(new File("")));
+	}
 
-    /**
-     * Test method for {@link org.deegree.commons.utils.FileUtils#getFileExtension(java.io.File)}.
-     */
-    @Test
-    public void testGetExclusiveExtension() {
-        assertEquals( "foo", FileUtils.getFilename( new File( "/tmp/foo.txt" ) ) );
-        assertEquals( "foo.bar", FileUtils.getFilename( new File( "/tmp/foo.bar.txt" ) ) );
-        assertEquals( "foo.bar", FileUtils.getFilename( new File( "/tmp/foo.bar." ) ) );
-        assertEquals( "foo", FileUtils.getFilename( new File( "/tmp/foo" ) ) );
-        assertEquals( "foo", FileUtils.getFilename( new File( "/tmp.dir/foo" ) ) );
-        assertEquals( "", FileUtils.getFilename( new File( "" ) ) );
-    }
+	/**
+	 * Test method for
+	 * {@link org.deegree.commons.utils.FileUtils#getFileExtension(java.io.File)}.
+	 */
+	@Test
+	public void testGetExclusiveExtension() {
+		assertEquals("foo", FileUtils.getFilename(new File("/tmp/foo.txt")));
+		assertEquals("foo.bar", FileUtils.getFilename(new File("/tmp/foo.bar.txt")));
+		assertEquals("foo.bar", FileUtils.getFilename(new File("/tmp/foo.bar.")));
+		assertEquals("foo", FileUtils.getFilename(new File("/tmp/foo")));
+		assertEquals("foo", FileUtils.getFilename(new File("/tmp.dir/foo")));
+		assertEquals("", FileUtils.getFilename(new File("")));
+	}
 
 }

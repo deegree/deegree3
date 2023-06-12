@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -55,64 +54,62 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.Pair;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class Upload {
 
-    public static void upload( String path, HttpServletRequest req, HttpServletResponse resp )
-                            throws IOException {
+	public static void upload(String path, HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-        Pair<DeegreeWorkspace, String> p = getWorkspaceAndPath( path );
+		Pair<DeegreeWorkspace, String> p = getWorkspaceAndPath(path);
 
-        resp.setContentType( "text/plain" );
+		resp.setContentType("text/plain");
 
-        if ( p.second == null ) {
-            IOUtils.write( "No file name given.\n", resp.getOutputStream() );
-            return;
-        }
+		if (p.second == null) {
+			IOUtils.write("No file name given.\n", resp.getOutputStream());
+			return;
+		}
 
-        boolean isZip = p.second.endsWith( ".zip" ) || req.getContentType() != null
-                        && req.getContentType().equals( "application/zip" );
+		boolean isZip = p.second.endsWith(".zip")
+				|| req.getContentType() != null && req.getContentType().equals("application/zip");
 
-        ServletInputStream in = null;
-        try {
-            in = req.getInputStream();
-            if ( isZip ) {
-                // unzip a workspace
-                String wsName = p.second.substring( 0, p.second.length() - 4 );
-                String dirName = p.second.endsWith( ".zip" ) ? wsName : p.second;
-                File workspaceRoot = new File ( getWorkspaceRoot() );
-                File dir = new File( workspaceRoot, dirName );
-                if ( !FilenameUtils.directoryContains( workspaceRoot.getCanonicalPath(), dir.getCanonicalPath() ) ) {
-                    IOUtils.write( "Workspace " + wsName + " invalid.\n", resp.getOutputStream() );
-                    return;
-                } else if ( isWorkspace( dirName ) ) {
-                    IOUtils.write( "Workspace " + wsName + " exists.\n", resp.getOutputStream() );
-                    return;
-                }
-                unzip( in, dir );
-                IOUtils.write( "Workspace " + wsName + " uploaded.\n", resp.getOutputStream() );
-            } else {
-                File workspaceDir = p.first.getLocation();
-                File dest = new File( workspaceDir, p.second );
-                if ( !FilenameUtils.directoryContains( workspaceDir.getCanonicalPath(), dest.getCanonicalPath() ) ) {
-                    IOUtils.write( "Unable to upload file: " + p.second + ".\n", resp.getOutputStream() );
-                    return;
-                }
-                if ( !dest.getParentFile().exists() && !dest.getParentFile().mkdirs() ) {
-                    IOUtils.write( "Unable to create parent directory for upload.\n", resp.getOutputStream() );
-                    return;
-                }
-                copyInputStreamToFile( in, dest );
-                IOUtils.write( dest.getName() + " uploaded.\n", resp.getOutputStream() );
-            }
-        } finally {
-            closeQuietly( in );
-        }
-    }
+		ServletInputStream in = null;
+		try {
+			in = req.getInputStream();
+			if (isZip) {
+				// unzip a workspace
+				String wsName = p.second.substring(0, p.second.length() - 4);
+				String dirName = p.second.endsWith(".zip") ? wsName : p.second;
+				File workspaceRoot = new File(getWorkspaceRoot());
+				File dir = new File(workspaceRoot, dirName);
+				if (!FilenameUtils.directoryContains(workspaceRoot.getCanonicalPath(), dir.getCanonicalPath())) {
+					IOUtils.write("Workspace " + wsName + " invalid.\n", resp.getOutputStream());
+					return;
+				}
+				else if (isWorkspace(dirName)) {
+					IOUtils.write("Workspace " + wsName + " exists.\n", resp.getOutputStream());
+					return;
+				}
+				unzip(in, dir);
+				IOUtils.write("Workspace " + wsName + " uploaded.\n", resp.getOutputStream());
+			}
+			else {
+				File workspaceDir = p.first.getLocation();
+				File dest = new File(workspaceDir, p.second);
+				if (!FilenameUtils.directoryContains(workspaceDir.getCanonicalPath(), dest.getCanonicalPath())) {
+					IOUtils.write("Unable to upload file: " + p.second + ".\n", resp.getOutputStream());
+					return;
+				}
+				if (!dest.getParentFile().exists() && !dest.getParentFile().mkdirs()) {
+					IOUtils.write("Unable to create parent directory for upload.\n", resp.getOutputStream());
+					return;
+				}
+				copyInputStreamToFile(in, dest);
+				IOUtils.write(dest.getName() + " uploaded.\n", resp.getOutputStream());
+			}
+		}
+		finally {
+			closeQuietly(in);
+		}
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -54,43 +53,44 @@ import org.deegree.workspace.ResourceMetadata;
 
 /**
  * Responsible for building memory iso stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class IsoMemoryMetadataStoreBuilder implements ResourceBuilder<MetadataStore<? extends MetadataRecord>> {
 
-    private ISOMemoryMetadataStoreConfig config;
+	private ISOMemoryMetadataStoreConfig config;
 
-    private ResourceMetadata<MetadataStore<? extends MetadataRecord>> metadata;
+	private ResourceMetadata<MetadataStore<? extends MetadataRecord>> metadata;
 
-    public IsoMemoryMetadataStoreBuilder( ISOMemoryMetadataStoreConfig config,
-                                     ResourceMetadata<MetadataStore<? extends MetadataRecord>> metadata ) {
-        this.config = config;
-        this.metadata = metadata;
-    }
+	public IsoMemoryMetadataStoreBuilder(ISOMemoryMetadataStoreConfig config,
+			ResourceMetadata<MetadataStore<? extends MetadataRecord>> metadata) {
+		this.config = config;
+		this.metadata = metadata;
+	}
 
-    @Override
-    public MetadataStore<? extends MetadataRecord> build() {
-        List<File> recordDirectories = new ArrayList<File>();
-        File insertDirectory = null;
-        try {
-            List<String> isoRecordDirectories = config.getISORecordDirectory();
-            for ( String isoRecordDirectory : isoRecordDirectories ) {
-                recordDirectories.add( metadata.getLocation().resolveToFile( isoRecordDirectory ) );
-            }
-            if ( config.getInsertDirectory() != null ) {
-                insertDirectory = metadata.getLocation().resolveToFile( config.getInsertDirectory() );
-            } else {
-                insertDirectory = recordDirectories.get( 0 );
-            }
+	@Override
+	public MetadataStore<? extends MetadataRecord> build() {
+		List<File> recordDirectories = new ArrayList<File>();
+		File insertDirectory = null;
+		try {
+			List<String> isoRecordDirectories = config.getISORecordDirectory();
+			for (String isoRecordDirectory : isoRecordDirectories) {
+				recordDirectories.add(metadata.getLocation().resolveToFile(isoRecordDirectory));
+			}
+			if (config.getInsertDirectory() != null) {
+				insertDirectory = metadata.getLocation().resolveToFile(config.getInsertDirectory());
+			}
+			else {
+				insertDirectory = recordDirectories.get(0);
+			}
 
-            return new ISOMemoryMetadataStore( recordDirectories, insertDirectory, metadata );
-        } catch ( Exception e ) {
-            String msg = "Error setting up iso memory meatadata store from configuration: " + e.getMessage();
-            throw new ResourceInitException( msg, e );
-        }
-    }
+			return new ISOMemoryMetadataStore(recordDirectories, insertDirectory, metadata);
+		}
+		catch (Exception e) {
+			String msg = "Error setting up iso memory meatadata store from configuration: " + e.getMessage();
+			throw new ResourceInitException(msg, e);
+		}
+	}
 
 }

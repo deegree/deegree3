@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -50,41 +49,37 @@ import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class WPVSProvider extends OWSProvider {
 
-    protected static final ImplementationMetadata<WPVSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<WPVSRequestType>() {
-        {
-            supportedVersions = new Version[] { VERSION_040 };
-            handledNamespaces = new String[] { WPVS_NS };
-            handledRequests = WPVSRequestType.class;
-            serviceName = new String[] { "WPVS" };
-        }
-    };
+	protected static final ImplementationMetadata<WPVSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<WPVSRequestType>() {
+		{
+			supportedVersions = new Version[] { VERSION_040 };
+			handledNamespaces = new String[] { WPVS_NS };
+			handledRequests = WPVSRequestType.class;
+			serviceName = new String[] { "WPVS" };
+		}
+	};
 
-    @Override
-    public String getNamespace() {
-        return "http://www.deegree.org/services/wpvs";
-    }
+	@Override
+	public String getNamespace() {
+		return "http://www.deegree.org/services/wpvs";
+	}
 
-    @Override
-    public URL getSchema() {
-        return WPVSProvider.class.getResource( "/META-INF/schemas/services/wpvs/wpvs_configuration.xsd" );
-    }
+	@Override
+	public URL getSchema() {
+		return WPVSProvider.class.getResource("/META-INF/schemas/services/wpvs/wpvs_configuration.xsd");
+	}
 
-    @Override
-    public ImplementationMetadata<WPVSRequestType> getImplementationMetadata() {
-        return IMPLEMENTATION_METADATA;
-    }
+	@Override
+	public ImplementationMetadata<WPVSRequestType> getImplementationMetadata() {
+		return IMPLEMENTATION_METADATA;
+	}
 
-    @Override
-    public ResourceMetadata<OWS> createFromLocation( Workspace workspace, ResourceLocation<OWS> location ) {
-        return new WpvsMetadata( workspace, location, this );
-    }
+	@Override
+	public ResourceMetadata<OWS> createFromLocation(Workspace workspace, ResourceLocation<OWS> location) {
+		return new WpvsMetadata(workspace, location, this);
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2014 by:
@@ -23,7 +22,7 @@
  Boomkamp 16
  7461 AX Rijssen
  The Netherlands
- http://idgis.nl/ 
+ http://idgis.nl/
 
  lat/lon GmbH
  Aennchenstr. 19, 53177 Bonn
@@ -53,18 +52,18 @@ import org.deegree.featureinfo.FeatureInfoParams;
 
 public class PlainTextFeatureInfoSerializer implements FeatureInfoSerializer {
 
-    @Override
-    public void serialize( FeatureInfoParams params, FeatureInfoContext context )
-                            throws IOException, XMLStreamException {
+	@Override
+	public void serialize(FeatureInfoParams params, FeatureInfoContext context) throws IOException, XMLStreamException {
 
-        PrintWriter out = new PrintWriter( new OutputStreamWriter( context.getOutputStream(), "UTF-8" ) );
-        for ( Feature f : params.getFeatureCollection() ) {
-            out.println( f.getName().getLocalPart() + ":" );
-            for ( Property p : f.getProperties() ) {
-                out.println( "  " + p.getName().getLocalPart() + ": " + p.getValue() );
-            }
-            out.println();
-        }
-        out.close();
-    }
+		PrintWriter out = new PrintWriter(new OutputStreamWriter(context.getOutputStream(), "UTF-8"));
+		for (Feature f : params.getFeatureCollection()) {
+			out.println(f.getName().getLocalPart() + ":");
+			for (Property p : f.getProperties()) {
+				out.println("  " + p.getName().getLocalPart() + ": " + p.getValue());
+			}
+			out.println();
+		}
+		out.close();
+	}
+
 }

@@ -46,71 +46,68 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 
 /**
- * Interface for all version of GML geometry decoders. Any new geometry decoder should implement this interface.
- * 
+ * Interface for all version of GML geometry decoders. Any new geometry decoder should
+ * implement this interface.
+ *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * 
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 public interface GMLGeometryReader {
 
-    /**
-     * @param xmlStream
-     * @return
-     * @throws XMLParsingException
-     * @throws XMLStreamException
-     * @throws UnknownCRSException
-     */
-    public Geometry parse( XMLStreamReaderWrapper xmlStream )
-                            throws XMLParsingException, XMLStreamException, UnknownCRSException;
+	/**
+	 * @param xmlStream
+	 * @return
+	 * @throws XMLParsingException
+	 * @throws XMLStreamException
+	 * @throws UnknownCRSException
+	 */
+	public Geometry parse(XMLStreamReaderWrapper xmlStream)
+			throws XMLParsingException, XMLStreamException, UnknownCRSException;
 
-    /**
-     * @param xmlStream
-     * @param defaultCRS
-     * @return
-     * @throws XMLParsingException
-     * @throws XMLStreamException
-     * @throws UnknownCRSException
-     */
-    public Geometry parse( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
-                            throws XMLParsingException, XMLStreamException, UnknownCRSException;
+	/**
+	 * @param xmlStream
+	 * @param defaultCRS
+	 * @return
+	 * @throws XMLParsingException
+	 * @throws XMLStreamException
+	 * @throws UnknownCRSException
+	 */
+	public Geometry parse(XMLStreamReaderWrapper xmlStream, ICRS defaultCRS)
+			throws XMLParsingException, XMLStreamException, UnknownCRSException;
 
-    /**
-     * @param xmlStream
-     * @param defaultCRS
-     * @return
-     * @throws XMLParsingException
-     * @throws XMLStreamException
-     */
-    public Envelope parseEnvelope( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
-                            throws XMLParsingException, XMLStreamException;
+	/**
+	 * @param xmlStream
+	 * @param defaultCRS
+	 * @return
+	 * @throws XMLParsingException
+	 * @throws XMLStreamException
+	 */
+	public Envelope parseEnvelope(XMLStreamReaderWrapper xmlStream, ICRS defaultCRS)
+			throws XMLParsingException, XMLStreamException;
 
-    /**
-     * @param xmlReader
-     * @return true if stream's event is an {@link XMLStreamConstants#START_ELEMENT} && the current element's name is a
-     *         known geometry.
-     */
-    public boolean isGeometryElement( XMLStreamReader xmlReader );
+	/**
+	 * @param xmlReader
+	 * @return true if stream's event is an {@link XMLStreamConstants#START_ELEMENT} &&
+	 * the current element's name is a known geometry.
+	 */
+	public boolean isGeometryElement(XMLStreamReader xmlReader);
 
-    /**
-     * @param xmlReader
-     * @return true if stream's event is an {@link XMLStreamConstants#START_ELEMENT} && the current element's name is an
-     *         envelope.
-     */
-    public boolean isGeometryOrEnvelopeElement( XMLStreamReader xmlReader );
+	/**
+	 * @param xmlReader
+	 * @return true if stream's event is an {@link XMLStreamConstants#START_ELEMENT} &&
+	 * the current element's name is an envelope.
+	 */
+	public boolean isGeometryOrEnvelopeElement(XMLStreamReader xmlReader);
 
-    /**
-     * Parse the current geometry or envelope the given stream is pointing to.
-     * 
-     * @param xmlStream
-     * @return the Geometry (or Envelope) the given stream is pointing to.
-     * @throws XMLParsingException
-     * @throws XMLStreamException
-     * @throws UnknownCRSException
-     */
-    public Geometry parseGeometryOrEnvelope( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
-                            throws XMLParsingException, XMLStreamException, UnknownCRSException;
+	/**
+	 * Parse the current geometry or envelope the given stream is pointing to.
+	 * @param xmlStream
+	 * @return the Geometry (or Envelope) the given stream is pointing to.
+	 * @throws XMLParsingException
+	 * @throws XMLStreamException
+	 * @throws UnknownCRSException
+	 */
+	public Geometry parseGeometryOrEnvelope(XMLStreamReaderWrapper xmlStream, ICRS defaultCRS)
+			throws XMLParsingException, XMLStreamException, UnknownCRSException;
+
 }

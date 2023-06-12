@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -56,74 +55,74 @@ import org.slf4j.Logger;
 
 /**
  * Builds map service components from jaxb config beans.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 class MapServiceBuilder {
 
-    private static final Logger LOG = getLogger( MapServiceBuilder.class );
+	private static final Logger LOG = getLogger(MapServiceBuilder.class);
 
-    private ServiceConfigurationType conf;
+	private ServiceConfigurationType conf;
 
-    private Antialias alias;
+	private Antialias alias;
 
-    private Quality quali;
+	private Quality quali;
 
-    private Interpolation interpol;
+	private Interpolation interpol;
 
-    MapServiceBuilder( ServiceConfigurationType conf ) {
-        this.conf = conf;
-        alias = Antialias.BOTH;
-        quali = Quality.HIGH;
-        interpol = Interpolation.NEARESTNEIGHBOUR;
-    }
+	MapServiceBuilder(ServiceConfigurationType conf) {
+		this.conf = conf;
+		alias = Antialias.BOTH;
+		quali = Quality.HIGH;
+		interpol = Interpolation.NEARESTNEIGHBOUR;
+	}
 
-    MapOptions buildMapOptions() {
-        int maxFeatures = 10000;
-        int featureInfoRadius = 1;
-        if ( conf != null ) {
-            LayerOptionsType sf = conf.getDefaultLayerOptions();
-            alias = handleDefaultValue( sf == null ? null : sf.getAntiAliasing(), Antialias.class, BOTH );
-            quali = handleDefaultValue( sf == null ? null : sf.getRenderingQuality(), Quality.class, NORMAL );
-            interpol = handleDefaultValue( sf == null ? null : sf.getInterpolation(), Interpolation.class,
-                                           NEARESTNEIGHBOR );
-            if ( sf != null && sf.getMaxFeatures() != null ) {
-                maxFeatures = sf.getMaxFeatures();
-                LOG.debug( "Using global max features setting of {}.", maxFeatures );
-            } else {
-                LOG.debug( "Using default global max features setting of {}, set it to -1 if you don't want a limit.",
-                           maxFeatures );
-            }
-            if ( sf != null && sf.getFeatureInfoRadius() != null ) {
-                featureInfoRadius = sf.getFeatureInfoRadius();
-                LOG.debug( "Using global feature info radius setting of {}.", featureInfoRadius );
-            } else {
-                LOG.debug( "Using default feature info radius of {}.", featureInfoRadius );
-            }
-            return new MapOptions.Builder().
-                                    quality( quali ).
-                                    interpolation( interpol ).
-                                    antialias( alias ).
-                                    maxFeatures( maxFeatures).
-                                    featureInfoRadius( featureInfoRadius ).build();
-        }
-        return null;
-    }
+	MapOptions buildMapOptions() {
+		int maxFeatures = 10000;
+		int featureInfoRadius = 1;
+		if (conf != null) {
+			LayerOptionsType sf = conf.getDefaultLayerOptions();
+			alias = handleDefaultValue(sf == null ? null : sf.getAntiAliasing(), Antialias.class, BOTH);
+			quali = handleDefaultValue(sf == null ? null : sf.getRenderingQuality(), Quality.class, NORMAL);
+			interpol = handleDefaultValue(sf == null ? null : sf.getInterpolation(), Interpolation.class,
+					NEARESTNEIGHBOR);
+			if (sf != null && sf.getMaxFeatures() != null) {
+				maxFeatures = sf.getMaxFeatures();
+				LOG.debug("Using global max features setting of {}.", maxFeatures);
+			}
+			else {
+				LOG.debug("Using default global max features setting of {}, set it to -1 if you don't want a limit.",
+						maxFeatures);
+			}
+			if (sf != null && sf.getFeatureInfoRadius() != null) {
+				featureInfoRadius = sf.getFeatureInfoRadius();
+				LOG.debug("Using global feature info radius setting of {}.", featureInfoRadius);
+			}
+			else {
+				LOG.debug("Using default feature info radius of {}.", featureInfoRadius);
+			}
+			return new MapOptions.Builder().quality(quali)
+				.interpolation(interpol)
+				.antialias(alias)
+				.maxFeatures(maxFeatures)
+				.featureInfoRadius(featureInfoRadius)
+				.build();
+		}
+		return null;
+	}
 
-    private static <T extends Enum<T>> T handleDefaultValue( String val, Class<T> enumType, T defaultValue ) {
-        if ( val == null ) {
-            return defaultValue;
-        }
-        try {
-            return Enum.valueOf( enumType, val.toUpperCase() );
-        } catch ( IllegalArgumentException e ) {
-            LOG.warn( "'{}' is not a valid value for '{}'. Using default value '{}' instead.",
-                      new Object[] { val, enumType.getSimpleName(), defaultValue } );
-            return defaultValue;
-        }
-    }
+	private static <T extends Enum<T>> T handleDefaultValue(String val, Class<T> enumType, T defaultValue) {
+		if (val == null) {
+			return defaultValue;
+		}
+		try {
+			return Enum.valueOf(enumType, val.toUpperCase());
+		}
+		catch (IllegalArgumentException e) {
+			LOG.warn("'{}' is not a valid value for '{}'. Using default value '{}' instead.",
+					new Object[] { val, enumType.getSimpleName(), defaultValue });
+			return defaultValue;
+		}
+	}
 
 }

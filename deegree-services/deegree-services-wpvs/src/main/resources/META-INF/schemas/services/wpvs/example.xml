@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <deegreeWPVS xmlns="http://www.deegree.org/services/wpvs" xmlns:md="http://www.deegree.org/webservices"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/services/wpvs http://schemas.deegree.org/3.5/services/wpvs/wpvs_configuration.xsd">
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/services/wpvs https://schemas.deegree.org/core/3.5/services/wpvs/wpvs_configuration.xsd">
   <ServiceConfiguration>
     <!-- Configures the number of textures stored in GPU (Graphic Processing Unit) memory, i.e. ready for rendering. -->
     <TexturesInGPUMem>300</TexturesInGPUMem>
@@ -38,7 +38,7 @@
     </SkyImages>
     <DatasetDefinitions>
       <Title>Datasets offered by the WPVS</Title>
-      <MetadataURL>http://schemas.deegree.org/services/wpvs/</MetadataURL>
+      <MetadataURL>https://schemas.deegree.org/services/wpvs/</MetadataURL>
       <Abstract>This definition is a container for all available datasets</Abstract>
       <!-- md:Keywords>
         <md:Keyword lang="de_DE">Beschreibung von der Datasetdefinition</md:Keyword>

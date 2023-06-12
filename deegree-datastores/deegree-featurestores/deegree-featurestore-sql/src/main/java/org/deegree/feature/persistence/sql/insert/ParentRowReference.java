@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -46,47 +45,44 @@ import org.deegree.feature.persistence.sql.id.KeyPropagation;
  * <p>
  * The parent provides values for foreign key columns.
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 class ParentRowReference {
 
-    private final InsertRow parent;
+	private final InsertRow parent;
 
-    private final KeyPropagation propagation;
+	private final KeyPropagation propagation;
 
-    private final Map<InsertRow, SQLIdentifier> hrefingRows = new HashMap<InsertRow, SQLIdentifier>();
+	private final Map<InsertRow, SQLIdentifier> hrefingRows = new HashMap<InsertRow, SQLIdentifier>();
 
-    ParentRowReference( InsertRow parent, KeyPropagation propagation ) {
-        this.parent = parent;
-        this.propagation = propagation;
-    }
+	ParentRowReference(InsertRow parent, KeyPropagation propagation) {
+		this.parent = parent;
+		this.propagation = propagation;
+	}
 
-    InsertRow getTarget() {
-        return parent;
-    }
+	InsertRow getTarget() {
+		return parent;
+	}
 
-    /**
-     * Returns the {@link KeyPropagation} from the parent {@link InsertRow}.
-     * 
-     * @return key propagation, never <code>null</code>
-     */
-    KeyPropagation getKeyPropagation() {
-        return propagation;
-    }
+	/**
+	 * Returns the {@link KeyPropagation} from the parent {@link InsertRow}.
+	 * @return key propagation, never <code>null</code>
+	 */
+	KeyPropagation getKeyPropagation() {
+		return propagation;
+	}
 
-    void addHrefingRow( InsertRow row, SQLIdentifier hrefCol ) {
-        hrefingRows.put( row, hrefCol );
-    }
+	void addHrefingRow(InsertRow row, SQLIdentifier hrefCol) {
+		hrefingRows.put(row, hrefCol);
+	}
 
-    boolean isHrefed( InsertRow childInsertRow ) {
-        return hrefingRows.containsKey( childInsertRow );
-    }
+	boolean isHrefed(InsertRow childInsertRow) {
+		return hrefingRows.containsKey(childInsertRow);
+	}
 
-    SQLIdentifier getHrefColum( InsertRow childInsertRow ) {
-        return hrefingRows.get( childInsertRow );
-    }
+	SQLIdentifier getHrefColum(InsertRow childInsertRow) {
+		return hrefingRows.get(childInsertRow);
+	}
+
 }

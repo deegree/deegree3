@@ -42,36 +42,34 @@ import org.deegree.workspace.standard.DefaultResourceIdentifier;
 
 /**
  * Resource metadata for sql renderable stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class SqlRenderableStoreMetadata extends AbstractResourceMetadata<RenderableStore> {
 
-    private static final String CONFIG_JAXB_PACKAGE = RenderableSQLStoreConfig.class.getPackage().getName();
+	private static final String CONFIG_JAXB_PACKAGE = RenderableSQLStoreConfig.class.getPackage().getName();
 
-    public SqlRenderableStoreMetadata( Workspace workspace, ResourceLocation<RenderableStore> location,
-                                       AbstractResourceProvider<RenderableStore> provider ) {
-        super( workspace, location, provider );
-    }
+	public SqlRenderableStoreMetadata(Workspace workspace, ResourceLocation<RenderableStore> location,
+			AbstractResourceProvider<RenderableStore> provider) {
+		super(workspace, location, provider);
+	}
 
-    @Override
-    public ResourceBuilder<RenderableStore> prepare() {
-        try {
-            RenderableSQLStoreConfig config = (RenderableSQLStoreConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE,
-                                                                                               provider.getSchema(),
-                                                                                               location.getAsStream(),
-                                                                                               workspace );
+	@Override
+	public ResourceBuilder<RenderableStore> prepare() {
+		try {
+			RenderableSQLStoreConfig config = (RenderableSQLStoreConfig) JAXBUtils.unmarshall(CONFIG_JAXB_PACKAGE,
+					provider.getSchema(), location.getAsStream(), workspace);
 
-            dependencies.add( new DefaultResourceIdentifier<ConnectionProvider>( ConnectionProviderProvider.class,
-                                                                                 config.getJDBCConnId() ) );
+			dependencies.add(new DefaultResourceIdentifier<ConnectionProvider>(ConnectionProviderProvider.class,
+					config.getJDBCConnId()));
 
-            return new SqlRenderableStoreBuilder( config, this, workspace );
+			return new SqlRenderableStoreBuilder(config, this, workspace);
 
-        } catch ( Exception e ) {
-            throw new ResourceInitException( e.getLocalizedMessage(), e );
-        }
-    }
+		}
+		catch (Exception e) {
+			throw new ResourceInitException(e.getLocalizedMessage(), e);
+		}
+	}
 
 }

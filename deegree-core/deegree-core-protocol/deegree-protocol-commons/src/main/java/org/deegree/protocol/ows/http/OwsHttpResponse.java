@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -46,61 +45,52 @@ import org.deegree.protocol.ows.exception.OWSExceptionReport;
 /**
  * Encapsulates an HTTP response from an OGC web service.
  * <p>
- * NOTE: The receiver <b>must</b> call {@link #close()} eventually, otherwise the HTTP connection will not be freed.
+ * NOTE: The receiver <b>must</b> call {@link #close()} eventually, otherwise the HTTP
+ * connection will not be freed.
  * </p>
- * 
- * @version $Revision$, $Date$
+ *
  */
 public interface OwsHttpResponse extends Closeable {
 
-    /**
-     * Provides access to the raw response.
-     * 
-     * @return http response, never <code>null</code>
-     */
-    public HttpResponse getAsHttpResponse();
+	/**
+	 * Provides access to the raw response.
+	 * @return http response, never <code>null</code>
+	 */
+	public HttpResponse getAsHttpResponse();
 
-    /**
-     * Provides access to the response body as a binary stream.
-     * 
-     * @return binary stream, never <code>null</code>
-     */
-    public CloseRequiredInputStream getAsBinaryStream();
+	/**
+	 * Provides access to the response body as a binary stream.
+	 * @return binary stream, never <code>null</code>
+	 */
+	public CloseRequiredInputStream getAsBinaryStream();
 
-    /**
-     * Provides access to the response body as an XML stream.
-     * 
-     * @return xml stream, never <code>null</code>
-     * @throws OWSExceptionReport
-     *             if the stream contains an XML-encoded OWS Exception report
-     * @throws XMLStreamException
-     *             if accessing the stream fails (e.g. no XML payload)
-     */
-    public XMLStreamReader getAsXMLStream()
-                            throws OWSExceptionReport, XMLStreamException;
+	/**
+	 * Provides access to the response body as an XML stream.
+	 * @return xml stream, never <code>null</code>
+	 * @throws OWSExceptionReport if the stream contains an XML-encoded OWS Exception
+	 * report
+	 * @throws XMLStreamException if accessing the stream fails (e.g. no XML payload)
+	 */
+	public XMLStreamReader getAsXMLStream() throws OWSExceptionReport, XMLStreamException;
 
-    /**
-     * Throws an {@link OWSExceptionReport} if the status code is not 200 (OK).
-     * 
-     * @throws OWSExceptionReport
-     *             if status code isn't 200
-     */
-    public void assertHttpStatus200()
-                            throws OWSExceptionReport;
+	/**
+	 * Throws an {@link OWSExceptionReport} if the status code is not 200 (OK).
+	 * @throws OWSExceptionReport if status code isn't 200
+	 */
+	public void assertHttpStatus200() throws OWSExceptionReport;
 
-    /**
-     * Throws an {@link OWSExceptionReport} if the <code>Content-Type</code> header indicates an XML response and the
-     * contained document actually is an exception report.
-     * 
-     * @throws OWSExceptionReport
-     *             if XML content type and payload is an exception report
-     */
-    public void assertNoXmlContentTypeAndExceptionReport()
-                            throws OWSExceptionReport, XMLStreamException;
+	/**
+	 * Throws an {@link OWSExceptionReport} if the <code>Content-Type</code> header
+	 * indicates an XML response and the contained document actually is an exception
+	 * report.
+	 * @throws OWSExceptionReport if XML content type and payload is an exception report
+	 */
+	public void assertNoXmlContentTypeAndExceptionReport() throws OWSExceptionReport, XMLStreamException;
 
-    /**
-     * Closes the HTTP connection.
-     */
-    @Override
-    public void close();
+	/**
+	 * Closes the HTTP connection.
+	 */
+	@Override
+	public void close();
+
 }

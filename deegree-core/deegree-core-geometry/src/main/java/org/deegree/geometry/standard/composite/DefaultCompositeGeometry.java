@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -51,142 +50,135 @@ import org.locationtech.jts.geom.GeometryCollection;
 
 /**
  * Default implementation of {@link CompositeGeometry}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class DefaultCompositeGeometry extends AbstractDefaultGeometry implements CompositeGeometry<GeometricPrimitive> {
 
-    private List<GeometricPrimitive> memberPrimitives;
+	private List<GeometricPrimitive> memberPrimitives;
 
-    /**
-     * Creates a new {@link DefaultCompositeGeometry} from the given parameters.
-     * 
-     * @param id
-     *            identifier, may be null
-     * @param crs
-     *            coordinate reference system, may be null
-     * @param pm
-     *            precision model, may be null
-     * @param memberPrimitives
-     */
-    public DefaultCompositeGeometry( String id, ICRS crs, PrecisionModel pm,
-                                     List<GeometricPrimitive> memberPrimitives ) {
-        super( id, crs, pm );
-        this.memberPrimitives = memberPrimitives;
-    }
+	/**
+	 * Creates a new {@link DefaultCompositeGeometry} from the given parameters.
+	 * @param id identifier, may be null
+	 * @param crs coordinate reference system, may be null
+	 * @param pm precision model, may be null
+	 * @param memberPrimitives
+	 */
+	public DefaultCompositeGeometry(String id, ICRS crs, PrecisionModel pm, List<GeometricPrimitive> memberPrimitives) {
+		super(id, crs, pm);
+		this.memberPrimitives = memberPrimitives;
+	}
 
-    @Override
-    public int getCoordinateDimension() {
-        return memberPrimitives.get( 0 ).getCoordinateDimension();
-    }
+	@Override
+	public int getCoordinateDimension() {
+		return memberPrimitives.get(0).getCoordinateDimension();
+	}
 
-    public boolean add( GeometricPrimitive e ) {
-        return memberPrimitives.add( e );
-    }
+	public boolean add(GeometricPrimitive e) {
+		return memberPrimitives.add(e);
+	}
 
-    public void add( int index, GeometricPrimitive element ) {
-        memberPrimitives.add( index, element );
-    }
+	public void add(int index, GeometricPrimitive element) {
+		memberPrimitives.add(index, element);
+	}
 
-    public boolean addAll( Collection<? extends GeometricPrimitive> c ) {
-        return memberPrimitives.addAll( c );
-    }
+	public boolean addAll(Collection<? extends GeometricPrimitive> c) {
+		return memberPrimitives.addAll(c);
+	}
 
-    public boolean addAll( int index, Collection<? extends GeometricPrimitive> c ) {
-        return memberPrimitives.addAll( index, c );
-    }
+	public boolean addAll(int index, Collection<? extends GeometricPrimitive> c) {
+		return memberPrimitives.addAll(index, c);
+	}
 
-    public void clear() {
-        memberPrimitives.clear();
-    }
+	public void clear() {
+		memberPrimitives.clear();
+	}
 
-    public boolean contains( Object o ) {
-        return memberPrimitives.contains( o );
-    }
+	public boolean contains(Object o) {
+		return memberPrimitives.contains(o);
+	}
 
-    public boolean containsAll( Collection<?> c ) {
-        return memberPrimitives.containsAll( c );
-    }
+	public boolean containsAll(Collection<?> c) {
+		return memberPrimitives.containsAll(c);
+	}
 
-    public GeometricPrimitive get( int index ) {
-        return memberPrimitives.get( index );
-    }
+	public GeometricPrimitive get(int index) {
+		return memberPrimitives.get(index);
+	}
 
-    public int indexOf( Object o ) {
-        return memberPrimitives.indexOf( o );
-    }
+	public int indexOf(Object o) {
+		return memberPrimitives.indexOf(o);
+	}
 
-    public boolean isEmpty() {
-        return memberPrimitives.isEmpty();
-    }
+	public boolean isEmpty() {
+		return memberPrimitives.isEmpty();
+	}
 
-    public Iterator<GeometricPrimitive> iterator() {
-        return memberPrimitives.iterator();
-    }
+	public Iterator<GeometricPrimitive> iterator() {
+		return memberPrimitives.iterator();
+	}
 
-    public int lastIndexOf( Object o ) {
-        return memberPrimitives.lastIndexOf( o );
-    }
+	public int lastIndexOf(Object o) {
+		return memberPrimitives.lastIndexOf(o);
+	}
 
-    public ListIterator<GeometricPrimitive> listIterator() {
-        return memberPrimitives.listIterator();
-    }
+	public ListIterator<GeometricPrimitive> listIterator() {
+		return memberPrimitives.listIterator();
+	}
 
-    public ListIterator<GeometricPrimitive> listIterator( int index ) {
-        return memberPrimitives.listIterator( index );
-    }
+	public ListIterator<GeometricPrimitive> listIterator(int index) {
+		return memberPrimitives.listIterator(index);
+	}
 
-    public GeometricPrimitive remove( int index ) {
-        return memberPrimitives.remove( index );
-    }
+	public GeometricPrimitive remove(int index) {
+		return memberPrimitives.remove(index);
+	}
 
-    public boolean remove( Object o ) {
-        return memberPrimitives.remove( o );
-    }
+	public boolean remove(Object o) {
+		return memberPrimitives.remove(o);
+	}
 
-    public boolean removeAll( Collection<?> c ) {
-        return memberPrimitives.removeAll( c );
-    }
+	public boolean removeAll(Collection<?> c) {
+		return memberPrimitives.removeAll(c);
+	}
 
-    public boolean retainAll( Collection<?> c ) {
-        return memberPrimitives.retainAll( c );
-    }
+	public boolean retainAll(Collection<?> c) {
+		return memberPrimitives.retainAll(c);
+	}
 
-    public GeometricPrimitive set( int index, GeometricPrimitive element ) {
-        return memberPrimitives.set( index, element );
-    }
+	public GeometricPrimitive set(int index, GeometricPrimitive element) {
+		return memberPrimitives.set(index, element);
+	}
 
-    public int size() {
-        return memberPrimitives.size();
-    }
+	public int size() {
+		return memberPrimitives.size();
+	}
 
-    public List<GeometricPrimitive> subList( int fromIndex, int toIndex ) {
-        return memberPrimitives.subList( fromIndex, toIndex );
-    }
+	public List<GeometricPrimitive> subList(int fromIndex, int toIndex) {
+		return memberPrimitives.subList(fromIndex, toIndex);
+	}
 
-    public Object[] toArray() {
-        return memberPrimitives.toArray();
-    }
+	public Object[] toArray() {
+		return memberPrimitives.toArray();
+	}
 
-    public <T> T[] toArray( T[] a ) {
-        return memberPrimitives.toArray( a );
-    }
+	public <T> T[] toArray(T[] a) {
+		return memberPrimitives.toArray(a);
+	}
 
-    @Override
-    public GeometryType getGeometryType() {
-        return GeometryType.COMPOSITE_GEOMETRY;
-    }
+	@Override
+	public GeometryType getGeometryType() {
+		return GeometryType.COMPOSITE_GEOMETRY;
+	}
 
-    @Override
-    protected GeometryCollection buildJTSGeometry() {
-        org.locationtech.jts.geom.Geometry[] jtsMembers = new org.locationtech.jts.geom.Geometry[size()];
-        int i = 0;
-        for ( Geometry geometry : memberPrimitives ) {
-            jtsMembers[i++] = getAsDefaultGeometry( geometry ).getJTSGeometry();
-        }
-        return jtsFactory.createGeometryCollection( jtsMembers );
-    }
+	@Override
+	protected GeometryCollection buildJTSGeometry() {
+		org.locationtech.jts.geom.Geometry[] jtsMembers = new org.locationtech.jts.geom.Geometry[size()];
+		int i = 0;
+		for (Geometry geometry : memberPrimitives) {
+			jtsMembers[i++] = getAsDefaultGeometry(geometry).getJTSGeometry();
+		}
+		return jtsFactory.createGeometryCollection(jtsMembers);
+	}
+
 }

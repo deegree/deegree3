@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/src/main/java/org/deegree/gml/GMLObject.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -43,77 +42,71 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.types.FeatureType;
 
 /**
- * Encapsulates additional {@link Property} instances that can be associated with a {@link Feature}, but which don't
- * actually belong to the set of properties defined by the {@link FeatureType} (e.g. for storing rendering hints along
- * with the feature).
- * 
+ * Encapsulates additional {@link Property} instances that can be associated with a
+ * {@link Feature}, but which don't actually belong to the set of properties defined by
+ * the {@link FeatureType} (e.g. for storing rendering hints along with the feature).
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * 
- * @version $Revision: $, $Date: $
  */
 public class ExtraProps {
 
-    public static final String EXTRA_PROP_NS = "http://www.deegree.org/extraprop";
+	public static final String EXTRA_PROP_NS = "http://www.deegree.org/extraprop";
 
-    /** Namespace for string-valued extra properties */
-    public static final String EXTRA_PROP_NS_STRING = "http://www.deegree.org/extraprop/string";
+	/** Namespace for string-valued extra properties */
+	public static final String EXTRA_PROP_NS_STRING = "http://www.deegree.org/extraprop/string";
 
-    /** Namespace for geometry-valued extra properties */
-    public static final String EXTRA_PROP_NS_GEOMETRY = "http://www.deegree.org/extraprop/geometry";
+	/** Namespace for geometry-valued extra properties */
+	public static final String EXTRA_PROP_NS_GEOMETRY = "http://www.deegree.org/extraprop/geometry";
 
-    private final Property[] props;
+	private final Property[] props;
 
-    public ExtraProps( Property[] props ) {
-        this.props = props;
-    }
+	public ExtraProps(Property[] props) {
+		this.props = props;
+	}
 
-    /**
-     * Returns all properties in order.
-     * 
-     * @return all properties
-     */
-    public Property[] getProperties() {
-        return props;
-    }
+	/**
+	 * Returns all properties in order.
+	 * @return all properties
+	 */
+	public Property[] getProperties() {
+		return props;
+	}
 
-    /**
-     * Returns the properties with the given name, in order.
-     * 
-     * @param propName
-     *            name of the requested properties
-     * @return the properties with the given name, in order, may be empty, but never <code>null</code>
-     */
-    public Property[] getProperties( String propName ) {
-        List<Property> namedProps = new ArrayList<Property>( props.length );
-        for ( Property property : props ) {
-            if ( propName.equals( property.getName().getLocalPart() ) ) {
-                namedProps.add( property );
-            }
-        }
-        return namedProps.toArray( new Property[namedProps.size()] );
-    }
+	/**
+	 * Returns the properties with the given name, in order.
+	 * @param propName name of the requested properties
+	 * @return the properties with the given name, in order, may be empty, but never
+	 * <code>null</code>
+	 */
+	public Property[] getProperties(String propName) {
+		List<Property> namedProps = new ArrayList<Property>(props.length);
+		for (Property property : props) {
+			if (propName.equals(property.getName().getLocalPart())) {
+				namedProps.add(property);
+			}
+		}
+		return namedProps.toArray(new Property[namedProps.size()]);
+	}
 
-    /**
-     * Returns the property with the given name.
-     * 
-     * @param propName
-     *            name of the requested property
-     * @return the property with the given name
-     * @throws IllegalArgumentException
-     *             if the feature has more than one property with the given name
-     */
-    public Property getProperty( String propName ) {
-        Property prop = null;
-        for ( Property property : props ) {
-            if ( propName.equals( property.getName().getLocalPart() ) ) {
-                if ( prop != null ) {
-                    String msg = "Feature has more than one property with name '" + propName + "'.";
-                    throw new IllegalArgumentException( msg );
-                }
-                prop = property;
-            }
-        }
-        return prop;
-    }
+	/**
+	 * Returns the property with the given name.
+	 * @param propName name of the requested property
+	 * @return the property with the given name
+	 * @throws IllegalArgumentException if the feature has more than one property with the
+	 * given name
+	 */
+	public Property getProperty(String propName) {
+		Property prop = null;
+		for (Property property : props) {
+			if (propName.equals(property.getName().getLocalPart())) {
+				if (prop != null) {
+					String msg = "Feature has more than one property with name '" + propName + "'.";
+					throw new IllegalArgumentException(msg);
+				}
+				prop = property;
+			}
+		}
+		return prop;
+	}
+
 }

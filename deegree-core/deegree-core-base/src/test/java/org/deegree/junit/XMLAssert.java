@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -48,82 +47,77 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class contains static assert methods for using XML validation results in JUnit test cases.
- * 
+ * This class contains static assert methods for using XML validation results in JUnit
+ * test cases.
+ *
  * @see SchemaValidator
- * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class XMLAssert {
 
-    private static final Logger LOG = LoggerFactory.getLogger( XMLAssert.class );
+	private static final Logger LOG = LoggerFactory.getLogger(XMLAssert.class);
 
-    /**
-     * Asserts that the specified XML document is valid with respect to the schemas that it references (using
-     * <code>xsi:schemaLocation</code> attributes) and/or the specified schema documents.
-     * 
-     * @param is
-     *            provides the XML document to be validated
-     * @param schemaLocations
-     *            optional locations of schema documents to be considered in the validation
-     */
-    public static void assertValidity( final InputStream is, String... schemaLocations ) {
-        XMLInputSource source = new XMLInputSource( null, null, null, is, null );
-        List<SchemaValidationEvent> events = SchemaValidator.validate( source, schemaLocations );
-        if ( events.size() > 0 ) {
-            fail( events.get( 0 ).toString() );
-        }
-        if ( LOG.isErrorEnabled() ) {
-            for ( SchemaValidationEvent event : events ) {
-                LOG.error( event.toString() );
-            }
-        }
-    }
+	/**
+	 * Asserts that the specified XML document is valid with respect to the schemas that
+	 * it references (using <code>xsi:schemaLocation</code> attributes) and/or the
+	 * specified schema documents.
+	 * @param is provides the XML document to be validated
+	 * @param schemaLocations optional locations of schema documents to be considered in
+	 * the validation
+	 */
+	public static void assertValidity(final InputStream is, String... schemaLocations) {
+		XMLInputSource source = new XMLInputSource(null, null, null, is, null);
+		List<SchemaValidationEvent> events = SchemaValidator.validate(source, schemaLocations);
+		if (events.size() > 0) {
+			fail(events.get(0).toString());
+		}
+		if (LOG.isErrorEnabled()) {
+			for (SchemaValidationEvent event : events) {
+				LOG.error(event.toString());
+			}
+		}
+	}
 
-    /**
-     * Asserts that the specified XML document is valid with respect to the schemas that it references (using
-     * <code>xsi:schemaLocation</code> attributes) and/or the specified schema documents.
-     *
-     * @param reader
-     *            provides the XML document to be validated
-     * @param schemaLocations
-     *            optional locations of schema documents to be considered in the validation
-     */
-    public static void assertValidity( Reader reader, String... schemaLocations ) {
-        XMLInputSource source = new XMLInputSource( null, null, null, reader, null );
-        List<SchemaValidationEvent> events = SchemaValidator.validate( source, schemaLocations );
-        if ( events.size() > 0 ) {
-            fail( events.get( 0 ).toString() );
-        }
-        if ( LOG.isErrorEnabled() ) {
-            for ( SchemaValidationEvent event : events ) {
-                LOG.error( event.toString() );
-            }
-        }
-    }
+	/**
+	 * Asserts that the specified XML document is valid with respect to the schemas that
+	 * it references (using <code>xsi:schemaLocation</code> attributes) and/or the
+	 * specified schema documents.
+	 * @param reader provides the XML document to be validated
+	 * @param schemaLocations optional locations of schema documents to be considered in
+	 * the validation
+	 */
+	public static void assertValidity(Reader reader, String... schemaLocations) {
+		XMLInputSource source = new XMLInputSource(null, null, null, reader, null);
+		List<SchemaValidationEvent> events = SchemaValidator.validate(source, schemaLocations);
+		if (events.size() > 0) {
+			fail(events.get(0).toString());
+		}
+		if (LOG.isErrorEnabled()) {
+			for (SchemaValidationEvent event : events) {
+				LOG.error(event.toString());
+			}
+		}
+	}
 
-    /**
-     * Asserts that the specified XML document is valid with respect to the schemas that it references (using
-     * <code>xsi:schemaLocation</code> attributes) and/or the specified schema documents.
-     * 
-     * @param source
-     *            provides the document to be validated
-     * @param schemaLocations
-     *            optional locations of schema documents to be considered in the validation
-     */
-    public static void assertValidity( XMLInputSource source, String... schemaLocations ) {
-        List<SchemaValidationEvent> events = SchemaValidator.validate( source, schemaLocations );
-        if ( events.size() > 0 ) {
-            fail( events.get( 0 ).toString() );
-        }
-        if ( LOG.isErrorEnabled() ) {
-            for ( SchemaValidationEvent event : events ) {
-                LOG.error( event.toString() );
-            }
-        }
-    }
+	/**
+	 * Asserts that the specified XML document is valid with respect to the schemas that
+	 * it references (using <code>xsi:schemaLocation</code> attributes) and/or the
+	 * specified schema documents.
+	 * @param source provides the document to be validated
+	 * @param schemaLocations optional locations of schema documents to be considered in
+	 * the validation
+	 */
+	public static void assertValidity(XMLInputSource source, String... schemaLocations) {
+		List<SchemaValidationEvent> events = SchemaValidator.validate(source, schemaLocations);
+		if (events.size() > 0) {
+			fail(events.get(0).toString());
+		}
+		if (LOG.isErrorEnabled()) {
+			for (SchemaValidationEvent event : events) {
+				LOG.error(event.toString());
+			}
+		}
+	}
+
 }

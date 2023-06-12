@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -45,156 +44,155 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Implementation of a <i>selective refinement</i> algorithm that operates on {@link MultiresolutionMesh} instances.
+ * Implementation of a <i>selective refinement</i> algorithm that operates on
+ * {@link MultiresolutionMesh} instances.
  * <p>
- * The function {@link #determineLOD()} solves the following problem: Given a multiresolution model <i>M</i> (as a
- * {@link MultiresolutionMesh} instance) and a level-of-detail criterion <i>c</i> (as a {@link LODCriterion} instance),
- * determine the smallest mesh produceable by <i>M</i> so that <i>c</i> is fullfilled everywhere on the surface of the
- * mesh.
+ * The function {@link #determineLOD()} solves the following problem: Given a
+ * multiresolution model <i>M</i> (as a {@link MultiresolutionMesh} instance) and a
+ * level-of-detail criterion <i>c</i> (as a {@link LODCriterion} instance), determine the
+ * smallest mesh produceable by <i>M</i> so that <i>c</i> is fullfilled everywhere on the
+ * surface of the mesh.
  * </p>
- * 
+ *
  * @see MultiresolutionMesh
  * @see LODCriterion
  * @see SpatialSelection
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$
  */
 public class SelectiveRefinement {
 
-    private static Logger LOG = LoggerFactory.getLogger( SelectiveRefinement.class );
+	private static Logger LOG = LoggerFactory.getLogger(SelectiveRefinement.class);
 
-    // associated multiresolution model
-    private MultiresolutionMesh mt;
+	// associated multiresolution model
+	private MultiresolutionMesh mt;
 
-    // associated LODCriterion
-    private LODCriterion crit;
+	// associated LODCriterion
+	private LODCriterion crit;
 
-    // determines the current lod (contains arcs)
-    private Set<Arc> lod;
+	// determines the current lod (contains arcs)
+	private Set<Arc> lod;
 
-    // bitfield to mark which nodes are above the current cut
-    private boolean[] applied;
+	// bitfield to mark which nodes are above the current cut
+	private boolean[] applied;
 
-    /**
-     * Creates a new <code>SelectiveRefinement</code> instance for the given {@link MultiresolutionMesh} and
-     * {@link LODCriterion}.
-     * 
-     * @param mt
-     * @param crit
-     */
-    public SelectiveRefinement( MultiresolutionMesh mt, LODCriterion crit ) {
-        this.mt = mt;
-        this.crit = crit;
-    }
+	/**
+	 * Creates a new <code>SelectiveRefinement</code> instance for the given
+	 * {@link MultiresolutionMesh} and {@link LODCriterion}.
+	 * @param mt
+	 * @param crit
+	 */
+	public SelectiveRefinement(MultiresolutionMesh mt, LODCriterion crit) {
+		this.mt = mt;
+		this.crit = crit;
+	}
 
-    /**
-     * Determines the LOD corresponding to the associated {@link LODCriterion}.
-     * 
-     * @return PatchInfo objects of all patches that make up the LOD
-     */
-    public List<MeshFragment> determineLOD() {
+	/**
+	 * Determines the LOD corresponding to the associated {@link LODCriterion}.
+	 * @return PatchInfo objects of all patches that make up the LOD
+	 */
+	public List<MeshFragment> determineLOD() {
 
-        List<MeshFragment> fragments = new ArrayList<MeshFragment>();
+		List<MeshFragment> fragments = new ArrayList<MeshFragment>();
 
-        adaptTopDown();
+		adaptTopDown();
 
-        for ( Arc arc : lod ) {
-            for ( int fragmentId = arc.lowestPatch; fragmentId <= arc.highestPatch; fragmentId++ ) {
-                MeshFragment fragment = mt.fragments[fragmentId];
-                fragments.add( fragment );
-            }
-        }
+		for (Arc arc : lod) {
+			for (int fragmentId = arc.lowestPatch; fragmentId <= arc.highestPatch; fragmentId++) {
+				MeshFragment fragment = mt.fragments[fragmentId];
+				fragments.add(fragment);
+			}
+		}
 
-        return fragments;
-    }
+		return fragments;
+	}
 
-    private void adaptTopDown() {
+	private void adaptTopDown() {
 
-        long begin = System.currentTimeMillis();
+		long begin = System.currentTimeMillis();
 
-        initializeCut();
+		initializeCut();
 
-        // initialize toDo with all arc ids in the current lod
-        List<Arc> toDo = new ArrayList<Arc>( lod );
+		// initialize toDo with all arc ids in the current lod
+		List<Arc> toDo = new ArrayList<Arc>(lod);
 
-        while ( !toDo.isEmpty() ) {
-            Arc region = toDo.remove( toDo.size() - 1 );
-            Node modification = mt.nodes[region.destinationNode];
+		while (!toDo.isEmpty()) {
+			Arc region = toDo.remove(toDo.size() - 1);
+			Node modification = mt.nodes[region.destinationNode];
 
-            // do not move the cut below the drain
-            if ( modification.lowestOutgoingArc == -1 ) {
-                continue;
-            }
+			// do not move the cut below the drain
+			if (modification.lowestOutgoingArc == -1) {
+				continue;
+			}
 
-            // only process arc if it points to a node below the cut
-            if ( !applied[modification.id] ) {
-                if ( crit.needsRefinement( region ) ) {
-                    int incomingArc = modification.lowestIncomingArc;
-                    while ( incomingArc != -1 ) {
-                        if ( applied[mt.arcs[incomingArc].sourceNode] ) {
-                            lod.remove( mt.arcs[incomingArc] );
-                        } else {
-                            forceRefinement( mt.arcs[incomingArc], toDo );
-                        }
-                        incomingArc = mt.arcs[incomingArc].nextArcWithSameDestination;
-                    }
+			// only process arc if it points to a node below the cut
+			if (!applied[modification.id]) {
+				if (crit.needsRefinement(region)) {
+					int incomingArc = modification.lowestIncomingArc;
+					while (incomingArc != -1) {
+						if (applied[mt.arcs[incomingArc].sourceNode]) {
+							lod.remove(mt.arcs[incomingArc]);
+						}
+						else {
+							forceRefinement(mt.arcs[incomingArc], toDo);
+						}
+						incomingArc = mt.arcs[incomingArc].nextArcWithSameDestination;
+					}
 
-                    if ( modification.lowestOutgoingArc > 0 ) {
-                        for ( int arcId = modification.lowestOutgoingArc; arcId <= modification.highestOutgoingArc; arcId++ ) {
-                            Arc arc = mt.arcs[arcId];
-                            lod.add( arc );
-                            toDo.add( arc );
-                        }
-                    }
-                    applied[modification.id] = true;
-                }
-            }
-        }
+					if (modification.lowestOutgoingArc > 0) {
+						for (int arcId = modification.lowestOutgoingArc; arcId <= modification.highestOutgoingArc; arcId++) {
+							Arc arc = mt.arcs[arcId];
+							lod.add(arc);
+							toDo.add(arc);
+						}
+					}
+					applied[modification.id] = true;
+				}
+			}
+		}
 
-        long elapsed = System.currentTimeMillis() - begin;
-        LOG.debug( "Selective refinement (top-down): " + elapsed + " ms" );
-    }
+		long elapsed = System.currentTimeMillis() - begin;
+		LOG.debug("Selective refinement (top-down): " + elapsed + " ms");
+	}
 
-    /**
-     * Initializes the cut, so it is just below the root node.
-     */
-    private void initializeCut() {
-        lod = new HashSet<Arc>();
-        applied = new boolean[mt.nodes.length];
-        Node root = mt.nodes[0];
+	/**
+	 * Initializes the cut, so it is just below the root node.
+	 */
+	private void initializeCut() {
+		lod = new HashSet<Arc>();
+		applied = new boolean[mt.nodes.length];
+		Node root = mt.nodes[0];
 
-        int[] outgoingArcs = new int[root.highestOutgoingArc - root.lowestOutgoingArc + 1];
-        for ( int i = 0; i < outgoingArcs.length; i++ ) {
-            Arc arc = mt.arcs[i + root.lowestOutgoingArc];
-            lod.add( arc );
-        }
-        applied[0] = true;
-    }
+		int[] outgoingArcs = new int[root.highestOutgoingArc - root.lowestOutgoingArc + 1];
+		for (int i = 0; i < outgoingArcs.length; i++) {
+			Arc arc = mt.arcs[i + root.lowestOutgoingArc];
+			lod.add(arc);
+		}
+		applied[0] = true;
+	}
 
-    private void forceRefinement( Arc region, List<Arc> toDo ) {
+	private void forceRefinement(Arc region, List<Arc> toDo) {
 
-        Node modification = mt.nodes[region.sourceNode];
+		Node modification = mt.nodes[region.sourceNode];
 
-        int incomingArc = modification.lowestIncomingArc;
-        while ( incomingArc != -1 ) {
-            if ( applied[mt.arcs[incomingArc].sourceNode] ) {
-                lod.remove( mt.arcs[incomingArc] );
-            } else {
-                forceRefinement( mt.arcs[incomingArc], toDo );
-            }
-            incomingArc = mt.arcs[incomingArc].nextArcWithSameDestination;
-        }
+		int incomingArc = modification.lowestIncomingArc;
+		while (incomingArc != -1) {
+			if (applied[mt.arcs[incomingArc].sourceNode]) {
+				lod.remove(mt.arcs[incomingArc]);
+			}
+			else {
+				forceRefinement(mt.arcs[incomingArc], toDo);
+			}
+			incomingArc = mt.arcs[incomingArc].nextArcWithSameDestination;
+		}
 
-        for ( int arcId = modification.lowestOutgoingArc; arcId <= modification.highestOutgoingArc; arcId++ ) {
-            if ( arcId != region.id ) {
-                Arc arc2 = mt.arcs[arcId];
-                lod.add( arc2 );
-                toDo.add( arc2 );
-            }
-        }
-        applied[modification.id] = true;
-    }
+		for (int arcId = modification.lowestOutgoingArc; arcId <= modification.highestOutgoingArc; arcId++) {
+			if (arcId != region.id) {
+				Arc arc2 = mt.arcs[arcId];
+				lod.add(arc2);
+				toDo.add(arc2);
+			}
+		}
+		applied[modification.id] = true;
+	}
+
 }

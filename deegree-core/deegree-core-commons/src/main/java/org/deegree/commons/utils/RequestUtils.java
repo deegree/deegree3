@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -46,45 +45,45 @@ import java.util.Map.Entry;
 
 /**
  * Utility class to pass request parameters implicitly through the various layers.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 public class RequestUtils {
 
-    private static transient final ThreadLocal<Map<String, String>> PARAMETERS = new ThreadLocal<Map<String, String>>();
+	private static transient final ThreadLocal<Map<String, String>> PARAMETERS = new ThreadLocal<Map<String, String>>();
 
-    /**
-     * This thread local can be used to store the current thread's request parameters. Use with caution, and clean up!
-     */
-    public static ThreadLocal<Map<String, String>> getCurrentThreadRequestParameters() {
-        return PARAMETERS;
-    }
+	/**
+	 * This thread local can be used to store the current thread's request parameters. Use
+	 * with caution, and clean up!
+	 */
+	public static ThreadLocal<Map<String, String>> getCurrentThreadRequestParameters() {
+		return PARAMETERS;
+	}
 
-    /**
-     * Utility method that uppercases the original parameters, adds the default parameters in the map if missing, and
-     * replaces the parameters contained in the hards map.
-     */
-    public static void replaceParameters( Map<String, String> map, Map<String, String> originals,
-                                          Map<String, String> defaults, Map<String, String> hards ) {
-        // handle default params
-        for ( String def : defaults.keySet() ) {
-            String key = def.toUpperCase();
-            if ( originals.containsKey( key ) ) {
-                map.put( key, originals.get( key ) );
-            } else {
-                map.put( def, defaults.get( def ) );
-            }
-        }
-        // handle preset params
-        for ( Entry<String, String> e : hards.entrySet() ) {
-            if ( map.containsKey( e.getKey().toLowerCase() ) ) {
-                map.put( e.getKey().toLowerCase(), e.getValue() );
-            } else
-                map.put( e.getKey(), e.getValue() );
-        }
-    }
+	/**
+	 * Utility method that uppercases the original parameters, adds the default parameters
+	 * in the map if missing, and replaces the parameters contained in the hards map.
+	 */
+	public static void replaceParameters(Map<String, String> map, Map<String, String> originals,
+			Map<String, String> defaults, Map<String, String> hards) {
+		// handle default params
+		for (String def : defaults.keySet()) {
+			String key = def.toUpperCase();
+			if (originals.containsKey(key)) {
+				map.put(key, originals.get(key));
+			}
+			else {
+				map.put(def, defaults.get(def));
+			}
+		}
+		// handle preset params
+		for (Entry<String, String> e : hards.entrySet()) {
+			if (map.containsKey(e.getKey().toLowerCase())) {
+				map.put(e.getKey().toLowerCase(), e.getValue());
+			}
+			else
+				map.put(e.getKey(), e.getValue());
+		}
+	}
 
 }

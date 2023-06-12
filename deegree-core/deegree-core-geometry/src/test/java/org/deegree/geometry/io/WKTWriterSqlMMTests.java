@@ -55,51 +55,50 @@ import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.junit.Test;
 
 public class WKTWriterSqlMMTests {
-    private static GeometryFactory fac = new GeometryFactory();
 
-    private static WKTWriter wkt = new WKTWriter( Set.of( USE_SQL_MM ), new DecimalCoordinateFormatter( 0 ) );
+	private static GeometryFactory fac = new GeometryFactory();
 
-    @Test
-    public void testPolygonFromArcString()
-                            throws IOException {
-        List<Point> points = List.of( fac.createPoint( null, 0, 0, null ), //
-                                      fac.createPoint( null, 10, 0, null ), //
-                                      fac.createPoint( null, 0, 0, null ) );
-        ArcString circle = fac.createArcString( fac.createPoints( points ) );
-        Ring ring = fac.createRing( null, null, List.of( fac.createCurve( null, null, circle ) ) );
-        Geometry geom = fac.createPolygon( null, null, ring, null );
+	private static WKTWriter wkt = new WKTWriter(Set.of(USE_SQL_MM), new DecimalCoordinateFormatter(0));
 
-        StringWriter out = new StringWriter();
-        wkt.writeGeometry( geom, out );
-        assertThat( out.toString(), is( "CURVEPOLYGON (CIRCULARSTRING (0 0,10 0,0 0))" ) );
-    }
+	@Test
+	public void testPolygonFromArcString() throws IOException {
+		List<Point> points = List.of(fac.createPoint(null, 0, 0, null), //
+				fac.createPoint(null, 10, 0, null), //
+				fac.createPoint(null, 0, 0, null));
+		ArcString circle = fac.createArcString(fac.createPoints(points));
+		Ring ring = fac.createRing(null, null, List.of(fac.createCurve(null, null, circle)));
+		Geometry geom = fac.createPolygon(null, null, ring, null);
 
-    @Test
-    public void testCurveArcString()
-                            throws IOException {
-        List<Point> points = List.of( fac.createPoint( null, 0, 0, null ), //
-                                      fac.createPoint( null, 10, 0, null ), //
-                                      fac.createPoint( null, 0, 0, null ) );
-        ArcString circle = fac.createArcString( fac.createPoints( points ) );
-        Curve curve = fac.createCurve( null, null, circle );
+		StringWriter out = new StringWriter();
+		wkt.writeGeometry(geom, out);
+		assertThat(out.toString(), is("CURVEPOLYGON (CIRCULARSTRING (0 0,10 0,0 0))"));
+	}
 
-        StringWriter out = new StringWriter();
-        wkt.writeCurveGeometry( curve, out );
-        assertThat( out.toString(), is( "CIRCULARSTRING (0 0,10 0,0 0)" ) );
-    }
+	@Test
+	public void testCurveArcString() throws IOException {
+		List<Point> points = List.of(fac.createPoint(null, 0, 0, null), //
+				fac.createPoint(null, 10, 0, null), //
+				fac.createPoint(null, 0, 0, null));
+		ArcString circle = fac.createArcString(fac.createPoints(points));
+		Curve curve = fac.createCurve(null, null, circle);
 
-    @Test
-    public void testCompoundCurve()
-                            throws IOException {
-        List<Point> points = List.of( fac.createPoint( null, 0, 0, null ), //
-                                      fac.createPoint( null, 10, 0, null ), //
-                                      fac.createPoint( null, 0, 0, null ) );
-        ArcString circle = fac.createArcString( fac.createPoints( points ) );
-        LineStringSegment line = fac.createLineStringSegment( fac.createPoints( points ) );
-        Curve curve = fac.createCurve( null, null, circle, line );
+		StringWriter out = new StringWriter();
+		wkt.writeCurveGeometry(curve, out);
+		assertThat(out.toString(), is("CIRCULARSTRING (0 0,10 0,0 0)"));
+	}
 
-        StringWriter out = new StringWriter();
-        wkt.writeCurveGeometry( curve, out );
-        assertThat( out.toString(), is( "COMPOUNDCURVE (CIRCULARSTRING (0 0,10 0,0 0),(0 0,10 0,0 0))" ) );
-    }
+	@Test
+	public void testCompoundCurve() throws IOException {
+		List<Point> points = List.of(fac.createPoint(null, 0, 0, null), //
+				fac.createPoint(null, 10, 0, null), //
+				fac.createPoint(null, 0, 0, null));
+		ArcString circle = fac.createArcString(fac.createPoints(points));
+		LineStringSegment line = fac.createLineStringSegment(fac.createPoints(points));
+		Curve curve = fac.createCurve(null, null, circle, line);
+
+		StringWriter out = new StringWriter();
+		wkt.writeCurveGeometry(curve, out);
+		assertThat(out.toString(), is("COMPOUNDCURVE (CIRCULARSTRING (0 0,10 0,0 0),(0 0,10 0,0 0))"));
+	}
+
 }

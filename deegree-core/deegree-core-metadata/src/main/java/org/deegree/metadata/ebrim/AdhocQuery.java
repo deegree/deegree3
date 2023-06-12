@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -43,48 +42,45 @@ import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.org">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class AdhocQuery extends RegistryObject {
 
-    public AdhocQuery( OMElement record ) {
-        super( record );
-    }
+	public AdhocQuery(OMElement record) {
+		super(record);
+	}
 
-    public AdhocQuery( XMLStreamReader xmlStream ) {
-        super( xmlStream );
-    }
+	public AdhocQuery(XMLStreamReader xmlStream) {
+		super(xmlStream);
+	}
 
-    /**
-     * @return the queryLanguage
-     */
-    public String getQueryLanguage() {
-        return adapter.getRequiredNodeAsString( adapter.getRootElement(), new XPath( "./@queryLanguage", ns ) );
-    }
+	/**
+	 * @return the queryLanguage
+	 */
+	public String getQueryLanguage() {
+		return adapter.getRequiredNodeAsString(adapter.getRootElement(), new XPath("./@queryLanguage", ns));
+	}
 
-    /**
-     * @return the queryExpression
-     */
-    public OMElement getQueryExpression() {
-        return adapter.getElement( adapter.getRootElement(), new XPath( "./rim:QueryExpression", ns ) );
-    }
+	/**
+	 * @return the queryExpression
+	 */
+	public OMElement getQueryExpression() {
+		return adapter.getElement(adapter.getRootElement(), new XPath("./rim:QueryExpression", ns));
+	}
 
-    // TODO: let adhocquery implement query interface
-    public ReturnableElement getElementSetName() {
-        String reAsString = adapter.getNodeAsString( adapter.getRootElement(),
-                                                     new XPath( "./rim:QueryExpression/csw:Query/csw:ElementSetName",
-                                                                ns ), null );
-        ReturnableElement re = ReturnableElement.summary;
-        try {
-            re = ReturnableElement.valueOf( reAsString );
-        } catch ( Exception e ) {
-            //
-        }
-        return re;
-    }
+	// TODO: let adhocquery implement query interface
+	public ReturnableElement getElementSetName() {
+		String reAsString = adapter.getNodeAsString(adapter.getRootElement(),
+				new XPath("./rim:QueryExpression/csw:Query/csw:ElementSetName", ns), null);
+		ReturnableElement re = ReturnableElement.summary;
+		try {
+			re = ReturnableElement.valueOf(reAsString);
+		}
+		catch (Exception e) {
+			//
+		}
+		return re;
+	}
 
 }

@@ -29,19 +29,18 @@ import org.deegree.gml.GMLStreamReader;
 
 /**
  * Extension point that allows to use custom FeatureInputStreams
- * 
+ *
  * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  */
 public interface FeatureStreamFactory {
 
-    /**
-     * Check if the root element of the XML stream is applicable
-     * 
-     * @param rootElement
-     *            root element from the document or stream
-     * @return true if this factory can supply a capable FeatureInputStream
-     */
-    public boolean isApplicableToDocumentRoot( QName rootElement );
+	/**
+	 * Check if the root element of the XML stream is applicable
+	 * @param rootElement root element from the document or stream
+	 * @return true if this factory can supply a capable FeatureInputStream
+	 */
+	public boolean isApplicableToDocumentRoot(QName rootElement);
 
-    public FeatureInputStream createStream( XMLStreamReader xmlStream, GMLStreamReader gmlStream );
+	public FeatureInputStream createStream(XMLStreamReader xmlStream, GMLStreamReader gmlStream);
+
 }

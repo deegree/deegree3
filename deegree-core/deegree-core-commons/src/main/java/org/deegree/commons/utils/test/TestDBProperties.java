@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -46,104 +45,103 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Provides convenient access to test database configurations defined in {@link TestProperties}.
- * 
+ * Provides convenient access to test database configurations defined in
+ * {@link TestProperties}.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class TestDBProperties {
 
-    private static Logger LOG = LoggerFactory.getLogger( TestDBProperties.class );
+	private static Logger LOG = LoggerFactory.getLogger(TestDBProperties.class);
 
-    private static final String TESTDB_PROPERTY_PREFIX = "testdb.";
+	private static final String TESTDB_PROPERTY_PREFIX = "testdb.";
 
-    private final String id;
+	private final String id;
 
-    private final String adminUrl;
+	private final String adminUrl;
 
-    private final String adminUser;
+	private final String adminUser;
 
-    private final String adminPass;
+	private final String adminPass;
 
-    private final String dbName;
+	private final String dbName;
 
-    private final String url;
+	private final String url;
 
-    private final String user;
+	private final String user;
 
-    private final String pass;
+	private final String pass;
 
-    private TestDBProperties( String id, Properties props ) throws IllegalArgumentException {
-        this.id = id;
-        String prefix = TESTDB_PROPERTY_PREFIX + id + ".";
-        this.adminUrl = props.getProperty( prefix + "adminurl" );
-        this.adminUser = props.getProperty( prefix + "adminuser" );
-        this.adminPass = props.getProperty( prefix + "adminpass" );
-        this.dbName = props.getProperty( prefix + "name" );
-        this.url = props.getProperty( prefix + "url" );
-        this.user = props.getProperty( prefix + "user" );
-        this.pass = props.getProperty( prefix + "pass" );
-    }
+	private TestDBProperties(String id, Properties props) throws IllegalArgumentException {
+		this.id = id;
+		String prefix = TESTDB_PROPERTY_PREFIX + id + ".";
+		this.adminUrl = props.getProperty(prefix + "adminurl");
+		this.adminUser = props.getProperty(prefix + "adminuser");
+		this.adminPass = props.getProperty(prefix + "adminpass");
+		this.dbName = props.getProperty(prefix + "name");
+		this.url = props.getProperty(prefix + "url");
+		this.user = props.getProperty(prefix + "user");
+		this.pass = props.getProperty(prefix + "pass");
+	}
 
-    public String getId() {
-        return id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public String getAdminUrl() {
-        return adminUrl;
-    }
+	public String getAdminUrl() {
+		return adminUrl;
+	}
 
-    public String getAdminUser() {
-        return adminUser;
-    }
+	public String getAdminUser() {
+		return adminUser;
+	}
 
-    public String getAdminPass() {
-        return adminPass;
-    }
+	public String getAdminPass() {
+		return adminPass;
+	}
 
-    public String getDbName() {
-        return dbName;
-    }
+	public String getDbName() {
+		return dbName;
+	}
 
-    public String getUrl() {
-        return url;
-    }
+	public String getUrl() {
+		return url;
+	}
 
-    public String getUser() {
-        return user;
-    }
+	public String getUser() {
+		return user;
+	}
 
-    public String getPass() {
-        return pass;
-    }
+	public String getPass() {
+		return pass;
+	}
 
-    public static List<TestDBProperties> getAll()
-                            throws IllegalArgumentException, IOException {
+	public static List<TestDBProperties> getAll() throws IllegalArgumentException, IOException {
 
-        List<TestDBProperties> settings = new ArrayList<TestDBProperties>();
+		List<TestDBProperties> settings = new ArrayList<TestDBProperties>();
 
-        Properties props = TestProperties.getProperties();
-        Set<String> ids = new HashSet<String>();
+		Properties props = TestProperties.getProperties();
+		Set<String> ids = new HashSet<String>();
 
-        for ( Object key : props.keySet() ) {
-            String propName = (String) key;
-            if ( propName.startsWith( TESTDB_PROPERTY_PREFIX ) ) {
-                String s = propName.substring( TESTDB_PROPERTY_PREFIX.length() );
-                int pos = s.indexOf( '.' );
-                if ( pos != -1 ) {
-                    String id = s.substring( 0, pos );
-                    if ( !ids.contains( id ) ) {
-                        LOG.info( "Found test DB config '{}'", id );
-                        settings.add( new TestDBProperties( id, props ) );
-                        ids.add( id );
-                    }
-                } else {
-                    LOG.error( "Skipping test db configuration property {}. Unexpected format.", propName );
-                }
-            }
-        }
-        return settings;
-    }
+		for (Object key : props.keySet()) {
+			String propName = (String) key;
+			if (propName.startsWith(TESTDB_PROPERTY_PREFIX)) {
+				String s = propName.substring(TESTDB_PROPERTY_PREFIX.length());
+				int pos = s.indexOf('.');
+				if (pos != -1) {
+					String id = s.substring(0, pos);
+					if (!ids.contains(id)) {
+						LOG.info("Found test DB config '{}'", id);
+						settings.add(new TestDBProperties(id, props));
+						ids.add(id);
+					}
+				}
+				else {
+					LOG.error("Skipping test db configuration property {}. Unexpected format.", propName);
+				}
+			}
+		}
+		return settings;
+	}
+
 }

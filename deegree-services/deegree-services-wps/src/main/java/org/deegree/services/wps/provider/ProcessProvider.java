@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -43,28 +42,25 @@ import org.deegree.services.wps.WPSProcess;
 import org.deegree.workspace.Resource;
 
 /**
- * Implementations are responsible for making {@link WPSProcess} instances available to the {@link ProcessManager}.
- * 
+ * Implementations are responsible for making {@link WPSProcess} instances available to
+ * the {@link ProcessManager}.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface ProcessProvider extends Resource {
 
-    /**
-     * Returns all currently available processes.
-     * 
-     * @return all currently available processes, may be <code>null</code> or empty
-     */
-    public Map<CodeType, ? extends WPSProcess> getProcesses();
+	/**
+	 * Returns all currently available processes.
+	 * @return all currently available processes, may be <code>null</code> or empty
+	 */
+	public Map<CodeType, ? extends WPSProcess> getProcesses();
 
-    /**
-     * Returns the process with the specified identifier.
-     * 
-     * @param id
-     *            identifier of the requested process, never <code>null</code>
-     * @return the process with the specified identifier, or <code>null</code> if no such process exists (anymore)
-     */
-    public WPSProcess getProcess( CodeType id );
+	/**
+	 * Returns the process with the specified identifier.
+	 * @param id identifier of the requested process, never <code>null</code>
+	 * @return the process with the specified identifier, or <code>null</code> if no such
+	 * process exists (anymore)
+	 */
+	public WPSProcess getProcess(CodeType id);
+
 }

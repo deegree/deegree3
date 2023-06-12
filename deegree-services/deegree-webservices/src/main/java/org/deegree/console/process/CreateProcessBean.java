@@ -38,19 +38,19 @@ import org.deegree.services.wps.ProcessManager;
  * JSF backing bean for "Create new process" view.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- *
  * @since 3.3
  */
 @ManagedBean
 @ViewScoped
 public class CreateProcessBean extends AbstractCreateResourceBean {
 
-    public CreateProcessBean() {
-        super( ProcessManager.class );
-    }
+	public CreateProcessBean() {
+		super(ProcessManager.class);
+	}
 
-    @Override
-    protected String getOutcome() {
-        return "/console/process/index";
-    }
+	@Override
+	protected String getOutcome() {
+		return "/console/process/index";
+	}
+
 }

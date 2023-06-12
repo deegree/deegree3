@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/src/main/java/org/deegree/commons/xml/NamespaceContext.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -45,138 +44,127 @@ import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
 
 /**
- * Modifiable prefix to namespace (and namespace to prefix) mappings for dealing with qualified names and XPath
- * expressions.
+ * Modifiable prefix to namespace (and namespace to prefix) mappings for dealing with
+ * qualified names and XPath expressions.
  * <p>
- * Implements both the <code>org.jaxen.NamespaceContext</code> and the <code>javax.xml.namespace.NamespaceContext</code>
- * interfaces.
+ * Implements both the <code>org.jaxen.NamespaceContext</code> and the
+ * <code>javax.xml.namespace.NamespaceContext</code> interfaces.
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 24581 $, $Date: 2010-05-26 17:05:14 +0200 (Mi, 26. Mai 2010) $
  */
 public class NamespaceBindings implements org.jaxen.NamespaceContext, javax.xml.namespace.NamespaceContext {
 
-    // key: prefix, value: namespace
-    private final Map<String, String> prefixToNs = new HashMap<String, String>();
+	// key: prefix, value: namespace
+	private final Map<String, String> prefixToNs = new HashMap<String, String>();
 
-    // key: namespace, value: prefix
-    private final Map<String, String> nsToPrefix = new HashMap<String, String>();
+	// key: namespace, value: prefix
+	private final Map<String, String> nsToPrefix = new HashMap<String, String>();
 
-    /**
-     * Creates a new instance of {@link NamespaceContext} with no bindings.
-     */
-    public NamespaceBindings() {
-    	prefixToNs.put( CommonNamespaces.XMLNSNS_PREFIX, CommonNamespaces.XMLNSNS );
-    	nsToPrefix.put( CommonNamespaces.XMLNSNS, CommonNamespaces.XMLNSNS_PREFIX );
-    }
+	/**
+	 * Creates a new instance of {@link NamespaceContext} with no bindings.
+	 */
+	public NamespaceBindings() {
+		prefixToNs.put(CommonNamespaces.XMLNSNS_PREFIX, CommonNamespaces.XMLNSNS);
+		nsToPrefix.put(CommonNamespaces.XMLNSNS, CommonNamespaces.XMLNSNS_PREFIX);
+	}
 
-    /**
-     * Creates a new instance of {@link NamespaceContext} that contains all the bindings from the argument context.
-     * 
-     * @param nsContext
-     *            bindings to copy, must not be <code>null</code>
-     */
-    public NamespaceBindings( NamespaceBindings nsContext ) {
-    	this();
-    	
-        prefixToNs.putAll( nsContext.prefixToNs );
-        nsToPrefix.putAll( nsContext.nsToPrefix );
-    }
+	/**
+	 * Creates a new instance of {@link NamespaceContext} that contains all the bindings
+	 * from the argument context.
+	 * @param nsContext bindings to copy, must not be <code>null</code>
+	 */
+	public NamespaceBindings(NamespaceBindings nsContext) {
+		this();
 
-    /**
-     * Creates a new instance of {@link NamespaceContext} that contains all the bindings from the given XML namespace
-     * context.
-     * 
-     * @param nsContext
-     *            bindings to copy, must not be <code>null</code>
-     */
-    public NamespaceBindings( javax.xml.namespace.NamespaceContext nsContext, Collection<String> prefixes ) {
-    	this();
-    	
-        for ( String prefix : prefixes ) {
-            String ns = nsContext.getNamespaceURI( prefix );
-            prefixToNs.put( prefix, ns );
-            nsToPrefix.put( ns, prefix );
-        }
-    }
+		prefixToNs.putAll(nsContext.prefixToNs);
+		nsToPrefix.putAll(nsContext.nsToPrefix);
+	}
 
-    /**
-     * Registers a new prefix with an assigned namespace URI.
-     * 
-     * @param prefix
-     *            prefix, must not be <code>null</code>
-     * @param namespace
-     *            namespace, may be <code>null</code>
-     * @return this: new XPath(..., new NamespaceContext().addNamespace(...)
-     */
-    public NamespaceBindings addNamespace( String prefix, String namespace ) {
-        prefixToNs.put( prefix, namespace );
-        nsToPrefix.put( namespace, prefix );
-        return this;
-    }
+	/**
+	 * Creates a new instance of {@link NamespaceContext} that contains all the bindings
+	 * from the given XML namespace context.
+	 * @param nsContext bindings to copy, must not be <code>null</code>
+	 */
+	public NamespaceBindings(javax.xml.namespace.NamespaceContext nsContext, Collection<String> prefixes) {
+		this();
 
-    /**
-     * Returns the namespace mapping for the given prefix (Jaxen method).
-     * <p>
-     * Taken from the Jaxen Javadoc: In XPath, there is no such thing as a 'default namespace'. The empty prefix always
-     * resolves to the empty namespace URI. This method should return null for the empty prefix. Similarly, the prefix
-     * "xml" always resolves to the URI "http://www.w3.org/XML/1998/namespace".
-     * </p>
-     * 
-     * @param prefix
-     *            prefix, may be <code>null</code>
-     * @return namespace uri, may be <code>null</code> (unbound)
-     */
-    @Override
-    public String translateNamespacePrefixToUri( String prefix ) {
-        if ( prefix == null || prefix.isEmpty() ) {
-            return null;
-        }
-        return prefixToNs.get( prefix );
-    }
+		for (String prefix : prefixes) {
+			String ns = nsContext.getNamespaceURI(prefix);
+			prefixToNs.put(prefix, ns);
+			nsToPrefix.put(ns, prefix);
+		}
+	}
 
-    /**
-     * Returns all bound namespaces.
-     * 
-     * @return bound namespaces, never <code>null</code>
-     */
-    public Iterator<String> getNamespaceURIs() {
-        return nsToPrefix.keySet().iterator();
-    }
+	/**
+	 * Registers a new prefix with an assigned namespace URI.
+	 * @param prefix prefix, must not be <code>null</code>
+	 * @param namespace namespace, may be <code>null</code>
+	 * @return this: new XPath(..., new NamespaceContext().addNamespace(...)
+	 */
+	public NamespaceBindings addNamespace(String prefix, String namespace) {
+		prefixToNs.put(prefix, namespace);
+		nsToPrefix.put(namespace, prefix);
+		return this;
+	}
 
-    @Override
-    public String getNamespaceURI( String prefix ) {
-        String ns = prefixToNs.get( prefix );
-        if ( ns == null ) {
-            return XMLConstants.DEFAULT_NS_PREFIX;
-        }
-        return ns;
-    }
+	/**
+	 * Returns the namespace mapping for the given prefix (Jaxen method).
+	 * <p>
+	 * Taken from the Jaxen Javadoc: In XPath, there is no such thing as a 'default
+	 * namespace'. The empty prefix always resolves to the empty namespace URI. This
+	 * method should return null for the empty prefix. Similarly, the prefix "xml" always
+	 * resolves to the URI "http://www.w3.org/XML/1998/namespace".
+	 * </p>
+	 * @param prefix prefix, may be <code>null</code>
+	 * @return namespace uri, may be <code>null</code> (unbound)
+	 */
+	@Override
+	public String translateNamespacePrefixToUri(String prefix) {
+		if (prefix == null || prefix.isEmpty()) {
+			return null;
+		}
+		return prefixToNs.get(prefix);
+	}
 
-    @Override
-    public String getPrefix( String ns ) {
-        return nsToPrefix.get( ns );
-    }
+	/**
+	 * Returns all bound namespaces.
+	 * @return bound namespaces, never <code>null</code>
+	 */
+	public Iterator<String> getNamespaceURIs() {
+		return nsToPrefix.keySet().iterator();
+	}
 
-    @Override
-    public Iterator<String> getPrefixes( String ns ) {
-        return Collections.singletonList( nsToPrefix.get( ns ) ).iterator();
-    }
+	@Override
+	public String getNamespaceURI(String prefix) {
+		String ns = prefixToNs.get(prefix);
+		if (ns == null) {
+			return XMLConstants.DEFAULT_NS_PREFIX;
+		}
+		return ns;
+	}
 
-    /**
-     * Returns all bound prefixes.
-     * 
-     * @return bound prefixes, never <code>null</code>
-     */
-    public Iterator<String> getPrefixes() {
-        return prefixToNs.keySet().iterator();
-    }
+	@Override
+	public String getPrefix(String ns) {
+		return nsToPrefix.get(ns);
+	}
 
-    @Override
-    public String toString() {
-        return prefixToNs.toString();
-    }
+	@Override
+	public Iterator<String> getPrefixes(String ns) {
+		return Collections.singletonList(nsToPrefix.get(ns)).iterator();
+	}
+
+	/**
+	 * Returns all bound prefixes.
+	 * @return bound prefixes, never <code>null</code>
+	 */
+	public Iterator<String> getPrefixes() {
+		return prefixToNs.keySet().iterator();
+	}
+
+	@Override
+	public String toString() {
+		return prefixToNs.toString();
+	}
+
 }

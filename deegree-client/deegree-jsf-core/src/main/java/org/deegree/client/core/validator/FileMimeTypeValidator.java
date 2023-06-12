@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -50,54 +49,45 @@ import org.deegree.client.core.model.UploadedFile;
 import org.deegree.client.core.utils.MessageUtils;
 
 /**
- * 
- *<code>FileMimeTypeValidator</code> validates the mime type of an {@link UploadedFile} to a list of supported mime
- * types.
- * 
+ *
+ * <code>FileMimeTypeValidator</code> validates the mime type of an {@link UploadedFile}
+ * to a list of supported mime types.
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 @FacesValidator(value = "fileMimeTypeValidator")
 public class FileMimeTypeValidator implements Validator {
 
-    private List<String> mimeTypes = new ArrayList<String>();
+	private List<String> mimeTypes = new ArrayList<String>();
 
-    @Override
-    public void validate( FacesContext context, UIComponent component, Object value )
-                            throws ValidatorException {
-        UploadedFile uploadedFile = (UploadedFile) value;
-        if ( uploadedFile != null ) {
-            MimetypesFileTypeMap mimetypesFileTypeMap = new MimetypesFileTypeMap();
-            String mimeType = mimetypesFileTypeMap.getContentType( uploadedFile.getFileName() );
+	@Override
+	public void validate(FacesContext context, UIComponent component, Object value) throws ValidatorException {
+		UploadedFile uploadedFile = (UploadedFile) value;
+		if (uploadedFile != null) {
+			MimetypesFileTypeMap mimetypesFileTypeMap = new MimetypesFileTypeMap();
+			String mimeType = mimetypesFileTypeMap.getContentType(uploadedFile.getFileName());
 
-            if ( !mimeTypes.contains( mimeType ) ) {
-                uploadedFile.delete();
-                FacesMessage message = MessageUtils.getFacesMessage(
-                                                                     FacesMessage.SEVERITY_ERROR,
-                                                                     "org.deegree.client.core.validator.FileMimeTypeValidator.invalidMimeType",
-                                                                     mimeType, mimeTypes );
-                throw new ValidatorException( message );
-            }
-        }
-    }
+			if (!mimeTypes.contains(mimeType)) {
+				uploadedFile.delete();
+				FacesMessage message = MessageUtils.getFacesMessage(FacesMessage.SEVERITY_ERROR,
+						"org.deegree.client.core.validator.FileMimeTypeValidator.invalidMimeType", mimeType, mimeTypes);
+				throw new ValidatorException(message);
+			}
+		}
+	}
 
-    /**
-     * @param mimeTypes
-     *            the supported mime types
-     */
-    public void setMimeTypes( List<String> mimeTypes ) {
-        this.mimeTypes = mimeTypes;
-    }
+	/**
+	 * @param mimeTypes the supported mime types
+	 */
+	public void setMimeTypes(List<String> mimeTypes) {
+		this.mimeTypes = mimeTypes;
+	}
 
-    /**
-     * 
-     * @param mimeType
-     *            a mime type to add to the list of supported mime types
-     */
-    public void addMimeType( String mimeType ) {
-        mimeTypes.add( mimeType );
-    }
+	/**
+	 * @param mimeType a mime type to add to the list of supported mime types
+	 */
+	public void addMimeType(String mimeType) {
+		mimeTypes.add(mimeType);
+	}
 
 }

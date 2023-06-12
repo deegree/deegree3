@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -46,23 +45,18 @@ import org.deegree.protocol.wfs.AbstractWFSRequest;
  * <li>WFS 2.0.0</li>
  * </ul>
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class ListStoredQueries extends AbstractWFSRequest {
 
-    /**
-     * Creates a new {@link ListStoredQueries} instance.
-     * 
-     * @param version
-     *            protocol version, must not be <code>null</code>
-     * @param handle
-     *            client-generated identifier, may be <code>null</code>
-     */
-    public ListStoredQueries( Version version, String handle ) {
-        super( version, handle );
-    }
+	/**
+	 * Creates a new {@link ListStoredQueries} instance.
+	 * @param version protocol version, must not be <code>null</code>
+	 * @param handle client-generated identifier, may be <code>null</code>
+	 */
+	public ListStoredQueries(Version version, String handle) {
+		super(version, handle);
+	}
+
 }

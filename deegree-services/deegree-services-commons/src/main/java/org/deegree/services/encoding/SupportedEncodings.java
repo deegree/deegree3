@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2014 by:
@@ -37,23 +36,18 @@ package org.deegree.services.encoding;
 
 /**
  * Encapsulates informations about supported encodings.
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public interface SupportedEncodings<E extends Enum> {
 
-    /**
-     * Checks if an encoding is supported by a request type.
-     * 
-     * @param requestType
-     *            never <code>null</code>
-     * @param encoding
-     *            never <code>null</code>
-     * @return <code>true</code> if the passed encoding is supported for the request type, <code>false</code> otherwise
-     */
-    boolean isEncodingSupported( E requestType, String encoding );
+	/**
+	 * Checks if an encoding is supported by a request type.
+	 * @param requestType never <code>null</code>
+	 * @param encoding never <code>null</code>
+	 * @return <code>true</code> if the passed encoding is supported for the request type,
+	 * <code>false</code> otherwise
+	 */
+	boolean isEncodingSupported(E requestType, String encoding);
 
 }

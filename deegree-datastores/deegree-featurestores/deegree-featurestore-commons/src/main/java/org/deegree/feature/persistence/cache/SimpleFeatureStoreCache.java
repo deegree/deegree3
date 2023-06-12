@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/src/main/java/org/deegree/feature/persistence/cache/FeatureStoreCache.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -44,76 +43,74 @@ import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.feature.persistence.FeatureStore;
 
 /**
- * {@link FeatureStoreCache} that uses a Java's {@link SoftReference} as eviction strategy and allows to limit the maximum
- * number of cached objects.
- * 
+ * {@link FeatureStoreCache} that uses a Java's {@link SoftReference} as eviction strategy
+ * and allows to limit the maximum number of cached objects.
+ *
  * @see FeatureStore
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 22192 $, $Date: 2010-01-25 20:00:06 +0100 (Mo, 25 Jan 2010) $
  */
 public class SimpleFeatureStoreCache implements FeatureStoreCache {
 
-    private static final int DEFAULT_LIMIT = 10000;
+	private static final int DEFAULT_LIMIT = 10000;
 
 	private final Map<String, SoftReference<GMLObject>> idToObject;
 
-    /**
-     * Creates a new {@link SimpleFeatureStoreCache} instance that allows to store a default number of entries. 
-     */
-    public SimpleFeatureStoreCache() {
-    	this (DEFAULT_LIMIT);
+	/**
+	 * Creates a new {@link SimpleFeatureStoreCache} instance that allows to store a
+	 * default number of entries.
+	 */
+	public SimpleFeatureStoreCache() {
+		this(DEFAULT_LIMIT);
 	}
-	
-    /**
-     * Creates a new {@link SimpleFeatureStoreCache} instance that allows to store the specified number of entries.
-     * 
-     * @param maxEntries
-     *      maximum number of cached objects
-     */
-    public SimpleFeatureStoreCache( int maxEntries ) {
-        idToObject = Collections.synchronizedMap( new CacheMap( maxEntries ) );
-    }
+
+	/**
+	 * Creates a new {@link SimpleFeatureStoreCache} instance that allows to store the
+	 * specified number of entries.
+	 * @param maxEntries maximum number of cached objects
+	 */
+	public SimpleFeatureStoreCache(int maxEntries) {
+		idToObject = Collections.synchronizedMap(new CacheMap(maxEntries));
+	}
 
 	@Override
-    public GMLObject get( String id ) {
-        SoftReference<GMLObject> ref = idToObject.get( id );
-        if ( ref == null ) {
-            return null;
-        }
-        return ref.get();
-    }
+	public GMLObject get(String id) {
+		SoftReference<GMLObject> ref = idToObject.get(id);
+		if (ref == null) {
+			return null;
+		}
+		return ref.get();
+	}
 
-    @Override
-    public void add( GMLObject obj ) {
-        idToObject.put( obj.getId(), new SoftReference<GMLObject>( obj ) );
-    }
+	@Override
+	public void add(GMLObject obj) {
+		idToObject.put(obj.getId(), new SoftReference<GMLObject>(obj));
+	}
 
-    @Override
-    public void remove( String id ) {
-        idToObject.remove( id );
-    }
+	@Override
+	public void remove(String id) {
+		idToObject.remove(id);
+	}
 
-    @Override
-    public void clear() {
-        idToObject.clear();
-    }
+	@Override
+	public void clear() {
+		idToObject.clear();
+	}
 
-    private class CacheMap extends LinkedHashMap<String, SoftReference<GMLObject>> {
+	private class CacheMap extends LinkedHashMap<String, SoftReference<GMLObject>> {
 
-        private static final long serialVersionUID = 6368164113834314158L;
+		private static final long serialVersionUID = 6368164113834314158L;
 
-        private final int maxEntries;
+		private final int maxEntries;
 
-        private CacheMap( int maxEntries ) {
-            this.maxEntries = maxEntries;
-        }
+		private CacheMap(int maxEntries) {
+			this.maxEntries = maxEntries;
+		}
 
-        @Override
-        protected boolean removeEldestEntry( Map.Entry<String, SoftReference<GMLObject>> eldest ) {
-            return size() > maxEntries;
-        }
-    }
+		@Override
+		protected boolean removeEldestEntry(Map.Entry<String, SoftReference<GMLObject>> eldest) {
+			return size() > maxEntries;
+		}
+
+	}
+
 }

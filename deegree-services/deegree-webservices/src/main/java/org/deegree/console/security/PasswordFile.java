@@ -42,104 +42,99 @@ import org.apache.commons.io.IOUtils;
 
 public class PasswordFile implements Serializable {
 
-    private static final long serialVersionUID = -8331316987059763053L;
+	private static final long serialVersionUID = -8331316987059763053L;
 
-    private final File file;
+	private final File file;
 
-    public PasswordFile( File file ) {
-        this.file = file;
-    }
+	public PasswordFile(File file) {
+		this.file = file;
+	}
 
-    /**
-     * Returns the {@link SaltedPassword} currently stored in the file.
-     * 
-     * @return salted password, never <code>null</code>
-     */
-    public SaltedPassword getCurrentContent()
-                            throws IOException {
+	/**
+	 * Returns the {@link SaltedPassword} currently stored in the file.
+	 * @return salted password, never <code>null</code>
+	 */
+	public SaltedPassword getCurrentContent() throws IOException {
 
-        SaltedPassword saltedPw = null;
-        if ( file.exists() ) {
-            BufferedReader in = new BufferedReader( new InputStreamReader( new FileInputStream( file ) ) );
-            try {
-                List<String> lines = IOUtils.readLines( in );
-                if ( lines.size() != 1 ) {
-                    throw new IOException( "Password file has incorrect format." );
-                }
-                saltedPw = decodeHexEncodedSaltAndPassword( lines.get( 0 ) );
-            } finally {
-                in.close();
-            }
-        }
-        return saltedPw;
-    }
+		SaltedPassword saltedPw = null;
+		if (file.exists()) {
+			BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+			try {
+				List<String> lines = IOUtils.readLines(in);
+				if (lines.size() != 1) {
+					throw new IOException("Password file has incorrect format.");
+				}
+				saltedPw = decodeHexEncodedSaltAndPassword(lines.get(0));
+			}
+			finally {
+				in.close();
+			}
+		}
+		return saltedPw;
+	}
 
-    private SaltedPassword decodeHexEncodedSaltAndPassword( String encoded )
-                            throws IOException {
+	private SaltedPassword decodeHexEncodedSaltAndPassword(String encoded) throws IOException {
 
-        int offset = encoded.indexOf( ':' );
-        if ( offset == -1 ) {
-            throw new IOException( "Password file has incorrect format." );
-        }
-        String hexEncodedSalt = encoded.substring( 0, offset );
-        String hexEncodedSaltedAndHashedPassword = encoded.substring( offset + 1, encoded.length() );
-        byte[] salt = decodeHexString( hexEncodedSalt );
-        byte[] saltedAndHashedPassword = decodeHexString( hexEncodedSaltedAndHashedPassword );
-        return new SaltedPassword( saltedAndHashedPassword, salt );
-    }
+		int offset = encoded.indexOf(':');
+		if (offset == -1) {
+			throw new IOException("Password file has incorrect format.");
+		}
+		String hexEncodedSalt = encoded.substring(0, offset);
+		String hexEncodedSaltedAndHashedPassword = encoded.substring(offset + 1, encoded.length());
+		byte[] salt = decodeHexString(hexEncodedSalt);
+		byte[] saltedAndHashedPassword = decodeHexString(hexEncodedSaltedAndHashedPassword);
+		return new SaltedPassword(saltedAndHashedPassword, salt);
+	}
 
-    private byte[] decodeHexString( String s ) {
-        int len = s.length();
-        byte[] data = new byte[len / 2];
-        for ( int i = 0; i < len; i += 2 ) {
-            data[i / 2] = (byte) ( ( digit( s.charAt( i ), 16 ) << 4 ) + digit( s.charAt( i + 1 ), 16 ) );
-        }
-        return data;
-    }
+	private byte[] decodeHexString(String s) {
+		int len = s.length();
+		byte[] data = new byte[len / 2];
+		for (int i = 0; i < len; i += 2) {
+			data[i / 2] = (byte) ((digit(s.charAt(i), 16) << 4) + digit(s.charAt(i + 1), 16));
+		}
+		return data;
+	}
 
-    /**
-     * Updates the file with the given {@link SaltedPassword}.
-     * 
-     * @param pw
-     *            salted password, must not be <code>null</code>
-     * @throws IOException
-     *             if the password could not be stored
-     */
-    public void update( SaltedPassword pw )
-                            throws IOException {
+	/**
+	 * Updates the file with the given {@link SaltedPassword}.
+	 * @param pw salted password, must not be <code>null</code>
+	 * @throws IOException if the password could not be stored
+	 */
+	public void update(SaltedPassword pw) throws IOException {
 
-        if ( file.exists() ) {
-            if ( !file.delete() ) {
-                throw new IOException( "Could not delete existing password file '" + file + "'." );
-            }
-        }
+		if (file.exists()) {
+			if (!file.delete()) {
+				throw new IOException("Could not delete existing password file '" + file + "'.");
+			}
+		}
 
-        if ( !file.getParentFile().exists() ) {
-            file.getParentFile().mkdirs();
-        }
+		if (!file.getParentFile().exists()) {
+			file.getParentFile().mkdirs();
+		}
 
-        PrintWriter writer = new PrintWriter( file, "UTF-8" );
-        writer.print( encodeHexString( pw.getSalt() ) );
-        writer.print( ':' );
-        writer.println( encodeHexString( pw.getSaltedAndHashedPassword() ) );
-        writer.close();
-    }
+		PrintWriter writer = new PrintWriter(file, "UTF-8");
+		writer.print(encodeHexString(pw.getSalt()));
+		writer.print(':');
+		writer.println(encodeHexString(pw.getSaltedAndHashedPassword()));
+		writer.close();
+	}
 
-    private String encodeHexString( final byte[] bytes ) {
-        if ( bytes == null ) {
-            return null;
-        }
-        final StringBuilder hex = new StringBuilder( 2 * bytes.length );
-        for ( final byte b : bytes ) {
-            final int hiVal = ( b & 0xF0 ) >> 4;
-            final int loVal = b & 0x0F;
-            hex.append( (char) ( '0' + ( hiVal + ( hiVal / 10 * 7 ) ) ) );
-            hex.append( (char) ( '0' + ( loVal + ( loVal / 10 * 7 ) ) ) );
-        }
-        return hex.toString();
-    }
+	private String encodeHexString(final byte[] bytes) {
+		if (bytes == null) {
+			return null;
+		}
+		final StringBuilder hex = new StringBuilder(2 * bytes.length);
+		for (final byte b : bytes) {
+			final int hiVal = (b & 0xF0) >> 4;
+			final int loVal = b & 0x0F;
+			hex.append((char) ('0' + (hiVal + (hiVal / 10 * 7))));
+			hex.append((char) ('0' + (loVal + (loVal / 10 * 7))));
+		}
+		return hex.toString();
+	}
 
-    public boolean exists() {
-        return file.exists();
-    }
+	public boolean exists() {
+		return file.exists();
+	}
+
 }

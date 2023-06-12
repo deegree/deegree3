@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -72,104 +71,103 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Builder for pyramid coverages.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 public class PyramidCoverageBuilder implements ResourceBuilder<Coverage> {
 
-    private static Logger LOG = LoggerFactory.getLogger( PyramidCoverageBuilder.class );
+	private static Logger LOG = LoggerFactory.getLogger(PyramidCoverageBuilder.class);
 
-    private Pyramid config;
+	private Pyramid config;
 
-    private ResourceMetadata<Coverage> metadata;
+	private ResourceMetadata<Coverage> metadata;
 
-    public PyramidCoverageBuilder( ResourceMetadata<Coverage> metadata, Pyramid config ) {
-        this.metadata = metadata;
-        this.config = config;
-    }
+	public PyramidCoverageBuilder(ResourceMetadata<Coverage> metadata, Pyramid config) {
+		this.metadata = metadata;
+		this.config = config;
+	}
 
-    @Override
-    public Coverage build() {
-        try {
-            Iterator<ImageReader> readers = ImageIO.getImageReadersBySuffix( "tiff" );
-            ImageReader reader = null;
-            while ( readers.hasNext() && !( reader instanceof TIFFImageReader ) ) {
-                reader = readers.next();
-            }
+	@Override
+	public Coverage build() {
+		try {
+			Iterator<ImageReader> readers = ImageIO.getImageReadersBySuffix("tiff");
+			ImageReader reader = null;
+			while (readers.hasNext() && !(reader instanceof TIFFImageReader)) {
+				reader = readers.next();
+			}
 
-            if ( reader == null ) {
-                throw new ResourceInitException( "No TIFF reader was found for imageio." );
-            }
+			if (reader == null) {
+				throw new ResourceInitException("No TIFF reader was found for imageio.");
+			}
 
-            ICRS crs = null;
-            if ( config.getCRS() != null ) {
-                crs = CRSManager.getCRSRef( config.getCRS() );
-            }
+			ICRS crs = null;
+			if (config.getCRS() != null) {
+				crs = CRSManager.getCRSRef(config.getCRS());
+			}
 
-            MultiResolutionRaster mrr = new MultiResolutionRaster( metadata );
-            String file = config.getPyramidFile();
-            ImageInputStream iis = ImageIO.createImageInputStream( metadata.getLocation().resolveToFile( file ) );
-            reader.setInput( iis );
-            int num = reader.getNumImages( true );
-            if ( crs == null ) {
-                IIOMetadata md = reader.getImageMetadata( 0 );
-                crs = getCRS( md );
-            }
-            iis.close();
+			MultiResolutionRaster mrr = new MultiResolutionRaster(metadata);
+			String file = config.getPyramidFile();
+			ImageInputStream iis = ImageIO.createImageInputStream(metadata.getLocation().resolveToFile(file));
+			reader.setInput(iis);
+			int num = reader.getNumImages(true);
+			if (crs == null) {
+				IIOMetadata md = reader.getImageMetadata(0);
+				crs = getCRS(md);
+			}
+			iis.close();
 
-            if ( crs == null ) {
-                throw new ResourceInitException( "No CRS information could be read from GeoTIFF, and none was "
-                                                 + " configured. Please configure a CRS or add one to the GeoTIFF." );
-            }
+			if (crs == null) {
+				throw new ResourceInitException("No CRS information could be read from GeoTIFF, and none was "
+						+ " configured. Please configure a CRS or add one to the GeoTIFF.");
+			}
 
-            for ( int i = 0; i < num; ++i ) {
-                RasterIOOptions opts = new RasterIOOptions();
-                opts.add( IMAGE_INDEX, "" + i );
-                opts.add( OPT_FORMAT, "tiff" );
-                opts.add( CRS, crs.getAlias() );
-                if ( config.getOriginLocation() != null ) {
-                    opts.add( RasterIOOptions.GEO_ORIGIN_LOCATION,
-                              config.getOriginLocation().toString().toUpperCase() );
-                }
+			for (int i = 0; i < num; ++i) {
+				RasterIOOptions opts = new RasterIOOptions();
+				opts.add(IMAGE_INDEX, "" + i);
+				opts.add(OPT_FORMAT, "tiff");
+				opts.add(CRS, crs.getAlias());
+				if (config.getOriginLocation() != null) {
+					opts.add(RasterIOOptions.GEO_ORIGIN_LOCATION, config.getOriginLocation().toString().toUpperCase());
+				}
 
-                AbstractRaster raster = RasterFactory.loadRasterFromFile( metadata.getLocation().resolveToFile( file ),
-                                                                          opts, metadata );
-                setNoDataValue( raster, config.getNodata() );
-                raster.setCoordinateSystem( crs );
-                mrr.addRaster( raster );
-            }
-            mrr.setCoordinateSystem( crs );
-            return mrr;
-        } catch ( Exception e ) {
-            throw new ResourceInitException( "Could not read pyramid configuration file.", e );
-        }
-    }
+				AbstractRaster raster = RasterFactory.loadRasterFromFile(metadata.getLocation().resolveToFile(file),
+						opts, metadata);
+				setNoDataValue(raster, config.getNodata());
+				raster.setCoordinateSystem(crs);
+				mrr.addRaster(raster);
+			}
+			mrr.setCoordinateSystem(crs);
+			return mrr;
+		}
+		catch (Exception e) {
+			throw new ResourceInitException("Could not read pyramid configuration file.", e);
+		}
+	}
 
-
-    private static ICRS getCRS( IIOMetadata metaData ) {
-        GeoTiffIIOMetadataAdapter geoTIFFMetaData = new GeoTiffIIOMetadataAdapter( metaData );
-        try {
-            int modelType = Integer.valueOf( geoTIFFMetaData.getGeoKey( GeoTiffIIOMetadataAdapter.GTModelTypeGeoKey ) );
-            String epsgCode = null;
-            if ( modelType == GeoTiffIIOMetadataAdapter.ModelTypeProjected ) {
-                epsgCode = geoTIFFMetaData.getGeoKey( GeoTiffIIOMetadataAdapter.ProjectedCSTypeGeoKey );
-            } else if ( modelType == GeoTiffIIOMetadataAdapter.ModelTypeGeographic ) {
-                epsgCode = geoTIFFMetaData.getGeoKey( GeoTiffIIOMetadataAdapter.GeographicTypeGeoKey );
-            }
-            if ( epsgCode != null && epsgCode.length() != 0 ) {
-                try {
-                    return CRSManager.lookup( "EPSG:" + epsgCode );
-                } catch ( UnknownCRSException e ) {
-                    LOG.error( "No coordinate system found for EPSG:" + epsgCode );
-                }
-            }
-        } catch ( UnsupportedOperationException ex ) {
-            LOG.debug( "couldn't read crs information in GeoTIFF" );
-        }
-        return null;
-    }
+	private static ICRS getCRS(IIOMetadata metaData) {
+		GeoTiffIIOMetadataAdapter geoTIFFMetaData = new GeoTiffIIOMetadataAdapter(metaData);
+		try {
+			int modelType = Integer.valueOf(geoTIFFMetaData.getGeoKey(GeoTiffIIOMetadataAdapter.GTModelTypeGeoKey));
+			String epsgCode = null;
+			if (modelType == GeoTiffIIOMetadataAdapter.ModelTypeProjected) {
+				epsgCode = geoTIFFMetaData.getGeoKey(GeoTiffIIOMetadataAdapter.ProjectedCSTypeGeoKey);
+			}
+			else if (modelType == GeoTiffIIOMetadataAdapter.ModelTypeGeographic) {
+				epsgCode = geoTIFFMetaData.getGeoKey(GeoTiffIIOMetadataAdapter.GeographicTypeGeoKey);
+			}
+			if (epsgCode != null && epsgCode.length() != 0) {
+				try {
+					return CRSManager.lookup("EPSG:" + epsgCode);
+				}
+				catch (UnknownCRSException e) {
+					LOG.error("No coordinate system found for EPSG:" + epsgCode);
+				}
+			}
+		}
+		catch (UnsupportedOperationException ex) {
+			LOG.debug("couldn't read crs information in GeoTIFF");
+		}
+		return null;
+	}
 
 }

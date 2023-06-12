@@ -44,23 +44,24 @@ import java.util.Properties;
 
 public class TestEnvironment {
 
-    private Properties properties;
+	private Properties properties;
 
-    public TestEnvironment( Properties properties ) {
-        this.properties = properties;
-    }
+	public TestEnvironment(Properties properties) {
+		this.properties = properties;
+	}
 
-    public String getPort() {
-        String port = properties.getProperty( "portnumber", "8080" );
-        return port;
-    }
+	public String getPort() {
+		String port = properties.getProperty("portnumber", "8080");
+		return port;
+	}
 
-    public String getContext() {
-        String context = properties.getProperty( "context", "deegree-webservices" );
-        return context;
-    }
+	public String getContext() {
+		String context = properties.getProperty("context", "deegree-webservices");
+		return context;
+	}
 
-    public String getWorkspaceDir() {
-        return properties.getProperty( "workspaceDir" );
-    }
+	public String getWorkspaceDir() {
+		return properties.getProperty("workspaceDir");
+	}
+
 }

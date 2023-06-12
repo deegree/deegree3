@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -40,49 +39,51 @@ import java.io.PrintStream;
 
 class CiteWrapper {
 
-    private final String citeScript;
+	private final String citeScript;
 
-    private final PrintStream oldSysOut;
+	private final PrintStream oldSysOut;
 
-    private final PrintStream oldSysErr;
+	private final PrintStream oldSysErr;
 
-    private String out;
+	private String out;
 
-    private String err;
+	private String err;
 
-    CiteWrapper( String citeScript ) {
-        this.citeScript = citeScript;
-        this.oldSysOut = System.out;
-        this.oldSysErr = System.err;
-    }
+	CiteWrapper(String citeScript) {
+		this.citeScript = citeScript;
+		this.oldSysOut = System.out;
+		this.oldSysErr = System.err;
+	}
 
-    void execute()
-                            throws Exception {
+	void execute() throws Exception {
 
-        String[] args = new String[] { "-cmd=-mode=test", "-mode=test", "-source=" + citeScript, "-workdir=/tmp" };
-        try {
-            ByteArrayOutputStream sysOut = new ByteArrayOutputStream();
-            ByteArrayOutputStream sysErr = new ByteArrayOutputStream();
-            System.setOut( new PrintStream( sysOut ) );
-            System.setErr( new PrintStream( sysErr ) );
-            
-            // TODO what about the build path?
-            com.occamlab.te.Test.main( args );
-            out = sysOut.toString( "UTF-8" );
-            err = sysErr.toString( "UTF-8" );
-        } catch ( Exception e ) {
-            throw e;
-        } finally {
-            System.setOut( oldSysOut );
-            System.setErr( oldSysErr );
-        }
-    }
+		String[] args = new String[] { "-cmd=-mode=test", "-mode=test", "-source=" + citeScript, "-workdir=/tmp" };
+		try {
+			ByteArrayOutputStream sysOut = new ByteArrayOutputStream();
+			ByteArrayOutputStream sysErr = new ByteArrayOutputStream();
+			System.setOut(new PrintStream(sysOut));
+			System.setErr(new PrintStream(sysErr));
 
-    String getOutput() {
-        return out;
-    }
+			// TODO what about the build path?
+			com.occamlab.te.Test.main(args);
+			out = sysOut.toString("UTF-8");
+			err = sysErr.toString("UTF-8");
+		}
+		catch (Exception e) {
+			throw e;
+		}
+		finally {
+			System.setOut(oldSysOut);
+			System.setErr(oldSysErr);
+		}
+	}
 
-    String getError() {
-        return err;
-    }
+	String getOutput() {
+		return out;
+	}
+
+	String getError() {
+		return err;
+	}
+
 }

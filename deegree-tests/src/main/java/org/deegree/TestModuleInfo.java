@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -42,16 +41,14 @@ import org.deegree.commons.version.DeegreeModuleInfo;
  * {@link DeegreeModuleInfo} for the test module.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- *
- * @version $Revision: $, $Date: $
  */
 public class TestModuleInfo extends DeegreeModuleInfo {
 
-    private static final String MODULE_NAME = "test";
+	private static final String MODULE_NAME = "test";
 
-    @Override
-    public String getName() {
-        return MODULE_NAME;
-    }
+	@Override
+	public String getName() {
+		return MODULE_NAME;
+	}
+
 }

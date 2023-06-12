@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -53,68 +52,63 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 
 /**
  * Factory for creating {@link GMLStreamReader} instances.
- * 
+ *
  * @see GMLObject
  * @see GMLStreamReader
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class GMLInputFactory {
 
-    /**
-     * Creates a new {@link GMLStreamReader} instance for reading GML of the specified version.
-     * 
-     * @param version
-     *            GML version, must not be <code>null</code>
-     * @param xmlStream
-     *            XML stream used to read the input, must not be <code>null</code> and either point to a
-     *            <code>START_DOCUMENT</code> event or a <code>START_ELEMENT</code> event of a GML object element
-     * @return initialized {@link GMLStreamReader}
-     * @throws XMLStreamException
-     */
-    public static GMLStreamReader createGMLStreamReader( GMLVersion version, XMLStreamReader xmlStream )
-                            throws XMLStreamException {
-        // TODO remove this (get rid of deprecated GML3GeometryReader constructor first)
-        if (xmlStream == null) {
-            return new GMLStreamReader( version, null );
-        }
-        if ( xmlStream.getEventType() == XMLStreamConstants.START_DOCUMENT ) {
-            xmlStream.nextTag();
-        }
-        if ( xmlStream instanceof XMLStreamReaderWrapper ) {
-            return new GMLStreamReader( version, (XMLStreamReaderWrapper) xmlStream );
-        }
-        return new GMLStreamReader( version, new XMLStreamReaderWrapper( xmlStream, null ) );
-    }
+	/**
+	 * Creates a new {@link GMLStreamReader} instance for reading GML of the specified
+	 * version.
+	 * @param version GML version, must not be <code>null</code>
+	 * @param xmlStream XML stream used to read the input, must not be <code>null</code>
+	 * and either point to a <code>START_DOCUMENT</code> event or a
+	 * <code>START_ELEMENT</code> event of a GML object element
+	 * @return initialized {@link GMLStreamReader}
+	 * @throws XMLStreamException
+	 */
+	public static GMLStreamReader createGMLStreamReader(GMLVersion version, XMLStreamReader xmlStream)
+			throws XMLStreamException {
+		// TODO remove this (get rid of deprecated GML3GeometryReader constructor first)
+		if (xmlStream == null) {
+			return new GMLStreamReader(version, null);
+		}
+		if (xmlStream.getEventType() == XMLStreamConstants.START_DOCUMENT) {
+			xmlStream.nextTag();
+		}
+		if (xmlStream instanceof XMLStreamReaderWrapper) {
+			return new GMLStreamReader(version, (XMLStreamReaderWrapper) xmlStream);
+		}
+		return new GMLStreamReader(version, new XMLStreamReaderWrapper(xmlStream, null));
+	}
 
-    /**
-     * Creates a new {@link GMLStreamReader} instance for reading GML of the specified version.
-     * 
-     * @param version
-     *            GML version, must not be <code>null</code>
-     * @param url
-     *            URL used to read the input, must not be <code>null</code>
-     * @return initialized {@link GMLStreamReader}
-     * @throws IOException
-     * @throws FactoryConfigurationError
-     * @throws XMLStreamException
-     */
-    public static GMLStreamReader createGMLStreamReader( GMLVersion version, URL url )
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+	/**
+	 * Creates a new {@link GMLStreamReader} instance for reading GML of the specified
+	 * version.
+	 * @param version GML version, must not be <code>null</code>
+	 * @param url URL used to read the input, must not be <code>null</code>
+	 * @return initialized {@link GMLStreamReader}
+	 * @throws IOException
+	 * @throws FactoryConfigurationError
+	 * @throws XMLStreamException
+	 */
+	public static GMLStreamReader createGMLStreamReader(GMLVersion version, URL url)
+			throws XMLStreamException, FactoryConfigurationError, IOException {
 
-        URLConnection conn = ProxySettings.openURLConnection( url );
-        InputStream is = conn.getInputStream();
-        try {
-            XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( is );
-            // skip START_DOCUMENT event
-            xmlStream.nextTag();
-            return new GMLStreamReader( version, new XMLStreamReaderWrapper( xmlStream, url.toString() ) );
-        } catch ( XMLStreamException | FactoryConfigurationError e ) {
-            IOUtils.closeQuietly( is );
-            throw e;
-        }
-    }
+		URLConnection conn = ProxySettings.openURLConnection(url);
+		InputStream is = conn.getInputStream();
+		try {
+			XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader(is);
+			// skip START_DOCUMENT event
+			xmlStream.nextTag();
+			return new GMLStreamReader(version, new XMLStreamReaderWrapper(xmlStream, url.toString()));
+		}
+		catch (XMLStreamException | FactoryConfigurationError e) {
+			IOUtils.closeQuietly(is);
+			throw e;
+		}
+	}
+
 }

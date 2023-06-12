@@ -46,9 +46,10 @@ import org.deegree.theme.persistence.ThemeManager;
 @ViewScoped
 public class ThemeManagerBean extends AbstractResourceManagerBean<ThemeManager> implements Serializable {
 
-    private static final long serialVersionUID = -7445293485322343946L;
+	private static final long serialVersionUID = -7445293485322343946L;
 
-    public ThemeManagerBean() {
-        super( ThemeManager.class );
-    }
+	public ThemeManagerBean() {
+		super(ThemeManager.class);
+	}
+
 }

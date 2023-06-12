@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -78,109 +77,105 @@ import static org.deegree.feature.types.property.GeometryPropertyType.Coordinate
  * Responsible for building feature layer filters.
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * @version $Revision: $, $Date: $
  */
 class FilterBuilder {
 
-    static OperatorFilter buildFilterForMap( OperatorFilter filter, Style style, LayerQuery query,
-                                             DimensionFilterBuilder dimFilterBuilder, List<String> headers )
-                            throws OWSException {
-        style = style.filter( query.getScale() );
-        filter = Filters.and( filter, Styles.getStyleFilters( style, query.getScale() ) );
-        filter = Filters.and( filter, query.getFilter() );
-        filter = Filters.and( filter, dimFilterBuilder.getDimensionFilter( query.getDimensions(), headers ) );
-        return filter;
-    }
+	static OperatorFilter buildFilterForMap(OperatorFilter filter, Style style, LayerQuery query,
+			DimensionFilterBuilder dimFilterBuilder, List<String> headers) throws OWSException {
+		style = style.filter(query.getScale());
+		filter = Filters.and(filter, Styles.getStyleFilters(style, query.getScale()));
+		filter = Filters.and(filter, query.getFilter());
+		filter = Filters.and(filter, dimFilterBuilder.getDimensionFilter(query.getDimensions(), headers));
+		return filter;
+	}
 
-    static OperatorFilter buildFilter( Operator operator, FeatureType ft, Envelope clickBox ) {
-        if ( ft == null ) {
-            if ( operator == null ) {
-                return null;
-            }
-            return new OperatorFilter( operator );
-        }
-        LinkedList<Operator> list = findOperators( ft, clickBox );
-        if ( list.size() > 1 ) {
-            Or or = new Or( list.toArray( new Operator[list.size()] ) );
-            if ( operator == null ) {
-                return new OperatorFilter( or );
-            }
-            return new OperatorFilter( new And( operator, or ) );
-        }
-        if ( list.isEmpty() ) {
-            // obnoxious case where feature has no geometry properties (but features may have extra geometry props)
-            if ( operator == null ) {
-                return new OperatorFilter( new Intersects( null, clickBox ) );
-            }
-            return new OperatorFilter( new And( operator, new Intersects( null, clickBox ) ) );
-        }
-        if ( operator == null ) {
-            return new OperatorFilter( list.get( 0 ) );
-        }
-        return new OperatorFilter( new And( operator, list.get( 0 ) ) );
-    }
+	static OperatorFilter buildFilter(Operator operator, FeatureType ft, Envelope clickBox) {
+		if (ft == null) {
+			if (operator == null) {
+				return null;
+			}
+			return new OperatorFilter(operator);
+		}
+		LinkedList<Operator> list = findOperators(ft, clickBox);
+		if (list.size() > 1) {
+			Or or = new Or(list.toArray(new Operator[list.size()]));
+			if (operator == null) {
+				return new OperatorFilter(or);
+			}
+			return new OperatorFilter(new And(operator, or));
+		}
+		if (list.isEmpty()) {
+			// obnoxious case where feature has no geometry properties (but features may
+			// have extra geometry props)
+			if (operator == null) {
+				return new OperatorFilter(new Intersects(null, clickBox));
+			}
+			return new OperatorFilter(new And(operator, new Intersects(null, clickBox)));
+		}
+		if (operator == null) {
+			return new OperatorFilter(list.get(0));
+		}
+		return new OperatorFilter(new And(operator, list.get(0)));
+	}
 
-    private static LinkedList<Operator> findOperators( FeatureType ft, Envelope clickBox ) {
-        LinkedList<Operator> list = new LinkedList<Operator>();
-        for ( PropertyType pt : ft.getPropertyDeclarations() ) {
-            if ( pt instanceof GeometryPropertyType
-                 && ( ( (GeometryPropertyType) pt ).getCoordinateDimension() == DIM_2 ||
-                      ( (GeometryPropertyType) pt ).getCoordinateDimension() == DIM_2_OR_3 ) ) {
-                list.add( new Intersects( new ValueReference( pt.getName() ), clickBox ) );
-            }
-        }
-        return list;
-    }
+	private static LinkedList<Operator> findOperators(FeatureType ft, Envelope clickBox) {
+		LinkedList<Operator> list = new LinkedList<Operator>();
+		for (PropertyType pt : ft.getPropertyDeclarations()) {
+			if (pt instanceof GeometryPropertyType && (((GeometryPropertyType) pt).getCoordinateDimension() == DIM_2
+					|| ((GeometryPropertyType) pt).getCoordinateDimension() == DIM_2_OR_3)) {
+				list.add(new Intersects(new ValueReference(pt.getName()), clickBox));
+			}
+		}
+		return list;
+	}
 
-    static OperatorFilter appendRequestFilter( OperatorFilter filter, LayerQuery query, Set<QName> propertyNames ) {
-        OperatorFilter requestFilter = buildRequestFilter( query, propertyNames );
-        return Filters.and( filter, requestFilter );
-    }
+	static OperatorFilter appendRequestFilter(OperatorFilter filter, LayerQuery query, Set<QName> propertyNames) {
+		OperatorFilter requestFilter = buildRequestFilter(query, propertyNames);
+		return Filters.and(filter, requestFilter);
+	}
 
-    static OperatorFilter buildRequestFilter( LayerQuery layerQuery, Set<QName> propertyNames ) {
-        Pair<String, List<String>> requestFilter = layerQuery.requestFilter();
-        if ( requestFilter == null )
-            return null;
+	static OperatorFilter buildRequestFilter(LayerQuery layerQuery, Set<QName> propertyNames) {
+		Pair<String, List<String>> requestFilter = layerQuery.requestFilter();
+		if (requestFilter == null)
+			return null;
 
-        List<ComparisonOperator> operators = createOperatorsIfPropertyIsKnown( requestFilter, propertyNames );
-        if ( operators.isEmpty() )
-            return null;
-        if ( operators.size() == 1 )
-            return new OperatorFilter( operators.get( 0 ) );
-        return new OperatorFilter( new Or( operators.toArray( new Operator[operators.size()] ) ) );
-    }
+		List<ComparisonOperator> operators = createOperatorsIfPropertyIsKnown(requestFilter, propertyNames);
+		if (operators.isEmpty())
+			return null;
+		if (operators.size() == 1)
+			return new OperatorFilter(operators.get(0));
+		return new OperatorFilter(new Or(operators.toArray(new Operator[operators.size()])));
+	}
 
-    private static List<ComparisonOperator> createOperatorsIfPropertyIsKnown( Pair<String, List<String>> requestFilter,
-                                                                              Set<QName> propertyNames ) {
-        String filterProperty = requestFilter.getFirst();
-        if ( propertyIsknown( filterProperty, propertyNames ) ) {
-            return createOperatorsIfPropertyIsKnown( requestFilter, filterProperty );
-        }
-        return Collections.emptyList();
-    }
+	private static List<ComparisonOperator> createOperatorsIfPropertyIsKnown(Pair<String, List<String>> requestFilter,
+			Set<QName> propertyNames) {
+		String filterProperty = requestFilter.getFirst();
+		if (propertyIsknown(filterProperty, propertyNames)) {
+			return createOperatorsIfPropertyIsKnown(requestFilter, filterProperty);
+		}
+		return Collections.emptyList();
+	}
 
-    private static List<ComparisonOperator> createOperatorsIfPropertyIsKnown( Pair<String, List<String>> requestFilter,
-                                                                              String filterProperty ) {
-        List<ComparisonOperator> operators = new ArrayList<ComparisonOperator>();
-        List<String> filterValues = requestFilter.getSecond();
-        for ( String filterValue : filterValues ) {
-            Expression filterPropertyExpression = new ValueReference( new QName( filterProperty ) );
-            Expression filterValueExpression = new Literal<PrimitiveValue>( filterValue );
-            PropertyIsEqualTo isEqualTo = new PropertyIsEqualTo( filterPropertyExpression,
-                                                                 filterValueExpression, false,
-                                                                 MatchAction.ALL );
-            operators.add( isEqualTo );
-        }
-        return operators;
-    }
+	private static List<ComparisonOperator> createOperatorsIfPropertyIsKnown(Pair<String, List<String>> requestFilter,
+			String filterProperty) {
+		List<ComparisonOperator> operators = new ArrayList<ComparisonOperator>();
+		List<String> filterValues = requestFilter.getSecond();
+		for (String filterValue : filterValues) {
+			Expression filterPropertyExpression = new ValueReference(new QName(filterProperty));
+			Expression filterValueExpression = new Literal<PrimitiveValue>(filterValue);
+			PropertyIsEqualTo isEqualTo = new PropertyIsEqualTo(filterPropertyExpression, filterValueExpression, false,
+					MatchAction.ALL);
+			operators.add(isEqualTo);
+		}
+		return operators;
+	}
 
-    private static boolean propertyIsknown( String filterProperty, Set<QName> propertyNames ) {
-        for ( QName propertyName : propertyNames ) {
-            if ( filterProperty.equals( propertyName.getLocalPart() ) )
-                return true;
-        }
-        return false;
-    }
+	private static boolean propertyIsknown(String filterProperty, Set<QName> propertyNames) {
+		for (QName propertyName : propertyNames) {
+			if (filterProperty.equals(propertyName.getLocalPart()))
+				return true;
+		}
+		return false;
+	}
 
 }

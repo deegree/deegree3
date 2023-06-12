@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -37,49 +36,44 @@ package org.deegree.tile;
 
 /**
  * Indicates an exception that occured while reading or writing tile data.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class TileIOException extends RuntimeException {
 
-    private static final long serialVersionUID = -336113433539622673L;
+	private static final long serialVersionUID = -336113433539622673L;
 
-    /**
-     * Creates a new {@link FeatureStoreException} without detail message.
-     */
-    public TileIOException() {
-        super();
-    }
+	/**
+	 * Creates a new {@link FeatureStoreException} without detail message.
+	 */
+	public TileIOException() {
+		super();
+	}
 
-    /**
-     * Creates a new {@link TileIOException} with detail message.
-     * 
-     * @param message
-     *            detail message
-     */
-    public TileIOException( String message ) {
-        super( message );
-    }
+	/**
+	 * Creates a new {@link TileIOException} with detail message.
+	 * @param message detail message
+	 */
+	public TileIOException(String message) {
+		super(message);
+	}
 
-    /**
-     * Creates a new {@link TileIOException} which wraps the causing exception.
-     * 
-     * @param cause
-     */
-    public TileIOException( Throwable cause ) {
-        super( cause );
-    }
+	/**
+	 * Creates a new {@link TileIOException} which wraps the causing exception.
+	 * @param cause
+	 */
+	public TileIOException(Throwable cause) {
+		super(cause);
+	}
 
-    /**
-     * Creates a new {@link TileIOException} which wraps the causing exception and provides a detail message.
-     * 
-     * @param message
-     * @param cause
-     */
-    public TileIOException( String message, Throwable cause ) {
-        super( message, cause );
-    }
+	/**
+	 * Creates a new {@link TileIOException} which wraps the causing exception and
+	 * provides a detail message.
+	 * @param message
+	 * @param cause
+	 */
+	public TileIOException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
 }

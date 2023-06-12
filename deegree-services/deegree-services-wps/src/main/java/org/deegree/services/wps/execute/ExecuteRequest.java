@@ -1,4 +1,3 @@
-//$Header: /deegreerepository/deegree/resources/eclipse/svn_classfile_header_template.xml,v 1.2 2007/03/06 09:44:09 bezema Exp $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -47,79 +46,67 @@ import org.deegree.services.wps.ProcessletInputs;
  *
  * @author <a href="mailto:apadberg@uni-bonn.de">Alexander Padberg</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: padberg$
- *
- * @version $Revision$, $Date: 08.05.2008 13:54:31$
  */
 public class ExecuteRequest extends WPSRequest {
 
-    private ProcessDefinition processDef;
+	private ProcessDefinition processDef;
 
-    private ProcessletInputs dataInputs;
+	private ProcessletInputs dataInputs;
 
-    private ResponseForm responseForm;
+	private ResponseForm responseForm;
 
-    /**
-     * Creates a new {@link ExecuteRequest} instance.
-     *
-     * @param version
-     *            WPS protocol version
-     * @param language
-     *            RFC 4646 language code of the human-readable text, may be null
-     * @param processDef
-     *            definition of the process to be executed
-     * @param dataInputs
-     *            input (or parameter) values provided to the process, may be null
-     * @param responseForm
-     *            defines the response type of the WPS, may be null
-     */
-    public ExecuteRequest( Version version, String language, ProcessDefinition processDef, ProcessletInputs dataInputs,
-                           ResponseForm responseForm ) {
-        super( version, language );
-        this.processDef = processDef;
-        this.dataInputs = dataInputs;
-        this.responseForm = responseForm;
-    }
+	/**
+	 * Creates a new {@link ExecuteRequest} instance.
+	 * @param version WPS protocol version
+	 * @param language RFC 4646 language code of the human-readable text, may be null
+	 * @param processDef definition of the process to be executed
+	 * @param dataInputs input (or parameter) values provided to the process, may be null
+	 * @param responseForm defines the response type of the WPS, may be null
+	 */
+	public ExecuteRequest(Version version, String language, ProcessDefinition processDef, ProcessletInputs dataInputs,
+			ResponseForm responseForm) {
+		super(version, language);
+		this.processDef = processDef;
+		this.dataInputs = dataInputs;
+		this.responseForm = responseForm;
+	}
 
-    /**
-     * Returns the identifier of the process to be executed.
-     *
-     * @return the identifier of the process to be executed
-     */
-    public CodeType getProcessId() {
-        return new CodeType(processDef.getIdentifier().getValue(), processDef.getIdentifier().getCodeSpace());
-    }
+	/**
+	 * Returns the identifier of the process to be executed.
+	 * @return the identifier of the process to be executed
+	 */
+	public CodeType getProcessId() {
+		return new CodeType(processDef.getIdentifier().getValue(), processDef.getIdentifier().getCodeSpace());
+	}
 
-    /**
-     * Returns the definition of the process to be executed.
-     *
-     * @return the definition of the process to be executed
-     */
-    public ProcessDefinition getProcessDefinition() {
-        return processDef;
-    }
+	/**
+	 * Returns the definition of the process to be executed.
+	 * @return the definition of the process to be executed
+	 */
+	public ProcessDefinition getProcessDefinition() {
+		return processDef;
+	}
 
-    /**
-     * Returns the input parameter values provided to the process.
-     *
-     * @return the input parameter values provided to the process, may be null
-     */
-    public ProcessletInputs getDataInputs() {
-        return dataInputs;
-    }
+	/**
+	 * Returns the input parameter values provided to the process.
+	 * @return the input parameter values provided to the process, may be null
+	 */
+	public ProcessletInputs getDataInputs() {
+		return dataInputs;
+	}
 
-    /**
-     * Returns the requested response type.
-     *
-     * @return the requested response type, or null for default response type
-     */
-    public ResponseForm getResponseForm() {
-        return responseForm;
-    }
+	/**
+	 * Returns the requested response type.
+	 * @return the requested response type, or null for default response type
+	 */
+	public ResponseForm getResponseForm() {
+		return responseForm;
+	}
 
-    @Override
-    public String toString() {
-        return ( "Request: Execute " + super.toString() + ", identifier: " + processDef.getIdentifier()
-                 + ", DataInputs: " + dataInputs + ", ResponseForm: " + responseForm );
-    }
+	@Override
+	public String toString() {
+		return ("Request: Execute " + super.toString() + ", identifier: " + processDef.getIdentifier()
+				+ ", DataInputs: " + dataInputs + ", ResponseForm: " + responseForm);
+	}
+
 }

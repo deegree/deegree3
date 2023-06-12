@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-base/src/main/java/org/deegree/sqldialect/SQLDialect.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -45,59 +44,50 @@ import org.deegree.commons.jdbc.TableName;
 
 /**
  * Metadata for a table in an SQL database (columns/types).
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: markus $
- * 
- * @version $Revision: $, $Date: $
  */
 public class TableDefinition {
 
-    private TableName name;
+	private TableName name;
 
-    private Map<SQLIdentifier, ColumnDefinition> columnNameToColumn = new LinkedHashMap<SQLIdentifier, ColumnDefinition>();
+	private Map<SQLIdentifier, ColumnDefinition> columnNameToColumn = new LinkedHashMap<SQLIdentifier, ColumnDefinition>();
 
-    /**
-     * Creates a new <code>TableDetails</code> instance.
-     * 
-     * @param name
-     *            name of the table, must not be <code>null</code>
-     * @param columns
-     *            column of the table, must not be <code>null</code>
-     */
-    public TableDefinition( TableName name, List<ColumnDefinition> columns ) {
-        this.name = name;
-        for ( ColumnDefinition column : columns ) {
-            columnNameToColumn.put( column.getName(), column );
-        }
-    }
+	/**
+	 * Creates a new <code>TableDetails</code> instance.
+	 * @param name name of the table, must not be <code>null</code>
+	 * @param columns column of the table, must not be <code>null</code>
+	 */
+	public TableDefinition(TableName name, List<ColumnDefinition> columns) {
+		this.name = name;
+		for (ColumnDefinition column : columns) {
+			columnNameToColumn.put(column.getName(), column);
+		}
+	}
 
-    /**
-     * Returns the name of table.
-     * 
-     * @return name of table, never <code>null</code>
-     */
-    public SQLIdentifier getName() {
-        return name;
-    }
+	/**
+	 * Returns the name of table.
+	 * @return name of table, never <code>null</code>
+	 */
+	public SQLIdentifier getName() {
+		return name;
+	}
 
-    /**
-     * Returns the columns of the table.
-     * 
-     * @return columns of the table, never <code>null</code>
-     */
-    public List<ColumnDefinition> getColumns() {
-        return new ArrayList<ColumnDefinition>( columnNameToColumn.values() );
-    }
+	/**
+	 * Returns the columns of the table.
+	 * @return columns of the table, never <code>null</code>
+	 */
+	public List<ColumnDefinition> getColumns() {
+		return new ArrayList<ColumnDefinition>(columnNameToColumn.values());
+	}
 
-    /**
-     * Returns the specified column.
-     * 
-     * @param name
-     *            name of the column, must not be <code>null</code>
-     * @return specified column, may be <code>null</code> (no such column)
-     */
-    public ColumnDefinition getColumn( SQLIdentifier name ) {
-        return columnNameToColumn.get( name );
-    }
+	/**
+	 * Returns the specified column.
+	 * @param name name of the column, must not be <code>null</code>
+	 * @return specified column, may be <code>null</code> (no such column)
+	 */
+	public ColumnDefinition getColumn(SQLIdentifier name) {
+		return columnNameToColumn.get(name);
+	}
+
 }

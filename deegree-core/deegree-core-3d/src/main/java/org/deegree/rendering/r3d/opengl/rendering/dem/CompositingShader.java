@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -36,63 +35,63 @@
 package org.deegree.rendering.r3d.opengl.rendering.dem;
 
 /**
- * The <code>CompositingShader</code> generates a fragment shader file for a number of texture units. The applied
- * colormodel is sort of a 'decall' functionality with glColor and semi transparent support.
- * 
+ * The <code>CompositingShader</code> generates a fragment shader file for a number of
+ * texture units. The applied colormodel is sort of a 'decall' functionality with glColor
+ * and semi transparent support.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class CompositingShader {
 
-    /**
-     * @param numTextures
-     * @return create a fragment shader program which is programmed with a 'DECAL'-like strukture with semi-transpartent
-     *         supprt, for the given number of texture units.
-     */
-    public static String getGLSLCode( int numTextures ) {
+	/**
+	 * @param numTextures
+	 * @return create a fragment shader program which is programmed with a 'DECAL'-like
+	 * strukture with semi-transpartent supprt, for the given number of texture units.
+	 */
+	public static String getGLSLCode(int numTextures) {
 
-        StringBuffer sb = new StringBuffer();
+		StringBuffer sb = new StringBuffer();
 
-        // first line "uniform sampler2D tex0,tex1,tex2...;"
-        sb.append( "uniform sampler2D tex0" );
-        for ( int i = 1; i < numTextures; i++ ) {
-            sb.append( ",tex" );
-            sb.append( i );
-        }
-        sb.append( ';' );
+		// first line "uniform sampler2D tex0,tex1,tex2...;"
+		sb.append("uniform sampler2D tex0");
+		for (int i = 1; i < numTextures; i++) {
+			sb.append(",tex");
+			sb.append(i);
+		}
+		sb.append(';');
 
-        // begin main method
-        sb.append( "\n\nvoid main()\n{\n" );
-        sb.append( "  gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n" );
+		// begin main method
+		sb.append("\n\nvoid main()\n{\n");
+		sb.append("  gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n");
 
-        // add a GL_DECAL-like function for each texture unit
-        for ( int i = 0; i < numTextures; i++ ) {
-            if ( i == 0 ) {
-                sb.append( "\n  vec2 tCoord = gl_TexCoord[" + i + "].st;" );
-            } else {
-                sb.append( "\n  tCoord = gl_TexCoord[" + i + "].st;" );
-            }
-            sb.append( "tCoord = gl_TexCoord[" + i + "].st;" );
-            sb.append( "\n  if( tCoord.s >= 0.0 && tCoord.t >= 0.0){" );
-            sb.append( "\n    vec4 texColor = texture2D(tex" + i + ", tCoord );" );
-            sb.append( "\n    gl_FragColor = ((1.0 - texColor.a) * gl_FragColor) + (texColor.a * texColor);" );
-            sb.append( "\n  }" );
-        }
+		// add a GL_DECAL-like function for each texture unit
+		for (int i = 0; i < numTextures; i++) {
+			if (i == 0) {
+				sb.append("\n  vec2 tCoord = gl_TexCoord[" + i + "].st;");
+			}
+			else {
+				sb.append("\n  tCoord = gl_TexCoord[" + i + "].st;");
+			}
+			sb.append("tCoord = gl_TexCoord[" + i + "].st;");
+			sb.append("\n  if( tCoord.s >= 0.0 && tCoord.t >= 0.0){");
+			sb.append("\n    vec4 texColor = texture2D(tex" + i + ", tCoord );");
+			sb.append("\n    gl_FragColor = ((1.0 - texColor.a) * gl_FragColor) + (texColor.a * texColor);");
+			sb.append("\n  }");
+		}
 
-        // end main method
-        sb.append( "\n\n  gl_FragColor = gl_FragColor * gl_Color;\n" );
-        sb.append( "}\n" );
-        return sb.toString();
-    }
+		// end main method
+		sb.append("\n\n  gl_FragColor = gl_FragColor * gl_Color;\n");
+		sb.append("}\n");
+		return sb.toString();
+	}
 
-    /**
-     * Simple main to output the shader program.
-     * 
-     * @param args
-     */
-    public static void main( String[] args ) {
-        System.out.println( CompositingShader.getGLSLCode( 3 ) );
-    }
+	/**
+	 * Simple main to output the shader program.
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		System.out.println(CompositingShader.getGLSLCode(3));
+	}
+
 }

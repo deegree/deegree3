@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -40,79 +39,66 @@ import org.deegree.protocol.wps.client.param.ComplexFormat;
 
 /**
  * Encapsulates the requested settings for an output parameter.
- * 
+ *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class OutputFormat {
 
-    private CodeType id;
+	private CodeType id;
 
-    private String uom;
+	private String uom;
 
-    private ComplexFormat complexAttributes;
+	private ComplexFormat complexAttributes;
 
-    private boolean asRef;
+	private boolean asRef;
 
-    /**
-     * Creates a new {@link OutputFormat} instance.
-     * 
-     * @param id
-     *            parameter identifier, must not be <code>null</code>
-     * @param uom
-     *            requested unit-of-measure, can be <code>null</code>
-     * @param asRef
-     *            true, if the output should be returned as reference, false otherwise
-     * @param mimeType
-     *            requested mime type for the output, can be <code>null</code>
-     * @param encoding
-     *            requested encoding for the output, can be <code>null</code>
-     * @param schema
-     *            requested XML schema for the output, can be <code>null</code>
-     */
-    public OutputFormat( CodeType id, String uom, boolean asRef, String mimeType, String encoding, String schema ) {
-        this.id = id;
-        this.uom = uom;
-        this.asRef = asRef;
-        this.complexAttributes = new ComplexFormat( mimeType, encoding, schema );
-    }
+	/**
+	 * Creates a new {@link OutputFormat} instance.
+	 * @param id parameter identifier, must not be <code>null</code>
+	 * @param uom requested unit-of-measure, can be <code>null</code>
+	 * @param asRef true, if the output should be returned as reference, false otherwise
+	 * @param mimeType requested mime type for the output, can be <code>null</code>
+	 * @param encoding requested encoding for the output, can be <code>null</code>
+	 * @param schema requested XML schema for the output, can be <code>null</code>
+	 */
+	public OutputFormat(CodeType id, String uom, boolean asRef, String mimeType, String encoding, String schema) {
+		this.id = id;
+		this.uom = uom;
+		this.asRef = asRef;
+		this.complexAttributes = new ComplexFormat(mimeType, encoding, schema);
+	}
 
-    /**
-     * Returns the parameter identifier.
-     * 
-     * @return parameter identifier, never <code>null</code>
-     */
-    public CodeType getId() {
-        return id;
-    }
+	/**
+	 * Returns the parameter identifier.
+	 * @return parameter identifier, never <code>null</code>
+	 */
+	public CodeType getId() {
+		return id;
+	}
 
-    /**
-     * Returns the requested unit-of-measure (only applies to bounding box outputs).
-     * 
-     * @return requested unit-of-measure, can be <code>null</code>
-     */
-    public String getUom() {
-        return uom;
-    }
+	/**
+	 * Returns the requested unit-of-measure (only applies to bounding box outputs).
+	 * @return requested unit-of-measure, can be <code>null</code>
+	 */
+	public String getUom() {
+		return uom;
+	}
 
-    /**
-     * Returns the requested complex format (only applies to complex outputs).
-     * 
-     * @return requested complex format, can be <code>null</code>
-     */
-    public ComplexFormat getComplexAttributes() {
-        return complexAttributes;
-    }
+	/**
+	 * Returns the requested complex format (only applies to complex outputs).
+	 * @return requested complex format, can be <code>null</code>
+	 */
+	public ComplexFormat getComplexAttributes() {
+		return complexAttributes;
+	}
 
-    /**
-     * Returns whether the output should be returned as reference.
-     * 
-     * @return true, if the output should be returned as reference, false otherwise
-     */
-    public boolean isReference() {
-        return asRef;
-    }
+	/**
+	 * Returns whether the output should be returned as reference.
+	 * @return true, if the output should be returned as reference, false otherwise
+	 */
+	public boolean isReference() {
+		return asRef;
+	}
+
 }

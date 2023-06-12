@@ -1,4 +1,3 @@
-// $HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/commons/trunk/src/org/deegree/commons/xml/XMLAdapter.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -40,62 +39,58 @@ import javax.xml.stream.XMLStreamReader;
 import org.apache.axiom.om.OMElement;
 
 /**
- * Thrown when a syntactic or semantic error has been encountered during the parsing process in an {@link XMLAdapter}.
+ * Thrown when a syntactic or semantic error has been encountered during the parsing
+ * process in an {@link XMLAdapter}.
  * <p>
- * Helps to determine the error in the XML document by returning file name and position (column, line, character offset)
- * information in {@link #getMessage()} when they are available.
- * 
+ * Helps to determine the error in the XML document by returning file name and position
+ * (column, line, character offset) information in {@link #getMessage()} when they are
+ * available.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer </a>
- * @author last edited by: $Author:$
- * 
- * @version $Revision:$, $Date:$
  */
 public class XMLParsingException extends XMLProcessingException {
 
-    private static final long serialVersionUID = 2428868104304736218L;
+	private static final long serialVersionUID = 2428868104304736218L;
 
-    private String msg;
+	private String msg;
 
-    private XMLErrorPosition errorPosition;
+	private XMLErrorPosition errorPosition;
 
-    @Deprecated
-    public XMLParsingException( String msg ) {
-        this.msg = msg;
-        errorPosition = null;
-    }
+	@Deprecated
+	public XMLParsingException(String msg) {
+		this.msg = msg;
+		errorPosition = null;
+	}
 
-    /**
-     * Creates a new exception for a parsing error that occured in a StAX-based parsing method.
-     * 
-     * @param xmlReader
-     *            {@link XMLStreamReader} that encountered the erroneous event
-     * @param msg
-     *            error information that explains the problem
-     */
-    public XMLParsingException( XMLStreamReader xmlReader, String msg ) {
-        this.msg = msg;
-        this.errorPosition = new XMLErrorPosition( xmlReader );
-    }
+	/**
+	 * Creates a new exception for a parsing error that occured in a StAX-based parsing
+	 * method.
+	 * @param xmlReader {@link XMLStreamReader} that encountered the erroneous event
+	 * @param msg error information that explains the problem
+	 */
+	public XMLParsingException(XMLStreamReader xmlReader, String msg) {
+		this.msg = msg;
+		this.errorPosition = new XMLErrorPosition(xmlReader);
+	}
 
-    /**
-     * Creates a new exception for a parsing error that occured in an AXIOM-based parsing method.
-     * 
-     * @param origin
-     *            {@link XMLAdapter} that determined the error (usually use <code>this</code>)
-     * @param erroneousElement
-     *            element that contains the error
-     * @param msg
-     *            error information that explains the problem
-     */
-    public XMLParsingException( XMLAdapter origin, OMElement erroneousElement, String msg ) {
-        this.msg = msg;
-        this.errorPosition = new XMLErrorPosition( origin, erroneousElement );
-    }
+	/**
+	 * Creates a new exception for a parsing error that occured in an AXIOM-based parsing
+	 * method.
+	 * @param origin {@link XMLAdapter} that determined the error (usually use
+	 * <code>this</code>)
+	 * @param erroneousElement element that contains the error
+	 * @param msg error information that explains the problem
+	 */
+	public XMLParsingException(XMLAdapter origin, OMElement erroneousElement, String msg) {
+		this.msg = msg;
+		this.errorPosition = new XMLErrorPosition(origin, erroneousElement);
+	}
 
-    @Override
-    public String getMessage() {
-        return "Error in XML document ("
-               + ( ( errorPosition != null ) ? errorPosition.getAsMessage() : "Unknown error position" ) + "): " + msg;
-    }
+	@Override
+	public String getMessage() {
+		return "Error in XML document ("
+				+ ((errorPosition != null) ? errorPosition.getAsMessage() : "Unknown error position") + "): " + msg;
+	}
+
 }

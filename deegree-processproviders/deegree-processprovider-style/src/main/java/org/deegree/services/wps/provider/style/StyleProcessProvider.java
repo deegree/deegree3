@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -59,113 +58,106 @@ import org.deegree.workspace.ResourceMetadata;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class StyleProcessProvider implements ProcessProvider {
 
-    static final String IN_PARAM_ID = "Style";
+	static final String IN_PARAM_ID = "Style";
 
-    static final String OUT_PARAM_ID = "Legend";
+	static final String OUT_PARAM_ID = "Legend";
 
-    Map<CodeType, WPSProcess> idtoProcess = new HashMap<CodeType, WPSProcess>();
+	Map<CodeType, WPSProcess> idtoProcess = new HashMap<CodeType, WPSProcess>();
 
-    private ResourceMetadata<ProcessProvider> metadata;
+	private ResourceMetadata<ProcessProvider> metadata;
 
-    public StyleProcessProvider( String processId, ResourceMetadata<ProcessProvider> metadata ) {
-        this.metadata = metadata;
-        idtoProcess.put( new CodeType( processId ), new GenericWPSProcess( getDescription( processId ),
-                                                                           new StyleProcesslet() ) );
-    }
+	public StyleProcessProvider(String processId, ResourceMetadata<ProcessProvider> metadata) {
+		this.metadata = metadata;
+		idtoProcess.put(new CodeType(processId),
+				new GenericWPSProcess(getDescription(processId), new StyleProcesslet()));
+	}
 
-    private ProcessDefinition getDescription( String processId ) {
-        ProcessDefinition definition = new ProcessDefinition();
+	private ProcessDefinition getDescription(String processId) {
+		ProcessDefinition definition = new ProcessDefinition();
 
-        org.deegree.process.jaxb.java.CodeType id = new org.deegree.process.jaxb.java.CodeType();
-        id.setValue( processId );
-        definition.setIdentifier( id );
-        definition.setProcessVersion( "0.0.1" );
-        definition.setStatusSupported( true );
-        definition.setStoreSupported( true );
+		org.deegree.process.jaxb.java.CodeType id = new org.deegree.process.jaxb.java.CodeType();
+		id.setValue(processId);
+		definition.setIdentifier(id);
+		definition.setProcessVersion("0.0.1");
+		definition.setStatusSupported(true);
+		definition.setStoreSupported(true);
 
-        LanguageStringType title = new LanguageStringType();
-        title.setValue( processId + " process" );
-        definition.setTitle( title );
+		LanguageStringType title = new LanguageStringType();
+		title.setValue(processId + " process");
+		definition.setTitle(title);
 
-        ComplexInputDefinition complexInput = new ComplexInputDefinition();
-        id = new org.deegree.process.jaxb.java.CodeType();
-        id.setValue( IN_PARAM_ID );
-        complexInput.setIdentifier( id );
+		ComplexInputDefinition complexInput = new ComplexInputDefinition();
+		id = new org.deegree.process.jaxb.java.CodeType();
+		id.setValue(IN_PARAM_ID);
+		complexInput.setIdentifier(id);
 
-        title = new LanguageStringType();
-        title.setValue( "style input" );
-        complexInput.setTitle( title );
-        complexInput.setMinOccurs( ONE );
-        complexInput.setMaxOccurs( ONE );
+		title = new LanguageStringType();
+		title.setValue("style input");
+		complexInput.setTitle(title);
+		complexInput.setMinOccurs(ONE);
+		complexInput.setMaxOccurs(ONE);
 
-        ComplexFormatType inFormat = new ComplexFormatType();
-        inFormat.setEncoding( "UTF-8" );
-        inFormat.setMimeType( "text/xml" );
-        inFormat.setSchema( "http://www.opengis.net/sld" );
-        complexInput.setDefaultFormat( inFormat );
+		ComplexFormatType inFormat = new ComplexFormatType();
+		inFormat.setEncoding("UTF-8");
+		inFormat.setMimeType("text/xml");
+		inFormat.setSchema("http://www.opengis.net/sld");
+		complexInput.setDefaultFormat(inFormat);
 
-        JAXBElement<ComplexInputDefinition> inputEl = new JAXBElement<ComplexInputDefinition>(
-                                                                                               new QName( "", "" ),
-                                                                                               ComplexInputDefinition.class,
-                                                                                               complexInput );
-        InputParameters inputs = new InputParameters();
-        inputs.getProcessInput().add( inputEl );
-        definition.setInputParameters( inputs );
+		JAXBElement<ComplexInputDefinition> inputEl = new JAXBElement<ComplexInputDefinition>(new QName("", ""),
+				ComplexInputDefinition.class, complexInput);
+		InputParameters inputs = new InputParameters();
+		inputs.getProcessInput().add(inputEl);
+		definition.setInputParameters(inputs);
 
-        ComplexOutputDefinition complexOutput = new ComplexOutputDefinition();
-        id = new org.deegree.process.jaxb.java.CodeType();
-        id.setValue( OUT_PARAM_ID );
-        complexOutput.setIdentifier( id );
+		ComplexOutputDefinition complexOutput = new ComplexOutputDefinition();
+		id = new org.deegree.process.jaxb.java.CodeType();
+		id.setValue(OUT_PARAM_ID);
+		complexOutput.setIdentifier(id);
 
-        ComplexFormatType outFormat = new ComplexFormatType();
-        outFormat.setMimeType( "image/png" );
-        complexOutput.setDefaultFormat( outFormat );
+		ComplexFormatType outFormat = new ComplexFormatType();
+		outFormat.setMimeType("image/png");
+		complexOutput.setDefaultFormat(outFormat);
 
-        title = new LanguageStringType();
-        title.setValue( "legend graphic output" );
-        complexOutput.setTitle( title );
+		title = new LanguageStringType();
+		title.setValue("legend graphic output");
+		complexOutput.setTitle(title);
 
-        JAXBElement<ComplexOutputDefinition> outputEl = new JAXBElement<ComplexOutputDefinition>(
-                                                                                                  new QName( "", "" ),
-                                                                                                  ComplexOutputDefinition.class,
-                                                                                                  complexOutput );
-        OutputParameters outputs = new OutputParameters();
-        outputs.getProcessOutput().add( outputEl );
-        definition.setOutputParameters( outputs );
-        return definition;
-    }
+		JAXBElement<ComplexOutputDefinition> outputEl = new JAXBElement<ComplexOutputDefinition>(new QName("", ""),
+				ComplexOutputDefinition.class, complexOutput);
+		OutputParameters outputs = new OutputParameters();
+		outputs.getProcessOutput().add(outputEl);
+		definition.setOutputParameters(outputs);
+		return definition;
+	}
 
-    @Override
-    public Map<CodeType, ? extends WPSProcess> getProcesses() {
-        return idtoProcess;
-    }
+	@Override
+	public Map<CodeType, ? extends WPSProcess> getProcesses() {
+		return idtoProcess;
+	}
 
-    @Override
-    public WPSProcess getProcess( CodeType id ) {
-        return idtoProcess.get( id );
-    }
+	@Override
+	public WPSProcess getProcess(CodeType id) {
+		return idtoProcess.get(id);
+	}
 
-    @Override
-    public void init() {
-        // nothing to do
-    }
+	@Override
+	public void init() {
+		// nothing to do
+	}
 
-    @Override
-    public void destroy() {
-        // nothing to do
-    }
+	@Override
+	public void destroy() {
+		// nothing to do
+	}
 
-    @Override
-    public ResourceMetadata<? extends Resource> getMetadata() {
-        return metadata;
-    }
+	@Override
+	public ResourceMetadata<? extends Resource> getMetadata() {
+		return metadata;
+	}
 
 }

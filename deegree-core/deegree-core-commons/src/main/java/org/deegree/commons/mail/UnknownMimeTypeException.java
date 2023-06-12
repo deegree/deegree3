@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -37,39 +36,34 @@ package org.deegree.commons.mail;
 
 /**
  * A UnknownMimetypeException is thrown if the MIME type is not supported.
- * 
+ *
  * @author <a href="mailto:tfr@users.sourceforge.net">Torsten Friebe</A>
- * 
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class UnknownMimeTypeException extends Exception {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = -3326395686226436933L;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = -3326395686226436933L;
 
-    private String mimeType;
+	private String mimeType;
 
-    /**
-     * Creates a exception with the given message and MIME type
-     * 
-     * @param message
-     * @param mimeType
-     */
-    public UnknownMimeTypeException( String message, String mimeType ) {
-        super( message + " : Unknown MIME Type :" + mimeType );
-        this.mimeType = mimeType;
-    }
+	/**
+	 * Creates a exception with the given message and MIME type
+	 * @param message
+	 * @param mimeType
+	 */
+	public UnknownMimeTypeException(String message, String mimeType) {
+		super(message + " : Unknown MIME Type :" + mimeType);
+		this.mimeType = mimeType;
+	}
 
-    /**
-     * @return the name of the unknown mime type
-     * 
-     */
-    public String getMimeType() {
-        return this.mimeType;
-    }
+	/**
+	 * @return the name of the unknown mime type
+	 *
+	 */
+	public String getMimeType() {
+		return this.mimeType;
+	}
 
 }

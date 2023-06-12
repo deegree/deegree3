@@ -11,21 +11,12 @@
     <version>3.5.0-SNAPSHOT</version>
   </parent>
 
-  <profiles>
-    <profile>
-      <id>mssql</id>
-      <modules>
-        <module>deegree-sqldialect-mssql</module>
-      </modules>
-    </profile>
-  </profiles>
-
   <modules>
     <module>deegree-sqldialect-commons</module>
     <module>deegree-sqldialect-gpkg</module>
     <module>deegree-sqldialect-postgis</module>
     <module>deegree-sqldialect-oracle</module>
+    <module>deegree-sqldialect-mssql</module>
   </modules>
-
 </project>
 

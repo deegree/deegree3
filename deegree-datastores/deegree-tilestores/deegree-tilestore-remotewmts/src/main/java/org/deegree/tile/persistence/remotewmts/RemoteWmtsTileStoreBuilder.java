@@ -43,48 +43,47 @@ import org.deegree.workspace.Workspace;
 
 /**
  * This class is responsible for building remote WMTS tile stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class RemoteWmtsTileStoreBuilder implements ResourceBuilder<TileStore> {
 
-    private RemoteWMTSTileStoreJAXB config;
+	private RemoteWMTSTileStoreJAXB config;
 
-    private Workspace workspace;
+	private Workspace workspace;
 
-    private ResourceMetadata<TileStore> metadata;
+	private ResourceMetadata<TileStore> metadata;
 
-    public RemoteWmtsTileStoreBuilder( RemoteWMTSTileStoreJAXB config, Workspace workspace,
-                                       ResourceMetadata<TileStore> metadata ) {
-        this.config = config;
-        this.workspace = workspace;
-        this.metadata = metadata;
-    }
+	public RemoteWmtsTileStoreBuilder(RemoteWMTSTileStoreJAXB config, Workspace workspace,
+			ResourceMetadata<TileStore> metadata) {
+		this.config = config;
+		this.workspace = workspace;
+		this.metadata = metadata;
+	}
 
-    @Override
-    public TileStore build() {
-        try {
-            RemoteWMTS wmts = getRemoteWmts( config.getRemoteWMTSId() );
-            TileDataSetBuilder builder = new TileDataSetBuilder( wmts.getClient(), workspace );
-            Map<String, TileDataSet> map = builder.buildTileDataSetMap( config );
-            return new GenericTileStore( map, metadata );
-        } catch ( Exception e ) {
-            String msg = "Unable to create RemoteWMTSTileStore: " + e.getMessage();
-            throw new ResourceInitException( msg, e );
-        }
-    }
+	@Override
+	public TileStore build() {
+		try {
+			RemoteWMTS wmts = getRemoteWmts(config.getRemoteWMTSId());
+			TileDataSetBuilder builder = new TileDataSetBuilder(wmts.getClient(), workspace);
+			Map<String, TileDataSet> map = builder.buildTileDataSetMap(config);
+			return new GenericTileStore(map, metadata);
+		}
+		catch (Exception e) {
+			String msg = "Unable to create RemoteWMTSTileStore: " + e.getMessage();
+			throw new ResourceInitException(msg, e);
+		}
+	}
 
-    private RemoteWMTS getRemoteWmts( String remoteWmtsId )
-                            throws ResourceInitException {
-        RemoteOWS wmts = workspace.getResource( RemoteOWSProvider.class, remoteWmtsId );
-        if ( !( wmts instanceof RemoteWMTS ) ) {
-            String msg = "The remote WMTS id " + remoteWmtsId + " must correspond to a WMTS instance (was "
-                         + wmts.getClass().getSimpleName() + ")";
-            throw new ResourceInitException( msg );
-        }
-        return (RemoteWMTS) wmts;
-    }
+	private RemoteWMTS getRemoteWmts(String remoteWmtsId) throws ResourceInitException {
+		RemoteOWS wmts = workspace.getResource(RemoteOWSProvider.class, remoteWmtsId);
+		if (!(wmts instanceof RemoteWMTS)) {
+			String msg = "The remote WMTS id " + remoteWmtsId + " must correspond to a WMTS instance (was "
+					+ wmts.getClass().getSimpleName() + ")";
+			throw new ResourceInitException(msg);
+		}
+		return (RemoteWMTS) wmts;
+	}
 
 }

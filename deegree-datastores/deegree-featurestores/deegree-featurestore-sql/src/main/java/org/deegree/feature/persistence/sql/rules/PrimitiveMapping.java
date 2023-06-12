@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -46,47 +45,40 @@ import java.util.List;
 
 /**
  * {@link Mapping} of {@link PrimitiveValue} particles.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class PrimitiveMapping extends Mapping {
 
-    private final PrimitiveType pt;
+	private final PrimitiveType pt;
 
-    private final MappingExpression mapping;
+	private final MappingExpression mapping;
 
-    /**
-     * 
-     * @param path
-     *            relative xpath expression, must not be <code>null</code>
-     * @param voidable
-     *            true, if the particle can be omitted from the parent particle (i.e. be <code>null</code>), false
-     *            otherwise
-     * @param mapping
-     * @param pt
-     * @param tableChange
-     *            table joins, can be <code>null</code> (no joins involved)
-     */
-    public PrimitiveMapping( ValueReference path, boolean voidable, MappingExpression mapping, PrimitiveType pt,
-                             List<TableJoin> tableChange, CustomConverterJAXB converter ) {
-        super( path, voidable, tableChange, converter );
-        this.pt = pt;
-        this.mapping = mapping;
-    }
+	/**
+	 * @param path relative xpath expression, must not be <code>null</code>
+	 * @param voidable true, if the particle can be omitted from the parent particle (i.e.
+	 * be <code>null</code>), false otherwise
+	 * @param mapping
+	 * @param pt
+	 * @param tableChange table joins, can be <code>null</code> (no joins involved)
+	 */
+	public PrimitiveMapping(ValueReference path, boolean voidable, MappingExpression mapping, PrimitiveType pt,
+			List<TableJoin> tableChange, CustomConverterJAXB converter) {
+		super(path, voidable, tableChange, converter);
+		this.pt = pt;
+		this.mapping = mapping;
+	}
 
-    /**
-     * Returns the primitive type for the mapped particles.
-     * 
-     * @return primitive type for the mapped particles
-     */
-    public PrimitiveType getType() {
-        return pt;
-    }
+	/**
+	 * Returns the primitive type for the mapped particles.
+	 * @return primitive type for the mapped particles
+	 */
+	public PrimitiveType getType() {
+		return pt;
+	}
 
-    public MappingExpression getMapping() {
-        return mapping;
-    }
+	public MappingExpression getMapping() {
+		return mapping;
+	}
+
 }

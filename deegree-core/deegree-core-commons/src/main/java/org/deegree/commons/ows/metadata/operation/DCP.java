@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -43,62 +42,60 @@ import org.deegree.commons.ows.metadata.domain.Domain;
 import org.deegree.commons.utils.Pair;
 
 /**
- * The <code>DCP</code> bean encapsulates the corresponding GetCapabilities response metadata element.
- * 
+ * The <code>DCP</code> bean encapsulates the corresponding GetCapabilities response
+ * metadata element.
+ *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class DCP {
 
-    private List<Pair<URL, List<Domain>>> getEndpoints;
+	private List<Pair<URL, List<Domain>>> getEndpoints;
 
-    private List<Pair<URL, List<Domain>>> postEndpoints;
+	private List<Pair<URL, List<Domain>>> postEndpoints;
 
-    /**
-     * Creates a new {@link DCP} instance.
-     * 
-     * @param getUrl
-     *            endpoint for HTTP-GET requests, can be <code>null</code>
-     * @param postUrl
-     *            endpoint for HTTP-POST requests, can be <code>null</code>
-     */
-    public DCP( URL getUrl, URL postUrl ) {
-        getEndpoints = new ArrayList<Pair<URL, List<Domain>>>();
-        if ( getUrl != null ) {
-            getEndpoints.add( new Pair<URL, List<Domain>>( getUrl, new ArrayList<Domain>() ) );
-        }
-        postEndpoints = new ArrayList<Pair<URL, List<Domain>>>();
-        if ( postUrl != null ) {
-            postEndpoints.add( new Pair<URL, List<Domain>>( postUrl, new ArrayList<Domain>() ) );
-        }
-    }
+	/**
+	 * Creates a new {@link DCP} instance.
+	 * @param getUrl endpoint for HTTP-GET requests, can be <code>null</code>
+	 * @param postUrl endpoint for HTTP-POST requests, can be <code>null</code>
+	 */
+	public DCP(URL getUrl, URL postUrl) {
+		getEndpoints = new ArrayList<Pair<URL, List<Domain>>>();
+		if (getUrl != null) {
+			getEndpoints.add(new Pair<URL, List<Domain>>(getUrl, new ArrayList<Domain>()));
+		}
+		postEndpoints = new ArrayList<Pair<URL, List<Domain>>>();
+		if (postUrl != null) {
+			postEndpoints.add(new Pair<URL, List<Domain>>(postUrl, new ArrayList<Domain>()));
+		}
+	}
 
-    public DCP( List<Pair<URL, List<Domain>>> getEndpoints, List<Pair<URL, List<Domain>>> postEndpoints ) {
-        if ( getEndpoints != null ) {
-            this.getEndpoints = getEndpoints;
-        } else {
-            this.getEndpoints = new ArrayList<Pair<URL, List<Domain>>>();
-        }
-        if ( postEndpoints != null ) {
-            this.postEndpoints = postEndpoints;
-        } else {
-            this.postEndpoints = new ArrayList<Pair<URL, List<Domain>>>();
-        }
-    }
+	public DCP(List<Pair<URL, List<Domain>>> getEndpoints, List<Pair<URL, List<Domain>>> postEndpoints) {
+		if (getEndpoints != null) {
+			this.getEndpoints = getEndpoints;
+		}
+		else {
+			this.getEndpoints = new ArrayList<Pair<URL, List<Domain>>>();
+		}
+		if (postEndpoints != null) {
+			this.postEndpoints = postEndpoints;
+		}
+		else {
+			this.postEndpoints = new ArrayList<Pair<URL, List<Domain>>>();
+		}
+	}
 
-    /**
-     * @return getURLs, never <code>null</code>
-     */
-    public List<Pair<URL, List<Domain>>> getGetEndpoints() {
-        return getEndpoints;
-    }
+	/**
+	 * @return getURLs, never <code>null</code>
+	 */
+	public List<Pair<URL, List<Domain>>> getGetEndpoints() {
+		return getEndpoints;
+	}
 
-    /**
-     * @return getPostURLs, never <code>null</code>
-     */
-    public List<Pair<URL, List<Domain>>> getPostEndpoints() {
-        return postEndpoints;
-    }
+	/**
+	 * @return getPostURLs, never <code>null</code>
+	 */
+	public List<Pair<URL, List<Domain>>> getPostEndpoints() {
+		return postEndpoints;
+	}
+
 }

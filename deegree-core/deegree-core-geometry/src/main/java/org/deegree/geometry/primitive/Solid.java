@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -42,69 +41,66 @@ import org.deegree.commons.uom.Unit;
 
 /**
  * <code>Solid</code> instances are 3D-geometries that ...
- * 
+ *
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version. $Revision$, $Date$
+ *
  */
 public interface Solid extends GeometricPrimitive {
 
-    /**
-     * Convenience enum type for discriminating the different solid variants.
-     */
-    public enum SolidType {
-        /** Generic solid that consists of an arbitrary number of */
-        Solid,
-        /** Solid composited from multiple members solids. */
-        CompositeSolid
-    }
+	/**
+	 * Convenience enum type for discriminating the different solid variants.
+	 */
+	public enum SolidType {
 
-    /**
-     * Must always return {@link GeometricPrimitive.PrimitiveType#Solid}.
-     * 
-     * @return {@link GeometricPrimitive.PrimitiveType#Solid}
-     */
-    @Override
-    public PrimitiveType getPrimitiveType();
+		/** Generic solid that consists of an arbitrary number of */
+		Solid,
+		/** Solid composited from multiple members solids. */
+		CompositeSolid
 
-    /**
-     * Returns the type of solid.
-     * 
-     * @return the type of solid
-     */
-    public SolidType getSolidType();
+	}
 
-    /**
-     * 
-     * @param requestedBaseUnit 
-     * @return volume of the solid
-     */
-    public Measure getVolume( Unit requestedBaseUnit );
+	/**
+	 * Must always return {@link GeometricPrimitive.PrimitiveType#Solid}.
+	 * @return {@link GeometricPrimitive.PrimitiveType#Solid}
+	 */
+	@Override
+	public PrimitiveType getPrimitiveType();
 
-    /**
-     * 
-     * @param requestedBaseUnit 
-     * @return area of the solid's boundary
-     */
-    public Measure getArea( Unit requestedBaseUnit );
+	/**
+	 * Returns the type of solid.
+	 * @return the type of solid
+	 */
+	public SolidType getSolidType();
 
-    /**
-     * Returns the exterior surface (shell) of the solid.
-     * <p>
-     * Please note that this method may return null. The following explanation is from the GML 3.1.1 schema
-     * (geometryPrimitives.xsd): In normal 3-dimensional Euclidean space, one (composite) surface is distinguished as
-     * the exterior. In the more general case, this is not always possible.
-     * 
-     * @return the exterior surface, or null if no surface is distinguished as being the exterior boundary
-     */
-    public Surface getExteriorSurface();
+	/**
+	 * @param requestedBaseUnit
+	 * @return volume of the solid
+	 */
+	public Measure getVolume(Unit requestedBaseUnit);
 
-    /**
-     * Returns the interior surfaces of the solid.
-     * 
-     * @return the interior surfaces, list may be empty (but not null)
-     */
-    public List<Surface> getInteriorSurfaces();
+	/**
+	 * @param requestedBaseUnit
+	 * @return area of the solid's boundary
+	 */
+	public Measure getArea(Unit requestedBaseUnit);
+
+	/**
+	 * Returns the exterior surface (shell) of the solid.
+	 * <p>
+	 * Please note that this method may return null. The following explanation is from the
+	 * GML 3.1.1 schema (geometryPrimitives.xsd): In normal 3-dimensional Euclidean space,
+	 * one (composite) surface is distinguished as the exterior. In the more general case,
+	 * this is not always possible.
+	 * @return the exterior surface, or null if no surface is distinguished as being the
+	 * exterior boundary
+	 */
+	public Surface getExteriorSurface();
+
+	/**
+	 * Returns the interior surfaces of the solid.
+	 * @return the interior surfaces, list may be empty (but not null)
+	 */
+	public List<Surface> getInteriorSurfaces();
+
 }

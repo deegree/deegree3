@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-base/src/main/java/org/deegree/filter/sql/islike/IsLikeString.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -42,158 +41,154 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.comparison.PropertyIsLike;
 
 /**
- * Used for an escape-free representation of a literal from a {@link PropertyIsLike} operation.
+ * Used for an escape-free representation of a literal from a {@link PropertyIsLike}
+ * operation.
  * <p>
- * May contain special symbols (wildCard, singleChar, escape) as a list of its parts ({@link IsLikeStringPart}).
+ * May contain special symbols (wildCard, singleChar, escape) as a list of its parts
+ * ({@link IsLikeStringPart}).
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 22060 $, $Date: 2010-01-20 17:59:52 +0100 (Mi, 20. Jan 2010) $
  */
 public class IsLikeString {
 
-    private List<IsLikeStringPart> parts;
+	private List<IsLikeStringPart> parts;
 
-    private String wildCard;
+	private String wildCard;
 
-    private String singleChar;
+	private String singleChar;
 
-    private String escape;
+	private String escape;
 
-    /**
-     * Constructs a new <code>SpecialCharString</code> instance from the given parameters.
-     * 
-     * @param encodedString
-     * @param wildCard
-     *            must be exacly one character
-     * @param singleChar
-     *            must be exacly one character
-     * @param escape
-     *            must be exacly one character
-     * @throws FilterEvaluationException
-     *             if wildCard, singleChar or escapeChar are not exactly one character
-     */
-    public IsLikeString( String encodedString, String wildCard, String singleChar, String escape )
-                            throws FilterEvaluationException {
-        if ( wildCard.length() != 1 || singleChar.length() != 1 || escape.length() != 1 ) {
-            String msg = "At the moment, wildCard, singleChar and escapeChar must each be exactly one character.";
-            throw new FilterEvaluationException( msg );
-        }
-        this.wildCard = wildCard;
-        this.singleChar = singleChar;
-        this.escape = escape;
-        this.parts = decode( encodedString );
-    }
+	/**
+	 * Constructs a new <code>SpecialCharString</code> instance from the given parameters.
+	 * @param encodedString
+	 * @param wildCard must be exacly one character
+	 * @param singleChar must be exacly one character
+	 * @param escape must be exacly one character
+	 * @throws FilterEvaluationException if wildCard, singleChar or escapeChar are not
+	 * exactly one character
+	 */
+	public IsLikeString(String encodedString, String wildCard, String singleChar, String escape)
+			throws FilterEvaluationException {
+		if (wildCard.length() != 1 || singleChar.length() != 1 || escape.length() != 1) {
+			String msg = "At the moment, wildCard, singleChar and escapeChar must each be exactly one character.";
+			throw new FilterEvaluationException(msg);
+		}
+		this.wildCard = wildCard;
+		this.singleChar = singleChar;
+		this.escape = escape;
+		this.parts = decode(encodedString);
+	}
 
-    /**
-     * Decodes the given <code>String</code> to a representation that contains explicit objects to represent wildCard
-     * and singleChar symbols and has no escape symbols.
-     * 
-     * @param encodedString
-     *            encoded <code>String</code>, may contain wildCard, singleChar and escape symbols
-     * @return decoded representation that contains special objects for special characters
-     */
-    private List<IsLikeStringPart> decode( String encodedString ) {
+	/**
+	 * Decodes the given <code>String</code> to a representation that contains explicit
+	 * objects to represent wildCard and singleChar symbols and has no escape symbols.
+	 * @param encodedString encoded <code>String</code>, may contain wildCard, singleChar
+	 * and escape symbols
+	 * @return decoded representation that contains special objects for special characters
+	 */
+	private List<IsLikeStringPart> decode(String encodedString) {
 
-        List<IsLikeStringPart> parts = new ArrayList<IsLikeStringPart>( encodedString.length() );
+		List<IsLikeStringPart> parts = new ArrayList<IsLikeStringPart>(encodedString.length());
 
-        boolean escapeMode = false;
-        String decodedString = encodedString;
+		boolean escapeMode = false;
+		String decodedString = encodedString;
 
-        StringBuffer sb = null;
-        while ( decodedString.length() > 0 ) {
-            if ( escapeMode ) {
-                if ( sb == null ) {
-                    sb = new StringBuffer();
-                }
-                sb.append( decodedString.charAt( 0 ) );
-                decodedString = decodedString.substring( 1 );
-                escapeMode = false;
-            } else {
-                if ( decodedString.startsWith( wildCard ) ) {
-                    if ( sb != null ) {
-                        parts.add( new PlainText( sb.toString() ) );
-                        sb = null;
-                    }
-                    parts.add( new WildCard() );
-                    decodedString = decodedString.substring( wildCard.length() );
-                } else if ( decodedString.startsWith( singleChar ) ) {
-                    if ( sb != null ) {
-                        parts.add( new PlainText( sb.toString() ) );
-                        sb = null;
-                    }
-                    parts.add( new SingleChar() );
-                    decodedString = decodedString.substring( singleChar.length() );
-                } else if ( decodedString.startsWith( escape ) ) {
-                    decodedString = decodedString.substring( escape.length() );
-                    escapeMode = true;
-                } else {
-                    if ( sb == null ) {
-                        sb = new StringBuffer();
-                    }
-                    sb.append( decodedString.charAt( 0 ) );
-                    decodedString = decodedString.substring( 1 );
-                }
-            }
-        }
+		StringBuffer sb = null;
+		while (decodedString.length() > 0) {
+			if (escapeMode) {
+				if (sb == null) {
+					sb = new StringBuffer();
+				}
+				sb.append(decodedString.charAt(0));
+				decodedString = decodedString.substring(1);
+				escapeMode = false;
+			}
+			else {
+				if (decodedString.startsWith(wildCard)) {
+					if (sb != null) {
+						parts.add(new PlainText(sb.toString()));
+						sb = null;
+					}
+					parts.add(new WildCard());
+					decodedString = decodedString.substring(wildCard.length());
+				}
+				else if (decodedString.startsWith(singleChar)) {
+					if (sb != null) {
+						parts.add(new PlainText(sb.toString()));
+						sb = null;
+					}
+					parts.add(new SingleChar());
+					decodedString = decodedString.substring(singleChar.length());
+				}
+				else if (decodedString.startsWith(escape)) {
+					decodedString = decodedString.substring(escape.length());
+					escapeMode = true;
+				}
+				else {
+					if (sb == null) {
+						sb = new StringBuffer();
+					}
+					sb.append(decodedString.charAt(0));
+					decodedString = decodedString.substring(1);
+				}
+			}
+		}
 
-        if ( sb != null ) {
-            parts.add( new PlainText( sb.toString() ) );
-        }
-        return parts;
-    }
+		if (sb != null) {
+			parts.add(new PlainText(sb.toString()));
+		}
+		return parts;
+	}
 
-    /**
-     * Returns an encoding that is suitable for arguments of "IS LIKE"-clauses in SQL.
-     * <p>
-     * This means:
-     * <ul>
-     * <li>wildCard: encoded as the '%'-character</li>
-     * <li>singleChar: encoded as the '_'-character</li>
-     * <li>escape: encoded as the '\'-character</li>
-     * </ul>
-     * 
-     * @return encoded string
-     */
-    public String toSQL() {
-        StringBuffer sb = new StringBuffer();
-        for ( IsLikeStringPart part : parts ) {
-            sb.append( part.toSQL() );
-        }
-        return sb.toString();
-    }
+	/**
+	 * Returns an encoding that is suitable for arguments of "IS LIKE"-clauses in SQL.
+	 * <p>
+	 * This means:
+	 * <ul>
+	 * <li>wildCard: encoded as the '%'-character</li>
+	 * <li>singleChar: encoded as the '_'-character</li>
+	 * <li>escape: encoded as the '\'-character</li>
+	 * </ul>
+	 * @return encoded string
+	 */
+	public String toSQL() {
+		StringBuffer sb = new StringBuffer();
+		for (IsLikeStringPart part : parts) {
+			sb.append(part.toSQL());
+		}
+		return sb.toString();
+	}
 
-    /**
-     * Returns an encoding that is suitable for arguments of "IS LIKE"-clauses in SQL.
-     * <p>
-     * This means:
-     * <ul>
-     * <li>wildCard: encoded as the '%'-character</li>
-     * <li>singleChar: encoded as the '_'-character</li>
-     * <li>escape: encoded as the '\'-character</li>
-     * </ul>
-     * 
-     * @param toLowerCase
-     *            true means: convert to lowercase letters
-     * @return encoded string
-     */
-    public String toSQL( boolean toLowerCase ) {
-        StringBuffer sb = new StringBuffer();
-        for ( IsLikeStringPart part : parts ) {
-            sb.append( part.toSQL( toLowerCase ) );
-        }
-        return sb.toString();
-    }
+	/**
+	 * Returns an encoding that is suitable for arguments of "IS LIKE"-clauses in SQL.
+	 * <p>
+	 * This means:
+	 * <ul>
+	 * <li>wildCard: encoded as the '%'-character</li>
+	 * <li>singleChar: encoded as the '_'-character</li>
+	 * <li>escape: encoded as the '\'-character</li>
+	 * </ul>
+	 * @param toLowerCase true means: convert to lowercase letters
+	 * @return encoded string
+	 */
+	public String toSQL(boolean toLowerCase) {
+		StringBuffer sb = new StringBuffer();
+		for (IsLikeStringPart part : parts) {
+			sb.append(part.toSQL(toLowerCase));
+		}
+		return sb.toString();
+	}
 
-    @Override
-    public String toString() {
-        StringBuffer sb = new StringBuffer();
-        for ( IsLikeStringPart part : parts ) {
-            sb.append( part.toString() );
-            sb.append( '\n' );
-        }
-        return sb.toString();
-    }
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		for (IsLikeStringPart part : parts) {
+			sb.append(part.toString());
+			sb.append('\n');
+		}
+		return sb.toString();
+	}
+
 }

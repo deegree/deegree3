@@ -58,107 +58,103 @@ import org.deegree.commons.utils.Pair;
 
 /**
  * Merges {@link DatasetMetadata} instances.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * 
  * @since 3.3
  */
 class DatasetMetadataMerger {
 
-    /**
-     * Merges a list of {@link DatasetMetadata} instances.
-     * 
-     * @param metadata
-     *            list of metadata to merge, can be <code>null</code> or empty
-     * @return merged metadata, can be <code>null</code>
-     */
-    DatasetMetadata merge( final List<DatasetMetadata> metadata ) {
-        if ( metadata == null || metadata.isEmpty() )
-            return null;
-        DatasetMetadata mergedMetadata = null;
-        for ( DatasetMetadata datasetMetadata : metadata ) {
-            if ( mergedMetadata == null )
-                mergedMetadata = datasetMetadata;
-            else
-                mergedMetadata = merge( mergedMetadata, datasetMetadata );
-        }
-        return mergedMetadata;
-    }
+	/**
+	 * Merges a list of {@link DatasetMetadata} instances.
+	 * @param metadata list of metadata to merge, can be <code>null</code> or empty
+	 * @return merged metadata, can be <code>null</code>
+	 */
+	DatasetMetadata merge(final List<DatasetMetadata> metadata) {
+		if (metadata == null || metadata.isEmpty())
+			return null;
+		DatasetMetadata mergedMetadata = null;
+		for (DatasetMetadata datasetMetadata : metadata) {
+			if (mergedMetadata == null)
+				mergedMetadata = datasetMetadata;
+			else
+				mergedMetadata = merge(mergedMetadata, datasetMetadata);
+		}
+		return mergedMetadata;
+	}
 
-    /**
-     * Merges two {@link DatasetMetadata} instances.
-     * 
-     * @param providerMetadata
-     *            metadata from provider (takes precedence), can be <code>null</code>
-     * @param layerMetadata
-     *            metadata from layer, can be <code>null</code>
-     * @return merged metadata, can be <code>null</code>
-     */
-    DatasetMetadata merge( final DatasetMetadata providerMetadata, final DatasetMetadata layerMetadata ) {
-        if ( providerMetadata == null ) {
-            return layerMetadata;
-        } else if ( layerMetadata == null ) {
-            return providerMetadata;
-        }
-        final QName name = layerMetadata.getQName();
-        final List<LanguageString> titles = merge( providerMetadata.getTitles(), layerMetadata.getTitles() );
-        final List<LanguageString> abstracts = merge( providerMetadata.getAbstracts(), layerMetadata.getAbstracts() );
-        final List<Pair<List<LanguageString>, CodeType>> keywords = new ArrayList<Pair<List<LanguageString>, CodeType>>();
-        if ( providerMetadata.getKeywords() != null ) {
-            keywords.addAll( providerMetadata.getKeywords() );
-        }
-        if ( layerMetadata.getKeywords() != null ) {
-            keywords.addAll( layerMetadata.getKeywords() );
-        }
-        final List<MetadataUrl> metadataUrls = new ArrayList<MetadataUrl>();
-        if ( providerMetadata.getMetadataUrls() != null ) {
-            metadataUrls.addAll( providerMetadata.getMetadataUrls() );
-        }
-        if ( layerMetadata.getMetadataUrls() != null ) {
-            metadataUrls.addAll( layerMetadata.getMetadataUrls() );
-        }
-        final List<ExternalIdentifier> externalIds = new ArrayList<ExternalIdentifier>();
-        if ( providerMetadata.getExternalIds() != null ) {
-            externalIds.addAll( providerMetadata.getExternalIds() );
-        }
-        if ( layerMetadata.getExternalIds() != null ) {
-            externalIds.addAll( layerMetadata.getExternalIds() );
-        }
-        final List<UrlWithFormat> dataUrls = new ArrayList<UrlWithFormat>();
-        if ( providerMetadata.getDataUrls() != null ) {
-            dataUrls.addAll( providerMetadata.getDataUrls() );
-        }
-        if ( layerMetadata.getDataUrls() != null ) {
-            dataUrls.addAll( layerMetadata.getDataUrls() );
-        }
-        final List<UrlWithFormat> featureListUrls = new ArrayList<UrlWithFormat>();
-        if ( providerMetadata.getFeatureListUrls() != null ) {
-            featureListUrls.addAll( providerMetadata.getFeatureListUrls() );
-        }
-        if ( layerMetadata.getDataUrls() != null ) {
-            featureListUrls.addAll( layerMetadata.getFeatureListUrls() );
-        }
-        Attribution attribution = providerMetadata.getAttribution();
-        if ( attribution == null ) {
-            attribution = layerMetadata.getAttribution();
-        }
-        List<ExtendedDescription> extendedDescriptions = providerMetadata.getExtendedDescriptions();
-        if ( extendedDescriptions == null ) {
-            extendedDescriptions = layerMetadata.getExtendedDescriptions();
-        }
-        return new DatasetMetadata( name, titles, abstracts, keywords, metadataUrls, externalIds, dataUrls,
-                                    featureListUrls, attribution, extendedDescriptions );
-    }
+	/**
+	 * Merges two {@link DatasetMetadata} instances.
+	 * @param providerMetadata metadata from provider (takes precedence), can be
+	 * <code>null</code>
+	 * @param layerMetadata metadata from layer, can be <code>null</code>
+	 * @return merged metadata, can be <code>null</code>
+	 */
+	DatasetMetadata merge(final DatasetMetadata providerMetadata, final DatasetMetadata layerMetadata) {
+		if (providerMetadata == null) {
+			return layerMetadata;
+		}
+		else if (layerMetadata == null) {
+			return providerMetadata;
+		}
+		final QName name = layerMetadata.getQName();
+		final List<LanguageString> titles = merge(providerMetadata.getTitles(), layerMetadata.getTitles());
+		final List<LanguageString> abstracts = merge(providerMetadata.getAbstracts(), layerMetadata.getAbstracts());
+		final List<Pair<List<LanguageString>, CodeType>> keywords = new ArrayList<Pair<List<LanguageString>, CodeType>>();
+		if (providerMetadata.getKeywords() != null) {
+			keywords.addAll(providerMetadata.getKeywords());
+		}
+		if (layerMetadata.getKeywords() != null) {
+			keywords.addAll(layerMetadata.getKeywords());
+		}
+		final List<MetadataUrl> metadataUrls = new ArrayList<MetadataUrl>();
+		if (providerMetadata.getMetadataUrls() != null) {
+			metadataUrls.addAll(providerMetadata.getMetadataUrls());
+		}
+		if (layerMetadata.getMetadataUrls() != null) {
+			metadataUrls.addAll(layerMetadata.getMetadataUrls());
+		}
+		final List<ExternalIdentifier> externalIds = new ArrayList<ExternalIdentifier>();
+		if (providerMetadata.getExternalIds() != null) {
+			externalIds.addAll(providerMetadata.getExternalIds());
+		}
+		if (layerMetadata.getExternalIds() != null) {
+			externalIds.addAll(layerMetadata.getExternalIds());
+		}
+		final List<UrlWithFormat> dataUrls = new ArrayList<UrlWithFormat>();
+		if (providerMetadata.getDataUrls() != null) {
+			dataUrls.addAll(providerMetadata.getDataUrls());
+		}
+		if (layerMetadata.getDataUrls() != null) {
+			dataUrls.addAll(layerMetadata.getDataUrls());
+		}
+		final List<UrlWithFormat> featureListUrls = new ArrayList<UrlWithFormat>();
+		if (providerMetadata.getFeatureListUrls() != null) {
+			featureListUrls.addAll(providerMetadata.getFeatureListUrls());
+		}
+		if (layerMetadata.getDataUrls() != null) {
+			featureListUrls.addAll(layerMetadata.getFeatureListUrls());
+		}
+		Attribution attribution = providerMetadata.getAttribution();
+		if (attribution == null) {
+			attribution = layerMetadata.getAttribution();
+		}
+		List<ExtendedDescription> extendedDescriptions = providerMetadata.getExtendedDescriptions();
+		if (extendedDescriptions == null) {
+			extendedDescriptions = layerMetadata.getExtendedDescriptions();
+		}
+		return new DatasetMetadata(name, titles, abstracts, keywords, metadataUrls, externalIds, dataUrls,
+				featureListUrls, attribution, extendedDescriptions);
+	}
 
-    private List<LanguageString> merge( final List<LanguageString> first, final List<LanguageString> second ) {
-        final List<LanguageString> merged = new ArrayList<LanguageString>();
-        if ( first != null ) {
-            merged.addAll( first );
-        }
-        if ( second != null ) {
-            merged.addAll( second );
-        }
-        return merged;
-    }
+	private List<LanguageString> merge(final List<LanguageString> first, final List<LanguageString> second) {
+		final List<LanguageString> merged = new ArrayList<LanguageString>();
+		if (first != null) {
+			merged.addAll(first);
+		}
+		if (second != null) {
+			merged.addAll(second);
+		}
+		return merged;
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -54,65 +53,62 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Encapsulates the method for parsing a {@link GetRecords} XML request via Http-POST.
- * 
+ *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: thomas $
- * 
- * @version $Revision: $, $Date: $
  */
 public class GetRecordsXMLAdapter extends AbstractGetRecordsXMLAdapter {
 
-    private static Logger LOG = LoggerFactory.getLogger( GetRecordsXMLAdapter.class );
-    
-    @Override
-    protected GetRecords parseSubElements( OMElement holeRequest, ResultType resultType, int maxRecords,
-                                           int startPosition, String outputFormat, String requestId, URI outputSchema,
-                                           List<OMElement> getRecordsChildElements ) {
-        boolean distributedSearch = false;
-        int hopCount = -1;
-        String responseHandler = null;
+	private static Logger LOG = LoggerFactory.getLogger(GetRecordsXMLAdapter.class);
 
-        Query query = null;
-        AdhocQuery ahQuery = null;
-        for ( OMElement omElement : getRecordsChildElements ) {
-            if ( !new QName( CSW_202_NS, "DistributedSearch" ).equals( omElement.getQName() )
-                 && !new QName( CSW_202_NS, "ResponseHandler" ).equals( omElement.getQName() )
-                 && !new QName( CSW_202_NS, "Query" ).equals( omElement.getQName() )
-                 && !new QName( RIM_NS, "AdhocQuery" ).equals( omElement.getQName() ) ) {
-                String msg = "Child element '" + omElement.getQName() + "' is not allowed.";
-                throw new XMLParsingException( this, omElement, msg );
-            }
-            // optional
-            if ( new QName( CSW_202_NS, "DistributedSearch" ).equals( omElement.getQName() ) ) {
-                if ( omElement.getText().equals( "true" ) ) {
-                    distributedSearch = true;
-                } else {
-                    distributedSearch = false;
-                }
-                hopCount = getNodeAsInt( omElement, new XPath( "@hopCount", nsContext ), 2 );
-            }
-            // optional
-            if ( new QName( CSW_202_NS, "ResponseHandler" ).equals( omElement.getQName() ) ) {
-                responseHandler = omElement.getText();
-            }
-            // one of Query or AdhocQuery is mandatory
-            query = parseQuery( omElement );
-            if ( query == null && new QName( RIM_NS, "AdhocQuery" ).equals( omElement.getQName() ) ) {
-                ahQuery = new AdhocQuery( omElement );
-            }
-        }
-        if ( query == null && ahQuery == null ) {
-            String msg = "Invalid query: either Query or AdhocQuery element is required!";
-            LOG.debug( msg );
-            throw new InvalidParameterValueException( msg );
-        }
-        if ( query != null ) {
-            return new GetRecords( VERSION_202, nsContext, outputFormat, resultType, requestId, outputSchema,
-                                   startPosition, maxRecords, distributedSearch, hopCount, responseHandler, query,
-                                   holeRequest );
-        }
-        return new GetRecords( VERSION_202, nsContext, outputFormat, resultType, requestId, outputSchema,
-                               startPosition, maxRecords, distributedSearch, hopCount, responseHandler, ahQuery,
-                               holeRequest );
-    }
+	@Override
+	protected GetRecords parseSubElements(OMElement holeRequest, ResultType resultType, int maxRecords,
+			int startPosition, String outputFormat, String requestId, URI outputSchema,
+			List<OMElement> getRecordsChildElements) {
+		boolean distributedSearch = false;
+		int hopCount = -1;
+		String responseHandler = null;
+
+		Query query = null;
+		AdhocQuery ahQuery = null;
+		for (OMElement omElement : getRecordsChildElements) {
+			if (!new QName(CSW_202_NS, "DistributedSearch").equals(omElement.getQName())
+					&& !new QName(CSW_202_NS, "ResponseHandler").equals(omElement.getQName())
+					&& !new QName(CSW_202_NS, "Query").equals(omElement.getQName())
+					&& !new QName(RIM_NS, "AdhocQuery").equals(omElement.getQName())) {
+				String msg = "Child element '" + omElement.getQName() + "' is not allowed.";
+				throw new XMLParsingException(this, omElement, msg);
+			}
+			// optional
+			if (new QName(CSW_202_NS, "DistributedSearch").equals(omElement.getQName())) {
+				if (omElement.getText().equals("true")) {
+					distributedSearch = true;
+				}
+				else {
+					distributedSearch = false;
+				}
+				hopCount = getNodeAsInt(omElement, new XPath("@hopCount", nsContext), 2);
+			}
+			// optional
+			if (new QName(CSW_202_NS, "ResponseHandler").equals(omElement.getQName())) {
+				responseHandler = omElement.getText();
+			}
+			// one of Query or AdhocQuery is mandatory
+			query = parseQuery(omElement);
+			if (query == null && new QName(RIM_NS, "AdhocQuery").equals(omElement.getQName())) {
+				ahQuery = new AdhocQuery(omElement);
+			}
+		}
+		if (query == null && ahQuery == null) {
+			String msg = "Invalid query: either Query or AdhocQuery element is required!";
+			LOG.debug(msg);
+			throw new InvalidParameterValueException(msg);
+		}
+		if (query != null) {
+			return new GetRecords(VERSION_202, nsContext, outputFormat, resultType, requestId, outputSchema,
+					startPosition, maxRecords, distributedSearch, hopCount, responseHandler, query, holeRequest);
+		}
+		return new GetRecords(VERSION_202, nsContext, outputFormat, resultType, requestId, outputSchema, startPosition,
+				maxRecords, distributedSearch, hopCount, responseHandler, ahQuery, holeRequest);
+	}
+
 }

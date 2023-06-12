@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -42,41 +41,38 @@ import org.deegree.commons.xml.XPath;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.org">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class Association extends RegistryObject {
 
-    public Association( XMLStreamReader xmlReader ) {
-        super( xmlReader );
-    }
+	public Association(XMLStreamReader xmlReader) {
+		super(xmlReader);
+	}
 
-    public Association( OMElement record ) {
-        super( record );
-    }
+	public Association(OMElement record) {
+		super(record);
+	}
 
-    /**
-     * @return the sourceObject
-     */
-    public String getSourceObject() {
-        return adapter.getRequiredNodeAsString( adapter.getRootElement(), new XPath( "@sourceObject", ns ) );
-    }
+	/**
+	 * @return the sourceObject
+	 */
+	public String getSourceObject() {
+		return adapter.getRequiredNodeAsString(adapter.getRootElement(), new XPath("@sourceObject", ns));
+	}
 
-    /**
-     * @return the targetObject
-     */
-    public String getTargetObject() {
-        return adapter.getRequiredNodeAsString( adapter.getRootElement(), new XPath( "@targetObject", ns ) );
-    }
+	/**
+	 * @return the targetObject
+	 */
+	public String getTargetObject() {
+		return adapter.getRequiredNodeAsString(adapter.getRootElement(), new XPath("@targetObject", ns));
+	}
 
-    /**
-     * @return the associationType
-     */
-    public String getAssociationType() {
-        return adapter.getRequiredNodeAsString( adapter.getRootElement(), new XPath( "@associationType", ns ) );
-    }
+	/**
+	 * @return the associationType
+	 */
+	public String getAssociationType() {
+		return adapter.getRequiredNodeAsString(adapter.getRootElement(), new XPath("@associationType", ns));
+	}
 
 }

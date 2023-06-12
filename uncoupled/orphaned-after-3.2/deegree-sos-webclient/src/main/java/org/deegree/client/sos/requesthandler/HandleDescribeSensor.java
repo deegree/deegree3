@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
  * DescribeSensor-response.
  * 
  * @author <a href="mailto:neumeister@lat-lon.de">Ulrich Neumeister</a>
- * @author last edited by: $Author$
  * 
  */
 public class HandleDescribeSensor {

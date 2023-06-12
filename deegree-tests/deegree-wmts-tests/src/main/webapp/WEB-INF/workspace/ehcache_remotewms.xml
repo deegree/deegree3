@@ -1,12 +1,18 @@
-<ehcache name="remotewmscache">
-<cache name="remotewmscache"
-   maxElementsInMemory="10000"
-   eternal="false"
-   timeToIdleSeconds="300"
-   timeToLiveSeconds="600"
-   overflowToDisk="false"
-   diskPersistent="false"
-   diskExpiryThreadIntervalSeconds="1"
-   >
-</cache>
-</ehcache>
+<config
+        xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+        xmlns='http://www.ehcache.org/v3'
+        xsi:schemaLocation="http://www.ehcache.org/v3 http://www.ehcache.org/schema/ehcache-core-3.0.xsd">
+
+  <cache alias="remotewmscache">
+    <!-- Don't change key-type and value-type! -->
+    <key-type>java.lang.String</key-type>
+    <value-type>byte[]</value-type>
+    <!-- Don't change key-type and value-type! -->
+    <expiry>
+      <tti unit="seconds">300</tti>
+    </expiry>
+    <resources>
+      <offheap unit="MB">10</offheap>
+    </resources>
+  </cache>
+</config>

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -55,39 +54,38 @@ import org.deegree.workspace.Workspace;
 
 /**
  * Responsible for building iso metadata stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class IsoMetadataStoreBuilder implements ResourceBuilder<MetadataStore<? extends MetadataRecord>> {
 
-    private ISOMetadataStoreConfig cfg;
+	private ISOMetadataStoreConfig cfg;
 
-    private ResourceMetadata<MetadataStore<? extends MetadataRecord>> metadata;
+	private ResourceMetadata<MetadataStore<? extends MetadataRecord>> metadata;
 
-    private Workspace workspace;
+	private Workspace workspace;
 
-    public IsoMetadataStoreBuilder( ISOMetadataStoreConfig cfg,
-                                    ResourceMetadata<MetadataStore<? extends MetadataRecord>> metadata,
-                                    Workspace workspace ) {
-        this.cfg = cfg;
-        this.metadata = metadata;
-        this.workspace = workspace;
-    }
+	public IsoMetadataStoreBuilder(ISOMetadataStoreConfig cfg,
+			ResourceMetadata<MetadataStore<? extends MetadataRecord>> metadata, Workspace workspace) {
+		this.cfg = cfg;
+		this.metadata = metadata;
+		this.workspace = workspace;
+	}
 
-    @Override
-    public MetadataStore<? extends MetadataRecord> build() {
-        try {
+	@Override
+	public MetadataStore<? extends MetadataRecord> build() {
+		try {
 
-            ConnectionProvider prov = workspace.getResource( ConnectionProviderProvider.class, cfg.getJDBCConnId() );
+			ConnectionProvider prov = workspace.getResource(ConnectionProviderProvider.class, cfg.getJDBCConnId());
 
-            SQLDialect dialect = prov.getDialect();
-            return new ISOMetadataStore( cfg, dialect, metadata, workspace );
-        } catch ( Exception e ) {
-            String msg = Messages.getMessage( "ERROR_IN_CONFIG_FILE", metadata.getIdentifier(), e.getMessage() );
-            throw new ResourceInitException( msg, e );
-        }
-    }
+			SQLDialect dialect = prov.getDialect();
+			return new ISOMetadataStore(cfg, dialect, metadata, workspace);
+		}
+		catch (Exception e) {
+			String msg = Messages.getMessage("ERROR_IN_CONFIG_FILE", metadata.getIdentifier(), e.getMessage());
+			throw new ResourceInitException(msg, e);
+		}
+	}
 
 }

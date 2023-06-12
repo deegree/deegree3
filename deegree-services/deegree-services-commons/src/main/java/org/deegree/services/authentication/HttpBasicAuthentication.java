@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -52,149 +51,141 @@ import org.slf4j.LoggerFactory;
 /**
  * HTTP Basic Authentication.
  * <p>
- * It is a basic authentication protocol. The browser generates a dialog with the authentication credentials username
- * and password. After typing in the needed information there is a second request needed to send the credentials back to
- * the server. The basic authentication just encodes the username and password with a simple algorithm that is not
- * intended to secure the credentials. In fact this encryption exists to provide multilanguage capability.
- * 
- * 
+ * It is a basic authentication protocol. The browser generates a dialog with the
+ * authentication credentials username and password. After typing in the needed
+ * information there is a second request needed to send the credentials back to the
+ * server. The basic authentication just encodes the username and password with a simple
+ * algorithm that is not intended to secure the credentials. In fact this encryption
+ * exists to provide multilanguage capability.
+ *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: thomas $
- * 
- * @version $Revision: $, $Date: $
  */
 public class HttpBasicAuthentication implements CredentialsProvider {
 
-    private static Logger LOG = LoggerFactory.getLogger( HttpBasicAuthentication.class );
+	private static Logger LOG = LoggerFactory.getLogger(HttpBasicAuthentication.class);
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.services.controller.CredentialProvider#doKVP(java.util.Map,
-     * javax.servlet.http.HttpServletRequest)
-     */
-    @Override
-    public Credentials doKVP( Map<String, String> normalizedKVPParams, HttpServletRequest req,
-                              HttpServletResponse response )
-                            throws SecurityException {
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see org.deegree.services.controller.CredentialProvider#doKVP(java.util.Map,
+	 * javax.servlet.http.HttpServletRequest)
+	 */
+	@Override
+	public Credentials doKVP(Map<String, String> normalizedKVPParams, HttpServletRequest req,
+			HttpServletResponse response) throws SecurityException {
 
-        return doBasicAuthentication( req, response );
+		return doBasicAuthentication(req, response);
 
-    }
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.services.controller.CredentialProvider#doXML(javax.xml.stream.XMLStreamReader,
-     * javax.servlet.http.HttpServletRequest)
-     */
-    @Override
-    public Credentials doXML( XMLStreamReader reader, HttpServletRequest req, HttpServletResponse response )
-                            throws SecurityException {
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see org.deegree.services.controller.CredentialProvider#doXML(javax.xml.stream.
+	 * XMLStreamReader, javax.servlet.http.HttpServletRequest)
+	 */
+	@Override
+	public Credentials doXML(XMLStreamReader reader, HttpServletRequest req, HttpServletResponse response)
+			throws SecurityException {
 
-        return doBasicAuthentication( req, response );
+		return doBasicAuthentication(req, response);
 
-    }
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.services.controller.CredentialProvider#doSOAP(javax.xml.stream.XMLStreamReader,
-     * javax.servlet.http.HttpServletRequest)
-     */
-    @Override
-    public Credentials doSOAP( SOAPEnvelope soapDoc, HttpServletRequest req )
-                            throws SecurityException {
-        throw new UnsupportedOperationException( "SOAPSecurity is not implementable in HTTP BASIC!" );
-        // OMElement requestHeader = soapDoc.getHeader();
-        // SoapHeaderXMLAdapter soapXMLHeader = new SoapHeaderXMLAdapter();
-        // soapXMLHeader.setRootElement( requestHeader );
-        // SoapHeader soapHeader = soapXMLHeader.parseHeader();
-        //
-        // LOG.info( soapHeader.getUsername() + " " + soapHeader.getPassword() );
-        // return new Credentials( soapHeader.getUsername(), soapHeader.getPassword() );
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see org.deegree.services.controller.CredentialProvider#doSOAP(javax.xml.stream.
+	 * XMLStreamReader, javax.servlet.http.HttpServletRequest)
+	 */
+	@Override
+	public Credentials doSOAP(SOAPEnvelope soapDoc, HttpServletRequest req) throws SecurityException {
+		throw new UnsupportedOperationException("SOAPSecurity is not implementable in HTTP BASIC!");
+		// OMElement requestHeader = soapDoc.getHeader();
+		// SoapHeaderXMLAdapter soapXMLHeader = new SoapHeaderXMLAdapter();
+		// soapXMLHeader.setRootElement( requestHeader );
+		// SoapHeader soapHeader = soapXMLHeader.parseHeader();
+		//
+		// LOG.info( soapHeader.getUsername() + " " + soapHeader.getPassword() );
+		// return new Credentials( soapHeader.getUsername(), soapHeader.getPassword() );
 
-    }
+	}
 
-    /**
-     * Swapped method to provide the basic authentication.
-     * 
-     * @param req
-     * @param response
-     */
-    private Credentials doBasicAuthentication( HttpServletRequest req, HttpServletResponse response ) {
-        // look for HTTP Basic Authentification info
-        LOG.debug( "header: " + req.getHeader( "authorization" ) );
-        String authorizationHeader = req.getHeader( "authorization" );
-        if ( authorizationHeader != null ) {
-            if ( authorizationHeader.startsWith( "Basic " ) || authorizationHeader.startsWith( "BASIC " ) ) {
-                LOG.debug( "Found basic authorization header: '" + authorizationHeader + "'." );
-                // 6: length of "Basic "
-                String encodedCreds = authorizationHeader.substring( 6 ).trim();
-                LOG.debug( "encodedCreds: " + encodedCreds );
-                String creds = new String( Base64.decodeBase64( encodedCreds ) );
-                LOG.debug( "creds: " + creds );
-                int delimPos = creds.indexOf( ':' );
-                if ( delimPos != -1 ) {
+	/**
+	 * Swapped method to provide the basic authentication.
+	 * @param req
+	 * @param response
+	 */
+	private Credentials doBasicAuthentication(HttpServletRequest req, HttpServletResponse response) {
+		// look for HTTP Basic Authentification info
+		LOG.debug("header: " + req.getHeader("authorization"));
+		String authorizationHeader = req.getHeader("authorization");
+		if (authorizationHeader != null) {
+			if (authorizationHeader.startsWith("Basic ") || authorizationHeader.startsWith("BASIC ")) {
+				LOG.debug("Found basic authorization header: '" + authorizationHeader + "'.");
+				// 6: length of "Basic "
+				String encodedCreds = authorizationHeader.substring(6).trim();
+				LOG.debug("encodedCreds: " + encodedCreds);
+				String creds = new String(Base64.decodeBase64(encodedCreds));
+				LOG.debug("creds: " + creds);
+				int delimPos = creds.indexOf(':');
+				if (delimPos != -1) {
 
-                    String user = creds.substring( 0, delimPos );
+					String user = creds.substring(0, delimPos);
 
-                    String password = creds.substring( delimPos + 1 );
+					String password = creds.substring(delimPos + 1);
 
-                    LOG.debug( "user: " + user );
-                    LOG.debug( "password: " + password );
-                    return new Credentials( user, password );
+					LOG.debug("user: " + user);
+					LOG.debug("password: " + password);
+					return new Credentials(user, password);
 
-                }
-            }
-        }
-        return null;
-    }
+				}
+			}
+		}
+		return null;
+	}
 
-    public void handleException( HttpServletResponse response, SecurityException e )
-                            throws IOException {
+	public void handleException(HttpServletResponse response, SecurityException e) throws IOException {
 
-        if ( e instanceof InvalidCredentialsException ) {
-            doInvalidCredentialsExceptionException( response, (InvalidCredentialsException) e );
-        } else if ( e != null ) {
-            doAuthenticationException( response, e );
-        }
+		if (e instanceof InvalidCredentialsException) {
+			doInvalidCredentialsExceptionException(response, (InvalidCredentialsException) e);
+		}
+		else if (e != null) {
+			doAuthenticationException(response, e);
+		}
 
-    }
+	}
 
-    /**
-     * Handles the authentication.
-     * 
-     * @param response
-     * @param e
-     * @throws IOException
-     */
-    private void doAuthenticationException( HttpServletResponse response, SecurityException e )
-                            throws IOException {
+	/**
+	 * Handles the authentication.
+	 * @param response
+	 * @param e
+	 * @throws IOException
+	 */
+	private void doAuthenticationException(HttpServletResponse response, SecurityException e) throws IOException {
 
-        LOG.debug( "SecurityException: " );
-        response.reset();
-        response.resetBuffer();
-        response.setHeader( "WWW-Authenticate", "Basic realm=\" Backroom " );
-        response.setStatus( HttpServletResponse.SC_UNAUTHORIZED );
-        response.flushBuffer();
+		LOG.debug("SecurityException: ");
+		response.reset();
+		response.resetBuffer();
+		response.setHeader("WWW-Authenticate", "Basic realm=\" Backroom ");
+		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+		response.flushBuffer();
 
-    }
+	}
 
-    /**
-     * Handles the authentication.
-     * 
-     * @param response
-     * @param e
-     * @throws IOException
-     */
-    private void doInvalidCredentialsExceptionException( HttpServletResponse response, InvalidCredentialsException e )
-                            throws IOException {
+	/**
+	 * Handles the authentication.
+	 * @param response
+	 * @param e
+	 * @throws IOException
+	 */
+	private void doInvalidCredentialsExceptionException(HttpServletResponse response, InvalidCredentialsException e)
+			throws IOException {
 
-        LOG.debug( "exception should respond Forbidden: " );
+		LOG.debug("exception should respond Forbidden: ");
 
-        response.sendError( 403 );
+		response.sendError(403);
 
-    }
+	}
 
 }

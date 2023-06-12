@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -72,154 +71,148 @@ import org.slf4j.Logger;
 
 /**
  * {@link Tile} implementation for {@link RemoteWMTSTileDataLevel}.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 class RemoteWMTSTile implements Tile {
 
-    private static final Logger LOG = getLogger( RemoteWMTSTile.class );
+	private static final Logger LOG = getLogger(RemoteWMTSTile.class);
 
-    private final WMTSClient client;
+	private final WMTSClient client;
 
-    private final GetTile request;
+	private final GetTile request;
 
-    private final String recodedOutputFormat;
+	private final String recodedOutputFormat;
 
-    private final Envelope envelope;
+	private final Envelope envelope;
 
-    private Map<String, String> defaultGetFeatureInfo;
+	private Map<String, String> defaultGetFeatureInfo;
 
-    private Map<String, String> hardGetFeatureInfo;
+	private Map<String, String> hardGetFeatureInfo;
 
-    /**
-     * Creates a new {@link RemoteWMTSTile} instance.
-     * 
-     * @param client
-     *            client to use for performing the {@link GetTile} request, must not be <code>null</code>
-     * @param request
-     *            request for retrieving the tile image, must not be <code>null</code>
-     * @param recodedOutputFormat
-     *            if not <code>null</code>, images will be recoded into specified output format (use ImageIO like
-     *            formats, eg. 'png')
-     * @param envelope
-     * @param defaultGetFeatureInfo
-     *            default parameters to be filled in for GFI
-     * @param hardGetFeatureInfo
-     *            parameters to be overridden for GFI
-     */
-    RemoteWMTSTile( WMTSClient client, GetTile request, String recodedOutputFormat, Envelope envelope,
-                    Map<String, String> defaultGetFeatureInfo, Map<String, String> hardGetFeatureInfo ) {
-        this.client = client;
-        this.request = request;
-        this.recodedOutputFormat = recodedOutputFormat;
-        this.envelope = envelope;
-        this.defaultGetFeatureInfo = defaultGetFeatureInfo;
-        this.hardGetFeatureInfo = hardGetFeatureInfo;
-    }
+	/**
+	 * Creates a new {@link RemoteWMTSTile} instance.
+	 * @param client client to use for performing the {@link GetTile} request, must not be
+	 * <code>null</code>
+	 * @param request request for retrieving the tile image, must not be <code>null</code>
+	 * @param recodedOutputFormat if not <code>null</code>, images will be recoded into
+	 * specified output format (use ImageIO like formats, eg. 'png')
+	 * @param envelope
+	 * @param defaultGetFeatureInfo default parameters to be filled in for GFI
+	 * @param hardGetFeatureInfo parameters to be overridden for GFI
+	 */
+	RemoteWMTSTile(WMTSClient client, GetTile request, String recodedOutputFormat, Envelope envelope,
+			Map<String, String> defaultGetFeatureInfo, Map<String, String> hardGetFeatureInfo) {
+		this.client = client;
+		this.request = request;
+		this.recodedOutputFormat = recodedOutputFormat;
+		this.envelope = envelope;
+		this.defaultGetFeatureInfo = defaultGetFeatureInfo;
+		this.hardGetFeatureInfo = hardGetFeatureInfo;
+	}
 
-    @Override
-    public BufferedImage getAsImage()
-                            throws TileIOException {
+	@Override
+	public BufferedImage getAsImage() throws TileIOException {
 
-        CloseRequiredInputStream is = getNativeFormatRemoteStream();
-        try {
-            return ImageIO.read( is );
-        } catch ( IOException e ) {
-            throw new TileIOException( "Error decoding remote WMTS response as image : " + e.getMessage(), e );
-        } finally {
-            closeQuietly( is );
-        }
-    }
+		CloseRequiredInputStream is = getNativeFormatRemoteStream();
+		try {
+			return ImageIO.read(is);
+		}
+		catch (IOException e) {
+			throw new TileIOException("Error decoding remote WMTS response as image : " + e.getMessage(), e);
+		}
+		finally {
+			closeQuietly(is);
+		}
+	}
 
-    @Override
-    public CloseRequiredInputStream getAsStream()
-                            throws TileIOException {
-        if ( recodedOutputFormat == null ) {
-            return getNativeFormatRemoteStream();
-        }
-        return getRecodedImageStream();
-    }
+	@Override
+	public CloseRequiredInputStream getAsStream() throws TileIOException {
+		if (recodedOutputFormat == null) {
+			return getNativeFormatRemoteStream();
+		}
+		return getRecodedImageStream();
+	}
 
-    private CloseRequiredInputStream getNativeFormatRemoteStream()
-                            throws TileIOException {
+	private CloseRequiredInputStream getNativeFormatRemoteStream() throws TileIOException {
 
-        CloseRequiredInputStream is = null;
-        try {
-            GetTileResponse response = client.getTile( request );
-            is = response.getAsRawResponse().getAsBinaryStream();
-        } catch ( Exception e ) {
-            throw new TileIOException( e.getMessage(), e );
-        }
-        return is;
-    }
+		CloseRequiredInputStream is = null;
+		try {
+			GetTileResponse response = client.getTile(request);
+			is = response.getAsRawResponse().getAsBinaryStream();
+		}
+		catch (Exception e) {
+			throw new TileIOException(e.getMessage(), e);
+		}
+		return is;
+	}
 
-    private CloseRequiredInputStream getRecodedImageStream()
-                            throws TileIOException {
-        BufferedImage img = getAsImage();
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        try {
-            ImageIO.write( img, recodedOutputFormat, out );
-            out.close();
-        } catch ( IOException e ) {
-            throw new TileIOException( "Error recoding remote WMTS tile image: " + e.getMessage(), e );
-        }
-        return new CloseRequiredInputStream( null, new ByteArrayInputStream( out.toByteArray() ) );
-    }
+	private CloseRequiredInputStream getRecodedImageStream() throws TileIOException {
+		BufferedImage img = getAsImage();
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		try {
+			ImageIO.write(img, recodedOutputFormat, out);
+			out.close();
+		}
+		catch (IOException e) {
+			throw new TileIOException("Error recoding remote WMTS tile image: " + e.getMessage(), e);
+		}
+		return new CloseRequiredInputStream(null, new ByteArrayInputStream(out.toByteArray()));
+	}
 
-    @Override
-    public Envelope getEnvelope() {
-        return envelope;
-    }
+	@Override
+	public Envelope getEnvelope() {
+		return envelope;
+	}
 
-    @Override
-    public FeatureCollection getFeatures( int i, int j, int limit ) {
-        FeatureCollection fc = null;
-        try {
-            Map<String, String> overriddenParameters = new HashMap<String, String>();
-            RequestUtils.replaceParameters( overriddenParameters,
-                                            RequestUtils.getCurrentThreadRequestParameters().get(),
-                                            defaultGetFeatureInfo, hardGetFeatureInfo );
-            Operation op = client.getOperations().getOperation( "GetFeatureInfo" );
-            if ( op == null ) {
-                throw new OWSException( "The remote WMTS claims not to support GetFeatureInfo.",
-                                        OPERATION_NOT_SUPPORTED );
-            }
-            Layer l = client.getLayer( this.request.getLayer() );
-            String infoformat = null;
-            for ( String fmt : l.getInfoFormats() ) {
-                if ( fmt.startsWith( "application/gml+xml" ) ) {
-                    // use first gml format found
-                    infoformat = fmt;
-                    break;
-                }
-                if ( fmt.startsWith( "text/xml" ) ) {
-                    infoformat = fmt;
-                    // continue, perhaps a proper gml format is found later on
-                }
-            }
-            if ( infoformat == null ) {
-                throw new OWSException( "The remote WMTS does not offer a GML or XML format for this layer.",
-                                        OPERATION_NOT_SUPPORTED );
-            }
-            LOG.debug( "Selected {} as info format for GFI request." );
-            GetFeatureInfo request = new GetFeatureInfo( this.request.getLayer(), this.request.getStyle(), infoformat,
-                                                         this.request.getTileMatrixSet(), this.request.getTileMatrix(),
-                                                         this.request.getTileRow(), this.request.getTileCol(), i, j,
-                                                         overriddenParameters );
-            fc = client.getFeatureInfo( request ).getFeatures();
-        } catch ( SocketTimeoutException e ) {
-            String msg = "Error performing GetFeatureInfo request, read timed out.";
-            throw new TileIOException( msg );
-        } catch ( UnknownHostException e ) {
-            throw new TileIOException( "Error performing GetFeatureInfo request, host could not be resolved: "
-                                       + e.getMessage() );
-        } catch ( Exception e ) {
-            String msg = "Error executing GetFeatureInfo request on remote server: " + e.getMessage();
-            throw new RuntimeException( msg, e );
-        }
-        return fc;
-    }
+	@Override
+	public FeatureCollection getFeatures(int i, int j, int limit) {
+		FeatureCollection fc = null;
+		try {
+			Map<String, String> overriddenParameters = new HashMap<String, String>();
+			RequestUtils.replaceParameters(overriddenParameters, RequestUtils.getCurrentThreadRequestParameters().get(),
+					defaultGetFeatureInfo, hardGetFeatureInfo);
+			Operation op = client.getOperations().getOperation("GetFeatureInfo");
+			if (op == null) {
+				throw new OWSException("The remote WMTS claims not to support GetFeatureInfo.",
+						OPERATION_NOT_SUPPORTED);
+			}
+			Layer l = client.getLayer(this.request.getLayer());
+			String infoformat = null;
+			for (String fmt : l.getInfoFormats()) {
+				if (fmt.startsWith("application/gml+xml")) {
+					// use first gml format found
+					infoformat = fmt;
+					break;
+				}
+				if (fmt.startsWith("text/xml")) {
+					infoformat = fmt;
+					// continue, perhaps a proper gml format is found later on
+				}
+			}
+			if (infoformat == null) {
+				throw new OWSException("The remote WMTS does not offer a GML or XML format for this layer.",
+						OPERATION_NOT_SUPPORTED);
+			}
+			LOG.debug("Selected {} as info format for GFI request.");
+			GetFeatureInfo request = new GetFeatureInfo(this.request.getLayer(), this.request.getStyle(), infoformat,
+					this.request.getTileMatrixSet(), this.request.getTileMatrix(), this.request.getTileRow(),
+					this.request.getTileCol(), i, j, overriddenParameters);
+			fc = client.getFeatureInfo(request).getFeatures();
+		}
+		catch (SocketTimeoutException e) {
+			String msg = "Error performing GetFeatureInfo request, read timed out.";
+			throw new TileIOException(msg);
+		}
+		catch (UnknownHostException e) {
+			throw new TileIOException(
+					"Error performing GetFeatureInfo request, host could not be resolved: " + e.getMessage());
+		}
+		catch (Exception e) {
+			String msg = "Error executing GetFeatureInfo request on remote server: " + e.getMessage();
+			throw new RuntimeException(msg, e);
+		}
+		return fc;
+	}
+
 }

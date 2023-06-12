@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-metadata/src/main/java/org/deegree/metadata/iso/persistence/parsing/ParsedProfileElement.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -38,52 +37,49 @@ package org.deegree.metadata.iso.parsing;
 import org.apache.axiom.om.OMElement;
 
 /**
- * Encapsulates the parsed elements that can be analysed from a record that is affected by the transaction operation.<br>
+ * Encapsulates the parsed elements that can be analysed from a record that is affected by
+ * the transaction operation.<br>
  * Here are the queryable and returnable properties and the elements in xml format.
- * 
+ *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 30651 $, $Date: 2011-05-05 11:40:31 +0200 (Do, 05. Mai 2011) $
  */
 public class ParsedProfileElement {
 
-    private final OMElement rootElement;
+	private final OMElement rootElement;
 
-    private final QueryableProperties queryableProperties;
+	private final QueryableProperties queryableProperties;
 
-    private final ReturnableProperties returnableProperties;
+	private final ReturnableProperties returnableProperties;
 
-    /**
-     * Creates a new {@link ParsedProfileElement} instance.
-     * 
-     * @param queryableProperties
-     * @param returnableProperties
-     * @param generateRecord
-     */
-    public ParsedProfileElement( QueryableProperties queryableProperties, ReturnableProperties returnableProperties,
-                                 OMElement element ) {
-        this.queryableProperties = queryableProperties;
-        this.returnableProperties = returnableProperties;
-        this.rootElement = element;
-    }
+	/**
+	 * Creates a new {@link ParsedProfileElement} instance.
+	 * @param queryableProperties
+	 * @param returnableProperties
+	 * @param generateRecord
+	 */
+	public ParsedProfileElement(QueryableProperties queryableProperties, ReturnableProperties returnableProperties,
+			OMElement element) {
+		this.queryableProperties = queryableProperties;
+		this.returnableProperties = returnableProperties;
+		this.rootElement = element;
+	}
 
-    /**
-     * @return the queryableProperties
-     */
-    public QueryableProperties getQueryableProperties() {
-        return queryableProperties;
-    }
+	/**
+	 * @return the queryableProperties
+	 */
+	public QueryableProperties getQueryableProperties() {
+		return queryableProperties;
+	}
 
-    /**
-     * @return the returnableProperties
-     */
-    public ReturnableProperties getReturnableProperties() {
-        return returnableProperties;
-    }
+	/**
+	 * @return the returnableProperties
+	 */
+	public ReturnableProperties getReturnableProperties() {
+		return returnableProperties;
+	}
 
-    public OMElement getRootElement() {
-        return rootElement;
-    }
+	public OMElement getRootElement() {
+		return rootElement;
+	}
 
 }

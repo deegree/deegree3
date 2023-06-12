@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -56,62 +55,58 @@ import org.deegree.protocol.wps.client.process.ProcessInfo;
 
 /**
  * Provides access to the relevant information from a WPS 1.0.0 capabilities document.
- * 
+ *
  * @see WPSClient
  * @see ProcessInfo
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class WPS100CapabilitiesAdapter extends OWSCommon110CapabilitiesAdapter {
 
-    private final NamespaceBindings nsContext = new NamespaceBindings();
+	private final NamespaceBindings nsContext = new NamespaceBindings();
 
-    /**
-     * Creates a new {@link WPS100CapabilitiesAdapter} instance.
-     */
-    public WPS100CapabilitiesAdapter() {
-        nsContext.addNamespace( "wps", WPS_100_NS );
-        nsContext.addNamespace( "ows", OWS_11_NS );
-        nsContext.addNamespace( "xlink", XLNNS );
-    }
+	/**
+	 * Creates a new {@link WPS100CapabilitiesAdapter} instance.
+	 */
+	public WPS100CapabilitiesAdapter() {
+		nsContext.addNamespace("wps", WPS_100_NS);
+		nsContext.addNamespace("ows", OWS_11_NS);
+		nsContext.addNamespace("xlink", XLNNS);
+	}
 
-    /**
-     * Returns information on all processes announced in the document.
-     * 
-     * @return information on all processes, may be empty, but never <code>null</code>
-     */
-    public List<ProcessInfo> getProcesses() {
-        List<ProcessInfo> processes = new ArrayList<ProcessInfo>();
-        XPath xpath = new XPath( "wps:ProcessOfferings/wps:Process", nsContext );
-        List<OMElement> omProcesses = getElements( getRootElement(), xpath );
-        for ( OMElement omProcess : omProcesses ) {
-            String version = omProcess.getAttributeValue( new QName( WPS_100_NS, "processVersion" ) );
-            CodeType id = parseId( omProcess );
-            LanguageString processTitle = parseLanguageString( omProcess, "Title" );
-            LanguageString processAbstract = parseLanguageString( omProcess, "Abstract" );
-            processes.add( new ProcessInfo( id, processTitle, processAbstract, version ) );
-        }
-        return processes;
-    }
+	/**
+	 * Returns information on all processes announced in the document.
+	 * @return information on all processes, may be empty, but never <code>null</code>
+	 */
+	public List<ProcessInfo> getProcesses() {
+		List<ProcessInfo> processes = new ArrayList<ProcessInfo>();
+		XPath xpath = new XPath("wps:ProcessOfferings/wps:Process", nsContext);
+		List<OMElement> omProcesses = getElements(getRootElement(), xpath);
+		for (OMElement omProcess : omProcesses) {
+			String version = omProcess.getAttributeValue(new QName(WPS_100_NS, "processVersion"));
+			CodeType id = parseId(omProcess);
+			LanguageString processTitle = parseLanguageString(omProcess, "Title");
+			LanguageString processAbstract = parseLanguageString(omProcess, "Abstract");
+			processes.add(new ProcessInfo(id, processTitle, processAbstract, version));
+		}
+		return processes;
+	}
 
-    private LanguageString parseLanguageString( OMElement omElement, String name ) {
-        OMElement omElem = omElement.getFirstChildWithName( new QName( OWS_11_NS, name ) );
-        if ( omElem != null ) {
-            String lang = omElem.getAttributeValue( new QName( XMLNS, "lang" ) );
-            return new LanguageString( omElem.getText(), lang );
-        }
-        return null;
-    }
+	private LanguageString parseLanguageString(OMElement omElement, String name) {
+		OMElement omElem = omElement.getFirstChildWithName(new QName(OWS_11_NS, name));
+		if (omElem != null) {
+			String lang = omElem.getAttributeValue(new QName(XMLNS, "lang"));
+			return new LanguageString(omElem.getText(), lang);
+		}
+		return null;
+	}
 
-    private CodeType parseId( OMElement omProcess ) {
-        OMElement omId = omProcess.getFirstChildWithName( new QName( OWS_11_NS, "Identifier" ) );
-        String codeSpace = omId.getAttributeValue( new QName( null, "codeSpace" ) );
-        if ( codeSpace != null ) {
-            return new CodeType( omId.getText(), codeSpace );
-        }
-        return new CodeType( omId.getText() );
-    }
+	private CodeType parseId(OMElement omProcess) {
+		OMElement omId = omProcess.getFirstChildWithName(new QName(OWS_11_NS, "Identifier"));
+		String codeSpace = omId.getAttributeValue(new QName(null, "codeSpace"));
+		if (codeSpace != null) {
+			return new CodeType(omId.getText(), codeSpace);
+		}
+		return new CodeType(omId.getText());
+	}
+
 }

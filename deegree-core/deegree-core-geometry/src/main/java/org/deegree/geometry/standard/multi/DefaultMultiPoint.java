@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -46,44 +45,38 @@ import org.deegree.geometry.primitive.Point;
  * Default implementation of {@link MultiPoint}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- *
- * @version $Revision$, $Date$
  */
 public class DefaultMultiPoint extends DefaultMultiGeometry<Point> implements MultiPoint {
 
-    /**
-     * Creates a new {@link DefaultMultiPoint} from the given parameters.
-     *
-     * @param id
-     *            identifier, may be null
-     * @param crs
-     *            coordinate reference system, may be null
-     * @param pm
-     *            precision model, may be nul
-     * @param members
-     */
-    public DefaultMultiPoint( String id, ICRS crs, PrecisionModel pm, List<Point> members ) {
-        super( id, crs, pm, members );
-    }
+	/**
+	 * Creates a new {@link DefaultMultiPoint} from the given parameters.
+	 * @param id identifier, may be null
+	 * @param crs coordinate reference system, may be null
+	 * @param pm precision model, may be nul
+	 * @param members
+	 */
+	public DefaultMultiPoint(String id, ICRS crs, PrecisionModel pm, List<Point> members) {
+		super(id, crs, pm, members);
+	}
 
-    @Override
-    public MultiGeometryType getMultiGeometryType() {
-        return MultiGeometryType.MULTI_POINT;
-    }
+	@Override
+	public MultiGeometryType getMultiGeometryType() {
+		return MultiGeometryType.MULTI_POINT;
+	}
 
-    @Override
-    public boolean isSFSCompliant() {
-        return true;
-    }
-    
-    @Override
-    protected org.locationtech.jts.geom.MultiPoint buildJTSGeometry() {
-        org.locationtech.jts.geom.Point [] jtsMembers = new org.locationtech.jts.geom.Point[size()];
-        int i = 0;
-        for ( Point geometry : members ) {
-            jtsMembers[i++] = (org.locationtech.jts.geom.Point) getAsDefaultGeometry( geometry ).getJTSGeometry();
-        }
-        return jtsFactory.createMultiPoint( jtsMembers );
-    }
+	@Override
+	public boolean isSFSCompliant() {
+		return true;
+	}
+
+	@Override
+	protected org.locationtech.jts.geom.MultiPoint buildJTSGeometry() {
+		org.locationtech.jts.geom.Point[] jtsMembers = new org.locationtech.jts.geom.Point[size()];
+		int i = 0;
+		for (Point geometry : members) {
+			jtsMembers[i++] = (org.locationtech.jts.geom.Point) getAsDefaultGeometry(geometry).getJTSGeometry();
+		}
+		return jtsFactory.createMultiPoint(jtsMembers);
+	}
+
 }

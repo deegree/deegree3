@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -55,103 +54,101 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Keeps track of additional (referenced) {@link GMLObject}s that have to be included in {@link GetFeature}/
- * {@link GetPropertyValue} responses.
- * 
+ * Keeps track of additional (referenced) {@link GMLObject}s that have to be included in
+ * {@link GetFeature}/ {@link GetPropertyValue} responses.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class WfsXlinkStrategy implements GmlXlinkStrategy {
 
-    private static Logger LOG = LoggerFactory.getLogger( WfsXlinkStrategy.class );
+	private static Logger LOG = LoggerFactory.getLogger(WfsXlinkStrategy.class);
 
-    private LinkedHashMap<String, GMLReference<?>> uriToRef = new LinkedHashMap<String, GMLReference<?>>();
+	private LinkedHashMap<String, GMLReference<?>> uriToRef = new LinkedHashMap<String, GMLReference<?>>();
 
-    private Map<GMLReference<?>, GmlXlinkOptions> refToResolveState = new HashMap<GMLReference<?>, GmlXlinkOptions>();
+	private Map<GMLReference<?>, GmlXlinkOptions> refToResolveState = new HashMap<GMLReference<?>, GmlXlinkOptions>();
 
-    private final BufferableXMLStreamWriter xmlStream;
+	private final BufferableXMLStreamWriter xmlStream;
 
-    private final boolean localReferencesPossible;
+	private final boolean localReferencesPossible;
 
-    private final String remoteXlinkTemplate;
+	private final String remoteXlinkTemplate;
 
-    private final GmlXlinkOptions resolveOptions;
+	private final GmlXlinkOptions resolveOptions;
 
-    private final Set<String> exportedIds = new HashSet<String>();
+	private final Set<String> exportedIds = new HashSet<String>();
 
-    public WfsXlinkStrategy( BufferableXMLStreamWriter xmlStream, boolean localReferencesPossible,
-                             String xlinkTemplate, GmlXlinkOptions resolveOptions ) {
-        this.xmlStream = xmlStream;
-        this.localReferencesPossible = localReferencesPossible;
-        this.remoteXlinkTemplate = xlinkTemplate;
-        this.resolveOptions = resolveOptions;
-    }
+	public WfsXlinkStrategy(BufferableXMLStreamWriter xmlStream, boolean localReferencesPossible, String xlinkTemplate,
+			GmlXlinkOptions resolveOptions) {
+		this.xmlStream = xmlStream;
+		this.localReferencesPossible = localReferencesPossible;
+		this.remoteXlinkTemplate = xlinkTemplate;
+		this.resolveOptions = resolveOptions;
+	}
 
-    @Override
-    public String requireObject( GMLReference<?> ref, GmlXlinkOptions resolveState ) {
-        String uri = ref.getURI();
-        LOG.debug( "Exporting forward reference to object {} which must be included in the output.", uri );
-        uriToRef.put( uri, ref );
-        refToResolveState.put( ref, resolveState );
-        return uri;
-    }
+	@Override
+	public String requireObject(GMLReference<?> ref, GmlXlinkOptions resolveState) {
+		String uri = ref.getURI();
+		LOG.debug("Exporting forward reference to object {} which must be included in the output.", uri);
+		uriToRef.put(uri, ref);
+		refToResolveState.put(ref, resolveState);
+		return uri;
+	}
 
-    @Override
-    public String handleReference( GMLReference<?> ref ) {
+	@Override
+	public String handleReference(GMLReference<?> ref) {
 
-        String uri = ref.getURI();
-        LOG.debug( "Encountered reference to object {}.", uri );
-        if ( !isGmlIdBasedUri( uri ) ) {
-            LOG.debug( "Reference to object {} considered non-rewritable.", uri );
-            return uri;
-        }
+		String uri = ref.getURI();
+		LOG.debug("Encountered reference to object {}.", uri);
+		if (!isGmlIdBasedUri(uri)) {
+			LOG.debug("Reference to object {} considered non-rewritable.", uri);
+			return uri;
+		}
 
-        if ( localReferencesPossible ) {
-            LOG.debug( "Exporting potential forward reference to object {} which may or may not be exported later.",
-                       ref.getURI() );
-            try {
-                xmlStream.activateBuffering();
-            } catch ( XMLStreamException e ) {
-                throw new RuntimeException( e.getMessage(), e );
-            }
-            return "{" + ref.getId() + "}";
-        }
-        LOG.debug( "Exporting reference to object {} as remote reference.", ref.getId() );
-        return remoteXlinkTemplate.replace( "{}", ref.getId() );
-    }
+		if (localReferencesPossible) {
+			LOG.debug("Exporting potential forward reference to object {} which may or may not be exported later.",
+					ref.getURI());
+			try {
+				xmlStream.activateBuffering();
+			}
+			catch (XMLStreamException e) {
+				throw new RuntimeException(e.getMessage(), e);
+			}
+			return "{" + ref.getId() + "}";
+		}
+		LOG.debug("Exporting reference to object {} as remote reference.", ref.getId());
+		return remoteXlinkTemplate.replace("{}", ref.getId());
+	}
 
-    private boolean isGmlIdBasedUri( String uri ) {
-        return uri.startsWith( "#" );
-    }
+	private boolean isGmlIdBasedUri(String uri) {
+		return uri.startsWith("#");
+	}
 
-    public Collection<GMLReference<?>> getAdditionalRefs() {
-        return uriToRef.values();
-    }
+	public Collection<GMLReference<?>> getAdditionalRefs() {
+		return uriToRef.values();
+	}
 
-    public Map<GMLReference<?>, GmlXlinkOptions> getResolveStates() {
-        return refToResolveState;
-    }
+	public Map<GMLReference<?>, GmlXlinkOptions> getResolveStates() {
+		return refToResolveState;
+	}
 
-    public void clear() {
-        uriToRef = new LinkedHashMap<String, GMLReference<?>>();
-        refToResolveState = new HashMap<GMLReference<?>, GmlXlinkOptions>();
-    }
+	public void clear() {
+		uriToRef = new LinkedHashMap<String, GMLReference<?>>();
+		refToResolveState = new HashMap<GMLReference<?>, GmlXlinkOptions>();
+	}
 
-    @Override
-    public GmlXlinkOptions getResolveOptions() {
-        return resolveOptions;
-    }
+	@Override
+	public GmlXlinkOptions getResolveOptions() {
+		return resolveOptions;
+	}
 
-    @Override
-    public void addExportedId( String gmlId ) {
-        exportedIds.add( gmlId );
-    }
+	@Override
+	public void addExportedId(String gmlId) {
+		exportedIds.add(gmlId);
+	}
 
-    @Override
-    public boolean isObjectExported( String gmlId ) {
-        return exportedIds.contains( gmlId );
-    }
+	@Override
+	public boolean isObjectExported(String gmlId) {
+		return exportedIds.contains(gmlId);
+	}
 
 }

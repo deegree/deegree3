@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -75,94 +74,92 @@ import org.slf4j.Logger;
  * OWS implementation for WMTS protocol.
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- *
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 public class WMTSController extends AbstractOWS {
 
-    private static final Logger LOG = getLogger( WMTSController.class );
+	private static final Logger LOG = getLogger(WMTSController.class);
 
-    private String metadataUrlTemplate;
+	private String metadataUrlTemplate;
 
-    private WmtsRequestDispatcher dispatcher;
+	private WmtsRequestDispatcher dispatcher;
 
-    public WMTSController( ResourceMetadata<OWS> metadata, Workspace workspace, Object jaxbConfig ) {
-        super( metadata, workspace, jaxbConfig );
-    }
+	public WMTSController(ResourceMetadata<OWS> metadata, Workspace workspace, Object jaxbConfig) {
+		super(metadata, workspace, jaxbConfig);
+	}
 
-    @Override
-    public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConfig,
-                      Object controllerConf ) {
-        WmtsBuilder builder = new WmtsBuilder( workspace, (DeegreeWMTS) controllerConf );
+	@Override
+	public void init(DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConfig,
+			Object controllerConf) {
+		WmtsBuilder builder = new WmtsBuilder(workspace, (DeegreeWMTS) controllerConf);
 
-        this.metadataUrlTemplate = builder.getMetadataUrlTemplate();
+		this.metadataUrlTemplate = builder.getMetadataUrlTemplate();
 
-        dispatcher = new WmtsRequestDispatcher( (DeegreeWMTS) controllerConf, serviceMetadata, workspace, builder,
-                                                getMetadata().getIdentifier().getId(), getMetadata().getLocation() );
-    }
+		dispatcher = new WmtsRequestDispatcher((DeegreeWMTS) controllerConf, serviceMetadata, workspace, builder,
+				getMetadata().getIdentifier().getId(), getMetadata().getLocation());
+	}
 
-    @Override
-    public void doKVP( Map<String, String> map, HttpServletRequest request, HttpResponseBuffer response,
-                       List<FileItem> multiParts )
-                            throws ServletException, IOException {
-        RequestUtils.getCurrentThreadRequestParameters().set( map );
-        try {
-            ImplementationMetadata<?> serviceInfo = ( (OWSProvider) getMetadata().getProvider() ).getImplementationMetadata();
+	@Override
+	public void doKVP(Map<String, String> map, HttpServletRequest request, HttpResponseBuffer response,
+			List<FileItem> multiParts) throws ServletException, IOException {
+		RequestUtils.getCurrentThreadRequestParameters().set(map);
+		try {
+			ImplementationMetadata<?> serviceInfo = ((OWSProvider) getMetadata().getProvider())
+				.getImplementationMetadata();
 
-            String v = map.get( "VERSION" );
-            Version version = v == null ? serviceInfo.getImplementedVersions().iterator().next() : parseVersion( v );
+			String v = map.get("VERSION");
+			Version version = v == null ? serviceInfo.getImplementedVersions().iterator().next() : parseVersion(v);
 
-            WMTSRequestType req;
-            try {
-                req = (WMTSRequestType) ( (ImplementationMetadata) serviceInfo ).getRequestTypeByName( map.get( "REQUEST" ) );
-            } catch ( IllegalArgumentException e ) {
-                sendException( new OWSException( "'" + map.get( "REQUEST" ) + "' is not a supported WMTS operation.",
-                                                 OPERATION_NOT_SUPPORTED ), response );
-                return;
-            } catch ( NullPointerException e ) {
-                sendException( new OWSException( "The REQUEST parameter is missing.", OPERATION_NOT_SUPPORTED ),
-                               response );
-                return;
-            }
+			WMTSRequestType req;
+			try {
+				req = (WMTSRequestType) ((ImplementationMetadata) serviceInfo).getRequestTypeByName(map.get("REQUEST"));
+			}
+			catch (IllegalArgumentException e) {
+				sendException(new OWSException("'" + map.get("REQUEST") + "' is not a supported WMTS operation.",
+						OPERATION_NOT_SUPPORTED), response);
+				return;
+			}
+			catch (NullPointerException e) {
+				sendException(new OWSException("The REQUEST parameter is missing.", OPERATION_NOT_SUPPORTED), response);
+				return;
+			}
 
-            try {
-                dispatcher.handleRequest( req, response, map, version );
-            } catch ( OWSException e ) {
-                LOG.debug( "The response is an exception with the message '{}'", e.getLocalizedMessage() );
-                LOG.trace( "Stack trace of OWSException being sent", e );
+			try {
+				dispatcher.handleRequest(req, response, map, version);
+			}
+			catch (OWSException e) {
+				LOG.debug("The response is an exception with the message '{}'", e.getLocalizedMessage());
+				LOG.trace("Stack trace of OWSException being sent", e);
 
-                sendException( e, response );
-            }
-        } finally {
-            RequestUtils.getCurrentThreadRequestParameters().remove();
-        }
-    }
+				sendException(e, response);
+			}
+		}
+		finally {
+			RequestUtils.getCurrentThreadRequestParameters().remove();
+		}
+	}
 
-    @Override
-    public void doXML( XMLStreamReader xmlStream, HttpServletRequest request, HttpResponseBuffer response,
-                       List<FileItem> multiParts )
-                            throws ServletException, IOException {
-        OWSException ex = new OWSException( "XML support is not implemented for WMTS.",
-                                            OWSException.OPERATION_NOT_SUPPORTED );
-        sendException( ex, response );
-    }
+	@Override
+	public void doXML(XMLStreamReader xmlStream, HttpServletRequest request, HttpResponseBuffer response,
+			List<FileItem> multiParts) throws ServletException, IOException {
+		OWSException ex = new OWSException("XML support is not implemented for WMTS.",
+				OWSException.OPERATION_NOT_SUPPORTED);
+		sendException(ex, response);
+	}
 
-    @Override
-    public void destroy() {
-        // anything to destroy?
-    }
+	@Override
+	public void destroy() {
+		// anything to destroy?
+	}
 
-    private void sendException( OWSException e, HttpResponseBuffer response )
-                            throws ServletException {
-        sendException( null, new OWS110ExceptionReportSerializer( VERSION_100 ), e, response );
-    }
+	private void sendException(OWSException e, HttpResponseBuffer response) throws ServletException {
+		sendException(null, new OWS110ExceptionReportSerializer(VERSION_100), e, response);
+	}
 
-    /**
-     * @return null, if no template is configured
-     */
-    public String getMetadataUrlTemplate() {
-        return metadataUrlTemplate;
-    }
+	/**
+	 * @return null, if no template is configured
+	 */
+	public String getMetadataUrlTemplate() {
+		return metadataUrlTemplate;
+	}
 
 }

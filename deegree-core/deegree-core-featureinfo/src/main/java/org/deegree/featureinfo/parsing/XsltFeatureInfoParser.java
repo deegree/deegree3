@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2015 by:
@@ -58,67 +57,68 @@ import org.slf4j.Logger;
 
 /**
  * Responsible for parsing 'feature collections' with a xslt file.
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
 public class XsltFeatureInfoParser implements FeatureInfoParser {
 
-    private static final Logger LOG = getLogger( XsltFeatureInfoParser.class );
+	private static final Logger LOG = getLogger(XsltFeatureInfoParser.class);
 
-    private static final XMLInputFactory XML_FACTORY = XMLInputFactory.newInstance();
+	private static final XMLInputFactory XML_FACTORY = XMLInputFactory.newInstance();
 
-    private final URL xsltFile;
+	private final URL xsltFile;
 
-    private final GMLVersion targetGmlVersion;
+	private final GMLVersion targetGmlVersion;
 
-    /**
-     * @param xsltFile
-     *            the xslt file used to transform the feature info xml, never <code>null</code>
-     * @param targetGmlVersion
-     *            the gml version the xslt is transforming to, never <code>null</code>
-     **/
-    public XsltFeatureInfoParser( URL xsltFile, GMLVersion targetGmlVersion ) {
-        this.xsltFile = xsltFile;
-        this.targetGmlVersion = targetGmlVersion;
-    }
+	/**
+	 * @param xsltFile the xslt file used to transform the feature info xml, never
+	 * <code>null</code>
+	 * @param targetGmlVersion the gml version the xslt is transforming to, never
+	 * <code>null</code>
+	 **/
+	public XsltFeatureInfoParser(URL xsltFile, GMLVersion targetGmlVersion) {
+		this.xsltFile = xsltFile;
+		this.targetGmlVersion = targetGmlVersion;
+	}
 
-    @Override
-    public FeatureCollection parseAsFeatureCollection( InputStream featureInfoToParse, String csvLayerNames )
-                            throws XMLStreamException {
-        XMLStreamReader transformedReader = transform( featureInfoToParse );
-        return readAsGmlFeatureCollection( transformedReader );
-    }
+	@Override
+	public FeatureCollection parseAsFeatureCollection(InputStream featureInfoToParse, String csvLayerNames)
+			throws XMLStreamException {
+		XMLStreamReader transformedReader = transform(featureInfoToParse);
+		return readAsGmlFeatureCollection(transformedReader);
+	}
 
-    private XMLStreamReader transform( InputStream featureInfoToParse )
-                            throws XMLStreamException {
-        LOG.debug( "Apply xslt transformation {}.", xsltFile );
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        try {
-            XsltUtils.transform( featureInfoToParse, xsltFile, outputStream );
-            ByteArrayInputStream inputStream = new ByteArrayInputStream( outputStream.toByteArray() );
-            return XML_FACTORY.createXMLStreamReader( inputStream );
-        } catch ( Exception e ) {
-            LOG.warn( "Unable to transform remote feature info xml stream: {}.", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-            throw new XMLStreamException( "Unable to transform remote feature info xml stream." );
-        }
-    }
+	private XMLStreamReader transform(InputStream featureInfoToParse) throws XMLStreamException {
+		LOG.debug("Apply xslt transformation {}.", xsltFile);
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		try {
+			XsltUtils.transform(featureInfoToParse, xsltFile, outputStream);
+			ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
+			return XML_FACTORY.createXMLStreamReader(inputStream);
+		}
+		catch (Exception e) {
+			LOG.warn("Unable to transform remote feature info xml stream: {}.", e.getLocalizedMessage());
+			LOG.trace("Stack trace:", e);
+			throw new XMLStreamException("Unable to transform remote feature info xml stream.");
+		}
+	}
 
-    private FeatureCollection readAsGmlFeatureCollection( XMLStreamReader transformedReader )
-                            throws XMLStreamException {
-        try {
-            GMLStreamReader reader = GMLInputFactory.createGMLStreamReader( targetGmlVersion, transformedReader );
-            reader.setApplicationSchema( new DynamicAppSchema() );
-            return reader.readFeatureCollection();
-        } catch ( XMLParsingException e ) {
-            LOG.warn( "Unable to read transfomed feature info xml stream: {}.", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-            throw new XMLStreamException( "Unable to read transfomed feature info xml stream." );
-        } catch ( UnknownCRSException e ) {
-            LOG.warn( "Unable to read transfomed feature info xml stream: {}.", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-            throw new XMLStreamException( "Unable to read transfomed feature info xml stream." );
-        }
-    }
+	private FeatureCollection readAsGmlFeatureCollection(XMLStreamReader transformedReader) throws XMLStreamException {
+		try {
+			GMLStreamReader reader = GMLInputFactory.createGMLStreamReader(targetGmlVersion, transformedReader);
+			reader.setApplicationSchema(new DynamicAppSchema());
+			return reader.readFeatureCollection();
+		}
+		catch (XMLParsingException e) {
+			LOG.warn("Unable to read transfomed feature info xml stream: {}.", e.getLocalizedMessage());
+			LOG.trace("Stack trace:", e);
+			throw new XMLStreamException("Unable to read transfomed feature info xml stream.");
+		}
+		catch (UnknownCRSException e) {
+			LOG.warn("Unable to read transfomed feature info xml stream: {}.", e.getLocalizedMessage());
+			LOG.trace("Stack trace:", e);
+			throw new XMLStreamException("Unable to read transfomed feature info xml stream.");
+		}
+	}
 
 }

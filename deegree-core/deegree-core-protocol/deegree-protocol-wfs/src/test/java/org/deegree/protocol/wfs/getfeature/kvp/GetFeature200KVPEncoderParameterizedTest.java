@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2015 by:
@@ -57,52 +56,49 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class GetFeature200KVPEncoderParameterizedTest {
 
-    private Map<String, String> kvpMapUnderTest;
+	private Map<String, String> kvpMapUnderTest;
 
-    private String testName;
+	private String testName;
 
-    public GetFeature200KVPEncoderParameterizedTest( String testName, Map<String, String> kvpMapUnderTest ) {
-        this.testName = testName;
-        this.kvpMapUnderTest = kvpMapUnderTest;
-    }
+	public GetFeature200KVPEncoderParameterizedTest(String testName, Map<String, String> kvpMapUnderTest) {
+		this.testName = testName;
+		this.kvpMapUnderTest = kvpMapUnderTest;
+	}
 
-    @Parameters
-    public static List<Object[]> data()
-                            throws IOException {
-        List<Object[]> kvpMaps = new ArrayList<Object[]>();
-        kvpMaps.add( new Object[] { "example1.kvp", asKvp( "wfs200/example1.kvp" ) } );
-        kvpMaps.add( new Object[] { "example2.kvp", asKvp( "wfs200/example2.kvp" ) } );
-        kvpMaps.add( new Object[] { "example3.kvp", asKvp( "wfs200/example2.kvp" ) } );
-        kvpMaps.add( new Object[] { "example4.kvp", asKvp( "wfs200/example4.kvp" ) } );
-        kvpMaps.add( new Object[] { "example5.kvp", asKvp( "wfs200/example5.kvp" ) } );
-        kvpMaps.add( new Object[] { "example7.kvp", asKvp( "wfs200/example7.kvp" ) } );
-        kvpMaps.add( new Object[] { "example11.kvp", asKvp( "wfs200/example11.kvp" ) } );
-        kvpMaps.add( new Object[] { "example12.kvp", asKvp( "wfs200/example12.kvp" ) } );
-        kvpMaps.add( new Object[] { "example13.kvp", asKvp( "wfs200/example13.kvp" ) } );
-        kvpMaps.add( new Object[] { "example16.kvp", asKvp( "wfs200/example16.kvp" ) } );
-        kvpMaps.add( new Object[] { "example17.kvp", asKvp( "wfs200/example17.kvp" ) } );
-        kvpMaps.add( new Object[] { "example18.kvp", asKvp( "wfs200/example18.kvp" ) } );
-        kvpMaps.add( new Object[] { "example19.kvp", asKvp( "wfs200/example19.kvp" ) } );
-        kvpMaps.add( new Object[] { "example20.kvp", asKvp( "wfs200/example20.kvp" ) } );
-        kvpMaps.add( new Object[] { "example21.kvp", asKvp( "wfs200/example21.kvp" ) } );
-        kvpMaps.add( new Object[] { "example_bbox_explicit_crs.kvp", asKvp( "wfs200/example_bbox_explicit_crs.kvp" ) } );
-        return kvpMaps;
-    }
+	@Parameters
+	public static List<Object[]> data() throws IOException {
+		List<Object[]> kvpMaps = new ArrayList<Object[]>();
+		kvpMaps.add(new Object[] { "example1.kvp", asKvp("wfs200/example1.kvp") });
+		kvpMaps.add(new Object[] { "example2.kvp", asKvp("wfs200/example2.kvp") });
+		kvpMaps.add(new Object[] { "example3.kvp", asKvp("wfs200/example2.kvp") });
+		kvpMaps.add(new Object[] { "example4.kvp", asKvp("wfs200/example4.kvp") });
+		kvpMaps.add(new Object[] { "example5.kvp", asKvp("wfs200/example5.kvp") });
+		kvpMaps.add(new Object[] { "example7.kvp", asKvp("wfs200/example7.kvp") });
+		kvpMaps.add(new Object[] { "example11.kvp", asKvp("wfs200/example11.kvp") });
+		kvpMaps.add(new Object[] { "example12.kvp", asKvp("wfs200/example12.kvp") });
+		kvpMaps.add(new Object[] { "example13.kvp", asKvp("wfs200/example13.kvp") });
+		kvpMaps.add(new Object[] { "example16.kvp", asKvp("wfs200/example16.kvp") });
+		kvpMaps.add(new Object[] { "example17.kvp", asKvp("wfs200/example17.kvp") });
+		kvpMaps.add(new Object[] { "example18.kvp", asKvp("wfs200/example18.kvp") });
+		kvpMaps.add(new Object[] { "example19.kvp", asKvp("wfs200/example19.kvp") });
+		kvpMaps.add(new Object[] { "example20.kvp", asKvp("wfs200/example20.kvp") });
+		kvpMaps.add(new Object[] { "example21.kvp", asKvp("wfs200/example21.kvp") });
+		kvpMaps.add(new Object[] { "example_bbox_explicit_crs.kvp", asKvp("wfs200/example_bbox_explicit_crs.kvp") });
+		return kvpMaps;
+	}
 
-    @Test
-    public void testExport()
-                            throws Exception {
-        GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpMapUnderTest, null );
+	@Test
+	public void testExport() throws Exception {
+		GetFeature getFeature = GetFeatureKVPAdapter.parse(kvpMapUnderTest, null);
 
-        Map<String, String> exportedKvp = GetFeature200KVPEncoder.export( getFeature );
+		Map<String, String> exportedKvp = GetFeature200KVPEncoder.export(getFeature);
 
-        assertThat( "Failed test resource: " + testName, exportedKvp, is( kvpMapUnderTest ) );
-    }
+		assertThat("Failed test resource: " + testName, exportedKvp, is(kvpMapUnderTest));
+	}
 
-    private static Map<String, String> asKvp( String name )
-                            throws IOException {
-        URL exampleURL = GetFeature200KVPEncoderParameterizedTest.class.getResource( name );
-        return KVPUtils.readFileIntoMap( exampleURL );
-    }
+	private static Map<String, String> asKvp(String name) throws IOException {
+		URL exampleURL = GetFeature200KVPEncoderParameterizedTest.class.getResource(name);
+		return KVPUtils.readFileIntoMap(exampleURL);
+	}
 
 }

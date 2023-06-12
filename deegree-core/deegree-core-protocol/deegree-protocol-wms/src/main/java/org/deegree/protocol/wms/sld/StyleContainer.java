@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2014 by:
@@ -41,50 +40,47 @@ import org.deegree.style.StyleRef;
 
 /**
  * Encapsulates a style parsed from SLD.
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
 public class StyleContainer {
 
-    private final LayerRef layerRef;
+	private final LayerRef layerRef;
 
-    private final StyleRef styleRef;
+	private final StyleRef styleRef;
 
-    private final OperatorFilter filter;
+	private final OperatorFilter filter;
 
-    /**
-     * @param layerRef
-     *            the parsed layer, never <code>null</code>
-     * @param styleRef
-     *            the parsed style, never <code>null</code>
-     * @param filter
-     *            the parsed filter, may be <code>null</code>
-     */
-    public StyleContainer( LayerRef layerRef, StyleRef styleRef, OperatorFilter filter ) {
-        this.layerRef = layerRef;
-        this.styleRef = styleRef;
-        this.filter = filter;
-    }
+	/**
+	 * @param layerRef the parsed layer, never <code>null</code>
+	 * @param styleRef the parsed style, never <code>null</code>
+	 * @param filter the parsed filter, may be <code>null</code>
+	 */
+	public StyleContainer(LayerRef layerRef, StyleRef styleRef, OperatorFilter filter) {
+		this.layerRef = layerRef;
+		this.styleRef = styleRef;
+		this.filter = filter;
+	}
 
-    /**
-     * @return the parsed layer, never <code>null</code>
-     */
-    public LayerRef getLayerRef() {
-        return layerRef;
-    }
+	/**
+	 * @return the parsed layer, never <code>null</code>
+	 */
+	public LayerRef getLayerRef() {
+		return layerRef;
+	}
 
-    /**
-     * @return the parsed style, never <code>null</code>
-     */
-    public StyleRef getStyleRef() {
-        return styleRef;
-    }
+	/**
+	 * @return the parsed style, never <code>null</code>
+	 */
+	public StyleRef getStyleRef() {
+		return styleRef;
+	}
 
-    /**
-     * @return the parsed filter, may be <code>null</code>
-     */
-    public OperatorFilter getFilter() {
-        return filter;
-    }
+	/**
+	 * @return the parsed filter, may be <code>null</code>
+	 */
+	public OperatorFilter getFilter() {
+		return filter;
+	}
 
 }

@@ -37,34 +37,34 @@ import org.deegree.workspace.Workspace;
 import org.gdal.gdal.gdal;
 
 /**
- * {@link TileMatrixSetProvider} for {@link TileMatrixSet}s based on overview and tiling information reported by <a
- * href="http://www.gdal.org">GDAL</a>.
- * 
+ * {@link TileMatrixSetProvider} for {@link TileMatrixSet}s based on overview and tiling
+ * information reported by <a href="http://www.gdal.org">GDAL</a>.
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * 
  * @since 3.5
  */
 public class GdalTileMatrixSetProvider extends TileMatrixSetProvider {
 
-    private static final String SCHEMA_NAMESPACE = "http://www.deegree.org/datasource/tile/tilematrixset/gdal";
+	private static final String SCHEMA_NAMESPACE = "http://www.deegree.org/datasource/tile/tilematrixset/gdal";
 
-    private static final URL SCHEMA_URL = GdalTileMatrixSetProvider.class.getResource( "/META-INF/schemas/datasource/tile/tilematrixset/gdal/gdal.xsd" );
+	private static final URL SCHEMA_URL = GdalTileMatrixSetProvider.class
+		.getResource("/META-INF/schemas/datasource/tile/tilematrixset/gdal/gdal.xsd");
 
-    @Override
-    public String getNamespace() {
-        return SCHEMA_NAMESPACE;
-    }
+	@Override
+	public String getNamespace() {
+		return SCHEMA_NAMESPACE;
+	}
 
-    @Override
-    public ResourceMetadata<TileMatrixSet> createFromLocation( Workspace workspace,
-                                                               ResourceLocation<TileMatrixSet> location ) {
-        gdal.AllRegister();
-        return new GdalTileMatrixSetMetadata( workspace, location, this );
-    }
+	@Override
+	public ResourceMetadata<TileMatrixSet> createFromLocation(Workspace workspace,
+			ResourceLocation<TileMatrixSet> location) {
+		gdal.AllRegister();
+		return new GdalTileMatrixSetMetadata(workspace, location, this);
+	}
 
-    @Override
-    public URL getSchema() {
-        return SCHEMA_URL;
-    }
+	@Override
+	public URL getSchema() {
+		return SCHEMA_URL;
+	}
 
 }

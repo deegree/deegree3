@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -51,89 +50,82 @@ import org.slf4j.LoggerFactory;
 /**
  * deegree Authentication.
  * <p>
- * This is a deegree specific authentication that uses the possibilities of KVP to append the username and password as
- * well as the sessionID in the URL.
- * 
+ * This is a deegree specific authentication that uses the possibilities of KVP to append
+ * the username and password as well as the sessionID in the URL.
+ *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: thomas $
- * 
- * @version $Revision: $, $Date: $
  */
 public class DeegreeAuthentication implements CredentialsProvider {
 
-    private static Logger LOG = LoggerFactory.getLogger( DeegreeAuthentication.class );
+	private static Logger LOG = LoggerFactory.getLogger(DeegreeAuthentication.class);
 
-    @Override
-    public Credentials doKVP( Map<String, String> normalizedKVPParams, HttpServletRequest req,
-                              HttpServletResponse response )
-                            throws SecurityException {
+	@Override
+	public Credentials doKVP(Map<String, String> normalizedKVPParams, HttpServletRequest req,
+			HttpServletResponse response) throws SecurityException {
 
-        // extract (deegree specific) security information and bind to current thread
-        String user = normalizedKVPParams.get( "USER" );
-        String password = normalizedKVPParams.get( "PASSWORD" );
-        String tokenId = normalizedKVPParams.get( "SESSIONID" );
+		// extract (deegree specific) security information and bind to current thread
+		String user = normalizedKVPParams.get("USER");
+		String password = normalizedKVPParams.get("PASSWORD");
+		String tokenId = normalizedKVPParams.get("SESSIONID");
 
-        return new Credentials( user, password, tokenId );
-    }
+		return new Credentials(user, password, tokenId);
+	}
 
-    @Override
-    public Credentials doXML( XMLStreamReader xmlStream, HttpServletRequest req, HttpServletResponse response )
-                            throws SecurityException {
+	@Override
+	public Credentials doXML(XMLStreamReader xmlStream, HttpServletRequest req, HttpServletResponse response)
+			throws SecurityException {
 
-        // extract (deegree specific) security information and bind to current thread
-        String user = xmlStream.getAttributeValue( "", "user" );
-        String password = xmlStream.getAttributeValue( "", "password" );
-        String tokenId = xmlStream.getAttributeValue( "", "sessionId" );
+		// extract (deegree specific) security information and bind to current thread
+		String user = xmlStream.getAttributeValue("", "user");
+		String password = xmlStream.getAttributeValue("", "password");
+		String tokenId = xmlStream.getAttributeValue("", "sessionId");
 
-        return new Credentials( user, password, tokenId );
-    }
+		return new Credentials(user, password, tokenId);
+	}
 
-    @Override
-    public Credentials doSOAP( SOAPEnvelope soapDoc, HttpServletRequest req ) {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	@Override
+	public Credentials doSOAP(SOAPEnvelope soapDoc, HttpServletRequest req) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    @Override
-    public void handleException( HttpServletResponse response, SecurityException e )
-                            throws IOException {
-        if ( e instanceof InvalidCredentialsException ) {
-            doInvalidCredentialsExceptionException( response, (InvalidCredentialsException) e );
-        } else {
-            doAuthenticationException( response, e );
-        }
+	@Override
+	public void handleException(HttpServletResponse response, SecurityException e) throws IOException {
+		if (e instanceof InvalidCredentialsException) {
+			doInvalidCredentialsExceptionException(response, (InvalidCredentialsException) e);
+		}
+		else {
+			doAuthenticationException(response, e);
+		}
 
-    }
+	}
 
-    /**
-     * Handles the authentication to put credentials into the URL.
-     * 
-     * @param response
-     * @param e
-     * @throws IOException
-     */
-    private void doAuthenticationException( HttpServletResponse response, SecurityException e )
-                            throws IOException {
+	/**
+	 * Handles the authentication to put credentials into the URL.
+	 * @param response
+	 * @param e
+	 * @throws IOException
+	 */
+	private void doAuthenticationException(HttpServletResponse response, SecurityException e) throws IOException {
 
-        LOG.debug( "SecurityException: " );
-        response.reset();
+		LOG.debug("SecurityException: ");
+		response.reset();
 
-    }
+	}
 
-    /**
-     * Handles the authentication.
-     * 
-     * @param response
-     * @param e
-     * @throws IOException
-     */
-    private void doInvalidCredentialsExceptionException( HttpServletResponse response, InvalidCredentialsException e )
-                            throws IOException {
+	/**
+	 * Handles the authentication.
+	 * @param response
+	 * @param e
+	 * @throws IOException
+	 */
+	private void doInvalidCredentialsExceptionException(HttpServletResponse response, InvalidCredentialsException e)
+			throws IOException {
 
-        LOG.debug( "exception should respond Forbidden: " );
+		LOG.debug("exception should respond Forbidden: ");
 
-        response.sendError( 403 );
+		response.sendError(403);
 
-    }
+	}
 
 }

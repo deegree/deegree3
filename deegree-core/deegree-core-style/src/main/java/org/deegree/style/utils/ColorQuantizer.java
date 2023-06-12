@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -51,10 +50,6 @@ package org.deegree.style.utils;
  *
  * Copyright 1998-2003 Helma Software. All Rights Reserved.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
  */
 
 import java.awt.AlphaComposite;
@@ -66,7 +61,7 @@ import java.awt.image.IndexColorModel;
 
 /*
  * Modifications by Juerg Lehni:
- * 
+ *
  * - Ported to Java from C
  * - Support for alpha-channels.
  * - Returns a BufferedImage of TYPE_BYTE_INDEXED with a IndexColorModel.
@@ -264,415 +259,428 @@ import java.awt.image.IndexColorModel;
  */
 
 public class ColorQuantizer {
-    public static final int MAX_NODES = 266817;
 
-    public static final int MAX_TREE_DEPTH = 8;
+	public static final int MAX_NODES = 266817;
 
-    public static final int MAX_CHILDREN = 16;
+	public static final int MAX_TREE_DEPTH = 8;
 
-    public static final int MAX_RGB = 255;
+	public static final int MAX_CHILDREN = 16;
 
-    static class ClosestColor {
-        int distance;
+	public static final int MAX_RGB = 255;
 
-        int colorIndex;
-    }
+	static class ClosestColor {
 
-    static class Node {
-        Cube cube;
+		int distance;
 
-        Node parent;
+		int colorIndex;
 
-        Node children[];
+	}
 
-        int numChildren;
+	static class Node {
 
-        int id;
+		Cube cube;
 
-        int level;
+		Node parent;
 
-        int uniqueCount;
+		Node children[];
 
-        int totalRed;
+		int numChildren;
 
-        int totalGreen;
+		int id;
 
-        int totalBlue;
+		int level;
 
-        int totalAlpha;
+		int uniqueCount;
 
-        long quantizeError;
+		int totalRed;
 
-        int colorIndex;
+		int totalGreen;
 
-        Node( Cube cube ) {
-            this( cube, 0, 0, null );
-            this.parent = this;
-        }
+		int totalBlue;
 
-        Node( Cube cube, int id, int level, Node parent ) {
-            this.cube = cube;
-            this.parent = parent;
-            this.id = id;
-            this.level = level;
-            this.children = new Node[MAX_CHILDREN];
-            this.numChildren = 0;
-            if ( parent != null ) {
-                parent.children[id] = this;
-                parent.numChildren++;
-            }
-            cube.numNodes++;
-        }
+		int totalAlpha;
 
-        void pruneLevel() {
-            // Traverse any children.
-            if ( this.numChildren > 0 )
-                for ( int id = 0; id < MAX_CHILDREN; id++ )
-                    if ( this.children[id] != null )
-                        this.children[id].pruneLevel();
-            if ( this.level == this.cube.depth )
-                prune();
-        }
+		long quantizeError;
 
-        void pruneToCubeDepth() {
-            // Traverse any children.
-            if ( this.numChildren > 0 )
-                for ( int id = 0; id < MAX_CHILDREN; id++ )
-                    if ( this.children[id] != null )
-                        this.children[id].pruneToCubeDepth();
-            if ( this.level > this.cube.depth )
-                prune();
-        }
+		int colorIndex;
 
-        void prune() {
-            // Traverse any children.
-            if ( this.numChildren > 0 )
-                for ( int id = 0; id < MAX_CHILDREN; id++ )
-                    if ( this.children[id] != null )
-                        this.children[id].prune();
-            // Merge color statistics into parent.
-            this.parent.uniqueCount += this.uniqueCount;
-            this.parent.totalRed += this.totalRed;
-            this.parent.totalGreen += this.totalGreen;
-            this.parent.totalBlue += this.totalBlue;
-            this.parent.totalAlpha += this.totalAlpha;
-            this.parent.children[this.id] = null;
-            this.parent.numChildren--;
-            this.cube.numNodes--;
-        }
+		Node(Cube cube) {
+			this(cube, 0, 0, null);
+			this.parent = this;
+		}
 
-        void reduce( long pruningThreshold ) {
-            // Traverse any children.
-            if ( this.numChildren > 0 )
-                for ( int id = 0; id < MAX_CHILDREN; id++ )
-                    if ( this.children[id] != null )
-                        this.children[id].reduce( pruningThreshold );
-            if ( this.quantizeError <= pruningThreshold )
-                prune();
-            else {
-                // Find minimum pruning threshold.
-                if ( this.uniqueCount > 0 )
-                    this.cube.numColors++;
-                if ( this.quantizeError < this.cube.nextThreshold )
-                    this.cube.nextThreshold = this.quantizeError;
-            }
-        }
+		Node(Cube cube, int id, int level, Node parent) {
+			this.cube = cube;
+			this.parent = parent;
+			this.id = id;
+			this.level = level;
+			this.children = new Node[MAX_CHILDREN];
+			this.numChildren = 0;
+			if (parent != null) {
+				parent.children[id] = this;
+				parent.numChildren++;
+			}
+			cube.numNodes++;
+		}
 
-        void findClosestColor( int red, int green, int blue, int alpha, ClosestColor closest ) {
-            // Traverse any children.
-            if ( this.numChildren > 0 )
-                for ( int id = 0; id < MAX_CHILDREN; id++ )
-                    if ( this.children[id] != null )
-                        this.children[id].findClosestColor( red, green, blue, alpha, closest );
-            if ( this.uniqueCount != 0 ) {
-                // Determine if this color is "closest".
-                int dr = ( this.cube.colorMap[0][this.colorIndex] & 0xff ) - red;
-                int dg = ( this.cube.colorMap[1][this.colorIndex] & 0xff ) - green;
-                int db = ( this.cube.colorMap[2][this.colorIndex] & 0xff ) - blue;
-                int da = ( this.cube.colorMap[3][this.colorIndex] & 0xff ) - alpha;
-                int distance = da * da + dr * dr + dg * dg + db * db;
-                if ( distance < closest.distance ) {
-                    closest.distance = distance;
-                    closest.colorIndex = this.colorIndex;
-                }
-            }
-        }
+		void pruneLevel() {
+			// Traverse any children.
+			if (this.numChildren > 0)
+				for (int id = 0; id < MAX_CHILDREN; id++)
+					if (this.children[id] != null)
+						this.children[id].pruneLevel();
+			if (this.level == this.cube.depth)
+				prune();
+		}
 
-        int fillColorMap( byte colorMap[][], int index ) {
-            // Traverse any children.
-            if ( this.numChildren > 0 )
-                for ( int id = 0; id < MAX_CHILDREN; id++ )
-                    if ( this.children[id] != null )
-                        index = this.children[id].fillColorMap( colorMap, index );
-            if ( this.uniqueCount != 0 ) {
-                // Colormap entry is defined by the mean color in this cube.
-                colorMap[0][index] = (byte) ( this.totalRed / this.uniqueCount + 0.5 );
-                colorMap[1][index] = (byte) ( this.totalGreen / this.uniqueCount + 0.5 );
-                colorMap[2][index] = (byte) ( this.totalBlue / this.uniqueCount + 0.5 );
-                colorMap[3][index] = (byte) ( this.totalAlpha / this.uniqueCount + 0.5 );
-                this.colorIndex = index++;
-            }
-            return index;
-        }
-    }
+		void pruneToCubeDepth() {
+			// Traverse any children.
+			if (this.numChildren > 0)
+				for (int id = 0; id < MAX_CHILDREN; id++)
+					if (this.children[id] != null)
+						this.children[id].pruneToCubeDepth();
+			if (this.level > this.cube.depth)
+				prune();
+		}
 
-    static class Cube {
-        Node root;
+		void prune() {
+			// Traverse any children.
+			if (this.numChildren > 0)
+				for (int id = 0; id < MAX_CHILDREN; id++)
+					if (this.children[id] != null)
+						this.children[id].prune();
+			// Merge color statistics into parent.
+			this.parent.uniqueCount += this.uniqueCount;
+			this.parent.totalRed += this.totalRed;
+			this.parent.totalGreen += this.totalGreen;
+			this.parent.totalBlue += this.totalBlue;
+			this.parent.totalAlpha += this.totalAlpha;
+			this.parent.children[this.id] = null;
+			this.parent.numChildren--;
+			this.cube.numNodes--;
+		}
 
-        int numColors;
+		void reduce(long pruningThreshold) {
+			// Traverse any children.
+			if (this.numChildren > 0)
+				for (int id = 0; id < MAX_CHILDREN; id++)
+					if (this.children[id] != null)
+						this.children[id].reduce(pruningThreshold);
+			if (this.quantizeError <= pruningThreshold)
+				prune();
+			else {
+				// Find minimum pruning threshold.
+				if (this.uniqueCount > 0)
+					this.cube.numColors++;
+				if (this.quantizeError < this.cube.nextThreshold)
+					this.cube.nextThreshold = this.quantizeError;
+			}
+		}
 
-        boolean addTransparency;
+		void findClosestColor(int red, int green, int blue, int alpha, ClosestColor closest) {
+			// Traverse any children.
+			if (this.numChildren > 0)
+				for (int id = 0; id < MAX_CHILDREN; id++)
+					if (this.children[id] != null)
+						this.children[id].findClosestColor(red, green, blue, alpha, closest);
+			if (this.uniqueCount != 0) {
+				// Determine if this color is "closest".
+				int dr = (this.cube.colorMap[0][this.colorIndex] & 0xff) - red;
+				int dg = (this.cube.colorMap[1][this.colorIndex] & 0xff) - green;
+				int db = (this.cube.colorMap[2][this.colorIndex] & 0xff) - blue;
+				int da = (this.cube.colorMap[3][this.colorIndex] & 0xff) - alpha;
+				int distance = da * da + dr * dr + dg * dg + db * db;
+				if (distance < closest.distance) {
+					closest.distance = distance;
+					closest.colorIndex = this.colorIndex;
+				}
+			}
+		}
 
-        // firstColor is set to 1 when when addTransparency is true!
-        int firstColor;
+		int fillColorMap(byte colorMap[][], int index) {
+			// Traverse any children.
+			if (this.numChildren > 0)
+				for (int id = 0; id < MAX_CHILDREN; id++)
+					if (this.children[id] != null)
+						index = this.children[id].fillColorMap(colorMap, index);
+			if (this.uniqueCount != 0) {
+				// Colormap entry is defined by the mean color in this cube.
+				colorMap[0][index] = (byte) (this.totalRed / this.uniqueCount + 0.5);
+				colorMap[1][index] = (byte) (this.totalGreen / this.uniqueCount + 0.5);
+				colorMap[2][index] = (byte) (this.totalBlue / this.uniqueCount + 0.5);
+				colorMap[3][index] = (byte) (this.totalAlpha / this.uniqueCount + 0.5);
+				this.colorIndex = index++;
+			}
+			return index;
+		}
 
-        byte colorMap[][];
+	}
 
-        long nextThreshold;
+	static class Cube {
 
-        int numNodes;
+		Node root;
 
-        int depth;
+		int numColors;
 
-        Cube( int maxColors ) {
-            this.depth = getDepth( maxColors );
-            this.numColors = 0;
-            this.root = new Node( this );
-        }
+		boolean addTransparency;
 
-        int getDepth( int numColors ) {
-            // Depth of color tree is: Log4(colormap size)+2.
-            int depth;
-            for ( depth = 1; numColors != 0; depth++ )
-                numColors >>= 2;
-            if ( depth > MAX_TREE_DEPTH )
-                depth = MAX_TREE_DEPTH;
-            if ( depth < 2 )
-                depth = 2;
-            return depth;
-        }
+		// firstColor is set to 1 when when addTransparency is true!
+		int firstColor;
 
-        void classifyImageColors( BufferedImage image, boolean alphaToBitmask ) {
-            this.addTransparency = false;
-            this.firstColor = 0;
+		byte colorMap[][];
 
-            Node node, child;
-            int x, px, y, index, level, id, count;
-            int pixel, red, green, blue, alpha;
-            int bisect, midRed, midGreen, midBlue, midAlpha;
+		long nextThreshold;
 
-            int width = image.getWidth();
-            int height = image.getHeight();
+		int numNodes;
 
-            // Classify the first 256 colors to a tree depth of MAX_TREE_DEPTH.
-            int levelThreshold = MAX_TREE_DEPTH;
-            // create a BufferedImage of only 1 pixel height for fetching the rows
-            // of the image in the correct format (ARGB)
-            // This speeds up things by more than factor 2, compared to the standard
-            // BufferedImage.getRGB solution
-            BufferedImage row = new BufferedImage( width, 1, BufferedImage.TYPE_INT_ARGB );
-            Graphics2D g2d = row.createGraphics();
-            int pixels[] = ( (DataBufferInt) row.getRaster().getDataBuffer() ).getData();
-            // make sure alpha values do not add up for each row:
-            g2d.setComposite( AlphaComposite.Src );
-            // calculate scanline by scanline in order to safe memory.
-            // It also seems to run faster like that
-            for ( y = 0; y < height; y++ ) {
-                g2d.drawImage( image, null, 0, -y );
-                // now pixels contains the rgb values of the row y!
-                if ( this.numNodes > MAX_NODES ) {
-                    // Prune one level if the color tree is too large.
-                    this.root.pruneLevel();
-                    this.depth--;
-                }
-                for ( x = 0; x < width; ) {
-                    pixel = pixels[x];
-                    red = ( pixel >> 16 ) & 0xff;
-                    green = ( pixel >> 8 ) & 0xff;
-                    blue = ( pixel >> 0 ) & 0xff;
-                    alpha = ( pixel >> 24 ) & 0xff;
-                    if ( alphaToBitmask )
-                        alpha = alpha < 0x80 ? 0 : 0xff;
+		int depth;
 
-                    // skip same pixels, but count them
-                    px = x;
-                    for ( ++x; x < width; x++ )
-                        if ( pixels[x] != pixel )
-                            break;
-                    count = x - px;
+		Cube(int maxColors) {
+			this.depth = getDepth(maxColors);
+			this.numColors = 0;
+			this.root = new Node(this);
+		}
 
-                    // Start at the root and descend the color cube tree.
-                    if ( alpha > 0 ) {
-                        index = MAX_TREE_DEPTH - 1;
-                        bisect = ( MAX_RGB + 1 ) >> 1;
-                        midRed = bisect;
-                        midGreen = bisect;
-                        midBlue = bisect;
-                        midAlpha = bisect;
-                        node = this.root;
-                        for ( level = 1; level <= levelThreshold; level++ ) {
-                            id = ( ( ( red >> index ) & 0x01 ) << 3 | ( ( green >> index ) & 0x01 ) << 2
-                                   | ( ( blue >> index ) & 0x01 ) << 1 | ( ( alpha >> index ) & 0x01 ) );
-                            bisect >>= 1;
-                            midRed += ( id & 8 ) != 0 ? bisect : -bisect;
-                            midGreen += ( id & 4 ) != 0 ? bisect : -bisect;
-                            midBlue += ( id & 2 ) != 0 ? bisect : -bisect;
-                            midAlpha += ( id & 1 ) != 0 ? bisect : -bisect;
-                            child = node.children[id];
-                            if ( child == null ) {
-                                // Set colors of new node to contain pixel.
-                                child = new Node( this, id, level, node );
-                                if ( level == levelThreshold ) {
-                                    this.numColors++;
-                                    if ( this.numColors == 256 ) {
-                                        // More than 256 colors; classify to the
-                                        // cube_info.depth tree depth.
-                                        levelThreshold = this.depth;
-                                        this.root.pruneToCubeDepth();
-                                    }
-                                }
-                            }
-                            // Approximate the quantization error represented by
-                            // this node.
-                            node = child;
-                            int r = red - midRed;
-                            int g = green - midGreen;
-                            int b = blue - midBlue;
-                            int a = alpha - midAlpha;
-                            node.quantizeError += count * ( r * r + g * g + b * b + a * a );
-                            this.root.quantizeError += node.quantizeError;
-                            index--;
-                        }
-                        // Sum RGB for this leaf for later derivation of the mean
-                        // cube color.
-                        node.uniqueCount += count;
-                        node.totalRed += count * red;
-                        node.totalGreen += count * green;
-                        node.totalBlue += count * blue;
-                        node.totalAlpha += count * alpha;
-                    } else if ( !this.addTransparency ) {
-                        this.addTransparency = true;
-                        this.numColors++;
-                        this.firstColor = 1; // start at 1 as 0 will be the transparent color
-                    }
-                }
-            }
-        }
+		int getDepth(int numColors) {
+			// Depth of color tree is: Log4(colormap size)+2.
+			int depth;
+			for (depth = 1; numColors != 0; depth++)
+				numColors >>= 2;
+			if (depth > MAX_TREE_DEPTH)
+				depth = MAX_TREE_DEPTH;
+			if (depth < 2)
+				depth = 2;
+			return depth;
+		}
 
-        void reduceImageColors( int maxColors ) {
-            this.nextThreshold = 0;
-            while ( this.numColors > maxColors ) {
-                long pruningThreshold = this.nextThreshold;
-                this.nextThreshold = this.root.quantizeError - 1;
-                this.numColors = this.firstColor;
-                this.root.reduce( pruningThreshold );
-            }
-        }
+		void classifyImageColors(BufferedImage image, boolean alphaToBitmask) {
+			this.addTransparency = false;
+			this.firstColor = 0;
 
-        BufferedImage assignImageColors( BufferedImage image, boolean dither, boolean alphaToBitmask ) {
-            // Allocate image colormap.
-            this.colorMap = new byte[4][this.numColors];
-            this.root.fillColorMap( this.colorMap, this.firstColor );
-            // create the right color model, depending on transparency settings:
-            IndexColorModel icm;
+			Node node, child;
+			int x, px, y, index, level, id, count;
+			int pixel, red, green, blue, alpha;
+			int bisect, midRed, midGreen, midBlue, midAlpha;
 
-            int width = image.getWidth();
-            int height = image.getHeight();
+			int width = image.getWidth();
+			int height = image.getHeight();
 
-            if ( alphaToBitmask ) {
-                if ( this.addTransparency ) {
-                    icm = new IndexColorModel( this.depth, this.numColors, this.colorMap[0], this.colorMap[1],
-                                               this.colorMap[2], 0 );
-                } else {
-                    icm = new IndexColorModel( this.depth, this.numColors, this.colorMap[0], this.colorMap[1],
-                                               this.colorMap[2] );
-                }
-            } else {
-                icm = new IndexColorModel( this.depth, this.numColors, this.colorMap[0], this.colorMap[1],
-                                           this.colorMap[2], this.colorMap[3] );
-            }
+			// Classify the first 256 colors to a tree depth of MAX_TREE_DEPTH.
+			int levelThreshold = MAX_TREE_DEPTH;
+			// create a BufferedImage of only 1 pixel height for fetching the rows
+			// of the image in the correct format (ARGB)
+			// This speeds up things by more than factor 2, compared to the standard
+			// BufferedImage.getRGB solution
+			BufferedImage row = new BufferedImage(width, 1, BufferedImage.TYPE_INT_ARGB);
+			Graphics2D g2d = row.createGraphics();
+			int pixels[] = ((DataBufferInt) row.getRaster().getDataBuffer()).getData();
+			// make sure alpha values do not add up for each row:
+			g2d.setComposite(AlphaComposite.Src);
+			// calculate scanline by scanline in order to safe memory.
+			// It also seems to run faster like that
+			for (y = 0; y < height; y++) {
+				g2d.drawImage(image, null, 0, -y);
+				// now pixels contains the rgb values of the row y!
+				if (this.numNodes > MAX_NODES) {
+					// Prune one level if the color tree is too large.
+					this.root.pruneLevel();
+					this.depth--;
+				}
+				for (x = 0; x < width;) {
+					pixel = pixels[x];
+					red = (pixel >> 16) & 0xff;
+					green = (pixel >> 8) & 0xff;
+					blue = (pixel >> 0) & 0xff;
+					alpha = (pixel >> 24) & 0xff;
+					if (alphaToBitmask)
+						alpha = alpha < 0x80 ? 0 : 0xff;
 
-            // create the indexed BufferedImage:
-            BufferedImage dest = new BufferedImage( width, height, BufferedImage.TYPE_BYTE_INDEXED, icm );
+					// skip same pixels, but count them
+					px = x;
+					for (++x; x < width; x++)
+						if (pixels[x] != pixel)
+							break;
+					count = x - px;
 
-            if ( dither )
-                new DiffusionFilterOp().filter( image, dest );
-            else {
-                ClosestColor closest = new ClosestColor();
-                // convert to indexed color
-                byte[] dst = ( (DataBufferByte) dest.getRaster().getDataBuffer() ).getData();
+					// Start at the root and descend the color cube tree.
+					if (alpha > 0) {
+						index = MAX_TREE_DEPTH - 1;
+						bisect = (MAX_RGB + 1) >> 1;
+						midRed = bisect;
+						midGreen = bisect;
+						midBlue = bisect;
+						midAlpha = bisect;
+						node = this.root;
+						for (level = 1; level <= levelThreshold; level++) {
+							id = (((red >> index) & 0x01) << 3 | ((green >> index) & 0x01) << 2
+									| ((blue >> index) & 0x01) << 1 | ((alpha >> index) & 0x01));
+							bisect >>= 1;
+							midRed += (id & 8) != 0 ? bisect : -bisect;
+							midGreen += (id & 4) != 0 ? bisect : -bisect;
+							midBlue += (id & 2) != 0 ? bisect : -bisect;
+							midAlpha += (id & 1) != 0 ? bisect : -bisect;
+							child = node.children[id];
+							if (child == null) {
+								// Set colors of new node to contain pixel.
+								child = new Node(this, id, level, node);
+								if (level == levelThreshold) {
+									this.numColors++;
+									if (this.numColors == 256) {
+										// More than 256 colors; classify to the
+										// cube_info.depth tree depth.
+										levelThreshold = this.depth;
+										this.root.pruneToCubeDepth();
+									}
+								}
+							}
+							// Approximate the quantization error represented by
+							// this node.
+							node = child;
+							int r = red - midRed;
+							int g = green - midGreen;
+							int b = blue - midBlue;
+							int a = alpha - midAlpha;
+							node.quantizeError += count * (r * r + g * g + b * b + a * a);
+							this.root.quantizeError += node.quantizeError;
+							index--;
+						}
+						// Sum RGB for this leaf for later derivation of the mean
+						// cube color.
+						node.uniqueCount += count;
+						node.totalRed += count * red;
+						node.totalGreen += count * green;
+						node.totalBlue += count * blue;
+						node.totalAlpha += count * alpha;
+					}
+					else if (!this.addTransparency) {
+						this.addTransparency = true;
+						this.numColors++;
+						this.firstColor = 1; // start at 1 as 0 will be the transparent
+												// color
+					}
+				}
+			}
+		}
 
-                // create a BufferedImage of only 1 pixel height for fetching
-                // the rows of the image in the correct format (ARGB)
-                // This speeds up things by more than factor 2, compared to the
-                // standard BufferedImage.getRGB solution
-                BufferedImage row = new BufferedImage( width, 1, BufferedImage.TYPE_INT_ARGB );
-                Graphics2D g2d = row.createGraphics();
-                int pixels[] = ( (DataBufferInt) row.getRaster().getDataBuffer() ).getData();
-                // make sure alpha values do not add up for each row:
-                g2d.setComposite( AlphaComposite.Src );
-                // calculate scanline by scanline in order to safe memory.
-                // It also seems to run faster like that
-                Node node;
-                int x, y, i, id;
-                int pixel, red, green, blue, alpha;
-                int pos = 0;
-                for ( y = 0; y < height; y++ ) {
-                    g2d.drawImage( image, null, 0, -y );
-                    // now pixels contains the rgb values of the row y!
-                    // filter this row now:
-                    for ( x = 0; x < width; ) {
-                        pixel = pixels[x];
-                        red = ( pixel >> 16 ) & 0xff;
-                        green = ( pixel >> 8 ) & 0xff;
-                        blue = ( pixel >> 0 ) & 0xff;
-                        alpha = ( pixel >> 24 ) & 0xff;
+		void reduceImageColors(int maxColors) {
+			this.nextThreshold = 0;
+			while (this.numColors > maxColors) {
+				long pruningThreshold = this.nextThreshold;
+				this.nextThreshold = this.root.quantizeError - 1;
+				this.numColors = this.firstColor;
+				this.root.reduce(pruningThreshold);
+			}
+		}
 
-                        if ( alphaToBitmask )
-                            alpha = alpha < 128 ? 0 : 0xff;
+		BufferedImage assignImageColors(BufferedImage image, boolean dither, boolean alphaToBitmask) {
+			// Allocate image colormap.
+			this.colorMap = new byte[4][this.numColors];
+			this.root.fillColorMap(this.colorMap, this.firstColor);
+			// create the right color model, depending on transparency settings:
+			IndexColorModel icm;
 
-                        byte col;
-                        if ( alpha == 0 && this.addTransparency ) {
-                            col = 0; // transparency color is at position 0 of color map
-                        } else {
-                            // walk the tree to find the cube containing that
-                            // color
-                            node = this.root;
-                            for ( i = MAX_TREE_DEPTH - 1; i > 0; i-- ) {
-                                id = ( ( ( red >> i ) & 0x01 ) << 3 | ( ( green >> i ) & 0x01 ) << 2
-                                       | ( ( blue >> i ) & 0x01 ) << 1 | ( ( alpha >> i ) & 0x01 ) );
-                                if ( node.children[id] == null )
-                                    break;
-                                node = node.children[id];
-                            }
+			int width = image.getWidth();
+			int height = image.getHeight();
 
-                            // Find the closest color.
-                            closest.distance = Integer.MAX_VALUE;
-                            node.parent.findClosestColor( red, green, blue, alpha, closest );
-                            col = (byte) closest.colorIndex;
-                        }
+			if (alphaToBitmask) {
+				if (this.addTransparency) {
+					icm = new IndexColorModel(this.depth, this.numColors, this.colorMap[0], this.colorMap[1],
+							this.colorMap[2], 0);
+				}
+				else {
+					icm = new IndexColorModel(this.depth, this.numColors, this.colorMap[0], this.colorMap[1],
+							this.colorMap[2]);
+				}
+			}
+			else {
+				icm = new IndexColorModel(this.depth, this.numColors, this.colorMap[0], this.colorMap[1],
+						this.colorMap[2], this.colorMap[3]);
+			}
 
-                        // first color
-                        dst[pos++] = col;
+			// create the indexed BufferedImage:
+			BufferedImage dest = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_INDEXED, icm);
 
-                        // next colors the same?
-                        for ( ++x; x < width; x++ ) {
-                            if ( pixels[x] != pixel )
-                                break;
-                            dst[pos++] = col;
-                        }
-                    }
-                }
-            }
-            return dest;
-        }
-    }
+			if (dither)
+				new DiffusionFilterOp().filter(image, dest);
+			else {
+				ClosestColor closest = new ClosestColor();
+				// convert to indexed color
+				byte[] dst = ((DataBufferByte) dest.getRaster().getDataBuffer()).getData();
 
-    public static BufferedImage quantizeImage( BufferedImage image, int maxColors, boolean dither, boolean alphaToBitmask ) {
-        Cube cube = new Cube( maxColors );
-        cube.classifyImageColors( image, alphaToBitmask );
-        cube.reduceImageColors( maxColors );
-        return cube.assignImageColors( image, dither, alphaToBitmask );
-    }
+				// create a BufferedImage of only 1 pixel height for fetching
+				// the rows of the image in the correct format (ARGB)
+				// This speeds up things by more than factor 2, compared to the
+				// standard BufferedImage.getRGB solution
+				BufferedImage row = new BufferedImage(width, 1, BufferedImage.TYPE_INT_ARGB);
+				Graphics2D g2d = row.createGraphics();
+				int pixels[] = ((DataBufferInt) row.getRaster().getDataBuffer()).getData();
+				// make sure alpha values do not add up for each row:
+				g2d.setComposite(AlphaComposite.Src);
+				// calculate scanline by scanline in order to safe memory.
+				// It also seems to run faster like that
+				Node node;
+				int x, y, i, id;
+				int pixel, red, green, blue, alpha;
+				int pos = 0;
+				for (y = 0; y < height; y++) {
+					g2d.drawImage(image, null, 0, -y);
+					// now pixels contains the rgb values of the row y!
+					// filter this row now:
+					for (x = 0; x < width;) {
+						pixel = pixels[x];
+						red = (pixel >> 16) & 0xff;
+						green = (pixel >> 8) & 0xff;
+						blue = (pixel >> 0) & 0xff;
+						alpha = (pixel >> 24) & 0xff;
+
+						if (alphaToBitmask)
+							alpha = alpha < 128 ? 0 : 0xff;
+
+						byte col;
+						if (alpha == 0 && this.addTransparency) {
+							col = 0; // transparency color is at position 0 of color map
+						}
+						else {
+							// walk the tree to find the cube containing that
+							// color
+							node = this.root;
+							for (i = MAX_TREE_DEPTH - 1; i > 0; i--) {
+								id = (((red >> i) & 0x01) << 3 | ((green >> i) & 0x01) << 2 | ((blue >> i) & 0x01) << 1
+										| ((alpha >> i) & 0x01));
+								if (node.children[id] == null)
+									break;
+								node = node.children[id];
+							}
+
+							// Find the closest color.
+							closest.distance = Integer.MAX_VALUE;
+							node.parent.findClosestColor(red, green, blue, alpha, closest);
+							col = (byte) closest.colorIndex;
+						}
+
+						// first color
+						dst[pos++] = col;
+
+						// next colors the same?
+						for (++x; x < width; x++) {
+							if (pixels[x] != pixel)
+								break;
+							dst[pos++] = col;
+						}
+					}
+				}
+			}
+			return dest;
+		}
+
+	}
+
+	public static BufferedImage quantizeImage(BufferedImage image, int maxColors, boolean dither,
+			boolean alphaToBitmask) {
+		Cube cube = new Cube(maxColors);
+		cube.classifyImageColors(image, alphaToBitmask);
+		cube.reduceImageColors(maxColors);
+		return cube.assignImageColors(image, dither, alphaToBitmask);
+	}
 
 }

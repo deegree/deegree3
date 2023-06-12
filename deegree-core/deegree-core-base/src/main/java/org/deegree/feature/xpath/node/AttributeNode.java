@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -42,60 +41,58 @@ import org.deegree.commons.tom.primitive.PrimitiveValue;
 
 /**
  * {@link XPathNode} that represents an XML attribute node.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * 
- * @version $Revision:$, $Date:$
  */
 public class AttributeNode<P extends TypedObjectNode> implements XPathNode<PrimitiveValue> {
 
-    private ElementNode<P> parentNode;
+	private ElementNode<P> parentNode;
 
-    private QName name;
+	private QName name;
 
-    private PrimitiveValue value;
+	private PrimitiveValue value;
 
-    public AttributeNode( ElementNode<P> parentNode, QName attrName, PrimitiveValue value ) {
-        this.parentNode = parentNode;
-        this.name = attrName;
-        this.value = value;
-    }
+	public AttributeNode(ElementNode<P> parentNode, QName attrName, PrimitiveValue value) {
+		this.parentNode = parentNode;
+		this.name = attrName;
+		this.value = value;
+	}
 
-    @Override
-    public boolean isElement() {
-        return false;
-    }
+	@Override
+	public boolean isElement() {
+		return false;
+	}
 
-    @Override
-    public ElementNode<P> getParent() {
-        return parentNode;
-    }
+	@Override
+	public ElementNode<P> getParent() {
+		return parentNode;
+	}
 
-    public String getLocalName() {
-        return name.getLocalPart();
-    }
+	public String getLocalName() {
+		return name.getLocalPart();
+	}
 
-    public String getPrefixedName() {
-        String prefixedName = "";
-        String prefix = name.getPrefix();
-        if ( prefix != null && prefix.length() > 0 ) {
-            prefixedName = prefix + ":";
-        }
-        prefixedName += name.getLocalPart();
-        return prefixedName;
-    }
+	public String getPrefixedName() {
+		String prefixedName = "";
+		String prefix = name.getPrefix();
+		if (prefix != null && prefix.length() > 0) {
+			prefixedName = prefix + ":";
+		}
+		prefixedName += name.getLocalPart();
+		return prefixedName;
+	}
 
-    public String getNamespaceUri() {
-        return name.getNamespaceURI();
-    }
+	public String getNamespaceUri() {
+		return name.getNamespaceURI();
+	}
 
-    public PrimitiveValue getValue() {
-        return value;
-    }
+	public PrimitiveValue getValue() {
+		return value;
+	}
 
-    @Override
-    public String toString() {
-        return value.getAsText();
-    }
+	@Override
+	public String toString() {
+		return value.getAsText();
+	}
+
 }

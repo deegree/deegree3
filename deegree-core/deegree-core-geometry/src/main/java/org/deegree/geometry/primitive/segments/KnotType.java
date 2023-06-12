@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -36,36 +35,36 @@
 package org.deegree.geometry.primitive.segments;
 
 /**
- * Defines allowed values for the knots' type. Uniform knots implies that all knots are of multiplicity 1 and they
- * differ by a positive constant from the preceding knot. Knots are quasi-uniform iff they are of multiplicity (degree +
- * 1) at the ends, of multiplicity 1 elsewhere, and they differ by a positive constant from the preceding knot.
+ * Defines allowed values for the knots' type. Uniform knots implies that all knots are of
+ * multiplicity 1 and they differ by a positive constant from the preceding knot. Knots
+ * are quasi-uniform iff they are of multiplicity (degree + 1) at the ends, of
+ * multiplicity 1 elsewhere, and they differ by a positive constant from the preceding
+ * knot.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- *
- * @version $Revision$, $Date$
  */
 public enum KnotType {
 
-    /**
-     *
-     */
-    UNSPECIFIED,
+	/**
+	 *
+	 */
+	UNSPECIFIED,
 
-    /**
-     * All knots are of multiplicity 1 and they differ by a positive constant from the preceding knot.
-     */
-    UNIFORM,
+	/**
+	 * All knots are of multiplicity 1 and they differ by a positive constant from the
+	 * preceding knot.
+	 */
+	UNIFORM,
 
-    /**
-     * Multiplicity of the knots is (degree + 1) at the ends, 1 elsewhere, and knots differ by a positive constant from
-     * the preceding knot.
-     */
-    QUASI_UNIFORM,
+	/**
+	 * Multiplicity of the knots is (degree + 1) at the ends, 1 elsewhere, and knots
+	 * differ by a positive constant from the preceding knot.
+	 */
+	QUASI_UNIFORM,
 
-    /**
-     * ???
-     */
-    BEZIER
+	/**
+	 * ???
+	 */
+	BEZIER
 
 }

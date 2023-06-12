@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -60,60 +59,56 @@ import org.slf4j.Logger;
 
 /**
  * {@link RecordInspector} that performs normalization of namespace prefixes.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class NamespaceNormalizationInspector implements RecordInspector<ISORecord> {
 
-    private static final Logger LOG = getLogger( NamespaceNormalizationInspector.class );
+	private static final Logger LOG = getLogger(NamespaceNormalizationInspector.class);
 
-    private final NamespaceBindings nsBindings = new NamespaceBindings();
+	private final NamespaceBindings nsBindings = new NamespaceBindings();
 
-    /**
-     * Creates a new {@link NamespaceNormalizationInspector} instance.
-     * 
-     * @param config
-     *            inspector configuration, must not be <code>null</code>
-     */
-    public NamespaceNormalizationInspector( NamespaceNormalizer config ) {
-        if ( config.getNamespaceBinding() != null ) {
-            for ( NamespaceBinding binding : config.getNamespaceBinding() ) {
-                String prefix = binding.getPrefix();
-                String namespaceUri = binding.getNamespaceURI();
-                LOG.debug( "'" + prefix + "' -> '" + namespaceUri + "'" );
-                nsBindings.addNamespace( prefix, namespaceUri );
-            }
-        }
-    }
+	/**
+	 * Creates a new {@link NamespaceNormalizationInspector} instance.
+	 * @param config inspector configuration, must not be <code>null</code>
+	 */
+	public NamespaceNormalizationInspector(NamespaceNormalizer config) {
+		if (config.getNamespaceBinding() != null) {
+			for (NamespaceBinding binding : config.getNamespaceBinding()) {
+				String prefix = binding.getPrefix();
+				String namespaceUri = binding.getNamespaceURI();
+				LOG.debug("'" + prefix + "' -> '" + namespaceUri + "'");
+				nsBindings.addNamespace(prefix, namespaceUri);
+			}
+		}
+	}
 
-    @Override
-    public ISORecord inspect( ISORecord record, Connection conn, SQLDialect dialect )
-                            throws MetadataInspectorException {
+	@Override
+	public ISORecord inspect(ISORecord record, Connection conn, SQLDialect dialect) throws MetadataInspectorException {
 
-        ISORecord result = record;
+		ISORecord result = record;
 
-        try {
-            // create temporary sink for normalized XML
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter( bos );
-            writer = new NamespaceNormalizingXMLStreamWriter( writer, nsBindings );
+		try {
+			// create temporary sink for normalized XML
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter(bos);
+			writer = new NamespaceNormalizingXMLStreamWriter(writer, nsBindings);
 
-            // create normalized copy
-            XMLStreamReader reader = record.getAsXMLStream();
-            XMLAdapter.writeElement( writer, reader );
-            reader.close();
-            writer.close();
+			// create normalized copy
+			XMLStreamReader reader = record.getAsXMLStream();
+			XMLAdapter.writeElement(writer, reader);
+			reader.close();
+			writer.close();
 
-            InputStream is = new ByteArrayInputStream( bos.toByteArray() );
-            XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( is );
-            result = new ISORecord( xmlStream );
-        } catch ( Throwable t ) {
-            LOG.error( "Namespace normalization failed. Proceeding with unnormalized record. Error: " + t.getMessage() );
-        }
+			InputStream is = new ByteArrayInputStream(bos.toByteArray());
+			XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader(is);
+			result = new ISORecord(xmlStream);
+		}
+		catch (Throwable t) {
+			LOG.error("Namespace normalization failed. Proceeding with unnormalized record. Error: " + t.getMessage());
+		}
 
-        return result;
-    }
+		return result;
+	}
+
 }

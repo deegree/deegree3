@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -38,18 +37,16 @@ package org.deegree.protocol.csw.client;
 import org.deegree.protocol.ows.capabilities.OWSCommon100CapabilitiesAdapter;
 
 /**
- * {@link CSWCapabilitiesAdapter} for documents that comply to the <a
- * href="http://www.opengeospatial.org/standards/specifications/catalog">CSW 2.0.2</a> specification.
- * 
+ * {@link CSWCapabilitiesAdapter} for documents that comply to the
+ * <a href="http://www.opengeospatial.org/standards/specifications/catalog">CSW 2.0.2</a>
+ * specification.
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class CSWCapabilitiesAdapter extends OWSCommon100CapabilitiesAdapter {
 
-    public Object parseFilterCapabilities() {
-        return null;
-    }
+	public Object parseFilterCapabilities() {
+		return null;
+	}
 
 }

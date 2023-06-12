@@ -1,4 +1,3 @@
-// $HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -41,67 +40,64 @@ import java.util.NoSuchElementException;
 import org.apache.axiom.om.OMElement;
 
 /**
- * This is a child element iterator that expects a fixed number of child elements. It will throw an
- * {@link XMLParsingException} when an element is missing, or when you access the last expected element and there are
- * stil child elements left.
- * 
+ * This is a child element iterator that expects a fixed number of child elements. It will
+ * throw an {@link XMLParsingException} when an element is missing, or when you access the
+ * last expected element and there are stil child elements left.
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class FixedChildIterator implements Iterable<OMElement>, Iterator<OMElement> {
 
-    private final int expectedChildren;
+	private final int expectedChildren;
 
-    private final OMElement parent;
+	private final OMElement parent;
 
-    private final Iterator<?> itr;
+	private final Iterator<?> itr;
 
-    private int i = 0;
+	private int i = 0;
 
-    /**
-     * @param parent
-     * @param expectedChildren
-     *            the number of expected child elements
-     */
-    public FixedChildIterator( OMElement parent, int expectedChildren ) {
-        this.parent = parent;
-        this.expectedChildren = expectedChildren;
-        this.itr = parent.getChildElements();
-    }
+	/**
+	 * @param parent
+	 * @param expectedChildren the number of expected child elements
+	 */
+	public FixedChildIterator(OMElement parent, int expectedChildren) {
+		this.parent = parent;
+		this.expectedChildren = expectedChildren;
+		this.itr = parent.getChildElements();
+	}
 
-    public OMElement next() {
-        if ( i >= expectedChildren ) { // only allow i next() calls
-            throw new NoSuchElementException( "requested to much elements." );
-        }
-        if ( !itr.hasNext() ) {
-            String msg = "Element '" + parent.getQName() + "' requires exactly " + expectedChildren
-                         + " child element(s).";
-            throw new XMLParsingException( msg );
-        }
-        OMElement result = (OMElement) itr.next();
-        i++;
-        if ( i == expectedChildren && itr.hasNext() ) { // more than expected
-            String msg = "Element '" + parent.getQName() + "' requires exactly " + expectedChildren
-                         + " child element(s).";
-            throw new XMLParsingException( msg );
-        }
-        return result;
-    }
+	public OMElement next() {
+		if (i >= expectedChildren) { // only allow i next() calls
+			throw new NoSuchElementException("requested to much elements.");
+		}
+		if (!itr.hasNext()) {
+			String msg = "Element '" + parent.getQName() + "' requires exactly " + expectedChildren
+					+ " child element(s).";
+			throw new XMLParsingException(msg);
+		}
+		OMElement result = (OMElement) itr.next();
+		i++;
+		if (i == expectedChildren && itr.hasNext()) { // more than expected
+			String msg = "Element '" + parent.getQName() + "' requires exactly " + expectedChildren
+					+ " child element(s).";
+			throw new XMLParsingException(msg);
+		}
+		return result;
+	}
 
-    @Override
-    public Iterator<OMElement> iterator() {
-        return this;
-    }
+	@Override
+	public Iterator<OMElement> iterator() {
+		return this;
+	}
 
-    @Override
-    public boolean hasNext() {
-        return i < expectedChildren;
-    }
+	@Override
+	public boolean hasNext() {
+		return i < expectedChildren;
+	}
 
-    @Override
-    public void remove() {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public void remove() {
+		throw new UnsupportedOperationException();
+	}
+
 }

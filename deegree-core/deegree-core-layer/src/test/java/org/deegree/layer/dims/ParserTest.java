@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -45,71 +44,67 @@ import org.junit.Test;
 
 /**
  * <code>ParserTest</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class ParserTest extends TestCase {
 
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void testParser()
-                            throws Exception {
-        DimensionsParser p = getParser( "123.445" );
-        assertEquals( "123.445", p.values.get( 0 ) );
+	/**
+	 * @throws Exception
+	 */
+	@Test
+	public void testParser() throws Exception {
+		DimensionsParser p = getParser("123.445");
+		assertEquals("123.445", p.values.get(0));
 
-        p = getParser( "123.445/543/2" );
-        assertEquals( "123.445/543/2", p.values.get( 0 ).toString() );
+		p = getParser("123.445/543/2");
+		assertEquals("123.445/543/2", p.values.get(0).toString());
 
-        p = getParser( "123.445/543" );
-        assertEquals( "123.445/543/0", p.values.get( 0 ).toString() );
+		p = getParser("123.445/543");
+		assertEquals("123.445/543/0", p.values.get(0).toString());
 
-        p = getParser( "a,b,c" );
-        // do the quick'n'dirty list 'equals'
-        assertEquals( "[a, b, c]", p.values.toString() );
+		p = getParser("a,b,c");
+		// do the quick'n'dirty list 'equals'
+		assertEquals("[a, b, c]", p.values.toString());
 
-        p = getParser( "    a , b , c   " );
-        assertEquals( "[a, b, c]", p.values.toString() );
+		p = getParser("    a , b , c   ");
+		assertEquals("[a, b, c]", p.values.toString());
 
-        p = getParser( "a/b/c,b/c/a,c/b/a" );
-        assertEquals( "[a/b/c, b/c/a, c/b/a]", p.values.toString() );
+		p = getParser("a/b/c,b/c/a,c/b/a");
+		assertEquals("[a/b/c, b/c/a, c/b/a]", p.values.toString());
 
-        p = getParser( "1,2," );
-        assertEquals( "Expected another value after [1, 2].", p.error );
+		p = getParser("1,2,");
+		assertEquals("Expected another value after [1, 2].", p.error);
 
-        p = getParser( "1/3,2/54/gf," );
-        assertEquals( "Expected another value after [1/3/0, 2/54/gf].", p.error );
+		p = getParser("1/3,2/54/gf,");
+		assertEquals("Expected another value after [1/3/0, 2/54/gf].", p.error);
 
-        p = getParser( "1/3, single" );
-        assertEquals( "[1/3/0, single]", p.values.toString() );
+		p = getParser("1/3, single");
+		assertEquals("[1/3/0, single]", p.values.toString());
 
-        p = getParser( "1/3, single/" );
-        assertEquals( "Missing max value for interval.", p.error );
+		p = getParser("1/3, single/");
+		assertEquals("Missing max value for interval.", p.error);
 
-        p = getParser( "single, pseudointerval/" );
-        assertEquals( "Missing max value for interval.", p.error );
+		p = getParser("single, pseudointerval/");
+		assertEquals("Missing max value for interval.", p.error);
 
-        p = getParser( "one/two, three/four/, " );
-        assertEquals( "Expected another value after [one/two/0, three/four/0].", p.error );
+		p = getParser("one/two, three/four/, ");
+		assertEquals("Expected another value after [one/two/0, three/four/0].", p.error);
 
-        p = getParser( "2000-01-01T00:00:00Z/2000-01-01T00:01:00Z/PT5S" );
-        assertEquals( "2000-01-01T00:00:00Z/2000-01-01T00:01:00Z/PT5S", p.values.get( 0 ).toString() );
-    }
+		p = getParser("2000-01-01T00:00:00Z/2000-01-01T00:01:00Z/PT5S");
+		assertEquals("2000-01-01T00:00:00Z/2000-01-01T00:01:00Z/PT5S", p.values.get(0).toString());
+	}
 
-    private static DimensionsParser getParser( String input )
-                            throws RecognitionException {
-        DimensionsLexer lexer = new DimensionsLexer( new ANTLRStringStream( input ) );
-        DimensionsParser parser = new DimensionsParser( new CommonTokenStream( lexer ) );
-        try {
-            parser.dimensionvalues();
-        } catch ( RecognitionException e ) {
-            // ignore exception, error message in the parser
-        }
-        return parser;
-    }
+	private static DimensionsParser getParser(String input) throws RecognitionException {
+		DimensionsLexer lexer = new DimensionsLexer(new ANTLRStringStream(input));
+		DimensionsParser parser = new DimensionsParser(new CommonTokenStream(lexer));
+		try {
+			parser.dimensionvalues();
+		}
+		catch (RecognitionException e) {
+			// ignore exception, error message in the parser
+		}
+		return parser;
+	}
 
 }

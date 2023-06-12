@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-metadata/src/main/java/org/deegree/metadata/persistence/transaction/MetadataProperty.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -39,45 +38,39 @@ import org.deegree.filter.expression.ValueReference;
 
 /**
  * To specify individual property values to be updated.
- * 
+ *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 30340 $, $Date: 2011-04-04 16:05:42 +0200 (Mo, 04. Apr 2011) $
  */
 public class MetadataProperty {
 
-    private ValueReference propertyName;
+	private ValueReference propertyName;
 
-    private Object replacementValue;
+	private Object replacementValue;
 
-    /**
-     * To specify individual property values to be updated.
-     * 
-     * @param propertyName
-     *            can be a string or an XPath-expression [1..1]
-     * @param replacementValue
-     *            can be anyType [0..1]
-     */
-    public MetadataProperty( ValueReference propertyName, Object replacementValue ) {
-        this.propertyName = propertyName;
-        this.replacementValue = replacementValue;
-    }
+	/**
+	 * To specify individual property values to be updated.
+	 * @param propertyName can be a string or an XPath-expression [1..1]
+	 * @param replacementValue can be anyType [0..1]
+	 */
+	public MetadataProperty(ValueReference propertyName, Object replacementValue) {
+		this.propertyName = propertyName;
+		this.replacementValue = replacementValue;
+	}
 
-    /**
-     * 
-     * @return the propertyName element contains the name of a property to be updated. The name may be a path
-     *         expression.
-     */
-    public ValueReference getPropertyName() {
-        return propertyName;
-    }
+	/**
+	 * @return the propertyName element contains the name of a property to be updated. The
+	 * name may be a path expression.
+	 */
+	public ValueReference getPropertyName() {
+		return propertyName;
+	}
 
-    /**
-     * @return the replacementValue element contains the replacement value for the named property.
-     */
-    public Object getReplacementValue() {
-        return replacementValue;
-    }
+	/**
+	 * @return the replacementValue element contains the replacement value for the named
+	 * property.
+	 */
+	public Object getReplacementValue() {
+		return replacementValue;
+	}
 
 }

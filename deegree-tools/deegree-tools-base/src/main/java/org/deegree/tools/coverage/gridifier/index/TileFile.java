@@ -46,150 +46,148 @@ import org.deegree.coverage.raster.io.imageio.IIORasterReader;
 import org.deegree.geometry.Envelope;
 
 /**
- * 
+ *
  * The <code>TileFile</code> class describes a TileFile in the filesystem rastertree.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author: rbezema $
- * @version $Revision: $, $Date: $
- * 
+ *
  */
 public class TileFile {
 
-    private int id;
+	private int id;
 
-    private Envelope env;
+	private Envelope env;
 
-    private String dir;
+	private String dir;
 
-    private String fileName;
+	private String fileName;
 
-    private int level;
+	private int level;
 
-    private float xRes;
+	private float xRes;
 
-    private float yRes;
+	private float yRes;
 
-    private OriginLocation location;
+	private OriginLocation location;
 
-    TileFile( int id, int level, Envelope env, String dir, String fileName, float xRes, float yRes,
-              OriginLocation location ) {
-        this.id = id;
-        this.env = env;
-        this.level = level;
-        this.dir = dir;
-        this.fileName = fileName;
-        this.xRes = xRes;
-        this.yRes = yRes;
-        this.location = location;
-    }
+	TileFile(int id, int level, Envelope env, String dir, String fileName, float xRes, float yRes,
+			OriginLocation location) {
+		this.id = id;
+		this.env = env;
+		this.level = level;
+		this.dir = dir;
+		this.fileName = fileName;
+		this.xRes = xRes;
+		this.yRes = yRes;
+		this.location = location;
+	}
 
-    /**
-     * 
-     * @return the envelope in world coordinates
-     */
-    public Envelope getGeoEnvelope() {
-        return env;
-    }
+	/**
+	 * @return the envelope in world coordinates
+	 */
+	public Envelope getGeoEnvelope() {
+		return env;
+	}
 
-    /**
-     * 
-     * @return the raster reference of this tilefile
-     */
-    public RasterGeoReference getEnvelope() {
-        // rb: should the axis of the crs not been taken into account?
-        return new RasterGeoReference( location, xRes, yRes, env.getMin().get0(), env.getMax().get1() );
-    }
+	/**
+	 * @return the raster reference of this tilefile
+	 */
+	public RasterGeoReference getEnvelope() {
+		// rb: should the axis of the crs not been taken into account?
+		return new RasterGeoReference(location, xRes, yRes, env.getMin().get0(), env.getMax().get1());
+	}
 
-    boolean intersects( Envelope env/* float minX2, float minY2, float maxX2, float maxY2 */) {
-        // float minX1 = this.minX;
-        // float minY1 = this.minY;
-        // float maxX1 = this.maxX;
-        // float maxY1 = this.maxY;
-        //
-        // // special case: this node is completely inside the region of the tilefile
-        // if ( minX1 >= minX2 && maxX1 <= maxX2 && minY1 >= minY2 && maxY1 <= maxY2 ) {
-        // return true;
-        // }
-        //
-        // // left or right border of the tilefile lays inside the y-band of this node
-        // if ( ( minX2 >= minX1 && minX2 <= maxX1 ) || ( maxX2 <= maxX1 && maxX2 >= minX1 ) ) {
-        // if ( minY2 <= maxY1 && maxY2 >= minY1 ) {
-        // return true;
-        // }
-        // }
-        //
-        // // top or bottom border of the tilefile lays inside the x-band of this node
-        // if ( ( minY2 >= minY1 && minY2 <= maxY1 ) || ( maxY2 <= maxY1 && maxY2 >= minY1 ) ) {
-        // if ( minX2 <= maxX1 && maxX2 >= minX1 ) {
-        // return true;
-        // }
-        // }
+	boolean intersects(
+			Envelope env/* float minX2, float minY2, float maxX2, float maxY2 */) {
+		// float minX1 = this.minX;
+		// float minY1 = this.minY;
+		// float maxX1 = this.maxX;
+		// float maxY1 = this.maxY;
+		//
+		// // special case: this node is completely inside the region of the tilefile
+		// if ( minX1 >= minX2 && maxX1 <= maxX2 && minY1 >= minY2 && maxY1 <= maxY2 ) {
+		// return true;
+		// }
+		//
+		// // left or right border of the tilefile lays inside the y-band of this node
+		// if ( ( minX2 >= minX1 && minX2 <= maxX1 ) || ( maxX2 <= maxX1 && maxX2 >= minX1
+		// ) ) {
+		// if ( minY2 <= maxY1 && maxY2 >= minY1 ) {
+		// return true;
+		// }
+		// }
+		//
+		// // top or bottom border of the tilefile lays inside the x-band of this node
+		// if ( ( minY2 >= minY1 && minY2 <= maxY1 ) || ( maxY2 <= maxY1 && maxY2 >= minY1
+		// ) ) {
+		// if ( minX2 <= maxX1 && maxX2 >= minX1 ) {
+		// return true;
+		// }
+		// }
 
-        return this.env.intersects( env );
-    }
+		return this.env.intersects(env);
+	}
 
-    /**
-     * loads the raster
-     * 
-     * @param tileBaseDir
-     * @return the loaded simpleraster
-     * @throws IOException
-     */
-    public AbstractRaster loadRaster( String tileBaseDir )
-                            throws IOException {
-        File file = new File( getFullFileName( tileBaseDir ) );
-        RasterReader reader = new IIORasterReader();
+	/**
+	 * loads the raster
+	 * @param tileBaseDir
+	 * @return the loaded simpleraster
+	 * @throws IOException
+	 */
+	public AbstractRaster loadRaster(String tileBaseDir) throws IOException {
+		File file = new File(getFullFileName(tileBaseDir));
+		RasterReader reader = new IIORasterReader();
 
-        RasterIOOptions options = RasterIOOptions.forFile( file, getEnvelope() );
-        return reader.load( file, options );
-    }
+		RasterIOOptions options = RasterIOOptions.forFile(file, getEnvelope());
+		return reader.load(file, options);
+	}
 
-    /**
-     * @param tileBaseDir
-     * @return the file name this tile is referencing
-     */
-    public String getFullFileName( String tileBaseDir ) {
-        return tileBaseDir + dir.substring( 1 ) + "/" + fileName;
-    }
+	/**
+	 * @param tileBaseDir
+	 * @return the file name this tile is referencing
+	 */
+	public String getFullFileName(String tileBaseDir) {
+		return tileBaseDir + dir.substring(1) + "/" + fileName;
+	}
 
-    @Override
-    public String toString() {
-        return "{id=" + id + "," + env + ", dir=" + dir + ",file=" + fileName + ",xRes=" + xRes + ",yRes=" + yRes + "}";
-    }
+	@Override
+	public String toString() {
+		return "{id=" + id + "," + env + ", dir=" + dir + ",file=" + fileName + ",xRes=" + xRes + ",yRes=" + yRes + "}";
+	}
 
-    @Override
-    public int hashCode() {
-        return id;
-    }
+	@Override
+	public int hashCode() {
+		return id;
+	}
 
-    @Override
-    public boolean equals( Object o ) {
-        if ( !( o instanceof TileFile ) ) {
-            return false;
-        }
-        TileFile that = (TileFile) o;
-        return that.id == this.id;
-    }
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof TileFile)) {
+			return false;
+		}
+		TileFile that = (TileFile) o;
+		return that.id == this.id;
+	}
 
-    /**
-     * @return the level
-     */
-    public int getLevel() {
-        return level;
-    }
+	/**
+	 * @return the level
+	 */
+	public int getLevel() {
+		return level;
+	}
 
-    /**
-     * @return the directory
-     */
-    public String getDir() {
-        return dir;
-    }
+	/**
+	 * @return the directory
+	 */
+	public String getDir() {
+		return dir;
+	}
 
-    /**
-     * @return the id
-     */
-    public int getId() {
-        return id;
-    }
+	/**
+	 * @return the id
+	 */
+	public int getId() {
+		return id;
+	}
+
 }

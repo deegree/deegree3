@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2014 by:
@@ -64,136 +63,128 @@ import org.junit.Test;
 
 /**
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class ConfigUtilsTest {
 
-    @Test
-    public void testParseStyles_EqualDefaultAndSimple()
-                            throws Exception {
-        StyleStore store = mockStyleStoreWithThreeStyles_EqualDefaultAndSimple();
-        Workspace workspace = mockWorkspace( store );
+	@Test
+	public void testParseStyles_EqualDefaultAndSimple() throws Exception {
+		StyleStore store = mockStyleStoreWithThreeStyles_EqualDefaultAndSimple();
+		Workspace workspace = mockWorkspace(store);
 
-        List<StyleRefType> styles = singletonList( readStyleRef( "styleRefs_EqualDefaultAndSimple.xml" ) );
+		List<StyleRefType> styles = singletonList(readStyleRef("styleRefs_EqualDefaultAndSimple.xml"));
 
-        Pair<Map<String, Style>, Map<String, Style>> selectedStyles = parseStyles( workspace, "layer", styles );
+		Pair<Map<String, Style>, Map<String, Style>> selectedStyles = parseStyles(workspace, "layer", styles);
 
-        Map<String, Style> styleMap = selectedStyles.getFirst();
-        Map<String, Style> legendStyleMap = selectedStyles.getSecond();
+		Map<String, Style> styleMap = selectedStyles.getFirst();
+		Map<String, Style> legendStyleMap = selectedStyles.getSecond();
 
-        assertThat( styleMap.size(), is( 3 ) );
-        assertThat( legendStyleMap.size(), is( 3 ) );
+		assertThat(styleMap.size(), is(3));
+		assertThat(legendStyleMap.size(), is(3));
 
-        Style defaultLegendStyle = legendStyleMap.get( "default" );
-        assertThat( defaultLegendStyle.getName(), is( "default" ) );
-        assertThat( defaultLegendStyle.getLegendURL(), is( new URL( "http://test.de/legende.png" ) ) );
-    }
+		Style defaultLegendStyle = legendStyleMap.get("default");
+		assertThat(defaultLegendStyle.getName(), is("default"));
+		assertThat(defaultLegendStyle.getLegendURL(), is(new URL("http://test.de/legende.png")));
+	}
 
-    @Test
-    public void testParseStyles_DifferentDefaultAndSimple()
-                            throws Exception {
-        StyleStore store = mockStyleStoreWithThreeStyles_DifferentDefaultAndSimple();
-        Workspace workspace = mockWorkspace( store );
+	@Test
+	public void testParseStyles_DifferentDefaultAndSimple() throws Exception {
+		StyleStore store = mockStyleStoreWithThreeStyles_DifferentDefaultAndSimple();
+		Workspace workspace = mockWorkspace(store);
 
-        List<StyleRefType> styles = singletonList( readStyleRef( "styleRefs_DifferentDefaultAndSimple.xml" ) );
+		List<StyleRefType> styles = singletonList(readStyleRef("styleRefs_DifferentDefaultAndSimple.xml"));
 
-        Pair<Map<String, Style>, Map<String, Style>> selectedStyles = parseStyles( workspace, "layer", styles );
+		Pair<Map<String, Style>, Map<String, Style>> selectedStyles = parseStyles(workspace, "layer", styles);
 
-        Map<String, Style> styleMap = selectedStyles.getFirst();
-        Map<String, Style> legendStyleMap = selectedStyles.getSecond();
+		Map<String, Style> styleMap = selectedStyles.getFirst();
+		Map<String, Style> legendStyleMap = selectedStyles.getSecond();
 
-        assertThat( styleMap.size(), is( 3 ) );
-        assertThat( legendStyleMap.size(), is( 3 ) );
+		assertThat(styleMap.size(), is(3));
+		assertThat(legendStyleMap.size(), is(3));
 
-        Style defaultLegendStyle = legendStyleMap.get( "default" );
-        assertThat( defaultLegendStyle.getName(), is( "default" ) );
-        assertThat( defaultLegendStyle.getLegendURL(), is( new URL( "http://test.de/legende2.png" ) ) );
-    }
+		Style defaultLegendStyle = legendStyleMap.get("default");
+		assertThat(defaultLegendStyle.getName(), is("default"));
+		assertThat(defaultLegendStyle.getLegendURL(), is(new URL("http://test.de/legende2.png")));
+	}
 
-    @Test
-    public void testParseStyles_OnlyOneWithLegendStyle()
-                            throws Exception {
-        StyleStore store = mockStyleStoreWithThreeStyles_DifferentDefaultAndSimple();
-        Workspace workspace = mockWorkspace( store );
+	@Test
+	public void testParseStyles_OnlyOneWithLegendStyle() throws Exception {
+		StyleStore store = mockStyleStoreWithThreeStyles_DifferentDefaultAndSimple();
+		Workspace workspace = mockWorkspace(store);
 
-        List<StyleRefType> styles = singletonList( readStyleRef( "styleRefs_OnlyOneWithLegendStyle.xml" ) );
+		List<StyleRefType> styles = singletonList(readStyleRef("styleRefs_OnlyOneWithLegendStyle.xml"));
 
-        Pair<Map<String, Style>, Map<String, Style>> selectedStyles = parseStyles( workspace, "layer", styles );
+		Pair<Map<String, Style>, Map<String, Style>> selectedStyles = parseStyles(workspace, "layer", styles);
 
-        Map<String, Style> styleMap = selectedStyles.getFirst();
-        Map<String, Style> legendStyleMap = selectedStyles.getSecond();
+		Map<String, Style> styleMap = selectedStyles.getFirst();
+		Map<String, Style> legendStyleMap = selectedStyles.getSecond();
 
-        assertThat( styleMap.size(), is( 3 ) );
-        assertThat( legendStyleMap.size(), is( 2 ) );
+		assertThat(styleMap.size(), is(3));
+		assertThat(legendStyleMap.size(), is(2));
 
-        Style defaultLegendStyle = legendStyleMap.get( "default" );
-        assertThat( defaultLegendStyle.getName(), is( "legendStyle" ) );
-        assertThat( defaultLegendStyle.getLegendURL(), nullValue() );
-    }
+		Style defaultLegendStyle = legendStyleMap.get("default");
+		assertThat(defaultLegendStyle.getName(), is("legendStyle"));
+		assertThat(defaultLegendStyle.getLegendURL(), nullValue());
+	}
 
-    @Test
-    public void testParseStyless_DefaultWithoutLegendStyle()
-                            throws Exception {
-        StyleStore store = mockStyleStoreWithThreeStyles_DifferentDefaultAndSimple();
-        Workspace workspace = mockWorkspace( store );
+	@Test
+	public void testParseStyless_DefaultWithoutLegendStyle() throws Exception {
+		StyleStore store = mockStyleStoreWithThreeStyles_DifferentDefaultAndSimple();
+		Workspace workspace = mockWorkspace(store);
 
-        List<StyleRefType> styles = singletonList( readStyleRef( "styleRefs_DefaultWithoutLegendStyle.xml" ) );
+		List<StyleRefType> styles = singletonList(readStyleRef("styleRefs_DefaultWithoutLegendStyle.xml"));
 
-        Pair<Map<String, Style>, Map<String, Style>> selectedStyles = parseStyles( workspace, "layer", styles );
+		Pair<Map<String, Style>, Map<String, Style>> selectedStyles = parseStyles(workspace, "layer", styles);
 
-        Map<String, Style> styleMap = selectedStyles.getFirst();
-        Map<String, Style> legendStyleMap = selectedStyles.getSecond();
+		Map<String, Style> styleMap = selectedStyles.getFirst();
+		Map<String, Style> legendStyleMap = selectedStyles.getSecond();
 
-        assertThat( styleMap.size(), is( 3 ) );
-        assertThat( legendStyleMap.size(), is( 3 ) );
+		assertThat(styleMap.size(), is(3));
+		assertThat(legendStyleMap.size(), is(3));
 
-        Style defaultLegendStyle = legendStyleMap.get( "default" );
-        assertThat( defaultLegendStyle.getName(), is( "simpleStyle" ) );
-        assertThat( defaultLegendStyle.getLegendURL(), is( new URL( "http://test.de/legende.png" ) ) );
-    }
+		Style defaultLegendStyle = legendStyleMap.get("default");
+		assertThat(defaultLegendStyle.getName(), is("simpleStyle"));
+		assertThat(defaultLegendStyle.getLegendURL(), is(new URL("http://test.de/legende.png")));
+	}
 
-    private StyleStore mockStyleStoreWithThreeStyles_EqualDefaultAndSimple() {
-        StyleStore mockedStyleStore = mock( StyleStore.class );
-        addStyle( mockedStyleStore, "simpleStyle", "layer", "simpleStyle" );
-        addStyle( mockedStyleStore, "default", "layer", "simpleStyle" );
-        addStyle( mockedStyleStore, "legendStyle", "layer", "legende" );
-        return mockedStyleStore;
-    }
+	private StyleStore mockStyleStoreWithThreeStyles_EqualDefaultAndSimple() {
+		StyleStore mockedStyleStore = mock(StyleStore.class);
+		addStyle(mockedStyleStore, "simpleStyle", "layer", "simpleStyle");
+		addStyle(mockedStyleStore, "default", "layer", "simpleStyle");
+		addStyle(mockedStyleStore, "legendStyle", "layer", "legende");
+		return mockedStyleStore;
+	}
 
-    private StyleStore mockStyleStoreWithThreeStyles_DifferentDefaultAndSimple() {
-        StyleStore mockedStyleStore = mock( StyleStore.class );
-        addStyle( mockedStyleStore, "simpleStyle", "layer", "simpleStyle1" );
-        addStyle( mockedStyleStore, "default", "layer", "simpleStyle2" );
-        addStyle( mockedStyleStore, "legendStyle", "layer", "legende" );
-        return mockedStyleStore;
-    }
+	private StyleStore mockStyleStoreWithThreeStyles_DifferentDefaultAndSimple() {
+		StyleStore mockedStyleStore = mock(StyleStore.class);
+		addStyle(mockedStyleStore, "simpleStyle", "layer", "simpleStyle1");
+		addStyle(mockedStyleStore, "default", "layer", "simpleStyle2");
+		addStyle(mockedStyleStore, "legendStyle", "layer", "legende");
+		return mockedStyleStore;
+	}
 
-    private void addStyle( StyleStore mockedStyleStore, String styleName, String layerNameRef, String styleNameRef ) {
-        Style simpleStyle = mockStyle( styleName );
-        when( mockedStyleStore.getStyle( layerNameRef, styleNameRef ) ).thenReturn( simpleStyle );
-    }
+	private void addStyle(StyleStore mockedStyleStore, String styleName, String layerNameRef, String styleNameRef) {
+		Style simpleStyle = mockStyle(styleName);
+		when(mockedStyleStore.getStyle(layerNameRef, styleNameRef)).thenReturn(simpleStyle);
+	}
 
-    private Style mockStyle( String styleName ) {
-        Style style = new Style();
-        Style spiedStyle = spy( style );
-        when( spiedStyle.getName() ).thenReturn( styleName );
-        return spiedStyle;
-    }
+	private Style mockStyle(String styleName) {
+		Style style = new Style();
+		Style spiedStyle = spy(style);
+		when(spiedStyle.getName()).thenReturn(styleName);
+		return spiedStyle;
+	}
 
-    private StyleRefType readStyleRef( String name )
-                            throws JAXBException {
-        JAXBContext jaxbContext = JAXBContext.newInstance( StyleRefType.class );
-        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-        InputStream resourceAsStream = ConfigUtilsTest.class.getResourceAsStream( name );
-        return (StyleRefType) unmarshaller.unmarshal( new StreamSource( resourceAsStream ), StyleRefType.class ).getValue();
-    }
+	private StyleRefType readStyleRef(String name) throws JAXBException {
+		JAXBContext jaxbContext = JAXBContext.newInstance(StyleRefType.class);
+		Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+		InputStream resourceAsStream = ConfigUtilsTest.class.getResourceAsStream(name);
+		return (StyleRefType) unmarshaller.unmarshal(new StreamSource(resourceAsStream), StyleRefType.class).getValue();
+	}
 
-    private Workspace mockWorkspace( StyleStore store ) {
-        Workspace mockedWorkspace = mock( Workspace.class );
-        when( mockedWorkspace.getResource( StyleStoreProvider.class, "sldStoreId" ) ).thenReturn( store );
-        return mockedWorkspace;
-    }
+	private Workspace mockWorkspace(StyleStore store) {
+		Workspace mockedWorkspace = mock(Workspace.class);
+		when(mockedWorkspace.getResource(StyleStoreProvider.class, "sldStoreId")).thenReturn(store);
+		return mockedWorkspace;
+	}
 
 }

@@ -38,39 +38,38 @@ import org.slf4j.Logger;
 
 /**
  * This class is responsible for building coverage layer stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class CoverageLayerStoreBuilder implements ResourceBuilder<LayerStore> {
 
-    private static final Logger LOG = getLogger( CoverageLayerStoreBuilder.class );
+	private static final Logger LOG = getLogger(CoverageLayerStoreBuilder.class);
 
-    private CoverageLayers cfg;
+	private CoverageLayers cfg;
 
-    private Workspace workspace;
+	private Workspace workspace;
 
-    private ResourceMetadata<LayerStore> metadata;
+	private ResourceMetadata<LayerStore> metadata;
 
-    public CoverageLayerStoreBuilder( CoverageLayers cfg, Workspace workspace, ResourceMetadata<LayerStore> metadata ) {
-        this.cfg = cfg;
-        this.workspace = workspace;
-        this.metadata = metadata;
-    }
+	public CoverageLayerStoreBuilder(CoverageLayers cfg, Workspace workspace, ResourceMetadata<LayerStore> metadata) {
+		this.cfg = cfg;
+		this.workspace = workspace;
+		this.metadata = metadata;
+	}
 
-    @Override
-    public LayerStore build() {
-        if ( cfg.getAutoLayers() != null ) {
-            LOG.debug( "Using auto configuration for coverage layers." );
-            AutoCoverageLayerBuilder builder = new AutoCoverageLayerBuilder( workspace, metadata );
-            return builder.createFromAutoLayers( cfg.getAutoLayers() );
-        }
+	@Override
+	public LayerStore build() {
+		if (cfg.getAutoLayers() != null) {
+			LOG.debug("Using auto configuration for coverage layers.");
+			AutoCoverageLayerBuilder builder = new AutoCoverageLayerBuilder(workspace, metadata);
+			return builder.createFromAutoLayers(cfg.getAutoLayers());
+		}
 
-        LOG.debug( "Using manual configuration for coverage layers." );
+		LOG.debug("Using manual configuration for coverage layers.");
 
-        ManualCoverageLayerBuilder builder = new ManualCoverageLayerBuilder( workspace, metadata );
-        return builder.buildManual( cfg );
-    }
+		ManualCoverageLayerBuilder builder = new ManualCoverageLayerBuilder(workspace, metadata);
+		return builder.buildManual(cfg);
+	}
 
 }

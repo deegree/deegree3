@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -37,48 +36,46 @@ package org.deegree.metadata.ebrim;
 
 /**
  * Enum for discriminating the registry object types of the ebRIM 3.0 information model.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public enum RIMType {
 
-    /** TODO some details on semantics would be nice */
-    AdhocQuery,
-    /** TODO some details on semantics would be nice */
-    Association,
-    /** TODO some details on semantics would be nice */
-    AuditableEvent,
-    /** TODO some details on semantics would be nice */
-    Classification,
-    /** TODO some details on semantics would be nice */
-    ClassificationNode,
-    /** TODO some details on semantics would be nice */
-    ClassificationScheme,
-    /** TODO some details on semantics would be nice */
-    ExternalIdentifier,
-    /** TODO some details on semantics would be nice */
-    ExternalLink,
-    /** TODO some details on semantics would be nice */
-    ExtrinsicObject,
-    /** TODO some details on semantics would be nice */
-    Federation,
-    /** TODO some details on semantics would be nice */
-    Organization,
-    /** TODO some details on semantics would be nice */
-    Person,
-    /** TODO some details on semantics would be nice */
-    RegistryObject,
-    /** TODO some details on semantics would be nice */
-    RegistryPackage,
-    /** TODO some details on semantics would be nice */
-    Service,
-    /** TODO some details on semantics would be nice */
-    ServiceBinding,
-    /** TODO some details on semantics would be nice */
-    SpecificationLink,
-    /** TODO some details on semantics would be nice */
-    User
+	/** TODO some details on semantics would be nice */
+	AdhocQuery,
+	/** TODO some details on semantics would be nice */
+	Association,
+	/** TODO some details on semantics would be nice */
+	AuditableEvent,
+	/** TODO some details on semantics would be nice */
+	Classification,
+	/** TODO some details on semantics would be nice */
+	ClassificationNode,
+	/** TODO some details on semantics would be nice */
+	ClassificationScheme,
+	/** TODO some details on semantics would be nice */
+	ExternalIdentifier,
+	/** TODO some details on semantics would be nice */
+	ExternalLink,
+	/** TODO some details on semantics would be nice */
+	ExtrinsicObject,
+	/** TODO some details on semantics would be nice */
+	Federation,
+	/** TODO some details on semantics would be nice */
+	Organization,
+	/** TODO some details on semantics would be nice */
+	Person,
+	/** TODO some details on semantics would be nice */
+	RegistryObject,
+	/** TODO some details on semantics would be nice */
+	RegistryPackage,
+	/** TODO some details on semantics would be nice */
+	Service,
+	/** TODO some details on semantics would be nice */
+	ServiceBinding,
+	/** TODO some details on semantics would be nice */
+	SpecificationLink,
+	/** TODO some details on semantics would be nice */
+	User
+
 }

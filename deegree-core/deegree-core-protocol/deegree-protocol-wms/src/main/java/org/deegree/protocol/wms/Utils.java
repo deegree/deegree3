@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -48,155 +47,157 @@ import org.slf4j.Logger;
 
 /**
  * <code>Utils</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class Utils {
 
-    private static final Logger LOG = getLogger( Utils.class );
+	private static final Logger LOG = getLogger(Utils.class);
 
-    /**
-     * @param id
-     * @param lon0
-     * @param lat0
-     * @return the corresponding auto generated crs
-     */
-    public static ICRS getAutoCRS( int id, double lon0, double lat0 ) {
-        switch ( id ) {
-        case 42001: {
-            double zone = min( floor( ( lon0 + 180.0 ) / 6.0 ) + 1, 60 );
-            double central_meridian = -183.0 + zone * 6.0;
-            double false_northing = ( lat0 >= 0.0 ) ? 0.0 : 10000000.0;
+	/**
+	 * @param id
+	 * @param lon0
+	 * @param lat0
+	 * @return the corresponding auto generated crs
+	 */
+	public static ICRS getAutoCRS(int id, double lon0, double lat0) {
+		switch (id) {
+			case 42001: {
+				double zone = min(floor((lon0 + 180.0) / 6.0) + 1, 60);
+				double central_meridian = -183.0 + zone * 6.0;
+				double false_northing = (lat0 >= 0.0) ? 0.0 : 10000000.0;
 
-            String wkt = "PROJCS[\"WGS 84 / Auto UTM\",";
-            wkt += "    GEOGCS[\"WGS 84\",";
-            wkt += "        DATUM[\"WGS_1984\",";
-            wkt += "        SPHEROID[\"WGS_1984\", 6378137, 298.257223563]],";
-            wkt += "        PRIMEM[\"Greenwich\", 0],";
-            wkt += "        UNIT[\"Decimal_Degree\", 0.0174532925199433]],";
-            wkt += "    PROJECTION[\"Transverse_Mercator\"],";
-            wkt += "    PARAMETER[\"Central_Meridian\", " + central_meridian + "],";
-            wkt += "    PARAMETER[\"Latitude_of_Origin\", 0],";
-            wkt += "    PARAMETER[\"False_Easting\", 500000],";
-            wkt += "    PARAMETER[\"False_Northing\", " + false_northing + "],";
-            wkt += "    PARAMETER[\"Scale_Factor\", 0.9996],";
-            wkt += "    UNIT[\"Meter\", 1]]";
+				String wkt = "PROJCS[\"WGS 84 / Auto UTM\",";
+				wkt += "    GEOGCS[\"WGS 84\",";
+				wkt += "        DATUM[\"WGS_1984\",";
+				wkt += "        SPHEROID[\"WGS_1984\", 6378137, 298.257223563]],";
+				wkt += "        PRIMEM[\"Greenwich\", 0],";
+				wkt += "        UNIT[\"Decimal_Degree\", 0.0174532925199433]],";
+				wkt += "    PROJECTION[\"Transverse_Mercator\"],";
+				wkt += "    PARAMETER[\"Central_Meridian\", " + central_meridian + "],";
+				wkt += "    PARAMETER[\"Latitude_of_Origin\", 0],";
+				wkt += "    PARAMETER[\"False_Easting\", 500000],";
+				wkt += "    PARAMETER[\"False_Northing\", " + false_northing + "],";
+				wkt += "    PARAMETER[\"Scale_Factor\", 0.9996],";
+				wkt += "    UNIT[\"Meter\", 1]]";
 
-            LOG.debug( "Generated wkt: {}", wkt );
+				LOG.debug("Generated wkt: {}", wkt);
 
-            try {
-                return CRSManager.getCRSRef( WKTParser.parse( wkt ) );
-            } catch ( IOException e ) {
-                LOG.debug( "Unknown error", e );
-            }
-            break;
-        }
-        case 42002: {
-            double central_meridian = lon0;
-            double false_northing = ( lat0 >= 0.0 ) ? 0.0 : 10000000.0;
+				try {
+					return CRSManager.getCRSRef(WKTParser.parse(wkt));
+				}
+				catch (IOException e) {
+					LOG.debug("Unknown error", e);
+				}
+				break;
+			}
+			case 42002: {
+				double central_meridian = lon0;
+				double false_northing = (lat0 >= 0.0) ? 0.0 : 10000000.0;
 
-            String wkt = "PROJCS[\"WGS 84 / Auto Tr. Mercator\",";
-            wkt += "    GEOGCS[\"WGS 84\",";
-            wkt += "        DATUM[\"WGS_1984\",";
-            wkt += "        SPHEROID[\"WGS_1984\", 6378137, 298.257223563]],";
-            wkt += "        PRIMEM[\"Greenwich\", 0],";
-            wkt += "        UNIT[\"Decimal_Degree\", 0.0174532925199433]],";
-            wkt += "    PROJECTION[\"Transverse_Mercator\"],";
-            wkt += "    PARAMETER[\"Central_Meridian\", " + central_meridian + "],";
-            wkt += "    PARAMETER[\"Latitude_of_Origin\", 0],";
-            wkt += "    PARAMETER[\"False_Easting\", 500000],";
-            wkt += "    PARAMETER[\"False_Northing\", " + false_northing + "],";
-            wkt += "    PARAMETER[\"Scale_Factor\", 0.9996],";
-            wkt += "    UNIT[\"Meter\", 1]]";
+				String wkt = "PROJCS[\"WGS 84 / Auto Tr. Mercator\",";
+				wkt += "    GEOGCS[\"WGS 84\",";
+				wkt += "        DATUM[\"WGS_1984\",";
+				wkt += "        SPHEROID[\"WGS_1984\", 6378137, 298.257223563]],";
+				wkt += "        PRIMEM[\"Greenwich\", 0],";
+				wkt += "        UNIT[\"Decimal_Degree\", 0.0174532925199433]],";
+				wkt += "    PROJECTION[\"Transverse_Mercator\"],";
+				wkt += "    PARAMETER[\"Central_Meridian\", " + central_meridian + "],";
+				wkt += "    PARAMETER[\"Latitude_of_Origin\", 0],";
+				wkt += "    PARAMETER[\"False_Easting\", 500000],";
+				wkt += "    PARAMETER[\"False_Northing\", " + false_northing + "],";
+				wkt += "    PARAMETER[\"Scale_Factor\", 0.9996],";
+				wkt += "    UNIT[\"Meter\", 1]]";
 
-            LOG.debug( "Generated wkt: {}", wkt );
+				LOG.debug("Generated wkt: {}", wkt);
 
-            try {
-                return CRSManager.getCRSRef( WKTParser.parse( wkt ) );
-            } catch ( IOException e ) {
-                LOG.debug( "Unknown error", e );
-            }
-            break;
-        }
-        case 42003: {
-            double central_meridian = lon0;
-            double latitude_of_origin = lat0;
+				try {
+					return CRSManager.getCRSRef(WKTParser.parse(wkt));
+				}
+				catch (IOException e) {
+					LOG.debug("Unknown error", e);
+				}
+				break;
+			}
+			case 42003: {
+				double central_meridian = lon0;
+				double latitude_of_origin = lat0;
 
-            String wkt = "PROJCS[\"WGS 84 / Auto Orthographic\",";
-            wkt += "    GEOGCS[\"WGS 84\",";
-            wkt += "        DATUM[\"WGS_1984\",";
-            wkt += "        SPHEROID[\"WGS_1984\", 6378137, 298.257223563]],";
-            wkt += "        PRIMEM[\"Greenwich\", 0],";
-            wkt += "        UNIT[\"Decimal_Degree\", 0.0174532925199433]],";
-            wkt += "    PROJECTION[\"Orthographic\"],";
-            wkt += "    PARAMETER[\"Central_Meridian\", " + central_meridian + "],";
-            wkt += "    PARAMETER[\"Latitude_of_Origin\", " + latitude_of_origin + "],";
-            wkt += "    UNIT[\"Meter\", 1]]";
+				String wkt = "PROJCS[\"WGS 84 / Auto Orthographic\",";
+				wkt += "    GEOGCS[\"WGS 84\",";
+				wkt += "        DATUM[\"WGS_1984\",";
+				wkt += "        SPHEROID[\"WGS_1984\", 6378137, 298.257223563]],";
+				wkt += "        PRIMEM[\"Greenwich\", 0],";
+				wkt += "        UNIT[\"Decimal_Degree\", 0.0174532925199433]],";
+				wkt += "    PROJECTION[\"Orthographic\"],";
+				wkt += "    PARAMETER[\"Central_Meridian\", " + central_meridian + "],";
+				wkt += "    PARAMETER[\"Latitude_of_Origin\", " + latitude_of_origin + "],";
+				wkt += "    UNIT[\"Meter\", 1]]";
 
-            LOG.debug( "Generated wkt: {}", wkt );
+				LOG.debug("Generated wkt: {}", wkt);
 
-            try {
-                return CRSManager.getCRSRef( WKTParser.parse( wkt ) );
-            } catch ( IOException e ) {
-                LOG.debug( "Unknown error", e );
-            }
-            break;
-        }
-        case 42004: {
-            double central_meridian = lon0;
-            double standard_parallel = lat0;
+				try {
+					return CRSManager.getCRSRef(WKTParser.parse(wkt));
+				}
+				catch (IOException e) {
+					LOG.debug("Unknown error", e);
+				}
+				break;
+			}
+			case 42004: {
+				double central_meridian = lon0;
+				double standard_parallel = lat0;
 
-            String wkt = "PROJCS[\"WGS 84 / Auto Equirectangular\",";
-            wkt += "    GEOGCS[\"WGS 84\",";
-            wkt += "        DATUM[\"WGS_1984\",";
-            wkt += "        SPHEROID[\"WGS_1984\", 6378137, 298.257223563]],";
-            wkt += "        PRIMEM[\"Greenwich\", 0],";
-            wkt += "        UNIT[\"Decimal_Degree\", 0.0174532925199433]],";
-            wkt += "    PROJECTION[\"Equirectangular\"],";
-            wkt += "    PARAMETER[\"Central_Meridian\", " + central_meridian + "],";
-            wkt += "    PARAMETER[\"Latitude_of_Origin\", 0],";
-            wkt += "    PARAMETER[\"Standard_Parallel_1\", " + standard_parallel + "],";
-            wkt += "    UNIT[\"Meter\", 1]]";
+				String wkt = "PROJCS[\"WGS 84 / Auto Equirectangular\",";
+				wkt += "    GEOGCS[\"WGS 84\",";
+				wkt += "        DATUM[\"WGS_1984\",";
+				wkt += "        SPHEROID[\"WGS_1984\", 6378137, 298.257223563]],";
+				wkt += "        PRIMEM[\"Greenwich\", 0],";
+				wkt += "        UNIT[\"Decimal_Degree\", 0.0174532925199433]],";
+				wkt += "    PROJECTION[\"Equirectangular\"],";
+				wkt += "    PARAMETER[\"Central_Meridian\", " + central_meridian + "],";
+				wkt += "    PARAMETER[\"Latitude_of_Origin\", 0],";
+				wkt += "    PARAMETER[\"Standard_Parallel_1\", " + standard_parallel + "],";
+				wkt += "    UNIT[\"Meter\", 1]]";
 
-            LOG.debug( "Generated wkt: {}", wkt );
+				LOG.debug("Generated wkt: {}", wkt);
 
-            try {
-                return CRSManager.getCRSRef( WKTParser.parse( wkt ) );
-            } catch ( IOException e ) {
-                LOG.debug( "Unknown error", e );
-            }
-            break;
-        }
-        case 42005: {
-            double central_meridian = lon0;
+				try {
+					return CRSManager.getCRSRef(WKTParser.parse(wkt));
+				}
+				catch (IOException e) {
+					LOG.debug("Unknown error", e);
+				}
+				break;
+			}
+			case 42005: {
+				double central_meridian = lon0;
 
-            String wkt = "PROJCS[\"WGS 84 / Auto Mollweide\",";
-            wkt += "    GEOGCS[\"WGS 84\",";
-            wkt += "        DATUM[\"WGS_1984\",";
-            wkt += "        SPHEROID[\"WGS_1984\", 6378137, 298.257223563]],";
-            wkt += "        PRIMEM[\"Greenwich\", 0],";
-            wkt += "        UNIT[\"Decimal_Degree\", 0.0174532925199433]],";
-            wkt += "    PROJECTION[\"Mollweide\"],";
-            wkt += "    PARAMETER[\"Central_Meridian\", " + central_meridian + "],";
-            wkt += "    UNIT[\"Meter\", 1]]";
+				String wkt = "PROJCS[\"WGS 84 / Auto Mollweide\",";
+				wkt += "    GEOGCS[\"WGS 84\",";
+				wkt += "        DATUM[\"WGS_1984\",";
+				wkt += "        SPHEROID[\"WGS_1984\", 6378137, 298.257223563]],";
+				wkt += "        PRIMEM[\"Greenwich\", 0],";
+				wkt += "        UNIT[\"Decimal_Degree\", 0.0174532925199433]],";
+				wkt += "    PROJECTION[\"Mollweide\"],";
+				wkt += "    PARAMETER[\"Central_Meridian\", " + central_meridian + "],";
+				wkt += "    UNIT[\"Meter\", 1]]";
 
-            LOG.debug( "Generated wkt: {}", wkt );
+				LOG.debug("Generated wkt: {}", wkt);
 
-            try {
-                return CRSManager.getCRSRef( WKTParser.parse( wkt ) );
-            } catch ( IOException e ) {
-                LOG.debug( "Unknown error", e );
-            }
-            break;
-        }
-        default:
-            break;
-        }
+				try {
+					return CRSManager.getCRSRef(WKTParser.parse(wkt));
+				}
+				catch (IOException e) {
+					LOG.debug("Unknown error", e);
+				}
+				break;
+			}
+			default:
+				break;
+		}
 
-        return null;
-    }
+		return null;
+	}
 
 }

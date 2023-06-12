@@ -39,128 +39,127 @@ import java.util.ArrayList;
 import org.apache.xerces.impl.dv.util.Base64;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class DataHandler extends URLStreamHandler {
 
-    @Override
-    protected URLConnection openConnection( URL u )
-                            throws IOException {
-        String[] ss = u.getPath().split( ",", 2 );
-        final String data = ss[1];
-        ss = cleanup( ss[0].split( ";" ) );
+	@Override
+	protected URLConnection openConnection(URL u) throws IOException {
+		String[] ss = u.getPath().split(",", 2);
+		final String data = ss[1];
+		ss = cleanup(ss[0].split(";"));
 
-        String mime = "text/plain";
-        String charset = "US-ASCII";
-        String encoding = null;
+		String mime = "text/plain";
+		String charset = "US-ASCII";
+		String encoding = null;
 
-        if ( ss.length == 3 ) {
-            mime = ss[0];
-            charset = ss[1].split( "=" )[1];
-            encoding = ss[2];
-        } else if ( ss.length == 2 ) {
-            if ( ss[0].startsWith( "charset" ) ) {
-                charset = ss[0].split( "=" )[1];
-                encoding = ss[1];
-            } else {
-                mime = ss[0];
-                if ( ss[1].startsWith( "charset" ) ) {
-                    charset = ss[1].split( "=" )[1];
-                } else {
-                    encoding = ss[1];
-                }
-            }
-        } else if ( ss.length == 1 ) {
-            if ( ss[0].startsWith( "charset" ) ) {
-                charset = ss[0].split( "=" )[1];
-            } else {
-                encoding = ss[0];
-            }
-        } else if ( ss.length > 0 ) {
-            System.out.println( "too many fields" );
-        }
+		if (ss.length == 3) {
+			mime = ss[0];
+			charset = ss[1].split("=")[1];
+			encoding = ss[2];
+		}
+		else if (ss.length == 2) {
+			if (ss[0].startsWith("charset")) {
+				charset = ss[0].split("=")[1];
+				encoding = ss[1];
+			}
+			else {
+				mime = ss[0];
+				if (ss[1].startsWith("charset")) {
+					charset = ss[1].split("=")[1];
+				}
+				else {
+					encoding = ss[1];
+				}
+			}
+		}
+		else if (ss.length == 1) {
+			if (ss[0].startsWith("charset")) {
+				charset = ss[0].split("=")[1];
+			}
+			else {
+				encoding = ss[0];
+			}
+		}
+		else if (ss.length > 0) {
+			System.out.println("too many fields");
+		}
 
-        if ( encoding != null && !encoding.equalsIgnoreCase( "base64" ) ) {
-            throw new IOException( "The '" + encoding + "' encoding is not supported by the data URL. "
-                                   + "Only base64 and the default of url-encoded is allowed." );
-        }
+		if (encoding != null && !encoding.equalsIgnoreCase("base64")) {
+			throw new IOException("The '" + encoding + "' encoding is not supported by the data URL. "
+					+ "Only base64 and the default of url-encoded is allowed.");
+		}
 
-        final String contentType = mime.isEmpty() ? "text/plain" : mime;
-        final String characterEncoding = charset;
+		final String contentType = mime.isEmpty() ? "text/plain" : mime;
+		final String characterEncoding = charset;
 
-        if ( encoding == null ) {
-            return new URLConnection( u ) {
-                InputStream in;
+		if (encoding == null) {
+			return new URLConnection(u) {
+				InputStream in;
 
-                {
-                    connect();
-                }
+				{
+					connect();
+				}
 
-                @Override
-                public void connect()
-                                        throws IOException {
-                    in = new ByteArrayInputStream( decode( data, characterEncoding ).getBytes( "UTF-8" ) );
-                }
+				@Override
+				public void connect() throws IOException {
+					in = new ByteArrayInputStream(decode(data, characterEncoding).getBytes("UTF-8"));
+				}
 
-                @Override
-                public InputStream getInputStream() {
-                    return in;
-                }
+				@Override
+				public InputStream getInputStream() {
+					return in;
+				}
 
-                @Override
-                public String getContentEncoding() {
-                    return "UTF-8";
-                }
+				@Override
+				public String getContentEncoding() {
+					return "UTF-8";
+				}
 
-                @Override
-                public String getContentType() {
-                    return contentType;
-                }
-            };
-        }
+				@Override
+				public String getContentType() {
+					return contentType;
+				}
+			};
+		}
 
-        return new URLConnection( u ) {
-            InputStream in;
+		return new URLConnection(u) {
+			InputStream in;
 
-            {
-                connect();
-            }
+			{
+				connect();
+			}
 
-            @Override
-            public void connect()
-                                    throws IOException {
-                in = new ByteArrayInputStream( Base64.decode( data ) );
-            }
+			@Override
+			public void connect() throws IOException {
+				in = new ByteArrayInputStream(Base64.decode(data));
+			}
 
-            @Override
-            public InputStream getInputStream() {
-                return in;
-            }
+			@Override
+			public InputStream getInputStream() {
+				return in;
+			}
 
-            @Override
-            public String getContentEncoding() {
-                return characterEncoding;
-            }
+			@Override
+			public String getContentEncoding() {
+				return characterEncoding;
+			}
 
-            @Override
-            public String getContentType() {
-                return contentType;
-            }
-        };
-    }
+			@Override
+			public String getContentType() {
+				return contentType;
+			}
+		};
+	}
 
-    private static String[] cleanup( String[] ss ) {
-        ArrayList<String> list = new ArrayList<String>();
-        for ( String s : ss ) {
-            if ( !s.isEmpty() ) {
-                list.add( s );
-            }
-        }
-        return list.toArray( new String[list.size()] );
-    }
+	private static String[] cleanup(String[] ss) {
+		ArrayList<String> list = new ArrayList<String>();
+		for (String s : ss) {
+			if (!s.isEmpty()) {
+				list.add(s);
+			}
+		}
+		return list.toArray(new String[list.size()]);
+	}
 
 }

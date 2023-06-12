@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2013 by:
@@ -76,226 +75,224 @@ import org.deegree.geometry.primitive.segments.LineStringSegment;
  * Provides
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- *
- * @version $Revision$, $Date$
  */
 public class GMLObjectWalker {
 
-    private final Set<GMLObject> visited = new HashSet<GMLObject>();
+	private final Set<GMLObject> visited = new HashSet<GMLObject>();
 
-    private final GMLObjectVisitor visitor;
+	private final GMLObjectVisitor visitor;
 
-    /**
-     * Creates a new {@link GMLObjectWalker} instance that will trigger callbacks to the given {@link GMLObjectVisitor}
-     * instance.
-     *
-     * @param visitor
-     *            visitor instance, must not be <code>null</code>
-     */
-    public GMLObjectWalker( GMLObjectVisitor visitor ) {
-        this.visitor = visitor;
-    }
+	/**
+	 * Creates a new {@link GMLObjectWalker} instance that will trigger callbacks to the
+	 * given {@link GMLObjectVisitor} instance.
+	 * @param visitor visitor instance, must not be <code>null</code>
+	 */
+	public GMLObjectWalker(GMLObjectVisitor visitor) {
+		this.visitor = visitor;
+	}
 
-    /**
-     * Starts the traversal of the {@link GMLObject} hierarchy.
-     *
-     * @param node
-     *            start node, must not be <code>null</code>
-     */
-    public void traverse( GMLObject node ) {
-        if ( node instanceof Reference<?> ) {
-            Reference<?> ref = (Reference<?>) node;
-            if ( visitor.visitReference( ref ) ) {
-                if ( ref.isResolved() ) {
-                    node = (GMLObject) ref.getReferencedObject();
-                    traverse( node );
-                }
-            }
-            return;
-        }
+	/**
+	 * Starts the traversal of the {@link GMLObject} hierarchy.
+	 * @param node start node, must not be <code>null</code>
+	 */
+	public void traverse(GMLObject node) {
+		if (node instanceof Reference<?>) {
+			Reference<?> ref = (Reference<?>) node;
+			if (visitor.visitReference(ref)) {
+				if (ref.isResolved()) {
+					node = (GMLObject) ref.getReferencedObject();
+					traverse(node);
+				}
+			}
+			return;
+		}
 
-        if ( !visited.contains( node ) ) {
-            visited.add( node );
-            if ( node instanceof FeatureCollection ) {
-                FeatureCollection fc = (FeatureCollection) node;
-                for ( Feature member : fc ) {
-                    traverse( member );
-                }
-            } else if ( node instanceof Feature ) {
-                Feature f = (Feature) node;
-                if ( visitor.visitFeature( f ) ) {
-                    traverseGMLObject( f );
-                }
-            } else if ( node instanceof Geometry ) {
-                Geometry g = (Geometry) node;
-                if ( visitor.visitGeometry( g ) ) {
-                    traverseGeometry( g );
-                }
-            } else {
-                if ( visitor.visitObject( node ) ) {
-                    traverseGMLObject( node );
-                }
-            }
-        }
-    }
+		if (!visited.contains(node)) {
+			visited.add(node);
+			if (node instanceof FeatureCollection) {
+				FeatureCollection fc = (FeatureCollection) node;
+				for (Feature member : fc) {
+					traverse(member);
+				}
+			}
+			else if (node instanceof Feature) {
+				Feature f = (Feature) node;
+				if (visitor.visitFeature(f)) {
+					traverseGMLObject(f);
+				}
+			}
+			else if (node instanceof Geometry) {
+				Geometry g = (Geometry) node;
+				if (visitor.visitGeometry(g)) {
+					traverseGeometry(g);
+				}
+			}
+			else {
+				if (visitor.visitObject(node)) {
+					traverseGMLObject(node);
+				}
+			}
+		}
+	}
 
-    private void traverseGMLObject( GMLObject node ) {
-        for ( Property prop : node.getProperties() ) {
-            if ( prop.getValue() != null ) {
-                TypedObjectNode ton = prop.getValue();
-                traverseTypedObjectNode( ton );
-            }
-        }
-    }
+	private void traverseGMLObject(GMLObject node) {
+		for (Property prop : node.getProperties()) {
+			if (prop.getValue() != null) {
+				TypedObjectNode ton = prop.getValue();
+				traverseTypedObjectNode(ton);
+			}
+		}
+	}
 
-    private void traverseTypedObjectNode( TypedObjectNode node ) {
-        if ( node instanceof GMLObject ) {
-            traverse( (GMLObject) node );
-        } else if ( node instanceof ElementNode ) {
-            ElementNode generic = (ElementNode) node;
-            for ( TypedObjectNode child : generic.getChildren() ) {
-                traverseTypedObjectNode( child );
-            }
-        }
-    }
+	private void traverseTypedObjectNode(TypedObjectNode node) {
+		if (node instanceof GMLObject) {
+			traverse((GMLObject) node);
+		}
+		else if (node instanceof ElementNode) {
+			ElementNode generic = (ElementNode) node;
+			for (TypedObjectNode child : generic.getChildren()) {
+				traverseTypedObjectNode(child);
+			}
+		}
+	}
 
-    private void traverseGeometry( Geometry node ) {
-        GeometryType gt = node.getGeometryType();
-        switch ( gt ) {
-        case COMPOSITE_GEOMETRY:
-            for ( Geometry member : (CompositeGeometry<?>) node ) {
-                traverse( member );
-            }
-            break;
-        case ENVELOPE:
-            // nothing to do
-            break;
-        case MULTI_GEOMETRY:
-            for ( Geometry member : (MultiGeometry<?>) node ) {
-                traverse( member );
-            }
-            break;
-        case PRIMITIVE_GEOMETRY:
-            traversePrimitive( (GeometricPrimitive) node );
-            break;
-        }
-    }
+	private void traverseGeometry(Geometry node) {
+		GeometryType gt = node.getGeometryType();
+		switch (gt) {
+			case COMPOSITE_GEOMETRY:
+				for (Geometry member : (CompositeGeometry<?>) node) {
+					traverse(member);
+				}
+				break;
+			case ENVELOPE:
+				// nothing to do
+				break;
+			case MULTI_GEOMETRY:
+				for (Geometry member : (MultiGeometry<?>) node) {
+					traverse(member);
+				}
+				break;
+			case PRIMITIVE_GEOMETRY:
+				traversePrimitive((GeometricPrimitive) node);
+				break;
+		}
+	}
 
-    private void traversePrimitive( GeometricPrimitive g ) {
-        PrimitiveType pt = g.getPrimitiveType();
-        switch ( pt ) {
-        case Curve:
-            traverseCurve( (Curve) g );
-            break;
-        case Point:
-            // nothing to do
-            break;
-        case Solid:
-            traverseSolid( (Solid) g );
-            break;
-        case Surface:
-            traverseSurface( (Surface) g );
-            break;
-        }
-    }
+	private void traversePrimitive(GeometricPrimitive g) {
+		PrimitiveType pt = g.getPrimitiveType();
+		switch (pt) {
+			case Curve:
+				traverseCurve((Curve) g);
+				break;
+			case Point:
+				// nothing to do
+				break;
+			case Solid:
+				traverseSolid((Solid) g);
+				break;
+			case Surface:
+				traverseSurface((Surface) g);
+				break;
+		}
+	}
 
-    private void traverseCurve( Curve c ) {
-        CurveType ct = c.getCurveType();
-        switch ( ct ) {
-        case CompositeCurve:
-            for ( Curve member : ( (CompositeCurve) c ) ) {
-                traverse( member );
-            }
-            break;
-        case Curve:
-        case Ring:
-            for ( CurveSegment segment : c.getCurveSegments() ) {
-                traverseSegment( segment );
-            }
-            break;
-        case LineString:
-            traversePoints( ( (LineString) c ).getControlPoints() );
-            break;
-        case OrientableCurve:
-            traverse( ( (OrientableCurve) c ).getBaseCurve() );
-            break;
-        }
-    }
+	private void traverseCurve(Curve c) {
+		CurveType ct = c.getCurveType();
+		switch (ct) {
+			case CompositeCurve:
+				for (Curve member : ((CompositeCurve) c)) {
+					traverse(member);
+				}
+				break;
+			case Curve:
+			case Ring:
+				for (CurveSegment segment : c.getCurveSegments()) {
+					traverseSegment(segment);
+				}
+				break;
+			case LineString:
+				traversePoints(((LineString) c).getControlPoints());
+				break;
+			case OrientableCurve:
+				traverse(((OrientableCurve) c).getBaseCurve());
+				break;
+		}
+	}
 
-    private void traverseSurface( Surface s ) {
-        SurfaceType st = s.getSurfaceType();
-        switch ( st ) {
-        case CompositeSurface:
-            for ( Surface member : ( (CompositeSurface) s ) ) {
-                traverse( member );
-            }
-            break;
-        case OrientableSurface:
-            traverse( ( (OrientableSurface) s ).getBaseSurface() );
-            break;
-        case Polygon:
-            Polygon p = (Polygon) s;
-            if ( p.getExteriorRing() != null ) {
-                traverse( p.getExteriorRing() );
-            }
-            for ( Ring inner : p.getInteriorRings() ) {
-                traverse( inner );
-            }
-            break;
-        case PolyhedralSurface:
-        case Surface:
-        case TriangulatedSurface:
-            for ( SurfacePatch patch : s.getPatches() ) {
-                traversePatch( patch );
-            }
-            break;
-        case Tin:
-            Tin tin = (Tin) s;
-            for ( List<LineStringSegment> stops : tin.getStopLines() ) {
-                for ( LineStringSegment ls : stops ) {
-                    traverseSegment( ls );
-                }
-            }
-            for ( List<LineStringSegment> breaks : tin.getBreakLines() ) {
-                for ( LineStringSegment ls : breaks ) {
-                    traverseSegment( ls );
-                }
-            }
-            break;
-        }
-    }
+	private void traverseSurface(Surface s) {
+		SurfaceType st = s.getSurfaceType();
+		switch (st) {
+			case CompositeSurface:
+				for (Surface member : ((CompositeSurface) s)) {
+					traverse(member);
+				}
+				break;
+			case OrientableSurface:
+				traverse(((OrientableSurface) s).getBaseSurface());
+				break;
+			case Polygon:
+				Polygon p = (Polygon) s;
+				if (p.getExteriorRing() != null) {
+					traverse(p.getExteriorRing());
+				}
+				for (Ring inner : p.getInteriorRings()) {
+					traverse(inner);
+				}
+				break;
+			case PolyhedralSurface:
+			case Surface:
+			case TriangulatedSurface:
+				for (SurfacePatch patch : s.getPatches()) {
+					traversePatch(patch);
+				}
+				break;
+			case Tin:
+				Tin tin = (Tin) s;
+				for (List<LineStringSegment> stops : tin.getStopLines()) {
+					for (LineStringSegment ls : stops) {
+						traverseSegment(ls);
+					}
+				}
+				for (List<LineStringSegment> breaks : tin.getBreakLines()) {
+					for (LineStringSegment ls : breaks) {
+						traverseSegment(ls);
+					}
+				}
+				break;
+		}
+	}
 
-    private void traverseSolid( Solid s ) {
-        SolidType st = s.getSolidType();
-        switch ( st ) {
-        case CompositeSolid: {
-            for ( Solid member : ( (CompositeSolid) s ) ) {
-                traverse( member );
-            }
-            break;
-        }
-        case Solid: {
-            if ( s.getExteriorSurface() != null ) {
-                traverse( s.getExteriorSurface() );
-            }
-            for ( Surface inner : s.getInteriorSurfaces() ) {
-                traverse( inner );
-            }
-            break;
-        }
-        }
-    }
+	private void traverseSolid(Solid s) {
+		SolidType st = s.getSolidType();
+		switch (st) {
+			case CompositeSolid: {
+				for (Solid member : ((CompositeSolid) s)) {
+					traverse(member);
+				}
+				break;
+			}
+			case Solid: {
+				if (s.getExteriorSurface() != null) {
+					traverse(s.getExteriorSurface());
+				}
+				for (Surface inner : s.getInteriorSurfaces()) {
+					traverse(inner);
+				}
+				break;
+			}
+		}
+	}
 
-    private void traversePatch( SurfacePatch p ) {
-        // TODO
-    }
+	private void traversePatch(SurfacePatch p) {
+		// TODO
+	}
 
-    private void traverseSegment( CurveSegment c ) {
-        // TODO
-    }
+	private void traverseSegment(CurveSegment c) {
+		// TODO
+	}
 
-    private void traversePoints( Points p ) {
-        // TODO
-    }
+	private void traversePoints(Points p) {
+		// TODO
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -44,113 +43,100 @@ import org.deegree.commons.tom.sql.ParticleConverter;
 
 /**
  * Encapsulates columns and values for manipulating one row in a database.
- * 
+ *
  * @author <a href="mailto:goltz@deegree.org">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public abstract class TransactionRow {
 
-    protected TableName table;
+	protected TableName table;
 
-    protected final LinkedHashMap<SQLIdentifier, String> columnToLiteral = new LinkedHashMap<SQLIdentifier, String>();
+	protected final LinkedHashMap<SQLIdentifier, String> columnToLiteral = new LinkedHashMap<SQLIdentifier, String>();
 
-    protected final LinkedHashMap<SQLIdentifier, Object> columnToObject = new LinkedHashMap<SQLIdentifier, Object>();
+	protected final LinkedHashMap<SQLIdentifier, Object> columnToObject = new LinkedHashMap<SQLIdentifier, Object>();
 
-    /**
-     * @param table
-     *            table targeted by the transaction, must not be <code>null</code>
-     */
-    public TransactionRow( TableName table ) {
-        this.table = table;
-    }
+	/**
+	 * @param table table targeted by the transaction, must not be <code>null</code>
+	 */
+	public TransactionRow(TableName table) {
+		this.table = table;
+	}
 
-    /**
-     * @return the table targeted for the transaction
-     */
-    public TableName getTable() {
-        return table;
-    }
+	/**
+	 * @return the table targeted for the transaction
+	 */
+	public TableName getTable() {
+		return table;
+	}
 
-    /**
-     * 
-     * @param column
-     *            the name of the column, must not be <code>null</code>
-     * @param literal
-     *            a string literal to add as value
-     */
-    public void addLiteralValue( SQLIdentifier column, String literal ) {
-        columnToLiteral.put( column, literal );
-    }
+	/**
+	 * @param column the name of the column, must not be <code>null</code>
+	 * @param literal a string literal to add as value
+	 */
+	public void addLiteralValue(SQLIdentifier column, String literal) {
+		columnToLiteral.put(column, literal);
+	}
 
-    /**
-     * 
-     * @param column
-     *            the name of the column, must not be <code>null</code>
-     * @param value
-     *            the value to append, can be <code>null</code>
-     */
-    public void addPreparedArgument( SQLIdentifier column, Object value ) {
-        addPreparedArgument( column, value, "?" );
-    }
+	/**
+	 * @param column the name of the column, must not be <code>null</code>
+	 * @param value the value to append, can be <code>null</code>
+	 */
+	public void addPreparedArgument(SQLIdentifier column, Object value) {
+		addPreparedArgument(column, value, "?");
+	}
 
-    public void addPreparedArgument( String column, Object value ) {
-        addPreparedArgument( new SQLIdentifier( column ), value, "?" );
-    }
+	public void addPreparedArgument(String column, Object value) {
+		addPreparedArgument(new SQLIdentifier(column), value, "?");
+	}
 
-    /**
-     * Use this method for example to manipulate a geometry: (#addPreparedArgument("geom", geomAsWKB,
-     * "SetSRID(GeomFromWKB(?)"))
-     * 
-     * @param column
-     *            the name of the column, must not be <code>null</code>
-     * @param value
-     *            the value to append, can be <code>null</code>
-     * @param literal
-     *            the string literal to append to the list of values, must not be <code>null</code>
-     */
-    public void addPreparedArgument( SQLIdentifier column, Object value, String literal ) {
-        columnToLiteral.put( column, literal );
-        columnToObject.put( column, value );
-    }
+	/**
+	 * Use this method for example to manipulate a geometry: (#addPreparedArgument("geom",
+	 * geomAsWKB, "SetSRID(GeomFromWKB(?)"))
+	 * @param column the name of the column, must not be <code>null</code>
+	 * @param value the value to append, can be <code>null</code>
+	 * @param literal the string literal to append to the list of values, must not be
+	 * <code>null</code>
+	 */
+	public void addPreparedArgument(SQLIdentifier column, Object value, String literal) {
+		columnToLiteral.put(column, literal);
+		columnToObject.put(column, value);
+	}
 
-    public void addPreparedArgument( String column, Object value, String literal ) {
-        addPreparedArgument( new SQLIdentifier( column ), value, literal );
-    }
+	public void addPreparedArgument(String column, Object value, String literal) {
+		addPreparedArgument(new SQLIdentifier(column), value, literal);
+	}
 
-    public <T extends TypedObjectNode> void addPreparedArgument( SQLIdentifier column, T particle,
-                                                                 ParticleConverter<T> converter ) {
-        columnToLiteral.put( column, converter.getSetSnippet( particle ) );
-        columnToObject.put( column, new ParticleConversion<T>( converter, particle ) );
-    }
+	public <T extends TypedObjectNode> void addPreparedArgument(SQLIdentifier column, T particle,
+			ParticleConverter<T> converter) {
+		columnToLiteral.put(column, converter.getSetSnippet(particle));
+		columnToObject.put(column, new ParticleConversion<T>(converter, particle));
+	}
 
-    public <T extends TypedObjectNode> void addPreparedArgument( String columnName, T particle,
-                                                                 ParticleConverter<T> converter ) {
-        SQLIdentifier column = new SQLIdentifier( columnName );
-        columnToLiteral.put( column, converter.getSetSnippet( particle ) );
-        columnToObject.put( column, new ParticleConversion<T>( converter, particle ) );
-    }
+	public <T extends TypedObjectNode> void addPreparedArgument(String columnName, T particle,
+			ParticleConverter<T> converter) {
+		SQLIdentifier column = new SQLIdentifier(columnName);
+		columnToLiteral.put(column, converter.getSetSnippet(particle));
+		columnToObject.put(column, new ParticleConversion<T>(converter, particle));
+	}
 
-    
-    /**
-     * @return all columns considered by this transaction
-     */
-    public Collection<SQLIdentifier> getColumns() {
-        return columnToLiteral.keySet();
-    }
+	/**
+	 * @return all columns considered by this transaction
+	 */
+	public Collection<SQLIdentifier> getColumns() {
+		return columnToLiteral.keySet();
+	}
 
-    /**
-     * @param column
-     *            the name of the column, must not be <code>null</code>
-     * @return the value assigned to the column with the given name, null if there is not value assigned
-     */
-    public Object get( SQLIdentifier column ) {
-        return columnToObject.get( column );
-    }
+	/**
+	 * @param column the name of the column, must not be <code>null</code>
+	 * @return the value assigned to the column with the given name, null if there is not
+	 * value assigned
+	 */
+	public Object get(SQLIdentifier column) {
+		return columnToObject.get(column);
+	}
 
-    /**
-     * @return the generated sl statement
-     */
-    public abstract String getSql();
+	/**
+	 * @return the generated sl statement
+	 */
+	public abstract String getSql();
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -52,100 +51,101 @@ import org.slf4j.LoggerFactory;
  * Defines a predicate based on temporal relationships between two time-valued arguments.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- *
- * @version $Revision$, $Date$
  */
 public abstract class TemporalOperator implements Operator {
 
-    private static final Logger LOG = LoggerFactory.getLogger( TemporalOperator.class );
+	private static final Logger LOG = LoggerFactory.getLogger(TemporalOperator.class);
 
-    protected final Expression param1;
+	protected final Expression param1;
 
-    protected final Expression param2;
+	protected final Expression param2;
 
-    protected TemporalOperator( Expression param1, Expression param2 ) {
-        this.param1 = param1;
-        this.param2 = param2;
-    }
+	protected TemporalOperator(Expression param1, Expression param2) {
+		this.param1 = param1;
+		this.param2 = param2;
+	}
 
-    /**
-     * Convenience enum type for discriminating the different {@link TemporalOperator} types.
-     */
-    public enum SubType {
-        AFTER, ANYINTERACTS, BEFORE, BEGINS, BEGUNBY, DURING, ENDS, ENDEDBY, MEETS, METBY, OVERLAPPEDBY, TEQUALS, TCONTAINS, TOVERLAPS
-    }
+	/**
+	 * Convenience enum type for discriminating the different {@link TemporalOperator}
+	 * types.
+	 */
+	public enum SubType {
 
-    /**
-     * Always returns {@link Operator.Type#TEMPORAL} (for {@link TemporalOperator} instances).
-     *
-     * @return {@link Operator.Type#TEMPORAL}
-     */
-    @Override
-    public Type getType() {
-        return Type.TEMPORAL;
-    }
+		AFTER, ANYINTERACTS, BEFORE, BEGINS, BEGUNBY, DURING, ENDS, ENDEDBY, MEETS, METBY, OVERLAPPEDBY, TEQUALS,
+		TCONTAINS, TOVERLAPS
 
-    /**
-     * Returns the type of spatial operator. Use this to safely determine the subtype of {@link TemporalOperator}.
-     *
-     * @return type of spatial operator
-     */
-    public SubType getSubType() {
-        return SubType.valueOf( getClass().getSimpleName().toUpperCase() );
-    }
+	}
 
-    public Expression getParameter1() {
-        return param1;
-    }
+	/**
+	 * Always returns {@link Operator.Type#TEMPORAL} (for {@link TemporalOperator}
+	 * instances).
+	 * @return {@link Operator.Type#TEMPORAL}
+	 */
+	@Override
+	public Type getType() {
+		return Type.TEMPORAL;
+	}
 
-    public Expression getParameter2() {
-        return param2;
-    }
+	/**
+	 * Returns the type of spatial operator. Use this to safely determine the subtype of
+	 * {@link TemporalOperator}.
+	 * @return type of spatial operator
+	 */
+	public SubType getSubType() {
+		return SubType.valueOf(getClass().getSimpleName().toUpperCase());
+	}
 
-    @Override
-    public String toString( String indent ) {
-        String s = indent + "-" + getSubType() + "\n";
-        s += param1.toString( indent + "  " );
-        s += param2.toString( indent + "  " );
-        return s;
-    }
+	public Expression getParameter1() {
+		return param1;
+	}
 
-    @Override
-    public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
-                            throws FilterEvaluationException {
-        final TypedObjectNode[] param1Values = param1.evaluate( obj, xpathEvaluator );
-        final TypedObjectNode[] param2Values = param2.evaluate( obj, xpathEvaluator );
-        if ( param1Values.length == 1 && param2Values.length == 1 ) {
-            final TimeGeometricPrimitive t1 = getTimePrimitiveValue( param1Values[0] );
-            final TimeGeometricPrimitive t2 = getTimePrimitiveValue( param2Values[0] );
-            return evaluate( t1, t2 );
-        }
-        return false;
-    }
+	public Expression getParameter2() {
+		return param2;
+	}
 
-    protected boolean evaluate( TimeGeometricPrimitive t1, TimeGeometricPrimitive t2 ) {
-        throw new UnsupportedOperationException( "Evaluation of operator " + getSubType() + " is not implemented yet." );
-    }
+	@Override
+	public String toString(String indent) {
+		String s = indent + "-" + getSubType() + "\n";
+		s += param1.toString(indent + "  ");
+		s += param2.toString(indent + "  ");
+		return s;
+	}
 
-    private TimeGeometricPrimitive getTimePrimitiveValue( final TypedObjectNode node ) {
-        if ( node == null ) {
-            return null;
-        }
-        if ( node instanceof TimeGeometricPrimitive ) {
-            return (TimeGeometricPrimitive) node;
-        }
-        if ( node instanceof Property ) {
-            return getTimePrimitiveValue( ( (Property) node ).getValue() );
-        }
-        if ( node instanceof ElementNode ) {
-            final ElementNode elNode = (ElementNode) node;
-            final List<TypedObjectNode> children = elNode.getChildren();
-            if ( children == null || children.isEmpty() ) {
-                return null;
-            }
-            return getTimePrimitiveValue( children.get( 0 ) );
-        }
-        return null;
-    }
+	@Override
+	public <T> boolean evaluate(T obj, XPathEvaluator<T> xpathEvaluator) throws FilterEvaluationException {
+		final TypedObjectNode[] param1Values = param1.evaluate(obj, xpathEvaluator);
+		final TypedObjectNode[] param2Values = param2.evaluate(obj, xpathEvaluator);
+		if (param1Values.length == 1 && param2Values.length == 1) {
+			final TimeGeometricPrimitive t1 = getTimePrimitiveValue(param1Values[0]);
+			final TimeGeometricPrimitive t2 = getTimePrimitiveValue(param2Values[0]);
+			return evaluate(t1, t2);
+		}
+		return false;
+	}
+
+	protected boolean evaluate(TimeGeometricPrimitive t1, TimeGeometricPrimitive t2) {
+		throw new UnsupportedOperationException("Evaluation of operator " + getSubType() + " is not implemented yet.");
+	}
+
+	private TimeGeometricPrimitive getTimePrimitiveValue(final TypedObjectNode node) {
+		if (node == null) {
+			return null;
+		}
+		if (node instanceof TimeGeometricPrimitive) {
+			return (TimeGeometricPrimitive) node;
+		}
+		if (node instanceof Property) {
+			return getTimePrimitiveValue(((Property) node).getValue());
+		}
+		if (node instanceof ElementNode) {
+			final ElementNode elNode = (ElementNode) node;
+			final List<TypedObjectNode> children = elNode.getChildren();
+			if (children == null || children.isEmpty()) {
+				return null;
+			}
+			return getTimePrimitiveValue(children.get(0));
+		}
+		return null;
+	}
+
 }

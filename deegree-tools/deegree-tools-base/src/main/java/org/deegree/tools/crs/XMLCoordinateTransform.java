@@ -72,162 +72,163 @@ import org.slf4j.Logger;
 
 /**
  * Tool for converting the GML geometries inside an XML document from one SRS to another.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 @Tool("Converts the GML geometries inside an XML document from one SRS to another.")
 public class XMLCoordinateTransform {
 
-    private static final Logger LOG = getLogger( XMLCoordinateTransform.class );
+	private static final Logger LOG = getLogger(XMLCoordinateTransform.class);
 
-    private static final String OPT_S_SRS = "source_srs";
+	private static final String OPT_S_SRS = "source_srs";
 
-    private static final String OPT_T_SRS = "target_srs";
+	private static final String OPT_T_SRS = "target_srs";
 
-    private static final String OPT_TRANSFORMATION = "transformation";
+	private static final String OPT_TRANSFORMATION = "transformation";
 
-    private static final String OPT_INPUT = "input";
+	private static final String OPT_INPUT = "input";
 
-    private static final String OPT_GML_VERSION = "gml_version";
+	private static final String OPT_GML_VERSION = "gml_version";
 
-    private static final String OPT_OUTPUT = "output";
+	private static final String OPT_OUTPUT = "output";
 
-    /**
-     * a starter method to transform a given point or a serie of points read from a file.
-     * 
-     * @param args
-     */
-    public static void main( String[] args ) {
-        CommandLineParser parser = new PosixParser();
+	/**
+	 * a starter method to transform a given point or a serie of points read from a file.
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		CommandLineParser parser = new PosixParser();
 
-        Options options = initOptions();
-        boolean verbose = false;
+		Options options = initOptions();
+		boolean verbose = false;
 
-        // for the moment, using the CLI API there is no way to respond to a help argument; see
-        // https://issues.apache.org/jira/browse/CLI-179
-        if ( args != null && args.length > 0 ) {
-            for ( String a : args ) {
-                if ( a != null && a.toLowerCase().contains( "help" ) || "-?".equals( a ) ) {
-                    printHelp( options );
-                }
-            }
-        }
+		// for the moment, using the CLI API there is no way to respond to a help
+		// argument; see
+		// https://issues.apache.org/jira/browse/CLI-179
+		if (args != null && args.length > 0) {
+			for (String a : args) {
+				if (a != null && a.toLowerCase().contains("help") || "-?".equals(a)) {
+					printHelp(options);
+				}
+			}
+		}
 
-        CommandLine line = null;
-        try {
-            line = parser.parse( options, args );
-            verbose = line.hasOption( OPT_VERBOSE );
-            doTransform( line );
-        } catch ( ParseException exp ) {
-            System.err.println( "ERROR: Invalid command line: " + exp.getMessage() );
-            printHelp( options );
-        } catch ( Throwable e ) {
-            System.err.println( "An Exception occurred while transforming your document, error message: "
-                                + e.getMessage() );
-            if ( verbose ) {
-                e.printStackTrace();
-            }
-            System.exit( 1 );
-        }
-    }
+		CommandLine line = null;
+		try {
+			line = parser.parse(options, args);
+			verbose = line.hasOption(OPT_VERBOSE);
+			doTransform(line);
+		}
+		catch (ParseException exp) {
+			System.err.println("ERROR: Invalid command line: " + exp.getMessage());
+			printHelp(options);
+		}
+		catch (Throwable e) {
+			System.err
+				.println("An Exception occurred while transforming your document, error message: " + e.getMessage());
+			if (verbose) {
+				e.printStackTrace();
+			}
+			System.exit(1);
+		}
+	}
 
-    private static void doTransform( CommandLine line )
-                            throws IllegalArgumentException, TransformationException, UnknownCRSException, IOException,
-                            XMLStreamException, FactoryConfigurationError {
+	private static void doTransform(CommandLine line) throws IllegalArgumentException, TransformationException,
+			UnknownCRSException, IOException, XMLStreamException, FactoryConfigurationError {
 
-        // TODO source srs should actually override all srsName attributes in document, not just be the default
-        ICRS sourceCRS = null;
-        String sourceCRSId = line.getOptionValue( OPT_S_SRS );
-        if ( sourceCRSId != null ) {
-            sourceCRS = CRSManager.lookup( sourceCRSId );
-        }
+		// TODO source srs should actually override all srsName attributes in document,
+		// not just be the default
+		ICRS sourceCRS = null;
+		String sourceCRSId = line.getOptionValue(OPT_S_SRS);
+		if (sourceCRSId != null) {
+			sourceCRS = CRSManager.lookup(sourceCRSId);
+		}
 
-        String targetCRSId = line.getOptionValue( OPT_T_SRS );
-        ICRS targetCRS = CRSManager.lookup( targetCRSId );
+		String targetCRSId = line.getOptionValue(OPT_T_SRS);
+		ICRS targetCRS = CRSManager.lookup(targetCRSId);
 
-        String transId = line.getOptionValue( OPT_TRANSFORMATION );
-        List<Transformation> trans = null;
-        if ( transId != null ) {
-            Transformation t = CRSManager.getTransformation( null, transId );
-            if ( t != null ) {
-                trans = Collections.singletonList( CRSManager.getTransformation( null, transId ) );
-            } else {
-                throw new IllegalArgumentException( "Specified transformation id '" + transId
-                                                    + "' does not exist in CRS database." );
-            }
-        }
+		String transId = line.getOptionValue(OPT_TRANSFORMATION);
+		List<Transformation> trans = null;
+		if (transId != null) {
+			Transformation t = CRSManager.getTransformation(null, transId);
+			if (t != null) {
+				trans = Collections.singletonList(CRSManager.getTransformation(null, transId));
+			}
+			else {
+				throw new IllegalArgumentException(
+						"Specified transformation id '" + transId + "' does not exist in CRS database.");
+			}
+		}
 
-        GMLVersion gmlVersion = GMLVersion.GML_31;
-        String gmlVersionString = line.getOptionValue( OPT_GML_VERSION );
-        if ( gmlVersionString != null ) {
-            gmlVersion = GMLVersion.valueOf( gmlVersionString );
-        }
+		GMLVersion gmlVersion = GMLVersion.GML_31;
+		String gmlVersionString = line.getOptionValue(OPT_GML_VERSION);
+		if (gmlVersionString != null) {
+			gmlVersion = GMLVersion.valueOf(gmlVersionString);
+		}
 
-        String i = line.getOptionValue( OPT_INPUT );
-        File inputFile = new File( i );
-        if ( !inputFile.exists() ) {
-            throw new IllegalArgumentException( "Input file '" + inputFile + "' does not exist." );
-        }
-        XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( new FileInputStream( inputFile ) );
+		String i = line.getOptionValue(OPT_INPUT);
+		File inputFile = new File(i);
+		if (!inputFile.exists()) {
+			throw new IllegalArgumentException("Input file '" + inputFile + "' does not exist.");
+		}
+		XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader(new FileInputStream(inputFile));
 
-        String o = line.getOptionValue( OPT_OUTPUT );
-        XMLStreamWriter xmlWriter = null;
-        if ( o != null ) {
-            File outputFile = new File( o );
-            xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( new FileOutputStream( outputFile ),
-                                                                              "UTF-8" );
-        } else {
-            xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( System.out, "UTF-8" );
-        }
+		String o = line.getOptionValue(OPT_OUTPUT);
+		XMLStreamWriter xmlWriter = null;
+		if (o != null) {
+			File outputFile = new File(o);
+			xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter(new FileOutputStream(outputFile), "UTF-8");
+		}
+		else {
+			xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter(System.out, "UTF-8");
+		}
 
-        xmlWriter = new IndentingXMLStreamWriter( xmlWriter, "    " );
-        xmlWriter.writeStartDocument( "UTF-8", "1.0" );
-        XMLTransformer transformer = new XMLTransformer( targetCRS );
-        transformer.transform( xmlReader, xmlWriter, sourceCRS, gmlVersion, false, trans );
-        xmlWriter.close();
-    }
+		xmlWriter = new IndentingXMLStreamWriter(xmlWriter, "    ");
+		xmlWriter.writeStartDocument("UTF-8", "1.0");
+		XMLTransformer transformer = new XMLTransformer(targetCRS);
+		transformer.transform(xmlReader, xmlWriter, sourceCRS, gmlVersion, false, trans);
+		xmlWriter.close();
+	}
 
-    private static Options initOptions() {
+	private static Options initOptions() {
 
-        Options options = new Options();
+		Options options = new Options();
 
-        Option option = new Option( OPT_S_SRS, true, "Identifier of the source srs, e.g. 'EPSG:4326'." );
-        option.setArgs( 1 );
-        options.addOption( option );
+		Option option = new Option(OPT_S_SRS, true, "Identifier of the source srs, e.g. 'EPSG:4326'.");
+		option.setArgs(1);
+		options.addOption(option);
 
-        option = new Option( OPT_T_SRS, true, "Identifier of the target srs, e.g. 'EPSG:4326'." );
-        option.setArgs( 1 );
-        option.setRequired( true );
-        options.addOption( option );
+		option = new Option(OPT_T_SRS, true, "Identifier of the target srs, e.g. 'EPSG:4326'.");
+		option.setArgs(1);
+		option.setRequired(true);
+		options.addOption(option);
 
-        option = new Option( OPT_TRANSFORMATION, true, "Identifier of the transformation to be used, e.g. 'EPSG:4326'." );
-        option.setArgs( 1 );
-        options.addOption( option );
+		option = new Option(OPT_TRANSFORMATION, true, "Identifier of the transformation to be used, e.g. 'EPSG:4326'.");
+		option.setArgs(1);
+		options.addOption(option);
 
-        option = new Option( OPT_INPUT, true, "Filename of the XML file to be transformed" );
-        option.setArgs( 1 );
-        option.setRequired( true );
-        options.addOption( option );
+		option = new Option(OPT_INPUT, true, "Filename of the XML file to be transformed");
+		option.setArgs(1);
+		option.setRequired(true);
+		options.addOption(option);
 
-        option = new Option( OPT_GML_VERSION, true,
-                             "GML version (GML_2, GML_30, GML_31 or GML_32). Defaults to GML_31 if omitted." );
-        option.setArgs( 1 );
-        options.addOption( option );
+		option = new Option(OPT_GML_VERSION, true,
+				"GML version (GML_2, GML_30, GML_31 or GML_32). Defaults to GML_31 if omitted.");
+		option.setArgs(1);
+		options.addOption(option);
 
-        option = new Option( OPT_OUTPUT, true,
-                             "Filename of the output file. If omitted, output is directed to console." );
-        option.setArgs( 1 );
-        options.addOption( option );
+		option = new Option(OPT_OUTPUT, true,
+				"Filename of the output file. If omitted, output is directed to console.");
+		option.setArgs(1);
+		options.addOption(option);
 
-        CommandUtils.addDefaultOptions( options );
+		CommandUtils.addDefaultOptions(options);
 
-        return options;
-    }
+		return options;
+	}
 
-    private static void printHelp( Options options ) {
-        CommandUtils.printHelp( options, XMLCoordinateTransform.class.getCanonicalName(), null, null );
-    }
+	private static void printHelp(Options options) {
+		CommandUtils.printHelp(options, XMLCoordinateTransform.class.getCanonicalName(), null, null);
+	}
+
 }

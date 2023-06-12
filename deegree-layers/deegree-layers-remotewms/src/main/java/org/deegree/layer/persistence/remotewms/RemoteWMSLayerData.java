@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aschmitz@wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -52,63 +51,61 @@ import org.deegree.rendering.r2d.context.RenderContext;
 import org.slf4j.Logger;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 public class RemoteWMSLayerData implements LayerData {
 
-    private static final Logger LOG = getLogger( RemoteWMSLayerData.class );
+	private static final Logger LOG = getLogger(RemoteWMSLayerData.class);
 
-    private GetMap gm;
+	private GetMap gm;
 
-    private final WMSClient client;
+	private final WMSClient client;
 
-    private final Map<String, String> extraParams;
+	private final Map<String, String> extraParams;
 
-    private GetFeatureInfo gfi;
+	private GetFeatureInfo gfi;
 
-    private FeatureInfoParser featureInfoParser;
+	private FeatureInfoParser featureInfoParser;
 
-    public RemoteWMSLayerData( WMSClient client, GetMap gm, Map<String, String> extraParams ) {
-        this.client = client;
-        this.gm = gm;
-        this.extraParams = extraParams;
-    }
+	public RemoteWMSLayerData(WMSClient client, GetMap gm, Map<String, String> extraParams) {
+		this.client = client;
+		this.gm = gm;
+		this.extraParams = extraParams;
+	}
 
-    public RemoteWMSLayerData( WMSClient client, GetFeatureInfo gfi, Map<String, String> extraParams,
-                               FeatureInfoParser featureInfoParser ) {
-        this.client = client;
-        this.gfi = gfi;
-        this.extraParams = extraParams;
-        this.featureInfoParser = featureInfoParser;
-    }
+	public RemoteWMSLayerData(WMSClient client, GetFeatureInfo gfi, Map<String, String> extraParams,
+			FeatureInfoParser featureInfoParser) {
+		this.client = client;
+		this.gfi = gfi;
+		this.extraParams = extraParams;
+		this.featureInfoParser = featureInfoParser;
+	}
 
-    @Override
-    public void render( RenderContext context ) {
-        try {
-            Pair<BufferedImage, String> map = client.getMap( gm, extraParams, 30 );
-            if ( map.first != null ) {
-                context.paintImage( map.first );
-            }
-        } catch ( Throwable e ) {
-            e.printStackTrace();
-            LOG.warn( "Error when retrieving remote map: {}", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-        }
-    }
+	@Override
+	public void render(RenderContext context) {
+		try {
+			Pair<BufferedImage, String> map = client.getMap(gm, extraParams, 30);
+			if (map.first != null) {
+				context.paintImage(map.first);
+			}
+		}
+		catch (Throwable e) {
+			e.printStackTrace();
+			LOG.warn("Error when retrieving remote map: {}", e.getLocalizedMessage());
+			LOG.trace("Stack trace:", e);
+		}
+	}
 
-    @Override
-    public FeatureCollection info() {
-        try {
-            return client.doGetFeatureInfo( gfi, extraParams, featureInfoParser );
-        } catch ( Exception e ) {
-            LOG.warn( "Error when retrieving remote feature info: {}", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-        }
-        return new GenericFeatureCollection();
-    }
+	@Override
+	public FeatureCollection info() {
+		try {
+			return client.doGetFeatureInfo(gfi, extraParams, featureInfoParser);
+		}
+		catch (Exception e) {
+			LOG.warn("Error when retrieving remote feature info: {}", e.getLocalizedMessage());
+			LOG.trace("Stack trace:", e);
+		}
+		return new GenericFeatureCollection();
+	}
 
 }

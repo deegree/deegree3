@@ -12,8 +12,8 @@ In contrast to other deegree configurations the style configurations do
 not have a custom format. You can use standard SLD or SE documents
 (1.0.0 and 1.1.0 are supported), with a couple of deegree specific
 extensions, which are described below. Please refer to the
-http://www.opengeospatial.org/standards/sld[SLD] and
-http://www.opengeospatial.org/standards/se[SE] specifications for
+https://www.ogc.org/standard/sld/[SLD] and
+https://www.ogc.org/standard/se/[SE] specifications for
 reference. Additionally this page contains specific examples below.
 
 In deegree terms, each SLD or SE file will create a _style store_. In
@@ -69,8 +69,8 @@ It is constructed like this:
 
 [source,xml]
 ----
-<FeatureTypeStyle xmlns="http://www.opengis.net/se" xmlns:ogc="http://www.opengis.net/ogc" xmlns:sed="http://www.deegree.org/se" xmlns:deegreeogc="http://www.deegree.org/ogc" xmlns:plan="http://www.deegree.org/plan" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se http://schemas.deegree.org/3.5/se/Symbolizer-deegree.xsd">
-    <FeatureTypeName>plan:yourFeatureType</FeatureTypeName>
+<FeatureTypeStyle xmlns="http://www.opengis.net/se" xmlns:ogc="http://www.opengis.net/ogc" xmlns:sed="http://www.deegree.org/se" xmlns:deegreeogc="http://www.deegree.org/ogc" xmlns:plan="http://www.deegree.org/plan" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se https://schemas.deegree.org/core/3.5/se/symbology-1.1.0.xsd">
+<FeatureTypeName>plan:yourFeatureType</FeatureTypeName>
     <Rule>
         ...
     </Rule>
@@ -453,8 +453,8 @@ xmlns:ogc="http://www.opengis.net/ogc"
 xmlns:sed="http://www.deegree.org/se"
 xmlns:deegreeogc="http://www.deegree.org/ogc"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se http://schemas.deegree.org/3.5/se/Symbolizer-deegree.xsd">
- <Name>Weatherstations</Name>
+xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se https://schemas.deegree.org/core/3.5/se/symbology-1.1.0.xsd">
+<Name>Weatherstations</Name>
  <Rule>
     <Name>Weatherstations</Name>
     <Description>
@@ -496,8 +496,8 @@ xmlns:ogc="http://www.opengis.net/ogc"
 xmlns:sed="http://www.deegree.org/se"
 xmlns:deegreeogc="http://www.deegree.org/ogc"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se http://schemas.deegree.org/3.5/se/Symbolizer-deegree.xsd">
-  <Name>Railroads</Name>
+xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se https://schemas.deegree.org/core/3.5/se/symbology-1.1.0.xsd">
+<Name>Railroads</Name>
   <Rule>
     <Name>Railroads</Name>
     <LineSymbolizer>
@@ -538,8 +538,8 @@ xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.
  xmlns:sed="http://www.deegree.org/se"
  xmlns:deegreeogc="http://www.deegree.org/ogc"
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se http://schemas.deegree.org/3.5/se/Symbolizer-deegree.xsd">
-  <Name>LandslideAreas</Name>
+ xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se https://schemas.deegree.org/core/3.5/se/symbology-1.1.0.xsd">
+<Name>LandslideAreas</Name>
   <Rule>
     <Name>LandslideAreas</Name>
     <Description>
@@ -571,8 +571,8 @@ xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.
  xmlns:sed="http://www.deegree.org/se"
  xmlns:deegreeogc="http://www.deegree.org/ogc"
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se http://schemas.deegree.org/3.5/se/Symbolizer-deegree.xsd">
-  <Name>Municipalities</Name>
+ xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se https://schemas.deegree.org/core/3.5/se/symbology-1.1.0.xsd">
+<Name>Municipalities</Name>
   <Rule>
     <Name>Municipalities</Name>
     <Description>
@@ -645,7 +645,7 @@ deegree supports some extensions of SLD/SE and filter encoding to enable
 more sophisticated styling. The following sections describe the
 respective extensions for SLD/SE and filter encoding. For several
 specific extensions, there is a deegree SE XML
-http://schemas.deegree.org/se[Schema].
+https://schemas.deegree.org/core/3.5/se/[Schema].
 
 ==== SLD/SE extensions
 
@@ -1008,6 +1008,33 @@ support ogc:Expressions as child elements. Example:
   </OnlineResource>
   <Format>image/svg</Format>
 </ExternalGraphic> 
+----
+
+===== Text with rectangular Halo
+
+For the cartographic design of text, it is possible to place a rectangular box behind the text instead of a halo effect.
+To enable the rectangular box behind a text use an negative value for the `Radius` of `Halo` in the `TextSymbolizer`.
+
+.Example of regular `Halo` (`Radius` of `3.0`) on the left and rectangular `Halo` (`Radius` of `-3.0`) on the right.
+image::renderstyles_halo_regular_and_boxed.png[]
+
+.Symbolizer used in previous example
+[source,xml]
+----
+<TextSymbolizer>
+	<!-- Label omitted -->
+	<Font>
+		<SvgParameter name="font-family">Sans-Serif</SvgParameter>
+		<SvgParameter name="font-size">30</SvgParameter>
+	</Font>
+	<Halo>
+		<Radius>-3.0</Radius>
+		<Fill>
+			<SvgParameter name="fill">#FF0000</SvgParameter>
+			<SvgParameter name="fill-opacity">0.4</SvgParameter>
+		</Fill>
+	</Halo>
+</TextSymbolizer>
 ----
 
 ===== GraphicStroke extensions

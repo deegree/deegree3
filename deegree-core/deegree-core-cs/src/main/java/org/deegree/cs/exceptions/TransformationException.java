@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -45,112 +44,103 @@ import javax.vecmath.Point3d;
 import org.deegree.cs.coordinatesystems.ICRS;
 
 /**
- * The <code>TransformationException</code> class can be thrown if a transformation exception occurs. For example in the
- * process of creating a transformation step.
- * 
+ * The <code>TransformationException</code> class can be thrown if a transformation
+ * exception occurs. For example in the process of creating a transformation step.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 
 public class TransformationException extends Exception {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1475176551325426832L;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1475176551325426832L;
 
-    private Map<Integer, String> transformErrors = new HashMap<Integer, String>();
+	private Map<Integer, String> transformErrors = new HashMap<Integer, String>();
 
-    private List<Point3d> transformedPoints = null;
+	private List<Point3d> transformedPoints = null;
 
-    /**
-     * Initializes the error message map with the given size.
-     * 
-     * @param numberOfCoordinates
-     *            in the list of coordinates which will be transformed.
-     */
-    public TransformationException( int numberOfCoordinates ) {
-        if ( numberOfCoordinates < 0 ) {
-            numberOfCoordinates = 0;
-        }
-        transformErrors = new HashMap<Integer, String>( numberOfCoordinates );
-    }
+	/**
+	 * Initializes the error message map with the given size.
+	 * @param numberOfCoordinates in the list of coordinates which will be transformed.
+	 */
+	public TransformationException(int numberOfCoordinates) {
+		if (numberOfCoordinates < 0) {
+			numberOfCoordinates = 0;
+		}
+		transformErrors = new HashMap<Integer, String>(numberOfCoordinates);
+	}
 
-    /**
-     * @param message
-     */
-    public TransformationException( String message ) {
-        super( message );
-    }
+	/**
+	 * @param message
+	 */
+	public TransformationException(String message) {
+		super(message);
+	}
 
-    /**
-     * @param cause
-     */
-    public TransformationException( Throwable cause ) {
-        super( cause );
-    }
+	/**
+	 * @param cause
+	 */
+	public TransformationException(Throwable cause) {
+		super(cause);
+	}
 
-    /**
-     * @param message
-     * @param cause
-     */
-    public TransformationException( String message, Throwable cause ) {
-        super( message, cause );
-    }
+	/**
+	 * @param message
+	 * @param cause
+	 */
+	public TransformationException(String message, Throwable cause) {
+		super(message, cause);
+	}
 
-    /**
-     * @param sourceCS
-     *            from which crs
-     * @param targetCS
-     *            to which crs
-     * @param cause
-     *            for the exception.
-     */
-    public TransformationException( ICRS sourceCS, ICRS targetCS, String cause ) {
-        super( "Can't transform from: " + sourceCS.getCode() + " into " + targetCS.getCode() + " because: " + cause );
-    }
+	/**
+	 * @param sourceCS from which crs
+	 * @param targetCS to which crs
+	 * @param cause for the exception.
+	 */
+	public TransformationException(ICRS sourceCS, ICRS targetCS, String cause) {
+		super("Can't transform from: " + sourceCS.getCode() + " into " + targetCS.getCode() + " because: " + cause);
+	}
 
-    /**
-     * @return the transformErrors may be empty but will never be <code>null</code>.
-     */
-    public final Map<Integer, String> getTransformErrors() {
-        return transformErrors;
-    }
+	/**
+	 * @return the transformErrors may be empty but will never be <code>null</code>.
+	 */
+	public final Map<Integer, String> getTransformErrors() {
+		return transformErrors;
+	}
 
-    /**
-     * @param coordinateNumber
-     *            the position of the coordinate-tuple/triple which were responsible for the transformationexception.
-     * @param errorMessage
-     *            the error message for given coordinate pair (in the array of coordinates).
-     */
-    public final void setTransformError( int coordinateNumber, String errorMessage ) {
-        String value = "";
-        Integer key = coordinateNumber;
-        if ( transformErrors.containsKey( key ) && transformErrors.get( key ) != null ) {
-            value = transformErrors.get( key ) + ";";
-        }
-        value += errorMessage;
-        transformErrors.put( key, value );
-    }
+	/**
+	 * @param coordinateNumber the position of the coordinate-tuple/triple which were
+	 * responsible for the transformationexception.
+	 * @param errorMessage the error message for given coordinate pair (in the array of
+	 * coordinates).
+	 */
+	public final void setTransformError(int coordinateNumber, String errorMessage) {
+		String value = "";
+		Integer key = coordinateNumber;
+		if (transformErrors.containsKey(key) && transformErrors.get(key) != null) {
+			value = transformErrors.get(key) + ";";
+		}
+		value += errorMessage;
+		transformErrors.put(key, value);
+	}
 
-    /**
-     * @return the transformedPoints, which are the points that were (successfully or unsuccessfully) transformed or
-     *         <code>null</code> if no points were set.
-     */
-    public final List<Point3d> getTransformedPoints() {
-        return transformedPoints;
-    }
+	/**
+	 * @return the transformedPoints, which are the points that were (successfully or
+	 * unsuccessfully) transformed or <code>null</code> if no points were set.
+	 */
+	public final List<Point3d> getTransformedPoints() {
+		return transformedPoints;
+	}
 
-    /**
-     * @param transformedPoints
-     *            which were (successfully or unsuccessfully) transformed until the exception(s) occurred.
-     */
-    public final void setTransformedPoints( List<Point3d> transformedPoints ) {
-        this.transformedPoints = transformedPoints;
-    }
+	/**
+	 * @param transformedPoints which were (successfully or unsuccessfully) transformed
+	 * until the exception(s) occurred.
+	 */
+	public final void setTransformedPoints(List<Point3d> transformedPoints) {
+		this.transformedPoints = transformedPoints;
+	}
 
 }
