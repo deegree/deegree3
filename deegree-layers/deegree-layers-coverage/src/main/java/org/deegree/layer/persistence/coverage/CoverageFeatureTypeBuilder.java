@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -56,28 +55,26 @@ import org.w3c.dom.ls.LSInput;
 
 /**
  * Builds the standard coverage feature type for feature info.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 class CoverageFeatureTypeBuilder {
 
-    private static final Logger LOG = getLogger( CoverageFeatureTypeBuilder.class );
+	private static final Logger LOG = getLogger(CoverageFeatureTypeBuilder.class);
 
-    static FeatureType buildFeatureType() {
-        try {
-            LSInput input = new GenericLSInput();
-            InputStream schema = CoverageFeatureTypeBuilder.class.getResourceAsStream( "gfiSchema.xsd" );
-            input.setByteStream( schema );
-            GMLAppSchemaReader decoder = new GMLAppSchemaReader( null, null, input );
-            AppSchema extractAppSchema = decoder.extractAppSchema();
-            return extractAppSchema.getFeatureType( new QName( "http://www.deegree.org/app", "data", "app" ) );
-        } catch ( Exception e ) {
-            LOG.error( "Could not read schema for GFI response on CoverageFeatureType", e );
-            return null;
-        }
-    }
+	static FeatureType buildFeatureType() {
+		try {
+			LSInput input = new GenericLSInput();
+			InputStream schema = CoverageFeatureTypeBuilder.class.getResourceAsStream("gfiSchema.xsd");
+			input.setByteStream(schema);
+			GMLAppSchemaReader decoder = new GMLAppSchemaReader(null, null, input);
+			AppSchema extractAppSchema = decoder.extractAppSchema();
+			return extractAppSchema.getFeatureType(new QName("http://www.deegree.org/app", "data", "app"));
+		}
+		catch (Exception e) {
+			LOG.error("Could not read schema for GFI response on CoverageFeatureType", e);
+			return null;
+		}
+	}
 
 }

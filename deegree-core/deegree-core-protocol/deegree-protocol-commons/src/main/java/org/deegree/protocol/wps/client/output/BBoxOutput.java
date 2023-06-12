@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -38,79 +37,69 @@ package org.deegree.protocol.wps.client.output;
 import org.deegree.commons.tom.ows.CodeType;
 
 /**
- * {@link ExecutionOutput} that contains a bounding box value with optional information on the coordinate reference
- * system.
- * 
+ * {@link ExecutionOutput} that contains a bounding box value with optional information on
+ * the coordinate reference system.
+ *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class BBoxOutput extends ExecutionOutput {
 
-    private final double[] lower;
+	private final double[] lower;
 
-    private final double[] upper;
+	private final double[] upper;
 
-    private final String crs;
+	private final String crs;
 
-    private final int dim;
+	private final int dim;
 
-    /**
-     * Creates a new {@link BBoxOutput} instance.
-     * 
-     * @param id
-     *            output parameter identifier, must not be <code>null</code>
-     * @param lower
-     *            coordinates of the lower corner, must not be <code>null</code>
-     * @param upper
-     *            coordinates of the upper corner, must not be <code>null</code> and have the same length as the lower
-     *            array
-     * @param crs
-     *            identifier of the coordinate reference system, can be <code>null</code> (unspecified)
-     */
-    public BBoxOutput( CodeType id, double[] lower, double[] upper, String crs ) {
-        super( id );
-        this.lower = lower;
-        this.upper = upper;
-        this.dim = lower.length;
-        this.crs = crs;
-    }
+	/**
+	 * Creates a new {@link BBoxOutput} instance.
+	 * @param id output parameter identifier, must not be <code>null</code>
+	 * @param lower coordinates of the lower corner, must not be <code>null</code>
+	 * @param upper coordinates of the upper corner, must not be <code>null</code> and
+	 * have the same length as the lower array
+	 * @param crs identifier of the coordinate reference system, can be <code>null</code>
+	 * (unspecified)
+	 */
+	public BBoxOutput(CodeType id, double[] lower, double[] upper, String crs) {
+		super(id);
+		this.lower = lower;
+		this.upper = upper;
+		this.dim = lower.length;
+		this.crs = crs;
+	}
 
-    /**
-     * Returns the coordinates of the lower corner.
-     * 
-     * @return the coordinates of the lower corner, never <code>null</code>
-     */
-    public double[] getLower() {
-        return lower;
-    }
+	/**
+	 * Returns the coordinates of the lower corner.
+	 * @return the coordinates of the lower corner, never <code>null</code>
+	 */
+	public double[] getLower() {
+		return lower;
+	}
 
-    /**
-     * Returns the coordinates of the upper corner.
-     * 
-     * @return the coordinates of the upper corner, never <code>null</code>
-     */
-    public double[] getUpper() {
-        return upper;
-    }
+	/**
+	 * Returns the coordinates of the upper corner.
+	 * @return the coordinates of the upper corner, never <code>null</code>
+	 */
+	public double[] getUpper() {
+		return upper;
+	}
 
-    /**
-     * Returns the dimension (number of coordinates of lower/upper corner).
-     * 
-     * @return coordinate dimension
-     */
-    public int getDimension() {
-        return dim;
-    }
+	/**
+	 * Returns the dimension (number of coordinates of lower/upper corner).
+	 * @return coordinate dimension
+	 */
+	public int getDimension() {
+		return dim;
+	}
 
-    /**
-     * Returns the coordinate system identifier.
-     * 
-     * @return coordinate system identifier, or <code>null</code> if unspecified
-     */
-    public String getCrs() {
-        return crs;
-    }
+	/**
+	 * Returns the coordinate system identifier.
+	 * @return coordinate system identifier, or <code>null</code> if unspecified
+	 */
+	public String getCrs() {
+		return crs;
+	}
+
 }

@@ -28,19 +28,17 @@
 package org.deegree.workspace;
 
 /**
- * SPI extension point for cleanup after workspace shutdown. After all resources have been destroyed, all SPI providers
- * implementing this interface will be called.
- * 
+ * SPI extension point for cleanup after workspace shutdown. After all resources have been
+ * destroyed, all SPI providers implementing this interface will be called.
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public interface Destroyable {
 
-    /**
-     * @param workspace
-     *            the workspace being destroyed, never <code>null</code>
-     */
-    void destroy( Workspace workspace );
+	/**
+	 * @param workspace the workspace being destroyed, never <code>null</code>
+	 */
+	void destroy(Workspace workspace);
 
 }

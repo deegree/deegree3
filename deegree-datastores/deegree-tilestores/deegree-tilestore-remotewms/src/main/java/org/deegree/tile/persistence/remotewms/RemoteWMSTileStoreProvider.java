@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -50,31 +49,29 @@ import org.deegree.workspace.Workspace;
 
 /**
  * {@link TileStoreProvider} for the {@link RemoteWMSTileStore}.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$
  */
 public class RemoteWMSTileStoreProvider extends TileStoreProvider {
 
-    private static final String CONFIG_NAMESPACE = "http://www.deegree.org/datasource/tile/remotewms";
+	private static final String CONFIG_NAMESPACE = "http://www.deegree.org/datasource/tile/remotewms";
 
-    private static final URL CONFIG_SCHEMA = RemoteWMSTileStoreProvider.class.getResource( "/META-INF/schemas/datasource/tile/remotewms/remotewms.xsd" );
+	private static final URL CONFIG_SCHEMA = RemoteWMSTileStoreProvider.class
+		.getResource("/META-INF/schemas/datasource/tile/remotewms/remotewms.xsd");
 
-    @Override
-    public String getNamespace() {
-        return CONFIG_NAMESPACE;
-    }
+	@Override
+	public String getNamespace() {
+		return CONFIG_NAMESPACE;
+	}
 
-    @Override
-    public ResourceMetadata<TileStore> createFromLocation( Workspace workspace, ResourceLocation<TileStore> location ) {
-        return new RemoteWmsTileStoreMetadata( workspace, location, this );
-    }
+	@Override
+	public ResourceMetadata<TileStore> createFromLocation(Workspace workspace, ResourceLocation<TileStore> location) {
+		return new RemoteWmsTileStoreMetadata(workspace, location, this);
+	}
 
-    @Override
-    public URL getSchema() {
-        return CONFIG_SCHEMA;
-    }
+	@Override
+	public URL getSchema() {
+		return CONFIG_SCHEMA;
+	}
 
 }

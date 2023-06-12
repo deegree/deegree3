@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -50,53 +49,51 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @version $Revision$
- * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * 
+ *
  */
 public class JAIRasterWriter implements RasterWriter {
 
-    private static final Logger LOG = LoggerFactory.getLogger( JAIRasterWriter.class );
+	private static final Logger LOG = LoggerFactory.getLogger(JAIRasterWriter.class);
 
-    @Override
-    public void write( AbstractRaster raster, File file, RasterIOOptions options )
-                            throws IOException {
-        LOG.debug( "writing " + file + " with JAI" );
-        String ext = FileUtils.getFileExtension( file );
-        String format = JAIRasterIOProvider.getJAIFormat( ext );
-        if ( format != null ) {
-            JAIRasterDataWriter.saveRasterDataToFile( raster.getAsSimpleRaster().getRasterData(),
-                                                      file.getAbsolutePath(), format );
-        } else {
-            JAIRasterDataWriter.saveRasterDataToFile( raster.getAsSimpleRaster().getRasterData(),
-                                                      file.getAbsolutePath() );
-        }
-        RasterGeoReference rasterReference = raster.getRasterReference();
-        WorldFileAccess.writeWorldFile( rasterReference, file );
-    }
+	@Override
+	public void write(AbstractRaster raster, File file, RasterIOOptions options) throws IOException {
+		LOG.debug("writing " + file + " with JAI");
+		String ext = FileUtils.getFileExtension(file);
+		String format = JAIRasterIOProvider.getJAIFormat(ext);
+		if (format != null) {
+			JAIRasterDataWriter.saveRasterDataToFile(raster.getAsSimpleRaster().getRasterData(), file.getAbsolutePath(),
+					format);
+		}
+		else {
+			JAIRasterDataWriter.saveRasterDataToFile(raster.getAsSimpleRaster().getRasterData(),
+					file.getAbsolutePath());
+		}
+		RasterGeoReference rasterReference = raster.getRasterReference();
+		WorldFileAccess.writeWorldFile(rasterReference, file);
+	}
 
-    @Override
-    public void write( AbstractRaster raster, OutputStream out, RasterIOOptions options )
-                            throws IOException {
-        LOG.debug( "writing to stream with JAI" );
-        String ext = options.get( RasterIOOptions.OPT_FORMAT );
-        String format = JAIRasterIOProvider.getJAIFormat( ext );
-        if ( format != null ) {
-            JAIRasterDataWriter.saveRasterDataToStream( raster.getAsSimpleRaster().getRasterData(), out, format );
-        } else {
-            JAIRasterDataWriter.saveRasterDataToStream( raster.getAsSimpleRaster().getRasterData(), out, "TIFF" );
-        }
-    }
+	@Override
+	public void write(AbstractRaster raster, OutputStream out, RasterIOOptions options) throws IOException {
+		LOG.debug("writing to stream with JAI");
+		String ext = options.get(RasterIOOptions.OPT_FORMAT);
+		String format = JAIRasterIOProvider.getJAIFormat(ext);
+		if (format != null) {
+			JAIRasterDataWriter.saveRasterDataToStream(raster.getAsSimpleRaster().getRasterData(), out, format);
+		}
+		else {
+			JAIRasterDataWriter.saveRasterDataToStream(raster.getAsSimpleRaster().getRasterData(), out, "TIFF");
+		}
+	}
 
-    @Override
-    public boolean canWrite( AbstractRaster raster, RasterIOOptions options ) {
-        return true;
-    }
+	@Override
+	public boolean canWrite(AbstractRaster raster, RasterIOOptions options) {
+		return true;
+	}
 
-    @Override
-    public Set<String> getSupportedFormats() {
-        return JAIRasterIOProvider.SUPPORTED_TYPES;
-    }
+	@Override
+	public Set<String> getSupportedFormats() {
+		return JAIRasterIOProvider.SUPPORTED_TYPES;
+	}
+
 }

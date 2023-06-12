@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -43,20 +42,19 @@ import org.deegree.protocol.wfs.transaction.TransactionAction;
 
 public interface TransactionActionXmlReader {
 
-    /**
-     * Returns the object representation of a transaction action element.
-     * <p>
-     * Note that this method will not necessarily consume all corresponding events from the given <code>XMLStream</code>
-     * .
-     * </p>
-     * 
-     * @param xmlStream
-     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;wfs:Delete&gt;), points at the
-     *            corresponding <code>END_ELEMENT</code> event (&lt;/wfs:Delete&gt;) afterwards
-     * @return corresponding {@link TransactionAction} object
-     * @throws XMLStreamException
-     * @throws XMLParsingException
-     */
-    TransactionAction readAction( XMLStreamReader xmlStream )
-                            throws XMLStreamException, XMLParsingException;
+	/**
+	 * Returns the object representation of a transaction action element.
+	 * <p>
+	 * Note that this method will not necessarily consume all corresponding events from
+	 * the given <code>XMLStream</code> .
+	 * </p>
+	 * @param xmlStream cursor must point at the <code>START_ELEMENT</code> event
+	 * (&lt;wfs:Delete&gt;), points at the corresponding <code>END_ELEMENT</code> event
+	 * (&lt;/wfs:Delete&gt;) afterwards
+	 * @return corresponding {@link TransactionAction} object
+	 * @throws XMLStreamException
+	 * @throws XMLParsingException
+	 */
+	TransactionAction readAction(XMLStreamReader xmlStream) throws XMLStreamException, XMLParsingException;
+
 }

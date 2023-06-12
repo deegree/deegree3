@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -71,69 +70,68 @@ import org.slf4j.Logger;
 
 /**
  * Builds layer metadata objects from jaxb config for feature layers.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 class LayerMetadataBuilder {
 
-    private static final Logger LOG = getLogger( LayerMetadataBuilder.class );
+	private static final Logger LOG = getLogger(LayerMetadataBuilder.class);
 
-    static LayerMetadata buildMetadata( FeatureLayerType lay, QName featureType, FeatureStore store )
-                            throws FeatureStoreException {
-        SpatialMetadata smd = fromJaxb( lay.getEnvelope(), lay.getCRS() );
-        Description desc = fromJaxb( lay.getTitle(), lay.getAbstract(), lay.getKeywords() );
-        LayerMetadata md = new LayerMetadata( lay.getName(), desc, smd );
-        md.setMapOptions( parseLayerOptions( lay.getLayerOptions() ) );
-        md.setDimensions( parseDimensions( md.getName(), lay.getDimension() ) );
-        md.setMetadataId( lay.getMetadataSetId() );
-        if ( featureType != null ) {
-            md.getFeatureTypes().add( store.getSchema().getFeatureType( featureType ) );
-        } else {
-            md.getFeatureTypes().addAll( Arrays.asList( store.getSchema().getFeatureTypes() ) );
-        }
+	static LayerMetadata buildMetadata(FeatureLayerType lay, QName featureType, FeatureStore store)
+			throws FeatureStoreException {
+		SpatialMetadata smd = fromJaxb(lay.getEnvelope(), lay.getCRS());
+		Description desc = fromJaxb(lay.getTitle(), lay.getAbstract(), lay.getKeywords());
+		LayerMetadata md = new LayerMetadata(lay.getName(), desc, smd);
+		md.setMapOptions(parseLayerOptions(lay.getLayerOptions()));
+		md.setDimensions(parseDimensions(md.getName(), lay.getDimension()));
+		md.setMetadataId(lay.getMetadataSetId());
+		if (featureType != null) {
+			md.getFeatureTypes().add(store.getSchema().getFeatureType(featureType));
+		}
+		else {
+			md.getFeatureTypes().addAll(Arrays.asList(store.getSchema().getFeatureTypes()));
+		}
 
-        if ( smd.getEnvelope() == null ) {
-            if ( featureType != null ) {
-                smd.setEnvelope( store.getEnvelope( featureType ) );
-            } else {
-                smd.setEnvelope( getCombinedEnvelope( store ) );
-            }
-        }
-        if ( smd.getCoordinateSystems() == null || smd.getCoordinateSystems().isEmpty() ) {
-            List<ICRS> crs = new ArrayList<ICRS>();
-            crs.add( smd.getEnvelope().getCoordinateSystem() );
-            smd.setCoordinateSystems( crs );
-        }
+		if (smd.getEnvelope() == null) {
+			if (featureType != null) {
+				smd.setEnvelope(store.getEnvelope(featureType));
+			}
+			else {
+				smd.setEnvelope(getCombinedEnvelope(store));
+			}
+		}
+		if (smd.getCoordinateSystems() == null || smd.getCoordinateSystems().isEmpty()) {
+			List<ICRS> crs = new ArrayList<ICRS>();
+			crs.add(smd.getEnvelope().getCoordinateSystem());
+			smd.setCoordinateSystems(crs);
+		}
 
-        ScaleDenominatorsType denoms = lay.getScaleDenominators();
-        if ( denoms != null ) {
-            md.setScaleDenominators( new DoublePair( denoms.getMin(), denoms.getMax() ) );
-        }
+		ScaleDenominatorsType denoms = lay.getScaleDenominators();
+		if (denoms != null) {
+			md.setScaleDenominators(new DoublePair(denoms.getMin(), denoms.getMax()));
+		}
 
-        return md;
-    }
+		return md;
+	}
 
-    static LayerMetadata buildMetadataForAutoMode( FeatureStore store, FeatureType ft, String name ) {
-        List<ICRS> crs = new ArrayList<ICRS>();
-        Envelope envelope = null;
-        try {
-            envelope = store.getEnvelope( ft.getName() );
-        } catch ( Throwable e ) {
-            LOG.debug( "Could not get envelope from feature store: {}", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-        }
-        if ( envelope != null ) {
-            crs.add( envelope.getCoordinateSystem() );
-        }
-        SpatialMetadata smd = new SpatialMetadata( envelope, crs );
-        Description desc = new Description( name, Collections.singletonList( new LanguageString( name, null ) ), null,
-                                            null );
-        LayerMetadata md = new LayerMetadata( name, desc, smd );
-        md.getFeatureTypes().add( ft );
-        return md;
-    }
+	static LayerMetadata buildMetadataForAutoMode(FeatureStore store, FeatureType ft, String name) {
+		List<ICRS> crs = new ArrayList<ICRS>();
+		Envelope envelope = null;
+		try {
+			envelope = store.getEnvelope(ft.getName());
+		}
+		catch (Throwable e) {
+			LOG.debug("Could not get envelope from feature store: {}", e.getLocalizedMessage());
+			LOG.trace("Stack trace:", e);
+		}
+		if (envelope != null) {
+			crs.add(envelope.getCoordinateSystem());
+		}
+		SpatialMetadata smd = new SpatialMetadata(envelope, crs);
+		Description desc = new Description(name, Collections.singletonList(new LanguageString(name, null)), null, null);
+		LayerMetadata md = new LayerMetadata(name, desc, smd);
+		md.getFeatureTypes().add(ft);
+		return md;
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -50,68 +49,61 @@ import org.deegree.process.jaxb.java.ComplexFormatType;
 import org.deegree.process.jaxb.java.ComplexInputDefinition;
 
 /**
- * A {@link ComplexInputImpl} with a value that is given as a reference to a web-accessible resource.
- * 
+ * A {@link ComplexInputImpl} with a value that is given as a reference to a
+ * web-accessible resource.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * 
- * @version $Revision: $, $Date: $
  */
 public class ReferencedComplexInput extends ComplexInputImpl {
 
-    private InputReference reference;
+	private InputReference reference;
 
-    /**
-     * Creates a new {@link ComplexInputImpl} instance from a reference to a web-accessible URI.
-     * 
-     * @param definition
-     *            corresponding input definition from process description
-     * @param title
-     *            optional title supplied with the input parameter, may be null
-     * @param summary
-     *            optional narrative description supplied with the input parameter, may be null
-     * @param format
-     *            the XML schema, format, and encoding of the complex value
-     * @param reference
-     *            provides information for retrieving the input value via the web
-     */
-    public ReferencedComplexInput( ComplexInputDefinition definition, LanguageString title, LanguageString summary,
-                                   ComplexFormatType format, InputReference reference ) {
-        super( definition, title, summary, format );
-        this.reference = reference;
-    }
+	/**
+	 * Creates a new {@link ComplexInputImpl} instance from a reference to a
+	 * web-accessible URI.
+	 * @param definition corresponding input definition from process description
+	 * @param title optional title supplied with the input parameter, may be null
+	 * @param summary optional narrative description supplied with the input parameter,
+	 * may be null
+	 * @param format the XML schema, format, and encoding of the complex value
+	 * @param reference provides information for retrieving the input value via the web
+	 */
+	public ReferencedComplexInput(ComplexInputDefinition definition, LanguageString title, LanguageString summary,
+			ComplexFormatType format, InputReference reference) {
+		super(definition, title, summary, format);
+		this.reference = reference;
+	}
 
-    @Override
-    public InputStream getValueAsBinaryStream()
-                            throws IOException {
-        return reference.openStream();
-    }
+	@Override
+	public InputStream getValueAsBinaryStream() throws IOException {
+		return reference.openStream();
+	}
 
-    @Override
-    public XMLStreamReader getValueAsXMLStream()
-                            throws IOException {
-        XMLStreamReader reader = null;
-        try {
-            reader = XMLInputFactory.newInstance().createXMLStreamReader( getValueAsBinaryStream() );
-            reader.next();
-        } catch ( Exception e ) {
-            throw new IOException( e.getMessage(), e );
-        }
-        return new XMLStreamReaderWrapper( reader, XMLAdapter.DEFAULT_URL );
-    }
+	@Override
+	public XMLStreamReader getValueAsXMLStream() throws IOException {
+		XMLStreamReader reader = null;
+		try {
+			reader = XMLInputFactory.newInstance().createXMLStreamReader(getValueAsBinaryStream());
+			reader.next();
+		}
+		catch (Exception e) {
+			throw new IOException(e.getMessage(), e);
+		}
+		return new XMLStreamReaderWrapper(reader, XMLAdapter.DEFAULT_URL);
+	}
 
-    /**
-     * Returns the URL that provides the input.
-     * 
-     * @return the URL that provides the input.
-     */
-    public URL getURL() {
-        return reference.getURL();
-    }
+	/**
+	 * Returns the URL that provides the input.
+	 * @return the URL that provides the input.
+	 */
+	public URL getURL() {
+		return reference.getURL();
+	}
 
-    @Override
-    public String toString() {
-        return super.toString() + " (ReferencedComplexInput/Reference), inputReference=" + reference + ", mimeType='"
-               + getMimeType() + "', encoding='" + getEncoding() + "', schema='" + getSchema() + "'";
-    }
+	@Override
+	public String toString() {
+		return super.toString() + " (ReferencedComplexInput/Reference), inputReference=" + reference + ", mimeType='"
+				+ getMimeType() + "', encoding='" + getEncoding() + "', schema='" + getSchema() + "'";
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -51,45 +50,41 @@ import org.deegree.style.se.unevaluated.Symbolizer;
 import org.deegree.style.styling.Styling;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class StandardLegendItem implements LegendItem {
 
-    private String text;
+	private String text;
 
-    private StandardLegendRenderer renderer;
+	private StandardLegendRenderer renderer;
 
-    public StandardLegendItem( LinkedList<Styling> stylings, Continuation<LinkedList<Symbolizer<?>>> rule,
-                               Class<?> ruleType, String text, Renderer renderer, TextRenderer textRenderer ) {
-        this.text = text;
-        this.renderer = new StandardLegendRenderer( ruleType, stylings, text, renderer, textRenderer, rule );
-    }
+	public StandardLegendItem(LinkedList<Styling> stylings, Continuation<LinkedList<Symbolizer<?>>> rule,
+			Class<?> ruleType, String text, Renderer renderer, TextRenderer textRenderer) {
+		this.text = text;
+		this.renderer = new StandardLegendRenderer(ruleType, stylings, text, renderer, textRenderer, rule);
+	}
 
-    @Override
-    public int getHeight() {
-        return 1;
-    }
+	@Override
+	public int getHeight() {
+		return 1;
+	}
 
-    @Override
-    public void paint( int origin, LegendOptions opts ) {
-        renderer.paint( origin, opts );
-    }
+	@Override
+	public void paint(int origin, LegendOptions opts) {
+		renderer.paint(origin, opts);
+	}
 
-    @Override
-    public int getMaxWidth( LegendOptions opts ) {
-        int res = 2 * opts.spacing + opts.baseWidth;
+	@Override
+	public int getMaxWidth(LegendOptions opts) {
+		int res = 2 * opts.spacing + opts.baseWidth;
 
-        Font font = new Font( "Arial", PLAIN, opts.textSize );
+		Font font = new Font("Arial", PLAIN, opts.textSize);
 
-        if ( text != null && text.length() > 0 ) {
-            TextLayout layout = new TextLayout( text, font, new FontRenderContext( new AffineTransform(), true, false ) );
-            res = (int) max( layout.getBounds().getWidth() + ( 2 * opts.baseWidth ), res );
-        }
-        return res;
-    }
+		if (text != null && text.length() > 0) {
+			TextLayout layout = new TextLayout(text, font, new FontRenderContext(new AffineTransform(), true, false));
+			res = (int) max(layout.getBounds().getWidth() + (2 * opts.baseWidth), res);
+		}
+		return res;
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -49,78 +48,75 @@ import org.deegree.geometry.primitive.patches.Triangle;
 
 /**
  * Default implementation of {@link Triangle}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class DefaultTriangle implements Triangle {
 
-    private LinearRing exterior;
+	private LinearRing exterior;
 
-    /**
-     * Creates a new {@link DefaultTriangle} instance from the given parameters.
-     * 
-     * @param exterior
-     *            ring that contains exactly four planar points, the first and last point must be identical
-     */
-    public DefaultTriangle( LinearRing exterior ) {
-        if ( exterior.getControlPoints().size() != 4 ) {
-            String msg = "The exterior ring of a triangle must contain exactly four points.";
-            throw new IllegalArgumentException( msg );
-        }
-        this.exterior = exterior;
-    }
+	/**
+	 * Creates a new {@link DefaultTriangle} instance from the given parameters.
+	 * @param exterior ring that contains exactly four planar points, the first and last
+	 * point must be identical
+	 */
+	public DefaultTriangle(LinearRing exterior) {
+		if (exterior.getControlPoints().size() != 4) {
+			String msg = "The exterior ring of a triangle must contain exactly four points.";
+			throw new IllegalArgumentException(msg);
+		}
+		this.exterior = exterior;
+	}
 
-    @Override
-    public LinearRing getExteriorRing() {
-        return exterior;
-    }
+	@Override
+	public LinearRing getExteriorRing() {
+		return exterior;
+	}
 
-    @Override
-    public Point getPoint1() {
-        return exterior.getControlPoints().get( 0 );
-    }
+	@Override
+	public Point getPoint1() {
+		return exterior.getControlPoints().get(0);
+	}
 
-    @Override
-    public Point getPoint2() {
-        return exterior.getControlPoints().get( 1 );
-    }
+	@Override
+	public Point getPoint2() {
+		return exterior.getControlPoints().get(1);
+	}
 
-    @Override
-    public Point getPoint3() {
-        return exterior.getControlPoints().get( 2 );
-    }
+	@Override
+	public Point getPoint3() {
+		return exterior.getControlPoints().get(2);
+	}
 
-    @Override
-    public Measure getArea( Unit requestedBaseUnit ) {
-        // TODO
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Measure getArea(Unit requestedBaseUnit) {
+		// TODO
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public int getCoordinateDimension() {
-        return getPoint1().getCoordinateDimension();
-    }
+	@Override
+	public int getCoordinateDimension() {
+		return getPoint1().getCoordinateDimension();
+	}
 
-    @Override
-    public List<Ring> getInteriorRings() {
-        return Collections.emptyList();
-    }
+	@Override
+	public List<Ring> getInteriorRings() {
+		return Collections.emptyList();
+	}
 
-    @Override
-    public List<LinearRing> getBoundaryRings() {
-        return Collections.singletonList( exterior );
-    }
+	@Override
+	public List<LinearRing> getBoundaryRings() {
+		return Collections.singletonList(exterior);
+	}
 
-    @Override
-    public PolygonPatchType getPolygonPatchType() {
-        return PolygonPatchType.TRIANGLE;
-    }
+	@Override
+	public PolygonPatchType getPolygonPatchType() {
+		return PolygonPatchType.TRIANGLE;
+	}
 
-    @Override
-    public SurfacePatchType getSurfacePatchType() {
-        return POLYGON_PATCH;
-    }
+	@Override
+	public SurfacePatchType getSurfacePatchType() {
+		return POLYGON_PATCH;
+	}
+
 }

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deegreeWPS xmlns="http://www.deegree.org/services/wps"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.deegree.org/services/wps https://schemas.deegree.org/core/3.5/services/wps/wps_configuration.xsd">
+
+  <SupportedVersions>
+    <Version>1.0.0</Version>
+  </SupportedVersions>
+
+</deegreeWPS>

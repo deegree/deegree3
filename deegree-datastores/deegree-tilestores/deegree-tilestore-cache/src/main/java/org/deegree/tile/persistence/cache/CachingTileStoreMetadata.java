@@ -41,32 +41,30 @@ import org.deegree.workspace.standard.DefaultResourceIdentifier;
 
 /**
  * The metadata class for caching tile stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class CachingTileStoreMetadata extends AbstractResourceMetadata<TileStore> {
 
-    public CachingTileStoreMetadata( Workspace workspace, ResourceLocation<TileStore> location,
-                                     AbstractResourceProvider<TileStore> provider ) {
-        super( workspace, location, provider );
-    }
+	public CachingTileStoreMetadata(Workspace workspace, ResourceLocation<TileStore> location,
+			AbstractResourceProvider<TileStore> provider) {
+		super(workspace, location, provider);
+	}
 
-    @Override
-    public ResourceBuilder<TileStore> prepare() {
-        try {
-            org.deegree.tile.persistence.cache.jaxb.CachingTileStore cfg;
-            cfg = (org.deegree.tile.persistence.cache.jaxb.CachingTileStore) unmarshall( "org.deegree.tile.persistence.cache.jaxb",
-                                                                                         provider.getSchema(),
-                                                                                         location.getAsStream(),
-                                                                                         workspace );
-            String tsid = cfg.getTileStoreId();
-            dependencies.add( new DefaultResourceIdentifier<TileStore>( TileStoreProvider.class, tsid ) );
-            return new CachingTileStoreBuilder( cfg, this, workspace );
-        } catch ( Exception e ) {
-            throw new ResourceInitException( "Could not prepare tile store: " + e.getLocalizedMessage(), e );
-        }
-    }
+	@Override
+	public ResourceBuilder<TileStore> prepare() {
+		try {
+			org.deegree.tile.persistence.cache.jaxb.CachingTileStore cfg;
+			cfg = (org.deegree.tile.persistence.cache.jaxb.CachingTileStore) unmarshall(
+					"org.deegree.tile.persistence.cache.jaxb", provider.getSchema(), location.getAsStream(), workspace);
+			String tsid = cfg.getTileStoreId();
+			dependencies.add(new DefaultResourceIdentifier<TileStore>(TileStoreProvider.class, tsid));
+			return new CachingTileStoreBuilder(cfg, this, workspace);
+		}
+		catch (Exception e) {
+			throw new ResourceInitException("Could not prepare tile store: " + e.getLocalizedMessage(), e);
+		}
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -50,127 +49,132 @@ import com.sun.faces.util.Util;
 
 /**
  * Input component which allows multiple insert.
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
-@ResourceDependencies( { @ResourceDependency(library = "deegree", name = "css/inputMultiple.css", target = "head"),
-                        @ResourceDependency(name = "javascript/multipleItems.js", library = "deegree"),
-                        @ResourceDependency(name = "jsf.js", target = "head", library = "javax.faces") })
+@ResourceDependencies({ @ResourceDependency(library = "deegree", name = "css/inputMultiple.css", target = "head"),
+		@ResourceDependency(name = "javascript/multipleItems.js", library = "deegree"),
+		@ResourceDependency(name = "jsf.js", target = "head", library = "javax.faces") })
 @FacesComponent(value = "HtmlInputMultiple")
 public class HtmlInputMultiple extends UIInput implements ClientBehaviorHolder {
 
-    private static enum PropertyKeys {
-        initialCollapsed, styleClass, style
-    }
+	private static enum PropertyKeys {
 
-    private Class<UIInput> inputComponentClass;
+		initialCollapsed, styleClass, style
 
-    private boolean collapsible = false;
+	}
 
-    private List<Integer> collapsed = new ArrayList<Integer>();
+	private Class<UIInput> inputComponentClass;
 
-    private boolean initialStateChanged = false;
+	private boolean collapsible = false;
 
-    public HtmlInputMultiple() {
-        setRendererType( "org.deegree.InputMultiple" );
-    }
+	private List<Integer> collapsed = new ArrayList<Integer>();
 
-    @SuppressWarnings("unchecked")
-    public void setInputClassName( String inputClassName ) {
-        try {
-            inputComponentClass = Util.loadClass( inputClassName, null );
-        } catch ( ClassNotFoundException e ) {
-            e.printStackTrace();
-        }
-    }
+	private boolean initialStateChanged = false;
 
-    public void setInputComponentClass( Class<UIInput> inputComponentClass ) {
-        this.inputComponentClass = inputComponentClass;
-    }
+	public HtmlInputMultiple() {
+		setRendererType("org.deegree.InputMultiple");
+	}
 
-    public UIInput getInputInstance() {
-        if ( inputComponentClass != null ) {
-            try {
-                return (UIInput) inputComponentClass.newInstance();
-            } catch ( Exception e ) {
-                try {
-                    return HtmlInputText.class.newInstance();
-                } catch ( Exception e1 ) {
-                    // TODO
-                    e.printStackTrace();
-                }
-            }
-        } else {
-            try {
-                return HtmlInputText.class.newInstance();
-            } catch ( Exception e ) {
-                // TODO
-                e.printStackTrace();
-            }
-        }
-        return null;
-    }
+	@SuppressWarnings("unchecked")
+	public void setInputClassName(String inputClassName) {
+		try {
+			inputComponentClass = Util.loadClass(inputClassName, null);
+		}
+		catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
 
-    public void setStyle( String style ) {
-        getStateHelper().put( PropertyKeys.style, style );
-    }
+	public void setInputComponentClass(Class<UIInput> inputComponentClass) {
+		this.inputComponentClass = inputComponentClass;
+	}
 
-    public String getStyle() {
-        return (String) getStateHelper().eval( PropertyKeys.style, null );
-    }
+	public UIInput getInputInstance() {
+		if (inputComponentClass != null) {
+			try {
+				return (UIInput) inputComponentClass.newInstance();
+			}
+			catch (Exception e) {
+				try {
+					return HtmlInputText.class.newInstance();
+				}
+				catch (Exception e1) {
+					// TODO
+					e.printStackTrace();
+				}
+			}
+		}
+		else {
+			try {
+				return HtmlInputText.class.newInstance();
+			}
+			catch (Exception e) {
+				// TODO
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}
 
-    public void setStyleClass( String styleClass ) {
-        getStateHelper().put( PropertyKeys.styleClass, styleClass );
-    }
+	public void setStyle(String style) {
+		getStateHelper().put(PropertyKeys.style, style);
+	}
 
-    public String getStyleClass() {
-        return (String) getStateHelper().eval( PropertyKeys.styleClass, null );
-    }
+	public String getStyle() {
+		return (String) getStateHelper().eval(PropertyKeys.style, null);
+	}
 
-    public boolean isCollapsible() {
-        return collapsible;
-    }
+	public void setStyleClass(String styleClass) {
+		getStateHelper().put(PropertyKeys.styleClass, styleClass);
+	}
 
-    public void setCollapsible( boolean collapsible ) {
-        this.collapsible = collapsible;
-    }
+	public String getStyleClass() {
+		return (String) getStateHelper().eval(PropertyKeys.styleClass, null);
+	}
 
-    public boolean isCollapsed( int index ) {
-        return this.collapsed.contains( index ) || isInitialCollapsed();
-    }
+	public boolean isCollapsible() {
+		return collapsible;
+	}
 
-    public void setCollapsed( int index, boolean collapsed ) {
-        initialStateChanged = true;
-        if ( collapsed ) {
-            this.collapsed.add( index );
-        } else {
-            this.collapsed.remove( index );
-        }
-    }
+	public void setCollapsible(boolean collapsible) {
+		this.collapsible = collapsible;
+	}
 
-    public boolean isInitialCollapsed() {
-        return (Boolean) getStateHelper().eval( PropertyKeys.initialCollapsed, false );
-    }
+	public boolean isCollapsed(int index) {
+		return this.collapsed.contains(index) || isInitialCollapsed();
+	}
 
-    public void setInitialCollapsed( boolean initialCollapsed ) {
-        getStateHelper().put( PropertyKeys.initialCollapsed, initialCollapsed );
-    }
+	public void setCollapsed(int index, boolean collapsed) {
+		initialStateChanged = true;
+		if (collapsed) {
+			this.collapsed.add(index);
+		}
+		else {
+			this.collapsed.remove(index);
+		}
+	}
 
-    public boolean isInitialStateChanged() {
-        return initialStateChanged;
-    }
+	public boolean isInitialCollapsed() {
+		return (Boolean) getStateHelper().eval(PropertyKeys.initialCollapsed, false);
+	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<Object> getValue() {
-        Object value = super.getValue();
-        if ( !( value instanceof List<?> ) ) {
-            throw new FacesException( "value of HtmlInputMultiple must be a list" );
-        }
-        return (List<Object>) value;
-    }
+	public void setInitialCollapsed(boolean initialCollapsed) {
+		getStateHelper().put(PropertyKeys.initialCollapsed, initialCollapsed);
+	}
+
+	public boolean isInitialStateChanged() {
+		return initialStateChanged;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Object> getValue() {
+		Object value = super.getValue();
+		if (!(value instanceof List<?>)) {
+			throw new FacesException("value of HtmlInputMultiple must be a list");
+		}
+		return (List<Object>) value;
+	}
 
 }

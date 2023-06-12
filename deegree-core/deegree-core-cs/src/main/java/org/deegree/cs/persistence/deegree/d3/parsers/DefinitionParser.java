@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2009 by:
@@ -56,7 +55,6 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.proxy.ProxySettings;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
@@ -70,263 +68,255 @@ import org.deegree.cs.persistence.deegree.d3.DeegreeCRSStore;
 import org.slf4j.Logger;
 
 /**
- * The parent class of all parsers defines convenience methods common to all StAX based crs parsers as well as reading
- * in the locations of the crs components defintions.
- * 
+ * The parent class of all parsers defines convenience methods common to all StAX based
+ * crs parsers as well as reading in the locations of the crs components defintions.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
- * 
+ *
  */
-@LoggingNotes(debug = "Get stacktraces if something goes wrong.")
 public abstract class DefinitionParser {
 
-    private static final Logger LOG = getLogger( DefinitionParser.class );
+	private static final Logger LOG = getLogger(DefinitionParser.class);
 
-    private final Object LOCK = new Object();
+	private final Object LOCK = new Object();
 
-    protected DeegreeCRSStore store = null;
+	protected DeegreeCRSStore store = null;
 
-    private XMLStreamReader configReader;
+	private XMLStreamReader configReader;
 
-    private InputStream configStream;
+	private InputStream configStream;
 
-    private final URL configURL;
+	private final URL configURL;
 
-    private boolean readEntireFile = false;
+	private boolean readEntireFile = false;
 
-    /**
-     * @param store
-     * @param configURL
-     */
-    protected DefinitionParser( DeegreeCRSStore store, URL configURL ) {
-        this.configURL = configURL;
-        this.store = store;
-    }
+	/**
+	 * @param store
+	 * @param configURL
+	 */
+	protected DefinitionParser(DeegreeCRSStore store, URL configURL) {
+		this.configURL = configURL;
+		this.store = store;
+	}
 
-    /**
-     * @return the top level element of a configuration file.
-     */
-    protected abstract QName expectedRootName();
+	/**
+	 * @return the top level element of a configuration file.
+	 */
+	protected abstract QName expectedRootName();
 
-    /**
-     * Get the configuration reader. The stream will be before the end document event or <code>null</code> if the entire
-     * file was read.
-     * 
-     * @return the configuration reader.
-     * @throws XMLStreamException
-     */
-    protected XMLStreamReader getConfigReader()
-                            throws XMLStreamException {
-        synchronized ( LOCK ) {
-            /**
-             * rb: What to do about caching, if the cache is cleared {@link AbstractCRSProvider#clearCache()}, the
-             * 'readEntireFile' flag must be set to false...
-             */
-            if ( configReader == null ) {
-                openReader();
-            } else {
-                if ( !readEntireFile ) {
-                    if ( configReader.getEventType() == XMLStreamConstants.END_DOCUMENT ) {
-                        try {
-                            this.configStream.close();
-                        } catch ( IOException e ) {
-                            LOG.debug( "Unable to close the stream to the configuration: " + this.configURL
-                                       + " stack trace.", e );
-                            LOG.debug( "Unable to close the stream to the configuration: " + this.configURL
-                                       + " because: " + e.getLocalizedMessage() );
-                        }
-                        this.configReader.close();
-                        this.readEntireFile = true;
-                        // openReader();
-                        this.configReader = null;
-                        openReader();
-                    }
-                }
-            }
-        }
-        return configReader;
-    }
+	/**
+	 * Get the configuration reader. The stream will be before the end document event or
+	 * <code>null</code> if the entire file was read.
+	 * @return the configuration reader.
+	 * @throws XMLStreamException
+	 */
+	protected XMLStreamReader getConfigReader() throws XMLStreamException {
+		synchronized (LOCK) {
+			/**
+			 * rb: What to do about caching, if the cache is cleared
+			 * {@link AbstractCRSProvider#clearCache()}, the 'readEntireFile' flag must be
+			 * set to false...
+			 */
+			if (configReader == null) {
+				openReader();
+			}
+			else {
+				if (!readEntireFile) {
+					if (configReader.getEventType() == XMLStreamConstants.END_DOCUMENT) {
+						try {
+							this.configStream.close();
+						}
+						catch (IOException e) {
+							LOG.debug("Unable to close the stream to the configuration: " + this.configURL
+									+ " stack trace.", e);
+							LOG.debug("Unable to close the stream to the configuration: " + this.configURL
+									+ " because: " + e.getLocalizedMessage());
+						}
+						this.configReader.close();
+						this.readEntireFile = true;
+						// openReader();
+						this.configReader = null;
+						openReader();
+					}
+				}
+			}
+		}
+		return configReader;
+	}
 
-    /**
-     * Parses all elements of the identifiable object, it is assumed the reader is on a top level element, the next
-     * element will be an id. After this method the reader will point to the first element after areasOfUse.
-     * 
-     * @param reader
-     *            the xml-reader pointing to parent of the first id-element
-     * @return the identifiable object or <code>null</code> if no id was given.
-     * @throws CRSConfigurationException
-     */
-    protected CRSResource parseIdentifiable( XMLStreamReader reader )
-                            throws CRSConfigurationException {
-        QName parent = reader.getName();
-        try {
+	/**
+	 * Parses all elements of the identifiable object, it is assumed the reader is on a
+	 * top level element, the next element will be an id. After this method the reader
+	 * will point to the first element after areasOfUse.
+	 * @param reader the xml-reader pointing to parent of the first id-element
+	 * @return the identifiable object or <code>null</code> if no id was given.
+	 * @throws CRSConfigurationException
+	 */
+	protected CRSResource parseIdentifiable(XMLStreamReader reader) throws CRSConfigurationException {
+		QName parent = reader.getName();
+		try {
 
-            if ( !reader.isStartElement() ) {
-                throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_NOT_START_STAX_ERROR",
-                                                                          "CRSIdentifiable", parent ) );
-            }
-            // point to the next id element.
-            nextElement( reader );
+			if (!reader.isStartElement()) {
+				throw new CRSConfigurationException(
+						Messages.getMessage("CRS_CONFIG_NOT_START_STAX_ERROR", "CRSIdentifiable", parent));
+			}
+			// point to the next id element.
+			nextElement(reader);
 
-            String[] identifiers = getSimpleUnboundedAsStrings( reader, new QName( CRS_NS, "Id" ) );
-            if ( identifiers.length == 0 ) {
-                String msg = Messages.getMessage( "CRS_CONFIG_NO_ID", parent );
-                throw new CRSConfigurationException( msg );
-            }
+			String[] identifiers = getSimpleUnboundedAsStrings(reader, new QName(CRS_NS, "Id"));
+			if (identifiers.length == 0) {
+				String msg = Messages.getMessage("CRS_CONFIG_NO_ID", parent);
+				throw new CRSConfigurationException(msg);
+			}
 
-            String[] names = getSimpleUnboundedAsStrings( reader, new QName( CRS_NS, "Name" ) );
-            String[] versions = getSimpleUnboundedAsStrings( reader, new QName( CRS_NS, "Version" ) );
-            String[] descriptions = getSimpleUnboundedAsStrings( reader, new QName( CRS_NS, "Description" ) );
-            String[] areasOfUse = getSimpleUnboundedAsStrings( reader, new QName( CRS_NS, "AreaOfUse" ) );
+			String[] names = getSimpleUnboundedAsStrings(reader, new QName(CRS_NS, "Name"));
+			String[] versions = getSimpleUnboundedAsStrings(reader, new QName(CRS_NS, "Version"));
+			String[] descriptions = getSimpleUnboundedAsStrings(reader, new QName(CRS_NS, "Description"));
+			String[] areasOfUse = getSimpleUnboundedAsStrings(reader, new QName(CRS_NS, "AreaOfUse"));
 
-            // convert the string IDs to CRSCodeTypes
-            Set<CRSCodeType> codeSet = new HashSet<CRSCodeType>();
-            int n = identifiers.length;
-            for ( String identifier : identifiers ) {
-                codeSet.add( CRSCodeType.valueOf( identifier ) );
-            }
-            return new CRSIdentifiable( codeSet.toArray( new CRSCodeType[codeSet.size()] ), names, versions,
-                                        descriptions, areasOfUse );
+			// convert the string IDs to CRSCodeTypes
+			Set<CRSCodeType> codeSet = new HashSet<CRSCodeType>();
+			int n = identifiers.length;
+			for (String identifier : identifiers) {
+				codeSet.add(CRSCodeType.valueOf(identifier));
+			}
+			return new CRSIdentifiable(codeSet.toArray(new CRSCodeType[codeSet.size()]), names, versions, descriptions,
+					areasOfUse);
 
-        } catch ( XMLStreamException e ) {
-            throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PARSE_ERROR", "CRSIdentifiable",
-                                                                      parent, e.getMessage() ), e );
-        }
-    }
+		}
+		catch (XMLStreamException e) {
+			throw new CRSConfigurationException(
+					Messages.getMessage("CRS_CONFIG_PARSE_ERROR", "CRSIdentifiable", parent, e.getMessage()), e);
+		}
+	}
 
-    private void openReader() {
-        try {
-            synchronized ( LOCK ) {
-                configStream = ProxySettings.openURLConnection( configURL ).getInputStream();
-                this.configReader = XMLInputFactory.newInstance().createXMLStreamReader( configURL.toExternalForm(),
-                                                                                         this.configStream );
-                // move from start document.
-                XMLStreamUtils.nextElement( configReader );
-                if ( !expectedRootName().equals( configReader.getName() ) ) {
-                    LOG.error( "The root element of the crs configuration at location: " + configURL
-                               + " is not the expected: " + expectedRootName() + " is your configuration correct?" );
-                }
-            }
-        } catch ( XMLStreamException e ) {
-            LOG.debug( "Could not read config file from url: " + configURL + ", stack trace.", e );
-            LOG.error( "Could not read config file from url: " + configURL + " because: " + e.getLocalizedMessage() );
-        } catch ( FactoryConfigurationError e ) {
-            LOG.debug( "Could not read config file from url: " + configURL + ", stack trace.", e );
-            LOG.error( "Could not read config file from url: " + configURL + " because: " + e.getLocalizedMessage() );
-        } catch ( IOException e ) {
-            LOG.debug( "Could not read config file from url: " + configURL + ", stack trace.", e );
-            LOG.error( "Could not read config file from url: " + configURL + " because: " + e.getLocalizedMessage() );
-        }
+	private void openReader() {
+		try {
+			synchronized (LOCK) {
+				configStream = ProxySettings.openURLConnection(configURL).getInputStream();
+				this.configReader = XMLInputFactory.newInstance()
+					.createXMLStreamReader(configURL.toExternalForm(), this.configStream);
+				// move from start document.
+				XMLStreamUtils.nextElement(configReader);
+				if (!expectedRootName().equals(configReader.getName())) {
+					LOG.error("The root element of the crs configuration at location: " + configURL
+							+ " is not the expected: " + expectedRootName() + " is your configuration correct?");
+				}
+			}
+		}
+		catch (XMLStreamException e) {
+			LOG.debug("Could not read config file from url: " + configURL + ", stack trace.", e);
+			LOG.error("Could not read config file from url: " + configURL + " because: " + e.getLocalizedMessage());
+		}
+		catch (FactoryConfigurationError e) {
+			LOG.debug("Could not read config file from url: " + configURL + ", stack trace.", e);
+			LOG.error("Could not read config file from url: " + configURL + " because: " + e.getLocalizedMessage());
+		}
+		catch (IOException e) {
+			LOG.debug("Could not read config file from url: " + configURL + ", stack trace.", e);
+			LOG.error("Could not read config file from url: " + configURL + " because: " + e.getLocalizedMessage());
+		}
 
-    }
+	}
 
-    /**
-     * Parses a unit from the given xml-parent.
-     * 
-     * @param reader
-     *            xml-reader to parse the unit from.
-     * @param required
-     *            if the unit is required.
-     * 
-     * @return the unit object or null if not required and not found.
-     * @throws CRSConfigurationException
-     *             if the unit object could not be created.
-     */
-    protected Unit parseUnit( XMLStreamReader reader, boolean required )
-                            throws CRSConfigurationException {
-        String unitId;
-        if ( !reader.isStartElement() ) {
-            throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_NOT_START_STAX_ERROR",
-                                                                      "CRSIdentifiable" ) );
-        }
-        try {
-            if ( required ) {
-                unitId = XMLStreamUtils.getRequiredText( reader, new QName( CRS_NS, "Units" ), true );
-            } else {
-                unitId = XMLStreamUtils.getText( reader, new QName( CRS_NS, "Units" ), null, true );
-                if ( unitId == null ) {
-                    return null;
-                }
-            }
-        } catch ( XMLStreamException e ) {
-            throw new CRSConfigurationException(
-                                                 Messages.getMessage( "CRS_CONFIG_PARSE_ERROR", "Units", e.getMessage() ),
-                                                 e );
-        }
-        Unit result = getStore().getCachedIdentifiable( Unit.class, unitId );
-        if ( result == null ) {
-            result = Unit.createUnitFromString( unitId );
-            if ( result == null ) {
-                throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PARSE_ERROR", "Units",
-                                                                          "unknown unit: " + unitId ) );
-            }
-        }
-        return result;
-    }
+	/**
+	 * Parses a unit from the given xml-parent.
+	 * @param reader xml-reader to parse the unit from.
+	 * @param required if the unit is required.
+	 * @return the unit object or null if not required and not found.
+	 * @throws CRSConfigurationException if the unit object could not be created.
+	 */
+	protected Unit parseUnit(XMLStreamReader reader, boolean required) throws CRSConfigurationException {
+		String unitId;
+		if (!reader.isStartElement()) {
+			throw new CRSConfigurationException(
+					Messages.getMessage("CRS_CONFIG_NOT_START_STAX_ERROR", "CRSIdentifiable"));
+		}
+		try {
+			if (required) {
+				unitId = XMLStreamUtils.getRequiredText(reader, new QName(CRS_NS, "Units"), true);
+			}
+			else {
+				unitId = XMLStreamUtils.getText(reader, new QName(CRS_NS, "Units"), null, true);
+				if (unitId == null) {
+					return null;
+				}
+			}
+		}
+		catch (XMLStreamException e) {
+			throw new CRSConfigurationException(Messages.getMessage("CRS_CONFIG_PARSE_ERROR", "Units", e.getMessage()),
+					e);
+		}
+		Unit result = getStore().getCachedIdentifiable(Unit.class, unitId);
+		if (result == null) {
+			result = Unit.createUnitFromString(unitId);
+			if (result == null) {
+				throw new CRSConfigurationException(
+						Messages.getMessage("CRS_CONFIG_PARSE_ERROR", "Units", "unknown unit: " + unitId));
+			}
+		}
+		return result;
+	}
 
-    /**
-     * @return the provider used for reversed look ups, will never be <code>null</code>
-     */
-    public DeegreeCRSStore getStore() {
-        return store;
-    }
+	/**
+	 * @return the provider used for reversed look ups, will never be <code>null</code>
+	 */
+	public DeegreeCRSStore getStore() {
+		return store;
+	}
 
-    /**
-     * Post: reader will be at {@link XMLStreamConstants#START_ELEMENT} of the next element.
-     * 
-     * @param reader
-     *            to be used.
-     * @param qName
-     *            name of the element
-     * @param required
-     *            if true and the element is missing an exception will be thrown.
-     * @param defaultValue
-     * @return the value of the lat lon type or 0 if the element was not defined (and was not required.)
-     * @throws XMLStreamException
-     */
-    protected double parseLatLonType( XMLStreamReader reader, QName qName, boolean required, double defaultValue )
-                            throws XMLStreamException {
-        double result = defaultValue;
-        if ( reader.isStartElement() && qName.equals( reader.getName() ) ) {
-            boolean inDegrees = XMLStreamUtils.getAttributeValueAsBoolean( reader, null, "inDegrees", true );
-            result = XMLStreamUtils.getElementTextAsDouble( reader, qName, defaultValue, true );
-            result = ( !Double.isNaN( result ) && result != 0 && inDegrees ) ? Math.toRadians( result ) : result;
-        } else {
-            if ( required ) {
-                throw new XMLParsingException( reader, Messages.getMessage( "CRS_CONFIG_PARSE_ERROR", qName ) );
-            }
-        }
-        return result;
-    }
+	/**
+	 * Post: reader will be at {@link XMLStreamConstants#START_ELEMENT} of the next
+	 * element.
+	 * @param reader to be used.
+	 * @param qName name of the element
+	 * @param required if true and the element is missing an exception will be thrown.
+	 * @param defaultValue
+	 * @return the value of the lat lon type or 0 if the element was not defined (and was
+	 * not required.)
+	 * @throws XMLStreamException
+	 */
+	protected double parseLatLonType(XMLStreamReader reader, QName qName, boolean required, double defaultValue)
+			throws XMLStreamException {
+		double result = defaultValue;
+		if (reader.isStartElement() && qName.equals(reader.getName())) {
+			boolean inDegrees = XMLStreamUtils.getAttributeValueAsBoolean(reader, null, "inDegrees", true);
+			result = XMLStreamUtils.getElementTextAsDouble(reader, qName, defaultValue, true);
+			result = (!Double.isNaN(result) && result != 0 && inDegrees) ? Math.toRadians(result) : result;
+		}
+		else {
+			if (required) {
+				throw new XMLParsingException(reader, Messages.getMessage("CRS_CONFIG_PARSE_ERROR", qName));
+			}
+		}
+		return result;
+	}
 
-    /**
-     * Forwards the stream
-     * 
-     * @param reader
-     *            to forward
-     * @param allowedElements
-     * @return true if the stream is pointing to an element with the given qname.
-     * @throws XMLStreamException
-     */
-    public boolean moveReaderToNextIdentifiable( XMLStreamReader reader, Set<QName> allowedElements )
-                            throws XMLStreamException {
-        return XMLStreamConstants.END_DOCUMENT != reader.getEventType()
-               && XMLStreamUtils.moveReaderToFirstMatch( reader, allowedElements );
-    }
+	/**
+	 * Forwards the stream
+	 * @param reader to forward
+	 * @param allowedElements
+	 * @return true if the stream is pointing to an element with the given qname.
+	 * @throws XMLStreamException
+	 */
+	public boolean moveReaderToNextIdentifiable(XMLStreamReader reader, Set<QName> allowedElements)
+			throws XMLStreamException {
+		return XMLStreamConstants.END_DOCUMENT != reader.getEventType()
+				&& XMLStreamUtils.moveReaderToFirstMatch(reader, allowedElements);
+	}
 
-    /**
-     * @return true if the entire file has been read, false otherwise.
-     */
-    public boolean readEntireFile() {
-        return this.readEntireFile;
-    }
+	/**
+	 * @return true if the entire file has been read, false otherwise.
+	 */
+	public boolean readEntireFile() {
+		return this.readEntireFile;
+	}
 
-    /**
-     * @return the configuration url.
-     */
-    protected URL getConfigURL() {
-        return this.configURL;
-    }
+	/**
+	 * @return the configuration url.
+	 */
+	protected URL getConfigURL() {
+		return this.configURL;
+	}
 
 }

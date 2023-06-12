@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2015 by:
@@ -51,52 +50,50 @@ import org.junit.Test;
 
 /**
  * currently it is only tested that no exception occurs
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
 public class SOAPExceptionSerializerTest {
 
-    @SuppressWarnings("deprecation")
-    @Test
-    public void testSerializeExceptionToXML_SOAP11()
-                            throws Exception {
-        SOAPFactory factory = OMAbstractFactory.getSOAP11Factory();
-        XMLExceptionSerializer detailSerializer = new OWS110ExceptionReportSerializer( new Version( 2, 0, 0 ) );
-        SOAPExceptionSerializer soapExceptionSerializer = new SOAPExceptionSerializer( factory.getSOAPVersion(), null,
-                                                                                       factory, detailSerializer );
-        SOAPException soapException = createException();
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter( stream );
-        writer.writeStartDocument();
-        soapExceptionSerializer.serializeExceptionToXML( writer, soapException );
-        writer.writeEndDocument();
-        writer.close();
-    }
+	@SuppressWarnings("deprecation")
+	@Test
+	public void testSerializeExceptionToXML_SOAP11() throws Exception {
+		SOAPFactory factory = OMAbstractFactory.getSOAP11Factory();
+		XMLExceptionSerializer detailSerializer = new OWS110ExceptionReportSerializer(new Version(2, 0, 0));
+		SOAPExceptionSerializer soapExceptionSerializer = new SOAPExceptionSerializer(factory.getSOAPVersion(), null,
+				factory, detailSerializer);
+		SOAPException soapException = createException();
+		ByteArrayOutputStream stream = new ByteArrayOutputStream();
+		XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter(stream);
+		writer.writeStartDocument();
+		soapExceptionSerializer.serializeExceptionToXML(writer, soapException);
+		writer.writeEndDocument();
+		writer.close();
+	}
 
-    @SuppressWarnings("deprecation")
-    @Test
-    public void testSerializeExceptionToXML_SOAP12()
-                            throws Exception {
-        SOAPFactory factory = OMAbstractFactory.getSOAP12Factory();
-        SOAPExceptionSerializer soapExceptionSerializer = createExceptionSerializer( factory );
-        SOAPException soapException = createException();
+	@SuppressWarnings("deprecation")
+	@Test
+	public void testSerializeExceptionToXML_SOAP12() throws Exception {
+		SOAPFactory factory = OMAbstractFactory.getSOAP12Factory();
+		SOAPExceptionSerializer soapExceptionSerializer = createExceptionSerializer(factory);
+		SOAPException soapException = createException();
 
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter( stream );
-        writer.writeStartDocument();
-        soapExceptionSerializer.serializeExceptionToXML( writer, soapException );
-        writer.writeEndDocument();
-        writer.close();
-    }
+		ByteArrayOutputStream stream = new ByteArrayOutputStream();
+		XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter(stream);
+		writer.writeStartDocument();
+		soapExceptionSerializer.serializeExceptionToXML(writer, soapException);
+		writer.writeEndDocument();
+		writer.close();
+	}
 
-    private SOAPException createException() {
-        OWSException owsException = new OWSException( new InvalidParameterValueException( "version" ) );
-        return new SOAPException( "reason", "code", owsException );
-    }
+	private SOAPException createException() {
+		OWSException owsException = new OWSException(new InvalidParameterValueException("version"));
+		return new SOAPException("reason", "code", owsException);
+	}
 
-    private SOAPExceptionSerializer createExceptionSerializer( SOAPFactory factory ) {
-        XMLExceptionSerializer detailSerializer = new OWS110ExceptionReportSerializer( new Version( 2, 0, 0 ) );
-        return new SOAPExceptionSerializer( factory.getSOAPVersion(), null, factory, detailSerializer );
-    }
+	private SOAPExceptionSerializer createExceptionSerializer(SOAPFactory factory) {
+		XMLExceptionSerializer detailSerializer = new OWS110ExceptionReportSerializer(new Version(2, 0, 0));
+		return new SOAPExceptionSerializer(factory.getSOAPVersion(), null, factory, detailSerializer);
+	}
 
 }

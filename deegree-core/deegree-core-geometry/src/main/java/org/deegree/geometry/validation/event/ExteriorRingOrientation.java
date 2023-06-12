@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -41,66 +40,61 @@ import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
 
 /**
- * {@link GeometryValidationEvent} that indicates the orientation of an exterior {@link Ring} of a {@link PolygonPatch}.
- * 
+ * {@link GeometryValidationEvent} that indicates the orientation of an exterior
+ * {@link Ring} of a {@link PolygonPatch}.
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * 
- * @version $Revision: $, $Date: $
  */
 public class ExteriorRingOrientation extends AbstractGeometryValidationEvent {
 
-    private final PolygonPatch patch;
+	private final PolygonPatch patch;
 
-    private final boolean isClockwise;
+	private final boolean isClockwise;
 
-    /**
-     * Creates a new {@link ExteriorRingOrientation} instance.
-     * 
-     * @param patch
-     *            patch that the ring belongs to, never <code>null</code>
-     * @param isClockwise
-     *            <code>true</code> if orientation is clockwise, <code>false</code> if counter-clockwise
-     * @param geometryParticleHierarchy
-     *            list of affected geometry particles (that the patch is part of), must not be <code>null</code>
-     */
-    public ExteriorRingOrientation( PolygonPatch patch, boolean isClockwise, List<Object> geometryParticleHierarchy ) {
-        super( geometryParticleHierarchy );
-        this.patch = patch;
-        this.isClockwise = isClockwise;
-    }
+	/**
+	 * Creates a new {@link ExteriorRingOrientation} instance.
+	 * @param patch patch that the ring belongs to, never <code>null</code>
+	 * @param isClockwise <code>true</code> if orientation is clockwise,
+	 * <code>false</code> if counter-clockwise
+	 * @param geometryParticleHierarchy list of affected geometry particles (that the
+	 * patch is part of), must not be <code>null</code>
+	 */
+	public ExteriorRingOrientation(PolygonPatch patch, boolean isClockwise, List<Object> geometryParticleHierarchy) {
+		super(geometryParticleHierarchy);
+		this.patch = patch;
+		this.isClockwise = isClockwise;
+	}
 
-    /**
-     * Returns the affected {@link PolygonPatch} geometry.
-     * 
-     * @return affected patch, never <code>null</code>
-     */
-    public PolygonPatch getPatch() {
-        return patch;
-    }
+	/**
+	 * Returns the affected {@link PolygonPatch} geometry.
+	 * @return affected patch, never <code>null</code>
+	 */
+	public PolygonPatch getPatch() {
+		return patch;
+	}
 
-    /**
-     * Returns the orientation.
-     * 
-     * @return <code>true</code> if orientation is clockwise, <code>false</code> if counter-clockwise
-     */
-    public boolean isClockwise() {
-        return isClockwise;
-    }
+	/**
+	 * Returns the orientation.
+	 * @return <code>true</code> if orientation is clockwise, <code>false</code> if
+	 * counter-clockwise
+	 */
+	public boolean isClockwise() {
+		return isClockwise;
+	}
 
-    /**
-     * Returns true if the geometry is an exterior boundary.
-     * 
-     * @return <code>true</code> if geometry is an exterior boundary, <code>false</code> if it's interior
-     */
-    public boolean isExterior() {
-        boolean isExterior = !isClockwise;
+	/**
+	 * Returns true if the geometry is an exterior boundary.
+	 * @return <code>true</code> if geometry is an exterior boundary, <code>false</code>
+	 * if it's interior
+	 */
+	public boolean isExterior() {
+		boolean isExterior = !isClockwise;
 
-        if ( isLeftHanded( patch.getExteriorRing().getCoordinateSystem() ) ) {
-            isExterior = !isExterior;
-        }
+		if (isLeftHanded(patch.getExteriorRing().getCoordinateSystem())) {
+			isExterior = !isExterior;
+		}
 
-        return isExterior;
-    }
+		return isExterior;
+	}
 
 }

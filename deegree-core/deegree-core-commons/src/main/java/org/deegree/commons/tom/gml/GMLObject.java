@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -44,49 +43,42 @@ import org.deegree.commons.tom.gml.property.Property;
 
 /**
  * Base interface for GML objects.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface GMLObject extends Object {
 
-    /**
-     * Returns the id of the GML object.
-     * <p>
-     * In a GML encoding of the object, this corresponds to the <code>gml:id</code> (GML 3 and later) or
-     * <code>fid</code> (GML 2) attribute of the object element.
-     * </p>
-     * 
-     * @return the id of the object, may be <code>null</code>
-     */
-    @Override
-    public String getId();
+	/**
+	 * Returns the id of the GML object.
+	 * <p>
+	 * In a GML encoding of the object, this corresponds to the <code>gml:id</code> (GML 3
+	 * and later) or <code>fid</code> (GML 2) attribute of the object element.
+	 * </p>
+	 * @return the id of the object, may be <code>null</code>
+	 */
+	@Override
+	public String getId();
 
-    /**
-     * Returns the type declaration for this object.
-     * 
-     * TODO type declaration should always be available
-     * 
-     * @return type declaration, may be <code>null</code> (no type declaration available)
-     */
-    public GMLObjectType getType();
+	/**
+	 * Returns the type declaration for this object.
+	 *
+	 * TODO type declaration should always be available
+	 * @return type declaration, may be <code>null</code> (no type declaration available)
+	 */
+	public GMLObjectType getType();
 
-    /**
-     * Returns all properties of this object, in order.
-     * 
-     * @return all properties, in order, may be empty, but never <code>null</code>
-     */
-    public List<Property> getProperties();
+	/**
+	 * Returns all properties of this object, in order.
+	 * @return all properties, in order, may be empty, but never <code>null</code>
+	 */
+	public List<Property> getProperties();
 
-    /**
-     * Returns all properties with the given name, in order.
-     * 
-     * @param propName
-     *            name of the requested properties, must not be <code>null</code>
-     * @return the properties with the given name, in order, may be empty (no such properties), but never
-     *         <code>null</code>
-     */
-    public List<Property> getProperties( QName propName );
+	/**
+	 * Returns all properties with the given name, in order.
+	 * @param propName name of the requested properties, must not be <code>null</code>
+	 * @return the properties with the given name, in order, may be empty (no such
+	 * properties), but never <code>null</code>
+	 */
+	public List<Property> getProperties(QName propName);
+
 }

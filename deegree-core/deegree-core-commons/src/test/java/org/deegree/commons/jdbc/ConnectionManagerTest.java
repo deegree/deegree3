@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -40,21 +39,23 @@ import org.junit.Test;
 
 public class ConnectionManagerTest {
 
-    // TODO use configuration that works in every environment (derby??)
+	// TODO use configuration that works in every environment (derby??)
 
-    @Test
-    public void testConnectionAllocation() {
-        //
-        // URL configURL = ConnectionManagerTest.class.getResource( "jdbc_connections.xml");
-        // ConnectionManager.addConnections( configURL);
-        //
-        // Connection[] conns = new Connection[20];
-        // for ( int i = 0; i < conns.length; i++ ) {
-        // conns [i] = ConnectionManager.getConnection( "conn1" );
-        // }
-        //
-        // for ( int i = 0; i < conns.length; i++ ) {
-        // conns [i].close();
-        // }
-    }
+	@Test
+	public void testConnectionAllocation() {
+		//
+		// URL configURL = ConnectionManagerTest.class.getResource(
+		// "jdbc_connections.xml");
+		// ConnectionManager.addConnections( configURL);
+		//
+		// Connection[] conns = new Connection[20];
+		// for ( int i = 0; i < conns.length; i++ ) {
+		// conns [i] = ConnectionManager.getConnection( "conn1" );
+		// }
+		//
+		// for ( int i = 0; i < conns.length; i++ ) {
+		// conns [i].close();
+		// }
+	}
+
 }

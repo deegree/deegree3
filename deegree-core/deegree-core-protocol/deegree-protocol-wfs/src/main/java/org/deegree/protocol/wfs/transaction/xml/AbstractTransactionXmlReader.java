@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -43,28 +42,29 @@ import org.deegree.protocol.wfs.AbstractWFSRequestXMLAdapter;
 import org.deegree.protocol.wfs.transaction.ReleaseAction;
 
 /**
- * Abstract base class for readers for XML encoded <code>Transaction</code> requests and contained actions.
- * 
+ * Abstract base class for readers for XML encoded <code>Transaction</code> requests and
+ * contained actions.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 abstract class AbstractTransactionXmlReader extends AbstractWFSRequestXMLAdapter implements TransactionXmlReader {
 
-    protected ReleaseAction parseReleaseAction( String releaseActionString ) {
-        ReleaseAction releaseAction = null;
-        if ( releaseActionString != null ) {
-            if ( "SOME".equals( releaseActionString ) ) {
-                releaseAction = SOME;
-            } else if ( "ALL".equals( releaseActionString ) ) {
-                releaseAction = ALL;
-            } else {
-                String msg = "Invalid value (=" + releaseActionString
-                             + ") for release action parameter. Valid values are 'ALL' or 'SOME'.";
-                throw new InvalidParameterValueException( msg, "releaseAction" );
-            }
-        }
-        return releaseAction;
-    }
+	protected ReleaseAction parseReleaseAction(String releaseActionString) {
+		ReleaseAction releaseAction = null;
+		if (releaseActionString != null) {
+			if ("SOME".equals(releaseActionString)) {
+				releaseAction = SOME;
+			}
+			else if ("ALL".equals(releaseActionString)) {
+				releaseAction = ALL;
+			}
+			else {
+				String msg = "Invalid value (=" + releaseActionString
+						+ ") for release action parameter. Valid values are 'ALL' or 'SOME'.";
+				throw new InvalidParameterValueException(msg, "releaseAction");
+			}
+		}
+		return releaseAction;
+	}
+
 }

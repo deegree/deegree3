@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -57,94 +56,97 @@ import org.locationtech.jts.geom.MultiPoint;
 
 /**
  * Provides methods for creating linearized versions of {@link Geometry} objects.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class GeometryLinearizer {
 
-    private static final Logger LOG = LoggerFactory.getLogger( SurfaceLinearizer.class );
+	private static final Logger LOG = LoggerFactory.getLogger(SurfaceLinearizer.class);
 
-    private GeometryFactory geomFac;
+	private GeometryFactory geomFac;
 
-    private CurveLinearizer curveLinearizer;
+	private CurveLinearizer curveLinearizer;
 
-    private SurfaceLinearizer sfLinearizer;
+	private SurfaceLinearizer sfLinearizer;
 
-    /**
-     * Creates a new {@link GeometryLinearizer} instance.
-     */
-    public GeometryLinearizer() {
-        this.geomFac = new GeometryFactory();
-        this.curveLinearizer = new CurveLinearizer( geomFac );
-        this.sfLinearizer = new SurfaceLinearizer( geomFac );
-    }
+	/**
+	 * Creates a new {@link GeometryLinearizer} instance.
+	 */
+	public GeometryLinearizer() {
+		this.geomFac = new GeometryFactory();
+		this.curveLinearizer = new CurveLinearizer(geomFac);
+		this.sfLinearizer = new SurfaceLinearizer(geomFac);
+	}
 
-    /**
-     * Returns a linearized version of the given {@link Geometry}.
-     * 
-     * @param <T>
-     *            geometry type
-     * @param geom
-     *            geometry to be linearized, must not be <code>null</code>
-     * @param crit
-     *            linearization criterion, must not be <code>null</code>
-     * @return linearized version of the input geometry, never <code>null</code>
-     */
-    @SuppressWarnings("unchecked")
-    public <T extends Geometry> T linearize( T geom, LinearizationCriterion crit ) {
-        T linearized = geom;
-        if ( geom instanceof Curve ) {
-            linearized = (T) curveLinearizer.linearize( (Curve) geom, crit );
-        } else if ( geom instanceof Surface ) {
-            linearized = (T) sfLinearizer.linearize( (Surface) geom, crit );
-        } else if ( geom instanceof Solid ) {
-            LOG.warn( "Linearization of Solids is not implemented yet." );
-        } else if ( geom instanceof MultiGeometry<?> ) {
-            linearized = (T) linearizeMulti( (MultiGeometry<?>) geom, crit );
-        }
-        return linearized;
-    }
+	/**
+	 * Returns a linearized version of the given {@link Geometry}.
+	 * @param <T> geometry type
+	 * @param geom geometry to be linearized, must not be <code>null</code>
+	 * @param crit linearization criterion, must not be <code>null</code>
+	 * @return linearized version of the input geometry, never <code>null</code>
+	 */
+	@SuppressWarnings("unchecked")
+	public <T extends Geometry> T linearize(T geom, LinearizationCriterion crit) {
+		T linearized = geom;
+		if (geom instanceof Curve) {
+			linearized = (T) curveLinearizer.linearize((Curve) geom, crit);
+		}
+		else if (geom instanceof Surface) {
+			linearized = (T) sfLinearizer.linearize((Surface) geom, crit);
+		}
+		else if (geom instanceof Solid) {
+			LOG.warn("Linearization of Solids is not implemented yet.");
+		}
+		else if (geom instanceof MultiGeometry<?>) {
+			linearized = (T) linearizeMulti((MultiGeometry<?>) geom, crit);
+		}
+		return linearized;
+	}
 
-    @SuppressWarnings("unchecked")
-    private <T extends MultiGeometry<?>> T linearizeMulti( T geom, LinearizationCriterion crit ) {
-        T linearized = geom;
-        if ( geom instanceof MultiPoint ) {
-            // nothing to do
-        } else if ( geom instanceof MultiLineString ) {
-            // nothing to do
-        } else if ( geom instanceof MultiSolid ) {
-            LOG.warn( "Linearization of Solids is not implemented yet." );
-        } else if ( geom instanceof MultiCurve ) {
-            MultiCurve<Curve> mc = (MultiCurve<Curve>) geom;
-            List<Curve> linearizedMembers = new ArrayList<Curve>( mc.size() );
-            for ( Curve curve : mc ) {
-                linearizedMembers.add( curveLinearizer.linearize( curve, crit ) );
-            }
-            linearized = (T) geomFac.createMultiCurve( geom.getId(), geom.getCoordinateSystem(), linearizedMembers );
-        } else if ( geom instanceof MultiPolygon ) {
-            MultiPolygon mp = (MultiPolygon) geom;
-            List<Polygon> linearizedMembers = new ArrayList<Polygon>( mp.size() );
-            for ( Polygon polygon : mp ) {
-                linearizedMembers.add( sfLinearizer.linearize( polygon, crit ) );
-            }
-            linearized = (T) geomFac.createMultiPolygon( geom.getId(), geom.getCoordinateSystem(), linearizedMembers );
-        } else if ( geom instanceof MultiSurface ) {
-            MultiSurface<Surface> ms = (MultiSurface<Surface>) geom;
-            List<Surface> linearizedMembers = new ArrayList<Surface>( ms.size() );
-            for ( Surface polygon : ms ) {
-                linearizedMembers.add( sfLinearizer.linearize( polygon, crit ) );
-            }
-            linearized = (T) geomFac.createMultiSurface( geom.getId(), geom.getCoordinateSystem(), linearizedMembers );
-        } else {
-            List<Geometry> linearizedMembers = new ArrayList<Geometry>( geom.size() );
-            for ( Object member : geom ) {
-                linearizedMembers.add( linearize( (Geometry) member, crit ) );
-            }
-            linearized = (T) geomFac.createMultiGeometry( geom.getId(), geom.getCoordinateSystem(), linearizedMembers );
-        }
-        return linearized;
-    }
+	@SuppressWarnings("unchecked")
+	private <T extends MultiGeometry<?>> T linearizeMulti(T geom, LinearizationCriterion crit) {
+		T linearized = geom;
+		if (geom instanceof MultiPoint) {
+			// nothing to do
+		}
+		else if (geom instanceof MultiLineString) {
+			// nothing to do
+		}
+		else if (geom instanceof MultiSolid) {
+			LOG.warn("Linearization of Solids is not implemented yet.");
+		}
+		else if (geom instanceof MultiCurve) {
+			MultiCurve<Curve> mc = (MultiCurve<Curve>) geom;
+			List<Curve> linearizedMembers = new ArrayList<Curve>(mc.size());
+			for (Curve curve : mc) {
+				linearizedMembers.add(curveLinearizer.linearize(curve, crit));
+			}
+			linearized = (T) geomFac.createMultiCurve(geom.getId(), geom.getCoordinateSystem(), linearizedMembers);
+		}
+		else if (geom instanceof MultiPolygon) {
+			MultiPolygon mp = (MultiPolygon) geom;
+			List<Polygon> linearizedMembers = new ArrayList<Polygon>(mp.size());
+			for (Polygon polygon : mp) {
+				linearizedMembers.add(sfLinearizer.linearize(polygon, crit));
+			}
+			linearized = (T) geomFac.createMultiPolygon(geom.getId(), geom.getCoordinateSystem(), linearizedMembers);
+		}
+		else if (geom instanceof MultiSurface) {
+			MultiSurface<Surface> ms = (MultiSurface<Surface>) geom;
+			List<Surface> linearizedMembers = new ArrayList<Surface>(ms.size());
+			for (Surface polygon : ms) {
+				linearizedMembers.add(sfLinearizer.linearize(polygon, crit));
+			}
+			linearized = (T) geomFac.createMultiSurface(geom.getId(), geom.getCoordinateSystem(), linearizedMembers);
+		}
+		else {
+			List<Geometry> linearizedMembers = new ArrayList<Geometry>(geom.size());
+			for (Object member : geom) {
+				linearizedMembers.add(linearize((Geometry) member, crit));
+			}
+			linearized = (T) geomFac.createMultiGeometry(geom.getId(), geom.getCoordinateSystem(), linearizedMembers);
+		}
+		return linearized;
+	}
+
 }

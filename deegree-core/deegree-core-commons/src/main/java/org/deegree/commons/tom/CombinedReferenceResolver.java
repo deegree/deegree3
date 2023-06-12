@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-commons/src/main/java/org/deegree/commons/tom/ElementNode.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -41,34 +40,33 @@ import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.GMLReferenceResolver;
 
 /**
- * Resolves objects by using a list of resolvers. Resolves an object to the first resolver that can resolve it.
- * 
+ * Resolves objects by using a list of resolvers. Resolves an object to the first resolver
+ * that can resolve it.
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 30435 $, $Date: 2011-04-13 17:26:03 +0200 (Wed, 13 Apr 2011) $
  */
 public class CombinedReferenceResolver implements GMLReferenceResolver {
 
-    private List<GMLReferenceResolver> resolvers;
+	private List<GMLReferenceResolver> resolvers;
 
-    public CombinedReferenceResolver( List<GMLReferenceResolver> resolvers ) {
-        this.resolvers = resolvers;
-    }
+	public CombinedReferenceResolver(List<GMLReferenceResolver> resolvers) {
+		this.resolvers = resolvers;
+	}
 
-    @Override
-    public GMLObject getObject( String uri, String baseURL ) {
-        for ( GMLReferenceResolver resolver : resolvers ) {
-            try {
-                GMLObject obj = resolver.getObject( uri, baseURL );
-                if ( obj != null ) {
-                    return obj;
-                }
-            } catch ( Throwable t ) {
-                // just skip to the next resolver
-            }
-        }
-        return null;
-    }
+	@Override
+	public GMLObject getObject(String uri, String baseURL) {
+		for (GMLReferenceResolver resolver : resolvers) {
+			try {
+				GMLObject obj = resolver.getObject(uri, baseURL);
+				if (obj != null) {
+					return obj;
+				}
+			}
+			catch (Throwable t) {
+				// just skip to the next resolver
+			}
+		}
+		return null;
+	}
 
 }

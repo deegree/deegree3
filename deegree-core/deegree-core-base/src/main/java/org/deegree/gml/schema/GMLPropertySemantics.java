@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-base/src/main/java/org/deegree/feature/types/property/ObjectPropertyType.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -40,74 +39,68 @@ import org.deegree.commons.tom.gml.GMLObjectCategory;
 import org.deegree.feature.types.property.ValueRepresentation;
 
 /**
- * An {@link XSElementDeclaration} with complex GML property semantics (encapsulates or references another element).
+ * An {@link XSElementDeclaration} with complex GML property semantics (encapsulates or
+ * references another element).
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: markus $
- *
- * @version $Revision: $, $Date: $
  */
 public class GMLPropertySemantics {
 
-    private final XSElementDeclaration propertyElDecl;
+	private final XSElementDeclaration propertyElDecl;
 
-    private final XSElementDeclaration valueElDecl;
+	private final XSElementDeclaration valueElDecl;
 
-    private final ValueRepresentation valueRepresentations;
+	private final ValueRepresentation valueRepresentations;
 
-    private final GMLObjectCategory category;
+	private final GMLObjectCategory category;
 
-    /**
-     * Creates a new {@link GMLPropertySemantics} instance.
-     *
-     * @param propertyElDecl
-     *            declaration of the property element, must not be <code>null</code>
-     * @param valueElDecl
-     *            declaration of the value element, must not be <code>null</code>
-     * @param valueRepresentations
-     *            allowed representations for the value, must not be <code>null</code>
-     * @param category
-     *            GML object category, can be <code>null</code>
-     */
-    public GMLPropertySemantics( XSElementDeclaration propertyElDecl, XSElementDeclaration valueElDecl,
-                                 ValueRepresentation valueRepresentations, final GMLObjectCategory category ) {
-        this.propertyElDecl = propertyElDecl;
-        this.valueElDecl = valueElDecl;
-        this.valueRepresentations = valueRepresentations;
-        this.category = category;
-    }
+	/**
+	 * Creates a new {@link GMLPropertySemantics} instance.
+	 * @param propertyElDecl declaration of the property element, must not be
+	 * <code>null</code>
+	 * @param valueElDecl declaration of the value element, must not be <code>null</code>
+	 * @param valueRepresentations allowed representations for the value, must not be
+	 * <code>null</code>
+	 * @param category GML object category, can be <code>null</code>
+	 */
+	public GMLPropertySemantics(XSElementDeclaration propertyElDecl, XSElementDeclaration valueElDecl,
+			ValueRepresentation valueRepresentations, final GMLObjectCategory category) {
+		this.propertyElDecl = propertyElDecl;
+		this.valueElDecl = valueElDecl;
+		this.valueRepresentations = valueRepresentations;
+		this.category = category;
+	}
 
-    /**
-     * Returns the declaration of the property element.
-     *
-     * @return declaration of the property element, never <code>null</code>
-     */
-    public XSElementDeclaration getPropertyElDecl() {
-        return propertyElDecl;
-    }
+	/**
+	 * Returns the declaration of the property element.
+	 * @return declaration of the property element, never <code>null</code>
+	 */
+	public XSElementDeclaration getPropertyElDecl() {
+		return propertyElDecl;
+	}
 
-    /**
-     * Returns the declaration of the value element.
-     *
-     * @return declaration of the value element, never <code>null</code>
-     */
-    public XSElementDeclaration getValueElDecl() {
-        return valueElDecl;
-    }
+	/**
+	 * Returns the declaration of the value element.
+	 * @return declaration of the value element, never <code>null</code>
+	 */
+	public XSElementDeclaration getValueElDecl() {
+		return valueElDecl;
+	}
 
-    /**
-     * Returns the allowed representations for the value element (by reference, inline or both).
-     *
-     * @return allowed representations, never <code>null</code>
-     */
-    public ValueRepresentation getRepresentations() {
-        return valueRepresentations;
-    }
+	/**
+	 * Returns the allowed representations for the value element (by reference, inline or
+	 * both).
+	 * @return allowed representations, never <code>null</code>
+	 */
+	public ValueRepresentation getRepresentations() {
+		return valueRepresentations;
+	}
 
-    /**
-     * @return can be <code>null</code>
-     */
-    public GMLObjectCategory getValueCategory() {
-        return category;
-    }
+	/**
+	 * @return can be <code>null</code>
+	 */
+	public GMLObjectCategory getValueCategory() {
+		return category;
+	}
+
 }

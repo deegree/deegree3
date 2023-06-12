@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -40,20 +39,17 @@ import java.util.List;
 import org.deegree.geometry.validation.GeometryValidator;
 
 /**
- * An event that indicates that the {@link GeometryValidator} detected a topological property.
- * 
+ * An event that indicates that the {@link GeometryValidator} detected a topological
+ * property.
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * 
- * @version $Revision: $, $Date: $
  */
 public interface GeometryValidationEvent {
 
-    /**
-     * Returns the hierarchy of affected geometry particles, bottom-up.
-     * 
-     * @return hierarchy of affected geometry particles, never <code>null</code>
-     */
-    List<Object> getGeometryParticleHierarchy();
+	/**
+	 * Returns the hierarchy of affected geometry particles, bottom-up.
+	 * @return hierarchy of affected geometry particles, never <code>null</code>
+	 */
+	List<Object> getGeometryParticleHierarchy();
 
 }

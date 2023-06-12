@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2013 by:
@@ -62,9 +61,7 @@ import org.deegree.workspace.standard.DefaultResourceIdentifier;
  * {@link org.deegree.spring.ApplicationContextHolder} as dependency.
  * 
  * @author <a href="mailto:reijer.copier@idgis.nl">Reijer Copier</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
  */
 public class GenericSpringResourceMetadata<T extends Resource> extends AbstractResourceMetadata<T> {
 

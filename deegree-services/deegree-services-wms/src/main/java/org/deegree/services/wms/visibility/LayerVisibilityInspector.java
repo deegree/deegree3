@@ -43,14 +43,13 @@ import org.deegree.layer.metadata.LayerMetadata;
  */
 public interface LayerVisibilityInspector {
 
-    /**
-     * Checks if the layer with the passed {@link LayerMetadata} should be rendered or not.
-     *
-     * @param layerMetadata
-     *                         the metadata of the layer to inspect, never <code>null</code>
-     *
-     * @return <code>true</code> if the layer should be rendered, <code>false</code> otherwise
-     */
-    boolean isVisible( LayerMetadata layerMetadata );
+	/**
+	 * Checks if the layer with the passed {@link LayerMetadata} should be rendered or
+	 * not.
+	 * @param layerMetadata the metadata of the layer to inspect, never <code>null</code>
+	 * @return <code>true</code> if the layer should be rendered, <code>false</code>
+	 * otherwise
+	 */
+	boolean isVisible(LayerMetadata layerMetadata);
 
 }

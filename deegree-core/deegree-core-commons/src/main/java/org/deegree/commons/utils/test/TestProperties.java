@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -43,46 +42,46 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Encapsulates access to the global test configuration file <code>${user.home}/.deegree-test.properties</code>.
- * 
+ * Encapsulates access to the global test configuration file
+ * <code>${user.home}/.deegree-test.properties</code>.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class TestProperties {
 
-    private static Logger LOG = LoggerFactory.getLogger( TestProperties.class );
+	private static Logger LOG = LoggerFactory.getLogger(TestProperties.class);
 
-    private static final Properties props = new Properties();
+	private static final Properties props = new Properties();
 
-    private static final String DEEGREE_TEST_PROPERTIES = ".deegree-test.properties";
+	private static final String DEEGREE_TEST_PROPERTIES = ".deegree-test.properties";
 
-    static {
-        String userHome = System.getProperty( "user.home" );
-        File file = new File( userHome, DEEGREE_TEST_PROPERTIES );
-        if ( file.exists() ) {
-            LOG.info( "Reading test properties from file {}.", file );
-            try {
-                props.load( new FileReader( file ) );
-            } catch ( Exception e ) {
-                e.printStackTrace();
-            }
-        } else {
-            LOG.info( "File {} does not exist. Some tests may be skipped.", file );
-        }
-    }
+	static {
+		String userHome = System.getProperty("user.home");
+		File file = new File(userHome, DEEGREE_TEST_PROPERTIES);
+		if (file.exists()) {
+			LOG.info("Reading test properties from file {}.", file);
+			try {
+				props.load(new FileReader(file));
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		else {
+			LOG.info("File {} does not exist. Some tests may be skipped.", file);
+		}
+	}
 
-    /**
-     * Returns the properties from <code>${user.home}/.deegree-test.properties</code>.
-     * 
-     * @return the properties, can be empty, but never <code>null</code>
-     */
-    public static Properties getProperties() {
-        return props;
-    }
+	/**
+	 * Returns the properties from <code>${user.home}/.deegree-test.properties</code>.
+	 * @return the properties, can be empty, but never <code>null</code>
+	 */
+	public static Properties getProperties() {
+		return props;
+	}
 
-    public static String getProperty( String key ) {
-        return props.getProperty( key );
-    }
+	public static String getProperty(String key) {
+		return props.getProperty(key);
+	}
+
 }

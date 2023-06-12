@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -52,154 +51,148 @@ import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r3d.ViewParams;
 
 /**
- * The <code>QTModelScene</code> is a quadtree based organization of a scene containing {@link PositionableModel}s.
- * 
+ * The <code>QTModelScene</code> is a quadtree based organization of a scene containing
+ * {@link PositionableModel}s.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
- * @param <T>
- *            a positionable
- * 
+ * @param <T> a positionable
+ *
  */
 public class QTModelScene<T extends PositionableModel> extends QTree<T> {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 3400650143709933646L;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 3400650143709933646L;
 
-    // the most significant error of a node.
-    private float maxError = Float.MIN_VALUE;
+	// the most significant error of a node.
+	private float maxError = Float.MIN_VALUE;
 
-    private double maxPixelError;
+	private double maxPixelError;
 
-    /**
-     * Create son node.
-     * 
-     * @param numberOfObjects
-     * @param envelope
-     * @param depth
-     */
-    private QTModelScene( int numberOfObjects, float[] envelope, byte depth, double maxPixelError ) {
-        super( numberOfObjects, envelope, depth );
-        this.maxPixelError = maxPixelError;
-    }
+	/**
+	 * Create son node.
+	 * @param numberOfObjects
+	 * @param envelope
+	 * @param depth
+	 */
+	private QTModelScene(int numberOfObjects, float[] envelope, byte depth, double maxPixelError) {
+		super(numberOfObjects, envelope, depth);
+		this.maxPixelError = maxPixelError;
+	}
 
-    /**
-     * 
-     * @param validDomain
-     * @param numberOfObjects
-     * @param maxPixelError
-     */
-    public QTModelScene( Envelope validDomain, int numberOfObjects, double maxPixelError ) {
-        super( createEnvelope( validDomain ), numberOfObjects );
-        this.maxPixelError = maxPixelError;
-    }
+	/**
+	 * @param validDomain
+	 * @param numberOfObjects
+	 * @param maxPixelError
+	 */
+	public QTModelScene(Envelope validDomain, int numberOfObjects, double maxPixelError) {
+		super(createEnvelope(validDomain), numberOfObjects);
+		this.maxPixelError = maxPixelError;
+	}
 
-    /**
-     * This method uses the envelope of the object instead of the given envelope;
-     * 
-     * @param envelope
-     *            of the object
-     * @param object
-     *            to insert
-     * @return true if the object was inserted, false otherwise.
-     */
-    @Override
-    public boolean insert( float[] envelope, T object ) {
-        if ( envelope == null || object == null ) {
-            return false;
-        }
-        return insert( object );
-    }
+	/**
+	 * This method uses the envelope of the object instead of the given envelope;
+	 * @param envelope of the object
+	 * @param object to insert
+	 * @return true if the object was inserted, false otherwise.
+	 */
+	@Override
+	public boolean insert(float[] envelope, T object) {
+		if (envelope == null || object == null) {
+			return false;
+		}
+		return insert(object);
+	}
 
-    /**
-     * @param object
-     *            to insert
-     * @return true if the object was inserted, false otherwise.
-     */
-    public boolean insert( T object ) {
-        if ( object == null ) {
-            return false;
-        }
-        this.maxError = Math.max( object.getErrorScalar(), maxError );
-        return super.insert( object.getModelBBox(), object );
-    }
+	/**
+	 * @param object to insert
+	 * @return true if the object was inserted, false otherwise.
+	 */
+	public boolean insert(T object) {
+		if (object == null) {
+			return false;
+		}
+		this.maxError = Math.max(object.getErrorScalar(), maxError);
+		return super.insert(object.getModelBBox(), object);
+	}
 
-    private void getObjects( ViewParams viewParams, float[] eye, Set<T> result ) {
-        if ( viewParams.getViewFrustum().intersects( getEnvelope() ) ) {
-            if ( hasCoveringObjects() ) {
-                for ( Entry<T> obj : objectsCoveringEnv ) {
-                    result.add( obj.entryValue );
-                }
-            }
-            if ( isLeaf() ) {
-                if ( leafObjects != null ) {
-                    double distance = VectorUtils.getDistance( envelope, eye );
+	private void getObjects(ViewParams viewParams, float[] eye, Set<T> result) {
+		if (viewParams.getViewFrustum().intersects(getEnvelope())) {
+			if (hasCoveringObjects()) {
+				for (Entry<T> obj : objectsCoveringEnv) {
+					result.add(obj.entryValue);
+				}
+			}
+			if (isLeaf()) {
+				if (leafObjects != null) {
+					double distance = VectorUtils.getDistance(envelope, eye);
 
-                    double estimatePixel = viewParams.estimatePixelSizeForSpaceUnit( distance );
-                    double estError = estimatePixel * maxError;
-                    if ( distance <= 1E-10 || ( estError > maxPixelError ) ) {
-                        for ( Entry<T> obj : leafObjects ) {
-                            distance = Vectors3f.distance( eye, 0, obj.entryEnv, 0 );
-                            double estPixelSize = viewParams.estimatePixelSizeForSpaceUnit( distance );
-                            boolean noPixelError = ( obj.entryValue.getErrorScalar() * estPixelSize ) > maxPixelError;
-                            boolean intersects = viewParams.getViewFrustum().intersects( obj.entryEnv );
-                            if ( noPixelError && intersects ) {
-                                result.add( obj.entryValue );
-                            }
+					double estimatePixel = viewParams.estimatePixelSizeForSpaceUnit(distance);
+					double estError = estimatePixel * maxError;
+					if (distance <= 1E-10 || (estError > maxPixelError)) {
+						for (Entry<T> obj : leafObjects) {
+							distance = Vectors3f.distance(eye, 0, obj.entryEnv, 0);
+							double estPixelSize = viewParams.estimatePixelSizeForSpaceUnit(distance);
+							boolean noPixelError = (obj.entryValue.getErrorScalar() * estPixelSize) > maxPixelError;
+							boolean intersects = viewParams.getViewFrustum().intersects(obj.entryEnv);
+							if (noPixelError && intersects) {
+								result.add(obj.entryValue);
+							}
 
-                        }
-                    }
-                }
+						}
+					}
+				}
 
-            } else {
-                for ( QTree<T> n : children ) {
-                    if ( n != null ) {
-                        ( (QTModelScene<T>) n ).getObjects( viewParams, eye, result );
-                    }
-                }
-            }
-        }
-    }
+			}
+			else {
+				for (QTree<T> n : children) {
+					if (n != null) {
+						((QTModelScene<T>) n).getObjects(viewParams, eye, result);
+					}
+				}
+			}
+		}
+	}
 
-    @Override
-    protected QTModelScene<T> createNode( int son ) {
-        float[] newEnv = bboxForSon( son );
-        return new QTModelScene<T>( numberOfObjects, newEnv, (byte) ( currentDepth + 1 ), maxPixelError );
-    }
+	@Override
+	protected QTModelScene<T> createNode(int son) {
+		float[] newEnv = bboxForSon(son);
+		return new QTModelScene<T>(numberOfObjects, newEnv, (byte) (currentDepth + 1), maxPixelError);
+	}
 
-    /**
-     * @param viewParams
-     *            to get the objects for.
-     * @return the objects which intersect with the given view parameters and or it's children, or the empty list.
-     */
-    public Set<T> getObjects( ViewParams viewParams ) {
-        Set<T> result = new HashSet<T>();
-        Point3d e = viewParams.getViewFrustum().getEyePos();
-        float[] eye = new float[] { (float) e.x, (float) e.y, (float) e.z };
-        getObjects( viewParams, eye, result );
-        return result;
-    }
+	/**
+	 * @param viewParams to get the objects for.
+	 * @return the objects which intersect with the given view parameters and or it's
+	 * children, or the empty list.
+	 */
+	public Set<T> getObjects(ViewParams viewParams) {
+		Set<T> result = new HashSet<T>();
+		Point3d e = viewParams.getViewFrustum().getEyePos();
+		float[] eye = new float[] { (float) e.x, (float) e.y, (float) e.z };
+		getObjects(viewParams, eye, result);
+		return result;
+	}
 
-    /**
-     * @param object
-     * @return true if this tree contains the given object
-     */
-    public boolean contains( PositionableModel object ) {
-        if ( object != null && intersects( envelope, object.getModelBBox(), getMaxOffset() ) ) {
-            List<T> r = getObjects( object.getModelBBox() );
-            if ( r != null && !r.isEmpty() ) {
-                return r.contains( object );
-            }
-        }
-        return false;
-    }
+	/**
+	 * @param object
+	 * @return true if this tree contains the given object
+	 */
+	public boolean contains(PositionableModel object) {
+		if (object != null && intersects(envelope, object.getModelBBox(), getMaxOffset())) {
+			List<T> r = getObjects(object.getModelBBox());
+			if (r != null && !r.isEmpty()) {
+				return r.contains(object);
+			}
+		}
+		return false;
+	}
 
-    /**
-     * @return the configured max pixel error.
-     */
-    public final double getMaxPixelError() {
-        return maxPixelError;
-    }
+	/**
+	 * @return the configured max pixel error.
+	 */
+	public final double getMaxPixelError() {
+		return maxPixelError;
+	}
+
 }

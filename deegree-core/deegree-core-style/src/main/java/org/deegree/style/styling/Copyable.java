@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aschmitz@deegree.wald.intevation.de/deegree/deegree3/trunk/deegree-core/deegree-core-rendering-2d/src/main/java/org/deegree/rendering/r2d/styling/Copyable.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -40,16 +39,13 @@ package org.deegree.style.styling;
  * <code>Copyable</code>
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- *
- * @version $Revision: 18171 $, $Date: 2009-06-17 16:00:07 +0200 (Wed, 17 Jun 2009) $
  * @param <T>
  */
 public interface Copyable<T> {
 
-    /**
-     * @return the copied object
-     */
-    T copy();
+	/**
+	 * @return the copied object
+	 */
+	T copy();
 
 }

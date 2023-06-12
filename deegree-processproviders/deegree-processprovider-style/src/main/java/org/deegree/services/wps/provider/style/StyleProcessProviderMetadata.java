@@ -36,21 +36,20 @@ import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
  * Resource metadata for style process providers.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class StyleProcessProviderMetadata extends AbstractResourceMetadata<ProcessProvider> {
 
-    public StyleProcessProviderMetadata( Workspace workspace, ResourceLocation<ProcessProvider> location,
-                                         AbstractResourceProvider<ProcessProvider> provider ) {
-        super( workspace, location, provider );
-    }
+	public StyleProcessProviderMetadata(Workspace workspace, ResourceLocation<ProcessProvider> location,
+			AbstractResourceProvider<ProcessProvider> provider) {
+		super(workspace, location, provider);
+	}
 
-    @Override
-    public ResourceBuilder<ProcessProvider> prepare() {
-        return new StyleProcessProviderBuilder( this );
-    }
+	@Override
+	public ResourceBuilder<ProcessProvider> prepare() {
+		return new StyleProcessProviderBuilder(this);
+	}
 
 }

@@ -43,33 +43,32 @@ import org.deegree.workspace.standard.DefaultResourceIdentifier;
 
 /**
  * Resource metadata implementation for geotiff tile stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class GeoTiffTileStoreMetadata extends AbstractResourceMetadata<TileStore> {
 
-    public GeoTiffTileStoreMetadata( Workspace workspace, ResourceLocation<TileStore> location,
-                                     AbstractResourceProvider<TileStore> provider ) {
-        super( workspace, location, provider );
-    }
+	public GeoTiffTileStoreMetadata(Workspace workspace, ResourceLocation<TileStore> location,
+			AbstractResourceProvider<TileStore> provider) {
+		super(workspace, location, provider);
+	}
 
-    @Override
-    public ResourceBuilder<TileStore> prepare() {
-        try {
-            GeoTIFFTileStoreJAXB cfg = (GeoTIFFTileStoreJAXB) unmarshall( "org.deegree.tile.persistence.geotiff.jaxb",
-                                                                          provider.getSchema(), location.getAsStream(),
-                                                                          workspace );
-            for ( GeoTIFFTileStoreJAXB.TileDataSet tds : cfg.getTileDataSet() ) {
-                dependencies.add( new DefaultResourceIdentifier<TileMatrixSet>( TileMatrixSetProvider.class,
-                                                                                tds.getTileMatrixSetId() ) );
-            }
-            return new GeoTiffTileStoreBuilder( cfg, workspace, this );
-        } catch ( Exception e ) {
-            throw new ResourceInitException( "Unable to prepare resource " + getIdentifier() + ": "
-                                             + e.getLocalizedMessage(), e );
-        }
-    }
+	@Override
+	public ResourceBuilder<TileStore> prepare() {
+		try {
+			GeoTIFFTileStoreJAXB cfg = (GeoTIFFTileStoreJAXB) unmarshall("org.deegree.tile.persistence.geotiff.jaxb",
+					provider.getSchema(), location.getAsStream(), workspace);
+			for (GeoTIFFTileStoreJAXB.TileDataSet tds : cfg.getTileDataSet()) {
+				dependencies.add(new DefaultResourceIdentifier<TileMatrixSet>(TileMatrixSetProvider.class,
+						tds.getTileMatrixSetId()));
+			}
+			return new GeoTiffTileStoreBuilder(cfg, workspace, this);
+		}
+		catch (Exception e) {
+			throw new ResourceInitException(
+					"Unable to prepare resource " + getIdentifier() + ": " + e.getLocalizedMessage(), e);
+		}
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-metadata/src/main/java/org/deegree/metadata/iso/persistence/ISOMetadataStoreProvider.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -54,142 +53,140 @@ import org.slf4j.Logger;
 
 /**
  * {@link MetadataStoreTransaction} for the {@link ISOMemoryMetadataStore}.
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: 30800 $, $Date: 2011-05-12 16:49:44 +0200 (Do, 12. Mai 2011) $
  */
 public class ISOMemoryMetadataStoreTransaction implements MetadataStoreTransaction {
 
-    private static final Logger LOG = getLogger( ISOMemoryMetadataStoreTransaction.class );
+	private static final Logger LOG = getLogger(ISOMemoryMetadataStoreTransaction.class);
 
-    enum TransactionStatus {
-        UPDATE, DELETE, INSERT
-    }
+	enum TransactionStatus {
 
-    private final ISOMemoryMetadataStore metadataStore;
+		UPDATE, DELETE, INSERT
 
-    private final StoredISORecords storedRecords;
+	}
 
-    private final List<TransactionCandidate> transactionCandidates = new ArrayList<TransactionCandidate>();
+	private final ISOMemoryMetadataStore metadataStore;
 
-    private TransactionCommitter committer;
+	private final StoredISORecords storedRecords;
 
-    public ISOMemoryMetadataStoreTransaction( ISOMemoryMetadataStore metadataStore, StoredISORecords storedRecords,
-                                              File transactionalDirectory ) {
-        this.metadataStore = metadataStore;
-        this.storedRecords = storedRecords;
-        committer = new TransactionCommitter( storedRecords, transactionalDirectory );
-    }
+	private final List<TransactionCandidate> transactionCandidates = new ArrayList<TransactionCandidate>();
 
-    @Override
-    public void commit()
-                            throws MetadataStoreException {
-        try {
-            for ( TransactionCandidate transactionCandidate : transactionCandidates ) {
-                switch ( transactionCandidate.status ) {
-                case INSERT:
-                    committer.commitInsert( transactionCandidate );
-                    break;
-                case UPDATE:
-                    committer.commitUpdate( transactionCandidate );
-                    break;
-                case DELETE:
-                    committer.commitDelete( transactionCandidate );
-                    break;
-                }
-            }
-            metadataStore.releaseTransaction();
-        } catch ( Exception e ) {
-            rollback();
-            LOG.error( "Commit failed: ", e );
-            throw new MetadataStoreException( e );
-        }
-    }
+	private TransactionCommitter committer;
 
-    @Override
-    public void rollback()
-                            throws MetadataStoreException {
-        transactionCandidates.clear();
-        metadataStore.releaseTransaction();
-    }
+	public ISOMemoryMetadataStoreTransaction(ISOMemoryMetadataStore metadataStore, StoredISORecords storedRecords,
+			File transactionalDirectory) {
+		this.metadataStore = metadataStore;
+		this.storedRecords = storedRecords;
+		committer = new TransactionCommitter(storedRecords, transactionalDirectory);
+	}
 
-    @Override
-    public List<String> performInsert( InsertOperation insert )
-                            throws MetadataStoreException, MetadataInspectorException {
-        List<? extends MetadataRecord> recordsToInsert = insert.getRecords();
-        List<String> insertedIds = new ArrayList<String>( recordsToInsert.size() );
-        for ( MetadataRecord record : recordsToInsert ) {
-            ISORecord isoRecord = (ISORecord) record;
-            if ( storedRecords.contains( isoRecord ) ) {
-                throw new MetadataStoreException( "Insert failed: record with identifier " + record.getIdentifier()
-                                                  + " exists." );
-            }
-            transactionCandidates.add( new TransactionCandidate( TransactionStatus.INSERT, isoRecord.getIdentifier(),
-                                                                 isoRecord ) );
-            insertedIds.add( isoRecord.getIdentifier() );
-        }
-        return insertedIds;
-    }
+	@Override
+	public void commit() throws MetadataStoreException {
+		try {
+			for (TransactionCandidate transactionCandidate : transactionCandidates) {
+				switch (transactionCandidate.status) {
+					case INSERT:
+						committer.commitInsert(transactionCandidate);
+						break;
+					case UPDATE:
+						committer.commitUpdate(transactionCandidate);
+						break;
+					case DELETE:
+						committer.commitDelete(transactionCandidate);
+						break;
+				}
+			}
+			metadataStore.releaseTransaction();
+		}
+		catch (Exception e) {
+			rollback();
+			LOG.error("Commit failed: ", e);
+			throw new MetadataStoreException(e);
+		}
+	}
 
-    @Override
-    public int performDelete( DeleteOperation delete )
-                            throws MetadataStoreException {
-        List<ISORecord> recordsToDelete;
-        try {
-            recordsToDelete = storedRecords.getRecords( delete.getConstraint() );
-            for ( ISORecord record : recordsToDelete ) {
-                transactionCandidates.add( new TransactionCandidate( TransactionStatus.DELETE, record.getIdentifier(),
-                                                                     record ) );
-            }
-        } catch ( FilterEvaluationException e ) {
-            LOG.error( "Could not evaluate filter!", e );
-            throw new MetadataStoreException( e );
-        }
-        return recordsToDelete.size();
-    }
+	@Override
+	public void rollback() throws MetadataStoreException {
+		transactionCandidates.clear();
+		metadataStore.releaseTransaction();
+	}
 
-    @Override
-    public int performUpdate( UpdateOperation update )
-                            throws MetadataStoreException, MetadataInspectorException {
-        try {
-            if ( update.getRecordProperty() != null && !update.getRecordProperty().isEmpty() ) {
-                throw new MetadataStoreException( "Update failed: update of properties is not implemented yet!" );
-            }
-            List<ISORecord> records = storedRecords.getRecords( update.getConstraint() );
-            if ( records.size() > 1 ) {
-                throw new MetadataStoreException(
-                                                  "Update failed: update with a filter matching more than one record is not implemented yet!" );
-            }
-            if ( records.size() == 0 ) {
-                return 0;
-            }
-            ISORecord record = records.get( 0 );
-            transactionCandidates.add( new TransactionCandidate( TransactionStatus.UPDATE, record.getIdentifier(),
-                                                                 (ISORecord) update.getRecord() ) );
-            return 1;
-        } catch ( FilterEvaluationException e ) {
-            LOG.error( "Could not evaluate filter!", e );
-            throw new MetadataStoreException( e );
-        }
-    }
+	@Override
+	public List<String> performInsert(InsertOperation insert)
+			throws MetadataStoreException, MetadataInspectorException {
+		List<? extends MetadataRecord> recordsToInsert = insert.getRecords();
+		List<String> insertedIds = new ArrayList<String>(recordsToInsert.size());
+		for (MetadataRecord record : recordsToInsert) {
+			ISORecord isoRecord = (ISORecord) record;
+			if (storedRecords.contains(isoRecord)) {
+				throw new MetadataStoreException(
+						"Insert failed: record with identifier " + record.getIdentifier() + " exists.");
+			}
+			transactionCandidates
+				.add(new TransactionCandidate(TransactionStatus.INSERT, isoRecord.getIdentifier(), isoRecord));
+			insertedIds.add(isoRecord.getIdentifier());
+		}
+		return insertedIds;
+	}
 
-    static class TransactionCandidate {
+	@Override
+	public int performDelete(DeleteOperation delete) throws MetadataStoreException {
+		List<ISORecord> recordsToDelete;
+		try {
+			recordsToDelete = storedRecords.getRecords(delete.getConstraint());
+			for (ISORecord record : recordsToDelete) {
+				transactionCandidates
+					.add(new TransactionCandidate(TransactionStatus.DELETE, record.getIdentifier(), record));
+			}
+		}
+		catch (FilterEvaluationException e) {
+			LOG.error("Could not evaluate filter!", e);
+			throw new MetadataStoreException(e);
+		}
+		return recordsToDelete.size();
+	}
 
-        TransactionStatus status;
+	@Override
+	public int performUpdate(UpdateOperation update) throws MetadataStoreException, MetadataInspectorException {
+		try {
+			if (update.getRecordProperty() != null && !update.getRecordProperty().isEmpty()) {
+				throw new MetadataStoreException("Update failed: update of properties is not implemented yet!");
+			}
+			List<ISORecord> records = storedRecords.getRecords(update.getConstraint());
+			if (records.size() > 1) {
+				throw new MetadataStoreException(
+						"Update failed: update with a filter matching more than one record is not implemented yet!");
+			}
+			if (records.size() == 0) {
+				return 0;
+			}
+			ISORecord record = records.get(0);
+			transactionCandidates.add(new TransactionCandidate(TransactionStatus.UPDATE, record.getIdentifier(),
+					(ISORecord) update.getRecord()));
+			return 1;
+		}
+		catch (FilterEvaluationException e) {
+			LOG.error("Could not evaluate filter!", e);
+			throw new MetadataStoreException(e);
+		}
+	}
 
-        String identifier;
+	static class TransactionCandidate {
 
-        ISORecord record;
+		TransactionStatus status;
 
-        TransactionCandidate( TransactionStatus status, String identifier, ISORecord record ) {
-            this.status = status;
-            this.identifier = identifier;
-            this.record = record;
-        }
+		String identifier;
 
-    }
+		ISORecord record;
+
+		TransactionCandidate(TransactionStatus status, String identifier, ISORecord record) {
+			this.status = status;
+			this.identifier = identifier;
+			this.record = record;
+		}
+
+	}
 
 }

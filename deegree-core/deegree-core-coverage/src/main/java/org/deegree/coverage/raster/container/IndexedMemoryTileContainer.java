@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2009 by:
@@ -51,97 +50,92 @@ import org.deegree.geometry.Envelope;
 
 /**
  * The <code>IndexedMemoryTileContainer</code> class uses a quad tree as a spatial index.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class IndexedMemoryTileContainer implements TileContainer {
 
-    private QTree<AbstractRaster> index;
+	private QTree<AbstractRaster> index;
 
-    private Envelope domain;
+	private Envelope domain;
 
-    private final RasterGeoReference rasterReference;
+	private final RasterGeoReference rasterReference;
 
-    private RasterDataInfo rdi;
+	private RasterDataInfo rdi;
 
-    private ResolutionInfo resolutionInfo;
+	private ResolutionInfo resolutionInfo;
 
-    /**
-     * Uses a QTree as a spatial index.
-     * 
-     * @param domain
-     * @param rasterReference
-     * @param objectsInLeaf
-     */
-    public IndexedMemoryTileContainer( Envelope domain, RasterGeoReference rasterReference, int objectsInLeaf ) {
-        this.rasterReference = rasterReference;
-        this.index = new QTree<AbstractRaster>( createEnvelope( domain ), objectsInLeaf );
-        this.domain = domain;
-    }
+	/**
+	 * Uses a QTree as a spatial index.
+	 * @param domain
+	 * @param rasterReference
+	 * @param objectsInLeaf
+	 */
+	public IndexedMemoryTileContainer(Envelope domain, RasterGeoReference rasterReference, int objectsInLeaf) {
+		this.rasterReference = rasterReference;
+		this.index = new QTree<AbstractRaster>(createEnvelope(domain), objectsInLeaf);
+		this.domain = domain;
+	}
 
-    @Override
-    public Envelope getEnvelope() {
-        return domain;
-    }
+	@Override
+	public Envelope getEnvelope() {
+		return domain;
+	}
 
-    @Override
-    public RasterGeoReference getRasterReference() {
-        return this.rasterReference;
-    }
+	@Override
+	public RasterGeoReference getRasterReference() {
+		return this.rasterReference;
+	}
 
-    @Override
-    public List<AbstractRaster> getTiles( Envelope env ) {
-        return index.query( createEnvelope( env ) );
-    }
+	@Override
+	public List<AbstractRaster> getTiles(Envelope env) {
+		return index.query(createEnvelope(env));
+	}
 
-    /**
-     * Adds a new tile to the container.
-     * 
-     * @param raster
-     *            new tile
-     */
-    public void addTile( AbstractRaster raster ) {
-        if ( raster != null ) {
-            if ( this.rdi == null ) {
-                this.rdi = raster.getRasterDataInfo();
-            }
-            if ( this.resolutionInfo == null ) {
-                this.resolutionInfo = raster.getResolutionInfo();
-            }
-            index.insert( createEnvelope( raster.getEnvelope() ), raster );
-        }
-    }
+	/**
+	 * Adds a new tile to the container.
+	 * @param raster new tile
+	 */
+	public void addTile(AbstractRaster raster) {
+		if (raster != null) {
+			if (this.rdi == null) {
+				this.rdi = raster.getRasterDataInfo();
+			}
+			if (this.resolutionInfo == null) {
+				this.resolutionInfo = raster.getResolutionInfo();
+			}
+			index.insert(createEnvelope(raster.getEnvelope()), raster);
+		}
+	}
 
-    /**
-     * @param rasters
-     */
-    public void addRasterTiles( List<AbstractRaster> rasters ) {
-        for ( AbstractRaster raster : rasters ) {
-            addTile( raster );
-        }
-        // try {
-        // FileWriter fw = new FileWriter( new File( "/tmp/out_tree.dot" ) );
-        // GraphvizDot.startDiGraph( fw );
-        // index.outputAsDot( fw, "", 0, -1 );
-        // GraphvizDot.endGraph( fw );
-        // fw.close();
-        // } catch ( IOException e ) {
-        // e.printStackTrace();
-        // }
+	/**
+	 * @param rasters
+	 */
+	public void addRasterTiles(List<AbstractRaster> rasters) {
+		for (AbstractRaster raster : rasters) {
+			addTile(raster);
+		}
+		// try {
+		// FileWriter fw = new FileWriter( new File( "/tmp/out_tree.dot" ) );
+		// GraphvizDot.startDiGraph( fw );
+		// index.outputAsDot( fw, "", 0, -1 );
+		// GraphvizDot.endGraph( fw );
+		// fw.close();
+		// } catch ( IOException e ) {
+		// e.printStackTrace();
+		// }
 
-    }
+	}
 
-    @Override
-    public RasterDataInfo getRasterDataInfo() {
-        return rdi;
-    }
+	@Override
+	public RasterDataInfo getRasterDataInfo() {
+		return rdi;
+	}
 
-    @Override
-    public ResolutionInfo getResolutionInfo() {
-        return this.resolutionInfo;
-    }
+	@Override
+	public ResolutionInfo getResolutionInfo() {
+		return this.resolutionInfo;
+	}
 
 }

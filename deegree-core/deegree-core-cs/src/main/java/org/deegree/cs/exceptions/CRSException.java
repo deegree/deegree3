@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -37,46 +36,40 @@
 package org.deegree.cs.exceptions;
 
 /**
- * A <code>CRSException</code> will inform the user that an error occurred while transforming, projecting or creating a
- * crs. The exporting process has been halted.
- * 
+ * A <code>CRSException</code> will inform the user that an error occurred while
+ * transforming, projecting or creating a crs. The exporting process has been halted.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 
 public class CRSException extends Exception {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = -8120907445764439063L;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = -8120907445764439063L;
 
-    /**
-     * @param string
-     */
-    public CRSException( String string ) {
-        super( string );
-    }
+	/**
+	 * @param string
+	 */
+	public CRSException(String string) {
+		super(string);
+	}
 
-    /**
-     * @param message
-     *            another message.
-     * @param e
-     *            which caused this crsException
-     */
-    public CRSException( String message, Exception e ) {
-        super( message, e );
-    }
+	/**
+	 * @param message another message.
+	 * @param e which caused this crsException
+	 */
+	public CRSException(String message, Exception e) {
+		super(message, e);
+	}
 
-    /**
-     * @param e
-     *            cause of this CRSException
-     */
-    public CRSException( Exception e ) {
-        super( e );
-    }
+	/**
+	 * @param e cause of this CRSException
+	 */
+	public CRSException(Exception e) {
+		super(e);
+	}
+
 }

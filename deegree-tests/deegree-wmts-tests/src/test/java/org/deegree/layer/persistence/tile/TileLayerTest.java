@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aschmitz@wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -50,36 +49,31 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 public class TileLayerTest {
 
-    private Workspace workspace;
+	private Workspace workspace;
 
-    @Before
-    public void setup()
-                            throws URISyntaxException, IOException {
-        URL u = TileLayerTest.class.getResource( "TileLayerTest.class" );
-        File dir = new File( new File( u.toURI() ).getParentFile(),
-                             "../../../../../../../src/main/webapp/WEB-INF/workspace" );
-        dir = dir.getCanonicalFile();
-        workspace = new DefaultWorkspace( dir );
-        workspace.initAll();
-    }
+	@Before
+	public void setup() throws URISyntaxException, IOException {
+		URL u = TileLayerTest.class.getResource("TileLayerTest.class");
+		File dir = new File(new File(u.toURI()).getParentFile(),
+				"../../../../../../../src/main/webapp/WEB-INF/workspace");
+		dir = dir.getCanonicalFile();
+		workspace = new DefaultWorkspace(dir);
+		workspace.initAll();
+	}
 
-    @Test
-    public void testMetadataId() {
-        Layer l = workspace.getResource( LayerStoreProvider.class, "tilelayers" ).get( "pyramid" );
-        Assert.assertEquals( "mdsetid", l.getMetadata().getMetadataId() );
-    }
+	@Test
+	public void testMetadataId() {
+		Layer l = workspace.getResource(LayerStoreProvider.class, "tilelayers").get("pyramid");
+		Assert.assertEquals("mdsetid", l.getMetadata().getMetadataId());
+	}
 
-    @After
-    public void shutdown() {
-        workspace.destroy();
-    }
+	@After
+	public void shutdown() {
+		workspace.destroy();
+	}
 
 }

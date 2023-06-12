@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aschmitz@deegree.wald.intevation.de/deegree/deegree3/trunk/deegree-core/deegree-core-rendering-2d/src/main/java/org/deegree/rendering/r2d/styling/components/Fill.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -44,28 +43,34 @@ import org.deegree.style.styling.Copyable;
  * <code>Fill</code>
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- *
- * @version $Revision: 18171 $, $Date: 2009-06-17 16:00:07 +0200 (Wed, 17 Jun 2009) $
  */
 public class Fill implements Copyable<Fill> {
 
-    /**
-     * Default is gray (#808080).
-     */
-    public Color color = new Color( 128, 128, 128, 255 );
+	/**
+	 * Default is gray (#808080).
+	 */
+	public Color color = new Color(128, 128, 128, 255);
 
-    /**
-     * Default is no graphic fill.
-     */
-    public Graphic graphic;
+	/**
+	 * Default is no graphic fill.
+	 */
+	public Graphic graphic;
 
-    @Override
-    public Fill copy() {
-        Fill copy = new Fill();
-        copy.color = color;
-        copy.graphic = graphic == null ? null : graphic.copy();
-        return copy;
-    }
+	@Override
+	public Fill copy() {
+		Fill copy = new Fill();
+		copy.color = color;
+		copy.graphic = graphic == null ? null : graphic.copy();
+		return copy;
+	}
+
+	/**
+	 * Checks if the Fill would result into a complete transparent result
+	 * @return <code>true</code> if no graphic is configured and the color has an alpha
+	 * value of zero
+	 */
+	public boolean isInvisible() {
+		return graphic == null && color != null && color.getAlpha() == 0;
+	}
 
 }

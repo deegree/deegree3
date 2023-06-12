@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -60,90 +59,87 @@ import org.slf4j.Logger;
 
 /**
  * <code>TransactionHandler</code>
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 
 class TransactionCommitter {
 
-    private static final Logger LOG = getLogger( TransactionCommitter.class );
+	private static final Logger LOG = getLogger(TransactionCommitter.class);
 
-    private StoredISORecords storedRecords;
+	private StoredISORecords storedRecords;
 
-    private File insertDirectory;
+	private File insertDirectory;
 
-    TransactionCommitter( StoredISORecords storedRecords, File insertDirectory ) {
-        this.storedRecords = storedRecords;
-        this.insertDirectory = insertDirectory;
-    }
+	TransactionCommitter(StoredISORecords storedRecords, File insertDirectory) {
+		this.storedRecords = storedRecords;
+		this.insertDirectory = insertDirectory;
+	}
 
-    void commitInsert( TransactionCandidate transactionCandidate )
-                            throws XMLStreamException, IOException {
-        File recordFile = null;
-        if ( insertDirectory != null ) {
-            recordFile = writeFile( transactionCandidate, null );
-        }
-        storedRecords.insertRecord( transactionCandidate.record, recordFile );
-    }
+	void commitInsert(TransactionCandidate transactionCandidate) throws XMLStreamException, IOException {
+		File recordFile = null;
+		if (insertDirectory != null) {
+			recordFile = writeFile(transactionCandidate, null);
+		}
+		storedRecords.insertRecord(transactionCandidate.record, recordFile);
+	}
 
-    void commitUpdate( TransactionCandidate transactionCandidate )
-                            throws XMLStreamException, MetadataStoreException, IOException {
-        File recordFile = null;
-        File fileToUpdate = storedRecords.getFile( transactionCandidate.identifier );
-        deleteFile( TransactionStatus.UPDATE, fileToUpdate );
-        recordFile = writeFile( transactionCandidate, fileToUpdate );
-        storedRecords.deleteRecord( transactionCandidate.identifier );
-        storedRecords.insertRecord( transactionCandidate.record, recordFile );
-    }
+	void commitUpdate(TransactionCandidate transactionCandidate)
+			throws XMLStreamException, MetadataStoreException, IOException {
+		File recordFile = null;
+		File fileToUpdate = storedRecords.getFile(transactionCandidate.identifier);
+		deleteFile(TransactionStatus.UPDATE, fileToUpdate);
+		recordFile = writeFile(transactionCandidate, fileToUpdate);
+		storedRecords.deleteRecord(transactionCandidate.identifier);
+		storedRecords.insertRecord(transactionCandidate.record, recordFile);
+	}
 
-    void commitDelete( TransactionCandidate transactionCandidate )
-                            throws MetadataStoreException {
-        File fileToDelete = storedRecords.getFile( transactionCandidate.identifier );
-        deleteFile( TransactionStatus.DELETE, fileToDelete );
-        storedRecords.deleteRecord( transactionCandidate.identifier );
-    }
+	void commitDelete(TransactionCandidate transactionCandidate) throws MetadataStoreException {
+		File fileToDelete = storedRecords.getFile(transactionCandidate.identifier);
+		deleteFile(TransactionStatus.DELETE, fileToDelete);
+		storedRecords.deleteRecord(transactionCandidate.identifier);
+	}
 
-    private File writeFile( TransactionCandidate transactionCandidate, File fileToWrite )
-                            throws XMLStreamException, IOException {
-        if ( fileToWrite == null ) {
-            fileToWrite = new File( insertDirectory, transactionCandidate.identifier + ".xml" );
-        }
-        if ( !fileToWrite.exists() ) {
-            boolean created = fileToWrite.createNewFile();
-            LOG.debug( "File {} was " + ( created ? "successful" : "not" ) + " created.", fileToWrite );
-        }
-        OutputStream stream = null;
-        XMLStreamWriter writer = null;
-        try {
-            stream = new FileOutputStream( fileToWrite );
-            writer = XMLOutputFactory.newInstance().createXMLStreamWriter( stream );
-            transactionCandidate.record.serialize( writer, ReturnableElement.full );
-        } finally {
-            try {
-                if ( writer != null )
-                    writer.close();
-            } catch ( XMLStreamException e ) {
-                // ignore when closing
-            }
-            try {
-                if ( stream != null )
-                    stream.close();
-            } catch ( IOException e ) {
-                // ignore when closing
-            }
-        }
-        return fileToWrite;
-    }
+	private File writeFile(TransactionCandidate transactionCandidate, File fileToWrite)
+			throws XMLStreamException, IOException {
+		if (fileToWrite == null) {
+			fileToWrite = new File(insertDirectory, transactionCandidate.identifier + ".xml");
+		}
+		if (!fileToWrite.exists()) {
+			boolean created = fileToWrite.createNewFile();
+			LOG.debug("File {} was " + (created ? "successful" : "not") + " created.", fileToWrite);
+		}
+		OutputStream stream = null;
+		XMLStreamWriter writer = null;
+		try {
+			stream = new FileOutputStream(fileToWrite);
+			writer = XMLOutputFactory.newInstance().createXMLStreamWriter(stream);
+			transactionCandidate.record.serialize(writer, ReturnableElement.full);
+		}
+		finally {
+			try {
+				if (writer != null)
+					writer.close();
+			}
+			catch (XMLStreamException e) {
+				// ignore when closing
+			}
+			try {
+				if (stream != null)
+					stream.close();
+			}
+			catch (IOException e) {
+				// ignore when closing
+			}
+		}
+		return fileToWrite;
+	}
 
-    private void deleteFile( TransactionStatus status, File file )
-                            throws MetadataStoreException {
-        boolean deleted = file.delete();
-        LOG.debug( "File {} was " + ( deleted ? "successful" : "not" ) + " deleted", file );
-        if ( !deleted )
-            throw new MetadataStoreException( "Commit failed: could not " + status + " record at " + file );
-    }
+	private void deleteFile(TransactionStatus status, File file) throws MetadataStoreException {
+		boolean deleted = file.delete();
+		LOG.debug("File {} was " + (deleted ? "successful" : "not") + " deleted", file);
+		if (!deleted)
+			throw new MetadataStoreException("Commit failed: could not " + status + " record at " + file);
+	}
 
 }

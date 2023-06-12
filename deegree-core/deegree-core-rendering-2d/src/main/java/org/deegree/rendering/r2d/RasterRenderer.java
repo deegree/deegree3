@@ -1,4 +1,3 @@
-//$HeadURL: http://wald.intevation.org/svn/deegree/deegree3/core/trunk/src/org/deegree/rendering/r2d/Renderer.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -41,18 +40,15 @@ import org.deegree.style.styling.RasterStyling;
 
 /**
  * <code>TestingRasterRenderer interface</code>
- * 
+ *
  * @author <a href="mailto:a.aiordachioaie@jacobs-university.de">Andrei Aiordachioaie</a>
- * @author last edited by: $Author: aaiordachioaie $
- * 
- * @version $Revision: 18377 $, $Date: 2009-09-15 12:07:01 +0200 $
  */
 public interface RasterRenderer {
 
-    /**
-     * @param styling
-     * @param raster
-     */
-    void render( RasterStyling styling, AbstractRaster raster );
+	/**
+	 * @param styling
+	 * @param raster
+	 */
+	void render(RasterStyling styling, AbstractRaster raster);
 
 }

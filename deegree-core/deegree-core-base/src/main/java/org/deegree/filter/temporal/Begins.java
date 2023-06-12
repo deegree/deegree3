@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -41,29 +40,25 @@ import org.deegree.filter.XPathEvaluator;
 
 /**
  * {@link TemporalOperator} that...
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class Begins extends TemporalOperator {
 
-    /**
-     * Creates a new instance of {@link Begins}.
-     * 
-     * @param param1
-     *            first temporal expression (time instant or period), must not be <code>null</code>
-     * @param param2
-     *            second temporal expression (time instant or period), must not be <code>null</code>
-     */
-    public Begins( Expression param1, Expression param2 ) {
-        super( param1, param2 );
-    }
+	/**
+	 * Creates a new instance of {@link Begins}.
+	 * @param param1 first temporal expression (time instant or period), must not be
+	 * <code>null</code>
+	 * @param param2 second temporal expression (time instant or period), must not be
+	 * <code>null</code>
+	 */
+	public Begins(Expression param1, Expression param2) {
+		super(param1, param2);
+	}
 
-    @Override
-    public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
-                            throws FilterEvaluationException {
-        throw new UnsupportedOperationException( "Evaluation of operator " + getSubType() + " is not implemented yet." );
-    }
+	@Override
+	public <T> boolean evaluate(T obj, XPathEvaluator<T> xpathEvaluator) throws FilterEvaluationException {
+		throw new UnsupportedOperationException("Evaluation of operator " + getSubType() + " is not implemented yet.");
+	}
+
 }

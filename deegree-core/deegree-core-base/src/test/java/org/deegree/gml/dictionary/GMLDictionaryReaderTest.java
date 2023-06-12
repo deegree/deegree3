@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -52,52 +51,50 @@ import org.deegree.junit.XMLMemoryStreamWriter;
 import org.junit.Test;
 
 /**
- * Tests that check the correct reading of {@link Definition} and {@link Dictionary} objects from GML documents.
- * 
+ * Tests that check the correct reading of {@link Definition} and {@link Dictionary}
+ * objects from GML documents.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class GMLDictionaryReaderTest {
 
-    @Test
-    public void testReadExampleDictionary()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+	@Test
+	public void testReadExampleDictionary() throws XMLStreamException, FactoryConfigurationError, IOException {
 
-        URL url = GMLDictionaryReaderTest.class.getResource( "../misc/dictionary/example_dictionary.gml" );
-        XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( url.toString(),
-                                                                                         url.openStream() );
-        // skip START_DOCUMENT event
-        xmlStream.nextTag();
+		URL url = GMLDictionaryReaderTest.class.getResource("../misc/dictionary/example_dictionary.gml");
+		XMLStreamReader xmlStream = XMLInputFactory.newInstance()
+			.createXMLStreamReader(url.toString(), url.openStream());
+		// skip START_DOCUMENT event
+		xmlStream.nextTag();
 
-        GMLDictionaryReader dictReader = new GMLDictionaryReader( GML_30, xmlStream, new GmlDocumentIdContext( GML_30 ) );
+		GMLDictionaryReader dictReader = new GMLDictionaryReader(GML_30, xmlStream, new GmlDocumentIdContext(GML_30));
 
-        Dictionary dict = (Dictionary) dictReader.read();
-        assertEquals( "CodeLists", dict.getId() );
-        assertEquals( 2, dict.size() );
-        assertEquals( "XP_HorizontaleAusrichtung", dict.get( 0 ).getId() );
-        assertEquals( "XP_BedeutungenBereich", dict.get( 1 ).getId() );
-    }
+		Dictionary dict = (Dictionary) dictReader.read();
+		assertEquals("CodeLists", dict.getId());
+		assertEquals(2, dict.size());
+		assertEquals("XP_HorizontaleAusrichtung", dict.get(0).getId());
+		assertEquals("XP_BedeutungenBereich", dict.get(1).getId());
+	}
 
-    @Test
-    public void testWriteExampleDictionary()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+	@Test
+	public void testWriteExampleDictionary() throws XMLStreamException, FactoryConfigurationError, IOException {
 
-        URL url = GMLDictionaryReaderTest.class.getResource( "../misc/dictionary/example_dictionary.gml" );
-        XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( url.toString(),
-                                                                                         url.openStream() );
-        // skip START_DOCUMENT event
-        xmlStream.nextTag();
+		URL url = GMLDictionaryReaderTest.class.getResource("../misc/dictionary/example_dictionary.gml");
+		XMLStreamReader xmlStream = XMLInputFactory.newInstance()
+			.createXMLStreamReader(url.toString(), url.openStream());
+		// skip START_DOCUMENT event
+		xmlStream.nextTag();
 
-        GMLDictionaryReader dictReader = new GMLDictionaryReader( GML_30, xmlStream, new GmlDocumentIdContext( GML_30 ) );
+		GMLDictionaryReader dictReader = new GMLDictionaryReader(GML_30, xmlStream, new GmlDocumentIdContext(GML_30));
 
-        Dictionary dict = (Dictionary) dictReader.read();        
+		Dictionary dict = (Dictionary) dictReader.read();
 
-        XMLMemoryStreamWriter xmlWriter = new XMLMemoryStreamWriter();
-        GMLDictionaryWriter writer = new GMLDictionaryWriter( GML_30, new IndentingXMLStreamWriter( xmlWriter.getXMLStreamWriter() ));
-        writer.write( dict );
-        xmlWriter.getXMLStreamWriter().close();
-//        LOG.debug (xmlWriter.toString());
-    }
+		XMLMemoryStreamWriter xmlWriter = new XMLMemoryStreamWriter();
+		GMLDictionaryWriter writer = new GMLDictionaryWriter(GML_30,
+				new IndentingXMLStreamWriter(xmlWriter.getXMLStreamWriter()));
+		writer.write(dict);
+		xmlWriter.getXMLStreamWriter().close();
+		// LOG.debug (xmlWriter.toString());
+	}
+
 }

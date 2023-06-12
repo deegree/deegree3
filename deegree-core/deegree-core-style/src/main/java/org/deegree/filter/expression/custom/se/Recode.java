@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -59,123 +58,119 @@ import org.deegree.style.se.unevaluated.Continuation;
 
 /**
  * <code>Recode</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class Recode extends AbstractCustomExpression {
 
-    private static final QName ELEMENT_NAME = new QName( SENS, "Recode" );
+	private static final QName ELEMENT_NAME = new QName(SENS, "Recode");
 
-    private StringBuffer value;
+	private StringBuffer value;
 
-    private Continuation<StringBuffer> contn;
+	private Continuation<StringBuffer> contn;
 
-    private LinkedList<Double> datas = new LinkedList<Double>();
+	private LinkedList<Double> datas = new LinkedList<Double>();
 
-    private LinkedList<StringBuffer> values = new LinkedList<StringBuffer>();
+	private LinkedList<StringBuffer> values = new LinkedList<StringBuffer>();
 
-    private LinkedList<Continuation<StringBuffer>> valueContns = new LinkedList<Continuation<StringBuffer>>();
+	private LinkedList<Continuation<StringBuffer>> valueContns = new LinkedList<Continuation<StringBuffer>>();
 
-    private String fallbackValue;
+	private String fallbackValue;
 
-    /***/
-    public Recode() {
-        // just used for SPI
-    }
+	/***/
+	public Recode() {
+		// just used for SPI
+	}
 
-    private Recode( StringBuffer value, Continuation<StringBuffer> contn, LinkedList<Double> datas,
-                    LinkedList<StringBuffer> values, LinkedList<Continuation<StringBuffer>> valueContns,
-                    String fallbackValue ) {
-        this.value = value;
-        this.contn = contn;
-        this.datas = datas;
-        this.values = values;
-        this.valueContns = valueContns;
-        this.fallbackValue = fallbackValue;
-    }
+	private Recode(StringBuffer value, Continuation<StringBuffer> contn, LinkedList<Double> datas,
+			LinkedList<StringBuffer> values, LinkedList<Continuation<StringBuffer>> valueContns, String fallbackValue) {
+		this.value = value;
+		this.contn = contn;
+		this.datas = datas;
+		this.values = values;
+		this.valueContns = valueContns;
+		this.fallbackValue = fallbackValue;
+	}
 
-    @Override
-    public QName getElementName() {
-        return ELEMENT_NAME;
-    }
+	@Override
+	public QName getElementName() {
+		return ELEMENT_NAME;
+	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypedObjectNode[] evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
-                            throws FilterEvaluationException {
-        StringBuffer sb = new StringBuffer( value.toString().trim() );
-        if ( contn != null ) {
-            contn.evaluate( sb, (Feature) obj, (XPathEvaluator<Feature>) xpathEvaluator );
-        }
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> TypedObjectNode[] evaluate(T obj, XPathEvaluator<T> xpathEvaluator) throws FilterEvaluationException {
+		StringBuffer sb = new StringBuffer(value.toString().trim());
+		if (contn != null) {
+			contn.evaluate(sb, (Feature) obj, (XPathEvaluator<Feature>) xpathEvaluator);
+		}
 
-        String s = sb.toString();
-        if ( s.isEmpty() ) {
-            return new TypedObjectNode[] { new PrimitiveValue( fallbackValue ) };
-        }
-        double val = parseDouble( s );
+		String s = sb.toString();
+		if (s.isEmpty()) {
+			return new TypedObjectNode[] { new PrimitiveValue(fallbackValue) };
+		}
+		double val = parseDouble(s);
 
-        Iterator<Double> data = datas.iterator();
-        Iterator<StringBuffer> vals = values.iterator();
-        Iterator<Continuation<StringBuffer>> contns = valueContns.iterator();
-        while ( data.hasNext() ) {
-            StringBuffer target = new StringBuffer( vals.next().toString().trim() );
-            Continuation<StringBuffer> contn = contns.next();
+		Iterator<Double> data = datas.iterator();
+		Iterator<StringBuffer> vals = values.iterator();
+		Iterator<Continuation<StringBuffer>> contns = valueContns.iterator();
+		while (data.hasNext()) {
+			StringBuffer target = new StringBuffer(vals.next().toString().trim());
+			Continuation<StringBuffer> contn = contns.next();
 
-            if ( data.next().doubleValue() == val ) {
-                if ( contn == null ) {
-                    return new TypedObjectNode[] { new PrimitiveValue( target.toString() ) };
-                }
-                contn.evaluate( target, (Feature) obj, (XPathEvaluator<Feature>) xpathEvaluator );
-                return new TypedObjectNode[] { new PrimitiveValue( target.toString() ) };
-            }
-        }
+			if (data.next().doubleValue() == val) {
+				if (contn == null) {
+					return new TypedObjectNode[] { new PrimitiveValue(target.toString()) };
+				}
+				contn.evaluate(target, (Feature) obj, (XPathEvaluator<Feature>) xpathEvaluator);
+				return new TypedObjectNode[] { new PrimitiveValue(target.toString()) };
+			}
+		}
 
-        return new TypedObjectNode[] { new PrimitiveValue( fallbackValue ) };
-    }
+		return new TypedObjectNode[] { new PrimitiveValue(fallbackValue) };
+	}
 
-    @Override
-    public Recode parse( XMLStreamReader in )
-                            throws XMLStreamException {
+	@Override
+	public Recode parse(XMLStreamReader in) throws XMLStreamException {
 
-        StringBuffer value = null;
-        Continuation<StringBuffer> contn = null;
-        LinkedList<Double> datas = new LinkedList<Double>();
-        LinkedList<StringBuffer> values = new LinkedList<StringBuffer>();
-        LinkedList<Continuation<StringBuffer>> valueContns = new LinkedList<Continuation<StringBuffer>>();
-        String fallbackValue;
+		StringBuffer value = null;
+		Continuation<StringBuffer> contn = null;
+		LinkedList<Double> datas = new LinkedList<Double>();
+		LinkedList<StringBuffer> values = new LinkedList<StringBuffer>();
+		LinkedList<Continuation<StringBuffer>> valueContns = new LinkedList<Continuation<StringBuffer>>();
+		String fallbackValue;
 
-        in.require( START_ELEMENT, null, "Recode" );
+		in.require(START_ELEMENT, null, "Recode");
 
-        fallbackValue = in.getAttributeValue( null, "fallbackValue" );
+		fallbackValue = in.getAttributeValue(null, "fallbackValue");
 
-        while ( !( in.isEndElement() && in.getLocalName().equals( "Recode" ) ) ) {
-            in.nextTag();
+		while (!(in.isEndElement() && in.getLocalName().equals("Recode"))) {
+			in.nextTag();
 
-            if ( in.getLocalName().equals( "LookupValue" ) ) {
-                value = new StringBuffer();
-                contn = SymbologyParser.INSTANCE.updateOrContinue( in, "LookupValue", value, SBUPDATER, null ).second;
-            }
+			if (in.getLocalName().equals("LookupValue")) {
+				value = new StringBuffer();
+				contn = SymbologyParser.INSTANCE.updateOrContinue(in, "LookupValue", value, SBUPDATER, null).second;
+			}
 
-            if ( in.getLocalName().equals( "MapItem" ) ) {
-                while ( !( in.isEndElement() && in.getLocalName().equals( "MapItem" ) ) ) {
-                    in.nextTag();
+			if (in.getLocalName().equals("MapItem")) {
+				while (!(in.isEndElement() && in.getLocalName().equals("MapItem"))) {
+					in.nextTag();
 
-                    if ( in.getLocalName().equals( "Data" ) ) {
-                        datas.add( Double.valueOf( in.getElementText() ) );
-                    }
+					if (in.getLocalName().equals("Data")) {
+						datas.add(Double.valueOf(in.getElementText()));
+					}
 
-                    if ( in.getLocalName().equals( "Value" ) ) {
-                        StringBuffer sb = new StringBuffer();
-                        valueContns.add( SymbologyParser.INSTANCE.updateOrContinue( in, "Value", sb, SBUPDATER, null ).second );
-                        values.add( sb );
-                    }
-                }
-            }
-        }
-        in.require( END_ELEMENT, null, "Recode" );
-        return new Recode( value, contn, datas, values, valueContns, fallbackValue );
-    }
+					if (in.getLocalName().equals("Value")) {
+						StringBuffer sb = new StringBuffer();
+						valueContns
+							.add(SymbologyParser.INSTANCE.updateOrContinue(in, "Value", sb, SBUPDATER, null).second);
+						values.add(sb);
+					}
+				}
+			}
+		}
+		in.require(END_ELEMENT, null, "Recode");
+		return new Recode(value, contn, datas, values, valueContns, fallbackValue);
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -58,73 +57,73 @@ import org.slf4j.LoggerFactory;
 
 /**
  * {@link SqlDialectProvider} for Oracle spatial databases.
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class OracleDialectProvider implements SqlDialectProvider {
 
-    private static Logger LOG = LoggerFactory.getLogger( OracleDialectProvider.class );
+	private static Logger LOG = LoggerFactory.getLogger(OracleDialectProvider.class);
 
-    @Override
-    public boolean supportsConnection( Connection connection ) {
-        String url = null;
-        try {
-            url = connection.getMetaData().getURL();
-        } catch ( Exception e ) {
-            LOG.debug( "Could not determine metadata/url of connection: {}", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-            return false;
-        }
-        return url.startsWith( "jdbc:oracle:" );
-    }
+	@Override
+	public boolean supportsConnection(Connection connection) {
+		String url = null;
+		try {
+			url = connection.getMetaData().getURL();
+		}
+		catch (Exception e) {
+			LOG.debug("Could not determine metadata/url of connection: {}", e.getLocalizedMessage());
+			LOG.trace("Stack trace:", e);
+			return false;
+		}
+		return url.startsWith("jdbc:oracle:");
+	}
 
-    @Override
-    public SQLDialect createDialect( Connection conn ) {
-        String schema = null;
-        Statement stmt = null;
-        ResultSet rs = null;
+	@Override
+	public SQLDialect createDialect(Connection conn) {
+		String schema = null;
+		Statement stmt = null;
+		ResultSet rs = null;
 
-        // default to 10.0
-        int major = 10;
-        int minor = 0;
+		// default to 10.0
+		int major = 10;
+		int minor = 0;
 
-        try {
-            stmt = conn.createStatement();
+		try {
+			stmt = conn.createStatement();
 
-            // this function / parameters exists since oracle version 8
-            rs = stmt.executeQuery( "SELECT sys_context('USERENV', 'CURRENT_SCHEMA') FROM DUAL" );
+			// this function / parameters exists since oracle version 8
+			rs = stmt.executeQuery("SELECT sys_context('USERENV', 'CURRENT_SCHEMA') FROM DUAL");
 
-            if ( rs.next() )
-                schema = rs.getString( 1 );
+			if (rs.next())
+				schema = rs.getString(1);
 
-            JDBCUtils.close( rs );
+			JDBCUtils.close(rs);
 
-            // tested with oracle 9, 10, 11
-            rs = stmt.executeQuery( "SELECT version FROM product_component_version WHERE product LIKE 'Oracle%'" );
+			// tested with oracle 9, 10, 11
+			rs = stmt.executeQuery("SELECT version FROM product_component_version WHERE product LIKE 'Oracle%'");
 
-            if ( rs.next() ) {
-                Pattern p = Pattern.compile( "^(\\d+)\\.(\\d+)\\." );
-                Matcher m = p.matcher( rs.getString( 1 ) );
-                if ( m.find() ) {
-                    major = Integer.valueOf( m.group( 1 ) );
-                    minor = Integer.valueOf( m.group( 2 ) );
-                }
-            }
+			if (rs.next()) {
+				Pattern p = Pattern.compile("^(\\d+)\\.(\\d+)\\.");
+				Matcher m = p.matcher(rs.getString(1));
+				if (m.find()) {
+					major = Integer.valueOf(m.group(1));
+					minor = Integer.valueOf(m.group(2));
+				}
+			}
 
-            LOG.info( "Instantiating Oracle dialect for version {}.{}", major, minor );
-        } catch ( SQLException se ) {
-            LOG.warn( "Failed loading default schema/database version for connection." );
-            LOG.trace( se.getMessage(), se );
-            throw new ResourceInitException( se.getMessage(), se );
-        } finally {
-            JDBCUtils.close( rs, stmt, conn, null );
-        }
+			LOG.info("Instantiating Oracle dialect for version {}.{}", major, minor);
+		}
+		catch (SQLException se) {
+			LOG.warn("Failed loading default schema/database version for connection.");
+			LOG.trace(se.getMessage(), se);
+			throw new ResourceInitException(se.getMessage(), se);
+		}
+		finally {
+			JDBCUtils.close(rs, stmt, conn, null);
+		}
 
-        return new OracleDialect( schema, major, minor );
-    }
+		return new OracleDialect(schema, major, minor);
+	}
 
 }

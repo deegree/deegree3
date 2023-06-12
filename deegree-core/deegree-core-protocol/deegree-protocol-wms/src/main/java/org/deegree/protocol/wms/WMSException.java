@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -38,63 +37,58 @@ package org.deegree.protocol.wms;
 
 /**
  * <code>WMSException</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class WMSException extends Exception {
-    private static final long serialVersionUID = -2768366974222236855L;
 
-    /**
-     * <code>MissingDimensionValue</code>
-     * 
-     * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-     * @author last edited by: $Author$
-     * 
-     * @version $Revision$, $Date$
-     */
-    public static class MissingDimensionValue extends WMSException {
-        private static final long serialVersionUID = -837719651798847810L;
+	private static final long serialVersionUID = -2768366974222236855L;
 
-        /***/
-        public String name;
+	/**
+	 * <code>MissingDimensionValue</code>
+	 *
+	 * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+	 */
+	public static class MissingDimensionValue extends WMSException {
 
-        /**
-         * @param name
-         *            of the dimension
-         */
-        public MissingDimensionValue( String name ) {
-            this.name = name;
-        }
-    }
+		private static final long serialVersionUID = -837719651798847810L;
 
-    /**
-     * <code>InvalidDimensionValue</code>
-     * 
-     * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-     * @author last edited by: $Author$
-     * 
-     * @version $Revision$, $Date$
-     */
-    public static class InvalidDimensionValue extends WMSException {
-        private static final long serialVersionUID = 7140638649730642200L;
+		/***/
+		public String name;
 
-        /***/
-        public String name;
+		/**
+		 * @param name of the dimension
+		 */
+		public MissingDimensionValue(String name) {
+			this.name = name;
+		}
 
-        /***/
-        public String value;
+	}
 
-        /**
-         * @param name
-         * @param value
-         */
-        public InvalidDimensionValue( String name, String value ) {
-            this.name = name;
-            this.value = value;
-        }
-    }
+	/**
+	 * <code>InvalidDimensionValue</code>
+	 *
+	 * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+	 */
+	public static class InvalidDimensionValue extends WMSException {
+
+		private static final long serialVersionUID = 7140638649730642200L;
+
+		/***/
+		public String name;
+
+		/***/
+		public String value;
+
+		/**
+		 * @param name
+		 * @param value
+		 */
+		public InvalidDimensionValue(String name, String value) {
+			this.name = name;
+			this.value = value;
+		}
+
+	}
 
 }

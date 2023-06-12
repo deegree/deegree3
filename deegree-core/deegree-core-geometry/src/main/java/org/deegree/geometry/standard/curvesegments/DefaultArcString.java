@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -43,57 +42,53 @@ import org.deegree.geometry.primitive.segments.ArcString;
  * Default implementation of {@link ArcString} segments.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- *
- * @version $Revision$, $Date$
  */
 public class DefaultArcString implements ArcString {
 
-    protected int numArcs;
+	protected int numArcs;
 
-    protected Points controlPoints;
+	protected Points controlPoints;
 
-    /**
-     * Creates a new <code>DefaultArcString</code> instance from the given parameters.
-     *
-     * @param controlPoints
-     *            interpolation points
-     */
-    public DefaultArcString( Points controlPoints ) {
-        if ( controlPoints.size() < 3 || controlPoints.size() % 2 != 1 ) {
-            throw new IllegalArgumentException( "Invalid number of points." );
-        }
-        numArcs = controlPoints.size() / 2;
-        this.controlPoints = controlPoints;
-    }
+	/**
+	 * Creates a new <code>DefaultArcString</code> instance from the given parameters.
+	 * @param controlPoints interpolation points
+	 */
+	public DefaultArcString(Points controlPoints) {
+		if (controlPoints.size() < 3 || controlPoints.size() % 2 != 1) {
+			throw new IllegalArgumentException("Invalid number of points.");
+		}
+		numArcs = controlPoints.size() / 2;
+		this.controlPoints = controlPoints;
+	}
 
-    @Override
-    public int getCoordinateDimension() {
-        return controlPoints.getDimension();
-    }
+	@Override
+	public int getCoordinateDimension() {
+		return controlPoints.getDimension();
+	}
 
-    @Override
-    public Points getControlPoints() {
-        return controlPoints;
-    }
+	@Override
+	public Points getControlPoints() {
+		return controlPoints;
+	}
 
-    @Override
-    public int getNumArcs() {
-        return numArcs;
-    }
+	@Override
+	public int getNumArcs() {
+		return numArcs;
+	}
 
-    @Override
-    public Point getStartPoint() {
-        return controlPoints.get( 0 );
-    }
+	@Override
+	public Point getStartPoint() {
+		return controlPoints.get(0);
+	}
 
-    @Override
-    public Point getEndPoint() {
-        return controlPoints.get( controlPoints.size() - 1 );
-    }
+	@Override
+	public Point getEndPoint() {
+		return controlPoints.get(controlPoints.size() - 1);
+	}
 
-    @Override
-    public CurveSegmentType getSegmentType() {
-        return CurveSegmentType.ARC_STRING;
-    }
+	@Override
+	public CurveSegmentType getSegmentType() {
+		return CurveSegmentType.ARC_STRING;
+	}
+
 }

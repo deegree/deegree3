@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -46,38 +45,34 @@ import org.deegree.services.wcs.WCSRequest100XMLAdapter;
 
 /**
  * This is an xml adapter for DescribeCoverage requests after the WCS 1.0.0 spec.
- * 
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class DescribeCoverage100XMLAdapter extends WCSRequest100XMLAdapter {
 
-    /**
-     * @param rootElement
-     */
-    public DescribeCoverage100XMLAdapter( OMElement rootElement ) {
-        this.setRootElement( rootElement );
-    }
+	/**
+	 * @param rootElement
+	 */
+	public DescribeCoverage100XMLAdapter(OMElement rootElement) {
+		this.setRootElement(rootElement);
+	}
 
-    /**
-     * @return the parsed request
-     * @throws OWSException
-     */
-    public DescribeCoverage parse()
-                            throws OWSException {
+	/**
+	 * @return the parsed request
+	 * @throws OWSException
+	 */
+	public DescribeCoverage parse() throws OWSException {
 
-        Version version = checkVersion( rootElement );
+		Version version = checkVersion(rootElement);
 
-        List<OMElement> coverageElems = getElements( rootElement, new XPath( "/wcs:DescribeCoverage/wcs:Coverage",
-                                                                             wcsNSContext ) );
-        List<String> coverages = new ArrayList<String>( coverageElems.size() );
-        for ( OMElement elem : coverageElems ) {
-            coverages.add( elem.getText() );
-        }
-        return new DescribeCoverage( version, coverages );
-    }
+		List<OMElement> coverageElems = getElements(rootElement,
+				new XPath("/wcs:DescribeCoverage/wcs:Coverage", wcsNSContext));
+		List<String> coverages = new ArrayList<String>(coverageElems.size());
+		for (OMElement elem : coverageElems) {
+			coverages.add(elem.getText());
+		}
+		return new DescribeCoverage(version, coverages);
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -55,170 +54,165 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Identifies this {@link ProcessletOutput} to be a complex data structure encoded in XML (e.g., using GML), and
- * provides a sink for writing it.
- * 
+ * Identifies this {@link ProcessletOutput} to be a complex data structure encoded in XML
+ * (e.g., using GML), and provides a sink for writing it.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * 
- * @version $Revision: $, $Date: $
  */
 public class ComplexOutputImpl extends ProcessletOutputImpl implements ComplexOutput {
 
-    private static final Logger LOG = LoggerFactory.getLogger( ComplexOutputImpl.class );
+	private static final Logger LOG = LoggerFactory.getLogger(ComplexOutputImpl.class);
 
-    private static XMLInputFactory inputFactory = XMLInputFactory.newInstance();
+	private static XMLInputFactory inputFactory = XMLInputFactory.newInstance();
 
-    private static XMLOutputFactory outputFactory;
+	private static XMLOutputFactory outputFactory;
 
-    private OutputStorage location;
+	private OutputStorage location;
 
-    private OutputStream os;
+	private OutputStream os;
 
-    private BufferedInputStream is;
+	private BufferedInputStream is;
 
-    private XMLStreamWriter streamWriter;
+	private XMLStreamWriter streamWriter;
 
-    private XMLStreamReader streamReader;
+	private XMLStreamReader streamReader;
 
-    private final String requestedMimeType;
+	private final String requestedMimeType;
 
-    private final String requestedSchema;
+	private final String requestedSchema;
 
-    private final String requestedEncoding;
+	private final String requestedEncoding;
 
-    static {
-        outputFactory = XMLOutputFactory.newInstance();
-        outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", Boolean.TRUE );
-    }
+	static {
+		outputFactory = XMLOutputFactory.newInstance();
+		outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", Boolean.TRUE);
+	}
 
-    /**
-     * Construct a complex output, values will be written to the location and probably not stored.
-     * 
-     * @param outputType
-     * @param location
-     * @param isRequested
-     * @param requestedMimeType
-     * @param requestedSchema
-     * @param requestedEncoding
-     * @throws FileNotFoundException
-     * @throws XMLStreamException
-     */
-    public ComplexOutputImpl( ComplexOutputDefinition outputType, OutputStorage location, boolean isRequested,
-                              String requestedMimeType, String requestedSchema, String requestedEncoding )
-                            throws FileNotFoundException, XMLStreamException {
-        super( outputType, isRequested );
-        LOG.debug( "Creating sink for complex output at location '" + location + "'" );
-        this.location = location;
-        os = location.getOutputStream();
-        this.requestedMimeType = requestedMimeType;
-        this.requestedSchema = requestedSchema;
-        this.requestedEncoding = requestedEncoding;
-    }
+	/**
+	 * Construct a complex output, values will be written to the location and probably not
+	 * stored.
+	 * @param outputType
+	 * @param location
+	 * @param isRequested
+	 * @param requestedMimeType
+	 * @param requestedSchema
+	 * @param requestedEncoding
+	 * @throws FileNotFoundException
+	 * @throws XMLStreamException
+	 */
+	public ComplexOutputImpl(ComplexOutputDefinition outputType, OutputStorage location, boolean isRequested,
+			String requestedMimeType, String requestedSchema, String requestedEncoding)
+			throws FileNotFoundException, XMLStreamException {
+		super(outputType, isRequested);
+		LOG.debug("Creating sink for complex output at location '" + location + "'");
+		this.location = location;
+		os = location.getOutputStream();
+		this.requestedMimeType = requestedMimeType;
+		this.requestedSchema = requestedSchema;
+		this.requestedEncoding = requestedEncoding;
+	}
 
-    /**
-     * Construct a complex output, values will be written to the stream and (probably) not stored.
-     * 
-     * @param outputType
-     * @param outputStream
-     * @param isRequested
-     * @param requestedMimeType
-     * @param requestedSchema
-     * @param requestedEncoding
-     */
-    public ComplexOutputImpl( ComplexOutputDefinition outputType, OutputStream outputStream, boolean isRequested,
-                              String requestedMimeType, String requestedSchema, String requestedEncoding ) {
-        super( outputType, isRequested );
-        LOG.debug( "Creating direct sink for complex output" );
-        os = outputStream;
-        this.requestedMimeType = requestedMimeType;
-        this.requestedSchema = requestedSchema;
-        this.requestedEncoding = requestedEncoding;
-    }
+	/**
+	 * Construct a complex output, values will be written to the stream and (probably) not
+	 * stored.
+	 * @param outputType
+	 * @param outputStream
+	 * @param isRequested
+	 * @param requestedMimeType
+	 * @param requestedSchema
+	 * @param requestedEncoding
+	 */
+	public ComplexOutputImpl(ComplexOutputDefinition outputType, OutputStream outputStream, boolean isRequested,
+			String requestedMimeType, String requestedSchema, String requestedEncoding) {
+		super(outputType, isRequested);
+		LOG.debug("Creating direct sink for complex output");
+		os = outputStream;
+		this.requestedMimeType = requestedMimeType;
+		this.requestedSchema = requestedSchema;
+		this.requestedEncoding = requestedEncoding;
+	}
 
-    /**
-     * Returns the stream to write the output.
-     * 
-     * @return the stream to write the output
-     */
-    public OutputStream getBinaryOutputStream() {
-        return os;
-    }
+	/**
+	 * Returns the stream to write the output.
+	 * @return the stream to write the output
+	 */
+	public OutputStream getBinaryOutputStream() {
+		return os;
+	}
 
-    public XMLStreamWriter getXMLStreamWriter()
-                            throws XMLStreamException {
-        String encoding = requestedEncoding;
-        if ( requestedEncoding == null ) {
-            encoding = "UTF-8";
-        }
-        streamWriter = outputFactory.createXMLStreamWriter( new BufferedOutputStream( os ), encoding );
-        streamWriter.writeStartDocument( encoding, "1.0" );
-        return streamWriter;
-    }
+	public XMLStreamWriter getXMLStreamWriter() throws XMLStreamException {
+		String encoding = requestedEncoding;
+		if (requestedEncoding == null) {
+			encoding = "UTF-8";
+		}
+		streamWriter = outputFactory.createXMLStreamWriter(new BufferedOutputStream(os), encoding);
+		streamWriter.writeStartDocument(encoding, "1.0");
+		return streamWriter;
+	}
 
-    @Override
-    public String getRequestedMimeType() {
-        return requestedMimeType;
-    }
+	@Override
+	public String getRequestedMimeType() {
+		return requestedMimeType;
+	}
 
-    @Override
-    public String getRequestedSchema() {
-        return requestedSchema;
-    }
+	@Override
+	public String getRequestedSchema() {
+		return requestedSchema;
+	}
 
-    @Override
-    public String getRequestedEncoding() {
-        return requestedEncoding;
-    }
+	@Override
+	public String getRequestedEncoding() {
+		return requestedEncoding;
+	}
 
-    /**
-     * @return a reader on the stored location, or <code>null</code> if storing was disabled.
-     */
-    public XMLStreamReader getStreamReader() {
-        return streamReader;
-    }
+	/**
+	 * @return a reader on the stored location, or <code>null</code> if storing was
+	 * disabled.
+	 */
+	public XMLStreamReader getStreamReader() {
+		return streamReader;
+	}
 
-    /**
-     * Closes the stream writer and writes the end document (if it was initialized).
-     * 
-     * @throws XMLStreamException
-     * @throws IOException
-     */
-    public void close()
-                            throws XMLStreamException, IOException {
+	/**
+	 * Closes the stream writer and writes the end document (if it was initialized).
+	 * @throws XMLStreamException
+	 * @throws IOException
+	 */
+	public void close() throws XMLStreamException, IOException {
 
-        if ( streamWriter != null ) {
-            LOG.debug( "Closing sink for xml output at location '" + location + "'" );
-            streamWriter.writeEndDocument();
-            streamWriter.flush();
-            streamWriter.close();
-            if ( location != null ) {
-                streamReader = inputFactory.createXMLStreamReader( new BufferedInputStream( location.getInputStream() ) );
-            }
-        } else {
-            if ( location != null ) {
-                LOG.debug( "Closing sink for raw output at location '" + location + "'" );
-                os.flush();
-                os.close();
-                is = new BufferedInputStream( location.getInputStream() );
-            }
-        }
-    }
+		if (streamWriter != null) {
+			LOG.debug("Closing sink for xml output at location '" + location + "'");
+			streamWriter.writeEndDocument();
+			streamWriter.flush();
+			streamWriter.close();
+			if (location != null) {
+				streamReader = inputFactory.createXMLStreamReader(new BufferedInputStream(location.getInputStream()));
+			}
+		}
+		else {
+			if (location != null) {
+				LOG.debug("Closing sink for raw output at location '" + location + "'");
+				os.flush();
+				os.close();
+				is = new BufferedInputStream(location.getInputStream());
+			}
+		}
+	}
 
-    /**
-     * Returns the stream to read the value.
-     * 
-     * @return the stream to read the value
-     */
-    public InputStream getInputStream() {
-        return is;
-    }
+	/**
+	 * Returns the stream to read the value.
+	 * @return the stream to read the value
+	 */
+	public InputStream getInputStream() {
+		return is;
+	}
 
-    /**
-     * @return if the storage location was set, this method will return the web url of the stored output file.
-     *         <code>Null</code> otherwise.
-     */
-    public String getWebURL() {
-        return location != null ? location.getWebURL() : null;
-    }
+	/**
+	 * @return if the storage location was set, this method will return the web url of the
+	 * stored output file. <code>Null</code> otherwise.
+	 */
+	public String getWebURL() {
+		return location != null ? location.getWebURL() : null;
+	}
+
 }

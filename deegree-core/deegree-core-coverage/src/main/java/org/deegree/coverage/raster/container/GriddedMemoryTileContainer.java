@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -44,65 +43,60 @@ import org.deegree.geometry.Envelope;
 
 /**
  * Concrete implementation of {@link GriddedTileContainer} that keeps the tiles in memory.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class GriddedMemoryTileContainer extends GriddedTileContainer {
 
-    private AbstractRaster[] cells;
+	private AbstractRaster[] cells;
 
-    /**
-     * The memory based gridded tile container.
-     * 
-     * @param location
-     * @param envelope
-     * @param rows
-     * @param columns
-     * @param tileSamplesX
-     * @param tileSamplesY
-     * @param cells
-     */
-    public GriddedMemoryTileContainer( OriginLocation location, Envelope envelope, int rows, int columns,
-                                       int tileSamplesX, int tileSamplesY, AbstractRaster[] cells ) {
+	/**
+	 * The memory based gridded tile container.
+	 * @param location
+	 * @param envelope
+	 * @param rows
+	 * @param columns
+	 * @param tileSamplesX
+	 * @param tileSamplesY
+	 * @param cells
+	 */
+	public GriddedMemoryTileContainer(OriginLocation location, Envelope envelope, int rows, int columns,
+			int tileSamplesX, int tileSamplesY, AbstractRaster[] cells) {
 
-        super( location, envelope, rows, columns, tileSamplesX, tileSamplesY );
-        this.cells = cells == null ? null : new AbstractRaster[cells.length];
-        // make copy is a better style...
-        if ( cells != null ) {
-            for ( int i = 0; i < cells.length; ++i ) {
-                this.cells[i] = cells[i];
-            }
-        }
-    }
+		super(location, envelope, rows, columns, tileSamplesX, tileSamplesY);
+		this.cells = cells == null ? null : new AbstractRaster[cells.length];
+		// make copy is a better style...
+		if (cells != null) {
+			for (int i = 0; i < cells.length; ++i) {
+				this.cells[i] = cells[i];
+			}
+		}
+	}
 
-    @Override
-    public AbstractRaster getTile( int rowId, int columnId ) {
-        return cells[getTileId( columnId, rowId )];
-    }
+	@Override
+	public AbstractRaster getTile(int rowId, int columnId) {
+		return cells[getTileId(columnId, rowId)];
+	}
 
-    /**
-     * Creates an in-memory gridded tile container from the given tile container.
-     * 
-     * @param orig
-     * @return an in-memory gridded tile container.
-     * @throws IOException
-     */
-    public static GriddedMemoryTileContainer create( GriddedTileContainer orig )
-                            throws IOException {
+	/**
+	 * Creates an in-memory gridded tile container from the given tile container.
+	 * @param orig
+	 * @return an in-memory gridded tile container.
+	 * @throws IOException
+	 */
+	public static GriddedMemoryTileContainer create(GriddedTileContainer orig) throws IOException {
 
-        int rows = orig.getRows();
-        int columns = orig.getColumns();
-        AbstractRaster[] cells = new AbstractRaster[rows * columns];
-        for ( int rowId = 0; rowId < rows; rowId++ ) {
-            for ( int columnId = 0; columnId < columns; columnId++ ) {
-                cells[orig.getTileId( columnId, rowId )] = orig.getTile( rowId, columnId );
-            }
-        }
+		int rows = orig.getRows();
+		int columns = orig.getColumns();
+		AbstractRaster[] cells = new AbstractRaster[rows * columns];
+		for (int rowId = 0; rowId < rows; rowId++) {
+			for (int columnId = 0; columnId < columns; columnId++) {
+				cells[orig.getTileId(columnId, rowId)] = orig.getTile(rowId, columnId);
+			}
+		}
 
-        return new GriddedMemoryTileContainer( orig.getRasterReference().getOriginLocation(), orig.getEnvelope(), rows,
-                                               columns, orig.tileSamplesX, orig.tileSamplesY, cells );
-    }
+		return new GriddedMemoryTileContainer(orig.getRasterReference().getOriginLocation(), orig.getEnvelope(), rows,
+				columns, orig.tileSamplesX, orig.tileSamplesY, cells);
+	}
+
 }

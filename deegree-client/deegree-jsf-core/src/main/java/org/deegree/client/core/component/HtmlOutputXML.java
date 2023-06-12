@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -42,118 +41,121 @@ import javax.faces.component.UIOutput;
 import org.deegree.client.core.utils.MessageUtils;
 
 /**
- * Renders an XML document indented and colored, if possible. It's also possible to create a link for downloading the
- * value. The created file will be deleted after the given time, default are 60 minutes.
- * 
+ * Renders an XML document indented and colored, if possible. It's also possible to create
+ * a link for downloading the value. The created file will be deleted after the given
+ * time, default are 60 minutes.
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 @ResourceDependency(library = "deegree", name = "css/outputXML.css", target = "head")
 @FacesComponent(value = "HtmlOutputXML")
 public class HtmlOutputXML extends UIOutput {
 
-    public HtmlOutputXML() {
-        setRendererType( "org.deegree.OutputXML" );
-    }
+	public HtmlOutputXML() {
+		setRendererType("org.deegree.OutputXML");
+	}
 
-    private static enum AdditionalPropertyKeys {
-        downloadable, downloadLabel, downloadFile, minutesUntilDelete, styleClass
-    }
+	private static enum AdditionalPropertyKeys {
 
-    /**
-     * @param downloadLabel
-     *            The text rendered as label for the download link. If null, the default value will be returned.
-     */
-    public void setDownloadLabel( String downloadLabel ) {
-        getStateHelper().put( AdditionalPropertyKeys.downloadLabel, downloadLabel );
-    }
+		downloadable, downloadLabel, downloadFile, minutesUntilDelete, styleClass
 
-    /**
-     * @return The text rendered as label for the download link.
-     */
-    public String getDownloadLabel() {
-        String label = MessageUtils.getResourceText( null,
-                                                     "org.deegree.client.core.component.HtmlOutputXML.DOWNLOADLABEL" );
-        return (String) getStateHelper().eval( AdditionalPropertyKeys.downloadLabel, label );
-    }
+	}
 
-    /**
-     * @param downloadable
-     *            true if a link for a download should be rendered. Default is false.
-     */
-    public void setDownloadable( boolean downloadable ) {
-        getStateHelper().put( AdditionalPropertyKeys.downloadable, downloadable );
-    }
+	/**
+	 * @param downloadLabel The text rendered as label for the download link. If null, the
+	 * default value will be returned.
+	 */
+	public void setDownloadLabel(String downloadLabel) {
+		getStateHelper().put(AdditionalPropertyKeys.downloadLabel, downloadLabel);
+	}
 
-    /**
-     * @return true, if a link for downloading the value as file should be rendered. Default is false.
-     */
-    public boolean isDownloadable() {
-        return (Boolean) getStateHelper().eval( AdditionalPropertyKeys.downloadable, false );
-    }
+	/**
+	 * @return The text rendered as label for the download link.
+	 */
+	public String getDownloadLabel() {
+		String label = MessageUtils.getResourceText(null,
+				"org.deegree.client.core.component.HtmlOutputXML.DOWNLOADLABEL");
+		return (String) getStateHelper().eval(AdditionalPropertyKeys.downloadLabel, label);
+	}
 
-    /**
-     * @param downloadFile
-     *            The name of the directory in the web app directory, where the files should be stored. Can be null.
-     */
-    public void setDownloadFile( String downloadFile ) {
-        getStateHelper().put( AdditionalPropertyKeys.downloadFile, downloadFile );
-    }
+	/**
+	 * @param downloadable true if a link for a download should be rendered. Default is
+	 * false.
+	 */
+	public void setDownloadable(boolean downloadable) {
+		getStateHelper().put(AdditionalPropertyKeys.downloadable, downloadable);
+	}
 
-    /**
-     * @return The name of the directory in the web app directory, where the files should be stored. Can be null.
-     */
-    public String getDownloadFile() {
-        return (String) getStateHelper().eval( AdditionalPropertyKeys.downloadFile, null );
-    }
+	/**
+	 * @return true, if a link for downloading the value as file should be rendered.
+	 * Default is false.
+	 */
+	public boolean isDownloadable() {
+		return (Boolean) getStateHelper().eval(AdditionalPropertyKeys.downloadable, false);
+	}
 
-    /**
-     * @param minutesUntilDelete
-     *            Time in minutes after the created file should be deleted. A value <= 0 means, the file should not be
-     *            deleted. Default value is 60.
-     */
-    public void setMinutesUntilDelete( int minutesUntilDelete ) {
-        getStateHelper().put( AdditionalPropertyKeys.minutesUntilDelete, minutesUntilDelete );
-    }
+	/**
+	 * @param downloadFile The name of the directory in the web app directory, where the
+	 * files should be stored. Can be null.
+	 */
+	public void setDownloadFile(String downloadFile) {
+		getStateHelper().put(AdditionalPropertyKeys.downloadFile, downloadFile);
+	}
 
-    /**
-     * @return The time in minutes after the created file should be deleted. A value <= 0 means, the file should not be
-     *         deleted. Default value is 60.
-     */
-    public int getMinutesUntilDelete() {
-        return (Integer) getStateHelper().eval( AdditionalPropertyKeys.minutesUntilDelete, 60 );
-    }
+	/**
+	 * @return The name of the directory in the web app directory, where the files should
+	 * be stored. Can be null.
+	 */
+	public String getDownloadFile() {
+		return (String) getStateHelper().eval(AdditionalPropertyKeys.downloadFile, null);
+	}
 
-    /**
-     * @return A comma seperated list of available styleClasses. Default value is "outputXML".
-     */
-    public String getStyleClass() {
-        return (String) getStateHelper().eval( AdditionalPropertyKeys.styleClass, "outputXML" );
+	/**
+	 * @param minutesUntilDelete Time in minutes after the created file should be deleted.
+	 * A value <= 0 means, the file should not be deleted. Default value is 60.
+	 */
+	public void setMinutesUntilDelete(int minutesUntilDelete) {
+		getStateHelper().put(AdditionalPropertyKeys.minutesUntilDelete, minutesUntilDelete);
+	}
 
-    }
+	/**
+	 * @return The time in minutes after the created file should be deleted. A value <= 0
+	 * means, the file should not be deleted. Default value is 60.
+	 */
+	public int getMinutesUntilDelete() {
+		return (Integer) getStateHelper().eval(AdditionalPropertyKeys.minutesUntilDelete, 60);
+	}
 
-    /**
-     * @param styleClass
-     *            A comma sepereated list of available style classes, passed through the class attribute of the
-     *            component.
-     */
-    public void setStyleClass( String styleClass ) {
-        getStateHelper().put( AdditionalPropertyKeys.styleClass, styleClass );
-    }
+	/**
+	 * @return A comma seperated list of available styleClasses. Default value is
+	 * "outputXML".
+	 */
+	public String getStyleClass() {
+		return (String) getStateHelper().eval(AdditionalPropertyKeys.styleClass, "outputXML");
 
-    @Override
-    public String getValue() {
-        String v = null;
-        Object value = super.getValue();
-        if ( value != null ) {
-            if ( value instanceof String ) {
-                v = (String) value;
-            } else {
-                v = value.toString();
-            }
-        }
-        return v;
-    }
+	}
+
+	/**
+	 * @param styleClass A comma sepereated list of available style classes, passed
+	 * through the class attribute of the component.
+	 */
+	public void setStyleClass(String styleClass) {
+		getStateHelper().put(AdditionalPropertyKeys.styleClass, styleClass);
+	}
+
+	@Override
+	public String getValue() {
+		String v = null;
+		Object value = super.getValue();
+		if (value != null) {
+			if (value instanceof String) {
+				v = (String) value;
+			}
+			else {
+				v = value.toString();
+			}
+		}
+		return v;
+	}
+
 }

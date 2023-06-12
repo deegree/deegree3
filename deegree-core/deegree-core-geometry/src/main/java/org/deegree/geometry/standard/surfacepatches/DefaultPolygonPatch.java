@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -46,76 +45,73 @@ import org.deegree.geometry.primitive.patches.PolygonPatch;
 
 /**
  * Default implementation of {@link PolygonPatch}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class DefaultPolygonPatch implements PolygonPatch {
 
-    private Ring exteriorRing;
+	private Ring exteriorRing;
 
-    private List<Ring> interiorRings;
+	private List<Ring> interiorRings;
 
-    private List<Ring> allBoundaries;
+	private List<Ring> allBoundaries;
 
-    /**
-     * Creates a new {@link DefaultPolygonPatch} instance from the given parameters.
-     * 
-     * @param exteriorRing
-     *            ring that defines the outer boundary, may be null (see section 9.2.2.5 of GML spec)
-     * @param interiorRings
-     *            list of rings that define the inner boundaries, may be empty or null
-     */
-    public DefaultPolygonPatch( Ring exteriorRing, List<Ring> interiorRings ) {
-        this.exteriorRing = exteriorRing;
-        this.interiorRings = interiorRings;
-        if ( interiorRings == null ) {
-            this.interiorRings = Collections.emptyList();
-        }
-        this.allBoundaries = new LinkedList<Ring>();
-        if ( exteriorRing != null ) {
-            allBoundaries.add( exteriorRing );
-        }
-        if ( interiorRings != null ) {
-            allBoundaries.addAll( interiorRings );
-        }
-    }
+	/**
+	 * Creates a new {@link DefaultPolygonPatch} instance from the given parameters.
+	 * @param exteriorRing ring that defines the outer boundary, may be null (see section
+	 * 9.2.2.5 of GML spec)
+	 * @param interiorRings list of rings that define the inner boundaries, may be empty
+	 * or null
+	 */
+	public DefaultPolygonPatch(Ring exteriorRing, List<Ring> interiorRings) {
+		this.exteriorRing = exteriorRing;
+		this.interiorRings = interiorRings;
+		if (interiorRings == null) {
+			this.interiorRings = Collections.emptyList();
+		}
+		this.allBoundaries = new LinkedList<Ring>();
+		if (exteriorRing != null) {
+			allBoundaries.add(exteriorRing);
+		}
+		if (interiorRings != null) {
+			allBoundaries.addAll(interiorRings);
+		}
+	}
 
-    @Override
-    public int getCoordinateDimension() {
-        return exteriorRing.getCoordinateDimension();
-    }
+	@Override
+	public int getCoordinateDimension() {
+		return exteriorRing.getCoordinateDimension();
+	}
 
-    @Override
-    public Measure getArea( Unit requestedBaseUnit ) {
-        // TODO
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Measure getArea(Unit requestedBaseUnit) {
+		// TODO
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public Ring getExteriorRing() {
-        return exteriorRing;
-    }
+	@Override
+	public Ring getExteriorRing() {
+		return exteriorRing;
+	}
 
-    @Override
-    public List<Ring> getInteriorRings() {
-        return interiorRings;
-    }
+	@Override
+	public List<Ring> getInteriorRings() {
+		return interiorRings;
+	}
 
-    @Override
-    public List<Ring> getBoundaryRings() {
-        return allBoundaries;
-    }
+	@Override
+	public List<Ring> getBoundaryRings() {
+		return allBoundaries;
+	}
 
-    @Override
-    public SurfacePatchType getSurfacePatchType() {
-        return SurfacePatchType.POLYGON_PATCH;
-    }
+	@Override
+	public SurfacePatchType getSurfacePatchType() {
+		return SurfacePatchType.POLYGON_PATCH;
+	}
 
-    @Override
-    public PolygonPatchType getPolygonPatchType() {
-        return PolygonPatchType.POLYGON_PATCH;
-    }
+	@Override
+	public PolygonPatchType getPolygonPatchType() {
+		return PolygonPatchType.POLYGON_PATCH;
+	}
+
 }

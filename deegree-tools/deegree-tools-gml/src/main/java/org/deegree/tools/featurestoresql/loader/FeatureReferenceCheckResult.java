@@ -30,29 +30,30 @@ import java.util.Set;
  */
 public class FeatureReferenceCheckResult {
 
-    private final Set<String> unresolvableReferences;
+	private final Set<String> unresolvableReferences;
 
-    /**
-     * @param unresolvableReferences
-     *            a list of unresolvable reference, may be empty but never <code>null</code>
-     */
-    public FeatureReferenceCheckResult( Set<String> unresolvableReferences ) {
-        this.unresolvableReferences = unresolvableReferences;
-    }
+	/**
+	 * @param unresolvableReferences a list of unresolvable reference, may be empty but
+	 * never <code>null</code>
+	 */
+	public FeatureReferenceCheckResult(Set<String> unresolvableReferences) {
+		this.unresolvableReferences = unresolvableReferences;
+	}
 
-    /**
-     * @return <code>true</code> if the {@link FeatureReferenceChecker} did not found any unresolvable references,
-     *         <code>false</code> otherwise
-     */
-    public boolean isValid() {
-        return unresolvableReferences.size() == 0;
-    }
+	/**
+	 * @return <code>true</code> if the {@link FeatureReferenceChecker} did not found any
+	 * unresolvable references, <code>false</code> otherwise
+	 */
+	public boolean isValid() {
+		return unresolvableReferences.size() == 0;
+	}
 
-    /**
-     * @return the detected unresolvable references, may be empty but never <code>null</code>
-     */
-    public Set<String> getUnresolvableReferences() {
-        return unresolvableReferences;
-    }
+	/**
+	 * @return the detected unresolvable references, may be empty but never
+	 * <code>null</code>
+	 */
+	public Set<String> getUnresolvableReferences() {
+		return unresolvableReferences;
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -60,110 +59,117 @@ import org.slf4j.Logger;
 
 /**
  * Builds dimensions map from jaxb configuration.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 public class DimensionConfigBuilder {
 
-    private static final Logger LOG = getLogger( DimensionConfigBuilder.class );
+	private static final Logger LOG = getLogger(DimensionConfigBuilder.class);
 
-    public static Map<String, Dimension<?>> parseDimensions( String layerName, List<DimensionType> dimensions ) {
-        Map<String, Dimension<?>> map = new LinkedHashMap<String, Dimension<?>>();
-        for ( DimensionType type : dimensions ) {
-            DimensionsLexer lexer = new DimensionsLexer( new ANTLRStringStream( type.getExtent() ) );
-            DimensionsParser parser = new DimensionsParser( new CommonTokenStream( lexer ) );
-            DimensionsParser defaultParser = null;
-            if ( type.getDefaultValue() != null ) {
-                lexer = new DimensionsLexer( new ANTLRStringStream( type.getDefaultValue() ) );
-                defaultParser = new DimensionsParser( new CommonTokenStream( lexer ) );
-            }
+	public static Map<String, Dimension<?>> parseDimensions(String layerName, List<DimensionType> dimensions) {
+		Map<String, Dimension<?>> map = new LinkedHashMap<String, Dimension<?>>();
+		for (DimensionType type : dimensions) {
+			DimensionsLexer lexer = new DimensionsLexer(new ANTLRStringStream(type.getExtent()));
+			DimensionsParser parser = new DimensionsParser(new CommonTokenStream(lexer));
+			DimensionsParser defaultParser = null;
+			if (type.getDefaultValue() != null) {
+				lexer = new DimensionsLexer(new ANTLRStringStream(type.getDefaultValue()));
+				defaultParser = new DimensionsParser(new CommonTokenStream(lexer));
+			}
 
-            List<?> list;
-            List<?> defaultList;
+			List<?> list;
+			List<?> defaultList;
 
-            try {
-                try {
-                    parser.dimensionvalues();
-                } catch ( RecognitionException e ) {
-                    throw new Exception( parser.error );
-                }
+			try {
+				try {
+					parser.dimensionvalues();
+				}
+				catch (RecognitionException e) {
+					throw new Exception(parser.error);
+				}
 
-                list = parser.values;
+				list = parser.values;
 
-                if ( defaultParser != null ) {
-                    try {
-                        defaultParser.dimensionvalues();
-                    } catch ( RecognitionException e ) {
-                        throw new Exception( defaultParser.error );
-                    }
-                    defaultList = defaultParser.values;
-                } else {
-                    defaultList = parser.values;
-                }
-            } catch ( Exception e ) {
-                LOG.warn( "The dimension '{}' has not been added for layer '{}' because the error"
-                                                  + " '{}' occurred while parsing the extent/default values.",
-                          new Object[] { type.getName(), layerName, e.getLocalizedMessage() } );
-                continue;
-            }
+				if (defaultParser != null) {
+					try {
+						defaultParser.dimensionvalues();
+					}
+					catch (RecognitionException e) {
+						throw new Exception(defaultParser.error);
+					}
+					defaultList = defaultParser.values;
+				}
+				else {
+					defaultList = parser.values;
+				}
+			}
+			catch (Exception e) {
+				LOG.warn(
+						"The dimension '{}' has not been added for layer '{}' because the error"
+								+ " '{}' occurred while parsing the extent/default values.",
+						new Object[] { type.getName(), layerName, e.getLocalizedMessage() });
+				continue;
+			}
 
-            if ( type.isIsTime() ) {
-                handleTime( type, map, defaultList, list, layerName );
-            } else if ( type.isIsElevation() ) {
-                handleElevation( type, map, defaultList, list, layerName );
-            } else {
-                handleOther( type, map, defaultList, list, layerName );
-            }
-        }
-        return map;
-    }
+			if (type.isIsTime()) {
+				handleTime(type, map, defaultList, list, layerName);
+			}
+			else if (type.isIsElevation()) {
+				handleElevation(type, map, defaultList, list, layerName);
+			}
+			else {
+				handleOther(type, map, defaultList, list, layerName);
+			}
+		}
+		return map;
+	}
 
-    private static void handleTime( DimensionType type, Map<String, Dimension<?>> map, List<?> defaultList,
-                                    List<?> list, String layerName ) {
-        try {
-            boolean current = ( type.isCurrent() != null ) && type.isCurrent();
-            boolean nearest = ( type.isNearestValue() != null ) && type.isNearestValue();
-            boolean multiple = ( type.isMultipleValues() != null ) && type.isMultipleValues();
-            map.put( "time", new Dimension<Object>( "time", (List<?>) parseTyped( defaultList, true ), current,
-                                                    nearest, multiple, "ISO8601", null, type.getSource(),
-                                                    (List<?>) parseTyped( list, true ) ) );
-        } catch ( ParseException e ) {
-            LOG.warn( "The TIME dimension has not been added for layer {} because the error"
-                      + " '{}' occurred while parsing the extent/default values.", layerName, e.getLocalizedMessage() );
-        }
-    }
+	private static void handleTime(DimensionType type, Map<String, Dimension<?>> map, List<?> defaultList, List<?> list,
+			String layerName) {
+		try {
+			boolean current = (type.isCurrent() != null) && type.isCurrent();
+			boolean nearest = (type.isNearestValue() != null) && type.isNearestValue();
+			boolean multiple = (type.isMultipleValues() != null) && type.isMultipleValues();
+			map.put("time", new Dimension<Object>("time", (List<?>) parseTyped(defaultList, true), current, nearest,
+					multiple, "ISO8601", null, type.getSource(), (List<?>) parseTyped(list, true)));
+		}
+		catch (ParseException e) {
+			LOG.warn(
+					"The TIME dimension has not been added for layer {} because the error"
+							+ " '{}' occurred while parsing the extent/default values.",
+					layerName, e.getLocalizedMessage());
+		}
+	}
 
-    private static void handleElevation( DimensionType type, Map<String, Dimension<?>> map, List<?> defaultList,
-                                         List<?> list, String layerName ) {
-        try {
-            boolean nearest = ( type.isNearestValue() != null ) && type.isNearestValue();
-            boolean multiple = ( type.isMultipleValues() != null ) && type.isMultipleValues();
-            map.put( "elevation",
-                     new Dimension<Object>( "elevation", (List<?>) parseTyped( defaultList, false ), false, nearest,
-                                            multiple, type.getUnits(),
-                                            type.getUnitSymbol() == null ? "m" : type.getUnitSymbol(),
-                                            type.getSource(), (List<?>) parseTyped( list, false ) ) );
-        } catch ( ParseException e ) {
-            // does not happen, as we're not parsing with time == true
-        }
-    }
+	private static void handleElevation(DimensionType type, Map<String, Dimension<?>> map, List<?> defaultList,
+			List<?> list, String layerName) {
+		try {
+			boolean nearest = (type.isNearestValue() != null) && type.isNearestValue();
+			boolean multiple = (type.isMultipleValues() != null) && type.isMultipleValues();
+			map.put("elevation",
+					new Dimension<Object>("elevation", (List<?>) parseTyped(defaultList, false), false, nearest,
+							multiple, type.getUnits(), type.getUnitSymbol() == null ? "m" : type.getUnitSymbol(),
+							type.getSource(), (List<?>) parseTyped(list, false)));
+		}
+		catch (ParseException e) {
+			// does not happen, as we're not parsing with time == true
+		}
+	}
 
-    private static void handleOther( DimensionType type, Map<String, Dimension<?>> map, List<?> defaultList,
-                                     List<?> list, String layerName ) {
-        try {
-            boolean nearest = ( type.isNearestValue() != null ) && type.isNearestValue();
-            boolean multiple = ( type.isMultipleValues() != null ) && type.isMultipleValues();
-            Dimension<Object> dim;
-            dim = new Dimension<Object>( type.getName(), (List<?>) parseTyped( defaultList, false ), false, nearest,
-                                         multiple, type.getUnits(), type.getUnitSymbol(), type.getSource(),
-                                         (List<?>) parseTyped( list, false ) );
-            map.put( type.getName(), dim );
-        } catch ( ParseException e ) {
-            // does not happen, as we're not parsing with time == true
-        }
-    }
+	private static void handleOther(DimensionType type, Map<String, Dimension<?>> map, List<?> defaultList,
+			List<?> list, String layerName) {
+		try {
+			boolean nearest = (type.isNearestValue() != null) && type.isNearestValue();
+			boolean multiple = (type.isMultipleValues() != null) && type.isMultipleValues();
+			Dimension<Object> dim;
+			dim = new Dimension<Object>(type.getName(), (List<?>) parseTyped(defaultList, false), false, nearest,
+					multiple, type.getUnits(), type.getUnitSymbol(), type.getSource(),
+					(List<?>) parseTyped(list, false));
+			map.put(type.getName(), dim);
+		}
+		catch (ParseException e) {
+			// does not happen, as we're not parsing with time == true
+		}
+	}
 
 }

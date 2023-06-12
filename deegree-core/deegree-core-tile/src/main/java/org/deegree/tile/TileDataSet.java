@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -46,54 +45,47 @@ import java.util.List;
 import org.deegree.geometry.Envelope;
 
 /**
- * A collection of {@link TileDataLevel}s that adhere to the structure defined by a {@link TileMatrixSet}.
- * 
+ * A collection of {@link TileDataLevel}s that adhere to the structure defined by a
+ * {@link TileMatrixSet}.
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 public interface TileDataSet {
 
-    /**
-     * Constructs an iterator of tiles for a resolution and envelope.
-     * 
-     * @param envelope
-     *            all tiles intersecting with this envelope will be returned, must not be <code>null</code>
-     * @param resolution
-     *            selects the tile matrix, the smallest tile matrix with a sufficient resolution will be used
-     * @return an iterator of tiles, never <code>null</code>
-     */
-    Iterator<Tile> getTiles( Envelope envelope, double resolution );
+	/**
+	 * Constructs an iterator of tiles for a resolution and envelope.
+	 * @param envelope all tiles intersecting with this envelope will be returned, must
+	 * not be <code>null</code>
+	 * @param resolution selects the tile matrix, the smallest tile matrix with a
+	 * sufficient resolution will be used
+	 * @return an iterator of tiles, never <code>null</code>
+	 */
+	Iterator<Tile> getTiles(Envelope envelope, double resolution);
 
-    /**
-     * Returns the tile matrices of this matrix set.
-     * 
-     * @return the list of tile matrices this matrix set contains, never <code>null</code>
-     */
-    List<TileDataLevel> getTileDataLevels();
+	/**
+	 * Returns the tile matrices of this matrix set.
+	 * @return the list of tile matrices this matrix set contains, never <code>null</code>
+	 */
+	List<TileDataLevel> getTileDataLevels();
 
-    /**
-     * Returns the metadata about this matrix set.
-     * 
-     * @return never null.
-     */
-    TileMatrixSet getTileMatrixSet();
+	/**
+	 * Returns the metadata about this matrix set.
+	 * @return never null.
+	 */
+	TileMatrixSet getTileMatrixSet();
 
-    /**
-     * Returns a single tile matrix identified by the identifier.
-     * 
-     * @param identifier
-     * @return null, if no such matrix
-     */
-    TileDataLevel getTileDataLevel( String identifier );
+	/**
+	 * Returns a single tile matrix identified by the identifier.
+	 * @param identifier
+	 * @return null, if no such matrix
+	 */
+	TileDataLevel getTileDataLevel(String identifier);
 
-    /**
-     * Returns the mime type of the native image format.
-     * 
-     * @return mime type, never <code>null</code>
-     */
-    String getNativeImageFormat();
+	/**
+	 * Returns the mime type of the native image format.
+	 * @return mime type, never <code>null</code>
+	 */
+	String getNativeImageFormat();
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aschmitz@deegree.wald.intevation.de/deegree/deegree3/trunk/deegree-core/deegree-core-rendering-2d/src/main/java/org/deegree/rendering/r2d/se/unevaluated/Continuation.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -41,71 +40,68 @@ import org.deegree.filter.XPathEvaluator;
 
 /**
  * <code>Continuation</code> is not a real continuation...
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: aschmitz $
- * 
- * @version $Revision: 30128 $, $Date: 2011-03-22 13:02:43 +0100 (Tue, 22 Mar 2011) $
  * @param <T>
  */
 public abstract class Continuation<T> {
 
-    private Continuation<T> next;
+	private Continuation<T> next;
 
-    /**
-     *
-     */
-    public Continuation() {
-        // enable next to be null
-    }
+	/**
+	 *
+	 */
+	public Continuation() {
+		// enable next to be null
+	}
 
-    /**
-     * @param next
-     */
-    public Continuation( Continuation<T> next ) {
-        this.next = next;
-    }
+	/**
+	 * @param next
+	 */
+	public Continuation(Continuation<T> next) {
+		this.next = next;
+	}
 
-    /**
-     * @param base
-     * @param obj
-     */
-    public abstract void updateStep( T base, Feature obj, XPathEvaluator<Feature> evaluator );
+	/**
+	 * @param base
+	 * @param obj
+	 */
+	public abstract void updateStep(T base, Feature obj, XPathEvaluator<Feature> evaluator);
 
-    /**
-     * @param base
-     * @param obj
-     */
-    public void evaluate( T base, Feature obj, XPathEvaluator<Feature> evaluator ) {
-        updateStep( base, obj, evaluator );
-        if ( next != null ) {
-            next.evaluate( base, obj, evaluator );
-        }
-    }
+	/**
+	 * @param base
+	 * @param obj
+	 */
+	public void evaluate(T base, Feature obj, XPathEvaluator<Feature> evaluator) {
+		updateStep(base, obj, evaluator);
+		if (next != null) {
+			next.evaluate(base, obj, evaluator);
+		}
+	}
 
-    /**
-     * <code>Updater</code>
-     * 
-     * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-     * @author last edited by: $Author: aschmitz $
-     * 
-     * @version $Revision: 30128 $, $Date: 2011-03-22 13:02:43 +0100 (Tue, 22 Mar 2011) $
-     * @param <T>
-     */
-    public static interface Updater<T> {
-        /**
-         * @param obj
-         * @param val
-         */
-        void update( T obj, String val );
-    }
+	/**
+	 * <code>Updater</code>
+	 *
+	 * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+	 * @param <T>
+	 */
+	public static interface Updater<T> {
 
-    /**
-     * Updater for a string buffer.
-     */
-    public static final Updater<StringBuffer> SBUPDATER = new Updater<StringBuffer>() {
-        public void update( StringBuffer obj, String val ) {
-            obj.append( val );
-        }
-    };
+		/**
+		 * @param obj
+		 * @param val
+		 */
+		void update(T obj, String val);
+
+	}
+
+	/**
+	 * Updater for a string buffer.
+	 */
+	public static final Updater<StringBuffer> SBUPDATER = new Updater<StringBuffer>() {
+		public void update(StringBuffer obj, String val) {
+			obj.append(val);
+		}
+	};
+
 }

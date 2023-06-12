@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -43,42 +42,33 @@ import org.deegree.services.csw.AbstractCSWRequest;
 
 /**
  * Represents a <code>DescribeRecord</code> request to a CSW.
- * 
+ *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: thomas $
- * 
- * @version $Revision: $, $Date: $
  */
 public class DescribeRecord extends AbstractCSWRequest {
 
-    private String schemaLanguage;
+	private String schemaLanguage;
 
-    /**
-     * Creates a new {@link DescribeRecord} request.
-     * 
-     * @param version
-     *            protocol version, may not be null
-     * @param namespaces
-     * @param typeNames
-     *            requested type names, may be null
-     * @param outputFormat
-     *            requested output format, may be null
-     * @param schemaLanguage
-     *            requested schema language format
-     */
-    protected DescribeRecord( Version version, NamespaceBindings namespaces, QName[] typeNames, String outputFormat,
-                              String schemaLanguage ) {
-        super( version, namespaces, typeNames, outputFormat );
-        this.schemaLanguage = schemaLanguage;
-    }
+	/**
+	 * Creates a new {@link DescribeRecord} request.
+	 * @param version protocol version, may not be null
+	 * @param namespaces
+	 * @param typeNames requested type names, may be null
+	 * @param outputFormat requested output format, may be null
+	 * @param schemaLanguage requested schema language format
+	 */
+	protected DescribeRecord(Version version, NamespaceBindings namespaces, QName[] typeNames, String outputFormat,
+			String schemaLanguage) {
+		super(version, namespaces, typeNames, outputFormat);
+		this.schemaLanguage = schemaLanguage;
+	}
 
-    /**
-     * This is used to specify the schema language. The default value is XMLSCHEMA.
-     * 
-     * @return the schemaLanguage
-     */
-    public String getSchemaLanguage() {
-        return schemaLanguage;
-    }
+	/**
+	 * This is used to specify the schema language. The default value is XMLSCHEMA.
+	 * @return the schemaLanguage
+	 */
+	public String getSchemaLanguage() {
+		return schemaLanguage;
+	}
 
 }

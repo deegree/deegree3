@@ -45,34 +45,34 @@ import org.deegree.workspace.standard.DefaultResourceIdentifier;
 
 /**
  * Metadata for Oracle GeoRaster coverages
- * 
+ *
  * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
- * 
  * @since 3.4
  */
 public class OracleGeorasterMetadata extends AbstractResourceMetadata<Coverage> {
 
-    public OracleGeorasterMetadata( Workspace workspace, ResourceLocation<Coverage> location,
-                                    AbstractResourceProvider<Coverage> provider ) {
-        super( workspace, location, provider );
-    }
+	public OracleGeorasterMetadata(Workspace workspace, ResourceLocation<Coverage> location,
+			AbstractResourceProvider<Coverage> provider) {
+		super(workspace, location, provider);
+	}
 
-    @Override
-    public OracleGeorasterBuilder prepare() {
-        OracleGeorasterConfig config;
-        try {
-            config = (OracleGeorasterConfig) unmarshall( "org.deegree.coverage.persistence.oraclegeoraster.jaxb",
-                                                         provider.getSchema(), location.getAsStream(), workspace );
+	@Override
+	public OracleGeorasterBuilder prepare() {
+		OracleGeorasterConfig config;
+		try {
+			config = (OracleGeorasterConfig) unmarshall("org.deegree.coverage.persistence.oraclegeoraster.jaxb",
+					provider.getSchema(), location.getAsStream(), workspace);
 
-            dependencies.add( new DefaultResourceIdentifier<ConnectionProvider>( ConnectionProviderProvider.class,
-                                                                                 config.getJDBCConnId() ) );
+			dependencies.add(new DefaultResourceIdentifier<ConnectionProvider>(ConnectionProviderProvider.class,
+					config.getJDBCConnId()));
 
-            return new OracleGeorasterBuilder( config, this, workspace );
-        } catch ( JAXBException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return null;
-    }
+			return new OracleGeorasterBuilder(config, this, workspace);
+		}
+		catch (JAXBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
 
 }

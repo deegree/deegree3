@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -62,120 +61,114 @@ import org.slf4j.Logger;
 
 /**
  * <code>WMSControllerBase</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public abstract class WMSControllerBase implements Controller {
 
-    private static final Logger LOG = getLogger( WMSControllerBase.class );
+	private static final Logger LOG = getLogger(WMSControllerBase.class);
 
-    protected String EXCEPTION_DEFAULT, EXCEPTION_INIMAGE, EXCEPTION_BLANK;
+	protected String EXCEPTION_DEFAULT, EXCEPTION_INIMAGE, EXCEPTION_BLANK;
 
-    protected XMLExceptionSerializer exceptionSerializer;
+	protected XMLExceptionSerializer exceptionSerializer;
 
-    protected String EXCEPTION_MIME = "text/xml";
+	protected String EXCEPTION_MIME = "text/xml";
 
-    private final ExceptionsManager exceptionsManager;
+	private final ExceptionsManager exceptionsManager;
 
-    public WMSControllerBase( ExceptionsManager exceptionsManager ) {
-        this.exceptionsManager = exceptionsManager;
-    }
+	public WMSControllerBase(ExceptionsManager exceptionsManager) {
+		this.exceptionsManager = exceptionsManager;
+	}
 
-    @Override
-    public void handleException( Map<String, String> map, WMSRequestType req, OWSException e,
-                                 HttpResponseBuffer response, WMSController controller )
-                            throws ServletException {
-        String exceptionFormat = detectExceptionsParameter( map, req );
+	@Override
+	public void handleException(Map<String, String> map, WMSRequestType req, OWSException e,
+			HttpResponseBuffer response, WMSController controller) throws ServletException {
+		String exceptionFormat = detectExceptionsParameter(map, req);
 
-        writeException( map, e, response, exceptionFormat, controller );
-    }
+		writeException(map, e, response, exceptionFormat, controller);
+	}
 
-    @Override
-    public void getCapabilities( String getUrl, String postUrl, String updateSequence, MapService service,
-                                 HttpResponseBuffer response, ServiceIdentification identification,
-                                 ServiceProvider provider, Map<String, String> customParameters,
-                                 WMSController controller, OWSMetadataProvider metadata )
-                            throws OWSException, IOException {
-        getUrl = getUrl.substring( 0, getUrl.length() - 1 );
-        if ( updateSequence != null && updateSequence.trim().length() > 0 ) {
-            try {
-                int seq = parseInt( updateSequence );
-                if ( seq > service.getCurrentUpdateSequence() ) {
-                    throw new OWSException( get( "WMS.INVALID_UPDATE_SEQUENCE", updateSequence ),
-                                            OWSException.INVALID_UPDATE_SEQUENCE );
-                }
-                if ( seq == service.getCurrentUpdateSequence() ) {
-                    throw new OWSException( get( "WMS.CURRENT_UPDATE_SEQUENCE" ), OWSException.CURRENT_UPDATE_SEQUENCE );
-                }
-            } catch ( NumberFormatException e ) {
-                throw new OWSException( get( "WMS.INVALID_UPDATE_SEQUENCE", updateSequence ),
-                                        OWSException.INVALID_UPDATE_SEQUENCE );
-            }
-        }
+	@Override
+	public void getCapabilities(String getUrl, String postUrl, String updateSequence, MapService service,
+			HttpResponseBuffer response, ServiceIdentification identification, ServiceProvider provider,
+			Map<String, String> customParameters, WMSController controller, OWSMetadataProvider metadata)
+			throws OWSException, IOException {
+		getUrl = getUrl.substring(0, getUrl.length() - 1);
+		if (updateSequence != null && updateSequence.trim().length() > 0) {
+			try {
+				int seq = parseInt(updateSequence);
+				if (seq > service.getCurrentUpdateSequence()) {
+					throw new OWSException(get("WMS.INVALID_UPDATE_SEQUENCE", updateSequence),
+							OWSException.INVALID_UPDATE_SEQUENCE);
+				}
+				if (seq == service.getCurrentUpdateSequence()) {
+					throw new OWSException(get("WMS.CURRENT_UPDATE_SEQUENCE"), OWSException.CURRENT_UPDATE_SEQUENCE);
+				}
+			}
+			catch (NumberFormatException e) {
+				throw new OWSException(get("WMS.INVALID_UPDATE_SEQUENCE", updateSequence),
+						OWSException.INVALID_UPDATE_SEQUENCE);
+			}
+		}
 
-        XMLOutputFactory factory = XMLOutputFactory.newInstance();
-        factory.setProperty( IS_REPAIRING_NAMESPACES, true );
-        exportCapas( getUrl, postUrl, service, response, identification, provider, customParameters, controller,
-                     metadata );
-    }
+		XMLOutputFactory factory = XMLOutputFactory.newInstance();
+		factory.setProperty(IS_REPAIRING_NAMESPACES, true);
+		exportCapas(getUrl, postUrl, service, response, identification, provider, customParameters, controller,
+				metadata);
+	}
 
-    protected abstract void exportCapas( String getUrl, String postUrl, MapService service,
-                                         HttpResponseBuffer response, ServiceIdentification identification,
-                                         ServiceProvider provider, Map<String, String> customParameters,
-                                         WMSController controller, OWSMetadataProvider metadata )
-                            throws IOException, OWSException;
+	protected abstract void exportCapas(String getUrl, String postUrl, MapService service, HttpResponseBuffer response,
+			ServiceIdentification identification, ServiceProvider provider, Map<String, String> customParameters,
+			WMSController controller, OWSMetadataProvider metadata) throws IOException, OWSException;
 
-    protected abstract Version getVersion();
+	protected abstract Version getVersion();
 
-    private String detectExceptionsParameter( Map<String, String> map, WMSRequestType req ) {
-        String exceptionFormatParameter = map.get( "EXCEPTIONS" );
-        String notNullExceptionFormat = exceptionFormatParameter == null ? EXCEPTION_DEFAULT : exceptionFormatParameter;
-        if ( isSupportedFormatForRequestType( req, notNullExceptionFormat ) )
-            return notNullExceptionFormat;
-        return EXCEPTION_DEFAULT;
-    }
+	private String detectExceptionsParameter(Map<String, String> map, WMSRequestType req) {
+		String exceptionFormatParameter = map.get("EXCEPTIONS");
+		String notNullExceptionFormat = exceptionFormatParameter == null ? EXCEPTION_DEFAULT : exceptionFormatParameter;
+		if (isSupportedFormatForRequestType(req, notNullExceptionFormat))
+			return notNullExceptionFormat;
+		return EXCEPTION_DEFAULT;
+	}
 
-    private void writeException( Map<String, String> map, OWSException e, HttpResponseBuffer response,
-                                 String exceptionsFormat, WMSController controller )
-                            throws ServletException {
-        try {
-            writeExceptionCatchExceptions( map, e, response, exceptionsFormat, controller );
-        } catch ( ServletException ignored ) {
-            sendException( e, response, controller );
-        }
-    }
+	private void writeException(Map<String, String> map, OWSException e, HttpResponseBuffer response,
+			String exceptionsFormat, WMSController controller) throws ServletException {
+		try {
+			writeExceptionCatchExceptions(map, e, response, exceptionsFormat, controller);
+		}
+		catch (ServletException ignored) {
+			sendException(e, response, controller);
+		}
+	}
 
-    private void writeExceptionCatchExceptions( Map<String, String> map, OWSException e, HttpResponseBuffer response,
-                                                String exceptionsFormat, WMSController controller )
-                            throws ServletException {
-        try {
-            exceptionsManager.serialize( getVersion(), exceptionsFormat, response, e, exceptionSerializer, map );
-        } catch ( SerializingException se ) {
-            LOG.info( "An exception occured during serializing the exception, default serializer is used. Exception: {}",
-                      se.getMessage() );
-            controller.sendException( null, exceptionSerializer, e, response );
-        }
-    }
+	private void writeExceptionCatchExceptions(Map<String, String> map, OWSException e, HttpResponseBuffer response,
+			String exceptionsFormat, WMSController controller) throws ServletException {
+		try {
+			exceptionsManager.serialize(getVersion(), exceptionsFormat, response, e, exceptionSerializer, map);
+		}
+		catch (SerializingException se) {
+			LOG.info("An exception occured during serializing the exception, default serializer is used. Exception: {}",
+					se.getMessage());
+			controller.sendException(null, exceptionSerializer, e, response);
+		}
+	}
 
-    private boolean isSupportedFormatForRequestType( WMSRequestType req, String exceptions ) {
-        if ( req == null ) {
-            if ( EXCEPTION_BLANK.equals( exceptions ) || EXCEPTION_INIMAGE.equals( exceptions ) )
-                return false;
-            return true;
-        }
-        switch ( req ) {
-        case map:
-        case GetMap:
-        case GetLegendGraphic:
-            return true;
-        default:
-            if ( EXCEPTION_BLANK.equals( exceptions ) || EXCEPTION_INIMAGE.equals( exceptions ) )
-                return false;
-            return true;
-        }
-    }
+	private boolean isSupportedFormatForRequestType(WMSRequestType req, String exceptions) {
+		if (req == null) {
+			if (EXCEPTION_BLANK.equals(exceptions) || EXCEPTION_INIMAGE.equals(exceptions))
+				return false;
+			return true;
+		}
+		switch (req) {
+			case map:
+			case GetMap:
+			case GetLegendGraphic:
+				return true;
+			default:
+				if (EXCEPTION_BLANK.equals(exceptions) || EXCEPTION_INIMAGE.equals(exceptions))
+					return false;
+				return true;
+		}
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aschmitz@wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-base/src/main/java/org/deegree/protocol/wms/client/WMSClient111.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -52,70 +51,68 @@ import org.slf4j.LoggerFactory;
 /**
  * {@link WMS111CapabilitiesAdapter} for documents that comply to the <a
  * href="http://www.opengeospatial.org/standards/wms>WMS 1.1.1</a> specification.
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lgoltz $
- * 
- * @version $Revision: 31860 $, $Date: 2011-09-13 15:11:47 +0200 (Di, 13. Sep 2011) $
  */
 public class WMS111CapabilitiesAdapter extends WMSCapabilitiesAdapter {
 
-    private static final Logger LOG = LoggerFactory.getLogger( WMS111CapabilitiesAdapter.class );
+	private static final Logger LOG = LoggerFactory.getLogger(WMS111CapabilitiesAdapter.class);
 
-    /**
-     * Create a new {@link WMS111CapabilitiesAdapter} from the passed root element.
-     * 
-     * @param root
-     *            the capabilies doument, must not be <code>null</code> throws {@link IllegalArgumentException} if root
-     *            is null
-     */
-    public WMS111CapabilitiesAdapter( OMElement root ) {
-        if ( root == null )
-            throw new IllegalArgumentException( "Capablities root element must not be null!" );
-        setRootElement( root );
-    }
+	/**
+	 * Create a new {@link WMS111CapabilitiesAdapter} from the passed root element.
+	 * @param root the capabilies doument, must not be <code>null</code> throws
+	 * {@link IllegalArgumentException} if root is null
+	 */
+	public WMS111CapabilitiesAdapter(OMElement root) {
+		if (root == null)
+			throw new IllegalArgumentException("Capablities root element must not be null!");
+		setRootElement(root);
+	}
 
-    @Override
-    protected Envelope parseLatLonBoundingBox( OMElement elem ) {
-        double[] min = new double[2];
-        double[] max = new double[2];
+	@Override
+	protected Envelope parseLatLonBoundingBox(OMElement elem) {
+		double[] min = new double[2];
+		double[] max = new double[2];
 
-        while ( elem.getLocalName().equals( "Layer" ) ) {
-            OMElement bbox = getElement( elem, new XPath( "LatLonBoundingBox", null ) );
-            if ( bbox != null ) {
-                try {
-                    min[0] = Double.parseDouble( bbox.getAttributeValue( new QName( "minx" ) ) );
-                    min[1] = Double.parseDouble( bbox.getAttributeValue( new QName( "miny" ) ) );
-                    max[0] = Double.parseDouble( bbox.getAttributeValue( new QName( "maxx" ) ) );
-                    max[1] = Double.parseDouble( bbox.getAttributeValue( new QName( "maxy" ) ) );
-                    return new GeometryFactory().createEnvelope( min, max, CRSManager.getCRSRef( WGS84 ) );
-                } catch ( NumberFormatException nfe ) {
-                    LOG.warn( get( "WMSCLIENT.SERVER_INVALID_NUMERIC_VALUE", nfe.getLocalizedMessage() ) );
-                }
-            } else {
-                elem = (OMElement) elem.getParent();
-            }
-        }
-        return null;
-    }
+		while (elem.getLocalName().equals("Layer")) {
+			OMElement bbox = getElement(elem, new XPath("LatLonBoundingBox", null));
+			if (bbox != null) {
+				try {
+					min[0] = Double.parseDouble(bbox.getAttributeValue(new QName("minx")));
+					min[1] = Double.parseDouble(bbox.getAttributeValue(new QName("miny")));
+					max[0] = Double.parseDouble(bbox.getAttributeValue(new QName("maxx")));
+					max[1] = Double.parseDouble(bbox.getAttributeValue(new QName("maxy")));
+					return new GeometryFactory().createEnvelope(min, max, CRSManager.getCRSRef(WGS84));
+				}
+				catch (NumberFormatException nfe) {
+					LOG.warn(get("WMSCLIENT.SERVER_INVALID_NUMERIC_VALUE", nfe.getLocalizedMessage()));
+				}
+			}
+			else {
+				elem = (OMElement) elem.getParent();
+			}
+		}
+		return null;
+	}
 
-    @Override
-    protected String getPrefix() {
-        return "";
-    }
+	@Override
+	protected String getPrefix() {
+		return "";
+	}
 
-    @Override
-    protected String getLayerCRSElementName() {
-        return "SRS";
-    }
+	@Override
+	protected String getLayerCRSElementName() {
+		return "SRS";
+	}
 
-    @Override
-    protected Version getServiceVersion() {
-        return new Version( 1, 1, 1 );
-    }
+	@Override
+	protected Version getServiceVersion() {
+		return new Version(1, 1, 1);
+	}
 
-    @Override
-    protected String getExtendedCapabilitiesRootXPath() {
-        return "//WMT_MS_Capabilities/Capability/VendorSpecificCapabilities";
-    }
+	@Override
+	protected String getExtendedCapabilitiesRootXPath() {
+		return "//WMT_MS_Capabilities/Capability/VendorSpecificCapabilities";
+	}
+
 }

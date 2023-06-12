@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -36,15 +35,13 @@
 package org.deegree.protocol.wfs.transaction;
 
 /**
- * Convenience enum type for discriminating the different types of {@link TransactionAction}s.
- * 
+ * Convenience enum type for discriminating the different types of
+ * {@link TransactionAction}s.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public enum TransactionActionType {
 
-    DELETE, INSERT, NATIVE, UPDATE, REPLACE
+	DELETE, INSERT, NATIVE, UPDATE, REPLACE
 
 }

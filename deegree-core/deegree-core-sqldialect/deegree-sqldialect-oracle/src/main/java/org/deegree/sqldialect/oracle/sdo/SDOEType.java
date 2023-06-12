@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2011 by:
@@ -40,37 +39,37 @@ package org.deegree.sqldialect.oracle.sdo;
 
 /**
  * List of valid SDO_ETYPE
- * 
+ *
  * SDO_ETYPE of Geometry Types as available in Oracle 10.x
- * 
+ *
  * @see Oracle Spatial User's Guide and Reference / Section SDO_GEOMETRY Object Type
  * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
- * 
- * @version $Revision$, $Date$
  */
 public interface SDOEType {
-    public static final int UNKNOWN = 0;
 
-    public static final int POINT = 1;
+	public static final int UNKNOWN = 0;
 
-    public static final int LINESTRING = 2;
+	public static final int POINT = 1;
 
-    public static final int POLYGON_RING_UNKNOWN = 3;
+	public static final int LINESTRING = 2;
 
-    public static final int COMPOUND_LINESTRING = 4;
+	public static final int POLYGON_RING_UNKNOWN = 3;
 
-    public static final int POLYGON_RING_EXTERIOR = 1003;
+	public static final int COMPOUND_LINESTRING = 4;
 
-    public static final int POLYGON_RING_INTERIOR = 2003;
+	public static final int POLYGON_RING_EXTERIOR = 1003;
 
-    public static final int COMPOUND_POLYGON_RING_EXTERIOR = 1005;
+	public static final int POLYGON_RING_INTERIOR = 2003;
 
-    public static final int COMPOUND_POLYGON_RING_INTERIOR = 2005;
+	public static final int COMPOUND_POLYGON_RING_EXTERIOR = 1005;
 
-    public static final int COMPOUND_POLYGON_RING_UNKNOWN = 5;
+	public static final int COMPOUND_POLYGON_RING_INTERIOR = 2005;
 
-    /* Oracle 11g Types are currently not supported */
-    // public static final int SURFACE_EXTERIOR = 1006;
-    // public static final int SURFACE_INTERIOR = 2006;
-    // public static final int SOLID = 1007;
+	public static final int COMPOUND_POLYGON_RING_UNKNOWN = 5;
+
+	/* Oracle 11g Types are currently not supported */
+	// public static final int SURFACE_EXTERIOR = 1006;
+	// public static final int SURFACE_INTERIOR = 2006;
+	// public static final int SOLID = 1007;
+
 }

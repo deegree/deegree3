@@ -9,10 +9,20 @@ workspaces or resources and start a different workspace.
 
 The servlet that handles the REST interface is already running if you
 use the standard _web.xml_ deployment descriptor. For security reasons
-the REST API is only accessible after successful authentication against
-the servlet container. When using Apache Tomcat you'll need to add a
-user with the role _deegree_ to your Tomcat configuration
-_conf/tomcat-users.xml_ file.
+the REST API is secured by default with an API key read from the 
+_config.apikey_ file in deegree workspace directory.
+
+The API key can be provide in multiple different ways.
+* As header value of key `X-API-Key`
+* As authorization header of bearer type
+* As basic authorization password where username will be ignored
+* As parameter `token`
+* As parameter `api_key`
+
+TIP: If there is no _config.apikey_ file, one will be generated on startup
+with an random value. Alternatively, a value of `*` in config.apikey will 
+turn off security for the REST API. We strongly advise against doing this
+in productive environments.
 
 Once you did that, you can get an overview of available 'commands' by
 requesting _http://localhost:8080/deegree-webservices/config_. You'll
@@ -33,6 +43,7 @@ GET /config/restart/wsname                                   - restart with work
 GET /config/update                                           - update currently running workspace, rescan config files and update resources
 GET /config/update/wsname                                    - update with workspace <wsname>, rescan config files and update resources
 GET /config/listworkspaces                                   - list available workspace names
+GET /config/listfonts                                        - list currently available fonts on the server
 GET /config/list[/path]                                      - list currently running workspace or directory in workspace
 GET /config/list/wsname[/path]                               - list workspace with name <wsname> or directory in workspace
 GET /config/invalidate/datasources/tile/id/matrixset[?bbox=] - invalidate part or all of a tile store cache's tile matrix set

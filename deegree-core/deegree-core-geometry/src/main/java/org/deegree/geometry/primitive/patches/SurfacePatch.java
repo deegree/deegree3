@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -41,44 +40,44 @@ import org.deegree.geometry.primitive.Surface;
 
 /**
  * A {@link SurfacePatch} describes a continuous portion of a {@link Surface}.
- * 
+ *
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version. $Revision$, $Date$
+ *
  */
 public interface SurfacePatch {
 
-    /**
-     * Convenience enum type for discriminating the different surface patch variants in switch statements.
-     */
-    public enum SurfacePatchType {
-        /** Patch is a {@link GriddedSurfacePatch}. */
-        GRIDDED_SURFACE_PATCH,
-        /** Patch is a {@link PolygonPatch}. */
-        POLYGON_PATCH
-    }
+	/**
+	 * Convenience enum type for discriminating the different surface patch variants in
+	 * switch statements.
+	 */
+	public enum SurfacePatchType {
 
-    /**
-     * Returns the type of surface patch.
-     * 
-     * @return the type of surface patch
-     */
-    public SurfacePatchType getSurfacePatchType();
+		/** Patch is a {@link GriddedSurfacePatch}. */
+		GRIDDED_SURFACE_PATCH,
+		/** Patch is a {@link PolygonPatch}. */
+		POLYGON_PATCH
 
-    /**
-     * Returns the coordinate dimension, i.e. the dimension of the space that the patch is embedded in.
-     * 
-     * @return the coordinate dimension
-     */
-    public int getCoordinateDimension();
+	}
 
-    /**
-     * Returns the area covered by the patch.
-     * 
-     * @param uom
-     * @return area covered by the patch in the requested uom
-     */
-    public Measure getArea( Unit uom );
+	/**
+	 * Returns the type of surface patch.
+	 * @return the type of surface patch
+	 */
+	public SurfacePatchType getSurfacePatchType();
+
+	/**
+	 * Returns the coordinate dimension, i.e. the dimension of the space that the patch is
+	 * embedded in.
+	 * @return the coordinate dimension
+	 */
+	public int getCoordinateDimension();
+
+	/**
+	 * Returns the area covered by the patch.
+	 * @param uom
+	 * @return area covered by the patch in the requested uom
+	 */
+	public Measure getArea(Unit uom);
+
 }

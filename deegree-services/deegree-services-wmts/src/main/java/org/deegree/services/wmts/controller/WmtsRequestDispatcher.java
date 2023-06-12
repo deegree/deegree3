@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -61,64 +60,66 @@ import org.slf4j.Logger;
 
 /**
  * <code>RequestDispatcher</code>
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 
 class WmtsRequestDispatcher {
 
-    private static final Logger LOG = getLogger( WmtsRequestDispatcher.class );
+	private static final Logger LOG = getLogger(WmtsRequestDispatcher.class);
 
-    private CapabilitiesHandler capabilitiesHandler;
+	private CapabilitiesHandler capabilitiesHandler;
 
-    private TileHandler tileHandler;
+	private TileHandler tileHandler;
 
-    private FeatureInfoHandler featureInfoHandler;
+	private FeatureInfoHandler featureInfoHandler;
 
-    WmtsRequestDispatcher( DeegreeWMTS controllerConf, DeegreeServicesMetadataType mainMetadataConf,
-                           Workspace workspace, WmtsBuilder builder, String wmtsId, ResourceLocation<?> location ) {
-        featureInfoHandler = new FeatureInfoHandler( builder.getFeatureInfoFormatsConf(), location, workspace,
-                                                     builder.getThemes() );
-        capabilitiesHandler = new CapabilitiesHandler( mainMetadataConf, workspace, builder.getMetadataUrlTemplate(),
-                                                       wmtsId, builder.getThemes(), featureInfoHandler.getManager() );
-        tileHandler = new TileHandler( builder.getThemes() );
-    }
+	WmtsRequestDispatcher(DeegreeWMTS controllerConf, DeegreeServicesMetadataType mainMetadataConf, Workspace workspace,
+			WmtsBuilder builder, String wmtsId, ResourceLocation<?> location) {
+		featureInfoHandler = new FeatureInfoHandler(builder.getFeatureInfoFormatsConf(), location, workspace,
+				builder.getThemes());
+		capabilitiesHandler = new CapabilitiesHandler(mainMetadataConf, workspace, builder.getMetadataUrlTemplate(),
+				wmtsId, builder.getThemes(), featureInfoHandler.getManager());
+		tileHandler = new TileHandler(builder.getThemes());
+	}
 
-    void handleRequest( WMTSRequestType req, HttpResponseBuffer response, Map<String, String> map, Version version )
-                            throws OWSException, ServletException {
-        if ( !map.get( "SERVICE" ).equals( "WMTS" ) ) {
-            throw new OWSException( "The service parameter must to be WMTS.", INVALID_PARAMETER_VALUE, "service" );
-        }
-        if ( ( !map.get( "REQUEST" ).equals( "GetCapabilities" ) && !map.get( "REQUEST" ).equals( "GetTile" ) && !map.get( "REQUEST" ).equals( "GetFeatureInfo" ) ) ) {
-            throw new OWSException( "'" + map.get( "REQUEST" ) + "' is not a supported WMTS request.", INVALID_PARAMETER_VALUE , "request" );
-        }
-        switch ( req ) {
-        case GetCapabilities:
-            try {
-                response.setContentType( "application/xml" );
-                capabilitiesHandler.handleGetCapabilities( map, response.getXMLWriter() );
-            } catch ( Throwable e ) {
-                LOG.trace( "Stack trace:", e );
-                throw new OWSException( e.getMessage(), NO_APPLICABLE_CODE );
-            }
-            break;
-        case GetFeatureInfo:
-            try {
-                featureInfoHandler.getFeatureInfo( map, response );
-            } catch ( OWSException e ) {
-                throw e;
-            } catch ( Throwable e ) {
-                LOG.trace( "Stack trace:", e );
-                throw new OWSException( e.getMessage(), NO_APPLICABLE_CODE );
-            }
-            break;
-        case GetTile:
-            tileHandler.getTile( map, response );
-            break;
-        }
-    }
+	void handleRequest(WMTSRequestType req, HttpResponseBuffer response, Map<String, String> map, Version version)
+			throws OWSException, ServletException {
+		if (!map.get("SERVICE").equals("WMTS")) {
+			throw new OWSException("The service parameter must to be WMTS.", INVALID_PARAMETER_VALUE, "service");
+		}
+		if ((!map.get("REQUEST").equals("GetCapabilities") && !map.get("REQUEST").equals("GetTile")
+				&& !map.get("REQUEST").equals("GetFeatureInfo"))) {
+			throw new OWSException("'" + map.get("REQUEST") + "' is not a supported WMTS request.",
+					INVALID_PARAMETER_VALUE, "request");
+		}
+		switch (req) {
+			case GetCapabilities:
+				try {
+					response.setContentType("application/xml");
+					capabilitiesHandler.handleGetCapabilities(map, response.getXMLWriter());
+				}
+				catch (Throwable e) {
+					LOG.trace("Stack trace:", e);
+					throw new OWSException(e.getMessage(), NO_APPLICABLE_CODE);
+				}
+				break;
+			case GetFeatureInfo:
+				try {
+					featureInfoHandler.getFeatureInfo(map, response);
+				}
+				catch (OWSException e) {
+					throw e;
+				}
+				catch (Throwable e) {
+					LOG.trace("Stack trace:", e);
+					throw new OWSException(e.getMessage(), NO_APPLICABLE_CODE);
+				}
+				break;
+			case GetTile:
+				tileHandler.getTile(map, response);
+				break;
+		}
+	}
 
 }

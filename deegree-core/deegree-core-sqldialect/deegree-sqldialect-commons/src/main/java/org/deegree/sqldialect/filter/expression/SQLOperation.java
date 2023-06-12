@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-base/src/main/java/org/deegree/filter/sql/expression/SQLOperation.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -45,94 +44,94 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link SQLExpression} that represents an operation, e.g. an addition, an intersects predicate or a distance
- * calculation.
- * 
+ * {@link SQLExpression} that represents an operation, e.g. an addition, an intersects
+ * predicate or a distance calculation.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31370 $, $Date: 2011-07-28 19:37:13 +0200 (Do, 28. Jul 2011) $
  */
 public class SQLOperation implements SQLExpression {
 
-    private static final Logger LOG = LoggerFactory.getLogger( SQLOperation.class );
-    
-    private List<Object> particles;
+	private static final Logger LOG = LoggerFactory.getLogger(SQLOperation.class);
 
-    public SQLOperation( List<Object> particles ) {
-        this.particles = particles;
-    }
+	private List<Object> particles;
 
-    @Override
-    public boolean isSpatial() {
-        return true;
-    }
+	public SQLOperation(List<Object> particles) {
+		this.particles = particles;
+	}
 
-    @Override
-    public boolean isMultiValued() {
-        return false;
-    }
+	@Override
+	public boolean isSpatial() {
+		return true;
+	}
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        for ( Object particle : particles ) {
-            sb.append( particle );
-        }
-        return sb.toString();
-    }
+	@Override
+	public boolean isMultiValued() {
+		return false;
+	}
 
-    @Override
-    public List<SQLArgument> getArguments() {
-        List<SQLArgument> literals = new ArrayList<SQLArgument>();
-        for ( Object particle : particles ) {
-            if ( particle instanceof SQLExpression ) {
-                if ( particle instanceof SQLArgument ) {
-                    literals.add( (SQLArgument) particle );
-                } else {
-                    literals.addAll( ( (SQLExpression) particle ).getArguments() );
-                }
-            }
-        }
-        return literals;
-    }
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for (Object particle : particles) {
+			sb.append(particle);
+		}
+		return sb.toString();
+	}
 
-    @Override
-    public StringBuilder getSQL() {
-        StringBuilder sb = new StringBuilder();
-        for ( Object particle : particles ) {
-            if ( particle instanceof SQLExpression ) {
-                sb.append( ( (SQLExpression) particle ).getSQL() );
-            } else {
-                sb.append( particle );
-            }
-        }
-        return sb;
-    }
+	@Override
+	public List<SQLArgument> getArguments() {
+		List<SQLArgument> literals = new ArrayList<SQLArgument>();
+		for (Object particle : particles) {
+			if (particle instanceof SQLExpression) {
+				if (particle instanceof SQLArgument) {
+					literals.add((SQLArgument) particle);
+				}
+				else {
+					literals.addAll(((SQLExpression) particle).getArguments());
+				}
+			}
+		}
+		return literals;
+	}
 
-    @Override
-    public CRS getCRS() {
-        return null;
-    }
+	@Override
+	public StringBuilder getSQL() {
+		StringBuilder sb = new StringBuilder();
+		for (Object particle : particles) {
+			if (particle instanceof SQLExpression) {
+				sb.append(((SQLExpression) particle).getSQL());
+			}
+			else {
+				sb.append(particle);
+			}
+		}
+		return sb;
+	}
 
-    @Override
-    public String getSRID() {
-        return null;
-    }
+	@Override
+	public CRS getCRS() {
+		return null;
+	}
 
-    @Override
-    public PrimitiveType getPrimitiveType() {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	@Override
+	public String getSRID() {
+		return null;
+	}
 
-    @Override
-    public void cast( SQLExpression expr ) {
-        LOG.warn ("Operation casts are not implemented yet. Depending on DB type handling.");
-    }
+	@Override
+	public PrimitiveType getPrimitiveType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    @Override
-    public ParticleConverter getConverter() {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public void cast(SQLExpression expr) {
+		LOG.warn("Operation casts are not implemented yet. Depending on DB type handling.");
+	}
+
+	@Override
+	public ParticleConverter getConverter() {
+		throw new UnsupportedOperationException();
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -51,9 +50,7 @@ import org.deegree.feature.types.AppSchema;
  * Example code for reading GML documents/document fragments with deegree's GML API.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
  */
 public class ReadGML {
 

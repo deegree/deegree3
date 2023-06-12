@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -85,8 +84,6 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
 import org.apache.axiom.soap.impl.builder.StAXSOAPModelBuilder;
-import org.apache.axiom.soap.impl.common.SOAP11Factory;
-import org.apache.axiom.soap.impl.common.SOAP12Factory;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
@@ -94,7 +91,6 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.LogFactory;
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.concurrent.Executor;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
@@ -152,11 +148,8 @@ import org.slf4j.Logger;
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema </a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
  */
-@LoggingNotes(debug = "logs the server startup, incoming requests and timing info, also enables enhanced request logging in $HOME/.deegree")
 public class OGCFrontController extends HttpServlet {
 
     private static final Logger LOG = getLogger( OGCFrontController.class );
@@ -195,6 +188,8 @@ public class OGCFrontController extends HttpServlet {
     private transient Collection<ModuleInfo> modulesInfo;
 
     private transient String version;
+
+    private boolean addDeegreeVersionToHeader = false;
 
     /**
      * Returns the only instance of this class.
@@ -297,11 +292,13 @@ public class OGCFrontController extends HttpServlet {
         return getInstance().modulesInfo;
     }
 
-    private static void addHeaders( HttpServletResponse response ) {
+    private void addHeaders( HttpServletResponse response ) {
         // add cache control headers
         response.addHeader( "Cache-Control", "no-cache, no-store" );
         // add deegree header
-        response.addHeader( "deegree-version", getInstance().version );
+        if ( addDeegreeVersionToHeader ) {
+            response.addHeader( "deegree-version", getInstance().version );
+        }
     }
 
     /**
@@ -1112,6 +1109,9 @@ public class OGCFrontController extends HttpServlet {
         serviceConfiguration = workspace.getNewWorkspace().getResourceManager( OwsManager.class );
         OwsGlobalConfigLoader loader = workspace.getNewWorkspace().getInitializable( OwsGlobalConfigLoader.class );
         mainConfig = loader.getMainConfig();
+        if ( mainConfig != null && mainConfig.isAddDeegreeVersionToHeader() != null ) {
+            this.addDeegreeVersionToHeader = mainConfig.isAddDeegreeVersionToHeader();
+        }
         if ( mainConfig != null ) {
             initHardcodedUrls( mainConfig );
         }

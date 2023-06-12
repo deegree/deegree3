@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-datastores/deegree-featurestore/deegree-featurestore-commons/src/main/java/org/deegree/feature/persistence/cache/FeatureStoreCache.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -45,53 +44,41 @@ import org.deegree.geometry.Envelope;
 
 /**
  * Cache for {@link Envelope}s of {@link FeatureType}s stored in a {@link FeatureStore}.
- * 
+ *
  * @see FeatureStore
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision$
  */
 public interface BBoxCache {
 
-    /**
-     * Returns the cached envelope for features of the specified type.
-     * 
-     * @param ftName
-     *            name of the feature type, must not be <code>null</code>
-     * @return the envelope (using the storage CRS), or <code>null</code>, if the feature type does not have an envelope
-     *         (no geometry properties or no instances)
-     * @throws IllegalArgumentException
-     *             if the cache does not contain information on the specified feature type
-     */
-    Envelope get( QName ftName );
+	/**
+	 * Returns the cached envelope for features of the specified type.
+	 * @param ftName name of the feature type, must not be <code>null</code>
+	 * @return the envelope (using the storage CRS), or <code>null</code>, if the feature
+	 * type does not have an envelope (no geometry properties or no instances)
+	 * @throws IllegalArgumentException if the cache does not contain information on the
+	 * specified feature type
+	 */
+	Envelope get(QName ftName);
 
-    /**
-     * Updates the envelope for the specified type.
-     * 
-     * @param ftName
-     *            name of the feature type, must not be <code>null</code>
-     * @param bbox
-     *            new envelope (using the storage CRS), or <code>null</code>, if the feature type does not have an
-     *            envelope (no geometry properties or no instances)
-     */
-    void set( QName ftName, Envelope bbox );
+	/**
+	 * Updates the envelope for the specified type.
+	 * @param ftName name of the feature type, must not be <code>null</code>
+	 * @param bbox new envelope (using the storage CRS), or <code>null</code>, if the
+	 * feature type does not have an envelope (no geometry properties or no instances)
+	 */
+	void set(QName ftName, Envelope bbox);
 
-    /**
-     * Returns true, if the the specified feature type is known to the cache.
-     * 
-     * @param ftName
-     *            name of the feature type, must not be <code>null</code>
-     * @return true, if the feature type is known, false otherwise
-     */
-    boolean contains( QName ftName );
+	/**
+	 * Returns true, if the the specified feature type is known to the cache.
+	 * @param ftName name of the feature type, must not be <code>null</code>
+	 * @return true, if the feature type is known, false otherwise
+	 */
+	boolean contains(QName ftName);
 
-    /**
-     * Ensures that the cache is persisted.
-     * 
-     * @throws IOException
-     */
-    void persist()
-                            throws IOException;
+	/**
+	 * Ensures that the cache is persisted.
+	 * @throws IOException
+	 */
+	void persist() throws IOException;
+
 }

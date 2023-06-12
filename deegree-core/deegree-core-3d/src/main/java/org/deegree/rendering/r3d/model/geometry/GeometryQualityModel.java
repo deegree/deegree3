@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -41,36 +40,33 @@ import java.util.ArrayList;
 import org.deegree.rendering.r3d.model.QualityModel;
 
 /**
- * The <code>GeometryQualityModel</code> is kind of a marker class for QualityModels with geometries.
- * 
+ * The <code>GeometryQualityModel</code> is kind of a marker class for QualityModels with
+ * geometries.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class GeometryQualityModel extends QualityModel<SimpleAccessGeometry> {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 6512563995304520151L;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 6512563995304520151L;
 
-    /**
-     * Creates a GeometryQualityModel with an empty list of geometry patches
-     * 
-     */
-    public GeometryQualityModel() {
-        super();
-    }
+	/**
+	 * Creates a GeometryQualityModel with an empty list of geometry patches
+	 *
+	 */
+	public GeometryQualityModel() {
+		super();
+	}
 
-    /**
-     * Creates a GeometryQualityModel with the given qualityModelParts
-     * 
-     * @param qualityModelParts
-     */
-    public GeometryQualityModel( ArrayList<SimpleAccessGeometry> qualityModelParts ) {
-        super( qualityModelParts );
-    }
+	/**
+	 * Creates a GeometryQualityModel with the given qualityModelParts
+	 * @param qualityModelParts
+	 */
+	public GeometryQualityModel(ArrayList<SimpleAccessGeometry> qualityModelParts) {
+		super(qualityModelParts);
+	}
+
 }

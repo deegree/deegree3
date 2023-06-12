@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -43,68 +42,62 @@ import org.deegree.geometry.primitive.segments.OffsetCurve;
 
 /**
  * Default implementation of {@link OffsetCurve} segments.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class DefaultOffsetCurve implements OffsetCurve {
 
-    private Curve baseCurve;
+	private Curve baseCurve;
 
-    private Point direction;
+	private Point direction;
 
-    private Measure distance;
+	private Measure distance;
 
-    /**
-     * Creates a new <code>DefaultOffsetCurve</code> instance from the given parameters.
-     * 
-     * @param baseCurve
-     *            the base geometry
-     * @param direction
-     *            the direction of the offset
-     * @param distance
-     *            the distance from the base curve
-     */
-    public DefaultOffsetCurve( Curve baseCurve, Point direction, Measure distance ) {
-        this.baseCurve = baseCurve;
-        this.direction = direction;
-        this.distance = distance;
-    }
+	/**
+	 * Creates a new <code>DefaultOffsetCurve</code> instance from the given parameters.
+	 * @param baseCurve the base geometry
+	 * @param direction the direction of the offset
+	 * @param distance the distance from the base curve
+	 */
+	public DefaultOffsetCurve(Curve baseCurve, Point direction, Measure distance) {
+		this.baseCurve = baseCurve;
+		this.direction = direction;
+		this.distance = distance;
+	}
 
-    @Override
-    public Curve getBaseCurve() {
-        return baseCurve;
-    }
+	@Override
+	public Curve getBaseCurve() {
+		return baseCurve;
+	}
 
-    @Override
-    public Point getDirection() {
-        return direction;
-    }
+	@Override
+	public Point getDirection() {
+		return direction;
+	}
 
-    @Override
-    public Measure getDistance( Unit requestedUnits ) {
-        return distance;
-    }
+	@Override
+	public Measure getDistance(Unit requestedUnits) {
+		return distance;
+	}
 
-    @Override
-    public int getCoordinateDimension() {
-        return baseCurve.getCoordinateDimension();
-    }
+	@Override
+	public int getCoordinateDimension() {
+		return baseCurve.getCoordinateDimension();
+	}
 
-    @Override
-    public Point getStartPoint() {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Point getStartPoint() {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public Point getEndPoint() {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Point getEndPoint() {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public CurveSegmentType getSegmentType() {
-        return CurveSegmentType.OFFSET_CURVE;
-    }
+	@Override
+	public CurveSegmentType getSegmentType() {
+		return CurveSegmentType.OFFSET_CURVE;
+	}
+
 }

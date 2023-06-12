@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aschmitz@deegree.wald.intevation.de/deegree/deegree3/trunk/deegree-core/deegree-core-rendering-2d/src/main/java/org/deegree/rendering/r2d/styling/components/Graphic.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -44,83 +43,81 @@ import org.deegree.style.styling.Copyable;
 
 /**
  * <code>Graphic</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: aschmitz $
- * 
- * @version $Revision: 21314 $, $Date: 2009-12-08 13:48:34 +0100 (Tue, 08 Dec 2009) $
  */
 public class Graphic implements Copyable<Graphic> {
 
-    /**
-     * Default is 1.
-     */
-    public double opacity = 1;
+	/**
+	 * Default is 1.
+	 */
+	public double opacity = 1;
 
-    /**
-     * Default is -1.
-     */
-    public double size = -1;
+	/**
+	 * Default is -1.
+	 */
+	public double size = -1;
 
-    /**
-     * Default is 0.
-     */
-    public double rotation;
+	/**
+	 * Default is 0.
+	 */
+	public double rotation;
 
-    /**
-     * Default is 0.5.
-     */
-    public double anchorPointX = 0.5;
+	/**
+	 * Default is 0.5.
+	 */
+	public double anchorPointX = 0.5;
 
-    /**
-     * Default is 0.5.
-     */
-    public double anchorPointY = 0.5;
+	/**
+	 * Default is 0.5.
+	 */
+	public double anchorPointY = 0.5;
 
-    /**
-     * Default is 0.
-     */
-    public double displacementX;
+	/**
+	 * Default is 0.
+	 */
+	public double displacementX;
 
-    /**
-     * Default is 0.
-     */
-    public double displacementY;
+	/**
+	 * Default is 0.
+	 */
+	public double displacementY;
 
-    /**
-     * Default is null.
-     */
-    public BufferedImage image;
+	/**
+	 * Default is null.
+	 */
+	public BufferedImage image;
 
-    /**
-     * Is set to the image's URL. Image may still be null if image format is a vector format.
-     */
-    public String imageURL;
+	/**
+	 * Is set to the image's URL. Image may still be null if image format is a vector
+	 * format.
+	 */
+	public String imageURL;
 
-    /**
-     * Default is a default mark.
-     */
-    public Mark mark = new Mark();
+	/**
+	 * Default is a default mark.
+	 */
+	public Mark mark = new Mark();
 
-    @Override
-    public Graphic copy() {
-        Graphic other = new Graphic();
-        other.opacity = opacity;
-        other.size = size;
-        other.rotation = rotation;
-        other.anchorPointX = anchorPointX;
-        other.anchorPointY = anchorPointY;
-        other.displacementX = displacementX;
-        other.displacementY = displacementY;
-        other.image = image;
-        other.imageURL = imageURL;
-        other.mark = mark.copy();
-        return other;
-    }
+	@Override
+	public Graphic copy() {
+		Graphic other = new Graphic();
+		other.opacity = opacity;
+		other.size = size;
+		other.rotation = rotation;
+		other.anchorPointX = anchorPointX;
+		other.anchorPointY = anchorPointY;
+		other.displacementX = displacementX;
+		other.displacementY = displacementY;
+		other.image = image;
+		other.imageURL = imageURL;
+		other.mark = mark.copy();
+		return other;
+	}
 
-    @Override
-    public String toString() {
-        return generateToString( this );
-    }
+	@Override
+	public String toString() {
+		return generateToString(this);
+	}
 
 }

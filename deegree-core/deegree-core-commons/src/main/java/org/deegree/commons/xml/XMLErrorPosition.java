@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -43,70 +42,68 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 
 /**
  * Encapsulates information to locate the cause {@link XMLParsingException}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * 
- * @version $Revision:$, $Date:$
  */
 class XMLErrorPosition {
 
-    private String systemId;
+	private String systemId;
 
-    private int lineNumber;
+	private int lineNumber;
 
-    private int columnNumber;
+	private int columnNumber;
 
-    private int characterOffset;
+	private int characterOffset;
 
-    /**
-     * @param xmlReader
-     */
-    XMLErrorPosition( XMLStreamReader xmlReader ) {
+	/**
+	 * @param xmlReader
+	 */
+	XMLErrorPosition(XMLStreamReader xmlReader) {
 
-        if ( xmlReader instanceof XMLStreamReaderWrapper ) {
-            systemId = ( (XMLStreamReaderWrapper) xmlReader ).getSystemId();
-        } else {
-            systemId = "unknown source";
-        }
+		if (xmlReader instanceof XMLStreamReaderWrapper) {
+			systemId = ((XMLStreamReaderWrapper) xmlReader).getSystemId();
+		}
+		else {
+			systemId = "unknown source";
+		}
 
-        Location location = xmlReader.getLocation();
-        lineNumber = location.getLineNumber();
-        columnNumber = location.getColumnNumber();
-        characterOffset = location.getCharacterOffset();
-    }
+		Location location = xmlReader.getLocation();
+		lineNumber = location.getLineNumber();
+		columnNumber = location.getColumnNumber();
+		characterOffset = location.getCharacterOffset();
+	}
 
-    /**
-     * @param origin
-     * @param erroneousElement
-     */
-    XMLErrorPosition( XMLAdapter origin, OMElement erroneousElement ) {
-        systemId = origin.getSystemId() == null ? "" : origin.getSystemId().toString();
-        lineNumber = erroneousElement == null ? -1 : erroneousElement.getLineNumber();
-        // no column number or character offset information available
-        columnNumber = -1;
-        characterOffset = -1;
-    }
+	/**
+	 * @param origin
+	 * @param erroneousElement
+	 */
+	XMLErrorPosition(XMLAdapter origin, OMElement erroneousElement) {
+		systemId = origin.getSystemId() == null ? "" : origin.getSystemId().toString();
+		lineNumber = erroneousElement == null ? -1 : erroneousElement.getLineNumber();
+		// no column number or character offset information available
+		columnNumber = -1;
+		characterOffset = -1;
+	}
 
-    /**
-     * Returns the location information in a human readable form.
-     * 
-     * @return
-     */
-    String getAsMessage() {
-        String s = systemId != null && !"".equals( systemId ) ? ( "file '" + systemId + "', " ) : "";
-        s += "line: " + lineNumber;
-        if ( columnNumber != -1 ) {
-            s += ", column: " + columnNumber;
-        }
-        if ( characterOffset != -1 ) {
-            s += ", character offset: " + characterOffset;
-        }
-        return s;
-    }
+	/**
+	 * Returns the location information in a human readable form.
+	 * @return
+	 */
+	String getAsMessage() {
+		String s = systemId != null && !"".equals(systemId) ? ("file '" + systemId + "', ") : "";
+		s += "line: " + lineNumber;
+		if (columnNumber != -1) {
+			s += ", column: " + columnNumber;
+		}
+		if (characterOffset != -1) {
+			s += ", character offset: " + characterOffset;
+		}
+		return s;
+	}
 
-    @Override
-    public String toString() {
-        return getAsMessage();
-    }
+	@Override
+	public String toString() {
+		return getAsMessage();
+	}
+
 }

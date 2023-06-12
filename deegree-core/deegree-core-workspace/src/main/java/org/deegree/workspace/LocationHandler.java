@@ -31,62 +31,50 @@ import java.util.List;
 
 /**
  * Describes the operations that a workspace needs to be able to do on resource locations.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public interface LocationHandler {
 
-    /**
-     * Adds a single extra resource. Can be used after workspace startup to include the new resource in the
-     * initialization process.
-     * 
-     * @param location
-     *            may not be <code>null</code>
-     */
-    void addExtraResource( ResourceLocation<? extends Resource> location );
+	/**
+	 * Adds a single extra resource. Can be used after workspace startup to include the
+	 * new resource in the initialization process.
+	 * @param location may not be <code>null</code>
+	 */
+	void addExtraResource(ResourceLocation<? extends Resource> location);
 
-    /**
-     * Can be used to obtain a list of resource locations for a specific resource manager.
-     * 
-     * @param metadata
-     *            may not be <code>null</code>
-     * @return the locations, never <code>null</code>
-     */
-    <T extends Resource> List<ResourceLocation<T>> findResourceLocations( ResourceManagerMetadata<T> metadata );
+	/**
+	 * Can be used to obtain a list of resource locations for a specific resource manager.
+	 * @param metadata may not be <code>null</code>
+	 * @return the locations, never <code>null</code>
+	 */
+	<T extends Resource> List<ResourceLocation<T>> findResourceLocations(ResourceManagerMetadata<T> metadata);
 
-    /**
-     * Can be used to permanently store/update a resource location.
-     * 
-     * @param location
-     *            may not be <code>null</code>
-     * @return a new updated resource location, <code>null</code>, if the location could not be persisted
-     */
-    <T extends Resource> ResourceLocation<T> persist( ResourceLocation<T> location );
+	/**
+	 * Can be used to permanently store/update a resource location.
+	 * @param location may not be <code>null</code>
+	 * @return a new updated resource location, <code>null</code>, if the location could
+	 * not be persisted
+	 */
+	<T extends Resource> ResourceLocation<T> persist(ResourceLocation<T> location);
 
-    /**
-     * Can be used to permanently delete a resource location.
-     * 
-     * @param location
-     *            may not be <code>null</code>
-     */
-    <T extends Resource> void delete( ResourceLocation<T> location );
+	/**
+	 * Can be used to permanently delete a resource location.
+	 * @param location may not be <code>null</code>
+	 */
+	<T extends Resource> void delete(ResourceLocation<T> location);
 
-    /**
-     * Activates a resource location so the workspace can find/initialize it.
-     * 
-     * @param location
-     *            may not be <code>null</code>
-     */
-    <T extends Resource> void activate( ResourceLocation<T> location );
+	/**
+	 * Activates a resource location so the workspace can find/initialize it.
+	 * @param location may not be <code>null</code>
+	 */
+	<T extends Resource> void activate(ResourceLocation<T> location);
 
-    /**
-     * Deactivates a resource location so the workspace ignores it.
-     * 
-     * @param location
-     *            may not be <code>null</code>
-     */
-    <T extends Resource> void deactivate( ResourceLocation<T> location );
+	/**
+	 * Deactivates a resource location so the workspace ignores it.
+	 * @param location may not be <code>null</code>
+	 */
+	<T extends Resource> void deactivate(ResourceLocation<T> location);
 
 }

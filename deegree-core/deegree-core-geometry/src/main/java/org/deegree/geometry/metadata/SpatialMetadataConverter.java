@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aschmitz@wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -47,76 +46,69 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.metadata.jaxb.EnvelopeType;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 public class SpatialMetadataConverter {
 
-    /**
-     * @param env
-     *            may be null
-     * @param crs
-     *            should be a list of whitespace separated identifiers, may be null
-     */
-    public static SpatialMetadata fromJaxb( EnvelopeType env, String crs ) {
-        Envelope envelope = fromJaxb( env );
-        List<ICRS> list = fromJaxb( crs );
-        return new SpatialMetadata( envelope, list );
-    }
+	/**
+	 * @param env may be null
+	 * @param crs should be a list of whitespace separated identifiers, may be null
+	 */
+	public static SpatialMetadata fromJaxb(EnvelopeType env, String crs) {
+		Envelope envelope = fromJaxb(env);
+		List<ICRS> list = fromJaxb(crs);
+		return new SpatialMetadata(envelope, list);
+	}
 
-    /**
-     * @param crs
-     *            should be a list of whitespace separated identifiers, may be null
-     */
-    public static List<ICRS> fromJaxb( String crs ) {
-        ArrayList<ICRS> list = new ArrayList<ICRS>();
-        if ( crs == null ) {
-            return list;
-        }
+	/**
+	 * @param crs should be a list of whitespace separated identifiers, may be null
+	 */
+	public static List<ICRS> fromJaxb(String crs) {
+		ArrayList<ICRS> list = new ArrayList<ICRS>();
+		if (crs == null) {
+			return list;
+		}
 
-        for ( String c : crs.split( "\\s" ) ) {
-            if ( !c.isEmpty() ) {
-                list.add( CRSManager.getCRSRef( c ) );
-            }
-        }
+		for (String c : crs.split("\\s")) {
+			if (!c.isEmpty()) {
+				list.add(CRSManager.getCRSRef(c));
+			}
+		}
 
-        return list;
-    }
+		return list;
+	}
 
-    /**
-     * @param env
-     *            may be null
-     * @return null, if env is null
-     */
-    public static Envelope fromJaxb( EnvelopeType env ) {
-        Envelope envelope = null;
+	/**
+	 * @param env may be null
+	 * @return null, if env is null
+	 */
+	public static Envelope fromJaxb(EnvelopeType env) {
+		Envelope envelope = null;
 
-        if ( env != null ) {
-            String envCrs = env.getCrs();
-            ICRS crs;
-            if ( envCrs == null ) {
-                crs = CRSManager.getCRSRef( WGS84 );
-            } else {
-                crs = CRSManager.getCRSRef( envCrs );
-            }
+		if (env != null) {
+			String envCrs = env.getCrs();
+			ICRS crs;
+			if (envCrs == null) {
+				crs = CRSManager.getCRSRef(WGS84);
+			}
+			else {
+				crs = CRSManager.getCRSRef(envCrs);
+			}
 
-            Double[] points = env.getLowerCorner().toArray( new Double[] {} );
-            double[] min = new double[points.length];
-            for ( int i = 0; i < min.length; ++i ) {
-                min[i] = points[i];
-            }
-            points = env.getUpperCorner().toArray( new Double[] {} );
-            double[] max = new double[points.length];
-            for ( int i = 0; i < max.length; ++i ) {
-                max[i] = points[i];
-            }
-            envelope = new GeometryFactory().createEnvelope( min, max, crs );
-        }
+			Double[] points = env.getLowerCorner().toArray(new Double[] {});
+			double[] min = new double[points.length];
+			for (int i = 0; i < min.length; ++i) {
+				min[i] = points[i];
+			}
+			points = env.getUpperCorner().toArray(new Double[] {});
+			double[] max = new double[points.length];
+			for (int i = 0; i < max.length; ++i) {
+				max[i] = points[i];
+			}
+			envelope = new GeometryFactory().createEnvelope(min, max, crs);
+		}
 
-        return envelope;
-    }
+		return envelope;
+	}
 
 }

@@ -38,32 +38,30 @@ import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
  * Metadata implementation for batched MT file stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class BatchedMTFileStoreMetadata extends AbstractResourceMetadata<BatchedMTStore> {
 
-    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.rendering.r3d.jaxb.batchedmt";
+	private static final String CONFIG_JAXB_PACKAGE = "org.deegree.rendering.r3d.jaxb.batchedmt";
 
-    public BatchedMTFileStoreMetadata( Workspace workspace, ResourceLocation<BatchedMTStore> location,
-                                       AbstractResourceProvider<BatchedMTStore> provider ) {
-        super( workspace, location, provider );
-    }
+	public BatchedMTFileStoreMetadata(Workspace workspace, ResourceLocation<BatchedMTStore> location,
+			AbstractResourceProvider<BatchedMTStore> provider) {
+		super(workspace, location, provider);
+	}
 
-    @Override
-    public ResourceBuilder<BatchedMTStore> prepare() {
-        try {
-            BatchedMTFileStoreConfig config = (BatchedMTFileStoreConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE,
-                                                                                               provider.getSchema(),
-                                                                                               location.getAsStream(),
-                                                                                               workspace );
+	@Override
+	public ResourceBuilder<BatchedMTStore> prepare() {
+		try {
+			BatchedMTFileStoreConfig config = (BatchedMTFileStoreConfig) JAXBUtils.unmarshall(CONFIG_JAXB_PACKAGE,
+					provider.getSchema(), location.getAsStream(), workspace);
 
-            return new BatchedMTFileStoreBuilder( config, this );
-        } catch ( Exception e ) {
-            throw new ResourceInitException( "Unable to parse config: " + e.getLocalizedMessage(), e );
-        }
-    }
+			return new BatchedMTFileStoreBuilder(config, this);
+		}
+		catch (Exception e) {
+			throw new ResourceInitException("Unable to parse config: " + e.getLocalizedMessage(), e);
+		}
+	}
 
 }

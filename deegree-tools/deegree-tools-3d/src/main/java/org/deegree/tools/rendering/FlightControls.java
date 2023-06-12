@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -53,183 +52,187 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The <code></code> class TODO add class documentation here.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * 
- * @version $Revision: $, $Date: $
  */
 public class FlightControls implements KeyListener, MouseMotionListener, MouseWheelListener {
 
-    private static final Logger LOG = LoggerFactory.getLogger( FlightControls.class );
+	private static final Logger LOG = LoggerFactory.getLogger(FlightControls.class);
 
-    private final ViewFrustum vf;
+	private final ViewFrustum vf;
 
-    // fields needed by the MouseMotionListener
-    private boolean mouseLook = false;
+	// fields needed by the MouseMotionListener
+	private boolean mouseLook = false;
 
-    private int oldX = -1;
+	private int oldX = -1;
 
-    private int oldY = -1;
+	private int oldY = -1;
 
-    private GLCanvas master;
+	private GLCanvas master;
 
-    public FlightControls( GLCanvas master, ViewParams viewParams ) {
-        this.master = master;
-        this.vf = viewParams.getViewFrustum();
-    }
+	public FlightControls(GLCanvas master, ViewParams viewParams) {
+		this.master = master;
+		this.vf = viewParams.getViewFrustum();
+	}
 
-    @Override
-    public void keyPressed( KeyEvent ev ) {
+	@Override
+	public void keyPressed(KeyEvent ev) {
 
-        int k = ev.getKeyCode();
-        ev.getModifiers();
+		int k = ev.getKeyCode();
+		ev.getModifiers();
 
-        double rotationStep = 0.01;
-        double moveStep = calcMove();
+		double rotationStep = 0.01;
+		double moveStep = calcMove();
 
-        if ( ( ev.getModifiersEx() & ( InputEvent.SHIFT_DOWN_MASK | InputEvent.CTRL_DOWN_MASK ) ) == InputEvent.SHIFT_DOWN_MASK ) {
-            // SHIFT (and not CTRL)
-            rotationStep *= 10.0;
-            moveStep *= 10.0;
-        } else if ( ( ev.getModifiersEx() & ( InputEvent.SHIFT_DOWN_MASK | InputEvent.CTRL_DOWN_MASK ) ) == InputEvent.CTRL_DOWN_MASK ) {
-            // CTRL (and not SHIFT)
-            rotationStep /= 10.0;
-            moveStep /= 10.0;
-        }
+		if ((ev.getModifiersEx()
+				& (InputEvent.SHIFT_DOWN_MASK | InputEvent.CTRL_DOWN_MASK)) == InputEvent.SHIFT_DOWN_MASK) {
+			// SHIFT (and not CTRL)
+			rotationStep *= 10.0;
+			moveStep *= 10.0;
+		}
+		else if ((ev.getModifiersEx()
+				& (InputEvent.SHIFT_DOWN_MASK | InputEvent.CTRL_DOWN_MASK)) == InputEvent.CTRL_DOWN_MASK) {
+			// CTRL (and not SHIFT)
+			rotationStep /= 10.0;
+			moveStep /= 10.0;
+		}
 
-        switch ( k ) {
-        case KeyEvent.VK_Q: {
-            vf.rotateZ( rotationStep );
-            break;
-        }
-        case KeyEvent.VK_E: {
-            vf.rotateZ( -rotationStep );
-            break;
-        }
-        case KeyEvent.VK_A: {
-            vf.moveRight( -moveStep );
-            break;
-        }
-        case KeyEvent.VK_D: {
-            vf.moveRight( moveStep );
-            break;
-        }
-        case KeyEvent.VK_W: {
-            vf.moveForward( moveStep );
-            break;
-        }
-        case KeyEvent.VK_S: {
-            vf.moveForward( -moveStep );
-            break;
-        }
-        case KeyEvent.VK_R: {
-            vf.moveUp( moveStep );
-            break;
-        }
-        case KeyEvent.VK_F: {
-            vf.moveUp( -moveStep );
-            break;
-        }
-        case KeyEvent.VK_P: {
-            LOG.info( this.vf.toString() );
-            LOG.info( "View parameters:\n" + this.vf.toInitString() );
-            break;
-        }
-            // arrow keys
-        case KeyEvent.VK_UP: {
-            vf.moveUp( moveStep );
-            break;
-        }
-        case KeyEvent.VK_DOWN: {
-            vf.moveUp( -moveStep );
-            break;
-        }
-        case KeyEvent.VK_LEFT: {
-            vf.moveRight( -moveStep );
-            break;
-        }
-        case KeyEvent.VK_RIGHT: {
-            vf.moveRight( moveStep );
-            break;
-        }
-        case KeyEvent.VK_ESCAPE:
-            LOG.info( "Last view:\n" + this.vf.toInitString() );
-            System.exit( 1 );
-            break;
-        }
-        master.repaint();
-    }
+		switch (k) {
+			case KeyEvent.VK_Q: {
+				vf.rotateZ(rotationStep);
+				break;
+			}
+			case KeyEvent.VK_E: {
+				vf.rotateZ(-rotationStep);
+				break;
+			}
+			case KeyEvent.VK_A: {
+				vf.moveRight(-moveStep);
+				break;
+			}
+			case KeyEvent.VK_D: {
+				vf.moveRight(moveStep);
+				break;
+			}
+			case KeyEvent.VK_W: {
+				vf.moveForward(moveStep);
+				break;
+			}
+			case KeyEvent.VK_S: {
+				vf.moveForward(-moveStep);
+				break;
+			}
+			case KeyEvent.VK_R: {
+				vf.moveUp(moveStep);
+				break;
+			}
+			case KeyEvent.VK_F: {
+				vf.moveUp(-moveStep);
+				break;
+			}
+			case KeyEvent.VK_P: {
+				LOG.info(this.vf.toString());
+				LOG.info("View parameters:\n" + this.vf.toInitString());
+				break;
+			}
+			// arrow keys
+			case KeyEvent.VK_UP: {
+				vf.moveUp(moveStep);
+				break;
+			}
+			case KeyEvent.VK_DOWN: {
+				vf.moveUp(-moveStep);
+				break;
+			}
+			case KeyEvent.VK_LEFT: {
+				vf.moveRight(-moveStep);
+				break;
+			}
+			case KeyEvent.VK_RIGHT: {
+				vf.moveRight(moveStep);
+				break;
+			}
+			case KeyEvent.VK_ESCAPE:
+				LOG.info("Last view:\n" + this.vf.toInitString());
+				System.exit(1);
+				break;
+		}
+		master.repaint();
+	}
 
-    @Override
-    public void keyReleased( KeyEvent e ) {
-        // TODO Auto-generated method stub
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
 
-    }
+	}
 
-    @Override
-    public void keyTyped( KeyEvent e ) {
-        // TODO Auto-generated method stub
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
 
-    }
+	}
 
-    @Override
-    public void mouseDragged( MouseEvent event ) {
-        int x = event.getX();
-        int y = event.getY();
+	@Override
+	public void mouseDragged(MouseEvent event) {
+		int x = event.getX();
+		int y = event.getY();
 
-        if ( !mouseLook ) {
-            mouseLook = true;
-            oldX = x;
-            oldY = y;
-            return;
-        }
+		if (!mouseLook) {
+			mouseLook = true;
+			oldX = x;
+			oldY = y;
+			return;
+		}
 
-        int dx = oldX - x;
-        int dy = oldY - y;
+		int dx = oldX - x;
+		int dy = oldY - y;
 
-        oldX = x;
-        oldY = y;
+		oldX = x;
+		oldY = y;
 
-        if ( dx * dx > 100 * 100 || dy * dy > 100 * 100 ) {
-            return;
-        }
+		if (dx * dx > 100 * 100 || dy * dy > 100 * 100) {
+			return;
+		}
 
-        vf.rotateX( 0.003f * dy );
-        vf.rotateY( 0.003f * dx );
+		vf.rotateX(0.003f * dy);
+		vf.rotateY(0.003f * dx);
 
-        oldX = x;
-        oldY = y;
-        master.repaint();
-    }
+		oldX = x;
+		oldY = y;
+		master.repaint();
+	}
 
-    @Override
-    public void mouseMoved( MouseEvent e ) {
-        // TODO Auto-generated method stub
-    }
+	@Override
+	public void mouseMoved(MouseEvent e) {
+		// TODO Auto-generated method stub
+	}
 
-    @Override
-    public void mouseWheelMoved( MouseWheelEvent ev ) {
+	@Override
+	public void mouseWheelMoved(MouseWheelEvent ev) {
 
-        double moveStep = calcMove();
+		double moveStep = calcMove();
 
-        if ( ( ev.getModifiersEx() & ( InputEvent.SHIFT_DOWN_MASK | InputEvent.CTRL_DOWN_MASK ) ) == InputEvent.SHIFT_DOWN_MASK ) {
-            // SHIFT (and not CTRL)
-            moveStep *= 10.0;
-        } else if ( ( ev.getModifiersEx() & ( InputEvent.SHIFT_DOWN_MASK | InputEvent.CTRL_DOWN_MASK ) ) == InputEvent.CTRL_DOWN_MASK ) {
-            // CTRL (and not SHIFT)
-            moveStep /= 10.0;
-        }
+		if ((ev.getModifiersEx()
+				& (InputEvent.SHIFT_DOWN_MASK | InputEvent.CTRL_DOWN_MASK)) == InputEvent.SHIFT_DOWN_MASK) {
+			// SHIFT (and not CTRL)
+			moveStep *= 10.0;
+		}
+		else if ((ev.getModifiersEx()
+				& (InputEvent.SHIFT_DOWN_MASK | InputEvent.CTRL_DOWN_MASK)) == InputEvent.CTRL_DOWN_MASK) {
+			// CTRL (and not SHIFT)
+			moveStep /= 10.0;
+		}
 
-        vf.moveForward( -ev.getWheelRotation() * moveStep );
-        master.repaint();
-    }
+		vf.moveForward(-ev.getWheelRotation() * moveStep);
+		master.repaint();
+	}
 
-    private double calcMove() {
-        double moveStep = vf.getEyePos().z / 50.0;
-        if ( moveStep < 5 ) {
-            moveStep = 5;
-        }
-        return moveStep;
-    }
+	private double calcMove() {
+		double moveStep = vf.getEyePos().z / 50.0;
+		if (moveStep < 5) {
+			moveStep = 5;
+		}
+		return moveStep;
+	}
+
 }

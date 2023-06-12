@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -52,62 +51,61 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Resource manager for connection providers.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
- * 
- * @version $Revision: $, $Date: $
  */
 public class ConnectionProviderManager extends DefaultResourceManager<ConnectionProvider> {
 
-    private static final Logger LOG = LoggerFactory.getLogger( ConnectionProviderManager.class );
+	private static final Logger LOG = LoggerFactory.getLogger(ConnectionProviderManager.class);
 
-    public ConnectionProviderManager() {
-        super( new DefaultResourceManagerMetadata<ConnectionProvider>( ConnectionProviderProvider.class,
-                                                                       "database connections", "jdbc" ) );
-    }
+	public ConnectionProviderManager() {
+		super(new DefaultResourceManagerMetadata<ConnectionProvider>(ConnectionProviderProvider.class,
+				"database connections", "jdbc"));
+	}
 
-    @Override
-    public void startup( Workspace workspace ) {
-        // Check for legacy JDBC drivers and warn if some are found in modules directory
-        ClassLoader moduleClassLoader = workspace.getModuleClassLoader();
-        for ( Driver d : ServiceLoader.load( Driver.class, moduleClassLoader ) ) {
-            warnIfDriversAreRegisteredInModulesClassLoader( moduleClassLoader, d );
-        }
-        super.startup( workspace );
-    }
+	@Override
+	public void startup(Workspace workspace) {
+		// Check for legacy JDBC drivers and warn if some are found in modules directory
+		ClassLoader moduleClassLoader = workspace.getModuleClassLoader();
+		for (Driver d : ServiceLoader.load(Driver.class, moduleClassLoader)) {
+			warnIfDriversAreRegisteredInModulesClassLoader(moduleClassLoader, d);
+		}
+		super.startup(workspace);
+	}
 
-    @Override
-    public void shutdown() {
-        // nothing to do
-    }
+	@Override
+	public void shutdown() {
+		// nothing to do
+	}
 
-    private void warnIfDriversAreRegisteredInModulesClassLoader( ClassLoader moduleClassLoader, Driver d ) {
-        final String clsName = d.getClass().getName();
-        String clsFile = createClsFile( moduleClassLoader, clsName );
+	private void warnIfDriversAreRegisteredInModulesClassLoader(ClassLoader moduleClassLoader, Driver d) {
+		final String clsName = d.getClass().getName();
+		String clsFile = createClsFile(moduleClassLoader, clsName);
 
-        LOG.warn( "The JDBC driver {} has been found in the modules directory.", clsName );
-        LOG.warn( "This method of loading JDBC drivers is not supported in deegree any more." );
-        LOG.warn( "Please check the webservices handbook for more infomation." );
-        if ( clsFile != null ) {
-            LOG.warn( "The jdbc driver has been found at {}", clsFile );
-        }
-    }
+		LOG.warn("The JDBC driver {} has been found in the modules directory.", clsName);
+		LOG.warn("This method of loading JDBC drivers is not supported in deegree any more.");
+		LOG.warn("Please check the webservices handbook for more infomation.");
+		if (clsFile != null) {
+			LOG.warn("The jdbc driver has been found at {}", clsFile);
+		}
+	}
 
-    private String createClsFile( ClassLoader moduleClassLoader, final String clsName ) {
-        String clsFile;
-        try {
-            clsFile = moduleClassLoader.getResource( clsName.replace( '.', '/' ) + ".class" ).toString();
-        } catch ( Exception ign ) {
-            return null;
-        }
-        if ( clsFile == null || clsFile.length() == 0 )
-            return null;
-        int jarpos = clsFile.indexOf( ".jar" );
-        if ( jarpos != -1 ) {
-            clsFile = clsFile.substring( 0, jarpos + 4 );
-        }
-        return clsFile;
-    }
+	private String createClsFile(ClassLoader moduleClassLoader, final String clsName) {
+		String clsFile;
+		try {
+			clsFile = moduleClassLoader.getResource(clsName.replace('.', '/') + ".class").toString();
+		}
+		catch (Exception ign) {
+			return null;
+		}
+		if (clsFile == null || clsFile.length() == 0)
+			return null;
+		int jarpos = clsFile.indexOf(".jar");
+		if (jarpos != -1) {
+			clsFile = clsFile.substring(0, jarpos + 4);
+		}
+		return clsFile;
+	}
 
 }

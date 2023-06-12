@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -43,45 +42,46 @@ import org.deegree.protocol.ows.getcapabilities.GetCapabilitiesXMLParser;
 import org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureType;
 
 /**
- * Adapter between XML encoded <code>GetCapabilities</code> requests (WFS) and {@link GetCapabilities} objects.
+ * Adapter between XML encoded <code>GetCapabilities</code> requests (WFS) and
+ * {@link GetCapabilities} objects.
  * <p>
  * TODO code for exporting
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * 
- * @version $Revision: $, $Date: $
  */
 public class GetCapabilitiesXMLAdapter extends GetCapabilitiesXMLParser {
 
-    /**
-     * Parses a WFS <code>GetCapabilities</code> document into a {@link GetCapabilities} request.
-     * <p>
-     * Supported versions:
-     * <ul>
-     * <li>1.0.0</li>
-     * <li>1.1.0</li>
-     * <li>2.0.0</li>
-     * </ul>
-     * 
-     * @param version
-     *            specifies the request version, can be <code>null</code> (version attribute is evaluated then)
-     * @return parsed {@link DescribeFeatureType} request
-     */
-    public GetCapabilities parse( Version version ) {
-        GetCapabilities request = null;
-        if ( version != null ) {
-            // @version present -> treat as WFS 1.0.0 request
-            request = new GetCapabilities( version );
-        } else {
-            // else treat as WFS 1.1.0 / WFS 2.0.0 request (OWS 1.0.0 / 1.1.0)
-            String wfsNs = getRootElement().getNamespace().getNamespaceURI();
-            if ( WFS_200_NS.equals( wfsNs ) ) {
-                request = parse110();
-            } else {
-                request = parse100();
-            }
-        }
-        return request;
-    }
+	/**
+	 * Parses a WFS <code>GetCapabilities</code> document into a {@link GetCapabilities}
+	 * request.
+	 * <p>
+	 * Supported versions:
+	 * <ul>
+	 * <li>1.0.0</li>
+	 * <li>1.1.0</li>
+	 * <li>2.0.0</li>
+	 * </ul>
+	 * @param version specifies the request version, can be <code>null</code> (version
+	 * attribute is evaluated then)
+	 * @return parsed {@link DescribeFeatureType} request
+	 */
+	public GetCapabilities parse(Version version) {
+		GetCapabilities request = null;
+		if (version != null) {
+			// @version present -> treat as WFS 1.0.0 request
+			request = new GetCapabilities(version);
+		}
+		else {
+			// else treat as WFS 1.1.0 / WFS 2.0.0 request (OWS 1.0.0 / 1.1.0)
+			String wfsNs = getRootElement().getNamespace().getNamespaceURI();
+			if (WFS_200_NS.equals(wfsNs)) {
+				request = parse110();
+			}
+			else {
+				request = parse100();
+			}
+		}
+		return request;
+	}
+
 }

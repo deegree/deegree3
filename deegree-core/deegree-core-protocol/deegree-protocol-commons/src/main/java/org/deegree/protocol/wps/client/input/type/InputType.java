@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -40,115 +39,104 @@ import org.deegree.commons.tom.ows.LanguageString;
 
 /**
  * Abstract base class for definitions of process input parameters.
- * 
+ *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public abstract class InputType {
 
-    private CodeType id;
+	private CodeType id;
 
-    private LanguageString inputTitle;
+	private LanguageString inputTitle;
 
-    private LanguageString inputAbstract;
+	private LanguageString inputAbstract;
 
-    private String minOccurs;
+	private String minOccurs;
 
-    private String maxOccurs;
+	private String maxOccurs;
 
-    /**
-     * Convenvience enum type for discriminating the different subclasses of {@link InputType}.
-     * 
-     * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
-     * @author last edited by: $Author$
-     * 
-     * @version $Revision$, $Date$
-     */
-    public enum Type {
-        /** Instance is a {@link LiteralInputType}. */
-        LITERAL,
-        /** Instance is a {@link BBoxInputType}. */
-        BBOX,
-        /** Instance is a {@link ComplexInputType}. */
-        COMPLEX
-    }
-    
-    /**
-     * Creates a new {@link InputType} instance.
-     * 
-     * @param id
-     *            parameter identifier, must not be <code>null</code>
-     * @param inputTitle
-     *            parameter title, must not be <code>null</code>
-     * @param inputAbstract
-     *            abstract for the parameter, can be <code>null</code>
-     * @param minOccurs
-     *            minimum number of times the parameter must be present, may be <code>null</code> (defaults to 1 time)
-     * @param maxOccurs
-     *            maximum number of times the parameter may be present, may be <code>null</code> (defaults to 1 time)
-     */
-    protected InputType( CodeType id, LanguageString inputTitle, LanguageString inputAbstract, String minOccurs,
-                         String maxOccurs ) {
-        this.id = id;
-        this.inputTitle = inputTitle;
-        this.inputAbstract = inputAbstract;
-        this.minOccurs = minOccurs;
-        this.maxOccurs = maxOccurs;
-    }
-    
-    /**
-     * Returns the concrete input type of this instance.
-     * 
-     * @return the concrete input type, never <code>null</code> 
-     */
-    public abstract Type getType ();
-    
-    /**
-     * Returns the parameter identifier.
-     * 
-     * @return the parameter identifier, never <code>null</code>
-     */
-    public CodeType getId() {
-        return id;
-    }
+	/**
+	 * Convenvience enum type for discriminating the different subclasses of
+	 * {@link InputType}.
+	 *
+	 * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+	 */
+	public enum Type {
 
-    /**
-     * Returns the parameter title.
-     * 
-     * @return the parameter title, never <code>null</code>
-     */
-    public LanguageString getTitle() {
-        return inputTitle;
-    }
+		/** Instance is a {@link LiteralInputType}. */
+		LITERAL,
+		/** Instance is a {@link BBoxInputType}. */
+		BBOX,
+		/** Instance is a {@link ComplexInputType}. */
+		COMPLEX
 
-    /**
-     * Returns the abstract for the parameter.
-     * 
-     * @return the abstract for the parameter, can be <code>null</code>
-     */
-    public LanguageString getAbstract() {
-        return inputAbstract;
-    }
+	}
 
-    /**
-     * Returns minimum number of times the parameter must be present.
-     * 
-     * @return minimum occurrences of this parameter, may be <code>null</code> (defaults to 1 time)
-     */
-    public String getMinOccurs() {
-        return minOccurs;
-    }
+	/**
+	 * Creates a new {@link InputType} instance.
+	 * @param id parameter identifier, must not be <code>null</code>
+	 * @param inputTitle parameter title, must not be <code>null</code>
+	 * @param inputAbstract abstract for the parameter, can be <code>null</code>
+	 * @param minOccurs minimum number of times the parameter must be present, may be
+	 * <code>null</code> (defaults to 1 time)
+	 * @param maxOccurs maximum number of times the parameter may be present, may be
+	 * <code>null</code> (defaults to 1 time)
+	 */
+	protected InputType(CodeType id, LanguageString inputTitle, LanguageString inputAbstract, String minOccurs,
+			String maxOccurs) {
+		this.id = id;
+		this.inputTitle = inputTitle;
+		this.inputAbstract = inputAbstract;
+		this.minOccurs = minOccurs;
+		this.maxOccurs = maxOccurs;
+	}
 
-    /**
-     * Returns the maximum number of times the parameter may be present.
-     * 
-     * @return maximum number of times the parameter may be present, may be <code>null</code> (defaults to 1 time) or
-     *         "unbounded"
-     */
-    public String getMaxOccurs() {
-        return maxOccurs;
-    }
+	/**
+	 * Returns the concrete input type of this instance.
+	 * @return the concrete input type, never <code>null</code>
+	 */
+	public abstract Type getType();
+
+	/**
+	 * Returns the parameter identifier.
+	 * @return the parameter identifier, never <code>null</code>
+	 */
+	public CodeType getId() {
+		return id;
+	}
+
+	/**
+	 * Returns the parameter title.
+	 * @return the parameter title, never <code>null</code>
+	 */
+	public LanguageString getTitle() {
+		return inputTitle;
+	}
+
+	/**
+	 * Returns the abstract for the parameter.
+	 * @return the abstract for the parameter, can be <code>null</code>
+	 */
+	public LanguageString getAbstract() {
+		return inputAbstract;
+	}
+
+	/**
+	 * Returns minimum number of times the parameter must be present.
+	 * @return minimum occurrences of this parameter, may be <code>null</code> (defaults
+	 * to 1 time)
+	 */
+	public String getMinOccurs() {
+		return minOccurs;
+	}
+
+	/**
+	 * Returns the maximum number of times the parameter may be present.
+	 * @return maximum number of times the parameter may be present, may be
+	 * <code>null</code> (defaults to 1 time) or "unbounded"
+	 */
+	public String getMaxOccurs() {
+		return maxOccurs;
+	}
+
 }

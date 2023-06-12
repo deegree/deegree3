@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -45,237 +44,223 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The <code>SimpleAccessGeometry</code> class, defines geometry by a coordinate array with or without innerrings and a
- * set of colors.
- * 
+ * The <code>SimpleAccessGeometry</code> class, defines geometry by a coordinate array
+ * with or without innerrings and a set of colors.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class SimpleAccessGeometry implements QualityModelPart {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -5069487647474073270L;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = -5069487647474073270L;
 
-    private final static Logger LOG = LoggerFactory.getLogger( SimpleAccessGeometry.class );
+	private final static Logger LOG = LoggerFactory.getLogger(SimpleAccessGeometry.class);
 
-    /**
-     * The coordinates of this geometry may be null
-     */
-    protected transient float[] coordinates = null;
+	/**
+	 * The coordinates of this geometry may be null
+	 */
+	protected transient float[] coordinates = null;
 
-    // indizes of the startpositions of the innerrings
-    transient int[] innerRings = null;
+	// indizes of the startpositions of the innerrings
+	transient int[] innerRings = null;
 
-    transient int vertexCount;
+	transient int vertexCount;
 
-    private transient SimpleGeometryStyle style;
+	private transient SimpleGeometryStyle style;
 
-    /**
-     * @param coordinates
-     * @param innerRings
-     * @param style
-     */
-    public SimpleAccessGeometry( float[] coordinates, int[] innerRings, SimpleGeometryStyle style ) {
-        this.style = style;
-        this.coordinates = coordinates;
-        this.innerRings = innerRings;
-        vertexCount = ( coordinates == null ) ? 0 : ( coordinates.length / 3 );
-    }
+	/**
+	 * @param coordinates
+	 * @param innerRings
+	 * @param style
+	 */
+	public SimpleAccessGeometry(float[] coordinates, int[] innerRings, SimpleGeometryStyle style) {
+		this.style = style;
+		this.coordinates = coordinates;
+		this.innerRings = innerRings;
+		vertexCount = (coordinates == null) ? 0 : (coordinates.length / 3);
+	}
 
-    /**
-     * @param coordinates
-     * @param style
-     */
-    public SimpleAccessGeometry( float[] coordinates, SimpleGeometryStyle style ) {
-        this( coordinates, null, style );
-    }
+	/**
+	 * @param coordinates
+	 * @param style
+	 */
+	public SimpleAccessGeometry(float[] coordinates, SimpleGeometryStyle style) {
+		this(coordinates, null, style);
+	}
 
-    /**
-     * @param coordinates
-     * @param innerRings
-     *            containing indizes to the vertex, not the array offset.
-     */
-    public SimpleAccessGeometry( float[] coordinates, int[] innerRings ) {
-        this( coordinates, innerRings, new SimpleGeometryStyle() );
-    }
+	/**
+	 * @param coordinates
+	 * @param innerRings containing indizes to the vertex, not the array offset.
+	 */
+	public SimpleAccessGeometry(float[] coordinates, int[] innerRings) {
+		this(coordinates, innerRings, new SimpleGeometryStyle());
+	}
 
-    /**
-     * @param coordinates
-     */
-    public SimpleAccessGeometry( float[] coordinates ) {
-        this( coordinates, null, new SimpleGeometryStyle() );
-    }
+	/**
+	 * @param coordinates
+	 */
+	public SimpleAccessGeometry(float[] coordinates) {
+		this(coordinates, null, new SimpleGeometryStyle());
+	}
 
-    /**
-     * @return the coordinates
-     */
-    public final float[] getGeometry() {
-        return coordinates;
-    }
+	/**
+	 * @return the coordinates
+	 */
+	public final float[] getGeometry() {
+		return coordinates;
+	}
 
-    /**
-     * @param coordinates
-     *            the originalGeometry to set
-     */
-    public final void setGeometry( float[] coordinates ) {
-        this.coordinates = coordinates;
-    }
+	/**
+	 * @param coordinates the originalGeometry to set
+	 */
+	public final void setGeometry(float[] coordinates) {
+		this.coordinates = coordinates;
+	}
 
-    /**
-     * @return the innerRings
-     */
-    public final int[] getInnerRings() {
-        return innerRings;
-    }
+	/**
+	 * @return the innerRings
+	 */
+	public final int[] getInnerRings() {
+		return innerRings;
+	}
 
-    /**
-     * @param innerRings
-     *            the innerRings to set
-     */
-    public final void setInnerRings( int[] innerRings ) {
-        this.innerRings = innerRings;
-    }
+	/**
+	 * @param innerRings the innerRings to set
+	 */
+	public final void setInnerRings(int[] innerRings) {
+		this.innerRings = innerRings;
+	}
 
-    /**
-     * If the geometry is horizontal lying.
-     * 
-     * @param coordinates
-     * @return the coordinates that are horizontal, can be <Code>null</Code>.
-     */
-    public float[] getHorizontalGeometries( float[] coordinates ) {
+	/**
+	 * If the geometry is horizontal lying.
+	 * @param coordinates
+	 * @return the coordinates that are horizontal, can be <Code>null</Code>.
+	 */
+	public float[] getHorizontalGeometries(float[] coordinates) {
 
-        if ( coordinates.length / vertexCount == 3 ) {
-            float comparefloat = coordinates[2];
-            for ( int t = 2; t < coordinates.length; t += 3 ) {
+		if (coordinates.length / vertexCount == 3) {
+			float comparefloat = coordinates[2];
+			for (int t = 2; t < coordinates.length; t += 3) {
 
-                float temp = coordinates[t];
-                if ( temp != comparefloat ) {
-                    return null;
-                }
-            }
-        }
+				float temp = coordinates[t];
+				if (temp != comparefloat) {
+					return null;
+				}
+			}
+		}
 
-        return coordinates;
-    }
+		return coordinates;
+	}
 
-    /**
-     * @param coordinateLocation
-     *            of the x ordinate of the requested coordinate.
-     * @return a copy of the coordinate at the given location (location, location +1,location +2)
-     * @throws IndexOutOfBoundsException
-     *             is outside the coordinate array
-     */
-    public float[] getCoordinate( int coordinateLocation ) {
-        if ( coordinates == null || coordinateLocation < 0 || coordinateLocation + 2 > coordinates.length ) {
-            throw new IndexOutOfBoundsException( "Location is out of the range" );
-        }
-        return new float[] { coordinates[coordinateLocation], coordinates[coordinateLocation + 1],
-                            coordinates[coordinateLocation + 2] };
-    }
+	/**
+	 * @param coordinateLocation of the x ordinate of the requested coordinate.
+	 * @return a copy of the coordinate at the given location (location, location
+	 * +1,location +2)
+	 * @throws IndexOutOfBoundsException is outside the coordinate array
+	 */
+	public float[] getCoordinate(int coordinateLocation) {
+		if (coordinates == null || coordinateLocation < 0 || coordinateLocation + 2 > coordinates.length) {
+			throw new IndexOutOfBoundsException("Location is out of the range");
+		}
+		return new float[] { coordinates[coordinateLocation], coordinates[coordinateLocation + 1],
+				coordinates[coordinateLocation + 2] };
+	}
 
-    /**
-     * @param vertex
-     *            the vertex index(starting at 0), e.g. if you would like to get the coordinates of the second vertex
-     *            the vertex index would be 1
-     * @return a copy of the coordinates for the vertex at given index
-     * @throws IndexOutOfBoundsException
-     *             is outside the coordinate array
-     */
-    public float[] getCoordinateForVertex( int vertex ) {
-        if ( coordinates == null || vertex < 0 || ( vertex * 3 ) + 2 > coordinates.length ) {
-            throw new IndexOutOfBoundsException( "No such vertex: " + vertex + ", the given index is out of range" );
-        }
-        return new float[] { coordinates[vertex * 3], coordinates[( vertex * 3 ) + 1], coordinates[( vertex * 3 ) + 2] };
-    }
+	/**
+	 * @param vertex the vertex index(starting at 0), e.g. if you would like to get the
+	 * coordinates of the second vertex the vertex index would be 1
+	 * @return a copy of the coordinates for the vertex at given index
+	 * @throws IndexOutOfBoundsException is outside the coordinate array
+	 */
+	public float[] getCoordinateForVertex(int vertex) {
+		if (coordinates == null || vertex < 0 || (vertex * 3) + 2 > coordinates.length) {
+			throw new IndexOutOfBoundsException("No such vertex: " + vertex + ", the given index is out of range");
+		}
+		return new float[] { coordinates[vertex * 3], coordinates[(vertex * 3) + 1], coordinates[(vertex * 3) + 2] };
+	}
 
-    /**
-     * @return the vertexCount
-     */
-    public final int getVertexCount() {
-        return vertexCount;
-    }
+	/**
+	 * @return the vertexCount
+	 */
+	public final int getVertexCount() {
+		return vertexCount;
+	}
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        if ( coordinates != null && coordinates.length > 0 ) {
-            sb.append( "VertexCount: " ).append( vertexCount );
-            sb.append( "\nCoordinates:\n" );
-            for ( int i = 0; i < vertexCount; ++i ) {
-                sb.append( i ).append( ":" ).append( Vectors3f.asString( getCoordinateForVertex( i ) ) ).append( "\n" );
-            }
-            if ( innerRings != null && innerRings.length > 0 ) {
-                sb.append( "\nInnerRings at vertices: " );
-                for ( int i = 0; i < innerRings.length; ++i ) {
-                    sb.append( innerRings[i] );
-                    if ( ( i + 1 ) < innerRings.length ) {
-                        sb.append( ", " );
-                    }
-                }
-            } else {
-                sb.append( "No Inner rings defined." );
-            }
-        } else {
-            sb.append( "No geometry coordinates defined." );
-        }
-        return sb.toString();
-    }
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		if (coordinates != null && coordinates.length > 0) {
+			sb.append("VertexCount: ").append(vertexCount);
+			sb.append("\nCoordinates:\n");
+			for (int i = 0; i < vertexCount; ++i) {
+				sb.append(i).append(":").append(Vectors3f.asString(getCoordinateForVertex(i))).append("\n");
+			}
+			if (innerRings != null && innerRings.length > 0) {
+				sb.append("\nInnerRings at vertices: ");
+				for (int i = 0; i < innerRings.length; ++i) {
+					sb.append(innerRings[i]);
+					if ((i + 1) < innerRings.length) {
+						sb.append(", ");
+					}
+				}
+			}
+			else {
+				sb.append("No Inner rings defined.");
+			}
+		}
+		else {
+			sb.append("No geometry coordinates defined.");
+		}
+		return sb.toString();
+	}
 
-    /**
-     * Method called while serializing this object
-     * 
-     * @param out
-     *            to write to.
-     * @throws IOException
-     */
-    private void writeObject( java.io.ObjectOutputStream out )
-                            throws IOException {
-        LOG.trace( "Serializing to object stream" );
+	/**
+	 * Method called while serializing this object
+	 * @param out to write to.
+	 * @throws IOException
+	 */
+	private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+		LOG.trace("Serializing to object stream");
 
-        out.writeObject( coordinates );
-        out.writeObject( innerRings );
-        out.writeInt( vertexCount );
+		out.writeObject(coordinates);
+		out.writeObject(innerRings);
+		out.writeInt(vertexCount);
 
-    }
+	}
 
-    /**
-     * Method called while de-serializing (instancing) this object.
-     * 
-     * @param in
-     *            to create the methods from.
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
-    private void readObject( java.io.ObjectInputStream in )
-                            throws IOException, ClassNotFoundException {
-        LOG.trace( "Deserializing from object stream" );
-        // The coordinates of this geometry may be null
-        coordinates = (float[]) in.readObject();
-        // indizes of the startpositions of the innerrings
-        innerRings = (int[]) in.readObject();
-        // length 32 bit only lowest 24 are used rgb
-        vertexCount = in.readInt();
-    }
+	/**
+	 * Method called while de-serializing (instancing) this object.
+	 * @param in to create the methods from.
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
+	private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+		LOG.trace("Deserializing from object stream");
+		// The coordinates of this geometry may be null
+		coordinates = (float[]) in.readObject();
+		// indizes of the startpositions of the innerrings
+		innerRings = (int[]) in.readObject();
+		// length 32 bit only lowest 24 are used rgb
+		vertexCount = in.readInt();
+	}
 
-    @Override
-    public long sizeOf() {
-        long localSize = style.sizeOf();
-        localSize += AllocatedHeapMemory.sizeOfFloatArray( coordinates, true );
-        localSize += AllocatedHeapMemory.sizeOfIntArray( innerRings, true );
-        localSize += AllocatedHeapMemory.INT_SIZE;
-        return localSize;
-    }
+	@Override
+	public long sizeOf() {
+		long localSize = style.sizeOf();
+		localSize += AllocatedHeapMemory.sizeOfFloatArray(coordinates, true);
+		localSize += AllocatedHeapMemory.sizeOfIntArray(innerRings, true);
+		localSize += AllocatedHeapMemory.INT_SIZE;
+		return localSize;
+	}
 
-    /**
-     * @return the style information of this geometry
-     */
-    public SimpleGeometryStyle getStyle() {
-        return style;
-    }
+	/**
+	 * @return the style information of this geometry
+	 */
+	public SimpleGeometryStyle getStyle() {
+		return style;
+	}
+
 }

@@ -52,150 +52,139 @@ import oracle.sql.StructDescriptor;
 
 /**
  * Helper class to convert between Oracle STRUCT JDBC and Java primitives
- * 
+ *
  * <p>
- * The code of these classes is partial inspired from the Geotools Oracle Plugin, which uses the same approach and is
- * also licensed under GNU LGPL 2.1.
+ * The code of these classes is partial inspired from the Geotools Oracle Plugin, which
+ * uses the same approach and is also licensed under GNU LGPL 2.1.
  * </p>
- * 
- * @see http://geotools.org (C) 2003-2008, Open Source Geospatial Foundation (OSGeo), Plugin jdbc-oracle
- *      org.geotools.data.oracle.sdo.GeometryConverter
- * 
+ *
+ * @see http://geotools.org (C) 2003-2008, Open Source Geospatial Foundation (OSGeo),
+ * Plugin jdbc-oracle org.geotools.data.oracle.sdo.GeometryConverter
  * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  */
 public class OracleObjectTools {
 
-    private static final boolean USE_OPTIMIZED_POINT_STORAGE = TunableParameter.get( "deegree.sqldialect.oracle.optimized_point_storage",
-                                                                                     true );
+	private static final boolean USE_OPTIMIZED_POINT_STORAGE = TunableParameter
+		.get("deegree.sqldialect.oracle.optimized_point_storage", true);
 
-    protected static int fromInteger( Datum data, int defaultValue )
-                            throws SQLException {
-        if ( data == null )
-            return defaultValue;
-        return ( (NUMBER) data ).intValue();
-    }
+	protected static int fromInteger(Datum data, int defaultValue) throws SQLException {
+		if (data == null)
+			return defaultValue;
+		return ((NUMBER) data).intValue();
+	}
 
-    protected static int[] fromIntegerArray( ARRAY data )
-                            throws SQLException {
-        if ( data == null )
-            return null;
+	protected static int[] fromIntegerArray(ARRAY data) throws SQLException {
+		if (data == null)
+			return null;
 
-        return data.getIntArray();
-    }
+		return data.getIntArray();
+	}
 
-    protected static double[] fromDoubleArray( ARRAY data, final double defaultValue )
-                            throws SQLException {
-        if ( data == null )
-            return null;
-        if ( defaultValue == 0 )
-            return data.getDoubleArray();
-        return fromDoubleArray( data.getOracleArray(), defaultValue );
-    }
+	protected static double[] fromDoubleArray(ARRAY data, final double defaultValue) throws SQLException {
+		if (data == null)
+			return null;
+		if (defaultValue == 0)
+			return data.getDoubleArray();
+		return fromDoubleArray(data.getOracleArray(), defaultValue);
+	}
 
-    protected static double[] fromDoubleArray( Datum data[], final double defaultValue )
-                            throws SQLException {
-        if ( data == null )
-            return null;
-        double res[] = new double[data.length];
-        for ( int i = 0; i < data.length; i++ ) {
-            res[i] = fromDouble( data[i], defaultValue );
-        }
-        return res;
-    }
+	protected static double[] fromDoubleArray(Datum data[], final double defaultValue) throws SQLException {
+		if (data == null)
+			return null;
+		double res[] = new double[data.length];
+		for (int i = 0; i < data.length; i++) {
+			res[i] = fromDouble(data[i], defaultValue);
+		}
+		return res;
+	}
 
-    protected static double fromDouble( Datum data, final double defaultValue )
-                            throws SQLException {
-        if ( data == null )
-            return defaultValue;
-        return ( (NUMBER) data ).doubleValue();
-    }
+	protected static double fromDouble(Datum data, final double defaultValue) throws SQLException {
+		if (data == null)
+			return defaultValue;
+		return ((NUMBER) data).doubleValue();
+	}
 
-    protected static double[] fromDoubleArray( STRUCT struct, final double defaultValue )
-                            throws SQLException {
-        if ( struct == null )
-            return null;
-        return fromDoubleArray( struct.getOracleAttributes(), defaultValue );
-    }
+	protected static double[] fromDoubleArray(STRUCT struct, final double defaultValue) throws SQLException {
+		if (struct == null)
+			return null;
+		return fromDoubleArray(struct.getOracleAttributes(), defaultValue);
+	}
 
-    protected static STRUCT toSDOGeometry( GeomHolder h, OracleConnection conn ) 
-                            throws SQLException {
-        return toSDOGeometry( h.gtype, h.srid, h.elem_info, h.ordinates, conn);
-    }
-    
-    /**
-     * Convert SDO_Geometry informations into Oracle JDBC STRUCT element
-     */
-    protected static STRUCT toSDOGeometry( int gtype, int srid, int[] elemInfo, double[] ordinates,
-                                           OracleConnection conn )
-                            throws SQLException {
-        NUMBER sdoGtype = toNumber( gtype );
-        NUMBER sdoSrid = toNumber( srid );
-        STRUCT sdoPoint = null;
-        ARRAY sdoElemInfo = null;
-        ARRAY sdoOrdinates = null;
+	protected static STRUCT toSDOGeometry(SDOGeometry h, OracleConnection conn) throws SQLException {
+		return toSDOGeometry(h.gtype, h.srid, h.elem_info, h.ordinates, conn);
+	}
 
-        /*
-         * a single 2/3D point will be stored optimized as SDO_POINT_TYPE which is preferred by oracle
-         */
-        if ( USE_OPTIMIZED_POINT_STORAGE && elemInfo != null && ordinates != null && //
-             elemInfo.length == 3 && elemInfo[0] == 1 && elemInfo[1] == 1 && elemInfo[2] == 1 && //
-             ordinates.length > 1 && ordinates.length < 4 && //
-             ( gtype == 2001 || gtype == 3001 ) ) {
-            NUMBER z = null;
-            if ( ordinates.length > 2 ) {
-                z = toNumber( ordinates[2] );
-                sdoGtype = toNumber( 3001 );
-            } else {
-                sdoGtype = toNumber( 2001 );
-            }
-            Datum elements[] = new Datum[] { toNumber( ordinates[0] ), toNumber( ordinates[1] ), z, };
-            sdoPoint = toStruct( elements, "MDSYS.SDO_POINT_TYPE", conn );
-        } else {
-            sdoElemInfo = toArray( elemInfo, "MDSYS.SDO_ELEM_INFO_ARRAY", conn );
-            sdoOrdinates = toArray( ordinates, "MDSYS.SDO_ORDINATE_ARRAY", conn );
-        }
+	/**
+	 * Convert SDO_Geometry informations into Oracle JDBC STRUCT element
+	 */
+	protected static STRUCT toSDOGeometry(int gtype, int srid, int[] elemInfo, double[] ordinates,
+			OracleConnection conn) throws SQLException {
+		NUMBER sdoGtype = toNumber(gtype);
+		NUMBER sdoSrid = toNumber(srid);
+		STRUCT sdoPoint = null;
+		ARRAY sdoElemInfo = null;
+		ARRAY sdoOrdinates = null;
 
-        Datum elements[] = new Datum[] { sdoGtype, // SDO_GTYPE
-                                        sdoSrid, // SDO_SRID
-                                        sdoPoint, // SDO_POINT_TYPE
-                                        sdoElemInfo, // SDO_ELEM_INFO_ARRAY
-                                        sdoOrdinates // SDO_ORDINATE_ARRAY
-        };
-        return toStruct( elements, "MDSYS.SDO_GEOMETRY", conn );
-    }
+		/*
+		 * a single 2/3D point will be stored optimized as SDO_POINT_TYPE which is
+		 * preferred by oracle
+		 */
+		if (USE_OPTIMIZED_POINT_STORAGE && elemInfo != null && ordinates != null && //
+				elemInfo.length == 3 && elemInfo[0] == 1 && elemInfo[1] == 1 && elemInfo[2] == 1 && //
+				ordinates.length > 1 && ordinates.length < 4 && //
+				(gtype == 2001 || gtype == 3001)) {
+			NUMBER z = null;
+			if (ordinates.length > 2) {
+				z = toNumber(ordinates[2]);
+				sdoGtype = toNumber(3001);
+			}
+			else {
+				sdoGtype = toNumber(2001);
+			}
+			Datum elements[] = new Datum[] { toNumber(ordinates[0]), toNumber(ordinates[1]), z, };
+			sdoPoint = toStruct(elements, "MDSYS.SDO_POINT_TYPE", conn);
+		}
+		else {
+			sdoElemInfo = toArray(elemInfo, "MDSYS.SDO_ELEM_INFO_ARRAY", conn);
+			sdoOrdinates = toArray(ordinates, "MDSYS.SDO_ORDINATE_ARRAY", conn);
+		}
 
-    protected static final NUMBER toNumber( int value )
-                            throws SQLException {
-        return new NUMBER( value );
-    }
+		Datum elements[] = new Datum[] { sdoGtype, // SDO_GTYPE
+				sdoSrid, // SDO_SRID
+				sdoPoint, // SDO_POINT_TYPE
+				sdoElemInfo, // SDO_ELEM_INFO_ARRAY
+				sdoOrdinates // SDO_ORDINATE_ARRAY
+		};
+		return toStruct(elements, "MDSYS.SDO_GEOMETRY", conn);
+	}
 
-    protected static final NUMBER toNumber( double value )
-                            throws SQLException {
-        if ( Double.isNaN( value ) )
-            return null;
-        else
-            return new NUMBER( value );
-    }
+	protected static final NUMBER toNumber(int value) throws SQLException {
+		return new NUMBER(value);
+	}
 
-    protected static final STRUCT toStruct( Datum elements[], String type, OracleConnection conn )
-                            throws SQLException {
-        StructDescriptor descr = StructDescriptor.createDescriptor( type, conn );
+	protected static final NUMBER toNumber(double value) throws SQLException {
+		if (Double.isNaN(value))
+			return null;
+		else
+			return new NUMBER(value);
+	}
 
-        return new STRUCT( descr, conn, elements );
-    }
+	protected static final STRUCT toStruct(Datum elements[], String type, OracleConnection conn) throws SQLException {
+		StructDescriptor descr = StructDescriptor.createDescriptor(type, conn);
 
-    protected static final ARRAY toArray( double elements[], String type, OracleConnection conn )
-                            throws SQLException {
-        ArrayDescriptor descriptor = ArrayDescriptor.createDescriptor( type, conn );
+		return new STRUCT(descr, conn, elements);
+	}
 
-        return new ARRAY( descriptor, conn, elements );
-    }
+	protected static final ARRAY toArray(double elements[], String type, OracleConnection conn) throws SQLException {
+		ArrayDescriptor descriptor = ArrayDescriptor.createDescriptor(type, conn);
 
-    protected static final ARRAY toArray( int elements[], String type, OracleConnection conn )
-                            throws SQLException {
-        ArrayDescriptor descriptor = ArrayDescriptor.createDescriptor( type, conn );
+		return new ARRAY(descriptor, conn, elements);
+	}
 
-        return new ARRAY( descriptor, conn, elements );
-    }
+	protected static final ARRAY toArray(int elements[], String type, OracleConnection conn) throws SQLException {
+		ArrayDescriptor descriptor = ArrayDescriptor.createDescriptor(type, conn);
+
+		return new ARRAY(descriptor, conn, elements);
+	}
 
 }

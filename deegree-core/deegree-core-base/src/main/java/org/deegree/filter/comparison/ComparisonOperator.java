@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -50,96 +49,95 @@ import org.deegree.filter.i18n.Messages;
 
 /**
  * Abstract base class for all comparison operators.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * 
- * @version $Revision:$, $Date:$
  */
 public abstract class ComparisonOperator implements Operator {
 
-    protected final Boolean matchCase;
+	protected final Boolean matchCase;
 
-    protected final MatchAction matchAction;
+	protected final MatchAction matchAction;
 
-    protected ComparisonOperator( Boolean matchCase, MatchAction matchAction ) {
-        this.matchCase = matchCase;
-        this.matchAction = matchAction;
-    }
+	protected ComparisonOperator(Boolean matchCase, MatchAction matchAction) {
+		this.matchCase = matchCase;
+		this.matchAction = matchAction;
+	}
 
-    public enum SubType {
-        PROPERTY_IS_EQUAL_TO, PROPERTY_IS_NOT_EQUAL_TO, PROPERTY_IS_LESS_THAN, PROPERTY_IS_GREATER_THAN, PROPERTY_IS_LESS_THAN_OR_EQUAL_TO, PROPERTY_IS_GREATER_THAN_OR_EQUAL_TO, PROPERTY_IS_LIKE, PROPERTY_IS_NULL, PROPERTY_IS_NIL, PROPERTY_IS_BETWEEN;
-    }
+	public enum SubType {
 
-    public Type getType() {
-        return Type.COMPARISON;
-    }
+		PROPERTY_IS_EQUAL_TO, PROPERTY_IS_NOT_EQUAL_TO, PROPERTY_IS_LESS_THAN, PROPERTY_IS_GREATER_THAN,
+		PROPERTY_IS_LESS_THAN_OR_EQUAL_TO, PROPERTY_IS_GREATER_THAN_OR_EQUAL_TO, PROPERTY_IS_LIKE, PROPERTY_IS_NULL,
+		PROPERTY_IS_NIL, PROPERTY_IS_BETWEEN;
 
-    public Boolean isMatchCase() {
-        return matchCase;
-    }
+	}
 
-    public MatchAction getMatchAction() {
-        return matchAction;
-    }
+	public Type getType() {
+		return Type.COMPARISON;
+	}
 
-    public abstract SubType getSubType();
+	public Boolean isMatchCase() {
+		return matchCase;
+	}
 
-    /**
-     * Performs a checked cast to {@link Comparable}. If the given value is neither null nor a {@link Comparable}
-     * instance, a corresponding {@link FilterEvaluationException} is thrown.
-     * 
-     * @param value
-     * @return the very same value (if it is a {@link Comparable} or <code>null</code>)
-     * @throws FilterEvaluationException
-     *             if the value is neither <code>null</code> nor a {@link Comparable}
-     */
-    protected Comparable<?> checkComparableOrNull( Object value )
-                            throws FilterEvaluationException {
-        if ( value != null && !( value instanceof Comparable<?> ) ) {
-            String msg = Messages.getMessage( "FILTER_EVALUATION_NOT_COMPARABLE", this.getType().name(), value );
-            throw new FilterEvaluationException( msg );
-        }
-        return (Comparable<?>) value;
-    }
+	public MatchAction getMatchAction() {
+		return matchAction;
+	}
 
-    /**
-     * Creates a pair of {@link PrimitiveValue} instances from the given {@link TypedObjectNode}s.
-     * 
-     * @param node1
-     *            first node, can be <code>null</code>
-     * @param node2
-     *            second node, can be <code>null</code>
-     * @return pair of primitive values, never <code>null</code> (and values not null)
-     * @throws FilterEvaluationException
-     */
-    protected Pair<PrimitiveValue, PrimitiveValue> getPrimitiveValues( TypedObjectNode node1, TypedObjectNode node2 )
-                            throws FilterEvaluationException {
-        PrimitiveValue primitive1 = getPrimitiveValue( node1 );
-        PrimitiveValue primitive2 = getPrimitiveValue( node2 );
-        return new Pair<PrimitiveValue, PrimitiveValue>( primitive1, primitive2 );
-    }
+	public abstract SubType getSubType();
 
-    private PrimitiveValue getPrimitiveValue( TypedObjectNode node ) {
-        if ( node == null ) {
-            return new PrimitiveValue( "null" );
-        }
-        if ( node instanceof PrimitiveValue ) {
-            return (PrimitiveValue) node;
-        }
-        if ( node instanceof Property ) {
-            return getPrimitiveValue( ( (Property) node ).getValue() );
-        }
-        if ( node instanceof ElementNode ) {
-            ElementNode elNode = (ElementNode) node;
-            List<TypedObjectNode> children = elNode.getChildren();
-            if ( children == null || children.isEmpty() ) {
-                return new PrimitiveValue( "null" );
-            }
-            return getPrimitiveValue( children.get( 0 ) );
-        }
-        return new PrimitiveValue( node.toString() );
-    }
+	/**
+	 * Performs a checked cast to {@link Comparable}. If the given value is neither null
+	 * nor a {@link Comparable} instance, a corresponding
+	 * {@link FilterEvaluationException} is thrown.
+	 * @param value
+	 * @return the very same value (if it is a {@link Comparable} or <code>null</code>)
+	 * @throws FilterEvaluationException if the value is neither <code>null</code> nor a
+	 * {@link Comparable}
+	 */
+	protected Comparable<?> checkComparableOrNull(Object value) throws FilterEvaluationException {
+		if (value != null && !(value instanceof Comparable<?>)) {
+			String msg = Messages.getMessage("FILTER_EVALUATION_NOT_COMPARABLE", this.getType().name(), value);
+			throw new FilterEvaluationException(msg);
+		}
+		return (Comparable<?>) value;
+	}
 
-    public abstract Expression[] getParams();
+	/**
+	 * Creates a pair of {@link PrimitiveValue} instances from the given
+	 * {@link TypedObjectNode}s.
+	 * @param node1 first node, can be <code>null</code>
+	 * @param node2 second node, can be <code>null</code>
+	 * @return pair of primitive values, never <code>null</code> (and values not null)
+	 * @throws FilterEvaluationException
+	 */
+	protected Pair<PrimitiveValue, PrimitiveValue> getPrimitiveValues(TypedObjectNode node1, TypedObjectNode node2)
+			throws FilterEvaluationException {
+		PrimitiveValue primitive1 = getPrimitiveValue(node1);
+		PrimitiveValue primitive2 = getPrimitiveValue(node2);
+		return new Pair<PrimitiveValue, PrimitiveValue>(primitive1, primitive2);
+	}
+
+	private PrimitiveValue getPrimitiveValue(TypedObjectNode node) {
+		if (node == null) {
+			return new PrimitiveValue("null");
+		}
+		if (node instanceof PrimitiveValue) {
+			return (PrimitiveValue) node;
+		}
+		if (node instanceof Property) {
+			return getPrimitiveValue(((Property) node).getValue());
+		}
+		if (node instanceof ElementNode) {
+			ElementNode elNode = (ElementNode) node;
+			List<TypedObjectNode> children = elNode.getChildren();
+			if (children == null || children.isEmpty()) {
+				return new PrimitiveValue("null");
+			}
+			return getPrimitiveValue(children.get(0));
+		}
+		return new PrimitiveValue(node.toString());
+	}
+
+	public abstract Expression[] getParams();
+
 }

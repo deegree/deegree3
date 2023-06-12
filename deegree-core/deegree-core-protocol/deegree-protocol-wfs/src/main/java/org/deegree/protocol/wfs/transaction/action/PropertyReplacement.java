@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -41,56 +40,54 @@ import org.deegree.filter.expression.ValueReference;
 
 /**
  * Describes the change of a property as part of an {@link Update} action.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class PropertyReplacement {
 
-    private final ValueReference propertyName;
+	private final ValueReference propertyName;
 
-    private final XMLStreamReader xmlStream;
+	private final XMLStreamReader xmlStream;
 
-    private final UpdateAction updateAction;
+	private final UpdateAction updateAction;
 
-    /**
-     * @param propertyName
-     * @param xmlStream
-     * @param updateAction
-     */
-    public PropertyReplacement( ValueReference propertyName, XMLStreamReader xmlStream, UpdateAction updateAction ) {
-        this.propertyName = propertyName;
-        this.xmlStream = xmlStream;
-        this.updateAction = updateAction;
-    }
+	/**
+	 * @param propertyName
+	 * @param xmlStream
+	 * @param updateAction
+	 */
+	public PropertyReplacement(ValueReference propertyName, XMLStreamReader xmlStream, UpdateAction updateAction) {
+		this.propertyName = propertyName;
+		this.xmlStream = xmlStream;
+		this.updateAction = updateAction;
+	}
 
-    /**
-     * Returns the name of the property to be replaced.
-     * 
-     * @return the name of the property to be replaced, never <code>null</code>
-     */
-    public ValueReference getPropertyName() {
-        return propertyName;
-    }
+	/**
+	 * Returns the name of the property to be replaced.
+	 * @return the name of the property to be replaced, never <code>null</code>
+	 */
+	public ValueReference getPropertyName() {
+		return propertyName;
+	}
 
-    /**
-     * Returns an <code>XMLStreamReader</code> that provides access to the encoded replacement value (if such a value is
-     * specified).
-     * <p>
-     * <i>NOTE: The client <b>must</b> read this stream exactly once and exactly up to the next tag event after the
-     * <code>wfs:Value</code> END_ELEMENT event, i.e. the <code>wfs:Property</code> END_ELEMENT event.</i>
-     * </p>
-     * 
-     * @return <code>XMLStreamReader</code> that provides access to the XML encoded replacement value, cursor points at
-     *         the <code>wfs:Value</code> <code>START_ELEMENT</code> event, or <code>null</code>
-     */
-    public XMLStreamReader getReplacementValue() {
-        return xmlStream;
-    }
+	/**
+	 * Returns an <code>XMLStreamReader</code> that provides access to the encoded
+	 * replacement value (if such a value is specified).
+	 * <p>
+	 * <i>NOTE: The client <b>must</b> read this stream exactly once and exactly up to the
+	 * next tag event after the <code>wfs:Value</code> END_ELEMENT event, i.e. the
+	 * <code>wfs:Property</code> END_ELEMENT event.</i>
+	 * </p>
+	 * @return <code>XMLStreamReader</code> that provides access to the XML encoded
+	 * replacement value, cursor points at the <code>wfs:Value</code>
+	 * <code>START_ELEMENT</code> event, or <code>null</code>
+	 */
+	public XMLStreamReader getReplacementValue() {
+		return xmlStream;
+	}
 
-    public UpdateAction getUpdateAction() {
-        return updateAction;
-    }
+	public UpdateAction getUpdateAction() {
+		return updateAction;
+	}
+
 }

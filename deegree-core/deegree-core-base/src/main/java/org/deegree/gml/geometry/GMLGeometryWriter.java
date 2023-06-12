@@ -56,151 +56,141 @@ import org.deegree.geometry.primitive.TriangulatedSurface;
 import org.deegree.geometry.refs.GeometryReference;
 
 /**
- * Interface that makes the usage of Geometry Encoders simpler, not depending on their version anymore. Any new version
- * of a GML encoder should implement this interface.
- * 
+ * Interface that makes the usage of Geometry Encoders simpler, not depending on their
+ * version anymore. Any new version of a GML encoder should implement this interface.
+ *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface GMLGeometryWriter {
 
-    /**
-     * Exports a general geometry. This is the method to call when there is no information about the geometry (the case
-     * switching is done here).
-     * 
-     * @param geometry
-     * @throws XMLStreamException
-     * @throws UnknownCRSException
-     * @throws TransformationException
-     */
-    public void export( Geometry geometry )
-                            throws XMLStreamException, UnknownCRSException, TransformationException;
+	/**
+	 * Exports a general geometry. This is the method to call when there is no information
+	 * about the geometry (the case switching is done here).
+	 * @param geometry
+	 * @throws XMLStreamException
+	 * @throws UnknownCRSException
+	 * @throws TransformationException
+	 */
+	public void export(Geometry geometry) throws XMLStreamException, UnknownCRSException, TransformationException;
 
-    /**
-     * @param compositeCurve
-     * @throws XMLStreamException
-     * @throws UnknownCRSException
-     * @throws TransformationException
-     */
-    public void exportCompositeCurve( CompositeCurve compositeCurve )
-                            throws XMLStreamException, UnknownCRSException, TransformationException;
+	/**
+	 * @param compositeCurve
+	 * @throws XMLStreamException
+	 * @throws UnknownCRSException
+	 * @throws TransformationException
+	 */
+	public void exportCompositeCurve(CompositeCurve compositeCurve)
+			throws XMLStreamException, UnknownCRSException, TransformationException;
 
-    /**
-     * @param geometryComplex
-     * @throws XMLStreamException
-     * @throws UnknownCRSException
-     * @throws TransformationException
-     */
-    public void exportCompositeGeometry( CompositeGeometry<GeometricPrimitive> geometryComplex )
-                            throws XMLStreamException, UnknownCRSException, TransformationException;
+	/**
+	 * @param geometryComplex
+	 * @throws XMLStreamException
+	 * @throws UnknownCRSException
+	 * @throws TransformationException
+	 */
+	public void exportCompositeGeometry(CompositeGeometry<GeometricPrimitive> geometryComplex)
+			throws XMLStreamException, UnknownCRSException, TransformationException;
 
-    /**
-     * @param compositeSolid
-     * @throws XMLStreamException
-     * @throws UnknownCRSException
-     * @throws TransformationException
-     */
-    public void exportCompositeSolid( CompositeSolid compositeSolid )
-                            throws XMLStreamException, UnknownCRSException, TransformationException;
+	/**
+	 * @param compositeSolid
+	 * @throws XMLStreamException
+	 * @throws UnknownCRSException
+	 * @throws TransformationException
+	 */
+	public void exportCompositeSolid(CompositeSolid compositeSolid)
+			throws XMLStreamException, UnknownCRSException, TransformationException;
 
-    /**
-     * @param compositeSurface
-     * @throws XMLStreamException
-     * @throws UnknownCRSException
-     * @throws TransformationException
-     */
-    public void exportCompositeSurface( CompositeSurface compositeSurface )
-                            throws XMLStreamException, UnknownCRSException, TransformationException;
+	/**
+	 * @param compositeSurface
+	 * @throws XMLStreamException
+	 * @throws UnknownCRSException
+	 * @throws TransformationException
+	 */
+	public void exportCompositeSurface(CompositeSurface compositeSurface)
+			throws XMLStreamException, UnknownCRSException, TransformationException;
 
-    /**
-     * @param curve
-     * @throws XMLStreamException
-     * @throws UnknownCRSException
-     * @throws TransformationException
-     */
-    public void exportCurve( Curve curve )
-                            throws XMLStreamException, UnknownCRSException, TransformationException;
+	/**
+	 * @param curve
+	 * @throws XMLStreamException
+	 * @throws UnknownCRSException
+	 * @throws TransformationException
+	 */
+	public void exportCurve(Curve curve) throws XMLStreamException, UnknownCRSException, TransformationException;
 
-    /**
-     * @param envelope
-     * @throws XMLStreamException
-     * @throws UnknownCRSException
-     * @throws TransformationException
-     */
-    public void exportEnvelope( Envelope envelope )
-                            throws XMLStreamException, UnknownCRSException, TransformationException;
+	/**
+	 * @param envelope
+	 * @throws XMLStreamException
+	 * @throws UnknownCRSException
+	 * @throws TransformationException
+	 */
+	public void exportEnvelope(Envelope envelope)
+			throws XMLStreamException, UnknownCRSException, TransformationException;
 
-    /**
-     * @param geometry
-     * @throws XMLStreamException
-     * @throws UnknownCRSException
-     * @throws TransformationException
-     */
-    public void exportMultiGeometry( MultiGeometry<? extends Geometry> geometry )
-                            throws XMLStreamException, UnknownCRSException, TransformationException;
+	/**
+	 * @param geometry
+	 * @throws XMLStreamException
+	 * @throws UnknownCRSException
+	 * @throws TransformationException
+	 */
+	public void exportMultiGeometry(MultiGeometry<? extends Geometry> geometry)
+			throws XMLStreamException, UnknownCRSException, TransformationException;
 
-    /**
-     * @param point
-     * @throws XMLStreamException
-     * @throws UnknownCRSException
-     * @throws TransformationException
-     */
-    public void exportPoint( Point point )
-                            throws XMLStreamException, UnknownCRSException, TransformationException;
+	/**
+	 * @param point
+	 * @throws XMLStreamException
+	 * @throws UnknownCRSException
+	 * @throws TransformationException
+	 */
+	public void exportPoint(Point point) throws XMLStreamException, UnknownCRSException, TransformationException;
 
-    /**
-     * @param geometryRef
-     * @throws XMLStreamException
-     * @throws UnknownCRSException
-     * @throws TransformationException
-     */
-    public void exportReference( GeometryReference<Geometry> geometryRef )
-                            throws XMLStreamException, UnknownCRSException, TransformationException;
+	/**
+	 * @param geometryRef
+	 * @throws XMLStreamException
+	 * @throws UnknownCRSException
+	 * @throws TransformationException
+	 */
+	public void exportReference(GeometryReference<Geometry> geometryRef)
+			throws XMLStreamException, UnknownCRSException, TransformationException;
 
-    /**
-     * @param ring
-     * @throws XMLStreamException
-     * @throws UnknownCRSException
-     * @throws TransformationException
-     */
-    public void exportRing( Ring ring )
-                            throws XMLStreamException, UnknownCRSException, TransformationException;
+	/**
+	 * @param ring
+	 * @throws XMLStreamException
+	 * @throws UnknownCRSException
+	 * @throws TransformationException
+	 */
+	public void exportRing(Ring ring) throws XMLStreamException, UnknownCRSException, TransformationException;
 
-    /**
-     * @param solid
-     * @throws XMLStreamException
-     * @throws UnknownCRSException
-     * @throws TransformationException
-     */
-    public void exportSolid( Solid solid )
-                            throws XMLStreamException, UnknownCRSException, TransformationException;
+	/**
+	 * @param solid
+	 * @throws XMLStreamException
+	 * @throws UnknownCRSException
+	 * @throws TransformationException
+	 */
+	public void exportSolid(Solid solid) throws XMLStreamException, UnknownCRSException, TransformationException;
 
-    /**
-     * @param surface
-     * @throws XMLStreamException
-     * @throws UnknownCRSException
-     * @throws TransformationException
-     */
-    public void exportSurface( Surface surface )
-                            throws XMLStreamException, UnknownCRSException, TransformationException;
+	/**
+	 * @param surface
+	 * @throws XMLStreamException
+	 * @throws UnknownCRSException
+	 * @throws TransformationException
+	 */
+	public void exportSurface(Surface surface) throws XMLStreamException, UnknownCRSException, TransformationException;
 
-    /**
-     * @param tin
-     * @throws XMLStreamException
-     * @throws UnknownCRSException
-     * @throws TransformationException
-     */
-    public void exportTin( Tin tin )
-                            throws XMLStreamException, UnknownCRSException, TransformationException;
+	/**
+	 * @param tin
+	 * @throws XMLStreamException
+	 * @throws UnknownCRSException
+	 * @throws TransformationException
+	 */
+	public void exportTin(Tin tin) throws XMLStreamException, UnknownCRSException, TransformationException;
 
-    /**
-     * @param triangSurface
-     * @throws XMLStreamException
-     * @throws UnknownCRSException
-     * @throws TransformationException
-     */
-    public void exportTriangulatedSurface( TriangulatedSurface triangSurface )
-                            throws XMLStreamException, UnknownCRSException, TransformationException;
+	/**
+	 * @param triangSurface
+	 * @throws XMLStreamException
+	 * @throws UnknownCRSException
+	 * @throws TransformationException
+	 */
+	public void exportTriangulatedSurface(TriangulatedSurface triangSurface)
+			throws XMLStreamException, UnknownCRSException, TransformationException;
+
 }

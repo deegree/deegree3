@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -41,114 +40,109 @@ import java.io.Serializable;
 import org.deegree.commons.utils.memory.AllocatedHeapMemory;
 
 /**
- * The <code>PrototypeData</code> saves information of a prototype, and the transformation matrix to apply before
- * rendering the prototype.
- * 
+ * The <code>PrototypeData</code> saves information of a prototype, and the transformation
+ * matrix to apply before rendering the prototype.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class PrototypeReference implements Serializable {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 417932269664979569L;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 417932269664979569L;
 
-    private transient String prototypeID;
+	private transient String prototypeID;
 
-    private transient float angle;
+	private transient float angle;
 
-    private transient float width;
+	private transient float width;
 
-    private transient float height;
+	private transient float height;
 
-    private transient float depth;
+	private transient float depth;
 
-    private float[] location;
+	private float[] location;
 
-    /**
-     * Construct a reference to a prototype, by supplying an id and the transformations
-     * 
-     * @param prototypeID
-     * @param angle
-     * @param location
-     * @param width
-     * @param height
-     * @param depth
-     */
-    public PrototypeReference( String prototypeID, float angle, float[] location, float width, float height, float depth ) {
-        this.prototypeID = prototypeID;
-        this.angle = angle;
-        this.location = location;
-        this.width = width;
-        this.height = height;
-        this.depth = depth;
-    }
+	/**
+	 * Construct a reference to a prototype, by supplying an id and the transformations
+	 * @param prototypeID
+	 * @param angle
+	 * @param location
+	 * @param width
+	 * @param height
+	 * @param depth
+	 */
+	public PrototypeReference(String prototypeID, float angle, float[] location, float width, float height,
+			float depth) {
+		this.prototypeID = prototypeID;
+		this.angle = angle;
+		this.location = location;
+		this.width = width;
+		this.height = height;
+		this.depth = depth;
+	}
 
-    /**
-     * @return the prototypeID
-     */
-    public final String getPrototypeID() {
-        return prototypeID;
-    }
+	/**
+	 * @return the prototypeID
+	 */
+	public final String getPrototypeID() {
+		return prototypeID;
+	}
 
-    /**
-     * @param prototypeID
-     *            the prototypeID to set
-     */
-    public final void setPrototypeID( String prototypeID ) {
-        this.prototypeID = prototypeID;
-    }
+	/**
+	 * @param prototypeID the prototypeID to set
+	 */
+	public final void setPrototypeID(String prototypeID) {
+		this.prototypeID = prototypeID;
+	}
 
-    /**
-     * @return the approximate size of this prototype in bytes.
-     */
-    public long getApproximateSizeInBytes() {
-        long localSize = AllocatedHeapMemory.INSTANCE_SIZE;
-        localSize += AllocatedHeapMemory.FLOAT_SIZE * 4;
-        localSize += AllocatedHeapMemory.sizeOfFloatArray( location, true );
-        localSize = AllocatedHeapMemory.sizeOfString( prototypeID, true, true );
+	/**
+	 * @return the approximate size of this prototype in bytes.
+	 */
+	public long getApproximateSizeInBytes() {
+		long localSize = AllocatedHeapMemory.INSTANCE_SIZE;
+		localSize += AllocatedHeapMemory.FLOAT_SIZE * 4;
+		localSize += AllocatedHeapMemory.sizeOfFloatArray(location, true);
+		localSize = AllocatedHeapMemory.sizeOfString(prototypeID, true, true);
 
-        return localSize;
-    }
+		return localSize;
+	}
 
-    /**
-     * @return the angle
-     */
-    public final float getAngle() {
-        return angle;
-    }
+	/**
+	 * @return the angle
+	 */
+	public final float getAngle() {
+		return angle;
+	}
 
-    /**
-     * @return the width
-     */
-    public final float getWidth() {
-        return width;
-    }
+	/**
+	 * @return the width
+	 */
+	public final float getWidth() {
+		return width;
+	}
 
-    /**
-     * @return the height
-     */
-    public final float getHeight() {
-        return height;
-    }
+	/**
+	 * @return the height
+	 */
+	public final float getHeight() {
+		return height;
+	}
 
-    /**
-     * @return the depth
-     */
-    public final float getDepth() {
-        return depth;
-    }
+	/**
+	 * @return the depth
+	 */
+	public final float getDepth() {
+		return depth;
+	}
 
-    /**
-     * @return the location (translation) of this reference.
-     */
-    public float[] getLocation() {
-        return location;
-    }
+	/**
+	 * @return the location (translation) of this reference.
+	 */
+	public float[] getLocation() {
+		return location;
+	}
 
 }

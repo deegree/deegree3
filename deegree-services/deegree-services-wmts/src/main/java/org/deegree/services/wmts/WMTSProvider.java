@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -53,39 +52,39 @@ import org.deegree.workspace.Workspace;
 
 /**
  * SPI provider class for WMTS services.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  */
 
 public class WMTSProvider extends OWSProvider {
 
-    public static final ImplementationMetadata<WMTSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<WMTSRequestType>() {
-        {
-            supportedVersions = new Version[] { Version.parseVersion( "1.0.0" ) };
-            handledNamespaces = new String[] { "http://www.opengis.net/wmts/1.0" };
-            handledRequests = WMTSRequestType.class;
-            serviceName = new String[] { "WMTS" };
-        }
-    };
+	public static final ImplementationMetadata<WMTSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<WMTSRequestType>() {
+		{
+			supportedVersions = new Version[] { Version.parseVersion("1.0.0") };
+			handledNamespaces = new String[] { "http://www.opengis.net/wmts/1.0" };
+			handledRequests = WMTSRequestType.class;
+			serviceName = new String[] { "WMTS" };
+		}
+	};
 
-    @Override
-    public String getNamespace() {
-        return "http://www.deegree.org/services/wmts";
-    }
+	@Override
+	public String getNamespace() {
+		return "http://www.deegree.org/services/wmts";
+	}
 
-    @Override
-    public URL getSchema() {
-        return WMTSProvider.class.getResource( "/META-INF/schemas/services/wmts/wmts.xsd" );
-    }
+	@Override
+	public URL getSchema() {
+		return WMTSProvider.class.getResource("/META-INF/schemas/services/wmts/wmts.xsd");
+	}
 
-    @Override
-    public ImplementationMetadata<WMTSRequestType> getImplementationMetadata() {
-        return IMPLEMENTATION_METADATA;
-    }
+	@Override
+	public ImplementationMetadata<WMTSRequestType> getImplementationMetadata() {
+		return IMPLEMENTATION_METADATA;
+	}
 
-    @Override
-    public ResourceMetadata<OWS> createFromLocation( Workspace workspace, ResourceLocation<OWS> location ) {
-        return new WmtsMetadata( workspace, location, this );
-    }
+	@Override
+	public ResourceMetadata<OWS> createFromLocation(Workspace workspace, ResourceLocation<OWS> location) {
+		return new WmtsMetadata(workspace, location, this);
+	}
 
 }

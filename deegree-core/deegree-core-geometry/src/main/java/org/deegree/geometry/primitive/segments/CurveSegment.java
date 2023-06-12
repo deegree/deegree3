@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -39,77 +38,77 @@ import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
 
 /**
- * A <code>CurveSegment</code> is a portion of a {@link Curve} which uses a single interpolation method.
+ * A <code>CurveSegment</code> is a portion of a {@link Curve} which uses a single
+ * interpolation method.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
- * @author last edited by: $Author$
  *
- * @version. $Revision$, $Date$
  */
 public interface CurveSegment {
 
-    /**
-     * Convenience enum type for discriminating the different curve segment variants in switch statements.
-     */
-    public enum CurveSegmentType {
-        /** Segment is an {@link Arc}. */
-        ARC,
-        /** Segment is an {@link ArcByBulge}. */
-        ARC_BY_BULGE,
-        /** Segment is an {@link ArcByCenterPoint}. */
-        ARC_BY_CENTER_POINT,
-        /** Segment is an {@link ArcString}. */
-        ARC_STRING,
-        /** Segment is an {@link ArcStringByBulge}. */
-        ARC_STRING_BY_BULGE,
-        /** Segment is a {@link Bezier}. */
-        BEZIER,
-        /** Segment is a {@link BSpline}. */
-        BSPLINE,
-        /** Segment is a {@link Circle}. */
-        CIRCLE,
-        /** Segment is a {@link CircleByCenterPoint}. */
-        CIRCLE_BY_CENTER_POINT,
-        /** Segment is a {@link Clothoid}. */
-        CLOTHOID,
-        /** Segment is a {@link CubicSpline}. */
-        CUBIC_SPLINE,
-        /** Segment is a {@link Geodesic}. */
-        GEODESIC,
-        /** Segment is a {@link GeodesicString}. */
-        GEODESIC_STRING,
-        /** Segment is a {@link LineStringSegment}. */
-        LINE_STRING_SEGMENT,
-        /** Segment is an {@link OffsetCurve}. */
-        OFFSET_CURVE
-    }
+	/**
+	 * Convenience enum type for discriminating the different curve segment variants in
+	 * switch statements.
+	 */
+	public enum CurveSegmentType {
 
-    /**
-     * Returns the type of curve segment.
-     *
-     * @return the type of curve segment
-     */
-    public CurveSegmentType getSegmentType();    
-    
-    /**
-     * Returns the coordinate dimension, i.e. the dimension of the space that the curve is embedded in.
-     * 
-     * @return the coordinate dimension
-     */
-    public int getCoordinateDimension();
+		/** Segment is an {@link Arc}. */
+		ARC,
+		/** Segment is an {@link ArcByBulge}. */
+		ARC_BY_BULGE,
+		/** Segment is an {@link ArcByCenterPoint}. */
+		ARC_BY_CENTER_POINT,
+		/** Segment is an {@link ArcString}. */
+		ARC_STRING,
+		/** Segment is an {@link ArcStringByBulge}. */
+		ARC_STRING_BY_BULGE,
+		/** Segment is a {@link Bezier}. */
+		BEZIER,
+		/** Segment is a {@link BSpline}. */
+		BSPLINE,
+		/** Segment is a {@link Circle}. */
+		CIRCLE,
+		/** Segment is a {@link CircleByCenterPoint}. */
+		CIRCLE_BY_CENTER_POINT,
+		/** Segment is a {@link Clothoid}. */
+		CLOTHOID,
+		/** Segment is a {@link CubicSpline}. */
+		CUBIC_SPLINE,
+		/** Segment is a {@link Geodesic}. */
+		GEODESIC,
+		/** Segment is a {@link GeodesicString}. */
+		GEODESIC_STRING,
+		/** Segment is a {@link LineStringSegment}. */
+		LINE_STRING_SEGMENT,
+		/** Segment is an {@link OffsetCurve}. */
+		OFFSET_CURVE
 
-    /**
-     * Returns the start point of the segment.
-     *
-     * @return the start point of the segment
-     */
-    public Point getStartPoint();
+	}
 
-    /**
-     * Returns the end point of the segment.
-     *
-     * @return the end point of the segment
-     */
-    public Point getEndPoint();
+	/**
+	 * Returns the type of curve segment.
+	 * @return the type of curve segment
+	 */
+	public CurveSegmentType getSegmentType();
+
+	/**
+	 * Returns the coordinate dimension, i.e. the dimension of the space that the curve is
+	 * embedded in.
+	 * @return the coordinate dimension
+	 */
+	public int getCoordinateDimension();
+
+	/**
+	 * Returns the start point of the segment.
+	 * @return the start point of the segment
+	 */
+	public Point getStartPoint();
+
+	/**
+	 * Returns the end point of the segment.
+	 * @return the end point of the segment
+	 */
+	public Point getEndPoint();
+
 }

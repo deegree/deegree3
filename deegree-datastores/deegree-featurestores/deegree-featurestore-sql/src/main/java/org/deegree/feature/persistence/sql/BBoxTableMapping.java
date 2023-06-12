@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.deegree.feature.persistence.sql;
 
@@ -8,32 +8,33 @@ import org.deegree.cs.coordinatesystems.ICRS;
 
 /**
  * @author markus
- * 
+ *
  */
 public class BBoxTableMapping {
 
-    private final TableName ftTable;
+	private final TableName ftTable;
 
-    private final ICRS crs;
+	private final ICRS crs;
 
-    public BBoxTableMapping( String ftTable, ICRS crs ) {
-        this.ftTable = new TableName( ftTable );
-        this.crs = crs;
-    }
+	public BBoxTableMapping(String ftTable, ICRS crs) {
+		this.ftTable = new TableName(ftTable);
+		this.crs = crs;
+	}
 
-    public TableName getTable() {
-        return ftTable;
-    }
+	public TableName getTable() {
+		return ftTable;
+	}
 
-    public ICRS getCRS() {
-        return crs;
-    }
+	public ICRS getCRS() {
+		return crs;
+	}
 
-    public String getFTNameColumn() {
-        return "qname";
-    }
+	public String getFTNameColumn() {
+		return "qname";
+	}
 
-    public String getBBoxColumn() {
-        return "bbox";
-    }
+	public String getBBoxColumn() {
+		return "bbox";
+	}
+
 }

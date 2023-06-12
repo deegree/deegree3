@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -43,26 +42,22 @@ import org.deegree.geometry.primitive.patches.Triangle;
  * A {@link Surface} that consists only of {@link Triangle} patches.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
  *
- * @version. $Revision$, $Date$
  */
 public interface TriangulatedSurface extends Surface {
 
-    /**
-     * Must always return {@link Surface.SurfaceType#TriangulatedSurface}.
-     *
-     * @return {@link Surface.SurfaceType#TriangulatedSurface}
-     */
-    @Override
-    public SurfaceType getSurfaceType();
+	/**
+	 * Must always return {@link Surface.SurfaceType#TriangulatedSurface}.
+	 * @return {@link Surface.SurfaceType#TriangulatedSurface}
+	 */
+	@Override
+	public SurfaceType getSurfaceType();
 
-    /**
-     * Returns the patches that constitute this surface.
-     *
-     * @return the patches that constitute this surface
-     */
-    @Override
-    public List<Triangle> getPatches();
+	/**
+	 * Returns the patches that constitute this surface.
+	 * @return the patches that constitute this surface
+	 */
+	@Override
+	public List<Triangle> getPatches();
 
 }

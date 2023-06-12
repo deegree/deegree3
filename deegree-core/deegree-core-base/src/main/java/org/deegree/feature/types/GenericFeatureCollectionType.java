@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -49,58 +48,57 @@ import org.deegree.feature.types.property.ArrayPropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 
 /**
- * Generic {@link FeatureCollectionType} implementation, can be used for representing arbitrary feature collection
- * types.
- * 
+ * Generic {@link FeatureCollectionType} implementation, can be used for representing
+ * arbitrary feature collection types.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * 
- * @version $Revision:$, $Date:$
  */
 public class GenericFeatureCollectionType extends GenericFeatureType implements FeatureCollectionType {
 
-    private final List<FeaturePropertyType> memberDecls = new ArrayList<FeaturePropertyType>();
+	private final List<FeaturePropertyType> memberDecls = new ArrayList<FeaturePropertyType>();
 
-    private final List<ArrayPropertyType> membersDecls = new ArrayList<ArrayPropertyType>();
+	private final List<ArrayPropertyType> membersDecls = new ArrayList<ArrayPropertyType>();
 
-    public GenericFeatureCollectionType( QName name, List<PropertyType> propDecls, boolean isAbstract ) {
-        super( name, propDecls, isAbstract );
-        for ( PropertyType propDecl : propDecls ) {
-            // TODO is this test sufficient?
-            if ( propDecl instanceof FeaturePropertyType ) {
-                memberDecls.add( (FeaturePropertyType) propDecl );
-            } else if ( propDecl instanceof ArrayPropertyType ) {
-                membersDecls.add( (ArrayPropertyType) propDecl );
-            }
-        }
-    }
+	public GenericFeatureCollectionType(QName name, List<PropertyType> propDecls, boolean isAbstract) {
+		super(name, propDecls, isAbstract);
+		for (PropertyType propDecl : propDecls) {
+			// TODO is this test sufficient?
+			if (propDecl instanceof FeaturePropertyType) {
+				memberDecls.add((FeaturePropertyType) propDecl);
+			}
+			else if (propDecl instanceof ArrayPropertyType) {
+				membersDecls.add((ArrayPropertyType) propDecl);
+			}
+		}
+	}
 
-    @Override
-    public Feature newFeatureInstance( String fid, List<Property> props, ExtraProps extraProps ) {
-        return super.newFeature( fid, props, extraProps );
-    }
+	@Override
+	public Feature newFeatureInstance(String fid, List<Property> props, ExtraProps extraProps) {
+		return super.newFeature(fid, props, extraProps);
+	}
 
-    @Override
-    public Feature newFeature( String fid, List<Property> props, ExtraProps extraProps ) {
-        return new GenericFeatureCollection( this, fid, props, extraProps );
-    }
+	@Override
+	public Feature newFeature(String fid, List<Property> props, ExtraProps extraProps) {
+		return new GenericFeatureCollection(this, fid, props, extraProps);
+	}
 
-    @Override
-    public List<FeaturePropertyType> getMemberDeclarations() {
-        return memberDecls;
-    }
+	@Override
+	public List<FeaturePropertyType> getMemberDeclarations() {
+		return memberDecls;
+	}
 
-    @Override
-    public List<ArrayPropertyType> getMemberArrayDeclarations() {
-        return membersDecls;
-    }
+	@Override
+	public List<ArrayPropertyType> getMemberArrayDeclarations() {
+		return membersDecls;
+	}
 
-    @Override
-    public String toString() {
-        String s = "- Feature collection type '" + getName() + "', abstract: " + isAbstract();
-        for ( PropertyType pt : getPropertyDeclarations() ) {
-            s += "\n" + pt;
-        }
-        return s;
-    }
+	@Override
+	public String toString() {
+		String s = "- Feature collection type '" + getName() + "', abstract: " + isAbstract();
+		for (PropertyType pt : getPropertyDeclarations()) {
+			s += "\n" + pt;
+		}
+		return s;
+	}
+
 }

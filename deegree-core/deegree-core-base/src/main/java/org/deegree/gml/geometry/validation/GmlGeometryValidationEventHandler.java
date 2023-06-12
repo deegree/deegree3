@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -36,17 +35,15 @@
 package org.deegree.gml.geometry.validation;
 
 /**
- * Implementations of this interface are passed to {@link GmlStreamGeometryValidator} on construction.
- * 
+ * Implementations of this interface are passed to {@link GmlStreamGeometryValidator} on
+ * construction.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * 
- * @version $Revision: $, $Date: $
  */
 public interface GmlGeometryValidationEventHandler {
 
-    void parsingError( GmlElementIdentifier geometryElement, Exception e );
+	void parsingError(GmlElementIdentifier geometryElement, Exception e);
 
-    boolean topologicalEvent( GmlGeometryValidationEvent event );
+	boolean topologicalEvent(GmlGeometryValidationEvent event);
 
 }

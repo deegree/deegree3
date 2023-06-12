@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -41,67 +40,62 @@ import org.apache.xerces.xs.XSElementDeclaration;
 
 /**
  * Declares a named property of a {@link GMLObjectType}.
- * 
+ *
  * @see GMLObjectType
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * 
- * @version $Revision:$, $Date:$
  */
 public interface PropertyType {
 
-    /**
-     * Returns the name of the property.
-     * 
-     * @return the name of the property
-     */
-    public QName getName();
+	/**
+	 * Returns the name of the property.
+	 * @return the name of the property
+	 */
+	public QName getName();
 
-    /**
-     * Specifies the minimum number of times that this property must be present in a feature instance.
-     * 
-     * @return the minimum number of times that this property must be present
-     */
-    public int getMinOccurs();
+	/**
+	 * Specifies the minimum number of times that this property must be present in a
+	 * feature instance.
+	 * @return the minimum number of times that this property must be present
+	 */
+	public int getMinOccurs();
 
-    /**
-     * Specifies the maximum number of times that this property must be present in a feature instance.
-     * 
-     * @return the maximum number of times that this property must be present, or -1 (=unbounded)
-     */
-    public int getMaxOccurs();
+	/**
+	 * Specifies the maximum number of times that this property must be present in a
+	 * feature instance.
+	 * @return the maximum number of times that this property must be present, or -1
+	 * (=unbounded)
+	 */
+	public int getMaxOccurs();
 
-    /**
-     * Returns whether this {@link PropertyType} declaration is abstract.
-     * 
-     * @return true, if it is abstract, false otherwise
-     */
-    public boolean isAbstract();
+	/**
+	 * Returns whether this {@link PropertyType} declaration is abstract.
+	 * @return true, if it is abstract, false otherwise
+	 */
+	public boolean isAbstract();
 
-    /**
-     * Returns the possible substitutions that are defined for this {@link PropertyType}.
-     * 
-     * NOTE: This is needed for a number of GML application schemas (e.g. CityGML) that define properties using abstract
-     * element declarations and provide multiple concrete substitutable elements.
-     * 
-     * @return the possible substitutions (including this {@link PropertyType}), never <code>null</code> and always at
-     *         least one entry
-     */
-    public PropertyType[] getSubstitutions();
+	/**
+	 * Returns the possible substitutions that are defined for this {@link PropertyType}.
+	 *
+	 * NOTE: This is needed for a number of GML application schemas (e.g. CityGML) that
+	 * define properties using abstract element declarations and provide multiple concrete
+	 * substitutable elements.
+	 * @return the possible substitutions (including this {@link PropertyType}), never
+	 * <code>null</code> and always at least one entry
+	 */
+	public PropertyType[] getSubstitutions();
 
-    /**
-     * Returns whether this {@link PropertyType} declaration allows for setting the <code>xsi:nil="true"</code>
-     * attribute in a GML representation.
-     * 
-     * @return true, if code>xsi:nil="true"</code> is permitted, false otherwise
-     */
-    public boolean isNillable();
+	/**
+	 * Returns whether this {@link PropertyType} declaration allows for setting the
+	 * <code>xsi:nil="true"</code> attribute in a GML representation.
+	 * @return true, if code>xsi:nil="true"</code> is permitted, false otherwise
+	 */
+	public boolean isNillable();
 
-    /**
-     * Returns the XML schema element declaration for this property type.
-     * 
-     * @return element declaration, or <code>null</code> (if the property type was not generated from a GML schema)
-     */
-    public XSElementDeclaration getElementDecl();
+	/**
+	 * Returns the XML schema element declaration for this property type.
+	 * @return element declaration, or <code>null</code> (if the property type was not
+	 * generated from a GML schema)
+	 */
+	public XSElementDeclaration getElementDecl();
+
 }

@@ -41,28 +41,26 @@ import org.deegree.commons.xml.XMLAdapter;
 
 /**
  * Provides basic functionality for parsing CSW XML requests.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: thomas $
- * 
- * @version $Revision: $, $Date: $
  */
 public abstract class AbstractCSWRequestXMLAdapter extends XMLAdapter {
 
-    // /** Namespace binding for CSW 2.0.2 constructs */
-    // protected final static String CSW_PREFIX = "csw";
+	// /** Namespace binding for CSW 2.0.2 constructs */
+	// protected final static String CSW_PREFIX = "csw";
 
-    protected final static String SOAP_10 = "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd";
+	protected final static String SOAP_10 = "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd";
 
-    protected final static String SOAP_10_PREFIX = "wsse";
+	protected final static String SOAP_10_PREFIX = "wsse";
 
-    public static final String RIM_NS = "urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0";
+	public static final String RIM_NS = "urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0";
 
-    public static final String RIM_PREFIX = "rim";
+	public static final String RIM_PREFIX = "rim";
 
-    static {
-        nsContext.addNamespace( CSW_PREFIX, CSW_202_NS );
-        nsContext.addNamespace( SOAP_10_PREFIX, SOAP_10 );
-        nsContext.addNamespace( RIM_PREFIX, RIM_NS );
-    }
+	static {
+		nsContext.addNamespace(CSW_PREFIX, CSW_202_NS);
+		nsContext.addNamespace(SOAP_10_PREFIX, SOAP_10);
+		nsContext.addNamespace(RIM_PREFIX, RIM_NS);
+	}
+
 }

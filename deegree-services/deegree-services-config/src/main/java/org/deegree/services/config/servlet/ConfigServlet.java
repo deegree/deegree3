@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -42,6 +41,7 @@ import static org.deegree.services.config.actions.Delete.delete;
 import static org.deegree.services.config.actions.Download.download;
 import static org.deegree.services.config.actions.Invalidate.invalidate;
 import static org.deegree.services.config.actions.List.list;
+import static org.deegree.services.config.actions.ListFonts.listFonts;
 import static org.deegree.services.config.actions.ListWorkspaces.listWorkspaces;
 import static org.deegree.services.config.actions.Restart.restart;
 import static org.deegree.services.config.actions.UpdateBboxCache.updateBboxCache;
@@ -58,147 +58,176 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
+import org.deegree.services.config.ApiKey;
 import org.slf4j.Logger;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class ConfigServlet extends HttpServlet {
 
-    private static final long serialVersionUID = -4412872621677620591L;
+	private static final long serialVersionUID = -4412872621677620591L;
 
-    private static final Logger LOG = getLogger( ConfigServlet.class );
+	private static final Logger LOG = getLogger(ConfigServlet.class);
 
-    @Override
-    public void init()
-                            throws ServletException {
-        LOG.info( "deegree 3 configuration servlet started." );
-    }
+	private static ApiKey token = new ApiKey();
 
-    @Override
-    protected void doGet( HttpServletRequest req, HttpServletResponse resp )
-                            throws ServletException, IOException {
-        String path = req.getPathInfo();
-        if ( path == null || path.equals( "/" ) ) {
-            StringBuilder data = new StringBuilder( "No action specified.\n\nAvailable actions:\n" );
-            data.append( "GET /config/download[/path]                                  - download currently running workspace or file in workspace\n" );
-            data.append( "GET /config/download/wsname[/path]                           - download workspace with name <wsname> or file in workspace\n" );
-            data.append( "GET /config/restart                                          - restart currently running workspace\n" );
-            data.append( "GET /config/restart[/path]                                   - restarts all resources connected to the specified one\n" );
-            data.append( "GET /config/restart/wsname                                   - restart with workspace <wsname>\n" );
-            data.append( "GET /config/update                                           - rescan config files and update resources\n" );
-            data.append( "GET /config/update/wsname                                    - update with workspace <wsname>, rescan config files and update resources\n" );
-            data.append( "GET /config/listworkspaces                                   - list available workspace names\n" );
-            data.append( "GET /config/list[/path]                                      - list currently running workspace or directory in workspace\n" );
-            data.append( "GET /config/list/wsname[/path]                               - list workspace with name <wsname> or directory in workspace\n" );
-            data.append( "GET /config/invalidate/datasources/tile/id/matrixset[?bbox=] - invalidate part or all of a tile store cache's tile matrix set\n" );
-            data.append( "GET /config/crs/list                                         - list available CRS definitions\n" );
-            data.append( "GET /config/validate[/path]                                  - validate currently running workspace or file in workspace\n" );
-            data.append( "GET /config/validate/wsname[/path]                           - validate workspace with name <wsname> or file in workspace\n" );
-            data.append( "GET /config/update/bboxcache[?featureStoreId=]               - recalculates the bounding boxes of all feature stores of the currently running workspace, with the parameter 'featureStoreId' a comma separated list of feature stores to update can be passed\n" );
-            data.append( "GET /config/update/bboxcache/wsname[?featureStoreId=]        - recalculates the bounding boxes of all feature stores of the workspace with name <wsname>, with the parameter 'featureStoreId' a comma separated list of feature stores to update can be passed\n" );
-            data.append( "POST /config/crs/getcodes with wkt=<wkt>                     - retrieves a list of CRS codes corresponding to the WKT (POSTed KVP)\n" );
-            data.append( "GET /config/crs/<code>                                       - checks if a CRS definition is available, returns true/false\n" );
-            data.append( "PUT /config/upload/wsname.zip                                - upload workspace <wsname>\n" );
-            data.append( "PUT /config/upload/path/file                                 - upload file into current workspace\n" );
-            data.append( "PUT /config/upload/wsname/path/file                          - upload file into workspace with name <wsname>\n" );
-            data.append( "DELETE /config/delete[/path]                                 - delete currently running workspace or file in workspace\n" );
-            data.append( "DELETE /config/delete/wsname[/path]                          - delete workspace with name <wsname> or file in workspace\n" );
-            data.append( "\nHTTP response codes used:\n" );
-            data.append( "200 - ok\n" );
-            data.append( "403 - if you tried something you shouldn't have\n" );
-            data.append( "404 - if a file or directory needed to fulfill a request was not found\n" );
-            data.append( "500 - if something serious went wrong on the server side\n" );
-            IOUtils.write( data.toString(), resp.getOutputStream() );
-            return;
-        }
+	@Override
+	public void init() throws ServletException {
+		LOG.info("deegree 3 configuration servlet started.");
+	}
 
-        try {
-            dispatch( path, req, resp );
-        } catch ( SecurityException e ) {
-            resp.setStatus( 403 );
-            IOUtils.write( "There were security concerns: " + e.getLocalizedMessage() + "\n", resp.getOutputStream() );
-        } catch ( Throwable e ) {
-            resp.setStatus( 500 );
-            IOUtils.write( "Error while processing request: " + e.getLocalizedMessage() + "\n", resp.getOutputStream() );
-        }
-    }
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		String path = req.getPathInfo();
+		if (path == null || path.equals("/")) {
+			StringBuilder data = new StringBuilder("No action specified.\n\nAvailable actions:\n");
+			data.append(
+					"GET /config/download[/path]                                  - download currently running workspace or file in workspace\n");
+			data.append(
+					"GET /config/download/wsname[/path]                           - download workspace with name <wsname> or file in workspace\n");
+			data.append(
+					"GET /config/restart                                          - restart currently running workspace\n");
+			data.append(
+					"GET /config/restart[/path]                                   - restarts all resources connected to the specified one\n");
+			data.append(
+					"GET /config/restart/wsname                                   - restart with workspace <wsname>\n");
+			data.append(
+					"GET /config/update                                           - rescan config files and update resources\n");
+			data.append(
+					"GET /config/update/wsname                                    - update with workspace <wsname>, rescan config files and update resources\n");
+			data.append(
+					"GET /config/listworkspaces                                   - list available workspace names\n");
+			data.append(
+					"GET /config/listfonts                                        - list currently available fonts on the server\n");
+			data.append(
+					"GET /config/list[/path]                                      - list currently running workspace or directory in workspace\n");
+			data.append(
+					"GET /config/list/wsname[/path]                               - list workspace with name <wsname> or directory in workspace\n");
+			data.append(
+					"GET /config/invalidate/datasources/tile/id/matrixset[?bbox=] - invalidate part or all of a tile store cache's tile matrix set\n");
+			data.append(
+					"GET /config/crs/list                                         - list available CRS definitions\n");
+			data.append(
+					"GET /config/validate[/path]                                  - validate currently running workspace or file in workspace\n");
+			data.append(
+					"GET /config/validate/wsname[/path]                           - validate workspace with name <wsname> or file in workspace\n");
+			data.append(
+					"GET /config/update/bboxcache[?featureStoreId=]               - recalculates the bounding boxes of all feature stores of the currently running workspace, with the parameter 'featureStoreId' a comma separated list of feature stores to update can be passed\n");
+			data.append(
+					"GET /config/update/bboxcache/wsname[?featureStoreId=]        - recalculates the bounding boxes of all feature stores of the workspace with name <wsname>, with the parameter 'featureStoreId' a comma separated list of feature stores to update can be passed\n");
+			data.append(
+					"POST /config/crs/getcodes with wkt=<wkt>                     - retrieves a list of CRS codes corresponding to the WKT (POSTed KVP)\n");
+			data.append(
+					"GET /config/crs/<code>                                       - checks if a CRS definition is available, returns true/false\n");
+			data.append("PUT /config/upload/wsname.zip                                - upload workspace <wsname>\n");
+			data.append(
+					"PUT /config/upload/path/file                                 - upload file into current workspace\n");
+			data.append(
+					"PUT /config/upload/wsname/path/file                          - upload file into workspace with name <wsname>\n");
+			data.append(
+					"DELETE /config/delete[/path]                                 - delete currently running workspace or file in workspace\n");
+			data.append(
+					"DELETE /config/delete/wsname[/path]                          - delete workspace with name <wsname> or file in workspace\n");
+			data.append("\nHTTP response codes used:\n");
+			data.append("200 - ok\n");
+			data.append("403 - if you tried something you shouldn't have\n");
+			data.append("404 - if a file or directory needed to fulfill a request was not found\n");
+			data.append("500 - if something serious went wrong on the server side\n");
+			IOUtils.write(data.toString(), resp.getOutputStream());
+			return;
+		}
 
-    private void dispatch( String path, HttpServletRequest req, HttpServletResponse resp )
-                            throws IOException, ServletException {
-        if ( path.toLowerCase().startsWith( "/download" ) ) {
-            download( path.substring( 9 ), resp );
-        }
+		try {
+			dispatch(path, req, resp);
+		}
+		catch (SecurityException e) {
+			resp.setStatus(403);
+			IOUtils.write("There were security concerns: " + e.getLocalizedMessage() + "\n", resp.getOutputStream());
+		}
+		catch (Throwable e) {
+			resp.setStatus(500);
+			IOUtils.write("Error while processing request: " + e.getLocalizedMessage() + "\n", resp.getOutputStream());
+		}
+	}
 
-        if ( path.toLowerCase().startsWith( "/restart" ) ) {
-            restart( path.substring( 8 ), resp );
-        }
+	private void dispatch(String path, HttpServletRequest req, HttpServletResponse resp)
+			throws IOException, ServletException {
+		token.validate(req);
 
-        if ( path.toLowerCase().startsWith( "/update" ) ) {
-            if ( path.toLowerCase().startsWith( "/update/bboxcache" ) ) {
-                updateBboxCache( path.substring( 17 ), req.getQueryString(), resp );
-            } else {
-                update( path.substring( 7 ), resp );
-            }
-        }
+		if (path.toLowerCase().startsWith("/download")) {
+			download(path.substring(9), resp);
+		}
 
-        if ( path.toLowerCase().startsWith( "/listworkspaces" ) ) {
-            listWorkspaces( resp );
-        } else if ( path.toLowerCase().startsWith( "/list" ) ) {
-            list( path.substring( 5 ), resp );
-        }
+		if (path.toLowerCase().startsWith("/restart")) {
+			restart(path.substring(8), resp);
+		}
 
-        if ( path.toLowerCase().startsWith( "/invalidate/datasources/tile/" ) ) {
-            invalidate( path.substring( 29 ), req.getQueryString(), resp );
-        }
+		if (path.toLowerCase().startsWith("/update")) {
+			if (path.toLowerCase().startsWith("/update/bboxcache")) {
+				updateBboxCache(path.substring(17), req.getQueryString(), resp);
+			}
+			else {
+				update(path.substring(7), resp);
+			}
+		}
 
-        if ( path.toLowerCase().startsWith( "/delete" ) ) {
-            delete( path.substring( 7 ), resp );
-        }
+		if (path.toLowerCase().startsWith("/listworkspaces")) {
+			listWorkspaces(resp);
+		}
+		else if (path.toLowerCase().startsWith("/listfonts")) {
+			listFonts(resp);
+		}
+		else if (path.toLowerCase().startsWith("/list")) {
+			list(path.substring(5), resp);
+		}
 
-        if ( path.toLowerCase().startsWith( "/crs/list" ) ) {
-            listCrs( resp );
-        } else if ( path.toLowerCase().startsWith( "/crs/getcodes" ) ) {
-            getCodes( req, resp );
-        } else if ( path.toLowerCase().startsWith( "/crs" ) ) {
-            checkCrs( path.substring( 4 ), resp );
-        }
+		if (path.toLowerCase().startsWith("/invalidate/datasources/tile/")) {
+			invalidate(path.substring(29), req.getQueryString(), resp);
+		}
 
-        if ( path.toLowerCase().startsWith( "/validate" ) ) {
-            validate( path.substring( 9 ), resp );
-        }
-    }
+		if (path.toLowerCase().startsWith("/delete")) {
+			delete(path.substring(7), resp);
+		}
 
-    @Override
-    protected void doDelete( HttpServletRequest req, HttpServletResponse resp )
-                            throws ServletException, IOException {
-        doGet( req, resp );
-    }
+		if (path.toLowerCase().startsWith("/crs/list")) {
+			listCrs(resp);
+		}
+		else if (path.toLowerCase().startsWith("/crs/getcodes")) {
+			getCodes(req, resp);
+		}
+		else if (path.toLowerCase().startsWith("/crs")) {
+			checkCrs(path.substring(4), resp);
+		}
 
-    @Override
-    protected void doPost( HttpServletRequest req, HttpServletResponse resp )
-                            throws ServletException, IOException {
-        doPut( req, resp );
-    }
+		if (path.toLowerCase().startsWith("/validate")) {
+			validate(path.substring(9), resp);
+		}
+	}
 
-    @Override
-    protected void doPut( HttpServletRequest req, HttpServletResponse resp )
-                            throws ServletException, IOException {
-        String path = req.getPathInfo();
-        if ( path == null || path.equals( "/" ) ) {
-            IOUtils.write( "No action specified.\n", resp.getOutputStream() );
-            return;
-        }
-        if ( path.startsWith( "/upload" ) ) {
-            upload( path.substring( 7 ), req, resp );
-        }
-        if ( path.startsWith( "/crs" ) ) {
-            dispatch( path, req, resp );
-        }
-    }
+	@Override
+	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		doGet(req, resp);
+	}
+
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		doPut(req, resp);
+	}
+
+	@Override
+	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		String path = req.getPathInfo();
+		if (path == null || path.equals("/")) {
+			IOUtils.write("No action specified.\n", resp.getOutputStream());
+			return;
+		}
+		if (path.startsWith("/upload")) {
+			upload(path.substring(7), req, resp);
+		}
+		if (path.startsWith("/crs")) {
+			dispatch(path, req, resp);
+		}
+	}
 
 }

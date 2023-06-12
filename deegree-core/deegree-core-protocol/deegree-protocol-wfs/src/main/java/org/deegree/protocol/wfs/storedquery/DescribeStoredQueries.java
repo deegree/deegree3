@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -46,41 +45,36 @@ import org.deegree.protocol.wfs.AbstractWFSRequest;
  * <li>WFS 2.0.0</li>
  * </ul>
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class DescribeStoredQueries extends AbstractWFSRequest {
 
-    private final String[] storedQueryIds;
+	private final String[] storedQueryIds;
 
-    /**
-     * Creates a new {@link DescribeStoredQueries} instance.
-     * 
-     * @param version
-     *            protocol version, must not be <code>null</code>
-     * @param handle
-     *            client-generated identifier, may be <code>null</code>
-     * @param storedQueryIds
-     *            ids of stored queries to describe, may be <code>null</code>
-     */
-    public DescribeStoredQueries( Version version, String handle, String[] storedQueryIds ) {
-        super( version, handle );
-        if ( storedQueryIds == null ) {
-            this.storedQueryIds = new String[0];
-        } else {
-            this.storedQueryIds = storedQueryIds;
-        }
-    }
+	/**
+	 * Creates a new {@link DescribeStoredQueries} instance.
+	 * @param version protocol version, must not be <code>null</code>
+	 * @param handle client-generated identifier, may be <code>null</code>
+	 * @param storedQueryIds ids of stored queries to describe, may be <code>null</code>
+	 */
+	public DescribeStoredQueries(Version version, String handle, String[] storedQueryIds) {
+		super(version, handle);
+		if (storedQueryIds == null) {
+			this.storedQueryIds = new String[0];
+		}
+		else {
+			this.storedQueryIds = storedQueryIds;
+		}
+	}
 
-    /**
-     * Returns the identifiers of the stored queries to be described.
-     * 
-     * @return identifiers of the stored queries, can be empty (describe all queries), but never <code>null</code>
-     */
-    public String[] getStoredQueryIds() {
-        return storedQueryIds;
-    }
+	/**
+	 * Returns the identifiers of the stored queries to be described.
+	 * @return identifiers of the stored queries, can be empty (describe all queries), but
+	 * never <code>null</code>
+	 */
+	public String[] getStoredQueryIds() {
+		return storedQueryIds;
+	}
+
 }

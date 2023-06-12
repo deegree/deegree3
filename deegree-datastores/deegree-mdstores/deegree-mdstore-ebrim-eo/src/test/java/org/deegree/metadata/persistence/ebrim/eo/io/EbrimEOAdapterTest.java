@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -56,74 +55,70 @@ import org.deegree.metadata.ebrim.RegistryPackage;
 import org.deegree.metadata.persistence.ebrim.eo.mapping.SlotMapper.EOTYPE;
 import org.junit.Test;
 
-
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:goltz@deegree.org">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class EbrimEOAdapterTest {
 
-    @Test
-    public void testParsingExtrinsicObject()
-                            throws ParseException {
-        InputStream is = EbrimEOAdapterTest.class.getResourceAsStream( "ebrimRecord1.xml" );
-        RegistryPackage rp = new RegistryPackage( new XMLAdapter( is ).getRootElement() );
+	@Test
+	public void testParsingExtrinsicObject() throws ParseException {
+		InputStream is = EbrimEOAdapterTest.class.getResourceAsStream("ebrimRecord1.xml");
+		RegistryPackage rp = new RegistryPackage(new XMLAdapter(is).getRootElement());
 
-        assertNotNull( rp );
+		assertNotNull(rp);
 
-        List<ExtrinsicObject> eops = rp.getExtrinsicObjects( EOTYPE.PRODUCT.getType() );
-        List<ExtrinsicObject> acqp = rp.getExtrinsicObjects( EOTYPE.ACQUPLATFORM.getType() );
+		List<ExtrinsicObject> eops = rp.getExtrinsicObjects(EOTYPE.PRODUCT.getType());
+		List<ExtrinsicObject> acqp = rp.getExtrinsicObjects(EOTYPE.ACQUPLATFORM.getType());
 
-        assertNotNull( eops );
-        assertEquals( 1, eops.size() );
-        ExtrinsicObject eop = eops.get( 0 );
-        assertEquals( "DESCENDING", eop.getSlotValue( SLOTURN + "orbitDirection" ) );
-        assertEquals( "2010-06-06", eop.getSlotValue( SLOTURN + "beginPosition" ) );
-        assertEquals( "11.55", eop.getSlotValue( SLOTURN + "acrossTrackIncidenceAngle" ) );
+		assertNotNull(eops);
+		assertEquals(1, eops.size());
+		ExtrinsicObject eop = eops.get(0);
+		assertEquals("DESCENDING", eop.getSlotValue(SLOTURN + "orbitDirection"));
+		assertEquals("2010-06-06", eop.getSlotValue(SLOTURN + "beginPosition"));
+		assertEquals("11.55", eop.getSlotValue(SLOTURN + "acrossTrackIncidenceAngle"));
 
-        assertNotNull( acqp );
-        assertEquals( 1, acqp.size() );
-        assertEquals( "6.5", acqp.get( 0 ).getSlotValue( SLOTURN + "sensorResolution" ) );
+		assertNotNull(acqp);
+		assertEquals(1, acqp.size());
+		assertEquals("6.5", acqp.get(0).getSlotValue(SLOTURN + "sensorResolution"));
 
-        assertNull( eop.getSlotValue( SLOTURN + "centerOf" ) );
+		assertNull(eop.getSlotValue(SLOTURN + "centerOf"));
 
-        Geometry multiExtentOf = (Geometry) eop.getGeometrySlotValue( SLOTURN + "multiExtentOf" );
-        assertNotNull( multiExtentOf );
-        assertTrue( multiExtentOf instanceof MultiSurface<?> );
+		Geometry multiExtentOf = (Geometry) eop.getGeometrySlotValue(SLOTURN + "multiExtentOf");
+		assertNotNull(multiExtentOf);
+		assertTrue(multiExtentOf instanceof MultiSurface<?>);
 
-        // Classification
-        List<Classification> classifications = rp.getClassifications();
-        assertNotNull( classifications );
-        assertEquals( 1, classifications.size() );
-        Classification classification = classifications.get( 0 );
-        assertNotNull( classification );
-        assertEquals( "urn:x-ogc:specification:csw-ebrim:EO:EOProductTypes:OPT", classification.getClassificationNode() );
-        assertEquals( "urn:x-ogc:specification:cswebrim:EO:EOProductTypes", classification.getClassificationScheme() );
-        assertEquals( "urn:ogc:def:EOP:RE00:IMG_MSI_3A:5230420:class", classification.getId() );
+		// Classification
+		List<Classification> classifications = rp.getClassifications();
+		assertNotNull(classifications);
+		assertEquals(1, classifications.size());
+		Classification classification = classifications.get(0);
+		assertNotNull(classification);
+		assertEquals("urn:x-ogc:specification:csw-ebrim:EO:EOProductTypes:OPT", classification.getClassificationNode());
+		assertEquals("urn:x-ogc:specification:cswebrim:EO:EOProductTypes", classification.getClassificationScheme());
+		assertEquals("urn:ogc:def:EOP:RE00:IMG_MSI_3A:5230420:class", classification.getId());
 
-        List<Association> associations = rp.getAssociations();
-        assertNotNull( associations );
-        assertEquals( 4, associations.size() );
+		List<Association> associations = rp.getAssociations();
+		assertNotNull(associations);
+		assertEquals(4, associations.size());
 
-        List<ClassificationNode> classificationNodes = rp.getClassificationNodes();
-        assertEquals( 0, classificationNodes.size() );
-    }
+		List<ClassificationNode> classificationNodes = rp.getClassificationNodes();
+		assertEquals(0, classificationNodes.size());
+	}
 
-    @Test
-    public void testParsingEoProfile() {
-        InputStream is = EbrimEOAdapterTest.class.getResourceAsStream( "eo_profile_extension_package.xml" );
-        RegistryPackage rp = new RegistryPackage( new XMLAdapter( is ).getRootElement() );
-        assertNotNull( rp );
+	@Test
+	public void testParsingEoProfile() {
+		InputStream is = EbrimEOAdapterTest.class.getResourceAsStream("eo_profile_extension_package.xml");
+		RegistryPackage rp = new RegistryPackage(new XMLAdapter(is).getRootElement());
+		assertNotNull(rp);
 
-        assertEquals( 6, rp.getAssociations().size() );
-        assertEquals( 0, rp.getClassifications().size() );
-        assertEquals( 0, rp.getExtrinsicObjects( EOTYPE.PRODUCT.getType() ).size() );
+		assertEquals(6, rp.getAssociations().size());
+		assertEquals(0, rp.getClassifications().size());
+		assertEquals(0, rp.getExtrinsicObjects(EOTYPE.PRODUCT.getType()).size());
 
-        List<ClassificationNode> classificationNodes = rp.getClassificationNodes();
-        assertEquals( 18, classificationNodes.size() );
-    }
+		List<ClassificationNode> classificationNodes = rp.getClassificationNodes();
+		assertEquals(18, classificationNodes.size());
+	}
+
 }

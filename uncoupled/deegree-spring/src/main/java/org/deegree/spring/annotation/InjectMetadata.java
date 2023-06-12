@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2013 by:
@@ -51,9 +50,7 @@ import java.lang.annotation.ElementType;
  * inject the reference to {@link org.deegree.spring.GenericSpringResourceMetadata}. 
  * 
  * @author <a href="mailto:reijer.copier@idgis.nl">Reijer Copier</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
  */
 @Documented
 @Target(ElementType.FIELD)

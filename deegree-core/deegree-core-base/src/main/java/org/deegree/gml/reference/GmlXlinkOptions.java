@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -46,83 +45,82 @@ import org.jaxen.expr.NameStep;
 
 /**
  * Options for controlling the generation of xlinks to {@link GMLObject}s.
- * 
+ *
  * @see GmlXlinkStrategy
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class GmlXlinkOptions {
 
-    private List<NameStep> resolvePath;
+	private List<NameStep> resolvePath;
 
-    private final int resolveDepth;
+	private final int resolveDepth;
 
-    private final int currentLevel;
+	private final int currentLevel;
 
-    private final ResolveMode mode;
+	private final ResolveMode mode;
 
-    private final long remoteTimeoutInMilliseconds;
+	private final long remoteTimeoutInMilliseconds;
 
-    public GmlXlinkOptions() {
-        resolvePath = null;
-        resolveDepth = 0;
-        currentLevel = 0;
-        mode = ResolveMode.NONE;
-        remoteTimeoutInMilliseconds = 0;
-    }
+	public GmlXlinkOptions() {
+		resolvePath = null;
+		resolveDepth = 0;
+		currentLevel = 0;
+		mode = ResolveMode.NONE;
+		remoteTimeoutInMilliseconds = 0;
+	}
 
-    public GmlXlinkOptions( ResolveParams params ) {
-        if ( params.getDepth() != null ) {
-            if ( "*".equals( params.getDepth() ) ) {
-                resolveDepth = -1;
-            } else {
-                resolveDepth = parseInt( params.getDepth() );
-            }
-        } else {
-            resolveDepth = 0;
-        }
-        this.currentLevel = 0;
-        this.mode = params.getMode();
-        if ( params.getTimeout() != null ) {
-            remoteTimeoutInMilliseconds = params.getTimeout().longValue() * 1000;
-        } else {
-            remoteTimeoutInMilliseconds = 60 * 1000;
-        }
-    }
+	public GmlXlinkOptions(ResolveParams params) {
+		if (params.getDepth() != null) {
+			if ("*".equals(params.getDepth())) {
+				resolveDepth = -1;
+			}
+			else {
+				resolveDepth = parseInt(params.getDepth());
+			}
+		}
+		else {
+			resolveDepth = 0;
+		}
+		this.currentLevel = 0;
+		this.mode = params.getMode();
+		if (params.getTimeout() != null) {
+			remoteTimeoutInMilliseconds = params.getTimeout().longValue() * 1000;
+		}
+		else {
+			remoteTimeoutInMilliseconds = 60 * 1000;
+		}
+	}
 
-    /**
-     * @param remainingResolvePath
-     * @param depth
-     * @param currentLevel
-     * @param mode
-     * @param remoteTimeoutInMilliseconds
-     */
-    public GmlXlinkOptions( List<NameStep> remainingResolvePath, int depth, int currentLevel, ResolveMode mode,
-                            long remoteTimeoutInMilliseconds ) {
-        this.resolvePath = remainingResolvePath;
-        this.resolveDepth = depth;
-        this.currentLevel = currentLevel;
-        this.mode = mode;
-        this.remoteTimeoutInMilliseconds = remoteTimeoutInMilliseconds;
-    }
+	/**
+	 * @param remainingResolvePath
+	 * @param depth
+	 * @param currentLevel
+	 * @param mode
+	 * @param remoteTimeoutInMilliseconds
+	 */
+	public GmlXlinkOptions(List<NameStep> remainingResolvePath, int depth, int currentLevel, ResolveMode mode,
+			long remoteTimeoutInMilliseconds) {
+		this.resolvePath = remainingResolvePath;
+		this.resolveDepth = depth;
+		this.currentLevel = currentLevel;
+		this.mode = mode;
+		this.remoteTimeoutInMilliseconds = remoteTimeoutInMilliseconds;
+	}
 
-    public int getDepth() {
-        return resolveDepth;
-    }
+	public int getDepth() {
+		return resolveDepth;
+	}
 
-    public int getCurrentLevel() {
-        return currentLevel;
-    }
+	public int getCurrentLevel() {
+		return currentLevel;
+	}
 
-    public ResolveMode getMode() {
-        return mode;
-    }
+	public ResolveMode getMode() {
+		return mode;
+	}
 
-    public long getRemoteTimeoutInMilliseconds() {
-        return remoteTimeoutInMilliseconds;
-    }
+	public long getRemoteTimeoutInMilliseconds() {
+		return remoteTimeoutInMilliseconds;
+	}
 
 }

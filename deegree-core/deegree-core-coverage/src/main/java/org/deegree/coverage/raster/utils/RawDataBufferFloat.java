@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2009 by:
@@ -46,106 +45,104 @@ import org.deegree.coverage.raster.geom.RasterRect;
 
 /**
  * The <code>RawDataBufferFloat</code> class TODO add class documentation here.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class RawDataBufferFloat extends DataBuffer {
 
-    private ByteBuffer floatBuffer;
+	private ByteBuffer floatBuffer;
 
-    private int noData;
+	private int noData;
 
-    private static final int SIZE = Float.SIZE / 8;
+	private static final int SIZE = Float.SIZE / 8;
 
-    private RasterRect maxViewData;
+	private RasterRect maxViewData;
 
-    private int toNullPoint;
+	private int toNullPoint;
 
-    private int lineStride;
+	private int lineStride;
 
-    /**
-     * @param floatBuffer
-     * @param noData
-     * @param bufferDomain
-     * @param view
-     */
-    public RawDataBufferFloat( ByteBuffer floatBuffer, float noData, RasterRect bufferDomain, DataView view ) {
-        super( DataBuffer.TYPE_FLOAT, floatBuffer.capacity() / SIZE );
-        this.floatBuffer = floatBuffer;
-        this.noData = Float.floatToIntBits( noData );
-        this.maxViewData = RasterRect.intersection( bufferDomain, view );
-        toNullPoint = ( ( bufferDomain.width * maxViewData.y ) + maxViewData.x );
-        lineStride = bufferDomain.width;
-    }
+	/**
+	 * @param floatBuffer
+	 * @param noData
+	 * @param bufferDomain
+	 * @param view
+	 */
+	public RawDataBufferFloat(ByteBuffer floatBuffer, float noData, RasterRect bufferDomain, DataView view) {
+		super(DataBuffer.TYPE_FLOAT, floatBuffer.capacity() / SIZE);
+		this.floatBuffer = floatBuffer;
+		this.noData = Float.floatToIntBits(noData);
+		this.maxViewData = RasterRect.intersection(bufferDomain, view);
+		toNullPoint = ((bufferDomain.width * maxViewData.y) + maxViewData.x);
+		lineStride = bufferDomain.width;
+	}
 
-    private int calculatePosition( int index ) {
-        int yPos = index / maxViewData.width;
-        int xPos = index - ( maxViewData.width * yPos );
-        return ( toNullPoint + ( ( yPos * lineStride ) + xPos ) ) * SIZE;
-    }
+	private int calculatePosition(int index) {
+		int yPos = index / maxViewData.width;
+		int xPos = index - (maxViewData.width * yPos);
+		return (toNullPoint + ((yPos * lineStride) + xPos)) * SIZE;
+	}
 
-    @Override
-    public int getElem( int i ) {
-        int index = calculatePosition( i );
-        if ( index >= floatBuffer.capacity() || index >= floatBuffer.limit() ) {
-            return noData;
-        }
-        // float v = floatBuffer.getFloat( index );
-        int val = floatBuffer.getInt( index );
-        // System.out.println( "Getting: " + v + " as int: " + val );
-        return val;
-    }
+	@Override
+	public int getElem(int i) {
+		int index = calculatePosition(i);
+		if (index >= floatBuffer.capacity() || index >= floatBuffer.limit()) {
+			return noData;
+		}
+		// float v = floatBuffer.getFloat( index );
+		int val = floatBuffer.getInt(index);
+		// System.out.println( "Getting: " + v + " as int: " + val );
+		return val;
+	}
 
-    @Override
-    public float getElemFloat( int i ) {
-        int index = calculatePosition( i );
-        if ( index >= floatBuffer.capacity() || index >= floatBuffer.limit() ) {
-            return noData;
-        }
-        // float v = floatBuffer.getFloat( index );
-        float val = floatBuffer.getFloat( index );
-        // System.out.println( "Getting elem float: " + val );
-        return val;
+	@Override
+	public float getElemFloat(int i) {
+		int index = calculatePosition(i);
+		if (index >= floatBuffer.capacity() || index >= floatBuffer.limit()) {
+			return noData;
+		}
+		// float v = floatBuffer.getFloat( index );
+		float val = floatBuffer.getFloat(index);
+		// System.out.println( "Getting elem float: " + val );
+		return val;
 
-    }
+	}
 
-    @Override
-    public float getElemFloat( int bank, int i ) {
-        if ( bank > 1 ) {
-            throw new IndexOutOfBoundsException( "Only one bank (buffer array) is supported." );
-        }
-        return getElemFloat( i );
-    }
+	@Override
+	public float getElemFloat(int bank, int i) {
+		if (bank > 1) {
+			throw new IndexOutOfBoundsException("Only one bank (buffer array) is supported.");
+		}
+		return getElemFloat(i);
+	}
 
-    @Override
-    public void setElem( int i, int val ) {
-        int index = calculatePosition( i );
-        if ( index < floatBuffer.capacity() && index < floatBuffer.limit() ) {
-            // System.out.println( "SETTING?" );
-            floatBuffer.putInt( index, val );
-        }
-        throw new IndexOutOfBoundsException( "The given index is outside the bank." );
+	@Override
+	public void setElem(int i, int val) {
+		int index = calculatePosition(i);
+		if (index < floatBuffer.capacity() && index < floatBuffer.limit()) {
+			// System.out.println( "SETTING?" );
+			floatBuffer.putInt(index, val);
+		}
+		throw new IndexOutOfBoundsException("The given index is outside the bank.");
 
-    }
+	}
 
-    @Override
-    public int getElem( int bank, int i ) {
-        if ( bank > 1 ) {
-            throw new IndexOutOfBoundsException( "Only one bank (buffer array) is supported." );
-        }
-        return getElem( i );
+	@Override
+	public int getElem(int bank, int i) {
+		if (bank > 1) {
+			throw new IndexOutOfBoundsException("Only one bank (buffer array) is supported.");
+		}
+		return getElem(i);
 
-    }
+	}
 
-    @Override
-    public void setElem( int bank, int i, int val ) {
-        if ( bank > 1 ) {
-            throw new IndexOutOfBoundsException( "Only one bank (buffer array) is supported." );
-        }
-        setElem( i, val );
-    }
+	@Override
+	public void setElem(int bank, int i, int val) {
+		if (bank > 1) {
+			throw new IndexOutOfBoundsException("Only one bank (buffer array) is supported.");
+		}
+		setElem(i, val);
+	}
 
 }

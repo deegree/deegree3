@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2015 by:
@@ -51,28 +50,27 @@ import org.junit.Test;
  */
 public class XsltCapabilitiesSerializerTest {
 
-    @Test
-    public void testSerialize()
-                            throws Exception {
-        URL xslt = XsltCapabilitiesSerializerTest.class.getResource( "capabilities2html.xsl" );
-        Workspace workspace = mockWorkspace();
-        XsltCapabilitiesSerializer xsltCapabilitiesSerializer = new XsltCapabilitiesSerializer( xslt, workspace );
+	@Test
+	public void testSerialize() throws Exception {
+		URL xslt = XsltCapabilitiesSerializerTest.class.getResource("capabilities2html.xsl");
+		Workspace workspace = mockWorkspace();
+		XsltCapabilitiesSerializer xsltCapabilitiesSerializer = new XsltCapabilitiesSerializer(xslt, workspace);
 
-        ByteArrayOutputStream responseStream = new ByteArrayOutputStream();
-        xsltCapabilitiesSerializer.serialize( capabilitiesXmlStream(), responseStream );
+		ByteArrayOutputStream responseStream = new ByteArrayOutputStream();
+		xsltCapabilitiesSerializer.serialize(capabilitiesXmlStream(), responseStream);
 
-        String html = responseStream.toString();
+		String html = responseStream.toString();
 
-        assertThat( html, containsString( "WMS" ) );
-        assertThat( html, containsString( "deegree 3 Utah Demo WMS" ) );
-    }
+		assertThat(html, containsString("WMS"));
+		assertThat(html, containsString("deegree WMS capabilities"));
+	}
 
-    private InputStream capabilitiesXmlStream() {
-        return XsltCapabilitiesSerializerTest.class.getResourceAsStream( "wmsCapabilities_130.xml" );
-    }
+	private InputStream capabilitiesXmlStream() {
+		return XsltCapabilitiesSerializerTest.class.getResourceAsStream("wmsCapabilities_130.xml");
+	}
 
-    private Workspace mockWorkspace() {
-        return mock( Workspace.class );
-    }
+	private Workspace mockWorkspace() {
+		return mock(Workspace.class);
+	}
 
 }

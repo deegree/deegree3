@@ -1,4 +1,3 @@
-// $HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/src/org/deegree/framework/xml/XMLFragment.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -37,57 +36,55 @@
 package org.deegree.filter;
 
 /**
- * A <code>Filter</code> is a boolean expression (often containing spatial predicates) that can be tested against
- * structured objects.
+ * A <code>Filter</code> is a boolean expression (often containing spatial predicates)
+ * that can be tested against structured objects.
  * <p>
- * deegree's filter subsystem is an implementation of the <a
- * href="http://www.opengeospatial.org/standards/filter">OpenGIS Filter Encoding Implementation Specification
- * 1.0.0/1.1.0/2.0.0 (=ISO 19143)</a>.
+ * deegree's filter subsystem is an implementation of the
+ * <a href="http://www.opengeospatial.org/standards/filter">OpenGIS Filter Encoding
+ * Implementation Specification 1.0.0/1.1.0/2.0.0 (=ISO 19143)</a>.
  * </p>
- * 
+ *
  * @see IdFilter
  * @see OperatorFilter
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * 
- * @version $Revision:$, $Date:$
  */
 public interface Filter {
 
-    /**
-     * Convenience enum type for discriminating the different filter types.
-     */
-    public enum Type {
-        /** Filter that matches objects with certain ids. The object is an instance of {@link IdFilter}. */
-        ID_FILTER,
-        /**
-         * Filter that matches objects that match a certain expression. The object is an instance of
-         * {@link OperatorFilter}.
-         */
-        OPERATOR_FILTER
-    }
+	/**
+	 * Convenience enum type for discriminating the different filter types.
+	 */
+	public enum Type {
 
-    /**
-     * Returns the type of filter. Use this to safely determine the subtype of {@link Filter}.
-     * 
-     * @return type of filter (id or expression based)
-     */
-    public Type getType();
+		/**
+		 * Filter that matches objects with certain ids. The object is an instance of
+		 * {@link IdFilter}.
+		 */
+		ID_FILTER,
+		/**
+		 * Filter that matches objects that match a certain expression. The object is an
+		 * instance of {@link OperatorFilter}.
+		 */
+		OPERATOR_FILTER
 
-    /**
-     * Determines if the given object matches this <code>Filter</code>.
-     * 
-     * @param <T>
-     *            type of the context object
-     * @param obj
-     *            object that the operator is evaluated upon, must not be <code>null</code>
-     * @param xpathEvaluator
-     *            used for evaluation of XPath expressions, must not be <code>null</code>
-     * @return true, if the operator evaluates to true, false otherwise
-     * @throws FilterEvaluationException
-     *             if the evaluation fails
-     */
-    public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
-                            throws FilterEvaluationException;
+	}
+
+	/**
+	 * Returns the type of filter. Use this to safely determine the subtype of
+	 * {@link Filter}.
+	 * @return type of filter (id or expression based)
+	 */
+	public Type getType();
+
+	/**
+	 * Determines if the given object matches this <code>Filter</code>.
+	 * @param <T> type of the context object
+	 * @param obj object that the operator is evaluated upon, must not be
+	 * <code>null</code>
+	 * @param xpathEvaluator used for evaluation of XPath expressions, must not be
+	 * <code>null</code>
+	 * @return true, if the operator evaluates to true, false otherwise
+	 * @throws FilterEvaluationException if the evaluation fails
+	 */
+	public <T> boolean evaluate(T obj, XPathEvaluator<T> xpathEvaluator) throws FilterEvaluationException;
+
 }

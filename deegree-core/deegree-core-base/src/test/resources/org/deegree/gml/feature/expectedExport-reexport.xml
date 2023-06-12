@@ -1,0 +1,10 @@
+<gml:FeatureCollection xmlns:gml="http://www.opengis.net/gml/3.2">
+  <gml:featureMember>
+    <ll:Tempo_30_Zonen xmlns:ll="http://www.lat-lon.de" gml:id="Tempo_30_Zonen99">
+      <ll:id>0</ll:id>
+      <ll:beschluss>vor 1991</ll:beschluss>
+      <ll:zone>K</ll:zone>
+      <ll:url>http://www.wuppertal.de/geoportal/Verkehrsberuhigung/Ronsdorf_K.pdf</ll:url>
+    </ll:Tempo_30_Zonen>
+  </gml:featureMember>
+</gml:FeatureCollection>

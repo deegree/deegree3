@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -65,57 +64,51 @@ import static org.slf4j.LoggerFactory.getLogger;
  * <code>WMTSIntegrationTest</code>
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 
 @RunWith(Parameterized.class)
 public class WmtsGetTileSimilarityIT extends AbstractWmtsSimilarityIT {
 
-    private static final Logger LOG = getLogger( WmtsGetTileSimilarityIT.class );
+	private static final Logger LOG = getLogger(WmtsGetTileSimilarityIT.class);
 
-    protected final BufferedImage expected;
+	protected final BufferedImage expected;
 
-    public WmtsGetTileSimilarityIT( String resourceName )
-                    throws IOException {
-        super( resourceName, "/getTile" );
-        this.expected = ImageIO.read(
-                        WmtsGetFeatureInfoSimilarityIT.class.getResourceAsStream(
-                                        "/getTile/" + resourceName + ".response" ) );
-    }
+	public WmtsGetTileSimilarityIT(String resourceName) throws IOException {
+		super(resourceName, "/getTile");
+		this.expected = ImageIO
+			.read(WmtsGetFeatureInfoSimilarityIT.class.getResourceAsStream("/getTile/" + resourceName + ".response"));
+	}
 
-    @Parameters
-    public static Collection<Object[]> getParameters() {
-        List<Object[]> requests = new ArrayList<>();
-        requests.add( new Object[] { "cache1" } );
-        requests.add( new Object[] { "cache2" } );
-        requests.add( new Object[] { "filesystem1" } );
-        requests.add( new Object[] { "filesystem2" } );
-        requests.add( new Object[] { "remotewms1" } );
-        requests.add( new Object[] { "remotewms130" } );
-        requests.add( new Object[] { "remotewms_cache" } );
-        requests.add( new Object[] { "remotewms_cache2" } );
-        //requests.add( new Object[] { "remotewms_gif" } );
-        requests.add( new Object[] { "remotewmts" } );
-        requests.add( new Object[] { "transparent" } );
-        requests.add( new Object[] { "uncached1" } );
-        requests.add( new Object[] { "uncached2" } );
-        requests.add( new Object[] { "utah4326" } );
-        requests.add( new Object[] { "utah4326_130" } );
-        return requests;
-    }
+	@Parameters
+	public static Collection<Object[]> getParameters() {
+		List<Object[]> requests = new ArrayList<>();
+		requests.add(new Object[] { "cache1" });
+		requests.add(new Object[] { "cache2" });
+		requests.add(new Object[] { "filesystem1" });
+		requests.add(new Object[] { "filesystem2" });
+		requests.add(new Object[] { "remotewms1" });
+		requests.add(new Object[] { "remotewms130" });
+		requests.add(new Object[] { "remotewms_cache" });
+		requests.add(new Object[] { "remotewms_cache2" });
+		// requests.add( new Object[] { "remotewms_gif" } );
+		requests.add(new Object[] { "remotewmts" });
+		requests.add(new Object[] { "transparent" });
+		requests.add(new Object[] { "uncached1" });
+		requests.add(new Object[] { "uncached2" });
+		requests.add(new Object[] { "utah4326" });
+		requests.add(new Object[] { "utah4326_130" });
+		return requests;
+	}
 
-    @Test
-    public void testSimilarity()
-                            throws
-                            Exception {
-        String request = createRequest();
-        InputStream in = retrieve( STREAM, request );
-        LOG.info( "Requesting {}", request );
-        BufferedImage actual = ImageIO.read( in );
+	@Test
+	public void testSimilarity() throws Exception {
+		String request = createRequest();
+		InputStream in = retrieve(STREAM, request);
+		LOG.info("Requesting {}", request);
+		BufferedImage actual = ImageIO.read(in);
 
-        assertTrue( "Image for " + resourceName + "are not similar enough",
-                    isImageSimilar( expected, actual, 0.01, getClass().getName() + "_" + resourceName ) );
-    }
+		assertTrue("Image for " + resourceName + "are not similar enough",
+				isImageSimilar(expected, actual, 0.01, getClass().getName() + "_" + resourceName));
+	}
 
 }

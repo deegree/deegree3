@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -57,83 +56,82 @@ import org.deegree.workspace.Workspace;
 
 /**
  * Expects two arguments corresponding to two single values.
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class IDiv implements FunctionProvider {
 
-    private static final String NAME = "IDiv";
+	private static final String NAME = "IDiv";
 
-    private static final List<ParameterType> INPUTS = new ArrayList<ParameterType>( 2 );
+	private static final List<ParameterType> INPUTS = new ArrayList<ParameterType>(2);
 
-    static {
-        INPUTS.add( INTEGER );
-        INPUTS.add( INTEGER );
-    }
+	static {
+		INPUTS.add(INTEGER);
+		INPUTS.add(INTEGER);
+	}
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
+	@Override
+	public String getName() {
+		return NAME;
+	}
 
-    @Override
-    public List<ParameterType> getArgs() {
-        return INPUTS;
-    }
+	@Override
+	public List<ParameterType> getArgs() {
+		return INPUTS;
+	}
 
-    @Override
-    public ParameterType getReturnType() {
-        return INTEGER;
-    }
+	@Override
+	public ParameterType getReturnType() {
+		return INTEGER;
+	}
 
-    @Override
-    public Function create( List<Expression> params ) {
-        return new Function( NAME, params ) {
+	@Override
+	public Function create(List<Expression> params) {
+		return new Function(NAME, params) {
 
-            private <T> Pair<Integer, Integer> extractValues( Expression first, Expression second, T f,
-                                                              XPathEvaluator<T> xpathEvaluator )
-                                    throws FilterEvaluationException {
-                TypedObjectNode[] vals1 = first.evaluate( f, xpathEvaluator );
-                TypedObjectNode[] vals2 = second.evaluate( f, xpathEvaluator );
+			private <T> Pair<Integer, Integer> extractValues(Expression first, Expression second, T f,
+					XPathEvaluator<T> xpathEvaluator) throws FilterEvaluationException {
+				TypedObjectNode[] vals1 = first.evaluate(f, xpathEvaluator);
+				TypedObjectNode[] vals2 = second.evaluate(f, xpathEvaluator);
 
-                checkTwoArguments( NAME, vals1, vals2 );
+				checkTwoArguments(NAME, vals1, vals2);
 
-                PrimitiveValue pv1;
-                PrimitiveValue pv2;
-                if ( vals1[0] instanceof PrimitiveValue ) {
-                    pv1 = (PrimitiveValue) vals1[0];
-                } else {
-                    pv1 = ( (SimpleProperty) vals1[0] ).getValue();
-                }
-                if ( vals2[0] instanceof PrimitiveValue ) {
-                    pv2 = (PrimitiveValue) vals2[0];
-                } else {
-                    pv2 = ( (SimpleProperty) vals2[0] ).getValue();
-                }
+				PrimitiveValue pv1;
+				PrimitiveValue pv2;
+				if (vals1[0] instanceof PrimitiveValue) {
+					pv1 = (PrimitiveValue) vals1[0];
+				}
+				else {
+					pv1 = ((SimpleProperty) vals1[0]).getValue();
+				}
+				if (vals2[0] instanceof PrimitiveValue) {
+					pv2 = (PrimitiveValue) vals2[0];
+				}
+				else {
+					pv2 = ((SimpleProperty) vals2[0]).getValue();
+				}
 
-                return new Pair<Integer, Integer>( round( Double.valueOf( pv1.getValue().toString() ) ),
-                                                   round( Double.valueOf( pv2.getValue().toString() ) ) );
-            }
+				return new Pair<Integer, Integer>(round(Double.valueOf(pv1.getValue().toString())),
+						round(Double.valueOf(pv2.getValue().toString())));
+			}
 
-            @Override
-            public <T> TypedObjectNode[] evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
-                                    throws FilterEvaluationException {
-                Pair<Integer, Integer> p = extractValues( getParams()[0], getParams()[1], obj, xpathEvaluator );
-                return new TypedObjectNode[] { new PrimitiveValue( BigInteger.valueOf( p.first / p.second ) ) };
-            }
-        };
-    }
+			@Override
+			public <T> TypedObjectNode[] evaluate(T obj, XPathEvaluator<T> xpathEvaluator)
+					throws FilterEvaluationException {
+				Pair<Integer, Integer> p = extractValues(getParams()[0], getParams()[1], obj, xpathEvaluator);
+				return new TypedObjectNode[] { new PrimitiveValue(BigInteger.valueOf(p.first / p.second)) };
+			}
+		};
+	}
 
-    @Override
-    public void init( Workspace ws ) {
-        // nothing to do
-    }
+	@Override
+	public void init(Workspace ws) {
+		// nothing to do
+	}
 
-    @Override
-    public void destroy() {
-        // nothing to do
-    }
+	@Override
+	public void destroy() {
+		// nothing to do
+	}
+
 }

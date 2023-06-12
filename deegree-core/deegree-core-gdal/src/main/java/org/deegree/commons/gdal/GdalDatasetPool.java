@@ -44,65 +44,66 @@ import org.slf4j.Logger;
 
 /**
  * Pool for <code>GdalDataset</code> objects that limits the number of open datasets.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * 
  * @since 3.4
  */
 public class GdalDatasetPool {
 
-    private static final Logger LOG = getLogger( GdalDatasetPool.class );
+	private static final Logger LOG = getLogger(GdalDatasetPool.class);
 
-    private final LimitedKeyedResourcePool<GdalDataset> pool;
+	private final LimitedKeyedResourcePool<GdalDataset> pool;
 
-    private final Map<File, ICRS> gdalFileToCrs = synchronizedMap( new HashMap<File, ICRS>() );
+	private final Map<File, ICRS> gdalFileToCrs = synchronizedMap(new HashMap<File, ICRS>());
 
-    private final Map<File, Envelope> gdalFileToEnvelope = synchronizedMap( new HashMap<File, Envelope>() );
+	private final Map<File, Envelope> gdalFileToEnvelope = synchronizedMap(new HashMap<File, Envelope>());
 
-    GdalDatasetPool( final int maxOpen ) {
-        final KeyedResourceFactory<GdalDataset> factory = new GdalDatasetFactory( this );
-        pool = new LimitedKeyedResourcePool<GdalDataset>( factory, maxOpen );
-    }
+	GdalDatasetPool(final int maxOpen) {
+		final KeyedResourceFactory<GdalDataset> factory = new GdalDatasetFactory(this);
+		pool = new LimitedKeyedResourcePool<GdalDataset>(factory, maxOpen);
+	}
 
-    public void addDataset( File file, ICRS crs )
-                            throws IOException {
-        gdalFileToCrs.put( file, crs );
-        GdalDataset dataset = null;
-        try {
-            dataset = new GdalDataset( file, crs );
-            gdalFileToEnvelope.put( file, dataset.getEnvelope() );
-        } catch ( Exception e ) {
-            throw new IllegalArgumentException( e.getMessage(), e );
-        } finally {
-            if ( dataset != null ) {
-                dataset.close();
-            }
-        }
-    }
+	public void addDataset(File file, ICRS crs) throws IOException {
+		gdalFileToCrs.put(file, crs);
+		GdalDataset dataset = null;
+		try {
+			dataset = new GdalDataset(file, crs);
+			gdalFileToEnvelope.put(file, dataset.getEnvelope());
+		}
+		catch (Exception e) {
+			throw new IllegalArgumentException(e.getMessage(), e);
+		}
+		finally {
+			if (dataset != null) {
+				dataset.close();
+			}
+		}
+	}
 
-    public ICRS getCrs( File file ) {
-        return gdalFileToCrs.get( file );
-    }
+	public ICRS getCrs(File file) {
+		return gdalFileToCrs.get(file);
+	}
 
-    public Envelope getEnvelope( File gdalFile ) {
-        return gdalFileToEnvelope.get( gdalFile );
-    }
+	public Envelope getEnvelope(File gdalFile) {
+		return gdalFileToEnvelope.get(gdalFile);
+	}
 
-    public GdalDataset borrow( File file )
-                            throws NoSuchElementException, IllegalStateException, Exception {
-        GdalDataset dataset = pool.borrow( file.getCanonicalFile().toString() );
-        return dataset;
-    }
+	public GdalDataset borrow(File file) throws NoSuchElementException, IllegalStateException, Exception {
+		GdalDataset dataset = pool.borrow(file.getCanonicalFile().toString());
+		return dataset;
+	}
 
-    public void returnDataset( GdalDataset dataset ) {
-        pool.returnObject( dataset );
-    }
+	public void returnDataset(GdalDataset dataset) {
+		pool.returnObject(dataset);
+	}
 
-    void shutdown() {
-        try {
-            pool.close();
-        } catch ( Exception e ) {
-            LOG.error( "Error closing KeyedObjectPool: " + e.getMessage() );
-        }
-    }
+	void shutdown() {
+		try {
+			pool.close();
+		}
+		catch (Exception e) {
+			LOG.error("Error closing KeyedObjectPool: " + e.getMessage());
+		}
+	}
+
 }

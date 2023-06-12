@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -37,11 +36,8 @@ package org.deegree.feature.persistence.sql.id;
 
 /**
  * {@link IDGenerator} that generates new identifiers using the UUID algorithm.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: markus $
- * 
- * @version $Revision: $, $Date: $
  */
 public class UUIDGenerator implements IDGenerator {
 

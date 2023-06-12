@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -41,45 +40,40 @@ import org.deegree.protocol.wps.client.param.ComplexFormat;
 
 /**
  * {@link OutputType} that defines a complex output (XML or binary).
- * 
+ *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class ComplexOutputType extends OutputType {
 
-    private ComplexFormat defaultFormat;
+	private ComplexFormat defaultFormat;
 
-    private ComplexFormat[] supportedFormats;
+	private ComplexFormat[] supportedFormats;
 
-    public ComplexOutputType( CodeType id, LanguageString outputTitle, LanguageString outputAbstract,
-                              ComplexFormat defaultFormat, ComplexFormat[] supportedFormats ) {
-        super( id, outputTitle, outputAbstract );
-        this.defaultFormat = defaultFormat;
-        this.supportedFormats = supportedFormats;
-    }
+	public ComplexOutputType(CodeType id, LanguageString outputTitle, LanguageString outputAbstract,
+			ComplexFormat defaultFormat, ComplexFormat[] supportedFormats) {
+		super(id, outputTitle, outputAbstract);
+		this.defaultFormat = defaultFormat;
+		this.supportedFormats = supportedFormats;
+	}
 
-    @Override
-    public Type getType() {
-        return Type.COMPLEX;
-    }
+	@Override
+	public Type getType() {
+		return Type.COMPLEX;
+	}
 
-    /**
-     * 
-     * @return the default {@link ComplexFormat} used
-     */
-    public ComplexFormat getDefaultFormat() {
-        return defaultFormat;
-    }
+	/**
+	 * @return the default {@link ComplexFormat} used
+	 */
+	public ComplexFormat getDefaultFormat() {
+		return defaultFormat;
+	}
 
-    /**
-     * 
-     * @return the supported array of {@link ComplexFormat} used
-     */
-    public ComplexFormat[] getSupportedFormats() {
-        return supportedFormats;
-    }
+	/**
+	 * @return the supported array of {@link ComplexFormat} used
+	 */
+	public ComplexFormat[] getSupportedFormats() {
+		return supportedFormats;
+	}
 
 }

@@ -52,168 +52,172 @@ import org.slf4j.Logger;
 
 /**
  * JSF bean that wraps a {@link ResourceMetadata} and actions.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 @ManagedBean
 @RequestScoped
 public class Config implements Comparable<Config>, Serializable {
 
-    private static final long serialVersionUID = -175529275940063759L;
+	private static final long serialVersionUID = -175529275940063759L;
 
-    private static final Logger LOG = getLogger( Config.class );
+	private static final Logger LOG = getLogger(Config.class);
 
-    protected String id;
+	protected String id;
 
-    private URL schemaURL;
+	private URL schemaURL;
 
-    private String schemaAsText;
+	private String schemaAsText;
 
-    private URL template;
+	private URL template;
 
-    private String resourceOutcome;
+	private String resourceOutcome;
 
-    private transient ResourceMetadata<?> metadata;
+	private transient ResourceMetadata<?> metadata;
 
-    public Config() {
-        // constructor required by JSF
-    }
+	public Config() {
+		// constructor required by JSF
+	}
 
-    public Config( ResourceMetadata<?> metadata, ResourceManager<?> resourceManager, String resourceOutcome,
-                   boolean autoActivate ) {
-        if ( metadata != null ) {
-            this.id = metadata.getIdentifier().getId();
-        }
-        this.metadata = metadata;
-        this.resourceOutcome = resourceOutcome;
-        if ( metadata != null && metadata.getProvider() instanceof AbstractResourceProvider<?> ) {
-            schemaURL = ( (AbstractResourceProvider<?>) metadata.getProvider() ).getSchema();
-        }
-        if ( schemaURL != null ) {
-            try {
-                schemaAsText = IOUtils.toString( schemaURL.openStream(), "UTF-8" );
-            } catch ( IOException e ) {
-                LOG.warn( "Schema not available: {}", schemaURL );
-                LOG.trace( "Stack trace:", e );
-            }
-        }
-    }
+	public Config(ResourceMetadata<?> metadata, ResourceManager<?> resourceManager, String resourceOutcome,
+			boolean autoActivate) {
+		if (metadata != null) {
+			this.id = metadata.getIdentifier().getId();
+		}
+		this.metadata = metadata;
+		this.resourceOutcome = resourceOutcome;
+		if (metadata != null && metadata.getProvider() instanceof AbstractResourceProvider<?>) {
+			schemaURL = ((AbstractResourceProvider<?>) metadata.getProvider()).getSchema();
+		}
+		if (schemaURL != null) {
+			try {
+				schemaAsText = IOUtils.toString(schemaURL.openStream(), "UTF-8");
+			}
+			catch (IOException e) {
+				LOG.warn("Schema not available: {}", schemaURL);
+				LOG.trace("Stack trace:", e);
+			}
+		}
+	}
 
-    public void activate() {
-        try {
-            getWorkspace().getLocationHandler().activate( metadata.getLocation() );
-            getWorkspace().add( metadata.getLocation() );
-            WorkspaceUtils.reinitializeChain( getWorkspace(), metadata.getIdentifier() );
-        } catch ( Exception t ) {
-            LOG.error( t.getMessage(), t );
-            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to activate resource: " + t.getMessage(), null );
-            FacesContext.getCurrentInstance().addMessage( null, fm );
-            return;
-        }
-    }
+	public void activate() {
+		try {
+			getWorkspace().getLocationHandler().activate(metadata.getLocation());
+			getWorkspace().add(metadata.getLocation());
+			WorkspaceUtils.reinitializeChain(getWorkspace(), metadata.getIdentifier());
+		}
+		catch (Exception t) {
+			LOG.error(t.getMessage(), t);
+			FacesMessage fm = new FacesMessage(SEVERITY_ERROR, "Unable to activate resource: " + t.getMessage(), null);
+			FacesContext.getCurrentInstance().addMessage(null, fm);
+			return;
+		}
+	}
 
-    public void deactivate() {
-        try {
-            getWorkspace().destroy( metadata.getIdentifier() );
-            getWorkspace().getLocationHandler().deactivate( metadata.getLocation() );
-            getWorkspace().add( metadata.getLocation() );
-            List<ResourceMetadata<?>> list = new ArrayList<ResourceMetadata<?>>();
-            WorkspaceUtils.collectDependents( list, getWorkspace().getDependencyGraph().getNode( metadata.getIdentifier() ) );
-            for ( ResourceMetadata<?> md : list ) {
-                getWorkspace().getLocationHandler().deactivate( md.getLocation() );
-            }
-        } catch ( Throwable t ) {
-            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to deactivate resource: " + t.getMessage(),
-                                                null );
-            FacesContext.getCurrentInstance().addMessage( null, fm );
-            return;
-        }
-    }
+	public void deactivate() {
+		try {
+			getWorkspace().destroy(metadata.getIdentifier());
+			getWorkspace().getLocationHandler().deactivate(metadata.getLocation());
+			getWorkspace().add(metadata.getLocation());
+			List<ResourceMetadata<?>> list = new ArrayList<ResourceMetadata<?>>();
+			WorkspaceUtils.collectDependents(list,
+					getWorkspace().getDependencyGraph().getNode(metadata.getIdentifier()));
+			for (ResourceMetadata<?> md : list) {
+				getWorkspace().getLocationHandler().deactivate(md.getLocation());
+			}
+		}
+		catch (Throwable t) {
+			FacesMessage fm = new FacesMessage(SEVERITY_ERROR, "Unable to deactivate resource: " + t.getMessage(),
+					null);
+			FacesContext.getCurrentInstance().addMessage(null, fm);
+			return;
+		}
+	}
 
-    public String edit()
-                            throws IOException {
-        StringBuilder sb = new StringBuilder( "/console/generic/xmleditor?faces-redirect=true" );
-        sb.append( "&id=" ).append( id );
-        sb.append( "&schemaUrl=" ).append( ""+schemaURL );
-        sb.append( "&resourceProviderClass=" ).append( metadata.getIdentifier().getProvider().getCanonicalName() );
-        sb.append( "&nextView=" ).append( resourceOutcome );
-        return sb.toString();
-    }
+	public String edit() throws IOException {
+		StringBuilder sb = new StringBuilder("/console/generic/xmleditor?faces-redirect=true");
+		sb.append("&id=").append(id);
+		sb.append("&schemaUrl=").append("" + schemaURL);
+		sb.append("&resourceProviderClass=").append(metadata.getIdentifier().getProvider().getCanonicalName());
+		sb.append("&nextView=").append(resourceOutcome);
+		return sb.toString();
+	}
 
-    public void delete() {
-        try {
-            getWorkspace().getLocationHandler().delete( metadata.getLocation() );
-        } catch ( Throwable t ) {
-            JsfUtils.indicateException( "Deleting resource file", t );
-            return;
-        }
-        try {
-            getWorkspace().destroy( metadata.getIdentifier() );
-        } catch ( Throwable t ) {
-            JsfUtils.indicateException( "Destroying resource", t );
-        }
-    }
+	public void delete() {
+		try {
+			getWorkspace().getLocationHandler().delete(metadata.getLocation());
+		}
+		catch (Throwable t) {
+			JsfUtils.indicateException("Deleting resource file", t);
+			return;
+		}
+		try {
+			getWorkspace().destroy(metadata.getIdentifier());
+		}
+		catch (Throwable t) {
+			JsfUtils.indicateException("Destroying resource", t);
+		}
+	}
 
-    public void showErrors() {
-        String msg = "Initialization of resource '" + id + "' failed: ";
-        for ( String error : getWorkspace().getErrorHandler().getErrors( metadata.getIdentifier() ) ) {
-            msg += error;
-        }
-        FacesMessage fm = new FacesMessage( SEVERITY_ERROR, msg, null );
-        FacesContext.getCurrentInstance().addMessage( null, fm );
-    }
+	public void showErrors() {
+		String msg = "Initialization of resource '" + id + "' failed: ";
+		for (String error : getWorkspace().getErrorHandler().getErrors(metadata.getIdentifier())) {
+			msg += error;
+		}
+		FacesMessage fm = new FacesMessage(SEVERITY_ERROR, msg, null);
+		FacesContext.getCurrentInstance().addMessage(null, fm);
+	}
 
-    @Override
-    public int compareTo( Config o ) {
-        return id.compareTo( o.id );
-    }
+	@Override
+	public int compareTo(Config o) {
+		return id.compareTo(o.id);
+	}
 
-    public String getId() {
-        return id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public void setId( String id ) {
-        this.id = id;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public String getSchemaAsText() {
-        return schemaAsText;
-    }
+	public String getSchemaAsText() {
+		return schemaAsText;
+	}
 
-    public void setSchemaAsText( String schemaAsText ) {
-        this.schemaAsText = schemaAsText;
-    }
+	public void setSchemaAsText(String schemaAsText) {
+		this.schemaAsText = schemaAsText;
+	}
 
-    public URL getTemplate() {
-        return template;
-    }
+	public URL getTemplate() {
+		return template;
+	}
 
-    public void setTemplate( URL template ) {
-        this.template = template;
-    }
+	public void setTemplate(URL template) {
+		this.template = template;
+	}
 
-    public String getResourceOutcome() {
-        return resourceOutcome;
-    }
+	public String getResourceOutcome() {
+		return resourceOutcome;
+	}
 
-    public void setResourceOutcome( String resourceOutcome ) {
-        this.resourceOutcome = resourceOutcome;
-    }
+	public void setResourceOutcome(String resourceOutcome) {
+		this.resourceOutcome = resourceOutcome;
+	}
 
-    public URL getSchemaURL() {
-        return schemaURL;
-    }
+	public URL getSchemaURL() {
+		return schemaURL;
+	}
 
-    public void setSchemaURL( URL schemaURL ) {
-        this.schemaURL = schemaURL;
-    }
+	public void setSchemaURL(URL schemaURL) {
+		this.schemaURL = schemaURL;
+	}
 
-    public String getState() {
-        ResourceState state = getWorkspace().getStates().getState( metadata.getIdentifier() );
-        return state == null ? "Deactivated" : state.toString();
-    }
+	public String getState() {
+		ResourceState state = getWorkspace().getStates().getState(metadata.getIdentifier());
+		return state == null ? "Deactivated" : state.toString();
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -44,7 +43,6 @@ import java.util.List;
 
 import javax.vecmath.Point3d;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.CRSResource;
@@ -59,240 +57,239 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The <code>GeocentricTransform</code> class is used to create a transformation between a geocentric CRS (having
- * lat-lon coordinates) and it's geodetic CRS (having x-y-z) coordinates and vice versa.
- * 
+ * The <code>GeocentricTransform</code> class is used to create a transformation between a
+ * geocentric CRS (having lat-lon coordinates) and it's geodetic CRS (having x-y-z)
+ * coordinates and vice versa.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
-@LoggingNotes(debug = "Get information about the incoming ordinates of a geocentric transformation.")
 public class GeocentricTransform extends Transformation {
 
-    private static Logger LOG = LoggerFactory.getLogger( GeocentricTransform.class );
+	private static Logger LOG = LoggerFactory.getLogger(GeocentricTransform.class);
 
-    /**
-     * Cosine of 67.5 degrees.
-     */
-    private static final double COS_67P5 = 0.38268343236508977;
+	/**
+	 * Cosine of 67.5 degrees.
+	 */
+	private static final double COS_67P5 = 0.38268343236508977;
 
-    /**
-     * Toms region 1 constant, which will allow for a difference between ellipsoid of 2000 Kilometers. <quote>Under this
-     * policy the maximum error is less than 42 centimeters for altitudes less then 10.000.000 Kilometers</quote>
-     */
-    private static final double AD_C = 1.0026;
+	/**
+	 * Toms region 1 constant, which will allow for a difference between ellipsoid of 2000
+	 * Kilometers. <quote>Under this policy the maximum error is less than 42 centimeters
+	 * for altitudes less then 10.000.000 Kilometers</quote>
+	 */
+	private static final double AD_C = 1.0026;
 
-    /**
-     * Semi-major axis of ellipsoid in meters.
-     */
-    private double semiMajorAxis;
+	/**
+	 * Semi-major axis of ellipsoid in meters.
+	 */
+	private double semiMajorAxis;
 
-    /**
-     * Semi-minor axis of ellipsoid in meters.
-     */
-    private double semiMinorAxis;
+	/**
+	 * Semi-minor axis of ellipsoid in meters.
+	 */
+	private double semiMinorAxis;
 
-    /**
-     * Square of semi-major axis {@link #semiMajorAxis}.
-     */
-    private double squaredSemiMajorAxis;
+	/**
+	 * Square of semi-major axis {@link #semiMajorAxis}.
+	 */
+	private double squaredSemiMajorAxis;
 
-    /**
-     * Square of semi-minor axis {@link #semiMinorAxis}.
-     */
-    private double squaredSemiMinorAxis;
+	/**
+	 * Square of semi-minor axis {@link #semiMinorAxis}.
+	 */
+	private double squaredSemiMinorAxis;
 
-    /**
-     * Eccentricity squared.
-     */
-    private double squaredEccentricity;
+	/**
+	 * Eccentricity squared.
+	 */
+	private double squaredEccentricity;
 
-    /**
-     * 2nd eccentricity squared.
-     */
-    private double ep2;
+	/**
+	 * 2nd eccentricity squared.
+	 */
+	private double ep2;
 
-    /**
-     * true if the given points will use heights (e.g. have a z/height-value).
-     */
-    private boolean hasHeight;
+	/**
+	 * true if the given points will use heights (e.g. have a z/height-value).
+	 */
+	private boolean hasHeight;
 
-    private double defaultHeightValue;
+	private double defaultHeightValue;
 
-    /**
-     * @param source
-     *            the geographic crs.
-     * @param target
-     *            the geocentric crs.
-     * @param id
-     *            an identifiable instance containing information about this transformation
-     */
-    public GeocentricTransform( ICRS source, IGeocentricCRS target, CRSResource id ) {
-        super( source, target, id );
-        calcParams();
-    }
+	/**
+	 * @param source the geographic crs.
+	 * @param target the geocentric crs.
+	 * @param id an identifiable instance containing information about this transformation
+	 */
+	public GeocentricTransform(ICRS source, IGeocentricCRS target, CRSResource id) {
+		super(source, target, id);
+		calcParams();
+	}
 
-    private void calcParams() {
-        if ( getSourceCRS().getType() == CRSType.COMPOUND ) {
-            this.hasHeight = true;
-            defaultHeightValue = ( (ICompoundCRS) getSourceCRS() ).getDefaultHeight();
-        } else if ( getTargetCRS().getType() == CRSType.COMPOUND ) {
-            this.hasHeight = true;
-            defaultHeightValue = ( (ICompoundCRS) getTargetCRS() ).getDefaultHeight();
-        } else {
-            this.hasHeight = false;
-            defaultHeightValue = 0;
-        }
-        IEllipsoid ellipsoid = getSourceCRS().getGeodeticDatum().getEllipsoid();
-        semiMajorAxis = Unit.METRE.convert( ellipsoid.getSemiMajorAxis(), ellipsoid.getUnits() );
-        semiMinorAxis = Unit.METRE.convert( ellipsoid.getSemiMinorAxis(), ellipsoid.getUnits() );
-        squaredSemiMajorAxis = semiMajorAxis * semiMajorAxis;
-        squaredSemiMinorAxis = semiMinorAxis * semiMinorAxis;
-        squaredEccentricity = ellipsoid.getSquaredEccentricity();
-        // e2 = ( a2 - b2 ) / a2;
-        ep2 = ( squaredSemiMajorAxis - squaredSemiMinorAxis ) / squaredSemiMinorAxis;
-    }
+	private void calcParams() {
+		if (getSourceCRS().getType() == CRSType.COMPOUND) {
+			this.hasHeight = true;
+			defaultHeightValue = ((ICompoundCRS) getSourceCRS()).getDefaultHeight();
+		}
+		else if (getTargetCRS().getType() == CRSType.COMPOUND) {
+			this.hasHeight = true;
+			defaultHeightValue = ((ICompoundCRS) getTargetCRS()).getDefaultHeight();
+		}
+		else {
+			this.hasHeight = false;
+			defaultHeightValue = 0;
+		}
+		IEllipsoid ellipsoid = getSourceCRS().getGeodeticDatum().getEllipsoid();
+		semiMajorAxis = Unit.METRE.convert(ellipsoid.getSemiMajorAxis(), ellipsoid.getUnits());
+		semiMinorAxis = Unit.METRE.convert(ellipsoid.getSemiMinorAxis(), ellipsoid.getUnits());
+		squaredSemiMajorAxis = semiMajorAxis * semiMajorAxis;
+		squaredSemiMinorAxis = semiMinorAxis * semiMinorAxis;
+		squaredEccentricity = ellipsoid.getSquaredEccentricity();
+		// e2 = ( a2 - b2 ) / a2;
+		ep2 = (squaredSemiMajorAxis - squaredSemiMinorAxis) / squaredSemiMinorAxis;
+	}
 
-    @Override
-    public void inverse() {
-        super.inverse();
-        calcParams();
-    }
+	@Override
+	public void inverse() {
+		super.inverse();
+		calcParams();
+	}
 
-    /**
-     * @param source
-     *            the geographic crs.
-     * @param target
-     *            the geocentric crs.
-     */
-    public GeocentricTransform( ICRS source, IGeocentricCRS target ) {
-        this( source, target, new CRSIdentifiable( CRSCodeType.valueOf( createFromTo( source.getCode().toString(),
-                                                                                      target.getCode().toString() ) ) ) );
-    }
+	/**
+	 * @param source the geographic crs.
+	 * @param target the geocentric crs.
+	 */
+	public GeocentricTransform(ICRS source, IGeocentricCRS target) {
+		this(source, target, new CRSIdentifiable(
+				CRSCodeType.valueOf(createFromTo(source.getCode().toString(), target.getCode().toString()))));
+	}
 
-    @Override
-    public List<Point3d> doTransform( List<Point3d> srcPts ) {
-        List<Point3d> result = new ArrayList<Point3d>( srcPts );
-        if ( LOG.isDebugEnabled() ) {
-            StringBuilder sb = new StringBuilder( isInverseTransform() ? "An inverse " : "A " );
-            sb.append( getImplementationName() );
-            sb.append( " with incoming points: " );
-            sb.append( srcPts );
-            LOG.debug( sb.toString() );
-        }
-        if ( isInverseTransform() ) {
-            toGeographic( result );
-        } else {
-            toGeoCentric( result );
-        }
-        return result;
-    }
+	@Override
+	public List<Point3d> doTransform(List<Point3d> srcPts) {
+		List<Point3d> result = new ArrayList<Point3d>(srcPts);
+		if (LOG.isDebugEnabled()) {
+			StringBuilder sb = new StringBuilder(isInverseTransform() ? "An inverse " : "A ");
+			sb.append(getImplementationName());
+			sb.append(" with incoming points: ");
+			sb.append(srcPts);
+			LOG.debug(sb.toString());
+		}
+		if (isInverseTransform()) {
+			toGeographic(result);
+		}
+		else {
+			toGeoCentric(result);
+		}
+		return result;
+	}
 
-    /**
-     * Converts geocentric coordinates (x, y, z) to geodetic coordinates (longitude, latitude, height), according to the
-     * current ellipsoid parameters. The method used here is derived from "An Improved Algorithm for Geocentric to
-     * Geodetic Coordinate Conversion", by Ralph Toms, Feb 1996 UCRL-JC-123138.
-     * 
-     * @param srcPts
-     *            the points which must be transformed.
-     */
-    protected void toGeographic( List<Point3d> srcPts ) {
-        for ( Point3d p : srcPts ) {
-            // Note: Variable names follow the notation used in Toms, Feb 1996
+	/**
+	 * Converts geocentric coordinates (x, y, z) to geodetic coordinates (longitude,
+	 * latitude, height), according to the current ellipsoid parameters. The method used
+	 * here is derived from "An Improved Algorithm for Geocentric to Geodetic Coordinate
+	 * Conversion", by Ralph Toms, Feb 1996 UCRL-JC-123138.
+	 * @param srcPts the points which must be transformed.
+	 */
+	protected void toGeographic(List<Point3d> srcPts) {
+		for (Point3d p : srcPts) {
+			// Note: Variable names follow the notation used in Toms, Feb 1996
 
-            final double T0 = p.z * AD_C; // initial estimate of vertical component
-            final double W = length( p.x, p.y );// distance from Z axis
-            final double S0 = length( T0, W );// initial estimate of horizontal component
+			final double T0 = p.z * AD_C; // initial estimate of vertical component
+			final double W = length(p.x, p.y);// distance from Z axis
+			final double S0 = length(T0, W);// initial estimate of horizontal component
 
-            final double sin_B0 = T0 / S0; // sin(B0), B0 is estimate of Bowring variable
-            final double cos_B0 = W / S0; // cos(B0)
-            final double sin3_B0 = sin_B0 * sin_B0 * sin_B0; // cube of sin(B0)
-            final double T1 = p.z + semiMinorAxis * ep2 * sin3_B0; // corrected estimate of vertical component
+			final double sin_B0 = T0 / S0; // sin(B0), B0 is estimate of Bowring variable
+			final double cos_B0 = W / S0; // cos(B0)
+			final double sin3_B0 = sin_B0 * sin_B0 * sin_B0; // cube of sin(B0)
+			final double T1 = p.z + semiMinorAxis * ep2 * sin3_B0; // corrected estimate
+																	// of vertical
+																	// component
 
-            // numerator of cos(phi1)
-            final double sum = W - semiMajorAxis * squaredEccentricity * ( cos_B0 * cos_B0 * cos_B0 );
+			// numerator of cos(phi1)
+			final double sum = W - semiMajorAxis * squaredEccentricity * (cos_B0 * cos_B0 * cos_B0);
 
-            // corrected estimate of horizontal component
-            final double S1 = length( T1, sum );// Math.sqrt( T1 * T1 + sum * sum );
+			// corrected estimate of horizontal component
+			final double S1 = length(T1, sum);// Math.sqrt( T1 * T1 + sum * sum );
 
-            // sin(phi), phi is estimated latitude
-            final double sinPhi = T1 / S1;
-            final double cosPhi = sum / S1; // cos(phi)
+			// sin(phi), phi is estimated latitude
+			final double sinPhi = T1 / S1;
+			final double cosPhi = sum / S1; // cos(phi)
 
-            // Lambda in tom.
-            p.x = Math.atan2( p.y, p.x );// longitude;
-            p.y = Math.atan( sinPhi / cosPhi );// latitude;
-            if ( hasHeight ) {
-                double height;
-                // rn = radius of curvature of the prime vertical, of the ellipsoid at location
-                final double rn = semiMajorAxis / Math.sqrt( 1 - squaredEccentricity * ( sinPhi * sinPhi ) );
+			// Lambda in tom.
+			p.x = Math.atan2(p.y, p.x);// longitude;
+			p.y = Math.atan(sinPhi / cosPhi);// latitude;
+			if (hasHeight) {
+				double height;
+				// rn = radius of curvature of the prime vertical, of the ellipsoid at
+				// location
+				final double rn = semiMajorAxis / Math.sqrt(1 - squaredEccentricity * (sinPhi * sinPhi));
 
-                if ( cosPhi >= +COS_67P5 ) {
-                    height = W / +cosPhi - rn;
-                } else if ( cosPhi <= -COS_67P5 ) {
-                    height = W / -cosPhi - rn;
-                } else {
-                    height = p.z / sinPhi + rn * ( squaredEccentricity - 1.0 );
-                }
-                p.z = height;
-            } else {
-                p.z = defaultHeightValue;
-            }
-        }
-    }
+				if (cosPhi >= +COS_67P5) {
+					height = W / +cosPhi - rn;
+				}
+				else if (cosPhi <= -COS_67P5) {
+					height = W / -cosPhi - rn;
+				}
+				else {
+					height = p.z / sinPhi + rn * (squaredEccentricity - 1.0);
+				}
+				p.z = height;
+			}
+			else {
+				p.z = defaultHeightValue;
+			}
+		}
+	}
 
-    /**
-     * Converts geographic (longitude, latitude, height) to cartesian (x,y,z) coordinates.
-     * 
-     * @param srcPts
-     *            to convert.
-     */
-    protected void toGeoCentric( List<Point3d> srcPts ) {
-        for ( Point3d p : srcPts ) {
-            final double lambda = p.x; // Longitude
-            final double phi = p.y; // Latitude
-            // first check the p.z value if it is defined, if not, use the defaultheight value, which will be
-            // initialized with 0 or the configured compound crs value.
-            if ( Double.isNaN( p.z ) || Math.abs( p.z ) < EPS11 ) {
-                p.z = defaultHeightValue;
-            }
-            final double h = hasHeight ? p.z : 0; // Height above the ellipsoid (metres).
+	/**
+	 * Converts geographic (longitude, latitude, height) to cartesian (x,y,z) coordinates.
+	 * @param srcPts to convert.
+	 */
+	protected void toGeoCentric(List<Point3d> srcPts) {
+		for (Point3d p : srcPts) {
+			final double lambda = p.x; // Longitude
+			final double phi = p.y; // Latitude
+			// first check the p.z value if it is defined, if not, use the defaultheight
+			// value, which will be
+			// initialized with 0 or the configured compound crs value.
+			if (Double.isNaN(p.z) || Math.abs(p.z) < EPS11) {
+				p.z = defaultHeightValue;
+			}
+			final double h = hasHeight ? p.z : 0; // Height above the ellipsoid (metres).
 
-            final double cosPhi = Math.cos( phi );
-            final double sinPhi = Math.sin( phi );
-            final double rn = semiMajorAxis / Math.sqrt( 1 - squaredEccentricity * ( sinPhi * sinPhi ) );
+			final double cosPhi = Math.cos(phi);
+			final double sinPhi = Math.sin(phi);
+			final double rn = semiMajorAxis / Math.sqrt(1 - squaredEccentricity * (sinPhi * sinPhi));
 
-            p.x = ( rn + h ) * cosPhi * Math.cos( lambda );
-            p.y = ( rn + h ) * cosPhi * Math.sin( lambda );
-            p.z = ( rn * ( 1 - squaredEccentricity ) + h ) * sinPhi;
-        }
-    }
+			p.x = (rn + h) * cosPhi * Math.cos(lambda);
+			p.y = (rn + h) * cosPhi * Math.sin(lambda);
+			p.z = (rn * (1 - squaredEccentricity) + h) * sinPhi;
+		}
+	}
 
-    @Override
-    public boolean isIdentity() {
-        return false;
-    }
+	@Override
+	public boolean isIdentity() {
+		return false;
+	}
 
-    /**
-     * @return the semiMajorAxis.
-     */
-    public final double getSemiMajorAxis() {
-        return semiMajorAxis;
-    }
+	/**
+	 * @return the semiMajorAxis.
+	 */
+	public final double getSemiMajorAxis() {
+		return semiMajorAxis;
+	}
 
-    /**
-     * @return the semiMinorAxis.
-     */
-    public final double getSemiMinorAxis() {
-        return semiMinorAxis;
-    }
+	/**
+	 * @return the semiMinorAxis.
+	 */
+	public final double getSemiMinorAxis() {
+		return semiMinorAxis;
+	}
 
-    @Override
-    public String getImplementationName() {
-        return "Geocentric-Transform";
-    }
+	@Override
+	public String getImplementationName() {
+		return "Geocentric-Transform";
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -48,43 +47,39 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.Pair;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class List {
 
-    public static void list( String path, HttpServletResponse resp )
-                            throws IOException {
-        Pair<DeegreeWorkspace, String> p = getWorkspaceAndPath( path );
+	public static void list(String path, HttpServletResponse resp) throws IOException {
+		Pair<DeegreeWorkspace, String> p = getWorkspaceAndPath(path);
 
-        resp.setContentType( "text/plain" );
-        
-        File dir = p.first.getLocation();
-        dir = p.second == null ? dir : new File( dir, p.second );
+		resp.setContentType("text/plain");
 
-        if ( !dir.exists() ) {
-            resp.setStatus( 404 );
-            if ( p.second == null ) {
-                IOUtils.write( "No such workspace: " + p.first.getName() + "\n", resp.getOutputStream() );
-            } else {
-                IOUtils.write( "No such direcory in workspace: " + p.first.getName() + " -> " + p.second + "\n",
-                               resp.getOutputStream() );
-            }
-            return;
-        }
+		File dir = p.first.getLocation();
+		dir = p.second == null ? dir : new File(dir, p.second);
 
-        File[] ls = dir.listFiles();
-        ServletOutputStream os = resp.getOutputStream();
-        if ( ls != null ) {
-            for ( File f : ls ) {
-                if ( !f.getName().equalsIgnoreCase( ".svn" ) ) {
-                    IOUtils.write( f.getName() + "\n", os );
-                }
-            }
-        }
-    }
+		if (!dir.exists()) {
+			resp.setStatus(404);
+			if (p.second == null) {
+				IOUtils.write("No such workspace: " + p.first.getName() + "\n", resp.getOutputStream());
+			}
+			else {
+				IOUtils.write("No such direcory in workspace: " + p.first.getName() + " -> " + p.second + "\n",
+						resp.getOutputStream());
+			}
+			return;
+		}
+
+		File[] ls = dir.listFiles();
+		ServletOutputStream os = resp.getOutputStream();
+		if (ls != null) {
+			for (File f : ls) {
+				if (!f.getName().equalsIgnoreCase(".svn")) {
+					IOUtils.write(f.getName() + "\n", os);
+				}
+			}
+		}
+	}
 
 }

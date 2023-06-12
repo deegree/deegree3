@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -37,20 +36,18 @@ package org.deegree.commons.tom;
 
 /**
  * Discriminates the different modes for resolving {@link Reference}s.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public enum ResolveMode {
 
-    /** Neither local nor remote references are resolved */
-    NONE,
-    /** Only local references are resolved */
-    LOCAL,
-    /** Only remote references are resolved */
-    REMOTE,
-    /** Both local and remote references are resolved */
-    ALL
+	/** Neither local nor remote references are resolved */
+	NONE,
+	/** Only local references are resolved */
+	LOCAL,
+	/** Only remote references are resolved */
+	REMOTE,
+	/** Both local and remote references are resolved */
+	ALL
+
 }

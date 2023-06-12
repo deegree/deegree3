@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2014 by:
@@ -23,7 +22,7 @@
  Boomkamp 16
  7461 AX Rijssen
  The Netherlands
- http://idgis.nl/ 
+ http://idgis.nl/
 
  lat/lon GmbH
  Aennchenstr. 19, 53177 Bonn
@@ -51,20 +50,20 @@ import org.deegree.featureinfo.FeatureInfoParams;
 
 public class TemplateFeatureInfoSerializer implements FeatureInfoSerializer {
 
-    private final String fiFile;
+	private final String fiFile;
 
-    public TemplateFeatureInfoSerializer() {
-        this( null );
-    }
+	public TemplateFeatureInfoSerializer() {
+		this(null);
+	}
 
-    public TemplateFeatureInfoSerializer( final String fiFile ) {
-        this.fiFile = fiFile;
-    }
+	public TemplateFeatureInfoSerializer(final String fiFile) {
+		this.fiFile = fiFile;
+	}
 
-    @Override
-    public void serialize( FeatureInfoParams params, FeatureInfoContext context )
-                            throws IOException, XMLStreamException {
+	@Override
+	public void serialize(FeatureInfoParams params, FeatureInfoContext context) throws IOException, XMLStreamException {
 
-        runTemplate( context.getOutputStream(), fiFile, params.getFeatureCollection(), params.isWithGeometries() );
-    }
+		runTemplate(context.getOutputStream(), fiFile, params.getFeatureCollection(), params.isWithGeometries());
+	}
+
 }

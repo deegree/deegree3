@@ -27,5 +27,5 @@ means ETRS89 in XY-order, while _urn:ogc:def:crs:epsg::4258_ is YX
 NOTE: The CRS subsystem is not fully integrated with the deegree workspace
 yet. Rework and proper documentation are on the roadmap for one of the
 next releases. If you have trouble finding a specific CRS, please
-http://www.deegree.org/Community[contact the deegree mailing lists for
+https://www.deegree.org/community/[contact the deegree mailing lists for
 support].

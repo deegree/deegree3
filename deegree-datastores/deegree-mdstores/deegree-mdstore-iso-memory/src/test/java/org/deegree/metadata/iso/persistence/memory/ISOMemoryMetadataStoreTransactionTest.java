@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-metadata/src/main/java/org/deegree/metadata/iso/persistence/ISOMetadataStoreProvider.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -59,123 +58,117 @@ import org.mockito.Mockito;
 
 /**
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: 30800 $, $Date: 2011-05-12 16:49:44 +0200 (Do, 12. Mai 2011) $
  */
 public class ISOMemoryMetadataStoreTransactionTest {
 
-    private File directory;
+	private File directory;
 
-    @Before
-    public void setupTestDirectory()
-                            throws Exception {
-        try {
-            directory = File.createTempFile( "deegreecswtest", "" );
-            directory.delete();
-            directory.mkdir();
-        } catch ( Exception e ) {
-            e.printStackTrace();
-        }
-        URL record = ISOMemoryMetadataStore.class.getResource( "1.xml" );
-        File dataDirectory = new File( new File( record.toURI() ).getParent() );
-        File[] listFiles = dataDirectory.listFiles( new FilenameFilter() {
-            @Override
-            public boolean accept( File arg0, String arg1 ) {
-                return arg1.endsWith( ".xml" ) && arg1.length() < 6;
-            }
-        } );
-        for ( File file : listFiles ) {
-            FileUtils.copyFile( file, new File( directory, file.getName() ) );
-        }
-    }
+	@Before
+	public void setupTestDirectory() throws Exception {
+		try {
+			directory = File.createTempFile("deegreecswtest", "");
+			directory.delete();
+			directory.mkdir();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		URL record = ISOMemoryMetadataStore.class.getResource("1.xml");
+		File dataDirectory = new File(new File(record.toURI()).getParent());
+		File[] listFiles = dataDirectory.listFiles(new FilenameFilter() {
+			@Override
+			public boolean accept(File arg0, String arg1) {
+				return arg1.endsWith(".xml") && arg1.length() < 6;
+			}
+		});
+		for (File file : listFiles) {
+			FileUtils.copyFile(file, new File(directory, file.getName()));
+		}
+	}
 
-    @Test
-    public void testInsert()
-                            throws Exception {
-        StoredISORecords storedRecords = new StoredISORecords( Collections.singletonList( directory ) );
-        ISOMemoryMetadataStore metadataStore = Mockito.mock( ISOMemoryMetadataStore.class );
-        ISOMemoryMetadataStoreTransaction transaction = new ISOMemoryMetadataStoreTransaction( metadataStore,
-                                                                                               storedRecords, directory );
-        int beforeInsert = storedRecords.getNumberOfStoredRecords();
-        ISORecord record = GetTestRecordsUtils.getRecord( "toInsert.xml" );
-        InsertOperation insert = new InsertOperation( Collections.singletonList( record ), null, null );
-        transaction.performInsert( insert );
-        transaction.commit();
-        assertEquals( beforeInsert + 1, storedRecords.getNumberOfStoredRecords() );
-        assertSynchronizedStore( storedRecords );
-    }
+	@Test
+	public void testInsert() throws Exception {
+		StoredISORecords storedRecords = new StoredISORecords(Collections.singletonList(directory));
+		ISOMemoryMetadataStore metadataStore = Mockito.mock(ISOMemoryMetadataStore.class);
+		ISOMemoryMetadataStoreTransaction transaction = new ISOMemoryMetadataStoreTransaction(metadataStore,
+				storedRecords, directory);
+		int beforeInsert = storedRecords.getNumberOfStoredRecords();
+		ISORecord record = GetTestRecordsUtils.getRecord("toInsert.xml");
+		InsertOperation insert = new InsertOperation(Collections.singletonList(record), null, null);
+		transaction.performInsert(insert);
+		transaction.commit();
+		assertEquals(beforeInsert + 1, storedRecords.getNumberOfStoredRecords());
+		assertSynchronizedStore(storedRecords);
+	}
 
-    @Test
-    public void testDelete()
-                            throws Exception {
-        StoredISORecords storedRecords = new StoredISORecords( Collections.singletonList( directory ) );
-        ISOMemoryMetadataStore metadataStore = Mockito.mock( ISOMemoryMetadataStore.class );
-        ISOMemoryMetadataStoreTransaction transaction = new ISOMemoryMetadataStoreTransaction( metadataStore,
-                                                                                               storedRecords, directory );
-        int beforeInsert = storedRecords.getNumberOfStoredRecords();
-        ISORecord record = GetTestRecordsUtils.getRecord( "1.xml" );
-        Filter filter = getIdFilter( record.getIdentifier() );
-        DeleteOperation delete = new DeleteOperation( null, null, filter );
-        transaction.performDelete( delete );
-        transaction.commit();
-        assertEquals( beforeInsert - 1, storedRecords.getNumberOfStoredRecords() );
-        assertSynchronizedStore( storedRecords );
-    }
+	@Test
+	public void testDelete() throws Exception {
+		StoredISORecords storedRecords = new StoredISORecords(Collections.singletonList(directory));
+		ISOMemoryMetadataStore metadataStore = Mockito.mock(ISOMemoryMetadataStore.class);
+		ISOMemoryMetadataStoreTransaction transaction = new ISOMemoryMetadataStoreTransaction(metadataStore,
+				storedRecords, directory);
+		int beforeInsert = storedRecords.getNumberOfStoredRecords();
+		ISORecord record = GetTestRecordsUtils.getRecord("1.xml");
+		Filter filter = getIdFilter(record.getIdentifier());
+		DeleteOperation delete = new DeleteOperation(null, null, filter);
+		transaction.performDelete(delete);
+		transaction.commit();
+		assertEquals(beforeInsert - 1, storedRecords.getNumberOfStoredRecords());
+		assertSynchronizedStore(storedRecords);
+	}
 
-    @Test
-    public void testUpdate()
-                            throws Exception {
-        StoredISORecords storedRecords = new StoredISORecords( Collections.singletonList( directory ) );
-        ISOMemoryMetadataStore metadataStore = Mockito.mock( ISOMemoryMetadataStore.class );
-        ISOMemoryMetadataStoreTransaction transaction = new ISOMemoryMetadataStoreTransaction( metadataStore,
-                                                                                               storedRecords, directory );
+	@Test
+	public void testUpdate() throws Exception {
+		StoredISORecords storedRecords = new StoredISORecords(Collections.singletonList(directory));
+		ISOMemoryMetadataStore metadataStore = Mockito.mock(ISOMemoryMetadataStore.class);
+		ISOMemoryMetadataStoreTransaction transaction = new ISOMemoryMetadataStoreTransaction(metadataStore,
+				storedRecords, directory);
 
-        ISORecord updateRecord = GetTestRecordsUtils.getRecord( "toUpdate.xml" );
-        String expectedKeyword = getKeyword( updateRecord );
-        String identifierOfRecordToUpdate = updateRecord.getIdentifier();
+		ISORecord updateRecord = GetTestRecordsUtils.getRecord("toUpdate.xml");
+		String expectedKeyword = getKeyword(updateRecord);
+		String identifierOfRecordToUpdate = updateRecord.getIdentifier();
 
-        File fileBeforeUpdate = storedRecords.getFile( identifierOfRecordToUpdate );
-        assertTrue( fileBeforeUpdate.exists() );
+		File fileBeforeUpdate = storedRecords.getFile(identifierOfRecordToUpdate);
+		assertTrue(fileBeforeUpdate.exists());
 
-        int beforeInsert = storedRecords.getNumberOfStoredRecords();
+		int beforeInsert = storedRecords.getNumberOfStoredRecords();
 
-        update( transaction, updateRecord );
+		update(transaction, updateRecord);
 
-        assertEquals( beforeInsert, storedRecords.getNumberOfStoredRecords() );
-        assertSynchronizedStore( storedRecords );
+		assertEquals(beforeInsert, storedRecords.getNumberOfStoredRecords());
+		assertSynchronizedStore(storedRecords);
 
-        List<ISORecord> records = storedRecords.getRecords( getIdFilter( updateRecord.getIdentifier() ) );
-        assertEquals( 1, records.size() );
-        assertEquals( expectedKeyword, getKeyword( records.get( 0 ) ) );
+		List<ISORecord> records = storedRecords.getRecords(getIdFilter(updateRecord.getIdentifier()));
+		assertEquals(1, records.size());
+		assertEquals(expectedKeyword, getKeyword(records.get(0)));
 
-        File fileAfterUpdate = storedRecords.getFile( identifierOfRecordToUpdate );
-        assertTrue( fileAfterUpdate.exists() );
-        assertEquals( fileBeforeUpdate, fileAfterUpdate );
-    }
+		File fileAfterUpdate = storedRecords.getFile(identifierOfRecordToUpdate);
+		assertTrue(fileAfterUpdate.exists());
+		assertEquals(fileBeforeUpdate, fileAfterUpdate);
+	}
 
-    private String getKeyword( ISORecord updateRecord ) {
-        return updateRecord.getParsedElement().getQueryableProperties().getKeywords().get( 0 ).getKeywords().get( 0 );
-    }
+	private String getKeyword(ISORecord updateRecord) {
+		return updateRecord.getParsedElement().getQueryableProperties().getKeywords().get(0).getKeywords().get(0);
+	}
 
-    private void update( ISOMemoryMetadataStoreTransaction transaction, ISORecord updateRecord )
-                            throws MetadataStoreException, MetadataInspectorException {
-        Filter filter = getIdFilter( updateRecord.getIdentifier() );
-        UpdateOperation update = new UpdateOperation( null, updateRecord, null, filter, null );
-        transaction.performUpdate( update );
-        transaction.commit();
-    }
+	private void update(ISOMemoryMetadataStoreTransaction transaction, ISORecord updateRecord)
+			throws MetadataStoreException, MetadataInspectorException {
+		Filter filter = getIdFilter(updateRecord.getIdentifier());
+		UpdateOperation update = new UpdateOperation(null, updateRecord, null, filter, null);
+		transaction.performUpdate(update);
+		transaction.commit();
+	}
 
-    private IdFilter getIdFilter( String id ) {
-        return new IdFilter( id );
-    }
+	private IdFilter getIdFilter(String id) {
+		return new IdFilter(id);
+	}
 
-    private void assertSynchronizedStore( StoredISORecords storedRecords ) {
-        assertEquals( storedRecords.getNumberOfStoredRecords(), getNumberOfRecordsInStoreDirectory() );
-    }
+	private void assertSynchronizedStore(StoredISORecords storedRecords) {
+		assertEquals(storedRecords.getNumberOfStoredRecords(), getNumberOfRecordsInStoreDirectory());
+	}
 
-    private int getNumberOfRecordsInStoreDirectory() {
-        return directory.listFiles().length;
-    }
+	private int getNumberOfRecordsInStoreDirectory() {
+		return directory.listFiles().length;
+	}
 
 }

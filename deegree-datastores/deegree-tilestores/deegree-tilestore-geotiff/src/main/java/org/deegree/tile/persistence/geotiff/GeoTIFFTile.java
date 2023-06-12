@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -58,92 +57,91 @@ import org.deegree.tile.Tile;
 import org.deegree.tile.TileIOException;
 
 /**
- * A {@link Tile} that is read from a GeoTIFF/BigTIFF file, through ImageIO/imageio-ext. Uses an object pool to cache
- * readers (they take a long time to startup). </p>
- * 
+ * A {@link Tile} that is read from a GeoTIFF/BigTIFF file, through ImageIO/imageio-ext.
+ * Uses an object pool to cache readers (they take a long time to startup).
+ * </p>
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 public class GeoTIFFTile implements Tile {
 
-    // private static final Logger LOG = getLogger( GeoTIFFTile.class );
+	// private static final Logger LOG = getLogger( GeoTIFFTile.class );
 
-    private final int imageIndex, x, y;
+	private final int imageIndex, x, y;
 
-    private final Envelope envelope;
+	private final Envelope envelope;
 
-    private final int sizeX, sizeY;
+	private final int sizeX, sizeY;
 
-    private final GenericObjectPool<ImageReader> readerPool;
+	private final GenericObjectPool<ImageReader> readerPool;
 
-    public GeoTIFFTile( GenericObjectPool<ImageReader> readerPool, int imageIndex, int x, int y, Envelope envelope, int sizeX,
-                        int sizeY ) {
-        this.readerPool = readerPool;
-        this.imageIndex = imageIndex;
-        this.x = x;
-        this.y = y;
-        this.envelope = envelope;
-        this.sizeX = sizeX;
-        this.sizeY = sizeY;
-    }
+	public GeoTIFFTile(GenericObjectPool<ImageReader> readerPool, int imageIndex, int x, int y, Envelope envelope,
+			int sizeX, int sizeY) {
+		this.readerPool = readerPool;
+		this.imageIndex = imageIndex;
+		this.x = x;
+		this.y = y;
+		this.envelope = envelope;
+		this.sizeX = sizeX;
+		this.sizeY = sizeY;
+	}
 
-    @Override
-    public BufferedImage getAsImage()
-                            throws TileIOException {
-        ImageReader reader = null;
-        try {
-            reader = readerPool.borrowObject();
-            BufferedImage img = reader.readTile( imageIndex, x, y );
-            if ( img.getWidth() != sizeX || img.getHeight() != sizeY ) {
-                Hashtable<Object, Object> table = new Hashtable<Object, Object>();
-                String[] props = img.getPropertyNames();
-                if ( props != null ) {
-                    for ( String p : props ) {
-                        table.put( p, img.getProperty( p ) );
-                    }
-                }
-                BufferedImage img2 = new BufferedImage( img.getColorModel(),
-                                                        img.getData().createCompatibleWritableRaster( sizeX, sizeY ),
-                                                        img.isAlphaPremultiplied(), table );
-                Graphics2D g = img2.createGraphics();
-                g.drawImage( img, 0, 0, null );
-                g.dispose();
-                img = img2;
-            }
-            return img;
-        } catch ( Exception e ) {
-            throw new TileIOException( "Error retrieving image: " + e.getMessage(), e );
-        } finally {
-            try {
-                readerPool.returnObject( reader );
-            } catch ( Exception e ) {
-                // ignore closing error
-            }
-        }
-    }
+	@Override
+	public BufferedImage getAsImage() throws TileIOException {
+		ImageReader reader = null;
+		try {
+			reader = readerPool.borrowObject();
+			BufferedImage img = reader.readTile(imageIndex, x, y);
+			if (img.getWidth() != sizeX || img.getHeight() != sizeY) {
+				Hashtable<Object, Object> table = new Hashtable<Object, Object>();
+				String[] props = img.getPropertyNames();
+				if (props != null) {
+					for (String p : props) {
+						table.put(p, img.getProperty(p));
+					}
+				}
+				BufferedImage img2 = new BufferedImage(img.getColorModel(),
+						img.getData().createCompatibleWritableRaster(sizeX, sizeY), img.isAlphaPremultiplied(), table);
+				Graphics2D g = img2.createGraphics();
+				g.drawImage(img, 0, 0, null);
+				g.dispose();
+				img = img2;
+			}
+			return img;
+		}
+		catch (Exception e) {
+			throw new TileIOException("Error retrieving image: " + e.getMessage(), e);
+		}
+		finally {
+			try {
+				readerPool.returnObject(reader);
+			}
+			catch (Exception e) {
+				// ignore closing error
+			}
+		}
+	}
 
-    @Override
-    public InputStream getAsStream()
-                            throws TileIOException {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        try {
-            ImageIO.write( getAsImage(), "png", bos );
-        } catch ( IOException e ) {
-            throw new TileIOException( "Error retrieving image: " + e.getMessage(), e );
-        }
-        return new ByteArrayInputStream( bos.toByteArray() );
-    }
+	@Override
+	public InputStream getAsStream() throws TileIOException {
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		try {
+			ImageIO.write(getAsImage(), "png", bos);
+		}
+		catch (IOException e) {
+			throw new TileIOException("Error retrieving image: " + e.getMessage(), e);
+		}
+		return new ByteArrayInputStream(bos.toByteArray());
+	}
 
-    @Override
-    public Envelope getEnvelope() {
-        return envelope;
-    }
+	@Override
+	public Envelope getEnvelope() {
+		return envelope;
+	}
 
-    @Override
-    public FeatureCollection getFeatures( int i, int j, int limit )
-                            throws UnsupportedOperationException {
-        throw new UnsupportedOperationException( "Feature retrieval is not supported by the GeoTIFFTileStore." );
-    }
+	@Override
+	public FeatureCollection getFeatures(int i, int j, int limit) throws UnsupportedOperationException {
+		throw new UnsupportedOperationException("Feature retrieval is not supported by the GeoTIFFTileStore.");
+	}
+
 }

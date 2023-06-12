@@ -37,35 +37,35 @@ import org.deegree.workspace.ResourceMetadata;
 
 /**
  * This class is responsible for building batched MT stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class BatchedMTFileStoreBuilder implements ResourceBuilder<BatchedMTStore> {
 
-    private BatchedMTFileStoreConfig config;
+	private BatchedMTFileStoreConfig config;
 
-    private ResourceMetadata<BatchedMTStore> metadata;
+	private ResourceMetadata<BatchedMTStore> metadata;
 
-    public BatchedMTFileStoreBuilder( BatchedMTFileStoreConfig config, ResourceMetadata<BatchedMTStore> metadata ) {
-        this.config = config;
-        this.metadata = metadata;
-    }
+	public BatchedMTFileStoreBuilder(BatchedMTFileStoreConfig config, ResourceMetadata<BatchedMTStore> metadata) {
+		this.config = config;
+		this.metadata = metadata;
+	}
 
-    @Override
-    public BatchedMTStore build() {
-        BatchedMTStore bs = null;
-        try {
-            CRSManager.getCRSRef( config.getCrs() );
-            URL dir = metadata.getLocation().resolveToUrl( config.getDirectory() );
-            int maxDirectMem = config.getMaxDirectMemory().intValue();
-            bs = new BatchedMTFileStore( dir, maxDirectMem, metadata );
+	@Override
+	public BatchedMTStore build() {
+		BatchedMTStore bs = null;
+		try {
+			CRSManager.getCRSRef(config.getCrs());
+			URL dir = metadata.getLocation().resolveToUrl(config.getDirectory());
+			int maxDirectMem = config.getMaxDirectMemory().intValue();
+			bs = new BatchedMTFileStore(dir, maxDirectMem, metadata);
 
-        } catch ( Exception e ) {
-            throw new ResourceInitException( "Unable to build batched MT store: " + e.getLocalizedMessage(), e );
-        }
-        return bs;
-    }
+		}
+		catch (Exception e) {
+			throw new ResourceInitException("Unable to build batched MT store: " + e.getLocalizedMessage(), e);
+		}
+		return bs;
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -44,34 +43,31 @@ import junit.framework.TestCase;
 
 /**
  * <code>CollectionUtilsTest</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class CollectionUtilsTest extends TestCase {
 
-    /**
-     *
-     */
-    public void testRemoveDuplicates() {
-        LinkedList<String> list = new LinkedList<String>();
-        list.add( "test" );
-        list.add( "test2" );
-        list.add( "test3" );
-        list.add( "test" );
-        list.add( "test5" );
-        list.add( "test6" );
-        list.add( "test" );
-        LinkedList<String> list2 = new LinkedList<String>();
-        list2.add( "test" );
-        list2.add( "test2" );
-        list2.add( "test3" );
-        list2.add( "test5" );
-        list2.add( "test6" );
-        assertEquals( removeDuplicates( list ), list2 );
-        assertEquals( list, list2 );
-    }
+	/**
+	 *
+	 */
+	public void testRemoveDuplicates() {
+		LinkedList<String> list = new LinkedList<String>();
+		list.add("test");
+		list.add("test2");
+		list.add("test3");
+		list.add("test");
+		list.add("test5");
+		list.add("test6");
+		list.add("test");
+		LinkedList<String> list2 = new LinkedList<String>();
+		list2.add("test");
+		list2.add("test2");
+		list2.add("test3");
+		list2.add("test5");
+		list2.add("test6");
+		assertEquals(removeDuplicates(list), list2);
+		assertEquals(list, list2);
+	}
 
 }

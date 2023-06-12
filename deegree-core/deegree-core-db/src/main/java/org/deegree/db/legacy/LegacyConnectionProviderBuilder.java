@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -58,58 +57,56 @@ import org.slf4j.Logger;
 
 /**
  * Builds legacy connection providers.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 public class LegacyConnectionProviderBuilder implements ResourceBuilder<ConnectionProvider> {
 
-    private static final Logger LOG = getLogger( LegacyConnectionProviderBuilder.class );
+	private static final Logger LOG = getLogger(LegacyConnectionProviderBuilder.class);
 
-    private JDBCConnection config;
+	private JDBCConnection config;
 
-    private LegacyConnectionProviderMetadata metadata;
+	private LegacyConnectionProviderMetadata metadata;
 
-    private Workspace workspace;
+	private Workspace workspace;
 
-    public LegacyConnectionProviderBuilder( JDBCConnection config, LegacyConnectionProviderMetadata metadata,
-                                            Workspace workspace ) {
-        this.config = config;
-        this.metadata = metadata;
-        this.workspace = workspace;
-    }
+	public LegacyConnectionProviderBuilder(JDBCConnection config, LegacyConnectionProviderMetadata metadata,
+			Workspace workspace) {
+		this.config = config;
+		this.metadata = metadata;
+		this.workspace = workspace;
+	}
 
-    @Override
-    public ConnectionProvider build() {
-        String url = config.getUrl();
-        LegacyConnectionProvider cprov;
-        cprov = new LegacyConnectionProvider( url, config.getUser(), config.getPassword(),
-                                              config.isReadOnly() == null ? false : config.isReadOnly(), metadata );
+	@Override
+	public ConnectionProvider build() {
+		String url = config.getUrl();
+		LegacyConnectionProvider cprov;
+		cprov = new LegacyConnectionProvider(url, config.getUser(), config.getPassword(),
+				config.isReadOnly() == null ? false : config.isReadOnly(), metadata);
 
-        ServiceLoader<SqlDialectProvider> dialectLoader = ServiceLoader.load( SqlDialectProvider.class,
-                                                                              workspace.getModuleClassLoader() );
-        Iterator<SqlDialectProvider> iter = dialectLoader.iterator();
-        SQLDialect dialect = null;
-        while ( iter.hasNext() ) {
-            SqlDialectProvider prov = iter.next();
-            Connection conn = null;
-            try {
-                conn = cprov.getConnection();
-                if ( prov.supportsConnection( conn ) ) {
-                    dialect = prov.createDialect( conn );
-                    break;
-                }
-            } finally {
-                JDBCUtils.close( conn );
-            }
-        }
-        cprov.setDialect( dialect );
-        if ( dialect == null ) {
-            LOG.warn( "No SQL dialect for {} found, trying to continue.", url );
-        }
-        return cprov;
-    }
+		ServiceLoader<SqlDialectProvider> dialectLoader = ServiceLoader.load(SqlDialectProvider.class,
+				workspace.getModuleClassLoader());
+		Iterator<SqlDialectProvider> iter = dialectLoader.iterator();
+		SQLDialect dialect = null;
+		while (iter.hasNext()) {
+			SqlDialectProvider prov = iter.next();
+			Connection conn = null;
+			try {
+				conn = cprov.getConnection();
+				if (prov.supportsConnection(conn)) {
+					dialect = prov.createDialect(conn);
+					break;
+				}
+			}
+			finally {
+				JDBCUtils.close(conn);
+			}
+		}
+		cprov.setDialect(dialect);
+		if (dialect == null) {
+			LOG.warn("No SQL dialect for {} found, trying to continue.", url);
+		}
+		return cprov;
+	}
 
 }

@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+<FeatureTypeStyle xmlns="http://www.opengis.net/se"
+	xmlns:ogc="http://www.opengis.net/ogc"
+	xmlns:app="http://deegree.org/app"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	xsi:schemaLocation="http://www.opengis.net/se https://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.opengis.net/ogc https://schemas.opengis.net/filter/1.1.0/filter.xsd">
+
+	<Rule>
+		<ogc:Filter>
+			<ogc:PropertyIsEqualTo>
+				<ogc:PropertyName>app:id</ogc:PropertyName>
+				<ogc:Literal>1</ogc:Literal>
+			</ogc:PropertyIsEqualTo>
+		</ogc:Filter>
+		<PointSymbolizer
+			uom="http://www.opengeospatial.org/se/units/pixel">
+			<Graphic>
+				<ExternalGraphic>
+					<OnlineResource xlink:href="./randombg.png" />
+					<Format>image/png</Format>
+				</ExternalGraphic>
+				<Size>90</Size>
+			</Graphic>
+		</PointSymbolizer>
+	</Rule>
+	<Rule>
+		<ogc:Filter>
+			<ogc:PropertyIsEqualTo>
+				<ogc:PropertyName>app:id</ogc:PropertyName>
+				<ogc:Literal>2</ogc:Literal>
+			</ogc:PropertyIsEqualTo>
+		</ogc:Filter>
+		<PointSymbolizer
+			uom="http://www.opengeospatial.org/se/units/pixel">
+			<Graphic>
+				<ExternalGraphic>
+					<OnlineResource xlink:href="./sample_wo_border.svg" />
+					<Format>image/svg</Format>
+				</ExternalGraphic>
+				<Size>90</Size>
+			</Graphic>
+		</PointSymbolizer>
+	</Rule>
+	<Rule>
+		<ogc:Filter>
+			<ogc:PropertyIsEqualTo>
+				<ogc:PropertyName>app:id</ogc:PropertyName>
+				<ogc:Literal>3</ogc:Literal>
+			</ogc:PropertyIsEqualTo>
+		</ogc:Filter>
+		<PointSymbolizer
+			uom="http://www.opengeospatial.org/se/units/pixel">
+			<Graphic>
+				<Mark>
+					<WellKnownName>star</WellKnownName>
+					<Fill>
+						<SvgParameter name="fill">#4382f0</SvgParameter>
+					</Fill>
+					<Stroke>
+						<SvgParameter name="stroke">#000000</SvgParameter>
+						<SvgParameter name="stroke-width">1</SvgParameter>
+						<SvgParameter name="stroke-linecap">butt</SvgParameter>
+					</Stroke>
+				</Mark>
+				<Size>90</Size>
+			</Graphic>
+		</PointSymbolizer>
+	</Rule>
+	<Rule>
+		<ogc:Filter>
+			<ogc:PropertyIsEqualTo>
+				<ogc:PropertyName>app:id</ogc:PropertyName>
+				<ogc:Literal>4</ogc:Literal>
+			</ogc:PropertyIsEqualTo>
+		</ogc:Filter>
+		<PointSymbolizer
+			uom="http://www.opengeospatial.org/se/units/pixel">
+			<Graphic>
+				<Mark>
+					<OnlineResource xlink:href="./TestSymbol.ttf" />
+					<Format>ttf</Format>
+					<MarkIndex>3</MarkIndex>
+					<Fill>
+						<SvgParameter name="fill">#00FF00</SvgParameter>
+					</Fill>
+					<Stroke>
+						<SvgParameter name="stroke">#FF0000</SvgParameter>
+						<SvgParameter name="stroke-width">2</SvgParameter>
+					</Stroke>
+				</Mark>
+				<Size>90</Size>
+			</Graphic>
+		</PointSymbolizer>
+	</Rule>
+	<Rule>
+		<ogc:Filter>
+			<ogc:PropertyIsEqualTo>
+				<ogc:PropertyName>app:id</ogc:PropertyName>
+				<ogc:Literal>5</ogc:Literal>
+			</ogc:PropertyIsEqualTo>
+		</ogc:Filter>
+		<PointSymbolizer
+			uom="http://www.opengeospatial.org/se/units/pixel">
+			<Graphic>
+				<Mark>
+					<OnlineResource xlink:href="./sample_wo_border.svg" />
+					<Format>svg</Format>
+					<Fill>
+						<SvgParameter name="fill">#00FF00</SvgParameter>
+					</Fill>
+					<Stroke>
+						<SvgParameter name="stroke">#FF0000</SvgParameter>
+						<SvgParameter name="stroke-width">2</SvgParameter>
+					</Stroke>
+				</Mark>
+				<Size>90</Size>
+			</Graphic>
+		</PointSymbolizer>
+	</Rule>
+</FeatureTypeStyle>

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -60,145 +59,130 @@ import org.deegree.feature.types.property.SimplePropertyType;
 
 /**
  * {@link FeatureType} that allows to add property declarations after construction.
- * 
+ *
  * @author <a href="schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class DynamicFeatureType implements FeatureType {
 
-    private final QName ftName;
+	private final QName ftName;
 
-    private final DynamicAppSchema appSchema;
+	private final DynamicAppSchema appSchema;
 
-    private final LinkedList<PropertyType> props = new LinkedList<PropertyType>();
+	private final LinkedList<PropertyType> props = new LinkedList<PropertyType>();
 
-    private final Map<QName, PropertyType> propNameToDecl = new HashMap<QName, PropertyType>();
+	private final Map<QName, PropertyType> propNameToDecl = new HashMap<QName, PropertyType>();
 
-    /**
-     * Creates a new {@link DynamicFeatureType} instance.
-     * 
-     * @param ftName
-     *            feature type name, must not be <code>null</code>
-     * @param appSchema
-     *            corresponding application schema, must not be <code>null</code>
-     */
-    public DynamicFeatureType( QName ftName, DynamicAppSchema appSchema ) {
-        this.ftName = ftName;
-        this.appSchema = appSchema;
-    }
+	/**
+	 * Creates a new {@link DynamicFeatureType} instance.
+	 * @param ftName feature type name, must not be <code>null</code>
+	 * @param appSchema corresponding application schema, must not be <code>null</code>
+	 */
+	public DynamicFeatureType(QName ftName, DynamicAppSchema appSchema) {
+		this.ftName = ftName;
+		this.appSchema = appSchema;
+	}
 
-    /**
-     * Adds a new {@link SimplePropertyType} declaration.
-     * 
-     * @param pre
-     *            predecessor property, can be <code>null</code>
-     * @param propName
-     *            property name, must not be <code>null</code>
-     * @return new (and added) property declaration, never <code>null</code>
-     */
-    public SimplePropertyType addSimplePropertyDeclaration( PropertyType pre, QName propName ) {
-        SimplePropertyType pt = new SimplePropertyType( propName, 0, 1, STRING, null, null );
-        props.add( props.indexOf( pre ) + 1, pt );
-        propNameToDecl.put( propName, pt );
-        return pt;
-    }
+	/**
+	 * Adds a new {@link SimplePropertyType} declaration.
+	 * @param pre predecessor property, can be <code>null</code>
+	 * @param propName property name, must not be <code>null</code>
+	 * @return new (and added) property declaration, never <code>null</code>
+	 */
+	public SimplePropertyType addSimplePropertyDeclaration(PropertyType pre, QName propName) {
+		SimplePropertyType pt = new SimplePropertyType(propName, 0, 1, STRING, null, null);
+		props.add(props.indexOf(pre) + 1, pt);
+		propNameToDecl.put(propName, pt);
+		return pt;
+	}
 
-    /**
-     * Adds a new {@link GeometryPropertyType} declaration.
-     * 
-     * @param pre
-     *            predecessor property, can be <code>null</code>
-     * @param propName
-     *            property name, must not be <code>null</code>
-     * @return new (and added) property declaration, never <code>null</code>
-     */
-    public GeometryPropertyType addGeometryPropertyDeclaration( PropertyType pre, QName propName ) {
-        GeometryPropertyType pt = new GeometryPropertyType( propName, 0, 1, null, null, GEOMETRY, DIM_2, BOTH );
-        props.add( props.indexOf( pre ) + 1, pt );
-        propNameToDecl.put( propName, pt );
-        return pt;
-    }
+	/**
+	 * Adds a new {@link GeometryPropertyType} declaration.
+	 * @param pre predecessor property, can be <code>null</code>
+	 * @param propName property name, must not be <code>null</code>
+	 * @return new (and added) property declaration, never <code>null</code>
+	 */
+	public GeometryPropertyType addGeometryPropertyDeclaration(PropertyType pre, QName propName) {
+		GeometryPropertyType pt = new GeometryPropertyType(propName, 0, 1, null, null, GEOMETRY, DIM_2, BOTH);
+		props.add(props.indexOf(pre) + 1, pt);
+		propNameToDecl.put(propName, pt);
+		return pt;
+	}
 
-    /**
-     * Adds a new {@link FeaturePropertyType} declaration.
-     * 
-     * @param pre
-     *            predecessor property, can be <code>null</code>
-     * @param propName
-     *            property name, must not be <code>null</code>
-     * @param valueFt
-     *            value feature type, must not be <code>null</code>
-     * @return new (and added) property declaration, never <code>null</code>
-     */
-    public FeaturePropertyType addFeaturePropertyDeclaration( PropertyType pre, QName propName, FeatureType valueFt ) {
-        QName valueFtName = valueFt == null ? null : valueFt.getName();
-        FeaturePropertyType pt = new FeaturePropertyType( propName, 0, 1, null, null, valueFtName, BOTH );
-        props.add( props.indexOf( pre ) + 1, pt );
-        propNameToDecl.put( propName, pt );
-        return pt;
-    }
+	/**
+	 * Adds a new {@link FeaturePropertyType} declaration.
+	 * @param pre predecessor property, can be <code>null</code>
+	 * @param propName property name, must not be <code>null</code>
+	 * @param valueFt value feature type, must not be <code>null</code>
+	 * @return new (and added) property declaration, never <code>null</code>
+	 */
+	public FeaturePropertyType addFeaturePropertyDeclaration(PropertyType pre, QName propName, FeatureType valueFt) {
+		QName valueFtName = valueFt == null ? null : valueFt.getName();
+		FeaturePropertyType pt = new FeaturePropertyType(propName, 0, 1, null, null, valueFtName, BOTH);
+		props.add(props.indexOf(pre) + 1, pt);
+		propNameToDecl.put(propName, pt);
+		return pt;
+	}
 
-    @Override
-    public GMLObjectCategory getCategory() {
-        return FEATURE;
-    }
+	@Override
+	public GMLObjectCategory getCategory() {
+		return FEATURE;
+	}
 
-    @Override
-    public QName getName() {
-        return ftName;
-    }
+	@Override
+	public QName getName() {
+		return ftName;
+	}
 
-    @Override
-    public PropertyType getPropertyDeclaration( QName propName ) {
-        return propNameToDecl.get( propName );
-    }
+	@Override
+	public PropertyType getPropertyDeclaration(QName propName) {
+		return propNameToDecl.get(propName);
+	}
 
-    @Override
-    public List<PropertyType> getPropertyDeclarations() {
-        return props;
-    }
+	@Override
+	public List<PropertyType> getPropertyDeclarations() {
+		return props;
+	}
 
-    @Override
-    public GeometryPropertyType getDefaultGeometryPropertyDeclaration() {
-        GeometryPropertyType geoPt = null;
-        for ( QName propName : propNameToDecl.keySet() ) {
-            PropertyType pt = propNameToDecl.get( propName );
-            if ( pt instanceof GeometryPropertyType ) {
-                geoPt = (GeometryPropertyType) pt;
-                break;
-            }
-        }
-        return geoPt;
-    }
+	@Override
+	public GeometryPropertyType getDefaultGeometryPropertyDeclaration() {
+		GeometryPropertyType geoPt = null;
+		for (QName propName : propNameToDecl.keySet()) {
+			PropertyType pt = propNameToDecl.get(propName);
+			if (pt instanceof GeometryPropertyType) {
+				geoPt = (GeometryPropertyType) pt;
+				break;
+			}
+		}
+		return geoPt;
+	}
 
-    @Override
-    public boolean isAbstract() {
-        return false;
-    }
+	@Override
+	public boolean isAbstract() {
+		return false;
+	}
 
-    @Override
-    public Feature newFeatureInstance( String fid, List<Property> props, ExtraProps extraProps ) {
-        return newFeature( fid, props, extraProps );
-    }
+	@Override
+	public Feature newFeatureInstance(String fid, List<Property> props, ExtraProps extraProps) {
+		return newFeature(fid, props, extraProps);
+	}
 
-    @Override
-    public Feature newFeature( String fid, List<Property> props, ExtraProps extraProps ) {
-        return new GenericFeature( this, fid, props, extraProps );
-    }
+	@Override
+	public Feature newFeature(String fid, List<Property> props, ExtraProps extraProps) {
+		return new GenericFeature(this, fid, props, extraProps);
+	}
 
-    @Override
-    public AppSchema getSchema() {
-        return appSchema;
-    }
+	@Override
+	public AppSchema getSchema() {
+		return appSchema;
+	}
 
-    @Override
-    public String toString() {
-        String s = "- Feature type '" + ftName + "'";
-        for ( PropertyType pt : props ) {
-            s += "\n" + pt;
-        }
-        return s;
-    }
+	@Override
+	public String toString() {
+		String s = "- Feature type '" + ftName + "'";
+		for (PropertyType pt : props) {
+			s += "\n" + pt;
+		}
+		return s;
+	}
+
 }

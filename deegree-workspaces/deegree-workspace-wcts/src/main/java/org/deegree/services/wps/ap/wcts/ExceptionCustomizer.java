@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2009 by:
@@ -46,34 +45,33 @@ import org.deegree.services.wps.DefaultExceptionCustomizer;
 
 /**
  * The <code>ExceptionCustomizer</code> class TODO add class documentation here.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class ExceptionCustomizer extends DefaultExceptionCustomizer {
 
-    /**
-     * @param processId
-     */
-    public ExceptionCustomizer( CodeType processId ) {
-        super( processId );
-    }
+	/**
+	 * @param processId
+	 */
+	public ExceptionCustomizer(CodeType processId) {
+		super(processId);
+	}
 
+	@Override
+	public OWSException inputMissingParameter(CodeType inputParameterId, String parameter) {
+		return new OWSException(
+				"Missing input parameter in call to TransformCoordinates. The inputparameter: " + inputParameterId
+						+ " misses following required parameter: " + parameter + ".",
+				OWSException.MISSING_PARAMETER_VALUE);
+	}
 
-    @Override
-    public OWSException inputMissingParameter( CodeType inputParameterId, String parameter ) {
-        return new OWSException( "Missing input parameter in call to TransformCoordinates. The inputparameter: "
-                                 + inputParameterId + " misses following required parameter: " + parameter + ".",
-                                 OWSException.MISSING_PARAMETER_VALUE );
-    }
-
-    @Override
-    public OWSException inputMissingParameters( CodeType inputParameterId, String... parameters ) {
-        return new OWSException( "Missing input parameters in call to TransformCoordinates. The inputparameter: "
-                                 + inputParameterId + " misses at least one of following parameters: "
-                                 + Arrays.toString( parameters ) + ".", OWSException.MISSING_PARAMETER_VALUE );
-    }
+	@Override
+	public OWSException inputMissingParameters(CodeType inputParameterId, String... parameters) {
+		return new OWSException(
+				"Missing input parameters in call to TransformCoordinates. The inputparameter: " + inputParameterId
+						+ " misses at least one of following parameters: " + Arrays.toString(parameters) + ".",
+				OWSException.MISSING_PARAMETER_VALUE);
+	}
 
 }

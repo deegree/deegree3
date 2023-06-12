@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -44,42 +43,36 @@ import org.deegree.cs.projections.azimuthal.StereographicAzimuthal;
 
 /**
  * {@link ProjectionRef} to a {@link StereographicAzimuthal}
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class StereographicAzimuthalRef extends ProjectionRef implements Serializable, IStereographicAzimuthal {
 
-    private static final long serialVersionUID = -1990207411294967232L;
+	private static final long serialVersionUID = -1990207411294967232L;
 
-    /**
-     * Creates a {@link StereographicAzimuthalRef} instance
-     * 
-     * @param resolver
-     *            used for resolving the reference, must not be <code>null</code>
-     * @param uri
-     *            the object's uri, must not be <code>null</code>
-     * @param baseURL
-     *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
-     */
-    public StereographicAzimuthalRef( ReferenceResolver resolver, String uri, String baseURL ) {
-        super( resolver, uri, baseURL );
-    }
+	/**
+	 * Creates a {@link StereographicAzimuthalRef} instance
+	 * @param resolver used for resolving the reference, must not be <code>null</code>
+	 * @param uri the object's uri, must not be <code>null</code>
+	 * @param baseURL base URL for resolving the uri, may be <code>null</code> (no
+	 * resolving of relative URLs)
+	 */
+	public StereographicAzimuthalRef(ReferenceResolver resolver, String uri, String baseURL) {
+		super(resolver, uri, baseURL);
+	}
 
-    public double getTrueScaleLatitude() {
-        return getReferencedObject().getTrueScaleLatitude();
-    }
+	public double getTrueScaleLatitude() {
+		return getReferencedObject().getTrueScaleLatitude();
+	}
 
-    @Override
-    public boolean equals( Object obj ) {
-        return super.equals( obj ) ? true : getReferencedObject().equals( obj );
-    }
+	@Override
+	public boolean equals(Object obj) {
+		return super.equals(obj) ? true : getReferencedObject().equals(obj);
+	}
 
-    @Override
-    public StereographicAzimuthal getReferencedObject()
-                            throws ReferenceResolvingException {
-        return (StereographicAzimuthal) super.getReferencedObject();
-    }
+	@Override
+	public StereographicAzimuthal getReferencedObject() throws ReferenceResolvingException {
+		return (StereographicAzimuthal) super.getReferencedObject();
+	}
+
 }

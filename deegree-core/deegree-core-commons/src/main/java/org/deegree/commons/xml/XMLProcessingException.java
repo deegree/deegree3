@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -37,83 +36,78 @@ package org.deegree.commons.xml;
 
 /**
  * Base class for XML-related exceptions.
- * 
+ *
  * @author <a href="mailto:mschneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class XMLProcessingException extends RuntimeException {
 
-    private static final long serialVersionUID = -375766555263169888L;
+	private static final long serialVersionUID = -375766555263169888L;
 
-    private String message = "org.deegree.xml.XMLParsingException";
+	private String message = "org.deegree.xml.XMLParsingException";
 
-    private String stackTrace = "<< is empty >>";
+	private String stackTrace = "<< is empty >>";
 
-    /**
-     * Creates a new instance of <code>XMLProcessingException</code> without detail message.
-     */
-    protected XMLProcessingException() {
-        // nothing to do
-    }
+	/**
+	 * Creates a new instance of <code>XMLProcessingException</code> without detail
+	 * message.
+	 */
+	protected XMLProcessingException() {
+		// nothing to do
+	}
 
-    /**
-     * Constructs an instance of <code>XMLProcessingException</code> with the specified detail message.
-     * 
-     * @param msg
-     *            the detail message.
-     */
-    public XMLProcessingException( String msg ) {
-        super();
-        message = msg;
+	/**
+	 * Constructs an instance of <code>XMLProcessingException</code> with the specified
+	 * detail message.
+	 * @param msg the detail message.
+	 */
+	public XMLProcessingException(String msg) {
+		super();
+		message = msg;
 
-    }
+	}
 
-    /**
-     * Constructs an instance of <code>XMLProcessingException</code> with the specified cause.
-     * 
-     * @param cause
-     *            the Throwable that caused this XMLParsingException
-     * 
-     */
-    public XMLProcessingException( Throwable cause ) {
-        super( cause );
-    }
+	/**
+	 * Constructs an instance of <code>XMLProcessingException</code> with the specified
+	 * cause.
+	 * @param cause the Throwable that caused this XMLParsingException
+	 *
+	 */
+	public XMLProcessingException(Throwable cause) {
+		super(cause);
+	}
 
-    /**
-     * Constructs an instance of <code>XMLProcessingException</code> with the specified detail message.
-     * 
-     * @param msg
-     *            the detail message.
-     * @param e
-     */
-    public XMLProcessingException( String msg, Throwable e ) {
-        this( msg );
-        if ( e != null ) {
-            StackTraceElement[] se = e.getStackTrace();
-            StringBuffer sb = new StringBuffer( 1000 );
-            for ( int i = 0; i < se.length; i++ ) {
-                sb.append( se[i].getClassName() + " " );
-                sb.append( se[i].getFileName() + " " );
-                sb.append( se[i].getMethodName() + "(" );
-                sb.append( se[i].getLineNumber() + ")\n" );
-            }
-            stackTrace = e.getMessage() + sb.toString();
-        }
-    }
+	/**
+	 * Constructs an instance of <code>XMLProcessingException</code> with the specified
+	 * detail message.
+	 * @param msg the detail message.
+	 * @param e
+	 */
+	public XMLProcessingException(String msg, Throwable e) {
+		this(msg);
+		if (e != null) {
+			StackTraceElement[] se = e.getStackTrace();
+			StringBuffer sb = new StringBuffer(1000);
+			for (int i = 0; i < se.length; i++) {
+				sb.append(se[i].getClassName() + " ");
+				sb.append(se[i].getFileName() + " ");
+				sb.append(se[i].getMethodName() + "(");
+				sb.append(se[i].getLineNumber() + ")\n");
+			}
+			stackTrace = e.getMessage() + sb.toString();
+		}
+	}
 
-    @Override
-    public String toString() {
-        return this.getClass() + ": " + getMessage() + "\n" + stackTrace;
-    }
+	@Override
+	public String toString() {
+		return this.getClass() + ": " + getMessage() + "\n" + stackTrace;
+	}
 
-    /**
-     *
-     */
-    @Override
-    public String getMessage() {
-        return message;
-    }
+	/**
+	 *
+	 */
+	@Override
+	public String getMessage() {
+		return message;
+	}
 
 }

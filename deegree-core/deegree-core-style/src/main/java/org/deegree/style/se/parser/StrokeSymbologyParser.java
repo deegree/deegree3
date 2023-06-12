@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -69,209 +68,246 @@ import org.slf4j.Logger;
 
 /**
  * Responsible for parsing all Stroke related parts.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 class StrokeSymbologyParser {
 
-    static final Logger LOG = getLogger( StrokeSymbologyParser.class );
+	static final Logger LOG = getLogger(StrokeSymbologyParser.class);
 
-    private SymbologyParserContext context;
+	private SymbologyParserContext context;
 
-    StrokeSymbologyParser( SymbologyParserContext context ) {
-        this.context = context;
-    }
+	StrokeSymbologyParser(SymbologyParserContext context) {
+		this.context = context;
+	}
 
-    Pair<Stroke, Continuation<Stroke>> parseStroke( XMLStreamReader in )
-                            throws XMLStreamException {
-        in.require( START_ELEMENT, null, "Stroke" );
+	Pair<Stroke, Continuation<Stroke>> parseStroke(XMLStreamReader in) throws XMLStreamException {
+		in.require(START_ELEMENT, null, "Stroke");
 
-        Stroke base = new Stroke();
-        Continuation<Stroke> contn = null;
+		Stroke base = new Stroke();
+		Continuation<Stroke> contn = null;
 
-        while ( !( in.isEndElement() && in.getLocalName().equals( "Stroke" ) ) ) {
-            in.nextTag();
+		while (!(in.isEndElement() && in.getLocalName().equals("Stroke"))) {
+			in.nextTag();
 
-            if ( in.getLocalName().endsWith( "Parameter" ) ) {
-                contn = parseParameter( contn, in, base );
-            } else if ( in.getLocalName().equals( "GraphicFill" ) ) {
-                contn = parseGraphicFill( contn, in, base );
-            } else if ( in.getLocalName().equals( "GraphicStroke" ) ) {
-                contn = parseGraphicStroke( contn, in, base );
-            } else if ( in.isStartElement() ) {
-                LOG.error( "Found unknown element '{}', skipping.", in.getLocalName() );
-                skipElement( in );
-            }
-        }
+			if (in.getLocalName().endsWith("Parameter")) {
+				contn = parseParameter(contn, in, base);
+			}
+			else if (in.getLocalName().equals("GraphicFill")) {
+				contn = parseGraphicFill(contn, in, base);
+			}
+			else if (in.getLocalName().equals("GraphicStroke")) {
+				contn = parseGraphicStroke(contn, in, base);
+			}
+			else if (in.isStartElement()) {
+				LOG.error("Found unknown element '{}', skipping.", in.getLocalName());
+				skipElement(in);
+			}
+		}
 
-        in.require( END_ELEMENT, null, "Stroke" );
+		in.require(END_ELEMENT, null, "Stroke");
 
-        return new Pair<Stroke, Continuation<Stroke>>( base, contn );
-    }
+		return new Pair<Stroke, Continuation<Stroke>>(base, contn);
+	}
 
-    private Continuation<Stroke> parseParameter( Continuation<Stroke> contn, XMLStreamReader in, Stroke base )
-                            throws XMLStreamException {
-        String name = in.getAttributeValue( null, "name" );
+	private Continuation<Stroke> parseParameter(Continuation<Stroke> contn, XMLStreamReader in, Stroke base)
+			throws XMLStreamException {
+		String name = in.getAttributeValue(null, "name");
 
-        if ( name.equals( "stroke" ) ) {
-            contn = context.parser.updateOrContinue( in, "Parameter", base, new Updater<Stroke>() {
-                @Override
-                public void update( Stroke obj, String val ) {
-                    // keep alpha value
-                    int alpha = obj.color.getAlpha();
-                    obj.color = decodeWithAlpha( val );
-                    obj.color = new Color( obj.color.getRed(), obj.color.getGreen(), obj.color.getBlue(), alpha );
-                }
-            }, contn ).second;
-        } else if ( name.equals( "stroke-opacity" ) ) {
-            contn = context.parser.updateOrContinue( in, "Parameter", base, new Updater<Stroke>() {
-                @Override
-                public void update( Stroke obj, String val ) {
-                    // keep original color
-                    float alpha = Float.parseFloat( val );
-                    float[] cols = obj.color.getRGBColorComponents( null );
-                    obj.color = new Color( cols[0], cols[1], cols[2], alpha );
-                }
-            }, contn ).second;
-        } else if ( name.equals( "stroke-width" ) ) {
-            contn = context.parser.updateOrContinue( in, "Parameter", base, new Updater<Stroke>() {
-                @Override
-                public void update( Stroke obj, String val ) {
-                    obj.width = Double.parseDouble( val );
-                }
-            }, contn ).second;
-        } else if ( name.equals( "stroke-linejoin" ) ) {
-            contn = context.parser.updateOrContinue( in, "Parameter", base, new Updater<Stroke>() {
-                @Override
-                public void update( Stroke obj, String val ) {
-                    try {
-                        obj.linejoin = LineJoin.valueOf( val.toUpperCase() );
-                    } catch ( IllegalArgumentException e ) {
-                        LOG.warn( "Used invalid value '{}' for line join.", val );
-                        obj.linejoin = ROUND;
-                    }
-                }
-            }, contn ).second;
-        } else if ( name.equals( "stroke-linecap" ) ) {
-            contn = context.parser.updateOrContinue( in, "Parameter", base, new Updater<Stroke>() {
-                @Override
-                public void update( Stroke obj, String val ) {
-                    try {
-                        obj.linecap = LineCap.valueOf( val.toUpperCase() );
-                    } catch ( IllegalArgumentException e ) {
-                        LOG.warn( "Used invalid value '{}' for line cap.", val );
-                        obj.linecap = BUTT;
-                    }
-                }
-            }, contn ).second;
-        } else if ( name.equals( "stroke-dasharray" ) ) {
-            contn = context.parser.updateOrContinue( in, "Parameter", base, new Updater<Stroke>() {
-                @Override
-                public void update( Stroke obj, String val ) {
-                    // , is not strictly allowed, but we don't lose anything by being flexible
-                    if ( val.contains( "," ) ) {
-                        obj.dasharray = splitAsDoubles( val, "," );
-                    } else {
-                        obj.dasharray = splitAsDoubles( val, "\\s" );
-                    }
-                }
-            }, contn ).second;
-        } else if ( name.equals( "stroke-dashoffset" ) ) {
-            contn = context.parser.updateOrContinue( in, "Parameter", base, new Updater<Stroke>() {
-                @Override
-                public void update( Stroke obj, String val ) {
-                    obj.dashoffset = Double.parseDouble( val );
-                }
-            }, contn ).second;
-        } else {
-            Location loc = in.getLocation();
-            LOG.error( "Found unknown parameter '{}' at line {}, column {}, skipping.",
-                       new Object[] { name, loc.getLineNumber(), loc.getColumnNumber() } );
-            skipElement( in );
-        }
+		if (name.equals("stroke")) {
+			contn = context.parser.updateOrContinue(in, "Parameter", base, new Updater<Stroke>() {
+				@Override
+				public void update(Stroke obj, String val) {
+					// keep alpha value
+					int alpha = obj.color.getAlpha();
+					obj.color = decodeWithAlpha(val);
+					obj.color = new Color(obj.color.getRed(), obj.color.getGreen(), obj.color.getBlue(), alpha);
+				}
+			}, contn).second;
+		}
+		else if (name.equals("stroke-opacity")) {
+			contn = context.parser.updateOrContinue(in, "Parameter", base, new Updater<Stroke>() {
+				@Override
+				public void update(Stroke obj, String val) {
+					// keep original color
+					float alpha = Float.parseFloat(val);
+					float[] cols = obj.color.getRGBColorComponents(null);
+					obj.color = new Color(cols[0], cols[1], cols[2], alpha);
+				}
+			}, contn).second;
+		}
+		else if (name.equals("stroke-width")) {
+			contn = context.parser.updateOrContinue(in, "Parameter", base, new Updater<Stroke>() {
+				@Override
+				public void update(Stroke obj, String val) {
+					obj.width = Double.parseDouble(val);
+				}
+			}, contn).second;
+		}
+		else if (name.equals("stroke-linejoin")) {
+			contn = context.parser.updateOrContinue(in, "Parameter", base, new Updater<Stroke>() {
+				@Override
+				public void update(Stroke obj, String val) {
+					try {
+						obj.linejoin = LineJoin.valueOf(val.toUpperCase());
+					}
+					catch (IllegalArgumentException e) {
+						LOG.warn("Used invalid value '{}' for line join.", val);
+						obj.linejoin = ROUND;
+					}
+				}
+			}, contn).second;
+		}
+		else if (name.equals("stroke-linecap")) {
+			contn = context.parser.updateOrContinue(in, "Parameter", base, new Updater<Stroke>() {
+				@Override
+				public void update(Stroke obj, String val) {
+					try {
+						obj.linecap = LineCap.valueOf(val.toUpperCase());
+					}
+					catch (IllegalArgumentException e) {
+						LOG.warn("Used invalid value '{}' for line cap.", val);
+						obj.linecap = BUTT;
+					}
+				}
+			}, contn).second;
+		}
+		else if (name.equals("stroke-dasharray")) {
+			contn = context.parser.updateOrContinue(in, "Parameter", base, new Updater<Stroke>() {
+				@Override
+				public void update(Stroke obj, String val) {
+					// , is not strictly allowed, but we don't lose anything by being
+					// flexible
+					if (val.contains(",")) {
+						obj.dasharray = splitAsDoubles(val, ",");
+					}
+					else {
+						obj.dasharray = splitAsDoubles(val, "\\s");
+					}
+				}
+			}, contn).second;
+		}
+		else if (name.equals("stroke-dashoffset")) {
+			contn = context.parser.updateOrContinue(in, "Parameter", base, new Updater<Stroke>() {
+				@Override
+				public void update(Stroke obj, String val) {
+					obj.dashoffset = Double.parseDouble(val);
+				}
+			}, contn).second;
+		}
+		else if (name.equals("deegree-graphicstroke-position-percentage")) {
+			// Note: this is a deegree specific parameter and replaces the Element
+			// PositionPercentage
+			contn = context.parser.updateOrContinue(in, "Parameter", base, new Updater<Stroke>() {
+				@Override
+				public void update(Stroke obj, String val) {
+					obj.positionPercentage = Double.parseDouble(val);
+				}
+			}, contn).second;
+		}
+		else if (name.equals("deegree-graphicstroke-rotation")) {
+			// Note: this is a deegree specific parameter
+			contn = context.parser.updateOrContinue(in, "Parameter", base, new Updater<Stroke>() {
+				@Override
+				public void update(Stroke obj, String val) {
+					obj.positionRotation = Double.parseDouble(val) > 0;
+				}
+			}, contn).second;
+		}
+		else {
+			Location loc = in.getLocation();
+			LOG.error("Found unknown parameter '{}' at line {}, column {}, skipping.",
+					new Object[] { name, loc.getLineNumber(), loc.getColumnNumber() });
+			skipElement(in);
+		}
 
-        in.require( END_ELEMENT, null, null );
-        return contn;
-    }
+		in.require(END_ELEMENT, null, null);
+		return contn;
+	}
 
-    private Continuation<Stroke> parseGraphicFill( Continuation<Stroke> contn, XMLStreamReader in, Stroke base )
-                            throws XMLStreamException {
-        in.nextTag();
-        final Pair<Graphic, Continuation<Graphic>> pair = context.graphicParser.parseGraphic( in );
-        if ( pair != null ) {
-            base.fill = pair.first;
-            if ( pair.second != null ) {
-                contn = new Continuation<Stroke>( contn ) {
-                    @Override
-                    public void updateStep( Stroke base, Feature f, XPathEvaluator<Feature> evaluator ) {
-                        pair.second.evaluate( base.fill, f, evaluator );
-                    }
-                };
-            }
-        }
-        in.require( END_ELEMENT, null, "Graphic" );
-        in.nextTag();
-        in.require( END_ELEMENT, null, "GraphicFill" );
-        return contn;
-    }
+	private Continuation<Stroke> parseGraphicFill(Continuation<Stroke> contn, XMLStreamReader in, Stroke base)
+			throws XMLStreamException {
+		in.nextTag();
+		final Pair<Graphic, Continuation<Graphic>> pair = context.graphicParser.parseGraphic(in);
+		if (pair != null) {
+			base.fill = pair.first;
+			if (pair.second != null) {
+				contn = new Continuation<Stroke>(contn) {
+					@Override
+					public void updateStep(Stroke base, Feature f, XPathEvaluator<Feature> evaluator) {
+						pair.second.evaluate(base.fill, f, evaluator);
+					}
+				};
+			}
+		}
+		in.require(END_ELEMENT, null, "Graphic");
+		in.nextTag();
+		in.require(END_ELEMENT, null, "GraphicFill");
+		return contn;
+	}
 
-    private Continuation<Stroke> parseGraphicStroke( Continuation<Stroke> contn, XMLStreamReader in, Stroke base )
-                            throws XMLStreamException {
-        while ( !( in.isEndElement() && in.getLocalName().equals( "GraphicStroke" ) ) ) {
-            in.nextTag();
+	private Continuation<Stroke> parseGraphicStroke(Continuation<Stroke> contn, XMLStreamReader in, Stroke base)
+			throws XMLStreamException {
+		while (!(in.isEndElement() && in.getLocalName().equals("GraphicStroke"))) {
+			in.nextTag();
 
-            if ( in.getLocalName().equals( "Graphic" ) ) {
-                final Pair<Graphic, Continuation<Graphic>> pair = context.graphicParser.parseGraphic( in );
+			if (in.getLocalName().equals("Graphic")) {
+				final Pair<Graphic, Continuation<Graphic>> pair = context.graphicParser.parseGraphic(in);
 
-                if ( pair != null ) {
-                    base.stroke = pair.first;
-                    if ( pair.second != null ) {
-                        contn = new Continuation<Stroke>( contn ) {
-                            @Override
-                            public void updateStep( Stroke base, Feature f, XPathEvaluator<Feature> evaluator ) {
-                                pair.second.evaluate( base.stroke, f, evaluator );
-                            }
-                        };
-                    }
-                }
+				if (pair != null) {
+					base.stroke = pair.first;
+					if (pair.second != null) {
+						contn = new Continuation<Stroke>(contn) {
+							@Override
+							public void updateStep(Stroke base, Feature f, XPathEvaluator<Feature> evaluator) {
+								pair.second.evaluate(base.stroke, f, evaluator);
+							}
+						};
+					}
+				}
 
-                in.require( END_ELEMENT, null, "Graphic" );
-            } else if ( in.getLocalName().equals( "InitialGap" ) ) {
-                contn = context.parser.updateOrContinue( in, "InitialGap", base, new Updater<Stroke>() {
-                    @Override
-                    public void update( Stroke obj, String val ) {
-                        obj.strokeInitialGap = Double.parseDouble( val );
-                    }
-                }, contn ).second;
-                in.require( END_ELEMENT, null, "InitialGap" );
-            } else if ( in.getLocalName().equals( "Gap" ) ) {
-                contn = context.parser.updateOrContinue( in, "Gap", base, new Updater<Stroke>() {
-                    @Override
-                    public void update( Stroke obj, String val ) {
-                        obj.strokeGap = Double.parseDouble( val );
-                    }
-                }, contn ).second;
-                in.require( END_ELEMENT, null, "Gap" );
-            } else if ( in.getLocalName().equals( "PositionPercentage" ) ) {
-                contn = context.parser.updateOrContinue( in, "PositionPercentage", base, new Updater<Stroke>() {
-                    @Override
-                    public void update( Stroke obj, String val ) {
-                        obj.positionPercentage = Double.parseDouble( val );
-                    }
-                }, contn ).second;
-                in.require( END_ELEMENT, null, "PositionPercentage" );
-            } else if ( in.isStartElement() ) {
-                Location loc = in.getLocation();
-                LOG.error( "Found unknown element '{}' at line {}, column {}, skipping.",
-                           new Object[] { in.getLocalName(), loc.getLineNumber(), loc.getColumnNumber() } );
-                skipElement( in );
-            }
+				in.require(END_ELEMENT, null, "Graphic");
+			}
+			else if (in.getLocalName().equals("InitialGap")) {
+				contn = context.parser.updateOrContinue(in, "InitialGap", base, new Updater<Stroke>() {
+					@Override
+					public void update(Stroke obj, String val) {
+						obj.strokeInitialGap = Double.parseDouble(val);
+					}
+				}, contn).second;
+				in.require(END_ELEMENT, null, "InitialGap");
+			}
+			else if (in.getLocalName().equals("Gap")) {
+				contn = context.parser.updateOrContinue(in, "Gap", base, new Updater<Stroke>() {
+					@Override
+					public void update(Stroke obj, String val) {
+						obj.strokeGap = Double.parseDouble(val);
+					}
+				}, contn).second;
+				in.require(END_ELEMENT, null, "Gap");
+			}
+			else if (in.getLocalName().equals("PositionPercentage")) {
+				Location loc = in.getLocation();
+				LOG.warn("The use of {} at line {}, column {} is deprecated and will be removed in the future. {}",
+						in.getLocalName(), loc.getLineNumber(), loc.getColumnNumber(),
+						"Use a Svg/CssParameter with the name 'deegree-graphicstroke-position-percentage' instead.");
+				contn = context.parser.updateOrContinue(in, "PositionPercentage", base, new Updater<Stroke>() {
+					@Override
+					public void update(Stroke obj, String val) {
+						obj.positionPercentage = Double.parseDouble(val);
+					}
+				}, contn).second;
+				in.require(END_ELEMENT, null, "PositionPercentage");
+			}
+			else if (in.isStartElement()) {
+				Location loc = in.getLocation();
+				LOG.error("Found unknown element '{}' at line {}, column {}, skipping.",
+						new Object[] { in.getLocalName(), loc.getLineNumber(), loc.getColumnNumber() });
+				skipElement(in);
+			}
 
-        }
-        return contn;
-    }
+		}
+		return contn;
+	}
 
 }

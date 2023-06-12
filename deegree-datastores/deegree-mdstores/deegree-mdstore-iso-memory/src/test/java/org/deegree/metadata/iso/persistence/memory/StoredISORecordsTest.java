@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-metadata/src/main/java/org/deegree/metadata/iso/persistence/ISOMetadataStoreProvider.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -67,306 +66,283 @@ import org.junit.Test;
 
 /**
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: 30992 $, $Date: 2011-05-31 16:09:20 +0200 (Di, 31. Mai 2011) $
  */
 public class StoredISORecordsTest {
 
-    private static final NamespaceBindings nsContext = CommonNamespaces.getNamespaceContext();
+	private static final NamespaceBindings nsContext = CommonNamespaces.getNamespaceContext();
 
-    /*
-     * AddRecords
-     */
+	/*
+	 * AddRecords
+	 */
 
-    @Test
-    public void testInsertRecordTwice()
-                            throws Exception {
-        StoredISORecords storedIsoRecords = getStoredIsoRecords();
-        int expectedNumberOfRecords = storedIsoRecords.getNumberOfStoredRecords();
-        storedIsoRecords.insertRecord( getRecord( "1.xml" ), null );
-        assertEquals( expectedNumberOfRecords, storedIsoRecords.getNumberOfStoredRecords() );
-    }
+	@Test
+	public void testInsertRecordTwice() throws Exception {
+		StoredISORecords storedIsoRecords = getStoredIsoRecords();
+		int expectedNumberOfRecords = storedIsoRecords.getNumberOfStoredRecords();
+		storedIsoRecords.insertRecord(getRecord("1.xml"), null);
+		assertEquals(expectedNumberOfRecords, storedIsoRecords.getNumberOfStoredRecords());
+	}
 
-    @Test
-    public void testInsertRecordWithoutFileIdentifier()
-                            throws Exception {
-        StoredISORecords storedIsoRecords = getStoredIsoRecords();
-        int expectedNumberOfRecords = storedIsoRecords.getNumberOfStoredRecords();
-        storedIsoRecords.insertRecord( getRecord( "withoutFileIdentifier.xml" ), null );
-        assertEquals( expectedNumberOfRecords, storedIsoRecords.getNumberOfStoredRecords() );
-    }
+	@Test
+	public void testInsertRecordWithoutFileIdentifier() throws Exception {
+		StoredISORecords storedIsoRecords = getStoredIsoRecords();
+		int expectedNumberOfRecords = storedIsoRecords.getNumberOfStoredRecords();
+		storedIsoRecords.insertRecord(getRecord("withoutFileIdentifier.xml"), null);
+		assertEquals(expectedNumberOfRecords, storedIsoRecords.getNumberOfStoredRecords());
+	}
 
-    /*
-     * GetRecordById
-     */
+	/*
+	 * GetRecordById
+	 */
 
-    @Test
-    public void testGetRecordById()
-                            throws Exception {
-        StoredISORecords storedIsoRecords = getStoredIsoRecords();
-        MetadataResultSet<ISORecord> recordResultSet = storedIsoRecords.getRecordById( singletonList( "f90258d9a412aa5f3ba679b4997bb176" ) );
+	@Test
+	public void testGetRecordById() throws Exception {
+		StoredISORecords storedIsoRecords = getStoredIsoRecords();
+		MetadataResultSet<ISORecord> recordResultSet = storedIsoRecords
+			.getRecordById(singletonList("f90258d9a412aa5f3ba679b4997bb176"));
 
-        assertTrue( recordResultSet.next() );
-        assertNotNull( recordResultSet.getRecord() );
-        assertFalse( recordResultSet.next() );
-    }
+		assertTrue(recordResultSet.next());
+		assertNotNull(recordResultSet.getRecord());
+		assertFalse(recordResultSet.next());
+	}
 
-    @Test
-    public void testGetRecordByIdWithUnknownId()
-                            throws Exception {
-        StoredISORecords storedIsoRecords = getStoredIsoRecords();
-        MetadataResultSet<ISORecord> recordResultSet = storedIsoRecords.getRecordById( singletonList( "UNKNOWN_ID" ) );
+	@Test
+	public void testGetRecordByIdWithUnknownId() throws Exception {
+		StoredISORecords storedIsoRecords = getStoredIsoRecords();
+		MetadataResultSet<ISORecord> recordResultSet = storedIsoRecords.getRecordById(singletonList("UNKNOWN_ID"));
 
-        assertFalse( recordResultSet.next() );
-    }
+		assertFalse(recordResultSet.next());
+	}
 
-    @Test
-    public void testGetRecordByIds()
-                            throws Exception {
-        StoredISORecords storedIsoRecords = getStoredIsoRecords();
-        List<String> ids = new ArrayList<String>();
-        ids.add( "f90258d9a412aa5f3ba679b4997bb176" );
-        ids.add( "15c1c1bbe5b4409c2fe10639bb54330f" );
-        MetadataResultSet<ISORecord> recordResultSet = storedIsoRecords.getRecordById( ids );
+	@Test
+	public void testGetRecordByIds() throws Exception {
+		StoredISORecords storedIsoRecords = getStoredIsoRecords();
+		List<String> ids = new ArrayList<String>();
+		ids.add("f90258d9a412aa5f3ba679b4997bb176");
+		ids.add("15c1c1bbe5b4409c2fe10639bb54330f");
+		MetadataResultSet<ISORecord> recordResultSet = storedIsoRecords.getRecordById(ids);
 
-        assertTrue( recordResultSet.next() );
-        assertNotNull( recordResultSet.getRecord() );
-        assertTrue( recordResultSet.next() );
-        assertNotNull( recordResultSet.getRecord() );
-        assertFalse( recordResultSet.next() );
-    }
+		assertTrue(recordResultSet.next());
+		assertNotNull(recordResultSet.getRecord());
+		assertTrue(recordResultSet.next());
+		assertNotNull(recordResultSet.getRecord());
+		assertFalse(recordResultSet.next());
+	}
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testGetRecordByIdNullList()
-                            throws Exception {
-        StoredISORecords storedIsoRecords = getStoredIsoRecords();
-        storedIsoRecords.getRecordById( null );
-    }
+	@Test(expected = IllegalArgumentException.class)
+	public void testGetRecordByIdNullList() throws Exception {
+		StoredISORecords storedIsoRecords = getStoredIsoRecords();
+		storedIsoRecords.getRecordById(null);
+	}
 
-    /*
-     * GetRecords
-     */
+	/*
+	 * GetRecords
+	 */
 
-    @Test
-    public void testGetRecordsAll()
-                            throws Exception {
-        StoredISORecords storedIsoRecords = getStoredIsoRecords();
-        MetadataQuery query = new MetadataQuery( null, null, null, null, 1, 100 );
-        MetadataResultSet<ISORecord> allRecords = storedIsoRecords.getRecords( query );
-        assertEquals( storedIsoRecords.getNumberOfStoredRecords(), allRecords.getRemaining() );
-    }
+	@Test
+	public void testGetRecordsAll() throws Exception {
+		StoredISORecords storedIsoRecords = getStoredIsoRecords();
+		MetadataQuery query = new MetadataQuery(null, null, null, null, 1, 100);
+		MetadataResultSet<ISORecord> allRecords = storedIsoRecords.getRecords(query);
+		assertEquals(storedIsoRecords.getNumberOfStoredRecords(), allRecords.getRemaining());
+	}
 
-    @Test
-    public void testGetRecordsWithLimitedMaxRecord()
-                            throws Exception {
-        StoredISORecords storedIsoRecords = getStoredIsoRecords();
-        int maxRecords = 2;
-        MetadataQuery query = new MetadataQuery( null, null, null, null, 1, maxRecords );
-        MetadataResultSet<ISORecord> allRecords = storedIsoRecords.getRecords( query );
-        assertEquals( maxRecords, allRecords.getRemaining() );
-    }
+	@Test
+	public void testGetRecordsWithLimitedMaxRecord() throws Exception {
+		StoredISORecords storedIsoRecords = getStoredIsoRecords();
+		int maxRecords = 2;
+		MetadataQuery query = new MetadataQuery(null, null, null, null, 1, maxRecords);
+		MetadataResultSet<ISORecord> allRecords = storedIsoRecords.getRecords(query);
+		assertEquals(maxRecords, allRecords.getRemaining());
+	}
 
-    @Test
-    public void testGetRecordsWithStartPositionWithoutQuery()
-                            throws Exception {
-        StoredISORecords storedRecords = new StoredISORecords();
-        storedRecords.insertRecord( getRecord( "1.xml" ), null );
-        ISORecord expectedRecord = getRecord( "3.xml" );
-        storedRecords.insertRecord( expectedRecord, null );
-        storedRecords.insertRecord( getRecord( "2.xml" ), null );
+	@Test
+	public void testGetRecordsWithStartPositionWithoutQuery() throws Exception {
+		StoredISORecords storedRecords = new StoredISORecords();
+		storedRecords.insertRecord(getRecord("1.xml"), null);
+		ISORecord expectedRecord = getRecord("3.xml");
+		storedRecords.insertRecord(expectedRecord, null);
+		storedRecords.insertRecord(getRecord("2.xml"), null);
 
-        int maxRecords = 1;
-        MetadataQuery query = new MetadataQuery( null, null, null, null, 2, maxRecords );
-        MetadataResultSet<ISORecord> records = storedRecords.getRecords( query );
-        assertEquals( maxRecords, records.getRemaining() );
-        ISORecord actualRecord = records.getRecord();
-        assertEquals( expectedRecord.getIdentifier(), actualRecord.getIdentifier() );
-    }
+		int maxRecords = 1;
+		MetadataQuery query = new MetadataQuery(null, null, null, null, 2, maxRecords);
+		MetadataResultSet<ISORecord> records = storedRecords.getRecords(query);
+		assertEquals(maxRecords, records.getRemaining());
+		ISORecord actualRecord = records.getRecord();
+		assertEquals(expectedRecord.getIdentifier(), actualRecord.getIdentifier());
+	}
 
-    @Test
-    public void testGetRecordsWithStartPositionWithQuery()
-                            throws Exception {
-        StoredISORecords storedRecords = new StoredISORecords();
-        storedRecords.insertRecord( getRecord( "1.xml" ), null );
-        // not matched by the filter!
-        storedRecords.insertRecord( getRecord( "2.xml" ), null );
-        ISORecord expectedRecord = getRecord( "3.xml" );
-        storedRecords.insertRecord( expectedRecord, null );
-        Literal<PrimitiveValue> literal = new Literal<PrimitiveValue>( "IKONOS 2" );
-        Operator operator = new PropertyIsEqualTo( new ValueReference( "Subject", nsContext ), literal, true, null );
+	@Test
+	public void testGetRecordsWithStartPositionWithQuery() throws Exception {
+		StoredISORecords storedRecords = new StoredISORecords();
+		storedRecords.insertRecord(getRecord("1.xml"), null);
+		// not matched by the filter!
+		storedRecords.insertRecord(getRecord("2.xml"), null);
+		ISORecord expectedRecord = getRecord("3.xml");
+		storedRecords.insertRecord(expectedRecord, null);
+		Literal<PrimitiveValue> literal = new Literal<PrimitiveValue>("IKONOS 2");
+		Operator operator = new PropertyIsEqualTo(new ValueReference("Subject", nsContext), literal, true, null);
 
-        Filter filter = new OperatorFilter( operator );
-        int maxRecords = 1;
-        MetadataQuery query = new MetadataQuery( null, null, filter, null, 2, maxRecords );
-        MetadataResultSet<ISORecord> records = storedRecords.getRecords( query );
-        assertEquals( maxRecords, records.getRemaining() );
-        ISORecord actualRecord = records.getRecord();
-        assertEquals( expectedRecord.getIdentifier(), actualRecord.getIdentifier() );
-    }
+		Filter filter = new OperatorFilter(operator);
+		int maxRecords = 1;
+		MetadataQuery query = new MetadataQuery(null, null, filter, null, 2, maxRecords);
+		MetadataResultSet<ISORecord> records = storedRecords.getRecords(query);
+		assertEquals(maxRecords, records.getRemaining());
+		ISORecord actualRecord = records.getRecord();
+		assertEquals(expectedRecord.getIdentifier(), actualRecord.getIdentifier());
+	}
 
-    @Test
-    public void testGetRecordsWithStartPositionWithMaxRecords()
-                            throws Exception {
-        StoredISORecords storedRecords = new StoredISORecords();
-        // not matched by the filter!
-        storedRecords.insertRecord( getRecord( "2.xml" ), null );
-        storedRecords.insertRecord( getRecord( "1.xml" ), null );
-        storedRecords.insertRecord( getRecord( "3.xml" ), null );
-        storedRecords.insertRecord( getRecord( "4.xml" ), null );
+	@Test
+	public void testGetRecordsWithStartPositionWithMaxRecords() throws Exception {
+		StoredISORecords storedRecords = new StoredISORecords();
+		// not matched by the filter!
+		storedRecords.insertRecord(getRecord("2.xml"), null);
+		storedRecords.insertRecord(getRecord("1.xml"), null);
+		storedRecords.insertRecord(getRecord("3.xml"), null);
+		storedRecords.insertRecord(getRecord("4.xml"), null);
 
-        Literal<PrimitiveValue> literal = new Literal<PrimitiveValue>( "IKONOS 2" );
-        Operator operator = new PropertyIsEqualTo( new ValueReference( "Subject", nsContext ), literal, true, null );
+		Literal<PrimitiveValue> literal = new Literal<PrimitiveValue>("IKONOS 2");
+		Operator operator = new PropertyIsEqualTo(new ValueReference("Subject", nsContext), literal, true, null);
 
-        Filter filter = new OperatorFilter( operator );
-        List<ISORecord> allMatchingRecords = storedRecords.getRecords( filter );
+		Filter filter = new OperatorFilter(operator);
+		List<ISORecord> allMatchingRecords = storedRecords.getRecords(filter);
 
-        int maxRecords = 3;
-        int startPosition = 2;
-        MetadataQuery query = new MetadataQuery( null, null, filter, null, startPosition, maxRecords );
-        MetadataResultSet<ISORecord> records = storedRecords.getRecords( query );
-        int expected = allMatchingRecords.size() - startPosition + 1;
-        assertEquals( expected, records.getRemaining() );
-    }
+		int maxRecords = 3;
+		int startPosition = 2;
+		MetadataQuery query = new MetadataQuery(null, null, filter, null, startPosition, maxRecords);
+		MetadataResultSet<ISORecord> records = storedRecords.getRecords(query);
+		int expected = allMatchingRecords.size() - startPosition + 1;
+		assertEquals(expected, records.getRemaining());
+	}
 
-    @Test
-    public void testGetRecordsOrder()
-                            throws Exception {
-        StoredISORecords storedRecords = new StoredISORecords();
-        ISORecord record1 = getRecord( "3.xml" );
-        storedRecords.insertRecord( record1, null );
-        ISORecord record2 = getRecord( "1.xml" );
-        storedRecords.insertRecord( record2, null );
-        ISORecord record3 = getRecord( "2.xml" );
-        storedRecords.insertRecord( record3, null );
+	@Test
+	public void testGetRecordsOrder() throws Exception {
+		StoredISORecords storedRecords = new StoredISORecords();
+		ISORecord record1 = getRecord("3.xml");
+		storedRecords.insertRecord(record1, null);
+		ISORecord record2 = getRecord("1.xml");
+		storedRecords.insertRecord(record2, null);
+		ISORecord record3 = getRecord("2.xml");
+		storedRecords.insertRecord(record3, null);
 
-        MetadataQuery query = new MetadataQuery( null, null, null, null, 1, 100 );
-        MetadataResultSet<ISORecord> records = storedRecords.getRecords( query );
-        assertSameOrderAsInserted( record1, record2, record3, records );
-    }
+		MetadataQuery query = new MetadataQuery(null, null, null, null, 1, 100);
+		MetadataResultSet<ISORecord> records = storedRecords.getRecords(query);
+		assertSameOrderAsInserted(record1, record2, record3, records);
+	}
 
-    private void assertSameOrderAsInserted( ISORecord record1, ISORecord record2, ISORecord record3,
-                                            MetadataResultSet<ISORecord> records )
-                            throws MetadataStoreException {
-        assertEquals( record1.getIdentifier(), records.getRecord().getIdentifier() );
-        assertEquals( record2.getIdentifier(), records.getRecord().getIdentifier() );
-        assertEquals( record3.getIdentifier(), records.getRecord().getIdentifier() );
-    }
+	private void assertSameOrderAsInserted(ISORecord record1, ISORecord record2, ISORecord record3,
+			MetadataResultSet<ISORecord> records) throws MetadataStoreException {
+		assertEquals(record1.getIdentifier(), records.getRecord().getIdentifier());
+		assertEquals(record2.getIdentifier(), records.getRecord().getIdentifier());
+		assertEquals(record3.getIdentifier(), records.getRecord().getIdentifier());
+	}
 
-    @Test
-    public void testGetRecordsAllWithFilterForSubject()
-                            throws Exception {
-        StoredISORecords storedIsoRecords = getStoredIsoRecords();
-        Literal<PrimitiveValue> literal = new Literal<PrimitiveValue>( "SPOT 2" );
-        Operator operator = new PropertyIsEqualTo( new ValueReference( "Subject", nsContext ), literal, true, null );
+	@Test
+	public void testGetRecordsAllWithFilterForSubject() throws Exception {
+		StoredISORecords storedIsoRecords = getStoredIsoRecords();
+		Literal<PrimitiveValue> literal = new Literal<PrimitiveValue>("SPOT 2");
+		Operator operator = new PropertyIsEqualTo(new ValueReference("Subject", nsContext), literal, true, null);
 
-        Filter filter = new OperatorFilter( operator );
-        MetadataQuery query = new MetadataQuery( null, null, filter, null, 1, 100 );
-        MetadataResultSet<ISORecord> allRecords = storedIsoRecords.getRecords( query );
-        assertEquals( 1, allRecords.getRemaining() );
-    }
+		Filter filter = new OperatorFilter(operator);
+		MetadataQuery query = new MetadataQuery(null, null, filter, null, 1, 100);
+		MetadataResultSet<ISORecord> allRecords = storedIsoRecords.getRecords(query);
+		assertEquals(1, allRecords.getRemaining());
+	}
 
-    @Test
-    public void testGetRecordsAllWithFilterForBBox()
-                            throws Exception {
-        StoredISORecords storedIsoRecords = getStoredIsoRecords();
-        GeometryFactory geomFactory = new GeometryFactory();
-        ValueReference reference = new ValueReference( "apiso:BoundingBox", nsContext );
-        Operator operator = new BBOX( reference, geomFactory.createEnvelope( 10, 45.22, 11., 45.5, CRSUtils.EPSG_4326 ) );
-        Filter filter = new OperatorFilter( operator );
-        MetadataQuery query = new MetadataQuery( null, null, filter, null, 1, 100 );
-        MetadataResultSet<ISORecord> allRecords = storedIsoRecords.getRecords( query );
-        assertEquals( 3, allRecords.getRemaining() );
-    }
+	@Test
+	public void testGetRecordsAllWithFilterForBBox() throws Exception {
+		StoredISORecords storedIsoRecords = getStoredIsoRecords();
+		GeometryFactory geomFactory = new GeometryFactory();
+		ValueReference reference = new ValueReference("apiso:BoundingBox", nsContext);
+		Operator operator = new BBOX(reference, geomFactory.createEnvelope(10, 45.22, 11., 45.5, CRSUtils.EPSG_4326));
+		Filter filter = new OperatorFilter(operator);
+		MetadataQuery query = new MetadataQuery(null, null, filter, null, 1, 100);
+		MetadataResultSet<ISORecord> allRecords = storedIsoRecords.getRecords(query);
+		assertEquals(3, allRecords.getRemaining());
+	}
 
-    @Test
-    public void testGetRecordsAllWithComplexFilter()
-                            throws Exception {
-        StoredISORecords storedIsoRecords = getStoredIsoRecords();
+	@Test
+	public void testGetRecordsAllWithComplexFilter() throws Exception {
+		StoredISORecords storedIsoRecords = getStoredIsoRecords();
 
-        Literal<PrimitiveValue> literalSubject = new Literal<PrimitiveValue>( "SPOT 2" );
-        Operator operatorSubject = new PropertyIsEqualTo( new ValueReference( "Subject", nsContext ), literalSubject,
-                                                          true, null );
+		Literal<PrimitiveValue> literalSubject = new Literal<PrimitiveValue>("SPOT 2");
+		Operator operatorSubject = new PropertyIsEqualTo(new ValueReference("Subject", nsContext), literalSubject, true,
+				null);
 
-        Literal<PrimitiveValue> lowerCreation = new Literal<PrimitiveValue>( "2006-06-14" );
-        Literal<PrimitiveValue> upperCreation = new Literal<PrimitiveValue>( "2006-06-16" );
-        Operator operatorCreation = new PropertyIsBetween( new ValueReference( "apiso:CreationDate", nsContext ),
-                                                           lowerCreation, upperCreation, true, null );
+		Literal<PrimitiveValue> lowerCreation = new Literal<PrimitiveValue>("2006-06-14");
+		Literal<PrimitiveValue> upperCreation = new Literal<PrimitiveValue>("2006-06-16");
+		Operator operatorCreation = new PropertyIsBetween(new ValueReference("apiso:CreationDate", nsContext),
+				lowerCreation, upperCreation, true, null);
 
-        Operator or = new Or( operatorSubject, operatorCreation );
-        Filter filter = new OperatorFilter( or );
-        MetadataQuery query = new MetadataQuery( null, null, filter, null, 1, 100 );
-        MetadataResultSet<ISORecord> allRecords = storedIsoRecords.getRecords( query );
-        assertEquals( 4, allRecords.getRemaining() );
-    }
+		Operator or = new Or(operatorSubject, operatorCreation);
+		Filter filter = new OperatorFilter(or);
+		MetadataQuery query = new MetadataQuery(null, null, filter, null, 1, 100);
+		MetadataResultSet<ISORecord> allRecords = storedIsoRecords.getRecords(query);
+		assertEquals(4, allRecords.getRemaining());
+	}
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testGetRecordsWithNullQuery()
-                            throws Exception {
-        StoredISORecords storedIsoRecords = getStoredIsoRecords();
-        MetadataQuery query = null;
-        storedIsoRecords.getRecords( query );
-    }
+	@Test(expected = IllegalArgumentException.class)
+	public void testGetRecordsWithNullQuery() throws Exception {
+		StoredISORecords storedIsoRecords = getStoredIsoRecords();
+		MetadataQuery query = null;
+		storedIsoRecords.getRecords(query);
+	}
 
-    /*
-     * Insert
-     */
+	/*
+	 * Insert
+	 */
 
-    @Test
-    public void testInsert()
-                            throws Exception {
-        StoredISORecords storedRecords = new StoredISORecords();
-        storedRecords.insertRecord( getRecord( "1.xml" ), null );
-        storedRecords.insertRecord( getRecord( "2.xml" ), null );
-        storedRecords.insertRecord( getRecord( "3.xml" ), null );
+	@Test
+	public void testInsert() throws Exception {
+		StoredISORecords storedRecords = new StoredISORecords();
+		storedRecords.insertRecord(getRecord("1.xml"), null);
+		storedRecords.insertRecord(getRecord("2.xml"), null);
+		storedRecords.insertRecord(getRecord("3.xml"), null);
 
-        assertEquals( 3, storedRecords.getNumberOfStoredRecords() );
-    }
+		assertEquals(3, storedRecords.getNumberOfStoredRecords());
+	}
 
-    /*
-     * Delete
-     */
+	/*
+	 * Delete
+	 */
 
-    @Test
-    public void testDelete()
-                            throws Exception {
-        StoredISORecords storedRecords = new StoredISORecords();
-        storedRecords.insertRecord( getRecord( "1.xml" ), null );
-        storedRecords.insertRecord( getRecord( "2.xml" ), null );
-        ISORecord record = getRecord( "3.xml" );
-        storedRecords.insertRecord( record, null );
+	@Test
+	public void testDelete() throws Exception {
+		StoredISORecords storedRecords = new StoredISORecords();
+		storedRecords.insertRecord(getRecord("1.xml"), null);
+		storedRecords.insertRecord(getRecord("2.xml"), null);
+		ISORecord record = getRecord("3.xml");
+		storedRecords.insertRecord(record, null);
 
-        int numberOfStoredRecordsBeforeDelete = storedRecords.getNumberOfStoredRecords();
-        storedRecords.deleteRecord( record.getIdentifier() );
-        assertEquals( numberOfStoredRecordsBeforeDelete - 1, storedRecords.getNumberOfStoredRecords() );
-        Filter filter = null;
-        List<ISORecord> records = storedRecords.getRecords( filter );
-        for ( ISORecord storedRecord : records ) {
-            assertFalse( record.getIdentifier().equals( storedRecord.getIdentifier() ) );
-        }
-    }
+		int numberOfStoredRecordsBeforeDelete = storedRecords.getNumberOfStoredRecords();
+		storedRecords.deleteRecord(record.getIdentifier());
+		assertEquals(numberOfStoredRecordsBeforeDelete - 1, storedRecords.getNumberOfStoredRecords());
+		Filter filter = null;
+		List<ISORecord> records = storedRecords.getRecords(filter);
+		for (ISORecord storedRecord : records) {
+			assertFalse(record.getIdentifier().equals(storedRecord.getIdentifier()));
+		}
+	}
 
-    @Test
-    public void testDeleteUnkown()
-                            throws Exception {
-        StoredISORecords storedRecords = new StoredISORecords();
-        storedRecords.insertRecord( getRecord( "1.xml" ), null );
-        storedRecords.insertRecord( getRecord( "2.xml" ), null );
+	@Test
+	public void testDeleteUnkown() throws Exception {
+		StoredISORecords storedRecords = new StoredISORecords();
+		storedRecords.insertRecord(getRecord("1.xml"), null);
+		storedRecords.insertRecord(getRecord("2.xml"), null);
 
-        int numberOfStoredRecordsBeforeDelete = storedRecords.getNumberOfStoredRecords();
-        storedRecords.deleteRecord( "Unknown" );
-        assertEquals( numberOfStoredRecordsBeforeDelete, storedRecords.getNumberOfStoredRecords() );
-    }
+		int numberOfStoredRecordsBeforeDelete = storedRecords.getNumberOfStoredRecords();
+		storedRecords.deleteRecord("Unknown");
+		assertEquals(numberOfStoredRecordsBeforeDelete, storedRecords.getNumberOfStoredRecords());
+	}
 
-    private StoredISORecords getStoredIsoRecords()
-                            throws Exception {
-        StoredISORecords storedRecords = new StoredISORecords();
+	private StoredISORecords getStoredIsoRecords() throws Exception {
+		StoredISORecords storedRecords = new StoredISORecords();
 
-        List<ISORecord> allRecords = GetTestRecordsUtils.getAllRecords();
-        for ( ISORecord record : allRecords ) {
-            storedRecords.insertRecord( record, null );
-        }
-        return storedRecords;
-    }
+		List<ISORecord> allRecords = GetTestRecordsUtils.getAllRecords();
+		for (ISORecord record : allRecords) {
+			storedRecords.insertRecord(record, null);
+		}
+		return storedRecords;
+	}
 
 }

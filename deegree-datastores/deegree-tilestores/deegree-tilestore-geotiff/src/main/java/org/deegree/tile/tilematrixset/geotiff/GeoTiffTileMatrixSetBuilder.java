@@ -62,93 +62,94 @@ import org.slf4j.Logger;
 
 /**
  * This class is responsible for building geotiff based tile matrix sets.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class GeoTiffTileMatrixSetBuilder implements ResourceBuilder<TileMatrixSet> {
 
-    private static final Logger LOG = getLogger( GeoTiffTileMatrixSetBuilder.class );
+	private static final Logger LOG = getLogger(GeoTiffTileMatrixSetBuilder.class);
 
-    private GeoTIFFTileMatrixSetConfig cfg;
+	private GeoTIFFTileMatrixSetConfig cfg;
 
-    private ResourceMetadata<TileMatrixSet> metadata;
+	private ResourceMetadata<TileMatrixSet> metadata;
 
-    public GeoTiffTileMatrixSetBuilder( GeoTIFFTileMatrixSetConfig cfg, ResourceMetadata<TileMatrixSet> metadata ) {
-        this.cfg = cfg;
-        this.metadata = metadata;
-    }
+	public GeoTiffTileMatrixSetBuilder(GeoTIFFTileMatrixSetConfig cfg, ResourceMetadata<TileMatrixSet> metadata) {
+		this.cfg = cfg;
+		this.metadata = metadata;
+	}
 
-    @Override
-    public TileMatrixSet build() {
-        ImageReader reader = null;
-        ImageInputStream iis = null;
+	@Override
+	public TileMatrixSet build() {
+		ImageReader reader = null;
+		ImageInputStream iis = null;
 
-        try {
-            ICRS crs = null;
-            if ( cfg.getStorageCRS() != null ) {
-                try {
-                    CRSRef ref = CRSManager.getCRSRef( cfg.getStorageCRS() );
-                    ref.getReferencedObject();
-                    crs = ref;
-                } catch ( ReferenceResolvingException e ) {
-                    throw new ResourceInitException( "Invalid CRS: " + cfg.getStorageCRS() );
-                }
-            }
+		try {
+			ICRS crs = null;
+			if (cfg.getStorageCRS() != null) {
+				try {
+					CRSRef ref = CRSManager.getCRSRef(cfg.getStorageCRS());
+					ref.getReferencedObject();
+					crs = ref;
+				}
+				catch (ReferenceResolvingException e) {
+					throw new ResourceInitException("Invalid CRS: " + cfg.getStorageCRS());
+				}
+			}
 
-            ImageIO.scanForPlugins();
-            
-            Iterator<ImageReader> readers = getImageReadersBySuffix( "tiff" );
-            while ( readers.hasNext() && !( reader instanceof TIFFImageReader ) ) {
-                reader = readers.next();
-            }
+			ImageIO.scanForPlugins();
 
-            File file = metadata.getLocation().resolveToFile( cfg.getFile() );
+			Iterator<ImageReader> readers = getImageReadersBySuffix("tiff");
+			while (readers.hasNext() && !(reader instanceof TIFFImageReader)) {
+				reader = readers.next();
+			}
 
-            if ( !file.exists() ) {
-                throw new ResourceInitException( "The file " + file + " does not exist." );
-            }
+			File file = metadata.getLocation().resolveToFile(cfg.getFile());
 
-            iis = createImageInputStream( file );
-            // this is already checked in provider
-            reader.setInput( iis, false, true );
-            int num = reader.getNumImages( true );
-            IIOMetadata md = reader.getImageMetadata( 0 );
-            Envelope envelope = getEnvelopeAndCrs( md, reader.getWidth( 0 ), reader.getHeight( 0 ), crs );
+			if (!file.exists()) {
+				throw new ResourceInitException("The file " + file + " does not exist.");
+			}
 
-            if ( envelope == null ) {
-                throw new ResourceInitException( "No envelope information could be read from GeoTIFF. "
-                                                 + "Please add one to the GeoTIFF." );
-            }
+			iis = createImageInputStream(file);
+			// this is already checked in provider
+			reader.setInput(iis, false, true);
+			int num = reader.getNumImages(true);
+			IIOMetadata md = reader.getImageMetadata(0);
+			Envelope envelope = getEnvelopeAndCrs(md, reader.getWidth(0), reader.getHeight(0), crs);
 
-            LOG.debug( "Envelope from GeoTIFF was {}.", envelope );
+			if (envelope == null) {
+				throw new ResourceInitException(
+						"No envelope information could be read from GeoTIFF. " + "Please add one to the GeoTIFF.");
+			}
 
-            SpatialMetadata smd = new SpatialMetadata( envelope, singletonList( envelope.getCoordinateSystem() ) );
+			LOG.debug("Envelope from GeoTIFF was {}.", envelope);
 
-            List<TileMatrix> matrices = new ArrayList<TileMatrix>();
+			SpatialMetadata smd = new SpatialMetadata(envelope, singletonList(envelope.getCoordinateSystem()));
 
-            for ( int i = 0; i < num; ++i ) {
-                int tw = reader.getTileWidth( i );
-                int th = reader.getTileHeight( i );
-                int width = reader.getWidth( i );
-                int height = reader.getHeight( i );
-                int numx = (int) Math.ceil( (double) width / (double) tw );
-                int numy = (int) Math.ceil( (double) height / (double) th );
-                double res = Math.max( envelope.getSpan0() / width, envelope.getSpan1() / height );
-                String id = Double.toString( res / DEFAULT_PIXEL_SIZE );
-                TileMatrix tmd = new TileMatrix( id, smd, BigInteger.valueOf( tw ), BigInteger.valueOf( th ), res,
-                                                 BigInteger.valueOf( numx ), BigInteger.valueOf( numy ) );
-                matrices.add( tmd );
-                LOG.debug( "Level {} has {}x{} tiles of {}x{} pixels, resolution is {}", new Object[] { i, numx, numy,
-                                                                                                       tw, th, res } );
-            }
+			List<TileMatrix> matrices = new ArrayList<TileMatrix>();
 
-            return new TileMatrixSet( file.getName().substring( 0, file.getName().length() - 4 ), null, matrices, smd,
-                                      metadata );
-        } catch ( Exception e ) {
-            throw new ResourceInitException( "Could not create tile matrix set. Reason: " + e.getLocalizedMessage(), e );
-        }
-    }
+			for (int i = 0; i < num; ++i) {
+				int tw = reader.getTileWidth(i);
+				int th = reader.getTileHeight(i);
+				int width = reader.getWidth(i);
+				int height = reader.getHeight(i);
+				int numx = (int) Math.ceil((double) width / (double) tw);
+				int numy = (int) Math.ceil((double) height / (double) th);
+				double res = Math.max(envelope.getSpan0() / width, envelope.getSpan1() / height);
+				String id = Double.toString(res / DEFAULT_PIXEL_SIZE);
+				TileMatrix tmd = new TileMatrix(id, smd, BigInteger.valueOf(tw), BigInteger.valueOf(th), res,
+						BigInteger.valueOf(numx), BigInteger.valueOf(numy));
+				matrices.add(tmd);
+				LOG.debug("Level {} has {}x{} tiles of {}x{} pixels, resolution is {}",
+						new Object[] { i, numx, numy, tw, th, res });
+			}
+
+			return new TileMatrixSet(file.getName().substring(0, file.getName().length() - 4), null, matrices, smd,
+					metadata);
+		}
+		catch (Exception e) {
+			throw new ResourceInitException("Could not create tile matrix set. Reason: " + e.getLocalizedMessage(), e);
+		}
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-base/src/main/java/org/deegree/filter/sql/islike/IsLikeStringPart.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -39,39 +38,34 @@ package org.deegree.sqldialect.filter.islike;
  * Part of a {@link IsLikeString}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author: mschneider $
- *
- * @version $Revision: 22060 $, $Date: 2010-01-20 17:59:52 +0100 (Mi, 20. Jan 2010) $
  */
 public interface IsLikeStringPart {
 
-    /**
-     * Returns an encoding that is suitable for arguments of "IS LIKE"-clauses in SQL.
-     * <p>
-     * This means:
-     * <ul>
-     * <li>wildCard: encoded as the '%'-character</li>
-     * <li>singleChar: encoded as the '_'-character</li>
-     * <li>escape: encoded as the '\'-character</li>
-     * </ul>
-     *
-     * @return encoded string
-     */
-    public String toSQL();
+	/**
+	 * Returns an encoding that is suitable for arguments of "IS LIKE"-clauses in SQL.
+	 * <p>
+	 * This means:
+	 * <ul>
+	 * <li>wildCard: encoded as the '%'-character</li>
+	 * <li>singleChar: encoded as the '_'-character</li>
+	 * <li>escape: encoded as the '\'-character</li>
+	 * </ul>
+	 * @return encoded string
+	 */
+	public String toSQL();
 
-    /**
-     * Returns an encoding that is suitable for arguments of "IS LIKE"-clauses in SQL.
-     * <p>
-     * This means:
-     * <ul>
-     * <li>wildCard: encoded as the '%'-character</li>
-     * <li>singleChar: encoded as the '_'-character</li>
-     * <li>escape: encoded as the '\'-character</li>
-     * </ul>
-     *
-     * @param toLowerCase
-     *            true means: convert to lowercase letters
-     * @return encoded string
-     */
-    public String toSQL( boolean toLowerCase );
+	/**
+	 * Returns an encoding that is suitable for arguments of "IS LIKE"-clauses in SQL.
+	 * <p>
+	 * This means:
+	 * <ul>
+	 * <li>wildCard: encoded as the '%'-character</li>
+	 * <li>singleChar: encoded as the '_'-character</li>
+	 * <li>escape: encoded as the '\'-character</li>
+	 * </ul>
+	 * @param toLowerCase true means: convert to lowercase letters
+	 * @return encoded string
+	 */
+	public String toSQL(boolean toLowerCase);
+
 }

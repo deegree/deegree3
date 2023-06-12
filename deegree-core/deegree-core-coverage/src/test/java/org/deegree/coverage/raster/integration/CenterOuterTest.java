@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2009 by:
@@ -60,170 +59,169 @@ import org.junit.Before;
 import org.slf4j.Logger;
 
 /**
- * The <code>CenterOuterTest</code> defines raster API integration tests on a tiled raster and a sole simple raster. For
- * each retrieval envelope a centered and outer representation of the raster file(s) is tested. The values tested should
- * not be altered, they are visually tested.
- * 
+ * The <code>CenterOuterTest</code> defines raster API integration tests on a tiled raster
+ * and a sole simple raster. For each retrieval envelope a centered and outer
+ * representation of the raster file(s) is tested. The values tested should not be
+ * altered, they are visually tested.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
- * 
+ *
  */
 public abstract class CenterOuterTest implements CompareValues {
-    private static final Logger LOG = getLogger( CenterOuterTest.class );
 
-    /** geometry factory to use */
-    protected static final GeometryFactory geomFac = new GeometryFactory();
+	private static final Logger LOG = getLogger(CenterOuterTest.class);
 
-    // se to true to get the compare values.
-    private static final boolean outputRasterAsArrays = false;
+	/** geometry factory to use */
+	protected static final GeometryFactory geomFac = new GeometryFactory();
 
-    /** To verify the coordinates */
-    protected static final Envelope rasterEnvelope = geomFac.createEnvelope( 1000, 2000, 1030, 2030, null );
+	// se to true to get the compare values.
+	private static final boolean outputRasterAsArrays = false;
 
-    /**
-     * kind of a constructor will be called as initialization.
-     * 
-     * @throws IOException
-     * @throws URISyntaxException
-     * @throws NumberFormatException
-     */
-    protected abstract void buildRasters()
-                            throws IOException, NumberFormatException, URISyntaxException;
+	/** To verify the coordinates */
+	protected static final Envelope rasterEnvelope = geomFac.createEnvelope(1000, 2000, 1030, 2030, null);
 
-    /**
-     * Init the two rasters
-     */
-    @Before
-    public void init() {
-        try {
-            buildRasters();
-        } catch ( Exception e ) {
-            Assert.fail( e.getLocalizedMessage() );
-        }
-    }
+	/**
+	 * kind of a constructor will be called as initialization.
+	 * @throws IOException
+	 * @throws URISyntaxException
+	 * @throws NumberFormatException
+	 */
+	protected abstract void buildRasters() throws IOException, NumberFormatException, URISyntaxException;
 
-    /**
-     * @param prefix
-     * @param raster
-     */
-    protected void writeDebugFile( String prefix, SimpleRaster raster ) {
-        assertNotNull( raster );
-        // always test reading operations on the new raster
-        BufferedImage image = RasterFactory.imageFromRaster( raster );
-        if ( outputRasterAsArrays ) {
-            BigInteger[] pixels = PixelCounter.countPixels( image );
-            StringBuilder sb = new StringBuilder( "private final static BigInteger[] FP_" );
-            sb.append( prefix.toUpperCase() );
-            sb.append( " = new BigInteger[] { " );
-            int i = 0;
-            for ( BigInteger bi : pixels ) {
-                sb.append( "BigInteger.valueOf( " );
-                sb.append( bi );
-                sb.append( "l )" );
-                if ( ++i < pixels.length ) {
-                    sb.append( ", " );
-                }
-            }
-            sb.append( "};" );
-            System.out.println( sb.toString() );
+	/**
+	 * Init the two rasters
+	 */
+	@Before
+	public void init() {
+		try {
+			buildRasters();
+		}
+		catch (Exception e) {
+			Assert.fail(e.getLocalizedMessage());
+		}
+	}
 
-            if ( LOG.isDebugEnabled() ) {
-                try {
-                    File f = File.createTempFile( prefix, ".png" );
-                    RasterFactory.saveRasterToFile( raster, f );
-                } catch ( IOException e ) {
-                    e.printStackTrace();
-                }
-                outputRaster( raster, prefix );
-            }
-        }
-    }
+	/**
+	 * @param prefix
+	 * @param raster
+	 */
+	protected void writeDebugFile(String prefix, SimpleRaster raster) {
+		assertNotNull(raster);
+		// always test reading operations on the new raster
+		BufferedImage image = RasterFactory.imageFromRaster(raster);
+		if (outputRasterAsArrays) {
+			BigInteger[] pixels = PixelCounter.countPixels(image);
+			StringBuilder sb = new StringBuilder("private final static BigInteger[] FP_");
+			sb.append(prefix.toUpperCase());
+			sb.append(" = new BigInteger[] { ");
+			int i = 0;
+			for (BigInteger bi : pixels) {
+				sb.append("BigInteger.valueOf( ");
+				sb.append(bi);
+				sb.append("l )");
+				if (++i < pixels.length) {
+					sb.append(", ");
+				}
+			}
+			sb.append("};");
+			System.out.println(sb.toString());
 
-    /**
-     * output the values of the given raster.
-     * 
-     * @param raster
-     * @param name
-     */
-    protected void outputRaster( SimpleRaster raster, String name ) {
-        StringBuilder sb = new StringBuilder( "/** values from the test: " );
-        sb.append( name ).append( "*/\n" );
-        sb.append( "public static final int[][] " );
-        sb.append( name.toUpperCase() ).append( "RESULT = new int[][]{\n" );
-        RasterData rasterData = raster.getRasterData();
-        byte[] result = new byte[rasterData.getBands()];
-        for ( int y = 0; y < raster.getRows(); ++y ) {
-            for ( int x = 0; x < raster.getColumns(); ++x ) {
-                rasterData.getPixel( x, y, result );
-                sb.append( "/* Pixel (x,y): " ).append( x ).append( "," ).append( y ).append( "*/ " );
-                sb.append( "new int[]{" );
-                sb.append( result[0] & 0xFF ).append( "," );
-                sb.append( result[1] & 0xFF ).append( "," );
-                sb.append( result[2] & 0xFF ).append( "}" );
-                if ( x + 1 < raster.getColumns() ) {
-                    sb.append( ",\n" );
-                }
-            }
-            if ( y + 1 < raster.getRows() ) {
-                sb.append( ",\n" );
-            }
-        }
-        sb.append( "};" );
-        LOG.debug( sb.toString() );
+			if (LOG.isDebugEnabled()) {
+				try {
+					File f = File.createTempFile(prefix, ".png");
+					RasterFactory.saveRasterToFile(raster, f);
+				}
+				catch (IOException e) {
+					e.printStackTrace();
+				}
+				outputRaster(raster, prefix);
+			}
+		}
+	}
 
-        try {
-            FileWriter fw = new FileWriter( "/tmp/" + name + ".txt" );
-            fw.write( sb.toString() );
-            fw.close();
-        } catch ( IOException e ) {
-            if ( LOG.isDebugEnabled() ) {
-                LOG.debug( "(Stack) Exception occurred: " + e.getLocalizedMessage(), e );
-            } else {
-                LOG.error( "Exception occurred: " + e.getLocalizedMessage() );
-            }
-        }
-        // System.out.println( sb.toString() );
-    }
+	/**
+	 * output the values of the given raster.
+	 * @param raster
+	 * @param name
+	 */
+	protected void outputRaster(SimpleRaster raster, String name) {
+		StringBuilder sb = new StringBuilder("/** values from the test: ");
+		sb.append(name).append("*/\n");
+		sb.append("public static final int[][] ");
+		sb.append(name.toUpperCase()).append("RESULT = new int[][]{\n");
+		RasterData rasterData = raster.getRasterData();
+		byte[] result = new byte[rasterData.getBands()];
+		for (int y = 0; y < raster.getRows(); ++y) {
+			for (int x = 0; x < raster.getColumns(); ++x) {
+				rasterData.getPixel(x, y, result);
+				sb.append("/* Pixel (x,y): ").append(x).append(",").append(y).append("*/ ");
+				sb.append("new int[]{");
+				sb.append(result[0] & 0xFF).append(",");
+				sb.append(result[1] & 0xFF).append(",");
+				sb.append(result[2] & 0xFF).append("}");
+				if (x + 1 < raster.getColumns()) {
+					sb.append(",\n");
+				}
+			}
+			if (y + 1 < raster.getRows()) {
+				sb.append(",\n");
+			}
+		}
+		sb.append("};");
+		LOG.debug(sb.toString());
 
-    /**
-     * @param reference
-     * @param simpleRaster
-     */
-    protected void testValues( int[][] reference, SimpleRaster simpleRaster ) {
-        int y = 0;
-        int x = 0;
-        RasterData data = simpleRaster.getRasterData();
-        byte[] result = new byte[data.getBands()];
-        int[] actualVal = new int[result.length];
-        int width = simpleRaster.getColumns();
-        for ( int i = 0; i < reference.length; ++i ) {
-            int[] refVal = reference[i];
-            data.getPixel( x++, y, result );
-            actualVal[0] = result[0] & 0xFF;
-            actualVal[1] = result[1] & 0xFF;
-            actualVal[2] = result[2] & 0xFF;
-            Assert.assertEquals( "Wrong color for pixel (" + ( x - 1 ) + "," + y + ") band 0: ", refVal[0],
-                                 actualVal[0] );
-            Assert.assertEquals( "Wrong color for pixel (" + ( x - 1 ) + "," + y + ") band 1: ", refVal[1],
-                                 actualVal[1] );
-            Assert.assertEquals( "Wrong color for pixel (" + ( x - 1 ) + "," + y + ") band 2: ", refVal[2],
-                                 actualVal[2] );
-            if ( ( i + 1 ) % width == 0 ) {
-                y++;
-                x = 0;
-            }
-        }
-    }
+		try {
+			FileWriter fw = new FileWriter("/tmp/" + name + ".txt");
+			fw.write(sb.toString());
+			fw.close();
+		}
+		catch (IOException e) {
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("(Stack) Exception occurred: " + e.getLocalizedMessage(), e);
+			}
+			else {
+				LOG.error("Exception occurred: " + e.getLocalizedMessage());
+			}
+		}
+		// System.out.println( sb.toString() );
+	}
 
-    /**
-     * @param footprint
-     * @param raster
-     */
-    public void testValues( BigInteger[] footprint, SimpleRaster raster ) {
-        BufferedImage image = RasterFactory.imageFromRaster( raster );
-        double similarty = PixelCounter.similarityLevel( image, footprint );
-        Assert.assertEquals( 1.0, similarty, 0.0001 );
+	/**
+	 * @param reference
+	 * @param simpleRaster
+	 */
+	protected void testValues(int[][] reference, SimpleRaster simpleRaster) {
+		int y = 0;
+		int x = 0;
+		RasterData data = simpleRaster.getRasterData();
+		byte[] result = new byte[data.getBands()];
+		int[] actualVal = new int[result.length];
+		int width = simpleRaster.getColumns();
+		for (int i = 0; i < reference.length; ++i) {
+			int[] refVal = reference[i];
+			data.getPixel(x++, y, result);
+			actualVal[0] = result[0] & 0xFF;
+			actualVal[1] = result[1] & 0xFF;
+			actualVal[2] = result[2] & 0xFF;
+			Assert.assertEquals("Wrong color for pixel (" + (x - 1) + "," + y + ") band 0: ", refVal[0], actualVal[0]);
+			Assert.assertEquals("Wrong color for pixel (" + (x - 1) + "," + y + ") band 1: ", refVal[1], actualVal[1]);
+			Assert.assertEquals("Wrong color for pixel (" + (x - 1) + "," + y + ") band 2: ", refVal[2], actualVal[2]);
+			if ((i + 1) % width == 0) {
+				y++;
+				x = 0;
+			}
+		}
+	}
 
-    }
+	/**
+	 * @param footprint
+	 * @param raster
+	 */
+	public void testValues(BigInteger[] footprint, SimpleRaster raster) {
+		BufferedImage image = RasterFactory.imageFromRaster(raster);
+		double similarty = PixelCounter.similarityLevel(image, footprint);
+		Assert.assertEquals(1.0, similarty, 0.0001);
+
+	}
+
 }

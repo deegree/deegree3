@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -60,76 +59,71 @@ import org.deegree.workspace.WorkspaceUtils;
 
 /**
  * Responsible for creating new feature layer configurations.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 class FeatureLayerWriter {
 
-    private Workspace workspace;
+	private Workspace workspace;
 
-    FeatureLayerWriter( Workspace workspace ) {
-        this.workspace = workspace;
-    }
+	FeatureLayerWriter(Workspace workspace) {
+		this.workspace = workspace;
+	}
 
-    void writeLayerConfigs( HashMap<String, List<FeatureLayer>> map, String crs )
-                            throws XMLStreamException {
-        XMLOutputFactory outfac = XMLOutputFactory.newInstance();
+	void writeLayerConfigs(HashMap<String, List<FeatureLayer>> map, String crs) throws XMLStreamException {
+		XMLOutputFactory outfac = XMLOutputFactory.newInstance();
 
-        for ( Entry<String, List<FeatureLayer>> e : map.entrySet() ) {
-            String id = e.getKey();
-            List<FeatureLayer> list = e.getValue();
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		for (Entry<String, List<FeatureLayer>> e : map.entrySet()) {
+			String id = e.getKey();
+			List<FeatureLayer> list = e.getValue();
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
-            String flns = "http://www.deegree.org/layers/feature";
-            String lns = "http://www.deegree.org/layers/base";
-            String dns = "http://www.deegree.org/metadata/description";
-            String gns = "http://www.deegree.org/metadata/spatial";
+			String flns = "http://www.deegree.org/layers/feature";
+			String lns = "http://www.deegree.org/layers/base";
+			String dns = "http://www.deegree.org/metadata/description";
+			String gns = "http://www.deegree.org/metadata/spatial";
 
-            XMLStreamWriter writer = new IndentingXMLStreamWriter( outfac.createXMLStreamWriter( bos ) );
-            writer.writeStartDocument();
-            writer.setDefaultNamespace( flns );
-            writer.writeStartElement( flns, "FeatureLayers" );
-            writer.writeDefaultNamespace( flns );
-            writer.writeNamespace( "l", lns );
-            writer.writeNamespace( "d", dns );
-            writer.writeNamespace( "g", gns );
-            writer.writeAttribute( "configVersion", "3.2.0" );
+			XMLStreamWriter writer = new IndentingXMLStreamWriter(outfac.createXMLStreamWriter(bos));
+			writer.writeStartDocument();
+			writer.setDefaultNamespace(flns);
+			writer.writeStartElement(flns, "FeatureLayers");
+			writer.writeDefaultNamespace(flns);
+			writer.writeNamespace("l", lns);
+			writer.writeNamespace("d", dns);
+			writer.writeNamespace("g", gns);
 
-            XMLAdapter.writeElement( writer, flns, "FeatureStoreId", id );
+			XMLAdapter.writeElement(writer, flns, "FeatureStoreId", id);
 
-            for ( FeatureLayer l : list ) {
-                writer.writeStartElement( flns, "FeatureLayer" );
-                XMLAdapter.writeElement( writer, lns, "Name", l.name );
-                XMLAdapter.writeElement( writer, dns, "Title", l.title );
-                XMLAdapter.writeElement( writer, gns, "CRS", crs );
-                if ( !( Double.isInfinite( l.minscale ) && Double.isInfinite( l.maxscale ) ) ) {
-                    writer.writeStartElement( lns, "ScaleDenominators" );
-                    if ( !Double.isInfinite( l.minscale ) ) {
-                        writer.writeAttribute( "min", Double.toString( l.minscale ) );
-                    }
-                    if ( !Double.isInfinite( l.maxscale ) ) {
-                        writer.writeAttribute( "max", Double.toString( l.maxscale ) );
-                    }
-                    writer.writeEndElement();
-                }
-                if ( l.style != null ) {
-                    writer.writeStartElement( lns, "StyleRef" );
-                    XMLAdapter.writeElement( writer, lns, "StyleStoreId", l.style );
-                    writer.writeEndElement();
-                }
+			for (FeatureLayer l : list) {
+				writer.writeStartElement(flns, "FeatureLayer");
+				XMLAdapter.writeElement(writer, lns, "Name", l.name);
+				XMLAdapter.writeElement(writer, dns, "Title", l.title);
+				XMLAdapter.writeElement(writer, gns, "CRS", crs);
+				if (!(Double.isInfinite(l.minscale) && Double.isInfinite(l.maxscale))) {
+					writer.writeStartElement(lns, "ScaleDenominators");
+					if (!Double.isInfinite(l.minscale)) {
+						writer.writeAttribute("min", Double.toString(l.minscale));
+					}
+					if (!Double.isInfinite(l.maxscale)) {
+						writer.writeAttribute("max", Double.toString(l.maxscale));
+					}
+					writer.writeEndElement();
+				}
+				if (l.style != null) {
+					writer.writeStartElement(lns, "StyleRef");
+					XMLAdapter.writeElement(writer, lns, "StyleStoreId", l.style);
+					writer.writeEndElement();
+				}
 
-                writer.writeEndElement();
-            }
+				writer.writeEndElement();
+			}
 
-            writer.writeEndElement();
-            writer.close();
+			writer.writeEndElement();
+			writer.close();
 
-            WorkspaceUtils.activateSynthetic( workspace, LayerStoreProvider.class, id,
-                                              new String( bos.toByteArray(), Charset.forName( "UTF-8" ) ) );
-        }
-    }
+			WorkspaceUtils.activateSynthetic(workspace, LayerStoreProvider.class, id,
+					new String(bos.toByteArray(), Charset.forName("UTF-8")));
+		}
+	}
 
 }

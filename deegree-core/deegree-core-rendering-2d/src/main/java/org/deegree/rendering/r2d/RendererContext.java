@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -49,48 +48,45 @@ import org.deegree.style.utils.UomCalculator;
 
 /**
  * <code>RendererContext</code>
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 public class RendererContext {
 
-    GeometryHelper geomHelper;
+	GeometryHelper geomHelper;
 
-    GeometryClipper clipper;
+	GeometryClipper clipper;
 
-    public UomCalculator uomCalculator;
+	public UomCalculator uomCalculator;
 
-    Java2DFillRenderer fillRenderer;
+	Java2DFillRenderer fillRenderer;
 
-    Java2DStrokeRenderer strokeRenderer;
+	Java2DStrokeRenderer strokeRenderer;
 
-    SvgRenderer svgRenderer;
+	SvgRenderer svgRenderer;
 
-    PolygonRenderer polygonRenderer;
+	PolygonRenderer polygonRenderer;
 
-    CurveRenderer curveRenderer;
+	CurveRenderer curveRenderer;
 
-    Graphics2D graphics;
+	Graphics2D graphics;
 
-    PointRenderer pointRenderer;
+	PointRenderer pointRenderer;
 
-    RendererContext( double pixelSize, double res, Graphics2D graphics, Java2DRenderer renderer, Envelope bbox,
-                     int width, AffineTransform worldToScreen ) {
-        this.graphics = graphics;
-        if ( bbox != null ) {
-            geomHelper = new GeometryHelper( bbox, width, worldToScreen );
-            clipper = new GeometryClipper( bbox, width );
-        }
-        uomCalculator = new UomCalculator( pixelSize, res );
-        fillRenderer = new Java2DFillRenderer( uomCalculator, graphics );
-        strokeRenderer = new Java2DStrokeRenderer( graphics, uomCalculator, fillRenderer );
-        svgRenderer = new SvgRenderer();
-        polygonRenderer = new PolygonRenderer( geomHelper, fillRenderer, strokeRenderer, graphics, renderer );
-        curveRenderer = new CurveRenderer( renderer );
-        pointRenderer = new PointRenderer( renderer.worldToScreen, this );
-    }
+	RendererContext(double pixelSize, double res, Graphics2D graphics, Java2DRenderer renderer, Envelope bbox,
+			int width, AffineTransform worldToScreen) {
+		this.graphics = graphics;
+		if (bbox != null) {
+			geomHelper = new GeometryHelper(bbox, width, worldToScreen);
+			clipper = new GeometryClipper(bbox, width);
+		}
+		uomCalculator = new UomCalculator(pixelSize, res);
+		fillRenderer = new Java2DFillRenderer(uomCalculator, graphics);
+		strokeRenderer = new Java2DStrokeRenderer(graphics, uomCalculator, fillRenderer, this);
+		svgRenderer = new SvgRenderer();
+		polygonRenderer = new PolygonRenderer(geomHelper, fillRenderer, strokeRenderer, graphics, renderer);
+		curveRenderer = new CurveRenderer(renderer);
+		pointRenderer = new PointRenderer(renderer.worldToScreen, this);
+	}
 
 }

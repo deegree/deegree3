@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -55,223 +54,217 @@ import org.deegree.geometry.standard.AbstractDefaultGeometry;
 
 /**
  * Default implementation of {@link OrientableCurve}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class DefaultOrientableCurve extends AbstractDefaultGeometry implements OrientableCurve {
 
-    private String id;
+	private String id;
 
-    private ICRS crs;
+	private ICRS crs;
 
-    private Curve baseCurve;
+	private Curve baseCurve;
 
-    private boolean isReversed;
+	private boolean isReversed;
 
-    /**
-     * Creates a new <code>DefaultOrientableCurve</code> instance from the given parameters.
-     * 
-     * @param id
-     *            identifier of the created geometry object
-     * @param crs
-     *            coordinate reference system
-     * @param baseCurve
-     *            base curve
-     * @param isReversed
-     *            set to true, if the order of the base curve shall be reversed
-     */
-    public DefaultOrientableCurve( String id, ICRS crs, Curve baseCurve, boolean isReversed ) {
-        super( id, crs, null );
-        this.baseCurve = baseCurve;
-        this.isReversed = isReversed;
-    }
+	/**
+	 * Creates a new <code>DefaultOrientableCurve</code> instance from the given
+	 * parameters.
+	 * @param id identifier of the created geometry object
+	 * @param crs coordinate reference system
+	 * @param baseCurve base curve
+	 * @param isReversed set to true, if the order of the base curve shall be reversed
+	 */
+	public DefaultOrientableCurve(String id, ICRS crs, Curve baseCurve, boolean isReversed) {
+		super(id, crs, null);
+		this.baseCurve = baseCurve;
+		this.isReversed = isReversed;
+	}
 
-    @Override
-    public String getId() {
-        return id;
-    }
+	@Override
+	public String getId() {
+		return id;
+	}
 
-    @Override
-    public ICRS getCoordinateSystem() {
-        return crs;
-    }
+	@Override
+	public ICRS getCoordinateSystem() {
+		return crs;
+	}
 
-    @Override
-    public LineString getAsLineString() {
-        return baseCurve.getAsLineString();
-    }
+	@Override
+	public LineString getAsLineString() {
+		return baseCurve.getAsLineString();
+	}
 
-    @Override
-    public List<CurveSegment> getCurveSegments() {
-        return baseCurve.getCurveSegments();
-    }
+	@Override
+	public List<CurveSegment> getCurveSegments() {
+		return baseCurve.getCurveSegments();
+	}
 
-    @Override
-    public CurveType getCurveType() {
-        return CurveType.OrientableCurve;
-    }
+	@Override
+	public CurveType getCurveType() {
+		return CurveType.OrientableCurve;
+	}
 
-    @Override
-    public Curve getBaseCurve() {
-        return baseCurve;
-    }
+	@Override
+	public Curve getBaseCurve() {
+		return baseCurve;
+	}
 
-    @Override
-    public boolean isReversed() {
-        return isReversed;
-    }
+	@Override
+	public boolean isReversed() {
+		return isReversed;
+	}
 
-    @Override
-    public Point getEndPoint() {
-        if ( isReversed ) {
-            return baseCurve.getStartPoint();
-        }
-        return baseCurve.getEndPoint();
-    }
+	@Override
+	public Point getEndPoint() {
+		if (isReversed) {
+			return baseCurve.getStartPoint();
+		}
+		return baseCurve.getEndPoint();
+	}
 
-    @Override
-    public Point getStartPoint() {
-        if ( isReversed ) {
-            return baseCurve.getEndPoint();
-        }
-        return baseCurve.getStartPoint();
-    }
+	@Override
+	public Point getStartPoint() {
+		if (isReversed) {
+			return baseCurve.getEndPoint();
+		}
+		return baseCurve.getStartPoint();
+	}
 
-    // -----------------------------------------------------------------------
-    // Curve methods that are just delegated to the wrapped base curve
-    // -----------------------------------------------------------------------
+	// -----------------------------------------------------------------------
+	// Curve methods that are just delegated to the wrapped base curve
+	// -----------------------------------------------------------------------
 
-    @Override
-    public boolean contains( Geometry geometry ) {
-        return baseCurve.contains( geometry );
-    }
+	@Override
+	public boolean contains(Geometry geometry) {
+		return baseCurve.contains(geometry);
+	}
 
-    @Override
-    public boolean crosses( Geometry geometry ) {
-        return baseCurve.crosses( geometry );
-    }
+	@Override
+	public boolean crosses(Geometry geometry) {
+		return baseCurve.crosses(geometry);
+	}
 
-    @Override
-    public Geometry getDifference( Geometry geometry ) {
-        return baseCurve.getDifference( geometry );
-    }
+	@Override
+	public Geometry getDifference(Geometry geometry) {
+		return baseCurve.getDifference(geometry);
+	}
 
-    @Override
-    public Measure getDistance( Geometry geometry, Unit requestedUnit ) {
-        return baseCurve.getDistance( geometry, requestedUnit );
-    }
+	@Override
+	public Measure getDistance(Geometry geometry, Unit requestedUnit) {
+		return baseCurve.getDistance(geometry, requestedUnit);
+	}
 
-    @Override
-    public boolean equals( Geometry geometry ) {
-        return baseCurve.equals( geometry );
-    }
+	@Override
+	public boolean equals(Geometry geometry) {
+		return baseCurve.equals(geometry);
+	}
 
-    @Override
-    public Pair<Point, Point> getBoundary() {
-        return baseCurve.getBoundary();
-    }
+	@Override
+	public Pair<Point, Point> getBoundary() {
+		return baseCurve.getBoundary();
+	}
 
-    @Override
-    public Geometry getBuffer( Measure distance ) {
-        return baseCurve.getBuffer( distance );
-    }
+	@Override
+	public Geometry getBuffer(Measure distance) {
+		return baseCurve.getBuffer(distance);
+	}
 
-    @Override
-    public Geometry getConvexHull() {
-        return baseCurve.getConvexHull();
-    }
+	@Override
+	public Geometry getConvexHull() {
+		return baseCurve.getConvexHull();
+	}
 
-    @Override
-    public int getCoordinateDimension() {
-        return baseCurve.getCoordinateDimension();
-    }
+	@Override
+	public int getCoordinateDimension() {
+		return baseCurve.getCoordinateDimension();
+	}
 
-    @Override
-    public Envelope getEnvelope() {
-        return baseCurve.getEnvelope();
-    }
+	@Override
+	public Envelope getEnvelope() {
+		return baseCurve.getEnvelope();
+	}
 
-    @Override
-    public Measure getLength( Unit requestedUnit ) {
-        return baseCurve.getLength( requestedUnit );
-    }
+	@Override
+	public Measure getLength(Unit requestedUnit) {
+		return baseCurve.getLength(requestedUnit);
+	}
 
-    @Override
-    public PrecisionModel getPrecision() {
-        return baseCurve.getPrecision();
-    }
+	@Override
+	public PrecisionModel getPrecision() {
+		return baseCurve.getPrecision();
+	}
 
-    @Override
-    public Geometry getIntersection( Geometry geometry ) {
-        return baseCurve.getIntersection( geometry );
-    }
+	@Override
+	public Geometry getIntersection(Geometry geometry) {
+		return baseCurve.getIntersection(geometry);
+	}
 
-    @Override
-    public boolean intersects( Geometry geometry ) {
-        return baseCurve.intersects( geometry );
-    }
+	@Override
+	public boolean intersects(Geometry geometry) {
+		return baseCurve.intersects(geometry);
+	}
 
-    @Override
-    public boolean isDisjoint( Geometry geometry ) {
-        return baseCurve.isDisjoint( geometry );
-    }
+	@Override
+	public boolean isDisjoint(Geometry geometry) {
+		return baseCurve.isDisjoint(geometry);
+	}
 
-    @Override
-    public boolean overlaps( Geometry geometry ) {
-        return baseCurve.overlaps( geometry );
-    }
+	@Override
+	public boolean overlaps(Geometry geometry) {
+		return baseCurve.overlaps(geometry);
+	}
 
-    @Override
-    public boolean touches( Geometry geometry ) {
-        return baseCurve.touches( geometry );
-    }
+	@Override
+	public boolean touches(Geometry geometry) {
+		return baseCurve.touches(geometry);
+	}
 
-    @Override
-    public boolean isBeyond( Geometry geometry, Measure distance ) {
-        return baseCurve.isBeyond( geometry, distance );
-    }
+	@Override
+	public boolean isBeyond(Geometry geometry, Measure distance) {
+		return baseCurve.isBeyond(geometry, distance);
+	}
 
-    @Override
-    public boolean isClosed() {
-        return baseCurve.isClosed();
-    }
+	@Override
+	public boolean isClosed() {
+		return baseCurve.isClosed();
+	}
 
-    @Override
-    public boolean isWithin( Geometry geometry ) {
-        return baseCurve.isWithin( geometry );
-    }
+	@Override
+	public boolean isWithin(Geometry geometry) {
+		return baseCurve.isWithin(geometry);
+	}
 
-    @Override
-    public boolean isWithinDistance( Geometry geometry, Measure distance ) {
-        return baseCurve.isWithinDistance( geometry, distance );
-    }
+	@Override
+	public boolean isWithinDistance(Geometry geometry, Measure distance) {
+		return baseCurve.isWithinDistance(geometry, distance);
+	}
 
-    @Override
-    public Geometry getUnion( Geometry geometry ) {
-        return baseCurve.getUnion( geometry );
-    }
+	@Override
+	public Geometry getUnion(Geometry geometry) {
+		return baseCurve.getUnion(geometry);
+	}
 
-    @Override
-    public PrimitiveType getPrimitiveType() {
-        return PrimitiveType.Curve;
-    }
+	@Override
+	public PrimitiveType getPrimitiveType() {
+		return PrimitiveType.Curve;
+	}
 
-    @Override
-    public GeometryType getGeometryType() {
-        return GeometryType.PRIMITIVE_GEOMETRY;
-    }
+	@Override
+	public GeometryType getGeometryType() {
+		return GeometryType.PRIMITIVE_GEOMETRY;
+	}
 
-    @Override
-    public Points getControlPoints() {
-        throw new RuntimeException( "not implemented yet" );
-    }
+	@Override
+	public Points getControlPoints() {
+		throw new RuntimeException("not implemented yet");
+	}
 
-    @Override
-    public org.locationtech.jts.geom.Geometry getJTSGeometry() {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	@Override
+	public org.locationtech.jts.geom.Geometry getJTSGeometry() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

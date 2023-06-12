@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-metadata/src/main/java/org/deegree/metadata/iso/persistence/TransactionHelper.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -43,51 +42,47 @@ import org.deegree.protocol.csw.MetadataStoreException;
 
 /**
  * Provides access to the sql service manager.
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class ServiceManagerProvider {
 
-    private ServiceManager serviceManager;
+	private ServiceManager serviceManager;
 
-    private static ServiceManagerProvider instance;
+	private static ServiceManagerProvider instance;
 
-    private ServiceManagerProvider() throws MetadataStoreException {
-        Iterator<ServiceManager> iter = ServiceLoader.load( ServiceManager.class ).iterator();
-        while ( iter.hasNext() ) {
-            if ( serviceManager != null ) {
-                String msg = "It is not allowed to specify more than one service manager. Please check "
-                             + ServiceManager.class.getName();
-                throw new MetadataStoreException( msg );
-            }
-            serviceManager = iter.next();
-        }
-        if ( serviceManager == null ) {
-            serviceManager = new DefaultServiceManager();
-        }
-    }
+	private ServiceManagerProvider() throws MetadataStoreException {
+		Iterator<ServiceManager> iter = ServiceLoader.load(ServiceManager.class).iterator();
+		while (iter.hasNext()) {
+			if (serviceManager != null) {
+				String msg = "It is not allowed to specify more than one service manager. Please check "
+						+ ServiceManager.class.getName();
+				throw new MetadataStoreException(msg);
+			}
+			serviceManager = iter.next();
+		}
+		if (serviceManager == null) {
+			serviceManager = new DefaultServiceManager();
+		}
+	}
 
-    /**
-     * @return the {@link ServiceManager}, never <code>null</code>
-     */
-    public ServiceManager getServiceManager() {
-        return serviceManager;
-    }
+	/**
+	 * @return the {@link ServiceManager}, never <code>null</code>
+	 */
+	public ServiceManager getServiceManager() {
+		return serviceManager;
+	}
 
-    /**
-     * @return the one and only instance of the {@link ServiceManagerProvider}, never <code>null</code>
-     * @throws ResourceInitException
-     *             if more than one {@link ServiceManager} was found
-     */
-    public synchronized static ServiceManagerProvider getInstance()
-                            throws MetadataStoreException {
-        if ( instance == null ) {
-            instance = new ServiceManagerProvider();
-        }
-        return instance;
-    }
+	/**
+	 * @return the one and only instance of the {@link ServiceManagerProvider}, never
+	 * <code>null</code>
+	 * @throws ResourceInitException if more than one {@link ServiceManager} was found
+	 */
+	public synchronized static ServiceManagerProvider getInstance() throws MetadataStoreException {
+		if (instance == null) {
+			instance = new ServiceManagerProvider();
+		}
+		return instance;
+	}
 
 }

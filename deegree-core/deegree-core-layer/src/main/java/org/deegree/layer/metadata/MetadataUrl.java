@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -38,79 +37,70 @@ package org.deegree.layer.metadata;
 import java.net.URL;
 
 /**
- * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class MetadataUrl {
 
-    private String format;
+	private String format;
 
-    private String type;
+	private String type;
 
-    private URL onlineResource;
+	private URL onlineResource;
 
-    /**
-     * Creates a new {@link MetadataUrl}
-     * 
-     * @param format
-     * @param type
-     * @param onlineResource
-     */
-    public MetadataUrl( String format, String type, URL onlineResource ) {
-        this.format = format;
-        this.type = type;
-        this.onlineResource = onlineResource;
-    }
+	/**
+	 * Creates a new {@link MetadataUrl}
+	 * @param format
+	 * @param type
+	 * @param onlineResource
+	 */
+	public MetadataUrl(String format, String type, URL onlineResource) {
+		this.format = format;
+		this.type = type;
+		this.onlineResource = onlineResource;
+	}
 
-    /**
-     * @return the format
-     */
-    public String getFormat() {
-        return format;
-    }
+	/**
+	 * @return the format
+	 */
+	public String getFormat() {
+		return format;
+	}
 
-    /**
-     * @param format
-     *            the format to set
-     */
-    public void setFormat( String format ) {
-        this.format = format;
-    }
+	/**
+	 * @param format the format to set
+	 */
+	public void setFormat(String format) {
+		this.format = format;
+	}
 
-    /**
-     * @return the type
-     */
-    public String getType() {
-        return type;
-    }
+	/**
+	 * @return the type
+	 */
+	public String getType() {
+		return type;
+	}
 
-    /**
-     * 
-     * @param type
-     *            the type to set
-     */
-    public void setType( String type ) {
-        this.type = type;
-    }
+	/**
+	 * @param type the type to set
+	 */
+	public void setType(String type) {
+		this.type = type;
+	}
 
-    /**
-     * @return the onlineResource
-     */
-    public URL getOnlineResource() {
-        return onlineResource;
-    }
+	/**
+	 * @return the onlineResource
+	 */
+	public URL getOnlineResource() {
+		return onlineResource;
+	}
 
-    /**
-     * @param onlineResource
-     *            the onlineResource to set
-     * 
-     * 
-     */
-    public void setOnlineResource( URL onlineResource ) {
-        this.onlineResource = onlineResource;
-    }
+	/**
+	 * @param onlineResource the onlineResource to set
+	 *
+	 *
+	 */
+	public void setOnlineResource(URL onlineResource) {
+		this.onlineResource = onlineResource;
+	}
 
 }

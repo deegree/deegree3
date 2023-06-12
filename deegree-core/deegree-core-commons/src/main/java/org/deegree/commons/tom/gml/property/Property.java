@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -48,72 +47,61 @@ import org.deegree.commons.tom.gml.GMLObject;
  * <p>
  * Encapsulates a (qualified) name, type information and a value.
  * </p>
- * 
+ *
  * @see GMLObject
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface Property extends ElementNode {
 
-    /**
-     * Returns the name of the property.
-     * <p>
-     * In a canonical GML representation, this corresponds to the property's element name in the declaration. However,
-     * there are some GML application schemas (e.g. CityGML) that define properties using abstract element declarations
-     * and provide multiple concrete substitutable elements. In these cases, the name of a property is not equal to the
-     * name of the property type.
-     * </p>
-     * 
-     * @return the name of the property, never <code>null</code>
-     */
-    @Override
-    public QName getName();
+	/**
+	 * Returns the name of the property.
+	 * <p>
+	 * In a canonical GML representation, this corresponds to the property's element name
+	 * in the declaration. However, there are some GML application schemas (e.g. CityGML)
+	 * that define properties using abstract element declarations and provide multiple
+	 * concrete substitutable elements. In these cases, the name of a property is not
+	 * equal to the name of the property type.
+	 * </p>
+	 * @return the name of the property, never <code>null</code>
+	 */
+	@Override
+	public QName getName();
 
-    /**
-     * Returns the type information for this property.
-     * 
-     * @return the type information, never <code>null</code>
-     */
-    public PropertyType getType();
+	/**
+	 * Returns the type information for this property.
+	 * @return the type information, never <code>null</code>
+	 */
+	public PropertyType getType();
 
-    /**
-     * Returns the value of this property.
-     * 
-     * @return the value of this property, can be <code>null</code>
-     */
-    public TypedObjectNode getValue();
+	/**
+	 * Returns the value of this property.
+	 * @return the value of this property, can be <code>null</code>
+	 */
+	public TypedObjectNode getValue();
 
-    /**
-     * Sets the value of this property.
-     * <p>
-     * NOTE: This also changes the children of the property.
-     * </p>
-     * 
-     * @param value
-     *            the value of this property, can be <code>null</code>
-     */
-    public void setValue( TypedObjectNode value );
+	/**
+	 * Sets the value of this property.
+	 * <p>
+	 * NOTE: This also changes the children of the property.
+	 * </p>
+	 * @param value the value of this property, can be <code>null</code>
+	 */
+	public void setValue(TypedObjectNode value);
 
-    /**
-     * Sets the children of this property.
-     * <p>
-     * NOTE: This also changes the value of the property.
-     * </p>
-     * 
-     * @param children
-     *            the children of this property, can be <code>null</code>
-     */
-    public void setChildren( List<TypedObjectNode> children );
+	/**
+	 * Sets the children of this property.
+	 * <p>
+	 * NOTE: This also changes the value of the property.
+	 * </p>
+	 * @param children the children of this property, can be <code>null</code>
+	 */
+	public void setChildren(List<TypedObjectNode> children);
 
-    /**
-     * Returns the text value of this property.
-     * 
-     * @return the text value of this property, never <code>null</code>
-     */
-    @Override
-    public String toString();
+	/**
+	 * Returns the text value of this property.
+	 * @return the text value of this property, never <code>null</code>
+	 */
+	@Override
+	public String toString();
 
 }

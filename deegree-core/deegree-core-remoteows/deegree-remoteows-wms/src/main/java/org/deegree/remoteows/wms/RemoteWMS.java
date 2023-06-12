@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aschmitz@wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-base/src/main/java/org/deegree/remoteows/wms/RemoteWMSStore.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -41,43 +40,39 @@ import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceMetadata;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: aschmitz $
- * 
- * @version $Revision: 31451 $, $Date: 2011-08-08 08:13:46 +0200 (Mon, 08 Aug 2011) $
  */
 public class RemoteWMS implements RemoteOWS {
 
-    private WMSClient client;
+	private WMSClient client;
 
-    private ResourceMetadata<RemoteOWS> metadata;
+	private ResourceMetadata<RemoteOWS> metadata;
 
-    /**
-     * @param client
-     */
-    public RemoteWMS( WMSClient client, ResourceMetadata<RemoteOWS> metadata ) {
-        this.client = client;
-        this.metadata = metadata;
-    }
+	/**
+	 * @param client
+	 */
+	public RemoteWMS(WMSClient client, ResourceMetadata<RemoteOWS> metadata) {
+		this.client = client;
+		this.metadata = metadata;
+	}
 
-    public WMSClient getClient() {
-        return client;
-    }
+	public WMSClient getClient() {
+		return client;
+	}
 
-    @Override
-    public void destroy() {
-        // nothing to do
-    }
+	@Override
+	public void destroy() {
+		// nothing to do
+	}
 
-    @Override
-    public void init() {
-        // nothing to do
-    }
+	@Override
+	public void init() {
+		// nothing to do
+	}
 
-    @Override
-    public ResourceMetadata<? extends Resource> getMetadata() {
-        return metadata;
-    }
+	@Override
+	public ResourceMetadata<? extends Resource> getMetadata() {
+		return metadata;
+	}
 
 }

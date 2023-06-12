@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -60,40 +59,38 @@ import org.slf4j.LoggerFactory;
 
 /**
  * <code>SimpleSqlFeatureStoreMetadata</code>
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 public class SimpleSqlFeatureStoreMetadata extends AbstractResourceMetadata<FeatureStore> {
 
-    private static final Logger LOG = LoggerFactory.getLogger( SimpleSqlFeatureStoreMetadata.class );
+	private static final Logger LOG = LoggerFactory.getLogger(SimpleSqlFeatureStoreMetadata.class);
 
-    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.feature.persistence.simplesql.jaxb";
+	private static final String CONFIG_JAXB_PACKAGE = "org.deegree.feature.persistence.simplesql.jaxb";
 
-    public SimpleSqlFeatureStoreMetadata( Workspace workspace, ResourceLocation<FeatureStore> location,
-                                          AbstractResourceProvider<FeatureStore> provider ) {
-        super( workspace, location, provider );
-    }
+	public SimpleSqlFeatureStoreMetadata(Workspace workspace, ResourceLocation<FeatureStore> location,
+			AbstractResourceProvider<FeatureStore> provider) {
+		super(workspace, location, provider);
+	}
 
-    @Override
-    public ResourceBuilder<FeatureStore> prepare() {
-        SimpleSQLFeatureStoreConfig config;
-        try {
-            config = (SimpleSQLFeatureStoreConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA,
-                                                                         location.getAsStream(), workspace );
-            String connId = config.getConnectionPoolId();
-            if ( connId == null ) {
-                connId = config.getJDBCConnId();
-            }
-            dependencies.add( new DefaultResourceIdentifier<ConnectionProvider>( ConnectionProviderProvider.class,
-                                                                                 connId ) );
-            return new SimpleSqlFeatureStoreBuilder( this, config, workspace );
-        } catch ( Exception e ) {
-            LOG.trace( "Stack trace:", e );
-            throw new ResourceInitException( e.getLocalizedMessage(), e );
-        }
-    }
+	@Override
+	public ResourceBuilder<FeatureStore> prepare() {
+		SimpleSQLFeatureStoreConfig config;
+		try {
+			config = (SimpleSQLFeatureStoreConfig) JAXBUtils.unmarshall(CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA,
+					location.getAsStream(), workspace);
+			String connId = config.getConnectionPoolId();
+			if (connId == null) {
+				connId = config.getJDBCConnId();
+			}
+			dependencies
+				.add(new DefaultResourceIdentifier<ConnectionProvider>(ConnectionProviderProvider.class, connId));
+			return new SimpleSqlFeatureStoreBuilder(this, config, workspace);
+		}
+		catch (Exception e) {
+			LOG.trace("Stack trace:", e);
+			throw new ResourceInitException(e.getLocalizedMessage(), e);
+		}
+	}
 
 }

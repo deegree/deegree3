@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -48,164 +47,151 @@ import org.deegree.services.csw.AbstractCSWRequest;
 
 /**
  * Represents a <Code>GetRecords</Code> request to a CSW.
- * 
+ *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: thomas $
- * 
- * @version $Revision: $, $Date: $
  */
 public class GetRecords extends AbstractCSWRequest {
 
-    private final String requestId;
+	private final String requestId;
 
-    private final URI outputSchema;
+	private final URI outputSchema;
 
-    private final int startPosition;
+	private final int startPosition;
 
-    private final int maxRecords;
+	private final int maxRecords;
 
-    private final boolean distributedSearch;
+	private final boolean distributedSearch;
 
-    private final int hopCount;
+	private final int hopCount;
 
-    private final String responseHandler;
+	private final String responseHandler;
 
-    private final ResultType resultType;
+	private final ResultType resultType;
 
-    private final Query query;
+	private final Query query;
 
-    private AdhocQuery adhocQuery;
+	private AdhocQuery adhocQuery;
 
-    private final OMElement holeRequest;
+	private final OMElement holeRequest;
 
-    /**
-     * Creates a new {@link GetRecords} request.
-     * 
-     * @param version
-     *            protocol version
-     * @param namespaces
-     * @param outputFormat
-     *            controls the format of the output regarding to a MIME-type (default: application/xml)
-     * @param resultType
-     *            mode of the response that is requested
-     * @param requestId
-     *            UUID
-     * @param outputSchema
-     *            indicates the schema of the output (default: http://www.opengis.net/cat/csw/2.0.2)
-     * @param startPosition
-     *            used to specify at which position should be started
-     * @param maxRecords
-     *            defines the maximum number of records that should be returned
-     * 
-     * @param distributedSearch
-     * @param hopCount
-     * @param responseHandler
-     * @param query
-     *            the query of the GetRecords request, never <code>null</code>
-     * @param holeRequest
-     */
-    public GetRecords( Version version, NamespaceBindings namespaces, String outputFormat, ResultType resultType,
-                       String requestId, URI outputSchema, int startPosition, int maxRecords,
-                       boolean distributedSearch, int hopCount, String responseHandler, Query query,
-                       OMElement holeRequest ) {
-        super( version, namespaces, query != null ? query.getQueryTypeNames() : new QName[0], outputFormat );
-        this.resultType = resultType;
-        this.requestId = requestId;
-        this.outputSchema = outputSchema;
-        this.startPosition = startPosition;
-        this.maxRecords = maxRecords;
-        this.distributedSearch = distributedSearch;
-        this.hopCount = hopCount;
-        this.responseHandler = responseHandler;
-        this.query = query;
-        this.holeRequest = holeRequest;
-    }
+	/**
+	 * Creates a new {@link GetRecords} request.
+	 * @param version protocol version
+	 * @param namespaces
+	 * @param outputFormat controls the format of the output regarding to a MIME-type
+	 * (default: application/xml)
+	 * @param resultType mode of the response that is requested
+	 * @param requestId UUID
+	 * @param outputSchema indicates the schema of the output (default:
+	 * http://www.opengis.net/cat/csw/2.0.2)
+	 * @param startPosition used to specify at which position should be started
+	 * @param maxRecords defines the maximum number of records that should be returned
+	 * @param distributedSearch
+	 * @param hopCount
+	 * @param responseHandler
+	 * @param query the query of the GetRecords request, never <code>null</code>
+	 * @param holeRequest
+	 */
+	public GetRecords(Version version, NamespaceBindings namespaces, String outputFormat, ResultType resultType,
+			String requestId, URI outputSchema, int startPosition, int maxRecords, boolean distributedSearch,
+			int hopCount, String responseHandler, Query query, OMElement holeRequest) {
+		super(version, namespaces, query != null ? query.getQueryTypeNames() : new QName[0], outputFormat);
+		this.resultType = resultType;
+		this.requestId = requestId;
+		this.outputSchema = outputSchema;
+		this.startPosition = startPosition;
+		this.maxRecords = maxRecords;
+		this.distributedSearch = distributedSearch;
+		this.hopCount = hopCount;
+		this.responseHandler = responseHandler;
+		this.query = query;
+		this.holeRequest = holeRequest;
+	}
 
-    public GetRecords( Version version, NamespaceBindings namespaces, String outputFormat, ResultType resultType,
-                       String requestId, URI outputSchema, int startPosition, int maxRecords,
-                       boolean distributedSearch, int hopCount, String responseHandler, AdhocQuery adhocQuery,
-                       OMElement holeRequest ) {
-        this( version, namespaces, outputFormat, resultType, requestId, outputSchema, startPosition, maxRecords,
-              distributedSearch, hopCount, responseHandler, (Query) null, holeRequest );
-        this.adhocQuery = adhocQuery;
-    }
+	public GetRecords(Version version, NamespaceBindings namespaces, String outputFormat, ResultType resultType,
+			String requestId, URI outputSchema, int startPosition, int maxRecords, boolean distributedSearch,
+			int hopCount, String responseHandler, AdhocQuery adhocQuery, OMElement holeRequest) {
+		this(version, namespaces, outputFormat, resultType, requestId, outputSchema, startPosition, maxRecords,
+				distributedSearch, hopCount, responseHandler, (Query) null, holeRequest);
+		this.adhocQuery = adhocQuery;
+	}
 
-    /**
-     * @return the requestId
-     */
-    public String getRequestId() {
-        return requestId;
-    }
+	/**
+	 * @return the requestId
+	 */
+	public String getRequestId() {
+		return requestId;
+	}
 
-    /**
-     * @return the outputSchema
-     */
-    public URI getOutputSchema() {
-        return outputSchema;
-    }
+	/**
+	 * @return the outputSchema
+	 */
+	public URI getOutputSchema() {
+		return outputSchema;
+	}
 
-    /**
-     * @return the startPosition
-     */
-    public int getStartPosition() {
-        return startPosition;
-    }
+	/**
+	 * @return the startPosition
+	 */
+	public int getStartPosition() {
+		return startPosition;
+	}
 
-    /**
-     * @return the maxRecords
-     */
-    public int getMaxRecords() {
-        return maxRecords;
-    }
+	/**
+	 * @return the maxRecords
+	 */
+	public int getMaxRecords() {
+		return maxRecords;
+	}
 
-    /**
-     * @return the distributedSearch
-     */
-    public boolean isDistributedSearch() {
-        return distributedSearch;
-    }
+	/**
+	 * @return the distributedSearch
+	 */
+	public boolean isDistributedSearch() {
+		return distributedSearch;
+	}
 
-    /**
-     * @return the hopCount
-     */
-    public int getHopCount() {
-        return hopCount;
-    }
+	/**
+	 * @return the hopCount
+	 */
+	public int getHopCount() {
+		return hopCount;
+	}
 
-    /**
-     * @return the responseHandler
-     */
-    public String getResponseHandler() {
-        return responseHandler;
-    }
+	/**
+	 * @return the responseHandler
+	 */
+	public String getResponseHandler() {
+		return responseHandler;
+	}
 
-    /**
-     * @return the resultType
-     */
-    public ResultType getResultType() {
-        return resultType;
-    }
+	/**
+	 * @return the resultType
+	 */
+	public ResultType getResultType() {
+		return resultType;
+	}
 
-    /**
-     * Returns the query.
-     * 
-     * @return query, can be <code>null</code> (if an AdhocQuery is used)
-     */
-    public Query getQuery() {
-        return query;
-    }
+	/**
+	 * Returns the query.
+	 * @return query, can be <code>null</code> (if an AdhocQuery is used)
+	 */
+	public Query getQuery() {
+		return query;
+	}
 
-    /**
-     * @return the query
-     */
-    public AdhocQuery getAdhocQuery() {
-        return adhocQuery;
-    }
+	/**
+	 * @return the query
+	 */
+	public AdhocQuery getAdhocQuery() {
+		return adhocQuery;
+	}
 
-    /**
-     * @return the holeRequest
-     */
-    public OMElement getXMLRequest() {
-        return holeRequest;
-    }
+	/**
+	 * @return the holeRequest
+	 */
+	public OMElement getXMLRequest() {
+		return holeRequest;
+	}
+
 }

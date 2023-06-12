@@ -1,28 +1,28 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!DOCTYPE WMT_MS_Capabilities SYSTEM "http://deegree3-demo.deegree.org/utah-workspace/services?request=DTD" [<!ELEMENT VendorSpecificCapabilities EMPTY>]>
 <WMT_MS_Capabilities version="1.1.1" updateSequence="0">
-  <Service>
-    <Name>OGC:WMS</Name>
-    <Title>deegree 3 Utah Demo</Title>
-    <Abstract>WMS and WFS demonstration with Utah data</Abstract>
-    <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://www.deegree.org"/>
+    <Service>
+    <Name>WMS</Name>
+    <Title>deegree WMS capabilities</Title>
+    <Abstract>An example template for the deegree WMS</Abstract>
+    <OnlineResource xlink:type="simple" xlink:href="http://www.deegree.org"/>
     <ContactInformation>
       <ContactPersonPrimary>
-        <ContactPerson>Andreas Schmitz</ContactPerson>
-        <ContactOrganization>lat/lon GmbH</ContactOrganization>
+        <ContactPerson>Gerhard Mercator</ContactPerson>
+        <ContactOrganization>deegree</ContactOrganization>
       </ContactPersonPrimary>
-      <ContactPosition>Software developer</ContactPosition>
+      <ContactPosition>Geographer</ContactPosition>
       <ContactAddress>
         <AddressType>postal</AddressType>
-        <Address>Aennchenstr. 19</Address>
-        <City>Bonn</City>
-        <StateOrProvince>NRW</StateOrProvince>
-        <PostCode>53177</PostCode>
-        <Country>Germany</Country>
+        <Address>9450 SW Gemini Dr #42523</Address>
+        <City>Beaverton</City>
+        <StateOrProvince>OR</StateOrProvince>
+        <PostCode>97008</PostCode>
+        <Country>USA</Country>
       </ContactAddress>
-      <ContactVoiceTelephone>0228/18496-0</ContactVoiceTelephone>
-      <ContactFacsimileTelephone>0228/18496-29</ContactFacsimileTelephone>
-      <ContactElectronicMailAddress>info@lat-lon.de</ContactElectronicMailAddress>
+      <ContactVoiceTelephone>0000/000000</ContactVoiceTelephone>
+      <ContactFacsimileTelephone>0000/000000</ContactFacsimileTelephone>
+      <ContactElectronicMailAddress>info@example.com</ContactElectronicMailAddress>
     </ContactInformation>
   </Service>
   <Capability>

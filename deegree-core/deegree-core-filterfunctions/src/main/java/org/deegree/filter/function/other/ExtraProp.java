@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/src/main/java/org/deegree/filter/function/other/IDiv.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -54,68 +53,66 @@ import org.deegree.filter.function.ParameterType;
 import org.deegree.workspace.Workspace;
 
 /**
- * Expects one argument that refers to a property of {@link ExtraProps} and returns the value.
- * 
+ * Expects one argument that refers to a property of {@link ExtraProps} and returns the
+ * value.
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 27253 $, $Date: 2010-10-18 11:49:13 +0200 (Mo, 18. Okt 2010) $
  */
 public class ExtraProp implements FunctionProvider {
 
-    private static final String NAME = "ExtraProp";
+	private static final String NAME = "ExtraProp";
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
+	@Override
+	public String getName() {
+		return NAME;
+	}
 
-    @Override
-    public List<ParameterType> getArgs() {
-        return Collections.singletonList( STRING );
-    }
+	@Override
+	public List<ParameterType> getArgs() {
+		return Collections.singletonList(STRING);
+	}
 
-    @Override
-    public ParameterType getReturnType() {
-        return ANYTYPE;
-    }
+	@Override
+	public ParameterType getReturnType() {
+		return ANYTYPE;
+	}
 
-    @Override
-    public Function create( List<Expression> params ) {
-        return new Function( NAME, params ) {
+	@Override
+	public Function create(List<Expression> params) {
+		return new Function(NAME, params) {
 
-            @Override
-            public <T> TypedObjectNode[] evaluate( T obj, List<TypedObjectNode[]> args )
-                                    throws FilterEvaluationException {
+			@Override
+			public <T> TypedObjectNode[] evaluate(T obj, List<TypedObjectNode[]> args)
+					throws FilterEvaluationException {
 
-                TypedObjectNode[] inputs = args.get( 0 );
-                List<TypedObjectNode> outputs = new ArrayList<TypedObjectNode>( inputs.length );
-                for ( TypedObjectNode input : inputs ) {
-                    if ( obj instanceof Feature ) {
-                        Feature f = (Feature) obj;
-                        String propName = ( (PrimitiveValue) input ).getAsText();
-                        ExtraProps extraProps = f.getExtraProperties();
-                        if ( extraProps != null ) {
-                            TypedObjectNode ton = extraProps.getProperty( propName );
-                            if ( ton != null ) {
-                                outputs.add( ton );
-                            }
-                        }
-                    }
-                }
-                return outputs.toArray( new TypedObjectNode[outputs.size()] );
-            }
-        };
-    }
+				TypedObjectNode[] inputs = args.get(0);
+				List<TypedObjectNode> outputs = new ArrayList<TypedObjectNode>(inputs.length);
+				for (TypedObjectNode input : inputs) {
+					if (obj instanceof Feature) {
+						Feature f = (Feature) obj;
+						String propName = ((PrimitiveValue) input).getAsText();
+						ExtraProps extraProps = f.getExtraProperties();
+						if (extraProps != null) {
+							TypedObjectNode ton = extraProps.getProperty(propName);
+							if (ton != null) {
+								outputs.add(ton);
+							}
+						}
+					}
+				}
+				return outputs.toArray(new TypedObjectNode[outputs.size()]);
+			}
+		};
+	}
 
-    @Override
-    public void init( Workspace ws ) {
-        // nothing to do
-    }
+	@Override
+	public void init(Workspace ws) {
+		// nothing to do
+	}
 
-    @Override
-    public void destroy() {
-        // nothing to do
-    }
+	@Override
+	public void destroy() {
+		// nothing to do
+	}
 
 }

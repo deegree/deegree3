@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -48,56 +47,54 @@ import org.deegree.services.wcs.model.CoverageResult;
 
 /**
  * This is a Coverage implementation for simple or tiled raster.
- * 
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class SimpleCoverage extends WCSCoverage {
 
-    /**
-     * @param name
-     * @param label
-     * @param raster
-     * @param options
-     */
-    public SimpleCoverage( String name, String label, AbstractRaster raster, CoverageOptions options ) {
-        this( name, label, raster, options, null );
-    }
+	/**
+	 * @param name
+	 * @param label
+	 * @param raster
+	 * @param options
+	 */
+	public SimpleCoverage(String name, String label, AbstractRaster raster, CoverageOptions options) {
+		this(name, label, raster, options, null);
+	}
 
-    /**
-     * @param name
-     * @param label
-     * @param raster
-     * @param options
-     * @param rangeSet
-     */
-    public SimpleCoverage( String name, String label, AbstractRaster raster, CoverageOptions options, RangeSet rangeSet ) {
-        super( name, label, raster, options, rangeSet );
-    }
+	/**
+	 * @param name
+	 * @param label
+	 * @param raster
+	 * @param options
+	 * @param rangeSet
+	 */
+	public SimpleCoverage(String name, String label, AbstractRaster raster, CoverageOptions options,
+			RangeSet rangeSet) {
+		super(name, label, raster, options, rangeSet);
+	}
 
-    @Override
-    public CoverageResult getCoverageResult( Envelope env, Grid grid, String format, String interpolation,
-                                             RangeSet requestedRangeset )
-                            throws WCServiceException {
-        AbstractRaster result;
-        try {
-            result = transform( (AbstractRaster) coverage, env, grid, interpolation );
-        } catch ( Exception e ) {
-            throw new RuntimeException( "error while transforming raster result: " + e.getMessage(), e );
-        }
-        if ( requestedRangeset != null ) {
-            RasterFilter filter = new RasterFilter( result );
-            result = filter.apply( getRangeSet(), requestedRangeset );
-        }
-        return new SimpleRasterResult( result, format );
-    }
+	@Override
+	public CoverageResult getCoverageResult(Envelope env, Grid grid, String format, String interpolation,
+			RangeSet requestedRangeset) throws WCServiceException {
+		AbstractRaster result;
+		try {
+			result = transform((AbstractRaster) coverage, env, grid, interpolation);
+		}
+		catch (Exception e) {
+			throw new RuntimeException("error while transforming raster result: " + e.getMessage(), e);
+		}
+		if (requestedRangeset != null) {
+			RasterFilter filter = new RasterFilter(result);
+			result = filter.apply(getRangeSet(), requestedRangeset);
+		}
+		return new SimpleRasterResult(result, format);
+	}
 
-    @Override
-    public Envelope getEnvelope() {
-        return coverage.getEnvelope();
-    }
+	@Override
+	public Envelope getEnvelope() {
+		return coverage.getEnvelope();
+	}
 
 }

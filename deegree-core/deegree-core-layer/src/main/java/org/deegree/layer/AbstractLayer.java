@@ -1,6 +1,5 @@
 package org.deegree.layer;
 
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -38,7 +37,6 @@ package org.deegree.layer;
 
 import java.util.Map;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.style.StyleRef;
@@ -46,59 +44,56 @@ import org.deegree.style.se.unevaluated.Style;
 
 /**
  * <code>Layer</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
-@LoggingNotes(warn = "logs information about dimension handling")
 public abstract class AbstractLayer implements Layer {
 
-    private final LayerMetadata metadata;
+	private final LayerMetadata metadata;
 
-    public static final Mapper<String, Layer> LAYER_NAME = new Mapper<String, Layer>() {
-        @Override
-        public String apply( Layer u ) {
-            return u.getMetadata().getName();
-        }
-    };
+	public static final Mapper<String, Layer> LAYER_NAME = new Mapper<String, Layer>() {
+		@Override
+		public String apply(Layer u) {
+			return u.getMetadata().getName();
+		}
+	};
 
-    public static final Mapper<LayerMetadata, Layer> LAYER_METADATA = new Mapper<LayerMetadata, Layer>() {
-        @Override
-        public LayerMetadata apply( Layer u ) {
-            return u.getMetadata();
-        }
-    };
+	public static final Mapper<LayerMetadata, Layer> LAYER_METADATA = new Mapper<LayerMetadata, Layer>() {
+		@Override
+		public LayerMetadata apply(Layer u) {
+			return u.getMetadata();
+		}
+	};
 
-    protected AbstractLayer( LayerMetadata md ) {
-        this.metadata = md;
-    }
+	protected AbstractLayer(LayerMetadata md) {
+		this.metadata = md;
+	}
 
-    protected Style resolveStyleRef( StyleRef ref ) {
-        Style style = ref.getStyle();
-        if ( style == null ) {
-            style = metadata.getStyles().get( ref.getName() );
-        }
-        return style;
-    }
+	protected Style resolveStyleRef(StyleRef ref) {
+		Style style = ref.getStyle();
+		if (style == null) {
+			style = metadata.getStyles().get(ref.getName());
+		}
+		return style;
+	}
 
-    @Override
-    public LayerMetadata getMetadata() {
-        return metadata;
-    }
+	@Override
+	public LayerMetadata getMetadata() {
+		return metadata;
+	}
 
-    @Override
-    public void destroy() {
-        // nothing to do
-    }
+	@Override
+	public void destroy() {
+		// nothing to do
+	}
 
-    @Override
-    public boolean isStyleApplicable( StyleRef style ) {
-        Map<String, Style> styles = metadata.getStyles();
-        if ( styles.isEmpty() && "default".equals( style.getName() ) ) {
-            return true;
-        }
-        return resolveStyleRef( style ) != null;
-    }
+	@Override
+	public boolean isStyleApplicable(StyleRef style) {
+		Map<String, Style> styles = metadata.getStyles();
+		if (styles.isEmpty() && "default".equals(style.getName())) {
+			return true;
+		}
+		return resolveStyleRef(style) != null;
+	}
+
 }

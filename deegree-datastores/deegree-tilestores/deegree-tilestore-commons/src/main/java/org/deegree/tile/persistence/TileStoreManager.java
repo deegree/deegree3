@@ -36,28 +36,27 @@ import org.deegree.workspace.standard.DefaultResourceManagerMetadata;
 
 /**
  * Resource manager for tile stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class TileStoreManager extends DefaultResourceManager<TileStore> {
 
-    public TileStoreManager() {
-        super( new DefaultResourceManagerMetadata<TileStore>( TileStoreProvider.class, "tile stores",
-                                                              "datasources/tile/" ) );
-    }
+	public TileStoreManager() {
+		super(new DefaultResourceManagerMetadata<TileStore>(TileStoreProvider.class, "tile stores",
+				"datasources/tile/"));
+	}
 
-    @Override
-    protected void read( List<ResourceLocation<TileStore>> list ) {
-        ListIterator<ResourceLocation<TileStore>> iter = list.listIterator();
-        while ( iter.hasNext() ) {
-            ResourceLocation<TileStore> loc = iter.next();
-            if ( loc.getIdentifier().getId().startsWith( "tilematrixset" ) ) {
-                iter.remove();
-            }
-        }
-        super.read( list );
-    }
+	@Override
+	protected void read(List<ResourceLocation<TileStore>> list) {
+		ListIterator<ResourceLocation<TileStore>> iter = list.listIterator();
+		while (iter.hasNext()) {
+			ResourceLocation<TileStore> loc = iter.next();
+			if (loc.getIdentifier().getId().startsWith("tilematrixset")) {
+				iter.remove();
+			}
+		}
+		super.read(list);
+	}
 
 }

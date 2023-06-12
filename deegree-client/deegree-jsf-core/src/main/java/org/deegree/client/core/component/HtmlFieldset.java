@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -40,44 +39,44 @@ import javax.faces.component.UIPanel;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 @FacesComponent(value = "HtmlFieldset")
 public class HtmlFieldset extends UIPanel {
 
-    private static enum AdditionalPropertyKeys {
-        styleClass, style, legend
-    }
+	private static enum AdditionalPropertyKeys {
 
-    public HtmlFieldset() {
-        setRendererType( "org.deegree.Fieldset" );
-    }
+		styleClass, style, legend
 
-    public String getStyleClass() {
-        return (String) getStateHelper().eval( AdditionalPropertyKeys.styleClass, null );
-    }
+	}
 
-    public void setStyleClass( String styleClass ) {
-        getStateHelper().put( AdditionalPropertyKeys.styleClass, styleClass );
-    }
+	public HtmlFieldset() {
+		setRendererType("org.deegree.Fieldset");
+	}
 
-    public String getStyle() {
-        return (String) getStateHelper().eval( AdditionalPropertyKeys.style, null );
-    }
+	public String getStyleClass() {
+		return (String) getStateHelper().eval(AdditionalPropertyKeys.styleClass, null);
+	}
 
-    public void setStyle( String style ) {
-        getStateHelper().put( AdditionalPropertyKeys.style, style );
-    }
+	public void setStyleClass(String styleClass) {
+		getStateHelper().put(AdditionalPropertyKeys.styleClass, styleClass);
+	}
 
-    public String getLegend() {
-        return (String) getStateHelper().eval( AdditionalPropertyKeys.legend, null );
-    }
+	public String getStyle() {
+		return (String) getStateHelper().eval(AdditionalPropertyKeys.style, null);
+	}
 
-    public void setLegend( String legend ) {
-        getStateHelper().put( AdditionalPropertyKeys.legend, legend );
-    }
+	public void setStyle(String style) {
+		getStateHelper().put(AdditionalPropertyKeys.style, style);
+	}
+
+	public String getLegend() {
+		return (String) getStateHelper().eval(AdditionalPropertyKeys.legend, null);
+	}
+
+	public void setLegend(String legend) {
+		getStateHelper().put(AdditionalPropertyKeys.legend, legend);
+	}
+
 }

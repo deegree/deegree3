@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aschmitz@wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -39,65 +38,57 @@ import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.filter.expression.ValueReference;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 public class ParsedPropertyReplacement {
 
-    private final Property newProp;
+	private final Property newProp;
 
-    private final UpdateAction action;
+	private final UpdateAction action;
 
-    private final ValueReference path;
+	private final ValueReference path;
 
-    private final int index;
+	private final int index;
 
-    /**
-     * @param newProp
-     *            never <code>null</code>
-     * @param action
-     *            can be <code>null</code>
-     * @param path
-     *            never <code>null</code>
-     * @param index
-     *            the index of the matched property
-     */
-    public ParsedPropertyReplacement( Property newProp, UpdateAction action, ValueReference path, int index ) {
-        this.newProp = newProp;
-        this.action = action;
-        this.path = path;
-        this.index = index;
-    }
+	/**
+	 * @param newProp never <code>null</code>
+	 * @param action can be <code>null</code>
+	 * @param path never <code>null</code>
+	 * @param index the index of the matched property
+	 */
+	public ParsedPropertyReplacement(Property newProp, UpdateAction action, ValueReference path, int index) {
+		this.newProp = newProp;
+		this.action = action;
+		this.path = path;
+		this.index = index;
+	}
 
-    /**
-     * @return never <code>null</code>
-     */
-    public Property getNewValue() {
-        return newProp;
-    }
+	/**
+	 * @return never <code>null</code>
+	 */
+	public Property getNewValue() {
+		return newProp;
+	}
 
-    /**
-     * @return can be <code>null</code>
-     */
-    public UpdateAction getUpdateAction() {
-        return action;
-    }
+	/**
+	 * @return can be <code>null</code>
+	 */
+	public UpdateAction getUpdateAction() {
+		return action;
+	}
 
-    /**
-     * @return never <code>null</code>
-     */
-    public ValueReference getValueReference() {
-        return path;
-    }
+	/**
+	 * @return never <code>null</code>
+	 */
+	public ValueReference getValueReference() {
+		return path;
+	}
 
-    /**
-     * @return the index of the matched property
-     */
-    public int getIndex() {
-        return index;
-    }
+	/**
+	 * @return the index of the matched property
+	 */
+	public int getIndex() {
+		return index;
+	}
 
 }

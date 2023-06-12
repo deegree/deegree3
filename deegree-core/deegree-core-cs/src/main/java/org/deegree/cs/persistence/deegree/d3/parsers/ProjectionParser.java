@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2009 by:
@@ -53,7 +52,6 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.CRSResource;
@@ -75,217 +73,222 @@ import org.slf4j.Logger;
 
 /**
  * Stax-based configuration parser for projection objects.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
-@LoggingNotes(debug = "Get information about the currently parsed projections, as well as a stack trace if something went wrong.")
 public class ProjectionParser extends DefinitionParser {
 
-    private static final Logger LOG = getLogger( ProjectionParser.class );
+	private static final Logger LOG = getLogger(ProjectionParser.class);
 
-    private static final QName ROOT = new QName( CRS_NS, "ProjectionDefinitions" );
+	private static final QName ROOT = new QName(CRS_NS, "ProjectionDefinitions");
 
-    private static final QName USER_ELEM = new QName( CRS_NS, "UserDefined" );
+	private static final QName USER_ELEM = new QName(CRS_NS, "UserDefined");
 
-    private static final QName LAEA_ELEM = new QName( CRS_NS, "LambertAzimuthalEqualArea" );
+	private static final QName LAEA_ELEM = new QName(CRS_NS, "LambertAzimuthalEqualArea");
 
-    private static final QName LCC_ELEM = new QName( CRS_NS, "LambertConformalConic" );
+	private static final QName LCC_ELEM = new QName(CRS_NS, "LambertConformalConic");
 
-    private static final QName SA_ELEM = new QName( CRS_NS, "StereographicAzimuthal" );
+	private static final QName SA_ELEM = new QName(CRS_NS, "StereographicAzimuthal");
 
-    private static final QName SAA_ELEM = new QName( CRS_NS, "StereographicAlternative" );
+	private static final QName SAA_ELEM = new QName(CRS_NS, "StereographicAlternative");
 
-    private static final QName TMERC_ELEM = new QName( CRS_NS, "TransverseMercator" );
+	private static final QName TMERC_ELEM = new QName(CRS_NS, "TransverseMercator");
 
-    private static final QName MERC_ELEM = new QName( CRS_NS, "Mercator" );
+	private static final QName MERC_ELEM = new QName(CRS_NS, "Mercator");
 
-    private final static Set<QName> knownProjections = new HashSet<QName>( 7 );
+	private final static Set<QName> knownProjections = new HashSet<QName>(7);
 
-    static {
-        knownProjections.add( USER_ELEM );
-        knownProjections.add( LAEA_ELEM );
-        knownProjections.add( LCC_ELEM );
-        knownProjections.add( SA_ELEM );
-        knownProjections.add( SAA_ELEM );
-        knownProjections.add( TMERC_ELEM );
-        knownProjections.add( MERC_ELEM );
-    }
+	static {
+		knownProjections.add(USER_ELEM);
+		knownProjections.add(LAEA_ELEM);
+		knownProjections.add(LCC_ELEM);
+		knownProjections.add(SA_ELEM);
+		knownProjections.add(SAA_ELEM);
+		knownProjections.add(TMERC_ELEM);
+		knownProjections.add(MERC_ELEM);
+	}
 
-    /**
-     * @param provider
-     * @param configURL
-     */
-    public ProjectionParser( DeegreeCRSStore provider, URL configURL ) {
-        super( provider, configURL );
-    }
+	/**
+	 * @param provider
+	 * @param configURL
+	 */
+	public ProjectionParser(DeegreeCRSStore provider, URL configURL) {
+		super(provider, configURL);
+	}
 
-    /**
-     * @param reader
-     *            to
-     * @param underlyingCRS
-     * @return the next datum on the stream.
-     * @throws XMLStreamException
-     */
-    protected Projection parseProjection( XMLStreamReader reader )
-                            throws XMLStreamException {
-        if ( reader == null || !super.moveReaderToNextIdentifiable( reader, knownProjections ) ) {
-            LOG.debug( "Could not get projection, no more definitions left." );
-            return null;
-        }
+	/**
+	 * @param reader to
+	 * @param underlyingCRS
+	 * @return the next datum on the stream.
+	 * @throws XMLStreamException
+	 */
+	protected Projection parseProjection(XMLStreamReader reader) throws XMLStreamException {
+		if (reader == null || !super.moveReaderToNextIdentifiable(reader, knownProjections)) {
+			LOG.debug("Could not get projection, no more definitions left.");
+			return null;
+		}
 
-        QName projectionName = reader.getName();
-        boolean tmercNorthern = true;
-        if ( TMERC_ELEM.equals( projectionName ) ) {
-            // change schema to let projection be identifiable. fix method geodetic
-            tmercNorthern = XMLStreamUtils.getAttributeValueAsBoolean( reader, null, "northernHemisphere", true );
-        }
-        LOG.debug( "At element: " + projectionName );
-        String className = XMLStreamUtils.getAttributeValue( reader, "class" );
+		QName projectionName = reader.getName();
+		boolean tmercNorthern = true;
+		if (TMERC_ELEM.equals(projectionName)) {
+			// change schema to let projection be identifiable. fix method geodetic
+			tmercNorthern = XMLStreamUtils.getAttributeValueAsBoolean(reader, null, "northernHemisphere", true);
+		}
+		LOG.debug("At element: " + projectionName);
+		String className = XMLStreamUtils.getAttributeValue(reader, "class");
 
-        CRSResource id = parseIdentifiable( reader );
-        // All projections will have following parameters
-        double latitudeOfNaturalOrigin = parseLatLonType( reader, new QName( CRS_NS, "LatitudeOfNaturalOrigin" ),
-                                                          false, 0 );
+		CRSResource id = parseIdentifiable(reader);
+		// All projections will have following parameters
+		double latitudeOfNaturalOrigin = parseLatLonType(reader, new QName(CRS_NS, "LatitudeOfNaturalOrigin"), false,
+				0);
 
-        double longitudeOfNaturalOrigin = parseLatLonType( reader, new QName( CRS_NS, "LongitudeOfNaturalOrigin" ),
-                                                           false, 0 );
+		double longitudeOfNaturalOrigin = parseLatLonType(reader, new QName(CRS_NS, "LongitudeOfNaturalOrigin"), false,
+				0);
 
-        double scaleFactor = XMLStreamUtils.getElementTextAsDouble( reader, new QName( CRS_NS, "ScaleFactor" ), 1,
-                                                                       true );
-        double falseEasting = getElementTextAsDouble( reader, new QName( CRS_NS, "FalseEasting" ), 0, true );
-        double falseNorthing = getElementTextAsDouble( reader, new QName( CRS_NS, "FalseNorthing" ), 0, true );
+		double scaleFactor = XMLStreamUtils.getElementTextAsDouble(reader, new QName(CRS_NS, "ScaleFactor"), 1, true);
+		double falseEasting = getElementTextAsDouble(reader, new QName(CRS_NS, "FalseEasting"), 0, true);
+		double falseNorthing = getElementTextAsDouble(reader, new QName(CRS_NS, "FalseNorthing"), 0, true);
 
-        Point2d naturalOrigin = new Point2d( longitudeOfNaturalOrigin, latitudeOfNaturalOrigin );
-        // rb: the projections should actually be made aware of the axis units.
-        Unit units = Unit.METRE;
-        Projection result = null;
-        if ( className != null && !"".equals( className.trim() ) ) {
-            result = instantiateConfiguredClass( reader, className, id, falseNorthing, falseEasting, naturalOrigin,
-                                                 units, scaleFactor );
+		Point2d naturalOrigin = new Point2d(longitudeOfNaturalOrigin, latitudeOfNaturalOrigin);
+		// rb: the projections should actually be made aware of the axis units.
+		Unit units = Unit.METRE;
+		Projection result = null;
+		if (className != null && !"".equals(className.trim())) {
+			result = instantiateConfiguredClass(reader, className, id, falseNorthing, falseEasting, naturalOrigin,
+					units, scaleFactor);
 
-        } else {
-            if ( TMERC_ELEM.equals( projectionName ) ) {
-                result = new TransverseMercator( tmercNorthern, falseNorthing, falseEasting, naturalOrigin, units,
-                                                 scaleFactor, id );
-            } else if ( LAEA_ELEM.equals( projectionName ) ) {
-                result = new LambertAzimuthalEqualArea( falseNorthing, falseEasting, naturalOrigin, units, scaleFactor,
-                                                        id );
-            } else if ( LCC_ELEM.equals( projectionName ) ) {
+		}
+		else {
+			if (TMERC_ELEM.equals(projectionName)) {
+				result = new TransverseMercator(tmercNorthern, falseNorthing, falseEasting, naturalOrigin, units,
+						scaleFactor, id);
+			}
+			else if (LAEA_ELEM.equals(projectionName)) {
+				result = new LambertAzimuthalEqualArea(falseNorthing, falseEasting, naturalOrigin, units, scaleFactor,
+						id);
+			}
+			else if (LCC_ELEM.equals(projectionName)) {
 
-                double firstP = parseLatLonType( reader, new QName( CRS_NS, "FirstParallelLatitude" ), false,
-                                                 Double.NaN );
-                double secondP = parseLatLonType( reader, new QName( CRS_NS, "SecondParallelLatitude" ), false,
-                                                  Double.NaN );
-                result = new LambertConformalConic( firstP, secondP, falseNorthing, falseEasting, naturalOrigin, units,
-                                                    scaleFactor, id );
-            } else if ( SA_ELEM.equals( projectionName ) ) {
-                double trueScaleL = parseLatLonType( reader, new QName( CRS_NS, "TrueScaleLatitude" ), false,
-                                                     Double.NaN );
-                result = new StereographicAzimuthal( trueScaleL, falseNorthing, falseEasting, naturalOrigin, units,
-                                                     scaleFactor, id );
-            } else if ( SAA_ELEM.equals( projectionName ) ) {
-                result = new StereographicAlternative( falseNorthing, falseEasting, naturalOrigin, units, scaleFactor,
-                                                       id );
-            } else if ( MERC_ELEM.equals( projectionName ) ) {
-                result = new Mercator( falseNorthing, falseEasting, naturalOrigin, units, scaleFactor, id );
-            } else {
-                throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PROJECTEDCRS_INVALID_PROJECTION",
-                                                                          projectionName, knownProjections.toString() ) );
+				double firstP = parseLatLonType(reader, new QName(CRS_NS, "FirstParallelLatitude"), false, Double.NaN);
+				double secondP = parseLatLonType(reader, new QName(CRS_NS, "SecondParallelLatitude"), false,
+						Double.NaN);
+				result = new LambertConformalConic(firstP, secondP, falseNorthing, falseEasting, naturalOrigin, units,
+						scaleFactor, id);
+			}
+			else if (SA_ELEM.equals(projectionName)) {
+				double trueScaleL = parseLatLonType(reader, new QName(CRS_NS, "TrueScaleLatitude"), false, Double.NaN);
+				result = new StereographicAzimuthal(trueScaleL, falseNorthing, falseEasting, naturalOrigin, units,
+						scaleFactor, id);
+			}
+			else if (SAA_ELEM.equals(projectionName)) {
+				result = new StereographicAlternative(falseNorthing, falseEasting, naturalOrigin, units, scaleFactor,
+						id);
+			}
+			else if (MERC_ELEM.equals(projectionName)) {
+				result = new Mercator(falseNorthing, falseEasting, naturalOrigin, units, scaleFactor, id);
+			}
+			else {
+				throw new CRSConfigurationException(Messages.getMessage("CRS_CONFIG_PROJECTEDCRS_INVALID_PROJECTION",
+						projectionName, knownProjections.toString()));
 
-            }
-        }
-        // throw new CRSConfigurationException( Messages.getMessage( "CRS_STAX_CONFIG_PARSE_EXCEPTION",
-        // "projection parameters", e.getMessage() ), e );
-        if ( result != null ) {
-            result = getStore().addIdToCache( result, false );
-        }
-        return result;
-    }
+			}
+		}
+		// throw new CRSConfigurationException( Messages.getMessage(
+		// "CRS_STAX_CONFIG_PARSE_EXCEPTION",
+		// "projection parameters", e.getMessage() ), e );
+		if (result != null) {
+			result = getStore().addIdToCache(result, false);
+		}
+		return result;
+	}
 
-    /**
-     * @param className
-     * @param underlyingCRS
-     * @return
-     */
-    private Projection instantiateConfiguredClass( XMLStreamReader reader, String className, CRSResource id,
-                                                   double falseNorthing, double falseEasting, Point2d naturalOrigin,
-                                                   IUnit units, double scaleFactor ) {
-        Projection result = null;
-        LOG.debug( "Trying to load user defined projection class: " + className );
-        try {
-            Class<?> t = Class.forName( className );
-            t.asSubclass( Projection.class );
-            /**
-             * try to get a constructor with a native type as a parameter, by going over the 'names' of the classes of
-             * the parameters, the native type will show up as the typename e.g. int or long..... <code>
-             * public Projection( CRSIdentifiable, GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
-             * Point2d naturalOrigin, Unit units, double scale, XMLStreamReader reader )
-             * </code>
-             */
+	/**
+	 * @param className
+	 * @param underlyingCRS
+	 * @return
+	 */
+	private Projection instantiateConfiguredClass(XMLStreamReader reader, String className, CRSResource id,
+			double falseNorthing, double falseEasting, Point2d naturalOrigin, IUnit units, double scaleFactor) {
+		Projection result = null;
+		LOG.debug("Trying to load user defined projection class: " + className);
+		try {
+			Class<?> t = Class.forName(className);
+			t.asSubclass(Projection.class);
+			/**
+			 * try to get a constructor with a native type as a parameter, by going over
+			 * the 'names' of the classes of the parameters, the native type will show up
+			 * as the typename e.g. int or long..... <code>
+			 * public Projection( CRSIdentifiable, GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
+			 * Point2d naturalOrigin, Unit units, double scale, XMLStreamReader reader )
+			 * </code>
+			 */
 
-            /**
-             * Load the constructor with the standard projection values and the element list.
-             */
-            Constructor<?> constructor = t.getConstructor( CRSIdentifiable.class, IGeographicCRS.class, double.class,
-                                                           double.class, Point2d.class, Unit.class, double.class,
-                                                           XMLStreamReader.class );
-            result = (Projection) constructor.newInstance( id, falseNorthing, falseEasting, naturalOrigin, units,
-                                                           scaleFactor, reader );
-        } catch ( ClassNotFoundException e ) {
-            LOG.error( e.getMessage(), e );
-        } catch ( SecurityException e ) {
-            LOG.error( e.getMessage(), e );
-        } catch ( NoSuchMethodException e ) {
-            LOG.error( e.getMessage(), e );
-        } catch ( IllegalArgumentException e ) {
-            LOG.error( e.getMessage(), e );
-        } catch ( InstantiationException e ) {
-            LOG.error( e.getMessage(), e );
-        } catch ( IllegalAccessException e ) {
-            LOG.error( e.getMessage(), e );
-        } catch ( InvocationTargetException e ) {
-            LOG.error( e.getMessage(), e );
-        }
-        if ( result == null ) {
-            LOG.debug( "Loading of user defined projection class: " + className + " was not successful" );
-        }
-        return result;
+			/**
+			 * Load the constructor with the standard projection values and the element
+			 * list.
+			 */
+			Constructor<?> constructor = t.getConstructor(CRSIdentifiable.class, IGeographicCRS.class, double.class,
+					double.class, Point2d.class, Unit.class, double.class, XMLStreamReader.class);
+			result = (Projection) constructor.newInstance(id, falseNorthing, falseEasting, naturalOrigin, units,
+					scaleFactor, reader);
+		}
+		catch (ClassNotFoundException e) {
+			LOG.error(e.getMessage(), e);
+		}
+		catch (SecurityException e) {
+			LOG.error(e.getMessage(), e);
+		}
+		catch (NoSuchMethodException e) {
+			LOG.error(e.getMessage(), e);
+		}
+		catch (IllegalArgumentException e) {
+			LOG.error(e.getMessage(), e);
+		}
+		catch (InstantiationException e) {
+			LOG.error(e.getMessage(), e);
+		}
+		catch (IllegalAccessException e) {
+			LOG.error(e.getMessage(), e);
+		}
+		catch (InvocationTargetException e) {
+			LOG.error(e.getMessage(), e);
+		}
+		if (result == null) {
+			LOG.debug("Loading of user defined projection class: " + className + " was not successful");
+		}
+		return result;
 
-    }
+	}
 
-    /**
-     * @param projectionId
-     * @param underlyingCRS
-     *            the crs to which the projection is defined.
-     * @return the
-     * @throws CRSConfigurationException
-     */
-    public IProjection getProjectionForId( String projectionId )
-                            throws CRSConfigurationException {
-        if ( projectionId == null || "".equals( projectionId.trim() ) ) {
-            return null;
-        }
-        String tmpProjectionId = projectionId.trim();
-        IProjection result = getStore().getCachedIdentifiable( Projection.class, tmpProjectionId );
-        if ( result == null ) {
-            try {
-                result = parseProjection( getConfigReader() );
-                while ( result != null && !result.hasId( tmpProjectionId, false, true ) ) {
-                    result = parseProjection( getConfigReader() );
-                }
-            } catch ( XMLStreamException e ) {
-                throw new CRSConfigurationException( e );
-            }
-        }
-        return result;
-    }
+	/**
+	 * @param projectionId
+	 * @param underlyingCRS the crs to which the projection is defined.
+	 * @return the
+	 * @throws CRSConfigurationException
+	 */
+	public IProjection getProjectionForId(String projectionId) throws CRSConfigurationException {
+		if (projectionId == null || "".equals(projectionId.trim())) {
+			return null;
+		}
+		String tmpProjectionId = projectionId.trim();
+		IProjection result = getStore().getCachedIdentifiable(Projection.class, tmpProjectionId);
+		if (result == null) {
+			try {
+				result = parseProjection(getConfigReader());
+				while (result != null && !result.hasId(tmpProjectionId, false, true)) {
+					result = parseProjection(getConfigReader());
+				}
+			}
+			catch (XMLStreamException e) {
+				throw new CRSConfigurationException(e);
+			}
+		}
+		return result;
+	}
 
-    @Override
-    protected QName expectedRootName() {
-        return ROOT;
-    }
+	@Override
+	protected QName expectedRootName() {
+		return ROOT;
+	}
 
 }

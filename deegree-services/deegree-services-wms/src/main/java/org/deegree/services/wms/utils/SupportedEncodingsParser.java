@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2017 by:
@@ -54,110 +53,111 @@ import org.deegree.services.jaxb.wms.DeegreeWMS.SupportedRequests;
  */
 public class SupportedEncodingsParser {
 
-    /**
-     * Parse the supported request and encodings from DeegreeWMS configuration
-     *
-     * @param jaxbConfig
-     *            the DeegreeWMS configuration to parse the encoding from, never <code>null</code>
-     * @return the parsed supported requests and encodings, never <code>null</code>
-     */
-    public SupportedEncodings parseEncodings( DeegreeWMS jaxbConfig ) {
-        SupportedRequests supportedRequests = jaxbConfig.getSupportedRequests();
-        if ( supportedRequests != null ) {
-            if ( isAtLeastOneRequestTypeConfigured( supportedRequests )
-                 || isGlobalSupportedEncodingsConfigured( supportedRequests ) )
-                return parseEncodings( supportedRequests );
-        }
-        return new UnlimitedSupportedEncodings();
-    }
+	/**
+	 * Parse the supported request and encodings from DeegreeWMS configuration
+	 * @param jaxbConfig the DeegreeWMS configuration to parse the encoding from, never
+	 * <code>null</code>
+	 * @return the parsed supported requests and encodings, never <code>null</code>
+	 */
+	public SupportedEncodings parseEncodings(DeegreeWMS jaxbConfig) {
+		SupportedRequests supportedRequests = jaxbConfig.getSupportedRequests();
+		if (supportedRequests != null) {
+			if (isAtLeastOneRequestTypeConfigured(supportedRequests)
+					|| isGlobalSupportedEncodingsConfigured(supportedRequests))
+				return parseEncodings(supportedRequests);
+		}
+		return new UnlimitedSupportedEncodings();
+	}
 
-    private LimitedSupportedEncodings parseEncodings( SupportedRequests supportedRequests ) {
-        List<String> supportedEncodingsForAllRequestTypes = supportedRequests.getSupportedEncodings();
-        if ( isAtLeastOneRequestTypeConfigured( supportedRequests ) )
-            return parseEncodingsWithSpecifiedRequestTypes( supportedRequests, supportedEncodingsForAllRequestTypes );
-        else
-            return parseEncodingWithSupportedEncodings( supportedEncodingsForAllRequestTypes );
-    }
+	private LimitedSupportedEncodings parseEncodings(SupportedRequests supportedRequests) {
+		List<String> supportedEncodingsForAllRequestTypes = supportedRequests.getSupportedEncodings();
+		if (isAtLeastOneRequestTypeConfigured(supportedRequests))
+			return parseEncodingsWithSpecifiedRequestTypes(supportedRequests, supportedEncodingsForAllRequestTypes);
+		else
+			return parseEncodingWithSupportedEncodings(supportedEncodingsForAllRequestTypes);
+	}
 
-    private LimitedSupportedEncodings parseEncodingWithSupportedEncodings( List<String> supportedEncodingsForAllRequestTypes ) {
-        LimitedSupportedEncodings<WMSRequestType> limitedSupportedEncodings = new LimitedSupportedEncodings();
-        for ( WMSRequestType type : WMSRequestType.values() ) {
-            limitedSupportedEncodings.addEnabledEncodings( type,
-                                                           collectEnabledEncodings( supportedEncodingsForAllRequestTypes ) );
-        }
-        return limitedSupportedEncodings;
-    }
+	private LimitedSupportedEncodings parseEncodingWithSupportedEncodings(
+			List<String> supportedEncodingsForAllRequestTypes) {
+		LimitedSupportedEncodings<WMSRequestType> limitedSupportedEncodings = new LimitedSupportedEncodings();
+		for (WMSRequestType type : WMSRequestType.values()) {
+			limitedSupportedEncodings.addEnabledEncodings(type,
+					collectEnabledEncodings(supportedEncodingsForAllRequestTypes));
+		}
+		return limitedSupportedEncodings;
+	}
 
-    private LimitedSupportedEncodings parseEncodingsWithSpecifiedRequestTypes( SupportedRequests supportedRequests,
-                                                                               List<String> supportedEncodingsForAllRequestTypes ) {
-        LimitedSupportedEncodings<WMSRequestType> limitedSupportedEncodings = new LimitedSupportedEncodings();
+	private LimitedSupportedEncodings parseEncodingsWithSpecifiedRequestTypes(SupportedRequests supportedRequests,
+			List<String> supportedEncodingsForAllRequestTypes) {
+		LimitedSupportedEncodings<WMSRequestType> limitedSupportedEncodings = new LimitedSupportedEncodings();
 
-        for ( WMSRequestType type : WMSRequestType.values() ) {
-            RequestType requestType = retrieveEncodings( supportedRequests, type );
-            Set<String> enabledEncodingsPerRequestType = collectEnabledEncodings( requestType,
-                                                                                  supportedEncodingsForAllRequestTypes );
-            limitedSupportedEncodings.addEnabledEncodings( type, enabledEncodingsPerRequestType );
-        }
+		for (WMSRequestType type : WMSRequestType.values()) {
+			RequestType requestType = retrieveEncodings(supportedRequests, type);
+			Set<String> enabledEncodingsPerRequestType = collectEnabledEncodings(requestType,
+					supportedEncodingsForAllRequestTypes);
+			limitedSupportedEncodings.addEnabledEncodings(type, enabledEncodingsPerRequestType);
+		}
 
-        return limitedSupportedEncodings;
-    }
+		return limitedSupportedEncodings;
+	}
 
-    private RequestType retrieveEncodings( SupportedRequests supportedRequests, WMSRequestType type ) {
-        switch ( type ) {
-        case DescribeLayer:
-            return supportedRequests.getDescribeLayer();
-        case capabilities:
-        case GetCapabilities:
-            return supportedRequests.getGetCapabilities();
-        case GetFeatureInfo:
-            return supportedRequests.getGetFeatureInfo();
-        case GetMap:
-        case map:
-            return supportedRequests.getGetMap();
-        case GetFeatureInfoSchema:
-            return supportedRequests.getGetFeatureInfoSchema();
-        case GetLegendGraphic:
-            return supportedRequests.getGetLegendGraphic();
-        case DTD:
-            return supportedRequests.getGetLegendGraphic();
-        default:
-            return null;
-        }
-    }
+	private RequestType retrieveEncodings(SupportedRequests supportedRequests, WMSRequestType type) {
+		switch (type) {
+			case DescribeLayer:
+				return supportedRequests.getDescribeLayer();
+			case capabilities:
+			case GetCapabilities:
+				return supportedRequests.getGetCapabilities();
+			case GetFeatureInfo:
+				return supportedRequests.getGetFeatureInfo();
+			case GetMap:
+			case map:
+				return supportedRequests.getGetMap();
+			case GetFeatureInfoSchema:
+				return supportedRequests.getGetFeatureInfoSchema();
+			case GetLegendGraphic:
+				return supportedRequests.getGetLegendGraphic();
+			case DTD:
+				return supportedRequests.getGetLegendGraphic();
+			default:
+				return null;
+		}
+	}
 
-    private boolean isGlobalSupportedEncodingsConfigured( SupportedRequests supportedRequests ) {
-        List<String> supportedEncodingsForAllRequestTypes = supportedRequests.getSupportedEncodings();
-        return supportedEncodingsForAllRequestTypes != null && !supportedEncodingsForAllRequestTypes.isEmpty();
-    }
+	private boolean isGlobalSupportedEncodingsConfigured(SupportedRequests supportedRequests) {
+		List<String> supportedEncodingsForAllRequestTypes = supportedRequests.getSupportedEncodings();
+		return supportedEncodingsForAllRequestTypes != null && !supportedEncodingsForAllRequestTypes.isEmpty();
+	}
 
-    private boolean isAtLeastOneRequestTypeConfigured( SupportedRequests supportedRequests ) {
-        return supportedRequests.getGetCapabilities() != null || supportedRequests.getGetMap() != null
-               || supportedRequests.getDescribeLayer() != null || supportedRequests.getGetFeatureInfo() != null
-               || supportedRequests.getGetFeatureInfoSchema() != null
-               || supportedRequests.getGetLegendGraphic() != null || supportedRequests.getDTD() != null;
-    }
+	private boolean isAtLeastOneRequestTypeConfigured(SupportedRequests supportedRequests) {
+		return supportedRequests.getGetCapabilities() != null || supportedRequests.getGetMap() != null
+				|| supportedRequests.getDescribeLayer() != null || supportedRequests.getGetFeatureInfo() != null
+				|| supportedRequests.getGetFeatureInfoSchema() != null
+				|| supportedRequests.getGetLegendGraphic() != null || supportedRequests.getDTD() != null;
+	}
 
-    private Set<String> collectEnabledEncodings( RequestType supportedEncodingsForThisType,
-                                                 List<String> supportedEncodingsForAllTypes ) {
-        Set<String> allEnabledEncodingForThisType = new HashSet<String>();
-        if ( supportedEncodingsForThisType != null ) {
-            allEnabledEncodingForThisType.addAll( supportedEncodingsForAllTypes );
-            List<String> encodingsForThisType = supportedEncodingsForThisType.getSupportedEncodings();
-            if ( encodingsForThisType != null && encodingsForThisType.size() > 0 ) {
-                allEnabledEncodingForThisType.addAll( encodingsForThisType );
-            } else if ( supportedEncodingsForAllTypes == null || supportedEncodingsForAllTypes.isEmpty() ) {
-                allEnabledEncodingForThisType.add( "kvp" );
-                allEnabledEncodingForThisType.add( "xml" );
-                allEnabledEncodingForThisType.add( "soap" );
-            }
-        }
-        return allEnabledEncodingForThisType;
-    }
+	private Set<String> collectEnabledEncodings(RequestType supportedEncodingsForThisType,
+			List<String> supportedEncodingsForAllTypes) {
+		Set<String> allEnabledEncodingForThisType = new HashSet<String>();
+		if (supportedEncodingsForThisType != null) {
+			allEnabledEncodingForThisType.addAll(supportedEncodingsForAllTypes);
+			List<String> encodingsForThisType = supportedEncodingsForThisType.getSupportedEncodings();
+			if (encodingsForThisType != null && encodingsForThisType.size() > 0) {
+				allEnabledEncodingForThisType.addAll(encodingsForThisType);
+			}
+			else if (supportedEncodingsForAllTypes == null || supportedEncodingsForAllTypes.isEmpty()) {
+				allEnabledEncodingForThisType.add("kvp");
+				allEnabledEncodingForThisType.add("xml");
+				allEnabledEncodingForThisType.add("soap");
+			}
+		}
+		return allEnabledEncodingForThisType;
+	}
 
-    private Set<String> collectEnabledEncodings( List<String> supportedEncodingsForAllTypes ) {
-        Set<String> allEnabledEncodingForThisType = new HashSet<String>();
-        allEnabledEncodingForThisType.addAll( supportedEncodingsForAllTypes );
-        return allEnabledEncodingForThisType;
-    }
+	private Set<String> collectEnabledEncodings(List<String> supportedEncodingsForAllTypes) {
+		Set<String> allEnabledEncodingForThisType = new HashSet<String>();
+		allEnabledEncodingForThisType.addAll(supportedEncodingsForAllTypes);
+		return allEnabledEncodingForThisType;
+	}
 
 }

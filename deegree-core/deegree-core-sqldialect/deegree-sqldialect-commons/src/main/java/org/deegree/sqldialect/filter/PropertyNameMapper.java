@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-base/src/main/java/org/deegree/filter/sql/PropertyNameMapper.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -39,32 +38,28 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.ValueReference;
 
 /**
- * Implementations provide {@link ValueReference} to table/column mappings for {@link AbstractWhereBuilder}
- * implementations.
- * 
+ * Implementations provide {@link ValueReference} to table/column mappings for
+ * {@link AbstractWhereBuilder} implementations.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 30964 $, $Date: 2011-05-30 14:34:29 +0200 (Mo, 30. Mai 2011) $
  */
 public interface PropertyNameMapper {
 
-    /**
-     * Returns the {@link PropertyNameMapping} for the given {@link ValueReference}.
-     * 
-     * @param propName
-     *            property name, can be <code>null</code> (indicates that the default geometry property of the root
-     *            object is requested)
-     * @param aliasManager
-     *            manager for creating and tracking table aliases, never <code>null</code>
-     * @return relational mapping, may be <code>null</code> (if no mapping is possible)
-     * @throws FilterEvaluationException
-     *             indicates that the {@link ValueReference} is invalid
-     * @throws UnmappableException
-     */
-    public PropertyNameMapping getMapping( ValueReference propName, TableAliasManager aliasManager )
-                            throws FilterEvaluationException, UnmappableException;
-    
-    public PropertyNameMapping getSpatialMapping( ValueReference propName, TableAliasManager aliasManager )
-                            throws FilterEvaluationException, UnmappableException;
+	/**
+	 * Returns the {@link PropertyNameMapping} for the given {@link ValueReference}.
+	 * @param propName property name, can be <code>null</code> (indicates that the default
+	 * geometry property of the root object is requested)
+	 * @param aliasManager manager for creating and tracking table aliases, never
+	 * <code>null</code>
+	 * @return relational mapping, may be <code>null</code> (if no mapping is possible)
+	 * @throws FilterEvaluationException indicates that the {@link ValueReference} is
+	 * invalid
+	 * @throws UnmappableException
+	 */
+	public PropertyNameMapping getMapping(ValueReference propName, TableAliasManager aliasManager)
+			throws FilterEvaluationException, UnmappableException;
+
+	public PropertyNameMapping getSpatialMapping(ValueReference propName, TableAliasManager aliasManager)
+			throws FilterEvaluationException, UnmappableException;
+
 }

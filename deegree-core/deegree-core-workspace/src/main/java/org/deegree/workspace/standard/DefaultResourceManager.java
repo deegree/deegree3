@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -62,118 +61,121 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Default resource manager implementation. Scans for provider implementations via SPI using the provider class from the
- * metadata.
- * 
+ * Default resource manager implementation. Scans for provider implementations via SPI
+ * using the provider class from the metadata.
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class DefaultResourceManager<T extends Resource> implements ResourceManager<T> {
 
-    private static Logger LOG = LoggerFactory.getLogger( DefaultResourceManager.class );
+	private static Logger LOG = LoggerFactory.getLogger(DefaultResourceManager.class);
 
-    private final ResourceManagerMetadata<T> metadata;
+	private final ResourceManagerMetadata<T> metadata;
 
-    protected final Map<ResourceIdentifier<T>, ResourceMetadata<T>> metadataMap = new HashMap<ResourceIdentifier<T>, ResourceMetadata<T>>();
+	protected final Map<ResourceIdentifier<T>, ResourceMetadata<T>> metadataMap = new HashMap<ResourceIdentifier<T>, ResourceMetadata<T>>();
 
-    private final Map<String, ResourceProvider<T>> nsToProvider = new HashMap<String, ResourceProvider<T>>();
+	private final Map<String, ResourceProvider<T>> nsToProvider = new HashMap<String, ResourceProvider<T>>();
 
-    private Workspace workspace;
+	private Workspace workspace;
 
-    public DefaultResourceManager( ResourceManagerMetadata<T> metadata ) {
-        this.metadata = metadata;
-    }
+	public DefaultResourceManager(ResourceManagerMetadata<T> metadata) {
+		this.metadata = metadata;
+	}
 
-    @Override
-    public void find() {
-        LOG.info( "--------------------------------------------------------------------------------" );
-        LOG.info( "Scanning for {}.", metadata.getName() );
-        LOG.info( "--------------------------------------------------------------------------------" );
+	@Override
+	public void find() {
+		LOG.info("--------------------------------------------------------------------------------");
+		LOG.info("Scanning for {}.", metadata.getName());
+		LOG.info("--------------------------------------------------------------------------------");
 
-        List<ResourceLocation<T>> list = workspace.getLocationHandler().findResourceLocations( metadata );
+		List<ResourceLocation<T>> list = workspace.getLocationHandler().findResourceLocations(metadata);
 
-        read( list );
+		read(list);
 
-        Iterator<ResourceProvider<T>> iter = nsToProvider.values().iterator();
+		Iterator<ResourceProvider<T>> iter = nsToProvider.values().iterator();
 
-        while ( iter.hasNext() ) {
-            ResourceProvider<T> prov = iter.next();
-            try {
-                for ( ResourceMetadata<T> md : prov.getAdditionalResources( workspace ) ) {
-                    // only overrides if the resource has not been overridden
-                    if ( !metadataMap.containsKey( md.getIdentifier() ) ) {
-                        metadataMap.put( md.getIdentifier(), md );
-                    }
-                }
-            } catch ( Exception e ) {
-                LOG.error( "Unable to obtain additional resources from {}: {}", prov.getClass().getSimpleName(),
-                           e.getLocalizedMessage() );
-                LOG.trace( "Stack trace:", e );
-            }
-        }
-    }
+		while (iter.hasNext()) {
+			ResourceProvider<T> prov = iter.next();
+			try {
+				for (ResourceMetadata<T> md : prov.getAdditionalResources(workspace)) {
+					// only overrides if the resource has not been overridden
+					if (!metadataMap.containsKey(md.getIdentifier())) {
+						metadataMap.put(md.getIdentifier(), md);
+					}
+				}
+			}
+			catch (Exception e) {
+				LOG.error("Unable to obtain additional resources from {}: {}", prov.getClass().getSimpleName(),
+						e.getLocalizedMessage());
+				LOG.trace("Stack trace:", e);
+			}
+		}
+	}
 
-    protected void read( List<ResourceLocation<T>> list ) {
-        for ( ResourceLocation<T> loc : list ) {
-            try {
-                ResourceProvider<T> prov = nsToProvider.get( loc.getNamespace() );
-                if ( prov != null ) {
-                    LOG.info( "Scanning resource {} with provider {}.", loc, prov.getClass().getSimpleName() );
-                    ResourceMetadata<T> md = prov.read( workspace, loc );
-                    metadataMap.put( md.getIdentifier(), md );
-                } else {
-                    LOG.warn( "Not scanning resource {}, no provider found for namespace {}.", loc, loc.getNamespace() );
-                }
-            } catch ( Exception e ) {
-                LOG.error( "Unable to scan resource {}: {}.", loc.getIdentifier(), e.getLocalizedMessage() );
-                LOG.trace( "Stack trace:", e );
-            }
-        }
-    }
+	protected void read(List<ResourceLocation<T>> list) {
+		for (ResourceLocation<T> loc : list) {
+			try {
+				ResourceProvider<T> prov = nsToProvider.get(loc.getNamespace());
+				if (prov != null) {
+					LOG.info("Scanning resource {} with provider {}.", loc, prov.getClass().getSimpleName());
+					ResourceMetadata<T> md = prov.read(workspace, loc);
+					metadataMap.put(md.getIdentifier(), md);
+				}
+				else {
+					LOG.warn("Not scanning resource {}, no provider found for namespace {}.", loc, loc.getNamespace());
+				}
+			}
+			catch (Exception e) {
+				LOG.error("Unable to scan resource {}: {}.", loc.getIdentifier(), e.getLocalizedMessage());
+				LOG.trace("Stack trace:", e);
+			}
+		}
+	}
 
-    @Override
-    public ResourceManagerMetadata<T> getMetadata() {
-        return metadata;
-    }
+	@Override
+	public ResourceManagerMetadata<T> getMetadata() {
+		return metadata;
+	}
 
-    @Override
-    public Collection<ResourceMetadata<T>> getResourceMetadata() {
-        return metadataMap.values();
-    }
+	@Override
+	public Collection<ResourceMetadata<T>> getResourceMetadata() {
+		return metadataMap.values();
+	}
 
-    @Override
-    public void shutdown() {
-        // nothing to do
-    }
+	@Override
+	public void shutdown() {
+		// nothing to do
+	}
 
-    @Override
-    public ResourceMetadata<T> add( ResourceLocation<T> location ) {
-        read( Collections.singletonList( location ) );
-        return metadataMap.get( location.getIdentifier() );
-    }
+	@Override
+	public ResourceMetadata<T> add(ResourceLocation<T> location) {
+		read(Collections.singletonList(location));
+		return metadataMap.get(location.getIdentifier());
+	}
 
-    @Override
-    public void remove( ResourceMetadata<?> md ) {
-        metadataMap.remove( md.getIdentifier() );
-    }
+	@Override
+	public void remove(ResourceMetadata<?> md) {
+		metadataMap.remove(md.getIdentifier());
+	}
 
-    @Override
-    public void startup( Workspace workspace ) {
-        this.workspace = workspace;
+	@Override
+	public void startup(Workspace workspace) {
+		this.workspace = workspace;
 
-        // load providers
-        Iterator<? extends ResourceProvider<T>> iter = ServiceLoader.load( metadata.getProviderClass(),
-                                                                           workspace.getModuleClassLoader() ).iterator();
-        while ( iter.hasNext() ) {
-            ResourceProvider<T> prov = iter.next();
-            nsToProvider.put( prov.getNamespace(), prov );
-        }
-    }
+		// load providers
+		Iterator<? extends ResourceProvider<T>> iter = ServiceLoader
+			.load(metadata.getProviderClass(), workspace.getModuleClassLoader())
+			.iterator();
+		while (iter.hasNext()) {
+			ResourceProvider<T> prov = iter.next();
+			nsToProvider.put(prov.getNamespace(), prov);
+		}
+	}
 
-    @Override
-    public List<ResourceProvider<T>> getProviders() {
-        return new ArrayList<ResourceProvider<T>>( nsToProvider.values() );
-    }
+	@Override
+	public List<ResourceProvider<T>> getProviders() {
+		return new ArrayList<ResourceProvider<T>>(nsToProvider.values());
+	}
 
 }

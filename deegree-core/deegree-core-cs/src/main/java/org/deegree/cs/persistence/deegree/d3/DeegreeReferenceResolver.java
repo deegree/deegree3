@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2009 by:
@@ -44,32 +43,31 @@ import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.cs.persistence.AbstractCRSStore.RESOURCETYPE;
 
 /**
- * The <code>CRSParser</code> holds the instances to the StAX based crs components parsers.
- * 
+ * The <code>CRSParser</code> holds the instances to the StAX based crs components
+ * parsers.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class DeegreeReferenceResolver implements ReferenceResolver {
 
-    private final DeegreeCRSStore store;
+	private final DeegreeCRSStore store;
 
-    private RESOURCETYPE resourceType;
+	private RESOURCETYPE resourceType;
 
-    public DeegreeReferenceResolver( DeegreeCRSStore store, RESOURCETYPE resourceType ) {
-        this.store = store;
-        this.resourceType = resourceType;
-    }
+	public DeegreeReferenceResolver(DeegreeCRSStore store, RESOURCETYPE resourceType) {
+		this.store = store;
+		this.resourceType = resourceType;
+	}
 
-    // TODO: encode type?
-    @Override
-    public Object getObject( String uri, String baseURL ) {
-        if ( uri.startsWith( "#" ) ) {
-            // OBJEKT-> keine REFERENZ!
-            // CACHE
-            return store.getCRSResource( uri.substring( 1 ), resourceType );
-        }
-        throw new ReferenceResolvingException( "Deegree CRS Resolver does not support remote references." );
-    }
+	// TODO: encode type?
+	@Override
+	public Object getObject(String uri, String baseURL) {
+		if (uri.startsWith("#")) {
+			// OBJEKT-> keine REFERENZ!
+			// CACHE
+			return store.getCRSResource(uri.substring(1), resourceType);
+		}
+		throw new ReferenceResolvingException("Deegree CRS Resolver does not support remote references.");
+	}
+
 }

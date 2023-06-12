@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -41,26 +40,24 @@ import java.sql.SQLException;
 import org.deegree.commons.tom.TypedObjectNode;
 
 /**
- * Helper class for delayed calls to {@link ParticleConverter#setParticle(PreparedStatement, TypedObjectNode, int)}.
- * 
+ * Helper class for delayed calls to
+ * {@link ParticleConverter#setParticle(PreparedStatement, TypedObjectNode, int)}.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class ParticleConversion<T extends TypedObjectNode> {
 
-    private final ParticleConverter<T> converter;
+	private final ParticleConverter<T> converter;
 
-    private final T particle;
+	private final T particle;
 
-    public ParticleConversion( ParticleConverter<T> converter, T particle ) {
-        this.converter = converter;
-        this.particle = particle;
-    }
+	public ParticleConversion(ParticleConverter<T> converter, T particle) {
+		this.converter = converter;
+		this.particle = particle;
+	}
 
-    public void setParticle( PreparedStatement stmt, int paramIndex )
-                            throws SQLException {
-        converter.setParticle( stmt, particle, paramIndex );
-    }
+	public void setParticle(PreparedStatement stmt, int paramIndex) throws SQLException {
+		converter.setParticle(stmt, particle, paramIndex);
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -49,90 +48,85 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Provides utility methods for outputting/logging the deegree 3 ascii art logo.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class DeegreeAALogoUtils {
 
-    private static Logger LOG = LoggerFactory.getLogger( DeegreeAALogoUtils.class );
+	private static Logger LOG = LoggerFactory.getLogger(DeegreeAALogoUtils.class);
 
-    private static List<String> lines = new LinkedList<String>();
+	private static List<String> lines = new LinkedList<String>();
 
-    private static String DEEGREE_AA_LOGO_FILE = "deegree_aa_logo.txt";
+	private static String DEEGREE_AA_LOGO_FILE = "deegree_aa_logo.txt";
 
-    static {
-        try {
-            InputStream is = DeegreeAALogoUtils.class.getResourceAsStream( DEEGREE_AA_LOGO_FILE );
-            BufferedReader reader = new BufferedReader( new InputStreamReader( is, "UTF-8" ) );
-            String line = null;
-            while ( ( line = reader.readLine() ) != null ) {
-                lines.add( line );
-            }
-        } catch ( Exception e ) {
-            LOG.error( "Could not read deegree logo '" + DEEGREE_AA_LOGO_FILE + "'." );
-        }
-    }
+	static {
+		try {
+			InputStream is = DeegreeAALogoUtils.class.getResourceAsStream(DEEGREE_AA_LOGO_FILE);
+			BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				lines.add(line);
+			}
+		}
+		catch (Exception e) {
+			LOG.error("Could not read deegree logo '" + DEEGREE_AA_LOGO_FILE + "'.");
+		}
+	}
 
-    /**
-     * Writes the logo to the given <code>Logger</code>, using the <code>Info</code> log level.
-     * 
-     * @param log
-     *            <code>Logger</code> to write to
-     */
-    public static void logInfo( Logger log ) {
-        for ( String line : lines ) {
-            log.info( line );
-        }
-    }
+	/**
+	 * Writes the logo to the given <code>Logger</code>, using the <code>Info</code> log
+	 * level.
+	 * @param log <code>Logger</code> to write to
+	 */
+	public static void logInfo(Logger log) {
+		for (String line : lines) {
+			log.info(line);
+		}
+	}
 
-    /**
-     * Writes the logo to the given <code>Writer</code>.
-     * 
-     * @param writer
-     *            <code>Writer</code> to write to
-     */
-    public static void print( Writer writer ) {
-        try {
-            for ( String line : lines ) {
-                writer.write( line );
-                writer.write( '\n' );
-            }
-        } catch ( IOException e ) {
-            // be gentle and silent (it's not that important after all)
-        }
-    }
+	/**
+	 * Writes the logo to the given <code>Writer</code>.
+	 * @param writer <code>Writer</code> to write to
+	 */
+	public static void print(Writer writer) {
+		try {
+			for (String line : lines) {
+				writer.write(line);
+				writer.write('\n');
+			}
+		}
+		catch (IOException e) {
+			// be gentle and silent (it's not that important after all)
+		}
+	}
 
-    /**
-     * Writes the logo to the given <code>OutputStream</code>.
-     * 
-     * @param os
-     *            <code>OutputStream</code> to write to
-     */
-    public static void print( OutputStream os ) {
-        try {
-            for ( String line : lines ) {
-                os.write( line.getBytes() );
-                os.write( '\n' );
-            }
-        } catch ( IOException e ) {
-            // be gentle and silent (it's not that important after all)
-        }
-    }
+	/**
+	 * Writes the logo to the given <code>OutputStream</code>.
+	 * @param os <code>OutputStream</code> to write to
+	 */
+	public static void print(OutputStream os) {
+		try {
+			for (String line : lines) {
+				os.write(line.getBytes());
+				os.write('\n');
+			}
+		}
+		catch (IOException e) {
+			// be gentle and silent (it's not that important after all)
+		}
+	}
 
-    /**
-     * Returns the logo as a single string, with newline separators.
-     * 
-     * @return the logo as a single string
-     */
-    public static String getAsString() {
-        StringBuffer sb = new StringBuffer();
-        for ( String line : lines ) {
-            sb.append( line );
-            sb.append( '\n' );
-        }
-        return sb.toString();
-    }
+	/**
+	 * Returns the logo as a single string, with newline separators.
+	 * @return the logo as a single string
+	 */
+	public static String getAsString() {
+		StringBuffer sb = new StringBuffer();
+		for (String line : lines) {
+			sb.append(line);
+			sb.append('\n');
+		}
+		return sb.toString();
+	}
+
 }

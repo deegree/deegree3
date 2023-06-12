@@ -55,44 +55,42 @@ import org.junit.Test;
 
 public class GmlTimePositionTypeReaderTest {
 
-    @Test
-    public void readMinimalExample()
-                            throws Exception {
-        final GMLStreamReader reader = getGmlStreamReader( "time_position_minimal.gml" );
-        final XMLStreamReader xmlStream = reader.getXMLReader();
-        final TimePosition timePosition = new GmlTimePositionTypeReader().read( xmlStream );
-        assertNotNull( timePosition );
-        assertNull( timePosition.getFrame() );
-        assertNull( timePosition.getCalendarEraName() );
-        assertNull( timePosition.getIndeterminatePosition() );
-        assertEquals( "2001-05-23", timePosition.getValue() );
-        assertOnEndElement( xmlStream );
-    }
+	@Test
+	public void readMinimalExample() throws Exception {
+		final GMLStreamReader reader = getGmlStreamReader("time_position_minimal.gml");
+		final XMLStreamReader xmlStream = reader.getXMLReader();
+		final TimePosition timePosition = new GmlTimePositionTypeReader().read(xmlStream);
+		assertNotNull(timePosition);
+		assertNull(timePosition.getFrame());
+		assertNull(timePosition.getCalendarEraName());
+		assertNull(timePosition.getIndeterminatePosition());
+		assertEquals("2001-05-23", timePosition.getValue());
+		assertOnEndElement(xmlStream);
+	}
 
-    @Test
-    public void readFullExample()
-                            throws Exception {
-        final GMLStreamReader reader = getGmlStreamReader( "time_position_full.gml" );
-        final XMLStreamReader xmlStream = reader.getXMLReader();
-        final TimePosition timePosition = new GmlTimePositionTypeReader().read( xmlStream );
-        assertNotNull( timePosition );
-        assertEquals( "http://my.big.org/TRS/calendars/japanese", timePosition.getFrame() );
-        assertEquals( "Meiji", timePosition.getCalendarEraName() );
-        assertEquals( BEFORE, timePosition.getIndeterminatePosition() );
-        assertEquals( "0025-03", timePosition.getValue() );
-        assertOnEndElement( xmlStream );
-    }
+	@Test
+	public void readFullExample() throws Exception {
+		final GMLStreamReader reader = getGmlStreamReader("time_position_full.gml");
+		final XMLStreamReader xmlStream = reader.getXMLReader();
+		final TimePosition timePosition = new GmlTimePositionTypeReader().read(xmlStream);
+		assertNotNull(timePosition);
+		assertEquals("http://my.big.org/TRS/calendars/japanese", timePosition.getFrame());
+		assertEquals("Meiji", timePosition.getCalendarEraName());
+		assertEquals(BEFORE, timePosition.getIndeterminatePosition());
+		assertEquals("0025-03", timePosition.getValue());
+		assertOnEndElement(xmlStream);
+	}
 
-    private void assertOnEndElement( final XMLStreamReader xmlStream ) {
-        require( xmlStream, END_ELEMENT );
-        assertEquals( "timePosition", xmlStream.getLocalName() );
-    }
+	private void assertOnEndElement(final XMLStreamReader xmlStream) {
+		require(xmlStream, END_ELEMENT);
+		assertEquals("timePosition", xmlStream.getLocalName());
+	}
 
-    private GMLStreamReader getGmlStreamReader( final String exampleName )
-                            throws Exception {
-        final URL url = GmlTimePositionTypeReader.class.getResource( exampleName );
-        GMLStreamReader reader = GMLInputFactory.createGMLStreamReader( GML_32, url );
-        skipStartDocument( reader.getXMLReader() );
-        return reader;
-    }
+	private GMLStreamReader getGmlStreamReader(final String exampleName) throws Exception {
+		final URL url = GmlTimePositionTypeReader.class.getResource(exampleName);
+		GMLStreamReader reader = GMLInputFactory.createGMLStreamReader(GML_32, url);
+		skipStartDocument(reader.getXMLReader());
+		return reader;
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -46,73 +45,67 @@ import org.deegree.services.csw.AbstractCSWRequest;
 
 /**
  * Represents a <Code>GetRecordById</Code> request to a CSW.
- * 
+ *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: thomas $
- * 
- * @version $Revision: $, $Date: $
  */
 public class GetRecordById extends AbstractCSWRequest {
 
-    private final ReturnableElement elementSetName;
+	private final ReturnableElement elementSetName;
 
-    private final URI outputSchema;
+	private final URI outputSchema;
 
-    private final List<String> requestedIds;
+	private final List<String> requestedIds;
 
-    /**
-     * 
-     * @param version
-     *            protocol version
-     * @param outputFormat
-     *            controls the format of the output regarding to a MIME-type (default: application/xml)
-     * @param elementSetName
-     *            {@link ReturnableElement}
-     * @param outputSchema
-     * @param id
-     * @param typeNames
-     */
-    public GetRecordById( Version version, String outputFormat, ReturnableElement elementSetName, URI outputSchema,
-                          List<String> id, QName[] typeNames ) {
-        super( version, null, typeNames, outputFormat );
-        this.elementSetName = elementSetName;
-        this.outputSchema = outputSchema;
-        this.requestedIds = id;
-    }
+	/**
+	 * @param version protocol version
+	 * @param outputFormat controls the format of the output regarding to a MIME-type
+	 * (default: application/xml)
+	 * @param elementSetName {@link ReturnableElement}
+	 * @param outputSchema
+	 * @param id
+	 * @param typeNames
+	 */
+	public GetRecordById(Version version, String outputFormat, ReturnableElement elementSetName, URI outputSchema,
+			List<String> id, QName[] typeNames) {
+		super(version, null, typeNames, outputFormat);
+		this.elementSetName = elementSetName;
+		this.outputSchema = outputSchema;
+		this.requestedIds = id;
+	}
 
-    /**
-     * @return the elementSetName
-     */
-    public ReturnableElement getElementSetName() {
-        return elementSetName;
-    }
+	/**
+	 * @return the elementSetName
+	 */
+	public ReturnableElement getElementSetName() {
+		return elementSetName;
+	}
 
-    /**
-     * @return the outputSchema
-     */
-    public URI getOutputSchema() {
-        return outputSchema;
-    }
+	/**
+	 * @return the outputSchema
+	 */
+	public URI getOutputSchema() {
+		return outputSchema;
+	}
 
-    /**
-     * @return the id
-     */
-    public List<String> getRequestedIds() {
-        return requestedIds;
-    }
+	/**
+	 * @return the id
+	 */
+	public List<String> getRequestedIds() {
+		return requestedIds;
+	}
 
-    @Override
-    public String toString() {
-        StringBuilder s = new StringBuilder();
-        s.append( "GetRecordById-request: \n" );
-        s.append( "\t elementSetName: " ).append( elementSetName ).append( "\n" );
-        s.append( "\t outputSchema: " ).append( outputSchema ).append( "\n" );
-        for ( String r : requestedIds ) {
-            s.append( "\t requestedID: " ).append( r ).append( "\n" );
-        }
+	@Override
+	public String toString() {
+		StringBuilder s = new StringBuilder();
+		s.append("GetRecordById-request: \n");
+		s.append("\t elementSetName: ").append(elementSetName).append("\n");
+		s.append("\t outputSchema: ").append(outputSchema).append("\n");
+		for (String r : requestedIds) {
+			s.append("\t requestedID: ").append(r).append("\n");
+		}
 
-        return s.toString();
+		return s.toString();
 
-    }
+	}
 
 }

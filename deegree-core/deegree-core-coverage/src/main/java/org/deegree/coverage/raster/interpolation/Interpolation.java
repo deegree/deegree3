@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -35,28 +34,19 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.interpolation;
 
-
 /**
- *
- *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- *
- * @version $Revision$, $Date$
  *
  */
 public interface Interpolation {
 
-    /**
-     * Returns the interpolated pixel.
-     *
-     * @param x
-     *            the raster coordinate
-     * @param y
-     *            the raster coordinate
-     * @param result
-     *            a byte array to put the values into
-     * @return the <code>result</code> array
-     */
-    public byte[] getPixel( float x, float y, byte[] result );
+	/**
+	 * Returns the interpolated pixel.
+	 * @param x the raster coordinate
+	 * @param y the raster coordinate
+	 * @param result a byte array to put the values into
+	 * @return the <code>result</code> array
+	 */
+	public byte[] getPixel(float x, float y, byte[] result);
+
 }

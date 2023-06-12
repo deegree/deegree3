@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -45,72 +44,70 @@ import org.deegree.geometry.primitive.segments.ArcByCenterPoint;
  * Default implementation of {@link ArcByCenterPoint} segments.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- *
- * @version $Revision$, $Date$
  */
 public class DefaultArcByCenterPoint implements ArcByCenterPoint {
 
-    private Point midPoint;
+	private Point midPoint;
 
-    private Measure radius;
+	private Measure radius;
 
-    private Angle startAngle;
+	private Angle startAngle;
 
-    private Angle endAngle;
+	private Angle endAngle;
 
-    /**
-     * Creates a new <code>DefaultArcByCenterPoint</code> instance from the given parameters.
-     *
-     * @param midPoint
-     * @param radius
-     * @param startAngle
-     * @param endAngle
-     */
-    public DefaultArcByCenterPoint( Point midPoint, Measure radius, Angle startAngle, Angle endAngle ) {
-        this.midPoint = midPoint;
-        this.radius = radius;
-        this.startAngle = startAngle;
-        this.endAngle = endAngle;
-    }
+	/**
+	 * Creates a new <code>DefaultArcByCenterPoint</code> instance from the given
+	 * parameters.
+	 * @param midPoint
+	 * @param radius
+	 * @param startAngle
+	 * @param endAngle
+	 */
+	public DefaultArcByCenterPoint(Point midPoint, Measure radius, Angle startAngle, Angle endAngle) {
+		this.midPoint = midPoint;
+		this.radius = radius;
+		this.startAngle = startAngle;
+		this.endAngle = endAngle;
+	}
 
-    @Override
-    public Angle getEndAngle() {
-        return endAngle;
-    }
+	@Override
+	public Angle getEndAngle() {
+		return endAngle;
+	}
 
-    @Override
-    public Point getMidPoint() {
-        return midPoint;
-    }
+	@Override
+	public Point getMidPoint() {
+		return midPoint;
+	}
 
-    @Override
-    public Measure getRadius(Unit requestedUnits) {
-        return radius;
-    }
+	@Override
+	public Measure getRadius(Unit requestedUnits) {
+		return radius;
+	}
 
-    @Override
-    public Angle getStartAngle() {
-        return startAngle;
-    }
+	@Override
+	public Angle getStartAngle() {
+		return startAngle;
+	}
 
-    @Override
-    public int getCoordinateDimension() {
-        return midPoint.getCoordinateDimension();
-    }
+	@Override
+	public int getCoordinateDimension() {
+		return midPoint.getCoordinateDimension();
+	}
 
-    @Override
-    public Point getStartPoint() {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Point getStartPoint() {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public Point getEndPoint() {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Point getEndPoint() {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public CurveSegmentType getSegmentType() {
-        return CurveSegmentType.ARC_BY_CENTER_POINT;
-    }
+	@Override
+	public CurveSegmentType getSegmentType() {
+		return CurveSegmentType.ARC_BY_CENTER_POINT;
+	}
+
 }

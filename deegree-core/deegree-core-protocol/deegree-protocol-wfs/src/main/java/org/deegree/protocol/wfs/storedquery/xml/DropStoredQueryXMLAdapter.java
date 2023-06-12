@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -45,43 +44,40 @@ import org.deegree.protocol.wfs.AbstractWFSRequestXMLAdapter;
 import org.deegree.protocol.wfs.storedquery.DropStoredQuery;
 
 /**
- * Adapter between XML <code>DropStoredQuery</code> requests and {@link DropStoredQuery} objects.
+ * Adapter between XML <code>DropStoredQuery</code> requests and {@link DropStoredQuery}
+ * objects.
  * <p>
  * Supported WFS versions:
  * <ul>
  * <li>2.0.0</li>
  * </ul>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class DropStoredQueryXMLAdapter extends AbstractWFSRequestXMLAdapter {
 
-    /**
-     * Parses a WFS <code>DropStoredQuery</code> document into a {@link DropStoredQuery} request.
-     * 
-     * @return parsed {@link DropStoredQuery} request, never <code>null</code>
-     * @throws InvalidParameterValueException
-     *             if a parameter contains a syntax error
-     */
-    public DropStoredQuery parse()
-                            throws InvalidParameterValueException {
+	/**
+	 * Parses a WFS <code>DropStoredQuery</code> document into a {@link DropStoredQuery}
+	 * request.
+	 * @return parsed {@link DropStoredQuery} request, never <code>null</code>
+	 * @throws InvalidParameterValueException if a parameter contains a syntax error
+	 */
+	public DropStoredQuery parse() throws InvalidParameterValueException {
 
-        // <xsd:attribute name="version" type="xsd:string" use="required" fixed="2.0.0"/>
-        Version version = Version.parseVersion( getRequiredNodeAsString( rootElement, new XPath( "@version", nsContext ) ) );
-        if ( !( VERSION_200.equals( version ) ) ) {
-            String msg = Messages.get( "UNSUPPORTED_VERSION", version, Version.getVersionsString( VERSION_200 ) );
-            throw new InvalidParameterValueException( msg );
-        }
+		// <xsd:attribute name="version" type="xsd:string" use="required" fixed="2.0.0"/>
+		Version version = Version.parseVersion(getRequiredNodeAsString(rootElement, new XPath("@version", nsContext)));
+		if (!(VERSION_200.equals(version))) {
+			String msg = Messages.get("UNSUPPORTED_VERSION", version, Version.getVersionsString(VERSION_200));
+			throw new InvalidParameterValueException(msg);
+		}
 
-        // <xsd:attribute name="handle" type="xsd:string"/>
-        String handle = getNodeAsString( rootElement, new XPath( "@handle", nsContext ), null );
+		// <xsd:attribute name="handle" type="xsd:string"/>
+		String handle = getNodeAsString(rootElement, new XPath("@handle", nsContext), null);
 
-        // xsd:attribute name="id" type="xsd:anyURI" use="required"/>
-        String id = getNodeAsString( rootElement, new XPath( "@id", nsContext ), null );
+		// xsd:attribute name="id" type="xsd:anyURI" use="required"/>
+		String id = getNodeAsString(rootElement, new XPath("@id", nsContext), null);
 
-        return new DropStoredQuery( version, handle, id );
-    }
+		return new DropStoredQuery(version, handle, id);
+	}
+
 }

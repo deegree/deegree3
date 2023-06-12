@@ -9,7 +9,6 @@ import org.apache.axiom.om.OMElement;
  * the XML element "Filter_Capabilities".
  * 
  * @author <a href="mailto:neumeister@lat-lon.de">Ulrich Neumeister</a>
- * @author last edited by: $Author$
  * 
  */
 public class Filter_Capabilities {

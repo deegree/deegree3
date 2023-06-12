@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2008 by:
@@ -48,26 +47,23 @@ import org.junit.Test;
 
 /**
  * Tests for {@link LockFeatureXMLAdapter}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class LockFeatureXMLAdapterTest {
 
-    @Test
-    public void testWfs200SpecExample1()
-                            throws Exception {
-        LockFeatureXMLAdapter parser = new LockFeatureXMLAdapter();
-        parser.load( LockFeatureXMLAdapterTest.class.getResource( "wfs200/example1.xml" ) );
-        LockFeature request = parser.parse();
-        assertEquals( VERSION_200, request.getVersion() );
+	@Test
+	public void testWfs200SpecExample1() throws Exception {
+		LockFeatureXMLAdapter parser = new LockFeatureXMLAdapter();
+		parser.load(LockFeatureXMLAdapterTest.class.getResource("wfs200/example1.xml"));
+		LockFeature request = parser.parse();
+		assertEquals(VERSION_200, request.getVersion());
 
-        assertFalse( request.getLockAll() );
-        assertEquals( 1, request.getQueries().size() );
-        assertNull( request.getExistingLockId() );
-        assertNull( request.getExpiryInSeconds() );
-        assertNull( request.getHandle() );
-    }
+		assertFalse(request.getLockAll());
+		assertEquals(1, request.getQueries().size());
+		assertNull(request.getExistingLockId());
+		assertNull(request.getExpiryInSeconds());
+		assertNull(request.getHandle());
+	}
+
 }

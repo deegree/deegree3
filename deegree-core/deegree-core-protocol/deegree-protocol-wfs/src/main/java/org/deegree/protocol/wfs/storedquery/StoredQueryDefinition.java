@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -43,66 +42,61 @@ import org.deegree.protocol.wfs.query.StoredQuery;
 
 /**
  * Defines the template for a {@link StoredQuery}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class StoredQueryDefinition {
 
-    private final String id;
+	private final String id;
 
-    private final List<LanguageString> titles;
+	private final List<LanguageString> titles;
 
-    private final List<LanguageString> abstracts;
+	private final List<LanguageString> abstracts;
 
-    private final List<OMElement> metadataEls;
+	private final List<OMElement> metadataEls;
 
-    private final List<Parameter> parameters;
+	private final List<Parameter> parameters;
 
-    private final List<QueryExpressionText> queryExpressionTexts;
+	private final List<QueryExpressionText> queryExpressionTexts;
 
-    public StoredQueryDefinition( String id, List<LanguageString> titles, List<LanguageString> abstracts,
-                                  List<OMElement> metadataEls, List<Parameter> parameters,
-                                  List<QueryExpressionText> queryExpressionTexts ) {
-        this.id = id;
-        this.titles = titles;
-        this.abstracts = abstracts;
-        this.metadataEls = metadataEls;
-        this.parameters = parameters;
-        this.queryExpressionTexts = queryExpressionTexts;
-    }
+	public StoredQueryDefinition(String id, List<LanguageString> titles, List<LanguageString> abstracts,
+			List<OMElement> metadataEls, List<Parameter> parameters, List<QueryExpressionText> queryExpressionTexts) {
+		this.id = id;
+		this.titles = titles;
+		this.abstracts = abstracts;
+		this.metadataEls = metadataEls;
+		this.parameters = parameters;
+		this.queryExpressionTexts = queryExpressionTexts;
+	}
 
-    /**
-     * 
-     * @return
-     */
-    public String getId() {
-        return id;
-    }
+	/**
+	 * @return
+	 */
+	public String getId() {
+		return id;
+	}
 
-    /**
-     * 
-     * @return
-     */
-    public List<LanguageString> getTitles() {
-        return titles;
-    }
+	/**
+	 * @return
+	 */
+	public List<LanguageString> getTitles() {
+		return titles;
+	}
 
-    public List<LanguageString> getAbstracts() {
-        return abstracts;
-    }
+	public List<LanguageString> getAbstracts() {
+		return abstracts;
+	}
 
-    public List<OMElement> getMetadata() {
-        return metadataEls;
-    }
+	public List<OMElement> getMetadata() {
+		return metadataEls;
+	}
 
-    public List<Parameter> getParameters() {
-        return parameters;
-    }
+	public List<Parameter> getParameters() {
+		return parameters;
+	}
 
-    public List<QueryExpressionText> getQueryExpressionTextEls() {
-        return queryExpressionTexts;
-    }
+	public List<QueryExpressionText> getQueryExpressionTextEls() {
+		return queryExpressionTexts;
+	}
+
 }

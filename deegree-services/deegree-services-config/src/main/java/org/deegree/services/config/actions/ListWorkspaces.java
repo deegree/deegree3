@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -45,29 +44,24 @@ import org.apache.commons.io.IOUtils;
 import org.deegree.commons.config.DeegreeWorkspace;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class ListWorkspaces {
 
-    public static void listWorkspaces( HttpServletResponse resp )
-                            throws IOException {
-        File dir = new File( DeegreeWorkspace.getWorkspaceRoot() );
+	public static void listWorkspaces(HttpServletResponse resp) throws IOException {
+		File dir = new File(DeegreeWorkspace.getWorkspaceRoot());
 
-        resp.setContentType( "text/plain" );
+		resp.setContentType("text/plain");
 
-        File[] ls = dir.listFiles();
-        ServletOutputStream os = resp.getOutputStream();
-        if ( ls != null ) {
-            for ( File f : ls ) {
-                if ( !f.getName().equalsIgnoreCase( ".svn" ) && !f.getName().equals( "requests.txt" ) ) {
-                    IOUtils.write( f.getName() + "\n", os );
-                }
-            }
-        }
-    }
+		File[] ls = dir.listFiles();
+		ServletOutputStream os = resp.getOutputStream();
+		if (ls != null) {
+			for (File f : ls) {
+				if (!f.getName().equalsIgnoreCase(".svn") && !f.getName().equals("requests.txt")) {
+					IOUtils.write(f.getName() + "\n", os);
+				}
+			}
+		}
+	}
 
 }

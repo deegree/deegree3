@@ -49,49 +49,49 @@ import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
  * Resource metadata for WPVS services.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class WpvsMetadata extends AbstractResourceMetadata<OWS> {
 
-    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.services.jaxb.wpvs";
+	private static final String CONFIG_JAXB_PACKAGE = "org.deegree.services.jaxb.wpvs";
 
-    public WpvsMetadata( Workspace workspace, ResourceLocation<OWS> location, AbstractResourceProvider<OWS> provider ) {
-        super( workspace, location, provider );
-    }
+	public WpvsMetadata(Workspace workspace, ResourceLocation<OWS> location, AbstractResourceProvider<OWS> provider) {
+		super(workspace, location, provider);
+	}
 
-    @Override
-    public ResourceBuilder<OWS> prepare() {
-        try {
-            DeegreeWPVS cfg = (DeegreeWPVS) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, provider.getSchema(),
-                                                                  location.getAsStream(), workspace );
+	@Override
+	public ResourceBuilder<OWS> prepare() {
+		try {
+			DeegreeWPVS cfg = (DeegreeWPVS) JAXBUtils.unmarshall(CONFIG_JAXB_PACKAGE, provider.getSchema(),
+					location.getAsStream(), workspace);
 
-            BatchedMTStoreManager mgr = workspace.getResourceManager( BatchedMTStoreManager.class );
-            Collection<ResourceMetadata<BatchedMTStore>> mds = mgr.getResourceMetadata();
-            for ( ResourceMetadata<BatchedMTStore> md : mds ) {
-                softDependencies.add( md.getIdentifier() );
-            }
+			BatchedMTStoreManager mgr = workspace.getResourceManager(BatchedMTStoreManager.class);
+			Collection<ResourceMetadata<BatchedMTStore>> mds = mgr.getResourceMetadata();
+			for (ResourceMetadata<BatchedMTStore> md : mds) {
+				softDependencies.add(md.getIdentifier());
+			}
 
-            RenderableStoreManager rmgr = workspace.getResourceManager( RenderableStoreManager.class );
-            Collection<ResourceMetadata<RenderableStore>> mds2 = rmgr.getResourceMetadata();
-            for ( ResourceMetadata<RenderableStore> md : mds2 ) {
-                softDependencies.add( md.getIdentifier() );
-            }
-            
-            OWSMetadataProviderManager mmgr = workspace.getResourceManager( OWSMetadataProviderManager.class );
-            for ( ResourceMetadata<OWSMetadataProvider> md : mmgr.getResourceMetadata() ) {
-                ResourceIdentifier<OWSMetadataProvider> mdId = md.getIdentifier();
-                if ( mdId.getId().equals( getIdentifier().getId() + "_metadata" ) ) {
-                    softDependencies.add( mdId );
-                }
-            }
+			RenderableStoreManager rmgr = workspace.getResourceManager(RenderableStoreManager.class);
+			Collection<ResourceMetadata<RenderableStore>> mds2 = rmgr.getResourceMetadata();
+			for (ResourceMetadata<RenderableStore> md : mds2) {
+				softDependencies.add(md.getIdentifier());
+			}
 
-            return new WpvsBuilder( this, workspace, cfg );
-        } catch ( Exception e ) {
-            throw new ResourceInitException( e.getLocalizedMessage(), e );
-        }
-    }
+			OWSMetadataProviderManager mmgr = workspace.getResourceManager(OWSMetadataProviderManager.class);
+			for (ResourceMetadata<OWSMetadataProvider> md : mmgr.getResourceMetadata()) {
+				ResourceIdentifier<OWSMetadataProvider> mdId = md.getIdentifier();
+				if (mdId.getId().equals(getIdentifier().getId() + "_metadata")) {
+					softDependencies.add(mdId);
+				}
+			}
+
+			return new WpvsBuilder(this, workspace, cfg);
+		}
+		catch (Exception e) {
+			throw new ResourceInitException(e.getLocalizedMessage(), e);
+		}
+	}
 
 }

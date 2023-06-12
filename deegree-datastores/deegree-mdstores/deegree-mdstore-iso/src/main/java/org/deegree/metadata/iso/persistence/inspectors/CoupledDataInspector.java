@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-metadata/src/main/java/org/deegree/metadata/iso/persistence/inspectors/CoupledDataInspector.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -63,170 +62,163 @@ import org.slf4j.Logger;
 
 /**
  * Inspects the coupling of data-metadata and service-metadata.
- * 
+ *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: lbuesching $
- * 
- * @version $Revision: 30992 $, $Date: 2011-05-31 16:09:20 +0200 (Di, 31. Mai 2011) $
  */
 public class CoupledDataInspector implements RecordInspector<ISORecord> {
 
-    private static final Logger LOG = getLogger( CoupledDataInspector.class );
+	private static final Logger LOG = getLogger(CoupledDataInspector.class);
 
-    private final CoupledResourceInspector config;
+	private final CoupledResourceInspector config;
 
-    private final NamespaceBindings nsContext;
+	private final NamespaceBindings nsContext;
 
-    public CoupledDataInspector( CoupledResourceInspector config ) {
-        this.config = config;
-        nsContext = new NamespaceBindings();
-        nsContext.addNamespace( "srv", "http://www.isotc211.org/2005/srv" );
-        nsContext.addNamespace( "gmd", "http://www.isotc211.org/2005/gmd" );
-        nsContext.addNamespace( "gco", "http://www.isotc211.org/2005/gco" );
-    }
+	public CoupledDataInspector(CoupledResourceInspector config) {
+		this.config = config;
+		nsContext = new NamespaceBindings();
+		nsContext.addNamespace("srv", "http://www.isotc211.org/2005/srv");
+		nsContext.addNamespace("gmd", "http://www.isotc211.org/2005/gmd");
+		nsContext.addNamespace("gco", "http://www.isotc211.org/2005/gco");
+	}
 
-    /**
-     * 
-     * @param conn
-     * @param operatesOnStringUuIdAttribute
-     * @return true if there is a coupling with a data-metadata, otherwise false.
-     */
-    private boolean determineCoupling( Connection conn, List<String> operatesOnStringUuIdAttribute, SQLDialect dialect )
-                            throws MetadataInspectorException {
-        // consistencyCheck( operatesOnStringUuIdAttribute );
-        boolean isCoupled = false;
+	/**
+	 * @param conn
+	 * @param operatesOnStringUuIdAttribute
+	 * @return true if there is a coupling with a data-metadata, otherwise false.
+	 */
+	private boolean determineCoupling(Connection conn, List<String> operatesOnStringUuIdAttribute, SQLDialect dialect)
+			throws MetadataInspectorException {
+		// consistencyCheck( operatesOnStringUuIdAttribute );
+		boolean isCoupled = false;
 
-        for ( String a : operatesOnStringUuIdAttribute ) {
-            // isCoupled = getCoupledDataMetadatasets( a.trim(), connectionType );
-            isCoupled = getCoupledDataMetadatasets( conn, a.trim(), dialect );
-        }
+		for (String a : operatesOnStringUuIdAttribute) {
+			// isCoupled = getCoupledDataMetadatasets( a.trim(), connectionType );
+			isCoupled = getCoupledDataMetadatasets(conn, a.trim(), dialect);
+		}
 
-        return isCoupled;
-    }
+		return isCoupled;
+	}
 
-    private boolean checkConsistency( List<String> o, List<String> i ) {
-        boolean isConsistent = true;
+	private boolean checkConsistency(List<String> o, List<String> i) {
+		boolean isConsistent = true;
 
-        while ( !i.isEmpty() ) {
-            String id = i.get( 0 );
-            for ( String uuid : o ) {
-                if ( !id.equals( uuid ) ) {
-                    isConsistent = false;
-                } else {
-                    isConsistent = true;
-                    break;
-                }
-            }
-            i.remove( 0 );
-        }
-        return isConsistent;
-    }
+		while (!i.isEmpty()) {
+			String id = i.get(0);
+			for (String uuid : o) {
+				if (!id.equals(uuid)) {
+					isConsistent = false;
+				}
+				else {
+					isConsistent = true;
+					break;
+				}
+			}
+			i.remove(0);
+		}
+		return isConsistent;
+	}
 
-    /**
-     * If there is a data metadata record available for the service metadata record.
-     * 
-     */
-    private boolean getCoupledDataMetadatasets( Connection conn, String resourceIdentifier, SQLDialect dialect )
-                            throws MetadataInspectorException {
+	/**
+	 * If there is a data metadata record available for the service metadata record.
+	 *
+	 */
+	private boolean getCoupledDataMetadatasets(Connection conn, String resourceIdentifier, SQLDialect dialect)
+			throws MetadataInspectorException {
 
-        String resourceIdCol = ISOPropertyNameMapper.CommonColumnNames.resourceid.name();
-        String mainTable = ISOPropertyNameMapper.DatabaseTables.idxtb_main.name();
+		String resourceIdCol = ISOPropertyNameMapper.CommonColumnNames.resourceid.name();
+		String mainTable = ISOPropertyNameMapper.DatabaseTables.idxtb_main.name();
 
-        ResultSet rs = null;
-        PreparedStatement stm = null;
-        LOG.warn( "Check table / column names." );
-        String s = "SELECT " + resourceIdCol + " FROM " + mainTable + " WHERE " + resourceIdCol + " = ?";
-        try {
-            stm = conn.prepareStatement( s );
-            stm.setString( 1, resourceIdentifier );
-            rs = stm.executeQuery();
-            return rs.next();
-        } catch ( SQLException e ) {
-            String msg = Messages.getMessage( "ERROR_SQL", s, e.getMessage() );
-            LOG.debug( msg );
-            throw new MetadataInspectorException( msg );
-        } finally {
-            close( rs );
-            close( stm );
-        }
-    }
+		ResultSet rs = null;
+		PreparedStatement stm = null;
+		LOG.warn("Check table / column names.");
+		String s = "SELECT " + resourceIdCol + " FROM " + mainTable + " WHERE " + resourceIdCol + " = ?";
+		try {
+			stm = conn.prepareStatement(s);
+			stm.setString(1, resourceIdentifier);
+			rs = stm.executeQuery();
+			return rs.next();
+		}
+		catch (SQLException e) {
+			String msg = Messages.getMessage("ERROR_SQL", s, e.getMessage());
+			LOG.debug(msg);
+			throw new MetadataInspectorException(msg);
+		}
+		finally {
+			close(rs);
+			close(stm);
+		}
+	}
 
-    @Override
-    public ISORecord inspect( ISORecord record, Connection conn, SQLDialect dialect )
-                            throws MetadataInspectorException {
+	@Override
+	public ISORecord inspect(ISORecord record, Connection conn, SQLDialect dialect) throws MetadataInspectorException {
 
-        XMLAdapter a = new XMLAdapter( record.getAsOMElement() );
+		XMLAdapter a = new XMLAdapter(record.getAsOMElement());
 
-        OMElement identificationInfo = a.getElement( a.getRootElement(), new XPath( "./gmd:identificationInfo[1]",
-                                                                                    nsContext ) );
+		OMElement identificationInfo = a.getElement(a.getRootElement(),
+				new XPath("./gmd:identificationInfo[1]", nsContext));
 
-        List<OMElement> operatesOnElemList = a.getElements( identificationInfo,
-                                                            new XPath( "./srv:SV_ServiceIdentification/srv:operatesOn",
-                                                                       nsContext ) );
-        List<String> operatesOnUuidList = new ArrayList<String>();
-        List<String> resourceIDs = new ArrayList<String>();
-        for ( OMElement operatesOnElem : operatesOnElemList ) {
-            String uuid = operatesOnElem.getAttributeValue( new QName( "uuidref" ) );
-            if ( uuid != null ) {
-                operatesOnUuidList.add( uuid.trim() );
-            }
-        }
+		List<OMElement> operatesOnElemList = a.getElements(identificationInfo,
+				new XPath("./srv:SV_ServiceIdentification/srv:operatesOn", nsContext));
+		List<String> operatesOnUuidList = new ArrayList<String>();
+		List<String> resourceIDs = new ArrayList<String>();
+		for (OMElement operatesOnElem : operatesOnElemList) {
+			String uuid = operatesOnElem.getAttributeValue(new QName("uuidref"));
+			if (uuid != null) {
+				operatesOnUuidList.add(uuid.trim());
+			}
+		}
 
-        List<OMElement> operatesOnCoupledResources = a.getElements( identificationInfo,
-                                                                    new XPath(
-                                                                               "./srv:SV_ServiceIdentification/srv:coupledResource/srv:SV_CoupledResource",
-                                                                               nsContext ) );
-        List<OperatesOnData> operatesOnDataList = new ArrayList<OperatesOnData>();
+		List<OMElement> operatesOnCoupledResources = a.getElements(identificationInfo,
+				new XPath("./srv:SV_ServiceIdentification/srv:coupledResource/srv:SV_CoupledResource", nsContext));
+		List<OperatesOnData> operatesOnDataList = new ArrayList<OperatesOnData>();
 
-        for ( OMElement operatesOnCoupledResource : operatesOnCoupledResources ) {
-            String operatesOnIdentifier = a.getNodeAsString( operatesOnCoupledResource,
-                                                             new XPath( "./srv:identifier/gco:CharacterString",
-                                                                        nsContext ), null );
+		for (OMElement operatesOnCoupledResource : operatesOnCoupledResources) {
+			String operatesOnIdentifier = a.getNodeAsString(operatesOnCoupledResource,
+					new XPath("./srv:identifier/gco:CharacterString", nsContext), null);
 
-            String operationName = a.getNodeAsString( operatesOnCoupledResource,
-                                                      new XPath( "./srv:operationName/gco:CharacterString", nsContext ),
-                                                      null );
+			String operationName = a.getNodeAsString(operatesOnCoupledResource,
+					new XPath("./srv:operationName/gco:CharacterString", nsContext), null);
 
-            String scopedName = a.getNodeAsString( operatesOnCoupledResource,
-                                                   new XPath( "./gco:ScopedName", nsContext ), null );
-            operatesOnDataList.add( new OperatesOnData( scopedName, operatesOnIdentifier, operationName ) );
-            resourceIDs.add( operatesOnIdentifier.trim() );
+			String scopedName = a.getNodeAsString(operatesOnCoupledResource, new XPath("./gco:ScopedName", nsContext),
+					null);
+			operatesOnDataList.add(new OperatesOnData(scopedName, operatesOnIdentifier, operationName));
+			resourceIDs.add(operatesOnIdentifier.trim());
 
-        }
+		}
 
-        String couplingType = a.getNodeAsString( identificationInfo,
-                                                 new XPath(
-                                                            "./srv:SV_ServiceIdentification/srv:couplingType/srv:SV_CouplingType/@codeListValue",
-                                                            nsContext ), null );
+		String couplingType = a.getNodeAsString(identificationInfo, new XPath(
+				"./srv:SV_ServiceIdentification/srv:couplingType/srv:SV_CouplingType/@codeListValue", nsContext), null);
 
-        /*---------------------------------------------------------------
-         * SV_ServiceIdentification
-         * Check for consistency in the coupling.
-         * 
-         *---------------------------------------------------------------*/
-        LOG.debug( "checking consistency in coupling..." );
-        if ( couplingType != null ) {
+		/*---------------------------------------------------------------
+		 * SV_ServiceIdentification
+		 * Check for consistency in the coupling.
+		 *
+		 *---------------------------------------------------------------*/
+		LOG.debug("checking consistency in coupling...");
+		if (couplingType != null) {
 
-            if ( couplingType.equals( "loose" ) ) {
-                // nothing to check
-                LOG.debug( "coupling: loose..." );
+			if (couplingType.equals("loose")) {
+				// nothing to check
+				LOG.debug("coupling: loose...");
 
-            } else {
-                LOG.debug( "coupling: tight/mixed..." );
-                boolean throwException = determineCoupling( conn, operatesOnUuidList, dialect )
-                                         && !checkConsistency( operatesOnUuidList, resourceIDs );
-                if ( throwException && config.isThrowConsistencyError() ) {
-                    String msg = Messages.getMessage( "ERROR_COUPLING" );
-                    LOG.debug( msg );
-                    throw new MetadataInspectorException( msg );
-                }
-            }
-        }
-        // TODO create new instance
-        return record;
-    }
+			}
+			else {
+				LOG.debug("coupling: tight/mixed...");
+				boolean throwException = determineCoupling(conn, operatesOnUuidList, dialect)
+						&& !checkConsistency(operatesOnUuidList, resourceIDs);
+				if (throwException && config.isThrowConsistencyError()) {
+					String msg = Messages.getMessage("ERROR_COUPLING");
+					LOG.debug(msg);
+					throw new MetadataInspectorException(msg);
+				}
+			}
+		}
+		// TODO create new instance
+		return record;
+	}
 
-    public CoupledResourceInspector getCi() {
-        return config;
-    }
+	public CoupledResourceInspector getCi() {
+		return config;
+	}
+
 }

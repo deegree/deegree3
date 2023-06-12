@@ -35,22 +35,21 @@ import org.deegree.db.ConnectionProviderManager;
 
 /**
  * JSF backing bean for "Create new database connection" view.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * 
  * @since 3.4
  */
 @ManagedBean
 @ViewScoped
 public class CreateSqlConnectionBean extends AbstractCreateResourceBean {
 
-    public CreateSqlConnectionBean() {
-        super( ConnectionProviderManager.class );
-    }
+	public CreateSqlConnectionBean() {
+		super(ConnectionProviderManager.class);
+	}
 
-    @Override
-    protected String getOutcome() {
-        return "/console/connection/sql/index";
-    }
+	@Override
+	protected String getOutcome() {
+		return "/console/connection/sql/index";
+	}
 
 }

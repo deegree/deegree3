@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -52,134 +51,126 @@ import org.slf4j.Logger;
 
 /**
  * TODO: move this!
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class CRSUtils {
 
-    private static final Logger LOG = getLogger( CRSUtils.class );
+	private static final Logger LOG = getLogger(CRSUtils.class);
 
-    /** The commonly used geographic 'EPSG:4326', with axis order X, Y. */
-    public static final CRS EPSG_4326 = GeographicCRS.WGS84;
+	/** The commonly used geographic 'EPSG:4326', with axis order X, Y. */
+	public static final CRS EPSG_4326 = GeographicCRS.WGS84;
 
-    /**
-     * Calculates the resolution (world units / pixel) for the given scale denominator (1 / map scale) and coordinate
-     * reference system (determines the world units).
-     * 
-     * @param scaleDenominator
-     *            scale denominator (1 / map scale)
-     * @param crs
-     *            coordinate reference system, must not be <code>null</code>
-     * @return resolution in world units per pixel
-     */
-    public static double calcResolution( double scaleDenominator, ICRS crs ) {
-        IUnit units = crs.getAxis()[0].getUnits();
-        return calcResolution( scaleDenominator, units );
-    }
+	/**
+	 * Calculates the resolution (world units / pixel) for the given scale denominator (1
+	 * / map scale) and coordinate reference system (determines the world units).
+	 * @param scaleDenominator scale denominator (1 / map scale)
+	 * @param crs coordinate reference system, must not be <code>null</code>
+	 * @return resolution in world units per pixel
+	 */
+	public static double calcResolution(double scaleDenominator, ICRS crs) {
+		IUnit units = crs.getAxis()[0].getUnits();
+		return calcResolution(scaleDenominator, units);
+	}
 
-    /**
-     * Calculates the resolution (world units / pixel) for the given scale denominator (1 / map scale) and unit system.
-     * 
-     * @param scaleDenominator
-     *            scale denominator (1 / map scale)
-     * @param units
-     *            units, must not be <code>null</code>
-     * @return resolution in world units per pixel
-     */
-    public static double calcResolution( double scaleDenominator, IUnit units ) {
-        if ( units.equals( METRE ) ) {
-            return calcMetricResFromScale( scaleDenominator );
-        } else if ( units.equals( DEGREE ) ) {
-            return calcDegreeResFromScale( scaleDenominator );
-        }
-        String msg = "Unhandled unit type: " + units
-                     + ". Conversion from scale denominator to resolution not implemented";
-        throw new IllegalArgumentException( msg );
-    }
+	/**
+	 * Calculates the resolution (world units / pixel) for the given scale denominator (1
+	 * / map scale) and unit system.
+	 * @param scaleDenominator scale denominator (1 / map scale)
+	 * @param units units, must not be <code>null</code>
+	 * @return resolution in world units per pixel
+	 */
+	public static double calcResolution(double scaleDenominator, IUnit units) {
+		if (units.equals(METRE)) {
+			return calcMetricResFromScale(scaleDenominator);
+		}
+		else if (units.equals(DEGREE)) {
+			return calcDegreeResFromScale(scaleDenominator);
+		}
+		String msg = "Unhandled unit type: " + units
+				+ ". Conversion from scale denominator to resolution not implemented";
+		throw new IllegalArgumentException(msg);
+	}
 
-    /**
-     * Retrieves an equivalent {@link ICRS} with authoritative axis ordering.
-     * 
-     * NOTE: Due to the current state of the CRS database, this method is a hack. As soon as the CRS-DB has been
-     * sanitized by removing the custom XY-variants of EPSG-CRS, it is not required anymore and should be removed.
-     * 
-     * @param crs
-     *            CRS with authoritative or non-authoritative (forced XY) axis-ordering, must not be <code>null</code>
-     * @return equivalent CRS with authoritative axis ordering, never <code>null</code>
-     * @throws UnknownCRSException
-     */
-    public static ICRS getAxisAwareCrs( final ICRS crs )
-                            throws UnknownCRSException {
-        if ( isAxisAware( crs ) ) {
-            return crs;
-        }
-        for ( final String crsString : crs.getOrignalCodeStrings() ) {
-            final String lowerCrsString = crsString.toLowerCase();
-            if ( lowerCrsString.startsWith( "epsg:" ) ) {
-                final String epsgCode = lowerCrsString.substring( 5 );
-                return getAxisAwareCrs( epsgCode );
-            }
-        }
-        throw new RuntimeException( "Unable to determine axis-aware CRS variant for " + crs.getAlias() );
-    }
+	/**
+	 * Retrieves an equivalent {@link ICRS} with authoritative axis ordering.
+	 *
+	 * NOTE: Due to the current state of the CRS database, this method is a hack. As soon
+	 * as the CRS-DB has been sanitized by removing the custom XY-variants of EPSG-CRS, it
+	 * is not required anymore and should be removed.
+	 * @param crs CRS with authoritative or non-authoritative (forced XY) axis-ordering,
+	 * must not be <code>null</code>
+	 * @return equivalent CRS with authoritative axis ordering, never <code>null</code>
+	 * @throws UnknownCRSException
+	 */
+	public static ICRS getAxisAwareCrs(final ICRS crs) throws UnknownCRSException {
+		if (isAxisAware(crs)) {
+			return crs;
+		}
+		for (final String crsString : crs.getOrignalCodeStrings()) {
+			final String lowerCrsString = crsString.toLowerCase();
+			if (lowerCrsString.startsWith("epsg:")) {
+				final String epsgCode = lowerCrsString.substring(5);
+				return getAxisAwareCrs(epsgCode);
+			}
+		}
+		throw new RuntimeException("Unable to determine axis-aware CRS variant for " + crs.getAlias());
+	}
 
-    /**
-     * Determines whether the given {@link ICRS} has authoritative axis ordering.
-     * 
-     * NOTE: Due to the current state of the CRS database, this method is a bit of a hack. As soon as the CRS-DB has
-     * been sanitized by removing the custom XY-variants of EPSG-CRS, it will not be required anymore and should be
-     * removed.
-     * 
-     * @param crs
-     *            CRS with authoritative or non-authoritative (forced XY) axis-ordering, must not be <code>null</code>
-     * @return <code>true</code>, if the given CRS uses authoritative axis ordering, <code>false</code> otherwise
-     * @throws UnknownCRSException
-     */
-    public static boolean isAxisAware( final ICRS crs )
-                            throws UnknownCRSException {
-        final String alias = crs.getAlias().toLowerCase();
-        if (isUrnEpsgIdentifier( alias ) || isOgcCrsIdentifier( alias )) {
-            LOG.debug( alias + " is considered axis aware" );
-            return true;
-        }
-        for ( final String crsString : crs.getOrignalCodeStrings() ) {
-            final String lowerCrsString = crsString.toLowerCase();
-            if ( isUrnEpsgIdentifier( lowerCrsString ) ) {
-                LOG.debug( crs.getAlias() + " is considered axis aware" );
-                return true;
-            }
-            if ( isOgcCrsIdentifier( lowerCrsString ) ) {
-                LOG.debug( crs.getAlias() + " is considered axis aware" );
-                return true;
-            }
-        }
-        LOG.debug( crs.getAlias() + " is not considered axis aware" );
-        return false;
-    }
+	/**
+	 * Determines whether the given {@link ICRS} has authoritative axis ordering.
+	 *
+	 * NOTE: Due to the current state of the CRS database, this method is a bit of a hack.
+	 * As soon as the CRS-DB has been sanitized by removing the custom XY-variants of
+	 * EPSG-CRS, it will not be required anymore and should be removed.
+	 * @param crs CRS with authoritative or non-authoritative (forced XY) axis-ordering,
+	 * must not be <code>null</code>
+	 * @return <code>true</code>, if the given CRS uses authoritative axis ordering,
+	 * <code>false</code> otherwise
+	 * @throws UnknownCRSException
+	 */
+	public static boolean isAxisAware(final ICRS crs) throws UnknownCRSException {
+		final String alias = crs.getAlias().toLowerCase();
+		if (isUrnEpsgIdentifier(alias) || isOgcCrsIdentifier(alias)) {
+			LOG.debug(alias + " is considered axis aware");
+			return true;
+		}
+		for (final String crsString : crs.getOrignalCodeStrings()) {
+			final String lowerCrsString = crsString.toLowerCase();
+			if (isUrnEpsgIdentifier(lowerCrsString)) {
+				LOG.debug(crs.getAlias() + " is considered axis aware");
+				return true;
+			}
+			if (isOgcCrsIdentifier(lowerCrsString)) {
+				LOG.debug(crs.getAlias() + " is considered axis aware");
+				return true;
+			}
+		}
+		LOG.debug(crs.getAlias() + " is not considered axis aware");
+		return false;
+	}
 
-    private static boolean isUrnEpsgIdentifier( final String lowerCrsString ) {
-        return lowerCrsString.startsWith( "urn:ogc:def:crs:epsg::" );
-    }
+	private static boolean isUrnEpsgIdentifier(final String lowerCrsString) {
+		return lowerCrsString.startsWith("urn:ogc:def:crs:epsg::");
+	}
 
-    private static boolean isOgcCrsIdentifier( final String lowerCrsString ) {
-        return lowerCrsString.startsWith( "crs:" );
-    }
+	private static boolean isOgcCrsIdentifier(final String lowerCrsString) {
+		return lowerCrsString.startsWith("crs:");
+	}
 
-    public static ICRS getAxisAwareCrs( final String epsgCode ) {
-        final String identifierWithCorrectOrder = "urn:ogc:def:crs:epsg::" + epsgCode;
-        return CRSManager.getCRSRef( identifierWithCorrectOrder );
-    }
+	public static ICRS getAxisAwareCrs(final String epsgCode) {
+		final String identifierWithCorrectOrder = "urn:ogc:def:crs:epsg::" + epsgCode;
+		return CRSManager.getCRSRef(identifierWithCorrectOrder);
+	}
 
-    public static final int getEpsgCode( final ICRS crs ) {
-        for ( final String crsString : crs.getOrignalCodeStrings() ) {
-            final String lowerCrsString = crsString.toLowerCase();
-            if ( lowerCrsString.contains( "epsg:" ) ) {
-                return Integer.parseInt( lowerCrsString.substring( lowerCrsString.lastIndexOf( ":" ) + 1) );
-            }
-        }
-        throw new IllegalArgumentException( "Unable to determine EPSG code for " + crs.getAlias() );
-    }
- }
+	public static final int getEpsgCode(final ICRS crs) {
+		for (final String crsString : crs.getOrignalCodeStrings()) {
+			final String lowerCrsString = crsString.toLowerCase();
+			if (lowerCrsString.contains("epsg:")) {
+				return Integer.parseInt(lowerCrsString.substring(lowerCrsString.lastIndexOf(":") + 1));
+			}
+		}
+		throw new IllegalArgumentException("Unable to determine EPSG code for " + crs.getAlias());
+	}
+
+}

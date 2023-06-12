@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -56,7 +55,6 @@ import java.awt.geom.Path2D.Double;
 import java.awt.geom.Point2D;
 import java.util.Collection;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.multi.MultiCurve;
 import org.deegree.geometry.multi.MultiGeometry;
@@ -77,200 +75,227 @@ import org.slf4j.Logger;
 
 /**
  * <code>Java2DTextRenderer</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
-@LoggingNotes(warn = "logs usage of text rendering with unsupported geometry types", debug = "logs rendering of null/zero length texts/null geometries")
 public class Java2DTextRenderer implements TextRenderer {
 
-    private static final Logger LOG = getLogger( Java2DTextRenderer.class );
+	private static final Logger LOG = getLogger(Java2DTextRenderer.class);
 
-    private Java2DRenderer renderer;
+	private Java2DRenderer renderer;
 
-    // private Java2DLabelRenderer labelRenderer;
+	// private Java2DLabelRenderer labelRenderer;
 
-    /**
-     * @param renderer
-     */
-    public Java2DTextRenderer( Java2DRenderer renderer ) {
-        this.renderer = renderer;
-        // this.labelRenderer = new Java2DLabelRenderer( renderer );
-    }
+	/**
+	 * @param renderer
+	 */
+	public Java2DTextRenderer(Java2DRenderer renderer) {
+		this.renderer = renderer;
+		// this.labelRenderer = new Java2DLabelRenderer( renderer );
+	}
 
-    @Override
-    public void render( TextStyling styling, String text, Collection<Geometry> geoms ) {
-        for ( Geometry g : geoms ) {
-            render( styling, text, g );
-        }
-    }
+	@Override
+	public void render(TextStyling styling, String text, Collection<Geometry> geoms) {
+		for (Geometry g : geoms) {
+			render(styling, text, g);
+		}
+	}
 
-    @Override
-    public void render( final TextStyling styling, final String text, final Geometry geom ) {
-        if ( geom == null ) {
-            LOG.debug( "Trying to render null geometry." );
-            return;
-        }
-        if ( text == null || text.length() == 0 ) {
-            LOG.debug( "Trying to render null or zero length text." );
-            return;
-        }
-        final Geometry renderGeometry = renderer.transformToWorldCrsAndClip( geom );
-        if ( renderGeometry == null ) {
-            return;
-        }
-        final Font font = convertFont( styling );
-        handleGeometryTypes( styling, text, font, renderGeometry );
-    }
+	@Override
+	public void render(final TextStyling styling, final String text, final Geometry geom) {
+		if (geom == null) {
+			LOG.debug("Trying to render null geometry.");
+			return;
+		}
+		if (text == null || text.length() == 0) {
+			LOG.debug("Trying to render null or zero length text.");
+			return;
+		}
+		final Geometry renderGeometry = renderer.transformToWorldCrsAndClip(geom);
+		if (renderGeometry == null) {
+			return;
+		}
+		final Font font = convertFont(styling);
+		handleGeometryTypes(styling, text, font, renderGeometry);
+	}
 
-    private void handleGeometryTypes( TextStyling styling, String text, Font font, Geometry geom ) {
-        if ( geom instanceof Point ) {
-            render( styling, font, text, (Point) geom );
-        } else if ( geom instanceof Surface && styling.linePlacement != null ) {
-            render( styling, font, text, (Surface) geom );
-        } else if ( geom instanceof Curve && styling.linePlacement != null ) {
-            render( styling, font, text, (Curve) geom );
-        } else if ( geom instanceof GeometricPrimitive ) {
-            render( styling, font, text, geom.getCentroid() );
-        } else if ( geom instanceof MultiPoint ) {
-            handleMultiGeometry( styling, text, font, (MultiPoint) geom );
-        } else if ( geom instanceof MultiCurve<?> && styling.linePlacement != null ) {
-            handleMultiGeometry( styling, text, font, (MultiCurve<?>) geom );
-        } else if ( geom instanceof MultiLineString && styling.linePlacement != null ) {
-            handleMultiGeometry( styling, text, font, (MultiLineString) geom );
-        } else if ( geom instanceof MultiGeometry<?> ) {
-            for ( Geometry g : (MultiGeometry<?>) geom ) {
-                render( styling, text, g );
-            }
-        } else {
-            LOG.warn( "Trying to use unsupported geometry type '{}' for text rendering.",
-                      geom.getClass().getSimpleName() );
-        }
-    }
+	private void handleGeometryTypes(TextStyling styling, String text, Font font, Geometry geom) {
+		if (geom instanceof Point) {
+			render(styling, font, text, (Point) geom);
+		}
+		else if (geom instanceof Surface && styling.linePlacement != null) {
+			render(styling, font, text, (Surface) geom);
+		}
+		else if (geom instanceof Curve && styling.linePlacement != null) {
+			render(styling, font, text, (Curve) geom);
+		}
+		else if (geom instanceof GeometricPrimitive) {
+			render(styling, font, text, geom.getCentroid());
+		}
+		else if (geom instanceof MultiPoint) {
+			handleMultiGeometry(styling, text, font, (MultiPoint) geom);
+		}
+		else if (geom instanceof MultiCurve<?> && styling.linePlacement != null) {
+			handleMultiGeometry(styling, text, font, (MultiCurve<?>) geom);
+		}
+		else if (geom instanceof MultiLineString && styling.linePlacement != null) {
+			handleMultiGeometry(styling, text, font, (MultiLineString) geom);
+		}
+		else if (geom instanceof MultiGeometry<?>) {
+			for (Geometry g : (MultiGeometry<?>) geom) {
+				render(styling, text, g);
+			}
+		}
+		else {
+			LOG.warn("Trying to use unsupported geometry type '{}' for text rendering.",
+					geom.getClass().getSimpleName());
+		}
+	}
 
-    private <T extends Geometry> void handleMultiGeometry( TextStyling styling, String text, Font font,
-                                                           MultiGeometry<T> geom ) {
-        for ( T g : geom ) {
-            handleGeometryTypes( styling, text, font, g );
-        }
-    }
+	private <T extends Geometry> void handleMultiGeometry(TextStyling styling, String text, Font font,
+			MultiGeometry<T> geom) {
+		for (T g : geom) {
+			handleGeometryTypes(styling, text, font, g);
+		}
+	}
 
-    void render( TextStyling styling, Font font, String text, Surface surface ) {
-        for ( SurfacePatch patch : surface.getPatches() ) {
-            if ( patch instanceof PolygonPatch ) {
-                PolygonPatch polygonPatch = (PolygonPatch) patch;
-                for ( Curve curve : polygonPatch.getBoundaryRings() ) {
-                    render( styling, font, text, curve );
-                }
-            } else {
-                throw new IllegalArgumentException( "Cannot render non-planar surfaces." );
-            }
-        }
-    }
+	void render(TextStyling styling, Font font, String text, Surface surface) {
+		for (SurfacePatch patch : surface.getPatches()) {
+			if (patch instanceof PolygonPatch) {
+				PolygonPatch polygonPatch = (PolygonPatch) patch;
+				for (Curve curve : polygonPatch.getBoundaryRings()) {
+					render(styling, font, text, curve);
+				}
+			}
+			else {
+				throw new IllegalArgumentException("Cannot render non-planar surfaces.");
+			}
+		}
+	}
 
-    void render( TextStyling styling, Font font, String text, Point p ) {
-        Point2D.Double pt = (Point2D.Double) renderer.worldToScreen.transform( new Point2D.Double( p.get0(), p.get1() ),
-                                                                               null );
+	void render(TextStyling styling, Font font, String text, Point p) {
+		Point2D.Double pt = (Point2D.Double) renderer.worldToScreen.transform(new Point2D.Double(p.get0(), p.get1()),
+				null);
 
-        double x = pt.x + renderer.rendererContext.uomCalculator.considerUOM( styling.displacementX, styling.uom );
-        double y = pt.y - renderer.rendererContext.uomCalculator.considerUOM( styling.displacementY, styling.uom );
-        renderer.graphics.setFont( font );
-        AffineTransform transform = renderer.graphics.getTransform();
-        renderer.graphics.rotate( toRadians( styling.rotation ), x, y );
-        TextLayout layout;
-        synchronized ( FontRenderContext.class ) {
-            // apparently getting the font render context is not threadsafe (despite having different graphics here)
-            // so do this globally synchronized to fix:
-            // http://tracker.deegree.org/deegree-core/ticket/200
-            FontRenderContext frc = renderer.graphics.getFontRenderContext();
-            layout = new TextLayout( text, font, frc );
-        }
-        double width = layout.getBounds().getWidth();
-        double height = layout.getBounds().getHeight();
-        double px = x - styling.anchorPointX * width;
-        double py = y + styling.anchorPointY * height;
+		double x = pt.x + renderer.rendererContext.uomCalculator.considerUOM(styling.displacementX, styling.uom);
+		double y = pt.y - renderer.rendererContext.uomCalculator.considerUOM(styling.displacementY, styling.uom);
+		renderer.graphics.setFont(font);
+		AffineTransform transform = renderer.graphics.getTransform();
+		renderer.graphics.rotate(toRadians(styling.rotation), x, y);
+		TextLayout layout;
+		synchronized (FontRenderContext.class) {
+			// apparently getting the font render context is not threadsafe (despite
+			// having different graphics here)
+			// so do this globally synchronized to fix:
+			// http://tracker.deegree.org/deegree-core/ticket/200
+			FontRenderContext frc = renderer.graphics.getFontRenderContext();
+			layout = new TextLayout(text, font, frc);
+		}
+		double width = layout.getBounds().getWidth();
+		double height = layout.getBounds().getHeight();
+		double px = x - styling.anchorPointX * width;
+		double py = y + styling.anchorPointY * height;
 
-        if ( styling.halo != null ) {
-            renderer.rendererContext.fillRenderer.applyFill( styling.halo.fill, styling.uom );
+		if (styling.halo != null) {
+			renderer.rendererContext.fillRenderer.applyFill(styling.halo.fill, styling.uom);
 
-            BasicStroke stroke = new BasicStroke(
-                                                  round( 2 * renderer.rendererContext.uomCalculator.considerUOM( styling.halo.radius,
-                                                                                                                 styling.uom ) ),
-                                                  CAP_BUTT, JOIN_ROUND );
-            renderer.graphics.setStroke( stroke );
-            renderer.graphics.draw( layout.getOutline( getTranslateInstance( px, py ) ) );
-        }
+			int haloSize = round(
+					2 * renderer.rendererContext.uomCalculator.considerUOM(styling.halo.radius, styling.uom));
+			if (haloSize < 0) {
+				// render box styled halo (deegree2 like)
+				int wi = Math.abs(haloSize);
+				// prevent useless halo of sub-pixel-size
+				if (wi < 1) {
+					wi = 1;
+				}
 
-        renderer.graphics.setStroke( new BasicStroke() );
+				int w = (int) (width + 0.5d);
+				int h = (int) (height + 0.5d);
+				int bx = (int) px;
+				int by = (int) py;
 
-        renderer.rendererContext.fillRenderer.applyFill( styling.fill, styling.uom );
-        layout.draw( renderer.graphics, (float) px, (float) py );
+				renderer.graphics.fillRect(bx - wi, by - h - wi, w + wi + wi, h + wi + wi);
+			}
+			else {
+				// prevent useless halo of sub-pixel-size
+				if (haloSize < 1) {
+					haloSize = 1;
+				}
 
-        renderer.graphics.setTransform( transform );
-    }
+				BasicStroke stroke = new BasicStroke(haloSize, CAP_BUTT, JOIN_ROUND);
+				renderer.graphics.setStroke(stroke);
+				renderer.graphics.draw(layout.getOutline(getTranslateInstance(px, py)));
+			}
+		}
 
-    void render( TextStyling styling, Font font, String text, Curve c ) {
-        java.awt.Stroke stroke = new TextStroke( text, font, styling.linePlacement );
-        if ( isZero( ( (TextStroke) stroke ).getLineHeight() ) ) {
-            return;
-        }
-        stroke = applyOffset( styling, stroke );
-        Double line = renderer.rendererContext.geomHelper.fromCurve( c, false );
-        if ( styling.halo != null ) {
-            Stroke haloStroke = new HaloStroke( text, font, styling.linePlacement, styling.halo, styling.uom,
-                                                renderer.rendererContext.uomCalculator );
-            haloStroke = applyOffset( styling, haloStroke );
-            renderer.rendererContext.fillRenderer.applyFill( styling.halo.fill, styling.uom );
-            renderer.graphics.setStroke( haloStroke );
-            renderer.graphics.draw( line );
-        }
+		renderer.graphics.setStroke(new BasicStroke());
 
-        renderer.rendererContext.fillRenderer.applyFill( styling.fill, styling.uom );
-        renderer.graphics.setStroke( stroke );
-        renderer.graphics.draw( line );
-    }
+		renderer.rendererContext.fillRenderer.applyFill(styling.fill, styling.uom);
+		layout.draw(renderer.graphics, (float) px, (float) py);
 
-    protected Font convertFont( TextStyling styling ) {
-        AffineTransform shear = null;
+		renderer.graphics.setTransform(transform);
+	}
 
-        int style = styling.font.bold ? BOLD : PLAIN;
-        switch ( styling.font.fontStyle ) {
-        case ITALIC:
-            style += ITALIC;
-            break;
-        case NORMAL:
-            style += PLAIN; // yes, it's zero, but the code looks nicer this way
-            break;
-        case OBLIQUE:
-            // Shear the font horizontally to achieve obliqueness
-            shear = new AffineTransform();
-            shear.shear( -0.2, 0 );
-            break;
-        }
+	void render(TextStyling styling, Font font, String text, Curve c) {
+		java.awt.Stroke stroke = new TextStroke(text, font, styling.linePlacement);
+		if (isZero(((TextStroke) stroke).getLineHeight())) {
+			return;
+		}
+		stroke = applyOffset(styling, stroke);
+		Double line = renderer.rendererContext.geomHelper.fromCurve(c, false);
+		if (styling.halo != null) {
+			Stroke haloStroke = new HaloStroke(text, font, styling.linePlacement, styling.halo, styling.uom,
+					renderer.rendererContext.uomCalculator);
+			haloStroke = applyOffset(styling, haloStroke);
+			renderer.rendererContext.fillRenderer.applyFill(styling.halo.fill, styling.uom);
+			renderer.graphics.setStroke(haloStroke);
+			renderer.graphics.draw(line);
+		}
 
-        // use the first matching name, or Dialog, if none was found
-        int size = round( renderer.rendererContext.uomCalculator.considerUOM( styling.font.fontSize, styling.uom ) );
-        Font font = new Font( "", style, size );
-        for ( String name : styling.font.fontFamily ) {
-            font = new Font( name, style, size );
-            if ( !font.getFamily().equalsIgnoreCase( "dialog" ) ) {
-                break;
-            }
-        }
+		renderer.rendererContext.fillRenderer.applyFill(styling.fill, styling.uom);
+		renderer.graphics.setStroke(stroke);
+		renderer.graphics.draw(line);
+	}
 
-        if ( styling.font.fontStyle == Style.OBLIQUE && shear != null )
-            font = font.deriveFont( shear );
-        return font;
-    }
+	protected Font convertFont(TextStyling styling) {
+		AffineTransform shear = null;
 
-    private java.awt.Stroke applyOffset( TextStyling styling, java.awt.Stroke stroke ) {
-        if ( !isZero( styling.linePlacement.perpendicularOffset ) ) {
-            stroke = new OffsetStroke( styling.linePlacement.perpendicularOffset, stroke,
-                                       styling.linePlacement.perpendicularOffsetType );
-        }
-        return stroke;
-    }
+		int style = styling.font.bold ? BOLD : PLAIN;
+		switch (styling.font.fontStyle) {
+			case ITALIC:
+				style += ITALIC;
+				break;
+			case NORMAL:
+				style += PLAIN; // yes, it's zero, but the code looks nicer this way
+				break;
+			case OBLIQUE:
+				// Shear the font horizontally to achieve obliqueness
+				shear = new AffineTransform();
+				shear.shear(-0.2, 0);
+				break;
+		}
+
+		// use the first matching name, or Dialog, if none was found
+		int size = round(renderer.rendererContext.uomCalculator.considerUOM(styling.font.fontSize, styling.uom));
+		Font font = new Font("", style, size);
+		for (String name : styling.font.fontFamily) {
+			font = new Font(name, style, size);
+			if (!font.getFamily().equalsIgnoreCase("dialog")) {
+				break;
+			}
+		}
+
+		if (styling.font.fontStyle == Style.OBLIQUE && shear != null)
+			font = font.deriveFont(shear);
+		return font;
+	}
+
+	private java.awt.Stroke applyOffset(TextStyling styling, java.awt.Stroke stroke) {
+		if (!isZero(styling.linePlacement.perpendicularOffset)) {
+			stroke = new OffsetStroke(styling.linePlacement.perpendicularOffset, stroke,
+					styling.linePlacement.perpendicularOffsetType);
+		}
+		return stroke;
+	}
 
 }

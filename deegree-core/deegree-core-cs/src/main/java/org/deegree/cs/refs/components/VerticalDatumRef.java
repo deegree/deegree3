@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -43,32 +42,27 @@ import org.deegree.cs.components.VerticalDatum;
 
 /**
  * {@link DatumRef} to a {@link VerticalDatum}
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class VerticalDatumRef extends DatumRef implements Serializable, IVerticalDatum {
 
-    private static final long serialVersionUID = -8057423901456946485L;
+	private static final long serialVersionUID = -8057423901456946485L;
 
-    /**
-     * Creates a reference to a {@link IVerticalDatum}
-     * 
-     * @param resolver
-     *            used for resolving the reference, must not be <code>null</code>
-     * @param uri
-     *            the object's uri, must not be <code>null</code>
-     * @param baseURL
-     *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
-     */
-    public VerticalDatumRef( ReferenceResolver resolver, String uri, String baseURL ) {
-        super( resolver, uri, baseURL );
-    }
+	/**
+	 * Creates a reference to a {@link IVerticalDatum}
+	 * @param resolver used for resolving the reference, must not be <code>null</code>
+	 * @param uri the object's uri, must not be <code>null</code>
+	 * @param baseURL base URL for resolving the uri, may be <code>null</code> (no
+	 * resolving of relative URLs)
+	 */
+	public VerticalDatumRef(ReferenceResolver resolver, String uri, String baseURL) {
+		super(resolver, uri, baseURL);
+	}
 
-    @Override
-    public boolean equals( Object obj ) {
-        return super.equals( obj ) ? true : getReferencedObject().equals( obj );
-    }
+	@Override
+	public boolean equals(Object obj) {
+		return super.equals(obj) ? true : getReferencedObject().equals(obj);
+	}
+
 }

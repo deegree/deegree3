@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <FileSystemTileStore xmlns="http://www.deegree.org/datasource/tile/filesystem" xmlns:md="http://www.deegree.org/metadata/spatial"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/datasource/tile/filesystem http://schemas.deegree.org/3.5/datasource/tile/filesystem/filesystem.xsd"
+  xsi:schemaLocation="http://www.deegree.org/datasource/tile/filesystem https://schemas.deegree.org/core/3.5/datasource/tile/filesystem/filesystem.xsd"
  >
 
   <TileDataSet>

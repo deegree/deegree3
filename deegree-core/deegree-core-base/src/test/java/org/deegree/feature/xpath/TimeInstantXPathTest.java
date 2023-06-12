@@ -25,53 +25,48 @@ import org.junit.Test;
 
 public class TimeInstantXPathTest {
 
-    @Test
-    public void evaluateGmlId()
-                            throws Exception {
-        final TypedObjectNode[] result = evaluate( "/gml:TimeInstant/@gml:id" );
-        assertEquals( 1, result.length );
-        final PrimitiveValue value = (PrimitiveValue) result[0];
-        assertEquals( "t11", value.getAsText() );
-    }
+	@Test
+	public void evaluateGmlId() throws Exception {
+		final TypedObjectNode[] result = evaluate("/gml:TimeInstant/@gml:id");
+		assertEquals(1, result.length);
+		final PrimitiveValue value = (PrimitiveValue) result[0];
+		assertEquals("t11", value.getAsText());
+	}
 
-    @Test
-    public void evaluateTimePosition()
-                            throws Exception {
-        final TypedObjectNode[] result = evaluate( "/gml:TimeInstant/gml:timePosition" );
-        assertEquals( 1, result.length );
-        final Property property = (Property) result[0];
-        assertEquals( new QName( GML3_2_NS, "timePosition" ), property.getName() );
-    }
+	@Test
+	public void evaluateTimePosition() throws Exception {
+		final TypedObjectNode[] result = evaluate("/gml:TimeInstant/gml:timePosition");
+		assertEquals(1, result.length);
+		final Property property = (Property) result[0];
+		assertEquals(new QName(GML3_2_NS, "timePosition"), property.getName());
+	}
 
-    @Test
-    public void evaluateTimePositionValue()
-                            throws Exception {
-        final TypedObjectNode[] result = evaluate( "/gml:TimeInstant/gml:timePosition/text()" );
-        assertEquals( 1, result.length );
-        final PrimitiveValue value = (PrimitiveValue) result[0];
-        assertEquals( "2001-05-23", value.getAsText() );
-    }
+	@Test
+	public void evaluateTimePositionValue() throws Exception {
+		final TypedObjectNode[] result = evaluate("/gml:TimeInstant/gml:timePosition/text()");
+		assertEquals(1, result.length);
+		final PrimitiveValue value = (PrimitiveValue) result[0];
+		assertEquals("2001-05-23", value.getAsText());
+	}
 
-    private TypedObjectNode[] evaluate( final String xpath )
-                            throws Exception, FilterEvaluationException {
-        final SimpleNamespaceContext nsContext = new SimpleNamespaceContext();
-        nsContext.addNamespace( "gml", "http://www.opengis.net/gml/3.2" );
-        final TimeObject object = readMinimalExample();
-        return new TypedObjectNodeXPathEvaluator().eval( object, new ValueReference( xpath, nsContext ) );
-    }
+	private TypedObjectNode[] evaluate(final String xpath) throws Exception, FilterEvaluationException {
+		final SimpleNamespaceContext nsContext = new SimpleNamespaceContext();
+		nsContext.addNamespace("gml", "http://www.opengis.net/gml/3.2");
+		final TimeObject object = readMinimalExample();
+		return new TypedObjectNodeXPathEvaluator().eval(object, new ValueReference(xpath, nsContext));
+	}
 
-    private TimeObject readMinimalExample()
-                            throws Exception {
-        final GMLStreamReader reader = getGmlStreamReader( "time_instant_minimal.gml" );
-        final XMLStreamReader xmlStream = reader.getXMLReader();
-        return new GmlTimeInstantReader( reader ).read( xmlStream );
-    }
+	private TimeObject readMinimalExample() throws Exception {
+		final GMLStreamReader reader = getGmlStreamReader("time_instant_minimal.gml");
+		final XMLStreamReader xmlStream = reader.getXMLReader();
+		return new GmlTimeInstantReader(reader).read(xmlStream);
+	}
 
-    private GMLStreamReader getGmlStreamReader( final String exampleName )
-                            throws Exception {
-        final URL url = GmlTimePositionTypeReader.class.getResource( exampleName );
-        GMLStreamReader reader = GMLInputFactory.createGMLStreamReader( GML_32, url );
-        skipStartDocument( reader.getXMLReader() );
-        return reader;
-    }
+	private GMLStreamReader getGmlStreamReader(final String exampleName) throws Exception {
+		final URL url = GmlTimePositionTypeReader.class.getResource(exampleName);
+		GMLStreamReader reader = GMLInputFactory.createGMLStreamReader(GML_32, url);
+		skipStartDocument(reader.getXMLReader());
+		return reader;
+	}
+
 }

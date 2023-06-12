@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -58,35 +57,33 @@ import org.deegree.workspace.standard.DefaultResourceIdentifier;
 
 /**
  * <code>SqlFeatureStoreMetadata</code>
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 public class SqlFeatureStoreMetadata extends AbstractResourceMetadata<FeatureStore> {
 
-    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.feature.persistence.sql.jaxb";
+	private static final String CONFIG_JAXB_PACKAGE = "org.deegree.feature.persistence.sql.jaxb";
 
-    public SqlFeatureStoreMetadata( Workspace workspace, ResourceLocation<FeatureStore> location,
-                                    AbstractResourceProvider<FeatureStore> provider ) {
-        super( workspace, location, provider );
-    }
+	public SqlFeatureStoreMetadata(Workspace workspace, ResourceLocation<FeatureStore> location,
+			AbstractResourceProvider<FeatureStore> provider) {
+		super(workspace, location, provider);
+	}
 
-    @Override
-    public ResourceBuilder<FeatureStore> prepare() {
-        try {
-            SQLFeatureStoreJAXB cfg = (SQLFeatureStoreJAXB) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA,
-                                                                                  location.getAsStream(), workspace );
-            String connid = cfg.getJDBCConnId().getValue();
-            dependencies.add( new DefaultResourceIdentifier<ConnectionProvider>( ConnectionProviderProvider.class,
-                                                                                 connid ) );
-            dependencies.add( new DefaultResourceIdentifier<ConnectionProvider>( ConnectionProviderProvider.class,
-                                                                                 "LOCK_DB" ) );
-            return new SqlFeatureStoreBuilder( this, cfg, workspace );
-        } catch ( Exception e ) {
-            throw new ResourceInitException( e.getLocalizedMessage(), e );
-        }
-    }
+	@Override
+	public ResourceBuilder<FeatureStore> prepare() {
+		try {
+			SQLFeatureStoreJAXB cfg = (SQLFeatureStoreJAXB) JAXBUtils.unmarshall(CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA,
+					location.getAsStream(), workspace);
+			String connid = cfg.getJDBCConnId().getValue();
+			dependencies
+				.add(new DefaultResourceIdentifier<ConnectionProvider>(ConnectionProviderProvider.class, connid));
+			dependencies
+				.add(new DefaultResourceIdentifier<ConnectionProvider>(ConnectionProviderProvider.class, "LOCK_DB"));
+			return new SqlFeatureStoreBuilder(this, cfg, workspace);
+		}
+		catch (Exception e) {
+			throw new ResourceInitException(e.getLocalizedMessage(), e);
+		}
+	}
 
 }

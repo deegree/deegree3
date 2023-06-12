@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -56,83 +55,85 @@ import org.deegree.workspace.ResourceMetadata;
 
 /**
  * Implementation that uses the old connection pooling mechanism.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 public class LegacyConnectionProvider implements ConnectionProvider {
 
-    private LegacyConnectionProviderMetadata metadata;
+	private LegacyConnectionProviderMetadata metadata;
 
-    private ConnectionPool pool;
+	private ConnectionPool pool;
 
-    private SQLDialect dialect;
+	private SQLDialect dialect;
 
-    public LegacyConnectionProvider( String url, String user, String password, boolean readOnly,
-                                     LegacyConnectionProviderMetadata metadata ) {
-        this.metadata = metadata;
-        // hardcoded as until 3.2
-        int poolMinSize = 5;
-        int poolMaxSize = 25;
+	public LegacyConnectionProvider(String url, String user, String password, boolean readOnly,
+			LegacyConnectionProviderMetadata metadata) {
+		this.metadata = metadata;
+		// hardcoded as until 3.2
+		int poolMinSize = 5;
+		int poolMaxSize = 25;
 
-        if ( metadata != null ) {
-            pool = new ConnectionPool( metadata.getIdentifier().getId(), url, user, password, readOnly, poolMinSize,
-                                       poolMaxSize );
-        } else {
-            pool = new ConnectionPool( "<unspecified>", url, user, password, readOnly, poolMinSize, poolMaxSize );
-        }
-    }
+		if (metadata != null) {
+			pool = new ConnectionPool(metadata.getIdentifier().getId(), url, user, password, readOnly, poolMinSize,
+					poolMaxSize);
+		}
+		else {
+			pool = new ConnectionPool("<unspecified>", url, user, password, readOnly, poolMinSize, poolMaxSize);
+		}
+	}
 
-    public void setDialect( SQLDialect dialect ) {
-        this.dialect = dialect;
-    }
+	public void setDialect(SQLDialect dialect) {
+		this.dialect = dialect;
+	}
 
-    @Override
-    public ResourceMetadata<? extends Resource> getMetadata() {
-        return metadata;
-    }
+	@Override
+	public ResourceMetadata<? extends Resource> getMetadata() {
+		return metadata;
+	}
 
-    @Override
-    public void init() {
-        try {
-            getConnection().close();
-        } catch ( SQLException e ) {
-            throw new ResourceInitException( e.getLocalizedMessage(), e );
-        }
-    }
+	@Override
+	public void init() {
+		try {
+			getConnection().close();
+		}
+		catch (SQLException e) {
+			throw new ResourceInitException(e.getLocalizedMessage(), e);
+		}
+	}
 
-    @Override
-    public Connection getConnection() {
-        try {
-            return pool.getConnection();
-        } catch ( SQLException e ) {
-            throw new ResourceException( e.getLocalizedMessage(), e );
-        }
-    }
+	@Override
+	public Connection getConnection() {
+		try {
+			return pool.getConnection();
+		}
+		catch (SQLException e) {
+			throw new ResourceException(e.getLocalizedMessage(), e);
+		}
+	}
 
-    @Override
-    public void destroy() {
-        try {
-            pool.destroy();
-        } catch ( Exception e ) {
-            throw new ResourceException( e.getLocalizedMessage(), e );
-        }
-    }
+	@Override
+	public void destroy() {
+		try {
+			pool.destroy();
+		}
+		catch (Exception e) {
+			throw new ResourceException(e.getLocalizedMessage(), e);
+		}
+	}
 
-    @Override
-    public SQLDialect getDialect() {
-        return dialect;
-    }
+	@Override
+	public SQLDialect getDialect() {
+		return dialect;
+	}
 
-    @Override
-    public void invalidate( Connection conn ) {
-        try {
-            pool.invalidate( (PoolableConnection) conn );
-        } catch ( Exception e ) {
-            throw new RuntimeException( e );
-        }
-    }
+	@Override
+	public void invalidate(Connection conn) {
+		try {
+			pool.invalidate((PoolableConnection) conn);
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 }

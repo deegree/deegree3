@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -39,19 +38,17 @@ package org.deegree.geometry.linearization;
  * TODO add documentation here
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- *
- * @version $Revision$, $Date$
  */
 public class NumPointsCriterion implements LinearizationCriterion {
 
-    private int pointsPerArc;
+	private int pointsPerArc;
 
-    public NumPointsCriterion (int pointsPerArc) {
-        this.pointsPerArc = pointsPerArc;
-    }
+	public NumPointsCriterion(int pointsPerArc) {
+		this.pointsPerArc = pointsPerArc;
+	}
 
-    public int getNumberOfPoints () {
-        return pointsPerArc;
-    }
+	public int getNumberOfPoints() {
+		return pointsPerArc;
+	}
+
 }

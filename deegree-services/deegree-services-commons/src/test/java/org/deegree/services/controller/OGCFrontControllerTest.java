@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2015 by:
@@ -58,115 +57,110 @@ import org.powermock.modules.junit4.PowerMockRunner;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(OGCFrontController.class)
-@PowerMockIgnore({"jdk.internal.reflect.*", "jdk.internal.misc.*", "javax.management.*", "javax.xml.*",
-        "javax.activation.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "org.xml.*", "org.w3c.dom.*"
-        })
+@PowerMockIgnore({ "jdk.internal.reflect.*", "jdk.internal.misc.*", "javax.management.*", "javax.xml.*",
+		"javax.activation.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "org.xml.*",
+		"org.w3c.dom.*" })
 public class OGCFrontControllerTest {
 
-    @Test
-    public void testGetHttpPostURLWithServiceUrl()
-                            throws Exception {
-        String serviceUrl = "http://myservice.de/deegree-webservices/test";
-        RequestContext mockedContext = mockContext( serviceUrl );
+	@Test
+	public void testGetHttpPostURLWithServiceUrl() throws Exception {
+		String serviceUrl = "http://myservice.de/deegree-webservices/test";
+		RequestContext mockedContext = mockContext(serviceUrl);
 
-        prepareOGCFrontController( mockedContext );
+		prepareOGCFrontController(mockedContext);
 
-        String httpPostURL = OGCFrontController.getHttpPostURL();
+		String httpPostURL = OGCFrontController.getHttpPostURL();
 
-        assertThat( httpPostURL, is( serviceUrl ) );
-    }
+		assertThat(httpPostURL, is(serviceUrl));
+	}
 
-    @Test
-    public void testGetHttpPostURLWithXForwardedHost()
-                            throws Exception {
-        String serviceUrl = "http://myservice.de/deegree-webservices/test";
-        String xForwardedHost = "xForwardedHost.de";
-        RequestContext mockedContext = mockContext( serviceUrl, xForwardedHost );
+	@Test
+	public void testGetHttpPostURLWithXForwardedHost() throws Exception {
+		String serviceUrl = "http://myservice.de/deegree-webservices/test";
+		String xForwardedHost = "xForwardedHost.de";
+		RequestContext mockedContext = mockContext(serviceUrl, xForwardedHost);
 
-        prepareOGCFrontController( mockedContext );
+		prepareOGCFrontController(mockedContext);
 
-        String httpPostURL = OGCFrontController.getHttpPostURL();
+		String httpPostURL = OGCFrontController.getHttpPostURL();
 
-        assertThat( httpPostURL, is( "http://xForwardedHost.de/deegree-webservices/test" ) );
-    }
+		assertThat(httpPostURL, is("http://xForwardedHost.de/deegree-webservices/test"));
+	}
 
-    @Test
-    public void testGetHttpPostURLWithXForwardedHostAndPortAddPort()
-                            throws Exception {
-        String serviceUrl = "http://myservice.de/deegree-webservices/test";
-        String xForwardedHost = "xForwardedHost.de";
-        String xForwardedPort = "8089";
-        RequestContext mockedContext = mockContext( serviceUrl, xForwardedHost, xForwardedPort );
+	@Test
+	public void testGetHttpPostURLWithXForwardedHostAndPortAddPort() throws Exception {
+		String serviceUrl = "http://myservice.de/deegree-webservices/test";
+		String xForwardedHost = "xForwardedHost.de";
+		String xForwardedPort = "8089";
+		RequestContext mockedContext = mockContext(serviceUrl, xForwardedHost, xForwardedPort);
 
-        prepareOGCFrontController( mockedContext );
+		prepareOGCFrontController(mockedContext);
 
-        String httpPostURL = OGCFrontController.getHttpPostURL();
+		String httpPostURL = OGCFrontController.getHttpPostURL();
 
-        assertThat( httpPostURL, is( "http://xForwardedHost.de:8089/deegree-webservices/test" ) );
-    }
+		assertThat(httpPostURL, is("http://xForwardedHost.de:8089/deegree-webservices/test"));
+	}
 
-    @Test
-    public void testGetHttpPostURLWithXForwardedHostAndPortReplacePort()
-                            throws Exception {
-        String serviceUrl = "http://myservice.de:9090/deegree-webservices/test";
-        String xForwardedHost = "xForwardedHost.de";
-        String xForwardedPort = "8089";
-        RequestContext mockedContext = mockContext( serviceUrl, xForwardedHost, xForwardedPort );
+	@Test
+	public void testGetHttpPostURLWithXForwardedHostAndPortReplacePort() throws Exception {
+		String serviceUrl = "http://myservice.de:9090/deegree-webservices/test";
+		String xForwardedHost = "xForwardedHost.de";
+		String xForwardedPort = "8089";
+		RequestContext mockedContext = mockContext(serviceUrl, xForwardedHost, xForwardedPort);
 
-        prepareOGCFrontController( mockedContext );
+		prepareOGCFrontController(mockedContext);
 
-        String httpPostURL = OGCFrontController.getHttpPostURL();
+		String httpPostURL = OGCFrontController.getHttpPostURL();
 
-        assertThat( httpPostURL, is( "http://xForwardedHost.de:8089/deegree-webservices/test" ) );
-    }
+		assertThat(httpPostURL, is("http://xForwardedHost.de:8089/deegree-webservices/test"));
+	}
 
-    @Test
-    public void testGetHttpPostURLWithXForwardedHostAndPortAndProtocolReplaceProto()
-                            throws Exception {
-        String serviceUrl = "http://myservice.de:9090/deegree-webservices/test";
-        String xForwardedHost = "xForwardedHost.de";
-        String xForwardedPort = "8089";
-        String xForwardedProto = "https";
-        RequestContext mockedContext = mockContext( serviceUrl, xForwardedHost, xForwardedPort, xForwardedProto );
+	@Test
+	public void testGetHttpPostURLWithXForwardedHostAndPortAndProtocolReplaceProto() throws Exception {
+		String serviceUrl = "http://myservice.de:9090/deegree-webservices/test";
+		String xForwardedHost = "xForwardedHost.de";
+		String xForwardedPort = "8089";
+		String xForwardedProto = "https";
+		RequestContext mockedContext = mockContext(serviceUrl, xForwardedHost, xForwardedPort, xForwardedProto);
 
-        prepareOGCFrontController( mockedContext );
+		prepareOGCFrontController(mockedContext);
 
-        String httpPostURL = OGCFrontController.getHttpPostURL();
+		String httpPostURL = OGCFrontController.getHttpPostURL();
 
-        assertThat( httpPostURL, is( "https://xForwardedHost.de:8089/deegree-webservices/test" ) );
-    }
+		assertThat(httpPostURL, is("https://xForwardedHost.de:8089/deegree-webservices/test"));
+	}
 
-    private void prepareOGCFrontController( RequestContext mockedContext )
-                            throws Exception {
-        mockStatic( OGCFrontController.class );
-        PowerMockito.when( OGCFrontController.getHttpPostURL() ).thenCallRealMethod();
-        PowerMockito.when( OGCFrontController.class, "getHttpURL" ).thenCallRealMethod();
-        PowerMockito.when( OGCFrontController.class, "buildUrlFromForwardedHeader", eq( mockedContext ),
-                           any( URL.class ) ).thenCallRealMethod();
-        PowerMockito.when( OGCFrontController.class, "parseProtocol", anyString(), any( URL.class ) ).thenCallRealMethod();
-        PowerMockito.when( OGCFrontController.class, "parsePort", anyString(), any( URL.class ) ).thenCallRealMethod();
-        PowerMockito.when( OGCFrontController.getContext() ).thenReturn( mockedContext );
-    }
+	private void prepareOGCFrontController(RequestContext mockedContext) throws Exception {
+		mockStatic(OGCFrontController.class);
+		PowerMockito.when(OGCFrontController.getHttpPostURL()).thenCallRealMethod();
+		PowerMockito.when(OGCFrontController.class, "getHttpURL").thenCallRealMethod();
+		PowerMockito.when(OGCFrontController.class, "buildUrlFromForwardedHeader", eq(mockedContext), any(URL.class))
+			.thenCallRealMethod();
+		PowerMockito.when(OGCFrontController.class, "parseProtocol", anyString(), any(URL.class)).thenCallRealMethod();
+		PowerMockito.when(OGCFrontController.class, "parsePort", anyString(), any(URL.class)).thenCallRealMethod();
+		PowerMockito.when(OGCFrontController.getContext()).thenReturn(mockedContext);
+	}
 
-    private RequestContext mockContext( String serviceUrl ) {
-        return mockContext( serviceUrl, null );
-    }
+	private RequestContext mockContext(String serviceUrl) {
+		return mockContext(serviceUrl, null);
+	}
 
-    private RequestContext mockContext( String serviceUrl, String xForwardedHost ) {
-        return mockContext( serviceUrl, xForwardedHost, null );
-    }
+	private RequestContext mockContext(String serviceUrl, String xForwardedHost) {
+		return mockContext(serviceUrl, xForwardedHost, null);
+	}
 
-    private RequestContext mockContext( String serviceUrl, String xForwardedHost, String xForwardedPort ) {
-        return mockContext( serviceUrl, xForwardedHost, xForwardedPort, "http" );
-    }
+	private RequestContext mockContext(String serviceUrl, String xForwardedHost, String xForwardedPort) {
+		return mockContext(serviceUrl, xForwardedHost, xForwardedPort, "http");
+	}
 
-    private RequestContext mockContext( String serviceUrl, String xForwardedHost, String xForwardedPort,
-                                        String xForwardedProto ) {
-        RequestContext context = mock( RequestContext.class );
-        when( context.getServiceUrl() ).thenReturn( serviceUrl );
-        when( context.getXForwardedHost() ).thenReturn( xForwardedHost );
-        when( context.getXForwardedPort() ).thenReturn( xForwardedPort );
-        when( context.getXForwardedProto() ).thenReturn( xForwardedProto );
-        return context;
-    }
+	private RequestContext mockContext(String serviceUrl, String xForwardedHost, String xForwardedPort,
+			String xForwardedProto) {
+		RequestContext context = mock(RequestContext.class);
+		when(context.getServiceUrl()).thenReturn(serviceUrl);
+		when(context.getXForwardedHost()).thenReturn(xForwardedHost);
+		when(context.getXForwardedPort()).thenReturn(xForwardedPort);
+		when(context.getXForwardedProto()).thenReturn(xForwardedProto);
+		return context;
+	}
+
 }

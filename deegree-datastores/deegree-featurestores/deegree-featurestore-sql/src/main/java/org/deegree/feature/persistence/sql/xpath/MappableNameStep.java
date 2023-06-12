@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -39,21 +38,19 @@ import javax.xml.namespace.QName;
 
 /**
  * XPath <code>NameStep</code>.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
-abstract class MappableNameStep extends MappableStep {
+public abstract class MappableNameStep extends MappableStep {
 
-    private final QName nodeName;
+	private final QName nodeName;
 
-    protected MappableNameStep( QName nodeName ) {
-        this.nodeName = nodeName;
-    }
+	protected MappableNameStep(QName nodeName) {
+		this.nodeName = nodeName;
+	}
 
-    QName getNodeName() {
-        return nodeName;
-    }
+	public QName getNodeName() {
+		return nodeName;
+	}
+
 }

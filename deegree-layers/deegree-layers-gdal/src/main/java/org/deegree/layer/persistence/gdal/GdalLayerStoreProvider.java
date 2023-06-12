@@ -37,28 +37,28 @@ import org.deegree.workspace.Workspace;
 
 /**
  * SPI class for GDAL layer stores.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * 
  * @since 3.4
  */
 public class GdalLayerStoreProvider extends LayerStoreProvider {
 
-    private static final URL CONFIG_SCHEMA = GdalLayerStoreProvider.class.getResource( "/META-INF/schemas/layers/gdal/gdal.xsd" );
+	private static final URL CONFIG_SCHEMA = GdalLayerStoreProvider.class
+		.getResource("/META-INF/schemas/layers/gdal/gdal.xsd");
 
-    @Override
-    public String getNamespace() {
-        return "http://www.deegree.org/layers/gdal";
-    }
+	@Override
+	public String getNamespace() {
+		return "http://www.deegree.org/layers/gdal";
+	}
 
-    @Override
-    public ResourceMetadata<LayerStore> createFromLocation( Workspace workspace, ResourceLocation<LayerStore> location ) {
-        return new GdalLayerStoreMetadata( workspace, location, this );
-    }
+	@Override
+	public ResourceMetadata<LayerStore> createFromLocation(Workspace workspace, ResourceLocation<LayerStore> location) {
+		return new GdalLayerStoreMetadata(workspace, location, this);
+	}
 
-    @Override
-    public URL getSchema() {
-        return CONFIG_SCHEMA;
-    }
+	@Override
+	public URL getSchema() {
+		return CONFIG_SCHEMA;
+	}
 
 }

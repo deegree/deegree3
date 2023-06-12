@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -42,62 +41,58 @@ import org.deegree.commons.xml.NamespaceBindings;
 
 /**
  * Abstract base class for the requests of all operations.
- * 
+ *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: thomas $
- * 
- * @version $Revision: $, $Date: $
  */
 public abstract class AbstractCSWRequest {
 
-    private Version version;
+	private Version version;
 
-    private NamespaceBindings namespaces;
+	private NamespaceBindings namespaces;
 
-    private QName[] typeNames;
+	private QName[] typeNames;
 
-    private String outputFormat;
+	private String outputFormat;
 
-    /**
-     * 
-     * 
-     * @param version
-     * @param namespaces
-     * @param typeNames
-     * @param outputFormat
-     */
-    public AbstractCSWRequest( Version version, NamespaceBindings namespaces, QName[] typeNames, String outputFormat ) {
-        this.version = version;
-        this.namespaces = namespaces;
-        this.typeNames = typeNames;
-        this.outputFormat = outputFormat;
-    }
+	/**
+	 * @param version
+	 * @param namespaces
+	 * @param typeNames
+	 * @param outputFormat
+	 */
+	public AbstractCSWRequest(Version version, NamespaceBindings namespaces, QName[] typeNames, String outputFormat) {
+		this.version = version;
+		this.namespaces = namespaces;
+		this.typeNames = typeNames;
+		this.outputFormat = outputFormat;
+	}
 
-    /**
-     * @return the version
-     */
-    public Version getVersion() {
-        return version;
-    }
+	/**
+	 * @return the version
+	 */
+	public Version getVersion() {
+		return version;
+	}
 
-    /**
-     * @return the namespaces
-     */
-    public NamespaceBindings getNamespaces() {
-        return namespaces;
-    }
+	/**
+	 * @return the namespaces
+	 */
+	public NamespaceBindings getNamespaces() {
+		return namespaces;
+	}
 
-    /**
-     * @return the typeNames
-     */
-    public QName[] getTypeNames() {
-        return typeNames;
-    }
+	/**
+	 * @return the typeNames
+	 */
+	public QName[] getTypeNames() {
+		return typeNames;
+	}
 
-    /**
-     * @return the outputFormat
-     */
-    public String getOutputFormat() {
-        return outputFormat;
-    }
+	/**
+	 * @return the outputFormat
+	 */
+	public String getOutputFormat() {
+		return outputFormat;
+	}
+
 }

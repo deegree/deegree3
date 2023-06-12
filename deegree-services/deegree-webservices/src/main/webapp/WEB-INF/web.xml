@@ -91,6 +91,8 @@
     <welcome-file>index.xhtml</welcome-file>
   </welcome-file-list>
 
+  <!-- REST API is protected by API key by default. -->
+  <!--
   <security-constraint>
     <web-resource-collection>
       <web-resource-name>Configuration</web-resource-name>
@@ -110,6 +112,7 @@
     <description>deegree administrator role</description>
     <role-name>deegree</role-name>
   </security-role>
+  -->
 
   <!-- http basic auth enable -->
   <!-- Define a security constraint on this application -->

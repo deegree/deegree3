@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -38,65 +37,56 @@ package org.deegree.protocol.wps.client.output;
 import org.deegree.commons.tom.ows.CodeType;
 
 /**
- * {@link ExecutionOutput} that contains a literal value with optional data type and unit-of-measure information.
- * 
+ * {@link ExecutionOutput} that contains a literal value with optional data type and
+ * unit-of-measure information.
+ *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class LiteralOutput extends ExecutionOutput {
 
-    private final String value;
+	private final String value;
 
-    private final String dataType;
+	private final String dataType;
 
-    private final String uom;
+	private final String uom;
 
-    /**
-     * Creates a new {@link LiteralOutput} instance.
-     * 
-     * @param id
-     *            output parameter identifier, must not be <code>null</code>
-     * @param value
-     *            literal value, must not be <code>null</code>
-     * @param dataType
-     *            literal data type, can be <code>null</code> (unspecified)
-     * @param uom
-     *            unit-of-measure, can be <code>null</code> (unspecified)
-     */
-    public LiteralOutput( CodeType id, String value, String dataType, String uom ) {
-        super( id );
-        this.value = value;
-        this.dataType = dataType;
-        this.uom = uom;
-    }
+	/**
+	 * Creates a new {@link LiteralOutput} instance.
+	 * @param id output parameter identifier, must not be <code>null</code>
+	 * @param value literal value, must not be <code>null</code>
+	 * @param dataType literal data type, can be <code>null</code> (unspecified)
+	 * @param uom unit-of-measure, can be <code>null</code> (unspecified)
+	 */
+	public LiteralOutput(CodeType id, String value, String dataType, String uom) {
+		super(id);
+		this.value = value;
+		this.dataType = dataType;
+		this.uom = uom;
+	}
 
-    /**
-     * Returns the value.
-     * 
-     * @return the value, never <code>null</code>
-     */
-    public String getValue() {
-        return value;
-    }
+	/**
+	 * Returns the value.
+	 * @return the value, never <code>null</code>
+	 */
+	public String getValue() {
+		return value;
+	}
 
-    /**
-     * Returns the data type.
-     * 
-     * @return the data type, may be <code>null</code> (unspecified)
-     */
-    public String getDataType() {
-        return dataType;
-    }
+	/**
+	 * Returns the data type.
+	 * @return the data type, may be <code>null</code> (unspecified)
+	 */
+	public String getDataType() {
+		return dataType;
+	}
 
-    /**
-     * Returns the unit-of-measure.
-     * 
-     * @return the unit-of-measure, may be <code>null</code> (unspecified)
-     */
-    public String getUom() {
-        return uom;
-    }
+	/**
+	 * Returns the unit-of-measure.
+	 * @return the unit-of-measure, may be <code>null</code> (unspecified)
+	 */
+	public String getUom() {
+		return uom;
+	}
+
 }

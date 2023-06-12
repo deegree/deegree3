@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -42,27 +41,24 @@ import org.deegree.geometry.Envelope;
 import org.deegree.tools.coverage.gridifier.RasterLevel;
 
 /**
- * The <code>MultiLevelRasterTileIndex</code> interface defines simple access to the raster index
- * 
+ * The <code>MultiLevelRasterTileIndex</code> interface defines simple access to the
+ * raster index
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * 
- * @version $Revision: $, $Date: $
  */
 public interface MultiLevelRasterTileIndex {
 
-    /**
-     * Return the matching tilefiles for the given enveloep
-     * 
-     * @param bbox
-     * @param metersPerPixel
-     * @return a set of matching tiel files
-     */
-    public Set<TileFile> getTiles( Envelope bbox, double metersPerPixel );
+	/**
+	 * Return the matching tilefiles for the given enveloep
+	 * @param bbox
+	 * @param metersPerPixel
+	 * @return a set of matching tiel files
+	 */
+	public Set<TileFile> getTiles(Envelope bbox, double metersPerPixel);
 
-    /**
-     * @return the RasterLevels
-     */
-    public RasterLevel[] getRasterLevels();
+	/**
+	 * @return the RasterLevels
+	 */
+	public RasterLevel[] getRasterLevels();
 
 }

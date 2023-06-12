@@ -45,57 +45,55 @@ import org.deegree.commons.xml.XPath;
 
 /**
  * Provides basic functionality for parsing WFS XML requests.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * 
- * @version $Revision: $, $Date: $
  */
 public abstract class AbstractWFSRequestXMLAdapter extends XMLAdapter {
 
-    /** Namespace context with predefined bindings "wfs" and "wfs200" */
-    protected static final NamespaceBindings nsContext;
+	/** Namespace context with predefined bindings "wfs" and "wfs200" */
+	protected static final NamespaceBindings nsContext;
 
-    /** Namespace binding for WFS 1.0.0 and WFS 1.1.0 constructs */
-    protected final static String WFS_PREFIX = "wfs";
+	/** Namespace binding for WFS 1.0.0 and WFS 1.1.0 constructs */
+	protected final static String WFS_PREFIX = "wfs";
 
-    /** Namespace binding for WFS 2.0.0 constructs */
-    protected final static String WFS_200_PREFIX = "wfs200";
+	/** Namespace binding for WFS 2.0.0 constructs */
+	protected final static String WFS_200_PREFIX = "wfs200";
 
-    /** Namespace binding for WFS Temporal Extension 1.0.0 constructs */
-    protected static final String WFS_TE_10_NS = "http://www.opengis.net/wfs-te/1.0";
+	/** Namespace binding for WFS Temporal Extension 1.0.0 constructs */
+	protected static final String WFS_TE_10_NS = "http://www.opengis.net/wfs-te/1.0";
 
-    protected static final String WFS_TE_10_PREFIX = "wfs-te";
-    
-    /** Namespace binding for FES Temporal Extension 1.0.0 constructs */
-    protected static final String FES_TE_10_NS = "http://www.opengis.net/fes-te/1.0";
-    
-    protected static final String FES_TE_10_PREFIX = "fes-te";
+	protected static final String WFS_TE_10_PREFIX = "wfs-te";
 
-    static {
-        nsContext = new NamespaceBindings( XMLAdapter.nsContext );
-        nsContext.addNamespace( WFS_PREFIX, WFSConstants.WFS_NS );
-        nsContext.addNamespace( WFS_200_PREFIX, WFSConstants.WFS_200_NS );
-        nsContext.addNamespace( FES_PREFIX, FES_20_NS );
-        nsContext.addNamespace( WFS_TE_10_PREFIX, WFS_TE_10_NS );
-        nsContext.addNamespace( FES_TE_10_PREFIX, FES_TE_10_NS );
-    }
+	/** Namespace binding for FES Temporal Extension 1.0.0 constructs */
+	protected static final String FES_TE_10_NS = "http://www.opengis.net/fes-te/1.0";
 
-    /**
-     * Returns the protocol version for the given WFS request element based on the value of the <code>version</code>
-     * attribute (for WFS 1.1.0, this attribute is optional and thus it is assumed that missing implies 1.1.0).
-     * 
-     * @return protocol version based on <code>version</code> attribute (if missing and namespace is WFS 1.0.0/1.1.0,
-     *         version is assumed to be 1.1.0)
-     */
-    protected Version determineVersion110Safe() {
-        if ( WFS_NS.equals( rootElement.getQName().getNamespaceURI() ) ) {
-            String s = getNodeAsString( rootElement, new XPath( "@version", nsContext ), "1.1.0" );
-            if ( s.isEmpty() ) {
-                s = "1.1.0";
-            }
-            return Version.parseVersion( s );
-        }
-        return Version.parseVersion( getRequiredNodeAsString( rootElement, new XPath( "@version", nsContext ) ) );
-    }
+	protected static final String FES_TE_10_PREFIX = "fes-te";
+
+	static {
+		nsContext = new NamespaceBindings(XMLAdapter.nsContext);
+		nsContext.addNamespace(WFS_PREFIX, WFSConstants.WFS_NS);
+		nsContext.addNamespace(WFS_200_PREFIX, WFSConstants.WFS_200_NS);
+		nsContext.addNamespace(FES_PREFIX, FES_20_NS);
+		nsContext.addNamespace(WFS_TE_10_PREFIX, WFS_TE_10_NS);
+		nsContext.addNamespace(FES_TE_10_PREFIX, FES_TE_10_NS);
+	}
+
+	/**
+	 * Returns the protocol version for the given WFS request element based on the value
+	 * of the <code>version</code> attribute (for WFS 1.1.0, this attribute is optional
+	 * and thus it is assumed that missing implies 1.1.0).
+	 * @return protocol version based on <code>version</code> attribute (if missing and
+	 * namespace is WFS 1.0.0/1.1.0, version is assumed to be 1.1.0)
+	 */
+	protected Version determineVersion110Safe() {
+		if (WFS_NS.equals(rootElement.getQName().getNamespaceURI())) {
+			String s = getNodeAsString(rootElement, new XPath("@version", nsContext), "1.1.0");
+			if (s.isEmpty()) {
+				s = "1.1.0";
+			}
+			return Version.parseVersion(s);
+		}
+		return Version.parseVersion(getRequiredNodeAsString(rootElement, new XPath("@version", nsContext)));
+	}
+
 }

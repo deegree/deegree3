@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aschmitz@wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -43,21 +42,17 @@ import junit.framework.TestCase;
 import org.junit.Test;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 public class XPathUtilsTest extends TestCase {
 
-    @Test
-    public void testFindQNames() {
-        NamespaceBindings ns = new NamespaceBindings();
-        ns.addNamespace( "app", "http://www.deegree.org/app" );
-        XPath path = new XPath( "/app:eins/app:zwei/app:drei/app:vier", ns );
-        QName q3 = new QName( "http://www.deegree.org/app", "drei" );
-        Assert.assertEquals( q3, XPathUtils.extractQNames( path ).get( 2 ) );
-    }
+	@Test
+	public void testFindQNames() {
+		NamespaceBindings ns = new NamespaceBindings();
+		ns.addNamespace("app", "http://www.deegree.org/app");
+		XPath path = new XPath("/app:eins/app:zwei/app:drei/app:vier", ns);
+		QName q3 = new QName("http://www.deegree.org/app", "drei");
+		Assert.assertEquals(q3, XPathUtils.extractQNames(path).get(2));
+	}
 
 }

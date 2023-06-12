@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/commons/trunk/src/org/deegree/model/feature/Feature.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -58,103 +57,98 @@ import org.slf4j.LoggerFactory;
 /**
  * Validates all geometry elements (at all levels of the document) of a GML stream.
  * <p>
- * The validator's reaction on topological issues is controlled by providing a {@link GmlGeometryValidationEventHandler}
- * which can also be used for generating validity reports.
+ * The validator's reaction on topological issues is controlled by providing a
+ * {@link GmlGeometryValidationEventHandler} which can also be used for generating
+ * validity reports.
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * 
- * @version $Revision:$, $Date:$
  */
 public class GmlStreamGeometryValidator {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GmlStreamGeometryValidator.class );
+	private static final Logger LOG = LoggerFactory.getLogger(GmlStreamGeometryValidator.class);
 
-    private final GMLStreamReader gmlStream;
+	private final GMLStreamReader gmlStream;
 
-    private final GMLGeometryReader geomParser;
+	private final GMLGeometryReader geomParser;
 
-    private final XMLStreamReaderWrapper xmlStream;
+	private final XMLStreamReaderWrapper xmlStream;
 
-    private final GmlGeometryValidationEventHandler gmlErrorHandler;
+	private final GmlGeometryValidationEventHandler gmlErrorHandler;
 
-    /**
-     * Creates a new {@link GmlStreamGeometryValidator} instance.
-     * 
-     * @param gmlStream
-     *            GML stream, must not be <code>null</code>
-     * @param eventHandler
-     *            event handler that controls the reaction on topological events and genearates validity reports
-     */
-    public GmlStreamGeometryValidator( GMLStreamReader gmlStream, GmlGeometryValidationEventHandler eventHandler ) {
-        xmlStream = new XMLStreamReaderWrapper( gmlStream.getXMLReader(),
-                                                gmlStream.getXMLReader().getLocation().getSystemId() );
-        geomParser = gmlStream.getGeometryReader();
-        this.gmlStream = gmlStream;
-        this.gmlErrorHandler = eventHandler;
-    }
+	/**
+	 * Creates a new {@link GmlStreamGeometryValidator} instance.
+	 * @param gmlStream GML stream, must not be <code>null</code>
+	 * @param eventHandler event handler that controls the reaction on topological events
+	 * and genearates validity reports
+	 */
+	public GmlStreamGeometryValidator(GMLStreamReader gmlStream, GmlGeometryValidationEventHandler eventHandler) {
+		xmlStream = new XMLStreamReaderWrapper(gmlStream.getXMLReader(),
+				gmlStream.getXMLReader().getLocation().getSystemId());
+		geomParser = gmlStream.getGeometryReader();
+		this.gmlStream = gmlStream;
+		this.gmlErrorHandler = eventHandler;
+	}
 
-    /**
-     * Starts the validation.
-     * 
-     * @throws XMLStreamException
-     * @throws UnknownCRSException
-     */
-    public void validateGeometries()
-                            throws XMLStreamException, UnknownCRSException {
+	/**
+	 * Starts the validation.
+	 * @throws XMLStreamException
+	 * @throws UnknownCRSException
+	 */
+	public void validateGeometries() throws XMLStreamException, UnknownCRSException {
 
-        while ( xmlStream.getEventType() != END_DOCUMENT ) {
-            if ( xmlStream.isStartElement() ) {
-                if ( gmlStream.isGeometryElement() ) {
-                    validateGeometryElement();
-                }
-            }
-            xmlStream.next();
-        }
-    }
+		while (xmlStream.getEventType() != END_DOCUMENT) {
+			if (xmlStream.isStartElement()) {
+				if (gmlStream.isGeometryElement()) {
+					validateGeometryElement();
+				}
+			}
+			xmlStream.next();
+		}
+	}
 
-    private void validateGeometryElement()
-                            throws UnknownCRSException {
+	private void validateGeometryElement() throws UnknownCRSException {
 
-        Location location = xmlStream.getLocation();
-        LOG.debug( "Validating GML geometry element ('" + xmlStream.getLocalName() + "') at line: "
-                   + location.getLineNumber() + ", column: " + location.getColumnNumber() + "." );
+		Location location = xmlStream.getLocation();
+		LOG.debug("Validating GML geometry element ('" + xmlStream.getLocalName() + "') at line: "
+				+ location.getLineNumber() + ", column: " + location.getColumnNumber() + ".");
 
-        GmlElementIdentifier identifier = new GmlElementIdentifier( xmlStream );
-        ValidationEventRedirector eventRedirector = new ValidationEventRedirector( gmlErrorHandler, identifier );
-        GeometryValidator geometryValidator = new GeometryValidator( eventRedirector );
-        try {
-            Geometry geometry = geomParser.parse( xmlStream );
-            geometryValidator.validateGeometry( geometry );
-        } catch ( XMLParsingException e ) {
-            gmlErrorHandler.parsingError( identifier, e );
-        } catch ( XMLStreamException e ) {
-            gmlErrorHandler.parsingError( identifier, e );
-        }
-    }
+		GmlElementIdentifier identifier = new GmlElementIdentifier(xmlStream);
+		ValidationEventRedirector eventRedirector = new ValidationEventRedirector(gmlErrorHandler, identifier);
+		GeometryValidator geometryValidator = new GeometryValidator(eventRedirector);
+		try {
+			Geometry geometry = geomParser.parse(xmlStream);
+			geometryValidator.validateGeometry(geometry);
+		}
+		catch (XMLParsingException e) {
+			gmlErrorHandler.parsingError(identifier, e);
+		}
+		catch (XMLStreamException e) {
+			gmlErrorHandler.parsingError(identifier, e);
+		}
+	}
 
-    private class ValidationEventRedirector implements GeometryValidationEventHandler {
+	private class ValidationEventRedirector implements GeometryValidationEventHandler {
 
-        private final GmlGeometryValidationEventHandler gmlErrorHandler;
+		private final GmlGeometryValidationEventHandler gmlErrorHandler;
 
-        private final GmlElementIdentifier topLevelGeometryElement;
+		private final GmlElementIdentifier topLevelGeometryElement;
 
-        private ValidationEventRedirector( GmlGeometryValidationEventHandler gmlErrorHandler,
-                                           GmlElementIdentifier topLevelGeometryElement ) {
-            this.gmlErrorHandler = gmlErrorHandler;
-            this.topLevelGeometryElement = topLevelGeometryElement;
-        }
+		private ValidationEventRedirector(GmlGeometryValidationEventHandler gmlErrorHandler,
+				GmlElementIdentifier topLevelGeometryElement) {
+			this.gmlErrorHandler = gmlErrorHandler;
+			this.topLevelGeometryElement = topLevelGeometryElement;
+		}
 
-        @Override
-        public boolean fireEvent( GeometryValidationEvent event ) {
-            return gmlErrorHandler.topologicalEvent( new GmlGeometryValidationEvent( event, getAffectedElements() ) );
-        }
+		@Override
+		public boolean fireEvent(GeometryValidationEvent event) {
+			return gmlErrorHandler.topologicalEvent(new GmlGeometryValidationEvent(event, getAffectedElements()));
+		}
 
-        private List<GmlElementIdentifier> getAffectedElements() {
-            return Collections.singletonList( topLevelGeometryElement );
-        }
+		private List<GmlElementIdentifier> getAffectedElements() {
+			return Collections.singletonList(topLevelGeometryElement);
+		}
 
-    }
+	}
 
 }

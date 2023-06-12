@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -39,25 +38,22 @@ import org.deegree.commons.tom.TypedObjectNode;
 
 /**
  * Base interface for XML nodes that have to be represented during XPath-evaluation.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * 
- * @version $Revision:$, $Date:$
  */
 public interface XPathNode<V extends TypedObjectNode> {
 
-    /**
-     * Returns the parent node.
-     * 
-     * @return the parent node or <code>null</code> if this is the root node
-     */
-    public XPathNode<? extends TypedObjectNode> getParent();
+	/**
+	 * Returns the parent node.
+	 * @return the parent node or <code>null</code> if this is the root node
+	 */
+	public XPathNode<? extends TypedObjectNode> getParent();
 
-    /**
-     * @return the value of the node.
-     */
-    public V getValue();
+	/**
+	 * @return the value of the node.
+	 */
+	public V getValue();
 
-    public boolean isElement();
+	public boolean isElement();
+
 }

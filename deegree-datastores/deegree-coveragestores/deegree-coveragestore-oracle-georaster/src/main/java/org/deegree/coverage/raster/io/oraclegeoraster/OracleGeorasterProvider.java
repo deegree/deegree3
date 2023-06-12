@@ -38,27 +38,28 @@ import org.deegree.workspace.Workspace;
 
 /**
  * Provider for Oracle GeoRaster coverages.
- * 
+ *
  * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
- * 
  * @since 3.4
  */
 public class OracleGeorasterProvider extends CoverageProvider {
 
-    private static final URL CONFIG_SCHEMA = OracleGeorasterProvider.class.getResource( "/META-INF/schemas/datasource/coverage/oraclegeoraster/oraclegeoraster.xsd" );
+	private static final URL CONFIG_SCHEMA = OracleGeorasterProvider.class
+		.getResource("/META-INF/schemas/datasource/coverage/oraclegeoraster/oraclegeoraster.xsd");
 
-    @Override
-    public String getNamespace() {
-        return "http://www.deegree.org/datasource/coverage/oraclegeoraster";
-    }
+	@Override
+	public String getNamespace() {
+		return "http://www.deegree.org/datasource/coverage/oraclegeoraster";
+	}
 
-    @Override
-    public ResourceMetadata<Coverage> createFromLocation( Workspace workspace, ResourceLocation<Coverage> location ) {
-        return new OracleGeorasterMetadata( workspace, location, this );
-    }
+	@Override
+	public ResourceMetadata<Coverage> createFromLocation(Workspace workspace, ResourceLocation<Coverage> location) {
+		return new OracleGeorasterMetadata(workspace, location, this);
+	}
 
-    @Override
-    public URL getSchema() {
-        return CONFIG_SCHEMA;
-    }
+	@Override
+	public URL getSchema() {
+		return CONFIG_SCHEMA;
+	}
+
 }

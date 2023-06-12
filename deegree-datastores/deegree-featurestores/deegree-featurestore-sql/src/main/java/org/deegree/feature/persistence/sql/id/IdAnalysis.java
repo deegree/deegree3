@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -40,55 +39,53 @@ import org.deegree.feature.types.FeatureType;
 
 /**
  * Analysis of an incoming feature / geometry id.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class IdAnalysis {
 
-    private final FeatureType ft;
+	private final FeatureType ft;
 
-    // TODO: geometries
-    private final boolean isFid = true;
+	// TODO: geometries
+	private final boolean isFid = true;
 
-    private String[] idKernels;
+	private String[] idKernels;
 
-    IdAnalysis( FeatureType ft, String idRemainder, FIDMapping fidMapping ) throws IllegalArgumentException {
-        this.ft = ft;
-        if ( fidMapping.getColumns().size() == 1 ) {
-            idKernels = new String[] { idRemainder };
-        } else {
-            idKernels = StringUtils.split( idRemainder, fidMapping.getDelimiter() );
-        }
-    }
+	IdAnalysis(FeatureType ft, String idRemainder, FIDMapping fidMapping) throws IllegalArgumentException {
+		this.ft = ft;
+		if (fidMapping.getColumns().size() == 1) {
+			idKernels = new String[] { idRemainder };
+		}
+		else {
+			idKernels = StringUtils.split(idRemainder, fidMapping.getDelimiter());
+		}
+	}
 
-    /**
-     * @return
-     */
-    public FeatureType getFeatureType() {
-        return ft;
-    }
+	/**
+	 * @return
+	 */
+	public FeatureType getFeatureType() {
+		return ft;
+	}
 
-    /**
-     * Returns the values for the feature id columns from the {@link FIDMapping}.
-     * 
-     * @return values for feature id columns, never <code>null</code>
-     */
-    public String[] getIdKernels() {
-        return idKernels;
-    }
+	/**
+	 * Returns the values for the feature id columns from the {@link FIDMapping}.
+	 * @return values for feature id columns, never <code>null</code>
+	 */
+	public String[] getIdKernels() {
+		return idKernels;
+	}
 
-    /**
-     * @return
-     */
-    public boolean isFid() {
-        return isFid;
-    }
+	/**
+	 * @return
+	 */
+	public boolean isFid() {
+		return isFid;
+	}
 
-    @Override
-    public String toString() {
-        return "ft=" + ft.getName() + ",idKernels=" + idKernels;
-    }
+	@Override
+	public String toString() {
+		return "ft=" + ft.getName() + ",idKernels=" + idKernels;
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/src/test/java/org/deegree/feature/persistence/postgis/PostGISFeatureStoreTest.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -35,46 +34,62 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.sqldialect.filter;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.deegree.commons.jdbc.TableName;
 import org.deegree.filter.expression.ValueReference;
 
 /**
- * Creates and tracks table aliases that are needed for mapping {@link ValueReference}s to a relational schema.
- * 
+ * Creates and tracks table aliases that are needed for mapping {@link ValueReference}s to
+ * a relational schema.
+ *
  * @see AbstractWhereBuilder
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 25462 $, $Date: 2010-07-21 18:45:40 +0200 (Mi, 21. Jul 2010) $
  */
 public class TableAliasManager {
 
-    private final String rootTableAlias;
+	private final Map<TableName, String> aliases = new HashMap<TableName, String>();
 
-    private int currentIdx = 1;
+	private final String rootTableAlias;
 
-    /**
-     * Creates a new {@link TableAliasManager} instance.
-     */
-    public TableAliasManager() {
-        rootTableAlias = generateNew();
-    }
+	private int currentIdx = 1;
 
-    /**
-     * Returns the table alias for the root table.
-     * 
-     * @return the table alias for the root table, never <code>null</code>
-     */
-    public String getRootTableAlias() {
-        return rootTableAlias;
-    }
+	/**
+	 * Creates a new {@link TableAliasManager} instance.
+	 */
+	public TableAliasManager() {
+		rootTableAlias = generateNew();
+	}
 
-    /**
-     * Returns a new unique table alias.
-     * 
-     * @return a new unique table alias, never <code>null</code>
-     */
-    public String generateNew() {
-        return "X" + ( currentIdx++ );
-    }
+	/**
+	 * Deprecated: Use #getTableAlias(TableName) instead.
+	 *
+	 * Returns the table alias for the root table.
+	 * @return the table alias for the root table, never <code>null</code>
+	 */
+	@Deprecated
+	public String getRootTableAlias() {
+		return rootTableAlias;
+	}
+
+	/**
+	 * Returns the table alias for the passed {@link TableName}.
+	 * @param tableName to retrieve the alias for, never <code>null</code>
+	 * @return the table alias of the passed {@link TableName}, never <code>null</code>
+	 */
+	public String getTableAlias(TableName tableName) {
+		if (!aliases.containsKey(tableName))
+			aliases.put(tableName, generateNew());
+		return aliases.get(tableName);
+	}
+
+	/**
+	 * Returns a new unique table alias.
+	 * @return a new unique table alias, never <code>null</code>
+	 */
+	public String generateNew() {
+		return "X" + (currentIdx++);
+	}
+
 }

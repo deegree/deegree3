@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -50,28 +49,26 @@ import org.deegree.workspace.Workspace;
 
 /**
  * This is an xml adapter for the deegree WCS ServiceConfiguration.
- * 
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class ServiceConfigurationXMLAdapter extends XMLAdapter {
 
-    /**
-     * @return the parsed ServiceConfiguration
-     * @throws XMLProcessingException
-     */
-    public static ServiceConfiguration parse( Workspace workspace, ResourceMetadata<OWS> metadata )
-                            throws XMLProcessingException {
-        try {
-            DeegreeWCS wcsConf = (DeegreeWCS) unmarshall( "org.deegree.services.jaxb.wcs",
-                                                          ( (OWSProvider) metadata.getProvider() ).getSchema(),
-                                                          metadata.getLocation().getAsStream(), workspace );
-            return wcsConf.getServiceConfiguration();
-        } catch ( JAXBException e ) {
-            throw new XMLProcessingException( e.getMessage(), e );
-        }
-    }
+	/**
+	 * @return the parsed ServiceConfiguration
+	 * @throws XMLProcessingException
+	 */
+	public static ServiceConfiguration parse(Workspace workspace, ResourceMetadata<OWS> metadata)
+			throws XMLProcessingException {
+		try {
+			DeegreeWCS wcsConf = (DeegreeWCS) unmarshall("org.deegree.services.jaxb.wcs",
+					((OWSProvider) metadata.getProvider()).getSchema(), metadata.getLocation().getAsStream(),
+					workspace);
+			return wcsConf.getServiceConfiguration();
+		}
+		catch (JAXBException e) {
+			throw new XMLProcessingException(e.getMessage(), e);
+		}
+	}
 
 }

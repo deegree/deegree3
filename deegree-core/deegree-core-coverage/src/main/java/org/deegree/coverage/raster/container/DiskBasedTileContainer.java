@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -54,7 +53,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.index.QTree;
 import org.deegree.coverage.ResolutionInfo;
 import org.deegree.coverage.persistence.DefaultCoverageBuilder.QTreeInfo;
@@ -68,185 +66,190 @@ import org.deegree.geometry.Envelope;
 import org.slf4j.Logger;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
-@LoggingNotes(debug = "logs when raster files could not be loaded", trace = "logs stack traces")
 public class DiskBasedTileContainer implements TileContainer {
 
-    private static final Logger LOG = getLogger( DiskBasedTileContainer.class );
+	private static final Logger LOG = getLogger(DiskBasedTileContainer.class);
 
-    private QTree<File> qtree;
+	private QTree<File> qtree;
 
-    private Envelope envelope;
+	private Envelope envelope;
 
-    private RasterDataInfo rasterDataInfo;
+	private RasterDataInfo rasterDataInfo;
 
-    private RasterGeoReference rasterGeoReference;
+	private RasterGeoReference rasterGeoReference;
 
-    private ResolutionInfo resolutionInfo;
+	private ResolutionInfo resolutionInfo;
 
-    private HashMap<File, SoftReference<AbstractRaster>> cache = new HashMap<File, SoftReference<AbstractRaster>>();
+	private HashMap<File, SoftReference<AbstractRaster>> cache = new HashMap<File, SoftReference<AbstractRaster>>();
 
-    private RasterIOOptions options;
+	private RasterIOOptions options;
 
-    private boolean initialized = false;
+	private boolean initialized = false;
 
-    /**
-     * @param info
-     * @param files
-     * @param rasters
-     * @param options
-     */
-    public DiskBasedTileContainer( QTreeInfo info, List<File> files, List<AbstractRaster> rasters,
-                                   RasterIOOptions options ) {
-        qtree = new QTree<File>( createEnvelope( info.envelope ), info.numberOfObjects );
-        envelope = info.envelope;
-        AbstractRaster raster = rasters.iterator().next();
-        rasterDataInfo = raster.getRasterDataInfo();
-        rasterGeoReference = info.rasterGeoReference;
-        resolutionInfo = raster.getResolutionInfo();
-        this.options = options;
-        Iterator<File> iter = files.iterator();
-        for ( AbstractRaster r : rasters ) {
-            File f = iter.next();
-            qtree.insert( createEnvelope( r.getEnvelope() ), f );
-            cache.put( f, new SoftReference<AbstractRaster>( r ) );
-        }
-        initialized = true;
-    }
+	/**
+	 * @param info
+	 * @param files
+	 * @param rasters
+	 * @param options
+	 */
+	public DiskBasedTileContainer(QTreeInfo info, List<File> files, List<AbstractRaster> rasters,
+			RasterIOOptions options) {
+		qtree = new QTree<File>(createEnvelope(info.envelope), info.numberOfObjects);
+		envelope = info.envelope;
+		AbstractRaster raster = rasters.iterator().next();
+		rasterDataInfo = raster.getRasterDataInfo();
+		rasterGeoReference = info.rasterGeoReference;
+		resolutionInfo = raster.getResolutionInfo();
+		this.options = options;
+		Iterator<File> iter = files.iterator();
+		for (AbstractRaster r : rasters) {
+			File f = iter.next();
+			qtree.insert(createEnvelope(r.getEnvelope()), f);
+			cache.put(f, new SoftReference<AbstractRaster>(r));
+		}
+		initialized = true;
+	}
 
-    /**
-     * @param file
-     */
-    public DiskBasedTileContainer( File file ) {
-        ObjectInputStream in = null;
-        LOG.debug( "Reading index file for directory..." );
-        try {
-            in = new ObjectInputStream( new BufferedInputStream( new FileInputStream( file ) ) );
-            qtree = (QTree<File>) in.readObject();
-            envelope = createEnvelope( (float[]) in.readObject(), null );
-            rasterDataInfo = (RasterDataInfo) in.readObject();
+	/**
+	 * @param file
+	 */
+	public DiskBasedTileContainer(File file) {
+		ObjectInputStream in = null;
+		LOG.debug("Reading index file for directory...");
+		try {
+			in = new ObjectInputStream(new BufferedInputStream(new FileInputStream(file)));
+			qtree = (QTree<File>) in.readObject();
+			envelope = createEnvelope((float[]) in.readObject(), null);
+			rasterDataInfo = (RasterDataInfo) in.readObject();
 
-            rasterGeoReference = new RasterGeoReference( (OriginLocation) in.readObject(), in.readDouble(),
-                                                         in.readDouble(), in.readDouble(), in.readDouble(),
-                                                         in.readDouble(), in.readDouble(), (CRS) in.readObject() );
+			rasterGeoReference = new RasterGeoReference((OriginLocation) in.readObject(), in.readDouble(),
+					in.readDouble(), in.readDouble(), in.readDouble(), in.readDouble(), in.readDouble(),
+					(CRS) in.readObject());
 
-            envelope.setCoordinateSystem( rasterGeoReference.getCrs() );
-            resolutionInfo = (ResolutionInfo) in.readObject();
-            options = (RasterIOOptions) in.readObject();
-            initialized = true;
-            LOG.debug( "Done." );
-        } catch ( FileNotFoundException e ) {
-            LOG.debug( "Raster pyramid file '{}' could not be found.", file );
-            LOG.trace( "Stack trace:", e );
-        } catch ( IOException e ) {
-            LOG.debug( "Raster pyramid file '{}' could not be read: '{}'", file, e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-        } catch ( Throwable e ) {
-            LOG.debug( "Raster pyramid file '{}' was in the wrong format.", file );
-            LOG.trace( "Stack trace:", e );
-        } finally {
-            if ( in != null ) {
-                try {
-                    in.close();
-                } catch ( IOException e ) {
-                    LOG.debug( "Raster pyramid file '{}' could not be closed: '{}'.", file, e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace:", e );
-                }
-            }
-        }
-    }
+			envelope.setCoordinateSystem(rasterGeoReference.getCrs());
+			resolutionInfo = (ResolutionInfo) in.readObject();
+			options = (RasterIOOptions) in.readObject();
+			initialized = true;
+			LOG.debug("Done.");
+		}
+		catch (FileNotFoundException e) {
+			LOG.debug("Raster pyramid file '{}' could not be found.", file);
+			LOG.trace("Stack trace:", e);
+		}
+		catch (IOException e) {
+			LOG.debug("Raster pyramid file '{}' could not be read: '{}'", file, e.getLocalizedMessage());
+			LOG.trace("Stack trace:", e);
+		}
+		catch (Throwable e) {
+			LOG.debug("Raster pyramid file '{}' was in the wrong format.", file);
+			LOG.trace("Stack trace:", e);
+		}
+		finally {
+			if (in != null) {
+				try {
+					in.close();
+				}
+				catch (IOException e) {
+					LOG.debug("Raster pyramid file '{}' could not be closed: '{}'.", file, e.getLocalizedMessage());
+					LOG.trace("Stack trace:", e);
+				}
+			}
+		}
+	}
 
-    @Override
-    public Envelope getEnvelope() {
-        return envelope;
-    }
+	@Override
+	public Envelope getEnvelope() {
+		return envelope;
+	}
 
-    @Override
-    public RasterDataInfo getRasterDataInfo() {
-        return rasterDataInfo;
-    }
+	@Override
+	public RasterDataInfo getRasterDataInfo() {
+		return rasterDataInfo;
+	}
 
-    @Override
-    public RasterGeoReference getRasterReference() {
-        return rasterGeoReference;
-    }
+	@Override
+	public RasterGeoReference getRasterReference() {
+		return rasterGeoReference;
+	}
 
-    @Override
-    public ResolutionInfo getResolutionInfo() {
-        return resolutionInfo;
-    }
+	@Override
+	public ResolutionInfo getResolutionInfo() {
+		return resolutionInfo;
+	}
 
-    /**
-     * @return false, if loading from file failed
-     */
-    public boolean isInitialized() {
-        return initialized;
-    }
+	/**
+	 * @return false, if loading from file failed
+	 */
+	public boolean isInitialized() {
+		return initialized;
+	}
 
-    @Override
-    public List<AbstractRaster> getTiles( Envelope env ) {
-        List<File> files = qtree.query( createEnvelope( env ) );
-        List<AbstractRaster> result = new ArrayList<AbstractRaster>( files.size() );
+	@Override
+	public List<AbstractRaster> getTiles(Envelope env) {
+		List<File> files = qtree.query(createEnvelope(env));
+		List<AbstractRaster> result = new ArrayList<AbstractRaster>(files.size());
 
-        for ( File f : files ) {
-            SoftReference<AbstractRaster> ref = cache.get( f );
-            AbstractRaster raster = ref == null ? null : ref.get();
-            if ( raster != null ) {
-                result.add( raster );
-            } else {
-                try {
-                    result.add( raster = loadRasterFromFile( f, options, null ) );
-                    cache.put( f, new SoftReference<AbstractRaster>( raster ) );
-                } catch ( IOException e ) {
-                    LOG.debug( "Raster file '{}' could not be loaded: '{}'.", f, e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace:", e );
-                }
-            }
-        }
+		for (File f : files) {
+			SoftReference<AbstractRaster> ref = cache.get(f);
+			AbstractRaster raster = ref == null ? null : ref.get();
+			if (raster != null) {
+				result.add(raster);
+			}
+			else {
+				try {
+					result.add(raster = loadRasterFromFile(f, options, null));
+					cache.put(f, new SoftReference<AbstractRaster>(raster));
+				}
+				catch (IOException e) {
+					LOG.debug("Raster file '{}' could not be loaded: '{}'.", f, e.getLocalizedMessage());
+					LOG.trace("Stack trace:", e);
+				}
+			}
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    /**
-     * @param file
-     */
-    public void export( File file ) {
-        LOG.debug( "Writing index file for directory..." );
-        ObjectOutputStream out = null;
-        try {
-            out = new ObjectOutputStream( new BufferedOutputStream( new FileOutputStream( file ) ) );
-            out.writeObject( qtree );
-            out.writeObject( createEnvelope( envelope ) );
-            out.writeObject( rasterDataInfo );
-            out.writeObject( rasterGeoReference.getOriginLocation() );
-            out.writeDouble( rasterGeoReference.getResolutionX() );
-            out.writeDouble( rasterGeoReference.getResolutionY() );
-            out.writeDouble( rasterGeoReference.getRotationX() );
-            out.writeDouble( rasterGeoReference.getRotationY() );
-            out.writeDouble( rasterGeoReference.getOriginEasting() );
-            out.writeDouble( rasterGeoReference.getOriginNorthing() );
-            out.writeObject( rasterGeoReference.getCrs() );
-            out.writeObject( resolutionInfo );
-            out.writeObject( options );
-            LOG.debug( "Done." );
-        } catch ( IOException e ) {
-            LOG.debug( "Raster pyramid file '{}' could not be written: '{}'.", file, e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-        } finally {
-            if ( out != null ) {
-                try {
-                    out.close();
-                } catch ( IOException e ) {
-                    LOG.debug( "Raster pyramid file '{}' could not be closed: '{}'.", file, e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace:", e );
-                }
-            }
-        }
-    }
+	/**
+	 * @param file
+	 */
+	public void export(File file) {
+		LOG.debug("Writing index file for directory...");
+		ObjectOutputStream out = null;
+		try {
+			out = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
+			out.writeObject(qtree);
+			out.writeObject(createEnvelope(envelope));
+			out.writeObject(rasterDataInfo);
+			out.writeObject(rasterGeoReference.getOriginLocation());
+			out.writeDouble(rasterGeoReference.getResolutionX());
+			out.writeDouble(rasterGeoReference.getResolutionY());
+			out.writeDouble(rasterGeoReference.getRotationX());
+			out.writeDouble(rasterGeoReference.getRotationY());
+			out.writeDouble(rasterGeoReference.getOriginEasting());
+			out.writeDouble(rasterGeoReference.getOriginNorthing());
+			out.writeObject(rasterGeoReference.getCrs());
+			out.writeObject(resolutionInfo);
+			out.writeObject(options);
+			LOG.debug("Done.");
+		}
+		catch (IOException e) {
+			LOG.debug("Raster pyramid file '{}' could not be written: '{}'.", file, e.getLocalizedMessage());
+			LOG.trace("Stack trace:", e);
+		}
+		finally {
+			if (out != null) {
+				try {
+					out.close();
+				}
+				catch (IOException e) {
+					LOG.debug("Raster pyramid file '{}' could not be closed: '{}'.", file, e.getLocalizedMessage());
+					LOG.trace("Stack trace:", e);
+				}
+			}
+		}
+	}
 
 }

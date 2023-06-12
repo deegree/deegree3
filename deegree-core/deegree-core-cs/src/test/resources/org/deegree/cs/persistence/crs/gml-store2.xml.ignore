@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
 <GMLCRSStore xmlns="http://www.deegree.org/crs/stores/gml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/crs http://schemas.deegree.org/crs/stores/gml/gml.xsd">
+  xsi:schemaLocation="http://www.deegree.org/crs https://schemas.deegree.org/crs/stores/gml/gml.xsd">
   <GMLFile>files/gmlDictionary2.xml</GMLFile>
 </GMLCRSStore>

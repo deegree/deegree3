@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2015 by:
@@ -72,179 +71,176 @@ import org.junit.Test;
  */
 public class GetMapParserTest {
 
-    @SuppressWarnings("unchecked")
-    @Test
-    public void testParse()
-                            throws Exception {
-        GetMapParser getMapXMLAdapter = new GetMapParser();
-        XMLStreamReader xmlStreamReader = createXmlStreamReader( "wms-1.3.0-GetMap.xml" );
-        GetMap getMap = getMapXMLAdapter.parse( xmlStreamReader );
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testParse() throws Exception {
+		GetMapParser getMapXMLAdapter = new GetMapParser();
+		XMLStreamReader xmlStreamReader = createXmlStreamReader("wms-1.3.0-GetMap.xml");
+		GetMap getMap = getMapXMLAdapter.parse(xmlStreamReader);
 
-        LinkedList<LayerRef> layers = getMap.getLayers();
-        assertThat( layers.size(), is( 3 ) );
-        assertThat( layers, hasLayerRef( "municipalities" ) );
-        assertThat( layers, hasLayerRef( "counties" ) );
-        assertThat( layers, hasLayerRef( "zipcodes" ) );
+		LinkedList<LayerRef> layers = getMap.getLayers();
+		assertThat(layers.size(), is(3));
+		assertThat(layers, hasLayerRef("municipalities"));
+		assertThat(layers, hasLayerRef("counties"));
+		assertThat(layers, hasLayerRef("zipcodes"));
 
-        LinkedList<StyleRef> styles = getMap.getStyles();
-        assertThat( styles.size(), is( 3 ) );
-        assertThat( styles, hasStyleRef( "Municipalities" ) );
-        assertThat( styles, hasStyleRef( "CountyBoundary" ) );
-        assertThat( styles, hasStyleRef( "default" ) );
+		LinkedList<StyleRef> styles = getMap.getStyles();
+		assertThat(styles.size(), is(3));
+		assertThat(styles, hasStyleRef("Municipalities"));
+		assertThat(styles, hasStyleRef("CountyBoundary"));
+		assertThat(styles, hasStyleRef("default"));
 
-        assertThat( getMap.getWidth(), is( 1024 ) );
-        assertThat( getMap.getHeight(), is( 512 ) );
-        assertThat( getMap.getFormat(), is( "image/png" ) );
-        assertThat( getMap.getTransparent(), is( true ) );
-        assertThat( getMap.getBgColor(), is( BLACK ) );
+		assertThat(getMap.getWidth(), is(1024));
+		assertThat(getMap.getHeight(), is(512));
+		assertThat(getMap.getFormat(), is("image/png"));
+		assertThat(getMap.getTransparent(), is(true));
+		assertThat(getMap.getBgColor(), is(BLACK));
 
-        assertThat( getMap.getCoordinateSystem(), is( CRSManager.lookup( "EPSG:4326" ) ) );
-        Envelope boundingBox = getMap.getBoundingBox();
-        assertThat( boundingBox.getMin().get0(), is( -115.4 ) );
-        assertThat( boundingBox.getMin().get1(), is( 35.0 ) );
-        assertThat( boundingBox.getMax().get0(), is( -108.0 ) );
-        assertThat( boundingBox.getMax().get1(), is( 44.0 ) );
+		assertThat(getMap.getCoordinateSystem(), is(CRSManager.lookup("EPSG:4326")));
+		Envelope boundingBox = getMap.getBoundingBox();
+		assertThat(boundingBox.getMin().get0(), is(-115.4));
+		assertThat(boundingBox.getMin().get1(), is(35.0));
+		assertThat(boundingBox.getMax().get0(), is(-108.0));
+		assertThat(boundingBox.getMax().get1(), is(44.0));
 
-        Map<String, String> parameterMap = getMap.getParameterMap();
-        assertThat( parameterMap.size(), is( 1 ) );
-        assertThat( parameterMap.get( "EXCEPTIONS" ), is( "INIMAGE" ) );
+		Map<String, String> parameterMap = getMap.getParameterMap();
+		assertThat(parameterMap.size(), is(1));
+		assertThat(parameterMap.get("EXCEPTIONS"), is("INIMAGE"));
 
-        HashMap<String, List<?>> dimensions = getMap.getDimensions();
-        assertThat( dimensions.size(), is( 2 ) );
+		HashMap<String, List<?>> dimensions = getMap.getDimensions();
+		assertThat(dimensions.size(), is(2));
 
-        assertThat( ( (List<DateTime>) dimensions.get( "time" ) ).size(), is( 1 ) );
-        assertThat( ( (List<DateTime>) dimensions.get( "time" ) ).get( 0 ).getDate(), is( expectedDateTime() ) );
+		assertThat(((List<DateTime>) dimensions.get("time")).size(), is(1));
+		assertThat(((List<DateTime>) dimensions.get("time")).get(0).getDate(), is(expectedDateTime()));
 
-        assertThat( ( (List<Double>) dimensions.get( "elevation" ) ).size(), is( 1 ) );
-        assertThat( ( (List<Double>) dimensions.get( "elevation" ) ).get( 0 ), is( 5d ) );
-    }
+		assertThat(((List<Double>) dimensions.get("elevation")).size(), is(1));
+		assertThat(((List<Double>) dimensions.get("elevation")).get(0), is(5d));
+	}
 
-    @Test
-    public void testParse_defaultValues()
-                            throws Exception {
-        GetMapParser getMapXMLAdapter = new GetMapParser();
-        XMLStreamReader xmlStreamReader = createXmlStreamReader( "wms-1.3.0-GetMap_simple.xml" );
-        GetMap getMap = getMapXMLAdapter.parse( xmlStreamReader );
+	@Test
+	public void testParse_defaultValues() throws Exception {
+		GetMapParser getMapXMLAdapter = new GetMapParser();
+		XMLStreamReader xmlStreamReader = createXmlStreamReader("wms-1.3.0-GetMap_simple.xml");
+		GetMap getMap = getMapXMLAdapter.parse(xmlStreamReader);
 
-        LinkedList<LayerRef> layers = getMap.getLayers();
-        assertThat( layers.size(), is( 1 ) );
-        assertThat( layers, hasLayerRef( "municipalities" ) );
+		LinkedList<LayerRef> layers = getMap.getLayers();
+		assertThat(layers.size(), is(1));
+		assertThat(layers, hasLayerRef("municipalities"));
 
-        LinkedList<StyleRef> styles = getMap.getStyles();
-        assertThat( styles.size(), is( 1 ) );
-        assertThat( styles, hasStyleRef( "Municipalities" ) );
+		LinkedList<StyleRef> styles = getMap.getStyles();
+		assertThat(styles.size(), is(1));
+		assertThat(styles, hasStyleRef("Municipalities"));
 
-        assertThat( getMap.getWidth(), is( 10 ) );
-        assertThat( getMap.getHeight(), is( 50 ) );
-        assertThat( getMap.getFormat(), is( "image/jpeg" ) );
-        assertThat( getMap.getTransparent(), is( false ) );
-        assertThat( getMap.getBgColor(), is( WHITE ) );
+		assertThat(getMap.getWidth(), is(10));
+		assertThat(getMap.getHeight(), is(50));
+		assertThat(getMap.getFormat(), is("image/jpeg"));
+		assertThat(getMap.getTransparent(), is(false));
+		assertThat(getMap.getBgColor(), is(WHITE));
 
-        assertThat( getMap.getCoordinateSystem(), is( CRSManager.lookup( "EPSG:4326" ) ) );
-        Envelope boundingBox = getMap.getBoundingBox();
-        assertThat( boundingBox.getMin().get0(), is( -115.4 ) );
-        assertThat( boundingBox.getMin().get1(), is( 35.0 ) );
-        assertThat( boundingBox.getMax().get0(), is( -108.0 ) );
-        assertThat( boundingBox.getMax().get1(), is( 44.0 ) );
+		assertThat(getMap.getCoordinateSystem(), is(CRSManager.lookup("EPSG:4326")));
+		Envelope boundingBox = getMap.getBoundingBox();
+		assertThat(boundingBox.getMin().get0(), is(-115.4));
+		assertThat(boundingBox.getMin().get1(), is(35.0));
+		assertThat(boundingBox.getMax().get0(), is(-108.0));
+		assertThat(boundingBox.getMax().get1(), is(44.0));
 
-        Map<String, String> parameterMap = getMap.getParameterMap();
-        assertThat( parameterMap.size(), is( 1 ) );
-        assertThat( parameterMap.get( "EXCEPTIONS" ), is( "XML" ) );
-    }
+		Map<String, String> parameterMap = getMap.getParameterMap();
+		assertThat(parameterMap.size(), is(1));
+		assertThat(parameterMap.get("EXCEPTIONS"), is("XML"));
+	}
 
-    @SuppressWarnings("unchecked")
-    @Test
-    public void testParse_elevationValues()
-                            throws Exception {
-        GetMapParser getMapXMLAdapter = new GetMapParser();
-        XMLStreamReader xmlStreamReader = createXmlStreamReader( "wms-1.3.0-GetMap_elevationValues.xml" );
-        GetMap getMap = getMapXMLAdapter.parse( xmlStreamReader );
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testParse_elevationValues() throws Exception {
+		GetMapParser getMapXMLAdapter = new GetMapParser();
+		XMLStreamReader xmlStreamReader = createXmlStreamReader("wms-1.3.0-GetMap_elevationValues.xml");
+		GetMap getMap = getMapXMLAdapter.parse(xmlStreamReader);
 
-        HashMap<String, List<?>> dimensions = getMap.getDimensions();
-        assertThat( dimensions.size(), is( 1 ) );
+		HashMap<String, List<?>> dimensions = getMap.getDimensions();
+		assertThat(dimensions.size(), is(1));
 
-        List<Double> elevationValues = (List<Double>) dimensions.get( "elevation" );
-        assertThat( elevationValues.size(), is( 5 ) );
-        assertThat( elevationValues, hasItems( -1.5, -0.5, 0d, 0.5, 1.5 ) );
-    }
+		List<Double> elevationValues = (List<Double>) dimensions.get("elevation");
+		assertThat(elevationValues.size(), is(5));
+		assertThat(elevationValues, hasItems(-1.5, -0.5, 0d, 0.5, 1.5));
+	}
 
-    @SuppressWarnings("unchecked")
-    @Test
-    public void testParse_elevationInterval()
-                            throws Exception {
-        GetMapParser getMapXMLAdapter = new GetMapParser();
-        XMLStreamReader xmlStreamReader = createXmlStreamReader( "wms-1.3.0-GetMap_elevationInterval.xml" );
-        GetMap getMap = getMapXMLAdapter.parse( xmlStreamReader );
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testParse_elevationInterval() throws Exception {
+		GetMapParser getMapXMLAdapter = new GetMapParser();
+		XMLStreamReader xmlStreamReader = createXmlStreamReader("wms-1.3.0-GetMap_elevationInterval.xml");
+		GetMap getMap = getMapXMLAdapter.parse(xmlStreamReader);
 
-        HashMap<String, List<?>> dimensions = getMap.getDimensions();
-        assertThat( dimensions.size(), is( 1 ) );
+		HashMap<String, List<?>> dimensions = getMap.getDimensions();
+		assertThat(dimensions.size(), is(1));
 
-        List<DimensionInterval<Double, Double, Double>> elevationValues = (List<DimensionInterval<Double, Double, Double>>) dimensions.get( "elevation" );
-        assertThat( elevationValues.size(), is( 1 ) );
-        assertThat( elevationValues.get( 0 ).min, is( -5d ) );
-        assertThat( elevationValues.get( 0 ).max, is( 5d ) );
-        assertThat( elevationValues.get( 0 ).res, is( 0d ) );
-    }
+		List<DimensionInterval<Double, Double, Double>> elevationValues = (List<DimensionInterval<Double, Double, Double>>) dimensions
+			.get("elevation");
+		assertThat(elevationValues.size(), is(1));
+		assertThat(elevationValues.get(0).min, is(-5d));
+		assertThat(elevationValues.get(0).max, is(5d));
+		assertThat(elevationValues.get(0).res, is(0d));
+	}
 
-    private XMLStreamReader createXmlStreamReader( String resource )
-                            throws XMLStreamException, FactoryConfigurationError {
-        InputStream getMapResource = GetMapParserTest.class.getResourceAsStream( resource );
-        return XMLInputFactory.newInstance().createXMLStreamReader( getMapResource );
-    }
+	private XMLStreamReader createXmlStreamReader(String resource)
+			throws XMLStreamException, FactoryConfigurationError {
+		InputStream getMapResource = GetMapParserTest.class.getResourceAsStream(resource);
+		return XMLInputFactory.newInstance().createXMLStreamReader(getMapResource);
+	}
 
-    private Date expectedDateTime() {
-        Calendar expectedCalendar = Calendar.getInstance();
-        expectedCalendar.set( Calendar.YEAR, 2015 );
-        expectedCalendar.set( Calendar.MONTH, 7 );
-        expectedCalendar.set( Calendar.DAY_OF_MONTH, 24 );
-        expectedCalendar.set( Calendar.HOUR_OF_DAY, 9 );
-        expectedCalendar.set( Calendar.MINUTE, 30 );
-        expectedCalendar.set( Calendar.SECOND, 0 );
-        expectedCalendar.set( Calendar.MILLISECOND, 0 );
-        expectedCalendar.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
-        return expectedCalendar.getTime();
-    }
+	private Date expectedDateTime() {
+		Calendar expectedCalendar = Calendar.getInstance();
+		expectedCalendar.set(Calendar.YEAR, 2015);
+		expectedCalendar.set(Calendar.MONTH, 7);
+		expectedCalendar.set(Calendar.DAY_OF_MONTH, 24);
+		expectedCalendar.set(Calendar.HOUR_OF_DAY, 9);
+		expectedCalendar.set(Calendar.MINUTE, 30);
+		expectedCalendar.set(Calendar.SECOND, 0);
+		expectedCalendar.set(Calendar.MILLISECOND, 0);
+		expectedCalendar.setTimeZone(TimeZone.getTimeZone("UTC"));
+		return expectedCalendar.getTime();
+	}
 
-    @SuppressWarnings("unchecked")
-    private Matcher<LinkedList<LayerRef>> hasLayerRef( final String layer ) {
-        return new BaseMatcher<LinkedList<LayerRef>>() {
+	@SuppressWarnings("unchecked")
+	private Matcher<LinkedList<LayerRef>> hasLayerRef(final String layer) {
+		return new BaseMatcher<LinkedList<LayerRef>>() {
 
-            @Override
-            public boolean matches( Object item ) {
-                LinkedList<LayerRef> layers = (LinkedList<LayerRef>) item;
-                for ( LayerRef layerRef : layers ) {
-                    if ( layer.equals( layerRef.getName() ) )
-                        return true;
-                }
-                return false;
-            }
+			@Override
+			public boolean matches(Object item) {
+				LinkedList<LayerRef> layers = (LinkedList<LayerRef>) item;
+				for (LayerRef layerRef : layers) {
+					if (layer.equals(layerRef.getName()))
+						return true;
+				}
+				return false;
+			}
 
-            @Override
-            public void describeTo( Description description ) {
-                description.appendText( "List should contain a layer with name " + layer );
-            }
-        };
-    }
+			@Override
+			public void describeTo(Description description) {
+				description.appendText("List should contain a layer with name " + layer);
+			}
+		};
+	}
 
-    @SuppressWarnings("unchecked")
-    private Matcher<LinkedList<StyleRef>> hasStyleRef( final String style ) {
-        return new BaseMatcher<LinkedList<StyleRef>>() {
+	@SuppressWarnings("unchecked")
+	private Matcher<LinkedList<StyleRef>> hasStyleRef(final String style) {
+		return new BaseMatcher<LinkedList<StyleRef>>() {
 
-            @Override
-            public boolean matches( Object item ) {
-                LinkedList<StyleRef> styles = (LinkedList<StyleRef>) item;
-                for ( StyleRef styleRef : styles ) {
-                    if ( style.equals( styleRef.getName() ) )
-                        return true;
-                }
-                return false;
-            }
+			@Override
+			public boolean matches(Object item) {
+				LinkedList<StyleRef> styles = (LinkedList<StyleRef>) item;
+				for (StyleRef styleRef : styles) {
+					if (style.equals(styleRef.getName()))
+						return true;
+				}
+				return false;
+			}
 
-            @Override
-            public void describeTo( Description description ) {
-                description.appendText( "List should contain a style with name " + style );
-            }
-        };
-    }
+			@Override
+			public void describeTo(Description description) {
+				description.appendText("List should contain a style with name " + style);
+			}
+		};
+	}
 
 }

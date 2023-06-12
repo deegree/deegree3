@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -63,67 +62,64 @@ import org.deegree.services.ows.capabilities.OWSCapabilitiesXMLAdapter;
 
 /**
  * Responsible for writing out capabilities metadata.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 
 class WmtsCapabilitiesMetadataWriter extends OWSCapabilitiesXMLAdapter {
 
-    private XMLStreamWriter writer;
+	private XMLStreamWriter writer;
 
-    private ServiceIdentification identification;
+	private ServiceIdentification identification;
 
-    WmtsCapabilitiesMetadataWriter( XMLStreamWriter writer, ServiceIdentification identification ) {
-        this.writer = writer;
-        this.identification = identification;
-    }
+	WmtsCapabilitiesMetadataWriter(XMLStreamWriter writer, ServiceIdentification identification) {
+		this.writer = writer;
+		this.identification = identification;
+	}
 
-    void exportServiceIdentification()
-                            throws XMLStreamException {
-        writer.writeStartElement( OWS110_NS, "ServiceIdentification" );
-        if ( identification == null ) {
-            writeElement( writer, OWS110_NS, "Title", "deegree 3 WMTS" );
-            writeElement( writer, OWS110_NS, "Abstract", "deegree 3 WMTS implementation" );
-        } else {
-            LanguageString title = identification.getTitle( null );
-            writeElement( writer, OWS110_NS, "Title", title == null ? "deegree 3 WMTS" : title.getString() );
-            LanguageString _abstract = identification.getAbstract( null );
-            writeElement( writer, OWS110_NS, "Abstract", _abstract == null ? "deegree 3 WMTS implementation"
-                                                                          : _abstract.getString() );
-        }
-        writeElement( writer, OWS110_NS, "ServiceType", "WMTS" );
-        writeElement( writer, OWS110_NS, "ServiceTypeVersion", "1.0.0" );
-        writer.writeEndElement();
-    }
+	void exportServiceIdentification() throws XMLStreamException {
+		writer.writeStartElement(OWS110_NS, "ServiceIdentification");
+		if (identification == null) {
+			writeElement(writer, OWS110_NS, "Title", "deegree 3 WMTS");
+			writeElement(writer, OWS110_NS, "Abstract", "deegree 3 WMTS implementation");
+		}
+		else {
+			LanguageString title = identification.getTitle(null);
+			writeElement(writer, OWS110_NS, "Title", title == null ? "deegree 3 WMTS" : title.getString());
+			LanguageString _abstract = identification.getAbstract(null);
+			writeElement(writer, OWS110_NS, "Abstract",
+					_abstract == null ? "deegree 3 WMTS implementation" : _abstract.getString());
+		}
+		writeElement(writer, OWS110_NS, "ServiceType", "WMTS");
+		writeElement(writer, OWS110_NS, "ServiceTypeVersion", "1.0.0");
+		writer.writeEndElement();
+	}
 
-    void exportOperationsMetadata()
-                            throws XMLStreamException {
+	void exportOperationsMetadata() throws XMLStreamException {
 
-        List<Operation> operations = new LinkedList<Operation>();
+		List<Operation> operations = new LinkedList<Operation>();
 
-        List<DCP> dcps = null;
-        try {
-            DCP dcp = new DCP( new URL( OGCFrontController.getHttpGetURL() ), null );
-            dcps = Collections.singletonList( dcp );
-        } catch ( MalformedURLException e ) {
-            // should never happen
-        }
+		List<DCP> dcps = null;
+		try {
+			DCP dcp = new DCP(new URL(OGCFrontController.getHttpGetURL()), null);
+			dcps = Collections.singletonList(dcp);
+		}
+		catch (MalformedURLException e) {
+			// should never happen
+		}
 
-        List<Domain> params = new ArrayList<Domain>();
-        List<Domain> constraints = new ArrayList<Domain>();
-        constraints.add( new Domain( "GetEncoding", Collections.singletonList( "KVP" ) ) );
-        List<OMElement> mdEls = new ArrayList<OMElement>();
+		List<Domain> params = new ArrayList<Domain>();
+		List<Domain> constraints = new ArrayList<Domain>();
+		constraints.add(new Domain("GetEncoding", Collections.singletonList("KVP")));
+		List<OMElement> mdEls = new ArrayList<OMElement>();
 
-        operations.add( new Operation( "GetCapabilities", dcps, params, constraints, mdEls ) );
-        operations.add( new Operation( "GetTile", dcps, params, constraints, mdEls ) );
-        operations.add( new Operation( "GetFeatureInfo", dcps, params, constraints, mdEls ) );
+		operations.add(new Operation("GetCapabilities", dcps, params, constraints, mdEls));
+		operations.add(new Operation("GetTile", dcps, params, constraints, mdEls));
+		operations.add(new Operation("GetFeatureInfo", dcps, params, constraints, mdEls));
 
-        OperationsMetadata operationsMd = new OperationsMetadata( operations, params, constraints, null );
+		OperationsMetadata operationsMd = new OperationsMetadata(operations, params, constraints, null);
 
-        exportOperationsMetadata110( writer, operationsMd );
-    }
+		exportOperationsMetadata110(writer, operationsMd);
+	}
 
 }

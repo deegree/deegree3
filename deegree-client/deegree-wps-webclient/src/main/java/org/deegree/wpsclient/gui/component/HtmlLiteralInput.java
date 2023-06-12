@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -48,111 +47,114 @@ import org.deegree.commons.utils.StringPair;
 
 /**
  * <code>HtmlLiteralInput</code> capsulates a LiteralInput GUI field
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 @FacesComponent(value = "HtmlLiteralInput")
 public class HtmlLiteralInput extends UISelectOne {
-    /**
-     * <p>
-     * The standard component type for this component.
-     * </p>
-     */
-    public static final String COMPONENT_TYPE = "HtmlLiteralInput";
 
-    private static enum AdditionalPropertyKeys {
-        styleClass, defaultUom, dataType, allowedValues
-    }
+	/**
+	 * <p>
+	 * The standard component type for this component.
+	 * </p>
+	 */
+	public static final String COMPONENT_TYPE = "HtmlLiteralInput";
 
-    public HtmlLiteralInput() {
-        setRendererType( "org.deegree.LiteralInput" );
-    }
+	private static enum AdditionalPropertyKeys {
 
-    public String getStyleClass() {
-        return (String) getStateHelper().eval( AdditionalPropertyKeys.styleClass, null );
-    }
+		styleClass, defaultUom, dataType, allowedValues
 
-    public void setStyleClass( String styleClass ) {
-        getStateHelper().put( AdditionalPropertyKeys.styleClass, styleClass );
-    }
+	}
 
-    public String getDefaultUom() {
-        return (String) getStateHelper().eval( AdditionalPropertyKeys.defaultUom, null );
-    }
+	public HtmlLiteralInput() {
+		setRendererType("org.deegree.LiteralInput");
+	}
 
-    public void setDefaultUom( String defaultUom ) {
-        getStateHelper().put( AdditionalPropertyKeys.defaultUom, defaultUom );
-    }
+	public String getStyleClass() {
+		return (String) getStateHelper().eval(AdditionalPropertyKeys.styleClass, null);
+	}
 
-    public String getDataType() {
-        return (String) getStateHelper().eval( AdditionalPropertyKeys.dataType, null );
-    }
+	public void setStyleClass(String styleClass) {
+		getStateHelper().put(AdditionalPropertyKeys.styleClass, styleClass);
+	}
 
-    public void setDataType( String dataType ) {
-        getStateHelper().put( AdditionalPropertyKeys.dataType, dataType );
-    }
+	public String getDefaultUom() {
+		return (String) getStateHelper().eval(AdditionalPropertyKeys.defaultUom, null);
+	}
 
-    @SuppressWarnings("unchecked")
-    public List<String> getAllowedValues() {
-        Object allowedValues = getStateHelper().eval( AdditionalPropertyKeys.styleClass, null );
-        if ( allowedValues != null && allowedValues instanceof List<?> )
-            return (List<String>) allowedValues;
-        return Collections.EMPTY_LIST;
-    }
+	public void setDefaultUom(String defaultUom) {
+		getStateHelper().put(AdditionalPropertyKeys.defaultUom, defaultUom);
+	}
 
-    public void setAllowedValues( List<String> allowedValues ) {
-        getStateHelper().put( AdditionalPropertyKeys.allowedValues, allowedValues );
-    }
+	public String getDataType() {
+		return (String) getStateHelper().eval(AdditionalPropertyKeys.dataType, null);
+	}
 
-    @Override
-    protected void validateValue( FacesContext context, Object newValue ) {
-        if ( !isValid() ) {
-            return;
-        }
-        if ( newValue instanceof StringPair ) {
-            String value = ( (StringPair) newValue ).getFirst();
-            if ( isRequired() && ( value == null || value.trim().length() == 0 ) ) {
-                String requiredMessageStr = getRequiredMessage();
-                FacesMessage message;
-                if ( null != requiredMessageStr ) {
-                    message = new FacesMessage( FacesMessage.SEVERITY_ERROR, requiredMessageStr, requiredMessageStr );
-                } else {
-                    message = MessageUtils.getFacesMessage( FacesMessage.SEVERITY_ERROR, "ERROR.REQUIRED_LITERAL_INPUT" );
-                }
-                context.addMessage( getClientId( context ), message );
-                setValid( false );
-            } else if ( value != null && value.length() > 0 ) {
-                // TODO
-                List<String> allowedValues = getAllowedValues();
-                String dataType = getDataType();
-                if ( "integer".equalsIgnoreCase( dataType ) ) {
-                    try {
-                        Integer.parseInt( value );
-                    } catch ( NumberFormatException e ) {
-                        FacesMessage message = MessageUtils.getFacesMessage( FacesMessage.SEVERITY_ERROR,
-                                                                             "ERROR.INVALID_LITERAL_INPUT_INTEGER",
-                                                                             value );
-                        context.addMessage( getClientId( context ), message );
-                        setValid( false );
-                        return;
-                    }
-                } else if ( "double".equalsIgnoreCase( dataType ) ) {
-                    try {
-                        Double.parseDouble( value );
-                    } catch ( NumberFormatException e ) {
-                        FacesMessage message = MessageUtils.getFacesMessage( FacesMessage.SEVERITY_ERROR,
-                                                                             "ERROR.INVALID_LITERAL_INPUT_DOUBLE",
-                                                                             value );
-                        context.addMessage( getClientId( context ), message );
-                        setValid( false );
-                        return;
-                    }
-                }
-            }
-        }
-    }
+	public void setDataType(String dataType) {
+		getStateHelper().put(AdditionalPropertyKeys.dataType, dataType);
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<String> getAllowedValues() {
+		Object allowedValues = getStateHelper().eval(AdditionalPropertyKeys.styleClass, null);
+		if (allowedValues != null && allowedValues instanceof List<?>)
+			return (List<String>) allowedValues;
+		return Collections.EMPTY_LIST;
+	}
+
+	public void setAllowedValues(List<String> allowedValues) {
+		getStateHelper().put(AdditionalPropertyKeys.allowedValues, allowedValues);
+	}
+
+	@Override
+	protected void validateValue(FacesContext context, Object newValue) {
+		if (!isValid()) {
+			return;
+		}
+		if (newValue instanceof StringPair) {
+			String value = ((StringPair) newValue).getFirst();
+			if (isRequired() && (value == null || value.trim().length() == 0)) {
+				String requiredMessageStr = getRequiredMessage();
+				FacesMessage message;
+				if (null != requiredMessageStr) {
+					message = new FacesMessage(FacesMessage.SEVERITY_ERROR, requiredMessageStr, requiredMessageStr);
+				}
+				else {
+					message = MessageUtils.getFacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR.REQUIRED_LITERAL_INPUT");
+				}
+				context.addMessage(getClientId(context), message);
+				setValid(false);
+			}
+			else if (value != null && value.length() > 0) {
+				// TODO
+				List<String> allowedValues = getAllowedValues();
+				String dataType = getDataType();
+				if ("integer".equalsIgnoreCase(dataType)) {
+					try {
+						Integer.parseInt(value);
+					}
+					catch (NumberFormatException e) {
+						FacesMessage message = MessageUtils.getFacesMessage(FacesMessage.SEVERITY_ERROR,
+								"ERROR.INVALID_LITERAL_INPUT_INTEGER", value);
+						context.addMessage(getClientId(context), message);
+						setValid(false);
+						return;
+					}
+				}
+				else if ("double".equalsIgnoreCase(dataType)) {
+					try {
+						Double.parseDouble(value);
+					}
+					catch (NumberFormatException e) {
+						FacesMessage message = MessageUtils.getFacesMessage(FacesMessage.SEVERITY_ERROR,
+								"ERROR.INVALID_LITERAL_INPUT_DOUBLE", value);
+						context.addMessage(getClientId(context), message);
+						setValid(false);
+						return;
+					}
+				}
+			}
+		}
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2009 by:
@@ -42,37 +41,31 @@ import org.deegree.coverage.AbstractCoverage;
 import org.deegree.coverage.rangeset.RangeSet;
 
 /**
- * The <code>CoverageFilter</code> applies a rangeset (a coverage range definition) to a coverage.
- * 
+ * The <code>CoverageFilter</code> applies a rangeset (a coverage range definition) to a
+ * coverage.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
- * 
+ *
  */
 public abstract class CoverageFilter {
 
-    /** the coverage to operate upon */
-    protected AbstractCoverage coverage;
+	/** the coverage to operate upon */
+	protected AbstractCoverage coverage;
 
-    /**
-     * 
-     * @param coverage
-     *            used for the operations.
-     */
-    public CoverageFilter( AbstractCoverage coverage ) {
-        this.coverage = coverage;
-    }
+	/**
+	 * @param coverage used for the operations.
+	 */
+	public CoverageFilter(AbstractCoverage coverage) {
+		this.coverage = coverage;
+	}
 
-    /**
-     * Applies the given {@link RangeSet} to the coverage. If the coverage has no {@link RangeSet} this method will
-     * return the coverage.
-     * 
-     * @param rasterRangeSet
-     *            describing the values of the given coverage
-     * @param targetRangeset
-     *            describing the ranges of the target coverage
-     * @return a raster using the given RangeSet for selection
-     */
-    public abstract AbstractCoverage apply( RangeSet rasterRangeSet, RangeSet targetRangeset );
+	/**
+	 * Applies the given {@link RangeSet} to the coverage. If the coverage has no
+	 * {@link RangeSet} this method will return the coverage.
+	 * @param rasterRangeSet describing the values of the given coverage
+	 * @param targetRangeset describing the ranges of the target coverage
+	 * @return a raster using the given RangeSet for selection
+	 */
+	public abstract AbstractCoverage apply(RangeSet rasterRangeSet, RangeSet targetRangeset);
 
 }

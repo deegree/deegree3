@@ -1,0 +1,54 @@
+<gml:FeatureCollection xmlns:gml="http://www.opengis.net/gml/3.2">
+  <gml:featureMember>
+    <Philosopher xmlns="http://www.deegree.org/app" gml:id="PHILOSOPHER_1">
+      <id>1</id>
+      <name>Karl Marx</name>
+      <isAuthorOf><!--Inlined feature 'null'-->
+        <Book>
+          <title>Einleitung zur Kritik der Hegelschen Rechtsphilosophie</title>
+        </Book>
+      </isAuthorOf>
+      <isAuthorOf><!--Inlined feature 'null'-->
+        <Book>
+          <title>Zur Kritik der politischen Ökonomie</title>
+        </Book>
+      </isAuthorOf>
+    </Philosopher>
+  </gml:featureMember>
+  <gml:featureMember>
+    <Philosopher xmlns="http://www.deegree.org/app" gml:id="PHILOSOPHER_2">
+      <id>2</id>
+      <name>Friedrich Engels</name>
+    </Philosopher>
+  </gml:featureMember>
+  <gml:featureMember>
+    <Philosopher xmlns="http://www.deegree.org/app" gml:id="PHILOSOPHER_3">
+      <id>3</id>
+      <name>Jean-Jacques Rousseau</name>
+    </Philosopher>
+  </gml:featureMember>
+  <gml:featureMember>
+    <Philosopher xmlns="http://www.deegree.org/app" gml:id="PHILOSOPHER_4">
+      <id>4</id>
+      <name>Voltaire</name>
+    </Philosopher>
+  </gml:featureMember>
+  <gml:featureMember>
+    <Philosopher xmlns="http://www.deegree.org/app" gml:id="PHILOSOPHER_5">
+      <id>5</id>
+      <name>Simone de Beauvoir</name>
+    </Philosopher>
+  </gml:featureMember>
+  <gml:featureMember>
+    <Philosopher xmlns="http://www.deegree.org/app" gml:id="PHILOSOPHER_6">
+      <id>6</id>
+      <name>Jean-Paul Sartre</name>
+    </Philosopher>
+  </gml:featureMember>
+  <gml:featureMember>
+    <Philosopher xmlns="http://www.deegree.org/app" gml:id="PHILOSOPHER_7">
+      <id>7</id>
+      <name>Albert Camus</name>
+    </Philosopher>
+  </gml:featureMember>
+</gml:FeatureCollection>

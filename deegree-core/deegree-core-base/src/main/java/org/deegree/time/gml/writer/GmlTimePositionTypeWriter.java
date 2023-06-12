@@ -41,39 +41,38 @@ import org.deegree.time.position.TimePosition;
 
 public class GmlTimePositionTypeWriter {
 
-    private static final String FRAME = "frame";
+	private static final String FRAME = "frame";
 
-    private static final String CALENDAR_ERA_NAME = "calendarEraName";
+	private static final String CALENDAR_ERA_NAME = "calendarEraName";
 
-    private static final String INDETERMINATE_POSITION = "indeterminatePosition";
+	private static final String INDETERMINATE_POSITION = "indeterminatePosition";
 
-    public void write( final TimePosition timePosition, final XMLStreamWriter writer )
-                            throws XMLStreamException {
-        // <attribute name="frame" type="anyURI" default="#ISO-8601"/>
-        writeAttributeIfNotNull( FRAME, timePosition.getFrame(), writer );
-        // <attribute name="calendarEraName" type="string"/>
-        writeAttributeIfNotNull( CALENDAR_ERA_NAME, timePosition.getCalendarEraName(), writer );
-        // <attribute name="indeterminatePosition" type="gml:TimeIndeterminateValueType"/>
-        String indeterminatePosition = null;
-        if ( timePosition.getIndeterminatePosition() != null ) {
-            indeterminatePosition = timePosition.getIndeterminatePosition().toString().toLowerCase();
-        }
-        writeAttributeIfNotNull( INDETERMINATE_POSITION, indeterminatePosition, writer );
-        // gml:TimePositionUnion
-        writeCharactersIfNotEmpty( timePosition.getValue(), writer );
-    }
+	public void write(final TimePosition timePosition, final XMLStreamWriter writer) throws XMLStreamException {
+		// <attribute name="frame" type="anyURI" default="#ISO-8601"/>
+		writeAttributeIfNotNull(FRAME, timePosition.getFrame(), writer);
+		// <attribute name="calendarEraName" type="string"/>
+		writeAttributeIfNotNull(CALENDAR_ERA_NAME, timePosition.getCalendarEraName(), writer);
+		// <attribute name="indeterminatePosition" type="gml:TimeIndeterminateValueType"/>
+		String indeterminatePosition = null;
+		if (timePosition.getIndeterminatePosition() != null) {
+			indeterminatePosition = timePosition.getIndeterminatePosition().toString().toLowerCase();
+		}
+		writeAttributeIfNotNull(INDETERMINATE_POSITION, indeterminatePosition, writer);
+		// gml:TimePositionUnion
+		writeCharactersIfNotEmpty(timePosition.getValue(), writer);
+	}
 
-    private void writeAttributeIfNotNull( final String name, final String value, final XMLStreamWriter writer )
-                            throws XMLStreamException {
-        if ( value != null ) {
-            writer.writeAttribute( name, value );
-        }
-    }
+	private void writeAttributeIfNotNull(final String name, final String value, final XMLStreamWriter writer)
+			throws XMLStreamException {
+		if (value != null) {
+			writer.writeAttribute(name, value);
+		}
+	}
 
-    private void writeCharactersIfNotEmpty( final String value, final XMLStreamWriter writer )
-                            throws XMLStreamException {
-        if ( value != null && !value.isEmpty() ) {
-            writer.writeCharacters( value );
-        }
-    }
+	private void writeCharactersIfNotEmpty(final String value, final XMLStreamWriter writer) throws XMLStreamException {
+		if (value != null && !value.isEmpty()) {
+			writer.writeCharacters(value);
+		}
+	}
+
 }

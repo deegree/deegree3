@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -52,91 +51,84 @@ import org.deegree.protocol.wfs.query.Query;
  * <li>WFS 2.0.0</li>
  * </ul>
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class LockFeature extends AbstractWFSRequest {
 
-    private final List<Query> queries;
+	private final List<Query> queries;
 
-    private final BigInteger expiry;
+	private final BigInteger expiry;
 
-    private final Boolean lockAll;
+	private final Boolean lockAll;
 
-    private final String existingLockId;
+	private final String existingLockId;
 
-    /**
-     * Creates a new {@link LockFeature} request.
-     * 
-     * @param version
-     *            protocol version, may not be null
-     * @param handle
-     *            client-generated identifier, may be null
-     * @param queries
-     *            queries that select the features to be locked, must not be null and contain at least one entry
-     * @param expiry
-     *            expiry time (in minutes) before the features are unlocked automatically, may be null (unspecified)
-     * @param lockAll
-     *            true means that the request should fail if not all requested locks can be acquired, may be null
-     *            (unspecified)
-     * @param existingLockId
-     *            identifier of an existing lock for the purpose of resetting the lock expiry, can be <code>null</code>
-     */
-    public LockFeature( Version version, String handle, List<Query> queries, BigInteger expiry, Boolean lockAll,
-                        String existingLockId ) {
-        super( version, handle );
-        this.queries = queries;
-        this.expiry = expiry;
-        this.lockAll = lockAll;
-        this.existingLockId = existingLockId;
-    }
+	/**
+	 * Creates a new {@link LockFeature} request.
+	 * @param version protocol version, may not be null
+	 * @param handle client-generated identifier, may be null
+	 * @param queries queries that select the features to be locked, must not be null and
+	 * contain at least one entry
+	 * @param expiry expiry time (in minutes) before the features are unlocked
+	 * automatically, may be null (unspecified)
+	 * @param lockAll true means that the request should fail if not all requested locks
+	 * can be acquired, may be null (unspecified)
+	 * @param existingLockId identifier of an existing lock for the purpose of resetting
+	 * the lock expiry, can be <code>null</code>
+	 */
+	public LockFeature(Version version, String handle, List<Query> queries, BigInteger expiry, Boolean lockAll,
+			String existingLockId) {
+		super(version, handle);
+		this.queries = queries;
+		this.expiry = expiry;
+		this.lockAll = lockAll;
+		this.existingLockId = existingLockId;
+	}
 
-    /**
-     * Returns the queries that select the features to be locked.
-     * 
-     * @return the queries that select the features to be locked, never null and always contains at least one entry
-     */
-    public List<Query> getQueries() {
-        return queries;
-    }
+	/**
+	 * Returns the queries that select the features to be locked.
+	 * @return the queries that select the features to be locked, never null and always
+	 * contains at least one entry
+	 */
+	public List<Query> getQueries() {
+		return queries;
+	}
 
-    /**
-     * Returns the expiry time for the acquired locks.
-     * 
-     * @return the expiry time for the acquired locks, can be null (unspecified)
-     */
-    public BigInteger getExpiryInSeconds() {
-        return expiry;
-    }
+	/**
+	 * Returns the expiry time for the acquired locks.
+	 * @return the expiry time for the acquired locks, can be null (unspecified)
+	 */
+	public BigInteger getExpiryInSeconds() {
+		return expiry;
+	}
 
-    /**
-     * Returns whether the request should fail if not all specified features can be locked.
-     * <p>
-     * This corresponds to the lockAction parameter (lockAction = SOME/ALL).
-     * </p>
-     * 
-     * @return true, if the request should fail, can be null (unspecified)
-     */
-    public Boolean getLockAll() {
-        return lockAll;
-    }
+	/**
+	 * Returns whether the request should fail if not all specified features can be
+	 * locked.
+	 * <p>
+	 * This corresponds to the lockAction parameter (lockAction = SOME/ALL).
+	 * </p>
+	 * @return true, if the request should fail, can be null (unspecified)
+	 */
+	public Boolean getLockAll() {
+		return lockAll;
+	}
 
-    /**
-     * Returns the identifier of an existing lock that this request refers to.
-     * 
-     * @return identifier of an existing lock, can be <code>null</code> (not referring to an existing lock)
-     */
-    public String getExistingLockId() {
-        return existingLockId;
-    }
+	/**
+	 * Returns the identifier of an existing lock that this request refers to.
+	 * @return identifier of an existing lock, can be <code>null</code> (not referring to
+	 * an existing lock)
+	 */
+	public String getExistingLockId() {
+		return existingLockId;
+	}
 
-    @Override
-    public String toString() {
-        String s = "{version=" + getVersion() + ",handle=" + getHandle();
-        s += "}";
-        return s;
-    }
+	@Override
+	public String toString() {
+		String s = "{version=" + getVersion() + ",handle=" + getHandle();
+		s += "}";
+		return s;
+	}
+
 }

@@ -12,21 +12,18 @@ import org.deegree.services.csw.profile.ServiceProfile;
 
 public interface GetRecordByIdHandler {
 
-    /**
-     * Preprocessing for the export of a {@link GetRecordById} request
-     * 
-     * @param getRecBI
-     *            the parsed getRecordById request
-     * @param response
-     *            for the servlet request to the client
-     * @param isSoap
-     * @throws IOException
-     * @throws XMLStreamException
-     * @throws InvalidParameterValueException
-     * @throws OWSException
-     */
-    public abstract void doGetRecordById( GetRecordById getRecBI, HttpResponseBuffer response, MetadataStore<?> store,
-                                          ServiceProfile profile )
-                            throws XMLStreamException, IOException, InvalidParameterValueException, OWSException;
+	/**
+	 * Preprocessing for the export of a {@link GetRecordById} request
+	 * @param getRecBI the parsed getRecordById request
+	 * @param response for the servlet request to the client
+	 * @param isSoap
+	 * @throws IOException
+	 * @throws XMLStreamException
+	 * @throws InvalidParameterValueException
+	 * @throws OWSException
+	 */
+	public abstract void doGetRecordById(GetRecordById getRecBI, HttpResponseBuffer response, MetadataStore<?> store,
+			ServiceProfile profile)
+			throws XMLStreamException, IOException, InvalidParameterValueException, OWSException;
 
 }

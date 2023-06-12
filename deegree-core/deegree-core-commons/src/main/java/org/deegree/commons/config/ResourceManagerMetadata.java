@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -38,27 +37,23 @@ package org.deegree.commons.config;
 import java.util.List;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface ResourceManagerMetadata<T extends Resource> {
 
-    /**
-     * @return the directory path for configuration files within the workspace
-     */
-    String getPath();
+	/**
+	 * @return the directory path for configuration files within the workspace
+	 */
+	String getPath();
 
-    /**
-     * @return display name
-     */
-    String getName();
+	/**
+	 * @return display name
+	 */
+	String getName();
 
-    /**
-     * @return a list of resource providers that the manager manages
-     */
-    List<? extends ResourceProvider> getResourceProviders();
+	/**
+	 * @return a list of resource providers that the manager manages
+	 */
+	List<? extends ResourceProvider> getResourceProviders();
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -65,264 +64,210 @@ import org.deegree.geometry.standard.primitive.DefaultPolygon;
 
 /**
  * Supplies utility methods for building simple {@link Geometry} objects.
- * 
+ *
  * @see GeometryFactory
  * @see GeometryInspector
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version. $Revision$, $Date$
+ *
  */
 public class SimpleGeometryFactory {
 
-    protected List<GeometryInspector> inspectors = new ArrayList<GeometryInspector>();
+	protected List<GeometryInspector> inspectors = new ArrayList<GeometryInspector>();
 
-    protected PrecisionModel pm;
+	protected PrecisionModel pm;
 
-    public SimpleGeometryFactory() {
-        this.pm = PrecisionModel.DEFAULT_PRECISION_MODEL;
-    }
+	public SimpleGeometryFactory() {
+		this.pm = PrecisionModel.DEFAULT_PRECISION_MODEL;
+	}
 
-    public SimpleGeometryFactory( PrecisionModel pm ) {
-        this.pm = pm;
-    }
+	public SimpleGeometryFactory(PrecisionModel pm) {
+		this.pm = pm;
+	}
 
-    /**
-     * Adds the given {@link GeometryInspector} which will be invoked for every {@link Geometry} / {@link CurveSegment}
-     * or {@link SurfacePatch} instance created by this factory.
-     * 
-     * @param inspector
-     *            inspector to be added, must not be <code>null</code>
-     */
-    public void addInspector( GeometryInspector inspector ) {
-        inspectors.add( inspector );
-    }
+	/**
+	 * Adds the given {@link GeometryInspector} which will be invoked for every
+	 * {@link Geometry} / {@link CurveSegment} or {@link SurfacePatch} instance created by
+	 * this factory.
+	 * @param inspector inspector to be added, must not be <code>null</code>
+	 */
+	public void addInspector(GeometryInspector inspector) {
+		inspectors.add(inspector);
+	}
 
-    protected Geometry inspect( Geometry geom ) {
-        Geometry inspected = geom;
-        for ( GeometryInspector inspector : inspectors ) {
-            inspected = inspector.inspect( inspected );
-        }
-        return inspected;
-    }
+	protected Geometry inspect(Geometry geom) {
+		Geometry inspected = geom;
+		for (GeometryInspector inspector : inspectors) {
+			inspected = inspector.inspect(inspected);
+		}
+		return inspected;
+	}
 
-    protected Points inspect( Points points ) {
-        Points inspected = points;
-        for ( GeometryInspector inspector : inspectors ) {
-            inspected = inspector.inspect( inspected );
-        }
-        return inspected;
-    }
+	protected Points inspect(Points points) {
+		Points inspected = points;
+		for (GeometryInspector inspector : inspectors) {
+			inspected = inspector.inspect(inspected);
+		}
+		return inspected;
+	}
 
-    /**
-     * Creates a {@link Point} in 2D space.
-     * 
-     * @param id
-     *            identifier, may be null
-     * @param x
-     *            value for first coordinate
-     * @param y
-     *            value for second coordinate
-     * @param crs
-     *            coordinate reference system, may be null
-     * @return created {@link Point}
-     */
-    public Point createPoint( String id, double x, double y, ICRS crs ) {
-        return (Point) inspect( new DefaultPoint( id, crs, pm, new double[] { x, y } ) );
-    }
+	/**
+	 * Creates a {@link Point} in 2D space.
+	 * @param id identifier, may be null
+	 * @param x value for first coordinate
+	 * @param y value for second coordinate
+	 * @param crs coordinate reference system, may be null
+	 * @return created {@link Point}
+	 */
+	public Point createPoint(String id, double x, double y, ICRS crs) {
+		return (Point) inspect(new DefaultPoint(id, crs, pm, new double[] { x, y }));
+	}
 
-    /**
-     * Creates a {@link Point} in 3D space.
-     * 
-     * @param id
-     *            identifier, may be null
-     * @param x
-     *            value for first coordinate
-     * @param y
-     *            value for second coordinate
-     * @param z
-     *            value for third coordinate
-     * @param crs
-     *            coordinate reference system, may be null
-     * @return created {@link Point}
-     */
-    public Point createPoint( String id, double x, double y, double z, ICRS crs ) {
-        return (Point) inspect( new DefaultPoint( id, crs, pm, new double[] { x, y, z } ) );
-    }
+	/**
+	 * Creates a {@link Point} in 3D space.
+	 * @param id identifier, may be null
+	 * @param x value for first coordinate
+	 * @param y value for second coordinate
+	 * @param z value for third coordinate
+	 * @param crs coordinate reference system, may be null
+	 * @return created {@link Point}
+	 */
+	public Point createPoint(String id, double x, double y, double z, ICRS crs) {
+		return (Point) inspect(new DefaultPoint(id, crs, pm, new double[] { x, y, z }));
+	}
 
-    /**
-     * Creates a {@link Point} with an arbitrary number of coordinates.
-     * 
-     * @param id
-     *            identifier, may be null
-     * @param coordinates
-     *            coordinate values
-     * @param crs
-     *            coordinate reference system, may be null
-     * @return created {@link Point}
-     */
-    public Point createPoint( String id, double[] coordinates, ICRS crs ) {
-        return (Point) inspect( new DefaultPoint( id, crs, pm, coordinates ) );
-    }
+	/**
+	 * Creates a {@link Point} with an arbitrary number of coordinates.
+	 * @param id identifier, may be null
+	 * @param coordinates coordinate values
+	 * @param crs coordinate reference system, may be null
+	 * @return created {@link Point}
+	 */
+	public Point createPoint(String id, double[] coordinates, ICRS crs) {
+		return (Point) inspect(new DefaultPoint(id, crs, pm, coordinates));
+	}
 
-    /**
-     * Creates a {@link Points} object from the given list of {@link Point} instances.
-     * 
-     * @param points
-     *            list of points, must not be <code>null</code>
-     * @return created {@link Points}
-     */
-    public Points createPoints( List<Point> points ) {
-        return inspect( new PointsList( points ) );
-    }
+	/**
+	 * Creates a {@link Points} object from the given list of {@link Point} instances.
+	 * @param points list of points, must not be <code>null</code>
+	 * @return created {@link Points}
+	 */
+	public Points createPoints(List<Point> points) {
+		return inspect(new PointsList(points));
+	}
 
-    /**
-     * Creates a {@link Polygon} surface.
-     * 
-     * @param id
-     *            identifier of the new geometry instance
-     * @param crs
-     *            coordinate reference system, may be null
-     * @param exteriorRing
-     *            ring that defines the outer boundary, this may be null (see section 9.2.2.5 of GML spec)
-     * @param interiorRings
-     *            list of rings that define the inner boundaries, may be empty or null
-     * @return created {@link Polygon}
-     */
-    public Polygon createPolygon( String id, ICRS crs, Ring exteriorRing, List<Ring> interiorRings ) {
-        return (Polygon) inspect( new DefaultPolygon( id, crs, pm, exteriorRing, interiorRings ) );
-    }
+	/**
+	 * Creates a {@link Polygon} surface.
+	 * @param id identifier of the new geometry instance
+	 * @param crs coordinate reference system, may be null
+	 * @param exteriorRing ring that defines the outer boundary, this may be null (see
+	 * section 9.2.2.5 of GML spec)
+	 * @param interiorRings list of rings that define the inner boundaries, may be empty
+	 * or null
+	 * @return created {@link Polygon}
+	 */
+	public Polygon createPolygon(String id, ICRS crs, Ring exteriorRing, List<Ring> interiorRings) {
+		return (Polygon) inspect(new DefaultPolygon(id, crs, pm, exteriorRing, interiorRings));
+	}
 
-    /**
-     * Creates a {@link LineString} geometry.
-     * 
-     * @param id
-     *            identifier, may be null
-     * @param crs
-     *            coordinate reference system
-     * @param points
-     *            control points
-     * @return created {@link LineString}
-     */
-    public LineString createLineString( String id, ICRS crs, Points points ) {
-        return (LineString) inspect( new DefaultLineString( id, crs, pm, points ) );
-    }
+	/**
+	 * Creates a {@link LineString} geometry.
+	 * @param id identifier, may be null
+	 * @param crs coordinate reference system
+	 * @param points control points
+	 * @return created {@link LineString}
+	 */
+	public LineString createLineString(String id, ICRS crs, Points points) {
+		return (LineString) inspect(new DefaultLineString(id, crs, pm, points));
+	}
 
-    /**
-     * Creates an {@link Envelope}.
-     * 
-     * @param min
-     *            minimum corner coordinates
-     * @param max
-     *            maximum corner coordinates
-     * @param crs
-     *            coordinate reference system, may be null
-     * @return created {@link Envelope}
-     */
-    public Envelope createEnvelope( double[] min, double[] max, ICRS crs ) {
-        return (Envelope) inspect( new DefaultEnvelope( null, crs, pm, new DefaultPoint( null, crs, pm, min ),
-                                                        new DefaultPoint( null, crs, pm, max ) ) );
-    }
+	/**
+	 * Creates an {@link Envelope}.
+	 * @param min minimum corner coordinates
+	 * @param max maximum corner coordinates
+	 * @param crs coordinate reference system, may be null
+	 * @return created {@link Envelope}
+	 */
+	public Envelope createEnvelope(double[] min, double[] max, ICRS crs) {
+		return (Envelope) inspect(new DefaultEnvelope(null, crs, pm, new DefaultPoint(null, crs, pm, min),
+				new DefaultPoint(null, crs, pm, max)));
+	}
 
-    /**
-     * Creates an {@link Envelope} in 2D space.
-     * 
-     * @param minx
-     *            minimum x corner coordinate
-     * @param miny
-     *            minimum y corner coordinate
-     * @param maxx
-     *            maximum x corner coordinate
-     * @param maxy
-     *            maximum y corner coordinate
-     * @param crs
-     *            coordinate reference system, may be null
-     * @return created {@link Envelope}
-     */
-    public Envelope createEnvelope( double minx, double miny, double maxx, double maxy, ICRS crs ) {
-        return createEnvelope( new double[] { minx, miny }, new double[] { maxx, maxy }, crs );
-    }
+	/**
+	 * Creates an {@link Envelope} in 2D space.
+	 * @param minx minimum x corner coordinate
+	 * @param miny minimum y corner coordinate
+	 * @param maxx maximum x corner coordinate
+	 * @param maxy maximum y corner coordinate
+	 * @param crs coordinate reference system, may be null
+	 * @return created {@link Envelope}
+	 */
+	public Envelope createEnvelope(double minx, double miny, double maxx, double maxy, ICRS crs) {
+		return createEnvelope(new double[] { minx, miny }, new double[] { maxx, maxy }, crs);
+	}
 
-    /**
-     * Create an {@link Envelope} from a list of Doubles.
-     * 
-     * @param lowerCorner
-     * @param upperCorner
-     * @param crs
-     *            coordinate reference system, may be null
-     * @return the envelope
-     */
-    public Envelope createEnvelope( List<Double> lowerCorner, List<Double> upperCorner, ICRS crs ) {
-        if ( lowerCorner.size() != upperCorner.size() ) {
-            throw new IllegalArgumentException( "LowerCorner must be of same dimension as upperCorner." );
-        }
-        double[] lc = new double[lowerCorner.size()];
-        double[] uc = new double[upperCorner.size()];
-        for ( int i = 0; i < lc.length; ++i ) {
-            lc[i] = lowerCorner.get( i );
-            uc[i] = upperCorner.get( i );
-        }
-        return createEnvelope( lc, uc, crs );
-    }
+	/**
+	 * Create an {@link Envelope} from a list of Doubles.
+	 * @param lowerCorner
+	 * @param upperCorner
+	 * @param crs coordinate reference system, may be null
+	 * @return the envelope
+	 */
+	public Envelope createEnvelope(List<Double> lowerCorner, List<Double> upperCorner, ICRS crs) {
+		if (lowerCorner.size() != upperCorner.size()) {
+			throw new IllegalArgumentException("LowerCorner must be of same dimension as upperCorner.");
+		}
+		double[] lc = new double[lowerCorner.size()];
+		double[] uc = new double[upperCorner.size()];
+		for (int i = 0; i < lc.length; ++i) {
+			lc[i] = lowerCorner.get(i);
+			uc[i] = upperCorner.get(i);
+		}
+		return createEnvelope(lc, uc, crs);
+	}
 
-    /**
-     * Creates an untyped multi geometry from a list of {@link Geometry}s.
-     * 
-     * @param id
-     *            identifier, may be null
-     * @param crs
-     *            coordinate reference system, may be null
-     * @param members
-     * @return created {@link MultiGeometry}
-     */
-    @SuppressWarnings("unchecked")
-    public MultiGeometry<Geometry> createMultiGeometry( String id, ICRS crs, List<Geometry> members ) {
-        return (MultiGeometry<Geometry>) inspect( new DefaultMultiGeometry<Geometry>( id, crs, pm, members ) );
-    }
+	/**
+	 * Creates an untyped multi geometry from a list of {@link Geometry}s.
+	 * @param id identifier, may be null
+	 * @param crs coordinate reference system, may be null
+	 * @param members
+	 * @return created {@link MultiGeometry}
+	 */
+	@SuppressWarnings("unchecked")
+	public MultiGeometry<Geometry> createMultiGeometry(String id, ICRS crs, List<Geometry> members) {
+		return (MultiGeometry<Geometry>) inspect(new DefaultMultiGeometry<Geometry>(id, crs, pm, members));
+	}
 
-    /**
-     * Creates a {@link MultiPoint} from a list of passed {@link Point}s.
-     * 
-     * @param id
-     *            identifier, may be null
-     * @param crs
-     *            coordinate reference system, may be null
-     * @param members
-     *            points that constitute the collection
-     * @return created {@link MultiPoint}
-     */
-    public MultiPoint createMultiPoint( String id, ICRS crs, List<Point> members ) {
-        return (MultiPoint) inspect( new DefaultMultiPoint( id, crs, pm, members ) );
-    }
+	/**
+	 * Creates a {@link MultiPoint} from a list of passed {@link Point}s.
+	 * @param id identifier, may be null
+	 * @param crs coordinate reference system, may be null
+	 * @param members points that constitute the collection
+	 * @return created {@link MultiPoint}
+	 */
+	public MultiPoint createMultiPoint(String id, ICRS crs, List<Point> members) {
+		return (MultiPoint) inspect(new DefaultMultiPoint(id, crs, pm, members));
+	}
 
-    /**
-     * Creates a {@link MultiCurve} from a list of passed {@link LineString}s.
-     * 
-     * @param id
-     *            identifier, may be null
-     * @param crs
-     *            coordinate reference system, may be null
-     * @param members
-     *            curves that constitute the collection
-     * @return created {@link MultiLineString}
-     */
-    public MultiLineString createMultiLineString( String id, ICRS crs, List<LineString> members ) {
-        return (MultiLineString) inspect( new DefaultMultiLineString( id, crs, pm, members ) );
-    }
+	/**
+	 * Creates a {@link MultiCurve} from a list of passed {@link LineString}s.
+	 * @param id identifier, may be null
+	 * @param crs coordinate reference system, may be null
+	 * @param members curves that constitute the collection
+	 * @return created {@link MultiLineString}
+	 */
+	public MultiLineString createMultiLineString(String id, ICRS crs, List<LineString> members) {
+		return (MultiLineString) inspect(new DefaultMultiLineString(id, crs, pm, members));
+	}
 
-    /**
-     * Creates a {@link MultiPolygon} from a list of passed {@link Polygon}s.
-     * 
-     * @param id
-     *            identifier, may be null
-     * @param crs
-     *            coordinate reference system, may be null
-     * @param members
-     *            polygons that constitute the collection
-     * @return created {@link MultiPolygon}
-     */
-    public MultiPolygon createMultiPolygon( String id, ICRS crs, List<Polygon> members ) {
-        return (MultiPolygon) inspect( new DefaultMultiPolygon( id, crs, pm, members ) );
-    }
+	/**
+	 * Creates a {@link MultiPolygon} from a list of passed {@link Polygon}s.
+	 * @param id identifier, may be null
+	 * @param crs coordinate reference system, may be null
+	 * @param members polygons that constitute the collection
+	 * @return created {@link MultiPolygon}
+	 */
+	public MultiPolygon createMultiPolygon(String id, ICRS crs, List<Polygon> members) {
+		return (MultiPolygon) inspect(new DefaultMultiPolygon(id, crs, pm, members));
+	}
+
 }

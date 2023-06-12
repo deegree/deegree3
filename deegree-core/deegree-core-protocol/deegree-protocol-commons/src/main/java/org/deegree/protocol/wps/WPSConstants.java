@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -40,64 +39,57 @@ import org.deegree.commons.tom.ows.Version;
 
 /**
  * Important constants from the WMS specifications.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * 
- * @version $Revision: $, $Date: $
  */
 public class WPSConstants {
 
-    /** Namespace for elements from the WPS 1.0.0 specification */
-    public static final String WPS_100_NS = "http://www.opengis.net/wps/1.0.0";
+	/** Namespace for elements from the WPS 1.0.0 specification */
+	public static final String WPS_100_NS = "http://www.opengis.net/wps/1.0.0";
 
-    /** Common namespace prefix for elements from the WPS specification */
-    public static final String WPS_PREFIX = "wps";
+	/** Common namespace prefix for elements from the WPS specification */
+	public static final String WPS_PREFIX = "wps";
 
-    /** WPS protocol version 1.0.0 */
-    public static final Version VERSION_100 = Version.parseVersion( "1.0.0" );
+	/** WPS protocol version 1.0.0 */
+	public static final Version VERSION_100 = Version.parseVersion("1.0.0");
 
-    /**
-     * Enum type for discriminating between the different types of WebProcessingService (WPS) requests.
-     * 
-     * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
-     * @author last edited by: $Author: schneider $
-     * 
-     * @version $Revision: $, $Date: $
-     */
-    public enum WPSRequestType {
+	/**
+	 * Enum type for discriminating between the different types of WebProcessingService
+	 * (WPS) requests.
+	 *
+	 * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+	 */
+	public enum WPSRequestType {
 
-        /** Retrieve the process description for one more processes. */
-        DescribeProcess,
-        /** Retrieve the capabilities of the service. */
-        GetCapabilities,
-        /** Execute a process. */
-        Execute,
-        /** deegree WPS specific request for retrieving stored complex outputs. */
-        GetOutput,
-        /** deegree WPS specific request for retrieving response documents. */
-        GetResponseDocument
-    }
+		/** Retrieve the process description for one more processes. */
+		DescribeProcess,
+		/** Retrieve the capabilities of the service. */
+		GetCapabilities,
+		/** Execute a process. */
+		Execute,
+		/** deegree WPS specific request for retrieving stored complex outputs. */
+		GetOutput,
+		/** deegree WPS specific request for retrieving response documents. */
+		GetResponseDocument
 
-    /**
-     * 
-     * 
-     * @author <a href="mailto:apadberg@uni-bonn.de">Alexander Padberg</a>
-     * @author last edited by: $Author: $
-     * 
-     * @version $Revision: $, $Date: $
-     */
-    public enum ExecutionState {
-        /***/
-        ACCEPTED,
-        /***/
-        STARTED,
-        /***/
-        PAUSED,
-        /***/
-        SUCCEEDED,
-        /***/
-        FAILED
-    }
+	}
+
+	/**
+	 * @author <a href="mailto:apadberg@uni-bonn.de">Alexander Padberg</a>
+	 */
+	public enum ExecutionState {
+
+		/***/
+		ACCEPTED,
+		/***/
+		STARTED,
+		/***/
+		PAUSED,
+		/***/
+		SUCCEEDED,
+		/***/
+		FAILED
+
+	}
 
 }

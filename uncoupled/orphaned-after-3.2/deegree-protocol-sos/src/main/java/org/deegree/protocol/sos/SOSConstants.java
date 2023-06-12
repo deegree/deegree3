@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -42,9 +41,7 @@ import org.deegree.commons.tom.ows.Version;
  * Important constants from the SOS specifications.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
  * 
- * @version $Revision: $, $Date: $
  */
 public class SOSConstants {
 
@@ -61,9 +58,7 @@ public class SOSConstants {
      * Enum type for discriminating between the different types of SensorObservationService (SOS) requests.
      * 
      * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
-     * @author last edited by: $Author: schneider $
      * 
-     * @version $Revision: $, $Date: $
      */
     public enum SOSRequestType {
 

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -54,57 +53,54 @@ import org.deegree.workspace.Workspace;
 
 /**
  * Returns the centroid for each input geometry. Other inputs are ignored.
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class Centroid implements FunctionProvider {
 
-    private static final String NAME = "Centroid";
+	private static final String NAME = "Centroid";
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
+	@Override
+	public String getName() {
+		return NAME;
+	}
 
-    @Override
-    public List<ParameterType> getArgs() {
-        return Collections.singletonList( GEOMETRY );
-    }
+	@Override
+	public List<ParameterType> getArgs() {
+		return Collections.singletonList(GEOMETRY);
+	}
 
-    @Override
-    public ParameterType getReturnType() {
-        return POINT;
-    }
+	@Override
+	public ParameterType getReturnType() {
+		return POINT;
+	}
 
-    @Override
-    public Function create( List<Expression> params ) {
-        return new Function( NAME, params ) {
-            @Override
-            public TypedObjectNode[] evaluate( List<TypedObjectNode[]> args )
-                                    throws FilterEvaluationException {
-                TypedObjectNode[] inputs = args.get( 0 );
-                List<TypedObjectNode> outputs = new ArrayList<TypedObjectNode>( inputs.length );
-                for ( TypedObjectNode input : inputs ) {
-                    Geometry geom = getGeometryValue( input );
-                    if ( geom != null ) {
-                        outputs.add( geom.getCentroid() );
-                    }
-                }
-                return outputs.toArray( new TypedObjectNode[outputs.size()] );
-            }
-        };
-    }
+	@Override
+	public Function create(List<Expression> params) {
+		return new Function(NAME, params) {
+			@Override
+			public TypedObjectNode[] evaluate(List<TypedObjectNode[]> args) throws FilterEvaluationException {
+				TypedObjectNode[] inputs = args.get(0);
+				List<TypedObjectNode> outputs = new ArrayList<TypedObjectNode>(inputs.length);
+				for (TypedObjectNode input : inputs) {
+					Geometry geom = getGeometryValue(input);
+					if (geom != null) {
+						outputs.add(geom.getCentroid());
+					}
+				}
+				return outputs.toArray(new TypedObjectNode[outputs.size()]);
+			}
+		};
+	}
 
-    @Override
-    public void init( Workspace ws ) {
-        // nothing to do
-    }
+	@Override
+	public void init(Workspace ws) {
+		// nothing to do
+	}
 
-    @Override
-    public void destroy() {
-        // nothing to do
-    }
+	@Override
+	public void destroy() {
+		// nothing to do
+	}
+
 }

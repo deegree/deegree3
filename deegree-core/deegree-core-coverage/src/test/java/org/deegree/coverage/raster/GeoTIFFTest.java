@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -57,108 +56,100 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * This class tests the loading of GeoTIFF files. It doesn't test the various TIFF formats, but only the georeferencing
- * metadata. Be careful this test will only work with the IIORasterReader, the JAIRasterReader doesn't support meta-data
- * reading (yet?).
- * 
+ * This class tests the loading of GeoTIFF files. It doesn't test the various TIFF
+ * formats, but only the georeferencing metadata. Be careful this test will only work with
+ * the IIORasterReader, the JAIRasterReader doesn't support meta-data reading (yet?).
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class GeoTIFFTest {
 
-    private static AbstractRaster raster;
+	private static AbstractRaster raster;
 
-    /**
-     * load the GeoTIFF file to test
-     * 
-     * @throws IOException
-     */
-    @BeforeClass
-    public static void init()
-                            throws Exception {
-        URL inputURL = GeoTIFFTest.class.getResource( "epsg4326.tiff" );
-        File input = new File( inputURL.toURI() );
-        RasterIOOptions options = RasterIOOptions.forFile( input );
-        options.add( RasterIOOptions.GEO_ORIGIN_LOCATION, OriginLocation.OUTER.name() );
-        raster = RasterFactory.loadRasterFromFile( input, options );
-    }
+	/**
+	 * load the GeoTIFF file to test
+	 * @throws IOException
+	 */
+	@BeforeClass
+	public static void init() throws Exception {
+		URL inputURL = GeoTIFFTest.class.getResource("epsg4326.tiff");
+		File input = new File(inputURL.toURI());
+		RasterIOOptions options = RasterIOOptions.forFile(input);
+		options.add(RasterIOOptions.GEO_ORIGIN_LOCATION, OriginLocation.OUTER.name());
+		raster = RasterFactory.loadRasterFromFile(input, options);
+	}
 
-    /**
-     * test the coordinate system of a GeoTIFF
-     * 
-     * @throws UnknownCRSException
-     */
-    @Test
-    public void geoTIFFCRS()
-                            throws UnknownCRSException {
-        Envelope env = raster.getEnvelope();
-        Assert.assertNotNull( env );
-        ICRS crs = env.getCoordinateSystem();
-        Assert.assertNotNull( crs );
-        ICRS coordSys = crs;
-        assertNotNull( coordSys );
-        CRSCodeType[] codes = coordSys.getCodes();
-        CRSCodeType epsgCode = null;
-        for (CRSCodeType code : codes) {
-            if ( "4326".equals( code.getCode() )) {
-                epsgCode = code;
-                break;
-            }
-        }
-        assertNotNull( epsgCode );
-        String c = epsgCode.getCode();
-        assertNotNull( c );
-        assertTrue( "4326".equals( c ) );
-    }
+	/**
+	 * test the coordinate system of a GeoTIFF
+	 * @throws UnknownCRSException
+	 */
+	@Test
+	public void geoTIFFCRS() throws UnknownCRSException {
+		Envelope env = raster.getEnvelope();
+		Assert.assertNotNull(env);
+		ICRS crs = env.getCoordinateSystem();
+		Assert.assertNotNull(crs);
+		ICRS coordSys = crs;
+		assertNotNull(coordSys);
+		CRSCodeType[] codes = coordSys.getCodes();
+		CRSCodeType epsgCode = null;
+		for (CRSCodeType code : codes) {
+			if ("4326".equals(code.getCode())) {
+				epsgCode = code;
+				break;
+			}
+		}
+		assertNotNull(epsgCode);
+		String c = epsgCode.getCode();
+		assertNotNull(c);
+		assertTrue("4326".equals(c));
+	}
 
-    /**
-     * test the envelope of a GeoTIFF
-     * 
-     * @throws UnknownCRSException
-     * 
-     */
-    @Test
-    public void geoTIFFEnvelope()
-                            throws UnknownCRSException {
-        // TODO handle precision
-        // double precision = raster.getRasterReference().getDelta();
+	/**
+	 * test the envelope of a GeoTIFF
+	 * @throws UnknownCRSException
+	 *
+	 */
+	@Test
+	public void geoTIFFEnvelope() throws UnknownCRSException {
+		// TODO handle precision
+		// double precision = raster.getRasterReference().getDelta();
 
-        double[] renvMin = raster.getEnvelope().getMin().getAsArray();
-        double[] renvMax = raster.getEnvelope().getMax().getAsArray();
-        double delta = 1E-6;
-        Assert.assertEquals( -113.69474315, renvMin[0], delta );
-        Assert.assertEquals( 39.10223806, renvMin[1], delta );
-        Assert.assertEquals( -110.35882409, renvMax[0], delta );
-        Assert.assertEquals( 41.54129761, renvMax[1], delta );
-        Assert.assertTrue( raster.getEnvelope().getCoordinateSystem().hasId( "epsg:4326", true, true ) );
-    }
+		double[] renvMin = raster.getEnvelope().getMin().getAsArray();
+		double[] renvMax = raster.getEnvelope().getMax().getAsArray();
+		double delta = 1E-6;
+		Assert.assertEquals(-113.69474315, renvMin[0], delta);
+		Assert.assertEquals(39.10223806, renvMin[1], delta);
+		Assert.assertEquals(-110.35882409, renvMax[0], delta);
+		Assert.assertEquals(41.54129761, renvMax[1], delta);
+		Assert.assertTrue(raster.getEnvelope().getCoordinateSystem().hasId("epsg:4326", true, true));
+	}
 
-    /**
-     * test the raster size of a GeoTIFF
-     */
-    @Test
-    public void geoTIFFSize() {
-        assertEquals( 100, raster.getColumns() );
-        assertEquals( 73, raster.getRows() );
-    }
+	/**
+	 * test the raster size of a GeoTIFF
+	 */
+	@Test
+	public void geoTIFFSize() {
+		assertEquals(100, raster.getColumns());
+		assertEquals(73, raster.getRows());
+	}
 
-    /**
-     * test the raster envelope of a GeoTIFF
-     */
-    @Test
-    public void geoTIFFRasterEnvelope() {
-        double delta = 0.0000000001;
-        // double delta = 0.000001;
-        RasterGeoReference renv = raster.getRasterReference();
-        // actual values by gdalinfo
-        double[] orig = renv.getOrigin();
-        assertEquals( -113.6947431831, orig[0], delta );
-        assertEquals( 41.5412977608, orig[1], delta );
-        assertEquals( 0.0333591905, renv.getResolutionX(), delta );
-        assertEquals( -0.0334117789, renv.getResolutionY(), delta );
+	/**
+	 * test the raster envelope of a GeoTIFF
+	 */
+	@Test
+	public void geoTIFFRasterEnvelope() {
+		double delta = 0.0000000001;
+		// double delta = 0.000001;
+		RasterGeoReference renv = raster.getRasterReference();
+		// actual values by gdalinfo
+		double[] orig = renv.getOrigin();
+		assertEquals(-113.6947431831, orig[0], delta);
+		assertEquals(41.5412977608, orig[1], delta);
+		assertEquals(0.0333591905, renv.getResolutionX(), delta);
+		assertEquals(-0.0334117789, renv.getResolutionY(), delta);
 
-    }
+	}
+
 }

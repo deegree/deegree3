@@ -43,6 +43,20 @@ f
 
 |deegree.rendering.stroke.miterlimit |java.lang.Float |10 |When the configured factor is exceeded portrayal changes from JOIN_MITER to JOIN_BEVEL (see https://docs.oracle.com/javase/tutorial/2d/geometry/strokeandfill.html).
 
+|deegree.sqldialect.oracle.export_oriented_point |java.lang.Boolean |false |Read the orientation of Oracle orientated points as additional properties, disabled by default. The properties are located in the deegree extraprop namespace `http://www.deegree.org/extraprop` and are named `orientation0`, `orientation1`, etc. 
+
 |deegree.sqldialect.oracle.optimized_point_storage |java.lang.Boolean |true |Use optimized point storage for 2D points in oracle database.
+
+|deegree.gdal.layer.limit_bands |java.lang.Boolean |false |If problems occur with data using four bands (e.g. including transparency or infrared), this option can be used to limit data access to the first three bands.
+
+|deegree.cache.svgrenderer |java.lang.Integer |256 |Maximum number of rendered SVG images to be cached for speed
+
+|deegree.rendering.svg-to-shape.previous |java.lang.Boolean |false |Enables the behavior of previously used versions when scaling SVG graphics for the rendering of strokes
+
+|deegree.rendering.graphicstroke.svg-as-mark |java.lang.Boolean |false |Enables the previous behavior of rendering SVG graphics in `GraphicStroke`/`OnlineResource` like a Mark with the color of the `Stroke` instead of a rendered graphic.
+
+|deegree.gml.property.simple.trim |java.lang.Boolean |true |When deegree reads GML data, by default (`true`) simple property values get their leading and trailing whitespace characters removed.
+
+|deegree.config.apikey.warn-when-disabled |java.lang.Boolean |true |Log warning if security on REST api is disabled by specifying `*` in _config.apikey_.
 
 |===

@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -39,33 +38,27 @@ import org.deegree.commons.tom.ows.Version;
 
 /**
  * Abstract base class for CSW request beans.
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public abstract class AbstractCSWRequest {
 
-    private final Version version;
+	private final Version version;
 
-    /**
-     * Creates a new {@link AbstractCSWRequest} request.
-     * 
-     * @param version
-     *            protocol version, may not be <code>null</code>
-     */
-    public AbstractCSWRequest( Version version ) {
-        this.version = version;
-    }
+	/**
+	 * Creates a new {@link AbstractCSWRequest} request.
+	 * @param version protocol version, may not be <code>null</code>
+	 */
+	public AbstractCSWRequest(Version version) {
+		this.version = version;
+	}
 
-    /**
-     * Returns the protocol version of the request.
-     * 
-     * @return the protocol version of the request, never <code>null</code>
-     */
-    public Version getVersion() {
-        return version;
-    }
+	/**
+	 * Returns the protocol version of the request.
+	 * @return the protocol version of the request, never <code>null</code>
+	 */
+	public Version getVersion() {
+		return version;
+	}
 
 }

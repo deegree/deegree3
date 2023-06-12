@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -56,69 +55,67 @@ import org.junit.Test;
 import org.slf4j.Logger;
 
 /**
- * The <code>SurfaceLinearizerTest</code> class verifies the corecteness of the surface linearization
- * 
+ * The <code>SurfaceLinearizerTest</code> class verifies the corecteness of the surface
+ * linearization
+ *
  * TODO add test to verify
  * <ul>
  * <li>polygon with inner rings</li>
  * <li>surface patches</li>
  * </ul>
- * 
+ *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * 
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class SurfaceLinearizerTest {
 
-    private static final Logger LOG = getLogger( SurfaceLinearizerTest.class );
+	private static final Logger LOG = getLogger(SurfaceLinearizerTest.class);
 
-    final double MAX_ERROR = 0.001;
+	final double MAX_ERROR = 0.001;
 
-    final int MAX_POINTS = 10000;
+	final int MAX_POINTS = 10000;
 
-    private org.deegree.geometry.GeometryFactory geomFac;
+	private org.deegree.geometry.GeometryFactory geomFac;
 
-    private SurfaceLinearizer linearizer;
+	private SurfaceLinearizer linearizer;
 
-    @Before
-    public void setUp() {
-        geomFac = new org.deegree.geometry.GeometryFactory();
-        linearizer = new SurfaceLinearizer( geomFac );
-    }
+	@Before
+	public void setUp() {
+		geomFac = new org.deegree.geometry.GeometryFactory();
+		linearizer = new SurfaceLinearizer(geomFac);
+	}
 
-    @Test
-    public void linearizePolygon() {
-        Polygon polygon = new DefaultPolygon( null, null, null, createExteriorRing(), createInteriorRings() );
-        Polygon res = linearizer.linearize( polygon, new MaxErrorCriterion( MAX_ERROR, MAX_POINTS ) );
-        LOG.debug( "exterior ring:" );
-        for ( Curve curve : res.getExteriorRing().getMembers() ) {
-            for ( Point p : curve.getControlPoints() ) {
-                LOG.debug( p.get0() + ", " + p.get1() );
-            }
-        }
-        for ( Points pts : res.getInteriorRingsCoordinates() ) {
-            LOG.debug( "interior ring:" );
-            for ( int i = 0; i < pts.size(); i++ )
-                LOG.debug( pts.get( i ).get0() + ", " + pts.get( i ).get1() );
-        }
-    }
+	@Test
+	public void linearizePolygon() {
+		Polygon polygon = new DefaultPolygon(null, null, null, createExteriorRing(), createInteriorRings());
+		Polygon res = linearizer.linearize(polygon, new MaxErrorCriterion(MAX_ERROR, MAX_POINTS));
+		LOG.debug("exterior ring:");
+		for (Curve curve : res.getExteriorRing().getMembers()) {
+			for (Point p : curve.getControlPoints()) {
+				LOG.debug(p.get0() + ", " + p.get1());
+			}
+		}
+		for (Points pts : res.getInteriorRingsCoordinates()) {
+			LOG.debug("interior ring:");
+			for (int i = 0; i < pts.size(); i++)
+				LOG.debug(pts.get(i).get0() + ", " + pts.get(i).get1());
+		}
+	}
 
-    private List<Ring> createInteriorRings() {
-        return new ArrayList<Ring>();
-    }
+	private List<Ring> createInteriorRings() {
+		return new ArrayList<Ring>();
+	}
 
-    private Ring createExteriorRing() {
-        Point p1 = new DefaultPoint( null, null, null, new double[] { 1.0, 2.0 } );
-        Point p2 = new DefaultPoint( null, null, null, new double[] { 3.0, 4.0 } );
-        Point p3 = new DefaultPoint( null, null, null, new double[] { 5.0, 5.0 } );
-        List<CurveSegment> curveSegments = new ArrayList<CurveSegment>();
-        curveSegments.add( new DefaultArc( p1, p2, p3 ) );
-        Curve firstCurve = new DefaultCurve( null, null, null, curveSegments );
-        List<Curve> curves = new ArrayList<Curve>();
-        curves.add( firstCurve );
-        return new DefaultRing( null, null, null, curves );
-    }
+	private Ring createExteriorRing() {
+		Point p1 = new DefaultPoint(null, null, null, new double[] { 1.0, 2.0 });
+		Point p2 = new DefaultPoint(null, null, null, new double[] { 3.0, 4.0 });
+		Point p3 = new DefaultPoint(null, null, null, new double[] { 5.0, 5.0 });
+		List<CurveSegment> curveSegments = new ArrayList<CurveSegment>();
+		curveSegments.add(new DefaultArc(p1, p2, p3));
+		Curve firstCurve = new DefaultCurve(null, null, null, curveSegments);
+		List<Curve> curves = new ArrayList<Curve>();
+		curves.add(firstCurve);
+		return new DefaultRing(null, null, null, curves);
+	}
+
 }

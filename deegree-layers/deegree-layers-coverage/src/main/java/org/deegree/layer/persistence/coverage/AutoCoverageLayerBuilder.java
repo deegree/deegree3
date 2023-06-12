@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -65,49 +64,45 @@ import org.deegree.workspace.Workspace;
 
 /**
  * Responsible for creating coverage layers from jaxb beans, AutoLayers variant.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 class AutoCoverageLayerBuilder {
 
-    private Workspace workspace;
+	private Workspace workspace;
 
-    private ResourceMetadata<LayerStore> metadata;
+	private ResourceMetadata<LayerStore> metadata;
 
-    AutoCoverageLayerBuilder( Workspace workspace, ResourceMetadata<LayerStore> metadata ) {
-        this.workspace = workspace;
-        this.metadata = metadata;
-    }
+	AutoCoverageLayerBuilder(Workspace workspace, ResourceMetadata<LayerStore> metadata) {
+		this.workspace = workspace;
+		this.metadata = metadata;
+	}
 
-    LayerStore createFromAutoLayers( AutoLayers cfg ) {
-        String cid = cfg.getCoverageStoreId();
-        String sid = cfg.getStyleStoreId();
-        Coverage cov = workspace.getResource( CoverageProvider.class, cid );
-        StyleStore sstore = null;
-        if ( sid != null ) {
-            sstore = workspace.getResource( StyleStoreProvider.class, sid );
-        }
+	LayerStore createFromAutoLayers(AutoLayers cfg) {
+		String cid = cfg.getCoverageStoreId();
+		String sid = cfg.getStyleStoreId();
+		Coverage cov = workspace.getResource(CoverageProvider.class, cid);
+		StyleStore sstore = null;
+		if (sid != null) {
+			sstore = workspace.getResource(StyleStoreProvider.class, sid);
+		}
 
-        SpatialMetadata smd = new SpatialMetadata( cov.getEnvelope(),
-                                                   Collections.singletonList( cov.getCoordinateSystem() ) );
-        Description desc = new Description( cid, Collections.singletonList( new LanguageString( cid, null ) ), null,
-                                            null );
-        LayerMetadata md = new LayerMetadata( cid, desc, smd );
+		SpatialMetadata smd = new SpatialMetadata(cov.getEnvelope(),
+				Collections.singletonList(cov.getCoordinateSystem()));
+		Description desc = new Description(cid, Collections.singletonList(new LanguageString(cid, null)), null, null);
+		LayerMetadata md = new LayerMetadata(cid, desc, smd);
 
-        md.getFeatureTypes().add( buildFeatureType() );
+		md.getFeatureTypes().add(buildFeatureType());
 
-        if ( sstore != null ) {
-            for ( Style s : sstore.getAll( cid ) ) {
-                md.getStyles().put( s.getName(), s );
-            }
-        }
+		if (sstore != null) {
+			for (Style s : sstore.getAll(cid)) {
+				md.getStyles().put(s.getName(), s);
+			}
+		}
 
-        Layer l = new CoverageLayer( md, cov instanceof AbstractRaster ? (AbstractRaster) cov : null,
-                                     cov instanceof MultiResolutionRaster ? (MultiResolutionRaster) cov : null );
-        return new SingleLayerStore( l, metadata );
-    }
+		Layer l = new CoverageLayer(md, cov instanceof AbstractRaster ? (AbstractRaster) cov : null,
+				cov instanceof MultiResolutionRaster ? (MultiResolutionRaster) cov : null);
+		return new SingleLayerStore(l, metadata);
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -51,89 +50,84 @@ import org.junit.Test;
 
 /**
  * Tests/documentation of weird behavior in the StaX implementation.
- * 
+ *
  * @author <a href="mailto:name@deegree.org">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class StaXWeirdnessTest {
 
-    /**
-     * The problem is that multiple calls to XMLStreamWriter#setPrefix(String,String) can cause a prefix to be bound
-     * more than once (which results in invalid XML). Interestingly, one and two calls lead to a single binding, but
-     * three calls cause a double binding. Current workaround is to use Woodstox.
-     * 
-     * @throws XMLStreamException
-     * @throws UnsupportedEncodingException
-     */
-    @Test
-    public void testForSetPrefixBug()
-                            throws XMLStreamException, UnsupportedEncodingException {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        XMLOutputFactory of = XMLOutputFactory.newInstance();
-        of.setProperty( IS_REPAIRING_NAMESPACES, true );
-        XMLStreamWriter xmlStream = of.createXMLStreamWriter( bos );
+	/**
+	 * The problem is that multiple calls to XMLStreamWriter#setPrefix(String,String) can
+	 * cause a prefix to be bound more than once (which results in invalid XML).
+	 * Interestingly, one and two calls lead to a single binding, but three calls cause a
+	 * double binding. Current workaround is to use Woodstox.
+	 * @throws XMLStreamException
+	 * @throws UnsupportedEncodingException
+	 */
+	@Test
+	public void testForSetPrefixBug() throws XMLStreamException, UnsupportedEncodingException {
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		XMLOutputFactory of = XMLOutputFactory.newInstance();
+		of.setProperty(IS_REPAIRING_NAMESPACES, true);
+		XMLStreamWriter xmlStream = of.createXMLStreamWriter(bos);
 
-        xmlStream.setPrefix( "ogc", "http://www.opengis.net/ogc" );
-        xmlStream.setPrefix( "ogc", "http://www.opengis.net/ogc" );
-        xmlStream.setPrefix( "ogc", "http://www.opengis.net/ogc" );
+		xmlStream.setPrefix("ogc", "http://www.opengis.net/ogc");
+		xmlStream.setPrefix("ogc", "http://www.opengis.net/ogc");
+		xmlStream.setPrefix("ogc", "http://www.opengis.net/ogc");
 
-        xmlStream.writeStartElement( "A" );
-        xmlStream.writeEndElement();
-        xmlStream.close();
-        String s = bos.toString( "UTF-8" );
-        int n = 0;
-        int pos = 0;
-        while ( ( pos = s.indexOf( "xmlns:ogc", pos ) ) != -1 ) {
-            n++;
-            pos++;
-        }
-        Assert.assertTrue( n <= 1 );
-    }
+		xmlStream.writeStartElement("A");
+		xmlStream.writeEndElement();
+		xmlStream.close();
+		String s = bos.toString("UTF-8");
+		int n = 0;
+		int pos = 0;
+		while ((pos = s.indexOf("xmlns:ogc", pos)) != -1) {
+			n++;
+			pos++;
+		}
+		Assert.assertTrue(n <= 1);
+	}
 
-    /**
-     * Test to document a failproof way to bind the default namespace without relying on a specific setting of the
-     * <code>IS_REPAIRING_NAMESPACES</code> property (or a specific StAX implementation).
-     * 
-     * @throws XMLStreamException
-     * @throws UnsupportedEncodingException
-     */
-    @Test
-    public void testBindDefaultNsIsRepairingNamespacesTrue()
-                            throws XMLStreamException, UnsupportedEncodingException {
-        XMLOutputFactory of = XMLOutputFactory.newInstance();
-        of.setProperty( IS_REPAIRING_NAMESPACES, true );
-        testBindDefaultNs( of );
-    }
+	/**
+	 * Test to document a failproof way to bind the default namespace without relying on a
+	 * specific setting of the <code>IS_REPAIRING_NAMESPACES</code> property (or a
+	 * specific StAX implementation).
+	 * @throws XMLStreamException
+	 * @throws UnsupportedEncodingException
+	 */
+	@Test
+	public void testBindDefaultNsIsRepairingNamespacesTrue() throws XMLStreamException, UnsupportedEncodingException {
+		XMLOutputFactory of = XMLOutputFactory.newInstance();
+		of.setProperty(IS_REPAIRING_NAMESPACES, true);
+		testBindDefaultNs(of);
+	}
 
-    /**
-     * Test to document a failproof way to bind the default namespace without relying on a specific setting of the
-     * <code>IS_REPAIRING_NAMESPACES</code> property (or a specific StAX implementation).
-     * 
-     * @throws XMLStreamException
-     * @throws UnsupportedEncodingException
-     */
-    @Test
-    public void testBindDefaultNsIsRepairingNamespacesFalse()
-                            throws XMLStreamException, UnsupportedEncodingException {
+	/**
+	 * Test to document a failproof way to bind the default namespace without relying on a
+	 * specific setting of the <code>IS_REPAIRING_NAMESPACES</code> property (or a
+	 * specific StAX implementation).
+	 * @throws XMLStreamException
+	 * @throws UnsupportedEncodingException
+	 */
+	@Test
+	public void testBindDefaultNsIsRepairingNamespacesFalse() throws XMLStreamException, UnsupportedEncodingException {
 
-        XMLOutputFactory of = XMLOutputFactory.newInstance();
-        of.setProperty( IS_REPAIRING_NAMESPACES, false );
-        testBindDefaultNs( of );
-    }
+		XMLOutputFactory of = XMLOutputFactory.newInstance();
+		of.setProperty(IS_REPAIRING_NAMESPACES, false);
+		testBindDefaultNs(of);
+	}
 
-    private void testBindDefaultNs( XMLOutputFactory of )
-                            throws XMLStreamException, UnsupportedEncodingException, FactoryConfigurationError {
+	private void testBindDefaultNs(XMLOutputFactory of)
+			throws XMLStreamException, UnsupportedEncodingException, FactoryConfigurationError {
 
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        XMLStreamWriter xmlStream = of.createXMLStreamWriter( bos );
-        xmlStream.setDefaultNamespace( "http://www.opengis.net/ogc" );
-        xmlStream.writeStartElement( "http://www.opengis.net/ogc", "A" );
-        xmlStream.writeDefaultNamespace( "http://www.opengis.net/ogc" );
-        xmlStream.writeEndElement();
-        xmlStream.close();
-        String s = bos.toString( "UTF-8" );
-        assertTrue( s.startsWith( "<A xmlns=\"http://www.opengis.net/ogc\"" ) );
-    }
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		XMLStreamWriter xmlStream = of.createXMLStreamWriter(bos);
+		xmlStream.setDefaultNamespace("http://www.opengis.net/ogc");
+		xmlStream.writeStartElement("http://www.opengis.net/ogc", "A");
+		xmlStream.writeDefaultNamespace("http://www.opengis.net/ogc");
+		xmlStream.writeEndElement();
+		xmlStream.close();
+		String s = bos.toString("UTF-8");
+		assertTrue(s.startsWith("<A xmlns=\"http://www.opengis.net/ogc\""));
+	}
+
 }

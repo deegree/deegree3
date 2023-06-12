@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-metadata/src/main/java/org/deegree/metadata/persistence/MetadataStoreTransaction.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -45,73 +44,57 @@ import org.deegree.protocol.csw.MetadataStoreException;
 /**
  * Provides transactional access to a {@link MetadataStore}.
  * <p>
- * NOTE: a transaction must always be ended by calling either {@link #commit()} or {@link #rollback()}
+ * NOTE: a transaction must always be ended by calling either {@link #commit()} or
+ * {@link #rollback()}
  * </p>
- * 
+ *
  * @see MetadataStore#acquireTransaction()
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 30650 $, $Date: 2011-05-05 11:34:25 +0200 (Do, 05. Mai 2011) $
  */
 public interface MetadataStoreTransaction {
 
-    /**
-     * Makes the changes persistent that have been performed in this transaction and releases the transaction instance
-     * so other clients may acquire a transaction on the {@link MetadataStore}.
-     * 
-     * @throws MetadataStoreException
-     *             if the committing fails
-     */
-    public void commit()
-                            throws MetadataStoreException;
+	/**
+	 * Makes the changes persistent that have been performed in this transaction and
+	 * releases the transaction instance so other clients may acquire a transaction on the
+	 * {@link MetadataStore}.
+	 * @throws MetadataStoreException if the committing fails
+	 */
+	public void commit() throws MetadataStoreException;
 
-    /**
-     * Aborts the changes that have been performed in this transaction and releases the transaction instance so other
-     * clients may acquire a transaction on the {@link MetadataStore}.
-     * 
-     * @throws MetadataStoreException
-     *             if the rollback fails
-     */
-    public void rollback()
-                            throws MetadataStoreException;
+	/**
+	 * Aborts the changes that have been performed in this transaction and releases the
+	 * transaction instance so other clients may acquire a transaction on the
+	 * {@link MetadataStore}.
+	 * @throws MetadataStoreException if the rollback fails
+	 */
+	public void rollback() throws MetadataStoreException;
 
-    /**
-     * Performs the given {@link InsertOperation}.
-     * 
-     * TODO for scalabilitiy reasons and simplicitly, consider changing this to #performInsert (MetadataRecord)
-     * 
-     * @param insert
-     *            operation to be performed, must not be <code>null</code>
-     * @return identifier of the inserted records, can be empty, but never <code>null</code>
-     * @throws MetadataStoreException
-     *             if the insertion failed
-     */
-    public List<String> performInsert( InsertOperation insert )
-                            throws MetadataStoreException, MetadataInspectorException;
+	/**
+	 * Performs the given {@link InsertOperation}.
+	 *
+	 * TODO for scalabilitiy reasons and simplicitly, consider changing this to
+	 * #performInsert (MetadataRecord)
+	 * @param insert operation to be performed, must not be <code>null</code>
+	 * @return identifier of the inserted records, can be empty, but never
+	 * <code>null</code>
+	 * @throws MetadataStoreException if the insertion failed
+	 */
+	public List<String> performInsert(InsertOperation insert) throws MetadataStoreException, MetadataInspectorException;
 
-    /**
-     * Performs the given {@link DeleteOperation}.
-     * 
-     * @param delete
-     *            operation to be performed, must not be <code>null</code>
-     * @return number of deleted records
-     * @throws MetadataStoreException
-     *             if the deletion failed
-     */
-    public int performDelete( DeleteOperation delete )
-                            throws MetadataStoreException;
+	/**
+	 * Performs the given {@link DeleteOperation}.
+	 * @param delete operation to be performed, must not be <code>null</code>
+	 * @return number of deleted records
+	 * @throws MetadataStoreException if the deletion failed
+	 */
+	public int performDelete(DeleteOperation delete) throws MetadataStoreException;
 
-    /**
-     * Performs the given {@link UpdateOperation}.
-     * 
-     * @param update
-     *            operation to be performed, must not be <code>null</code>
-     * @return number of updated records
-     * @throws MetadataStoreException
-     *             if the update failed
-     */
-    public int performUpdate( UpdateOperation update )
-                            throws MetadataStoreException, MetadataInspectorException;
+	/**
+	 * Performs the given {@link UpdateOperation}.
+	 * @param update operation to be performed, must not be <code>null</code>
+	 * @return number of updated records
+	 * @throws MetadataStoreException if the update failed
+	 */
+	public int performUpdate(UpdateOperation update) throws MetadataStoreException, MetadataInspectorException;
+
 }

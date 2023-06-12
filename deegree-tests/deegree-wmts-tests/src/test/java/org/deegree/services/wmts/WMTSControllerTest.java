@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aschmitz@wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -50,37 +49,32 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 /**
- *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- *
- * @version $Revision: $, $Date: $
  */
 public class WMTSControllerTest {
 
-    private Workspace workspace;
+	private Workspace workspace;
 
-    @Before
-    public void setup()
-                            throws URISyntaxException, IOException {
-        URL u = WMTSControllerTest.class.getResource( "WMTSControllerTest.class" );
-        File dir = new File( new File( u.toURI() ).getParentFile(),
-                             "../../../../../../src/main/webapp/WEB-INF/workspace" );
-        dir = dir.getCanonicalFile();
-        workspace = new DefaultWorkspace( dir );
-        workspace.initAll();
-    }
+	@Before
+	public void setup() throws URISyntaxException, IOException {
+		URL u = WMTSControllerTest.class.getResource("WMTSControllerTest.class");
+		File dir = new File(new File(u.toURI()).getParentFile(), "../../../../../../src/main/webapp/WEB-INF/workspace");
+		dir = dir.getCanonicalFile();
+		workspace = new DefaultWorkspace(dir);
+		workspace.initAll();
+	}
 
-    @Test
-    public void testMetadataId() {
-        WMTSController wmts = (WMTSController) workspace.getResource( OWSProvider.class, "wmts" );
-        Assert.assertEquals( "http://someLink/services?service=CSW&request=GetRecordById&version=2.0.2&outputSchema=http%3A//www.isotc211.org/2005/gmd&elementSetName=full&id=${metadataSetId}",
-                             wmts.getMetadataUrlTemplate() );
-    }
+	@Test
+	public void testMetadataId() {
+		WMTSController wmts = (WMTSController) workspace.getResource(OWSProvider.class, "wmts");
+		Assert.assertEquals(
+				"http://someLink/services?service=CSW&request=GetRecordById&version=2.0.2&outputSchema=http%3A//www.isotc211.org/2005/gmd&elementSetName=full&id=${metadataSetId}",
+				wmts.getMetadataUrlTemplate());
+	}
 
-    @After
-    public void shutdown() {
-        workspace.destroy();
-    }
+	@After
+	public void shutdown() {
+		workspace.destroy();
+	}
 
 }

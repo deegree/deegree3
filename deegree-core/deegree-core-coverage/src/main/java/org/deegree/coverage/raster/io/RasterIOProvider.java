@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -39,42 +38,41 @@ import java.util.ServiceLoader;
 import java.util.Set;
 
 /**
- * This interface is for all classes that provide raster IO. It uses the new Java 6 ServiceLoader.
- * 
+ * This interface is for all classes that provide raster IO. It uses the new Java 6
+ * ServiceLoader.
+ *
  * <p>
- * To add your own raster IO to deegree you have to implement this interface and put the class name of _your_
- * implementing class in META-INF/services/org.deegree.model.coverage.raster within _your_ .jar or classes directory.
- * Then you have to add your implementation to the classpath of deegree.
- * 
+ * To add your own raster IO to deegree you have to implement this interface and put the
+ * class name of _your_ implementing class in
+ * META-INF/services/org.deegree.model.coverage.raster within _your_ .jar or classes
+ * directory. Then you have to add your implementation to the classpath of deegree.
+ *
  * @see ServiceLoader
- * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 public interface RasterIOProvider {
-    /**
-     * @param type
-     * @return a raster reader of the requested type, or null
-     */
-    public RasterReader getRasterReader( String type );
 
-    /**
-     * @param type
-     * @return a raster writer of the requested type, or null
-     */
-    public RasterWriter getRasterWriter( String type );
+	/**
+	 * @param type
+	 * @return a raster reader of the requested type, or null
+	 */
+	public RasterReader getRasterReader(String type);
 
-    /**
-     * @return a {@link Set} of (image) formats the raster writer can read.
-     */
-    public Set<String> getRasterReaderFormats();
+	/**
+	 * @param type
+	 * @return a raster writer of the requested type, or null
+	 */
+	public RasterWriter getRasterWriter(String type);
 
-    /**
-     * @return a {@link Set} of (image) formats the raster writer support.
-     */
-    public Set<String> getRasterWriterFormats();
+	/**
+	 * @return a {@link Set} of (image) formats the raster writer can read.
+	 */
+	public Set<String> getRasterReaderFormats();
+
+	/**
+	 * @return a {@link Set} of (image) formats the raster writer support.
+	 */
+	public Set<String> getRasterWriterFormats();
 
 }

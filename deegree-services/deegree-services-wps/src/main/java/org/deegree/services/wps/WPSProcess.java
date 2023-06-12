@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -38,33 +37,29 @@ package org.deegree.services.wps;
 import org.deegree.process.jaxb.java.ProcessDefinition;
 
 /**
- * Encapsulates the components that are needed by the {@link ProcessManager} to offer a process.
- * 
+ * Encapsulates the components that are needed by the {@link ProcessManager} to offer a
+ * process.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface WPSProcess {
 
-    /**
-     * Returns the description (e.g. parameter types, metadata) of the process.
-     * 
-     * @return the description, never <code>null</code>
-     */
-    public ProcessDefinition getDescription();
+	/**
+	 * Returns the description (e.g. parameter types, metadata) of the process.
+	 * @return the description, never <code>null</code>
+	 */
+	public ProcessDefinition getDescription();
 
-    /**
-     * Returns the {@link Processlet} (process code) instance of the process.
-     * 
-     * @return the processlet, never <code>null</code>
-     */
-    public Processlet getProcesslet();
+	/**
+	 * Returns the {@link Processlet} (process code) instance of the process.
+	 * @return the processlet, never <code>null</code>
+	 */
+	public Processlet getProcesslet();
 
-    /**
-     * Returns the exception customizer for the process.
-     * 
-     * @return exception customizer, can be <code>null</code>
-     */
-    public ExceptionCustomizer getExceptionCustomizer();
+	/**
+	 * Returns the exception customizer for the process.
+	 * @return exception customizer, can be <code>null</code>
+	 */
+	public ExceptionCustomizer getExceptionCustomizer();
+
 }

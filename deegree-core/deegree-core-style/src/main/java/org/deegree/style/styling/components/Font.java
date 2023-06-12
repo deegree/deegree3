@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aschmitz@deegree.wald.intevation.de/deegree/deegree3/trunk/deegree-core/deegree-core-rendering-2d/src/main/java/org/deegree/rendering/r2d/styling/components/Font.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -47,55 +46,53 @@ import org.deegree.style.styling.Copyable;
  * <code>Font</code>
  *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: aschmitz $
- *
- * @version $Revision: 29574 $, $Date: 2011-02-08 13:31:14 +0100 (Tue, 08 Feb 2011) $
  */
 public class Font implements Copyable<Font> {
 
-    /**
-     * Default is empty list.
-     */
-    public List<String> fontFamily = new LinkedList<String>();
+	/**
+	 * Default is empty list.
+	 */
+	public List<String> fontFamily = new LinkedList<String>();
 
-    /**
-     * Default is NORMAL.
-     */
-    public Style fontStyle = NORMAL;
+	/**
+	 * Default is NORMAL.
+	 */
+	public Style fontStyle = NORMAL;
 
-    /**
-     * Default is false.
-     */
-    public boolean bold;
+	/**
+	 * Default is false.
+	 */
+	public boolean bold;
 
-    /**
-     * Default is 10.
-     */
-    public double fontSize = 10;
+	/**
+	 * Default is 10.
+	 */
+	public double fontSize = 10;
 
-    /**
-     * <code>Style</code>
-     *
-     * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-     * @author last edited by: $Author: aschmitz $
-     *
-     * @version $Revision: 29574 $, $Date: 2011-02-08 13:31:14 +0100 (Tue, 08 Feb 2011) $
-     */
-    public static enum Style {
-        /** * */
-        OBLIQUE, /** * */
-        ITALIC, /** * */
-        NORMAL
-    }
+	/**
+	 * <code>Style</code>
+	 *
+	 * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+	 */
+	public static enum Style {
 
-    @Override
-    public Font copy() {
-        Font copy = new Font();
-        copy.fontFamily.addAll( fontFamily );
-        copy.fontStyle = fontStyle;
-        copy.bold = bold;
-        copy.fontSize = fontSize;
-        return copy;
-    }
+		/** * */
+		OBLIQUE,
+		/** * */
+		ITALIC,
+		/** * */
+		NORMAL
+
+	}
+
+	@Override
+	public Font copy() {
+		Font copy = new Font();
+		copy.fontFamily.addAll(fontFamily);
+		copy.fontStyle = fontStyle;
+		copy.bold = bold;
+		copy.fontSize = fontSize;
+		return copy;
+	}
 
 }

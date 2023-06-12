@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -46,37 +45,32 @@ import org.deegree.protocol.wfs.AbstractWFSRequest;
  * <li>WFS 2.0.0</li>
  * </ul>
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class DropStoredQuery extends AbstractWFSRequest {
 
-    private final String storedQueryId;
+	private final String storedQueryId;
 
-    /**
-     * Creates a new {@link DropStoredQuery} instance.
-     * 
-     * @param version
-     *            protocol version, must not be <code>null</code>
-     * @param handle
-     *            client-generated identifier, may be <code>null</code>
-     * @param storedQueryId
-     *            id of stored query to be dropped, must not be <code>null</code>
-     */
-    public DropStoredQuery( Version version, String handle, String storedQueryId ) {
-        super( version, handle );
-        this.storedQueryId = storedQueryId;
-    }
+	/**
+	 * Creates a new {@link DropStoredQuery} instance.
+	 * @param version protocol version, must not be <code>null</code>
+	 * @param handle client-generated identifier, may be <code>null</code>
+	 * @param storedQueryId id of stored query to be dropped, must not be
+	 * <code>null</code>
+	 */
+	public DropStoredQuery(Version version, String handle, String storedQueryId) {
+		super(version, handle);
+		this.storedQueryId = storedQueryId;
+	}
 
-    /**
-     * Returns the identifier of the stored query to be dropped.
-     * 
-     * @return identifiers of the stored queries, can be empty (describe all queries), but never <code>null</code>
-     */
-    public String getStoredQueryId() {
-        return storedQueryId;
-    }
+	/**
+	 * Returns the identifier of the stored query to be dropped.
+	 * @return identifiers of the stored queries, can be empty (describe all queries), but
+	 * never <code>null</code>
+	 */
+	public String getStoredQueryId() {
+		return storedQueryId;
+	}
+
 }

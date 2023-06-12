@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2009 by:
@@ -44,41 +43,38 @@ import org.deegree.coverage.raster.geom.RasterRect;
 
 /**
  * The <code>BufferResult</code> class TODO add class documentation here.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class BufferResult {
 
-    private final ByteBuffer result;
+	private final ByteBuffer result;
 
-    private final RasterRect rect;
+	private final RasterRect rect;
 
-    /**
-     * Create a buffer result.
-     * 
-     * @param resultRect
-     * @param result
-     */
-    public BufferResult( RasterRect resultRect, ByteBuffer result ) {
-        this.result = result;
-        this.rect = resultRect;
-    }
+	/**
+	 * Create a buffer result.
+	 * @param resultRect
+	 * @param result
+	 */
+	public BufferResult(RasterRect resultRect, ByteBuffer result) {
+		this.result = result;
+		this.rect = resultRect;
+	}
 
-    /**
-     * @return the result
-     */
-    public final ByteBuffer getResult() {
-        return result;
-    }
+	/**
+	 * @return the result
+	 */
+	public final ByteBuffer getResult() {
+		return result;
+	}
 
-    /**
-     * @return the rect
-     */
-    public final RasterRect getRect() {
-        return rect;
-    }
+	/**
+	 * @return the rect
+	 */
+	public final RasterRect getRect() {
+		return rect;
+	}
 
 }

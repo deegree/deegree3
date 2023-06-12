@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -37,49 +36,44 @@ package org.deegree.tile.persistence;
 
 /**
  * Indicates an exception that occured in the tile persistence layer.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class TileStoreException extends RuntimeException {
 
-    private static final long serialVersionUID = -336113433539622673L;
+	private static final long serialVersionUID = -336113433539622673L;
 
-    /**
-     * Creates a new {@link TileStoreException} without detail message.
-     */
-    public TileStoreException() {
-        super();
-    }
+	/**
+	 * Creates a new {@link TileStoreException} without detail message.
+	 */
+	public TileStoreException() {
+		super();
+	}
 
-    /**
-     * Creates a new {@link TileStoreException} with detail message.
-     * 
-     * @param message
-     *            detail message
-     */
-    public TileStoreException( String message ) {
-        super( message );
-    }
+	/**
+	 * Creates a new {@link TileStoreException} with detail message.
+	 * @param message detail message
+	 */
+	public TileStoreException(String message) {
+		super(message);
+	}
 
-    /**
-     * Creates a new {@link TileStoreException} which wraps the causing exception.
-     * 
-     * @param cause
-     */
-    public TileStoreException( Throwable cause ) {
-        super( cause );
-    }
+	/**
+	 * Creates a new {@link TileStoreException} which wraps the causing exception.
+	 * @param cause
+	 */
+	public TileStoreException(Throwable cause) {
+		super(cause);
+	}
 
-    /**
-     * Creates a new {@link TileStoreException} which wraps the causing exception and provides a detail message.
-     * 
-     * @param message
-     * @param cause
-     */
-    public TileStoreException( String message, Throwable cause ) {
-        super( message, cause );
-    }
+	/**
+	 * Creates a new {@link TileStoreException} which wraps the causing exception and
+	 * provides a detail message.
+	 * @param message
+	 * @param cause
+	 */
+	public TileStoreException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
 }

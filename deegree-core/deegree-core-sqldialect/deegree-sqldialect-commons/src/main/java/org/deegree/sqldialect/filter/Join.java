@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-base/src/main/java/org/deegree/filter/sql/Join.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -41,99 +40,97 @@ import java.util.List;
 
 /**
  * The <code></code> class TODO add class documentation here.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 30979 $, $Date: 2011-05-31 14:00:22 +0200 (Di, 31. Mai 2011) $
  */
 public class Join {
 
-    private final String fromTable;
+	private final String fromTable;
 
-    private final String fromTableAlias;
+	private final String fromTableAlias;
 
-    private final List<String> fromColumns;
+	private final List<String> fromColumns;
 
-    private final String toTable;
+	private final String toTable;
 
-    private final String toTableAlias;
+	private final String toTableAlias;
 
-    private final List<String> toColumns;
+	private final List<String> toColumns;
 
-    public Join( String fromTable, String fromTableAlias, String fromColumn, String toTable, String toTableAlias,
-                 String toColumn ) {
-        this.fromTable = fromTable;
-        this.fromTableAlias = fromTableAlias;
-        this.fromColumns = singletonList( fromColumn );
-        this.toTable = toTable;
-        this.toTableAlias = toTableAlias;
-        this.toColumns = singletonList( toColumn );
-    }
+	public Join(String fromTable, String fromTableAlias, String fromColumn, String toTable, String toTableAlias,
+			String toColumn) {
+		this.fromTable = fromTable;
+		this.fromTableAlias = fromTableAlias;
+		this.fromColumns = singletonList(fromColumn);
+		this.toTable = toTable;
+		this.toTableAlias = toTableAlias;
+		this.toColumns = singletonList(toColumn);
+	}
 
-    public Join( String fromTable, String fromTableAlias, List<String> fromColumns, String toTable,
-                 String toTableAlias, List<String> toColumns ) {
-        this.fromTable = fromTable;
-        this.fromTableAlias = fromTableAlias;
-        this.fromColumns = fromColumns;
-        this.toTable = toTable;
-        this.toTableAlias = toTableAlias;
-        this.toColumns = toColumns;
-    }
+	public Join(String fromTable, String fromTableAlias, List<String> fromColumns, String toTable, String toTableAlias,
+			List<String> toColumns) {
+		this.fromTable = fromTable;
+		this.fromTableAlias = fromTableAlias;
+		this.fromColumns = fromColumns;
+		this.toTable = toTable;
+		this.toTableAlias = toTableAlias;
+		this.toColumns = toColumns;
+	}
 
-    public String getFromTable() {
-        return fromTable;
-    }
+	public String getFromTable() {
+		return fromTable;
+	}
 
-    public String getFromTableAlias() {
-        return fromTableAlias;
-    }
+	public String getFromTableAlias() {
+		return fromTableAlias;
+	}
 
-    public List<String> getFromColumns() {
-        return fromColumns;
-    }
+	public List<String> getFromColumns() {
+		return fromColumns;
+	}
 
-    public String getToTable() {
-        return toTable;
-    }
+	public String getToTable() {
+		return toTable;
+	}
 
-    public String getToTableAlias() {
-        return toTableAlias;
-    }
+	public String getToTableAlias() {
+		return toTableAlias;
+	}
 
-    public List<String> getToColumns() {
-        return toColumns;
-    }
+	public List<String> getToColumns() {
+		return toColumns;
+	}
 
-    public String getSQLJoinCondition() {
-        StringBuilder sb = new StringBuilder();
+	public String getSQLJoinCondition() {
+		StringBuilder sb = new StringBuilder();
 
-        if ( fromColumns.size() > 1 ) {
-            sb.append( '(' );
-        }
+		if (fromColumns.size() > 1) {
+			sb.append('(');
+		}
 
-        sb.append( fromTableAlias );
-        sb.append( '.' );
-        sb.append( fromColumns.get( 0 ) );
-        sb.append( '=' );
-        sb.append( toTableAlias );
-        sb.append( '.' );
-        sb.append( toColumns.get( 0 ) );
+		sb.append(fromTableAlias);
+		sb.append('.');
+		sb.append(fromColumns.get(0));
+		sb.append('=');
+		sb.append(toTableAlias);
+		sb.append('.');
+		sb.append(toColumns.get(0));
 
-        for ( int i = 1; i < fromColumns.size(); i++ ) {
-            sb.append( " AND " );
-            sb.append( fromTableAlias );
-            sb.append( '.' );
-            sb.append( fromColumns.get( i ) );
-            sb.append( '=' );
-            sb.append( toTableAlias );
-            sb.append( '.' );
-            sb.append( toColumns.get( i ) );
-        }
+		for (int i = 1; i < fromColumns.size(); i++) {
+			sb.append(" AND ");
+			sb.append(fromTableAlias);
+			sb.append('.');
+			sb.append(fromColumns.get(i));
+			sb.append('=');
+			sb.append(toTableAlias);
+			sb.append('.');
+			sb.append(toColumns.get(i));
+		}
 
-        if ( fromColumns.size() > 1 ) {
-            sb.append( ')' );
-        }
-        return sb.toString();
-    }
+		if (fromColumns.size() > 1) {
+			sb.append(')');
+		}
+		return sb.toString();
+	}
+
 }

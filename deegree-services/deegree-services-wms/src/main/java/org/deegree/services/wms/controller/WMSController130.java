@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -64,85 +63,80 @@ import org.deegree.services.wms.controller.exceptions.ExceptionsManager;
 
 /**
  * <code>WMSController130</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class WMSController130 extends WMSControllerBase {
 
-    private static final String TEXT_XML_FORMAT = "text/xml";
+	private static final String TEXT_XML_FORMAT = "text/xml";
 
-    private final CapabilitiesManager capabilitiesManager;
+	private final CapabilitiesManager capabilitiesManager;
 
-    /**
-     * @param capabilitiesManager
-     *            handling export of capabilities, never <code>null</code>
-     * @param exceptionsManager
-     *            used to serialize exceptions, never <code>null</code>
-     */
-    public WMSController130( CapabilitiesManager capabilitiesManager, ExceptionsManager exceptionsManager ) {
-        super( exceptionsManager );
-        this.capabilitiesManager = capabilitiesManager;
-        EXCEPTION_DEFAULT = "XML";
-        EXCEPTION_BLANK = "BLANK";
-        EXCEPTION_INIMAGE = "INIMAGE";
-        exceptionSerializer = new PreOWSExceptionReportSerializer( EXCEPTION_MIME );
-    }
+	/**
+	 * @param capabilitiesManager handling export of capabilities, never <code>null</code>
+	 * @param exceptionsManager used to serialize exceptions, never <code>null</code>
+	 */
+	public WMSController130(CapabilitiesManager capabilitiesManager, ExceptionsManager exceptionsManager) {
+		super(exceptionsManager);
+		this.capabilitiesManager = capabilitiesManager;
+		EXCEPTION_DEFAULT = "XML";
+		EXCEPTION_BLANK = "BLANK";
+		EXCEPTION_INIMAGE = "INIMAGE";
+		exceptionSerializer = new PreOWSExceptionReportSerializer(EXCEPTION_MIME);
+	}
 
-    @Override
-    public void sendException( OWSException ex, HttpResponseBuffer response, WMSController controller )
-                            throws ServletException {
-        controller.sendException( null, exceptionSerializer, ex, response );
-    }
+	@Override
+	public void sendException(OWSException ex, HttpResponseBuffer response, WMSController controller)
+			throws ServletException {
+		controller.sendException(null, exceptionSerializer, ex, response);
+	}
 
-    @Override
-    public void throwSRSException( String name )
-                            throws OWSException {
-        throw new OWSException( get( "WMS.INVALID_SRS", name ), OWSException.INVALID_CRS );
-    }
+	@Override
+	public void throwSRSException(String name) throws OWSException {
+		throw new OWSException(get("WMS.INVALID_SRS", name), OWSException.INVALID_CRS);
+	}
 
-    @Override
-    protected void exportCapas( String getUrl, String postUrl, MapService service, HttpResponseBuffer response,
-                                ServiceIdentification identification, ServiceProvider provider,
-                                Map<String, String> customParameters, WMSController controller,
-                                OWSMetadataProvider metadata )
-                            throws IOException, OWSException {
-        String format = detectFormat( customParameters );
-        response.setContentType( format );
+	@Override
+	protected void exportCapas(String getUrl, String postUrl, MapService service, HttpResponseBuffer response,
+			ServiceIdentification identification, ServiceProvider provider, Map<String, String> customParameters,
+			WMSController controller, OWSMetadataProvider metadata) throws IOException, OWSException {
+		String format = detectFormat(customParameters);
+		response.setContentType(format);
 
-        try {
-            if ( TEXT_XML_FORMAT.equals( format ) ) {
-                XMLStreamWriter xmlWriter = response.getXMLWriter();
-                new Capabilities130XMLAdapter( identification, provider, metadata, getUrl, postUrl, service, controller ).export( xmlWriter );
-            } else {
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( stream );
-                new Capabilities130XMLAdapter( identification, provider, metadata, getUrl, postUrl, service, controller ).export( xmlWriter );
-                xmlWriter.close();
-                capabilitiesManager.serializeCapabilities( format, new ByteArrayInputStream( stream.toByteArray() ),
-                                                           response.getOutputStream() );
-            }
-        } catch ( XMLStreamException e ) {
-            throw new IOException( e );
-        }
-    }
+		try {
+			if (TEXT_XML_FORMAT.equals(format)) {
+				XMLStreamWriter xmlWriter = response.getXMLWriter();
+				new Capabilities130XMLAdapter(identification, provider, metadata, getUrl, postUrl, service, controller)
+					.export(xmlWriter);
+			}
+			else {
+				ByteArrayOutputStream stream = new ByteArrayOutputStream();
+				XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter(stream);
+				new Capabilities130XMLAdapter(identification, provider, metadata, getUrl, postUrl, service, controller)
+					.export(xmlWriter);
+				xmlWriter.close();
+				capabilitiesManager.serializeCapabilities(format, new ByteArrayInputStream(stream.toByteArray()),
+						response.getOutputStream());
+			}
+		}
+		catch (XMLStreamException e) {
+			throw new IOException(e);
+		}
+	}
 
-    @Override
-    protected Version getVersion() {
-        return WMSConstants.VERSION_130;
-    }
+	@Override
+	protected Version getVersion() {
+		return WMSConstants.VERSION_130;
+	}
 
-    private String detectFormat( Map<String, String> customParameters )
-                            throws OWSException {
-        String format = customParameters.get( "FORMAT" );
-        if ( capabilitiesManager.isSupported( format ) )
-            return format;
+	private String detectFormat(Map<String, String> customParameters) throws OWSException {
+		String format = customParameters.get("FORMAT");
+		if (capabilitiesManager.isSupported(format))
+			return format;
 
-        if ( capabilitiesManager.isSupported( TEXT_XML_FORMAT ) )
-            return TEXT_XML_FORMAT;
-        throw new OWSException( "Requested format '" + format + "' is not supported!", INVALID_PARAMETER_VALUE );
-    }
+		if (capabilitiesManager.isSupported(TEXT_XML_FORMAT))
+			return TEXT_XML_FORMAT;
+		throw new OWSException("Requested format '" + format + "' is not supported!", INVALID_PARAMETER_VALUE);
+	}
 
 }

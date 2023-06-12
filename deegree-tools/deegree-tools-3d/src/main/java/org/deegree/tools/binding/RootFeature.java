@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -51,77 +50,72 @@ import org.deegree.feature.types.FeatureType;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class RootFeature extends FeatureClass {
 
-    protected final static String FEAT = AbstractFeature.class.getSimpleName();
+	protected final static String FEAT = AbstractFeature.class.getSimpleName();
 
-    protected final static String FTYPE = FeatureType.class.getSimpleName();
+	protected final static String FTYPE = FeatureType.class.getSimpleName();
 
-    public RootFeature( FeatureType ft ) {
-        super( ft, null );
-    }
+	public RootFeature(FeatureType ft) {
+		super(ft, null);
+	}
 
-    /**
-     * @param geomClasses
-     * @param featClasses
-     * @return a list of imports needed for this feature class.
-     */
-    @Override
-    public List<String> getImports( Map<QName, FeatureClass> featClasses ) {
-        Set<String> imports = new HashSet<String>( super.getImports( featClasses ) );
-        FeatureInstanceWriter.addImports( imports );
-        FeatureTypeInstanceWriter.addImports( imports );
+	/**
+	 * @param geomClasses
+	 * @param featClasses
+	 * @return a list of imports needed for this feature class.
+	 */
+	@Override
+	public List<String> getImports(Map<QName, FeatureClass> featClasses) {
+		Set<String> imports = new HashSet<String>(super.getImports(featClasses));
+		FeatureInstanceWriter.addImports(imports);
+		FeatureTypeInstanceWriter.addImports(imports);
 
-        return new ArrayList<String>( imports );
-    }
+		return new ArrayList<String>(imports);
+	}
 
-    @Override
-    public void writeClassStart( Writer out )
-                            throws IOException {
-        StringBuilder sb = new StringBuilder( "public " );
-        if ( isAbstract() ) {
-            sb.append( "abstract " );
-        }
-        if ( isInterface() ) {
-            sb.append( "interface" );
-        } else {
-            sb.append( "class " );
-        }
-        sb.append( getClassName() );
-        sb.append( " extends " ).append( FEAT );
-        sb.append( " implements " ).append( FTYPE );
-        sb.append( " {\n" );
-        out.write( sb.toString() );
-    }
+	@Override
+	public void writeClassStart(Writer out) throws IOException {
+		StringBuilder sb = new StringBuilder("public ");
+		if (isAbstract()) {
+			sb.append("abstract ");
+		}
+		if (isInterface()) {
+			sb.append("interface");
+		}
+		else {
+			sb.append("class ");
+		}
+		sb.append(getClassName());
+		sb.append(" extends ").append(FEAT);
+		sb.append(" implements ").append(FTYPE);
+		sb.append(" {\n");
+		out.write(sb.toString());
+	}
 
-    /**
-     * @param out
-     * @throws IOException
-     */
-    @Override
-    public void writeFields( Writer out )
-                            throws IOException {
-        super.writeFields( out );
-        // generate fields for property..
-        // FeatureInstanceWriter.writeFields( out );
-        // FeatureTypeInstanceWriter.writeFields( out );
-    }
+	/**
+	 * @param out
+	 * @throws IOException
+	 */
+	@Override
+	public void writeFields(Writer out) throws IOException {
+		super.writeFields(out);
+		// generate fields for property..
+		// FeatureInstanceWriter.writeFields( out );
+		// FeatureTypeInstanceWriter.writeFields( out );
+	}
 
-    /**
-     * @param out
-     */
-    @Override
-    public void writeMethods( Writer out, HashMap<QName, FeatureClass> featClasses )
-                            throws IOException {
-        super.writeMethods( out, featClasses );
-        FeatureInstanceWriter.writeFeatureMethods( out, featClasses );
-        FeatureTypeInstanceWriter.writeFeatureTypeMethods( out, featClasses );
-    }
+	/**
+	 * @param out
+	 */
+	@Override
+	public void writeMethods(Writer out, HashMap<QName, FeatureClass> featClasses) throws IOException {
+		super.writeMethods(out, featClasses);
+		FeatureInstanceWriter.writeFeatureMethods(out, featClasses);
+		FeatureTypeInstanceWriter.writeFeatureTypeMethods(out, featClasses);
+	}
 
 }

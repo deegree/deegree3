@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -45,63 +44,60 @@ import org.deegree.metadata.iso.ISORecord;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class Queryable {
 
-    private String column;
+	private String column;
 
-    private QueryableConverter converter;
+	private QueryableConverter converter;
 
-    private XPath xpath;
+	private XPath xpath;
 
-    private List<QName> names;
+	private List<QName> names;
 
-    private boolean isMultiple;
+	private boolean isMultiple;
 
-    public Queryable( XPath xpath, List<QName> names, boolean isMultiple, String column,
-                      QueryableConverter converterClass ) {
-        this.xpath = xpath;
-        this.names = names;
-        this.isMultiple = isMultiple;
-        this.column = column;
-        this.converter = converterClass;
-    }
+	public Queryable(XPath xpath, List<QName> names, boolean isMultiple, String column,
+			QueryableConverter converterClass) {
+		this.xpath = xpath;
+		this.names = names;
+		this.isMultiple = isMultiple;
+		this.column = column;
+		this.converter = converterClass;
+	}
 
-    public String getConvertedValue( ISORecord rec ) {
-        return convert( rec.getStringFromXPath( xpath ) );
-    }
+	public String getConvertedValue(ISORecord rec) {
+		return convert(rec.getStringFromXPath(xpath));
+	}
 
-    public List<String> getConvertedValues( ISORecord rec ) {
-        List<String> result = new ArrayList<String>();
-        String[] values = rec.getStringsFromXPath( xpath );
-        for ( int i = 0; i < values.length; i++ ) {
-            result.add( convert( values[i] ) );
-        }
-        return result;
-    }
+	public List<String> getConvertedValues(ISORecord rec) {
+		List<String> result = new ArrayList<String>();
+		String[] values = rec.getStringsFromXPath(xpath);
+		for (int i = 0; i < values.length; i++) {
+			result.add(convert(values[i]));
+		}
+		return result;
+	}
 
-    private String convert( String toConvert ) {
-        if ( converter != null && toConvert != null ) {
-            return converter.convert( toConvert );
-        }
-        return toConvert;
-    }
+	private String convert(String toConvert) {
+		if (converter != null && toConvert != null) {
+			return converter.convert(toConvert);
+		}
+		return toConvert;
+	}
 
-    public String getColumn() {
-        return column;
-    }
+	public String getColumn() {
+		return column;
+	}
 
-    public boolean isMultiple() {
-        return isMultiple;
-    }
+	public boolean isMultiple() {
+		return isMultiple;
+	}
 
-    public List<QName> getNames() {
-        return names;
-    }
+	public List<QName> getNames() {
+		return names;
+	}
 
 }

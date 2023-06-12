@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -45,24 +44,19 @@ import org.deegree.services.controller.utils.HttpResponseBuffer;
 
 /**
  * Writes {@link OWSException}s to the {@link HttpResponseBuffer}.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface ExceptionSerializer {
 
-    /**
-     * Serializes the given exception.
-     * 
-     * @param response
-     *            servlet response, must not be <code>null</code>
-     * @param exception
-     *            exception to be serialized, must not be <code>null</code>
-     * @throws IOException
-     * @throws XMLStreamException
-     */
-    public void serializeException( HttpResponseBuffer response, OWSException exception )
-                            throws IOException, XMLStreamException;
+	/**
+	 * Serializes the given exception.
+	 * @param response servlet response, must not be <code>null</code>
+	 * @param exception exception to be serialized, must not be <code>null</code>
+	 * @throws IOException
+	 * @throws XMLStreamException
+	 */
+	public void serializeException(HttpResponseBuffer response, OWSException exception)
+			throws IOException, XMLStreamException;
+
 }

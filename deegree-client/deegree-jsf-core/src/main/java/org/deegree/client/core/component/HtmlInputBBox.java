@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -46,241 +45,234 @@ import org.deegree.client.core.utils.MessageUtils;
 
 /**
  * <code>HtmlInputBBox</code>
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 
 @FacesComponent(value = "HtmlInputBBox")
 public class HtmlInputBBox extends UISelectOne {
 
-    /**
-     * <p>
-     * The standard component type for this component.
-     * </p>
-     */
-    public static final String COMPONENT_TYPE = "HtmlInputBBox";
+	/**
+	 * <p>
+	 * The standard component type for this component.
+	 * </p>
+	 */
+	public static final String COMPONENT_TYPE = "HtmlInputBBox";
 
-    private static enum AdditionalPropertyKeys {
-        showCRS, styleClass, crsLabel, crsSize, minxLabel, minyLabel, maxxLabel, maxyLabel, disabled, onchange, labelColumnClass, inputColumnClass
-    }
+	private static enum AdditionalPropertyKeys {
 
-    public HtmlInputBBox() {
-        setRendererType( "org.deegree.InputBBox" );
-    }
+		showCRS, styleClass, crsLabel, crsSize, minxLabel, minyLabel, maxxLabel, maxyLabel, disabled, onchange,
+		labelColumnClass, inputColumnClass
 
-    public String getOnchange() {
-        return (String) getStateHelper().eval( AdditionalPropertyKeys.onchange, null );
-    }
+	}
 
-    public void setOnchange( String onchange ) {
-        getStateHelper().put( AdditionalPropertyKeys.onchange, onchange );
-    }
+	public HtmlInputBBox() {
+		setRendererType("org.deegree.InputBBox");
+	}
 
-    public String getStyleClass() {
-        return (String) getStateHelper().eval( AdditionalPropertyKeys.styleClass, null );
-    }
+	public String getOnchange() {
+		return (String) getStateHelper().eval(AdditionalPropertyKeys.onchange, null);
+	}
 
-    public void setStyleClass( String styleClass ) {
-        getStateHelper().put( AdditionalPropertyKeys.styleClass, styleClass );
-    }
+	public void setOnchange(String onchange) {
+		getStateHelper().put(AdditionalPropertyKeys.onchange, onchange);
+	}
 
-    public String getLabelColumnClass() {
-        return (String) getStateHelper().eval( AdditionalPropertyKeys.labelColumnClass, null );
-    }
+	public String getStyleClass() {
+		return (String) getStateHelper().eval(AdditionalPropertyKeys.styleClass, null);
+	}
 
-    public void setLabelColumnClass( String labelColumnClass ) {
-        getStateHelper().put( AdditionalPropertyKeys.labelColumnClass, labelColumnClass );
-    }
+	public void setStyleClass(String styleClass) {
+		getStateHelper().put(AdditionalPropertyKeys.styleClass, styleClass);
+	}
 
-    public String getInputColumnClass() {
-        return (String) getStateHelper().eval( AdditionalPropertyKeys.inputColumnClass, null );
-    }
+	public String getLabelColumnClass() {
+		return (String) getStateHelper().eval(AdditionalPropertyKeys.labelColumnClass, null);
+	}
 
-    public void setInputColumnClass( String inputColumnClass ) {
-        getStateHelper().put( AdditionalPropertyKeys.inputColumnClass, inputColumnClass );
-    }
+	public void setLabelColumnClass(String labelColumnClass) {
+		getStateHelper().put(AdditionalPropertyKeys.labelColumnClass, labelColumnClass);
+	}
 
-    public String getCrsLabel() {
-        String crsLabel = (String) getStateHelper().eval( AdditionalPropertyKeys.crsLabel, null );
-        if ( crsLabel == null ) {
-            crsLabel = MessageUtils.getResourceText( null,
-                                                     "org.deegree.client.core.renderer.InputBBoxRenderer.CRSLABEL" );
-        }
-        return crsLabel;
-    }
+	public String getInputColumnClass() {
+		return (String) getStateHelper().eval(AdditionalPropertyKeys.inputColumnClass, null);
+	}
 
-    public void setCrsLabel( String crsLabel ) {
-        getStateHelper().put( AdditionalPropertyKeys.crsLabel, crsLabel );
-    }
+	public void setInputColumnClass(String inputColumnClass) {
+		getStateHelper().put(AdditionalPropertyKeys.inputColumnClass, inputColumnClass);
+	}
 
-    public String getMinxLabel() {
-        String minxLabel = (String) getStateHelper().eval( AdditionalPropertyKeys.minxLabel, null );
-        if ( minxLabel == null ) {
-            minxLabel = MessageUtils.getResourceText( null,
-                                                      "org.deegree.client.core.renderer.InputBBoxRenderer.MINXLABEL" );
-        }
-        return minxLabel;
-    }
+	public String getCrsLabel() {
+		String crsLabel = (String) getStateHelper().eval(AdditionalPropertyKeys.crsLabel, null);
+		if (crsLabel == null) {
+			crsLabel = MessageUtils.getResourceText(null,
+					"org.deegree.client.core.renderer.InputBBoxRenderer.CRSLABEL");
+		}
+		return crsLabel;
+	}
 
-    public void setMinxLabel( String minxLabel ) {
-        getStateHelper().put( AdditionalPropertyKeys.minxLabel, minxLabel );
-    }
+	public void setCrsLabel(String crsLabel) {
+		getStateHelper().put(AdditionalPropertyKeys.crsLabel, crsLabel);
+	}
 
-    public String getMinyLabel() {
-        String minyLabel = (String) getStateHelper().eval( AdditionalPropertyKeys.minyLabel, null );
-        if ( minyLabel == null ) {
-            minyLabel = MessageUtils.getResourceText( null,
-                                                      "org.deegree.client.core.renderer.InputBBoxRenderer.MINYLABEL" );
-        }
-        return minyLabel;
-    }
+	public String getMinxLabel() {
+		String minxLabel = (String) getStateHelper().eval(AdditionalPropertyKeys.minxLabel, null);
+		if (minxLabel == null) {
+			minxLabel = MessageUtils.getResourceText(null,
+					"org.deegree.client.core.renderer.InputBBoxRenderer.MINXLABEL");
+		}
+		return minxLabel;
+	}
 
-    public void setMinyLabel( String minyLabel ) {
-        getStateHelper().put( AdditionalPropertyKeys.minyLabel, minyLabel );
-    }
+	public void setMinxLabel(String minxLabel) {
+		getStateHelper().put(AdditionalPropertyKeys.minxLabel, minxLabel);
+	}
 
-    public String getMaxxLabel() {
-        String maxxLabel = (String) getStateHelper().eval( AdditionalPropertyKeys.maxxLabel, null );
-        if ( maxxLabel == null ) {
-            maxxLabel = MessageUtils.getResourceText( null,
-                                                      "org.deegree.client.core.renderer.InputBBoxRenderer.MAXXLABEL" );
-        }
-        return maxxLabel;
-    }
+	public String getMinyLabel() {
+		String minyLabel = (String) getStateHelper().eval(AdditionalPropertyKeys.minyLabel, null);
+		if (minyLabel == null) {
+			minyLabel = MessageUtils.getResourceText(null,
+					"org.deegree.client.core.renderer.InputBBoxRenderer.MINYLABEL");
+		}
+		return minyLabel;
+	}
 
-    public void setMaxxLabel( String maxxLabel ) {
-        getStateHelper().put( AdditionalPropertyKeys.maxxLabel, maxxLabel );
-    }
+	public void setMinyLabel(String minyLabel) {
+		getStateHelper().put(AdditionalPropertyKeys.minyLabel, minyLabel);
+	}
 
-    public String getMaxyLabel() {
-        String maxyLabel = (String) getStateHelper().eval( AdditionalPropertyKeys.maxyLabel, null );
-        if ( maxyLabel == null ) {
-            maxyLabel = MessageUtils.getResourceText( null,
-                                                      "org.deegree.client.core.renderer.InputBBoxRenderer.MAXYLABEL" );
-        }
-        return maxyLabel;
-    }
+	public String getMaxxLabel() {
+		String maxxLabel = (String) getStateHelper().eval(AdditionalPropertyKeys.maxxLabel, null);
+		if (maxxLabel == null) {
+			maxxLabel = MessageUtils.getResourceText(null,
+					"org.deegree.client.core.renderer.InputBBoxRenderer.MAXXLABEL");
+		}
+		return maxxLabel;
+	}
 
-    public void setMaxyLabel( String maxyLabel ) {
-        getStateHelper().put( AdditionalPropertyKeys.maxyLabel, maxyLabel );
-    }
+	public void setMaxxLabel(String maxxLabel) {
+		getStateHelper().put(AdditionalPropertyKeys.maxxLabel, maxxLabel);
+	}
 
-    public void setCrsSize( int crsSize ) {
-        getStateHelper().put( AdditionalPropertyKeys.crsSize, crsSize );
-    }
+	public String getMaxyLabel() {
+		String maxyLabel = (String) getStateHelper().eval(AdditionalPropertyKeys.maxyLabel, null);
+		if (maxyLabel == null) {
+			maxyLabel = MessageUtils.getResourceText(null,
+					"org.deegree.client.core.renderer.InputBBoxRenderer.MAXYLABEL");
+		}
+		return maxyLabel;
+	}
 
-    public int getCrsSize() {
-        return (Integer) getStateHelper().eval( AdditionalPropertyKeys.crsSize, -1 );
-    }
+	public void setMaxyLabel(String maxyLabel) {
+		getStateHelper().put(AdditionalPropertyKeys.maxyLabel, maxyLabel);
+	}
 
-    public boolean isShowCRS() {
-        return (Boolean) getStateHelper().eval( AdditionalPropertyKeys.showCRS, true );
-    }
+	public void setCrsSize(int crsSize) {
+		getStateHelper().put(AdditionalPropertyKeys.crsSize, crsSize);
+	}
 
-    public void setShowCRS( boolean crsLabel ) {
-        getStateHelper().put( AdditionalPropertyKeys.showCRS, crsLabel );
-    }
+	public int getCrsSize() {
+		return (Integer) getStateHelper().eval(AdditionalPropertyKeys.crsSize, -1);
+	}
 
-    public void setDisabled( boolean disabled ) {
-        getStateHelper().put( AdditionalPropertyKeys.disabled, disabled );
-    }
+	public boolean isShowCRS() {
+		return (Boolean) getStateHelper().eval(AdditionalPropertyKeys.showCRS, true);
+	}
 
-    public boolean isDisabled() {
-        return (Boolean) getStateHelper().eval( AdditionalPropertyKeys.disabled, false );
-    }
+	public void setShowCRS(boolean crsLabel) {
+		getStateHelper().put(AdditionalPropertyKeys.showCRS, crsLabel);
+	}
 
-    @Override
-    public BBox getValue() {
-        Object value = super.getValue();
-        if ( value == null ) {
-            return null;
-        }
-        if ( !( value instanceof BBox ) ) {
-            throw new FacesException( "value of HtmlInputBBox must be a org.deegree.client.core.model.BBox" );
-        }
-        return (BBox) super.getValue();
-    }
+	public void setDisabled(boolean disabled) {
+		getStateHelper().put(AdditionalPropertyKeys.disabled, disabled);
+	}
 
-    @Override
-    protected void validateValue( FacesContext context, Object value ) {
+	public boolean isDisabled() {
+		return (Boolean) getStateHelper().eval(AdditionalPropertyKeys.disabled, false);
+	}
 
-        if ( !isValid() ) {
-            return;
-        }
+	@Override
+	public BBox getValue() {
+		Object value = super.getValue();
+		if (value == null) {
+			return null;
+		}
+		if (!(value instanceof BBox)) {
+			throw new FacesException("value of HtmlInputBBox must be a org.deegree.client.core.model.BBox");
+		}
+		return (BBox) super.getValue();
+	}
 
-        if ( isRequired() && isBBoxEmpty( value ) ) {
-            FacesMessage message = MessageUtils.getFacesMessage( FacesMessage.SEVERITY_ERROR,
-                                                                 "org.deegree.client.core.component.HtmlInputBBox.REQUIRED",
-                                                                 getClientId() );
-            context.addMessage( getClientId( context ), message );
-            setValid( false );
-            return;
-        }
+	@Override
+	protected void validateValue(FacesContext context, Object value) {
 
-        BBox bbox = (BBox) value;
-        if ( isShowCRS() && bbox.getCrs() == null ) {
-            FacesMessage message = MessageUtils.getFacesMessage( FacesMessage.SEVERITY_ERROR,
-                                                                 "org.deegree.client.core.component.HtmlInputBBox.INVALID_CRS",
-                                                                 getClientId() );
-            context.addMessage( getClientId( context ), message );
-            setValid( false );
-        }
-        if ( Double.isNaN( bbox.getMinx() ) ) {
-            FacesMessage message = MessageUtils.getFacesMessage( FacesMessage.SEVERITY_ERROR,
-                                                                 "org.deegree.client.core.component.HtmlInputBBox.INVALID_MINX",
-                                                                 getClientId(), bbox.getMinx() );
-            context.addMessage( getClientId( context ), message );
-            setValid( false );
-        }
+		if (!isValid()) {
+			return;
+		}
 
-        if ( Double.isNaN( bbox.getMinY() ) ) {
-            FacesMessage message = MessageUtils.getFacesMessage( FacesMessage.SEVERITY_ERROR,
-                                                                 "org.deegree.client.core.component.HtmlInputBBox.INVALID_MINY",
-                                                                 getClientId(), bbox.getMinY() );
-            context.addMessage( getClientId( context ), message );
-            setValid( false );
-        }
-        if ( Double.isNaN( bbox.getMaxX() ) ) {
-            FacesMessage message = MessageUtils.getFacesMessage( FacesMessage.SEVERITY_ERROR,
-                                                                 "org.deegree.client.core.component.HtmlInputBBox.INVALID_MAXX",
-                                                                 getClientId(), bbox.getMaxX() );
-            context.addMessage( getClientId( context ), message );
-            setValid( false );
-        }
-        if ( Double.isNaN( bbox.getMaxY() ) ) {
-            FacesMessage message = MessageUtils.getFacesMessage( FacesMessage.SEVERITY_ERROR,
-                                                                 "org.deegree.client.core.component.HtmlInputBBox.INVALID_MAXY",
-                                                                 getClientId(), bbox.getMaxY() );
-            context.addMessage( getClientId( context ), message );
-            setValid( false );
-        }
+		if (isRequired() && isBBoxEmpty(value)) {
+			FacesMessage message = MessageUtils.getFacesMessage(FacesMessage.SEVERITY_ERROR,
+					"org.deegree.client.core.component.HtmlInputBBox.REQUIRED", getClientId());
+			context.addMessage(getClientId(context), message);
+			setValid(false);
+			return;
+		}
 
-        if ( bbox.getMaxX() < bbox.getMinx() || bbox.getMaxY() < bbox.getMaxY() ) {
-            FacesMessage message = MessageUtils.getFacesMessage( FacesMessage.SEVERITY_ERROR,
-                                                                 "org.deegree.client.core.component.HtmlInputBBox.INVALID_BBOX",
-                                                                 getClientId(), bbox.getMinx(), bbox.getMinY(),
-                                                                 bbox.getMaxX(), bbox.getMaxY() );
-            context.addMessage( getClientId( context ), message );
-            setValid( false );
-        }
-    }
+		BBox bbox = (BBox) value;
+		if (isShowCRS() && bbox.getCrs() == null) {
+			FacesMessage message = MessageUtils.getFacesMessage(FacesMessage.SEVERITY_ERROR,
+					"org.deegree.client.core.component.HtmlInputBBox.INVALID_CRS", getClientId());
+			context.addMessage(getClientId(context), message);
+			setValid(false);
+		}
+		if (Double.isNaN(bbox.getMinx())) {
+			FacesMessage message = MessageUtils.getFacesMessage(FacesMessage.SEVERITY_ERROR,
+					"org.deegree.client.core.component.HtmlInputBBox.INVALID_MINX", getClientId(), bbox.getMinx());
+			context.addMessage(getClientId(context), message);
+			setValid(false);
+		}
 
-    private boolean isBBoxEmpty( Object value ) {
-        if ( value == null ) {
-            return true;
-        }
-        if ( !( value instanceof BBox ) ) {
-            return true;
-        }
-        BBox bbox = (BBox) value;
-        if ( ( isShowCRS() && bbox.getCrs() != null ) && !( bbox.getCrs().length() > 0 )
-             && Double.isNaN( bbox.getMinx() ) && Double.isNaN( bbox.getMinY() ) && Double.isNaN( bbox.getMaxX() )
-             && Double.isNaN( bbox.getMaxY() ) ) {
-            return true;
-        }
-        return false;
-    }
+		if (Double.isNaN(bbox.getMinY())) {
+			FacesMessage message = MessageUtils.getFacesMessage(FacesMessage.SEVERITY_ERROR,
+					"org.deegree.client.core.component.HtmlInputBBox.INVALID_MINY", getClientId(), bbox.getMinY());
+			context.addMessage(getClientId(context), message);
+			setValid(false);
+		}
+		if (Double.isNaN(bbox.getMaxX())) {
+			FacesMessage message = MessageUtils.getFacesMessage(FacesMessage.SEVERITY_ERROR,
+					"org.deegree.client.core.component.HtmlInputBBox.INVALID_MAXX", getClientId(), bbox.getMaxX());
+			context.addMessage(getClientId(context), message);
+			setValid(false);
+		}
+		if (Double.isNaN(bbox.getMaxY())) {
+			FacesMessage message = MessageUtils.getFacesMessage(FacesMessage.SEVERITY_ERROR,
+					"org.deegree.client.core.component.HtmlInputBBox.INVALID_MAXY", getClientId(), bbox.getMaxY());
+			context.addMessage(getClientId(context), message);
+			setValid(false);
+		}
+
+		if (bbox.getMaxX() < bbox.getMinx() || bbox.getMaxY() < bbox.getMaxY()) {
+			FacesMessage message = MessageUtils.getFacesMessage(FacesMessage.SEVERITY_ERROR,
+					"org.deegree.client.core.component.HtmlInputBBox.INVALID_BBOX", getClientId(), bbox.getMinx(),
+					bbox.getMinY(), bbox.getMaxX(), bbox.getMaxY());
+			context.addMessage(getClientId(context), message);
+			setValid(false);
+		}
+	}
+
+	private boolean isBBoxEmpty(Object value) {
+		if (value == null) {
+			return true;
+		}
+		if (!(value instanceof BBox)) {
+			return true;
+		}
+		BBox bbox = (BBox) value;
+		if ((isShowCRS() && bbox.getCrs() != null) && !(bbox.getCrs().length() > 0) && Double.isNaN(bbox.getMinx())
+				&& Double.isNaN(bbox.getMinY()) && Double.isNaN(bbox.getMaxX()) && Double.isNaN(bbox.getMaxY())) {
+			return true;
+		}
+		return false;
+	}
+
 }

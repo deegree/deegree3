@@ -39,31 +39,31 @@ import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
  * Metadata implementation for remote WMS.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class RemoteWmsMetadata extends AbstractResourceMetadata<RemoteOWS> {
 
-    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.remoteows.wms_new.jaxb";
+	private static final String CONFIG_JAXB_PACKAGE = "org.deegree.remoteows.wms_new.jaxb";
 
-    public RemoteWmsMetadata( Workspace workspace, ResourceLocation<RemoteOWS> location,
-                              AbstractResourceProvider<RemoteOWS> provider ) {
-        super( workspace, location, provider );
-    }
+	public RemoteWmsMetadata(Workspace workspace, ResourceLocation<RemoteOWS> location,
+			AbstractResourceProvider<RemoteOWS> provider) {
+		super(workspace, location, provider);
+	}
 
-    @Override
-    public ResourceBuilder<RemoteOWS> prepare() {
-        try {
-            org.deegree.remoteows.wms_new.jaxb.RemoteWMS cfg;
-            cfg = (org.deegree.remoteows.wms_new.jaxb.RemoteWMS) unmarshall( CONFIG_JAXB_PACKAGE, provider.getSchema(),
-                                                                             location.getAsStream(), workspace );
-            return new RemoteWmsBuilder( cfg, this );
-        } catch ( Exception e ) {
-            throw new ResourceInitException( "Unable to prepare " + location.getIdentifier() + ": "
-                                             + e.getLocalizedMessage(), e );
-        }
-    }
+	@Override
+	public ResourceBuilder<RemoteOWS> prepare() {
+		try {
+			org.deegree.remoteows.wms_new.jaxb.RemoteWMS cfg;
+			cfg = (org.deegree.remoteows.wms_new.jaxb.RemoteWMS) unmarshall(CONFIG_JAXB_PACKAGE, provider.getSchema(),
+					location.getAsStream(), workspace);
+			return new RemoteWmsBuilder(cfg, this);
+		}
+		catch (Exception e) {
+			throw new ResourceInitException(
+					"Unable to prepare " + location.getIdentifier() + ": " + e.getLocalizedMessage(), e);
+		}
+	}
 
 }

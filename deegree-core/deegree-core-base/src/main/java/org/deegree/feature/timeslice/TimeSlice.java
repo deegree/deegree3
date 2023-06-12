@@ -40,9 +40,10 @@ import org.deegree.commons.tom.gml.GMLObject;
  * Object that encapsulates the time-varying properties of a dynamic feature.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- *
  * @since 3.4
  */
 public interface TimeSlice extends GMLObject {
-    // marker interface
+
+	// marker interface
+
 }

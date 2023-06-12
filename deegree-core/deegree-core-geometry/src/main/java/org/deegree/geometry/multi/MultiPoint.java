@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -41,10 +40,10 @@ import org.deegree.geometry.primitive.Point;
  * Specialised aggregation type for {@link Point} objects.
  *
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
- * @author last edited by: $Author$
  *
- * @version. $Revision$, $Date$
  */
 public interface MultiPoint extends MultiGeometry<Point> {
-    // no additional methods
+
+	// no additional methods
+
 }

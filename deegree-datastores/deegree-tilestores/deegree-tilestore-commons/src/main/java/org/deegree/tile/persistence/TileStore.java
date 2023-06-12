@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -50,66 +49,53 @@ import org.deegree.tile.TileDataSet;
 
 /**
  * {@link Resource} that provides access to stored {@link TileDataSet}s and {@link Tile}s.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 public interface TileStore extends Resource {
 
-    /**
-     * Returns the specified {@link TileDataSet}.
-     * 
-     * @param tileDataSet
-     *            the id of the tile data set, must not be <code>null</code>
-     * @return the tile data set, or <code>null</code>, if no tile data set with the specified identifier exists
-     */
-    TileDataSet getTileDataSet( String tileDataSet );
+	/**
+	 * Returns the specified {@link TileDataSet}.
+	 * @param tileDataSet the id of the tile data set, must not be <code>null</code>
+	 * @return the tile data set, or <code>null</code>, if no tile data set with the
+	 * specified identifier exists
+	 */
+	TileDataSet getTileDataSet(String tileDataSet);
 
-    /**
-     * Returns the identifiers of all {@link TileDataSet}s served by this tile store.
-     * 
-     * @return the identifiers, can be empty, but never <code>null</code>
-     */
-    Collection<String> getTileDataSetIds();
+	/**
+	 * Returns the identifiers of all {@link TileDataSet}s served by this tile store.
+	 * @return the identifiers, can be empty, but never <code>null</code>
+	 */
+	Collection<String> getTileDataSetIds();
 
-    /**
-     * Creates tile stream according to the parameters.
-     * 
-     * @param tileDataSet
-     *            the id of the tile data set, must not be <code>null</code>
-     * @param envelope
-     *            the extent of tiles needed, must not be <code>null</code>
-     * @param resolution
-     *            the desired minimum resolution of tiles, must be positive
-     * @return an iterator of tiles for the given envelope and resolution, never <code>null</code>
-     */
-    Iterator<Tile> getTiles( String tileDataSet, Envelope envelope, double resolution );
+	/**
+	 * Creates tile stream according to the parameters.
+	 * @param tileDataSet the id of the tile data set, must not be <code>null</code>
+	 * @param envelope the extent of tiles needed, must not be <code>null</code>
+	 * @param resolution the desired minimum resolution of tiles, must be positive
+	 * @return an iterator of tiles for the given envelope and resolution, never
+	 * <code>null</code>
+	 */
+	Iterator<Tile> getTiles(String tileDataSet, Envelope envelope, double resolution);
 
-    /**
-     * Queries a single tile from the specified tile data set.
-     * 
-     * @param tileDataSet
-     *            id of the tile data set, must not be <code>null</code>
-     * @param tileDataLevel
-     *            id of the tile data level, must not be <code>null</code>
-     * @param x
-     *            column index, starting at zero
-     * @param y
-     *            row index, starting at zero
-     * @return the specified tile, or <code>null</code>, if no such tile exists
-     */
-    Tile getTile( String tileDataSet, String tileDataLevel, int x, int y );
+	/**
+	 * Queries a single tile from the specified tile data set.
+	 * @param tileDataSet id of the tile data set, must not be <code>null</code>
+	 * @param tileDataLevel id of the tile data level, must not be <code>null</code>
+	 * @param x column index, starting at zero
+	 * @param y row index, starting at zero
+	 * @return the specified tile, or <code>null</code>, if no such tile exists
+	 */
+	Tile getTile(String tileDataSet, String tileDataLevel, int x, int y);
 
-    /**
-     * Acquires transactional access to the tile store.
-     * 
-     * @param tileDataSet
-     *            the id of the tile data set to be modified, must not be <code>null</code>
-     * @return transaction object that allows to perform transactions operations on the store, never <code>null</code>
-     */
-    TileStoreTransaction acquireTransaction( String tileDataSet );
+	/**
+	 * Acquires transactional access to the tile store.
+	 * @param tileDataSet the id of the tile data set to be modified, must not be
+	 * <code>null</code>
+	 * @return transaction object that allows to perform transactions operations on the
+	 * store, never <code>null</code>
+	 */
+	TileStoreTransaction acquireTransaction(String tileDataSet);
 
 }

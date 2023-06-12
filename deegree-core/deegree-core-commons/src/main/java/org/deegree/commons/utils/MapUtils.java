@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -40,76 +39,69 @@ import static java.lang.Math.sqrt;
 
 /**
  * <code>MapUtils</code>
- * 
+ *
  * Note: methods currently more or less copied from deegree 2.
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class MapUtils {
 
-    /** The value of sqrt(2) */
-    public static final double SQRT2 = sqrt( 2 );
+	/** The value of sqrt(2) */
+	public static final double SQRT2 = sqrt(2);
 
-    /** The Value of a PixelSize */
-    public static final double DEFAULT_PIXEL_SIZE = 0.00028;
+	/** The Value of a PixelSize */
+	public static final double DEFAULT_PIXEL_SIZE = 0.00028;
 
-    public static final double WMTS_METERS_PER_DEGREE = 111319.490793273;
+	public static final double WMTS_METERS_PER_DEGREE = 111319.490793273;
 
-    /**
-     * calculates the distance in meters between two points in EPSG:4326 coodinates. this is a convenience method
-     * assuming the world is a ball
-     * 
-     * @param lon1
-     * @param lat1
-     * @param lon2
-     * @param lat2
-     * @return the distance in meters between two points in EPSG:4326 coords
-     */
-    public static double calcDistance( double lon1, double lat1, double lon2, double lat2 ) {
-        double r = 6378.137;
-        double rad = Math.PI / 180d;
-        double cose = Math.sin( rad * lon1 ) * Math.sin( rad * lon2 ) + Math.cos( rad * lon1 ) * Math.cos( rad * lon2 )
-                      * Math.cos( rad * ( lat1 - lat2 ) );
-        double dist = r * Math.acos( cose ) * Math.cos( rad * Math.min( lat1, lat2 ) );
+	/**
+	 * calculates the distance in meters between two points in EPSG:4326 coodinates. this
+	 * is a convenience method assuming the world is a ball
+	 * @param lon1
+	 * @param lat1
+	 * @param lon2
+	 * @param lat2
+	 * @return the distance in meters between two points in EPSG:4326 coords
+	 */
+	public static double calcDistance(double lon1, double lat1, double lon2, double lat2) {
+		double r = 6378.137;
+		double rad = Math.PI / 180d;
+		double cose = Math.sin(rad * lon1) * Math.sin(rad * lon2)
+				+ Math.cos(rad * lon1) * Math.cos(rad * lon2) * Math.cos(rad * (lat1 - lat2));
+		double dist = r * Math.acos(cose) * Math.cos(rad * Math.min(lat1, lat2));
 
-        // * 0.835 is just an heuristic correction factor
-        return dist * 1000 * 0.835;
-    }
+		// * 0.835 is just an heuristic correction factor
+		return dist * 1000 * 0.835;
+	}
 
-    /**
-     * Calculates the scale denominator for a given resolution in degree units, according to the informative annexes of
-     * the WMTS 1.0.0 spec.
-     * 
-     * @param res
-     * @return the scale denominator
-     */
-    public static final double calcScaleFromDegrees( final double res ) {
-        return ( res * WMTS_METERS_PER_DEGREE ) / DEFAULT_PIXEL_SIZE;
-    }
+	/**
+	 * Calculates the scale denominator for a given resolution in degree units, according
+	 * to the informative annexes of the WMTS 1.0.0 spec.
+	 * @param res
+	 * @return the scale denominator
+	 */
+	public static final double calcScaleFromDegrees(final double res) {
+		return (res * WMTS_METERS_PER_DEGREE) / DEFAULT_PIXEL_SIZE;
+	}
 
-    /**
-     * Calculates the pixel resolution for the given scale denominator, according to the informative annexes of the WMTS
-     * 1.0.0 spec.
-     * 
-     * @param scale
-     *            scale denominator (1 / scale)
-     * @return the pixel resolution (degrees per pixel)
-     */
-    public static final double calcDegreeResFromScale( final double scale ) {
-        return ( scale * DEFAULT_PIXEL_SIZE ) / WMTS_METERS_PER_DEGREE;
-    }
+	/**
+	 * Calculates the pixel resolution for the given scale denominator, according to the
+	 * informative annexes of the WMTS 1.0.0 spec.
+	 * @param scale scale denominator (1 / scale)
+	 * @return the pixel resolution (degrees per pixel)
+	 */
+	public static final double calcDegreeResFromScale(final double scale) {
+		return (scale * DEFAULT_PIXEL_SIZE) / WMTS_METERS_PER_DEGREE;
+	}
 
-    /**
-     * Calculates the pixel resolution for the given scale denominator, assuming a metric coordinate reference system.
-     * 
-     * @param scale
-     *            scale denominator (1 / scale)
-     * @return the pixel resolution (meters per pixel)
-     */
-    public static final double calcMetricResFromScale( final double scale ) {
-        return scale * DEFAULT_PIXEL_SIZE;
-    }
+	/**
+	 * Calculates the pixel resolution for the given scale denominator, assuming a metric
+	 * coordinate reference system.
+	 * @param scale scale denominator (1 / scale)
+	 * @return the pixel resolution (meters per pixel)
+	 */
+	public static final double calcMetricResFromScale(final double scale) {
+		return scale * DEFAULT_PIXEL_SIZE;
+	}
+
 }

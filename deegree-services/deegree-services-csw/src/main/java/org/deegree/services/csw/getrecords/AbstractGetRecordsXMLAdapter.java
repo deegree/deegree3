@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -52,83 +51,77 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Abstract base class encapsulating the parsing an {@link GetRecords} XML request.
- * 
+ *
  * @author <a href="mailto:goltz@deegree.org">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public abstract class AbstractGetRecordsXMLAdapter extends AbstractCSWRequestXMLAdapter {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GetRecordsXMLAdapter.class );
+	private static final Logger LOG = LoggerFactory.getLogger(GetRecordsXMLAdapter.class);
 
-    /**
-     * Parses the {@link GetRecords} XML request by deciding which version has to be parsed because of the requested
-     * version.
-     * 
-     * @param version
-     * @return {@Link GetRecords}
-     */
-    public GetRecords parse( Version version, String defaultOutputFormat, String defaultOutputSchema ) {
+	/**
+	 * Parses the {@link GetRecords} XML request by deciding which version has to be
+	 * parsed because of the requested version.
+	 * @param version
+	 * @return {@Link GetRecords}
+	 */
+	public GetRecords parse(Version version, String defaultOutputFormat, String defaultOutputSchema) {
 
-        if ( version == null ) {
-            version = Version.parseVersion( getRequiredNodeAsString( rootElement, new XPath( "@version", nsContext ) ) );
-        }
+		if (version == null) {
+			version = Version.parseVersion(getRequiredNodeAsString(rootElement, new XPath("@version", nsContext)));
+		}
 
-        GetRecords result = null;
+		GetRecords result = null;
 
-        if ( VERSION_202.equals( version ) ) {
-            result = parse202( defaultOutputFormat, defaultOutputSchema );
-        } else {
-            String msg = Messages.get( "UNSUPPORTED_VERSION", version, Version.getVersionsString( VERSION_202 ) );
-            throw new InvalidParameterValueException( msg );
-        }
+		if (VERSION_202.equals(version)) {
+			result = parse202(defaultOutputFormat, defaultOutputSchema);
+		}
+		else {
+			String msg = Messages.get("UNSUPPORTED_VERSION", version, Version.getVersionsString(VERSION_202));
+			throw new InvalidParameterValueException(msg);
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    /**
-     * Parses the {@link GetRecords} request on basis of CSW version 2.0.2
-     * 
-     * @param version
-     *            that is requested, 2.0.2
-     * @return {@link GetRecords}
-     */
-    private GetRecords parse202( String defaultOutputFormat, String defaultOutputSchema ) {
-        LOG.debug( rootElement.toString() );
+	/**
+	 * Parses the {@link GetRecords} request on basis of CSW version 2.0.2
+	 * @param version that is requested, 2.0.2
+	 * @return {@link GetRecords}
+	 */
+	private GetRecords parse202(String defaultOutputFormat, String defaultOutputSchema) {
+		LOG.debug(rootElement.toString());
 
-        String resultTypeStr = getNodeAsString( rootElement, new XPath( "@resultType", nsContext ),
-                                                ResultType.hits.name() );
+		String resultTypeStr = getNodeAsString(rootElement, new XPath("@resultType", nsContext),
+				ResultType.hits.name());
 
-        OMElement holeRequest = getElement( rootElement, new XPath( ".", nsContext ) );
-        ResultType resultType = ResultType.determineResultType( resultTypeStr );
+		OMElement holeRequest = getElement(rootElement, new XPath(".", nsContext));
+		ResultType resultType = ResultType.determineResultType(resultTypeStr);
 
-        int maxRecords = getNodeAsInt( rootElement, new XPath( "@maxRecords", nsContext ), 10 );
+		int maxRecords = getNodeAsInt(rootElement, new XPath("@maxRecords", nsContext), 10);
 
-        int startPosition = getNodeAsInt( rootElement, new XPath( "@startPosition", nsContext ), 1 );
+		int startPosition = getNodeAsInt(rootElement, new XPath("@startPosition", nsContext), 1);
 
-        String outputFormat = getNodeAsString( rootElement, new XPath( "@outputFormat", nsContext ),
-                                               defaultOutputFormat );
+		String outputFormat = getNodeAsString(rootElement, new XPath("@outputFormat", nsContext), defaultOutputFormat);
 
-        String requestId = getNodeAsString( rootElement, new XPath( "@requestId", nsContext ), null );
+		String requestId = getNodeAsString(rootElement, new XPath("@requestId", nsContext), null);
 
-        String outputSchemaString = getNodeAsString( rootElement, new XPath( "@outputSchema", nsContext ),
-                                                     defaultOutputSchema );
+		String outputSchemaString = getNodeAsString(rootElement, new XPath("@outputSchema", nsContext),
+				defaultOutputSchema);
 
-        URI outputSchema = URI.create( outputSchemaString );
+		URI outputSchema = URI.create(outputSchemaString);
 
-        List<OMElement> getRecordsChildElements = getRequiredElements( rootElement, new XPath( "*", nsContext ) );
+		List<OMElement> getRecordsChildElements = getRequiredElements(rootElement, new XPath("*", nsContext));
 
-        return parseSubElements( holeRequest, resultType, maxRecords, startPosition, outputFormat, requestId,
-                                 outputSchema, getRecordsChildElements );
-    }
+		return parseSubElements(holeRequest, resultType, maxRecords, startPosition, outputFormat, requestId,
+				outputSchema, getRecordsChildElements);
+	}
 
-    protected Query parseQuery( OMElement omElement ) {
-        return Query.getQuery( omElement );
-    }
+	protected Query parseQuery(OMElement omElement) {
+		return Query.getQuery(omElement);
+	}
 
-    protected abstract GetRecords parseSubElements( OMElement holeRequest, ResultType resultType, int maxRecords,
-                                                    int startPosition, String outputFormat, String requestId,
-                                                    URI outputSchema, List<OMElement> getRecordsChildElements );
+	protected abstract GetRecords parseSubElements(OMElement holeRequest, ResultType resultType, int maxRecords,
+			int startPosition, String outputFormat, String requestId, URI outputSchema,
+			List<OMElement> getRecordsChildElements);
 
 }

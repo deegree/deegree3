@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/deegree3/trunk/deegree-core/deegree-core-metadata/src/main/java/org/deegree/metadata/DCRecord.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -50,90 +49,86 @@ import org.deegree.commons.xml.XPath;
 
 /**
  * handles mapping of the CSW Queryable Properties to a ISO Record
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: sthomas $
- * 
- * @version $Revision: 27406 $, $Date: 2010-10-19 18:43:48 +0200 (Di, 19. Okt 2010) $
  */
 public class ISOCQPMapping {
 
-    private static final String IDENTIFIER_XPATH = "/gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString";
+	private static final String IDENTIFIER_XPATH = "/gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString";
 
-    private static final String MODIFIED_XPATH = "/gmd:MD_Metadata/gmd:dateStamp/gco:Date";
+	private static final String MODIFIED_XPATH = "/gmd:MD_Metadata/gmd:dateStamp/gco:Date";
 
-    private static final String FORMAT_XPATH = "/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:distributionFormat/gmd:MD_Format/gmd:name/gco:CharacterString";
+	private static final String FORMAT_XPATH = "/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:distributionFormat/gmd:MD_Format/gmd:name/gco:CharacterString";
 
-    private static final String TYPE_XPATH = "/gmd:MD_Metadata/gmd:hierarchyLevel/gmd:MD_ScopeCode/@codeListValue";
+	private static final String TYPE_XPATH = "/gmd:MD_Metadata/gmd:hierarchyLevel/gmd:MD_ScopeCode/@codeListValue";
 
-    private static final String TITLE_DATA_XPATH = "/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString";
+	private static final String TITLE_DATA_XPATH = "/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString";
 
-    private static final String TITLE_SERVICE_XPATH = "/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_ServiceIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString";
+	private static final String TITLE_SERVICE_XPATH = "/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_ServiceIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString";
 
-    private static final String ABSTRACT_DATA_XPATH = "/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract/gco:CharacterString";
+	private static final String ABSTRACT_DATA_XPATH = "/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract/gco:CharacterString";
 
-    private static final String ABSTRACT_SERVICE_XPATH = "/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_ServiceIdentification/gmd:abstract/gco:CharacterString";
+	private static final String ABSTRACT_SERVICE_XPATH = "/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_ServiceIdentification/gmd:abstract/gco:CharacterString";
 
-    private static final List<Pair<List<QName>, XPath>> cqpToISO = new ArrayList<Pair<List<QName>, XPath>>();
+	private static final List<Pair<List<QName>, XPath>> cqpToISO = new ArrayList<Pair<List<QName>, XPath>>();
 
-    private static final List<Pair<List<QName>, XPath>> cqpToISO_Data = new ArrayList<Pair<List<QName>, XPath>>();
+	private static final List<Pair<List<QName>, XPath>> cqpToISO_Data = new ArrayList<Pair<List<QName>, XPath>>();
 
-    private static final List<Pair<List<QName>, XPath>> cqpToISO_Service = new ArrayList<Pair<List<QName>, XPath>>();
+	private static final List<Pair<List<QName>, XPath>> cqpToISO_Service = new ArrayList<Pair<List<QName>, XPath>>();
 
-    protected static final NamespaceBindings nsContext = CommonNamespaces.getNamespaceContext();
+	protected static final NamespaceBindings nsContext = CommonNamespaces.getNamespaceContext();
 
-    static {
-        cqpToISO_Data.add( new Pair<List<QName>, XPath>( createQNameList( "title", "Title" ),
-                                                         new XPath( TITLE_DATA_XPATH, nsContext ) ) );
-        cqpToISO_Service.add( new Pair<List<QName>, XPath>( createQNameList( "title", "Title" ),
-                                                            new XPath( TITLE_SERVICE_XPATH, nsContext ) ) );
+	static {
+		cqpToISO_Data.add(new Pair<List<QName>, XPath>(createQNameList("title", "Title"),
+				new XPath(TITLE_DATA_XPATH, nsContext)));
+		cqpToISO_Service.add(new Pair<List<QName>, XPath>(createQNameList("title", "Title"),
+				new XPath(TITLE_SERVICE_XPATH, nsContext)));
 
-        cqpToISO_Data.add( new Pair<List<QName>, XPath>( createQNameList( "abstract", "Abstract" ),
-                                                         new XPath( ABSTRACT_DATA_XPATH, nsContext ) ) );
-        cqpToISO_Service.add( new Pair<List<QName>, XPath>( createQNameList( "abstract", "Abstract" ),
-                                                            new XPath( ABSTRACT_SERVICE_XPATH, nsContext ) ) );
+		cqpToISO_Data.add(new Pair<List<QName>, XPath>(createQNameList("abstract", "Abstract"),
+				new XPath(ABSTRACT_DATA_XPATH, nsContext)));
+		cqpToISO_Service.add(new Pair<List<QName>, XPath>(createQNameList("abstract", "Abstract"),
+				new XPath(ABSTRACT_SERVICE_XPATH, nsContext)));
 
-        cqpToISO.add( new Pair<List<QName>, XPath>( createQNameList( "identifier", "Identifier" ),
-                                                    new XPath( IDENTIFIER_XPATH, nsContext ) ) );
-        cqpToISO.add( new Pair<List<QName>, XPath>( createQNameList( "modified", "Modified" ),
-                                                    new XPath( MODIFIED_XPATH, nsContext ) ) );
+		cqpToISO.add(new Pair<List<QName>, XPath>(createQNameList("identifier", "Identifier"),
+				new XPath(IDENTIFIER_XPATH, nsContext)));
+		cqpToISO.add(new Pair<List<QName>, XPath>(createQNameList("modified", "Modified"),
+				new XPath(MODIFIED_XPATH, nsContext)));
 
-        cqpToISO_Data.add( new Pair<List<QName>, XPath>( createQNameList( "abstract", "Abstract" ),
-                                                         new XPath( ABSTRACT_DATA_XPATH, nsContext ) ) );
-        cqpToISO_Service.add( new Pair<List<QName>, XPath>( createQNameList( "abstract", "Abstract" ),
-                                                            new XPath( ABSTRACT_SERVICE_XPATH, nsContext ) ) );
+		cqpToISO_Data.add(new Pair<List<QName>, XPath>(createQNameList("abstract", "Abstract"),
+				new XPath(ABSTRACT_DATA_XPATH, nsContext)));
+		cqpToISO_Service.add(new Pair<List<QName>, XPath>(createQNameList("abstract", "Abstract"),
+				new XPath(ABSTRACT_SERVICE_XPATH, nsContext)));
 
-        cqpToISO.add( new Pair<List<QName>, XPath>( createQNameList( "format", "Format" ), new XPath( FORMAT_XPATH,
-                                                                                                      nsContext ) ) );
-        cqpToISO.add( new Pair<List<QName>, XPath>( createQNameList( "type", "Type" ),
-                                                    new XPath( TYPE_XPATH, nsContext ) ) );
-    }
+		cqpToISO
+			.add(new Pair<List<QName>, XPath>(createQNameList("format", "Format"), new XPath(FORMAT_XPATH, nsContext)));
+		cqpToISO.add(new Pair<List<QName>, XPath>(createQNameList("type", "Type"), new XPath(TYPE_XPATH, nsContext)));
+	}
 
-    public static XPath getXPathFromCQP( QName qname, String type ) {
-        XPath xPath = getFromList( cqpToISO, qname );
-        if ( xPath != null )
-            return xPath;
-        if ( "service".equals( type ) )
-            return getFromList( cqpToISO_Service, qname );
-        return getFromList( cqpToISO_Data, qname );
-    }
+	public static XPath getXPathFromCQP(QName qname, String type) {
+		XPath xPath = getFromList(cqpToISO, qname);
+		if (xPath != null)
+			return xPath;
+		if ("service".equals(type))
+			return getFromList(cqpToISO_Service, qname);
+		return getFromList(cqpToISO_Data, qname);
+	}
 
-    private static XPath getFromList( List<Pair<List<QName>, XPath>> list, QName qname ) {
-        for ( Pair<List<QName>, XPath> pairs : list ) {
-            if ( pairs.first.contains( qname ) ) {
-                return pairs.second;
-            }
-        }
-        return null;
-    }
+	private static XPath getFromList(List<Pair<List<QName>, XPath>> list, QName qname) {
+		for (Pair<List<QName>, XPath> pairs : list) {
+			if (pairs.first.contains(qname)) {
+				return pairs.second;
+			}
+		}
+		return null;
+	}
 
-    private static List<QName> createQNameList( String... strings ) {
-        List<QName> list = new ArrayList<QName>();
-        for ( int i = 0; i < strings.length; i++ ) {
-            list.add( new QName( APISO_NS, strings[i] ) );
-            list.add( new QName( CSW_202_NS, strings[i] ) );
-        }
-        return list;
-    }
+	private static List<QName> createQNameList(String... strings) {
+		List<QName> list = new ArrayList<QName>();
+		for (int i = 0; i < strings.length; i++) {
+			list.add(new QName(APISO_NS, strings[i]));
+			list.add(new QName(CSW_202_NS, strings[i]));
+		}
+		return list;
+	}
 
 }

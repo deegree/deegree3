@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -53,28 +52,27 @@ import org.deegree.workspace.Workspace;
 
 /**
  * Abstract resource provider implementation for schema based providers.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public abstract class AbstractResourceProvider<T extends Resource> implements ResourceProvider<T> {
 
-    @Override
-    public ResourceMetadata<T> read( Workspace workspace, ResourceLocation<T> location ) {
-        if ( !getNamespace().equals( location.getNamespace() ) ) {
-            return null;
-        }
-        return createFromLocation( workspace, location );
-    }
+	@Override
+	public ResourceMetadata<T> read(Workspace workspace, ResourceLocation<T> location) {
+		if (!getNamespace().equals(location.getNamespace())) {
+			return null;
+		}
+		return createFromLocation(workspace, location);
+	}
 
-    public abstract ResourceMetadata<T> createFromLocation( Workspace workspace, ResourceLocation<T> location );
+	public abstract ResourceMetadata<T> createFromLocation(Workspace workspace, ResourceLocation<T> location);
 
-    public abstract URL getSchema();
+	public abstract URL getSchema();
 
-    @Override
-    public List<ResourceMetadata<T>> getAdditionalResources( Workspace workspace ) {
-        return new ArrayList<ResourceMetadata<T>>();
-    }
+	@Override
+	public List<ResourceMetadata<T>> getAdditionalResources(Workspace workspace) {
+		return new ArrayList<ResourceMetadata<T>>();
+	}
 
 }

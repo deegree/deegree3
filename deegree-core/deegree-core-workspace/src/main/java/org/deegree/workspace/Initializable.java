@@ -28,19 +28,17 @@
 package org.deegree.workspace;
 
 /**
- * SPI extension point for global initialization. SPI providers will be called upon workspace startup before resources
- * are initialized.
- * 
+ * SPI extension point for global initialization. SPI providers will be called upon
+ * workspace startup before resources are initialized.
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public interface Initializable {
 
-    /**
-     * @param workspace
-     *            the workspace being initialized, never <code>null</code>
-     */
-    void init( Workspace workspace );
+	/**
+	 * @param workspace the workspace being initialized, never <code>null</code>
+	 */
+	void init(Workspace workspace);
 
 }

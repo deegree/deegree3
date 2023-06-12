@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -46,22 +45,20 @@ import org.deegree.commons.tom.gml.property.PropertyType;
 
 /**
  * {@link PropertyType} that defines a property with a {@link TypedObjectNodeArray} value.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * 
- * @version $Revision:$, $Date:$
  */
 public class ArrayPropertyType extends AbstractPropertyType {
 
-    public ArrayPropertyType( QName name, int minOccurs, int maxOccurs, XSElementDeclaration elDecl,
-                              List<PropertyType> substitutions ) {
-        super( name, minOccurs, maxOccurs, elDecl, substitutions );
-    }
+	public ArrayPropertyType(QName name, int minOccurs, int maxOccurs, XSElementDeclaration elDecl,
+			List<PropertyType> substitutions) {
+		super(name, minOccurs, maxOccurs, elDecl, substitutions);
+	}
 
-    @Override
-    public String toString() {
-        String s = "- array property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs;
-        return s;
-    }
+	@Override
+	public String toString() {
+		String s = "- array property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs;
+		return s;
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -41,55 +40,38 @@ import org.deegree.tile.TileIOException;
 
 /**
  * Provides transactional access to a {@link TileStore}.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface TileStoreTransaction {
 
-    /**
-     * Updates or adds a specific tile.
-     * 
-     * @param tileDataLevel
-     *            the tile data level id
-     * @param tile
-     *            the tile
-     * @param x
-     *            column index
-     * @param y
-     *            row index
-     * @throws TileIOException
-     */
-    void put( String tileDataLevel, Tile tile, long x, long y )
-                            throws TileIOException;
+	/**
+	 * Updates or adds a specific tile.
+	 * @param tileDataLevel the tile data level id
+	 * @param tile the tile
+	 * @param x column index
+	 * @param y row index
+	 * @throws TileIOException
+	 */
+	void put(String tileDataLevel, Tile tile, long x, long y) throws TileIOException;
 
-    /**
-     * Deletes a specific tile.
-     * 
-     * @param tileDataLevel
-     *            the tile data level id
-     * @param x
-     *            column index
-     * @param y
-     *            row index
-     * @throws TileIOException
-     */
-    void delete( String tileDataLevel, long x, long y )
-                            throws TileIOException;
+	/**
+	 * Deletes a specific tile.
+	 * @param tileDataLevel the tile data level id
+	 * @param x column index
+	 * @param y row index
+	 * @throws TileIOException
+	 */
+	void delete(String tileDataLevel, long x, long y) throws TileIOException;
 
-    /**
-     * Deletes all tiles intersecting with the given envelope. If tileDataLevel is null, tiles will be deleted from all
-     * tile data levels.
-     * 
-     * @param tileDataLevel
-     *            the tile data level id
-     * @param envelope
-     *            the envelope
-     * @throws TileIOException
-     */
-    void delete( String tileDataLevel, Envelope envelope )
-                            throws TileIOException;
+	/**
+	 * Deletes all tiles intersecting with the given envelope. If tileDataLevel is null,
+	 * tiles will be deleted from all tile data levels.
+	 * @param tileDataLevel the tile data level id
+	 * @param envelope the envelope
+	 * @throws TileIOException
+	 */
+	void delete(String tileDataLevel, Envelope envelope) throws TileIOException;
+
 }

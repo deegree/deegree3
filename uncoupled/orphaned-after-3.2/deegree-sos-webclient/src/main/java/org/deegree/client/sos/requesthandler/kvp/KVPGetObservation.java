@@ -8,7 +8,6 @@ import java.util.List;
  * Offering-specific KVPs are stored in a list of KVPfromOffering objects.
  * 
  * @author <a href="mailto:neumeister@lat-lon.de">Ulrich Neumeister</a>
- * @author last edited by: $Author$
  * 
  */
 public class KVPGetObservation {

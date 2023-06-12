@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -36,13 +35,13 @@
 package org.deegree.commons.ows.metadata.domain;
 
 /**
- * Marker interface for types that are allowed for building an {@link AllowedValues} instance.
- * 
+ * Marker interface for types that are allowed for building an {@link AllowedValues}
+ * instance.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface Values {
-    // marker interface
+
+	// marker interface
+
 }

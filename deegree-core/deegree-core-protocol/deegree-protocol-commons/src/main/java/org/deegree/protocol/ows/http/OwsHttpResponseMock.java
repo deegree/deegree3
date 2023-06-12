@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -51,66 +50,62 @@ import org.deegree.protocol.ows.exception.OWSExceptionReport;
 
 /**
  * {@link OwsHttpResponse} used by {@link OwsHttpClientMock}.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 class OwsHttpResponseMock implements OwsHttpResponse {
 
-    private final URL responseBody;
+	private final URL responseBody;
 
-    private final String contentType;
+	private final String contentType;
 
-    private final int httpStatus;
+	private final int httpStatus;
 
-    OwsHttpResponseMock( URL responseBody, String contentType, int httpStatus ) {
-        this.responseBody = responseBody;
-        this.contentType = contentType;
-        this.httpStatus = httpStatus;
-    }
+	OwsHttpResponseMock(URL responseBody, String contentType, int httpStatus) {
+		this.responseBody = responseBody;
+		this.contentType = contentType;
+		this.httpStatus = httpStatus;
+	}
 
-    @Override
-    public HttpResponse getAsHttpResponse() {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public HttpResponse getAsHttpResponse() {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public CloseRequiredInputStream getAsBinaryStream() {
-        try {
-            return new CloseRequiredInputStream( this, responseBody.openStream() );
-        } catch ( IOException e ) {
-            throw new RuntimeException( e.getMessage(), e );
-        }
-    }
+	@Override
+	public CloseRequiredInputStream getAsBinaryStream() {
+		try {
+			return new CloseRequiredInputStream(this, responseBody.openStream());
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e.getMessage(), e);
+		}
+	}
 
-    @Override
-    public XMLStreamReader getAsXMLStream()
-                            throws OWSExceptionReport, XMLStreamException {
-        return XMLInputFactory.newInstance().createXMLStreamReader( getAsBinaryStream(), "UTF-8" );
-    }
+	@Override
+	public XMLStreamReader getAsXMLStream() throws OWSExceptionReport, XMLStreamException {
+		return XMLInputFactory.newInstance().createXMLStreamReader(getAsBinaryStream(), "UTF-8");
+	}
 
-    @Override
-    public void assertHttpStatus200()
-                            throws OWSExceptionReport {
-        if ( httpStatus != 200 ) {
-            List<OWSException> exceptions = Collections.emptyList();
-            throw new OWSExceptionReport( exceptions, null, null );
-        }
-    }
+	@Override
+	public void assertHttpStatus200() throws OWSExceptionReport {
+		if (httpStatus != 200) {
+			List<OWSException> exceptions = Collections.emptyList();
+			throw new OWSExceptionReport(exceptions, null, null);
+		}
+	}
 
-    @Override
-    public void assertNoXmlContentTypeAndExceptionReport()
-                            throws OWSExceptionReport, XMLStreamException {
-        if ( "text/xml".equals( contentType ) ) {
-            XMLStreamReader xmlStream = getAsXMLStream();
-            OWSExceptionReader.assertNoExceptionReport( xmlStream );
-        }
-    }
+	@Override
+	public void assertNoXmlContentTypeAndExceptionReport() throws OWSExceptionReport, XMLStreamException {
+		if ("text/xml".equals(contentType)) {
+			XMLStreamReader xmlStream = getAsXMLStream();
+			OWSExceptionReader.assertNoExceptionReport(xmlStream);
+		}
+	}
 
-    @Override
-    public void close() {
-        // TODO Auto-generated method stub
-    }
+	@Override
+	public void close() {
+		// TODO Auto-generated method stub
+	}
+
 }

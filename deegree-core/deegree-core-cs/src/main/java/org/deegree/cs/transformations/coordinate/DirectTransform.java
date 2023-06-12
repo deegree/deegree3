@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -40,7 +39,6 @@ import java.util.List;
 
 import javax.vecmath.Point3d;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.CRSResource;
@@ -52,83 +50,67 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The <code>DirectTransform</code> class wraps the access to a polynomial transformation, by calling it's
- * applyPolynomial method.
- * 
+ * The <code>DirectTransform</code> class wraps the access to a polynomial transformation,
+ * by calling it's applyPolynomial method.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
-@LoggingNotes(debug = "Get information about the incoming ordinates of a direct transformation.")
 public class DirectTransform extends Transformation {
 
-    private static Logger LOG = LoggerFactory.getLogger( DirectTransform.class );
+	private static Logger LOG = LoggerFactory.getLogger(DirectTransform.class);
 
-    private final PolynomialTransformation transformation;
+	private final PolynomialTransformation transformation;
 
-    /**
-     * @param transformation
-     *            to apply
-     * @param sourceCRS
-     *            in which the points will be defined.
-     * @param id
-     *            an identifiable instance containing information about this transformation
-     */
-    public DirectTransform( PolynomialTransformation transformation, CRS sourceCRS, CRSResource id ) {
-        super( sourceCRS, transformation.getTargetCRS(), id );
-        this.transformation = transformation;
-    }
+	/**
+	 * @param transformation to apply
+	 * @param sourceCRS in which the points will be defined.
+	 * @param id an identifiable instance containing information about this transformation
+	 */
+	public DirectTransform(PolynomialTransformation transformation, CRS sourceCRS, CRSResource id) {
+		super(sourceCRS, transformation.getTargetCRS(), id);
+		this.transformation = transformation;
+	}
 
-    /**
-     * @param transformation
-     *            to apply
-     * @param sourceCRS
-     *            in which the points will be defined.
-     */
-    public DirectTransform( PolynomialTransformation transformation, CRS sourceCRS ) {
-        this(
-              transformation,
-              sourceCRS,
-              new CRSIdentifiable(
-                                   CRSCodeType.valueOf( createFromTo(
-                                                                      sourceCRS.getCode().toString(),
-                                                                      transformation.getTargetCRS().getCode().toString() ) ) ) );
+	/**
+	 * @param transformation to apply
+	 * @param sourceCRS in which the points will be defined.
+	 */
+	public DirectTransform(PolynomialTransformation transformation, CRS sourceCRS) {
+		this(transformation, sourceCRS, new CRSIdentifiable(CRSCodeType.valueOf(
+				createFromTo(sourceCRS.getCode().toString(), transformation.getTargetCRS().getCode().toString()))));
 
-    }
+	}
 
-    @Override
-    public List<Point3d> doTransform( List<Point3d> srcPts )
-                            throws TransformationException {
-        if ( LOG.isDebugEnabled() ) {
-            StringBuilder sb = new StringBuilder( "A " );
-            sb.append( getImplementationName() );
-            sb.append( " with incoming points: " );
-            sb.append( srcPts );
-            LOG.debug( sb.toString() );
-        }
-        if ( isInverseTransform() ) {
-            LOG.warn( "A Direct Transformation cannot be inverse yet" );
-        }
-        return transformation.applyPolynomial( srcPts );
-    }
+	@Override
+	public List<Point3d> doTransform(List<Point3d> srcPts) throws TransformationException {
+		if (LOG.isDebugEnabled()) {
+			StringBuilder sb = new StringBuilder("A ");
+			sb.append(getImplementationName());
+			sb.append(" with incoming points: ");
+			sb.append(srcPts);
+			LOG.debug(sb.toString());
+		}
+		if (isInverseTransform()) {
+			LOG.warn("A Direct Transformation cannot be inverse yet");
+		}
+		return transformation.applyPolynomial(srcPts);
+	}
 
-    @Override
-    public boolean isIdentity() {
-        // a transformation cannot be an identity it doesn't make a lot of sense.
-        return false;
-    }
+	@Override
+	public boolean isIdentity() {
+		// a transformation cannot be an identity it doesn't make a lot of sense.
+		return false;
+	}
 
-    @Override
-    public String toString() {
-        return super.toString() + " - Direct-Transformation: " + transformation.getImplementationName();
-    }
+	@Override
+	public String toString() {
+		return super.toString() + " - Direct-Transformation: " + transformation.getImplementationName();
+	}
 
-    @Override
-    public String getImplementationName() {
-        return transformation.getImplementationName();
-    }
+	@Override
+	public String getImplementationName() {
+		return transformation.getImplementationName();
+	}
 
 }

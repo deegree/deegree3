@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -57,41 +56,41 @@ import org.slf4j.LoggerFactory;
 
 /**
  * JAX-RS {@link MessageBodyWriter} for {@link WSDL} instances.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 @Provider
 @Produces("text/xml")
 public class WSDLWriter implements MessageBodyWriter<WSDL> {
 
-    private static Logger LOG = LoggerFactory.getLogger( WSDLWriter.class );
+	private static Logger LOG = LoggerFactory.getLogger(WSDLWriter.class);
 
-    @Override
-    public boolean isWriteable( Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType ) {
-        return type == WSDL.class;
-    }
+	@Override
+	public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+		return type == WSDL.class;
+	}
 
-    @Override
-    public long getSize( WSDL t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType ) {
-        return t.getFile().length();
-    }
+	@Override
+	public long getSize(WSDL t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+		return t.getFile().length();
+	}
 
-    @Override
-    public void writeTo( WSDL t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-                         MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream )
-                            throws IOException, WebApplicationException {
-        InputStream is = null;
-        try {
-            is = new FileInputStream( t.getFile() );
-            copy( is, entityStream );
-            entityStream.flush();
-        } catch ( IOException e ) {
-            LOG.debug( "Error sending WSDL document to client.", e );
-        } finally {
-            closeQuietly( is );
-        }
-    }
+	@Override
+	public void writeTo(WSDL t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+			MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
+			throws IOException, WebApplicationException {
+		InputStream is = null;
+		try {
+			is = new FileInputStream(t.getFile());
+			copy(is, entityStream);
+			entityStream.flush();
+		}
+		catch (IOException e) {
+			LOG.debug("Error sending WSDL document to client.", e);
+		}
+		finally {
+			closeQuietly(is);
+		}
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -51,79 +50,80 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class creates a {@link XMLStreamWriter} that writes into a temporary buffer and can create a {@link Reader} on
- * that buffer. The {@link #toString()} method allows to print the content conveniently.
+ * This class creates a {@link XMLStreamWriter} that writes into a temporary buffer and
+ * can create a {@link Reader} on that buffer. The {@link #toString()} method allows to
+ * print the content conveniently.
  * <p>
  * NOTE: This class is not thread-safe!
  * </p>
- * 
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 class XMLMemoryStreamWriter {
 
-    private static final Logger LOG = LoggerFactory.getLogger( XMLMemoryStreamWriter.class );
+	private static final Logger LOG = LoggerFactory.getLogger(XMLMemoryStreamWriter.class);
 
-    private XMLStreamWriter xmlWriter;
+	private XMLStreamWriter xmlWriter;
 
-    private StringWriter writer;
+	private StringWriter writer;
 
-    /**
-     * Create a {@link XMLStreamWriter} that writes into a buffer. Call {@link #getReader()} to close the writer and get
-     * a {@link Reader} on the buffer.
-     * 
-     * @return the XMLStreamWriter
-     */
-    XMLStreamWriter getXMLStreamWriter() {
-        if ( xmlWriter == null ) {
-            writer = new StringWriter();
-            XMLOutputFactory factory = XMLOutputFactory.newInstance();
-            factory.setProperty( "javax.xml.stream.isRepairingNamespaces", Boolean.TRUE );
-            try {
-                xmlWriter = factory.createXMLStreamWriter( writer );
-            } catch ( XMLStreamException e ) {
-                Assert.fail( "error while creating the xml writer: " + e.getMessage() );
-            }
-        }
-        return xmlWriter;
-    }
+	/**
+	 * Create a {@link XMLStreamWriter} that writes into a buffer. Call
+	 * {@link #getReader()} to close the writer and get a {@link Reader} on the buffer.
+	 * @return the XMLStreamWriter
+	 */
+	XMLStreamWriter getXMLStreamWriter() {
+		if (xmlWriter == null) {
+			writer = new StringWriter();
+			XMLOutputFactory factory = XMLOutputFactory.newInstance();
+			factory.setProperty("javax.xml.stream.isRepairingNamespaces", Boolean.TRUE);
+			try {
+				xmlWriter = factory.createXMLStreamWriter(writer);
+			}
+			catch (XMLStreamException e) {
+				Assert.fail("error while creating the xml writer: " + e.getMessage());
+			}
+		}
+		return xmlWriter;
+	}
 
-    /**
-     * Get a reader for the xml buffer. This will close the {@link XMLStreamWriter}.
-     * 
-     * @return a {@link Reader} for the buffer
-     */
-    Reader getReader() {
-        if ( xmlWriter != null ) {
-            try {
-                xmlWriter.flush();
-                xmlWriter.close();
-                xmlWriter = null;
-                writer.close();
-            } catch ( IOException e ) {
-                throw new RuntimeException( "error while closing StringWriter: " + e.getMessage() );
-            } catch ( XMLStreamException e ) {
-                throw new RuntimeException( "error while closing XMLStreamWriter: " + e.getMessage() );
-            }
-        }
-        return new StringReader( writer.getBuffer().toString() );
-    }
+	/**
+	 * Get a reader for the xml buffer. This will close the {@link XMLStreamWriter}.
+	 * @return a {@link Reader} for the buffer
+	 */
+	Reader getReader() {
+		if (xmlWriter != null) {
+			try {
+				xmlWriter.flush();
+				xmlWriter.close();
+				xmlWriter = null;
+				writer.close();
+			}
+			catch (IOException e) {
+				throw new RuntimeException("error while closing StringWriter: " + e.getMessage());
+			}
+			catch (XMLStreamException e) {
+				throw new RuntimeException("error while closing XMLStreamWriter: " + e.getMessage());
+			}
+		}
+		return new StringReader(writer.getBuffer().toString());
+	}
 
-    @Override
-    public String toString() {
-        StringBuffer sb = new StringBuffer();
-        BufferedReader reader = new BufferedReader( getReader() );
-        String line = null;
-        try {
-            while ( ( line = reader.readLine() ) != null ) {
-                sb.append( line );
-                sb.append( '\n' );
-            }
-        } catch ( IOException e ) {
-            LOG.info( e.getMessage() );
-        }
-        return sb.toString();
-    }
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		BufferedReader reader = new BufferedReader(getReader());
+		String line = null;
+		try {
+			while ((line = reader.readLine()) != null) {
+				sb.append(line);
+				sb.append('\n');
+			}
+		}
+		catch (IOException e) {
+			LOG.info(e.getMessage());
+		}
+		return sb.toString();
+	}
+
 }

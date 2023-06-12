@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -38,46 +37,37 @@ package org.deegree.commons.config;
 import java.net.URL;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface ExtendedResourceManager<T extends Resource> extends ResourceManager {
 
-    /**
-     * Initializes the metadata (can be used to scan for resource providers, important so transitive dependencies work).
-     * 
-     * @param workspace
-     */
-    void initMetadata( DeegreeWorkspace workspace );
+	/**
+	 * Initializes the metadata (can be used to scan for resource providers, important so
+	 * transitive dependencies work).
+	 * @param workspace
+	 */
+	void initMetadata(DeegreeWorkspace workspace);
 
-    /**
-     * @return a metadata object for use in GUIs, may be null
-     */
-    ResourceManagerMetadata<T> getMetadata();
+	/**
+	 * @return a metadata object for use in GUIs, may be null
+	 */
+	ResourceManagerMetadata<T> getMetadata();
 
-    /**
-     * Is used to obtain a resource instance from a configuration url and register it. The creation is usually delegated
-     * to an appropriate {@link ResourceProvider}.
-     * 
-     * @param id
-     *            the desired id of the new resource
-     * @param configUrl
-     *            the configuration url of the new resource
-     * @return the new resource instance
-     * @throws ResourceInitException
-     *             if an error occurred while creating the resource
-     */
-    T create( String id, URL configUrl )
-                            throws ResourceInitException;
+	/**
+	 * Is used to obtain a resource instance from a configuration url and register it. The
+	 * creation is usually delegated to an appropriate {@link ResourceProvider}.
+	 * @param id the desired id of the new resource
+	 * @param configUrl the configuration url of the new resource
+	 * @return the new resource instance
+	 * @throws ResourceInitException if an error occurred while creating the resource
+	 */
+	T create(String id, URL configUrl) throws ResourceInitException;
 
-    /**
-     * Is used to obtain a resource instance from an id.
-     * 
-     * @param id
-     * @return null, if no such resource has been registered
-     */
-    T get( String id );
+	/**
+	 * Is used to obtain a resource instance from an id.
+	 * @param id
+	 * @return null, if no such resource has been registered
+	 */
+	T get(String id);
+
 }

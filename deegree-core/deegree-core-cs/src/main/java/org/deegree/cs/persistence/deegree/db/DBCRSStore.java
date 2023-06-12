@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -47,66 +46,59 @@ import org.deegree.cs.transformations.TransformationFactory.DSTransform;
 
 /**
  * TODO add class documentation here
- * 
- * This class have to be implemented - it's just an skeleton for the EPSGDBSynchronizer, yet!
- * 
+ *
+ * This class have to be implemented - it's just an skeleton for the EPSGDBSynchronizer,
+ * yet!
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class DBCRSStore extends AbstractCRSStore {
 
-    public DBCRSStore( DSTransform prefTransformType ) {
-        super( prefTransformType );
-        // TODO Auto-generated constructor stub
-    }
+	public DBCRSStore(DSTransform prefTransformType) {
+		super(prefTransformType);
+		// TODO Auto-generated constructor stub
+	}
 
-    @Override
-    public void init() {
-        // TODO Auto-generated method stub
+	@Override
+	public void init() {
+		// TODO Auto-generated method stub
 
-    }
+	}
 
-    @Override
-    public List<ICRS> getAvailableCRSs()
-                            throws CRSConfigurationException {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	@Override
+	public List<ICRS> getAvailableCRSs() throws CRSConfigurationException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    @Override
-    public List<CRSCodeType[]> getAvailableCRSCodes()
-                            throws CRSConfigurationException {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	@Override
+	public List<CRSCodeType[]> getAvailableCRSCodes() throws CRSConfigurationException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    @Override
-    public ICRS getCoordinateSystem( String id ) {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	@Override
+	public ICRS getCoordinateSystem(String id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    @Override
-    public Transformation getDirectTransformation( ICRS sourceCRS, ICRS targetCRS )
-                            throws CRSConfigurationException {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	@Override
+	public Transformation getDirectTransformation(ICRS sourceCRS, ICRS targetCRS) throws CRSConfigurationException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    @Override
-    public Transformation getDirectTransformation( String id )
-                            throws CRSConfigurationException {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	@Override
+	public Transformation getDirectTransformation(String id) throws CRSConfigurationException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    @Override
-    public CRSResource getCRSResource( CRSCodeType id )
-                            throws CRSConfigurationException {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	@Override
+	public CRSResource getCRSResource(CRSCodeType id) throws CRSConfigurationException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

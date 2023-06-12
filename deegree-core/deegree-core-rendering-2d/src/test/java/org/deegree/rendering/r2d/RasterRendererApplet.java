@@ -60,144 +60,148 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Test applet for raster rendering functions.
- * 
+ *
  * @author Andrei Aiordachioaie
  */
 public class RasterRendererApplet extends JApplet {
-    private static final long serialVersionUID = 5323930312991827270L;
 
-    public static final Logger LOG = LoggerFactory.getLogger( RasterRendererApplet.class );
+	private static final long serialVersionUID = 5323930312991827270L;
 
-    private AbstractRaster car, dem, doll;
+	public static final Logger LOG = LoggerFactory.getLogger(RasterRendererApplet.class);
 
-    @Override
-    public void paint( Graphics g ) {
-        loadRasters();
+	private AbstractRaster car, dem, doll;
 
-        renderRasterWithCategorize();
-        renderRasterWithInterpolate();
-        renderHillShadedRaster();
-        renderRasterSelectedChannels();
-    }
+	@Override
+	public void paint(Graphics g) {
+		loadRasters();
 
-    @Override
-    public void init() {
-        this.setSize( 840, 800 );
-    }
+		renderRasterWithCategorize();
+		renderRasterWithInterpolate();
+		renderHillShadedRaster();
+		renderRasterSelectedChannels();
+	}
 
-    public Categorize loadCategorizeFromXml( String name ) {
-        RasterStyling style = loadRasterStylingFromXml( name );
-        if ( style != null )
-            return style.categorize;
-        return null;
-    }
+	@Override
+	public void init() {
+		this.setSize(840, 800);
+	}
 
-    public Interpolate loadInterpolateFromXml( String name ) {
-        RasterStyling style = loadRasterStylingFromXml( name );
-        if ( style != null )
-            return style.interpolate;
-        return null;
-    }
+	public Categorize loadCategorizeFromXml(String name) {
+		RasterStyling style = loadRasterStylingFromXml(name);
+		if (style != null)
+			return style.categorize;
+		return null;
+	}
 
-    public RasterStyling loadRasterStylingFromXml( String fname ) {
-        RasterStyling rs = null;
-        try {
-            // LOG.debug( "Loading SE XML..." );
-            URI uri = RasterRendererApplet.class.getResource( fname ).toURI();
-            LOG.debug( "Loading resource: " + uri );
-            File f = new File( uri );
-            final XMLInputFactory fac = XMLInputFactory.newInstance();
-            XMLStreamReader in = fac.createXMLStreamReader( f.toString(), new FileInputStream( f ) );
-            in.next();
-            if ( in.getEventType() == XMLStreamConstants.START_DOCUMENT ) {
-                in.nextTag();
-            }
-            in.require( XMLStreamConstants.START_ELEMENT, null, "RasterSymbolizer" );
-            Symbolizer<RasterStyling> symb = SymbologyParser.INSTANCE.parseRasterSymbolizer( in, null );
-            rs = symb.evaluate( null, null ).first;
-            LOG.debug( "Loaded SE XML" );
-        } catch ( Exception e ) {
-            LOG.error( "Could not load XML file...", e );
-        }
+	public Interpolate loadInterpolateFromXml(String name) {
+		RasterStyling style = loadRasterStylingFromXml(name);
+		if (style != null)
+			return style.interpolate;
+		return null;
+	}
 
-        return rs;
-    }
+	public RasterStyling loadRasterStylingFromXml(String fname) {
+		RasterStyling rs = null;
+		try {
+			// LOG.debug( "Loading SE XML..." );
+			URI uri = RasterRendererApplet.class.getResource(fname).toURI();
+			LOG.debug("Loading resource: " + uri);
+			File f = new File(uri);
+			final XMLInputFactory fac = XMLInputFactory.newInstance();
+			XMLStreamReader in = fac.createXMLStreamReader(f.toString(), new FileInputStream(f));
+			in.next();
+			if (in.getEventType() == XMLStreamConstants.START_DOCUMENT) {
+				in.nextTag();
+			}
+			in.require(XMLStreamConstants.START_ELEMENT, null, "RasterSymbolizer");
+			Symbolizer<RasterStyling> symb = SymbologyParser.INSTANCE.parseRasterSymbolizer(in, null);
+			rs = symb.evaluate(null, null).first;
+			LOG.debug("Loaded SE XML");
+		}
+		catch (Exception e) {
+			LOG.error("Could not load XML file...", e);
+		}
 
-    public static void printFileContents( File f ) {
-        try {
-            String strCat = "", line;
-            BufferedReader buf = new BufferedReader( new FileReader( f ) );
-            while ( ( line = buf.readLine() ) != null ) {
-                strCat += line;
-                System.err.println( line );
-            }
-            LOG.debug( strCat );
-        } catch ( IOException e ) {
-            e.printStackTrace();
-        }
-    }
+		return rs;
+	}
 
-    /* Load a RasterStyle that contains a Categorize operation for the ColorMap */
-    private void renderRasterWithCategorize() {
-        RasterStyling style = loadRasterStylingFromXml( "setest17.xml" );
-        LOG.debug( "Found opacity: {}", style.opacity );
-        Graphics2D g2d = (Graphics2D) this.getGraphics();
-        Java2DRasterRenderer r = new Java2DRasterRenderer( g2d );
+	public static void printFileContents(File f) {
+		try {
+			String strCat = "", line;
+			BufferedReader buf = new BufferedReader(new FileReader(f));
+			while ((line = buf.readLine()) != null) {
+				strCat += line;
+				System.err.println(line);
+			}
+			LOG.debug(strCat);
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
-        r.render( style, car );
-    }
+	/* Load a RasterStyle that contains a Categorize operation for the ColorMap */
+	private void renderRasterWithCategorize() {
+		RasterStyling style = loadRasterStylingFromXml("setest17.xml");
+		LOG.debug("Found opacity: {}", style.opacity);
+		Graphics2D g2d = (Graphics2D) this.getGraphics();
+		Java2DRasterRenderer r = new Java2DRasterRenderer(g2d);
 
-    /* Render a raster after an Interpolation operation for the ColorMap */
-    private void renderRasterWithInterpolate() {
-        RasterStyling style = loadRasterStylingFromXml( "setest18.xml" );
-        LOG.debug( "Found interpolate: {}", style.interpolate );
-        Graphics2D g2d = (Graphics2D) this.getGraphics().create( 420, 0, 400, 380 );
-        Java2DRasterRenderer r = new Java2DRasterRenderer( g2d );
+		r.render(style, car);
+	}
 
-        r.render( style, car );
-    }
+	/* Render a raster after an Interpolation operation for the ColorMap */
+	private void renderRasterWithInterpolate() {
+		RasterStyling style = loadRasterStylingFromXml("setest18.xml");
+		LOG.debug("Found interpolate: {}", style.interpolate);
+		Graphics2D g2d = (Graphics2D) this.getGraphics().create(420, 0, 400, 380);
+		Java2DRasterRenderer r = new Java2DRasterRenderer(g2d);
 
-    /* Render a raster after hill-shading */
-    private void renderHillShadedRaster() {
-        RasterStyling style = loadRasterStylingFromXml( "setest21.xml" );
-        LOG.debug( "Found hill-shading: {}", style.shaded );
-        LOG.debug( "Found interpolate: {}", style.interpolate );
-        Graphics2D g2d = (Graphics2D) this.getGraphics().create( 10, 310, 370, 370 );
-        Java2DRasterRenderer r = new Java2DRasterRenderer( g2d );
-        r.render( style, dem );
-    }
+		r.render(style, car);
+	}
 
-    /* Render a raster after selecting (actually swapping) channels */
-    private void renderRasterSelectedChannels() {
-        RasterStyling style = loadRasterStylingFromXml( "setest20.xml" );
-        Graphics2D g2d = (Graphics2D) this.getGraphics().create( 400, 310, 370, 370 );
-        Java2DRasterRenderer r = new Java2DRasterRenderer( g2d );
-        r.render( style, doll );
-    }
+	/* Render a raster after hill-shading */
+	private void renderHillShadedRaster() {
+		RasterStyling style = loadRasterStylingFromXml("setest21.xml");
+		LOG.debug("Found hill-shading: {}", style.shaded);
+		LOG.debug("Found interpolate: {}", style.interpolate);
+		Graphics2D g2d = (Graphics2D) this.getGraphics().create(10, 310, 370, 370);
+		Java2DRasterRenderer r = new Java2DRasterRenderer(g2d);
+		r.render(style, dem);
+	}
 
-    private void loadRasters() {
-        try {
-            LOG.trace( "Loading images..." );
+	/* Render a raster after selecting (actually swapping) channels */
+	private void renderRasterSelectedChannels() {
+		RasterStyling style = loadRasterStylingFromXml("setest20.xml");
+		Graphics2D g2d = (Graphics2D) this.getGraphics().create(400, 310, 370, 370);
+		Java2DRasterRenderer r = new Java2DRasterRenderer(g2d);
+		r.render(style, doll);
+	}
 
-            URI uri = RasterRendererApplet.class.getResource( "image.png" ).toURI();
-            RasterFactory.loadRasterFromFile( new File( uri ) );
+	private void loadRasters() {
+		try {
+			LOG.trace("Loading images...");
 
-            uri = RasterRendererApplet.class.getResource( "car.jpg" ).toURI();
-            car = RasterFactory.loadRasterFromFile( new File( uri ) );
+			URI uri = RasterRendererApplet.class.getResource("image.png").toURI();
+			RasterFactory.loadRasterFromFile(new File(uri));
 
-            uri = RasterRendererApplet.class.getResource( "demimage.png" ).toURI();
-            dem = RasterFactory.loadRasterFromFile( new File( uri ) );
+			uri = RasterRendererApplet.class.getResource("car.jpg").toURI();
+			car = RasterFactory.loadRasterFromFile(new File(uri));
 
-            uri = RasterRendererApplet.class.getResource( "RussianDoll.jpg" ).toURI();
-            doll = RasterFactory.loadRasterFromFile( new File( uri ) );
+			uri = RasterRendererApplet.class.getResource("demimage.png").toURI();
+			dem = RasterFactory.loadRasterFromFile(new File(uri));
 
-            uri = RasterRendererApplet.class.getResource( "snow.jpg" ).toURI();
-            RasterFactory.loadRasterFromFile( new File( uri ) );
+			uri = RasterRendererApplet.class.getResource("RussianDoll.jpg").toURI();
+			doll = RasterFactory.loadRasterFromFile(new File(uri));
 
-            LOG.trace( "Loaded images" );
-        } catch ( Exception e ) {
-            LOG.error( "Could not load images...", e );
-        }
-    }
+			uri = RasterRendererApplet.class.getResource("snow.jpg").toURI();
+			RasterFactory.loadRasterFromFile(new File(uri));
+
+			LOG.trace("Loaded images");
+		}
+		catch (Exception e) {
+			LOG.error("Could not load images...", e);
+		}
+	}
 
 }

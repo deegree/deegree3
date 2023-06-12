@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -43,258 +42,238 @@ import org.deegree.cs.refs.components.GeodeticDatumRef;
 import org.deegree.cs.transformations.helmert.Helmert;
 
 /**
- * A <code>GeodeticDatum</code> (aka. HorizontalDatum) holds an ellipse and a prime-meridian.
- * 
+ * A <code>GeodeticDatum</code> (aka. HorizontalDatum) holds an ellipse and a
+ * prime-meridian.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 
 public class GeodeticDatum extends Datum implements IGeodeticDatum {
 
-    /**
-     * The default WGS 1984 datum, with primeMeridian set to Greenwich and default (no) wgs84 conversion info.
-     */
-    public static final GeodeticDatum WGS84 = new GeodeticDatum( Ellipsoid.WGS84, new CRSCodeType( "6326", "EPSG" ),
-                                                                 "WGS_1984" );
+	/**
+	 * The default WGS 1984 datum, with primeMeridian set to Greenwich and default (no)
+	 * wgs84 conversion info.
+	 */
+	public static final GeodeticDatum WGS84 = new GeodeticDatum(Ellipsoid.WGS84, new CRSCodeType("6326", "EPSG"),
+			"WGS_1984");
 
-    private IPrimeMeridian primeMeridian;
+	private IPrimeMeridian primeMeridian;
 
-    private IEllipsoid ellipsoid;
+	private IEllipsoid ellipsoid;
 
-    private Helmert toWGS84;
+	private Helmert toWGS84;
 
-    /**
-     * @param ellipsoid
-     *            of this datum
-     * @param primeMeridian
-     *            to which this datum is defined.
-     * @param toWGS84
-     *            bursa-wolf parameters describing the transform from this datum into the wgs84 datum.
-     * @param id
-     *            containing all relevant id data.
-     */
-    public GeodeticDatum( IEllipsoid ellipsoid, IPrimeMeridian primeMeridian, Helmert toWGS84, CRSResource id ) {
-        super( id );
-        this.ellipsoid = ellipsoid;
-        this.primeMeridian = primeMeridian;
-        this.toWGS84 = toWGS84;
-    }
+	/**
+	 * @param ellipsoid of this datum
+	 * @param primeMeridian to which this datum is defined.
+	 * @param toWGS84 bursa-wolf parameters describing the transform from this datum into
+	 * the wgs84 datum.
+	 * @param id containing all relevant id data.
+	 */
+	public GeodeticDatum(IEllipsoid ellipsoid, IPrimeMeridian primeMeridian, Helmert toWGS84, CRSResource id) {
+		super(id);
+		this.ellipsoid = ellipsoid;
+		this.primeMeridian = primeMeridian;
+		this.toWGS84 = toWGS84;
+	}
 
-    /**
-     * @param ellipsoid
-     *            of this datum
-     * @param primeMeridian
-     *            to which this datum is defined.
-     * @param id
-     *            containing all relevant id data.
-     */
-    public GeodeticDatum( IEllipsoid ellipsoid, IPrimeMeridian primeMeridian, CRSResource id ) {
-        this( ellipsoid, primeMeridian, null, id );
-    }
+	/**
+	 * @param ellipsoid of this datum
+	 * @param primeMeridian to which this datum is defined.
+	 * @param id containing all relevant id data.
+	 */
+	public GeodeticDatum(IEllipsoid ellipsoid, IPrimeMeridian primeMeridian, CRSResource id) {
+		this(ellipsoid, primeMeridian, null, id);
+	}
 
-    /**
-     * @param ellipsoid
-     *            of this datum
-     * @param primeMeridian
-     *            to which this datum is defined.
-     * @param toWGS84
-     *            bursa-wolf parameters describing the transform from this datum into the wgs84 datum.
-     * @param codes
-     * @param names
-     * @param versions
-     * @param descriptions
-     * @param areasOfUse
-     */
-    public GeodeticDatum( IEllipsoid ellipsoid, IPrimeMeridian primeMeridian, Helmert toWGS84, CRSCodeType[] codes,
-                          String[] names, String[] versions, String[] descriptions, String[] areasOfUse ) {
-        this( ellipsoid, primeMeridian, toWGS84, new CRSIdentifiable( codes, names, versions, descriptions, areasOfUse ) );
-    }
+	/**
+	 * @param ellipsoid of this datum
+	 * @param primeMeridian to which this datum is defined.
+	 * @param toWGS84 bursa-wolf parameters describing the transform from this datum into
+	 * the wgs84 datum.
+	 * @param codes
+	 * @param names
+	 * @param versions
+	 * @param descriptions
+	 * @param areasOfUse
+	 */
+	public GeodeticDatum(IEllipsoid ellipsoid, IPrimeMeridian primeMeridian, Helmert toWGS84, CRSCodeType[] codes,
+			String[] names, String[] versions, String[] descriptions, String[] areasOfUse) {
+		this(ellipsoid, primeMeridian, toWGS84, new CRSIdentifiable(codes, names, versions, descriptions, areasOfUse));
+	}
 
-    /**
-     * A datum with given ellipsoid and a GreenWich prime-meridian.
-     * 
-     * @param ellipsoid
-     *            of this datum
-     * @param toWGS84
-     *            bursa-wolf parameters describing the transform from this datum into the wgs84 datum.
-     * @param codes
-     */
-    public GeodeticDatum( IEllipsoid ellipsoid, Helmert toWGS84, CRSCodeType[] codes ) {
-        this( ellipsoid, PrimeMeridian.GREENWICH, toWGS84, new CRSIdentifiable( codes, null, null, null, null ) );
-    }
+	/**
+	 * A datum with given ellipsoid and a GreenWich prime-meridian.
+	 * @param ellipsoid of this datum
+	 * @param toWGS84 bursa-wolf parameters describing the transform from this datum into
+	 * the wgs84 datum.
+	 * @param codes
+	 */
+	public GeodeticDatum(IEllipsoid ellipsoid, Helmert toWGS84, CRSCodeType[] codes) {
+		this(ellipsoid, PrimeMeridian.GREENWICH, toWGS84, new CRSIdentifiable(codes, null, null, null, null));
+	}
 
-    /**
-     * A datum with given ellipsoid and a prime-meridian.
-     * 
-     * @param ellipsoid
-     *            of this datum
-     * @param primeMeridian
-     *            to which this datum is defined.
-     * @param toWGS84
-     *            bursa-wolf parameters describing the transform from this datum into the wgs84 datum.
-     * @param codes
-     */
-    public GeodeticDatum( IEllipsoid ellipsoid, IPrimeMeridian primeMeridian, Helmert toWGS84, CRSCodeType[] codes ) {
-        this( ellipsoid, primeMeridian, toWGS84, new CRSIdentifiable( codes, null, null, null, null ) );
-    }
+	/**
+	 * A datum with given ellipsoid and a prime-meridian.
+	 * @param ellipsoid of this datum
+	 * @param primeMeridian to which this datum is defined.
+	 * @param toWGS84 bursa-wolf parameters describing the transform from this datum into
+	 * the wgs84 datum.
+	 * @param codes
+	 */
+	public GeodeticDatum(IEllipsoid ellipsoid, IPrimeMeridian primeMeridian, Helmert toWGS84, CRSCodeType[] codes) {
+		this(ellipsoid, primeMeridian, toWGS84, new CRSIdentifiable(codes, null, null, null, null));
+	}
 
-    /**
-     * @param ellipsoid
-     *            of this datum
-     * @param primeMeridian
-     *            to which this datum is defined.
-     * @param toWGS84
-     *            bursa-wolf parameters describing the transform from this datum into the wgs84 datum.
-     * @param code
-     * @param name
-     * @param version
-     * @param description
-     * @param areaOfUse
-     */
-    public GeodeticDatum( IEllipsoid ellipsoid, IPrimeMeridian primeMeridian, Helmert toWGS84, CRSCodeType code,
-                          String name, String version, String description, String areaOfUse ) {
-        this( ellipsoid, primeMeridian, toWGS84, new CRSIdentifiable( new CRSCodeType[] { code },
-                                                                      new String[] { name }, new String[] { version },
-                                                                      new String[] { description },
-                                                                      new String[] { areaOfUse } ) );
-    }
+	/**
+	 * @param ellipsoid of this datum
+	 * @param primeMeridian to which this datum is defined.
+	 * @param toWGS84 bursa-wolf parameters describing the transform from this datum into
+	 * the wgs84 datum.
+	 * @param code
+	 * @param name
+	 * @param version
+	 * @param description
+	 * @param areaOfUse
+	 */
+	public GeodeticDatum(IEllipsoid ellipsoid, IPrimeMeridian primeMeridian, Helmert toWGS84, CRSCodeType code,
+			String name, String version, String description, String areaOfUse) {
+		this(ellipsoid, primeMeridian, toWGS84, new CRSIdentifiable(new CRSCodeType[] { code }, new String[] { name },
+				new String[] { version }, new String[] { description }, new String[] { areaOfUse }));
+	}
 
-    /**
-     * A datum with given ellipsoid and a GreenWich prime-meridian.
-     * 
-     * @param ellipsoid
-     *            of this datum
-     * @param toWGS84
-     *            bursa-wolf parameters describing the transform from this datum into the wgs84 datum.
-     * @param code
-     * @param name
-     */
-    public GeodeticDatum( IEllipsoid ellipsoid, Helmert toWGS84, CRSCodeType code, String name ) {
-        this( ellipsoid, PrimeMeridian.GREENWICH, toWGS84,
-              new CRSIdentifiable( new CRSCodeType[] { code }, new String[] { name }, null, null, null ) );
-    }
+	/**
+	 * A datum with given ellipsoid and a GreenWich prime-meridian.
+	 * @param ellipsoid of this datum
+	 * @param toWGS84 bursa-wolf parameters describing the transform from this datum into
+	 * the wgs84 datum.
+	 * @param code
+	 * @param name
+	 */
+	public GeodeticDatum(IEllipsoid ellipsoid, Helmert toWGS84, CRSCodeType code, String name) {
+		this(ellipsoid, PrimeMeridian.GREENWICH, toWGS84,
+				new CRSIdentifiable(new CRSCodeType[] { code }, new String[] { name }, null, null, null));
+	}
 
-    /**
-     * A datum with given ellipsoid and a GreenWich prime-meridian, with no helmert.
-     * 
-     * @param ellipsoid
-     *            of this datum
-     * @param code
-     * @param name
-     */
-    public GeodeticDatum( IEllipsoid ellipsoid, CRSCodeType code, String name ) {
-        this( ellipsoid, PrimeMeridian.GREENWICH, null, new CRSIdentifiable( new CRSCodeType[] { code },
-                                                                             new String[] { name }, null, null, null ) );
-    }
+	/**
+	 * A datum with given ellipsoid and a GreenWich prime-meridian, with no helmert.
+	 * @param ellipsoid of this datum
+	 * @param code
+	 * @param name
+	 */
+	public GeodeticDatum(IEllipsoid ellipsoid, CRSCodeType code, String name) {
+		this(ellipsoid, PrimeMeridian.GREENWICH, null,
+				new CRSIdentifiable(new CRSCodeType[] { code }, new String[] { name }, null, null, null));
+	}
 
-    /**
-     * @return the ellipsoid.
-     */
-    public final IEllipsoid getEllipsoid() {
-        return ellipsoid;
-    }
+	/**
+	 * @return the ellipsoid.
+	 */
+	public final IEllipsoid getEllipsoid() {
+		return ellipsoid;
+	}
 
-    /**
-     * @return the primeMeridian.
-     */
-    public final IPrimeMeridian getPrimeMeridian() {
-        return primeMeridian;
-    }
+	/**
+	 * @return the primeMeridian.
+	 */
+	public final IPrimeMeridian getPrimeMeridian() {
+		return primeMeridian;
+	}
 
-    /**
-     * @param primeMeridian
-     */
-    public final void setPrimeMeridian( IPrimeMeridian primeMeridian ) {
-        this.primeMeridian = primeMeridian;
-    }
+	/**
+	 * @param primeMeridian
+	 */
+	public final void setPrimeMeridian(IPrimeMeridian primeMeridian) {
+		this.primeMeridian = primeMeridian;
+	}
 
-    /**
-     * @return the toWGS84Conversion information needed to convert this geodetic Datum into the geocentric WGS84 Datum.
-     */
-    public final Helmert getWGS84Conversion() {
-        return toWGS84;
-    }
+	/**
+	 * @return the toWGS84Conversion information needed to convert this geodetic Datum
+	 * into the geocentric WGS84 Datum.
+	 */
+	public final Helmert getWGS84Conversion() {
+		return toWGS84;
+	}
 
-    /**
-     * 
-     * @param toWGS84Conversion
-     *            the transformation to be used to convert this geodetic datum into the wgs84 datum.
-     */
-    public final void setToWGS84( Helmert toWGS84Conversion ) {
-        this.toWGS84 = toWGS84Conversion;
-    }
+	/**
+	 * @param toWGS84Conversion the transformation to be used to convert this geodetic
+	 * datum into the wgs84 datum.
+	 */
+	public final void setToWGS84(Helmert toWGS84Conversion) {
+		this.toWGS84 = toWGS84Conversion;
+	}
 
-    @Override
-    public boolean equals( Object other ) {
-        if ( other instanceof GeodeticDatumRef ) {
-            other = ( (GeodeticDatumRef) other ).getReferencedObject();
-        }
-        if ( other != null && other instanceof GeodeticDatum ) {
-            GeodeticDatum that = (GeodeticDatum) other;
-            return this.getPrimeMeridian().equals( that.getPrimeMeridian() )
-                   && this.getEllipsoid().equals( that.getEllipsoid() )
-                   // && ( ( this.getWGS84Conversion() == null ) ? that.getWGS84Conversion() == null
-                   // : this.getWGS84Conversion().equals(
-                   // that.getWGS84Conversion() ) )
-                   && super.equals( that );
-        }
-        return false;
-    }
+	@Override
+	public boolean equals(Object other) {
+		if (other instanceof GeodeticDatumRef) {
+			other = ((GeodeticDatumRef) other).getReferencedObject();
+		}
+		if (other != null && other instanceof GeodeticDatum) {
+			GeodeticDatum that = (GeodeticDatum) other;
+			return this.getPrimeMeridian().equals(that.getPrimeMeridian())
+					&& this.getEllipsoid().equals(that.getEllipsoid())
+					// && ( ( this.getWGS84Conversion() == null ) ?
+					// that.getWGS84Conversion() == null
+					// : this.getWGS84Conversion().equals(
+					// that.getWGS84Conversion() ) )
+					&& super.equals(that);
+		}
+		return false;
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.cs.CRSIdentifiable#toString()
-     */
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder( super.toString() );
-        sb.append( "\n - Ellipsoid: " ).append( ellipsoid );
-        sb.append( "\n - Primemeridian: " ).append( primeMeridian );
-        if ( this.toWGS84 != null ) {
-            sb.append( "\n - wgs84-conversion-info: " ).append( toWGS84 );
-        }
-        return sb.toString();
-    }
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see org.deegree.cs.CRSIdentifiable#toString()
+	 */
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder(super.toString());
+		sb.append("\n - Ellipsoid: ").append(ellipsoid);
+		sb.append("\n - Primemeridian: ").append(primeMeridian);
+		if (this.toWGS84 != null) {
+			sb.append("\n - wgs84-conversion-info: ").append(toWGS84);
+		}
+		return sb.toString();
+	}
 
-    /**
-     * Implementation as proposed by Joshua Block in Effective Java (Addison-Wesley 2001), which supplies an even
-     * distribution and is relatively fast. It is created from field <b>f</b> as follows:
-     * <ul>
-     * <li>boolean -- code = (f ? 0 : 1)</li>
-     * <li>byte, char, short, int -- code = (int)f</li>
-     * <li>long -- code = (int)(f ^ (f &gt;&gt;&gt;32))</li>
-     * <li>float -- code = Float.floatToIntBits(f);</li>
-     * <li>double -- long l = Double.doubleToLongBits(f); code = (int)(l ^ (l &gt;&gt;&gt; 32))</li>
-     * <li>all Objects, (where equals(&nbsp;) calls equals(&nbsp;) for this field) -- code = f.hashCode(&nbsp;)</li>
-     * <li>Array -- Apply above rules to each element</li>
-     * </ul>
-     * <p>
-     * Combining the hash code(s) computed above: result = 37 * result + code;
-     * </p>
-     * 
-     * @return (int) ( result >>> 32 ) ^ (int) result;
-     * 
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-        // the 2.nd million th. prime, :-)
-        long code = 32452843;
-        if ( primeMeridian != null ) {
-            code = code * 37 + primeMeridian.hashCode();
-        }
-        if ( ellipsoid != null ) {
-            code = code * 37 + ellipsoid.hashCode();
-        }
-        if ( toWGS84 != null ) {
-            code = code * 37 + toWGS84.hashCode();
-        }
-        return (int) ( code >>> 32 ) ^ (int) code;
-    }
+	/**
+	 * Implementation as proposed by Joshua Block in Effective Java (Addison-Wesley 2001),
+	 * which supplies an even distribution and is relatively fast. It is created from
+	 * field <b>f</b> as follows:
+	 * <ul>
+	 * <li>boolean -- code = (f ? 0 : 1)</li>
+	 * <li>byte, char, short, int -- code = (int)f</li>
+	 * <li>long -- code = (int)(f ^ (f &gt;&gt;&gt;32))</li>
+	 * <li>float -- code = Float.floatToIntBits(f);</li>
+	 * <li>double -- long l = Double.doubleToLongBits(f); code = (int)(l ^ (l &gt;&gt;&gt;
+	 * 32))</li>
+	 * <li>all Objects, (where equals(&nbsp;) calls equals(&nbsp;) for this field) -- code
+	 * = f.hashCode(&nbsp;)</li>
+	 * <li>Array -- Apply above rules to each element</li>
+	 * </ul>
+	 * <p>
+	 * Combining the hash code(s) computed above: result = 37 * result + code;
+	 * </p>
+	 * @return (int) ( result >>> 32 ) ^ (int) result;
+	 *
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		// the 2.nd million th. prime, :-)
+		long code = 32452843;
+		if (primeMeridian != null) {
+			code = code * 37 + primeMeridian.hashCode();
+		}
+		if (ellipsoid != null) {
+			code = code * 37 + ellipsoid.hashCode();
+		}
+		if (toWGS84 != null) {
+			code = code * 37 + toWGS84.hashCode();
+		}
+		return (int) (code >>> 32) ^ (int) code;
+	}
 
 }

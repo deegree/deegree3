@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -50,46 +49,42 @@ import org.deegree.protocol.wfs.AbstractWFSRequestKVPAdapter;
 import org.deegree.protocol.wfs.storedquery.DescribeStoredQueries;
 
 /**
- * Adapter between KVP <code>DescribeStoredQueries</code> requests and {@link DescribeStoredQueries} objects.
+ * Adapter between KVP <code>DescribeStoredQueries</code> requests and
+ * {@link DescribeStoredQueries} objects.
  * <p>
  * Supported versions:
  * <ul>
  * <li>WFS 2.0.0</li>
  * </ul>
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class DescribeStoredQueriesKVPAdapter extends AbstractWFSRequestKVPAdapter {
 
-    /**
-     * Parses a normalized KVP-map as a WFS {@link DescribeStoredQueries} request.
-     * 
-     * @param kvpParams
-     *            normalized KVP-map; keys must be uppercase, each key only has one associated value
-     * @return parsed {@link DescribeStoredQueries} request
-     * @throws MissingParameterException
-     *             if the request version is unsupported
-     * @throws InvalidParameterValueException
-     *             if a parameter contains a syntax error
-     */
-    public static DescribeStoredQueries parse( Map<String, String> kvpParams )
-                            throws MissingParameterException, InvalidParameterValueException {
+	/**
+	 * Parses a normalized KVP-map as a WFS {@link DescribeStoredQueries} request.
+	 * @param kvpParams normalized KVP-map; keys must be uppercase, each key only has one
+	 * associated value
+	 * @return parsed {@link DescribeStoredQueries} request
+	 * @throws MissingParameterException if the request version is unsupported
+	 * @throws InvalidParameterValueException if a parameter contains a syntax error
+	 */
+	public static DescribeStoredQueries parse(Map<String, String> kvpParams)
+			throws MissingParameterException, InvalidParameterValueException {
 
-        Version version = Version.parseVersion( KVPUtils.getRequired( kvpParams, "VERSION" ) );
-        if ( !( VERSION_200.equals( version ) ) ) {
-            String msg = Messages.get( "UNSUPPORTED_VERSION", version, Version.getVersionsString( VERSION_200 ) );
-            throw new InvalidParameterValueException( msg );
-        }
+		Version version = Version.parseVersion(KVPUtils.getRequired(kvpParams, "VERSION"));
+		if (!(VERSION_200.equals(version))) {
+			String msg = Messages.get("UNSUPPORTED_VERSION", version, Version.getVersionsString(VERSION_200));
+			throw new InvalidParameterValueException(msg);
+		}
 
-        String[] storedQueryIds = null;
-        if ( kvpParams.get( "STOREDQUERY_ID" ) != null ) {
-            storedQueryIds = StringUtils.split( kvpParams.get( "STOREDQUERY_ID" ), "," );
-        }
+		String[] storedQueryIds = null;
+		if (kvpParams.get("STOREDQUERY_ID") != null) {
+			storedQueryIds = StringUtils.split(kvpParams.get("STOREDQUERY_ID"), ",");
+		}
 
-        return new DescribeStoredQueries( version, null, storedQueryIds );
-    }
+		return new DescribeStoredQueries(version, null, storedQueryIds);
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -37,62 +36,54 @@ package org.deegree.commons.jdbc;
 
 /**
  * Table name with optional schema qualifier and optional quoting.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: markus $
- * 
- * @version $Revision: $, $Date: $
  */
 public class TableName extends SQLIdentifier {
 
-    /**
-     * Creates a new {@link TableName} instance.
-     * 
-     * @param identifier
-     *            table identifier (with optional schema and quoting), must not be <code>null</code>
-     */
-    public TableName( String identifier ) {
-        super( identifier );
-    }
+	/**
+	 * Creates a new {@link TableName} instance.
+	 * @param identifier table identifier (with optional schema and quoting), must not be
+	 * <code>null</code>
+	 */
+	public TableName(String identifier) {
+		super(identifier);
+	}
 
-    /**
-     * Creates a new {@link TableName} instance.
-     * 
-     * @param table
-     *            database table identifier, never <code>null</code>
-     * @param schema
-     *            database schema identifier, can be <code>null</code>
-     */
-    public TableName( String table, String schema ) {
-        super( table, schema );
-    }
+	/**
+	 * Creates a new {@link TableName} instance.
+	 * @param table database table identifier, never <code>null</code>
+	 * @param schema database schema identifier, can be <code>null</code>
+	 */
+	public TableName(String table, String schema) {
+		super(table, schema);
+	}
 
-    /**
-     * Returns the name of the table (without schema).
-     * 
-     * @return the name of the table, never <code>null</code>
-     */
-    public String getTable() {
-        return getName();
-    }
+	/**
+	 * Returns the name of the table (without schema).
+	 * @return the name of the table, never <code>null</code>
+	 */
+	public String getTable() {
+		return getName();
+	}
 
-    /**
-     * Returns the name of the schema.
-     * 
-     * @return the name of the schema, can be <code>null</code> (default schema)
-     */
-    public String getSchema() {
-        return getQualifier();
-    }
+	/**
+	 * Returns the name of the schema.
+	 * @return the name of the schema, can be <code>null</code> (default schema)
+	 */
+	public String getSchema() {
+		return getQualifier();
+	}
 
-    public static TableName createFromQualifiedName( String tableName ) {
-        String table = tableName;
-        String schema = null;
-        if ( table.contains( "." ) ) {
-            String[] splittedQualifiedTableName = table.split( "[.]" );
-            schema = splittedQualifiedTableName[0];
-            table = splittedQualifiedTableName[1];
-        }
-        return new TableName( table, schema );
-    }
+	public static TableName createFromQualifiedName(String tableName) {
+		String table = tableName;
+		String schema = null;
+		if (table.contains(".")) {
+			String[] splittedQualifiedTableName = table.split("[.]");
+			schema = splittedQualifiedTableName[0];
+			table = splittedQualifiedTableName[1];
+		}
+		return new TableName(table, schema);
+	}
+
 }

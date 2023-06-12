@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2014 by:
@@ -23,7 +22,7 @@
  Boomkamp 16
  7461 AX Rijssen
  The Netherlands
- http://idgis.nl/ 
+ http://idgis.nl/
 
  lat/lon GmbH
  Aennchenstr. 19, 53177 Bonn
@@ -51,74 +50,72 @@ import org.deegree.featureinfo.FeatureInfoContext;
 
 public class StandardFeatureInfoContext implements FeatureInfoContext {
 
-    private final HttpResponseBuffer response;
+	private final HttpResponseBuffer response;
 
-    private OutputStream outputStream = null;
+	private OutputStream outputStream = null;
 
-    private XMLStreamWriter xmlWriter = null;
+	private XMLStreamWriter xmlWriter = null;
 
-    private boolean redirected = false;
+	private boolean redirected = false;
 
-    public StandardFeatureInfoContext( HttpResponseBuffer response ) {
-        this.response = response;
-    }
+	public StandardFeatureInfoContext(HttpResponseBuffer response) {
+		this.response = response;
+	}
 
-    @Override
-    public OutputStream getOutputStream()
-                            throws IOException {
+	@Override
+	public OutputStream getOutputStream() throws IOException {
 
-        if ( outputStream != null ) {
-            return outputStream;
-        }
+		if (outputStream != null) {
+			return outputStream;
+		}
 
-        if ( redirected ) {
-            throw new IllegalStateException( "sendRedirect() already called for FeatureInfoContext" );
-        }
+		if (redirected) {
+			throw new IllegalStateException("sendRedirect() already called for FeatureInfoContext");
+		}
 
-        if ( xmlWriter != null ) {
-            throw new IllegalStateException( "getXmlWriter() already called for FeatureInfoContext" );
-        }
+		if (xmlWriter != null) {
+			throw new IllegalStateException("getXmlWriter() already called for FeatureInfoContext");
+		}
 
-        return outputStream = response.getOutputStream();
-    }
+		return outputStream = response.getOutputStream();
+	}
 
-    @Override
-    public XMLStreamWriter getXmlWriter()
-                            throws IOException, XMLStreamException {
+	@Override
+	public XMLStreamWriter getXmlWriter() throws IOException, XMLStreamException {
 
-        if ( xmlWriter != null ) {
-            return xmlWriter;
-        }
+		if (xmlWriter != null) {
+			return xmlWriter;
+		}
 
-        if ( redirected ) {
-            throw new IllegalStateException( "sendRedirect() already called for FeatureInfoContext" );
-        }
+		if (redirected) {
+			throw new IllegalStateException("sendRedirect() already called for FeatureInfoContext");
+		}
 
-        if ( outputStream != null ) {
-            throw new IllegalStateException( "getOutputStream() already called for FeatureInfoContext" );
-        }
+		if (outputStream != null) {
+			throw new IllegalStateException("getOutputStream() already called for FeatureInfoContext");
+		}
 
-        return xmlWriter = response.getXMLWriter();
-    }
+		return xmlWriter = response.getXMLWriter();
+	}
 
-    @Override
-    public void sendRedirect( String location )
-                            throws IOException {
+	@Override
+	public void sendRedirect(String location) throws IOException {
 
-        if ( redirected ) {
-            throw new IllegalStateException( "sendRedirect() already called for FeatureInfoContext" );
-        }
+		if (redirected) {
+			throw new IllegalStateException("sendRedirect() already called for FeatureInfoContext");
+		}
 
-        if ( outputStream != null ) {
-            throw new IllegalStateException( "getOutputStream() already called for FeatureInfoContext" );
-        }
+		if (outputStream != null) {
+			throw new IllegalStateException("getOutputStream() already called for FeatureInfoContext");
+		}
 
-        if ( xmlWriter != null ) {
-            throw new IllegalStateException( "getXmlWriter() already called for FeatureInfoContext" );
-        }
+		if (xmlWriter != null) {
+			throw new IllegalStateException("getXmlWriter() already called for FeatureInfoContext");
+		}
 
-        response.getWrappee().sendRedirect( location );
+		response.getWrappee().sendRedirect(location);
 
-        redirected = true;
-    }
+		redirected = true;
+	}
+
 }

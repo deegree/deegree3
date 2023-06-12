@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -43,55 +42,52 @@ import org.deegree.filter.XPathEvaluator;
 
 /**
  * TODO add documentation here
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * 
- * @version $Revision:$, $Date:$
  */
 public class PropertyIsNull extends ComparisonOperator {
 
-    private final Expression propName;
+	private final Expression propName;
 
-    public PropertyIsNull( Expression propName, MatchAction matchAction ) {
-        super( true, matchAction );
-        this.propName = propName;
-    }
+	public PropertyIsNull(Expression propName, MatchAction matchAction) {
+		super(true, matchAction);
+		this.propName = propName;
+	}
 
-    public Expression getPropertyName() {
-        return propName;
-    }
+	public Expression getPropertyName() {
+		return propName;
+	}
 
-    @Override
-    public SubType getSubType() {
-        return SubType.PROPERTY_IS_NULL;
-    }
+	@Override
+	public SubType getSubType() {
+		return SubType.PROPERTY_IS_NULL;
+	}
 
-    @Override
-    public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
-                            throws FilterEvaluationException {
+	@Override
+	public <T> boolean evaluate(T obj, XPathEvaluator<T> xpathEvaluator) throws FilterEvaluationException {
 
-        TypedObjectNode[] paramValues = propName.evaluate( obj, xpathEvaluator );
-        if ( paramValues.length == 0 ) {
-            return true;
-        }
-        for ( Object value : paramValues ) {
-            if ( value == null ) {
-                return true;
-            }
-        }
-        return false;
-    }
+		TypedObjectNode[] paramValues = propName.evaluate(obj, xpathEvaluator);
+		if (paramValues.length == 0) {
+			return true;
+		}
+		for (Object value : paramValues) {
+			if (value == null) {
+				return true;
+			}
+		}
+		return false;
+	}
 
-    @Override
-    public String toString( String indent ) {
-        String s = indent + "-PropertyIsNull\n";
-        s += propName.toString( indent + "  " );
-        return s;
-    }
+	@Override
+	public String toString(String indent) {
+		String s = indent + "-PropertyIsNull\n";
+		s += propName.toString(indent + "  ");
+		return s;
+	}
 
-    @Override
-    public Expression[] getParams() {
-        return new Expression[] { propName };
-    }
+	@Override
+	public Expression[] getParams() {
+		return new Expression[] { propName };
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -62,61 +61,61 @@ import org.deegree.services.wps.output.ComplexOutput;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:name@deegree.org">Your Name</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class BufferProcesslet implements Processlet, GeometryHandler {
 
-    @Override
-    public void destroy() {
-        // TODO Auto-generated method stub
+	@Override
+	public void destroy() {
+		// TODO Auto-generated method stub
 
-    }
+	}
 
-    @Override
-    public void init() {
-        // TODO Auto-generated method stub
+	@Override
+	public void init() {
+		// TODO Auto-generated method stub
 
-    }
+	}
 
-    @Override
-    public void process( ProcessletInputs in, ProcessletOutputs out, ProcessletExecutionInfo info )
-                            throws ProcessletException {
-        double bufferDistance = Double.parseDouble( ( (LiteralInput) in.getParameter( "BufferDistance" ) ).getValue() );
-        ComplexInput gmlInputGeometry = (ComplexInput) in.getParameter( "GMLInput" );
+	@Override
+	public void process(ProcessletInputs in, ProcessletOutputs out, ProcessletExecutionInfo info)
+			throws ProcessletException {
+		double bufferDistance = Double.parseDouble(((LiteralInput) in.getParameter("BufferDistance")).getValue());
+		ComplexInput gmlInputGeometry = (ComplexInput) in.getParameter("GMLInput");
 
-        Geometry geom = null;
-        Geometry bufferedGeom = null;
-        try {
-            XMLStreamReader xmlReader = gmlInputGeometry.getValueAsXMLStream();
-            GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_31, xmlReader );
-            geom = gmlReader.readGeometry();
+		Geometry geom = null;
+		Geometry bufferedGeom = null;
+		try {
+			XMLStreamReader xmlReader = gmlInputGeometry.getValueAsXMLStream();
+			GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader(GML_31, xmlReader);
+			geom = gmlReader.readGeometry();
 
-            bufferedGeom = geom.getBuffer( new Measure( new BigDecimal( bufferDistance ), "unity" ) );
-        } catch ( Exception e ) {
-            throw new ProcessletException( "Error parsing parameter " + gmlInputGeometry.getIdentifier() + ": "
-                                           + e.getMessage() );
-        }
+			bufferedGeom = geom.getBuffer(new Measure(new BigDecimal(bufferDistance), "unity"));
+		}
+		catch (Exception e) {
+			throw new ProcessletException(
+					"Error parsing parameter " + gmlInputGeometry.getIdentifier() + ": " + e.getMessage());
+		}
 
-        ComplexOutput gmlOutputGeometry = (ComplexOutput) out.getParameter( "BufferedGeometry" );
+		ComplexOutput gmlOutputGeometry = (ComplexOutput) out.getParameter("BufferedGeometry");
 
-        try {
-            SchemaLocationXMLStreamWriter sw = new SchemaLocationXMLStreamWriter( gmlOutputGeometry.getXMLStreamWriter(),
-                                                                    "http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/base/geometryAggregates.xsd" );
-            sw.setPrefix( "gml", GMLNS );
-            GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter( GML_31, sw );
-            gmlWriter.write( bufferedGeom );
-        } catch ( Exception e ) {
-            throw new ProcessletException( "Error exporting geometry: " + e.getMessage() );
-        }
-    }
+		try {
+			SchemaLocationXMLStreamWriter sw = new SchemaLocationXMLStreamWriter(gmlOutputGeometry.getXMLStreamWriter(),
+					"http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/base/geometryAggregates.xsd");
+			sw.setPrefix("gml", GMLNS);
+			GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter(GML_31, sw);
+			gmlWriter.write(bufferedGeom);
+		}
+		catch (Exception e) {
+			throw new ProcessletException("Error exporting geometry: " + e.getMessage());
+		}
+	}
 
-    @Override
-    public Geometry process( Geometry inputGeometry, Map<String, Object> params ) {
-        double bufferDistance = (Double) params.get( "BufferDistance" );
-        return inputGeometry.getBuffer( new Measure( new BigDecimal( bufferDistance ), "unity" ) );
-    }
+	@Override
+	public Geometry process(Geometry inputGeometry, Map<String, Object> params) {
+		double bufferDistance = (Double) params.get("BufferDistance");
+		return inputGeometry.getBuffer(new Measure(new BigDecimal(bufferDistance), "unity"));
+	}
+
 }

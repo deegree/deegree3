@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -45,36 +44,34 @@ import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 
 /**
- * This class can generates ServiceExceptionReports v. 1.2.0, the format accepted by WCS 1.0.0.
- * 
+ * This class can generates ServiceExceptionReports v. 1.2.0, the format accepted by WCS
+ * 1.0.0.
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class WCS100ServiceExceptionReportSerializer extends XMLExceptionSerializer {
 
-    private static final String OGC_NS = "http://www.opengis.net/ogc";
+	private static final String OGC_NS = "http://www.opengis.net/ogc";
 
-    private static final String OGC_SCHEMA = "http://schemas.opengis.net/wcs/1.0.0/OGC-exception.xsd";
+	private static final String OGC_SCHEMA = "http://schemas.opengis.net/wcs/1.0.0/OGC-exception.xsd";
 
-    @Override
-    public void serializeExceptionToXML( XMLStreamWriter writer, OWSException ex )
-                            throws XMLStreamException {
+	@Override
+	public void serializeExceptionToXML(XMLStreamWriter writer, OWSException ex) throws XMLStreamException {
 
-        writer.writeStartElement( DEFAULT_NS_PREFIX, "ServiceExceptionReport", OGC_NS );
-        writer.writeNamespace( DEFAULT_NS_PREFIX, OGC_NS );
-        writer.writeNamespace( "xsi", XSINS );
-        writer.writeAttribute( XSINS, "schemaLocation", OGC_NS + " " + OGC_SCHEMA );
-        writer.writeAttribute( "version", "1.2.0" );
-        writer.writeStartElement( OGC_NS, "ServiceException" );
-        writer.writeAttribute( "code", ex.getExceptionCode() );
-        if ( ex.getLocator().length() > 0 ) {
-            writer.writeAttribute( "locator", ex.getLocator() );
-        }
-        writer.writeCharacters( ex.getMessage() );
-        writer.writeEndElement(); // ServiceException
-        writer.writeEndElement(); // ServiceExceptionReport
-    }
+		writer.writeStartElement(DEFAULT_NS_PREFIX, "ServiceExceptionReport", OGC_NS);
+		writer.writeNamespace(DEFAULT_NS_PREFIX, OGC_NS);
+		writer.writeNamespace("xsi", XSINS);
+		writer.writeAttribute(XSINS, "schemaLocation", OGC_NS + " " + OGC_SCHEMA);
+		writer.writeAttribute("version", "1.2.0");
+		writer.writeStartElement(OGC_NS, "ServiceException");
+		writer.writeAttribute("code", ex.getExceptionCode());
+		if (ex.getLocator().length() > 0) {
+			writer.writeAttribute("locator", ex.getLocator());
+		}
+		writer.writeCharacters(ex.getMessage() != null ? ex.getMessage() : "not available");
+		writer.writeEndElement(); // ServiceException
+		writer.writeEndElement(); // ServiceExceptionReport
+	}
+
 }

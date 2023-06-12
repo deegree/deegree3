@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -39,37 +38,32 @@ import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.workspace.Workspace;
 
 /**
- * A provider can be used to provide multiple exception serializers for multiple services, identified by their
- * implementation metadata.
- * 
+ * A provider can be used to provide multiple exception serializers for multiple services,
+ * identified by their implementation metadata.
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface SerializerProvider {
 
-    /**
-     * Called before anything else, so configuration files can be loaded etc.
-     * 
-     * @param workspace
-     */
-    void init( Workspace workspace );
+	/**
+	 * Called before anything else, so configuration files can be loaded etc.
+	 * @param workspace
+	 */
+	void init(Workspace workspace);
 
-    /**
-     * @param metadata
-     * @return true, if the provider wants to serialize exceptions for the service implementation specified by its
-     *         metadata
-     */
-    boolean matches( ImplementationMetadata<?> metadata );
+	/**
+	 * @param metadata
+	 * @return true, if the provider wants to serialize exceptions for the service
+	 * implementation specified by its metadata
+	 */
+	boolean matches(ImplementationMetadata<?> metadata);
 
-    /**
-     * @param metadata
-     * @param originalSerializer
-     *            the originally selected serializer
-     * @return an exception serializer for the specified service. Must not return null if matches(metadata) would return
-     *         true.
-     */
-    ExceptionSerializer getSerializer( ImplementationMetadata<?> metadata, ExceptionSerializer originalSerializer );
+	/**
+	 * @param metadata
+	 * @param originalSerializer the originally selected serializer
+	 * @return an exception serializer for the specified service. Must not return null if
+	 * matches(metadata) would return true.
+	 */
+	ExceptionSerializer getSerializer(ImplementationMetadata<?> metadata, ExceptionSerializer originalSerializer);
 
 }

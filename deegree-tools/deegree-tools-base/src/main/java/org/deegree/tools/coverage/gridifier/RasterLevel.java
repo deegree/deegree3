@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -38,79 +37,73 @@ package org.deegree.tools.coverage.gridifier;
 
 /**
  * The <code>RasterLevel</code> class some simple values for each level.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * 
- * @version $Revision: $, $Date: $
  */
 public class RasterLevel {
 
-    private int id;
+	private int id;
 
-    private int level;
+	private int level;
 
-    private double minScale;
+	private double minScale;
 
-    private double maxScale;
+	private double maxScale;
 
-    /**
-     * @param id
-     *            of the level
-     * @param level
-     *            of the tree
-     * @param minScale
-     *            the min scale
-     * @param maxScale
-     *            the max scale
-     */
-    public RasterLevel( int id, int level, double minScale, double maxScale ) {
-        this.id = id;
-        this.level = level;
-        this.minScale = minScale;
-        this.maxScale = maxScale;
-    }
+	/**
+	 * @param id of the level
+	 * @param level of the tree
+	 * @param minScale the min scale
+	 * @param maxScale the max scale
+	 */
+	public RasterLevel(int id, int level, double minScale, double maxScale) {
+		this.id = id;
+		this.level = level;
+		this.minScale = minScale;
+		this.maxScale = maxScale;
+	}
 
-    /**
-     * @return the level
-     */
-    public int getLevel() {
-        return level;
-    }
+	/**
+	 * @return the level
+	 */
+	public int getLevel() {
+		return level;
+	}
 
-    /**
-     * @return the min scale
-     */
-    public double getMinScale() {
-        return minScale;
-    }
+	/**
+	 * @return the min scale
+	 */
+	public double getMinScale() {
+		return minScale;
+	}
 
-    /**
-     * @return the max scale
-     */
-    public double getMaxScale() {
-        return maxScale;
-    }
+	/**
+	 * @return the max scale
+	 */
+	public double getMaxScale() {
+		return maxScale;
+	}
 
-    @Override
-    public String toString() {
-        return "{level=" + level + ",minScale=" + minScale + ",maxScale=" + maxScale + "}";
-    }
+	@Override
+	public String toString() {
+		return "{level=" + level + ",minScale=" + minScale + ",maxScale=" + maxScale + "}";
+	}
 
-    /**
-     * @return I really don't know
-     */
-    public double getNativeScale() {
-        if ( maxScale < 10000 ) {
-            return maxScale;
-        }
-        return minScale * 2;
-    }
+	/**
+	 * @return I really don't know
+	 */
+	public double getNativeScale() {
+		if (maxScale < 10000) {
+			return maxScale;
+		}
+		return minScale * 2;
+	}
 
-    /**
-     * @return the id
-     */
-    public final int getId() {
-        return id;
-    }
+	/**
+	 * @return the id
+	 */
+	public final int getId() {
+		return id;
+	}
+
 }

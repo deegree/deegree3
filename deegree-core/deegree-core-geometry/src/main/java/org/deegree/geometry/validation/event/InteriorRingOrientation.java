@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -41,81 +40,74 @@ import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
 
 /**
- * {@link GeometryValidationEvent} that indicates the orientation of an interior {@link Ring} of a {@link PolygonPatch}.
- * 
+ * {@link GeometryValidationEvent} that indicates the orientation of an interior
+ * {@link Ring} of a {@link PolygonPatch}.
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * 
- * @version $Revision: $, $Date: $
  */
 public class InteriorRingOrientation extends AbstractGeometryValidationEvent {
 
-    private final PolygonPatch patch;
+	private final PolygonPatch patch;
 
-    private final int ringIdx;
+	private final int ringIdx;
 
-    private final boolean isClockwise;
+	private final boolean isClockwise;
 
-    /**
-     * Creates a new {@link InteriorRingOrientation} instance.
-     * 
-     * @param patch
-     *            patch that the ring belongs to, never <code>null</code>
-     * @param ringIdx
-     *            index of the affected interior ring (starting at 0)
-     * @param isClockwise
-     *            <code>true</code> if orientation is clockwise, <code>false</code> if counter-clockwise
-     * @param geometryParticleHierarchy
-     *            list of affected geometry particles (that the patch is part of), must not be <code>null</code>
-     */
-    public InteriorRingOrientation( PolygonPatch patch, int ringIdx, boolean isClockwise,
-                                    List<Object> geometryParticleHierarchy ) {
-        super( geometryParticleHierarchy );
-        this.patch = patch;
-        this.ringIdx = ringIdx;
-        this.isClockwise = isClockwise;
-    }
+	/**
+	 * Creates a new {@link InteriorRingOrientation} instance.
+	 * @param patch patch that the ring belongs to, never <code>null</code>
+	 * @param ringIdx index of the affected interior ring (starting at 0)
+	 * @param isClockwise <code>true</code> if orientation is clockwise,
+	 * <code>false</code> if counter-clockwise
+	 * @param geometryParticleHierarchy list of affected geometry particles (that the
+	 * patch is part of), must not be <code>null</code>
+	 */
+	public InteriorRingOrientation(PolygonPatch patch, int ringIdx, boolean isClockwise,
+			List<Object> geometryParticleHierarchy) {
+		super(geometryParticleHierarchy);
+		this.patch = patch;
+		this.ringIdx = ringIdx;
+		this.isClockwise = isClockwise;
+	}
 
-    /**
-     * Returns the affected {@link PolygonPatch} geometry.
-     * 
-     * @return affected patch, never <code>null</code>
-     */
-    public PolygonPatch getPatch() {
-        return patch;
-    }
+	/**
+	 * Returns the affected {@link PolygonPatch} geometry.
+	 * @return affected patch, never <code>null</code>
+	 */
+	public PolygonPatch getPatch() {
+		return patch;
+	}
 
-    /**
-     * Returns the index of the affected interior ring (starting at 0).
-     * 
-     * @return index of the affected interior ring
-     */
-    public int getRingIdx() {
-        return ringIdx;
-    }
+	/**
+	 * Returns the index of the affected interior ring (starting at 0).
+	 * @return index of the affected interior ring
+	 */
+	public int getRingIdx() {
+		return ringIdx;
+	}
 
-    /**
-     * Returns the orientation.
-     * 
-     * @return <code>true</code> if orientation is clockwise, <code>false</code> if counter-clockwise
-     */
-    public boolean isClockwise() {
-        return isClockwise;
-    }
+	/**
+	 * Returns the orientation.
+	 * @return <code>true</code> if orientation is clockwise, <code>false</code> if
+	 * counter-clockwise
+	 */
+	public boolean isClockwise() {
+		return isClockwise;
+	}
 
-    /**
-     * Returns true if the geometry is an interior boundary.
-     * 
-     * @return <code>true</code> if geometry is an interior boundary, <code>false</code> if it's exterior
-     */
-    public boolean isInterior() {
-        boolean isInterior = isClockwise;
+	/**
+	 * Returns true if the geometry is an interior boundary.
+	 * @return <code>true</code> if geometry is an interior boundary, <code>false</code>
+	 * if it's exterior
+	 */
+	public boolean isInterior() {
+		boolean isInterior = isClockwise;
 
-        if ( isLeftHanded( patch.getInteriorRings().get( ringIdx ).getCoordinateSystem() ) ) {
-            isInterior = !isInterior;
-        }
+		if (isLeftHanded(patch.getInteriorRings().get(ringIdx).getCoordinateSystem())) {
+			isInterior = !isInterior;
+		}
 
-        return isInterior;
-    }
+		return isInterior;
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -71,247 +70,243 @@ import org.deegree.rendering.r3d.ViewParams;
 
 /**
  * The <code>GetViewKVPAdapter</code> class provides a GetView request chopper.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class GetViewKVPAdapter {
 
-    private static final double RAD_90 = Math.toRadians( 90 );
+	private static final double RAD_90 = Math.toRadians(90);
 
-    private static final double RAD_360 = Math.toRadians( 360 );
+	private static final double RAD_360 = Math.toRadians(360);
 
-    private static final GregorianCalendar DEFAULT_CAL = new GregorianCalendar( 2009, 2, 21, 12, 0 );
+	private static final GregorianCalendar DEFAULT_CAL = new GregorianCalendar(2009, 2, 21, 12, 0);
 
-    /**
-     * Factory method to create an instance of GetView from teh parameters in <code>model</code>
-     * 
-     * @param requestParams
-     *            a map containing request parameters and values
-     * @param encoding
-     *            of the request
-     * @param translationVector
-     * @param configuredNearClippingPlane
-     * @param configuredFarClippingPlane
-     * @return a new instance of GetView
-     * @throws OWSException
-     *             if a mandatory parameter is missing or if a parameter has an illegal value
-     */
-    public static GetView create( Map<String, String> requestParams, String encoding, double[] translationVector,
-                                  double configuredNearClippingPlane, double configuredFarClippingPlane )
-                            throws OWSException {
+	/**
+	 * Factory method to create an instance of GetView from teh parameters in
+	 * <code>model</code>
+	 * @param requestParams a map containing request parameters and values
+	 * @param encoding of the request
+	 * @param translationVector
+	 * @param configuredNearClippingPlane
+	 * @param configuredFarClippingPlane
+	 * @return a new instance of GetView
+	 * @throws OWSException if a mandatory parameter is missing or if a parameter has an
+	 * illegal value
+	 */
+	public static GetView create(Map<String, String> requestParams, String encoding, double[] translationVector,
+			double configuredNearClippingPlane, double configuredFarClippingPlane) throws OWSException {
 
-        String id = requestParams.get( "ID" );
-        try {
-            String version = KVPUtils.getRequired( requestParams, "VERSION" );
+		String id = requestParams.get("ID");
+		try {
+			String version = KVPUtils.getRequired(requestParams, "VERSION");
 
-            ICRS coordinateSystem = CRSManager.lookup( KVPUtils.getRequired( requestParams, "CRS" ) );
+			ICRS coordinateSystem = CRSManager.lookup(KVPUtils.getRequired(requestParams, "CRS"));
 
-            Envelope requestedBBox = getBoundingBox( requestParams, coordinateSystem, encoding, translationVector );
-            ViewParams viewParams = getViewParams( requestParams, translationVector, configuredNearClippingPlane,
-                                                   configuredFarClippingPlane );
-            GetViewResponseParameters responseParams = getResponseParams( requestParams );
-            GetViewSceneParameters sceneParameters = getSceneParameters( requestParams );
+			Envelope requestedBBox = getBoundingBox(requestParams, coordinateSystem, encoding, translationVector);
+			ViewParams viewParams = getViewParams(requestParams, translationVector, configuredNearClippingPlane,
+					configuredFarClippingPlane);
+			GetViewResponseParameters responseParams = getResponseParams(requestParams);
+			GetViewSceneParameters sceneParameters = getSceneParameters(requestParams);
 
-            return new GetView( id, version, coordinateSystem, requestedBBox, viewParams, responseParams,
-                                sceneParameters );
-        } catch ( InvalidParameterValueException e ) {
-            throw new OWSException( e.getMessage(), OWSException.INVALID_PARAMETER_VALUE );
-        } catch ( MissingParameterException e ) {
-            throw new OWSException( e.getMessage(), OWSException.MISSING_PARAMETER_VALUE );
-        } catch ( UnknownCRSException e ) {
-            throw new OWSException( e.getMessage(), OWSException.INVALID_CRS );
-        }
-    }
+			return new GetView(id, version, coordinateSystem, requestedBBox, viewParams, responseParams,
+					sceneParameters);
+		}
+		catch (InvalidParameterValueException e) {
+			throw new OWSException(e.getMessage(), OWSException.INVALID_PARAMETER_VALUE);
+		}
+		catch (MissingParameterException e) {
+			throw new OWSException(e.getMessage(), OWSException.MISSING_PARAMETER_VALUE);
+		}
+		catch (UnknownCRSException e) {
+			throw new OWSException(e.getMessage(), OWSException.INVALID_CRS);
+		}
+	}
 
-    private static Envelope getBoundingBox( Map<String, String> requestParams, ICRS coordinateSystem, String encoding,
-                                            double[] translationVector )
-                            throws OWSException {
-        String boxstring = getRequired( requestParams, "BOUNDINGBOX" );
-        try {
-            boxstring = URLDecoder.decode( boxstring, encoding );
-        } catch ( UnsupportedEncodingException e ) {
-            throw new OWSException( "Cannot decode BOUNDINGBOX: ' " + boxstring + " using " + encoding,
-                                    OWSException.INVALID_PARAMETER_VALUE );
-        }
+	private static Envelope getBoundingBox(Map<String, String> requestParams, ICRS coordinateSystem, String encoding,
+			double[] translationVector) throws OWSException {
+		String boxstring = getRequired(requestParams, "BOUNDINGBOX");
+		try {
+			boxstring = URLDecoder.decode(boxstring, encoding);
+		}
+		catch (UnsupportedEncodingException e) {
+			throw new OWSException("Cannot decode BOUNDINGBOX: ' " + boxstring + " using " + encoding,
+					OWSException.INVALID_PARAMETER_VALUE);
+		}
 
-        String[] tokens = boxstring.split( "," );
-        if ( tokens.length != 4 ) {
-            throw new OWSException( "BOUNDINGBOX value must have a value such as xmin,ymin,xmax,ymax",
-                                    OWSException.INVALID_PARAMETER_VALUE );
-        }
+		String[] tokens = boxstring.split(",");
+		if (tokens.length != 4) {
+			throw new OWSException("BOUNDINGBOX value must have a value such as xmin,ymin,xmax,ymax",
+					OWSException.INVALID_PARAMETER_VALUE);
+		}
 
-        double minx;
-        double maxx;
-        double miny;
-        double maxy;
-        try {
-            minx = Double.parseDouble( tokens[0] ) + translationVector[0];
-            miny = Double.parseDouble( tokens[1] ) + translationVector[1];
-            maxx = Double.parseDouble( tokens[2] ) + translationVector[0];
-            maxy = Double.parseDouble( tokens[3] ) + translationVector[1];
-        } catch ( NumberFormatException e ) {
-            throw new OWSException( "BOUNDINGBOX has an illegal value: " + e.getMessage(),
-                                    OWSException.INVALID_PARAMETER_VALUE );
-        }
+		double minx;
+		double maxx;
+		double miny;
+		double maxy;
+		try {
+			minx = Double.parseDouble(tokens[0]) + translationVector[0];
+			miny = Double.parseDouble(tokens[1]) + translationVector[1];
+			maxx = Double.parseDouble(tokens[2]) + translationVector[0];
+			maxy = Double.parseDouble(tokens[3]) + translationVector[1];
+		}
+		catch (NumberFormatException e) {
+			throw new OWSException("BOUNDINGBOX has an illegal value: " + e.getMessage(),
+					OWSException.INVALID_PARAMETER_VALUE);
+		}
 
-        if ( minx >= maxx ) {
-            throw new OWSException( "minx must be less than maxx", OWSException.INVALID_PARAMETER_VALUE );
-        }
+		if (minx >= maxx) {
+			throw new OWSException("minx must be less than maxx", OWSException.INVALID_PARAMETER_VALUE);
+		}
 
-        if ( miny >= maxy ) {
-            throw new OWSException( "miny must be less than maxy", OWSException.INVALID_PARAMETER_VALUE );
-        }
+		if (miny >= maxy) {
+			throw new OWSException("miny must be less than maxy", OWSException.INVALID_PARAMETER_VALUE);
+		}
 
-        return new GeometryFactory().createEnvelope( minx, miny, maxx, maxy, coordinateSystem );
+		return new GeometryFactory().createEnvelope(minx, miny, maxx, maxy, coordinateSystem);
 
-    }
+	}
 
-    private static ViewParams getViewParams( Map<String, String> requestParams, double[] translationVector,
-                                             double configuredNearClippingPlane, double configuredFarClippingPlane )
-                            throws OWSException {
-        // width
-        int width = getRequiredInt( requestParams, "WIDTH" );
-        int height = getRequiredInt( requestParams, "HEIGHT" );
+	private static ViewParams getViewParams(Map<String, String> requestParams, double[] translationVector,
+			double configuredNearClippingPlane, double configuredFarClippingPlane) throws OWSException {
+		// width
+		int width = getRequiredInt(requestParams, "WIDTH");
+		int height = getRequiredInt(requestParams, "HEIGHT");
 
-        if ( width < 0 || height < 0 ) {
-            throw new OWSException( "WIDTH and HEIGHT must be >= 0", OWSException.INVALID_PARAMETER_VALUE );
-        }
+		if (width < 0 || height < 0) {
+			throw new OWSException("WIDTH and HEIGHT must be >= 0", OWSException.INVALID_PARAMETER_VALUE);
+		}
 
-        double angleOfView = getRequiredDouble( requestParams, "AOV" );
-        /**
-         * checking for > 0 || < 180
-         */
-        if ( ( angleOfView <= 0 ) || ( angleOfView >= 180 ) ) {
-            throw new OWSException( "AOV value must be a number between 0° and 180°",
-                                    OWSException.INVALID_PARAMETER_VALUE );
-        }
+		double angleOfView = getRequiredDouble(requestParams, "AOV");
+		/**
+		 * checking for > 0 || < 180
+		 */
+		if ((angleOfView <= 0) || (angleOfView >= 180)) {
+			throw new OWSException("AOV value must be a number between 0° and 180°",
+					OWSException.INVALID_PARAMETER_VALUE);
+		}
 
-        /**
-         * checking for > 360 && < 360
-         */
-        double roll = Math.toRadians( getRequiredDouble( requestParams, "ROLL" ) ) % RAD_360;
-        if ( roll < 0 ) {
-            roll += RAD_360;
-        }
+		/**
+		 * checking for > 360 && < 360
+		 */
+		double roll = Math.toRadians(getRequiredDouble(requestParams, "ROLL")) % RAD_360;
+		if (roll < 0) {
+			roll += RAD_360;
+		}
 
-        double distance = getRequiredDouble( requestParams, "DISTANCE" );
-        if ( distance < 0 ) {
-            throw new OWSException( "DISTANCE must be a number >= 0.", OWSException.INVALID_PARAMETER_VALUE );
-        }
+		double distance = getRequiredDouble(requestParams, "DISTANCE");
+		if (distance < 0) {
+			throw new OWSException("DISTANCE must be a number >= 0.", OWSException.INVALID_PARAMETER_VALUE);
+		}
 
-        double pitch = Math.toRadians( getRequiredDouble( requestParams, "PITCH" ) );
-        if ( ( pitch < -RAD_90 ) || ( pitch > RAD_90 ) ) {
-            throw new OWSException( "PITCH value must be a number between -90° and 90°",
-                                    OWSException.INVALID_PARAMETER_VALUE );
-        }
+		double pitch = Math.toRadians(getRequiredDouble(requestParams, "PITCH"));
+		if ((pitch < -RAD_90) || (pitch > RAD_90)) {
+			throw new OWSException("PITCH value must be a number between -90° and 90°",
+					OWSException.INVALID_PARAMETER_VALUE);
+		}
 
-        double yaw = Math.toRadians( getRequiredDouble( requestParams, "YAW" ) ) % RAD_360;
-        if ( yaw < 0 ) {
-            yaw += RAD_360;
-        }
+		double yaw = Math.toRadians(getRequiredDouble(requestParams, "YAW")) % RAD_360;
+		if (yaw < 0) {
+			yaw += RAD_360;
+		}
 
-        String poi = KVPUtils.getRequired( requestParams, "POI" );
-        double[] pointOfInterest = ArrayUtils.splitAsDoubles( poi, "," );
+		String poi = KVPUtils.getRequired(requestParams, "POI");
+		double[] pointOfInterest = ArrayUtils.splitAsDoubles(poi, ",");
 
-        if ( pointOfInterest.length != 3 ) {
-            throw new OWSException(
-                                    "POI value must denote a number tuple with valid x,y,z values, for example '123.45,678.90,456.123'",
-                                    OWSException.INVALID_PARAMETER_VALUE );
-        }
+		if (pointOfInterest.length != 3) {
+			throw new OWSException(
+					"POI value must denote a number tuple with valid x,y,z values, for example '123.45,678.90,456.123'",
+					OWSException.INVALID_PARAMETER_VALUE);
+		}
 
-        pointOfInterest[0] += translationVector[0];
-        pointOfInterest[1] += translationVector[1];
+		pointOfInterest[0] += translationVector[0];
+		pointOfInterest[1] += translationVector[1];
 
-        double farClippingPlane = KVPUtils.getDefaultDouble( requestParams, "FARCLIPPINGPLANE",
-                                                             configuredFarClippingPlane );
+		double farClippingPlane = KVPUtils.getDefaultDouble(requestParams, "FARCLIPPINGPLANE",
+				configuredFarClippingPlane);
 
-        ViewFrustum vf = new ViewFrustum( pitch, yaw, roll, distance, new Point3d( pointOfInterest[0],
-                                                                                   pointOfInterest[1],
-                                                                                   pointOfInterest[2] ), angleOfView,
-                                          width / (double) height, configuredNearClippingPlane, farClippingPlane );
+		ViewFrustum vf = new ViewFrustum(pitch, yaw, roll, distance,
+				new Point3d(pointOfInterest[0], pointOfInterest[1], pointOfInterest[2]), angleOfView,
+				width / (double) height, configuredNearClippingPlane, farClippingPlane);
 
-        return new ViewParams( vf, width, height );
-    }
+		return new ViewParams(vf, width, height);
+	}
 
-    private static GetViewResponseParameters getResponseParams( Map<String, String> requestParams )
-                            throws OWSException {
-        // TRANSPARENCY
-        boolean transparency = getBoolean( requestParams, "TRANSPARENT", false );
+	private static GetViewResponseParameters getResponseParams(Map<String, String> requestParams) throws OWSException {
+		// TRANSPARENCY
+		boolean transparency = getBoolean(requestParams, "TRANSPARENT", false);
 
-        // FORMAT
-        String format = getRequired( requestParams, "OUTPUTFORMAT" );
+		// FORMAT
+		String format = getRequired(requestParams, "OUTPUTFORMAT");
 
-        if ( transparency
-             && ( "image/jpg".equals( format ) || "image/jpeg".equals( format ) || "image/bmp".equals( format )
-                  || "image/tif".equals( format ) || "image/tiff".equals( format ) ) ) {
-            throw new OWSException( "TRANSPARENCY=true is inconsistent with OUTPUTFORMAT=" + format
-                                    + ".Valid transparent formats are 'image/gif' " + "and 'image/png'.",
-                                    OWSException.INVALID_PARAMETER_VALUE );
-        }
+		if (transparency && ("image/jpg".equals(format) || "image/jpeg".equals(format) || "image/bmp".equals(format)
+				|| "image/tif".equals(format) || "image/tiff".equals(format))) {
+			throw new OWSException(
+					"TRANSPARENCY=true is inconsistent with OUTPUTFORMAT=" + format
+							+ ".Valid transparent formats are 'image/gif' " + "and 'image/png'.",
+					OWSException.INVALID_PARAMETER_VALUE);
+		}
 
-        double quality = KVPUtils.getDefaultDouble( requestParams, "QUALITY", 1 );
+		double quality = KVPUtils.getDefaultDouble(requestParams, "QUALITY", 1);
 
-        String exceptionFormat = requestParams.get( "EXCEPTIONFORMAT" );
-        if ( exceptionFormat == null ) {
-            exceptionFormat = "INIMAGE";
-        }
+		String exceptionFormat = requestParams.get("EXCEPTIONFORMAT");
+		if (exceptionFormat == null) {
+			exceptionFormat = "INIMAGE";
+		}
 
-        return new GetViewResponseParameters( transparency, format, quality, exceptionFormat );
-    }
+		return new GetViewResponseParameters(transparency, format, quality, exceptionFormat);
+	}
 
-    private static GetViewSceneParameters getSceneParameters( Map<String, String> requestParams )
-                            throws OWSException {
-        String elevationModel = requestParams.get( "ELEVATIONMODEL" );
-        if ( elevationModel != null ) {
-            elevationModel = elevationModel.trim();
-            if ( elevationModel.split( "," ).length > 1 ) {
-                throw new OWSException( "Only one ELEVATIONMODEL may be requested.",
-                                        OWSException.INVALID_PARAMETER_VALUE );
-            }
-        }
+	private static GetViewSceneParameters getSceneParameters(Map<String, String> requestParams) throws OWSException {
+		String elevationModel = requestParams.get("ELEVATIONMODEL");
+		if (elevationModel != null) {
+			elevationModel = elevationModel.trim();
+			if (elevationModel.split(",").length > 1) {
+				throw new OWSException("Only one ELEVATIONMODEL may be requested.",
+						OWSException.INVALID_PARAMETER_VALUE);
+			}
+		}
 
-        float scale = (float) KVPUtils.getDefaultDouble( requestParams, "SCALE", 1 );
+		float scale = (float) KVPUtils.getDefaultDouble(requestParams, "SCALE", 1);
 
-        Color bgColor;
-        String tmp = KVPUtils.getDefault( requestParams, "BACKGROUNDCOLOR", "" + Color.white.getRGB() );
-        try {
-            bgColor = Color.decode( tmp );
-        } catch ( NumberFormatException e ) {
-            throw new OWSException( "The BACKGROUNDCOLOR '" + tmp + "' does not denote a valid hexadecimal color.",
-                                    OWSException.INVALID_PARAMETER_VALUE );
-        }
+		Color bgColor;
+		String tmp = KVPUtils.getDefault(requestParams, "BACKGROUNDCOLOR", "" + Color.white.getRGB());
+		try {
+			bgColor = Color.decode(tmp);
+		}
+		catch (NumberFormatException e) {
+			throw new OWSException("The BACKGROUNDCOLOR '" + tmp + "' does not denote a valid hexadecimal color.",
+					OWSException.INVALID_PARAMETER_VALUE);
+		}
 
-        String backgroundImage = requestParams.get( "BACKGROUND" );
+		String backgroundImage = requestParams.get("BACKGROUND");
 
-        String datasetsString = requestParams.get( "DATASETS" );
-        List<String> datasets = new LinkedList<String>();
-        if ( datasetsString != null ) {
-            String[] ds = datasetsString.split( "," );
-            for ( String dataset : ds ) {
-                datasets.add( dataset.trim() );
-            }
-        }
+		String datasetsString = requestParams.get("DATASETS");
+		List<String> datasets = new LinkedList<String>();
+		if (datasetsString != null) {
+			String[] ds = datasetsString.split(",");
+			for (String dataset : ds) {
+				datasets.add(dataset.trim());
+			}
+		}
 
-        String date = requestParams.remove( "DATETIME" );
+		String date = requestParams.remove("DATETIME");
 
-        Calendar cal = DEFAULT_CAL;
-        if ( date != null ) {
-            try {
-                DateTime requestedDate = parseDateTime(  date );
-                cal = requestedDate.getCalendar();
-            } catch ( IllegalArgumentException e ) {
-                String msg = "Requested DATETIME: "
-                             + date
-                             + " could not be parsed please specify it in ISO8601 (YYYY-MM-DDTHH:MM:SS), or leave blank to use the servers default ('2009-03-21T12:00:00')";
-                throw new OWSException( msg, INVALID_PARAMETER_VALUE );
-            }
-        }
+		Calendar cal = DEFAULT_CAL;
+		if (date != null) {
+			try {
+				DateTime requestedDate = parseDateTime(date);
+				cal = requestedDate.getCalendar();
+			}
+			catch (IllegalArgumentException e) {
+				String msg = "Requested DATETIME: " + date
+						+ " could not be parsed please specify it in ISO8601 (YYYY-MM-DDTHH:MM:SS), or leave blank to use the servers default ('2009-03-21T12:00:00')";
+				throw new OWSException(msg, INVALID_PARAMETER_VALUE);
+			}
+		}
 
-        SunInfo pos = new SunInfo( cal );
+		SunInfo pos = new SunInfo(cal);
 
-        return new GetViewSceneParameters( scale, elevationModel, datasets, bgColor, backgroundImage, date, pos );
-    }
+		return new GetViewSceneParameters(scale, elevationModel, datasets, bgColor, backgroundImage, date, pos);
+	}
+
 }

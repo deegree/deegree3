@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -50,77 +49,71 @@ import org.deegree.geometry.primitive.segments.CurveSegment;
 
 /**
  * The <code></code> class TODO add class documentation here.
- * 
+ *
  * @param <T>
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class CurveReference<T extends Curve> extends GeometricPrimitiveReference<T> implements Curve {
 
-    /**
-     * Creates a new {@link CurveReference} instance.
-     * 
-     * @param resolver
-     *            used for resolving the reference, must not be <code>null</code>
-     * @param uri
-     *            the geometry's uri, must not be <code>null</code>
-     * @param baseURL
-     *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
-     */
-    public CurveReference( GMLReferenceResolver resolver, String uri, String baseURL ) {
-        super( resolver, uri, baseURL );
-    }
+	/**
+	 * Creates a new {@link CurveReference} instance.
+	 * @param resolver used for resolving the reference, must not be <code>null</code>
+	 * @param uri the geometry's uri, must not be <code>null</code>
+	 * @param baseURL base URL for resolving the uri, may be <code>null</code> (no
+	 * resolving of relative URLs)
+	 */
+	public CurveReference(GMLReferenceResolver resolver, String uri, String baseURL) {
+		super(resolver, uri, baseURL);
+	}
 
-    @Override
-    public LineString getAsLineString() {
-        return getReferencedObject().getAsLineString();
-    }
+	@Override
+	public LineString getAsLineString() {
+		return getReferencedObject().getAsLineString();
+	}
 
-    @Override
-    public Pair<Point, Point> getBoundary() {
-        return getReferencedObject().getBoundary();
-    }
+	@Override
+	public Pair<Point, Point> getBoundary() {
+		return getReferencedObject().getBoundary();
+	}
 
-    @Override
-    public Points getControlPoints() {
-        return getReferencedObject().getControlPoints();
-    }
+	@Override
+	public Points getControlPoints() {
+		return getReferencedObject().getControlPoints();
+	}
 
-    @Override
-    public List<CurveSegment> getCurveSegments() {
-        return getReferencedObject().getCurveSegments();
-    }
+	@Override
+	public List<CurveSegment> getCurveSegments() {
+		return getReferencedObject().getCurveSegments();
+	}
 
-    @Override
-    public CurveType getCurveType() {
-        return getReferencedObject().getCurveType();
-    }
+	@Override
+	public CurveType getCurveType() {
+		return getReferencedObject().getCurveType();
+	}
 
-    @Override
-    public Point getEndPoint() {
-        return getReferencedObject().getEndPoint();
-    }
+	@Override
+	public Point getEndPoint() {
+		return getReferencedObject().getEndPoint();
+	}
 
-    @Override
-    public Measure getLength( Unit requestedUnit ) {
-        return getReferencedObject().getLength( requestedUnit );
-    }
+	@Override
+	public Measure getLength(Unit requestedUnit) {
+		return getReferencedObject().getLength(requestedUnit);
+	}
 
-    @Override
-    public PrimitiveType getPrimitiveType() {
-        return getReferencedObject().getPrimitiveType();
-    }
+	@Override
+	public PrimitiveType getPrimitiveType() {
+		return getReferencedObject().getPrimitiveType();
+	}
 
-    @Override
-    public Point getStartPoint() {
-        return getReferencedObject().getStartPoint();
-    }
+	@Override
+	public Point getStartPoint() {
+		return getReferencedObject().getStartPoint();
+	}
 
-    @Override
-    public boolean isClosed() {
-        return getReferencedObject().isClosed();
-    }
+	@Override
+	public boolean isClosed() {
+		return getReferencedObject().isClosed();
+	}
+
 }

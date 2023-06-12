@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -57,7 +56,8 @@ import org.deegree.protocol.wfs.query.Query;
 import org.deegree.protocol.wfs.query.StandardPresentationParams;
 
 /**
- * Adapter between KVP <code>GetFeatureWithLock</code> requests and {@link GetFeatureWithLock} objects.
+ * Adapter between KVP <code>GetFeatureWithLock</code> requests and
+ * {@link GetFeatureWithLock} objects.
  * <p>
  * Supported versions:
  * <ul>
@@ -65,110 +65,109 @@ import org.deegree.protocol.wfs.query.StandardPresentationParams;
  * <li>WFS 1.1.0</li>
  * </ul>
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:schneider@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class GetFeatureWithLockKVPAdapter extends AbstractWFSRequestKVPAdapter {
 
-    /**
-     * Parses a normalized KVP-map as a WFS {@link GetFeatureWithLock} request.
-     * 
-     * @param kvpParams
-     *            normalized KVP-map; keys must be uppercase, each key only has one associated value
-     * @return parsed {@link GetFeatureWithLock} request
-     * @throws Exception
-     */
-    public static GetFeatureWithLock parse( Map<String, String> kvpParams )
-                            throws Exception {
+	/**
+	 * Parses a normalized KVP-map as a WFS {@link GetFeatureWithLock} request.
+	 * @param kvpParams normalized KVP-map; keys must be uppercase, each key only has one
+	 * associated value
+	 * @return parsed {@link GetFeatureWithLock} request
+	 * @throws Exception
+	 */
+	public static GetFeatureWithLock parse(Map<String, String> kvpParams) throws Exception {
 
-        Version version = Version.parseVersion( KVPUtils.getRequired( kvpParams, "VERSION" ) );
+		Version version = Version.parseVersion(KVPUtils.getRequired(kvpParams, "VERSION"));
 
-        GetFeatureWithLock result = null;
-        if ( VERSION_100.equals( version ) ) {
-            result = parse100( kvpParams );
-        } else if ( VERSION_110.equals( version ) ) {
-            result = parse110( kvpParams );
-        } else if ( VERSION_200.equals( version ) ) {
-            result = parse200( kvpParams );
-        } else {
-            String msg = Messages.get( "UNSUPPORTED_VERSION", version, Version.getVersionsString( VERSION_110 ) );
-            throw new InvalidParameterValueException( msg );
-        }
-        return result;
-    }
+		GetFeatureWithLock result = null;
+		if (VERSION_100.equals(version)) {
+			result = parse100(kvpParams);
+		}
+		else if (VERSION_110.equals(version)) {
+			result = parse110(kvpParams);
+		}
+		else if (VERSION_200.equals(version)) {
+			result = parse200(kvpParams);
+		}
+		else {
+			String msg = Messages.get("UNSUPPORTED_VERSION", version, Version.getVersionsString(VERSION_110));
+			throw new InvalidParameterValueException(msg);
+		}
+		return result;
+	}
 
-    private static GetFeatureWithLock parse100( Map<String, String> kvpParams ) {
-        throw new UnsupportedOperationException();
-    }
+	private static GetFeatureWithLock parse100(Map<String, String> kvpParams) {
+		throw new UnsupportedOperationException();
+	}
 
-    @SuppressWarnings("boxing")
-    private static GetFeatureWithLock parse110( Map<String, String> kvpParams )
-                            throws Exception {
+	@SuppressWarnings("boxing")
+	private static GetFeatureWithLock parse110(Map<String, String> kvpParams) throws Exception {
 
-        GetFeature gf = GetFeatureKVPAdapter.parse( kvpParams, null );
+		GetFeature gf = GetFeatureKVPAdapter.parse(kvpParams, null);
 
-        // optional: EXPIRY
-        String expiryStr = kvpParams.get( "EXPIRY" );
-        BigInteger expiryInMinutes = null;
-        if ( expiryStr != null ) {
-            expiryInMinutes = new BigInteger( expiryStr );
-        }
-        BigInteger expiryInSeconds = convertToSeconds( expiryInMinutes );
+		// optional: EXPIRY
+		String expiryStr = kvpParams.get("EXPIRY");
+		BigInteger expiryInMinutes = null;
+		if (expiryStr != null) {
+			expiryInMinutes = new BigInteger(expiryStr);
+		}
+		BigInteger expiryInSeconds = convertToSeconds(expiryInMinutes);
 
-        StandardPresentationParams presentationParams = gf.getPresentationParams();
-        ResolveParams resolveParams = gf.getResolveParams();
-        List<Query> queries = gf.getQueries();
-        return new GetFeatureWithLock( VERSION_110, null, presentationParams, resolveParams, queries, expiryInSeconds,
-                                       null );
-    }
+		StandardPresentationParams presentationParams = gf.getPresentationParams();
+		ResolveParams resolveParams = gf.getResolveParams();
+		List<Query> queries = gf.getQueries();
+		return new GetFeatureWithLock(VERSION_110, null, presentationParams, resolveParams, queries, expiryInSeconds,
+				null);
+	}
 
-    @SuppressWarnings("boxing")
-    private static GetFeatureWithLock parse200( Map<String, String> kvpParams )
-                            throws Exception {
+	@SuppressWarnings("boxing")
+	private static GetFeatureWithLock parse200(Map<String, String> kvpParams) throws Exception {
 
-        GetFeature gf = GetFeatureKVPAdapter.parse( kvpParams, null );
+		GetFeature gf = GetFeatureKVPAdapter.parse(kvpParams, null);
 
-        // optional LOCKACTION
-        Boolean lockAll = parseLockAction( kvpParams.get( "LOCKACTION" ) );
+		// optional LOCKACTION
+		Boolean lockAll = parseLockAction(kvpParams.get("LOCKACTION"));
 
-        // optional: EXPIRY
-        String expiryStr = kvpParams.get( "EXPIRY" );
-        BigInteger expiryInSeconds = null;
-        if ( expiryStr != null ) {
-            expiryInSeconds = new BigInteger( expiryStr );
-        }
+		// optional: EXPIRY
+		String expiryStr = kvpParams.get("EXPIRY");
+		BigInteger expiryInSeconds = null;
+		if (expiryStr != null) {
+			expiryInSeconds = new BigInteger(expiryStr);
+		}
 
-        StandardPresentationParams presentationParams = gf.getPresentationParams();
-        ResolveParams resolveParams = gf.getResolveParams();
-        List<Query> queries = gf.getQueries();
-        return new GetFeatureWithLock( VERSION_200, null, presentationParams, resolveParams, queries, expiryInSeconds,
-                                       lockAll );
-    }
+		StandardPresentationParams presentationParams = gf.getPresentationParams();
+		ResolveParams resolveParams = gf.getResolveParams();
+		List<Query> queries = gf.getQueries();
+		return new GetFeatureWithLock(VERSION_200, null, presentationParams, resolveParams, queries, expiryInSeconds,
+				lockAll);
+	}
 
-    private static BigInteger convertToSeconds( BigInteger expiryInMinutes ) {
-        if ( expiryInMinutes == null ) {
-            return null;
-        }
-        return expiryInMinutes.multiply( BigInteger.valueOf( 60 ) );
-    }
+	private static BigInteger convertToSeconds(BigInteger expiryInMinutes) {
+		if (expiryInMinutes == null) {
+			return null;
+		}
+		return expiryInMinutes.multiply(BigInteger.valueOf(60));
+	}
 
-    private static Boolean parseLockAction( String lockActionString ) {
-        Boolean lockAll = null;
-        if ( lockActionString != null ) {
-            if ( "SOME".equals( lockActionString ) ) {
-                lockAll = false;
-            } else if ( "ALL".equals( lockActionString ) ) {
-                lockAll = true;
-            } else {
-                String msg = "Invalid value (=" + lockActionString
-                             + ") for lock action parameter. Valid values are 'ALL' or 'SOME'.";
-                throw new InvalidParameterValueException( msg, "lockAction" );
-            }
-        }
-        return lockAll;
-    }
+	private static Boolean parseLockAction(String lockActionString) {
+		Boolean lockAll = null;
+		if (lockActionString != null) {
+			if ("SOME".equals(lockActionString)) {
+				lockAll = false;
+			}
+			else if ("ALL".equals(lockActionString)) {
+				lockAll = true;
+			}
+			else {
+				String msg = "Invalid value (=" + lockActionString
+						+ ") for lock action parameter. Valid values are 'ALL' or 'SOME'.";
+				throw new InvalidParameterValueException(msg, "lockAction");
+			}
+		}
+		return lockAll;
+	}
+
 }

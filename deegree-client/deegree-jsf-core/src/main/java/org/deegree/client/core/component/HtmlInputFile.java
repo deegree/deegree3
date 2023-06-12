@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -45,111 +44,109 @@ import org.deegree.client.core.model.UploadedFile;
 import org.deegree.client.core.utils.MessageUtils;
 
 /**
- * 
- * UIInput component to enable a file upload in a form. The form must have multipart content
- * (enctype="multipart/form-data")
- * 
+ *
+ * UIInput component to enable a file upload in a form. The form must have multipart
+ * content (enctype="multipart/form-data")
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 @FacesComponent(value = "HtmlInputFile")
 public class HtmlInputFile extends UIInput implements ClientBehaviorHolder {
 
-    /**
-     * <p>
-     * The standard component type for this component.
-     * </p>
-     */
-    public static final String COMPONENT_TYPE = "HtmlInputFile";
+	/**
+	 * <p>
+	 * The standard component type for this component.
+	 * </p>
+	 */
+	public static final String COMPONENT_TYPE = "HtmlInputFile";
 
-    private static enum AdditionalPropertyKeys {
-        styleClass, target, style
-    }
+	private static enum AdditionalPropertyKeys {
 
-    public HtmlInputFile() {
-        setRendererType( "org.deegree.InputFile" );
-    }
+		styleClass, target, style
 
-    /**
-     * @return A comma seperated list of available styleClasses. Default value is "outputXML".
-     */
-    public String getStyleClass() {
-        return (String) getStateHelper().eval( AdditionalPropertyKeys.styleClass, "outputXML" );
+	}
 
-    }
+	public HtmlInputFile() {
+		setRendererType("org.deegree.InputFile");
+	}
 
-    /**
-     * @param styleClass
-     *            A comma sepereated list of available style classes, passed through the class attribute of the
-     *            component.
-     */
-    public void setStyleClass( String styleClass ) {
-        getStateHelper().put( AdditionalPropertyKeys.styleClass, styleClass );
-    }
+	/**
+	 * @return A comma seperated list of available styleClasses. Default value is
+	 * "outputXML".
+	 */
+	public String getStyleClass() {
+		return (String) getStateHelper().eval(AdditionalPropertyKeys.styleClass, "outputXML");
 
-    /**
-     * @return
-     */
-    public String getStyle() {
-        return (String) getStateHelper().eval( AdditionalPropertyKeys.style, null );
+	}
 
-    }
+	/**
+	 * @param styleClass A comma sepereated list of available style classes, passed
+	 * through the class attribute of the component.
+	 */
+	public void setStyleClass(String styleClass) {
+		getStateHelper().put(AdditionalPropertyKeys.styleClass, styleClass);
+	}
 
-    /**
-     * @param style
-     */
-    public void setStyle( String style ) {
-        getStateHelper().put( AdditionalPropertyKeys.style, style );
-    }
+	/**
+	 * @return
+	 */
+	public String getStyle() {
+		return (String) getStateHelper().eval(AdditionalPropertyKeys.style, null);
 
-    /**
-     * @return location where to write the downloaded file, must begin at the webapp directory. If null, the file will
-     *         be stored in deegree's temp directory
-     */
-    public String getTarget() {
-        return (String) getStateHelper().eval( AdditionalPropertyKeys.target, null );
+	}
 
-    }
+	/**
+	 * @param style
+	 */
+	public void setStyle(String style) {
+		getStateHelper().put(AdditionalPropertyKeys.style, style);
+	}
 
-    /**
-     * @param target
-     *            Location where to write the downloaded file, beginning at the webapp directory. Can be null, if the
-     *            file should be stored in the webapp directory
-     */
-    public void setTarget( String styleClass ) {
-        getStateHelper().put( AdditionalPropertyKeys.target, styleClass );
-    }
+	/**
+	 * @return location where to write the downloaded file, must begin at the webapp
+	 * directory. If null, the file will be stored in deegree's temp directory
+	 */
+	public String getTarget() {
+		return (String) getStateHelper().eval(AdditionalPropertyKeys.target, null);
 
-    @Override
-    protected void validateValue( FacesContext context, Object value ) {
-        if ( !isValid() ) {
-            return;
-        }
-        if ( isRequired() && isUploadedFileEmpty( value ) ) {
-            FacesMessage message = MessageUtils.getFacesMessage( FacesMessage.SEVERITY_ERROR,
-                                                                 "org.deegree.client.core.component.HtmlInputFile.REQUIRED",
-                                                                 getClientId() );
-            context.addMessage( getClientId( context ), message );
+	}
 
-            setValid( false );
-            return;
-        }
+	/**
+	 * @param target Location where to write the downloaded file, beginning at the webapp
+	 * directory. Can be null, if the file should be stored in the webapp directory
+	 */
+	public void setTarget(String styleClass) {
+		getStateHelper().put(AdditionalPropertyKeys.target, styleClass);
+	}
 
-    }
+	@Override
+	protected void validateValue(FacesContext context, Object value) {
+		if (!isValid()) {
+			return;
+		}
+		if (isRequired() && isUploadedFileEmpty(value)) {
+			FacesMessage message = MessageUtils.getFacesMessage(FacesMessage.SEVERITY_ERROR,
+					"org.deegree.client.core.component.HtmlInputFile.REQUIRED", getClientId());
+			context.addMessage(getClientId(context), message);
 
-    private boolean isUploadedFileEmpty( Object value ) {
-        if ( value == null ) {
-            return true;
-        }
-        if ( !( value instanceof UploadedFile ) ) {
-            return true;
-        }
-        UploadedFile uploadedFile = (UploadedFile) value;
-        if ( uploadedFile.getFileItem() == null ) {
-            return true;
-        }
-        return false;
-    }
+			setValid(false);
+			return;
+		}
+
+	}
+
+	private boolean isUploadedFileEmpty(Object value) {
+		if (value == null) {
+			return true;
+		}
+		if (!(value instanceof UploadedFile)) {
+			return true;
+		}
+		UploadedFile uploadedFile = (UploadedFile) value;
+		if (uploadedFile.getFileItem() == null) {
+			return true;
+		}
+		return false;
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -41,45 +40,40 @@ import java.util.Map;
 import org.deegree.commons.utils.memory.MemoryAware;
 
 /**
- * The <code>J3DExporter</code> Inteface allows for easy access to some common the export methods.
+ * The <code>J3DExporter</code> Inteface allows for easy access to some common the export
+ * methods.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
- * @author last edited by: $Author$
- *
- * @version $Revision$, $Date$
  *
  */
 
 public interface J3DExporter {
 
-    /**
-     * A method which can be called to export to the given format.
-     *
-     * @param result
-     *            a reference to which the implementing class should write.
-     * @param j3dScene
-     *            the scene to be exported.
-     */
-    public void export( StringBuilder result, MemoryAware j3dScene );
+	/**
+	 * A method which can be called to export to the given format.
+	 * @param result a reference to which the implementing class should write.
+	 * @param j3dScene the scene to be exported.
+	 */
+	public void export(StringBuilder result, MemoryAware j3dScene);
 
-    /**
-     * @return A Name which can be presented to a calling client;
-     */
-    public String getName();
+	/**
+	 * @return A Name which can be presented to a calling client;
+	 */
+	public String getName();
 
-    /**
-     * @return a simple description which describes the function of the implementing class.
-     */
-    public String getShortDescription();
+	/**
+	 * @return a simple description which describes the function of the implementing
+	 * class.
+	 */
+	public String getShortDescription();
 
-    /**
-     * Should return a list of parameter names (keys) with their description (values) of all parameters this Exporter
-     * supports. It is up to the requester to use the given parameters and call the required constructor with the map<String,
-     * String>, containing the keys that have values.
-     *
-     * @return a map containing the parameter names (keys) and their description (values)
-     */
-    public Map<String, String> getParameterMap();
+	/**
+	 * Should return a list of parameter names (keys) with their description (values) of
+	 * all parameters this Exporter supports. It is up to the requester to use the given
+	 * parameters and call the required constructor with the map<String, String>,
+	 * containing the keys that have values.
+	 * @return a map containing the parameter names (keys) and their description (values)
+	 */
+	public Map<String, String> getParameterMap();
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -45,96 +44,94 @@ import org.deegree.filter.XPathEvaluator;
 
 /**
  * TODO add documentation here
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * 
- * @version $Revision:$, $Date:$
  */
 public class PropertyIsBetween extends ComparisonOperator {
 
-    private final Expression upperBoundary;
+	private final Expression upperBoundary;
 
-    private final Expression lowerBoundary;
+	private final Expression lowerBoundary;
 
-    private final Expression expression;
+	private final Expression expression;
 
-    public PropertyIsBetween( Expression expression, Expression lowerBoundary, Expression upperBoundary,
-                              boolean matchCase, MatchAction matchAction ) {
-        super( matchCase, matchAction );
-        this.expression = expression;
-        this.lowerBoundary = lowerBoundary;
-        this.upperBoundary = upperBoundary;
-    }
+	public PropertyIsBetween(Expression expression, Expression lowerBoundary, Expression upperBoundary,
+			boolean matchCase, MatchAction matchAction) {
+		super(matchCase, matchAction);
+		this.expression = expression;
+		this.lowerBoundary = lowerBoundary;
+		this.upperBoundary = upperBoundary;
+	}
 
-    public Expression getExpression() {
-        return expression;
-    }
+	public Expression getExpression() {
+		return expression;
+	}
 
-    /**
-     * @return the upperBoundary
-     */
-    public Expression getUpperBoundary() {
-        return upperBoundary;
-    }
+	/**
+	 * @return the upperBoundary
+	 */
+	public Expression getUpperBoundary() {
+		return upperBoundary;
+	}
 
-    /**
-     * @return the lowerBoundary
-     */
-    public Expression getLowerBoundary() {
-        return lowerBoundary;
-    }
+	/**
+	 * @return the lowerBoundary
+	 */
+	public Expression getLowerBoundary() {
+		return lowerBoundary;
+	}
 
-    @Override
-    public SubType getSubType() {
-        return SubType.PROPERTY_IS_BETWEEN;
-    }
+	@Override
+	public SubType getSubType() {
+		return SubType.PROPERTY_IS_BETWEEN;
+	}
 
-    @Override
-    public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
-                            throws FilterEvaluationException {
+	@Override
+	public <T> boolean evaluate(T obj, XPathEvaluator<T> xpathEvaluator) throws FilterEvaluationException {
 
-        TypedObjectNode[] propertyValues = expression.evaluate( obj, xpathEvaluator );
-        TypedObjectNode[] upperBoundaryValues = upperBoundary.evaluate( obj, xpathEvaluator );
-        TypedObjectNode[] lowerBoundaryValues = lowerBoundary.evaluate( obj, xpathEvaluator );
+		TypedObjectNode[] propertyValues = expression.evaluate(obj, xpathEvaluator);
+		TypedObjectNode[] upperBoundaryValues = upperBoundary.evaluate(obj, xpathEvaluator);
+		TypedObjectNode[] lowerBoundaryValues = lowerBoundary.evaluate(obj, xpathEvaluator);
 
-        for ( TypedObjectNode propertyValue : propertyValues ) {
-            // check for one upper value that is larger than the propertyValue
-            if ( propertyValue != null ) {
-                for ( TypedObjectNode upperValue : upperBoundaryValues ) {
-                    if ( upperValue != null ) {
-                        Pair<PrimitiveValue, PrimitiveValue> propUpper = getPrimitiveValues( propertyValue, upperValue );
-                        if ( ( propUpper.first ).compareTo( propUpper.second ) <= 0 ) {
-                            // now check for one lower value that is smaller than the propertyValue
-                            for ( TypedObjectNode lowerValue : lowerBoundaryValues ) {
-                                if ( lowerValue != null ) {
-                                    Pair<PrimitiveValue, PrimitiveValue> propLower = getPrimitiveValues( propertyValue,
-                                                                                                    lowerValue );
-                                    if ( ( propLower.first ).compareTo( propLower.second ) >= 0 ) {
-                                        return true;
-                                    }
-                                }
-                            }
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        return false;
-    }
+		for (TypedObjectNode propertyValue : propertyValues) {
+			// check for one upper value that is larger than the propertyValue
+			if (propertyValue != null) {
+				for (TypedObjectNode upperValue : upperBoundaryValues) {
+					if (upperValue != null) {
+						Pair<PrimitiveValue, PrimitiveValue> propUpper = getPrimitiveValues(propertyValue, upperValue);
+						if ((propUpper.first).compareTo(propUpper.second) <= 0) {
+							// now check for one lower value that is smaller than the
+							// propertyValue
+							for (TypedObjectNode lowerValue : lowerBoundaryValues) {
+								if (lowerValue != null) {
+									Pair<PrimitiveValue, PrimitiveValue> propLower = getPrimitiveValues(propertyValue,
+											lowerValue);
+									if ((propLower.first).compareTo(propLower.second) >= 0) {
+										return true;
+									}
+								}
+							}
+							break;
+						}
+					}
+				}
+			}
+		}
+		return false;
+	}
 
-    @Override
-    public String toString( String indent ) {
-        String s = indent + "-PropertyIsBetween\n";
-        s += lowerBoundary.toString( indent + "  " );
-        s += expression.toString( indent + "  " );
-        s += upperBoundary.toString( indent + "  " );
-        return s;
-    }
+	@Override
+	public String toString(String indent) {
+		String s = indent + "-PropertyIsBetween\n";
+		s += lowerBoundary.toString(indent + "  ");
+		s += expression.toString(indent + "  ");
+		s += upperBoundary.toString(indent + "  ");
+		return s;
+	}
 
-    @Override
-    public Expression[] getParams() {
-        return new Expression[] { lowerBoundary, expression, upperBoundary };
-    }
+	@Override
+	public Expression[] getParams() {
+		return new Expression[] { lowerBoundary, expression, upperBoundary };
+	}
+
 }

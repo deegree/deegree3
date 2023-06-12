@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2013 by:
@@ -50,9 +49,7 @@ import org.slf4j.Logger;
  * @see OGCFrontController#getServletContext()
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
  * 
- * @version $Revision: $, $Date: $
  */
 public class RequestContext {
 

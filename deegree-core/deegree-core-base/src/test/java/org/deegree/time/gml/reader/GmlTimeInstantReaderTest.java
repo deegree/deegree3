@@ -53,42 +53,40 @@ import org.junit.Test;
 
 public class GmlTimeInstantReaderTest {
 
-    @Test
-    public void readMinimalExample()
-                            throws Exception {
-        final GMLStreamReader reader = getGmlStreamReader( "time_instant_minimal.gml" );
-        final XMLStreamReader xmlStream = reader.getXMLReader();
-        final TimeInstant timeInstant = new GmlTimeInstantReader( reader ).read( xmlStream );
-        assertNotNull( timeInstant );
-        assertEquals( "t11", timeInstant.getId() );
-        assertNull( timeInstant.getFrame() );
-        assertEquals( "2001-05-23", timeInstant.getPosition().getValue() );
-        assertOnEndElement( xmlStream );
-    }
+	@Test
+	public void readMinimalExample() throws Exception {
+		final GMLStreamReader reader = getGmlStreamReader("time_instant_minimal.gml");
+		final XMLStreamReader xmlStream = reader.getXMLReader();
+		final TimeInstant timeInstant = new GmlTimeInstantReader(reader).read(xmlStream);
+		assertNotNull(timeInstant);
+		assertEquals("t11", timeInstant.getId());
+		assertNull(timeInstant.getFrame());
+		assertEquals("2001-05-23", timeInstant.getPosition().getValue());
+		assertOnEndElement(xmlStream);
+	}
 
-    @Test
-    public void readFullExample()
-                            throws Exception {
-        final GMLStreamReader reader = getGmlStreamReader( "time_instant_full.gml" );
-        final XMLStreamReader xmlStream = reader.getXMLReader();
-        final TimeInstant timeInstant = new GmlTimeInstantReader( reader ).read( xmlStream );
-        assertNotNull( timeInstant );
-        assertEquals( "t11", timeInstant.getId() );
-        assertEquals( "http://my.big.org/TRS/calendars/japanese", timeInstant.getFrame() );
-        assertNotNull( timeInstant.getPosition() );
-        assertOnEndElement( xmlStream );
-    }
+	@Test
+	public void readFullExample() throws Exception {
+		final GMLStreamReader reader = getGmlStreamReader("time_instant_full.gml");
+		final XMLStreamReader xmlStream = reader.getXMLReader();
+		final TimeInstant timeInstant = new GmlTimeInstantReader(reader).read(xmlStream);
+		assertNotNull(timeInstant);
+		assertEquals("t11", timeInstant.getId());
+		assertEquals("http://my.big.org/TRS/calendars/japanese", timeInstant.getFrame());
+		assertNotNull(timeInstant.getPosition());
+		assertOnEndElement(xmlStream);
+	}
 
-    private void assertOnEndElement( final XMLStreamReader xmlStream ) {
-        require( xmlStream, END_ELEMENT );
-        assertEquals( "TimeInstant", xmlStream.getLocalName() );
-    }
+	private void assertOnEndElement(final XMLStreamReader xmlStream) {
+		require(xmlStream, END_ELEMENT);
+		assertEquals("TimeInstant", xmlStream.getLocalName());
+	}
 
-    private GMLStreamReader getGmlStreamReader( final String exampleName )
-                            throws Exception {
-        final URL url = GmlTimePositionTypeReader.class.getResource( exampleName );
-        GMLStreamReader reader = GMLInputFactory.createGMLStreamReader( GML_32, url );
-        skipStartDocument( reader.getXMLReader() );
-        return reader;
-    }
+	private GMLStreamReader getGmlStreamReader(final String exampleName) throws Exception {
+		final URL url = GmlTimePositionTypeReader.class.getResource(exampleName);
+		GMLStreamReader reader = GMLInputFactory.createGMLStreamReader(GML_32, url);
+		skipStartDocument(reader.getXMLReader());
+		return reader;
+	}
+
 }

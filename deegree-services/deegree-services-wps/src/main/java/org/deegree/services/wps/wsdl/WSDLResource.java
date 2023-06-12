@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -47,16 +46,17 @@ import javax.ws.rs.WebApplicationException;
 @Path("/wsdl/wps")
 public class WSDLResource {
 
-    @GET
-    @Path("/{segment1}")
-    public WSDL get( @PathParam("segment1") String segment1 ) {
-        WSDL wsdl = null;
-        if ( segment1.equals( "ALL" ) ) {
-            wsdl = new WSDL( "services" + File.separatorChar + "wps.wsdl" );
-        }
-        if ( wsdl == null || !wsdl.getFile().exists() ) {
-            throw new WebApplicationException( HTTP_NOT_FOUND );
-        }
-        return wsdl;
-    }
+	@GET
+	@Path("/{segment1}")
+	public WSDL get(@PathParam("segment1") String segment1) {
+		WSDL wsdl = null;
+		if (segment1.equals("ALL")) {
+			wsdl = new WSDL("services" + File.separatorChar + "wps.wsdl");
+		}
+		if (wsdl == null || !wsdl.getFile().exists()) {
+			throw new WebApplicationException(HTTP_NOT_FOUND);
+		}
+		return wsdl;
+	}
+
 }

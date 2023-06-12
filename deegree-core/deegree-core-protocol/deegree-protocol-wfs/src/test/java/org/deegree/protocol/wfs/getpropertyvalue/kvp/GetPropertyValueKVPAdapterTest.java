@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2011 by:
@@ -58,125 +57,123 @@ import org.junit.Test;
 
 /**
  * Tests for {@link GetPropertyValueKVPAdapter}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class GetPropertyValueKVPAdapterTest extends TestCase {
 
-    @Test
-    public void test200Example1()
-                            throws Exception {
-        Map<String, String> kvpParams = readFileIntoMap( GetPropertyValueKVPAdapterTest.class.getResource( "wfs200/example1.kvp" ) );
-        GetPropertyValue request = GetPropertyValueKVPAdapter.parse( kvpParams );
-        assertEquals( VERSION_200, request.getVersion() );
-        assertEquals( "myns:mailAddress/myns:Address/myns:city", request.getValueReference().getAsText() );
-        StoredQuery query = (StoredQuery) request.getQuery();
-        assertEquals( "urn:ogc:def:query:OGC-WFS::GetFeatureById", query.getId() );
-        assertEquals( "p4456", query.getParams().get( "ID" ).getText() );
-    }
+	@Test
+	public void test200Example1() throws Exception {
+		Map<String, String> kvpParams = readFileIntoMap(
+				GetPropertyValueKVPAdapterTest.class.getResource("wfs200/example1.kvp"));
+		GetPropertyValue request = GetPropertyValueKVPAdapter.parse(kvpParams);
+		assertEquals(VERSION_200, request.getVersion());
+		assertEquals("myns:mailAddress/myns:Address/myns:city", request.getValueReference().getAsText());
+		StoredQuery query = (StoredQuery) request.getQuery();
+		assertEquals("urn:ogc:def:query:OGC-WFS::GetFeatureById", query.getId());
+		assertEquals("p4456", query.getParams().get("ID").getText());
+	}
 
-    @Test
-    public void test200Example2()
-                            throws Exception {
-        Map<String, String> kvpParams = readFileIntoMap( GetPropertyValueKVPAdapterTest.class.getResource( "wfs200/example2.kvp" ) );
-        GetPropertyValue request = GetPropertyValueKVPAdapter.parse( kvpParams );
-        assertEquals( VERSION_200, request.getVersion() );
-        assertEquals( ResolveMode.LOCAL, request.getResolveParams().getMode() );
-        assertEquals( "*", request.getResolveParams().getDepth() );
-        assertEquals( "myns:location", request.getValueReference().getAsText() );
-        FilterQuery query = (FilterQuery) request.getQuery();
-        assertEquals( 1, query.getTypeNames().length );
-        assertEquals( QName.valueOf( "Person" ), query.getTypeNames()[0].getFeatureTypeName() );
-        OperatorFilter filter = (OperatorFilter) query.getFilter();
-        Assert.assertTrue( filter.getOperator() instanceof And );
-    }
+	@Test
+	public void test200Example2() throws Exception {
+		Map<String, String> kvpParams = readFileIntoMap(
+				GetPropertyValueKVPAdapterTest.class.getResource("wfs200/example2.kvp"));
+		GetPropertyValue request = GetPropertyValueKVPAdapter.parse(kvpParams);
+		assertEquals(VERSION_200, request.getVersion());
+		assertEquals(ResolveMode.LOCAL, request.getResolveParams().getMode());
+		assertEquals("*", request.getResolveParams().getDepth());
+		assertEquals("myns:location", request.getValueReference().getAsText());
+		FilterQuery query = (FilterQuery) request.getQuery();
+		assertEquals(1, query.getTypeNames().length);
+		assertEquals(QName.valueOf("Person"), query.getTypeNames()[0].getFeatureTypeName());
+		OperatorFilter filter = (OperatorFilter) query.getFilter();
+		Assert.assertTrue(filter.getOperator() instanceof And);
+	}
 
-    @Test
-    public void test200Example3()
-                            throws Exception {
-        Map<String, String> kvpParams = readFileIntoMap( GetPropertyValueKVPAdapterTest.class.getResource( "wfs200/example3.kvp" ) );
-        GetPropertyValue request = GetPropertyValueKVPAdapter.parse( kvpParams );
-        assertEquals( VERSION_200, request.getVersion() );
-        assertEquals( "valueOf(myns:livesIn)/valueOf(myns:frontsOn)/abc:numLanes",
-                      request.getValueReference().getAsText() );
-        FilterQuery query = (FilterQuery) request.getQuery();
-        assertEquals( 1, query.getTypeNames().length );
-        assertEquals( QName.valueOf( "Person" ), query.getTypeNames()[0].getFeatureTypeName() );
-        OperatorFilter filter = (OperatorFilter) query.getFilter();
-        Assert.assertTrue( filter.getOperator() instanceof And );
-    }
+	@Test
+	public void test200Example3() throws Exception {
+		Map<String, String> kvpParams = readFileIntoMap(
+				GetPropertyValueKVPAdapterTest.class.getResource("wfs200/example3.kvp"));
+		GetPropertyValue request = GetPropertyValueKVPAdapter.parse(kvpParams);
+		assertEquals(VERSION_200, request.getVersion());
+		assertEquals("valueOf(myns:livesIn)/valueOf(myns:frontsOn)/abc:numLanes",
+				request.getValueReference().getAsText());
+		FilterQuery query = (FilterQuery) request.getQuery();
+		assertEquals(1, query.getTypeNames().length);
+		assertEquals(QName.valueOf("Person"), query.getTypeNames()[0].getFeatureTypeName());
+		OperatorFilter filter = (OperatorFilter) query.getFilter();
+		Assert.assertTrue(filter.getOperator() instanceof And);
+	}
 
-    @Test
-    public void test200Example4()
-                            throws Exception {
-        Map<String, String> kvpParams = readFileIntoMap( GetPropertyValueKVPAdapterTest.class.getResource( "wfs200/example4.kvp" ) );
-        GetPropertyValue request = GetPropertyValueKVPAdapter.parse( kvpParams );
-        assertEquals( VERSION_200, request.getVersion() );
-        assertEquals( "valueOf(myns:livesIn)/valueof(myns:mailAddress)/myns:postalCode",
-                      request.getValueReference().getAsText() );
-        FilterQuery query = (FilterQuery) request.getQuery();
-        assertEquals( 1, query.getTypeNames().length );
-        assertEquals( QName.valueOf( "Person" ), query.getTypeNames()[0].getFeatureTypeName() );
-        OperatorFilter filter = (OperatorFilter) query.getFilter();
-        Assert.assertTrue( filter.getOperator() instanceof And );
-    }
+	@Test
+	public void test200Example4() throws Exception {
+		Map<String, String> kvpParams = readFileIntoMap(
+				GetPropertyValueKVPAdapterTest.class.getResource("wfs200/example4.kvp"));
+		GetPropertyValue request = GetPropertyValueKVPAdapter.parse(kvpParams);
+		assertEquals(VERSION_200, request.getVersion());
+		assertEquals("valueOf(myns:livesIn)/valueof(myns:mailAddress)/myns:postalCode",
+				request.getValueReference().getAsText());
+		FilterQuery query = (FilterQuery) request.getQuery();
+		assertEquals(1, query.getTypeNames().length);
+		assertEquals(QName.valueOf("Person"), query.getTypeNames()[0].getFeatureTypeName());
+		OperatorFilter filter = (OperatorFilter) query.getFilter();
+		Assert.assertTrue(filter.getOperator() instanceof And);
+	}
 
-    @Test
-    public void test200Example5()
-                            throws Exception {
-        Map<String, String> kvpParams = readFileIntoMap( GetPropertyValueKVPAdapterTest.class.getResource( "wfs200/example5.kvp" ) );
-        GetPropertyValue request = GetPropertyValueKVPAdapter.parse( kvpParams );
-        assertEquals( VERSION_200, request.getVersion() );
-        assertEquals( "myns:age", request.getValueReference().getAsText() );
-        FilterQuery query = (FilterQuery) request.getQuery();
-        assertEquals( 1, query.getTypeNames().length );
-        assertEquals( QName.valueOf( "Person" ), query.getTypeNames()[0].getFeatureTypeName() );
-        OperatorFilter filter = (OperatorFilter) query.getFilter();
-        Assert.assertTrue( filter.getOperator() instanceof And );
-    }
+	@Test
+	public void test200Example5() throws Exception {
+		Map<String, String> kvpParams = readFileIntoMap(
+				GetPropertyValueKVPAdapterTest.class.getResource("wfs200/example5.kvp"));
+		GetPropertyValue request = GetPropertyValueKVPAdapter.parse(kvpParams);
+		assertEquals(VERSION_200, request.getVersion());
+		assertEquals("myns:age", request.getValueReference().getAsText());
+		FilterQuery query = (FilterQuery) request.getQuery();
+		assertEquals(1, query.getTypeNames().length);
+		assertEquals(QName.valueOf("Person"), query.getTypeNames()[0].getFeatureTypeName());
+		OperatorFilter filter = (OperatorFilter) query.getFilter();
+		Assert.assertTrue(filter.getOperator() instanceof And);
+	}
 
-    @Test
-    public void test200Example6()
-                            throws Exception {
-        Map<String, String> kvpParams = readFileIntoMap( GetPropertyValueKVPAdapterTest.class.getResource( "wfs200/example6.kvp" ) );
-        GetPropertyValue request = GetPropertyValueKVPAdapter.parse( kvpParams );
-        assertEquals( VERSION_200, request.getVersion() );
-        assertEquals( "myns:phone", request.getValueReference().getAsText() );
-        FilterQuery query = (FilterQuery) request.getQuery();
-        assertEquals( 1, query.getTypeNames().length );
-        assertEquals( QName.valueOf( "Person" ), query.getTypeNames()[0].getFeatureTypeName() );
-        OperatorFilter filter = (OperatorFilter) query.getFilter();
-        Assert.assertTrue( filter.getOperator() instanceof And );
-    }
+	@Test
+	public void test200Example6() throws Exception {
+		Map<String, String> kvpParams = readFileIntoMap(
+				GetPropertyValueKVPAdapterTest.class.getResource("wfs200/example6.kvp"));
+		GetPropertyValue request = GetPropertyValueKVPAdapter.parse(kvpParams);
+		assertEquals(VERSION_200, request.getVersion());
+		assertEquals("myns:phone", request.getValueReference().getAsText());
+		FilterQuery query = (FilterQuery) request.getQuery();
+		assertEquals(1, query.getTypeNames().length);
+		assertEquals(QName.valueOf("Person"), query.getTypeNames()[0].getFeatureTypeName());
+		OperatorFilter filter = (OperatorFilter) query.getFilter();
+		Assert.assertTrue(filter.getOperator() instanceof And);
+	}
 
-    @Test
-    public void test200Example7()
-                            throws Exception {
-        Map<String, String> kvpParams = readFileIntoMap( GetPropertyValueKVPAdapterTest.class.getResource( "wfs200/example7.kvp" ) );
-        GetPropertyValue request = GetPropertyValueKVPAdapter.parse( kvpParams );
-        assertEquals( VERSION_200, request.getVersion() );
-        assertEquals( "myns:phone[2]", request.getValueReference().getAsText() );
-        FilterQuery query = (FilterQuery) request.getQuery();
-        assertEquals( 1, query.getTypeNames().length );
-        assertEquals( QName.valueOf( "Person" ), query.getTypeNames()[0].getFeatureTypeName() );
-        OperatorFilter filter = (OperatorFilter) query.getFilter();
-        Assert.assertTrue( filter.getOperator() instanceof And );
-    }
+	@Test
+	public void test200Example7() throws Exception {
+		Map<String, String> kvpParams = readFileIntoMap(
+				GetPropertyValueKVPAdapterTest.class.getResource("wfs200/example7.kvp"));
+		GetPropertyValue request = GetPropertyValueKVPAdapter.parse(kvpParams);
+		assertEquals(VERSION_200, request.getVersion());
+		assertEquals("myns:phone[2]", request.getValueReference().getAsText());
+		FilterQuery query = (FilterQuery) request.getQuery();
+		assertEquals(1, query.getTypeNames().length);
+		assertEquals(QName.valueOf("Person"), query.getTypeNames()[0].getFeatureTypeName());
+		OperatorFilter filter = (OperatorFilter) query.getFilter();
+		Assert.assertTrue(filter.getOperator() instanceof And);
+	}
 
-    @Test
-    public void test200Example8()
-                            throws Exception {
-        Map<String, String> kvpParams = readFileIntoMap( GetPropertyValueKVPAdapterTest.class.getResource( "wfs200/example8.kvp" ) );
-        GetPropertyValue request = GetPropertyValueKVPAdapter.parse( kvpParams );
-        assertEquals( VERSION_200, request.getVersion() );
-        assertEquals( "valueOf(myns:livesIn)/myns:frontsOn", request.getValueReference().getAsText() );
-        FilterQuery query = (FilterQuery) request.getQuery();
-        assertEquals( 1, query.getTypeNames().length );
-        assertEquals( QName.valueOf( "Person" ), query.getTypeNames()[0].getFeatureTypeName() );
-        OperatorFilter filter = (OperatorFilter) query.getFilter();
-        Assert.assertTrue( filter.getOperator() instanceof And );
-    }
+	@Test
+	public void test200Example8() throws Exception {
+		Map<String, String> kvpParams = readFileIntoMap(
+				GetPropertyValueKVPAdapterTest.class.getResource("wfs200/example8.kvp"));
+		GetPropertyValue request = GetPropertyValueKVPAdapter.parse(kvpParams);
+		assertEquals(VERSION_200, request.getVersion());
+		assertEquals("valueOf(myns:livesIn)/myns:frontsOn", request.getValueReference().getAsText());
+		FilterQuery query = (FilterQuery) request.getQuery();
+		assertEquals(1, query.getTypeNames().length);
+		assertEquals(QName.valueOf("Person"), query.getTypeNames()[0].getFeatureTypeName());
+		OperatorFilter filter = (OperatorFilter) query.getFilter();
+		Assert.assertTrue(filter.getOperator() instanceof And);
+	}
+
 }

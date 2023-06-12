@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -51,173 +50,172 @@ import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.Envelope;
 
 /**
- * <code>List</code>-based {@link Points} implementation that allows to hold identifiable {@link Point} objects (with id
- * or even references to local or remote {@link Point} instances}.
+ * <code>List</code>-based {@link Points} implementation that allows to hold identifiable
+ * {@link Point} objects (with id or even references to local or remote {@link Point}
+ * instances}.
  * <p>
- * This implementation is rather expensive, as every contained point is represented as an individual {@link Point}
- * object. Whenever possible, {@link PackedPoints} or {@link PointsPoints} should be used instead.
+ * This implementation is rather expensive, as every contained point is represented as an
+ * individual {@link Point} object. Whenever possible, {@link PackedPoints} or
+ * {@link PointsPoints} should be used instead.
  * </p>
  *
  * @see PackedPoints
  * @see PointsPoints
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- *
- * @version $Revision$, $Date$
  */
 public class PointsList implements Points {
 
-    protected List<Point> points;
+	protected List<Point> points;
 
-    /**
-     * Creates a new {@link PointsList} instance based on the given list.
-     *
-     * @param points
-     */
-    public PointsList( List<Point> points ) {
-        this.points = points;
-    }
+	/**
+	 * Creates a new {@link PointsList} instance based on the given list.
+	 * @param points
+	 */
+	public PointsList(List<Point> points) {
+		this.points = points;
+	}
 
-    @Override
-    public int getDimension() {
-        for ( final Point point : points ) {
-            if ( !( point instanceof Reference<?> ) ) {
-                return point.getCoordinateDimension();
-            }
-        }
-        int dimension = 2;
-        for ( final Point point : points ) {
-            try {
-                dimension = point.getCoordinateDimension();
-            } catch ( Exception e ) {
-                // nothing to do, try next
-            }
-        }
-        return dimension;
-    }
+	@Override
+	public int getDimension() {
+		for (final Point point : points) {
+			if (!(point instanceof Reference<?>)) {
+				return point.getCoordinateDimension();
+			}
+		}
+		int dimension = 2;
+		for (final Point point : points) {
+			try {
+				dimension = point.getCoordinateDimension();
+			}
+			catch (Exception e) {
+				// nothing to do, try next
+			}
+		}
+		return dimension;
+	}
 
-    @Override
-    public int size() {
-        return points.size();
-    }
+	@Override
+	public int size() {
+		return points.size();
+	}
 
-    @Override
-    public Iterator<Point> iterator() {
-        return points.iterator();
-    }
+	@Override
+	public Iterator<Point> iterator() {
+		return points.iterator();
+	}
 
-    @Override
-    public Point get( int i ) {
-        return points.get( i );
-    }
+	@Override
+	public Point get(int i) {
+		return points.get(i);
+	}
 
-    @Override
-    public double[] getAsArray() {
-        double[] coords = new double[getDimension() * size()];
-        int i = 0;
-        for ( Point p : this ) {
-            for ( double coord : p.getAsArray() ) {
-                coords[i++] = coord;
-            }
-        }
-        return coords;
-    }
+	@Override
+	public double[] getAsArray() {
+		double[] coords = new double[getDimension() * size()];
+		int i = 0;
+		for (Point p : this) {
+			for (double coord : p.getAsArray()) {
+				coords[i++] = coord;
+			}
+		}
+		return coords;
+	}
 
-    @Override
-    public Point getEndPoint() {
-        return get( size() - 1 );
-    }
+	@Override
+	public Point getEndPoint() {
+		return get(size() - 1);
+	}
 
-    @Override
-    public Point getStartPoint() {
-        return get( 0 );
-    }
+	@Override
+	public Point getStartPoint() {
+		return get(0);
+	}
 
-    // -----------------------------------------------------------------------
-    // Implementation of JTS methods
-    // -----------------------------------------------------------------------
+	// -----------------------------------------------------------------------
+	// Implementation of JTS methods
+	// -----------------------------------------------------------------------
 
-    @Override
-    public Envelope expandEnvelope( Envelope env ) {
-        for ( Point p : points ) {
-            env.expandToInclude( p.get0(), p.get1() );
-        }
-        return env;
-    }
+	@Override
+	public Envelope expandEnvelope(Envelope env) {
+		for (Point p : points) {
+			env.expandToInclude(p.get0(), p.get1());
+		}
+		return env;
+	}
 
-    @Override
-    public Coordinate getCoordinate( int index ) {
-        if ( index < points.size() && index >= 0 ) {
-            Point point = points.get( index );
-            return new Coordinate( point.get0(), point.get1(), point.get2() );
-        }
-        return null;
-    }
+	@Override
+	public Coordinate getCoordinate(int index) {
+		if (index < points.size() && index >= 0) {
+			Point point = points.get(index);
+			return new Coordinate(point.get0(), point.get1(), point.get2());
+		}
+		return null;
+	}
 
-    @Override
-    public void getCoordinate( int index, Coordinate coord ) {
-        if ( index < points.size() && index >= 0 ) {
-            Point point = points.get( index );
-            coord.x = point.get0();
-            coord.y = point.get1();
-            coord.z = point.get2();
-        }
-    }
+	@Override
+	public void getCoordinate(int index, Coordinate coord) {
+		if (index < points.size() && index >= 0) {
+			Point point = points.get(index);
+			coord.x = point.get0();
+			coord.y = point.get1();
+			coord.z = point.get2();
+		}
+	}
 
-    @Override
-    public Coordinate getCoordinateCopy( int index ) {
-        Point point = points.get( index );
-        return new Coordinate( point.get0(), point.get1(), point.get2() );
-    }
+	@Override
+	public Coordinate getCoordinateCopy(int index) {
+		Point point = points.get(index);
+		return new Coordinate(point.get0(), point.get1(), point.get2());
+	}
 
-    @Override
-    public double getOrdinate( int index, int ordinateIndex ) {
-        return points.get( index ).get( ordinateIndex );
-    }
+	@Override
+	public double getOrdinate(int index, int ordinateIndex) {
+		return points.get(index).get(ordinateIndex);
+	}
 
-    @Override
-    public double getX( int index ) {
-        return points.get( index ).get0();
-    }
+	@Override
+	public double getX(int index) {
+		return points.get(index).get0();
+	}
 
-    @Override
-    public double getY( int index ) {
-        return points.get( index ).get1();
-    }
+	@Override
+	public double getY(int index) {
+		return points.get(index).get1();
+	}
 
-    @Override
-    public void setOrdinate( int index, int ordinateIndex, double value ) {
-        double[] coords = points.get( index ).getAsArray();
-        if ( coords.length > ordinateIndex && ordinateIndex >= 0 )
-            coords[ordinateIndex] = value;
-        else
-            throw new IndexOutOfBoundsException();
-    }
+	@Override
+	public void setOrdinate(int index, int ordinateIndex, double value) {
+		double[] coords = points.get(index).getAsArray();
+		if (coords.length > ordinateIndex && ordinateIndex >= 0)
+			coords[ordinateIndex] = value;
+		else
+			throw new IndexOutOfBoundsException();
+	}
 
-    @Override
-    public Coordinate[] toCoordinateArray() {
-        Coordinate[] coords = new Coordinate[size()];
-        int i = 0;
-        for ( Point p : this ) {
-            coords[i++] = new Coordinate( p.get0(), p.get1() );
-        }
-        return coords;
-    }
+	@Override
+	public Coordinate[] toCoordinateArray() {
+		Coordinate[] coords = new Coordinate[size()];
+		int i = 0;
+		for (Point p : this) {
+			coords[i++] = new Coordinate(p.get0(), p.get1());
+		}
+		return coords;
+	}
 
-    @Override
-    public Object clone() {
-        return copy();
-    }
+	@Override
+	public Object clone() {
+		return copy();
+	}
 
-    @Override
-    public CoordinateSequence copy() {
-        List<Point> copiedPoints = points.stream().map( point -> point.copy() ).collect( Collectors.toList() );
-        return new PointsList( copiedPoints );
-    }
+	@Override
+	public CoordinateSequence copy() {
+		List<Point> copiedPoints = points.stream().map(point -> point.copy()).collect(Collectors.toList());
+		return new PointsList(copiedPoints);
+	}
 
-    @Override
-    public String toString() {
-        return "Points list: " + points;
-    }
+	@Override
+	public String toString() {
+		return "Points list: " + points;
+	}
 
 }

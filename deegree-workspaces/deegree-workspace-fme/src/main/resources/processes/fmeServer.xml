@@ -1,0 +1,6 @@
+<FMEServer xmlns="http://www.deegree.org/processes/fme" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.deegree.org/processes/fme https://schemas.deegree.org/core/3.5/processes/fme/fme.xsd">
+  <Address>http://fmeserver.example.com/</Address>
+  <Username>guest</Username>
+  <Password>guest</Password>
+</FMEServer>

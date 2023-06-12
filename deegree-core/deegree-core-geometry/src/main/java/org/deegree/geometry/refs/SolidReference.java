@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -46,51 +45,46 @@ import org.deegree.geometry.primitive.Surface;
 
 /**
  * The <code></code> class TODO add class documentation here.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class SolidReference<T extends Solid> extends GeometryReference<T> implements Solid {
 
-    /**
-     * Creates a new {@link SolidReference} instance.
-     * 
-     * @param resolver
-     *            used for resolving the reference, must not be <code>null</code>
-     * @param uri
-     *            the geometry's uri, must not be <code>null</code>
-     * @param baseURL
-     *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
-     */
-    public SolidReference( GMLReferenceResolver resolver, String uri, String baseURL ) {
-        super( resolver, uri, baseURL );
-    }
+	/**
+	 * Creates a new {@link SolidReference} instance.
+	 * @param resolver used for resolving the reference, must not be <code>null</code>
+	 * @param uri the geometry's uri, must not be <code>null</code>
+	 * @param baseURL base URL for resolving the uri, may be <code>null</code> (no
+	 * resolving of relative URLs)
+	 */
+	public SolidReference(GMLReferenceResolver resolver, String uri, String baseURL) {
+		super(resolver, uri, baseURL);
+	}
 
-    public Measure getArea( Unit requestedBaseUnit ) {
-        return getReferencedObject().getArea( requestedBaseUnit );
-    }
+	public Measure getArea(Unit requestedBaseUnit) {
+		return getReferencedObject().getArea(requestedBaseUnit);
+	}
 
-    public PrimitiveType getPrimitiveType() {
-        return PrimitiveType.Solid;
-    }
+	public PrimitiveType getPrimitiveType() {
+		return PrimitiveType.Solid;
+	}
 
-    public SolidType getSolidType() {
-        return getReferencedObject().getSolidType();
-    }
+	public SolidType getSolidType() {
+		return getReferencedObject().getSolidType();
+	}
 
-    public Measure getVolume( Unit requestedBaseUnit ) {
-        return getReferencedObject().getVolume( requestedBaseUnit );
-    }
+	public Measure getVolume(Unit requestedBaseUnit) {
+		return getReferencedObject().getVolume(requestedBaseUnit);
+	}
 
-    @Override
-    public Surface getExteriorSurface() {
-        return getReferencedObject().getExteriorSurface();
-    }
+	@Override
+	public Surface getExteriorSurface() {
+		return getReferencedObject().getExteriorSurface();
+	}
 
-    @Override
-    public List<Surface> getInteriorSurfaces() {
-        return getReferencedObject().getInteriorSurfaces();
-    }
+	@Override
+	public List<Surface> getInteriorSurfaces() {
+		return getReferencedObject().getInteriorSurfaces();
+	}
+
 }

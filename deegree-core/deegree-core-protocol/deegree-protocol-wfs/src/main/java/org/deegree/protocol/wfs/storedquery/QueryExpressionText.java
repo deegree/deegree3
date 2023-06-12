@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -44,44 +43,42 @@ import org.deegree.commons.xml.XMLAdapter;
 
 /**
  * Actual code of a {@link StoredQueryDefinition}.
- * 
+ *
  * @see StoredQueryDefinition
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class QueryExpressionText extends XMLAdapter {
 
-    private final List<QName> returnFtNames;
+	private final List<QName> returnFtNames;
 
-    private final String language;
+	private final String language;
 
-    private final boolean isPrivate;
+	private final boolean isPrivate;
 
-    private final List<OMElement> childEls;
+	private final List<OMElement> childEls;
 
-    public QueryExpressionText( List<QName> returnFtNames, String language, boolean isPrivate, List<OMElement> childEls ) {
-        this.returnFtNames = returnFtNames;
-        this.language = language;
-        this.isPrivate = isPrivate;
-        this.childEls = childEls; 
-    }
+	public QueryExpressionText(List<QName> returnFtNames, String language, boolean isPrivate,
+			List<OMElement> childEls) {
+		this.returnFtNames = returnFtNames;
+		this.language = language;
+		this.isPrivate = isPrivate;
+		this.childEls = childEls;
+	}
 
-    public List<QName> getReturnFeatureTypes() {
-        return returnFtNames;
-    }
+	public List<QName> getReturnFeatureTypes() {
+		return returnFtNames;
+	}
 
-    public String getLanguage() {
-        return language;
-    }
+	public String getLanguage() {
+		return language;
+	}
 
-    public boolean isPrivate() {
-        return isPrivate;
-    }
+	public boolean isPrivate() {
+		return isPrivate;
+	}
 
-    public List<OMElement> getChildEls() {
-        return childEls;
-    }
+	public List<OMElement> getChildEls() {
+		return childEls;
+	}
+
 }

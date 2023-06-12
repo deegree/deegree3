@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -58,98 +57,97 @@ import org.slf4j.Logger;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 @ManagedBean
 @RequestScoped
 public class ExecuteBean implements Serializable {
 
-    private static final long serialVersionUID = -4044847936356583407L;
+	private static final long serialVersionUID = -4044847936356583407L;
 
-    private static final Logger LOG = getLogger( ExecuteBean.class );
+	private static final Logger LOG = getLogger(ExecuteBean.class);
 
-    private Map<String, Object> params = new HashMap<String, Object>();
+	private Map<String, Object> params = new HashMap<String, Object>();
 
-    private CodeType template;
+	private CodeType template;
 
-    private String result;
+	private String result;
 
-    public void setParams( Map<String, Object> params ) {
-        this.params = params;
-    }
+	public void setParams(Map<String, Object> params) {
+		this.params = params;
+	}
 
-    public Map<String, Object> getParams() {
-        return params;
-    }
+	public Map<String, Object> getParams() {
+		return params;
+	}
 
-    public Object print() {
-        LOG.debug( "try to print template " + template );
-        if ( template == null ) {
-            // TODO: msg
+	public Object print() {
+		LOG.debug("try to print template " + template);
+		if (template == null) {
+			// TODO: msg
 
-            return null;
-        }
+			return null;
+		}
 
-        String wpsUrl = Configuration.getWpsUrl();
-        URL capUrl;
-        try {
-            capUrl = new URL( wpsUrl + "?service=WPS&version=1.0.0&request=GetCapabilities" );
-            WPSClient wpsClient = new WPSClient( capUrl );
+		String wpsUrl = Configuration.getWpsUrl();
+		URL capUrl;
+		try {
+			capUrl = new URL(wpsUrl + "?service=WPS&version=1.0.0&request=GetCapabilities");
+			WPSClient wpsClient = new WPSClient(capUrl);
 
-            Process process = wpsClient.getProcess( getTemplate().getCode(), getTemplate().getCodeSpace() );
-            ProcessExecution exe = process.prepareExecution();
+			Process process = wpsClient.getProcess(getTemplate().getCode(), getTemplate().getCodeSpace());
+			ProcessExecution exe = process.prepareExecution();
 
-            for ( String key : params.keySet() ) {
-                LOG.debug( "parameter with key {} found.", key );
-                Object value = params.get( key );
-                if ( value != null ) {
-                    CodeType ct = CodeTypeConverter.getAsCodeType( key );
-                    String valueAsString;
-                    if ( value instanceof Date ) {
-                        DateFormat df = new SimpleDateFormat( "yyyy-MM-dd" );
-                        valueAsString = df.format( value );
-                    } else {
-                        valueAsString = value.toString();
-                    }
-                    if ( valueAsString.length() > 0 )
-                        exe.addLiteralInput( ct.getCode(), ct.getCodeSpace(), valueAsString, null, null );
-                }
-            }
+			for (String key : params.keySet()) {
+				LOG.debug("parameter with key {} found.", key);
+				Object value = params.get(key);
+				if (value != null) {
+					CodeType ct = CodeTypeConverter.getAsCodeType(key);
+					String valueAsString;
+					if (value instanceof Date) {
+						DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+						valueAsString = df.format(value);
+					}
+					else {
+						valueAsString = value.toString();
+					}
+					if (valueAsString.length() > 0)
+						exe.addLiteralInput(ct.getCode(), ct.getCodeSpace(), valueAsString, null, null);
+				}
+			}
 
-            OutputType[] outputTypes = process.getOutputTypes();
-            exe.addOutput( outputTypes[0].getId().getCode(), outputTypes[0].getId().getCodeSpace(), null, true, null,
-                           null, null );
+			OutputType[] outputTypes = process.getOutputTypes();
+			exe.addOutput(outputTypes[0].getId().getCode(), outputTypes[0].getId().getCodeSpace(), null, true, null,
+					null, null);
 
-            ComplexOutput o = (ComplexOutput) exe.execute().get( outputTypes[0].getId().getCode(),
-                                                                 outputTypes[0].getId().getCodeSpace() );
-            String link = o.getWebAccessibleURI().toASCIIString();
-            LOG.debug( "Result can be found here: " + link );
-            result = link;
-        } catch ( Exception e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return null;
-    }
+			ComplexOutput o = (ComplexOutput) exe.execute()
+				.get(outputTypes[0].getId().getCode(), outputTypes[0].getId().getCodeSpace());
+			String link = o.getWebAccessibleURI().toASCIIString();
+			LOG.debug("Result can be found here: " + link);
+			result = link;
+		}
+		catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
 
-    public void setTemplate( CodeType template ) {
-        this.template = template;
-    }
+	public void setTemplate(CodeType template) {
+		this.template = template;
+	}
 
-    public CodeType getTemplate() {
-        return template;
-    }
+	public CodeType getTemplate() {
+		return template;
+	}
 
-    public void setResult( String result ) {
-        this.result = result;
-    }
+	public void setResult(String result) {
+		this.result = result;
+	}
 
-    public String getResult() {
-        return result;
-    }
+	public String getResult() {
+		return result;
+	}
 
 }

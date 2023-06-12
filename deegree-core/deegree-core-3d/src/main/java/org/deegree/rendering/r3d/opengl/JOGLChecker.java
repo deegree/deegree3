@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -43,50 +42,49 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Utility class that contains a method for checking that JOGL is installed correctly.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class JOGLChecker {
 
-    private static final Logger LOG = LoggerFactory.getLogger( JOGLChecker.class );
+	private static final Logger LOG = LoggerFactory.getLogger(JOGLChecker.class);
 
-    /**
-     * Checks that the JOGL native libraries are available on the system.
-     * <p>
-     * If the libraries are not available, are corresponding message (with help information) is logged and an
-     * {@link UnsatisfiedLinkError} is thrown.
-     * 
-     * @throws UnsatisfiedLinkError
-     *             if the native libraries are not available
-     */
-    public static void check()
-                            throws UnsatisfiedLinkError {
+	/**
+	 * Checks that the JOGL native libraries are available on the system.
+	 * <p>
+	 * If the libraries are not available, are corresponding message (with help
+	 * information) is logged and an {@link UnsatisfiedLinkError} is thrown.
+	 * @throws UnsatisfiedLinkError if the native libraries are not available
+	 */
+	public static void check() throws UnsatisfiedLinkError {
 
-        try {
-            // check that JOGL's native libraries are available
-            new GLCanvas();
-        } catch ( UnsatisfiedLinkError e ) {
-            StringBuilder sb = new StringBuilder( "Cannot initialize JOGL (Java OpenGL bindings) -- " );
-            sb.append( "the native JOGL libraries cannot be loaded." );
+		try {
+			// check that JOGL's native libraries are available
+			new GLCanvas();
+		}
+		catch (UnsatisfiedLinkError e) {
+			StringBuilder sb = new StringBuilder("Cannot initialize JOGL (Java OpenGL bindings) -- ");
+			sb.append("the native JOGL libraries cannot be loaded.");
 
-            String os = System.getProperty( "os.name" );
-            if ( os != null ) {
-                os = os.toLowerCase().trim();
-                if ( os.contains( "win" ) ) {
-                    sb.append( " Hint: set your system's PATH environment variable to include the directory that contains gluegen-rt.dll, jogl_awt.dll jogl_cg.dll and jogl.dll." );
-                } else {
-                    sb.append( " Hint: set your systems's LD_LIBRARY_PATH environment variable to include the directory that contains libgluegen-rt.so, libjogl_awt.so, libjogl_cg.so, libjogl.so. This can be achieved by exporting the LD_LIBRARY_PATH (export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/path/to/jogl/libs/)." );
-                }
-            }
-            sb.append( " See http://wiki.deegree.org/deegreeWiki/deegree3/SystemRequirements for more information." );
+			String os = System.getProperty("os.name");
+			if (os != null) {
+				os = os.toLowerCase().trim();
+				if (os.contains("win")) {
+					sb.append(
+							" Hint: set your system's PATH environment variable to include the directory that contains gluegen-rt.dll, jogl_awt.dll jogl_cg.dll and jogl.dll.");
+				}
+				else {
+					sb.append(
+							" Hint: set your systems's LD_LIBRARY_PATH environment variable to include the directory that contains libgluegen-rt.so, libjogl_awt.so, libjogl_cg.so, libjogl.so. This can be achieved by exporting the LD_LIBRARY_PATH (export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/path/to/jogl/libs/).");
+				}
+			}
+			sb.append(" See http://wiki.deegree.org/deegreeWiki/deegree3/SystemRequirements for more information.");
 
-            String msg = sb.toString();
-            LOG.error( msg );
-            throw new UnsatisfiedLinkError( msg );
-        }
-    }
+			String msg = sb.toString();
+			LOG.error(msg);
+			throw new UnsatisfiedLinkError(msg);
+		}
+	}
+
 }

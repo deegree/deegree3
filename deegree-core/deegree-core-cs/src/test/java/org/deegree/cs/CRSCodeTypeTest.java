@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aionita@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2008 by:
@@ -47,85 +46,82 @@ import org.junit.Test;
 
 /**
  * Test class for CRSCodeType
- * 
+ *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * 
- * @author last edited by: $Author: ionita $
- * 
- * @version $Revision: $, $Date: $
- * 
+ *
  */
 public class CRSCodeTypeTest extends TestCase {
 
-    @Test
-    public void test_urn_x_ogc() {
-        CRSCodeType code = new CRSCodeType( "URN:X-OGC:DEF:CRS:EPSG:6.11:4326" );
-        assertThat( code.toString(), is( "epsg:6.11:4326" ) );
-        assertThat( code.getCode(), is( "4326" ) );
-        assertThat( code.getCodeVersion(), is( "6.11" ) );
-        assertThat( code.getCodeSpace(), is( "epsg" ) );
-    }
+	@Test
+	public void test_urn_x_ogc() {
+		CRSCodeType code = new CRSCodeType("URN:X-OGC:DEF:CRS:EPSG:6.11:4326");
+		assertThat(code.toString(), is("epsg:6.11:4326"));
+		assertThat(code.getCode(), is("4326"));
+		assertThat(code.getCodeVersion(), is("6.11"));
+		assertThat(code.getCodeSpace(), is("epsg"));
+	}
 
-    @Test
-    public void test_urn_x_ogc_3PartVersion() {
-        CRSCodeType code = new CRSCodeType( "URN:X-OGC:DEF:CRS:EPSG:6.11.2:4326" );
-        assertThat( code.toString(), is( "epsg:6.11.2:4326" ) );
-        assertThat( code.getCode(), is( "4326" ) );
-        assertThat( code.getCodeVersion(), is( "6.11.2" ) );
-        assertThat( code.getCodeSpace(), is( "epsg" ) );
-    }
+	@Test
+	public void test_urn_x_ogc_3PartVersion() {
+		CRSCodeType code = new CRSCodeType("URN:X-OGC:DEF:CRS:EPSG:6.11.2:4326");
+		assertThat(code.toString(), is("epsg:6.11.2:4326"));
+		assertThat(code.getCode(), is("4326"));
+		assertThat(code.getCodeVersion(), is("6.11.2"));
+		assertThat(code.getCodeSpace(), is("epsg"));
+	}
 
-    @Test
-    public void test_http_opengis_gml() {
-        CRSCodeType code = new CRSCodeType( "HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#4326" );
-        assertThat( code.toString(), is( "epsg:4326" ) );
-        assertThat( code.getCode(), is( "4326" ) );
-        assertThat( code.getCodeVersion(), is( "" ) );
-        assertThat( code.getCodeSpace(), is( "epsg" ) );
-    }
+	@Test
+	public void test_http_opengis_gml() {
+		CRSCodeType code = new CRSCodeType("HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#4326");
+		assertThat(code.toString(), is("epsg:4326"));
+		assertThat(code.getCode(), is("4326"));
+		assertThat(code.getCodeVersion(), is(""));
+		assertThat(code.getCodeSpace(), is("epsg"));
+	}
 
-    @Test
-    public void test_urn_opengis() {
-        CRSCodeType code = new CRSCodeType( "URN:OPENGIS:DEF:CRS:EPSG::4326" );
-        assertThat( code.toString(), is( "epsg:4326" ) );
-        assertThat( code.getCode(), is( "4326" ) );
-        assertThat( code.getCodeVersion(), is( "" ) );
-        assertThat( code.getCodeSpace(), is( "epsg" ) );
-    }
+	@Test
+	public void test_urn_opengis() {
+		CRSCodeType code = new CRSCodeType("URN:OPENGIS:DEF:CRS:EPSG::4326");
+		assertThat(code.toString(), is("epsg:4326"));
+		assertThat(code.getCode(), is("4326"));
+		assertThat(code.getCodeVersion(), is(""));
+		assertThat(code.getCodeSpace(), is("epsg"));
+	}
 
-    @Test
-    public void test_crs() {
-        CRSCodeType code = new CRSCodeType( "CRS:84" );
-        assertThat( code.toString(), is( "CRS:84" ) );
-        assertThat( code.getCode(), is( "" ) );
-        assertThat( code.getCodeVersion(), is( "" ) );
-        assertThat( code.getCodeSpace(), is( "" ) );
-    }
+	@Test
+	public void test_crs() {
+		CRSCodeType code = new CRSCodeType("CRS:84");
+		assertThat(code.toString(), is("CRS:84"));
+		assertThat(code.getCode(), is(""));
+		assertThat(code.getCodeVersion(), is(""));
+		assertThat(code.getCodeSpace(), is(""));
+	}
 
-    @Test
-    public void test_urn_ogc() {
-        CRSCodeType code = new CRSCodeType( "URN:OGC:DEF:CRS:OGC:1.3:CRS84" );
-        assertThat( code.toString(), is( "URN:OGC:DEF:CRS:OGC:1.3:CRS84" ) );
-        assertThat( code.getCode(), is( "" ) );
-        assertThat( code.getCodeVersion(), is( "" ) );
-        assertThat( code.getCodeSpace(), is( "" ) );
-    }
+	@Test
+	public void test_urn_ogc() {
+		CRSCodeType code = new CRSCodeType("URN:OGC:DEF:CRS:OGC:1.3:CRS84");
+		assertThat(code.toString(), is("URN:OGC:DEF:CRS:OGC:1.3:CRS84"));
+		assertThat(code.getCode(), is(""));
+		assertThat(code.getCodeVersion(), is(""));
+		assertThat(code.getCodeSpace(), is(""));
+	}
 
-    @Test
-    public void test_wgs84() {
-        CRSCodeType code = new CRSCodeType( "WGS84(DD)" );
-        assertThat( code.toString(), is( "WGS84(DD)" ) );
-        assertThat( code.getCode(), is( "" ) );
-        assertThat( code.getCodeVersion(), is( "" ) );
-        assertThat( code.getCodeSpace(), is( "" ) );
-    }
+	@Test
+	public void test_wgs84() {
+		CRSCodeType code = new CRSCodeType("WGS84(DD)");
+		assertThat(code.toString(), is("WGS84(DD)"));
+		assertThat(code.getCode(), is(""));
+		assertThat(code.getCodeVersion(), is(""));
+		assertThat(code.getCodeSpace(), is(""));
+	}
 
-    @Test
-    public void test_http_opengis_def() {
-        CRSCodeType code = new CRSCodeType( "HTTP://WWW.OPENGIS.NET/DEF/CRS/EPSG/0/4326" );
-        assertThat( code.toString(), is( "epsg:0:4326" ) );
-        assertThat( code.getCode(), is( "4326" ) );
-        assertThat( code.getCodeVersion(), is( "0" ) );
-        assertThat( code.getCodeSpace(), is( "epsg" ) );
-    }
+	@Test
+	public void test_http_opengis_def() {
+		CRSCodeType code = new CRSCodeType("HTTP://WWW.OPENGIS.NET/DEF/CRS/EPSG/0/4326");
+		assertThat(code.toString(), is("epsg:0:4326"));
+		assertThat(code.getCode(), is("4326"));
+		assertThat(code.getCodeVersion(), is("0"));
+		assertThat(code.getCodeSpace(), is("epsg"));
+	}
+
 }

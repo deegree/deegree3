@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-base/src/main/java/org/deegree/filter/sql/expression/SQLOperationBuilder.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -40,37 +39,35 @@ import java.util.List;
 
 /**
  * Helper class for building {@link SQLOperation} expressions.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 30975 $, $Date: 2011-05-31 11:09:09 +0200 (Di, 31. Mai 2011) $
  */
 public class SQLOperationBuilder {
 
-    private int sqlType;
+	private int sqlType;
 
-    private List<Object> particles = new ArrayList<Object>();
+	private List<Object> particles = new ArrayList<Object>();
 
-    public SQLOperationBuilder( int sqlType ) {
-        this.sqlType = sqlType;
-    }
+	public SQLOperationBuilder(int sqlType) {
+		this.sqlType = sqlType;
+	}
 
-    public SQLOperationBuilder() {
-        // nothing to do
-    }
+	public SQLOperationBuilder() {
+		// nothing to do
+	}
 
-    public SQLOperationBuilder add( String s ) {
-        particles.add( s );
-        return this;
-    }
+	public SQLOperationBuilder add(String s) {
+		particles.add(s);
+		return this;
+	}
 
-    public SQLOperationBuilder add( SQLExpression expr ) {
-        particles.add( expr );
-        return this;
-    }
+	public SQLOperationBuilder add(SQLExpression expr) {
+		particles.add(expr);
+		return this;
+	}
 
-    public SQLOperation toOperation() {
-        return new SQLOperation( particles );
-    }
+	public SQLOperation toOperation() {
+		return new SQLOperation(particles);
+	}
+
 }

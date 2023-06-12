@@ -1,4 +1,3 @@
-//$HeadURL: http://svn.wald.intevation.org/svn/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -47,9 +46,7 @@ import org.deegree.gml.GMLVersion;
  * Describes a GML schema with {@link URL}, {@link GMLVersion} and {@link GMLType}.
  * 
  * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
- * @author last edited by: $Author: pabel $
  * 
- * @version $Revision: $, $Date: $
  */
 public class GMLSchema implements OutputFormat {
 
@@ -59,9 +56,7 @@ public class GMLSchema implements OutputFormat {
      * Describes the type (like GEOMETRY or FEATURE_COLLECTION) of the GML data.
      * 
      * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
-     * @author last edited by: $Author: pabel $
      * 
-     * @version $Revision: $, $Date: $
      */
     public enum GMLType {
         GEOMETRY, FEATURE_COLLECTION;

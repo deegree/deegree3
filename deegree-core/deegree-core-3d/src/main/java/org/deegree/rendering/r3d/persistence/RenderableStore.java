@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -45,18 +44,15 @@ import org.deegree.workspace.Resource;
 
 /**
  * The <code></code> class TODO add class documentation here.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface RenderableStore extends Resource {
 
-    public void loadEntities( RenderableManager<?> renderer, ICRS baseCRS );
+	public void loadEntities(RenderableManager<?> renderer, ICRS baseCRS);
 
-    public boolean isBillboard();
+	public boolean isBillboard();
 
-    public List<RenderablePrototype> loadProtoTypes( DirectGeometryBuffer geometryBuffer, ICRS baseCRS );
+	public List<RenderablePrototype> loadProtoTypes(DirectGeometryBuffer geometryBuffer, ICRS baseCRS);
 
 }

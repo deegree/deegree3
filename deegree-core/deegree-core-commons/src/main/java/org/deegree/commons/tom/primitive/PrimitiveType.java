@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -39,60 +38,53 @@ import org.apache.xerces.xs.XSSimpleTypeDefinition;
 
 /**
  * Defines a primitive type.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class PrimitiveType {
 
-    private final BaseType baseType;
+	private final BaseType baseType;
 
-    private final XSSimpleTypeDefinition xsType;
+	private final XSSimpleTypeDefinition xsType;
 
-    /**
-     * Creates a new {@link PrimitiveType} instance for the given {@link BaseType}.
-     * 
-     * @param baseType
-     *            base type, must not be <code>null</code>
-     */
-    public PrimitiveType( BaseType baseType ) {
-        this.baseType = baseType;
-        xsType = null;
-    }
+	/**
+	 * Creates a new {@link PrimitiveType} instance for the given {@link BaseType}.
+	 * @param baseType base type, must not be <code>null</code>
+	 */
+	public PrimitiveType(BaseType baseType) {
+		this.baseType = baseType;
+		xsType = null;
+	}
 
-    /**
-     * Creates a new {@link PrimitiveType} instance for the given {@link XSSimpleTypeDefinition}.
-     * 
-     * @param xsType
-     *            XML schema type, must not be <code>null</code>
-     */
-    public PrimitiveType( XSSimpleTypeDefinition xsType ) {
-        this.xsType = xsType;
-        this.baseType = BaseType.valueOf( xsType );
-    }
+	/**
+	 * Creates a new {@link PrimitiveType} instance for the given
+	 * {@link XSSimpleTypeDefinition}.
+	 * @param xsType XML schema type, must not be <code>null</code>
+	 */
+	public PrimitiveType(XSSimpleTypeDefinition xsType) {
+		this.xsType = xsType;
+		this.baseType = BaseType.valueOf(xsType);
+	}
 
-    /**
-     * Returns the base type.
-     * 
-     * @return base type, never <code>null</code>
-     */
-    public BaseType getBaseType() {
-        return baseType;
-    }
+	/**
+	 * Returns the base type.
+	 * @return base type, never <code>null</code>
+	 */
+	public BaseType getBaseType() {
+		return baseType;
+	}
 
-    /**
-     * Returns the XML schema simple type definition.
-     * 
-     * @return XML schema simple type definition, can be <code>null</code>
-     */
-    public XSSimpleTypeDefinition getXSType() {
-        return xsType;
-    }
-    
-    @Override
-    public String toString () {
-        return baseType.toString();
-    }
+	/**
+	 * Returns the XML schema simple type definition.
+	 * @return XML schema simple type definition, can be <code>null</code>
+	 */
+	public XSSimpleTypeDefinition getXSType() {
+		return xsType;
+	}
+
+	@Override
+	public String toString() {
+		return baseType.toString();
+	}
+
 }

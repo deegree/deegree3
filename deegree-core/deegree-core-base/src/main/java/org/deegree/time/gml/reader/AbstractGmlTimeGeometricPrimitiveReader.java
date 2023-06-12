@@ -52,43 +52,41 @@ import org.deegree.time.primitive.RelatedTime;
 
 class AbstractGmlTimeGeometricPrimitiveReader extends AbstractGMLObjectReader {
 
-    protected static final String FRAME = "frame";
+	protected static final String FRAME = "frame";
 
-    protected AbstractGmlTimeGeometricPrimitiveReader( GMLStreamReader gmlStreamReader ) {
-        super( gmlStreamReader );
-    }
+	protected AbstractGmlTimeGeometricPrimitiveReader(GMLStreamReader gmlStreamReader) {
+		super(gmlStreamReader);
+	}
 
-    // TODO implement actual parsing
-    protected List<Property> readGmlStandardProperties( final XMLStreamReader xmlStream )
-                            throws XMLStreamException {
-        final List<Property> props = new ArrayList<Property>();
-        nextElement( xmlStream );
-        while ( xmlStream.isStartElement() && isStandardProperty( xmlStream.getName() ) ) {
-            skipElement( xmlStream );
-            nextElement( xmlStream );
-        }
-        return props;
-    }
+	// TODO implement actual parsing
+	protected List<Property> readGmlStandardProperties(final XMLStreamReader xmlStream) throws XMLStreamException {
+		final List<Property> props = new ArrayList<Property>();
+		nextElement(xmlStream);
+		while (xmlStream.isStartElement() && isStandardProperty(xmlStream.getName())) {
+			skipElement(xmlStream);
+			nextElement(xmlStream);
+		}
+		return props;
+	}
 
-    // TODO implement actual parsing
-    protected List<RelatedTime> readRelatedTimes( final XMLStreamReader xmlStream )
-                            throws XMLStreamException {
-        final QName elName = new QName( gmlNs, "relatedTime" );
-        while ( xmlStream.isStartElement() && elName.equals( xmlStream.getName() ) ) {
-            skipElement( xmlStream );
-            nextElement( xmlStream );
-        }
-        return emptyList();
-    }
+	// TODO implement actual parsing
+	protected List<RelatedTime> readRelatedTimes(final XMLStreamReader xmlStream) throws XMLStreamException {
+		final QName elName = new QName(gmlNs, "relatedTime");
+		while (xmlStream.isStartElement() && elName.equals(xmlStream.getName())) {
+			skipElement(xmlStream);
+			nextElement(xmlStream);
+		}
+		return emptyList();
+	}
 
-    private boolean isStandardProperty( QName name ) {
-        if ( gmlNs.equals( name.getNamespaceURI() ) ) {
-            String localName = name.getLocalPart();
-            return "metaDataProperty".equals( localName ) || "description".equals( localName )
-                   || "descriptionReference".equals( localName ) || "identifier".equals( localName )
-                   || "name".equals( localName );
-        }
-        return false;
-    }
+	private boolean isStandardProperty(QName name) {
+		if (gmlNs.equals(name.getNamespaceURI())) {
+			String localName = name.getLocalPart();
+			return "metaDataProperty".equals(localName) || "description".equals(localName)
+					|| "descriptionReference".equals(localName) || "identifier".equals(localName)
+					|| "name".equals(localName);
+		}
+		return false;
+	}
 
 }

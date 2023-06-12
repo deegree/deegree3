@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -44,50 +43,44 @@ import org.deegree.cs.refs.CRSResourceRef;
 
 /**
  * {@link CRSResourceRef} ti a {@link IAxis}
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class AxisRef extends CRSResourceRef<IAxis> implements Serializable, IAxis {
 
-    private static final long serialVersionUID = 162518956789884707L;
+	private static final long serialVersionUID = 162518956789884707L;
 
-    /**
-     * Creates a reference to a {@link IAxis}
-     * 
-     * @param resolver
-     *            used for resolving the reference, must not be <code>null</code>
-     * @param uri
-     *            the object's uri, must not be <code>null</code>
-     * @param baseURL
-     *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
-     */
-    public AxisRef( ReferenceResolver resolver, String uri, String baseURL ) {
-        super( resolver, uri, baseURL );
-    }
+	/**
+	 * Creates a reference to a {@link IAxis}
+	 * @param resolver used for resolving the reference, must not be <code>null</code>
+	 * @param uri the object's uri, must not be <code>null</code>
+	 * @param baseURL base URL for resolving the uri, may be <code>null</code> (no
+	 * resolving of relative URLs)
+	 */
+	public AxisRef(ReferenceResolver resolver, String uri, String baseURL) {
+		super(resolver, uri, baseURL);
+	}
 
-    public int getOrientation() {
-        return getReferencedObject().getOrientation();
-    }
+	public int getOrientation() {
+		return getReferencedObject().getOrientation();
+	}
 
-    public IUnit getUnits() {
-        return getReferencedObject().getUnits();
-    }
+	public IUnit getUnits() {
+		return getReferencedObject().getUnits();
+	}
 
-    public String getOrientationAsString() {
-        return getReferencedObject().getOrientationAsString();
-    }
+	public String getOrientationAsString() {
+		return getReferencedObject().getOrientationAsString();
+	}
 
-    @Override
-    public String getName() {
-        return getReferencedObject().getName();
-    }
+	@Override
+	public String getName() {
+		return getReferencedObject().getName();
+	}
 
-    @Override
-    public boolean equals( Object obj ) {
-        return super.equals( obj ) ? true : getReferencedObject().equals( obj );
-    }
+	@Override
+	public boolean equals(Object obj) {
+		return super.equals(obj) ? true : getReferencedObject().equals(obj);
+	}
 
 }

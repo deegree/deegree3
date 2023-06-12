@@ -37,28 +37,28 @@ import org.deegree.workspace.Workspace;
 
 /**
  * SPI provider implementation for feature layer stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class FeatureLayerStoreProvider extends LayerStoreProvider {
 
-    private static final URL SCHEMA_URL = FeatureLayerStoreProvider.class.getResource( "/META-INF/schemas/layers/feature/feature.xsd" );
+	private static final URL SCHEMA_URL = FeatureLayerStoreProvider.class
+		.getResource("/META-INF/schemas/layers/feature/feature.xsd");
 
-    @Override
-    public String getNamespace() {
-        return "http://www.deegree.org/layers/feature";
-    }
+	@Override
+	public String getNamespace() {
+		return "http://www.deegree.org/layers/feature";
+	}
 
-    @Override
-    public ResourceMetadata<LayerStore> createFromLocation( Workspace workspace, ResourceLocation<LayerStore> location ) {
-        return new FeatureLayerStoreMetadata( workspace, location, this );
-    }
+	@Override
+	public ResourceMetadata<LayerStore> createFromLocation(Workspace workspace, ResourceLocation<LayerStore> location) {
+		return new FeatureLayerStoreMetadata(workspace, location, this);
+	}
 
-    @Override
-    public URL getSchema() {
-        return SCHEMA_URL;
-    }
+	@Override
+	public URL getSchema() {
+		return SCHEMA_URL;
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -42,17 +41,15 @@ import org.deegree.geometry.primitive.Solid;
  * Specialised aggregation type for {@link Solid} objects.
  *
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
- * @author last edited by: $Author$
  *
- * @version. $Revision$, $Date$
  */
 public interface MultiSolid extends MultiGeometry<Solid> {
 
-    /**
-     * The volume of all contained {@link Solid}s measured in units of the used {@link CRS}.
-     *
-     * @return volume
-     */
-    public double getVolume();
+	/**
+	 * The volume of all contained {@link Solid}s measured in units of the used
+	 * {@link CRS}.
+	 * @return volume
+	 */
+	public double getVolume();
 
 }

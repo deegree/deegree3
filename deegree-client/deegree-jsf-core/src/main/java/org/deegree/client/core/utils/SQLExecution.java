@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -46,7 +45,6 @@ import java.sql.Statement;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.db.ConnectionProvider;
 import org.deegree.db.ConnectionProviderProvider;
@@ -54,88 +52,90 @@ import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@LoggingNotes(debug = "log the executed statements")
 public class SQLExecution implements Serializable {
 
-    private static final long serialVersionUID = -5784976166723417648L;
+	private static final long serialVersionUID = -5784976166723417648L;
 
-    private static Logger LOG = LoggerFactory.getLogger( SQLExecution.class );
+	private static Logger LOG = LoggerFactory.getLogger(SQLExecution.class);
 
-    private String connId;
+	private String connId;
 
-    private String[] sqlStatements;
+	private String[] sqlStatements;
 
-    private String message = "Click Execute to create tables.";
+	private String message = "Click Execute to create tables.";
 
-    private String backOutcome;
+	private String backOutcome;
 
-    private Workspace workspace;
+	private Workspace workspace;
 
-    public SQLExecution( String connId, String[] sqlStatements, String backOutcome, Workspace workspace ) {
-        this.connId = connId;
-        this.sqlStatements = sqlStatements;
-        this.backOutcome = backOutcome;
-        this.workspace = workspace;
-    }
+	public SQLExecution(String connId, String[] sqlStatements, String backOutcome, Workspace workspace) {
+		this.connId = connId;
+		this.sqlStatements = sqlStatements;
+		this.backOutcome = backOutcome;
+		this.workspace = workspace;
+	}
 
-    public String getMessage() {
-        return message;
-    }
+	public String getMessage() {
+		return message;
+	}
 
-    public String getStatements() {
-        StringBuffer sql = new StringBuffer();
-        for ( int i = 0; i < sqlStatements.length; i++ ) {
-            sql.append( sqlStatements[i] );
-            if ( !sqlStatements[i].trim().isEmpty() ) {
-                sql.append( ";" );
-            }
-            sql.append( "\n" );
-        }
-        return sql.toString();
-    }
+	public String getStatements() {
+		StringBuffer sql = new StringBuffer();
+		for (int i = 0; i < sqlStatements.length; i++) {
+			sql.append(sqlStatements[i]);
+			if (!sqlStatements[i].trim().isEmpty()) {
+				sql.append(";");
+			}
+			sql.append("\n");
+		}
+		return sql.toString();
+	}
 
-    public void setStatements( String sql ) {
-        sqlStatements = sql.split( ";\\s*\\n" );
-        for ( int i = 0; i < sqlStatements.length; ++i ) {
-            if ( sqlStatements[i].endsWith( "end" ) ) {
-                sqlStatements[i] = sqlStatements[i] + ";";
-            }
-        }
-    }
+	public void setStatements(String sql) {
+		sqlStatements = sql.split(";\\s*\\n");
+		for (int i = 0; i < sqlStatements.length; ++i) {
+			if (sqlStatements[i].endsWith("end")) {
+				sqlStatements[i] = sqlStatements[i] + ";";
+			}
+		}
+	}
 
-    public String execute() {
-        Connection conn = null;
-        Statement stmt = null;
-        try {
-            ConnectionProvider prov = workspace.getResource( ConnectionProviderProvider.class, connId );
-            conn = prov.getConnection();
-            conn.setAutoCommit( false );
-            stmt = conn.createStatement();
-            for ( String sql : sqlStatements ) {
-                LOG.debug( "Executing: {}", sql );
-                stmt.execute( sql );
-            }
-            conn.commit();
-            FacesMessage fm = new FacesMessage( SEVERITY_INFO, "Executed " + sqlStatements.length
-                                                               + " statements successfully.", null );
-            FacesContext.getCurrentInstance().addMessage( null, fm );
-        } catch ( Throwable t ) {
-            if ( conn != null ) {
-                try {
-                    conn.rollback();
-                } catch ( SQLException e1 ) {
-                    e1.printStackTrace();
-                }
-            }
-            JDBCUtils.close( null, stmt, conn, LOG );
-            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Error: " + t.getMessage(), null );
-            FacesContext.getCurrentInstance().addMessage( null, fm );
-            return null;
-        }
-        return backOutcome;
-    }
+	public String execute() {
+		Connection conn = null;
+		Statement stmt = null;
+		try {
+			ConnectionProvider prov = workspace.getResource(ConnectionProviderProvider.class, connId);
+			conn = prov.getConnection();
+			conn.setAutoCommit(false);
+			stmt = conn.createStatement();
+			for (String sql : sqlStatements) {
+				LOG.debug("Executing: {}", sql);
+				stmt.execute(sql);
+			}
+			conn.commit();
+			FacesMessage fm = new FacesMessage(SEVERITY_INFO,
+					"Executed " + sqlStatements.length + " statements successfully.", null);
+			FacesContext.getCurrentInstance().addMessage(null, fm);
+		}
+		catch (Throwable t) {
+			if (conn != null) {
+				try {
+					conn.rollback();
+				}
+				catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+			}
+			JDBCUtils.close(null, stmt, conn, LOG);
+			FacesMessage fm = new FacesMessage(SEVERITY_ERROR, "Error: " + t.getMessage(), null);
+			FacesContext.getCurrentInstance().addMessage(null, fm);
+			return null;
+		}
+		return backOutcome;
+	}
 
-    public String getBackOutcome() {
-        return backOutcome;
-    }
+	public String getBackOutcome() {
+		return backOutcome;
+	}
+
 }

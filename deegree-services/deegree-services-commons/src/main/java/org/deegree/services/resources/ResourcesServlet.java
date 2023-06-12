@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2013 by:
@@ -46,80 +45,75 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.services.controller.OGCFrontController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Provides access to service-related resources stored in the active workspace, e.g. XML schema files.
- * 
+ * Provides access to service-related resources stored in the active workspace, e.g. XML
+ * schema files.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
-@LoggingNotes(debug = "logs resource requests")
 public class ResourcesServlet extends HttpServlet {
 
-    private static final Logger LOG = LoggerFactory.getLogger( ResourcesServlet.class );
+	private static final Logger LOG = LoggerFactory.getLogger(ResourcesServlet.class);
 
-    private static final long serialVersionUID = -2072170206703402474L;
+	private static final long serialVersionUID = -2072170206703402474L;
 
-    /**
-     * Returns the URL for retrieving the specified workspace file via HTTP.
-     * <p>
-     * NOTE: This method will only return a correct result if the calling thread originated in the
-     * {@link #doGet(HttpServletRequest, HttpServletResponse)} or
-     * {@link #doPost(HttpServletRequest, HttpServletResponse)} of this class (or has been spawned as a child thread by
-     * such a thread).
-     * </p>
-     * 
-     * @param workspaceFilePath
-     *            relative path to the workspace file, must not be <code>null</code>
-     * @return the URL, never <code>null</code>
-     */
-    public static String getUrl( String workspaceFilePath ) {
-        return OGCFrontController.getResourcesUrl() + "/" + workspaceFilePath;
-    }
+	/**
+	 * Returns the URL for retrieving the specified workspace file via HTTP.
+	 * <p>
+	 * NOTE: This method will only return a correct result if the calling thread
+	 * originated in the {@link #doGet(HttpServletRequest, HttpServletResponse)} or
+	 * {@link #doPost(HttpServletRequest, HttpServletResponse)} of this class (or has been
+	 * spawned as a child thread by such a thread).
+	 * </p>
+	 * @param workspaceFilePath relative path to the workspace file, must not be
+	 * <code>null</code>
+	 * @return the URL, never <code>null</code>
+	 */
+	public static String getUrl(String workspaceFilePath) {
+		return OGCFrontController.getResourcesUrl() + "/" + workspaceFilePath;
+	}
 
-    @Override
-    protected void doGet( HttpServletRequest request, HttpServletResponse response )
-                            throws ServletException, IOException {
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 
-        String resourcePath = request.getPathInfo();
-        if ( !resourcePath.startsWith( "/" ) ) {
-            throw new ServletException( "Requested resource path does not start with '/'." );
-        }
-        if ( !resourcePath.toLowerCase().endsWith( ".xsd" ) ) {
-            throw new ServletException( "Requested resource path does not end with '.xsd'." );
-        }
-        resourcePath = resourcePath.substring( 1 );
+		String resourcePath = request.getPathInfo();
+		if (!resourcePath.startsWith("/")) {
+			throw new ServletException("Requested resource path does not start with '/'.");
+		}
+		if (!resourcePath.toLowerCase().endsWith(".xsd")) {
+			throw new ServletException("Requested resource path does not end with '.xsd'.");
+		}
+		resourcePath = resourcePath.substring(1);
 
-        LOG.debug( "Requested resource: " + resourcePath );
-        File wsDir = OGCFrontController.getServiceWorkspace().getLocation();
-        File resource = new File( wsDir, resourcePath );
-        if ( !resource.exists() ) {
-            throw new ServletException( "Resource " + resourcePath + " does not exist." );
-        }
-        if ( !resource.isFile() ) {
-            throw new ServletException( "Resource " + resourcePath + " does not denote a file." );
-        }
-        sendResource( resource, response );
-    }
+		LOG.debug("Requested resource: " + resourcePath);
+		File wsDir = OGCFrontController.getServiceWorkspace().getLocation();
+		File resource = new File(wsDir, resourcePath);
+		if (!resource.exists()) {
+			throw new ServletException("Resource " + resourcePath + " does not exist.");
+		}
+		if (!resource.isFile()) {
+			throw new ServletException("Resource " + resourcePath + " does not denote a file.");
+		}
+		sendResource(resource, response);
+	}
 
-    private void sendResource( File resource, HttpServletResponse response )
-                            throws IOException {
+	private void sendResource(File resource, HttpServletResponse response) throws IOException {
 
-        response.setContentLength( (int) resource.length() );
-        String mimeType = determineMimeType( resource );
-        response.setContentType( mimeType );
+		response.setContentLength((int) resource.length());
+		String mimeType = determineMimeType(resource);
+		response.setContentType(mimeType);
 
-        copyAndClose( new FileInputStream( resource ), response.getOutputStream() );
-    }
+		copyAndClose(new FileInputStream(resource), response.getOutputStream());
+	}
 
-    private String determineMimeType( File resource ) {
-        // TODO
-        return "text/xml";
-    }
+	private String determineMimeType(File resource) {
+		// TODO
+		return "text/xml";
+	}
+
 }

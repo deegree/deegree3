@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2009 by:
@@ -53,101 +52,102 @@ import org.slf4j.Logger;
 
 /**
  * Retrieve the data for a Colormap from the configuration.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class ColormapDataset extends Dataset<Colormap> {
 
-    private static final Logger LOG = getLogger( ColormapDataset.class );
+	private static final Logger LOG = getLogger(ColormapDataset.class);
 
-    private static final float[] MIN_DEFAULT = new float[] { 1, 0, 0, 1 };
+	private static final float[] MIN_DEFAULT = new float[] { 1, 0, 0, 1 };
 
-    private static final float[] MAX_DEFAULT = new float[] { 0, 1, 0, 1 };
+	private static final float[] MAX_DEFAULT = new float[] { 0, 1, 0, 1 };
 
-    private static final float[] HEIGHT_DEFAULT = new float[] { 0.25f, 0.11f, 0.09f, 1 };
+	private static final float[] HEIGHT_DEFAULT = new float[] { 0.25f, 0.11f, 0.09f, 1 };
 
-    @Override
-    public Envelope fillFromDatasetDefinitions( Envelope sceneEnvelope, double[] toLocalCRS,
-                                                ResourceLocation<?> location, DatasetDefinitions dsd ) {
+	@Override
+	public Envelope fillFromDatasetDefinitions(Envelope sceneEnvelope, double[] toLocalCRS,
+			ResourceLocation<?> location, DatasetDefinitions dsd) {
 
-        List<ColormapDatasetConfig> colormapDatsets = dsd.getColormapDataset();
-        if ( !colormapDatsets.isEmpty() ) {
-            sceneEnvelope = initDatasets( colormapDatsets, sceneEnvelope, toLocalCRS );
-        } else {
-            LOG.info( "No colormap dataset has been configured." );
-        }
-        return sceneEnvelope;
-    }
+		List<ColormapDatasetConfig> colormapDatsets = dsd.getColormapDataset();
+		if (!colormapDatsets.isEmpty()) {
+			sceneEnvelope = initDatasets(colormapDatsets, sceneEnvelope, toLocalCRS);
+		}
+		else {
+			LOG.info("No colormap dataset has been configured.");
+		}
+		return sceneEnvelope;
+	}
 
-    private Envelope initDatasets( List<ColormapDatasetConfig> colormapDatsets, Envelope sceneEnvelope,
-                                   double[] toLocalCRS ) {
-        if ( colormapDatsets != null && !colormapDatsets.isEmpty() ) {
-            for ( ColormapDatasetConfig dts : colormapDatsets ) {
-                if ( dts != null ) {
-                    if ( isUnAmbiguous( dts.getTitle() ) ) {
-                        LOG.info( "The colormap dataset with name: " + dts.getName() + " and title: " + dts.getTitle()
-                                  + " had multiple definitions in your service configuration." );
-                    } else {
-                        sceneEnvelope = handleColormapDataset( dts, sceneEnvelope, toLocalCRS );
-                    }
-                }
-            }
-        }
-        return sceneEnvelope;
-    }
+	private Envelope initDatasets(List<ColormapDatasetConfig> colormapDatsets, Envelope sceneEnvelope,
+			double[] toLocalCRS) {
+		if (colormapDatsets != null && !colormapDatsets.isEmpty()) {
+			for (ColormapDatasetConfig dts : colormapDatsets) {
+				if (dts != null) {
+					if (isUnAmbiguous(dts.getTitle())) {
+						LOG.info("The colormap dataset with name: " + dts.getName() + " and title: " + dts.getTitle()
+								+ " had multiple definitions in your service configuration.");
+					}
+					else {
+						sceneEnvelope = handleColormapDataset(dts, sceneEnvelope, toLocalCRS);
+					}
+				}
+			}
+		}
+		return sceneEnvelope;
+	}
 
-    /**
-     * @param dts
-     * @param sceneEnvelope
-     * @param toLocalCRS
-     * @param adapter
-     * @return
-     */
-    private Envelope handleColormapDataset( ColormapDatasetConfig dts, Envelope sceneEnvelope, double[] toLocalCRS ) {
-        float[] maxColor = parseColor( dts.getMaxColor(), MAX_DEFAULT );
-        float[] minColor = parseColor( dts.getMinColor(), MIN_DEFAULT );
-        float[] heightColor = parseColor( dts.getHeightISOColor(), HEIGHT_DEFAULT );
-        double zMax = dts.getMaxZValue() == null ? sceneEnvelope.getMax().get2() : dts.getMaxZValue();
-        double zMin = dts.getMinZValue() == null ? sceneEnvelope.getMin().get2() : dts.getMinZValue();
-        Colormap result = new Colormap( (float) zMin, (float) zMax, minColor, maxColor, heightColor );
-        if ( LOG.isDebugEnabled() ) {
-            LOG.debug( "Configured colormap: " + dts.getTitle() + " | " + result.toString() );
-        }
-        double[] min = Arrays.copyOf( sceneEnvelope.getMin().getAsArray(), 3 );
-        double[] max = Arrays.copyOf( sceneEnvelope.getMax().getAsArray(), 3 );
-        min[0] += toLocalCRS[0];
-        min[1] += toLocalCRS[1];
-        max[0] += toLocalCRS[0];
-        max[1] += toLocalCRS[1];
-        super.addConstraint( dts.getTitle(), result,
-                             geomFac.createEnvelope( min, max, sceneEnvelope.getCoordinateSystem() ) );
-        return sceneEnvelope;
-    }
+	/**
+	 * @param dts
+	 * @param sceneEnvelope
+	 * @param toLocalCRS
+	 * @param adapter
+	 * @return
+	 */
+	private Envelope handleColormapDataset(ColormapDatasetConfig dts, Envelope sceneEnvelope, double[] toLocalCRS) {
+		float[] maxColor = parseColor(dts.getMaxColor(), MAX_DEFAULT);
+		float[] minColor = parseColor(dts.getMinColor(), MIN_DEFAULT);
+		float[] heightColor = parseColor(dts.getHeightISOColor(), HEIGHT_DEFAULT);
+		double zMax = dts.getMaxZValue() == null ? sceneEnvelope.getMax().get2() : dts.getMaxZValue();
+		double zMin = dts.getMinZValue() == null ? sceneEnvelope.getMin().get2() : dts.getMinZValue();
+		Colormap result = new Colormap((float) zMin, (float) zMax, minColor, maxColor, heightColor);
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("Configured colormap: " + dts.getTitle() + " | " + result.toString());
+		}
+		double[] min = Arrays.copyOf(sceneEnvelope.getMin().getAsArray(), 3);
+		double[] max = Arrays.copyOf(sceneEnvelope.getMax().getAsArray(), 3);
+		min[0] += toLocalCRS[0];
+		min[1] += toLocalCRS[1];
+		max[0] += toLocalCRS[0];
+		max[1] += toLocalCRS[1];
+		super.addConstraint(dts.getTitle(), result,
+				geomFac.createEnvelope(min, max, sceneEnvelope.getCoordinateSystem()));
+		return sceneEnvelope;
+	}
 
-    /**
-     * @param maxColor
-     * @param minDefault
-     * @return
-     */
-    private float[] parseColor( String configColor, float[] defaultColor ) {
-        if ( configColor != null && !"".equals( configColor ) ) {
-            try {
-                Color decode = Color.decode( configColor );
-                if ( decode != null ) {
-                    float[] result = decode.getRGBComponents( null );
-                    if ( result[3] <= 0.0001 ) {
-                        result[3] = 1;
-                    }
-                }
-            } catch ( NumberFormatException e ) {
-                LOG.warn( "Invalid color: " + configColor + " using default color: " + Arrays.toString( defaultColor )
-                          + ".", e );
-            }
-        }
-        return Arrays.copyOf( defaultColor, 4 );
+	/**
+	 * @param maxColor
+	 * @param minDefault
+	 * @return
+	 */
+	private float[] parseColor(String configColor, float[] defaultColor) {
+		if (configColor != null && !"".equals(configColor)) {
+			try {
+				Color decode = Color.decode(configColor);
+				if (decode != null) {
+					float[] result = decode.getRGBComponents(null);
+					if (result[3] <= 0.0001) {
+						result[3] = 1;
+					}
+				}
+			}
+			catch (NumberFormatException e) {
+				LOG.warn("Invalid color: " + configColor + " using default color: " + Arrays.toString(defaultColor)
+						+ ".", e);
+			}
+		}
+		return Arrays.copyOf(defaultColor, 4);
 
-    }
+	}
+
 }

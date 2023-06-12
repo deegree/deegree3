@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -44,49 +43,47 @@ import org.deegree.feature.Features;
 
 /**
  * {@link FeatureInputStream} backed by a {@link CloseableIterator}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class IteratorFeatureInputStream implements FeatureInputStream {
 
-    private CloseableIterator<Feature> featureIter;
+	private CloseableIterator<Feature> featureIter;
 
-    /**
-     * Creates a new {@link IteratorFeatureInputStream} that is backed by the given {@link FeatureCollection}.
-     * 
-     * @param featureIter
-     * 
-     */
-    public IteratorFeatureInputStream( CloseableIterator<Feature> featureIter ) {
-        this.featureIter = featureIter;
-    }
+	/**
+	 * Creates a new {@link IteratorFeatureInputStream} that is backed by the given
+	 * {@link FeatureCollection}.
+	 * @param featureIter
+	 *
+	 */
+	public IteratorFeatureInputStream(CloseableIterator<Feature> featureIter) {
+		this.featureIter = featureIter;
+	}
 
-    @Override
-    public void close() {
-        featureIter.close();
-    }
+	@Override
+	public void close() {
+		featureIter.close();
+	}
 
-    @Override
-    public FeatureCollection toCollection() {
-        return Features.toCollection( this );
-    }
+	@Override
+	public FeatureCollection toCollection() {
+		return Features.toCollection(this);
+	}
 
-    @Override
-    public Iterator<Feature> iterator() {
-        return featureIter;
-    }
+	@Override
+	public Iterator<Feature> iterator() {
+		return featureIter;
+	}
 
-    @Override
-    public int count() {
-        int i = 0;
-        for ( @SuppressWarnings("unused")
-        Feature f : this ) {
-            i++;
-        }
-        close();
-        return i;
-    }
+	@Override
+	public int count() {
+		int i = 0;
+		for (@SuppressWarnings("unused")
+		Feature f : this) {
+			i++;
+		}
+		close();
+		return i;
+	}
+
 }

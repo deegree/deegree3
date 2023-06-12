@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -44,69 +43,63 @@ import org.deegree.cs.refs.CRSResourceRef;
 
 /**
  * {@link CRSesourceRef} to a {@link IEllipsoid}
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class EllipsoidRef extends CRSResourceRef<IEllipsoid> implements Serializable, IEllipsoid {
 
-    private static final long serialVersionUID = -3013277810266766577L;
+	private static final long serialVersionUID = -3013277810266766577L;
 
-    /**
-     * Creates a reference to a {@link IEllipsoid}
-     * 
-     * @param resolver
-     *            used for resolving the reference, must not be <code>null</code>
-     * @param uri
-     *            the object's uri, must not be <code>null</code>
-     * @param baseURL
-     *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
-     */
-    public EllipsoidRef( ReferenceResolver resolver, String uri, String baseURL ) {
-        super( resolver, uri, baseURL );
-    }
+	/**
+	 * Creates a reference to a {@link IEllipsoid}
+	 * @param resolver used for resolving the reference, must not be <code>null</code>
+	 * @param uri the object's uri, must not be <code>null</code>
+	 * @param baseURL base URL for resolving the uri, may be <code>null</code> (no
+	 * resolving of relative URLs)
+	 */
+	public EllipsoidRef(ReferenceResolver resolver, String uri, String baseURL) {
+		super(resolver, uri, baseURL);
+	}
 
-    public double getEccentricity() {
-        return getReferencedObject().getEccentricity();
-    }
+	public double getEccentricity() {
+		return getReferencedObject().getEccentricity();
+	}
 
-    public double getSquaredEccentricity() {
-        return getReferencedObject().getSquaredEccentricity();
-    }
+	public double getSquaredEccentricity() {
+		return getReferencedObject().getSquaredEccentricity();
+	}
 
-    public double getFlattening() {
-        return getReferencedObject().getFlattening();
-    }
+	public double getFlattening() {
+		return getReferencedObject().getFlattening();
+	}
 
-    public double getInverseFlattening() {
-        return getReferencedObject().getInverseFlattening();
-    }
+	public double getInverseFlattening() {
+		return getReferencedObject().getInverseFlattening();
+	}
 
-    public double getSemiMajorAxis() {
-        return getReferencedObject().getSemiMajorAxis();
-    }
+	public double getSemiMajorAxis() {
+		return getReferencedObject().getSemiMajorAxis();
+	}
 
-    public double getSemiMinorAxis() {
-        return getReferencedObject().getSemiMinorAxis();
-    }
+	public double getSemiMinorAxis() {
+		return getReferencedObject().getSemiMinorAxis();
+	}
 
-    public IUnit getUnits() {
-        return getReferencedObject().getUnits();
-    }
+	public IUnit getUnits() {
+		return getReferencedObject().getUnits();
+	}
 
-    public void setUnits( IUnit units ) {
-        getReferencedObject().setUnits( units );
-    }
+	public void setUnits(IUnit units) {
+		getReferencedObject().setUnits(units);
+	}
 
-    public boolean isSphere() {
-        return getReferencedObject().isSphere();
-    }
+	public boolean isSphere() {
+		return getReferencedObject().isSphere();
+	}
 
-    @Override
-    public boolean equals( Object obj ) {
-        return super.equals( obj ) ? true : getReferencedObject().equals( obj );
-    }
+	@Override
+	public boolean equals(Object obj) {
+		return super.equals(obj) ? true : getReferencedObject().equals(obj);
+	}
 
 }

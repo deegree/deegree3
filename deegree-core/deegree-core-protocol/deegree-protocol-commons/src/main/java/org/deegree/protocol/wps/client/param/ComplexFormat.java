@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -39,93 +38,87 @@ import java.io.Serializable;
 
 /**
  * Encapsulates the parameters needed for defining a complex input / output format.
- * 
+ *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class ComplexFormat implements Serializable {
 
-    private static final long serialVersionUID = -55302641376503085L;
+	private static final long serialVersionUID = -55302641376503085L;
 
-    private String mimeType;
+	private String mimeType;
 
-    private String encoding;
+	private String encoding;
 
-    private String schema;
+	private String schema;
 
-    /**
-     * Creates a new {@link ComplexFormat} instance.
-     * 
-     * @param mimeType
-     *            mime type, may be <code>null</code>
-     * @param encoding
-     *            encoding, may be <code>null</code>
-     * @param schema
-     *            XML schema, may be <code>null</code>
-     */
-    public ComplexFormat( String mimeType, String encoding, String schema ) {
-        this.mimeType = mimeType;
-        this.encoding = encoding;
-        this.schema = schema;
-    }
+	/**
+	 * Creates a new {@link ComplexFormat} instance.
+	 * @param mimeType mime type, may be <code>null</code>
+	 * @param encoding encoding, may be <code>null</code>
+	 * @param schema XML schema, may be <code>null</code>
+	 */
+	public ComplexFormat(String mimeType, String encoding, String schema) {
+		this.mimeType = mimeType;
+		this.encoding = encoding;
+		this.schema = schema;
+	}
 
-    /**
-     * Returns the mime type of the format.
-     * 
-     * @return mime type, may be <code>null</code> (means unspecified / default)
-     */
-    public String getMimeType() {
-        return mimeType;
-    }
+	/**
+	 * Returns the mime type of the format.
+	 * @return mime type, may be <code>null</code> (means unspecified / default)
+	 */
+	public String getMimeType() {
+		return mimeType;
+	}
 
-    /**
-     * Returns the encoding of the format.
-     * 
-     * @return encoding, may be <code>null</code> (means unspecified / default)
-     */
-    public String getEncoding() {
-        return encoding;
-    }
+	/**
+	 * Returns the encoding of the format.
+	 * @return encoding, may be <code>null</code> (means unspecified / default)
+	 */
+	public String getEncoding() {
+		return encoding;
+	}
 
-    /**
-     * Returns the XML schema URL of the format.
-     * 
-     * @return he XML schema URL, may be <code>null</code> (means unspecified / default)
-     */
-    public String getSchema() {
-        return schema;
-    }
+	/**
+	 * Returns the XML schema URL of the format.
+	 * @return he XML schema URL, may be <code>null</code> (means unspecified / default)
+	 */
+	public String getSchema() {
+		return schema;
+	}
 
-    @Override
-    public boolean equals( Object arg0 ) {
-        if ( arg0 == null || !( arg0 instanceof ComplexFormat ) )
-            return false;
-        ComplexFormat other = (ComplexFormat) arg0;
-        if ( ( ( this.schema != null && this.schema.equals( other.getSchema() ) ) || ( this.schema == null && other.getSchema() == null ) )
-             && ( ( this.encoding != null && this.encoding.equals( other.getEncoding() ) ) || ( this.encoding == null && other.getEncoding() == null ) )
-             && ( ( this.mimeType != null && this.mimeType.equals( other.getMimeType() ) ) || ( this.mimeType == null && other.getMimeType() == null ) ) ) {
-            return true;
-        }
+	@Override
+	public boolean equals(Object arg0) {
+		if (arg0 == null || !(arg0 instanceof ComplexFormat))
+			return false;
+		ComplexFormat other = (ComplexFormat) arg0;
+		if (((this.schema != null && this.schema.equals(other.getSchema()))
+				|| (this.schema == null && other.getSchema() == null))
+				&& ((this.encoding != null && this.encoding.equals(other.getEncoding()))
+						|| (this.encoding == null && other.getEncoding() == null))
+				&& ((this.mimeType != null && this.mimeType.equals(other.getMimeType()))
+						|| (this.mimeType == null && other.getMimeType() == null))) {
+			return true;
+		}
 
-        return false;
-    }
+		return false;
+	}
 
-    @Override
-    public int hashCode() {
-        int result = 0;
-        if ( schema != null )
-            result = schema.hashCode();
-        if ( encoding != null )
-            result = 37 * result + encoding.hashCode();
-        if ( mimeType != null )
-            result = 37 * result + mimeType.hashCode();
-        return result;
-    }
+	@Override
+	public int hashCode() {
+		int result = 0;
+		if (schema != null)
+			result = schema.hashCode();
+		if (encoding != null)
+			result = 37 * result + encoding.hashCode();
+		if (mimeType != null)
+			result = 37 * result + mimeType.hashCode();
+		return result;
+	}
 
-    @Override
-    public String toString() {
-        return schema + "; " + encoding + "; " + mimeType;
-    }
+	@Override
+	public String toString() {
+		return schema + "; " + encoding + "; " + mimeType;
+	}
+
 }

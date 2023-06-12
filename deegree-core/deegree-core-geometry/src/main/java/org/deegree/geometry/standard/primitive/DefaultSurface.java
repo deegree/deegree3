@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -59,128 +58,123 @@ import org.locationtech.jts.geom.LinearRing;
 
 /**
  * Default implementation of {@link Surface}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class DefaultSurface extends AbstractDefaultGeometry implements Surface {
 
-    protected List<? extends SurfacePatch> patches;
+	protected List<? extends SurfacePatch> patches;
 
-    /**
-     * Creates a new {@link DefaultSurface} instance from the given parameters.
-     * 
-     * @param id
-     *            identifier, may be null
-     * @param crs
-     *            coordinate reference system, may be null
-     * @param pm
-     *            precision model, may be null
-     * @param patches
-     *            patches that constitute the surface
-     */
-    public DefaultSurface( String id, ICRS crs, PrecisionModel pm, List<? extends SurfacePatch> patches ) {
-        super( id, crs, pm );
-        this.patches = patches;
-    }
+	/**
+	 * Creates a new {@link DefaultSurface} instance from the given parameters.
+	 * @param id identifier, may be null
+	 * @param crs coordinate reference system, may be null
+	 * @param pm precision model, may be null
+	 * @param patches patches that constitute the surface
+	 */
+	public DefaultSurface(String id, ICRS crs, PrecisionModel pm, List<? extends SurfacePatch> patches) {
+		super(id, crs, pm);
+		this.patches = patches;
+	}
 
-    @Override
-    public int getCoordinateDimension() {
-        return patches.get( 0 ).getCoordinateDimension();
-    }
+	@Override
+	public int getCoordinateDimension() {
+		return patches.get(0).getCoordinateDimension();
+	}
 
-    @Override
-    public GeometryType getGeometryType() {
-        return GeometryType.PRIMITIVE_GEOMETRY;
-    }
+	@Override
+	public GeometryType getGeometryType() {
+		return GeometryType.PRIMITIVE_GEOMETRY;
+	}
 
-    @Override
-    public PrimitiveType getPrimitiveType() {
-        return PrimitiveType.Surface;
-    }
+	@Override
+	public PrimitiveType getPrimitiveType() {
+		return PrimitiveType.Surface;
+	}
 
-    @Override
-    public SurfaceType getSurfaceType() {
-        return SurfaceType.Surface;
-    }
+	@Override
+	public SurfaceType getSurfaceType() {
+		return SurfaceType.Surface;
+	}
 
-    @Override
-    public Measure getArea( Unit requestedBaseUnit ) {
-        return new Measure( BigDecimal.valueOf( getJTSGeometry().getArea() ), null );
-    }
+	@Override
+	public Measure getArea(Unit requestedBaseUnit) {
+		return new Measure(BigDecimal.valueOf(getJTSGeometry().getArea()), null);
+	}
 
-    /**
-     * @return an interior point of this geometry
-     */
-    public Point getInteriorPoint() {
-        Coordinate coord = new InteriorPointArea( getJTSGeometry() ).getInteriorPoint();
-        return new GeometryFactory().createPoint( null, coord.x, coord.y, crs );
-    }
+	/**
+	 * @return an interior point of this geometry
+	 */
+	public Point getInteriorPoint() {
+		Coordinate coord = new InteriorPointArea(getJTSGeometry()).getInteriorPoint();
+		return new GeometryFactory().createPoint(null, coord.x, coord.y, crs);
+	}
 
-    @Override
-    public List<? extends SurfacePatch> getPatches() {
-        return patches;
-    }
+	@Override
+	public List<? extends SurfacePatch> getPatches() {
+		return patches;
+	}
 
-    @Override
-    public Measure getPerimeter( Unit requestedUnit ) {
-        return new Measure( BigDecimal.valueOf( getJTSGeometry().getLength() ), null );
-    }
+	@Override
+	public Measure getPerimeter(Unit requestedUnit) {
+		return new Measure(BigDecimal.valueOf(getJTSGeometry().getLength()), null);
+	}
 
-    @Override
-    public Points getExteriorRingCoordinates() {
-        if ( patches.size() == 1 ) {
-            if ( patches.get( 0 ) instanceof PolygonPatch ) {
-                PolygonPatch patch = (PolygonPatch) patches.get( 0 );
-                return patch.getExteriorRing().getControlPoints();
-            }
-            throw new IllegalArgumentException( Messages.getMessage( "SURFACE_IS_NON_PLANAR" ) );
-        }
-        throw new IllegalArgumentException( Messages.getMessage( "SURFACE_MORE_THAN_ONE_PATCH" ) );
-    }
+	@Override
+	public Points getExteriorRingCoordinates() {
+		if (patches.size() == 1) {
+			if (patches.get(0) instanceof PolygonPatch) {
+				PolygonPatch patch = (PolygonPatch) patches.get(0);
+				return patch.getExteriorRing().getControlPoints();
+			}
+			throw new IllegalArgumentException(Messages.getMessage("SURFACE_IS_NON_PLANAR"));
+		}
+		throw new IllegalArgumentException(Messages.getMessage("SURFACE_MORE_THAN_ONE_PATCH"));
+	}
 
-    @Override
-    public List<Points> getInteriorRingsCoordinates() {
-        List<Points> controlPoints = new ArrayList<Points>();
-        if ( patches.size() == 1 ) {
-            if ( patches.get( 0 ) instanceof PolygonPatch ) {
-                PolygonPatch patch = (PolygonPatch) patches.get( 0 );
-                List<Ring> interiorRings = patch.getInteriorRings();
-                for ( Ring ring : interiorRings ) {
-                    controlPoints.add( ring.getControlPoints() );
-                }
-            } else {
-                throw new IllegalArgumentException( Messages.getMessage( "SURFACE_IS_NON_PLANAR" ) );
-            }
-        } else {
-            throw new IllegalArgumentException( Messages.getMessage( "SURFACE_MORE_THAN_ONE_PATCH" ) );
-        }
-        return controlPoints;
-    }
+	@Override
+	public List<Points> getInteriorRingsCoordinates() {
+		List<Points> controlPoints = new ArrayList<Points>();
+		if (patches.size() == 1) {
+			if (patches.get(0) instanceof PolygonPatch) {
+				PolygonPatch patch = (PolygonPatch) patches.get(0);
+				List<Ring> interiorRings = patch.getInteriorRings();
+				for (Ring ring : interiorRings) {
+					controlPoints.add(ring.getControlPoints());
+				}
+			}
+			else {
+				throw new IllegalArgumentException(Messages.getMessage("SURFACE_IS_NON_PLANAR"));
+			}
+		}
+		else {
+			throw new IllegalArgumentException(Messages.getMessage("SURFACE_MORE_THAN_ONE_PATCH"));
+		}
+		return controlPoints;
+	}
 
-    @Override
-    protected org.locationtech.jts.geom.Geometry buildJTSGeometry() {
+	@Override
+	protected org.locationtech.jts.geom.Geometry buildJTSGeometry() {
 
-        if ( patches.size() < 1 || !( patches.get( 0 ) instanceof PolygonPatch ) ) {
-            throw new IllegalArgumentException( Messages.getMessage( "SURFACE_NOT_EQUIVALENT_TO_POLYGON" ) );
-        }
+		if (patches.size() < 1 || !(patches.get(0) instanceof PolygonPatch)) {
+			throw new IllegalArgumentException(Messages.getMessage("SURFACE_NOT_EQUIVALENT_TO_POLYGON"));
+		}
 
-        // TODO handle the other patches as well
-        PolygonPatch patch = (PolygonPatch) patches.get( 0 );
-        Ring exteriorRing = patch.getExteriorRing();
-        List<Ring> interiorRings = patch.getInteriorRings();
+		// TODO handle the other patches as well
+		PolygonPatch patch = (PolygonPatch) patches.get(0);
+		Ring exteriorRing = patch.getExteriorRing();
+		List<Ring> interiorRings = patch.getInteriorRings();
 
-        LinearRing shell = (LinearRing) getAsDefaultGeometry( exteriorRing ).getJTSGeometry();
-        LinearRing[] holes = null;
-        if ( interiorRings != null ) {
-            holes = new LinearRing[interiorRings.size()];
-            int i = 0;
-            for ( Ring ring : interiorRings ) {
-                holes[i++] = (LinearRing) getAsDefaultGeometry( ring ).getJTSGeometry();
-            }
-        }
-        return jtsFactory.createPolygon( shell, holes );
-    }
+		LinearRing shell = (LinearRing) getAsDefaultGeometry(exteriorRing).getJTSGeometry();
+		LinearRing[] holes = null;
+		if (interiorRings != null) {
+			holes = new LinearRing[interiorRings.size()];
+			int i = 0;
+			for (Ring ring : interiorRings) {
+				holes[i++] = (LinearRing) getAsDefaultGeometry(ring).getJTSGeometry();
+			}
+		}
+		return jtsFactory.createPolygon(shell, holes);
+	}
+
 }

@@ -1,0 +1,5 @@
+<JDBCConnection xmlns="http://www.deegree.org/jdbc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/jdbc https://schemas.deegree.org/jdbc/3.0.0/jdbc.xsd">
+  <Url>jdbc:postgresql://localhost:5432/deegree3-cite-csw</Url>
+  <User>postgres</User>
+  <Password>postgres</Password>
+</JDBCConnection>

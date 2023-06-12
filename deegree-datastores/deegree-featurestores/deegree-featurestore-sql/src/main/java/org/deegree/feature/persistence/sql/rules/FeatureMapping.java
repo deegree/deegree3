@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -46,42 +45,40 @@ import java.util.List;
 
 /**
  * {@link Mapping} for {@link Feature}-valued particles.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class FeatureMapping extends Mapping {
 
-    private MappingExpression hrefMapping;
+	private MappingExpression hrefMapping;
 
-    private QName valueFtName;
+	private QName valueFtName;
 
-    public FeatureMapping( ValueReference path, boolean voidable, MappingExpression hrefMapping, QName valueFtName,
-                           List<TableJoin> tableChange, CustomConverterJAXB converter ) {
-        super( path, voidable, tableChange, converter );
-        this.hrefMapping = hrefMapping;
-        this.valueFtName = valueFtName;
-    }
+	public FeatureMapping(ValueReference path, boolean voidable, MappingExpression hrefMapping, QName valueFtName,
+			List<TableJoin> tableChange, CustomConverterJAXB converter) {
+		super(path, voidable, tableChange, converter);
+		this.hrefMapping = hrefMapping;
+		this.valueFtName = valueFtName;
+	}
 
-    public FeatureMapping( ValueReference path, boolean voidable, MappingExpression hrefMapping, QName valueFtName,
-                           List<TableJoin> tableChange ) {
-        super( path, voidable, tableChange, null );
-        this.hrefMapping = hrefMapping;
-        this.valueFtName = valueFtName;
-    }
+	public FeatureMapping(ValueReference path, boolean voidable, MappingExpression hrefMapping, QName valueFtName,
+			List<TableJoin> tableChange) {
+		super(path, voidable, tableChange, null);
+		this.hrefMapping = hrefMapping;
+		this.valueFtName = valueFtName;
+	}
 
-    public MappingExpression getHrefMapping() {
-        return hrefMapping;
-    }
+	public MappingExpression getHrefMapping() {
+		return hrefMapping;
+	}
 
-    public QName getValueFtName() {
-        return valueFtName;
-    }
+	public QName getValueFtName() {
+		return valueFtName;
+	}
 
-    @Override
-    public String toString() {
-        return super.toString() + ",{ftName=" + valueFtName + "}";
-    }
+	@Override
+	public String toString() {
+		return super.toString() + ",{ftName=" + valueFtName + "}";
+	}
+
 }

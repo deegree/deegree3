@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -38,58 +37,57 @@ package org.deegree.commons.ows.metadata.domain;
 import java.util.List;
 
 /**
- * {@link PossibleValues} that are defined by a list of all valid values and/or ranges of values.
+ * {@link PossibleValues} that are defined by a list of all valid values and/or ranges of
+ * values.
  * <p>
- * Data model has been designed to capture the expressiveness of all OWS specifications and versions and was verified
- * against the following specifications:
+ * Data model has been designed to capture the expressiveness of all OWS specifications
+ * and versions and was verified against the following specifications:
  * <ul>
  * <li>OWS Common 2.0</li>
  * </ul>
  * </p>
  * <p>
- * From OWS Common 2.0: <cite>List of all the valid values and/or ranges of values for this quantity. For numeric
- * quantities, signed values should be ordered from negative infinity to positive infinity.</cite>
+ * From OWS Common 2.0: <cite>List of all the valid values and/or ranges of values for
+ * this quantity. For numeric quantities, signed values should be ordered from negative
+ * infinity to positive infinity.</cite>
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class AllowedValues implements PossibleValues {
 
-    private List<Values> values;
+	private List<Values> values;
 
-    /**
-     * Creates a new {@link AllowedValues} instance.
-     * 
-     * @param values
-     *            list of all valid values and/or ranges of values for this quantity, may be <code>null</code>
-     */
-    public AllowedValues( List<Values> values ) {
-        this.values = values;
-    }
+	/**
+	 * Creates a new {@link AllowedValues} instance.
+	 * @param values list of all valid values and/or ranges of values for this quantity,
+	 * may be <code>null</code>
+	 */
+	public AllowedValues(List<Values> values) {
+		this.values = values;
+	}
 
-    /**
-     * Returns the list of all valid values and/or ranges of values for this quantity.
-     * <p>
-     * From OWS Common 2.0: <cite>List of all the valid values and/or ranges of values for this quantity. For numeric
-     * quantities, signed values should be ordered from negative infinity to positive infinity.</cite>
-     * </p>
-     * 
-     * @return list of all valid values and/or ranges of values for this quantity, may be <code>null</code>
-     */
-    public List<Values> getValues() {
-        return values;
-    }
+	/**
+	 * Returns the list of all valid values and/or ranges of values for this quantity.
+	 * <p>
+	 * From OWS Common 2.0: <cite>List of all the valid values and/or ranges of values for
+	 * this quantity. For numeric quantities, signed values should be ordered from
+	 * negative infinity to positive infinity.</cite>
+	 * </p>
+	 * @return list of all valid values and/or ranges of values for this quantity, may be
+	 * <code>null</code>
+	 */
+	public List<Values> getValues() {
+		return values;
+	}
 
-    /**
-     * Sets the list of all valid values and/or ranges of values for this quantity.
-     * 
-     * @param values
-     *            list of all valid values and/or ranges of values for this quantity, may be <code>null</code>
-     */
-    public void setValues( List<Values> values ) {
-        this.values = values;
-    }
+	/**
+	 * Sets the list of all valid values and/or ranges of values for this quantity.
+	 * @param values list of all valid values and/or ranges of values for this quantity,
+	 * may be <code>null</code>
+	 */
+	public void setValues(List<Values> values) {
+		this.values = values;
+	}
+
 }

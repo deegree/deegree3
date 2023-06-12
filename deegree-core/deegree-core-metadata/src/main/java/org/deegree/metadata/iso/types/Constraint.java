@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -39,70 +38,67 @@ import java.util.List;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class Constraint {
 
-    private List<String> limitations;
+	private List<String> limitations;
 
-    private List<String> accessConstraints;
+	private List<String> accessConstraints;
 
-    private List<String> otherConstraints;
+	private List<String> otherConstraints;
 
-    private String classification;
+	private String classification;
 
-    public Constraint() {
-    }
+	public Constraint() {
+	}
 
-    /**
-     * @param useLimitations
-     * @param accessConstraints
-     * @param otherConstraints
-     * @param classification
-     */
-    public Constraint( List<String> limitations, List<String> accessConstraints, List<String> otherConstraints,
-                       String classification ) {
-        super();
-        this.limitations = limitations;
-        this.accessConstraints = accessConstraints;
-        this.otherConstraints = otherConstraints;
-        this.classification = classification;
-    }
+	/**
+	 * @param useLimitations
+	 * @param accessConstraints
+	 * @param otherConstraints
+	 * @param classification
+	 */
+	public Constraint(List<String> limitations, List<String> accessConstraints, List<String> otherConstraints,
+			String classification) {
+		super();
+		this.limitations = limitations;
+		this.accessConstraints = accessConstraints;
+		this.otherConstraints = otherConstraints;
+		this.classification = classification;
+	}
 
-    public List<String> getLimitations() {
-        return limitations;
-    }
+	public List<String> getLimitations() {
+		return limitations;
+	}
 
-    public List<String> getAccessConstraints() {
-        return accessConstraints;
-    }
+	public List<String> getAccessConstraints() {
+		return accessConstraints;
+	}
 
-    public List<String> getOtherConstraints() {
-        return otherConstraints;
-    }
+	public List<String> getOtherConstraints() {
+		return otherConstraints;
+	}
 
-    public String getClassification() {
-        return classification;
-    }
+	public String getClassification() {
+		return classification;
+	}
 
-    public void setLimitations( List<String> limitations ) {
-        this.limitations = limitations;
-    }
+	public void setLimitations(List<String> limitations) {
+		this.limitations = limitations;
+	}
 
-    public void setAccessConstraints( List<String> accessConstraints ) {
-        this.accessConstraints = accessConstraints;
-    }
+	public void setAccessConstraints(List<String> accessConstraints) {
+		this.accessConstraints = accessConstraints;
+	}
 
-    public void setOtherConstraints( List<String> otherConstraints ) {
-        this.otherConstraints = otherConstraints;
-    }
+	public void setOtherConstraints(List<String> otherConstraints) {
+		this.otherConstraints = otherConstraints;
+	}
 
-    public void setClassification( String classification ) {
-        this.classification = classification;
-    }
+	public void setClassification(String classification) {
+		this.classification = classification;
+	}
 
 }

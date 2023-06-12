@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -39,19 +38,16 @@ import java.util.List;
 
 /**
  * {@link Definition} that is a collection of {@link Definition} instances.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface Dictionary extends Definition, List<Definition> {
 
-    /**
-     * Returns whether the {@link Dictionary} represents a generic GML dictionary or a GML definition collection.
-     * 
-     * @return true, if this is a defininition collection, false otherwise
-     */
-    public boolean isDefinitionCollection();
+	/**
+	 * Returns whether the {@link Dictionary} represents a generic GML dictionary or a GML
+	 * definition collection.
+	 * @return true, if this is a defininition collection, false otherwise
+	 */
+	public boolean isDefinitionCollection();
 
 }

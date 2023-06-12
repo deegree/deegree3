@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -58,199 +57,186 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * <code>LeastSquareApproximation</code> is a polynomial transformation which uses the least square method to
- * approximate a function given by some measured values.
- * 
+ * <code>LeastSquareApproximation</code> is a polynomial transformation which uses the
+ * least square method to approximate a function given by some measured values.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class LeastSquareApproximation extends PolynomialTransformation {
-    private static Logger LOG = LoggerFactory.getLogger( LeastSquareApproximation.class );
 
-    private WarpPolynomial leastSquarePolynomial;
+	private static Logger LOG = LoggerFactory.getLogger(LeastSquareApproximation.class);
 
-    private final int order;
+	private WarpPolynomial leastSquarePolynomial;
 
-    private final float scaleX;
+	private final int order;
 
-    private final float scaleY;
+	private final float scaleX;
 
-    /**
-     * @param firstParameters
-     *            of the polynomial
-     * @param secondParameters
-     *            of the polynomial
-     * @param sourceCRS
-     *            of this transformation
-     * @param targetCRS
-     *            of this transformation
-     * @param scaleX
-     *            to apply to incoming data's x value, if 1 (or 0) no scale will be applied.
-     * @param scaleY
-     *            to apply to incoming data's y value, if 1 (or 0) no scale will be applied.
-     * @param id
-     *            an identifiable instance containing information about this transformation
-     */
-    public LeastSquareApproximation( List<Double> firstParameters, List<Double> secondParameters, ICRS sourceCRS,
-                                     ICRS targetCRS, float scaleX, float scaleY, CRSResource id ) {
-        super( firstParameters, secondParameters, sourceCRS, targetCRS, id );
-        if ( getSecondParams().size() != getFirstParams().size() ) {
-            throw new IllegalArgumentException( "The given parameter lists do not have equal length" );
-        }
-        // calc from (n+1)*(n+2) = 2*size;
-        order = (int) Math.floor( ( -3 + Math.sqrt( 9 + ( 4 * ( getFirstParams().size() * 2 ) - 2 ) ) ) * 0.5 );
-        float[] aParams = new float[getFirstParams().size()];
-        for ( int i = 0; i < firstParameters.size(); ++i ) {
-            aParams[i] = firstParameters.get( i ).floatValue();
-        }
-        float[] bParams = new float[getSecondParams().size()];
-        for ( int i = 0; i < secondParameters.size(); ++i ) {
-            bParams[i] = secondParameters.get( i ).floatValue();
-        }
-        if ( Float.isNaN( scaleX ) || Math.abs( scaleX ) < EPS11 ) {
-            scaleX = 1;
-        }
-        this.scaleX = scaleX;
+	private final float scaleY;
 
-        if ( Float.isNaN( scaleY ) || Math.abs( scaleY ) < EPS11 ) {
-            scaleY = 1;
-        }
-        this.scaleY = scaleY;
-        switch ( order ) {
-        case 2:
-            leastSquarePolynomial = new WarpQuadratic( aParams, bParams, this.scaleX, this.scaleY, 1f / this.scaleX,
-                                                       1f / this.scaleY );
-            break;
-        case 3:
+	/**
+	 * @param firstParameters of the polynomial
+	 * @param secondParameters of the polynomial
+	 * @param sourceCRS of this transformation
+	 * @param targetCRS of this transformation
+	 * @param scaleX to apply to incoming data's x value, if 1 (or 0) no scale will be
+	 * applied.
+	 * @param scaleY to apply to incoming data's y value, if 1 (or 0) no scale will be
+	 * applied.
+	 * @param id an identifiable instance containing information about this transformation
+	 */
+	public LeastSquareApproximation(List<Double> firstParameters, List<Double> secondParameters, ICRS sourceCRS,
+			ICRS targetCRS, float scaleX, float scaleY, CRSResource id) {
+		super(firstParameters, secondParameters, sourceCRS, targetCRS, id);
+		if (getSecondParams().size() != getFirstParams().size()) {
+			throw new IllegalArgumentException("The given parameter lists do not have equal length");
+		}
+		// calc from (n+1)*(n+2) = 2*size;
+		order = (int) Math.floor((-3 + Math.sqrt(9 + (4 * (getFirstParams().size() * 2) - 2))) * 0.5);
+		float[] aParams = new float[getFirstParams().size()];
+		for (int i = 0; i < firstParameters.size(); ++i) {
+			aParams[i] = firstParameters.get(i).floatValue();
+		}
+		float[] bParams = new float[getSecondParams().size()];
+		for (int i = 0; i < secondParameters.size(); ++i) {
+			bParams[i] = secondParameters.get(i).floatValue();
+		}
+		if (Float.isNaN(scaleX) || Math.abs(scaleX) < EPS11) {
+			scaleX = 1;
+		}
+		this.scaleX = scaleX;
 
-            leastSquarePolynomial = new WarpCubic( aParams, bParams, this.scaleX, this.scaleY, 1f / this.scaleX,
-                                                   1f / this.scaleY );
-            break;
-        default:
-            leastSquarePolynomial = new WarpGeneralPolynomial( aParams, bParams, this.scaleX, this.scaleY,
-                                                               1f / this.scaleX, 1f / this.scaleY );
-            break;
-        }
-    }
+		if (Float.isNaN(scaleY) || Math.abs(scaleY) < EPS11) {
+			scaleY = 1;
+		}
+		this.scaleY = scaleY;
+		switch (order) {
+			case 2:
+				leastSquarePolynomial = new WarpQuadratic(aParams, bParams, this.scaleX, this.scaleY, 1f / this.scaleX,
+						1f / this.scaleY);
+				break;
+			case 3:
 
-    /**
-     * Sets the id to EPSG::9645 ( General polynomial of degree 2 ).
-     * 
-     * @param firstParameters
-     *            of the polynomial
-     * @param secondParameters
-     *            of the polynomial
-     * @param sourceCRS
-     *            of this transformation
-     * @param targetCRS
-     *            of this transformation
-     * @param scaleX
-     *            to apply to incoming data's x value, if 1 (or 0) no scale will be applied.
-     * @param scaleY
-     *            to apply to incoming data's y value, if 1 (or 0) no scale will be applied.
-     */
-    public LeastSquareApproximation( List<Double> firstParameters, List<Double> secondParameters, ICRS sourceCRS,
-                                     ICRS targetCRS, float scaleX, float scaleY ) {
-        this( firstParameters, secondParameters, sourceCRS, targetCRS, scaleX, scaleY,
-              new CRSIdentifiable( new EPSGCode( 9645 ) ) );
-    }
+				leastSquarePolynomial = new WarpCubic(aParams, bParams, this.scaleX, this.scaleY, 1f / this.scaleX,
+						1f / this.scaleY);
+				break;
+			default:
+				leastSquarePolynomial = new WarpGeneralPolynomial(aParams, bParams, this.scaleX, this.scaleY,
+						1f / this.scaleX, 1f / this.scaleY);
+				break;
+		}
+	}
 
-    @Override
-    public List<Point3d> applyPolynomial( List<Point3d> srcPts )
-                            throws TransformationException {
-        if ( srcPts == null || srcPts.size() == 0 ) {
-            return srcPts;
-        }
-        List<Point3d> result = new ArrayList<Point3d>( srcPts.size() );
-        for ( Point3d p : srcPts ) {
-            Point2D r = leastSquarePolynomial.mapDestPoint( new Point2D.Double( p.x, p.y ) );
-            if ( r != null ) {
-                result.add( new Point3d( r.getX(), r.getY(), p.z ) );
-            } else {
-                throw new TransformationException( Messages.getMessage( "CRS_POLYNOMIAL_TRANSFORM_ERROR", p.toString() ) );
-            }
-        }
-        return result;
-    }
+	/**
+	 * Sets the id to EPSG::9645 ( General polynomial of degree 2 ).
+	 * @param firstParameters of the polynomial
+	 * @param secondParameters of the polynomial
+	 * @param sourceCRS of this transformation
+	 * @param targetCRS of this transformation
+	 * @param scaleX to apply to incoming data's x value, if 1 (or 0) no scale will be
+	 * applied.
+	 * @param scaleY to apply to incoming data's y value, if 1 (or 0) no scale will be
+	 * applied.
+	 */
+	public LeastSquareApproximation(List<Double> firstParameters, List<Double> secondParameters, ICRS sourceCRS,
+			ICRS targetCRS, float scaleX, float scaleY) {
+		this(firstParameters, secondParameters, sourceCRS, targetCRS, scaleX, scaleY,
+				new CRSIdentifiable(new EPSGCode(9645)));
+	}
 
-    @Override
-    public String getImplementationName() {
-        return "leastsquare";
-    }
+	@Override
+	public List<Point3d> applyPolynomial(List<Point3d> srcPts) throws TransformationException {
+		if (srcPts == null || srcPts.size() == 0) {
+			return srcPts;
+		}
+		List<Point3d> result = new ArrayList<Point3d>(srcPts.size());
+		for (Point3d p : srcPts) {
+			Point2D r = leastSquarePolynomial.mapDestPoint(new Point2D.Double(p.x, p.y));
+			if (r != null) {
+				result.add(new Point3d(r.getX(), r.getY(), p.z));
+			}
+			else {
+				throw new TransformationException(Messages.getMessage("CRS_POLYNOMIAL_TRANSFORM_ERROR", p.toString()));
+			}
+		}
+		return result;
+	}
 
-    @Override
-    public float[][] createVariables( List<Point3d> originalPoints, List<Point3d> projectedPoints, int polynomalOrder ) {
-        float[] sourceCoords = new float[originalPoints.size() * 2];
-        int count = 0;
-        double minX = Double.MAX_VALUE;
-        double minY = Double.MAX_VALUE;
+	@Override
+	public String getImplementationName() {
+		return "leastsquare";
+	}
 
-        double maxX = Double.MIN_VALUE;
-        double maxY = Double.MIN_VALUE;
+	@Override
+	public float[][] createVariables(List<Point3d> originalPoints, List<Point3d> projectedPoints, int polynomalOrder) {
+		float[] sourceCoords = new float[originalPoints.size() * 2];
+		int count = 0;
+		double minX = Double.MAX_VALUE;
+		double minY = Double.MAX_VALUE;
 
-        for ( Point3d coord : originalPoints ) {
-            if ( minX > coord.x ) {
-                minX = coord.x;
-            }
-            if ( maxX < coord.x ) {
-                maxX = coord.x;
-            }
-            if ( minY > coord.y ) {
-                minY = coord.y;
-            }
-            if ( maxY < coord.y ) {
-                maxY = coord.y;
-            }
-            sourceCoords[count++] = (float) coord.x;
-            sourceCoords[count++] = (float) coord.y;
-        }
+		double maxX = Double.MIN_VALUE;
+		double maxY = Double.MIN_VALUE;
 
-        float sX = Math.abs( ( maxX - minX ) ) > EPS11 ? (float) ( 1. / ( maxX - minX ) ) : 1;
-        float sY = Math.abs( ( maxY - minY ) ) > EPS11 ? (float) ( 1. / ( maxY - minY ) ) : 1;
-        float[] targetCoords = new float[projectedPoints.size() * 2];
+		for (Point3d coord : originalPoints) {
+			if (minX > coord.x) {
+				minX = coord.x;
+			}
+			if (maxX < coord.x) {
+				maxX = coord.x;
+			}
+			if (minY > coord.y) {
+				minY = coord.y;
+			}
+			if (maxY < coord.y) {
+				maxY = coord.y;
+			}
+			sourceCoords[count++] = (float) coord.x;
+			sourceCoords[count++] = (float) coord.y;
+		}
 
-        count = 0;
-        for ( Point3d coord : projectedPoints ) {
-            targetCoords[count++] = (float) coord.x;
-            targetCoords[count++] = (float) coord.y;
-        }
+		float sX = Math.abs((maxX - minX)) > EPS11 ? (float) (1. / (maxX - minX)) : 1;
+		float sY = Math.abs((maxY - minY)) > EPS11 ? (float) (1. / (maxY - minY)) : 1;
+		float[] targetCoords = new float[projectedPoints.size() * 2];
 
-        StringBuilder sb = new StringBuilder( "\nCalculated scales are:\n" );
-        sb.append( "<crs:scaleX>" ).append( sX ).append( "</crs:scaleX>\n" );
-        sb.append( "<crs:scaleY>" ).append( sY ).append( "</crs:scaleY>\n" );
-        LOG.info( sb.toString() );
+		count = 0;
+		for (Point3d coord : projectedPoints) {
+			targetCoords[count++] = (float) coord.x;
+			targetCoords[count++] = (float) coord.y;
+		}
 
-        /**
-         * create warp object from reference points and desired interpolation, Because jai only implements the
-         * mapDestPoint function, we must calculate the polynomial variables by using the target coordinates as the
-         * source.
-         */
-        WarpPolynomial warp = WarpPolynomial.createWarp( targetCoords, 0, sourceCoords, 0, sourceCoords.length, sX, sY,
-                                                         1f / sX, 1f / sY, polynomalOrder );
-        return warp.getCoeffs();
-    }
+		StringBuilder sb = new StringBuilder("\nCalculated scales are:\n");
+		sb.append("<crs:scaleX>").append(sX).append("</crs:scaleX>\n");
+		sb.append("<crs:scaleY>").append(sY).append("</crs:scaleY>\n");
+		LOG.info(sb.toString());
 
-    @Override
-    public int getOrder() {
-        return order;
-    }
+		/**
+		 * create warp object from reference points and desired interpolation, Because jai
+		 * only implements the mapDestPoint function, we must calculate the polynomial
+		 * variables by using the target coordinates as the source.
+		 */
+		WarpPolynomial warp = WarpPolynomial.createWarp(targetCoords, 0, sourceCoords, 0, sourceCoords.length, sX, sY,
+				1f / sX, 1f / sY, polynomalOrder);
+		return warp.getCoeffs();
+	}
 
-    /**
-     * @return the scale which will be applied to the x value of all incoming data
-     */
-    public final float getScaleX() {
-        return scaleX;
-    }
+	@Override
+	public int getOrder() {
+		return order;
+	}
 
-    /**
-     * @return the scale which will be applied to the y value of all incoming data
-     */
-    public final float getScaleY() {
-        return scaleY;
-    }
+	/**
+	 * @return the scale which will be applied to the x value of all incoming data
+	 */
+	public final float getScaleX() {
+		return scaleX;
+	}
+
+	/**
+	 * @return the scale which will be applied to the y value of all incoming data
+	 */
+	public final float getScaleY() {
+		return scaleY;
+	}
 
 }

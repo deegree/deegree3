@@ -40,82 +40,79 @@ import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.proxy.ProxySettings;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 @ManagedBean
 @RequestScoped
 public class ProxyBean {
 
-    public ProxyConfig getProxyConfig() throws IOException {
-        Path workspaceDir = Paths.get( DeegreeWorkspace.getWorkspaceRoot() );
-        File proxyFile = new File( workspaceDir.toFile(), "proxy.xml" );
-        if (!proxyFile.exists()) {
-            proxyFile.createNewFile();
-        }
-        return new ProxyConfig( proxyFile.getAbsolutePath() );
-    }
+	public ProxyConfig getProxyConfig() throws IOException {
+		Path workspaceDir = Paths.get(DeegreeWorkspace.getWorkspaceRoot());
+		File proxyFile = new File(workspaceDir.toFile(), "proxy.xml");
+		if (!proxyFile.exists()) {
+			proxyFile.createNewFile();
+		}
+		return new ProxyConfig(proxyFile.getAbsolutePath());
+	}
 
-    public String getNonftpProxyHosts() {
-        return ProxySettings.getFtpNonProxyHosts( true );
-    }
+	public String getNonftpProxyHosts() {
+		return ProxySettings.getFtpNonProxyHosts(true);
+	}
 
-    public String getFtpProxyPassword() {
-        return ProxySettings.getFtpProxyPassword( true );
-    }
+	public String getFtpProxyPassword() {
+		return ProxySettings.getFtpProxyPassword(true);
+	}
 
-    public String getFtpProxyUser() {
-        return ProxySettings.getFtpProxyUser( true );
-    }
+	public String getFtpProxyUser() {
+		return ProxySettings.getFtpProxyUser(true);
+	}
 
-    public String getFtpProxyPort() {
-        return ProxySettings.getFtpProxyPort( true );
-    }
+	public String getFtpProxyPort() {
+		return ProxySettings.getFtpProxyPort(true);
+	}
 
-    public String getFtpProxyHost() {
-        return ProxySettings.getFtpProxyHost( true );
-    }
+	public String getFtpProxyHost() {
+		return ProxySettings.getFtpProxyHost(true);
+	}
 
-    public String getNonhttpProxyHosts() {
-        return ProxySettings.getHttpNonProxyHosts( true );
-    }
+	public String getNonhttpProxyHosts() {
+		return ProxySettings.getHttpNonProxyHosts(true);
+	}
 
-    public String getHttpProxyPassword() {
-        return ProxySettings.getHttpProxyPassword( true );
-    }
+	public String getHttpProxyPassword() {
+		return ProxySettings.getHttpProxyPassword(true);
+	}
 
-    public String getHttpProxyUser() {
-        return ProxySettings.getHttpProxyUser( true );
-    }
+	public String getHttpProxyUser() {
+		return ProxySettings.getHttpProxyUser(true);
+	}
 
-    public String getHttpProxyPort() {
-        return ProxySettings.getHttpProxyPort( true );
-    }
+	public String getHttpProxyPort() {
+		return ProxySettings.getHttpProxyPort(true);
+	}
 
-    public String getHttpProxyHost() {
-        return ProxySettings.getHttpProxyHost( true );
-    }
+	public String getHttpProxyHost() {
+		return ProxySettings.getHttpProxyHost(true);
+	}
 
-    public String getNonProxyHosts() {
-        return ProxySettings.getNonProxyHosts();
-    }
+	public String getNonProxyHosts() {
+		return ProxySettings.getNonProxyHosts();
+	}
 
-    public String getProxyPassword() {
-        return ProxySettings.getProxyPassword();
-    }
+	public String getProxyPassword() {
+		return ProxySettings.getProxyPassword();
+	}
 
-    public String getProxyUser() {
-        return ProxySettings.getProxyUser();
-    }
+	public String getProxyUser() {
+		return ProxySettings.getProxyUser();
+	}
 
-    public String getProxyPort() {
-        return ProxySettings.getProxyPort();
-    }
+	public String getProxyPort() {
+		return ProxySettings.getProxyPort();
+	}
 
-    public String getProxyHost() {
-        return ProxySettings.getProxyHost();
-    }
+	public String getProxyHost() {
+		return ProxySettings.getProxyHost();
+	}
+
 }

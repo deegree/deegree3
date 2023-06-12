@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -46,100 +45,98 @@ import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 
 /**
- * {@link FeatureInputStream} that is derived by filtering another {@link FeatureInputStream}.
- * 
+ * {@link FeatureInputStream} that is derived by filtering another
+ * {@link FeatureInputStream}.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class FilteredFeatureInputStream implements FeatureInputStream {
 
-    private FeatureInputStream rs;
+	private FeatureInputStream rs;
 
-    private Filter filter;
+	private Filter filter;
 
-    /**
-     * Creates a new {@link FilteredFeatureInputStream} that is backed by the given {@link FeatureInputStream}.
-     * 
-     * @param rs
-     *            FeatureResultSet to back the result set, must not be <code>null</code>
-     * @param filter
-     *            filter, must not be <code>null</code>
-     */
-    public FilteredFeatureInputStream( FeatureInputStream rs, Filter filter ) {
-        this.rs = rs;
-        this.filter = filter;
-    }
+	/**
+	 * Creates a new {@link FilteredFeatureInputStream} that is backed by the given
+	 * {@link FeatureInputStream}.
+	 * @param rs FeatureResultSet to back the result set, must not be <code>null</code>
+	 * @param filter filter, must not be <code>null</code>
+	 */
+	public FilteredFeatureInputStream(FeatureInputStream rs, Filter filter) {
+		this.rs = rs;
+		this.filter = filter;
+	}
 
-    @Override
-    public void close() {
-        rs.close();
-    }
+	@Override
+	public void close() {
+		rs.close();
+	}
 
-    @Override
-    public FeatureCollection toCollection() {
-        return Features.toCollection( this );
-    }
+	@Override
+	public FeatureCollection toCollection() {
+		return Features.toCollection(this);
+	}
 
-    @Override
-    public Iterator<Feature> iterator() {
-        return new Iterator<Feature>() {
+	@Override
+	public Iterator<Feature> iterator() {
+		return new Iterator<Feature>() {
 
-            // TODO
-            TypedObjectNodeXPathEvaluator evaluator = new TypedObjectNodeXPathEvaluator();
+			// TODO
+			TypedObjectNodeXPathEvaluator evaluator = new TypedObjectNodeXPathEvaluator();
 
-            Iterator<Feature> iter = rs.iterator();
+			Iterator<Feature> iter = rs.iterator();
 
-            boolean nextCalled = true;
+			boolean nextCalled = true;
 
-            Feature next = null;
+			Feature next = null;
 
-            @Override
-            public boolean hasNext() {
-                if ( !nextCalled ) {
-                    return next != null;
-                }
-                next = null;
-                while ( iter.hasNext() ) {
-                    Feature candidate = iter.next();
-                    try {
-                        if ( filter.evaluate( candidate, evaluator ) ) {
-                            nextCalled = false;
-                            next = candidate;
-                            break;
-                        }
-                    } catch ( FilterEvaluationException e ) {
-                        throw new RuntimeException( e.getMessage(), e );
-                    }
-                }
-                return next != null;
-            }
+			@Override
+			public boolean hasNext() {
+				if (!nextCalled) {
+					return next != null;
+				}
+				next = null;
+				while (iter.hasNext()) {
+					Feature candidate = iter.next();
+					try {
+						if (filter.evaluate(candidate, evaluator)) {
+							nextCalled = false;
+							next = candidate;
+							break;
+						}
+					}
+					catch (FilterEvaluationException e) {
+						throw new RuntimeException(e.getMessage(), e);
+					}
+				}
+				return next != null;
+			}
 
-            @Override
-            public Feature next() {
-                if ( !hasNext() ) {
-                    throw new NoSuchElementException();
-                }
-                nextCalled = true;
-                return next;
-            }
+			@Override
+			public Feature next() {
+				if (!hasNext()) {
+					throw new NoSuchElementException();
+				}
+				nextCalled = true;
+				return next;
+			}
 
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException();
-            }
-        };
-    }
+			@Override
+			public void remove() {
+				throw new UnsupportedOperationException();
+			}
+		};
+	}
 
-    @Override
-    public int count() {
-        int i = 0;
-        for ( @SuppressWarnings("unused")
-        Feature f : this ) {
-            i++;
-        }
-        close();
-        return i;
-    }
+	@Override
+	public int count() {
+		int i = 0;
+		for (@SuppressWarnings("unused")
+		Feature f : this) {
+			i++;
+		}
+		close();
+		return i;
+	}
+
 }

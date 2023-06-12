@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -69,109 +68,108 @@ import org.deegree.services.wfs.format.gml.GmlFormat;
 
 /**
  * Handles {@link GetGmlObject} requests for the {@link GmlFormat}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class GmlGetGmlObjectHandler extends AbstractGmlRequestHandler {
 
-    /**
-     * Creates a new {@link GmlGetGmlObjectHandler} instance.
-     * 
-     * @param gmlFormat
-     *            never <code>null</code>
-     */
-    public GmlGetGmlObjectHandler( GmlFormat format ) {
-        super( format );
-    }
+	/**
+	 * Creates a new {@link GmlGetGmlObjectHandler} instance.
+	 * @param gmlFormat never <code>null</code>
+	 */
+	public GmlGetGmlObjectHandler(GmlFormat format) {
+		super(format);
+	}
 
-    /**
-     * Performs the given {@link GetFeature} request.
-     * 
-     * @param request
-     *            request to be handled, never <code>null</code>
-     * @param response
-     *            response that is used to write the result, never <code>null</code>
-     */
-    public void doGetGmlObject( GetGmlObject request, HttpResponseBuffer response )
-                            throws OWSException, XMLStreamException, IOException {
+	/**
+	 * Performs the given {@link GetFeature} request.
+	 * @param request request to be handled, never <code>null</code>
+	 * @param response response that is used to write the result, never <code>null</code>
+	 */
+	public void doGetGmlObject(GetGmlObject request, HttpResponseBuffer response)
+			throws OWSException, XMLStreamException, IOException {
 
-        Version version = request.getVersion();
-        String traverseXLinkDepthStr = request.getTraverseXlinkDepth();
-        String id = request.getRequestedId();
+		Version version = request.getVersion();
+		String traverseXLinkDepthStr = request.getTraverseXlinkDepth();
+		String id = request.getRequestedId();
 
-        int resolveDepth = 0;
-        if ( traverseXLinkDepthStr != null ) {
-            if ( "*".equals( traverseXLinkDepthStr ) ) {
-                resolveDepth = -1;
-            } else {
-                try {
-                    resolveDepth = Integer.parseInt( traverseXLinkDepthStr );
-                } catch ( NumberFormatException e ) {
-                    String msg = Messages.get( "WFS_TRAVERSEXLINKDEPTH_INVALID", traverseXLinkDepthStr );
-                    throw new OWSException( new InvalidParameterValueException( msg ) );
-                }
-            }
-        }
+		int resolveDepth = 0;
+		if (traverseXLinkDepthStr != null) {
+			if ("*".equals(traverseXLinkDepthStr)) {
+				resolveDepth = -1;
+			}
+			else {
+				try {
+					resolveDepth = Integer.parseInt(traverseXLinkDepthStr);
+				}
+				catch (NumberFormatException e) {
+					String msg = Messages.get("WFS_TRAVERSEXLINKDEPTH_INVALID", traverseXLinkDepthStr);
+					throw new OWSException(new InvalidParameterValueException(msg));
+				}
+			}
+		}
 
-        long remoteTimeoutInMilliseconds = 60 * 1000;
-        if ( request.getTraverseXlinkExpiry() != null ) {
-            remoteTimeoutInMilliseconds = request.getTraverseXlinkExpiry() * 60 * 1000;
-        }
+		long remoteTimeoutInMilliseconds = 60 * 1000;
+		if (request.getTraverseXlinkExpiry() != null) {
+			remoteTimeoutInMilliseconds = request.getTraverseXlinkExpiry() * 60 * 1000;
+		}
 
-        GmlXlinkOptions resolveState = new GmlXlinkOptions( null, resolveDepth, 0, ALL, remoteTimeoutInMilliseconds );
+		GmlXlinkOptions resolveState = new GmlXlinkOptions(null, resolveDepth, 0, ALL, remoteTimeoutInMilliseconds);
 
-        GMLObject o = retrieveObject( id );
-        GMLVersion gmlVersion = options.getGmlVersion();
+		GMLObject o = retrieveObject(id);
+		GMLVersion gmlVersion = options.getGmlVersion();
 
-        String schemaLocation = null;
-        if ( o instanceof Feature ) {
-            schemaLocation = getSchemaLocation( version, gmlVersion, ( (Feature) o ).getName() );
-        } else if ( o instanceof Geometry ) {
-            switch ( gmlVersion ) {
-            case GML_2:
-                schemaLocation = GMLNS + " http://schemas.opengis.net/gml/2.1.2.1/geometry.xsd";
-                break;
-            case GML_30:
-                schemaLocation = GMLNS + " http://schemas.opengis.net/gml/3.0.1/base/geometryComplexes.xsd";
-                break;
-            case GML_31:
-                schemaLocation = GMLNS + " http://schemas.opengis.net/gml/3.1.1/base/geometryComplexes.xsd";
-                break;
-            case GML_32:
-                schemaLocation = GML3_2_NS + " http://schemas.opengis.net/gml/3.2.1/geometryComplexes.xsd";
-                break;
-            }
-        } else {
-            String msg = "Error exporting GML object: only exporting of features and geometries is implemented.";
-            throw new OWSException( msg, OPERATION_NOT_SUPPORTED );
-        }
+		String schemaLocation = null;
+		if (o instanceof Feature) {
+			schemaLocation = getSchemaLocation(version, gmlVersion, ((Feature) o).getName());
+		}
+		else if (o instanceof Geometry) {
+			switch (gmlVersion) {
+				case GML_2:
+					schemaLocation = GMLNS + " http://schemas.opengis.net/gml/2.1.2.1/geometry.xsd";
+					break;
+				case GML_30:
+					schemaLocation = GMLNS + " http://schemas.opengis.net/gml/3.0.1/base/geometryComplexes.xsd";
+					break;
+				case GML_31:
+					schemaLocation = GMLNS + " http://schemas.opengis.net/gml/3.1.1/base/geometryComplexes.xsd";
+					break;
+				case GML_32:
+					schemaLocation = GML3_2_NS + " http://schemas.opengis.net/gml/3.2.1/geometryComplexes.xsd";
+					break;
+			}
+		}
+		else {
+			String msg = "Error exporting GML object: only exporting of features and geometries is implemented.";
+			throw new OWSException(msg, OPERATION_NOT_SUPPORTED);
+		}
 
-        String contentType = options.getMimeType();
-        XMLStreamWriter xmlStream = getXMLResponseWriter( response, contentType, schemaLocation );
-        GMLStreamWriter gmlStream = createGMLStreamWriter( gmlVersion, xmlStream );
-        gmlStream.setOutputCrs( format.getMaster().getDefaultQueryCrs() );
-        gmlStream.setGeometrySimplifier( options.getGeometrySimplifier() );
-        if ( !( xmlStream instanceof BufferableXMLStreamWriter ) ) {
-            xmlStream = new BufferableXMLStreamWriter( xmlStream, getObjectXlinkTemplate( version, gmlVersion ) );
-        }
-        GmlXlinkStrategy strategy = new WfsXlinkStrategy( (BufferableXMLStreamWriter) xmlStream, false,
-                                                          getObjectXlinkTemplate( version, gmlVersion ), resolveState );
-        gmlStream.setReferenceResolveStrategy( strategy );
-        gmlStream.setCoordinateFormatter( options.getFormatter() );
-        gmlStream.setNamespaceBindings( format.getMaster().getStoreManager().getPrefixToNs() );
-        gmlStream.setGenerateBoundedByForFeatures( options.isGenerateBoundedByForFeatures() );
-        try {
-            gmlStream.write( o );
-        } catch ( UnknownCRSException e ) {
-            String msg = "Error exporting GML object: " + e.getMessage();
-            throw new OWSException( msg, NO_APPLICABLE_CODE );
-        } catch ( TransformationException e ) {
-            String msg = "Error exporting GML object: " + e.getMessage();
-            throw new OWSException( msg, NO_APPLICABLE_CODE );
-        }
-    }
+		String contentType = options.getMimeType();
+		XMLStreamWriter xmlStream = getXMLResponseWriter(response, contentType, schemaLocation);
+		GMLStreamWriter gmlStream = createGMLStreamWriter(gmlVersion, xmlStream);
+		gmlStream.setOutputCrs(format.getMaster().getDefaultQueryCrs());
+		gmlStream.setGeometrySimplifier(options.getGeometrySimplifier());
+		if (!(xmlStream instanceof BufferableXMLStreamWriter)) {
+			xmlStream = new BufferableXMLStreamWriter(xmlStream, getObjectXlinkTemplate(version, gmlVersion));
+		}
+		GmlXlinkStrategy strategy = new WfsXlinkStrategy((BufferableXMLStreamWriter) xmlStream, false,
+				getObjectXlinkTemplate(version, gmlVersion), resolveState);
+		gmlStream.setReferenceResolveStrategy(strategy);
+		gmlStream.setCoordinateFormatter(options.getFormatter());
+		gmlStream.setNamespaceBindings(format.getMaster().getStoreManager().getPrefixToNs());
+		gmlStream.setGenerateBoundedByForFeatures(options.isGenerateBoundedByForFeatures());
+		try {
+			gmlStream.write(o);
+		}
+		catch (UnknownCRSException e) {
+			String msg = "Error exporting GML object: " + e.getMessage();
+			throw new OWSException(msg, NO_APPLICABLE_CODE);
+		}
+		catch (TransformationException e) {
+			String msg = "Error exporting GML object: " + e.getMessage();
+			throw new OWSException(msg, NO_APPLICABLE_CODE);
+		}
+	}
+
 }

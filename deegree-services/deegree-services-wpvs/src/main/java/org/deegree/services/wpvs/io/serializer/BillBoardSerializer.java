@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -45,69 +44,65 @@ import org.deegree.services.wpvs.io.DataObjectInfo;
 
 /**
  * The <code>BillBoardSerializer</code> class TODO add class documentation here.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class BillBoardSerializer extends ObjectSerializer<BillBoard> {
 
-    @Override
-    public BillBoard read( ByteBuffer billBuffer ) {
-        skipHeader( billBuffer );
-        String id = readString( billBuffer );
-        float[] location = new float[3];
-        location[0] = billBuffer.getFloat();
-        location[1] = billBuffer.getFloat();
-        location[2] = billBuffer.getFloat();
-        float width = billBuffer.getFloat();
-        float height = billBuffer.getFloat();
-        return new BillBoard( id, location, width, height );
-    }
+	@Override
+	public BillBoard read(ByteBuffer billBuffer) {
+		skipHeader(billBuffer);
+		String id = readString(billBuffer);
+		float[] location = new float[3];
+		location[0] = billBuffer.getFloat();
+		location[1] = billBuffer.getFloat();
+		location[2] = billBuffer.getFloat();
+		float width = billBuffer.getFloat();
+		float height = billBuffer.getFloat();
+		return new BillBoard(id, location, width, height);
+	}
 
-    @Override
-    public void write( ByteBuffer buffer, DataObjectInfo<BillBoard> object ) {
-        writeHeader( buffer, object );
-        BillBoard bb = object.getData();
-        writeString( buffer, bb.getTextureID() );
-        float[] location = bb.getLocation();
-        buffer.putFloat( location[0] );
-        buffer.putFloat( location[1] );
-        buffer.putFloat( location[2] );
-        buffer.putFloat( bb.getWidth() );
-        buffer.putFloat( bb.getHeight() );
-    }
+	@Override
+	public void write(ByteBuffer buffer, DataObjectInfo<BillBoard> object) {
+		writeHeader(buffer, object);
+		BillBoard bb = object.getData();
+		writeString(buffer, bb.getTextureID());
+		float[] location = bb.getLocation();
+		buffer.putFloat(location[0]);
+		buffer.putFloat(location[1]);
+		buffer.putFloat(location[2]);
+		buffer.putFloat(bb.getWidth());
+		buffer.putFloat(bb.getHeight());
+	}
 
-    @Override
-    public int serializedObjectSize( DataObjectInfo<BillBoard> bb ) {
-        return ( sizeOfString( bb.getData().getTextureID() ) + ( 5 * AllocatedHeapMemory.FLOAT_SIZE ) );
-    }
+	@Override
+	public int serializedObjectSize(DataObjectInfo<BillBoard> bb) {
+		return (sizeOfString(bb.getData().getTextureID()) + (5 * AllocatedHeapMemory.FLOAT_SIZE));
+	}
 
-    /**
-     * Serializes an object using the standard serialization mechanism, {@link ObjectOutputStream}
-     * 
-     * @param object
-     *            to be serialized with the {@link ObjectOutputStream}
-     * @return the byte array containing the serialized object.
-     */
-    @Override
-    public byte[] serializeObject( DataObjectInfo<BillBoard> object ) {
-        ByteBuffer bb = ByteBuffer.allocate( super.sizeOfSerializedObject( object ) );
-        write( bb, object );
-        return bb.array();
-    }
+	/**
+	 * Serializes an object using the standard serialization mechanism,
+	 * {@link ObjectOutputStream}
+	 * @param object to be serialized with the {@link ObjectOutputStream}
+	 * @return the byte array containing the serialized object.
+	 */
+	@Override
+	public byte[] serializeObject(DataObjectInfo<BillBoard> object) {
+		ByteBuffer bb = ByteBuffer.allocate(super.sizeOfSerializedObject(object));
+		write(bb, object);
+		return bb.array();
+	}
 
-    /**
-     * Deserialize an object from the given byte array.
-     * 
-     * @param buffer
-     *            containing bytes to deserialize.
-     * @return the deserialized object of type T.
-     */
-    @Override
-    public BillBoard deserializeDataObject( byte[] buffer ) {
-        ByteBuffer bb = ByteBuffer.wrap( buffer );
-        return read( bb );
-    }
+	/**
+	 * Deserialize an object from the given byte array.
+	 * @param buffer containing bytes to deserialize.
+	 * @return the deserialized object of type T.
+	 */
+	@Override
+	public BillBoard deserializeDataObject(byte[] buffer) {
+		ByteBuffer bb = ByteBuffer.wrap(buffer);
+		return read(bb);
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -39,23 +38,19 @@ package org.deegree.geometry.primitive.segments;
  * Special case of a {@link BSpline} curve segment with two knots.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- *
- * @version $Revision$, $Date$
  */
 public interface Bezier extends BSpline {
 
-    /**
-     * Returns the first knot that defines the spline's basis functions.
-     *
-     * @return first knot
-     */
-    public Knot getKnot1();
+	/**
+	 * Returns the first knot that defines the spline's basis functions.
+	 * @return first knot
+	 */
+	public Knot getKnot1();
 
-    /**
-     * Returns the second knot that defines the spline's basis functions.
-     *
-     * @return second knot
-     */
-    public Knot getKnot2();
+	/**
+	 * Returns the second knot that defines the spline's basis functions.
+	 * @return second knot
+	 */
+	public Knot getKnot2();
+
 }

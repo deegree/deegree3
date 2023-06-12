@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -42,66 +41,60 @@ import org.deegree.protocol.wps.client.output.ExecutionOutput;
 
 /**
  * Encapsulates the results from a process execution.
- * 
+ *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class ExecutionResponse {
 
-    private final URL statusLocation;
+	private final URL statusLocation;
 
-    private final ExecutionStatus status;
+	private final ExecutionStatus status;
 
-    private final ExecutionOutputs outputs;
+	private final ExecutionOutputs outputs;
 
-    /**
-     * @param statusLocation
-     *            may be <code>null</code>
-     * @param status
-     *            may be <code>null</code>
-     * @param outputs
-     *            never <code>null</code>
-     */
-    public ExecutionResponse( URL statusLocation, ExecutionStatus status, ExecutionOutput[] outputs ) {
-        this.statusLocation = statusLocation;
-        if ( status == null ) {
-            this.status = new ExecutionStatus( ExecutionState.SUCCEEDED, null, null, null, null );
-        } else {
-            this.status = status;
-        }
-        this.outputs = new ExecutionOutputs( outputs );
-    }
+	/**
+	 * @param statusLocation may be <code>null</code>
+	 * @param status may be <code>null</code>
+	 * @param outputs never <code>null</code>
+	 */
+	public ExecutionResponse(URL statusLocation, ExecutionStatus status, ExecutionOutput[] outputs) {
+		this.statusLocation = statusLocation;
+		if (status == null) {
+			this.status = new ExecutionStatus(ExecutionState.SUCCEEDED, null, null, null, null);
+		}
+		else {
+			this.status = status;
+		}
+		this.outputs = new ExecutionOutputs(outputs);
+	}
 
-    /**
-     * Returns the status location for fetching updated response documents.
-     * 
-     * @return the status location, may be <code>null</code> (in synchronous mode)
-     */
-    public URL getStatusLocation() {
-        return statusLocation;
-    }
+	/**
+	 * Returns the status location for fetching updated response documents.
+	 * @return the status location, may be <code>null</code> (in synchronous mode)
+	 */
+	public URL getStatusLocation() {
+		return statusLocation;
+	}
 
-    /**
-     * Returns the current status of the process execution.
-     * 
-     * @return the current status of the process execution, never <code>null</code>
-     */
-    public ExecutionStatus getStatus() {
-        return status;
-    }
+	/**
+	 * Returns the current status of the process execution.
+	 * @return the current status of the process execution, never <code>null</code>
+	 */
+	public ExecutionStatus getStatus() {
+		return status;
+	}
 
-    /**
-     * Returns the output parameters from the process execution.
-     * <p>
-     * NOTE: This method may only be called when the process is in state {@link ExecutionState#SUCCEEDED}.
-     * </p>
-     * 
-     * @return the output parameters, never <code>null</code>
-     */
-    public ExecutionOutputs getOutputs() {
-        return outputs;
-    }
+	/**
+	 * Returns the output parameters from the process execution.
+	 * <p>
+	 * NOTE: This method may only be called when the process is in state
+	 * {@link ExecutionState#SUCCEEDED}.
+	 * </p>
+	 * @return the output parameters, never <code>null</code>
+	 */
+	public ExecutionOutputs getOutputs() {
+		return outputs;
+	}
+
 }

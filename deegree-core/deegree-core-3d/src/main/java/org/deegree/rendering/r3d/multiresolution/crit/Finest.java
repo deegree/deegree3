@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -40,24 +39,22 @@ import org.deegree.rendering.r3d.multiresolution.Arc;
 import org.deegree.rendering.r3d.multiresolution.MultiresolutionMesh;
 
 /**
- * {@link LODCriterion} that requests the finest LOD available in a {@link MultiresolutionMesh}.
- * 
+ * {@link LODCriterion} that requests the finest LOD available in a
+ * {@link MultiresolutionMesh}.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class Finest implements LODCriterion {
 
-    /**
-     * Always returns true, so all available refinements are applied -> the resulting LOD is the finest one available.
-     * 
-     * @param arc
-     *            arc to be checked
-     * @return always true
-     */
-    @Override
-    public boolean needsRefinement( Arc arc ) {
-        return true;
-    }
+	/**
+	 * Always returns true, so all available refinements are applied -> the resulting LOD
+	 * is the finest one available.
+	 * @param arc arc to be checked
+	 * @return always true
+	 */
+	@Override
+	public boolean needsRefinement(Arc arc) {
+		return true;
+	}
+
 }

@@ -27,11 +27,6 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence.cache;
 
-import java.io.File;
-
-import net.sf.ehcache.CacheException;
-import net.sf.ehcache.CacheManager;
-
 import org.deegree.tile.persistence.TileStore;
 import org.deegree.tile.persistence.TileStoreProvider;
 import org.deegree.workspace.ResourceBuilder;
@@ -39,45 +34,50 @@ import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+
 /**
  * This class is responsible for building caching tile stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class CachingTileStoreBuilder implements ResourceBuilder<TileStore> {
 
-    private org.deegree.tile.persistence.cache.jaxb.CachingTileStore cfg;
+	private org.deegree.tile.persistence.cache.jaxb.CachingTileStore cfg;
 
-    private ResourceMetadata<TileStore> metadata;
+	private ResourceMetadata<TileStore> metadata;
 
-    private Workspace workspace;
+	private Workspace workspace;
 
-    public CachingTileStoreBuilder( org.deegree.tile.persistence.cache.jaxb.CachingTileStore cfg,
-                                    ResourceMetadata<TileStore> metadata, Workspace workspace ) {
-        this.cfg = cfg;
-        this.metadata = metadata;
-        this.workspace = workspace;
-    }
+	public CachingTileStoreBuilder(org.deegree.tile.persistence.cache.jaxb.CachingTileStore cfg,
+			ResourceMetadata<TileStore> metadata, Workspace workspace) {
+		this.cfg = cfg;
+		this.metadata = metadata;
+		this.workspace = workspace;
+	}
 
-    @Override
-    public TileStore build() {
-        try {
-            String cache = cfg.getCacheConfiguration();
-            File f = new File( cache );
-            if ( !f.isAbsolute() ) {
-                f = metadata.getLocation().resolveToFile( cache );
-            }
-            CacheManager cmgr = new CacheManager( f.toURI().toURL() );
-            TileStore tileStore = workspace.getResource( TileStoreProvider.class, cfg.getTileStoreId() );
-            return new CachingTileStore( tileStore, cmgr, cfg.getCacheName(), metadata );
-        } catch ( CacheException e ) {
-            // case needed, as NPE's inside exception can occur otherwise
-            throw new ResourceInitException( "Unable to create tile store: " + e.getMessage() );
-        } catch ( Exception e ) {
-            throw new ResourceInitException( "Unable to create tile store", e );
-        }
-    }
+	@Override
+	public TileStore build() {
+		try {
+			URL cacheConfiguration = getCacheConfiguration();
+			TileStore tileStore = workspace.getResource(TileStoreProvider.class, cfg.getTileStoreId());
+			return new CachingTileStore(tileStore, cfg.getCacheName(), cacheConfiguration, metadata);
+		}
+		catch (Exception e) {
+			throw new ResourceInitException("Unable to create tile store", e);
+		}
+	}
+
+	private URL getCacheConfiguration() throws MalformedURLException {
+		String cacheConfiguration = cfg.getCacheConfiguration();
+		File f = new File(cacheConfiguration);
+		if (!f.isAbsolute()) {
+			f = metadata.getLocation().resolveToFile(cacheConfiguration);
+		}
+		return f.toURI().toURL();
+	}
 
 }

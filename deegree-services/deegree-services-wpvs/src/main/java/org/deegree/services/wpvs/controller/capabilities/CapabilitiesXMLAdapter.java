@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -67,178 +66,175 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The <code>CapabilitiesXMLAdapter</code> class exports the capabilities of a wpvs.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class CapabilitiesXMLAdapter extends OWSCapabilitiesXMLAdapter {
 
-    private final static Logger LOG = LoggerFactory.getLogger( CapabilitiesXMLAdapter.class );
+	private final static Logger LOG = LoggerFactory.getLogger(CapabilitiesXMLAdapter.class);
 
-    private static final String WPVS_NS = "http://www.opengis.net/wpvs/1.0.0-pre";
+	private static final String WPVS_NS = "http://www.opengis.net/wpvs/1.0.0-pre";
 
-    private static final String WPVS_PREFIX = "wpvs";
+	private static final String WPVS_PREFIX = "wpvs";
 
-    /**
-     * @param writer
-     * @param request
-     * @param serviceID
-     * @param serviceProvider
-     * @param operations
-     * @param dcp
-     * @param serviceConfig
-     * @throws XMLStreamException
-     */
-    public void export040( XMLStreamWriter writer, GetCapabilities request, ServiceIdentificationType serviceID,
-                           ServiceProviderType serviceProvider, OperationsMetadata operations,
-                           ServiceConfiguration serviceConfig )
-                            throws XMLStreamException {
+	/**
+	 * @param writer
+	 * @param request
+	 * @param serviceID
+	 * @param serviceProvider
+	 * @param operations
+	 * @param dcp
+	 * @param serviceConfig
+	 * @throws XMLStreamException
+	 */
+	public void export040(XMLStreamWriter writer, GetCapabilities request, ServiceIdentificationType serviceID,
+			ServiceProviderType serviceProvider, OperationsMetadata operations, ServiceConfiguration serviceConfig)
+			throws XMLStreamException {
 
-        writer.writeStartElement( WPVS_PREFIX, "Capabilities", WPVS_NS );
-        writer.writeNamespace( OWS_PREFIX, OWS110_NS );
-        writer.writeNamespace( XSI_PREFIX, XSINS );
-        writer.writeNamespace( XLINK_PREFIX, XLNNS );
-        writer.writeAttribute( "service", "WPVS" );
-        writer.writeAttribute( "version", "0.5.0" );
-        // writer.writeAttribute( XSINS, "schemaLocation",
-        // "http://www.opengis.net/wpvs/1.0.0-pre http://schemas.opengis.net/ows/1.1.0/owsGetCapabilities.xsd" );
+		writer.writeStartElement(WPVS_PREFIX, "Capabilities", WPVS_NS);
+		writer.writeNamespace(OWS_PREFIX, OWS110_NS);
+		writer.writeNamespace(XSI_PREFIX, XSINS);
+		writer.writeNamespace(XLINK_PREFIX, XLNNS);
+		writer.writeAttribute("service", "WPVS");
+		writer.writeAttribute("version", "0.5.0");
+		// writer.writeAttribute( XSINS, "schemaLocation",
+		// "http://www.opengis.net/wpvs/1.0.0-pre
+		// http://schemas.opengis.net/ows/1.1.0/owsGetCapabilities.xsd" );
 
-        List<Version> versions = new ArrayList<Version>();
-        Set<String> sections = request.getSections();
-        boolean all = sections.isEmpty() || sections.contains( "All" );
-        if ( all || sections.contains( "ServiceIdentification" ) ) {
-            versions.add( new Version( 0, 4, 0 ) );
-            if ( serviceID != null ) {
-                exportServiceIdentification110( writer, serviceID, "WPVS", versions );
-            }
-        }
-        if ( all || sections.contains( "ServiceProvider" ) && serviceProvider != null ) {
-            exportServiceProvider110( writer, serviceProvider );
-        }
-        if ( all || sections.contains( "OperationsMetadata" ) ) {
-            exportOperationsMetadata110( writer, operations );
-        }
-        if ( all || sections.contains( "Dataset" ) ) {
-            exportDatasets( writer, serviceConfig.getDatasetDefinitions() );
-        }
+		List<Version> versions = new ArrayList<Version>();
+		Set<String> sections = request.getSections();
+		boolean all = sections.isEmpty() || sections.contains("All");
+		if (all || sections.contains("ServiceIdentification")) {
+			versions.add(new Version(0, 4, 0));
+			if (serviceID != null) {
+				exportServiceIdentification110(writer, serviceID, "WPVS", versions);
+			}
+		}
+		if (all || sections.contains("ServiceProvider") && serviceProvider != null) {
+			exportServiceProvider110(writer, serviceProvider);
+		}
+		if (all || sections.contains("OperationsMetadata")) {
+			exportOperationsMetadata110(writer, operations);
+		}
+		if (all || sections.contains("Dataset")) {
+			exportDatasets(writer, serviceConfig.getDatasetDefinitions());
+		}
 
-        writer.writeEndElement(); // Capabilities
-    }
+		writer.writeEndElement(); // Capabilities
+	}
 
-    /**
-     * @param dataSetDefinitions
-     * @throws XMLStreamException
-     */
-    private static void exportDatasets( XMLStreamWriter writer, DatasetDefinitions datasetDefinitions )
-                            throws XMLStreamException {
-        if ( datasetDefinitions == null ) {
-            LOG.warn( "No dataset definitions given, hence no data set section will be exported." );
-        }
-        writer.writeStartElement( WPVS_NS, "Dataset" );
-        writer.writeAttribute( "queryable", "false" );
-        if ( datasetDefinitions != null ) {
-            exportTextureDataset( writer, datasetDefinitions.getDEMTextureDataset() );
-            exportColormapDataset( writer, datasetDefinitions.getColormapDataset() );
-            exportRenderableDatasets( writer, datasetDefinitions.getRenderableDataset() );
-            exportElevationModel( writer, datasetDefinitions.getDEMDataset() );
-        }
+	/**
+	 * @param dataSetDefinitions
+	 * @throws XMLStreamException
+	 */
+	private static void exportDatasets(XMLStreamWriter writer, DatasetDefinitions datasetDefinitions)
+			throws XMLStreamException {
+		if (datasetDefinitions == null) {
+			LOG.warn("No dataset definitions given, hence no data set section will be exported.");
+		}
+		writer.writeStartElement(WPVS_NS, "Dataset");
+		writer.writeAttribute("queryable", "false");
+		if (datasetDefinitions != null) {
+			exportTextureDataset(writer, datasetDefinitions.getDEMTextureDataset());
+			exportColormapDataset(writer, datasetDefinitions.getColormapDataset());
+			exportRenderableDatasets(writer, datasetDefinitions.getRenderableDataset());
+			exportElevationModel(writer, datasetDefinitions.getDEMDataset());
+		}
 
-        writer.writeEndElement();// WPVS_NS, "Dataset"
+		writer.writeEndElement();// WPVS_NS, "Dataset"
 
-    }
+	}
 
-    /**
-     * @param writer
-     * @param renderables
-     * @throws XMLStreamException
-     */
-    private static void exportRenderableDatasets( XMLStreamWriter writer, List<RenderableDatasetConfig> renderables )
-                            throws XMLStreamException {
-        if ( renderables != null ) {
-            // TODO Rutger: Is this supposed to be like this?
-            for ( RenderableDatasetConfig renderable : renderables ) {
-                if ( renderable != null ) {
-                    writer.writeStartElement( WPVS_NS, "Dataset" );
-                    writer.writeAttribute( "queryable", "true" );
-                    exportAbstractDataType( writer, renderable );
-                    writer.writeEndElement();
-                }
-            }
-        }
-    }
+	/**
+	 * @param writer
+	 * @param renderables
+	 * @throws XMLStreamException
+	 */
+	private static void exportRenderableDatasets(XMLStreamWriter writer, List<RenderableDatasetConfig> renderables)
+			throws XMLStreamException {
+		if (renderables != null) {
+			// TODO Rutger: Is this supposed to be like this?
+			for (RenderableDatasetConfig renderable : renderables) {
+				if (renderable != null) {
+					writer.writeStartElement(WPVS_NS, "Dataset");
+					writer.writeAttribute("queryable", "true");
+					exportAbstractDataType(writer, renderable);
+					writer.writeEndElement();
+				}
+			}
+		}
+	}
 
-    /**
-     * @param writer
-     * @param dem
-     * @throws XMLStreamException
-     */
-    private static void exportElevationModel( XMLStreamWriter writer, DEMDatasetConfig dem )
-                            throws XMLStreamException {
-        if ( dem != null ) {
-            writer.writeStartElement( WPVS_NS, "ElevationModel" );
-            writer.writeAttribute( "queryable", "true" );
-            exportAbstractDataType( writer, dem );
-            writer.writeEndElement();// WPVS_NS, "ElevationModel"
-        }
+	/**
+	 * @param writer
+	 * @param dem
+	 * @throws XMLStreamException
+	 */
+	private static void exportElevationModel(XMLStreamWriter writer, DEMDatasetConfig dem) throws XMLStreamException {
+		if (dem != null) {
+			writer.writeStartElement(WPVS_NS, "ElevationModel");
+			writer.writeAttribute("queryable", "true");
+			exportAbstractDataType(writer, dem);
+			writer.writeEndElement();// WPVS_NS, "ElevationModel"
+		}
 
-    }
+	}
 
-    /**
-     * @param writer
-     * @param textureDataset
-     * @throws XMLStreamException
-     */
-    private static void exportTextureDataset( XMLStreamWriter writer, List<DEMTextureDatasetConfig> textureDatasets )
-                            throws XMLStreamException {
-        if ( textureDatasets != null && !textureDatasets.isEmpty() ) {
-            for ( DEMTextureDatasetConfig td : textureDatasets ) {
-                if ( td != null ) {
-                    writer.writeStartElement( WPVS_NS, "Dataset" );
-                    writer.writeAttribute( "queryable", "true" );
-                    exportAbstractDataType( writer, td );
-                    writer.writeEndElement();
-                }
-            }
-        }
-    }
+	/**
+	 * @param writer
+	 * @param textureDataset
+	 * @throws XMLStreamException
+	 */
+	private static void exportTextureDataset(XMLStreamWriter writer, List<DEMTextureDatasetConfig> textureDatasets)
+			throws XMLStreamException {
+		if (textureDatasets != null && !textureDatasets.isEmpty()) {
+			for (DEMTextureDatasetConfig td : textureDatasets) {
+				if (td != null) {
+					writer.writeStartElement(WPVS_NS, "Dataset");
+					writer.writeAttribute("queryable", "true");
+					exportAbstractDataType(writer, td);
+					writer.writeEndElement();
+				}
+			}
+		}
+	}
 
-    /**
-     * @param writer
-     * @param colormapDatasets
-     * @throws XMLStreamException
-     */
-    private static void exportColormapDataset( XMLStreamWriter writer, List<ColormapDatasetConfig> colormapDatasets )
-                            throws XMLStreamException {
-        if ( colormapDatasets != null && !colormapDatasets.isEmpty() ) {
-            for ( ColormapDatasetConfig cd : colormapDatasets ) {
-                if ( cd != null ) {
-                    writer.writeStartElement( WPVS_NS, "Dataset" );
-                    writer.writeAttribute( "queryable", "true" );
-                    exportAbstractDataType( writer, cd );
-                    writer.writeEndElement();
-                }
-            }
-        }
-    }
+	/**
+	 * @param writer
+	 * @param colormapDatasets
+	 * @throws XMLStreamException
+	 */
+	private static void exportColormapDataset(XMLStreamWriter writer, List<ColormapDatasetConfig> colormapDatasets)
+			throws XMLStreamException {
+		if (colormapDatasets != null && !colormapDatasets.isEmpty()) {
+			for (ColormapDatasetConfig cd : colormapDatasets) {
+				if (cd != null) {
+					writer.writeStartElement(WPVS_NS, "Dataset");
+					writer.writeAttribute("queryable", "true");
+					exportAbstractDataType(writer, cd);
+					writer.writeEndElement();
+				}
+			}
+		}
+	}
 
-    /**
-     * @param writer
-     * @param td
-     * @throws XMLStreamException
-     */
-    private static void exportAbstractDataType( XMLStreamWriter writer, AbstractDataType abstractDatatype )
-                            throws XMLStreamException {
-        if ( abstractDatatype != null ) {
-            // try to do as much order as the wms_capabilities_1_3_0.xsd
-            writeOptionalElement( writer, WPVS_NS, "Name", abstractDatatype.getName() );
-            writeElement( writer, WPVS_NS, "Title", abstractDatatype.getTitle() );
-            writeOptionalElement( writer, WPVS_NS, "Abstract", abstractDatatype.getAbstract() );
-            // exportKeyWords110( writer, abstractDatatype.getKeywords() );
-            // exportBoundingBoxType110( writer, abstractDatatype.getBoundingBox() );
-            exportSimpleStrings( writer, abstractDatatype.getMetadataURL(), WPVS_NS, "MetadataURL" );
-            // exportScales( writer, abstractDatatype.getScaleDenominators() );
-        }
-    }
+	/**
+	 * @param writer
+	 * @param td
+	 * @throws XMLStreamException
+	 */
+	private static void exportAbstractDataType(XMLStreamWriter writer, AbstractDataType abstractDatatype)
+			throws XMLStreamException {
+		if (abstractDatatype != null) {
+			// try to do as much order as the wms_capabilities_1_3_0.xsd
+			writeOptionalElement(writer, WPVS_NS, "Name", abstractDatatype.getName());
+			writeElement(writer, WPVS_NS, "Title", abstractDatatype.getTitle());
+			writeOptionalElement(writer, WPVS_NS, "Abstract", abstractDatatype.getAbstract());
+			// exportKeyWords110( writer, abstractDatatype.getKeywords() );
+			// exportBoundingBoxType110( writer, abstractDatatype.getBoundingBox() );
+			exportSimpleStrings(writer, abstractDatatype.getMetadataURL(), WPVS_NS, "MetadataURL");
+			// exportScales( writer, abstractDatatype.getScaleDenominators() );
+		}
+	}
+
 }

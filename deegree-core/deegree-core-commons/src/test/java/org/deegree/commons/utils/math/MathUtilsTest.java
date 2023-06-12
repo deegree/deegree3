@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -41,32 +40,32 @@ import org.junit.Test;
 
 /**
  * The <code>MathUtilsTest</code> test some basic methods
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class MathUtilsTest {
 
-    /**
-     * Test method for {@link org.deegree.commons.utils.math.MathUtils#previousPowerOfTwo(double)}.
-     */
-    @Test
-    public void testNearestPowerOfTwo() {
-        assertEquals( 9, MathUtils.previousPowerOfTwo( 511 ) );
-        assertEquals( 9, MathUtils.previousPowerOfTwo( 512 ) );
-        assertEquals( 10, MathUtils.previousPowerOfTwo( 513 ) );
-    }
+	/**
+	 * Test method for
+	 * {@link org.deegree.commons.utils.math.MathUtils#previousPowerOfTwo(double)}.
+	 */
+	@Test
+	public void testNearestPowerOfTwo() {
+		assertEquals(9, MathUtils.previousPowerOfTwo(511));
+		assertEquals(9, MathUtils.previousPowerOfTwo(512));
+		assertEquals(10, MathUtils.previousPowerOfTwo(513));
+	}
 
-    /**
-     * Test method for {@link org.deegree.commons.utils.math.MathUtils#nextPowerOfTwoValue(double)}.
-     */
-    @Test
-    public void testNextPowerOfTwo() {
-        assertEquals( 512, MathUtils.nextPowerOfTwoValue( 511 ) );
-        assertEquals( 512, MathUtils.nextPowerOfTwoValue( 512 ) );
-        assertEquals( 1024, MathUtils.nextPowerOfTwoValue( 513 ) );
-    }
+	/**
+	 * Test method for
+	 * {@link org.deegree.commons.utils.math.MathUtils#nextPowerOfTwoValue(double)}.
+	 */
+	@Test
+	public void testNextPowerOfTwo() {
+		assertEquals(512, MathUtils.nextPowerOfTwoValue(511));
+		assertEquals(512, MathUtils.nextPowerOfTwoValue(512));
+		assertEquals(1024, MathUtils.nextPowerOfTwoValue(513));
+	}
 
 }

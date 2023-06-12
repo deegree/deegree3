@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -45,72 +44,71 @@ import org.deegree.filter.XPathEvaluator;
 
 /**
  * TODO add documentation here
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * 
- * @version $Revision:$, $Date:$
  */
 public class PropertyIsNotEqualTo extends BinaryComparisonOperator {
 
-    public PropertyIsNotEqualTo( Expression param1, Expression param2, Boolean matchCase, MatchAction matchAction ) {
-        super( param1, param2, matchCase, matchAction );
-    }
+	public PropertyIsNotEqualTo(Expression param1, Expression param2, Boolean matchCase, MatchAction matchAction) {
+		super(param1, param2, matchCase, matchAction);
+	}
 
-    @Override
-    public SubType getSubType() {
-        return SubType.PROPERTY_IS_NOT_EQUAL_TO;
-    }
+	@Override
+	public SubType getSubType() {
+		return SubType.PROPERTY_IS_NOT_EQUAL_TO;
+	}
 
-    @Override
-    public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
-                            throws FilterEvaluationException {
+	@Override
+	public <T> boolean evaluate(T obj, XPathEvaluator<T> xpathEvaluator) throws FilterEvaluationException {
 
-        TypedObjectNode[] param1Values = param1.evaluate( obj, xpathEvaluator );
-        TypedObjectNode[] param2Values = param2.evaluate( obj, xpathEvaluator );
+		TypedObjectNode[] param1Values = param1.evaluate(obj, xpathEvaluator);
+		TypedObjectNode[] param2Values = param2.evaluate(obj, xpathEvaluator);
 
-        // evaluate to true if at least one pair of values matches the condition
-        for ( TypedObjectNode value1 : param1Values ) {
-            for ( TypedObjectNode value2 : param2Values ) {
-                if ( value1 == null && value2 == null ) {
-                    return true;
-                }
-                if ( value1 != null && value2 != null ) {
-                    Pair<PrimitiveValue, PrimitiveValue> comparablePair = getPrimitiveValues( value1, value2 );
-                    if ( !matchCase ) {
-                        if ( !comparablePair.first.toString().equalsIgnoreCase( comparablePair.second.toString() ) ) {
-                            return true;
-                        }
-                    } else {
-                        if ( !comparablePair.first.equals( comparablePair.second ) ) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-        return false;
-    }
+		// evaluate to true if at least one pair of values matches the condition
+		for (TypedObjectNode value1 : param1Values) {
+			for (TypedObjectNode value2 : param2Values) {
+				if (value1 == null && value2 == null) {
+					return true;
+				}
+				if (value1 != null && value2 != null) {
+					Pair<PrimitiveValue, PrimitiveValue> comparablePair = getPrimitiveValues(value1, value2);
+					if (!matchCase) {
+						if (!comparablePair.first.toString().equalsIgnoreCase(comparablePair.second.toString())) {
+							return true;
+						}
+					}
+					else {
+						if (!comparablePair.first.equals(comparablePair.second)) {
+							return true;
+						}
+					}
+				}
+			}
+		}
+		return false;
+	}
 
-    @Override
-    protected boolean compare( PrimitiveValue param1, PrimitiveValue param2 ) {
-        if ( !matchCase ) {
-            if ( !param1.toString().equalsIgnoreCase( param2.toString() ) ) {
-                return true;
-            }
-        } else {
-            if ( !param1.equals( param2 ) ) {
-                return true;
-            }
-        }
-        return false;
-    }
+	@Override
+	protected boolean compare(PrimitiveValue param1, PrimitiveValue param2) {
+		if (!matchCase) {
+			if (!param1.toString().equalsIgnoreCase(param2.toString())) {
+				return true;
+			}
+		}
+		else {
+			if (!param1.equals(param2)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
-    @Override
-    public String toString( String indent ) {
-        String s = indent + "-PropertyIsNotEqualTo\n";
-        s += param1.toString( indent + "  " );
-        s += param2.toString( indent + "  " );
-        return s;
-    }
+	@Override
+	public String toString(String indent) {
+		String s = indent + "-PropertyIsNotEqualTo\n";
+		s += param1.toString(indent + "  ");
+		s += param2.toString(indent + "  ");
+		return s;
+	}
+
 }

@@ -9,7 +9,7 @@ You can download the latest release from https://repo.deegree.org/repository/pub
 Java is installed and the _JAVA_HOME_ system environment variable points to the correct installation directory of a compatible JDK.
 Supported JDK versions are listed in <<system-requirements>>.
 
-=== Usage
+=== General Usage
 
 The executable JAR file contains help information. The following command line option shows the usage:
 
@@ -26,7 +26,7 @@ Use the keywords 'SqlFeatureStoreConfigCreator' or 'GmlLoader' to choose between
    GmlLoader -h (Prints the usage for this tool)
 ----
 
-Using the SqlFeatureStoreConfigCreator CLI:
+=== Using the SqlFeatureStoreConfigCreator CLI
 
 ----
 java -jar deegree-tools-gml.jar SqlFeatureStoreConfigCreator -h
@@ -161,7 +161,7 @@ The option useRefDataProps must be used with the option referenceData and result
  * Mapping of optional properties not in the referenceData is omitted.
  * Mapping of properties with xsi:nil="true" in the referenceData is reduced to the mapping of @xsi:nil and @nilReason.
 
-Using the GmlLoader CLI:
+=== Using the GmlLoader CLI GmlLoader
 
 ----
 java -jar deegree-tools-gml.jar GmlLoader -h
@@ -179,8 +179,11 @@ arguments:
  -sqlFeatureStoreId=<feature_store_identifier>, the ID of the SQLFeatureStore in the given workspace
 
 options:
+ -reportWriteStatistics=true, create a summary of all written feature types, disabled by default
+ -reportFile=GmlLoader.log, the name and optionally path to the report file, defaults to GmlLoader.log
  -disabledResources=<urlpatterns>, a comma separated list url patterns which should not be resolved, not set by default
  -chunkSize=<features_per_chunk>, number of features processed per chunk
+ -skipReferenceCheck=true, skip integrity check for feature references
  -dryRun=true, enable dry run where writing is skipped (checks only if all data can be read), disabled by default
 
 Example:
@@ -188,6 +191,14 @@ Example:
 
 ----
 
+==== Usage of option skipReferenceCheck
+
+In normal operation, the GmlLoader checks if all referenced features were included in the operation.
+The order in which the objects appear and how they are distributed among files is not relevant.
+However, there are use cases where the check has to be omitted, which can be done by specifying the
+parameter `-skipReferenceCheck=true`.
+This may be the case if the entire dataset is too large to be loaded in a single operation or
+the check can only be performed after the loading operation has finished.
 
 === Examples
 

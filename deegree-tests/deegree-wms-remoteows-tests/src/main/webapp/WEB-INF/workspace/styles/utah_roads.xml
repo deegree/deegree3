@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <FeatureTypeStyle xmlns="http://www.opengis.net/se" xmlns:app="http://www.deegree.org/app" xmlns:ogc="http://www.opengis.net/ogc" xmlns:sed="http://www.deegree.org/se"
     xmlns:deegreeogc="http://www.deegree.org/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se http://schemas.deegree.org/3.5/se/Symbolizer-deegree.xsd">
+    xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se https://schemas.deegree.org/core/3.5/se/Symbolizer-deegree.xsd">
   <Name>Roads</Name>
   <Rule>
     <Name>Roads</Name>

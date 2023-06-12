@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2009 by:
@@ -45,92 +44,91 @@ import org.junit.Test;
 
 /**
  * The <code>VersionFromMime</code> tests the mappig of gml mime types to gml versions
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class VersionFromMimeTest {
 
-    @Test
-    public void gml1_0_0() {
-        assertEquals( GMLVersion.GML_2, fromMimeType( "text/xml; subtype=gml/1.0.0", null ) );
-    }
+	@Test
+	public void gml1_0_0() {
+		assertEquals(GMLVersion.GML_2, fromMimeType("text/xml; subtype=gml/1.0.0", null));
+	}
 
-    @Test
-    public void gml2_0_0() {
-        assertEquals( GMLVersion.GML_2, fromMimeType( "text/xml; subtype=gml/2.0.0", null ) );
-    }
+	@Test
+	public void gml2_0_0() {
+		assertEquals(GMLVersion.GML_2, fromMimeType("text/xml; subtype=gml/2.0.0", null));
+	}
 
-    @Test
-    public void gml2_1_0() {
-        assertEquals( GMLVersion.GML_2, fromMimeType( "text/xml; subtype=gml/2.1.0", null ) );
-    }
+	@Test
+	public void gml2_1_0() {
+		assertEquals(GMLVersion.GML_2, fromMimeType("text/xml; subtype=gml/2.1.0", null));
+	}
 
-    @Test
-    public void gml2_1_2() {
-        assertEquals( GMLVersion.GML_2, fromMimeType( "text/xml; subtype=gml/2.1.2", null ) );
-    }
+	@Test
+	public void gml2_1_2() {
+		assertEquals(GMLVersion.GML_2, fromMimeType("text/xml; subtype=gml/2.1.2", null));
+	}
 
-    @Test
-    public void gml3_0_0() {
-        assertEquals( GMLVersion.GML_30, fromMimeType( "text/xml; subtype=gml/3.0.0", null ) );
-    }
+	@Test
+	public void gml3_0_0() {
+		assertEquals(GMLVersion.GML_30, fromMimeType("text/xml; subtype=gml/3.0.0", null));
+	}
 
-    @Test
-    public void gml3_0_1() {
-        assertEquals( GMLVersion.GML_30, fromMimeType( "text/xml; subtype=gml/3.0.1", null ) );
-    }
+	@Test
+	public void gml3_0_1() {
+		assertEquals(GMLVersion.GML_30, fromMimeType("text/xml; subtype=gml/3.0.1", null));
+	}
 
-    @Test
-    public void gml3_0_2() {
-        // don't know if 3.0.2 should actually be 3.0 or 3.1
-        assertEquals( GMLVersion.GML_31, fromMimeType( "text/xml; subtype=gml/3.0.2", null ) );
-    }
+	@Test
+	public void gml3_0_2() {
+		// don't know if 3.0.2 should actually be 3.0 or 3.1
+		assertEquals(GMLVersion.GML_31, fromMimeType("text/xml; subtype=gml/3.0.2", null));
+	}
 
-    @Test
-    public void gml3_1_0() {
-        assertEquals( GMLVersion.GML_31, fromMimeType( "text/xml; subtype=gml/3.1.0", null ) );
-    }
+	@Test
+	public void gml3_1_0() {
+		assertEquals(GMLVersion.GML_31, fromMimeType("text/xml; subtype=gml/3.1.0", null));
+	}
 
-    @Test
-    public void gml3_1_1() {
-        assertEquals( GMLVersion.GML_31, fromMimeType( "text/xml; subtype=gml/3.1.1", null ) );
-    }
+	@Test
+	public void gml3_1_1() {
+		assertEquals(GMLVersion.GML_31, fromMimeType("text/xml; subtype=gml/3.1.1", null));
+	}
 
-    @Test
-    public void gml3_2_0() {
-        assertEquals( GMLVersion.GML_32, fromMimeType( "text/xml; subtype=gml/3.2.0", null ) );
-    }
+	@Test
+	public void gml3_2_0() {
+		assertEquals(GMLVersion.GML_32, fromMimeType("text/xml; subtype=gml/3.2.0", null));
+	}
 
-    @Test
-    public void gml3_2_1() {
-        assertEquals( GMLVersion.GML_32, fromMimeType( "text/xml; subtype=gml/3.2.1", null ) );
-    }
+	@Test
+	public void gml3_2_1() {
+		assertEquals(GMLVersion.GML_32, fromMimeType("text/xml; subtype=gml/3.2.1", null));
+	}
 
-    @Test
-    public void gml3_2_2() {
-        assertEquals( GMLVersion.GML_32, fromMimeType( "text/xml; subtype=gml/3.2.2", null ) );
-    }
+	@Test
+	public void gml3_2_2() {
+		assertEquals(GMLVersion.GML_32, fromMimeType("text/xml; subtype=gml/3.2.2", null));
+	}
 
-    @Test
-    public void noGML() {
-        assertEquals( null, fromMimeType( "text/xml", null ) );
-    }
+	@Test
+	public void noGML() {
+		assertEquals(null, fromMimeType("text/xml", null));
+	}
 
-    @Test
-    public void multipleSubtypes() {
-        assertEquals( GMLVersion.GML_32, fromMimeType( "text/xml; subtype=gml/3.2; subtype=gml/3.2.1", null ) );
-    }
+	@Test
+	public void multipleSubtypes() {
+		assertEquals(GMLVersion.GML_32, fromMimeType("text/xml; subtype=gml/3.2; subtype=gml/3.2.1", null));
+	}
 
-    @Test
-    public void strangeSubtypes() {
-        assertEquals( null, fromMimeType( "text/xml; subtype gml/3.2", null ) );
-    }
+	@Test
+	public void strangeSubtypes() {
+		assertEquals(null, fromMimeType("text/xml; subtype gml/3.2", null));
+	}
 
-    @Test
-    public void brokenVersion() {
-        assertEquals( null, fromMimeType( "text/xml; subtype=gml/3.2", null ) );
-    }
+	@Test
+	public void brokenVersion() {
+		assertEquals(null, fromMimeType("text/xml; subtype=gml/3.2", null));
+	}
+
 }

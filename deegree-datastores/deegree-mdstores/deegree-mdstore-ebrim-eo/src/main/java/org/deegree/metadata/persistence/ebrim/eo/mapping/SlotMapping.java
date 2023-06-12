@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -39,39 +38,39 @@ import org.deegree.metadata.ebrim.ExtrinsicObject;
 
 /**
  * Defines the mapping of a slot of an {@link ExtrinsicObject} to a database column.
- * 
+ *
  * @author <a href="mailto:goltz@deegree.org">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class SlotMapping {
 
-    public enum SlotType {
-        _double, _int, _date, _multiple, _string, _geom;
-    }
+	public enum SlotType {
 
-    private String name;
+		_double, _int, _date, _multiple, _string, _geom;
 
-    private String column;
+	}
 
-    private SlotType type;
+	private String name;
 
-    public SlotMapping( String name, String column, SlotType type ) {
-        this.name = name;
-        this.column = column;
-        this.type = type;
-    }
+	private String column;
 
-    public String getName() {
-        return name;
-    }
+	private SlotType type;
 
-    public String getColumn() {
-        return column;
-    }
+	public SlotMapping(String name, String column, SlotType type) {
+		this.name = name;
+		this.column = column;
+		this.type = type;
+	}
 
-    public SlotType getType() {
-        return type;
-    }
+	public String getName() {
+		return name;
+	}
+
+	public String getColumn() {
+		return column;
+	}
+
+	public SlotType getType() {
+		return type;
+	}
+
 }

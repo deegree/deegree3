@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -44,52 +43,46 @@ import org.deegree.feature.property.ExtraProps;
 import org.deegree.feature.types.property.GeometryPropertyType;
 
 /**
- * Defines a class of {@link Feature}s, i.e. features with same name and same types of properties.
- * 
+ * Defines a class of {@link Feature}s, i.e. features with same name and same types of
+ * properties.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * 
- * @version $Revision:$, $Date:$
  */
 public interface FeatureType extends GMLObjectType {
 
-    /**
-     * Returns the first geometry property declaration of the feature type.
-     * 
-     * @return first geometry property declaration or <code>null</code> if no such declaration exists
-     */
-    public GeometryPropertyType getDefaultGeometryPropertyDeclaration();
+	/**
+	 * Returns the first geometry property declaration of the feature type.
+	 * @return first geometry property declaration or <code>null</code> if no such
+	 * declaration exists
+	 */
+	public GeometryPropertyType getDefaultGeometryPropertyDeclaration();
 
-    /**
-     * Creates a new {@link Feature} instance (that is an insatnce of a {@link FeatureType}).
-     *
-     * @param fid
-     *            feature id, or null if the feature doesn't have an id
-     * @param props
-     *            properties
-     * @param extraProps
-     *            properties that are not defined by the {@link FeatureType} (e.g. rendering hints)
-     * @return a new <code>Feature</code> instance
-     */
-    public Feature newFeatureInstance( String fid, List<Property> props, ExtraProps extraProps );
+	/**
+	 * Creates a new {@link Feature} instance (that is an insatnce of a
+	 * {@link FeatureType}).
+	 * @param fid feature id, or null if the feature doesn't have an id
+	 * @param props properties
+	 * @param extraProps properties that are not defined by the {@link FeatureType} (e.g.
+	 * rendering hints)
+	 * @return a new <code>Feature</code> instance
+	 */
+	public Feature newFeatureInstance(String fid, List<Property> props, ExtraProps extraProps);
 
-    /**
-     * Creates a new {@link Feature} instance (that is of this type).
-     * 
-     * @param fid
-     *            feature id, or null if the feature doesn't have an id
-     * @param props
-     *            properties
-     * @param extraProps
-     *            properties that are not defined by the {@link FeatureType} (e.g. rendering hints)
-     * @return a new <code>Feature</code> instance
-     */
-    public Feature newFeature( String fid, List<Property> props, ExtraProps extraProps );
+	/**
+	 * Creates a new {@link Feature} instance (that is of this type).
+	 * @param fid feature id, or null if the feature doesn't have an id
+	 * @param props properties
+	 * @param extraProps properties that are not defined by the {@link FeatureType} (e.g.
+	 * rendering hints)
+	 * @return a new <code>Feature</code> instance
+	 */
+	public Feature newFeature(String fid, List<Property> props, ExtraProps extraProps);
 
-    /**
-     * Returns the {@link AppSchema} that this feature type belongs to.
-     * 
-     * @return the corresponding {@link AppSchema} or <code>null</code> if this feature type has none
-     */
-    public AppSchema getSchema();
+	/**
+	 * Returns the {@link AppSchema} that this feature type belongs to.
+	 * @return the corresponding {@link AppSchema} or <code>null</code> if this feature
+	 * type has none
+	 */
+	public AppSchema getSchema();
+
 }

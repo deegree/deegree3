@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -66,129 +65,129 @@ import org.deegree.services.jaxb.metadata.ServiceProviderType;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.org">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class EbrimProfile implements ServiceProfile {
 
-    private static List<String> versions = new ArrayList<String>();
+	private static List<String> versions = new ArrayList<String>();
 
-    // the CSW-ebRim needs two service names because of contradictoons between OGC ebRim profile for EO
-    // products and its base specification.
-    public static final String SERVICENAME_CSW = "CSW";
+	// the CSW-ebRim needs two service names because of contradictoons between OGC ebRim
+	// profile for EO
+	// products and its base specification.
+	public static final String SERVICENAME_CSW = "CSW";
 
-    public static final String SERVICENAME_CSW_EBRIM = "CSW-ebRIM";
+	public static final String SERVICENAME_CSW_EBRIM = "CSW-ebRIM";
 
-    public static final String SERVICENAME_WRS = "WRS";
+	public static final String SERVICENAME_WRS = "WRS";
 
-    public static final String RIM_NS = "urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0";
+	public static final String RIM_NS = "urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0";
 
-    private static final String RIM_SCHEMA = "http://docs.oasis-open.org/regrep/v3.0/schema/rim.xsd";
+	private static final String RIM_SCHEMA = "http://docs.oasis-open.org/regrep/v3.0/schema/rim.xsd";
 
-    private static final String RIM_AP_NS = "http://www.opengis.net/cat/wrs/1.0";
+	private static final String RIM_AP_NS = "http://www.opengis.net/cat/wrs/1.0";
 
-    private static final String RIM_AP_SCHEMA = "http://schemas.opengis.net/csw/2.0.2/profiles/ebrim/1.0/csw-ebrim.xsd";
+	private static final String RIM_AP_SCHEMA = "http://schemas.opengis.net/csw/2.0.2/profiles/ebrim/1.0/csw-ebrim.xsd";
 
-    static {
-        versions.add( VERSION_100.toString() );
-        versions.add( VERSION_202.toString() );
-    }
+	static {
+		versions.add(VERSION_100.toString());
+		versions.add(VERSION_202.toString());
+	}
 
-    protected static final ImplementationMetadata<CSWRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<CSWRequestType>() {
-        {
-            supportedVersions = new Version[] { VERSION_100, VERSION_202 };
-            handledNamespaces = new String[] { CSW_202_NS, "http://www.opengis.net/cat/csw" };
-            handledRequests = CSWRequestType.class;
-            serviceName = new String[] { SERVICENAME_CSW, SERVICENAME_CSW_EBRIM, SERVICENAME_WRS };
-        }
-    };
+	protected static final ImplementationMetadata<CSWRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<CSWRequestType>() {
+		{
+			supportedVersions = new Version[] { VERSION_100, VERSION_202 };
+			handledNamespaces = new String[] { CSW_202_NS, "http://www.opengis.net/cat/csw" };
+			handledRequests = CSWRequestType.class;
+			serviceName = new String[] { SERVICENAME_CSW, SERVICENAME_CSW_EBRIM, SERVICENAME_WRS };
+		}
+	};
 
-    @Override
-    public List<String> getSupportedVersions() {
-        return versions;
-    }
+	@Override
+	public List<String> getSupportedVersions() {
+		return versions;
+	}
 
-    @Override
-    public ImplementationMetadata<CSWRequestType> getImplementationMetadata() {
-        return IMPLEMENTATION_METADATA;
-    }
+	@Override
+	public ImplementationMetadata<CSWRequestType> getImplementationMetadata() {
+		return IMPLEMENTATION_METADATA;
+	}
 
-    @Override
-    public String[] getSupportedServiceNames() {
-        return new String[] { "CSW", "CSW-ebRIM", "WRS" };
-    }
+	@Override
+	public String[] getSupportedServiceNames() {
+		return new String[] { "CSW", "CSW-ebRIM", "WRS" };
+	}
 
-    @Override
-    public String getAcceptFormat( GetCapabilities getCapabilitiesRequest ) throws OWSException {
-        String acceptFormat;
-        Set<String> af = getCapabilitiesRequest.getAcceptFormats();
-        String text = "text/xml";
-        if ( af.isEmpty() ) {
-            acceptFormat = text;
-        } else if ( af.contains( text ) ) {
-            acceptFormat = text;
-        } else {
-            throw new OWSException( "Format determination failed. Requested format is not supported by this CSW.",
-                                    OWSException.INVALID_FORMAT );
-        }
-        return acceptFormat;
-    }
+	@Override
+	public String getAcceptFormat(GetCapabilities getCapabilitiesRequest) throws OWSException {
+		String acceptFormat;
+		Set<String> af = getCapabilitiesRequest.getAcceptFormats();
+		String text = "text/xml";
+		if (af.isEmpty()) {
+			acceptFormat = text;
+		}
+		else if (af.contains(text)) {
+			acceptFormat = text;
+		}
+		else {
+			throw new OWSException("Format determination failed. Requested format is not supported by this CSW.",
+					OWSException.INVALID_FORMAT);
+		}
+		return acceptFormat;
+	}
 
-    @Override
-    public CapabilitiesHandler getCapabilitiesHandler( XMLStreamWriter writer,
-                                                       DeegreeServicesMetadataType mainControllerConf,
-                                                       DeegreeServiceControllerType mainConf, Set<Sections> sections,
-                                                       ServiceIdentificationType identification, Version version,
-                                                       boolean isTransactionEnabled, boolean isEnabledInspireExtension,
-                                                       ServiceProviderType provider, URL extendedCapabilities ) {
-        return new EbrimGetCapabilitiesHandler( writer, sections, identification, provider, version,
-                                                isTransactionEnabled, extendedCapabilities );
-    }
+	@Override
+	public CapabilitiesHandler getCapabilitiesHandler(XMLStreamWriter writer,
+			DeegreeServicesMetadataType mainControllerConf, DeegreeServiceControllerType mainConf,
+			Set<Sections> sections, ServiceIdentificationType identification, Version version,
+			boolean isTransactionEnabled, boolean isEnabledInspireExtension, ServiceProviderType provider,
+			URL extendedCapabilities) {
+		return new EbrimGetCapabilitiesHandler(writer, sections, identification, provider, version,
+				isTransactionEnabled, extendedCapabilities);
+	}
 
-    @Override
-    public QName[] getDefaultTypeNames() {
-        return new QName[] { new QName( "urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0", "RegistryPackage", "rim" ) };
-    }
+	@Override
+	public QName[] getDefaultTypeNames() {
+		return new QName[] { new QName("urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0", "RegistryPackage", "rim") };
+	}
 
-    @Override
-    public URL getSchema( QName typeName ) {
-        return null;
-    }
+	@Override
+	public URL getSchema(QName typeName) {
+		return null;
+	}
 
-    @Override
-    public List<URL> getSchemaReferences( QName typeName ) {
-        return Collections.singletonList( EbrimProfile.class.getResource( "/org/deegree/services/csw/exporthandling/rim_schema_ref.xml" ) );
-    }
+	@Override
+	public List<URL> getSchemaReferences(QName typeName) {
+		return Collections.singletonList(
+				EbrimProfile.class.getResource("/org/deegree/services/csw/exporthandling/rim_schema_ref.xml"));
+	}
 
-    @Override
-    public Version checkVersion( Version version ) {
-        if ( VERSION_100.equals( version ) )
-            return VERSION_202;
-        return version;
-    }
+	@Override
+	public Version checkVersion(Version version) {
+		if (VERSION_100.equals(version))
+			return VERSION_202;
+		return version;
+	}
 
-    @Override
-    public boolean supportsOperation( CSWRequestType type ) {
-        return true;
-    }
+	@Override
+	public boolean supportsOperation(CSWRequestType type) {
+		return true;
+	}
 
-    @Override
-    public String getGetRecordByIdSchemaLocation( Version version ) {
-        return CSW_202_NS + " " + CSW_202_DISCOVERY_SCHEMA + " " + RIM_AP_NS + " " + RIM_AP_SCHEMA + " " + RIM_NS + " "
-               + RIM_SCHEMA;
-    }
+	@Override
+	public String getGetRecordByIdSchemaLocation(Version version) {
+		return CSW_202_NS + " " + CSW_202_DISCOVERY_SCHEMA + " " + RIM_AP_NS + " " + RIM_AP_SCHEMA + " " + RIM_NS + " "
+				+ RIM_SCHEMA;
+	}
 
-    @Override
-    public boolean isStrict() {
-        return false;
-    }
+	@Override
+	public boolean isStrict() {
+		return false;
+	}
 
-    @Override
-    public boolean returnAsDC( URI outputSchema )
-                            throws MetadataStoreException {
-        return false;
-    }
+	@Override
+	public boolean returnAsDC(URI outputSchema) throws MetadataStoreException {
+		return false;
+	}
+
 }

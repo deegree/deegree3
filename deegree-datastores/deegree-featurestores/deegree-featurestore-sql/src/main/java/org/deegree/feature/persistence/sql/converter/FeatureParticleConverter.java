@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-base/src/main/java/org/deegree/geometry/utils/GeometryParticleConverter.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -50,75 +49,72 @@ import org.deegree.gml.reference.FeatureReference;
 
 /**
  * {@link ParticleConverter} for {@link Feature} particles.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 30976 $, $Date: 2011-05-31 11:09:40 +0200 (Di, 31. Mai 2011) $
  */
 public class FeatureParticleConverter implements ParticleConverter<Feature> {
 
-    private final SQLIdentifier fkColumn;
+	private final SQLIdentifier fkColumn;
 
-    private final SQLIdentifier hrefColumn;
+	private final SQLIdentifier hrefColumn;
 
-    private final GMLReferenceResolver resolver;
+	private final GMLReferenceResolver resolver;
 
-    private final FeatureType valueFt;
+	private final FeatureType valueFt;
 
-    private final MappedAppSchema schema;
+	private final MappedAppSchema schema;
 
-    private final String fidPrefix;
+	private final String fidPrefix;
 
-    public FeatureParticleConverter( SQLIdentifier fkColumn, SQLIdentifier hrefColumn, GMLReferenceResolver resolver,
-                                     FeatureType valueFt, MappedAppSchema schema ) {
-        this.fkColumn = fkColumn;
-        this.hrefColumn = hrefColumn;
-        this.resolver = resolver;
-        this.valueFt = valueFt;
-        this.schema = schema;
+	public FeatureParticleConverter(SQLIdentifier fkColumn, SQLIdentifier hrefColumn, GMLReferenceResolver resolver,
+			FeatureType valueFt, MappedAppSchema schema) {
+		this.fkColumn = fkColumn;
+		this.hrefColumn = hrefColumn;
+		this.resolver = resolver;
+		this.valueFt = valueFt;
+		this.schema = schema;
 
-        if ( valueFt != null && schema.getSubtypes( valueFt ).length == 0
-             && schema.getFtMapping( valueFt.getName() ) != null ) {
-            fidPrefix = schema.getFtMapping( valueFt.getName() ).getFidMapping().getPrefix();
-        } else {
-            fidPrefix = null;
-        }
-    }
+		if (valueFt != null && schema.getSubtypes(valueFt).length == 0
+				&& schema.getFtMapping(valueFt.getName()) != null) {
+			fidPrefix = schema.getFtMapping(valueFt.getName()).getFidMapping().getPrefix();
+		}
+		else {
+			fidPrefix = null;
+		}
+	}
 
-    @Override
-    public String getSelectSnippet( String tableAlias ) {
-        if ( hrefColumn != null ) {
-            return tableAlias + "." + hrefColumn;
-        }
-        return tableAlias + "." + fkColumn;
-    }
+	@Override
+	public String getSelectSnippet(String tableAlias) {
+		if (hrefColumn != null) {
+			return tableAlias + "." + hrefColumn;
+		}
+		return tableAlias + "." + fkColumn;
+	}
 
-    @Override
-    public Feature toParticle( ResultSet rs, int colIndex )
-                            throws SQLException {
+	@Override
+	public Feature toParticle(ResultSet rs, int colIndex) throws SQLException {
 
-        Object value = rs.getObject( colIndex );
-        if ( value == null ) {
-            return null;
-        }
-        if ( hrefColumn != null ) {
-            return new FeatureReference( resolver, "" + value, null );
-        }
-        if ( fidPrefix != null ) {
-            return new FeatureReference( resolver, "#" + fidPrefix + value, null );
-        }
-        return new FeatureReference( resolver, "#" + value, null );
-    }
+		Object value = rs.getObject(colIndex);
+		if (value == null) {
+			return null;
+		}
+		if (hrefColumn != null) {
+			return new FeatureReference(resolver, "" + value, null);
+		}
+		if (fidPrefix != null) {
+			return new FeatureReference(resolver, "#" + fidPrefix + value, null);
+		}
+		return new FeatureReference(resolver, "#" + value, null);
+	}
 
-    @Override
-    public String getSetSnippet( Feature particle ) {
-        return "?,?";
-    }
+	@Override
+	public String getSetSnippet(Feature particle) {
+		return "?,?";
+	}
 
-    @Override
-    public void setParticle( PreparedStatement stmt, Feature particle, int paramIndex )
-                            throws SQLException {
-        // TODO currently hardcoded in InsertRowManager and related classes
-    }
+	@Override
+	public void setParticle(PreparedStatement stmt, Feature particle, int paramIndex) throws SQLException {
+		// TODO currently hardcoded in InsertRowManager and related classes
+	}
+
 }

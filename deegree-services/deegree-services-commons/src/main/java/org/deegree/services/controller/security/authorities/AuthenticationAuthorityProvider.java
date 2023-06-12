@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -38,28 +37,23 @@ package org.deegree.services.controller.security.authorities;
 import java.net.URL;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface AuthenticationAuthorityProvider {
 
-    /**
-     * Returns the namespace for configurations documents that this provider handles.
-     * 
-     * @return the namespace for configurations documents, never <code>null</code>
-     */
-    String getConfigNamespace();
+	/**
+	 * Returns the namespace for configurations documents that this provider handles.
+	 * @return the namespace for configurations documents, never <code>null</code>
+	 */
+	String getConfigNamespace();
 
-    /**
-     * Creates a new {@link AuthenticationAuthority} instance from the given configuration document.
-     * 
-     * @param configURL
-     *            location of the configuration document, must not be <code>null</code>
-     * @return new authority store instance
-     */
-    AuthenticationAuthority getAuthenticationAuthority( URL configURL );
+	/**
+	 * Creates a new {@link AuthenticationAuthority} instance from the given configuration
+	 * document.
+	 * @param configURL location of the configuration document, must not be
+	 * <code>null</code>
+	 * @return new authority store instance
+	 */
+	AuthenticationAuthority getAuthenticationAuthority(URL configURL);
 
 }

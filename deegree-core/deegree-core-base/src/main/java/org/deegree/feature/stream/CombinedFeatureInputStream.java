@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -44,114 +43,114 @@ import org.deegree.feature.Features;
 
 /**
  * {@link FeatureInputStream} that encapsulates a sequence of {@link FeatureInputStream}s.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class CombinedFeatureInputStream implements FeatureInputStream {
 
-    Iterator<FeatureInputStream> resultSetIter;
+	Iterator<FeatureInputStream> resultSetIter;
 
-    FeatureInputStream currentResultSet;
+	FeatureInputStream currentResultSet;
 
-    boolean lastClosed = false;
+	boolean lastClosed = false;
 
-    /**
-     * Creates a new {@link CombinedFeatureInputStream} that is backed by the given {@link FeatureInputStream}.
-     * 
-     * @param resultSetIter
-     *            FeatureResultSet to back the result set, must not be <code>null</code>
-     */
-    public CombinedFeatureInputStream( Iterator<FeatureInputStream> resultSetIter ) {
-        this.resultSetIter = resultSetIter;
-    }
+	/**
+	 * Creates a new {@link CombinedFeatureInputStream} that is backed by the given
+	 * {@link FeatureInputStream}.
+	 * @param resultSetIter FeatureResultSet to back the result set, must not be
+	 * <code>null</code>
+	 */
+	public CombinedFeatureInputStream(Iterator<FeatureInputStream> resultSetIter) {
+		this.resultSetIter = resultSetIter;
+	}
 
-    @Override
-    public void close() {
-        if ( currentResultSet != null ) {
-            currentResultSet.close();
-        }
-        while ( resultSetIter.hasNext() ) {
-            resultSetIter.next().close();
-        }
-    }
+	@Override
+	public void close() {
+		if (currentResultSet != null) {
+			currentResultSet.close();
+		}
+		while (resultSetIter.hasNext()) {
+			resultSetIter.next().close();
+		}
+	}
 
-    @Override
-    public FeatureCollection toCollection() {
-        return Features.toCollection( this );
-    }
+	@Override
+	public FeatureCollection toCollection() {
+		return Features.toCollection(this);
+	}
 
-    @Override
-    public Iterator<Feature> iterator() {
-        return new Iterator<Feature>() {
+	@Override
+	public Iterator<Feature> iterator() {
+		return new Iterator<Feature>() {
 
-            Iterator<Feature> featureIter;
+			Iterator<Feature> featureIter;
 
-            boolean nextRead = true;
+			boolean nextRead = true;
 
-            Feature next = null;
+			Feature next = null;
 
-            @Override
-            public boolean hasNext() {
-                if ( !nextRead ) {
-                    return next != null;
-                }
-                if ( featureIter == null ) {
-                    if ( !resultSetIter.hasNext() ) {
-                        return false;
-                    }
-                    // only happens for the first call of #hasNext()
-                    currentResultSet = resultSetIter.next();
-                    featureIter = currentResultSet.iterator();
-                }
+			@Override
+			public boolean hasNext() {
+				if (!nextRead) {
+					return next != null;
+				}
+				if (featureIter == null) {
+					if (!resultSetIter.hasNext()) {
+						return false;
+					}
+					// only happens for the first call of #hasNext()
+					currentResultSet = resultSetIter.next();
+					featureIter = currentResultSet.iterator();
+				}
 
-                while ( !featureIter.hasNext() ) {
-                    if ( resultSetIter.hasNext() ) {
-                        currentResultSet.close();
-                        currentResultSet = resultSetIter.next();
-                        featureIter = currentResultSet.iterator();
-                    } else {
-                        // lastClosed = true;
-                        break;
-                    }
-                }
+				while (!featureIter.hasNext()) {
+					if (resultSetIter.hasNext()) {
+						currentResultSet.close();
+						currentResultSet = resultSetIter.next();
+						featureIter = currentResultSet.iterator();
+					}
+					else {
+						// lastClosed = true;
+						break;
+					}
+				}
 
-                if ( featureIter.hasNext() ) {
-                    next = featureIter.next();
-                    nextRead = false;
-                } else {
-                    next = null;
-                }
+				if (featureIter.hasNext()) {
+					next = featureIter.next();
+					nextRead = false;
+				}
+				else {
+					next = null;
+				}
 
-                return next != null;
-            }
+				return next != null;
+			}
 
-            @Override
-            public Feature next() {
-                if ( !hasNext() ) {
-                    throw new NoSuchElementException();
-                }
-                nextRead = true;
-                return next;
-            }
+			@Override
+			public Feature next() {
+				if (!hasNext()) {
+					throw new NoSuchElementException();
+				}
+				nextRead = true;
+				return next;
+			}
 
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException();
-            }
-        };
-    }
+			@Override
+			public void remove() {
+				throw new UnsupportedOperationException();
+			}
+		};
+	}
 
-    @Override
-    public int count() {
-        int i = 0;
-        for ( @SuppressWarnings("unused")
-        Feature f : this ) {
-            i++;
-        }
-        close();
-        return i;
-    }
+	@Override
+	public int count() {
+		int i = 0;
+		for (@SuppressWarnings("unused")
+		Feature f : this) {
+			i++;
+		}
+		close();
+		return i;
+	}
+
 }

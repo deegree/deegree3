@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -42,33 +41,29 @@ import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.services.csw.AbstractCSWRequestXMLAdapter;
 
 /**
- * Adapter between KVP encoded <code>Transaction</code> requests and {@link Transaction} objects.
- * 
+ * Adapter between KVP encoded <code>Transaction</code> requests and {@link Transaction}
+ * objects.
+ *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: thomas $
- * 
- * @version $Revision: $, $Date: $
  */
 public class TransactionKVPAdapter extends AbstractCSWRequestXMLAdapter {
 
-    /**
-     * Parses a normalized KVP-map as a CSW {@link Transaction} request. Regarding to CSW specification OGC 07-006r1
-     * there is no KVP support envisioned.
-     * <p>
-     * Supported versions:
-     * <ul>
-     * </ul>
-     * 
-     * @param kvpParams
-     *            normalized KVP-map; keys must be uppercase, each key only has one associated value
-     * @return parsed {@link Transaction} request
-     * @throws MissingParameterException
-     *             if the request version is unsupported
-     * @throws InvalidParameterValueException
-     *             if a parameter contains a syntax error
-     */
-    public static Transaction parse( Map<String, String> kvpParams )
-                            throws MissingParameterException, InvalidParameterValueException {
-        throw new UnsupportedOperationException();
-    }
+	/**
+	 * Parses a normalized KVP-map as a CSW {@link Transaction} request. Regarding to CSW
+	 * specification OGC 07-006r1 there is no KVP support envisioned.
+	 * <p>
+	 * Supported versions:
+	 * <ul>
+	 * </ul>
+	 * @param kvpParams normalized KVP-map; keys must be uppercase, each key only has one
+	 * associated value
+	 * @return parsed {@link Transaction} request
+	 * @throws MissingParameterException if the request version is unsupported
+	 * @throws InvalidParameterValueException if a parameter contains a syntax error
+	 */
+	public static Transaction parse(Map<String, String> kvpParams)
+			throws MissingParameterException, InvalidParameterValueException {
+		throw new UnsupportedOperationException();
+	}
+
 }

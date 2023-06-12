@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -38,29 +37,26 @@ package org.deegree.rendering.r3d.opengl.rendering;
 
 /**
  * Interface for objects that can be rendered to a 3D OpenGL scene.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface JOGLRenderable {
 
-    /**
-     * Called to render this object to an OpenGL context.
-     * <p>
-     * The following pre-conditions hold:
-     * <ul>
-     * <li>The projection matrix of <code>context</code> has been set up correctly by the caller.</li>
-     * <li>The view parameters <code>params</code> matches the projection and the screen size, so the callee can depend
-     * on them to perform view frustum culling and LOD adaptation.</li>
-     * </ul>
-     * </p>
-     * 
-     * @param glRenderContext
-     *            TODO
-     */
-    public void render( RenderContext glRenderContext );
+	/**
+	 * Called to render this object to an OpenGL context.
+	 * <p>
+	 * The following pre-conditions hold:
+	 * <ul>
+	 * <li>The projection matrix of <code>context</code> has been set up correctly by the
+	 * caller.</li>
+	 * <li>The view parameters <code>params</code> matches the projection and the screen
+	 * size, so the callee can depend on them to perform view frustum culling and LOD
+	 * adaptation.</li>
+	 * </ul>
+	 * </p>
+	 * @param glRenderContext TODO
+	 */
+	public void render(RenderContext glRenderContext);
 
 }

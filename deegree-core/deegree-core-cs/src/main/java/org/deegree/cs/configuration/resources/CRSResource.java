@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -42,42 +41,35 @@ import org.deegree.cs.transformations.Transformation;
 import org.deegree.cs.transformations.helmert.Helmert;
 
 /**
- * The <code>GMLResource</code> class defines the access to a resource containing GML crs definitions, often a
- * dictionary file or a database.
- * 
+ * The <code>GMLResource</code> class defines the access to a resource containing GML crs
+ * definitions, often a dictionary file or a database.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * @param <T>
- *            of the resource
- * 
+ * @param <T> of the resource
+ *
  */
 public interface CRSResource<T> extends XLinkResolver<T> {
 
-    /**
-     * Implementations should find the helmert transformation which transforms coordinates of the geodetic datum into
-     * coordinates of the WGS84 datum. If no such transformation could be found, the implementation should return
-     * <code>null</code>
-     * 
-     * @param sourceCRS
-     *            to retrieve the transformation for.
-     * @return the {@link Helmert} transformation or <code>null</code> if no such transformation was defined.
-     */
-    public abstract Helmert getWGS84Transformation( IGeographicCRS sourceCRS );
+	/**
+	 * Implementations should find the helmert transformation which transforms coordinates
+	 * of the geodetic datum into coordinates of the WGS84 datum. If no such
+	 * transformation could be found, the implementation should return <code>null</code>
+	 * @param sourceCRS to retrieve the transformation for.
+	 * @return the {@link Helmert} transformation or <code>null</code> if no such
+	 * transformation was defined.
+	 */
+	public abstract Helmert getWGS84Transformation(IGeographicCRS sourceCRS);
 
-    /**
-     * Implementations should find a given transformation (chain) which transforms coordinates of the given coordinate
-     * system into coordinates of the target crs. If no such transformation could be found, the implementation should
-     * return <code>null</code>
-     * 
-     * @param sourceCRS
-     *            start point of the transformation.
-     * @param targetCRS
-     *            end point of the transformations
-     * @return the {@link Transformation} or <code>null</code> if no such transformation was defined.
-     */
-    public abstract Transformation getTransformation( ICRS sourceCRS, ICRS targetCRS );
+	/**
+	 * Implementations should find a given transformation (chain) which transforms
+	 * coordinates of the given coordinate system into coordinates of the target crs. If
+	 * no such transformation could be found, the implementation should return
+	 * <code>null</code>
+	 * @param sourceCRS start point of the transformation.
+	 * @param targetCRS end point of the transformations
+	 * @return the {@link Transformation} or <code>null</code> if no such transformation
+	 * was defined.
+	 */
+	public abstract Transformation getTransformation(ICRS sourceCRS, ICRS targetCRS);
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -52,102 +51,96 @@ import org.deegree.protocol.wfs.AbstractWFSRequest;
  * <li>WFS 2.0.0</li>
  * </ul>
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * 
- * @version $Revision: $, $Date: $
  */
 public class DescribeFeatureType extends AbstractWFSRequest {
 
-    private final String outputFormat;
+	private final String outputFormat;
 
-    private final QName[] typeNames;
+	private final QName[] typeNames;
 
-    private Map<String, String> nsBindings;
+	private Map<String, String> nsBindings;
 
-    /**
-     * Creates a new {@link DescribeFeatureType} request.
-     * 
-     * @param version
-     *            protocol version, may not be null
-     * @param handle
-     *            client-generated identifier, may be null
-     * @param outputFormat
-     *            requested output format, may be null
-     * @param typeNames
-     *            requested type names, may be null
-     * @param nsBindings
-     *            mapping between prefices and namespaces (key: prefix, value: namespace), empty string as a key ('') is
-     *            the binding of the default namespace, may be <code>null</code>
-     */
-    public DescribeFeatureType( Version version, String handle, String outputFormat, QName[] typeNames,
-                                Map<String, String> nsBindings ) {
-        super( version, handle );
-        this.outputFormat = outputFormat;
-        this.typeNames = typeNames;
-        this.nsBindings = nsBindings;
-    }
+	/**
+	 * Creates a new {@link DescribeFeatureType} request.
+	 * @param version protocol version, may not be null
+	 * @param handle client-generated identifier, may be null
+	 * @param outputFormat requested output format, may be null
+	 * @param typeNames requested type names, may be null
+	 * @param nsBindings mapping between prefices and namespaces (key: prefix, value:
+	 * namespace), empty string as a key ('') is the binding of the default namespace, may
+	 * be <code>null</code>
+	 */
+	public DescribeFeatureType(Version version, String handle, String outputFormat, QName[] typeNames,
+			Map<String, String> nsBindings) {
+		super(version, handle);
+		this.outputFormat = outputFormat;
+		this.typeNames = typeNames;
+		this.nsBindings = nsBindings;
+	}
 
-    /**
-     * Returns the requested output format.
-     * 
-     * @return the requested output format, or null if unspecified
-     */
-    public String getOutputFormat() {
-        return this.outputFormat;
-    }
+	/**
+	 * Returns the requested output format.
+	 * @return the requested output format, or null if unspecified
+	 */
+	public String getOutputFormat() {
+		return this.outputFormat;
+	}
 
-    /**
-     * Returns the names of the feature types for which the schema is requested.
-     * 
-     * @return the names of the feature types for which the schema is requested, or null if unspecified
-     */
-    public QName[] getTypeNames() {
-        return typeNames;
-    }
+	/**
+	 * Returns the names of the feature types for which the schema is requested.
+	 * @return the names of the feature types for which the schema is requested, or null
+	 * if unspecified
+	 */
+	public QName[] getTypeNames() {
+		return typeNames;
+	}
 
-    /**
-     * Returns mapping between prefices and namespaces (key: prefix, value: namespace), empty string as a key ('') is
-     * the binding of the default namespace, null is returned if no <code>NAMESPACE</code> parameter is present.
-     * 
-     * @return mapping between prefices and namespaces, or null if unspecified
-     */
-    public Map<String, String> getNsBindings() {
-        return nsBindings;
-    }
+	/**
+	 * Returns mapping between prefices and namespaces (key: prefix, value: namespace),
+	 * empty string as a key ('') is the binding of the default namespace, null is
+	 * returned if no <code>NAMESPACE</code> parameter is present.
+	 * @return mapping between prefices and namespaces, or null if unspecified
+	 */
+	public Map<String, String> getNsBindings() {
+		return nsBindings;
+	}
 
-    @Override
-    public String toString() {
-        String s = "{version=" + getVersion() + ",handle=" + getHandle() + ",outputFormat=" + outputFormat
-                   + ",typeNames=";
-        if ( typeNames != null ) {
-            s += "{";
-            for ( int i = 0; i < typeNames.length; i++ ) {
-                s += typeNames[i];
-                if ( i != typeNames.length - 1 ) {
-                    s += ",";
-                }
-            }
-            s += "}";
-        } else {
-            s += "null";
-        }
-        s += ",namespace=";
-        if ( nsBindings != null ) {
-            s += "{";
-            int i = 0;
-            for ( String ns : nsBindings.keySet() ) {
-                s += ns + "=" + nsBindings.get( ns );
-                if ( i != nsBindings.size() - 1 ) {
-                    s += ",";
-                }
-            }
-            s += "}";
-        } else {
-            s += "null";
-        }
-        s += "}";
-        return s;
-    }
+	@Override
+	public String toString() {
+		String s = "{version=" + getVersion() + ",handle=" + getHandle() + ",outputFormat=" + outputFormat
+				+ ",typeNames=";
+		if (typeNames != null) {
+			s += "{";
+			for (int i = 0; i < typeNames.length; i++) {
+				s += typeNames[i];
+				if (i != typeNames.length - 1) {
+					s += ",";
+				}
+			}
+			s += "}";
+		}
+		else {
+			s += "null";
+		}
+		s += ",namespace=";
+		if (nsBindings != null) {
+			s += "{";
+			int i = 0;
+			for (String ns : nsBindings.keySet()) {
+				s += ns + "=" + nsBindings.get(ns);
+				if (i != nsBindings.size() - 1) {
+					s += ",";
+				}
+			}
+			s += "}";
+		}
+		else {
+			s += "null";
+		}
+		s += "}";
+		return s;
+	}
+
 }

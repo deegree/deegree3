@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -37,10 +36,10 @@ package org.deegree.time.primitive;
 
 public interface TimeGeometricPrimitive extends TimePrimitive {
 
-    /**
-     * Returns the time frame.
-     * 
-     * @return time frame, can be <code>null</code>
-     */
-    String getFrame();
+	/**
+	 * Returns the time frame.
+	 * @return time frame, can be <code>null</code>
+	 */
+	String getFrame();
+
 }

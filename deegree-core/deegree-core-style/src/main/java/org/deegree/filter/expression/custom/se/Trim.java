@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -55,102 +54,99 @@ import org.deegree.style.se.unevaluated.Continuation;
 
 /**
  * <code>Trim</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class Trim extends AbstractCustomExpression {
 
-    private static final QName ELEMENT_NAME = new QName( SENS, "Trim" );
+	private static final QName ELEMENT_NAME = new QName(SENS, "Trim");
 
-    private StringBuffer value;
+	private StringBuffer value;
 
-    private Continuation<StringBuffer> contn;
+	private Continuation<StringBuffer> contn;
 
-    private boolean leading = true, trailing;
+	private boolean leading = true, trailing;
 
-    private String substr;
+	private String substr;
 
-    /**
-     * 
-     */
-    public Trim() {
-        // just used for SPI
-    }
+	/**
+	 *
+	 */
+	public Trim() {
+		// just used for SPI
+	}
 
-    private Trim( StringBuffer value, Continuation<StringBuffer> contn, boolean leading, boolean trailing, String substr ) {
-        this.value = value;
-        this.contn = contn;
-        this.leading = leading;
-        this.trailing = trailing;
-        this.substr = substr;
-    }
+	private Trim(StringBuffer value, Continuation<StringBuffer> contn, boolean leading, boolean trailing,
+			String substr) {
+		this.value = value;
+		this.contn = contn;
+		this.leading = leading;
+		this.trailing = trailing;
+		this.substr = substr;
+	}
 
-    @Override
-    public QName getElementName() {
-        return ELEMENT_NAME;
-    }
+	@Override
+	public QName getElementName() {
+		return ELEMENT_NAME;
+	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> TypedObjectNode[] evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
-                            throws FilterEvaluationException {
-        StringBuffer sb = new StringBuffer( value.toString().trim() );
-        if ( contn != null ) {
-            contn.evaluate( sb, (Feature) obj, (XPathEvaluator<Feature>) xpathEvaluator );
-        }
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> TypedObjectNode[] evaluate(T obj, XPathEvaluator<T> xpathEvaluator) throws FilterEvaluationException {
+		StringBuffer sb = new StringBuffer(value.toString().trim());
+		if (contn != null) {
+			contn.evaluate(sb, (Feature) obj, (XPathEvaluator<Feature>) xpathEvaluator);
+		}
 
-        String res = sb.toString();
+		String res = sb.toString();
 
-        final int subLen = substr.length();
-        if ( leading ) {
-            while ( res.startsWith( substr ) ) {
-                res = res.substring( subLen );
-            }
-        }
-        if ( trailing ) {
-            while ( res.endsWith( substr ) ) {
-                res = res.substring( 0, res.length() - subLen );
-            }
-        }
-        return new TypedObjectNode[] { new PrimitiveValue( res ) };
-    }
+		final int subLen = substr.length();
+		if (leading) {
+			while (res.startsWith(substr)) {
+				res = res.substring(subLen);
+			}
+		}
+		if (trailing) {
+			while (res.endsWith(substr)) {
+				res = res.substring(0, res.length() - subLen);
+			}
+		}
+		return new TypedObjectNode[] { new PrimitiveValue(res) };
+	}
 
-    @Override
-    public Trim parse( XMLStreamReader in )
-                            throws XMLStreamException {
+	@Override
+	public Trim parse(XMLStreamReader in) throws XMLStreamException {
 
-        StringBuffer value = null;
-        Continuation<StringBuffer> contn = null;
-        boolean leading = true, trailing = false;
+		StringBuffer value = null;
+		Continuation<StringBuffer> contn = null;
+		boolean leading = true, trailing = false;
 
-        in.require( START_ELEMENT, null, "Trim" );
+		in.require(START_ELEMENT, null, "Trim");
 
-        String pos = in.getAttributeValue( null, "stripOffPosition" );
-        if ( pos != null ) {
-            if ( pos.equals( "trailing" ) ) {
-                leading = false;
-                trailing = true;
-            }
-            if ( pos.equals( "both" ) ) {
-                trailing = true;
-            }
-        }
-        String ch = in.getAttributeValue( null, "stripOffChar" );
-        String substr = ch == null ? " " : ch;
+		String pos = in.getAttributeValue(null, "stripOffPosition");
+		if (pos != null) {
+			if (pos.equals("trailing")) {
+				leading = false;
+				trailing = true;
+			}
+			if (pos.equals("both")) {
+				trailing = true;
+			}
+		}
+		String ch = in.getAttributeValue(null, "stripOffChar");
+		String substr = ch == null ? " " : ch;
 
-        while ( !( in.isEndElement() && in.getLocalName().equals( "Trim" ) ) ) {
-            in.nextTag();
+		while (!(in.isEndElement() && in.getLocalName().equals("Trim"))) {
+			in.nextTag();
 
-            if ( in.getLocalName().equals( "StringValue" ) ) {
-                value = new StringBuffer();
-                contn = SymbologyParser.INSTANCE.updateOrContinue( in, "StringValue", value, SBUPDATER, null ).second;
-            }
+			if (in.getLocalName().equals("StringValue")) {
+				value = new StringBuffer();
+				contn = SymbologyParser.INSTANCE.updateOrContinue(in, "StringValue", value, SBUPDATER, null).second;
+			}
 
-        }
-        in.require( END_ELEMENT, null, "Trim" );
-        return new Trim( value, contn, leading, trailing, substr );
-    }
+		}
+		in.require(END_ELEMENT, null, "Trim");
+		return new Trim(value, contn, leading, trailing, substr);
+	}
+
 }

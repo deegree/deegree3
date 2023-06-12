@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2014 by:
@@ -41,50 +40,49 @@ import java.util.Set;
 
 /**
  * {@link SupportedEncodings} implementation with limited encodings.
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
 public class LimitedSupportedEncodings<E extends Enum> implements SupportedEncodings<E> {
 
-    private final Map<E, Set<String>> enabledEncodingsPerRequestType = new HashMap<E, Set<String>>();
+	private final Map<E, Set<String>> enabledEncodingsPerRequestType = new HashMap<E, Set<String>>();
 
-    /**
-     * Instantiate a new {@link LimitedSupportedEncodings} instance, by default all encodings are disabled! Add enabled
-     * encodings by {@link LimitedSupportedEncodings#addEnabledEncodings(E, Set)}.
-     */
-    public LimitedSupportedEncodings() {
-    }
+	/**
+	 * Instantiate a new {@link LimitedSupportedEncodings} instance, by default all
+	 * encodings are disabled! Add enabled encodings by
+	 * {@link LimitedSupportedEncodings#addEnabledEncodings(E, Set)}.
+	 */
+	public LimitedSupportedEncodings() {
+	}
 
-    /**
-     * Add enabled encodings for a request type.
-     * 
-     * @param requestType
-     *            the type of the request to add enabled requests for, never <code>null</code>
-     * @param enabledEncodingsPerRequestType
-     *            a list of encodings enabled for the request type. May be empty (all encodings are disabled), but never
-     *            <code>null</code>.
-     */
-    public void addEnabledEncodings( E requestType, Set<String> enabledEncodingsPerRequestType ) {
-        this.getEnabledEncodingsPerRequestType().put( requestType, enabledEncodingsPerRequestType );
-    }
+	/**
+	 * Add enabled encodings for a request type.
+	 * @param requestType the type of the request to add enabled requests for, never
+	 * <code>null</code>
+	 * @param enabledEncodingsPerRequestType a list of encodings enabled for the request
+	 * type. May be empty (all encodings are disabled), but never <code>null</code>.
+	 */
+	public void addEnabledEncodings(E requestType, Set<String> enabledEncodingsPerRequestType) {
+		this.getEnabledEncodingsPerRequestType().put(requestType, enabledEncodingsPerRequestType);
+	}
 
-    @Override
-    public boolean isEncodingSupported( E requestType, String encoding ) {
-        if ( getEnabledEncodingsPerRequestType().containsKey( requestType ) ) {
-            Set<String> enabledEncodings = getEnabledEncodingsPerRequestType().get( requestType );
-            for ( String enabledEncoding : enabledEncodings ) {
-                if ( enabledEncoding.equalsIgnoreCase( encoding ) )
-                    return true;
-            }
-        }
-        return false;
-    }
+	@Override
+	public boolean isEncodingSupported(E requestType, String encoding) {
+		if (getEnabledEncodingsPerRequestType().containsKey(requestType)) {
+			Set<String> enabledEncodings = getEnabledEncodingsPerRequestType().get(requestType);
+			for (String enabledEncoding : enabledEncodings) {
+				if (enabledEncoding.equalsIgnoreCase(encoding))
+					return true;
+			}
+		}
+		return false;
+	}
 
-    /**
-     * @return the enabled encodings, never <code>null</code>
-     */
-    public Map<E, Set<String>> getEnabledEncodingsPerRequestType() {
-        return enabledEncodingsPerRequestType;
-    }
+	/**
+	 * @return the enabled encodings, never <code>null</code>
+	 */
+	public Map<E, Set<String>> getEnabledEncodingsPerRequestType() {
+		return enabledEncodingsPerRequestType;
+	}
 
 }

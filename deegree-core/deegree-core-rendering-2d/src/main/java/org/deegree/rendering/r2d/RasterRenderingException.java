@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -37,43 +36,37 @@
 package org.deegree.rendering.r2d;
 
 /**
- *
- *
  * @author <a href="mailto:a.aiordachioaie@jacobs-university.de">Andrei Aiordachioaie</a>
- * @author last edited by: $Author: aaiordachioaie$
  *
- * @version. $Revision$, $Date$
  */
 public class RasterRenderingException extends RuntimeException {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 3327285706883207758L;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 3327285706883207758L;
 
-    /**
-     *
-     *
-     */
-    public RasterRenderingException() {
-        super();
-    }
+	/**
+	 *
+	 *
+	 */
+	public RasterRenderingException() {
+		super();
+	}
 
-    /**
-     *
-     * @param message
-     * @param throwable
-     */
-    public RasterRenderingException( String message, Throwable throwable ) {
-        super( message, throwable );
-    }
+	/**
+	 * @param message
+	 * @param throwable
+	 */
+	public RasterRenderingException(String message, Throwable throwable) {
+		super(message, throwable);
+	}
 
-    /**
-     *
-     * @param message
-     */
-    public RasterRenderingException( String message ) {
-        super( message );
-    }
+	/**
+	 * @param message
+	 */
+	public RasterRenderingException(String message) {
+		super(message);
+	}
 
 }

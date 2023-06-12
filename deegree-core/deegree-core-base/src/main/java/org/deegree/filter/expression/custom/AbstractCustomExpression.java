@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -42,51 +41,45 @@ import org.deegree.filter.Expression;
 
 /**
  * Base class for implementing {@link CustomExpression}s.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public abstract class AbstractCustomExpression implements CustomExpression {
 
-    @Override
-    public Type getType() {
-        return Type.CUSTOM;
-    }
+	@Override
+	public Type getType() {
+		return Type.CUSTOM;
+	}
 
-    @Override
-    public CustomExpression parse100( XMLStreamReader xmlStream )
-                            throws XMLStreamException {
-        return parse( xmlStream );
-    }
+	@Override
+	public CustomExpression parse100(XMLStreamReader xmlStream) throws XMLStreamException {
+		return parse(xmlStream);
+	}
 
-    @Override
-    public CustomExpression parse110( XMLStreamReader xmlStream )
-                            throws XMLStreamException {
-        return parse( xmlStream );
-    }
+	@Override
+	public CustomExpression parse110(XMLStreamReader xmlStream) throws XMLStreamException {
+		return parse(xmlStream);
+	}
 
-    @Override
-    public CustomExpression parse200( XMLStreamReader xmlStream )
-                            throws XMLStreamException {
-        return parse( xmlStream );
-    }
+	@Override
+	public CustomExpression parse200(XMLStreamReader xmlStream) throws XMLStreamException {
+		return parse(xmlStream);
+	}
 
-    /**
-     * @param xmlStream
-     * @throws XMLStreamException
-     */
-    public abstract CustomExpression parse( XMLStreamReader xmlStream )
-                            throws XMLStreamException;
+	/**
+	 * @param xmlStream
+	 * @throws XMLStreamException
+	 */
+	public abstract CustomExpression parse(XMLStreamReader xmlStream) throws XMLStreamException;
 
-    @Override
-    public Expression[] getParams() {
-        return new Expression[0];
-    }
+	@Override
+	public Expression[] getParams() {
+		return new Expression[0];
+	}
 
-    @Override
-    public String toString( String indent ) {
-        return indent + "CustomExpression (" + getElementName() + ")";
-    }
+	@Override
+	public String toString(String indent) {
+		return indent + "CustomExpression (" + getElementName() + ")";
+	}
+
 }

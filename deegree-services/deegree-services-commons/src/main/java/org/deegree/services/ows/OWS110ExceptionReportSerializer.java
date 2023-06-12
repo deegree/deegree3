@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -58,81 +57,82 @@ import org.deegree.services.controller.exception.serializer.XMLExceptionSerializ
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 
 /**
- * {@link XMLExceptionSerializer} for OWS Commons 1.1.0 <code>ExceptionReport</code> documents.
- * 
+ * {@link XMLExceptionSerializer} for OWS Commons 1.1.0 <code>ExceptionReport</code>
+ * documents.
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class OWS110ExceptionReportSerializer extends XMLExceptionSerializer {
 
-    private static final String OWS_NS = "http://www.opengis.net/ows/1.1";
+	private static final String OWS_NS = "http://www.opengis.net/ows/1.1";
 
-    private static final String OWS_SCHEMA = "http://schemas.opengis.net/ows/1.1.0/owsExceptionReport.xsd";
+	private static final String OWS_SCHEMA = "http://schemas.opengis.net/ows/1.1.0/owsExceptionReport.xsd";
 
-    private final Version version;
+	private final Version version;
 
-    /**
-     * Creates a new {@link OWS110ExceptionReportSerializer} instance.
-     * 
-     * @param version
-     *            version attribute, must not be <code>null</code>
-     */
-    public OWS110ExceptionReportSerializer( Version version ) {
-        this.version = version;
-    }
+	/**
+	 * Creates a new {@link OWS110ExceptionReportSerializer} instance.
+	 * @param version version attribute, must not be <code>null</code>
+	 */
+	public OWS110ExceptionReportSerializer(Version version) {
+		this.version = version;
+	}
 
-    @Override
-    public void serializeException( HttpResponseBuffer response, OWSException exception )
-                            throws IOException, XMLStreamException {
-        response.reset();
-        response.setCharacterEncoding( "UTF-8" );
-        response.setContentType( "application/xml" );
-        setExceptionStatusCode( response, exception );
-        serializeExceptionToXML( response.getXMLWriter(), exception );
-    }
+	@Override
+	public void serializeException(HttpResponseBuffer response, OWSException exception)
+			throws IOException, XMLStreamException {
+		response.reset();
+		response.setCharacterEncoding("UTF-8");
+		response.setContentType("application/xml");
+		setExceptionStatusCode(response, exception);
+		serializeExceptionToXML(response.getXMLWriter(), exception);
+	}
 
-    @Override
-    public void setExceptionStatusCode( HttpResponseBuffer response, OWSException exception ) {
-        if ( NOT_FOUND.equals( exception.getExceptionCode() ) ) {
-            response.setStatus( SC_NOT_FOUND );
-        } else if ( NO_APPLICABLE_CODE.equals( exception.getExceptionCode() ) ) {
-            response.setStatus( SC_INTERNAL_SERVER_ERROR );
-        } else if ( OPERATION_PROCESSING_FAILED.equals( exception.getExceptionCode() ) ) {
-            response.setStatus( SC_FORBIDDEN );
-        } else if ( LOCK_HAS_EXPIRED.equals( exception.getExceptionCode() ) ) {
-            response.setStatus( SC_FORBIDDEN );
-        } else if (DUPLICATE_STORED_QUERY_ID_VALUE.equals( exception.getExceptionCode() )) {
-            response.setStatus( 409 );
-        } else {
-            response.setStatus( SC_BAD_REQUEST );
-        }
-    }
+	@Override
+	public void setExceptionStatusCode(HttpResponseBuffer response, OWSException exception) {
+		if (NOT_FOUND.equals(exception.getExceptionCode())) {
+			response.setStatus(SC_NOT_FOUND);
+		}
+		else if (NO_APPLICABLE_CODE.equals(exception.getExceptionCode())) {
+			response.setStatus(SC_INTERNAL_SERVER_ERROR);
+		}
+		else if (OPERATION_PROCESSING_FAILED.equals(exception.getExceptionCode())) {
+			response.setStatus(SC_FORBIDDEN);
+		}
+		else if (LOCK_HAS_EXPIRED.equals(exception.getExceptionCode())) {
+			response.setStatus(SC_FORBIDDEN);
+		}
+		else if (DUPLICATE_STORED_QUERY_ID_VALUE.equals(exception.getExceptionCode())) {
+			response.setStatus(409);
+		}
+		else {
+			response.setStatus(SC_BAD_REQUEST);
+		}
+	}
 
-    @Override
-    public void serializeExceptionToXML( XMLStreamWriter writer, OWSException ex )
-                            throws XMLStreamException {
-        if ( ex == null || writer == null ) {
-            return;
-        }
-        writer.writeStartElement( "ows", "ExceptionReport", OWS_NS );
-        writer.writeNamespace( "ows", OWS_NS );
-        writer.writeNamespace( "xsi", XSINS );
-        writer.writeAttribute( XSINS, "schemaLocation", OWS_NS + " " + OWS_SCHEMA );
-        writer.writeAttribute( "version", "" + version );
-        writer.writeStartElement( OWS_NS, "Exception" );
-        writer.writeAttribute( "exceptionCode", ex.getExceptionCode() );
-        if ( ex.getLocator() != null && !"".equals( ex.getLocator().trim() ) ) {
-            writer.writeAttribute( "locator", ex.getLocator() );
-        }
-        String message = ex.getMessage();
-        if ( message != null ) {
-            writer.writeStartElement( OWS_NS, "ExceptionText" );
-            writer.writeCharacters( message );
-            writer.writeEndElement();
-        }
-        writer.writeEndElement(); // Exception
-        writer.writeEndElement(); // ExceptionReport
-    }
+	@Override
+	public void serializeExceptionToXML(XMLStreamWriter writer, OWSException ex) throws XMLStreamException {
+		if (ex == null || writer == null) {
+			return;
+		}
+		writer.writeStartElement("ows", "ExceptionReport", OWS_NS);
+		writer.writeNamespace("ows", OWS_NS);
+		writer.writeNamespace("xsi", XSINS);
+		writer.writeAttribute(XSINS, "schemaLocation", OWS_NS + " " + OWS_SCHEMA);
+		writer.writeAttribute("version", "" + version);
+		writer.writeStartElement(OWS_NS, "Exception");
+		writer.writeAttribute("exceptionCode", ex.getExceptionCode());
+		if (ex.getLocator() != null && !"".equals(ex.getLocator().trim())) {
+			writer.writeAttribute("locator", ex.getLocator());
+		}
+		String message = ex.getMessage();
+		if (message != null) {
+			writer.writeStartElement(OWS_NS, "ExceptionText");
+			writer.writeCharacters(message);
+			writer.writeEndElement();
+		}
+		writer.writeEndElement(); // Exception
+		writer.writeEndElement(); // ExceptionReport
+	}
+
 }

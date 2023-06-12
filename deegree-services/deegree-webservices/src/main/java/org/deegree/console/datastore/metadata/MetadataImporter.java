@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -61,133 +60,135 @@ import org.slf4j.LoggerFactory;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 @ManagedBean
 @RequestScoped
 public class MetadataImporter implements Serializable {
 
-    private static Logger LOG = LoggerFactory.getLogger( MetadataImporter.class );
+	private static Logger LOG = LoggerFactory.getLogger(MetadataImporter.class);
 
-    private static final long serialVersionUID = -1896633353209120888L;
+	private static final long serialVersionUID = -1896633353209120888L;
 
-    private final MetadataStore ms;
+	private final MetadataStore ms;
 
-    private MetadataStoreTransaction ta;
+	private MetadataStoreTransaction ta;
 
-    /**
-     * single
-     */
-    private static final String METADATA_S = "metadataRecord";
+	/**
+	 * single
+	 */
+	private static final String METADATA_S = "metadataRecord";
 
-    /**
-     * plural
-     */
-    private static final String METADATA_P = "metadataRecords";
+	/**
+	 * plural
+	 */
+	private static final String METADATA_P = "metadataRecords";
 
-    private String url = "";
+	private String url = "";
 
-    private int countInsertFailed;
+	private int countInsertFailed;
 
-    private File file;
+	private File file;
 
-    private List<String> failedFiles;
+	private List<String> failedFiles;
 
-    public MetadataImporter( MetadataStore ms ) {
-        this.ms = ms;
-    }
+	public MetadataImporter(MetadataStore ms) {
+		this.ms = ms;
+	}
 
-    public String getUrl() {
-        return url;
-    }
+	public String getUrl() {
+		return url;
+	}
 
-    public void setUrl( String url ) {
-        this.url = url;
-    }
+	public void setUrl(String url) {
+		this.url = url;
+	}
 
-    public void importData()
-                            throws Throwable {
+	public void importData() throws Throwable {
 
-        int countInserted = 0;
-        countInsertFailed = 0;
-        failedFiles = new ArrayList<String>();
-        try {
+		int countInserted = 0;
+		countInsertFailed = 0;
+		failedFiles = new ArrayList<String>();
+		try {
 
-            File folder = new File( url );
-            if ( !folder.exists() ) {
-                LOG.info( "folder doesn't exists!" );
-                FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Folder doesn't exists!", null );
-                FacesContext.getCurrentInstance().addMessage( null, fm );
-                return;
-            }
-            File[] fileArray = folder.listFiles();
+			File folder = new File(url);
+			if (!folder.exists()) {
+				LOG.info("folder doesn't exists!");
+				FacesMessage fm = new FacesMessage(SEVERITY_ERROR, "Folder doesn't exists!", null);
+				FacesContext.getCurrentInstance().addMessage(null, fm);
+				return;
+			}
+			File[] fileArray = folder.listFiles();
 
-            InsertOperation insert = null;
-            for ( File file : fileArray ) {
-                this.file = file;
-                ta = ms.acquireTransaction();
-                MetadataRecord record = MetadataRecordFactory.create( file );
-                insert = new InsertOperation( singletonList( record ), record.getAsOMElement().getQName(), "insert" );
-                try {
-                    ta.performInsert( insert );
-                    ta.commit();
-                    countInserted++;
-                } catch ( MetadataInspectorException e ) {
-                    e.printStackTrace();
-                    // skip
-                    fail( file );
-                } catch ( MetadataStoreException e2 ) {
-                    e2.printStackTrace();
-                    // skip
-                    fail( file );
-                }
-            }
+			InsertOperation insert = null;
+			for (File file : fileArray) {
+				this.file = file;
+				ta = ms.acquireTransaction();
+				MetadataRecord record = MetadataRecordFactory.create(file);
+				insert = new InsertOperation(singletonList(record), record.getAsOMElement().getQName(), "insert");
+				try {
+					ta.performInsert(insert);
+					ta.commit();
+					countInserted++;
+				}
+				catch (MetadataInspectorException e) {
+					e.printStackTrace();
+					// skip
+					fail(file);
+				}
+				catch (MetadataStoreException e2) {
+					e2.printStackTrace();
+					// skip
+					fail(file);
+				}
+			}
 
-        } catch ( Throwable t ) {
-            t.printStackTrace();
-            fail( file );
-            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Metadata import failed: " + t.getMessage()
-                                                                + " check file: " + file.getName(), null );
-            FacesContext.getCurrentInstance().addMessage( null, fm );
-            return;
-        }
-        String metadataRecordOut;
-        if ( countInserted == 1 ) {
-            metadataRecordOut = METADATA_S;
-        } else {
-            metadataRecordOut = METADATA_P;
-        }
-        String msgImportOK = "Imported " + countInserted + " " + metadataRecordOut + ".";
-        if ( countInsertFailed == 1 ) {
-            metadataRecordOut = METADATA_S;
-        } else {
-            metadataRecordOut = METADATA_P;
-        }
-        String msgImportFail = "Failed to import " + countInsertFailed + " " + metadataRecordOut + ". "
-                               + "Ignored files are: " + failedFiles;
-        FacesMessage fm1 = new FacesMessage( SEVERITY_INFO, msgImportOK, null );
-        FacesMessage fm2 = new FacesMessage( SEVERITY_INFO, msgImportFail, null );
-        FacesContext.getCurrentInstance().addMessage( null, fm1 );
-        FacesContext.getCurrentInstance().addMessage( null, fm2 );
-    }
+		}
+		catch (Throwable t) {
+			t.printStackTrace();
+			fail(file);
+			FacesMessage fm = new FacesMessage(SEVERITY_ERROR,
+					"Metadata import failed: " + t.getMessage() + " check file: " + file.getName(), null);
+			FacesContext.getCurrentInstance().addMessage(null, fm);
+			return;
+		}
+		String metadataRecordOut;
+		if (countInserted == 1) {
+			metadataRecordOut = METADATA_S;
+		}
+		else {
+			metadataRecordOut = METADATA_P;
+		}
+		String msgImportOK = "Imported " + countInserted + " " + metadataRecordOut + ".";
+		if (countInsertFailed == 1) {
+			metadataRecordOut = METADATA_S;
+		}
+		else {
+			metadataRecordOut = METADATA_P;
+		}
+		String msgImportFail = "Failed to import " + countInsertFailed + " " + metadataRecordOut + ". "
+				+ "Ignored files are: " + failedFiles;
+		FacesMessage fm1 = new FacesMessage(SEVERITY_INFO, msgImportOK, null);
+		FacesMessage fm2 = new FacesMessage(SEVERITY_INFO, msgImportFail, null);
+		FacesContext.getCurrentInstance().addMessage(null, fm1);
+		FacesContext.getCurrentInstance().addMessage(null, fm2);
+	}
 
-    private void fail( File file )
-                            throws MetadataStoreException {
-        countInsertFailed++;
-        if ( failedFiles != null ) {
-            failedFiles.add( file.getName() );
-        }
+	private void fail(File file) throws MetadataStoreException {
+		countInsertFailed++;
+		if (failedFiles != null) {
+			failedFiles.add(file.getName());
+		}
 
-        if ( ta != null ) {
-            try {
-                ta.rollback();
-            } catch ( MetadataStoreException e ) {
-                throw new MetadataStoreException( e.getMessage() );
-            }
-        }
-    }
+		if (ta != null) {
+			try {
+				ta.rollback();
+			}
+			catch (MetadataStoreException e) {
+				throw new MetadataStoreException(e.getMessage());
+			}
+		}
+	}
+
 }

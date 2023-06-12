@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -47,51 +46,51 @@ import org.slf4j.Logger;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class Configuration {
 
-    private static final Logger LOG = getLogger( Configuration.class );
+	private static final Logger LOG = getLogger(Configuration.class);
 
-    private static Properties props;
+	private static Properties props;
 
-    static {
-        props = new Properties();
-        InputStream is = Configuration.class.getResourceAsStream( "/wpsprinter.properties" );
-        try {
-            props.load( is );
-        } catch ( IOException e ) {
-            LOG.error( "Could not load properties file!" );
-        }
-    }
+	static {
+		props = new Properties();
+		InputStream is = Configuration.class.getResourceAsStream("/wpsprinter.properties");
+		try {
+			props.load(is);
+		}
+		catch (IOException e) {
+			LOG.error("Could not load properties file!");
+		}
+	}
 
-    public static String getWpsUrl() {
-        return props.getProperty( "wpsurl" );
-    }
+	public static String getWpsUrl() {
+		return props.getProperty("wpsurl");
+	}
 
-    /**
-     * @return the list of template ids to be used in the client or null, if no template ids are configured
-     */
-    public static List<String> getTemplates() {
-        String templates = props.getProperty( "templates" );
-        if ( templates == null || templates.length() == 0 )
-            return null;
-        return ArrayUtils.toList( templates, ",", true );
-    }
+	/**
+	 * @return the list of template ids to be used in the client or null, if no template
+	 * ids are configured
+	 */
+	public static List<String> getTemplates() {
+		String templates = props.getProperty("templates");
+		if (templates == null || templates.length() == 0)
+			return null;
+		return ArrayUtils.toList(templates, ",", true);
+	}
 
-    public static String getDatePattern() {
-        return props.getProperty( "datePattern" );
-    }
+	public static String getDatePattern() {
+		return props.getProperty("datePattern");
+	}
 
-    public static String getDateTimePattern() {
-        return props.getProperty( "dateTimePattern" );
-    }
+	public static String getDateTimePattern() {
+		return props.getProperty("dateTimePattern");
+	}
 
-    public static String gettimePattern() {
-        return props.getProperty( "timePattern" );
-    }
+	public static String gettimePattern() {
+		return props.getProperty("timePattern");
+	}
+
 }

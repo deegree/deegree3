@@ -82,7 +82,7 @@
         <plugin>
           <groupId>org.jvnet.jaxb2.maven2</groupId>
           <artifactId>maven-jaxb2-plugin</artifactId>
-          <version>0.15.1</version>
+          <version>0.15.2</version>
           <executions>
             <execution>
               <goals>
@@ -137,7 +137,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>3.0.0-M7</version>
+          <version>3.1.0</version>
           <configuration>
             <!-- Travis build workaround -->
             <argLine>-Djava.awt.headless=true -Xms1024m -Xmx2048m --illegal-access=permit
@@ -154,7 +154,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-failsafe-plugin</artifactId>
-          <version>3.0.0-M7</version>
+          <version>3.1.0</version>
           <configuration>
             <argLine>
               --illegal-access=permit
@@ -238,7 +238,7 @@
         <plugin>
           <groupId>org.eclipse.jetty</groupId>
           <artifactId>jetty-maven-plugin</artifactId>
-          <version>10.0.12</version>
+          <version>10.0.15</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -323,7 +323,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
-        <version>3.1.0</version>
+        <version>3.3.0</version>
         <executions>
           <execution>
             <id>enforce-versions</id>
@@ -359,7 +359,6 @@
                     <ignoreClass>com.sun.media.jai.*</ignoreClass>
                     <ignoreClass>com.sun.xml.*</ignoreClass>
                     <ignoreClass>org.w3c.dom.*</ignoreClass>
-                    <ignoreClass>oracle.xml.*</ignoreClass>
                   </ignoreClasses>
                   <scopes>
                     <scope>compile</scope>
@@ -382,9 +381,23 @@
           <dependency>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>extra-enforcer-rules</artifactId>
-            <version>1.6.1</version>
+            <version>1.6.2</version>
           </dependency>
         </dependencies>
+      </plugin>
+      <plugin>
+        <groupId>io.spring.javaformat</groupId>
+        <artifactId>spring-javaformat-maven-plugin</artifactId>
+        <version>0.0.38</version>
+        <executions>
+          <execution>
+            <phase>validate</phase>
+            <inherited>true</inherited>
+            <goals>
+              <goal>validate</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
@@ -418,7 +431,7 @@
       <dependency>
         <groupId>com.sun.xml.bind</groupId>
         <artifactId>jaxb-impl</artifactId>
-        <version>2.3.3</version>
+        <version>2.3.7</version>
         <scope>runtime</scope>
       </dependency>
       <!-- JAX-WS 2.3 (Jakarta EE 8) -->
@@ -495,7 +508,13 @@
       <dependency>
         <groupId>com.jayway.jsonpath</groupId>
         <artifactId>json-path-assert</artifactId>
-        <version>2.4.0</version>
+        <version>${jsonpath.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.mpobjects.jasperreports.font</groupId>
+        <artifactId>jasperreports-fonts-liberation</artifactId>
+        <version>2.1.2</version>
         <scope>test</scope>
       </dependency>
       <!-- apache commons -->
@@ -538,7 +557,7 @@
       <dependency>
         <groupId>commons-fileupload</groupId>
         <artifactId>commons-fileupload</artifactId>
-        <version>1.4</version>
+        <version>1.5</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
@@ -554,12 +573,12 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-pool2</artifactId>
-        <version>2.7.0</version>
+        <version>2.11.1</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-dbcp2</artifactId>
-        <version>2.7.0</version>
+        <version>2.9.0</version>
         <exclusions>
           <exclusion>
             <groupId>commons-logging</groupId>
@@ -681,15 +700,9 @@
       </dependency>
       <!-- XML -->
       <dependency>
-        <groupId>org.codehaus.woodstox</groupId>
-        <artifactId>woodstox-core-lgpl</artifactId>
-        <version>4.2.0</version>
-        <exclusions>
-          <exclusion>
-            <groupId>javax.xml.stream</groupId>
-            <artifactId>stax-api</artifactId>
-          </exclusion>
-        </exclusions>
+        <groupId>com.fasterxml.woodstox</groupId>
+        <artifactId>woodstox-core</artifactId>
+        <version>5.4.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.ws.commons.axiom</groupId>
@@ -767,11 +780,6 @@
         <version>1.2</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.jettison</groupId>
-        <artifactId>jettison</artifactId>
-        <version>1.3.8</version>
-      </dependency>
-      <dependency>
         <groupId>org.jboss.netty</groupId>
         <artifactId>netty</artifactId>
         <version>3.2.10.Final</version>
@@ -780,6 +788,12 @@
         <groupId>net.sf.saxon</groupId>
         <artifactId>Saxon-HE</artifactId>
         <version>9.9.1-8</version>
+      </dependency>
+      <!-- JSON -->
+      <dependency>
+        <groupId>com.jayway.jsonpath</groupId>
+        <artifactId>json-path</artifactId>
+        <version>${jsonpath.version}</version>
       </dependency>
       <!-- JAI -->
       <dependency>
@@ -804,75 +818,41 @@
         <version>2.5.1</version>
       </dependency>
       <dependency>
+        <groupId>net.postgis</groupId>
+        <artifactId>postgis-geometry</artifactId>
+        <version>2.5.1</version>
+      </dependency>
+      <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>42.4.1</version>
+        <version>42.5.2</version>
       </dependency>
-      <!-- Oracle (Offical provided driver from repo1.maven.org) -->
+      <!-- Oracle (Official provided driver from repo1.maven.org) -->
       <dependency>
         <groupId>com.oracle.database.jdbc</groupId>
         <artifactId>ojdbc8</artifactId>
         <version>${oracle.version}</version>
-        <exclusions>
-          <!-- exclude Java Connection Pool (UCP) -->
-          <exclusion>
-            <groupId>com.oracle.database.jdbc</groupId>
-            <artifactId>ucp</artifactId>
-          </exclusion>
-          <!-- exclude Oracle Wallets and/or the Notification System-->
-          <exclusion>
-            <groupId>com.oracle.database.security</groupId>
-            <artifactId>oraclepki</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>com.oracle.database.security</groupId>
-            <artifactId>osdt_cert</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>com.oracle.database.security</groupId>
-            <artifactId>osdt_core</artifactId>
-          </exclusion>
-          <!-- exclude FAN events with UCP and/or the JDBC driver -->
-          <exclusion>
-            <groupId>com.oracle.database.ha</groupId>
-            <artifactId>simplefan</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>com.oracle.database.ha</groupId>
-            <artifactId>ons</artifactId>
-          </exclusion>
-          <!-- exclude Internationalization -->
-          <exclusion>
-            <groupId>com.oracle.database.nls</groupId>
-            <artifactId>orai18n</artifactId>
-          </exclusion>
-          <!-- exclude XMLType (xmlparserv2) -->
-          <exclusion>
-            <groupId>com.oracle.database.xml</groupId>
-            <artifactId>xmlparserv2</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <!-- Oracle GeoRaster -->
       <dependency>
         <groupId>com.oracle</groupId>
         <artifactId>sdoapi</artifactId>
-        <version>12.2.0.1</version>
+        <version>${oracle.version}</version>
       </dependency>
       <dependency>
         <groupId>com.oracle</groupId>
         <artifactId>sdotype</artifactId>
-        <version>12.2.0.1</version>
+        <version>${oracle.version}</version>
       </dependency>
       <dependency>
         <groupId>com.oracle</groupId>
         <artifactId>sdogr</artifactId>
-        <version>12.2.0.1</version>
+        <version>${oracle.version}</version>
       </dependency>
       <dependency>
         <groupId>com.oracle</groupId>
         <artifactId>sdoutl</artifactId>
-        <version>12.2.0.1</version>
+        <version>${oracle.version}</version>
       </dependency>
       <dependency>
         <groupId>com.oracle</groupId>
@@ -883,6 +863,12 @@
         <groupId>com.oracle.database.xml</groupId>
         <artifactId>xdb</artifactId>
         <version>${oracle.version}</version>
+      </dependency>
+      <!-- MSSQL (Official provided driver from repo1.maven.org) -->
+      <dependency>
+        <groupId>com.microsoft.sqlserver</groupId>
+        <artifactId>mssql-jdbc</artifactId>
+        <version>10.2.2.jre11</version>
       </dependency>
       <!-- Batik -->
       <dependency>
@@ -1081,13 +1067,13 @@
         <version>1.0-deegreeversion</version>
       </dependency>
       <dependency>
-        <groupId>net.sf.ehcache</groupId>
-        <artifactId>ehcache-core</artifactId>
-        <version>2.6.11</version>
+        <groupId>org.ehcache</groupId>
+        <artifactId>ehcache</artifactId>
+        <version>3.10.8</version>
         <exclusions>
           <exclusion>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -1142,7 +1128,7 @@
       <dependency>
         <groupId>org.gdal</groupId>
         <artifactId>gdal</artifactId>
-        <version>3.0.0</version>
+        <version>3.6.0</version>
       </dependency>
       <dependency>
         <groupId>org.reflections</groupId>
@@ -1176,7 +1162,7 @@
       <dependency>
         <groupId>org.deegree</groupId>
         <artifactId>deegree-ogcschemas</artifactId>
-        <version>20210817</version>
+        <version>20230513</version>
       </dependency>
       <dependency>
         <groupId>javax.mail</groupId>
@@ -1206,9 +1192,9 @@
         <version>${antlr.version}</version>
       </dependency>
       <dependency>
-        <groupId>${project.groupId}</groupId>
+        <groupId>net.gcardone.junidecode</groupId>
         <artifactId>junidecode</artifactId>
-        <version>0.2</version>
+        <version>0.4.1</version>
       </dependency>
       <dependency>
         <groupId>com.google.auto.service</groupId>
@@ -1232,14 +1218,15 @@
     <site.dir>${user.home}/Sites</site.dir>
     <java.version>11</java.version>
     <antlr.version>3.5.2</antlr.version>
-    <oracle.version>19.3.0.0</oracle.version>
+    <oracle.version>19.9.0.0</oracle.version>
     <log4j.version>2.17.2</log4j.version>
     <slf4j.version>1.7.36</slf4j.version>
-    <spring-boot.version>2.5.12</spring-boot.version>
-    <spring-batch.version>4.3.5</spring-batch.version>
-    <spring-framework.version>5.3.18</spring-framework.version>
+    <spring-boot.version>2.7.10</spring-boot.version>
+    <spring-batch.version>4.3.8</spring-batch.version>
+    <spring-framework.version>5.3.26</spring-framework.version>
     <batik.version>1.14</batik.version>
     <axoim.version>1.2.22</axoim.version>
+    <jsonpath.version>2.7.0</jsonpath.version>
   </properties>
 
   <modules>
@@ -1289,14 +1276,6 @@
               <excludeRoots>
                 <excludeRoot>target/generated-sources</excludeRoot>
               </excludeRoots>
-            </configuration>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-checkstyle-plugin</artifactId>
-            <version>3.1.2</version>
-            <configuration>
-              <configLocation>checkstyle.xml</configLocation>
             </configuration>
           </plugin>
           <plugin>

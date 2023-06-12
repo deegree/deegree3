@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -41,51 +40,44 @@ import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
 
 /**
- * {@link GeometryValidationEvent} that indicates that a {@link Curve} contains two successive points that are identical.
- * 
+ * {@link GeometryValidationEvent} that indicates that a {@link Curve} contains two
+ * successive points that are identical.
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * 
- * @version $Revision: $, $Date: $
  */
 public class DuplicatePoints extends AbstractGeometryValidationEvent {
 
-    private final Curve curve;
+	private final Curve curve;
 
-    private final Point duplicatePoint;
+	private final Point duplicatePoint;
 
-    /**
-     * Creates a new {@link DuplicatePoints} instance.
-     * 
-     * @param curve
-     *            affected {@link Curve} geometry, must not be <code>null</code>
-     * @param point
-     *            the duplicate point, must not be <code>null</code>
-     * @param geometryParticleHierarchy
-     *            list of affected geometry particles (that the curve is a part of), must not be <code>null</code>
-     */
-    public DuplicatePoints( Curve curve, Point duplicatePoint, List<Object> geometryParticleHierarchy ) {
-        super( geometryParticleHierarchy );
-        this.curve = curve;
-        this.duplicatePoint = duplicatePoint;
-    }
+	/**
+	 * Creates a new {@link DuplicatePoints} instance.
+	 * @param curve affected {@link Curve} geometry, must not be <code>null</code>
+	 * @param point the duplicate point, must not be <code>null</code>
+	 * @param geometryParticleHierarchy list of affected geometry particles (that the
+	 * curve is a part of), must not be <code>null</code>
+	 */
+	public DuplicatePoints(Curve curve, Point duplicatePoint, List<Object> geometryParticleHierarchy) {
+		super(geometryParticleHierarchy);
+		this.curve = curve;
+		this.duplicatePoint = duplicatePoint;
+	}
 
-    /**
-     * Returns the affected {@link Curve} geometry.
-     * 
-     * @return affected curve, never <code>null</code>
-     */
-    public Curve getCurve() {
-        return curve;
-    }
+	/**
+	 * Returns the affected {@link Curve} geometry.
+	 * @return affected curve, never <code>null</code>
+	 */
+	public Curve getCurve() {
+		return curve;
+	}
 
-    /**
-     * Returns the duplicate {@link Point}.
-     * 
-     * @return duplicate point, never <code>null</code>
-     */
-    public Point getDuplicatePoint() {
-        return duplicatePoint;
-    }
+	/**
+	 * Returns the duplicate {@link Point}.
+	 * @return duplicate point, never <code>null</code>
+	 */
+	public Point getDuplicatePoint() {
+		return duplicatePoint;
+	}
 
 }

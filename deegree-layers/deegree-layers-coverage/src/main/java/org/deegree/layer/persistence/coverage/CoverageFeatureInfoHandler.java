@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -46,6 +45,7 @@ import static org.deegree.coverage.raster.utils.CoverageTransform.transform;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -79,182 +79,185 @@ import org.slf4j.Logger;
 
 /**
  * Responsible for creating coverage feature info responses.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 class CoverageFeatureInfoHandler {
 
-    private static final Logger LOG = getLogger( CoverageFeatureInfoHandler.class );
+	private static final Logger LOG = getLogger(CoverageFeatureInfoHandler.class);
 
-    private static final QName VALUE_PROP = new QName( "http://www.deegree.org/app", "value", "app" );
+	private static final QName VALUE_PROP = new QName("http://www.deegree.org/app", "value", "app");
 
-    private AbstractRaster raster;
+	private AbstractRaster raster;
 
-    private Envelope bbox;
+	private Envelope bbox;
 
-    private FeatureType featureType;
+	private FeatureType featureType;
 
-    private InterpolationType interpol;
+	private InterpolationType interpol;
 
-    private CoverageDimensionHandler dimensionHandler;
+	private CoverageDimensionHandler dimensionHandler;
 
-    CoverageFeatureInfoHandler( AbstractRaster raster, Envelope bbox, FeatureType featureType,
-                                InterpolationType interpol, CoverageDimensionHandler dimensionHandler ) {
-        this.raster = raster;
-        this.bbox = bbox;
-        this.featureType = featureType;
-        this.interpol = interpol;
-        this.dimensionHandler = dimensionHandler;
-    }
+	private Integer decimalPlaces;
 
-    FeatureCollection handleFeatureInfoPoint( int x, int y, int width, int height ) {
-        try {
-            Point bboxCenter = bbox.getCentroid();
+	CoverageFeatureInfoHandler(AbstractRaster raster, Envelope bbox, FeatureType featureType,
+			InterpolationType interpol, CoverageDimensionHandler dimensionHandler, Integer decimalPlaces) {
+		this.raster = raster;
+		this.bbox = bbox;
+		this.featureType = featureType;
+		this.interpol = interpol;
+		this.dimensionHandler = dimensionHandler;
+		this.decimalPlaces = decimalPlaces;
+	}
 
-            double[] dpos = raster.getRasterReference().getRasterCoordinateUnrounded( bboxCenter.get0(),
-                                                                                      bboxCenter.get1() );
-            int[] pos = new int[] { (int) dpos[0], (int) dpos[1] };
+	FeatureCollection handleFeatureInfoPoint(int x, int y, int width, int height) {
+		try {
+			Point bboxCenter = bbox.getCentroid();
 
-            Envelope pixelEnv = raster.getRasterReference().getEnvelope( OriginLocation.OUTER,
-                                                                         new RasterRect( pos[0], pos[1], 1, 1 ),
-                                                                         raster.getCoordinateSystem() );
+			double[] dpos = raster.getRasterReference()
+				.getRasterCoordinateUnrounded(bboxCenter.get0(), bboxCenter.get1());
+			int[] pos = new int[] { (int) dpos[0], (int) dpos[1] };
 
-            GenericFeatureCollection col = new GenericFeatureCollection();
-            if ( !bbox.intersects( pixelEnv ) ) {
-                LOG.debug( "FeatureInfo point does not intersects with info box" );
-                return col;
-            } else if ( x < 0 || y < 0 || x >= width || y >= height ) {
-                LOG.debug( "FeatureInfo is not aligned with the pixel box" );
-                return col;
-            }
+			Envelope pixelEnv = raster.getRasterReference()
+				.getEnvelope(OriginLocation.OUTER, new RasterRect(pos[0], pos[1], 1, 1), raster.getCoordinateSystem());
 
-            // TRICKY It is necessary to perform a raster transformation first to avoid addressing issues with
-            // getXxxSample. 
-            // Background is that getXxxSample accesses the memory/file-buffer address directly, bypassing the 
-            // tiling, which leads to address problems with large files.
-            SimpleRaster infoRaster = transform( raster, bbox, Grid.fromSize( width, height, MAX_VALUE, bbox ),
-                                                 interpol.toString() ).getAsSimpleRaster();
+			GenericFeatureCollection col = new GenericFeatureCollection();
+			if (!bbox.intersects(pixelEnv)) {
+				LOG.debug("FeatureInfo point does not intersects with info box");
+				return col;
+			}
+			else if (x < 0 || y < 0 || x >= width || y >= height) {
+				LOG.debug("FeatureInfo is not aligned with the pixel box");
+				return col;
+			}
 
-            RasterData data = infoRaster.getAsSimpleRaster().getRasterData();
-            List<Property> props = new LinkedList<Property>();
-            DataType dataType = data.getDataType();
-            switch ( dataType ) {
-            case SHORT:
-            case USHORT: {
-                PrimitiveValue val = new PrimitiveValue( new BigDecimal( 0xffff & data.getShortSample( x, y, 0 ) ),
-                                                         new PrimitiveType( BaseType.DECIMAL ) );
-                props.add( new GenericProperty( featureType.getPropertyDeclarations().get( 0 ), val ) );
-                break;
-            }
-            case BYTE: {
-                // TODO unknown why this always yields 0 values for eg. satellite images/RGB/ARGB
-                for ( int i = 0; i < data.getBands(); ++i ) {
-                    PrimitiveValue val = new PrimitiveValue( new BigDecimal( 0xff & data.getByteSample( x, y, i ) ),
-                                                             new PrimitiveType( BaseType.DECIMAL ) );
-                    props.add( new GenericProperty( featureType.getPropertyDeclarations().get( 0 ), val ) );
-                }
-                break;
-            }
-            case DOUBLE:
-            case INT:
-            case UNDEFINED:
-                LOG.warn( "The raster is of type '{}', this is handled as float currently.", dataType );
-            case FLOAT:
-                props.add( new GenericProperty( featureType.getPropertyDeclarations().get( 0 ),
-                                                new PrimitiveValue( new BigDecimal( data.getFloatSample( x, y, 0 ) ),
-                                                                    new PrimitiveType( BaseType.DECIMAL ) ) ) );
-                break;
-            }
-            Feature f = new GenericFeature( featureType, null, props, null );
-            if ( pixelEnv != null ) {
-                f.setEnvelope( pixelEnv );
-            }
-            col.add( f );
-            return col;
-        } catch ( Throwable e ) {
-            LOG.trace( "Stack trace:", e );
-            LOG.error( "Unable to create raster feature info: {}", e.getLocalizedMessage() );
-        }
-        return null;
-    }
+			// TRICKY It is necessary to perform a raster transformation first to avoid
+			// addressing issues with
+			// getXxxSample.
+			// Background is that getXxxSample accesses the memory/file-buffer address
+			// directly, bypassing the
+			// tiling, which leads to address problems with large files.
+			SimpleRaster infoRaster = transform(raster, bbox, Grid.fromSize(width, height, MAX_VALUE, bbox),
+					interpol.toString())
+				.getAsSimpleRaster();
 
-    FeatureCollection handleFeatureInfo() {
-        try {
-            SimpleRaster res = transform( raster, bbox, Grid.fromSize( 1, 1, MAX_VALUE, bbox ),
-                                          interpol.toString() ).getAsSimpleRaster();
+			RasterData data = infoRaster.getAsSimpleRaster().getRasterData();
+			List<Property> props = new LinkedList<Property>();
+			DataType dataType = data.getDataType();
+			switch (dataType) {
+				case SHORT:
+				case USHORT: {
+					addValueToProps(props, new BigDecimal(0xffff & data.getShortSample(x, y, 0)));
+					break;
+				}
+				case BYTE: {
+					// TODO unknown why this always yields 0 values for eg. satellite
+					// images/RGB/ARGB
+					for (int i = 0; i < data.getBands(); ++i) {
+						addValueToProps(props, new BigDecimal(0xff & data.getByteSample(x, y, i)));
+					}
+					break;
+				}
+				case DOUBLE:
+				case INT:
+				case UNDEFINED:
+					LOG.warn("The raster is of type '{}', this is handled as float currently.", dataType);
+				case FLOAT:
+					addValueToProps(props, new BigDecimal(data.getFloatSample(x, y, 0)));
+					break;
+			}
+			Feature f = new GenericFeature(featureType, null, props, null);
+			if (pixelEnv != null) {
+				f.setEnvelope(pixelEnv);
+			}
+			col.add(f);
+			return col;
+		}
+		catch (Throwable e) {
+			LOG.trace("Stack trace:", e);
+			LOG.error("Unable to create raster feature info: {}", e.getLocalizedMessage());
+		}
+		return null;
+	}
 
-            RasterData data = res.getRasterData();
-            GenericFeatureCollection col = new GenericFeatureCollection();
-            List<Property> props = new LinkedList<Property>();
-            DataType dataType = data.getDataType();
-            switch ( dataType ) {
-            case SHORT:
-            case USHORT: {
-                PrimitiveValue val = new PrimitiveValue( new BigDecimal( 0xffff & data.getShortSample( 0, 0, 0 ) ),
-                                                         new PrimitiveType( BaseType.DECIMAL ) );
-                props.add( new GenericProperty( findValueProperty(), null, val, createAttributeList() ) );
-                break;
-            }
-            case BYTE: {
-                // TODO unknown why this always yields 0 values for eg. satellite images/RGB/ARGB
-                for ( int i = 0; i < data.getBands(); ++i ) {
-                    PrimitiveValue val = new PrimitiveValue( new BigDecimal( 0xff & data.getByteSample( 0, 0, i ) ),
-                                                             new PrimitiveType( BaseType.DECIMAL ) );
-                    props.add( new GenericProperty( findValueProperty(), null, val, createAttributeList() ) );
-                }
-                break;
-            }
-            case DOUBLE:
-            case INT:
-            case UNDEFINED:
-                LOG.warn( "The raster is of type '{}', this is handled as float currently.", dataType );
-            case FLOAT:
-                props.add( new GenericProperty( findValueProperty(), null,
-                                                new PrimitiveValue( new BigDecimal( data.getFloatSample( 0, 0, 0 ) ),
-                                                                    new PrimitiveType( BaseType.DECIMAL ) ),
-                                                createAttributeList() ) );
-                break;
-            }
-            Feature f = new GenericFeature( featureType, null, props, null );
-            col.add( f );
-            return col;
-        } catch ( Throwable e ) {
-            LOG.trace( "Stack trace:", e );
-            LOG.error( "Unable to create raster feature info: {}", e.getLocalizedMessage() );
-        }
-        return null;
-    }
+	FeatureCollection handleFeatureInfo() {
+		try {
+			SimpleRaster res = transform(raster, bbox, Grid.fromSize(1, 1, MAX_VALUE, bbox), interpol.toString())
+				.getAsSimpleRaster();
 
-    private PropertyType findValueProperty() {
-        List<PropertyType> propertyDeclarations = featureType.getPropertyDeclarations();
-        for ( PropertyType propertyType : propertyDeclarations ) {
-            if ( VALUE_PROP.equals( propertyType.getName() ) ) {
-                return propertyType;
-            }
-        }
-        LOG.warn( "Could not find property with name 'value', use the first property." );
-        return propertyDeclarations.get( 0 );
-    }
+			RasterData data = res.getRasterData();
+			GenericFeatureCollection col = new GenericFeatureCollection();
+			List<Property> props = new LinkedList<Property>();
+			DataType dataType = data.getDataType();
+			switch (dataType) {
+				case SHORT:
+				case USHORT: {
+					addValueToProps(props, new BigDecimal(0xffff & data.getShortSample(0, 0, 0)));
+					break;
+				}
+				case BYTE: {
+					// TODO unknown why this always yields 0 values for eg. satellite
+					// images/RGB/ARGB
+					for (int i = 0; i < data.getBands(); ++i) {
+						addValueToProps(props, new BigDecimal(0xff & data.getByteSample(0, 0, i)));
+					}
+					break;
+				}
+				case DOUBLE:
+				case INT:
+				case UNDEFINED:
+					LOG.warn("The raster is of type '{}', this is handled as float currently.", dataType);
+				case FLOAT:
+					addValueToProps(props, new BigDecimal(data.getFloatSample(0, 0, 0)));
+					break;
+			}
+			Feature f = new GenericFeature(featureType, null, props, null);
+			col.add(f);
+			return col;
+		}
+		catch (Throwable e) {
+			LOG.trace("Stack trace:", e);
+			LOG.error("Unable to create raster feature info: {}", e.getLocalizedMessage());
+		}
+		return null;
+	}
 
-    private Map<QName, PrimitiveValue> createAttributeList() {
-        Map<QName, PrimitiveValue> attrs = new HashMap<QName, PrimitiveValue>();
-        if ( dimensionHandler != null && dimensionHandler.getDimension() != null ) {
-            Dimension<?> dimension = dimensionHandler.getDimension();
-            String uom = createUom( dimension );
-            if ( uom != null )
-                attrs.put( new QName( "uom" ), new PrimitiveValue( uom ) );
-        }
-        return attrs;
-    }
+	private PropertyType findValueProperty() {
+		List<PropertyType> propertyDeclarations = featureType.getPropertyDeclarations();
+		for (PropertyType propertyType : propertyDeclarations) {
+			if (VALUE_PROP.equals(propertyType.getName())) {
+				return propertyType;
+			}
+		}
+		LOG.warn("Could not find property with name 'value', use the first property.");
+		return propertyDeclarations.get(0);
+	}
 
-    private String createUom( Dimension<?> dimension ) {
-        String unitSymbol = dimension.getUnitSymbol();
-        if ( unitSymbol != null && unitSymbol.length() > 0 )
-            return unitSymbol;
-        return dimension.getUnits();
-    }
+	private Map<QName, PrimitiveValue> createAttributeList() {
+		Map<QName, PrimitiveValue> attrs = new HashMap<QName, PrimitiveValue>();
+		if (dimensionHandler != null && dimensionHandler.getDimension() != null) {
+			Dimension<?> dimension = dimensionHandler.getDimension();
+			String uom = createUom(dimension);
+			if (uom != null)
+				attrs.put(new QName("uom"), new PrimitiveValue(uom));
+		}
+		return attrs;
+	}
+
+	private String createUom(Dimension<?> dimension) {
+		String unitSymbol = dimension.getUnitSymbol();
+		if (unitSymbol != null && unitSymbol.length() > 0)
+			return unitSymbol;
+		return dimension.getUnits();
+	}
+
+	private void addValueToProps(List<Property> props, BigDecimal result) {
+		PrimitiveValue val = new PrimitiveValue(roundValue(result), new PrimitiveType(BaseType.DECIMAL));
+		props.add(new GenericProperty(findValueProperty(), val));
+	}
+
+	private BigDecimal roundValue(BigDecimal value) {
+		return decimalPlaces != null ? value.setScale(decimalPlaces, RoundingMode.HALF_UP) : value;
+	}
 
 }

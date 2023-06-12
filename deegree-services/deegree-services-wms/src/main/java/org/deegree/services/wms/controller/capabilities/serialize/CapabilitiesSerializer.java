@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2015 by:
@@ -41,20 +40,17 @@ import java.io.OutputStream;
 
 /**
  * Serializes capabilities documents (XML).
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
 public interface CapabilitiesSerializer {
 
-    /**
-     * @param capabilitiesXmlStream
-     *            the stream containing the capabilities document, never <code>null</code>
-     * @param responseStream
-     *            stream to write the document in, never <code>null</code>
-     * @throws IOException
-     *             if an error occurred
-     */
-    void serialize( InputStream capabilitiesXmlStream, OutputStream responseStream )
-                            throws IOException;
+	/**
+	 * @param capabilitiesXmlStream the stream containing the capabilities document, never
+	 * <code>null</code>
+	 * @param responseStream stream to write the document in, never <code>null</code>
+	 * @throws IOException if an error occurred
+	 */
+	void serialize(InputStream capabilitiesXmlStream, OutputStream responseStream) throws IOException;
 
 }

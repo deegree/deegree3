@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -59,212 +58,232 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link Processlet} that provides a demonstration for using the different input and output parameter types in a
- * deegree 3 WPS process.
- * 
+ * {@link Processlet} that provides a demonstration for using the different input and
+ * output parameter types in a deegree 3 WPS process.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class ParameterDemoProcesslet implements Processlet {
 
-    private static final Logger LOG = LoggerFactory.getLogger( ParameterDemoProcesslet.class );
+	private static final Logger LOG = LoggerFactory.getLogger(ParameterDemoProcesslet.class);
 
-    @Override
-    public void process( ProcessletInputs in, ProcessletOutputs out, ProcessletExecutionInfo info )
-                            throws ProcessletException {
+	@Override
+	public void process(ProcessletInputs in, ProcessletOutputs out, ProcessletExecutionInfo info)
+			throws ProcessletException {
 
-        LOG.trace( "BEGIN ParameterDemoProcesslet#execute()" );
+		LOG.trace("BEGIN ParameterDemoProcesslet#execute()");
 
-        /**
-         * 
-         * 1.) READ INPUT PARAMETERS FROM REQUEST INTO VARIABLES
-         * 
-         * The relevant input parameters have been defined inside the ParameterDemoProcess.xml configuration file. The
-         * relevant snippet from this file is the <InputParameters> tag and its child nodes: <InputParameters>
-         * <LiteralInput> <Identifier>LiteralInput</Identifier> <Title>Example literal input </Title> <Abstract>This
-         * parameter specifies how long the execution of the process takes (the process sleeps for this time). May be
-         * specified in seconds or minutes.</Abstract> <DataType
-         * reference="http://www.w3.org/TR/xmlschema-2/#integer">integer</DataType> <DefaultUOM>seconds</DefaultUOM>
-         * <OtherUOM>minutes</OtherUOM> </LiteralInput> <BoundingBoxInput> <Identifier>BBOXInput</Identifier>
-         * <Title>BBOXInput</Title> <DefaultCRS>EPSG:4326</DefaultCRS> </BoundingBoxInput> <ComplexInput>
-         * <Identifier>XMLInput</Identifier> <Title>XMLInput</Title> <DefaultFormat mimeType="text/xml" />
-         * </ComplexInput> <ComplexInput> <Identifier>BinaryInput</Identifier> <Title>BinaryInput</Title> <DefaultFormat
-         * mimeType="image/png" encoding="base64" /> </ComplexInput> </InputParameters>
-         * 
-         * There are four input parameters: a literal input, a bounding-box input, and two complex inputs. Each
-         * parameter will be read into a variable of the corresponding type.
-         * 
-         **/
+		/**
+		 *
+		 * 1.) READ INPUT PARAMETERS FROM REQUEST INTO VARIABLES
+		 *
+		 * The relevant input parameters have been defined inside the
+		 * ParameterDemoProcess.xml configuration file. The relevant snippet from this
+		 * file is the <InputParameters> tag and its child nodes: <InputParameters>
+		 * <LiteralInput> <Identifier>LiteralInput</Identifier> <Title>Example literal
+		 * input </Title> <Abstract>This parameter specifies how long the execution of the
+		 * process takes (the process sleeps for this time). May be specified in seconds
+		 * or minutes.</Abstract> <DataType reference=
+		 * "http://www.w3.org/TR/xmlschema-2/#integer">integer</DataType>
+		 * <DefaultUOM>seconds</DefaultUOM> <OtherUOM>minutes</OtherUOM> </LiteralInput>
+		 * <BoundingBoxInput> <Identifier>BBOXInput</Identifier> <Title>BBOXInput</Title>
+		 * <DefaultCRS>EPSG:4326</DefaultCRS> </BoundingBoxInput> <ComplexInput>
+		 * <Identifier>XMLInput</Identifier> <Title>XMLInput</Title>
+		 * <DefaultFormat mimeType="text/xml" /> </ComplexInput> <ComplexInput>
+		 * <Identifier>BinaryInput</Identifier> <Title>BinaryInput</Title>
+		 * <DefaultFormat mimeType="image/png" encoding="base64" /> </ComplexInput>
+		 * </InputParameters>
+		 *
+		 * There are four input parameters: a literal input, a bounding-box input, and two
+		 * complex inputs. Each parameter will be read into a variable of the
+		 * corresponding type.
+		 *
+		 **/
 
-        /**
-         * 
-         * 1.1) READ INPUT PARAMETER OF TYPE LITERAL INPUT
-         * 
-         * determine the sleep time in seconds. Read the first parameter with the <Identifier>LiteralInput</Identifier>
-         * using the ProcessletInput object in. The method getParameter returns an object of the type
-         * {@link org.deegree.services.wps.ProcessletInputs} which has to be casted to the correct type. The correct
-         * type is also defined inside the configuration file (<LiteralInput>).
-         * 
-         */
+		/**
+		 *
+		 * 1.1) READ INPUT PARAMETER OF TYPE LITERAL INPUT
+		 *
+		 * determine the sleep time in seconds. Read the first parameter with the
+		 * <Identifier>LiteralInput</Identifier> using the ProcessletInput object in. The
+		 * method getParameter returns an object of the type
+		 * {@link org.deegree.services.wps.ProcessletInputs} which has to be casted to the
+		 * correct type. The correct type is also defined inside the configuration file
+		 * (<LiteralInput>).
+		 *
+		 */
 
-        LiteralInput li = (LiteralInput) in.getParameter( "LiteralInput" );
-        LOG.debug( "- LiteratlInput: " + li );
+		LiteralInput li = (LiteralInput) in.getParameter("LiteralInput");
+		LOG.debug("- LiteratlInput: " + li);
 
-        /**
-         * 
-         * 1.2) READ INPUT PARAMETER OF TYPE BOUNDINGBOXINPUT
-         * 
-         * works just like literal input, but uses another interface for type casting.
-         */
+		/**
+		 *
+		 * 1.2) READ INPUT PARAMETER OF TYPE BOUNDINGBOXINPUT
+		 *
+		 * works just like literal input, but uses another interface for type casting.
+		 */
 
-        BoundingBoxInput bboxInput = (BoundingBoxInput) in.getParameter( "BBOXInput" );
-        LOG.debug( "- BBOXInput: " + bboxInput );
+		BoundingBoxInput bboxInput = (BoundingBoxInput) in.getParameter("BBOXInput");
+		LOG.debug("- BBOXInput: " + bboxInput);
 
-        /**
-         * 
-         * 1.3) READ INPUT PARAMETER OF TYPE COMPLEXINPUT
-         * 
-         * works just like literal or boundingbox input, but uses another interface for type casting. ComplexInput is a
-         * complex data structure, i.e. an object encoded in XML (like GML) or a raw binary stream (like an image).
-         * 
-         */
+		/**
+		 *
+		 * 1.3) READ INPUT PARAMETER OF TYPE COMPLEXINPUT
+		 *
+		 * works just like literal or boundingbox input, but uses another interface for
+		 * type casting. ComplexInput is a complex data structure, i.e. an object encoded
+		 * in XML (like GML) or a raw binary stream (like an image).
+		 *
+		 */
 
-        ComplexInput xmlInput = (ComplexInput) in.getParameter( "XMLInput" );
-        LOG.debug( "- XMLInput: " + xmlInput );
+		ComplexInput xmlInput = (ComplexInput) in.getParameter("XMLInput");
+		LOG.debug("- XMLInput: " + xmlInput);
 
-        ComplexInput binaryInput = (ComplexInput) in.getParameter( "BinaryInput" );
-        LOG.debug( "- BinaryInput: " + binaryInput );
+		ComplexInput binaryInput = (ComplexInput) in.getParameter("BinaryInput");
+		LOG.debug("- BinaryInput: " + binaryInput);
 
-        /**
-         * 
-         * 2.) COMPUTATION After reading all input parameters into variables, the computation can be performed (or
-         * delegated).
-         * 
-         */
+		/**
+		 *
+		 * 2.) COMPUTATION After reading all input parameters into variables, the
+		 * computation can be performed (or delegated).
+		 *
+		 */
 
-        int sleepSeconds = determineSleepTime( li );
+		int sleepSeconds = determineSleepTime(li);
 
-        // sleep a total of sleepSeconds (but update the percent completed information for every
-        // percent)
-        try {
-            float sleepMillis = sleepSeconds * 1000;
-            int sleepStep = (int) ( sleepMillis / 99.0f );
-            LOG.debug( "Sleep step (millis): " + sleepStep );
-            for ( int percentCompleted = 0; percentCompleted <= 99; percentCompleted++ ) {
-                LOG.debug( "Setting percent completed: " + percentCompleted );
-                info.setPercentCompleted( percentCompleted );
-                Thread.sleep( sleepStep );
-            }
-        } catch ( InterruptedException e ) {
-            throw new ProcessletException( e.getMessage() );
-        }
+		// sleep a total of sleepSeconds (but update the percent completed information for
+		// every
+		// percent)
+		try {
+			float sleepMillis = sleepSeconds * 1000;
+			int sleepStep = (int) (sleepMillis / 99.0f);
+			LOG.debug("Sleep step (millis): " + sleepStep);
+			for (int percentCompleted = 0; percentCompleted <= 99; percentCompleted++) {
+				LOG.debug("Setting percent completed: " + percentCompleted);
+				info.setPercentCompleted(percentCompleted);
+				Thread.sleep(sleepStep);
+			}
+		}
+		catch (InterruptedException e) {
+			throw new ProcessletException(e.getMessage());
+		}
 
-        /**
-         * 3.) SET OUTPUT PARAMETERS
-         * 
-         * After the computation is complete, the results need to assigned to the corresponding output data types. This
-         * is done similar to reading input types. Please consult the configuration document for the definition of
-         * output types:
-         * 
-         * <OutputParameters> <LiteralOutput> <Identifier>LiteralOutput</Identifier> <Title>A literal output
-         * parameter</Title> <DataType reference="http://www.w3.org/TR/xmlschema-2/#integer">integer</DataType>
-         * <DefaultUOM>seconds</DefaultUOM> </LiteralOutput> <BoundingBoxOutput> <Identifier>BBOXOutput</Identifier>
-         * <Title>A bounding box output parameter</Title> <DefaultCRS>EPSG:4326</DefaultCRS> </BoundingBoxOutput>
-         * <ComplexOutput> <Identifier>XMLOutput</Identifier> <Title>An XML output parameter</Title> <DefaultFormat
-         * mimeType="text/xml" /> </ComplexOutput> <ComplexOutput> <Identifier>BinaryOutput</Identifier> <Title>A binary
-         * output parameter</Title> <DefaultFormat mimeType="image/png" encoding="base64" /> </ComplexOutput>
-         * </OutputParameters>
-         * 
-         * Here we define once again four types: LiteralOutput, BoundingBoxOutput, and two ComplexOutput tpyes.
-         * 
-         */
+		/**
+		 * 3.) SET OUTPUT PARAMETERS
+		 *
+		 * After the computation is complete, the results need to assigned to the
+		 * corresponding output data types. This is done similar to reading input types.
+		 * Please consult the configuration document for the definition of output types:
+		 *
+		 * <OutputParameters> <LiteralOutput> <Identifier>LiteralOutput</Identifier>
+		 * <Title>A literal output parameter</Title> <DataType reference=
+		 * "http://www.w3.org/TR/xmlschema-2/#integer">integer</DataType>
+		 * <DefaultUOM>seconds</DefaultUOM> </LiteralOutput> <BoundingBoxOutput>
+		 * <Identifier>BBOXOutput</Identifier> <Title>A bounding box output
+		 * parameter</Title> <DefaultCRS>EPSG:4326</DefaultCRS> </BoundingBoxOutput>
+		 * <ComplexOutput> <Identifier>XMLOutput</Identifier> <Title>An XML output
+		 * parameter</Title> <DefaultFormat mimeType="text/xml" /> </ComplexOutput>
+		 * <ComplexOutput> <Identifier>BinaryOutput</Identifier> <Title>A binary output
+		 * parameter</Title> <DefaultFormat mimeType="image/png" encoding="base64" />
+		 * </ComplexOutput> </OutputParameters>
+		 *
+		 * Here we define once again four types: LiteralOutput, BoundingBoxOutput, and two
+		 * ComplexOutput tpyes.
+		 *
+		 */
 
-        // Literal outputs will just be retrieved from the ProcessletOutput object...
-        LiteralOutput literalOutput = (LiteralOutput) out.getParameter( "LiteralOutput" );
-        LOG.debug( "Setting literal output (requested=" + literalOutput.isRequested() + ")" );
-        // ...and set to the required result
-        literalOutput.setValue( "" + sleepSeconds );
+		// Literal outputs will just be retrieved from the ProcessletOutput object...
+		LiteralOutput literalOutput = (LiteralOutput) out.getParameter("LiteralOutput");
+		LOG.debug("Setting literal output (requested=" + literalOutput.isRequested() + ")");
+		// ...and set to the required result
+		literalOutput.setValue("" + sleepSeconds);
 
-        // BoundingBoxOutput will just be retrieved from the ProcessletOutput object...
-        BoundingBoxOutput bboxOutput = (BoundingBoxOutput) out.getParameter( "BBOXOutput" );
-        LOG.debug( "Setting bbox output (requested=" + bboxOutput.isRequested() + ")" );
-        // ...and set to the required result
-        bboxOutput.setValue( bboxInput.getValue() );
+		// BoundingBoxOutput will just be retrieved from the ProcessletOutput object...
+		BoundingBoxOutput bboxOutput = (BoundingBoxOutput) out.getParameter("BBOXOutput");
+		LOG.debug("Setting bbox output (requested=" + bboxOutput.isRequested() + ")");
+		// ...and set to the required result
+		bboxOutput.setValue(bboxInput.getValue());
 
-        // ComplexOutput objects can become very huge. Therefore it is essential to stream the
-        // result.
-        // Initially we have to get a ComplexOutput object from the ProcessletOutput...
-        ComplexOutput xmlOutput = (ComplexOutput) out.getParameter( "XMLOutput" );
-        LOG.debug( "Setting XML output (requested=" + xmlOutput.isRequested() + ")" );
+		// ComplexOutput objects can become very huge. Therefore it is essential to stream
+		// the
+		// result.
+		// Initially we have to get a ComplexOutput object from the ProcessletOutput...
+		ComplexOutput xmlOutput = (ComplexOutput) out.getParameter("XMLOutput");
+		LOG.debug("Setting XML output (requested=" + xmlOutput.isRequested() + ")");
 
-        // .. and use the XMLStreamWriter to write the results to. This case handles XML based data.
-        try {
-            XMLStreamWriter writer = xmlOutput.getXMLStreamWriter();
-            XMLAdapter.writeElement( writer, xmlInput.getValueAsXMLStream() );
-        } catch ( XMLStreamException e ) {
-            LOG.error( e.getMessage() );
-        } catch ( IOException e ) {
-            LOG.error( e.getMessage() );
-        }
+		// .. and use the XMLStreamWriter to write the results to. This case handles XML
+		// based data.
+		try {
+			XMLStreamWriter writer = xmlOutput.getXMLStreamWriter();
+			XMLAdapter.writeElement(writer, xmlInput.getValueAsXMLStream());
+		}
+		catch (XMLStreamException e) {
+			LOG.error(e.getMessage());
+		}
+		catch (IOException e) {
+			LOG.error(e.getMessage());
+		}
 
-        // Another ComplexOutput is binary, e.g. an image...
-        ComplexOutput binaryOutput = (ComplexOutput) out.getParameter( "BinaryOutput" );
-        LOG.debug( "Setting binary output (requested=" + binaryOutput.isRequested() + ")" );
+		// Another ComplexOutput is binary, e.g. an image...
+		ComplexOutput binaryOutput = (ComplexOutput) out.getParameter("BinaryOutput");
+		LOG.debug("Setting binary output (requested=" + binaryOutput.isRequested() + ")");
 
-        // which is streamed using a binary stream.
-        try {
-            InputStream is = binaryInput.getValueAsBinaryStream();
-            BufferedOutputStream os = new BufferedOutputStream( binaryOutput.getBinaryOutputStream() );
-            byte[] buffer = new byte[1024];
-            int bytesRead = 0;
-            while ( ( bytesRead = is.read( buffer ) ) != -1 ) {
-                os.write( buffer, 0, bytesRead );
-            }
-            os.flush();
-        } catch ( IOException e1 ) {
-            LOG.error( e1.getMessage() );
-        }
+		// which is streamed using a binary stream.
+		try {
+			InputStream is = binaryInput.getValueAsBinaryStream();
+			BufferedOutputStream os = new BufferedOutputStream(binaryOutput.getBinaryOutputStream());
+			byte[] buffer = new byte[1024];
+			int bytesRead = 0;
+			while ((bytesRead = is.read(buffer)) != -1) {
+				os.write(buffer, 0, bytesRead);
+			}
+			os.flush();
+		}
+		catch (IOException e1) {
+			LOG.error(e1.getMessage());
+		}
 
-        /**
-         * 
-         * 4.) THAT'S ALL!
-         * 
-         * deegreeWPS will take care about delivering the result to the client in an OGC-compliant fashion.
-         * 
-         * 
-         */
+		/**
+		 *
+		 * 4.) THAT'S ALL!
+		 *
+		 * deegreeWPS will take care about delivering the result to the client in an
+		 * OGC-compliant fashion.
+		 *
+		 *
+		 */
 
-        LOG.trace( "END ParameterDemoProcesslet#execute()" );
-    }
+		LOG.trace("END ParameterDemoProcesslet#execute()");
+	}
 
-    private int determineSleepTime( LiteralInput input ) {
+	private int determineSleepTime(LiteralInput input) {
 
-        int seconds = -1;
-        String uom = input.getUOM();
+		int seconds = -1;
+		String uom = input.getUOM();
 
-        LOG.debug( "dataType: " + input.getDataType() + ", uom: " + input.getUOM() );
+		LOG.debug("dataType: " + input.getDataType() + ", uom: " + input.getUOM());
 
-        // NOTE: it is guaranteed (by the deegree WPS) that the UOM is always
-        // one of the UOMs specified in the process definition
-        if ( "seconds".equals( uom ) ) {
-            LOG.debug( "Sleep time given in seconds" );
-            seconds = (int) Double.parseDouble( input.getValue() );
-        } else if ( "minutes".equals( uom ) ) {
-            LOG.debug( "Sleep time given in minutes" );
-            seconds = (int) ( Double.parseDouble( input.getValue() ) * 60 );
-        }
-        return seconds;
-    }
+		// NOTE: it is guaranteed (by the deegree WPS) that the UOM is always
+		// one of the UOMs specified in the process definition
+		if ("seconds".equals(uom)) {
+			LOG.debug("Sleep time given in seconds");
+			seconds = (int) Double.parseDouble(input.getValue());
+		}
+		else if ("minutes".equals(uom)) {
+			LOG.debug("Sleep time given in minutes");
+			seconds = (int) (Double.parseDouble(input.getValue()) * 60);
+		}
+		return seconds;
+	}
 
-    @Override
-    public void destroy() {
-        LOG.debug( "ParameterDemoProcesslet#destroy() called" );
-    }
+	@Override
+	public void destroy() {
+		LOG.debug("ParameterDemoProcesslet#destroy() called");
+	}
 
-    @Override
-    public void init() {
-        LOG.debug( "ParameterDemoProcesslet#init() called" );
-    }
+	@Override
+	public void init() {
+		LOG.debug("ParameterDemoProcesslet#init() called");
+	}
+
 }

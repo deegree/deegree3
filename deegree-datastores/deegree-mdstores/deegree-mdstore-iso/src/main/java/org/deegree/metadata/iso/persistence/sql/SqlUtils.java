@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -42,73 +41,75 @@ import org.deegree.sqldialect.filter.Join;
 
 /**
  * Contains useful methods to create or adjust sql.
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class SqlUtils {
 
-    public static String repairAliasesInWhereClause( AbstractWhereBuilder builder, List<Join> usedJoins,
-                                                     List<Join> redundantJoins ) {
-        String whereClause = builder.getWhere().getSQL().toString();
-        for ( Join redundantJoin : redundantJoins ) {
-            Join usedJoin = getEquivalentJoin( redundantJoin, usedJoins );
-            String usedAlias = usedJoin.getToTableAlias();
-            String redundantAlias = redundantJoin.getToTableAlias();
-            whereClause = whereClause.replace( redundantAlias, usedAlias );
-        }
-        return whereClause;
-    }
+	public static String repairAliasesInWhereClause(AbstractWhereBuilder builder, List<Join> usedJoins,
+			List<Join> redundantJoins) {
+		String whereClause = builder.getWhere().getSQL().toString();
+		for (Join redundantJoin : redundantJoins) {
+			Join usedJoin = getEquivalentJoin(redundantJoin, usedJoins);
+			String usedAlias = usedJoin.getToTableAlias();
+			String redundantAlias = redundantJoin.getToTableAlias();
+			whereClause = whereClause.replace(redundantAlias, usedAlias);
+		}
+		return whereClause;
+	}
 
-    private static Join getEquivalentJoin( Join duplicatedJoin, List<Join> usedJoins ) {
-        for ( Join join : usedJoins ) {
-            if ( joinsAreEqual( duplicatedJoin, join ) ) {
-                return join;
-            }
-        }
-        return duplicatedJoin;
-    }
+	private static Join getEquivalentJoin(Join duplicatedJoin, List<Join> usedJoins) {
+		for (Join join : usedJoins) {
+			if (joinsAreEqual(duplicatedJoin, join)) {
+				return join;
+			}
+		}
+		return duplicatedJoin;
+	}
 
-    public static boolean joinIsWritten( Join join, List<Join> writtenJoins ) {
-        for ( Join other : writtenJoins ) {
-            if ( joinsAreEqual( join, other ) ) {
-                return true;
-            }
-        }
-        return false;
-    }
+	public static boolean joinIsWritten(Join join, List<Join> writtenJoins) {
+		for (Join other : writtenJoins) {
+			if (joinsAreEqual(join, other)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
-    private static boolean joinsAreEqual( Join join, Join other ) {
-        List<String> fromColumns = join.getFromColumns();
-        List<String> otherFromColumns = other.getFromColumns();
-        if ( fromColumns == null ) {
-            if ( otherFromColumns != null )
-                return false;
-        } else if ( !fromColumns.equals( otherFromColumns ) )
-            return false;
-        String fromTable = join.getFromTable();
-        String otherFromTable = other.getFromTable();
-        if ( fromTable == null ) {
-            if ( otherFromTable != null )
-                return false;
-        } else if ( !fromTable.equals( otherFromTable ) )
-            return false;
-        List<String> toColumns = join.getToColumns();
-        List<String> otherToColumns = other.getToColumns();
-        if ( toColumns == null ) {
-            if ( otherToColumns != null )
-                return false;
-        } else if ( !toColumns.equals( otherToColumns ) )
-            return false;
-        String toTable = join.getToTable();
-        String otherToTable = other.getToTable();
-        if ( toTable == null ) {
-            if ( otherToTable != null )
-                return false;
-        } else if ( !toTable.equals( otherToTable ) )
-            return false;
-        return true;
-    }
+	private static boolean joinsAreEqual(Join join, Join other) {
+		List<String> fromColumns = join.getFromColumns();
+		List<String> otherFromColumns = other.getFromColumns();
+		if (fromColumns == null) {
+			if (otherFromColumns != null)
+				return false;
+		}
+		else if (!fromColumns.equals(otherFromColumns))
+			return false;
+		String fromTable = join.getFromTable();
+		String otherFromTable = other.getFromTable();
+		if (fromTable == null) {
+			if (otherFromTable != null)
+				return false;
+		}
+		else if (!fromTable.equals(otherFromTable))
+			return false;
+		List<String> toColumns = join.getToColumns();
+		List<String> otherToColumns = other.getToColumns();
+		if (toColumns == null) {
+			if (otherToColumns != null)
+				return false;
+		}
+		else if (!toColumns.equals(otherToColumns))
+			return false;
+		String toTable = join.getToTable();
+		String otherToTable = other.getToTable();
+		if (toTable == null) {
+			if (otherToTable != null)
+				return false;
+		}
+		else if (!toTable.equals(otherToTable))
+			return false;
+		return true;
+	}
+
 }

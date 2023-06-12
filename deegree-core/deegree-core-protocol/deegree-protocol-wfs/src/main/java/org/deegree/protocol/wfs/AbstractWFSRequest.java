@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -39,46 +38,39 @@ import org.deegree.commons.tom.ows.Version;
 
 /**
  * Abstract base class for WFS request beans.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * 
- * @version $Revision: $, $Date: $
  */
 public abstract class AbstractWFSRequest {
 
-    private final Version version;
+	private final Version version;
 
-    private final String handle;
+	private final String handle;
 
-    /**
-     * Creates a new {@link AbstractWFSRequest} request.
-     * 
-     * @param version
-     *            protocol version, may not be <code>null</code>
-     * @param handle
-     *            client-generated identifier, may be <code>null</code>
-     */
-    public AbstractWFSRequest( Version version, String handle ) {
-        this.version = version;
-        this.handle = handle;
-    }
+	/**
+	 * Creates a new {@link AbstractWFSRequest} request.
+	 * @param version protocol version, may not be <code>null</code>
+	 * @param handle client-generated identifier, may be <code>null</code>
+	 */
+	public AbstractWFSRequest(Version version, String handle) {
+		this.version = version;
+		this.handle = handle;
+	}
 
-    /**
-     * Returns the protocol version of the request.
-     * 
-     * @return the protocol version of the request, never <code>null</code>
-     */
-    public Version getVersion() {
-        return this.version;
-    }
+	/**
+	 * Returns the protocol version of the request.
+	 * @return the protocol version of the request, never <code>null</code>
+	 */
+	public Version getVersion() {
+		return this.version;
+	}
 
-    /**
-     * Returns the client-generated identifier supplied with the request.
-     * 
-     * @return the client-generated identifier, may be <code>null</code>
-     */
-    public String getHandle() {
-        return this.handle;
-    }
+	/**
+	 * Returns the client-generated identifier supplied with the request.
+	 * @return the client-generated identifier, may be <code>null</code>
+	 */
+	public String getHandle() {
+		return this.handle;
+	}
+
 }

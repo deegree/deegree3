@@ -46,36 +46,36 @@ import org.deegree.services.wps.WPService;
 
 /**
  * JSF-Bean for the WPS main info page.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 29926 $, $Date: 2011-03-08 11:47:59 +0100 (Di, 08. Mär 2011) $
  */
 @ManagedBean
 @RequestScoped
 public class WPSBean {
 
-    private final String version;
+	private final String version;
 
-    private final List<String> processIds = new ArrayList<String>();
+	private final List<String> processIds = new ArrayList<String>();
 
-    public String getVersion() {
-        return version;
-    }
+	public String getVersion() {
+		return version;
+	}
 
-    public List<String> getProcessIds() {
-        return processIds;
-    }
+	public List<String> getProcessIds() {
+		return processIds;
+	}
 
-    /**
-     * Creates a new {@link WPSBean} instance (only used by JSF).
-     */
-    public WPSBean() {
-        WPService service = (WPService) ( OGCFrontController.getServiceConfiguration().getByOWSClass( WPService.class ).get( 0 ) );
-        this.version = service.getOfferedVersionsString();
-        for ( WPSProcess process : service.getProcessManager().getProcesses().values() ) {
-            processIds.add( process.getDescription().getIdentifier().getValue().toString() );
-        }
-    }
+	/**
+	 * Creates a new {@link WPSBean} instance (only used by JSF).
+	 */
+	public WPSBean() {
+		WPService service = (WPService) (OGCFrontController.getServiceConfiguration()
+			.getByOWSClass(WPService.class)
+			.get(0));
+		this.version = service.getOfferedVersionsString();
+		for (WPSProcess process : service.getProcessManager().getProcesses().values()) {
+			processIds.add(process.getDescription().getIdentifier().getValue().toString());
+		}
+	}
+
 }

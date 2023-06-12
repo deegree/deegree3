@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2015 by:
@@ -41,33 +40,31 @@ import org.deegree.time.primitive.TimeGeometricPrimitive;
 
 /**
  * Time operator to evaluate 'Before'.
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
 public class BeforeOperator {
 
-    /**
-     * Evaluates if self is before other or not. TimeInstant and TimePeriods are allowed and handled as followed:
-     * 
-     * <ul>
-     * <li>self.position < other.position</li>
-     * <li>self.position < other.begin.position</li>
-     * <li>self.end.position < other.position</li>
-     * <li>self.end.position < other.begin.position</li>
-     * </ul>
-     * 
-     * @param self
-     *            may be <code>null</code> (evaluation results in <code>false</code>)
-     * @param other
-     *            may be <code>null</code> (evaluation results in <code>false</code>)
-     * @return <code>true</code> if self is temporal before other, <code>false</code> if self is after or equal to other
-     *         or self and/or other are <code>null</code>
-     */
-    public boolean evaluate( final TimeGeometricPrimitive self, final TimeGeometricPrimitive other ) {
-        if ( self == null || other == null )
-            return false;
-        int compareBeginWithEnd = compareEndWithBegin( self, other );
-        return compareBeginWithEnd < 0;
-    }
+	/**
+	 * Evaluates if self is before other or not. TimeInstant and TimePeriods are allowed
+	 * and handled as followed:
+	 *
+	 * <ul>
+	 * <li>self.position < other.position</li>
+	 * <li>self.position < other.begin.position</li>
+	 * <li>self.end.position < other.position</li>
+	 * <li>self.end.position < other.begin.position</li>
+	 * </ul>
+	 * @param self may be <code>null</code> (evaluation results in <code>false</code>)
+	 * @param other may be <code>null</code> (evaluation results in <code>false</code>)
+	 * @return <code>true</code> if self is temporal before other, <code>false</code> if
+	 * self is after or equal to other or self and/or other are <code>null</code>
+	 */
+	public boolean evaluate(final TimeGeometricPrimitive self, final TimeGeometricPrimitive other) {
+		if (self == null || other == null)
+			return false;
+		int compareBeginWithEnd = compareEndWithBegin(self, other);
+		return compareBeginWithEnd < 0;
+	}
 
 }

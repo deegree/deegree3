@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -51,38 +50,39 @@ import org.deegree.protocol.i18n.Messages;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class TransactionXmlReaderFactory {
 
-    public TransactionXmlReader createReader( Version version ) {
-        if ( VERSION_100.equals( version ) ) {
-            return new TransactionXmlReader100();
-        } else if ( VERSION_110.equals( version ) ) {
-            return new TransactionXmlReader110();
-        } else if ( VERSION_200.equals( version ) ) {
-            return new TransactionXmlReader200();
-        }
-        String msg = Messages.get( "UNSUPPORTED_VERSION", version,
-                                   Version.getVersionsString( VERSION_100, VERSION_110, VERSION_200 ) );
-        throw new InvalidParameterValueException( msg );
-    }
+	public TransactionXmlReader createReader(Version version) {
+		if (VERSION_100.equals(version)) {
+			return new TransactionXmlReader100();
+		}
+		else if (VERSION_110.equals(version)) {
+			return new TransactionXmlReader110();
+		}
+		else if (VERSION_200.equals(version)) {
+			return new TransactionXmlReader200();
+		}
+		String msg = Messages.get("UNSUPPORTED_VERSION", version,
+				Version.getVersionsString(VERSION_100, VERSION_110, VERSION_200));
+		throw new InvalidParameterValueException(msg);
+	}
 
-    public TransactionXmlReader createReader( XMLStreamReader xmlStream ) {
-        Version version = null;
-        if ( WFS_NS.equals( xmlStream.getNamespaceURI() ) ) {
-            String s = getAttributeValue( xmlStream, "version" );
-            if ( s == null ) {
-                s = "1.1.0";
-            }
-            version = parseVersion( s );
-        } else {
-            version = parseVersion( getRequiredAttributeValue( xmlStream, "version" ) );
-        }
-        return createReader( version );
-    }
+	public TransactionXmlReader createReader(XMLStreamReader xmlStream) {
+		Version version = null;
+		if (WFS_NS.equals(xmlStream.getNamespaceURI())) {
+			String s = getAttributeValue(xmlStream, "version");
+			if (s == null) {
+				s = "1.1.0";
+			}
+			version = parseVersion(s);
+		}
+		else {
+			version = parseVersion(getRequiredAttributeValue(xmlStream, "version"));
+		}
+		return createReader(version);
+	}
+
 }

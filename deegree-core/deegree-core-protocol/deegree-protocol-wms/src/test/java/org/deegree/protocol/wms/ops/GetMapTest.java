@@ -16,44 +16,39 @@ import static org.junit.Assert.assertTrue;
  */
 public class GetMapTest {
 
-    @Test
-    public void testTransparent_True()
-                    throws Exception {
-        Map<String, String> kvp = createRequest(
-                        "BBOX=228152.00000000%2C5690412.00000000%2C493382.00000000%2C5939023.00000000&CRS=EPSG%3A25833&FORMAT=image%2Fpng&HEIGHT=500&LAYERS=EF.EnvironmentalMonitoringProgrammes&REQUEST=GetMap&SERVICE=WMS&STYLES=EF.EnvironmentalMonitoringProgrammes.Default.Point&TRANSPARENT=tRue&VERSION=1.3.0&WIDTH=500" );
-        GetMap getMap = new GetMap( kvp, Version.parseVersion( "1.3.0" ), null, true );
-        assertTrue( getMap.getTransparent() );
-    }
+	@Test
+	public void testTransparent_True() throws Exception {
+		Map<String, String> kvp = createRequest(
+				"BBOX=228152.00000000%2C5690412.00000000%2C493382.00000000%2C5939023.00000000&CRS=EPSG%3A25833&FORMAT=image%2Fpng&HEIGHT=500&LAYERS=EF.EnvironmentalMonitoringProgrammes&REQUEST=GetMap&SERVICE=WMS&STYLES=EF.EnvironmentalMonitoringProgrammes.Default.Point&TRANSPARENT=tRue&VERSION=1.3.0&WIDTH=500");
+		GetMap getMap = new GetMap(kvp, Version.parseVersion("1.3.0"), null, true);
+		assertTrue(getMap.getTransparent());
+	}
 
-    @Test
-    public void testTransparent_False()
-                    throws Exception {
-        Map<String, String> kvp = createRequest(
-                        "BBOX=228152.00000000%2C5690412.00000000%2C493382.00000000%2C5939023.00000000&CRS=EPSG%3A25833&FORMAT=image%2Fpng&HEIGHT=500&LAYERS=EF.EnvironmentalMonitoringProgrammes&REQUEST=GetMap&SERVICE=WMS&STYLES=EF.EnvironmentalMonitoringProgrammes.Default.Point&TRANSPARENT=fAlSe&VERSION=1.3.0&WIDTH=500" );
-        GetMap getMap = new GetMap( kvp, Version.parseVersion( "1.3.0" ), null, true );
-        assertFalse( getMap.getTransparent() );
-    }
+	@Test
+	public void testTransparent_False() throws Exception {
+		Map<String, String> kvp = createRequest(
+				"BBOX=228152.00000000%2C5690412.00000000%2C493382.00000000%2C5939023.00000000&CRS=EPSG%3A25833&FORMAT=image%2Fpng&HEIGHT=500&LAYERS=EF.EnvironmentalMonitoringProgrammes&REQUEST=GetMap&SERVICE=WMS&STYLES=EF.EnvironmentalMonitoringProgrammes.Default.Point&TRANSPARENT=fAlSe&VERSION=1.3.0&WIDTH=500");
+		GetMap getMap = new GetMap(kvp, Version.parseVersion("1.3.0"), null, true);
+		assertFalse(getMap.getTransparent());
+	}
 
-    @Test(expected = OWSException.class)
-    public void testTransparent_Invalid()
-                    throws Exception {
-        Map<String, String> kvp = createRequest(
-                        "BBOX=228152.00000000%2C5690412.00000000%2C493382.00000000%2C5939023.00000000&CRS=EPSG%3A25833&FORMAT=image%2Fpng&HEIGHT=500&LAYERS=EF.EnvironmentalMonitoringProgrammes&REQUEST=GetMap&SERVICE=WMS&STYLES=EF.EnvironmentalMonitoringProgrammes.Default.Point&TRANSPARENT=zzzz&VERSION=1.3.0&WIDTH=500" );
-        new GetMap( kvp, Version.parseVersion( "1.3.0" ), null, true );
-    }
+	@Test(expected = OWSException.class)
+	public void testTransparent_Invalid() throws Exception {
+		Map<String, String> kvp = createRequest(
+				"BBOX=228152.00000000%2C5690412.00000000%2C493382.00000000%2C5939023.00000000&CRS=EPSG%3A25833&FORMAT=image%2Fpng&HEIGHT=500&LAYERS=EF.EnvironmentalMonitoringProgrammes&REQUEST=GetMap&SERVICE=WMS&STYLES=EF.EnvironmentalMonitoringProgrammes.Default.Point&TRANSPARENT=zzzz&VERSION=1.3.0&WIDTH=500");
+		new GetMap(kvp, Version.parseVersion("1.3.0"), null, true);
+	}
 
-    @Test
-    public void testTransparent_Invalid_ParseLax()
-                    throws Exception {
-        Map<String, String> kvp = createRequest(
-                        "BBOX=228152.00000000%2C5690412.00000000%2C493382.00000000%2C5939023.00000000&CRS=EPSG%3A25833&FORMAT=image%2Fpng&HEIGHT=500&LAYERS=EF.EnvironmentalMonitoringProgrammes&REQUEST=GetMap&SERVICE=WMS&STYLES=EF.EnvironmentalMonitoringProgrammes.Default.Point&TRANSPARENT=zzzz&VERSION=1.3.0&WIDTH=500" );
-        GetMap getMap = new GetMap( kvp, Version.parseVersion( "1.3.0" ), null, false );
-        assertFalse( getMap.getTransparent() );
-    }
+	@Test
+	public void testTransparent_Invalid_ParseLax() throws Exception {
+		Map<String, String> kvp = createRequest(
+				"BBOX=228152.00000000%2C5690412.00000000%2C493382.00000000%2C5939023.00000000&CRS=EPSG%3A25833&FORMAT=image%2Fpng&HEIGHT=500&LAYERS=EF.EnvironmentalMonitoringProgrammes&REQUEST=GetMap&SERVICE=WMS&STYLES=EF.EnvironmentalMonitoringProgrammes.Default.Point&TRANSPARENT=zzzz&VERSION=1.3.0&WIDTH=500");
+		GetMap getMap = new GetMap(kvp, Version.parseVersion("1.3.0"), null, false);
+		assertFalse(getMap.getTransparent());
+	}
 
-    private Map<String, String> createRequest( String queryParams )
-                    throws IOException {
-        return KVPUtils.getNormalizedKVPMap( queryParams, "UTF-8" );
-    }
+	private Map<String, String> createRequest(String queryParams) throws IOException {
+		return KVPUtils.getNormalizedKVPMap(queryParams, "UTF-8");
+	}
 
 }

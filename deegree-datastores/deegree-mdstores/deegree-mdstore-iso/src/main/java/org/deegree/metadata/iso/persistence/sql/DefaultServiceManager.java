@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-metadata/src/main/java/org/deegree/metadata/iso/persistence/TransactionHelper.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -43,23 +42,20 @@ import org.deegree.sqldialect.SQLDialect;
 
 /**
  * Provides access to the default implementations of the sql services.
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class DefaultServiceManager implements ServiceManager {
 
-    @Override
-    public QueryService getQueryService( SQLDialect dialect, List<Queryable> queryables ) {
-        return new DefaultQueryService( dialect, queryables );
-    }
+	@Override
+	public QueryService getQueryService(SQLDialect dialect, List<Queryable> queryables) {
+		return new DefaultQueryService(dialect, queryables);
+	}
 
-    @Override
-    public TransactionService getTransactionService( SQLDialect dialect, List<Queryable> queryables,
-                                                    AnyText anyTextConfig ) {
-        return new DefaultTransactionService( dialect, queryables, anyTextConfig );
-    }
+	@Override
+	public TransactionService getTransactionService(SQLDialect dialect, List<Queryable> queryables,
+			AnyText anyTextConfig) {
+		return new DefaultTransactionService(dialect, queryables, anyTextConfig);
+	}
 
 }

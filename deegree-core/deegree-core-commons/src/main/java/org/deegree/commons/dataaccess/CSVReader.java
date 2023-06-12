@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -49,143 +48,141 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 
 /**
- * The <code>CSVReader</code> reads a csv file line by line. Note the regular expression for quotes may not work under
- * all circumstances, a Tokenizer might be a better solution.
- * 
+ * The <code>CSVReader</code> reads a csv file line by line. Note the regular expression
+ * for quotes may not work under all circumstances, a Tokenizer might be a better
+ * solution.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class CSVReader extends LineNumberReader {
-    private final static Logger LOG = getLogger( CSVReader.class );
 
-    private final String delimiter;
+	private final static Logger LOG = getLogger(CSVReader.class);
 
-    private String[] columnNames;
+	private final String delimiter;
 
-    private final int numberOfColumns;
+	private String[] columnNames;
 
-    private final boolean firstLineContainsColumnNames;
+	private final int numberOfColumns;
 
-    private final static Pattern QUOTED_REGEX = Pattern.compile( "\\\"" );
+	private final boolean firstLineContainsColumnNames;
 
-    private final Pattern splitRegex;
+	private final static Pattern QUOTED_REGEX = Pattern.compile("\\\"");
 
-    private boolean firstLineRead = false;
+	private final Pattern splitRegex;
 
-    /**
-     * @param in
-     * @param delimiter
-     * @param firstLineContainsColumnNames
-     */
-    public CSVReader( Reader in, String delimiter, boolean firstLineContainsColumnNames ) {
-        super( in );
-        this.delimiter = delimiter;
-        this.firstLineContainsColumnNames = firstLineContainsColumnNames;
-        splitRegex = Pattern.compile( ( delimiter == null || "".equals( delimiter ) ) ? "," : delimiter );
-        columnNames = readFirstLine();
-        if ( columnNames == null || columnNames.length == 0 ) {
-            throw new IllegalArgumentException( "Could not read the first line. " );
-        }
-        numberOfColumns = columnNames.length;
-    }
+	private boolean firstLineRead = false;
 
-    private String[] readFirstLine() {
-        try {
-            String line = super.readLine();
-            firstLineRead = true;
-            return parseLine( line );
-        } catch ( IOException e ) {
-            throw new IllegalArgumentException( "Could not read the first line because: " + e.getLocalizedMessage(), e );
-        }
-    }
+	/**
+	 * @param in
+	 * @param delimiter
+	 * @param firstLineContainsColumnNames
+	 */
+	public CSVReader(Reader in, String delimiter, boolean firstLineContainsColumnNames) {
+		super(in);
+		this.delimiter = delimiter;
+		this.firstLineContainsColumnNames = firstLineContainsColumnNames;
+		splitRegex = Pattern.compile((delimiter == null || "".equals(delimiter)) ? "," : delimiter);
+		columnNames = readFirstLine();
+		if (columnNames == null || columnNames.length == 0) {
+			throw new IllegalArgumentException("Could not read the first line. ");
+		}
+		numberOfColumns = columnNames.length;
+	}
 
-    /**
-     * @return the parsed line
-     */
-    private String[] parseLine( String line ) {
-        if ( line == null ) {
-            return null;
-        }
-        List<String> result = new LinkedList<String>();
-        if ( LOG.isTraceEnabled() ) {
-            LOG.trace( "Trying to parse (line: " + getLineNumber() + "): " + line );
-        }
-        if ( !"".equals( line ) ) {
-            String[] quoted = splitQuoted( line );
-            for ( String q : quoted ) {
-                String[] delimited = splitDelimeter( q );
-                for ( String d : delimited ) {
-                    if ( !"".equals( d ) ) {
-                        if ( LOG.isTraceEnabled() ) {
-                            LOG.trace( "Adding parsed value: " + d );
-                        }
-                        result.add( d );
-                    }
-                }
-            }
-        }
-        return result.toArray( new String[0] );
-    }
+	private String[] readFirstLine() {
+		try {
+			String line = super.readLine();
+			firstLineRead = true;
+			return parseLine(line);
+		}
+		catch (IOException e) {
+			throw new IllegalArgumentException("Could not read the first line because: " + e.getLocalizedMessage(), e);
+		}
+	}
 
-    /**
-     * Splits the given line into it's quoted values.
-     * 
-     * @param line
-     *            to 'delimiter' separate.
-     * @return the splitted string.
-     */
-    private String[] splitQuoted( String line ) {
-        return QUOTED_REGEX.split( line );
-    }
+	/**
+	 * @return the parsed line
+	 */
+	private String[] parseLine(String line) {
+		if (line == null) {
+			return null;
+		}
+		List<String> result = new LinkedList<String>();
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("Trying to parse (line: " + getLineNumber() + "): " + line);
+		}
+		if (!"".equals(line)) {
+			String[] quoted = splitQuoted(line);
+			for (String q : quoted) {
+				String[] delimited = splitDelimeter(q);
+				for (String d : delimited) {
+					if (!"".equals(d)) {
+						if (LOG.isTraceEnabled()) {
+							LOG.trace("Adding parsed value: " + d);
+						}
+						result.add(d);
+					}
+				}
+			}
+		}
+		return result.toArray(new String[0]);
+	}
 
-    /**
-     * Splits the given line into it's (delimiter seperated) values.
-     * 
-     * @param line
-     *            to 'delimiter' separate.
-     * @return the splitted string.
-     */
-    private String[] splitDelimeter( String line ) {
-        return splitRegex.split( line );
-    }
+	/**
+	 * Splits the given line into it's quoted values.
+	 * @param line to 'delimiter' separate.
+	 * @return the splitted string.
+	 */
+	private String[] splitQuoted(String line) {
+		return QUOTED_REGEX.split(line);
+	}
 
-    /**
-     * @return the values of the
-     * @throws IOException
-     */
-    public String[] parseLine()
-                            throws IOException {
-        if ( getLineNumber() == 1 ) {
-            if ( !firstLineContainsColumnNames ) {
-                if ( firstLineRead ) {
-                    firstLineRead = false;
-                    return columnNames;
-                }
-            }
-        }
-        return parseLine( readLine() );
-    }
+	/**
+	 * Splits the given line into it's (delimiter seperated) values.
+	 * @param line to 'delimiter' separate.
+	 * @return the splitted string.
+	 */
+	private String[] splitDelimeter(String line) {
+		return splitRegex.split(line);
+	}
 
-    /**
-     * @return the values of the first row, which may be the column names or the first line of data.
-     */
-    public final String[] getColumnsNames() {
-        return copyOf( columnNames, columnNames.length );
-    }
+	/**
+	 * @return the values of the
+	 * @throws IOException
+	 */
+	public String[] parseLine() throws IOException {
+		if (getLineNumber() == 1) {
+			if (!firstLineContainsColumnNames) {
+				if (firstLineRead) {
+					firstLineRead = false;
+					return columnNames;
+				}
+			}
+		}
+		return parseLine(readLine());
+	}
 
-    /**
-     * @return the numberOfColumns
-     */
-    public final int getNumberOfColumns() {
-        return numberOfColumns;
-    }
+	/**
+	 * @return the values of the first row, which may be the column names or the first
+	 * line of data.
+	 */
+	public final String[] getColumnsNames() {
+		return copyOf(columnNames, columnNames.length);
+	}
 
-    /**
-     * @return the delimiter
-     */
-    public final String getDelimiter() {
-        return delimiter;
-    }
+	/**
+	 * @return the numberOfColumns
+	 */
+	public final int getNumberOfColumns() {
+		return numberOfColumns;
+	}
+
+	/**
+	 * @return the delimiter
+	 */
+	public final String getDelimiter() {
+		return delimiter;
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2011 by:
@@ -40,9 +39,9 @@ package org.deegree.sqldialect.oracle.sdo;
 
 /**
  * List of valid last two digits of SDO_GTYPE
- * 
+ *
  * SDO_GTYPE of Geometry Types as available in Oracle 10.x
- * 
+ *
  * <p>
  * The Oracle SDO_GTYPE is 4 digits long number which is build from <code>DLTT</code>.
  * <ul>
@@ -51,40 +50,40 @@ package org.deegree.sqldialect.oracle.sdo;
  * <li><code>TT</code> is the geometry type as described in this class.</li>
  * </ul>
  * </p>
- * 
+ *
  * @see Oracle Spatial User's Guide and Reference / Section SDO_GEOMETRY Object Type
  * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
- * 
- * @version $Revision$, $Date$
  */
 public interface SDOGTypeTT {
-    /** Unknown Geometry (ignored by spatial) */
-    public static final int UNKNOWN = 0;
 
-    /** Point Type */
-    public static final int POINT = 1;
+	/** Unknown Geometry (ignored by spatial) */
+	public static final int UNKNOWN = 0;
 
-    /** Line (or Curve) */
-    public static final int LINE = 2;
+	/** Point Type */
+	public static final int POINT = 1;
 
-    /** Polygon (or Surface) */
-    public static final int POLYGON = 3;
+	/** Line (or Curve) */
+	public static final int LINE = 2;
 
-    /** Collection of any of the other Types */
-    public static final int COLLECTION = 4;
+	/** Polygon (or Surface) */
+	public static final int POLYGON = 3;
 
-    /** Multiple Point Types */
-    public static final int MULTIPOINT = 5;
+	/** Collection of any of the other Types */
+	public static final int COLLECTION = 4;
 
-    /** Multiple Line (or Curve) Types */
-    public static final int MULTILINE = 6;
+	/** Multiple Point Types */
+	public static final int MULTIPOINT = 5;
 
-    /** Multiple Polygon (or Surface) Types */
-    public static final int MULTIPOLYGON = 7;
+	/** Multiple Line (or Curve) Types */
+	public static final int MULTILINE = 6;
 
-    /* Oracle 11g Types are currently not supported */
-    // Solid Type
-    // public static final int SOLID = 8;
-    // Multiple Solid Types
-    // public static final int MULTISOLID = 9;
+	/** Multiple Polygon (or Surface) Types */
+	public static final int MULTIPOLYGON = 7;
+
+	/* Oracle 11g Types are currently not supported */
+	// Solid Type
+	// public static final int SOLID = 8;
+	// Multiple Solid Types
+	// public static final int MULTISOLID = 9;
+
 }

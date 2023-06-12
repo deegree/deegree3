@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2009 by:
@@ -48,7 +47,6 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.cs.CRSResource;
 import org.deegree.cs.components.PrimeMeridian;
@@ -59,82 +57,77 @@ import org.slf4j.Logger;
 
 /**
  * Stax-based configuration parser for prime meridian objects.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
-@LoggingNotes(debug = "Get information about the currently parsed primemeridian, as well as a stack trace if something went wrong.")
 public class PrimemeridianParser extends DefinitionParser {
-    private static final Logger LOG = getLogger( PrimemeridianParser.class );
 
-    private final static QName PM_ELEMENT = new QName( CRS_NS, "PrimeMeridian" );
+	private static final Logger LOG = getLogger(PrimemeridianParser.class);
 
-    private static final QName ROOT = new QName( CRS_NS, "PMDefinitions" );
+	private final static QName PM_ELEMENT = new QName(CRS_NS, "PrimeMeridian");
 
-    /**
-     * @param provider
-     * @param primeMeridanFile
-     */
-    public PrimemeridianParser( DeegreeCRSStore provider, URL primeMeridanFile ) {
-        super( provider, primeMeridanFile );
-    }
+	private static final QName ROOT = new QName(CRS_NS, "PMDefinitions");
 
-    /**
-     * @param meridianId
-     *            the id to search for.
-     * @return the primeMeridian with given id or <code>null</code>
-     * @throws CRSConfigurationException
-     *             if the longitude was not set or the units could not be parsed.
-     */
-    public PrimeMeridian getPrimeMeridianForId( String meridianId )
-                            throws CRSConfigurationException {
-        if ( meridianId == null || "".equals( meridianId.trim() ) ) {
-            return null;
-        }
-        PrimeMeridian result = getStore().getCachedIdentifiable( PrimeMeridian.class, meridianId );
-        if ( result == null ) {
-            try {
-                result = parsePrimeMeridian( getConfigReader() );
-                while ( result != null && !result.hasId( meridianId, false, true ) ) {
-                    result = parsePrimeMeridian( getConfigReader() );
-                }
-            } catch ( XMLStreamException e ) {
-                throw new CRSConfigurationException( e );
-            }
-        }
+	/**
+	 * @param provider
+	 * @param primeMeridanFile
+	 */
+	public PrimemeridianParser(DeegreeCRSStore provider, URL primeMeridanFile) {
+		super(provider, primeMeridanFile);
+	}
 
-        return result;
-    }
+	/**
+	 * @param meridianId the id to search for.
+	 * @return the primeMeridian with given id or <code>null</code>
+	 * @throws CRSConfigurationException if the longitude was not set or the units could
+	 * not be parsed.
+	 */
+	public PrimeMeridian getPrimeMeridianForId(String meridianId) throws CRSConfigurationException {
+		if (meridianId == null || "".equals(meridianId.trim())) {
+			return null;
+		}
+		PrimeMeridian result = getStore().getCachedIdentifiable(PrimeMeridian.class, meridianId);
+		if (result == null) {
+			try {
+				result = parsePrimeMeridian(getConfigReader());
+				while (result != null && !result.hasId(meridianId, false, true)) {
+					result = parsePrimeMeridian(getConfigReader());
+				}
+			}
+			catch (XMLStreamException e) {
+				throw new CRSConfigurationException(e);
+			}
+		}
 
-    /**
-     * @param reader
-     *            to use
-     * @return the next PrimeMeridian or null if no more definitions were found.
-     * @throws XMLStreamException
-     */
-    protected PrimeMeridian parsePrimeMeridian( XMLStreamReader reader )
-                            throws XMLStreamException {
-        if ( reader == null || !moveReaderToFirstMatch( reader, PM_ELEMENT ) ) {
-            LOG.debug( "Could not get prime meridian no more definitions found." );
-            return null;
-        }
+		return result;
+	}
 
-        CRSResource id = parseIdentifiable( reader );
-        Unit units = parseUnit( reader, true );
-        double longitude = 0;
-        try {
-            longitude = super.parseLatLonType( reader, new QName( CRS_NS, "Longitude" ), true, 0 );
-        } catch ( XMLParsingException e ) {
-            throw new CRSConfigurationException( e );
-        }
-        return getStore().addIdToCache( new PrimeMeridian( units, longitude, id ), false );
-    }
+	/**
+	 * @param reader to use
+	 * @return the next PrimeMeridian or null if no more definitions were found.
+	 * @throws XMLStreamException
+	 */
+	protected PrimeMeridian parsePrimeMeridian(XMLStreamReader reader) throws XMLStreamException {
+		if (reader == null || !moveReaderToFirstMatch(reader, PM_ELEMENT)) {
+			LOG.debug("Could not get prime meridian no more definitions found.");
+			return null;
+		}
 
-    @Override
-    protected QName expectedRootName() {
-        return ROOT;
-    }
+		CRSResource id = parseIdentifiable(reader);
+		Unit units = parseUnit(reader, true);
+		double longitude = 0;
+		try {
+			longitude = super.parseLatLonType(reader, new QName(CRS_NS, "Longitude"), true, 0);
+		}
+		catch (XMLParsingException e) {
+			throw new CRSConfigurationException(e);
+		}
+		return getStore().addIdToCache(new PrimeMeridian(units, longitude, id), false);
+	}
+
+	@Override
+	protected QName expectedRootName() {
+		return ROOT;
+	}
 
 }

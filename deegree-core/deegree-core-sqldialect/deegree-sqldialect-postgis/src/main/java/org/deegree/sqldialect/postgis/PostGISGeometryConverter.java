@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-base/src/main/java/org/deegree/filter/sql/postgis/PostGISGeometryConverter.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -50,125 +49,120 @@ import org.slf4j.LoggerFactory;
 
 /**
  * {@link GeometryParticleConverter} for PostGIS databases.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31055 $, $Date: 2011-06-14 17:19:48 +0200 (Di, 14. Jun 2011) $
  */
 public class PostGISGeometryConverter implements GeometryParticleConverter {
 
-    private static Logger LOG = LoggerFactory.getLogger( PostGISGeometryConverter.class );
+	private static Logger LOG = LoggerFactory.getLogger(PostGISGeometryConverter.class);
 
-    private final String column;
+	private final String column;
 
-    private final boolean useLegacyPredicates;
+	private final boolean useLegacyPredicates;
 
-    private final ICRS crs;
+	private final ICRS crs;
 
-    private final String srid;
+	private final String srid;
 
-    /**
-     * Creates a new {@link PostGISGeometryConverter} instance.
-     * 
-     * @param column
-     *            (unqualified) column that stores the geometry, must not be <code>null</code>
-     * @param crs
-     *            CRS of the stored geometries, can be <code>null</code>
-     * @param srid
-     *            PostGIS spatial reference identifier, must not be <code>null</code>
-     * @param useLegacyPredicates
-     *            if true, legacy-style PostGIS spatial predicates are used (e.g. <code>Intersects</code> instead of
-     *            <code>ST_Intersects</code>)
-     */
-    public PostGISGeometryConverter( String column, ICRS crs, String srid, boolean useLegacyPredicates ) {
-        this.column = column;
-        this.crs = crs;
-        this.srid = srid;
-        this.useLegacyPredicates = useLegacyPredicates;
-    }
+	/**
+	 * Creates a new {@link PostGISGeometryConverter} instance.
+	 * @param column (unqualified) column that stores the geometry, must not be
+	 * <code>null</code>
+	 * @param crs CRS of the stored geometries, can be <code>null</code>
+	 * @param srid PostGIS spatial reference identifier, must not be <code>null</code>
+	 * @param useLegacyPredicates if true, legacy-style PostGIS spatial predicates are
+	 * used (e.g. <code>Intersects</code> instead of <code>ST_Intersects</code>)
+	 */
+	public PostGISGeometryConverter(String column, ICRS crs, String srid, boolean useLegacyPredicates) {
+		this.column = column;
+		this.crs = crs;
+		this.srid = srid;
+		this.useLegacyPredicates = useLegacyPredicates;
+	}
 
-    @Override
-    public String getSelectSnippet( String tableAlias ) {
-        String asewkb = useLegacyPredicates ? "AsEWKB" : "ST_AsEWKB";
-        if ( tableAlias != null ) {
-            return asewkb + "(" + tableAlias + "." + column + ")";
-        }
-        return asewkb + "(" + column + ")";
-    }
+	@Override
+	public String getSelectSnippet(String tableAlias) {
+		String asewkb = useLegacyPredicates ? "AsEWKB" : "ST_AsEWKB";
+		if (tableAlias != null) {
+			return asewkb + "(" + tableAlias + "." + column + ")";
+		}
+		return asewkb + "(" + column + ")";
+	}
 
-    @Override
-    public Geometry toParticle( ResultSet rs, int colIndex )
-                            throws SQLException {
-        byte[] wkb = rs.getBytes( colIndex );
-        if ( wkb == null ) {
-            return null;
-        }
-        try {
-            return WKBReader.read( wkb, crs );
-        } catch ( Throwable t ) {
-            throw new IllegalArgumentException( t.getMessage(), t );
-        }
-    }
+	@Override
+	public Geometry toParticle(ResultSet rs, int colIndex) throws SQLException {
+		byte[] wkb = rs.getBytes(colIndex);
+		if (wkb == null) {
+			return null;
+		}
+		try {
+			return WKBReader.read(wkb, crs);
+		}
+		catch (Throwable t) {
+			throw new IllegalArgumentException(t.getMessage(), t);
+		}
+	}
 
-    @Override
-    public String getSetSnippet( Geometry particle ) {
-        StringBuilder sb = new StringBuilder();
-        if ( useLegacyPredicates ) {
-            sb.append( "SetSRID(GeomFromWKB(?)," );
-        } else {
-            sb.append( "ST_SetSRID(ST_GeomFromWKB(?)," );
-        }
-        sb.append( srid == null ? "-1" : srid );
-        sb.append( ")" );
-        return sb.toString();
-    }
+	@Override
+	public String getSetSnippet(Geometry particle) {
+		StringBuilder sb = new StringBuilder();
+		if (useLegacyPredicates) {
+			sb.append("SetSRID(GeomFromWKB(?),");
+		}
+		else {
+			sb.append("ST_SetSRID(ST_GeomFromWKB(?),");
+		}
+		sb.append(srid == null ? "-1" : srid);
+		sb.append(")");
+		return sb.toString();
+	}
 
-    @Override
-    public void setParticle( PreparedStatement stmt, Geometry particle, int paramIndex )
-                            throws SQLException {
-        byte[] wkb = null;
-        if ( particle != null ) {
-            try {
-                Geometry compatible = getCompatibleGeometry( particle );
-                wkb = WKBWriter.write( compatible );
-            } catch ( Throwable t ) {
-                throw new IllegalArgumentException( t.getMessage(), t );
-            }
-        }
-        stmt.setBytes( paramIndex, wkb );
-    }
+	@Override
+	public void setParticle(PreparedStatement stmt, Geometry particle, int paramIndex) throws SQLException {
+		byte[] wkb = null;
+		if (particle != null) {
+			try {
+				Geometry compatible = getCompatibleGeometry(particle);
+				wkb = WKBWriter.write(compatible);
+			}
+			catch (Throwable t) {
+				throw new IllegalArgumentException(t.getMessage(), t);
+			}
+		}
+		stmt.setBytes(paramIndex, wkb);
+	}
 
-    private Geometry getCompatibleGeometry( Geometry literal )
-                            throws SQLException {
-        if ( crs == null ) {
-            return literal;
-        }
+	private Geometry getCompatibleGeometry(Geometry literal) throws SQLException {
+		if (crs == null) {
+			return literal;
+		}
 
-        Geometry transformedLiteral = literal;
-        if ( literal != null ) {
-            ICRS literalCRS = literal.getCoordinateSystem();
-            if ( literalCRS != null && !( crs.equals( literalCRS ) ) ) {
-                LOG.debug( "Need transformed literal geometry for evaluation: " + literalCRS.getAlias() + " -> "
-                           + crs.getAlias() );
-                try {
-                    GeometryTransformer transformer = new GeometryTransformer( crs );
-                    transformedLiteral = transformer.transform( literal );
-                } catch ( Exception e ) {
-                    throw new SQLException( e.getMessage(), e );
-                }
-            }
-        }
-        return transformedLiteral;
-    }
+		Geometry transformedLiteral = literal;
+		if (literal != null) {
+			ICRS literalCRS = literal.getCoordinateSystem();
+			if (literalCRS != null && !(crs.equals(literalCRS))) {
+				LOG.debug("Need transformed literal geometry for evaluation: " + literalCRS.getAlias() + " -> "
+						+ crs.getAlias());
+				try {
+					GeometryTransformer transformer = new GeometryTransformer(crs);
+					transformedLiteral = transformer.transform(literal);
+				}
+				catch (Exception e) {
+					throw new SQLException(e.getMessage(), e);
+				}
+			}
+		}
+		return transformedLiteral;
+	}
 
-    @Override
-    public String getSrid() {
-        return srid;
-    }
+	@Override
+	public String getSrid() {
+		return srid;
+	}
 
-    @Override
-    public ICRS getCrs() {
-        return crs;
-    }
+	@Override
+	public ICRS getCrs() {
+		return crs;
+	}
+
 }

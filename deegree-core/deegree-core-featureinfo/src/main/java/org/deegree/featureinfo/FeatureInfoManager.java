@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -62,76 +61,75 @@ import org.slf4j.Logger;
 
 /**
  * Responsible for managing feature info output formats and their serializers.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author <a href="mailto:reijer.copier@idgis.nl">Reijer Copier</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 public class FeatureInfoManager {
 
-    private static final Logger LOG = getLogger( FeatureInfoManager.class );
+	private static final Logger LOG = getLogger(FeatureInfoManager.class);
 
-    private final Map<String, FeatureInfoSerializer> featureInfoSerializers = new LinkedHashMap<String, FeatureInfoSerializer>();
+	private final Map<String, FeatureInfoSerializer> featureInfoSerializers = new LinkedHashMap<String, FeatureInfoSerializer>();
 
-    public FeatureInfoManager( boolean addDefaultFormats ) {
-        if ( addDefaultFormats ) {
-            LOG.debug( "Adding default feature info formats" );
+	public FeatureInfoManager(boolean addDefaultFormats) {
+		if (addDefaultFormats) {
+			LOG.debug("Adding default feature info formats");
 
-            final FeatureInfoGmlWriter gmlWriter = new FeatureInfoGmlWriter();
+			final FeatureInfoGmlWriter gmlWriter = new FeatureInfoGmlWriter();
 
-            featureInfoSerializers.put( "application/vnd.ogc.gml", gmlWriter );
-            featureInfoSerializers.put( "text/xml", gmlWriter );
+			featureInfoSerializers.put("application/vnd.ogc.gml", gmlWriter);
+			featureInfoSerializers.put("text/xml", gmlWriter);
 
-            featureInfoSerializers.put( "text/plain", new PlainTextFeatureInfoSerializer() );
-            featureInfoSerializers.put( "text/html", new TemplateFeatureInfoSerializer() );
+			featureInfoSerializers.put("text/plain", new PlainTextFeatureInfoSerializer());
+			featureInfoSerializers.put("text/html", new TemplateFeatureInfoSerializer());
 
-            for ( final String version : new String[] { "2.1", "3.0", "3.1", "3.2" } ) {
-                featureInfoSerializers.put( "application/gml+xml; version=" + version, gmlWriter );
-            }
+			for (final String version : new String[] { "2.1", "3.0", "3.1", "3.2" }) {
+				featureInfoSerializers.put("application/gml+xml; version=" + version, gmlWriter);
+			}
 
-            for ( final String version : new String[] { "2.1.2", "3.0.1", "3.1.1", "3.2.1" } ) {
-                featureInfoSerializers.put( "text/xml; subtype=gml/" + version, gmlWriter );
-            }
-        }
-    }
+			for (final String version : new String[] { "2.1.2", "3.0.1", "3.1.1", "3.2.1" }) {
+				featureInfoSerializers.put("text/xml; subtype=gml/" + version, gmlWriter);
+			}
+		}
+	}
 
-    public void addOrReplaceCustomFormat( String format, FeatureInfoSerializer serializer ) {
-        LOG.debug( "Adding custom feature info format" );
+	public void addOrReplaceCustomFormat(String format, FeatureInfoSerializer serializer) {
+		LOG.debug("Adding custom feature info format");
 
-        featureInfoSerializers.put( format, serializer );
-    }
+		featureInfoSerializers.put(format, serializer);
+	}
 
-    public void addOrReplaceFormat( String format, String file ) {
-        LOG.debug( "Adding template feature info format" );
+	public void addOrReplaceFormat(String format, String file) {
+		LOG.debug("Adding template feature info format");
 
-        featureInfoSerializers.put( format, new TemplateFeatureInfoSerializer( file ) );
-    }
+		featureInfoSerializers.put(format, new TemplateFeatureInfoSerializer(file));
+	}
 
-    public void addOrReplaceXsltFormat( String format, URL xsltUrl, GMLVersion version, Workspace workspace ) {
-        LOG.debug( "Adding xslt feature info format" );
+	public void addOrReplaceXsltFormat(String format, URL xsltUrl, GMLVersion version, Workspace workspace) {
+		LOG.debug("Adding xslt feature info format");
 
-        XsltFeatureInfoSerializer xslt = new XsltFeatureInfoSerializer( version, xsltUrl, workspace );
-        featureInfoSerializers.put( format, xslt );
-    }
+		XsltFeatureInfoSerializer xslt = new XsltFeatureInfoSerializer(version, xsltUrl, workspace);
+		featureInfoSerializers.put(format, xslt);
+	}
 
-    public Set<String> getSupportedFormats() {
-        return featureInfoSerializers.keySet();
-    }
+	public Set<String> getSupportedFormats() {
+		return featureInfoSerializers.keySet();
+	}
 
-    public void serializeFeatureInfo( FeatureInfoParams params, FeatureInfoContext context )
-                            throws IOException, XMLStreamException {
+	public void serializeFeatureInfo(FeatureInfoParams params, FeatureInfoContext context)
+			throws IOException, XMLStreamException {
 
-        String format = params.getFormat();
+		String format = params.getFormat();
 
-        LOG.debug( "Generating feature info output for format: {}", format );
+		LOG.debug("Generating feature info output for format: {}", format);
 
-        FeatureInfoSerializer serializer = featureInfoSerializers.get( format.toLowerCase() );
-        if ( serializer != null ) {
-            serializer.serialize( params, context );
-        } else {
-            throw new IOException( "FeatureInfo format '" + format + "' is unknown." );
-        }
-    }
+		FeatureInfoSerializer serializer = featureInfoSerializers.get(format.toLowerCase());
+		if (serializer != null) {
+			serializer.serialize(params, context);
+		}
+		else {
+			throw new IOException("FeatureInfo format '" + format + "' is unknown.");
+		}
+	}
+
 }

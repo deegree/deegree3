@@ -58,92 +58,88 @@ import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetMap;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
- *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- *
- * @version $Revision$, $Date$
  */
 public class ServiceIntegrationTestHelper {
 
-    private static final Logger LOG = getLogger( ServiceIntegrationTestHelper.class );
+	private static final Logger LOG = getLogger(ServiceIntegrationTestHelper.class);
 
-    private TestEnvironment environment;
+	private TestEnvironment environment;
 
-    public ServiceIntegrationTestHelper( TestEnvironment environment ) {
-        this.environment = environment;
-    }
+	public ServiceIntegrationTestHelper(TestEnvironment environment) {
+		this.environment = environment;
+	}
 
-    public String createBaseURL() {
-        String port = environment.getPort();
-        String context = environment.getContext();
-        return "http://localhost:" + port + "/" + context + "/";
-    }
+	public String createBaseURL() {
+		String port = environment.getPort();
+		String context = environment.getContext();
+		return "http://localhost:" + port + "/" + context + "/";
+	}
 
-    public void testCapabilities( String service ) throws Exception {
-        String address = createBaseURL() + "services/" + service.toLowerCase() + "?request=GetCapabilities&service="
-                         + service;
-        try {
-            LOG.info( "Reading capabilities from " + address );
-            String input = IOUtils.toString( new URL( address ).openStream(), "UTF-8" );
-            XMLInputFactory fac = XMLInputFactory.newInstance();
-            XMLStreamReader in = fac.createXMLStreamReader( new StringReader( input ) );
-            while (!in.isStartElement()) {
-                in.next();
-            }
-            if ( in.getLocalName().toLowerCase().contains( "exception" ) ) {
-                LOG.error( "Actual response was:" );
-                LOG.error( input );
-                throw new Exception( "Retrieving capabilities from " + address + " failed." );
-            }
-        } catch ( Throwable e ) {
-            LOG.debug( "Failed to retrieve capabilities.", e );
-            throw new Exception( "Retrieving capabilities for " + service + " failed: "
-                                            + e.getLocalizedMessage(), e );
-        }
-    }
+	public void testCapabilities(String service) throws Exception {
+		String address = createBaseURL() + "services/" + service.toLowerCase() + "?request=GetCapabilities&service="
+				+ service;
+		try {
+			LOG.info("Reading capabilities from " + address);
+			String input = IOUtils.toString(new URL(address).openStream(), "UTF-8");
+			XMLInputFactory fac = XMLInputFactory.newInstance();
+			XMLStreamReader in = fac.createXMLStreamReader(new StringReader(input));
+			while (!in.isStartElement()) {
+				in.next();
+			}
+			if (in.getLocalName().toLowerCase().contains("exception")) {
+				LOG.error("Actual response was:");
+				LOG.error(input);
+				throw new Exception("Retrieving capabilities from " + address + " failed.");
+			}
+		}
+		catch (Throwable e) {
+			LOG.debug("Failed to retrieve capabilities.", e);
+			throw new Exception("Retrieving capabilities for " + service + " failed: " + e.getLocalizedMessage(), e);
+		}
+	}
 
-    public void testLayers( String service )
-                            throws Exception {
-        if ( !service.equals( "WMS" ) ) {
-            return;
-        }
-        String address = createBaseURL() + "services/wms?request=GetCapabilities&version=1.1.1&service=" + service;
-        String currentLayer = null;
-        try {
-            WMSClient client = new WMSClient( new URL( address ), 360, 360 );
-            for ( String layer : client.getNamedLayers() ) {
-                LOG.info( "Retrieving map for layer " + layer );
-                currentLayer = layer;
-                List<String> layers = singletonList( layer );
-                String srs = client.getCoordinateSystems( layer ).getFirst();
-                Envelope bbox = client.getBoundingBox( srs, layer );
-                if ( bbox == null ) {
-                    bbox = client.getLatLonBoundingBox( layer );
-                    if ( bbox == null ) {
-                        bbox = new GeometryFactory().createEnvelope( -180, -90, 180, 90, CRSUtils.EPSG_4326 );
-                    }
-                    bbox = new GeometryTransformer( CRSManager.lookup( srs ) ).transform( bbox );
-                }
-                GetMap gm = new GetMap( layers, 100, 100, bbox, CRSManager.lookup( srs ),
-                                        client.getFormats( GetMap ).getFirst(), true );
-                Object img = ImageIO.read( client.getMap( gm ) );
-                if ( img == null ) {
-                    throw new Exception( "Retrieving map for " + layer + " failed." );
-                }
-            }
-        } catch ( MalformedURLException e ) {
-            LOG.error(e.getLocalizedMessage(), e );
-            throw new Exception( "Retrieving capabilities for " + service + " failed: "
-                                            + e.getLocalizedMessage(), e );
-        } catch ( IOException e ) {
-            LOG.error(e.getLocalizedMessage(), e );
-            throw new Exception( "Retrieving map for " + currentLayer + " failed: "
-                                            + e.getLocalizedMessage(), e );
-        } catch ( Throwable e ) {
-            LOG.error(e.getLocalizedMessage(), e );
-            throw new Exception( "Layer " + currentLayer + " had no bounding box.", e );
-        }
-    }
+	public void testLayers(String service) throws Exception {
+		if (!service.equals("WMS")) {
+			return;
+		}
+		String address = createBaseURL() + "services/wms?request=GetCapabilities&version=1.1.1&service=" + service;
+		String currentLayer = null;
+		try {
+			WMSClient client = new WMSClient(new URL(address), 360, 360);
+			for (String layer : client.getNamedLayers()) {
+				LOG.info("Retrieving map for layer " + layer);
+				currentLayer = layer;
+				List<String> layers = singletonList(layer);
+				String srs = client.getCoordinateSystems(layer).getFirst();
+				Envelope bbox = client.getBoundingBox(srs, layer);
+				if (bbox == null) {
+					bbox = client.getLatLonBoundingBox(layer);
+					if (bbox == null) {
+						bbox = new GeometryFactory().createEnvelope(-180, -90, 180, 90, CRSUtils.EPSG_4326);
+					}
+					bbox = new GeometryTransformer(CRSManager.lookup(srs)).transform(bbox);
+				}
+				GetMap gm = new GetMap(layers, 100, 100, bbox, CRSManager.lookup(srs),
+						client.getFormats(GetMap).getFirst(), true);
+				Object img = ImageIO.read(client.getMap(gm));
+				if (img == null) {
+					throw new Exception("Retrieving map for " + layer + " failed.");
+				}
+			}
+		}
+		catch (MalformedURLException e) {
+			LOG.error(e.getLocalizedMessage(), e);
+			throw new Exception("Retrieving capabilities for " + service + " failed: " + e.getLocalizedMessage(), e);
+		}
+		catch (IOException e) {
+			LOG.error(e.getLocalizedMessage(), e);
+			throw new Exception("Retrieving map for " + currentLayer + " failed: " + e.getLocalizedMessage(), e);
+		}
+		catch (Throwable e) {
+			LOG.error(e.getLocalizedMessage(), e);
+			throw new Exception("Layer " + currentLayer + " had no bounding box.", e);
+		}
+	}
 
 }

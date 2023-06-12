@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/src/org/deegree/ogcwebservices/wfs/operation/DescribeFeatureType.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -46,91 +45,81 @@ import org.deegree.protocol.wfs.AbstractWFSRequest;
  * <li>WFS 1.1.0</li>
  * </ul>
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author: schneider $
- * 
- * @version $Revision: $, $Date: $
  */
 public class GetGmlObject extends AbstractWFSRequest {
 
-    private String requestedId;
+	private String requestedId;
 
-    private String outputFormat;
+	private String outputFormat;
 
-    // positive Integer, "*" (unlimited) or null (unspecified)
-    private String traverseXlinkDepth;
+	// positive Integer, "*" (unlimited) or null (unspecified)
+	private String traverseXlinkDepth;
 
-    // using Integer instead of int here, so it can be null (unspecified)
-    private Integer traverseXlinkExpiry;
+	// using Integer instead of int here, so it can be null (unspecified)
+	private Integer traverseXlinkExpiry;
 
-    /**
-     * Creates a new {@link GetGmlObject} request.
-     * 
-     * @param version
-     *            protocol version, must not be null
-     * @param handle
-     *            client-generated identifier, may be null
-     * @param requestedId
-     *            the id of the requested object, must not be null
-     * @param outputFormat
-     *            a String format of the result set, may be null
-     * @param traverseXlinkDepth
-     *            the depth to which nested property XLink linking element locator attribute (href) XLinks are traversed
-     *            and resolved if possible, the range of valid values for this parameter consists of positive integers,
-     *            "*" (unlimited) and null (unspecified)
-     * @param traverseXlinkExpiry
-     *            indicates how long the WFS should wait to receive a response to a nested GetGmlObject request (in
-     *            minutes), this attribute is only relevant if a value is specified for the traverseXlinkDepth
-     *            attribute, may be null
-     */
-    public GetGmlObject( Version version, String handle, String requestedId, String outputFormat,
-                         String traverseXlinkDepth, Integer traverseXlinkExpiry ) {
-        super( version, handle );
-        this.requestedId = requestedId;
-        this.outputFormat = outputFormat;
-        this.traverseXlinkDepth = traverseXlinkDepth;
-        this.traverseXlinkExpiry = traverseXlinkExpiry;
-    }
+	/**
+	 * Creates a new {@link GetGmlObject} request.
+	 * @param version protocol version, must not be null
+	 * @param handle client-generated identifier, may be null
+	 * @param requestedId the id of the requested object, must not be null
+	 * @param outputFormat a String format of the result set, may be null
+	 * @param traverseXlinkDepth the depth to which nested property XLink linking element
+	 * locator attribute (href) XLinks are traversed and resolved if possible, the range
+	 * of valid values for this parameter consists of positive integers, "*" (unlimited)
+	 * and null (unspecified)
+	 * @param traverseXlinkExpiry indicates how long the WFS should wait to receive a
+	 * response to a nested GetGmlObject request (in minutes), this attribute is only
+	 * relevant if a value is specified for the traverseXlinkDepth attribute, may be null
+	 */
+	public GetGmlObject(Version version, String handle, String requestedId, String outputFormat,
+			String traverseXlinkDepth, Integer traverseXlinkExpiry) {
+		super(version, handle);
+		this.requestedId = requestedId;
+		this.outputFormat = outputFormat;
+		this.traverseXlinkDepth = traverseXlinkDepth;
+		this.traverseXlinkExpiry = traverseXlinkExpiry;
+	}
 
-    /**
-     * Returns the id of the requested object.
-     * 
-     * @return the id of the requested object, never null
-     */
-    public String getRequestedId() {
-        return requestedId;
-    }
+	/**
+	 * Returns the id of the requested object.
+	 * @return the id of the requested object, never null
+	 */
+	public String getRequestedId() {
+		return requestedId;
+	}
 
-    /**
-     * Returns the requested output format.
-     * 
-     * @return the requested output format, or null if unspecified
-     */
-    public String getOutputFormat() {
-        return outputFormat;
-    }
+	/**
+	 * Returns the requested output format.
+	 * @return the requested output format, or null if unspecified
+	 */
+	public String getOutputFormat() {
+		return outputFormat;
+	}
 
-    /**
-     * Returns the depth to which nested property XLink linking element locator attribute (href) XLinks are traversed
-     * and resolved if possible. The range of valid values for this parameter consists of positive integers, "*"
-     * (unlimited) and null (unspecified).
-     * 
-     * @return the depth (positive integer), "*" (unlimited) or null (unspecified)
-     */
-    public String getTraverseXlinkDepth() {
-        return traverseXlinkDepth;
-    }
+	/**
+	 * Returns the depth to which nested property XLink linking element locator attribute
+	 * (href) XLinks are traversed and resolved if possible. The range of valid values for
+	 * this parameter consists of positive integers, "*" (unlimited) and null
+	 * (unspecified).
+	 * @return the depth (positive integer), "*" (unlimited) or null (unspecified)
+	 */
+	public String getTraverseXlinkDepth() {
+		return traverseXlinkDepth;
+	}
 
-    /**
-     * Return the number of minutes that the WFS should wait to receive a response to a nested <code>GetGmlObject</code>
-     * request. This is only relevant if a value is specified for the <code>traverseXlinkDepth</code> parameter.
-     * 
-     * @return the number of minutes to wait for nested <code>GetGmlObject</code> responses (positive integer) or null
-     *         (unspecified)
-     */
-    public Integer getTraverseXlinkExpiry() {
-        return traverseXlinkExpiry;
-    }
+	/**
+	 * Return the number of minutes that the WFS should wait to receive a response to a
+	 * nested <code>GetGmlObject</code> request. This is only relevant if a value is
+	 * specified for the <code>traverseXlinkDepth</code> parameter.
+	 * @return the number of minutes to wait for nested <code>GetGmlObject</code>
+	 * responses (positive integer) or null (unspecified)
+	 */
+	public Integer getTraverseXlinkExpiry() {
+		return traverseXlinkExpiry;
+	}
+
 }

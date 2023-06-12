@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -42,96 +41,95 @@ import java.util.List;
 import org.deegree.commons.utils.SunInfo;
 
 /**
- * The <code>GetViewSceneParameters</code> class wraps scene parameters of a GetView request.
- * 
+ * The <code>GetViewSceneParameters</code> class wraps scene parameters of a GetView
+ * request.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class GetViewSceneParameters {
 
-    private final String elevationModel;
+	private final String elevationModel;
 
-    private final List<String> datasets;
+	private final List<String> datasets;
 
-    private final Color bgColor;
+	private final Color bgColor;
 
-    private final String skyImage;
+	private final String skyImage;
 
-    private final String date;
+	private final String date;
 
-    private final float scale;
+	private final float scale;
 
-    private final SunInfo sunPosition;
+	private final SunInfo sunPosition;
 
-    /**
-     * @param scale
-     * @param elevationModel
-     * @param datasets
-     * @param bgColor
-     * @param skyImage
-     * @param date
-     * @param position
-     */
-    public GetViewSceneParameters( float scale, String elevationModel, List<String> datasets, Color bgColor,
-                                   String skyImage, String date, SunInfo position ) {
-        this.scale = scale;
-        this.elevationModel = elevationModel;
-        this.datasets = datasets;
-        this.bgColor = bgColor;
-        this.skyImage = skyImage;
-        this.date = date;
-        this.sunPosition = position;
-    }
+	/**
+	 * @param scale
+	 * @param elevationModel
+	 * @param datasets
+	 * @param bgColor
+	 * @param skyImage
+	 * @param date
+	 * @param position
+	 */
+	public GetViewSceneParameters(float scale, String elevationModel, List<String> datasets, Color bgColor,
+			String skyImage, String date, SunInfo position) {
+		this.scale = scale;
+		this.elevationModel = elevationModel;
+		this.datasets = datasets;
+		this.bgColor = bgColor;
+		this.skyImage = skyImage;
+		this.date = date;
+		this.sunPosition = position;
+	}
 
-    /**
-     * @return the elevationModel
-     */
-    public final String getElevationModel() {
-        return elevationModel;
-    }
+	/**
+	 * @return the elevationModel
+	 */
+	public final String getElevationModel() {
+		return elevationModel;
+	}
 
-    /**
-     * @return the datasets
-     */
-    public final List<String> getDatasets() {
-        return datasets;
-    }
+	/**
+	 * @return the datasets
+	 */
+	public final List<String> getDatasets() {
+		return datasets;
+	}
 
-    /**
-     * @return the bgColor
-     */
-    public final Color getBgColor() {
-        return bgColor;
-    }
+	/**
+	 * @return the bgColor
+	 */
+	public final Color getBgColor() {
+		return bgColor;
+	}
 
-    /**
-     * @return the skyImage
-     */
-    public final String getSkyImage() {
-        return skyImage;
-    }
+	/**
+	 * @return the skyImage
+	 */
+	public final String getSkyImage() {
+		return skyImage;
+	}
 
-    /**
-     * @return the date
-     */
-    public final String getDate() {
-        return date;
-    }
+	/**
+	 * @return the date
+	 */
+	public final String getDate() {
+		return date;
+	}
 
-    /**
-     * @return the scale
-     */
-    public final float getScale() {
-        return scale;
-    }
+	/**
+	 * @return the scale
+	 */
+	public final float getScale() {
+		return scale;
+	}
 
-    /**
-     * @return the sunPosition created from the date object.
-     */
-    public final SunInfo getSunPosition() {
-        return sunPosition;
-    }
+	/**
+	 * @return the sunPosition created from the date object.
+	 */
+	public final SunInfo getSunPosition() {
+		return sunPosition;
+	}
 
 }

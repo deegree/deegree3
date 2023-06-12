@@ -111,7 +111,7 @@ now tick the INSPIRE layers offered by the deegree WMS.
 .INSPIRE layers rendered by the deegree WMS
 image::console_workspace_inspire2.png[INSPIRE layers rendered by the deegree WMS,scaledwidth=50.0%]
 
-TIP: The map client is based on http://openlayers.org/[OpenLayers]. Drag the
+TIP: The map client is based on https://openlayers.org/[OpenLayers]. Drag the
 map by holding the mouse button and moving your mouse. Zoom using the
 controls on the left or with the mouse wheel. Alternatively, you can
 open a zoom rectangle by holding the SHIFT key and clicking the mouse
@@ -184,7 +184,7 @@ instance.
 .Selecting WMS layers to be displayed
 image::console_workspace_utah2.png[Selecting WMS layers to be displayed,scaledwidth=50.0%]
 
-TIP: The map client is based on http://openlayers.org/[OpenLayers]. Drag the
+TIP: The map client is based on https://openlayers.org/[OpenLayers]. Drag the
 map by holding the mouse button and moving your mouse. Zoom using the
 controls on the left or with the mouse wheel. Alternatively, you can
 open a zoom rectangle by holding the SHIFT key and clicking the mouse
@@ -210,7 +210,7 @@ section.
 image::console_workspace_utah5.png[Sending example requests,scaledwidth=50.0%]
 
 TIP: WFS request types and their format are specified in the
-http://www.opengeospatial.org/standards/wfs[OGC Web Feature Service
+https://www.ogc.org/standard/wfs/[OGC Web Feature Service
 specification].
 
 TIP: Instead of using the built-in layer preview or the generic OGC client,
@@ -339,7 +339,7 @@ demonstrate many of the possibilities of the WPS protocol:
 image::console_workspace_wps5.png[Example requests for the ParameterDemo process,scaledwidth=50.0%]
 
 TIP: WPS request types and their format are specified in the
-http://www.opengeospatial.org/standards/wps[OGC Web Processing Service
+https://www.ogc.org/standard/wps/[OGC Web Processing Service
 specification].
 
 TIP: In order to add your own processes, see <<anchor-configuration-wps>> and

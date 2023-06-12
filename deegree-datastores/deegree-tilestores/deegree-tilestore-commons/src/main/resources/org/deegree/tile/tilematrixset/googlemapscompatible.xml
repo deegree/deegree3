@@ -1,5 +1,5 @@
 <TileMatrixSet xmlns="http://www.deegree.org/datasource/tile/tilematrixset" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/datasource/tile/tilematrixset http://schemas.deegree.org/3.5/datasource/tile/tilematrixset/tilematrixset.xsd"
+  xsi:schemaLocation="http://www.deegree.org/datasource/tile/tilematrixset https://schemas.deegree.org/core/3.5/datasource/tile/tilematrixset/tilematrixset.xsd"
  >
 
   <CRS>urn:ogc:def:crs:EPSG::3857</CRS>

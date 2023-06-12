@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -53,12 +52,8 @@ import org.junit.runners.Parameterized.Parameters;
 
 /**
  * Wraps the execution of the CITE WFS 1.1.0 TestSuite as a JUnit-test.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 22950 $, $Date: 2010-03-09 19:05:17 +0100 (Di, 09. Mär
- *          2010) $
  */
 @RunWith(Parameterized.class)
 public class WFSCite110IntegrationTest extends AbstractCiteIntegrationTest {
@@ -69,7 +64,8 @@ public class WFSCite110IntegrationTest extends AbstractCiteIntegrationTest {
 
 	@Parameters
 	public static Collection getResultSnippets() throws Exception {
-		return getResultSnippets("/citewfs110/src/main.xml", "capabilities-url", "wfs110?request=GetCapabilities&service=WFS");
+		return getResultSnippets("/citewfs110/src/main.xml", "capabilities-url",
+				"wfs110?request=GetCapabilities&service=WFS");
 	}
 
 	public WFSCite110IntegrationTest(String testLabel, String resultSnippet) {
@@ -83,4 +79,5 @@ public class WFSCite110IntegrationTest extends AbstractCiteIntegrationTest {
 			throw new RuntimeException("Test '" + testLabel + "' failed.");
 		}
 	}
+
 }

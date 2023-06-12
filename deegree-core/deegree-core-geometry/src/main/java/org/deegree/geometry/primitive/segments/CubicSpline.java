@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -39,34 +38,29 @@ import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
 
 /**
- * A {@link CurveSegment} that uses the control points and a set of derivative parameters to define a piecewise 3rd
- * degree polynomial interpolation.
+ * A {@link CurveSegment} that uses the control points and a set of derivative parameters
+ * to define a piecewise 3rd degree polynomial interpolation.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- *
- * @version $Revision$, $Date$
  */
 public interface CubicSpline extends CurveSegment {
 
-    /**
-     * Returns the control points of the spline.
-     *
-     * @return the control points of the spline
-     */
-    public Points getControlPoints();
+	/**
+	 * Returns the control points of the spline.
+	 * @return the control points of the spline
+	 */
+	public Points getControlPoints();
 
-    /**
-     * Returns the unit tangent vector at the start point of the spline.
-     *
-     * @return the unit tangent vector at the start point of the spline
-     */
-    public Point getVectorAtStart();
+	/**
+	 * Returns the unit tangent vector at the start point of the spline.
+	 * @return the unit tangent vector at the start point of the spline
+	 */
+	public Point getVectorAtStart();
 
-    /**
-     * Returns the unit tangent vector at the end point of the spline.
-     *
-     * @return the unit tangent vector at the end point of the spline
-     */
-    public Point getVectorAtEnd();
+	/**
+	 * Returns the unit tangent vector at the end point of the spline.
+	 * @return the unit tangent vector at the end point of the spline
+	 */
+	public Point getVectorAtEnd();
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -49,106 +48,90 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Provides access to the outputs from a {@link ProcessExecution}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class ExecutionOutputs {
 
-    private static final Logger LOG = LoggerFactory.getLogger( ExecutionOutputs.class );
+	private static final Logger LOG = LoggerFactory.getLogger(ExecutionOutputs.class);
 
-    private final Map<CodeType, ExecutionOutput> paramIdToOutput = new LinkedHashMap<CodeType, ExecutionOutput>();
+	private final Map<CodeType, ExecutionOutput> paramIdToOutput = new LinkedHashMap<CodeType, ExecutionOutput>();
 
-    /**
-     * Creates a new {@link ExecutionOutputs} instance.
-     * 
-     * @param outputs
-     *            output values, never <code>null</code>
-     */
-    public ExecutionOutputs( ExecutionOutput[] outputs ) {
-        for ( ExecutionOutput output : outputs ) {
-            LOG.debug( "Output: " + output.getId() + ": " + output );
-            paramIdToOutput.put( output.getId(), output );
-        }
-    }
+	/**
+	 * Creates a new {@link ExecutionOutputs} instance.
+	 * @param outputs output values, never <code>null</code>
+	 */
+	public ExecutionOutputs(ExecutionOutput[] outputs) {
+		for (ExecutionOutput output : outputs) {
+			LOG.debug("Output: " + output.getId() + ": " + output);
+			paramIdToOutput.put(output.getId(), output);
+		}
+	}
 
-    /**
-     * Returns all outputs.
-     * 
-     * @return all outputs, never <code>null</code>
-     */
-    public ExecutionOutput[] getAll() {
-        return paramIdToOutput.values().toArray( new ExecutionOutput[paramIdToOutput.size()] );
-    }
+	/**
+	 * Returns all outputs.
+	 * @return all outputs, never <code>null</code>
+	 */
+	public ExecutionOutput[] getAll() {
+		return paramIdToOutput.values().toArray(new ExecutionOutput[paramIdToOutput.size()]);
+	}
 
-    /**
-     * Returns the output with the specified index.
-     * 
-     * @param i
-     *            index of the output, starting with zero
-     * @return the output with the specified index, never <code>null</code>
-     * @throws IndexOutOfBoundsException
-     *             if no such output exists
-     */
-    public ExecutionOutput get( int i ) {
-        return getAll()[i];
-    }
+	/**
+	 * Returns the output with the specified index.
+	 * @param i index of the output, starting with zero
+	 * @return the output with the specified index, never <code>null</code>
+	 * @throws IndexOutOfBoundsException if no such output exists
+	 */
+	public ExecutionOutput get(int i) {
+		return getAll()[i];
+	}
 
-    /**
-     * Returns the output with the specified identifier.
-     * 
-     * @param id
-     *            output identifier, never <code>null</code>
-     * @param idCodeSpace
-     *            codespace of the output identifier, may be <code>null</code> (for identifiers that don't use a code
-     *            space)
-     * @return output with the specified identifier, may be <code>null</code> (if no such output exists)
-     */
-    public ExecutionOutput get( String id, String idCodeSpace ) {
-        return paramIdToOutput.get( new CodeType( id, idCodeSpace ) );
-    }
+	/**
+	 * Returns the output with the specified identifier.
+	 * @param id output identifier, never <code>null</code>
+	 * @param idCodeSpace codespace of the output identifier, may be <code>null</code>
+	 * (for identifiers that don't use a code space)
+	 * @return output with the specified identifier, may be <code>null</code> (if no such
+	 * output exists)
+	 */
+	public ExecutionOutput get(String id, String idCodeSpace) {
+		return paramIdToOutput.get(new CodeType(id, idCodeSpace));
+	}
 
-    /**
-     * Returns the literal output with the specified identifier.
-     * 
-     * @param id
-     *            output identifier, never <code>null</code>
-     * @param idCodeSpace
-     *            codespace of the output identifier, may be <code>null</code> (for identifiers that don't use a code
-     *            space)
-     * @return output with the specified identifier, may be <code>null</code> (if no such output exists)
-     */
-    public LiteralOutput getLiteral( String id, String idCodeSpace ) {
-        return (LiteralOutput) paramIdToOutput.get( new CodeType( id, idCodeSpace ) );
-    }
+	/**
+	 * Returns the literal output with the specified identifier.
+	 * @param id output identifier, never <code>null</code>
+	 * @param idCodeSpace codespace of the output identifier, may be <code>null</code>
+	 * (for identifiers that don't use a code space)
+	 * @return output with the specified identifier, may be <code>null</code> (if no such
+	 * output exists)
+	 */
+	public LiteralOutput getLiteral(String id, String idCodeSpace) {
+		return (LiteralOutput) paramIdToOutput.get(new CodeType(id, idCodeSpace));
+	}
 
-    /**
-     * Returns the bounding box output with the specified identifier.
-     * 
-     * @param id
-     *            output identifier, never <code>null</code>
-     * @param idCodeSpace
-     *            codespace of the output identifier, may be <code>null</code> (for identifiers that don't use a code
-     *            space)
-     * @return output with the specified identifier, may be <code>null</code> (if no such output exists)
-     */
-    public BBoxOutput getBoundingBox( String id, String idCodeSpace ) {
-        return (BBoxOutput) paramIdToOutput.get( new CodeType( id, idCodeSpace ) );
-    }
+	/**
+	 * Returns the bounding box output with the specified identifier.
+	 * @param id output identifier, never <code>null</code>
+	 * @param idCodeSpace codespace of the output identifier, may be <code>null</code>
+	 * (for identifiers that don't use a code space)
+	 * @return output with the specified identifier, may be <code>null</code> (if no such
+	 * output exists)
+	 */
+	public BBoxOutput getBoundingBox(String id, String idCodeSpace) {
+		return (BBoxOutput) paramIdToOutput.get(new CodeType(id, idCodeSpace));
+	}
 
-    /**
-     * Returns the complex output with the specified identifier.
-     * 
-     * @param id
-     *            output identifier, never <code>null</code>
-     * @param idCodeSpace
-     *            codespace of the output identifier, may be <code>null</code> (for identifiers that don't use a code
-     *            space)
-     * @return output with the specified identifier, may be <code>null</code> (if no such output exists)
-     */
-    public ComplexOutput getComplex( String id, String idCodeSpace ) {
-        return (ComplexOutput) paramIdToOutput.get( new CodeType( id, idCodeSpace ) );
-    }
+	/**
+	 * Returns the complex output with the specified identifier.
+	 * @param id output identifier, never <code>null</code>
+	 * @param idCodeSpace codespace of the output identifier, may be <code>null</code>
+	 * (for identifiers that don't use a code space)
+	 * @return output with the specified identifier, may be <code>null</code> (if no such
+	 * output exists)
+	 */
+	public ComplexOutput getComplex(String id, String idCodeSpace) {
+		return (ComplexOutput) paramIdToOutput.get(new CodeType(id, idCodeSpace));
+	}
+
 }

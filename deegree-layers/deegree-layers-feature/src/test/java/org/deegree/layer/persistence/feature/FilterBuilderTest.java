@@ -24,75 +24,75 @@ import static org.junit.Assert.assertThat;
  */
 public class FilterBuilderTest {
 
-    @Test
-    public void testBuildRequestFilter() {
-        String filterProperty = "type";
-        List<String> filterValues = Collections.singletonList( "one" );
+	@Test
+	public void testBuildRequestFilter() {
+		String filterProperty = "type";
+		List<String> filterValues = Collections.singletonList("one");
 
-        LayerQuery layerQuery = mockLayerQuery( filterProperty, filterValues );
-        Set<QName> propertyNames = createPropertyNames( filterProperty );
-        OperatorFilter operatorFilter = FilterBuilder.buildRequestFilter( layerQuery, propertyNames );
+		LayerQuery layerQuery = mockLayerQuery(filterProperty, filterValues);
+		Set<QName> propertyNames = createPropertyNames(filterProperty);
+		OperatorFilter operatorFilter = FilterBuilder.buildRequestFilter(layerQuery, propertyNames);
 
-        assertThat( operatorFilter.getOperator(), instanceOf( PropertyIsEqualTo.class ) );
-    }
+		assertThat(operatorFilter.getOperator(), instanceOf(PropertyIsEqualTo.class));
+	}
 
-    @Test
-    public void testBuildRequestFilter_MultipleValues() {
-        String filterProperty = "type";
-        List<String> filterValues = Arrays.asList( new String[] { "one", "two" } );
-        LayerQuery layerQuery = mockLayerQuery( filterProperty, filterValues );
-        Set<QName> propertyNames = createPropertyNames( filterProperty );
-        OperatorFilter operatorFilter = FilterBuilder.buildRequestFilter( layerQuery, propertyNames );
+	@Test
+	public void testBuildRequestFilter_MultipleValues() {
+		String filterProperty = "type";
+		List<String> filterValues = Arrays.asList(new String[] { "one", "two" });
+		LayerQuery layerQuery = mockLayerQuery(filterProperty, filterValues);
+		Set<QName> propertyNames = createPropertyNames(filterProperty);
+		OperatorFilter operatorFilter = FilterBuilder.buildRequestFilter(layerQuery, propertyNames);
 
-        assertThat( operatorFilter.getOperator(), instanceOf( Or.class ) );
-    }
+		assertThat(operatorFilter.getOperator(), instanceOf(Or.class));
+	}
 
-    @Test
-    public void testBuildRequestFilter_EmptyValues() {
-        String filterProperty = "type";
-        List<String> filterValues = Collections.emptyList();
-        LayerQuery layerQuery = mockLayerQuery( filterProperty, filterValues );
-        Set<QName> propertyNames = createPropertyNames( filterProperty );
-        OperatorFilter operatorFilter = FilterBuilder.buildRequestFilter( layerQuery, propertyNames );
+	@Test
+	public void testBuildRequestFilter_EmptyValues() {
+		String filterProperty = "type";
+		List<String> filterValues = Collections.emptyList();
+		LayerQuery layerQuery = mockLayerQuery(filterProperty, filterValues);
+		Set<QName> propertyNames = createPropertyNames(filterProperty);
+		OperatorFilter operatorFilter = FilterBuilder.buildRequestFilter(layerQuery, propertyNames);
 
-        assertThat( operatorFilter, is( nullValue() ) );
-    }
+		assertThat(operatorFilter, is(nullValue()));
+	}
 
-    @Test
-    public void testBuildRequestFilter_NullRequestFilter() {
-        LayerQuery layerQuery = mockLayerQuery( null );
-        Set<QName> propertyNames = createPropertyNames( "abc" );
-        OperatorFilter operatorFilter = FilterBuilder.buildRequestFilter( layerQuery, propertyNames );
+	@Test
+	public void testBuildRequestFilter_NullRequestFilter() {
+		LayerQuery layerQuery = mockLayerQuery(null);
+		Set<QName> propertyNames = createPropertyNames("abc");
+		OperatorFilter operatorFilter = FilterBuilder.buildRequestFilter(layerQuery, propertyNames);
 
-        assertThat( operatorFilter, is( nullValue() ) );
-    }
+		assertThat(operatorFilter, is(nullValue()));
+	}
 
-    @Test
-    public void testBuildRequestFilter_PropertyNotKnown() {
-        String filterProperty = "type";
-        List<String> filterValues = Collections.singletonList( "one" );
+	@Test
+	public void testBuildRequestFilter_PropertyNotKnown() {
+		String filterProperty = "type";
+		List<String> filterValues = Collections.singletonList("one");
 
-        LayerQuery layerQuery = mockLayerQuery( filterProperty, filterValues );
-        Set<QName> propertyNames = createPropertyNames( "anothertype" );
-        OperatorFilter operatorFilter = FilterBuilder.buildRequestFilter( layerQuery, propertyNames );
+		LayerQuery layerQuery = mockLayerQuery(filterProperty, filterValues);
+		Set<QName> propertyNames = createPropertyNames("anothertype");
+		OperatorFilter operatorFilter = FilterBuilder.buildRequestFilter(layerQuery, propertyNames);
 
-        assertThat( operatorFilter, is( nullValue() ) );
-    }
+		assertThat(operatorFilter, is(nullValue()));
+	}
 
-    private LayerQuery mockLayerQuery( String filterProperty, List<String> filterValues ) {
-        Pair<String, List<String>> requestFilter = new Pair<String, List<String>>( filterProperty, filterValues );
+	private LayerQuery mockLayerQuery(String filterProperty, List<String> filterValues) {
+		Pair<String, List<String>> requestFilter = new Pair<String, List<String>>(filterProperty, filterValues);
 
-        return mockLayerQuery( requestFilter );
-    }
+		return mockLayerQuery(requestFilter);
+	}
 
-    private LayerQuery mockLayerQuery( Pair<String, List<String>> requestFilter ) {
-        LayerQuery layerQueryMock = Mockito.mock( LayerQuery.class );
-        Mockito.when( layerQueryMock.requestFilter() ).thenReturn( requestFilter );
-        return layerQueryMock;
-    }
+	private LayerQuery mockLayerQuery(Pair<String, List<String>> requestFilter) {
+		LayerQuery layerQueryMock = Mockito.mock(LayerQuery.class);
+		Mockito.when(layerQueryMock.requestFilter()).thenReturn(requestFilter);
+		return layerQueryMock;
+	}
 
-    private Set<QName> createPropertyNames( String filterProperty ) {
-        return Collections.singleton( new QName( filterProperty ) );
-    }
+	private Set<QName> createPropertyNames(String filterProperty) {
+		return Collections.singleton(new QName(filterProperty));
+	}
 
 }

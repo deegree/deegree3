@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -50,47 +49,48 @@ import org.deegree.time.primitive.TimePeriod;
  * {@link ElementNode} that wraps a {@link GMLObject} and it's parent.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- *
- * @version $Revision:$, $Date:$
  */
 public class GMLObjectNode<V extends GMLObject, P extends TypedObjectNode> extends ElementNode<V> {
 
-    private XPathNode<P> parentNode;
+	private XPathNode<P> parentNode;
 
-    private V object;
+	private V object;
 
-    public GMLObjectNode( XPathNode<P> parentNode, V object ) {
-        super( getName( object ) );
-        this.parentNode = parentNode;
-        this.object = object;
-    }
+	public GMLObjectNode(XPathNode<P> parentNode, V object) {
+		super(getName(object));
+		this.parentNode = parentNode;
+		this.object = object;
+	}
 
-    private static QName getName( GMLObject object ) {
-        if ( object.getType() != null ) {
-            return object.getType().getName();
-        }
-        if ( object instanceof Feature ) {
-            return ( (Feature) object ).getName();
-        } else if ( object instanceof Geometry ) {
-            // TODO should be covered by the type
-            return new QName( "GEOMETRY" );
-        } else if ( object instanceof TimeInstant ) {
-            return new QName( GML3_2_NS, "TimeInstant" );
-        } else if ( object instanceof TimePeriod ) {
-            return new QName( GML3_2_NS, "TimePeriod" );
-        }
-        throw new IllegalArgumentException( "Creating GMLObjectNode from " + object.getClass()
-                                            + " needs implementation." );
-    }
+	private static QName getName(GMLObject object) {
+		if (object.getType() != null) {
+			return object.getType().getName();
+		}
+		if (object instanceof Feature) {
+			return ((Feature) object).getName();
+		}
+		else if (object instanceof Geometry) {
+			// TODO should be covered by the type
+			return new QName("GEOMETRY");
+		}
+		else if (object instanceof TimeInstant) {
+			return new QName(GML3_2_NS, "TimeInstant");
+		}
+		else if (object instanceof TimePeriod) {
+			return new QName(GML3_2_NS, "TimePeriod");
+		}
+		throw new IllegalArgumentException(
+				"Creating GMLObjectNode from " + object.getClass() + " needs implementation.");
+	}
 
-    @Override
-    public XPathNode<P> getParent() {
-        return parentNode;
-    }
+	@Override
+	public XPathNode<P> getParent() {
+		return parentNode;
+	}
 
-    @Override
-    public V getValue() {
-        return object;
-    }
+	@Override
+	public V getValue() {
+		return object;
+	}
+
 }

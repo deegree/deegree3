@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -55,7 +54,8 @@ import org.deegree.protocol.wfs.AbstractWFSRequestKVPAdapter;
 import org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureType;
 
 /**
- * Adapter between KVP <code>DescribeFeatureType</code> requests and {@link DescribeFeatureType} objects.
+ * Adapter between KVP <code>DescribeFeatureType</code> requests and
+ * {@link DescribeFeatureType} objects.
  * <p>
  * Supported versions:
  * <ul>
@@ -64,241 +64,231 @@ import org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureType;
  * <li>WFS 2.0.0</li>
  * </ul>
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class DescribeFeatureTypeKVPAdapter extends AbstractWFSRequestKVPAdapter {
 
-    /**
-     * Parses a normalized KVP-map as a WFS {@link DescribeFeatureType} request.
-     * <p>
-     * Supported versions:
-     * <ul>
-     * <li>WFS 1.0.0</li>
-     * <li>WFS 1.1.0</li>
-     * <li>WFS 2.0.0</li>
-     * </ul>
-     * </p>
-     * 
-     * @param kvpParams
-     *            normalized KVP-map; keys must be uppercase, each key only has one associated value
-     * @return parsed {@link DescribeFeatureType} request
-     * @throws MissingParameterException
-     *             if the request version is unsupported
-     * @throws InvalidParameterValueException
-     *             if a parameter contains a syntax error
-     */
-    public static DescribeFeatureType parse( Map<String, String> kvpParams )
-                            throws MissingParameterException, InvalidParameterValueException {
+	/**
+	 * Parses a normalized KVP-map as a WFS {@link DescribeFeatureType} request.
+	 * <p>
+	 * Supported versions:
+	 * <ul>
+	 * <li>WFS 1.0.0</li>
+	 * <li>WFS 1.1.0</li>
+	 * <li>WFS 2.0.0</li>
+	 * </ul>
+	 * </p>
+	 * @param kvpParams normalized KVP-map; keys must be uppercase, each key only has one
+	 * associated value
+	 * @return parsed {@link DescribeFeatureType} request
+	 * @throws MissingParameterException if the request version is unsupported
+	 * @throws InvalidParameterValueException if a parameter contains a syntax error
+	 */
+	public static DescribeFeatureType parse(Map<String, String> kvpParams)
+			throws MissingParameterException, InvalidParameterValueException {
 
-        Version version = Version.parseVersion( KVPUtils.getRequired( kvpParams, "VERSION" ) );
+		Version version = Version.parseVersion(KVPUtils.getRequired(kvpParams, "VERSION"));
 
-        DescribeFeatureType result = null;
-        if ( VERSION_100.equals( version ) ) {
-            result = parse100( kvpParams );
-        } else if ( VERSION_110.equals( version ) ) {
-            result = parse110( kvpParams );
-        } else if ( VERSION_200.equals( version ) ) {
-            result = parse200( kvpParams );
-        } else {
-            String msg = Messages.get( "UNSUPPORTED_VERSION", version,
-                                       Version.getVersionsString( VERSION_100, VERSION_110, VERSION_200 ) );
-            throw new InvalidParameterValueException( msg );
-        }
-        return result;
-    }
+		DescribeFeatureType result = null;
+		if (VERSION_100.equals(version)) {
+			result = parse100(kvpParams);
+		}
+		else if (VERSION_110.equals(version)) {
+			result = parse110(kvpParams);
+		}
+		else if (VERSION_200.equals(version)) {
+			result = parse200(kvpParams);
+		}
+		else {
+			String msg = Messages.get("UNSUPPORTED_VERSION", version,
+					Version.getVersionsString(VERSION_100, VERSION_110, VERSION_200));
+			throw new InvalidParameterValueException(msg);
+		}
+		return result;
+	}
 
-    /**
-     * Parses a normalized KVP-map as a WFS 1.0.0 {@link DescribeFeatureType} request.
-     * 
-     * @param kvpParams
-     *            normalized KVP-map; keys must be uppercase, each key only has one associated value
-     * @return parsed {@link DescribeFeatureType} request
-     * @throws InvalidParameterValueException
-     *             if a parameter contains a syntax error
-     */
-    public static DescribeFeatureType parse100( Map<String, String> kvpParams )
-                            throws InvalidParameterValueException {
+	/**
+	 * Parses a normalized KVP-map as a WFS 1.0.0 {@link DescribeFeatureType} request.
+	 * @param kvpParams normalized KVP-map; keys must be uppercase, each key only has one
+	 * associated value
+	 * @return parsed {@link DescribeFeatureType} request
+	 * @throws InvalidParameterValueException if a parameter contains a syntax error
+	 */
+	public static DescribeFeatureType parse100(Map<String, String> kvpParams) throws InvalidParameterValueException {
 
-        // optional: 'NAMESPACE' (deegree specific extension, not mentioned in the WFS 1.0.0 specification)
-        Map<String, String> nsBindings = extractNamespaceBindings110( kvpParams );
+		// optional: 'NAMESPACE' (deegree specific extension, not mentioned in the WFS
+		// 1.0.0 specification)
+		Map<String, String> nsBindings = extractNamespaceBindings110(kvpParams);
 
-        // optional: 'TYPENAME'
-        QName[] typeNames = extractTypeNames( kvpParams, null );
+		// optional: 'TYPENAME'
+		QName[] typeNames = extractTypeNames(kvpParams, null);
 
-        // optional: 'OUTPUTFORMAT'
-        String outputFormat = kvpParams.get( "OUTPUTFORMAT" );
+		// optional: 'OUTPUTFORMAT'
+		String outputFormat = kvpParams.get("OUTPUTFORMAT");
 
-        return new DescribeFeatureType( VERSION_100, null, outputFormat, typeNames, nsBindings );
-    }
+		return new DescribeFeatureType(VERSION_100, null, outputFormat, typeNames, nsBindings);
+	}
 
-    /**
-     * Parses a normalized KVP-map as a WFS 1.1.0 {@link DescribeFeatureType} request.
-     * 
-     * @param kvpParams
-     *            normalized KVP-map; keys must be uppercase, each key only has one associated value
-     * @return parsed {@link DescribeFeatureType} request
-     * @throws InvalidParameterValueException
-     *             if a parameter contains a syntax error
-     */
-    public static DescribeFeatureType parse110( Map<String, String> kvpParams )
-                            throws InvalidParameterValueException {
+	/**
+	 * Parses a normalized KVP-map as a WFS 1.1.0 {@link DescribeFeatureType} request.
+	 * @param kvpParams normalized KVP-map; keys must be uppercase, each key only has one
+	 * associated value
+	 * @return parsed {@link DescribeFeatureType} request
+	 * @throws InvalidParameterValueException if a parameter contains a syntax error
+	 */
+	public static DescribeFeatureType parse110(Map<String, String> kvpParams) throws InvalidParameterValueException {
 
-        // optional: 'NAMESPACE'
-        Map<String, String> nsBindings = extractNamespaceBindings110( kvpParams );
+		// optional: 'NAMESPACE'
+		Map<String, String> nsBindings = extractNamespaceBindings110(kvpParams);
 
-        // optional: 'TYPENAME'
-        QName[] typeNames = extractTypeNames( kvpParams, nsBindings );
+		// optional: 'TYPENAME'
+		QName[] typeNames = extractTypeNames(kvpParams, nsBindings);
 
-        // optional: 'OUTPUTFORMAT'
-        String outputFormat = kvpParams.get( "OUTPUTFORMAT" );
+		// optional: 'OUTPUTFORMAT'
+		String outputFormat = kvpParams.get("OUTPUTFORMAT");
 
-        return new DescribeFeatureType( VERSION_110, null, outputFormat, typeNames, nsBindings );
-    }
+		return new DescribeFeatureType(VERSION_110, null, outputFormat, typeNames, nsBindings);
+	}
 
-    /**
-     * Parses a normalized KVP-map as a WFS 2.0.0 {@link DescribeFeatureType} request.
-     * 
-     * @param kvpParams
-     *            normalized KVP-map; keys must be uppercase, each key only has one associated value
-     * @return parsed {@link DescribeFeatureType} request
-     * @throws InvalidParameterValueException
-     *             if a parameter contains a syntax error
-     */
-    public static DescribeFeatureType parse200( Map<String, String> kvpParams )
-                            throws InvalidParameterValueException {
+	/**
+	 * Parses a normalized KVP-map as a WFS 2.0.0 {@link DescribeFeatureType} request.
+	 * @param kvpParams normalized KVP-map; keys must be uppercase, each key only has one
+	 * associated value
+	 * @return parsed {@link DescribeFeatureType} request
+	 * @throws InvalidParameterValueException if a parameter contains a syntax error
+	 */
+	public static DescribeFeatureType parse200(Map<String, String> kvpParams) throws InvalidParameterValueException {
 
-        // optional: 'NAMESPACE'
-        Map<String, String> nsBindings = extractNamespaceBindings200( kvpParams.get( "NAMESPACE" ) );
+		// optional: 'NAMESPACE'
+		Map<String, String> nsBindings = extractNamespaceBindings200(kvpParams.get("NAMESPACE"));
 
-        // optional: 'TYPENAME'/'TYPENAMES'
-        QName[] typeNames = extractTypeNames( kvpParams, nsBindings );
+		// optional: 'TYPENAME'/'TYPENAMES'
+		QName[] typeNames = extractTypeNames(kvpParams, nsBindings);
 
-        // optional: 'OUTPUTFORMAT'
-        String outputFormat = kvpParams.get( "OUTPUTFORMAT" );
+		// optional: 'OUTPUTFORMAT'
+		String outputFormat = kvpParams.get("OUTPUTFORMAT");
 
-        return new DescribeFeatureType( VERSION_200, null, outputFormat, typeNames, nsBindings );
-    }
+		return new DescribeFeatureType(VERSION_200, null, outputFormat, typeNames, nsBindings);
+	}
 
-    /**
-     * Exports the given {@link DescribeFeatureType} request as a KVP-encoded string (with encoded values).
-     * 
-     * @param request
-     *            request to be exported
-     * @param version
-     *            protocol version of the generated KVP
-     * @return KVP encoded request
-     */
-    public static String export( DescribeFeatureType request, Version version ) {
+	/**
+	 * Exports the given {@link DescribeFeatureType} request as a KVP-encoded string (with
+	 * encoded values).
+	 * @param request request to be exported
+	 * @param version protocol version of the generated KVP
+	 * @return KVP encoded request
+	 */
+	public static String export(DescribeFeatureType request, Version version) {
 
-        StringBuffer sb = new StringBuffer();
-        appendFirstKVP( sb, "SERVICE", "WFS" );
-        appendKVP( sb, "VERSION", version.toString() );
-        appendKVP( sb, "REQUEST", "DescribeFeatureType" );
-        if ( request.getOutputFormat() != null ) {
-            appendKVP( sb, "OUTPUTFORMAT", request.getOutputFormat() );
-        }
+		StringBuffer sb = new StringBuffer();
+		appendFirstKVP(sb, "SERVICE", "WFS");
+		appendKVP(sb, "VERSION", version.toString());
+		appendKVP(sb, "REQUEST", "DescribeFeatureType");
+		if (request.getOutputFormat() != null) {
+			appendKVP(sb, "OUTPUTFORMAT", request.getOutputFormat());
+		}
 
-        QName[] ftNames = request.getTypeNames();
-        if ( ftNames != null && ftNames.length > 0 ) {
+		QName[] ftNames = request.getTypeNames();
+		if (ftNames != null && ftNames.length > 0) {
 
-            Map<String, String> nsBindings = collectNsBinding( ftNames );
-            augmentNsBindings( nsBindings, ftNames );
+			Map<String, String> nsBindings = collectNsBinding(ftNames);
+			augmentNsBindings(nsBindings, ftNames);
 
-            StringBuffer typeNameList = new StringBuffer();
-            for ( QName name : ftNames ) {
-                String typeName = name.getLocalPart();
-                if ( name.getNamespaceURI() != "" ) {
-                    String prefix = nsBindings.get( name.getNamespaceURI() );
-                    typeName = prefix + ":" + name.getLocalPart();
-                }
-                if ( typeNameList.length() > 0 ) {
-                    typeNameList.append( ',' );
-                }
-                typeNameList.append( typeName );
-            }
-            appendKVP( sb, "TYPENAME", typeNameList.toString() );
+			StringBuffer typeNameList = new StringBuffer();
+			for (QName name : ftNames) {
+				String typeName = name.getLocalPart();
+				if (name.getNamespaceURI() != "") {
+					String prefix = nsBindings.get(name.getNamespaceURI());
+					typeName = prefix + ":" + name.getLocalPart();
+				}
+				if (typeNameList.length() > 0) {
+					typeNameList.append(',');
+				}
+				typeNameList.append(typeName);
+			}
+			appendKVP(sb, "TYPENAME", typeNameList.toString());
 
-            // only versions 1.1.0+ support the NAMESPACE parameter for proper qualifying of namespaces
-            if ( !version.equals( VERSION_100 ) && nsBindings.size() > 0 ) {
-                StringBuffer namespaceList = new StringBuffer();
-                for ( String namespace : nsBindings.keySet() ) {
-                    String prefix = nsBindings.get( namespace );
-                    if ( namespaceList.length() > 0 ) {
-                        namespaceList.append( ',' );
-                    }
-                    namespaceList.append( "xmlns(" );
-                    namespaceList.append( prefix );
-                    namespaceList.append( '=' );
-                    namespaceList.append( namespace );
-                    namespaceList.append( ')' );
-                }
-                appendKVP( sb, "NAMESPACE", namespaceList.toString() );
-            }
-        } else if ( request.getNsBindings() != null && !request.getNsBindings().isEmpty() ) {
-            StringBuffer namespaceList = new StringBuffer();
-            Map<String, String> prefixToNs = request.getNsBindings();
-            for ( String prefix : prefixToNs.keySet() ) {
-                String namespace = prefixToNs.get( prefix );
-                if ( namespaceList.length() > 0 ) {
-                    namespaceList.append( ',' );
-                }
-                namespaceList.append( "xmlns(" );
-                if ( !prefix.isEmpty() ) {
-                    namespaceList.append( prefix );
-                    namespaceList.append( '=' );
-                }
-                namespaceList.append( namespace );
-                namespaceList.append( ')' );
-            }
-            appendKVP( sb, "NAMESPACE", namespaceList.toString() );
-        }
-        return sb.toString();
-    }
+			// only versions 1.1.0+ support the NAMESPACE parameter for proper qualifying
+			// of namespaces
+			if (!version.equals(VERSION_100) && nsBindings.size() > 0) {
+				StringBuffer namespaceList = new StringBuffer();
+				for (String namespace : nsBindings.keySet()) {
+					String prefix = nsBindings.get(namespace);
+					if (namespaceList.length() > 0) {
+						namespaceList.append(',');
+					}
+					namespaceList.append("xmlns(");
+					namespaceList.append(prefix);
+					namespaceList.append('=');
+					namespaceList.append(namespace);
+					namespaceList.append(')');
+				}
+				appendKVP(sb, "NAMESPACE", namespaceList.toString());
+			}
+		}
+		else if (request.getNsBindings() != null && !request.getNsBindings().isEmpty()) {
+			StringBuffer namespaceList = new StringBuffer();
+			Map<String, String> prefixToNs = request.getNsBindings();
+			for (String prefix : prefixToNs.keySet()) {
+				String namespace = prefixToNs.get(prefix);
+				if (namespaceList.length() > 0) {
+					namespaceList.append(',');
+				}
+				namespaceList.append("xmlns(");
+				if (!prefix.isEmpty()) {
+					namespaceList.append(prefix);
+					namespaceList.append('=');
+				}
+				namespaceList.append(namespace);
+				namespaceList.append(')');
+			}
+			appendKVP(sb, "NAMESPACE", namespaceList.toString());
+		}
+		return sb.toString();
+	}
 
-    /**
-     * Augment the given map of prefix to namespace bindings with generated namespace prefices, so that every qualified
-     * feature type name has a proper namespace prefix.
-     * 
-     * @param nsBindings
-     * @param ftNames
-     */
-    private static void augmentNsBindings( Map<String, String> nsBindings, QName[] ftNames ) {
-        for ( QName name : ftNames ) {
-            if ( name.getNamespaceURI() != "" ) {
-                if ( nsBindings.get( name.getNamespaceURI() ) == null ) {
-                    String prefix = getUniquePrefix( nsBindings.keySet() );
-                    nsBindings.put( name.getNamespaceURI(), prefix );
-                }
-            }
-        }
-    }
+	/**
+	 * Augment the given map of prefix to namespace bindings with generated namespace
+	 * prefices, so that every qualified feature type name has a proper namespace prefix.
+	 * @param nsBindings
+	 * @param ftNames
+	 */
+	private static void augmentNsBindings(Map<String, String> nsBindings, QName[] ftNames) {
+		for (QName name : ftNames) {
+			if (name.getNamespaceURI() != "") {
+				if (nsBindings.get(name.getNamespaceURI()) == null) {
+					String prefix = getUniquePrefix(nsBindings.keySet());
+					nsBindings.put(name.getNamespaceURI(), prefix);
+				}
+			}
+		}
+	}
 
-    private static String getUniquePrefix( Set<String> existingPrefices ) {
-        int i = 0;
-        String prefix = null;
+	private static String getUniquePrefix(Set<String> existingPrefices) {
+		int i = 0;
+		String prefix = null;
 
-        do {
-            prefix = "ns" + ++i;
-        } while ( existingPrefices.contains( prefix ) );
+		do {
+			prefix = "ns" + ++i;
+		}
+		while (existingPrefices.contains(prefix));
 
-        return prefix;
-    }
+		return prefix;
+	}
 
-    private static Map<String, String> collectNsBinding( QName[] ftNames ) {
-        Map<String, String> nsBindings = new HashMap<String, String>();
-        for ( QName name : ftNames ) {
-            if ( name.getNamespaceURI() != "" ) {
-                String currentPrefix = nsBindings.get( name.getNamespaceURI() );
-                if ( currentPrefix == null && !"".equals( name.getPrefix() ) ) {
-                    nsBindings.put( name.getNamespaceURI(), name.getPrefix() );
-                }
-            }
-        }
-        return nsBindings;
-    }
+	private static Map<String, String> collectNsBinding(QName[] ftNames) {
+		Map<String, String> nsBindings = new HashMap<String, String>();
+		for (QName name : ftNames) {
+			if (name.getNamespaceURI() != "") {
+				String currentPrefix = nsBindings.get(name.getNamespaceURI());
+				if (currentPrefix == null && !"".equals(name.getPrefix())) {
+					nsBindings.put(name.getNamespaceURI(), name.getPrefix());
+				}
+			}
+		}
+		return nsBindings;
+	}
+
 }

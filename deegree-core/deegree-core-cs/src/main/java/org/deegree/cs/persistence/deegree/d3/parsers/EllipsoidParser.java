@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2009 by:
@@ -51,7 +50,6 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.cs.CRSResource;
 import org.deegree.cs.components.Ellipsoid;
@@ -63,113 +61,108 @@ import org.slf4j.Logger;
 
 /**
  * Stax-based configuration parser for ellipsoid objects.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
-@LoggingNotes(debug = "Get information about the currently parsed ellipsoid, as well as a stack trace if something went wrong.")
 public class EllipsoidParser extends DefinitionParser {
 
-    private static final Logger LOG = getLogger( EllipsoidParser.class );
+	private static final Logger LOG = getLogger(EllipsoidParser.class);
 
-    private static final QName ELLIPS_ELEM = new QName( CRS_NS, "Ellipsoid" );
+	private static final QName ELLIPS_ELEM = new QName(CRS_NS, "Ellipsoid");
 
-    private static final QName ROOT = new QName( CRS_NS, "EllipsoidDefinitions" );
+	private static final QName ROOT = new QName(CRS_NS, "EllipsoidDefinitions");
 
-    /**
-     * @param provider
-     * @param confURL
-     */
-    public EllipsoidParser( DeegreeCRSStore provider, URL confURL ) {
-        super( provider, confURL );
-    }
+	/**
+	 * @param provider
+	 * @param confURL
+	 */
+	public EllipsoidParser(DeegreeCRSStore provider, URL confURL) {
+		super(provider, confURL);
+	}
 
-    /**
-     * Tries to find a cached ellipsoid, if not found, the config will be checked.
-     * 
-     * @param ellipsoidID
-     * @return an ellipsoid or <code>null</code> if no ellipsoid with given id was found, or the id was
-     *         <code>null</code> or empty.
-     * @throws CRSConfigurationException
-     *             if something went wrong.
-     */
-    public Ellipsoid getEllipsoidForId( String ellipsoidID )
-                            throws CRSConfigurationException {
-        if ( ellipsoidID == null || "".equals( ellipsoidID.trim() ) ) {
-            return null;
-        }
-        Ellipsoid result = getStore().getCachedIdentifiable( Ellipsoid.class, ellipsoidID );
-        if ( result == null ) {
-            try {
-                result = parseEllipsoid( getConfigReader() );
-                while ( result != null && !result.hasId( ellipsoidID, false, true ) ) {
-                    result = parseEllipsoid( getConfigReader() );
-                }
-            } catch ( XMLStreamException e ) {
-                throw new CRSConfigurationException( e );
-            }
-        }
-        return result;
-    }
+	/**
+	 * Tries to find a cached ellipsoid, if not found, the config will be checked.
+	 * @param ellipsoidID
+	 * @return an ellipsoid or <code>null</code> if no ellipsoid with given id was found,
+	 * or the id was <code>null</code> or empty.
+	 * @throws CRSConfigurationException if something went wrong.
+	 */
+	public Ellipsoid getEllipsoidForId(String ellipsoidID) throws CRSConfigurationException {
+		if (ellipsoidID == null || "".equals(ellipsoidID.trim())) {
+			return null;
+		}
+		Ellipsoid result = getStore().getCachedIdentifiable(Ellipsoid.class, ellipsoidID);
+		if (result == null) {
+			try {
+				result = parseEllipsoid(getConfigReader());
+				while (result != null && !result.hasId(ellipsoidID, false, true)) {
+					result = parseEllipsoid(getConfigReader());
+				}
+			}
+			catch (XMLStreamException e) {
+				throw new CRSConfigurationException(e);
+			}
+		}
+		return result;
+	}
 
-    /**
-     * @param reader
-     *            to use
-     * @return the next ellipsoid or null if no more definitions were found.
-     * @throws XMLStreamException
-     */
-    protected Ellipsoid parseEllipsoid( XMLStreamReader reader )
-                            throws XMLStreamException {
-        if ( reader == null || !moveReaderToFirstMatch( reader, ELLIPS_ELEM ) ) {
-            LOG.debug( "Could not get ellipsoid no more definitions found." );
-            return null;
-        }
+	/**
+	 * @param reader to use
+	 * @return the next ellipsoid or null if no more definitions were found.
+	 * @throws XMLStreamException
+	 */
+	protected Ellipsoid parseEllipsoid(XMLStreamReader reader) throws XMLStreamException {
+		if (reader == null || !moveReaderToFirstMatch(reader, ELLIPS_ELEM)) {
+			LOG.debug("Could not get ellipsoid no more definitions found.");
+			return null;
+		}
 
-        CRSResource id = parseIdentifiable( reader );
+		CRSResource id = parseIdentifiable(reader);
 
-        Unit units = parseUnit( reader, true );
+		Unit units = parseUnit(reader, true);
 
-        double semiMajor = Double.NaN;
-        double inverseFlattening = Double.NaN;
-        double eccentricity = Double.NaN;
-        double semiMinorAxis = Double.NaN;
+		double semiMajor = Double.NaN;
+		double inverseFlattening = Double.NaN;
+		double eccentricity = Double.NaN;
+		double semiMinorAxis = Double.NaN;
 
-        try {
-            semiMajor = getRequiredElementTextAsDouble( reader, new QName( CRS_NS, "SemiMajorAxis" ), true );
-            inverseFlattening = getElementTextAsDouble( reader, new QName( CRS_NS, "InverseFlattening" ), Double.NaN,
-                                                        true );
-            eccentricity = getElementTextAsDouble( reader, new QName( CRS_NS, "Eccentricity" ), Double.NaN, true );
-            semiMinorAxis = getElementTextAsDouble( reader, new QName( CRS_NS, "SemiMinorAxis" ), Double.NaN, true );
-        } catch ( XMLParsingException e ) {
-            throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PARSE_ERROR", "ellipsoid",
-                                                                      ELLIPS_ELEM, e.getMessage() ), e );
-        }
-        if ( Double.isNaN( inverseFlattening ) && Double.isNaN( eccentricity ) && Double.isNaN( semiMinorAxis ) ) {
-            throw new CRSConfigurationException( Messages.getMessage( "CRS_STAX_CONFIG_ELLIPSOID_MISSES_PARAM",
-                                                                      reader.getLocation() ) );
-        }
-        Ellipsoid result = null;
-        if ( !Double.isNaN( inverseFlattening ) ) {
-            result = new Ellipsoid( semiMajor, units, inverseFlattening, id.getCodes(), id.getNames(),
-                                    id.getVersions(), id.getDescriptions(), id.getAreasOfUse() );
-        } else if ( !Double.isNaN( eccentricity ) ) {
-            result = new Ellipsoid( semiMajor, eccentricity, units, id.getCodes(), id.getNames(), id.getVersions(),
-                                    id.getDescriptions(), id.getAreasOfUse() );
-        } else {
-            result = new Ellipsoid( units, semiMajor, semiMinorAxis, id.getCodes(), id.getNames(), id.getVersions(),
-                                    id.getDescriptions(), id.getAreasOfUse() );
-        }
-        result = getStore().addIdToCache( result, false );
-        nextElement( reader );// end ellipsoid
+		try {
+			semiMajor = getRequiredElementTextAsDouble(reader, new QName(CRS_NS, "SemiMajorAxis"), true);
+			inverseFlattening = getElementTextAsDouble(reader, new QName(CRS_NS, "InverseFlattening"), Double.NaN,
+					true);
+			eccentricity = getElementTextAsDouble(reader, new QName(CRS_NS, "Eccentricity"), Double.NaN, true);
+			semiMinorAxis = getElementTextAsDouble(reader, new QName(CRS_NS, "SemiMinorAxis"), Double.NaN, true);
+		}
+		catch (XMLParsingException e) {
+			throw new CRSConfigurationException(
+					Messages.getMessage("CRS_CONFIG_PARSE_ERROR", "ellipsoid", ELLIPS_ELEM, e.getMessage()), e);
+		}
+		if (Double.isNaN(inverseFlattening) && Double.isNaN(eccentricity) && Double.isNaN(semiMinorAxis)) {
+			throw new CRSConfigurationException(
+					Messages.getMessage("CRS_STAX_CONFIG_ELLIPSOID_MISSES_PARAM", reader.getLocation()));
+		}
+		Ellipsoid result = null;
+		if (!Double.isNaN(inverseFlattening)) {
+			result = new Ellipsoid(semiMajor, units, inverseFlattening, id.getCodes(), id.getNames(), id.getVersions(),
+					id.getDescriptions(), id.getAreasOfUse());
+		}
+		else if (!Double.isNaN(eccentricity)) {
+			result = new Ellipsoid(semiMajor, eccentricity, units, id.getCodes(), id.getNames(), id.getVersions(),
+					id.getDescriptions(), id.getAreasOfUse());
+		}
+		else {
+			result = new Ellipsoid(units, semiMajor, semiMinorAxis, id.getCodes(), id.getNames(), id.getVersions(),
+					id.getDescriptions(), id.getAreasOfUse());
+		}
+		result = getStore().addIdToCache(result, false);
+		nextElement(reader);// end ellipsoid
 
-        return result;
-    }
+		return result;
+	}
 
-    @Override
-    protected QName expectedRootName() {
-        return ROOT;
-    }
+	@Override
+	protected QName expectedRootName() {
+		return ROOT;
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -50,53 +49,50 @@ import org.deegree.feature.property.ExtraProps;
 import org.deegree.feature.types.property.GeometryPropertyType;
 
 /**
- * Generic implementation of {@link FeatureType}, can be used for representing arbitrary feature types.
- * 
+ * Generic implementation of {@link FeatureType}, can be used for representing arbitrary
+ * feature types.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * 
- * @version $Revision:$, $Date:$
  */
 public class GenericFeatureType extends GenericGMLObjectType implements FeatureType {
 
-    private AppSchema schema;
+	private AppSchema schema;
 
-    public GenericFeatureType( QName name, List<PropertyType> propDecls, boolean isAbstract ) {
-        super( FEATURE, name, propDecls, isAbstract );
-    }
+	public GenericFeatureType(QName name, List<PropertyType> propDecls, boolean isAbstract) {
+		super(FEATURE, name, propDecls, isAbstract);
+	}
 
-    @Override
-    public GeometryPropertyType getDefaultGeometryPropertyDeclaration() {
-        for ( PropertyType pt : getPropertyDeclarations() ) {
-            if ( pt instanceof GeometryPropertyType ) {
-                return (GeometryPropertyType) pt;
-            }
-        }
-        return null;
-    }
+	@Override
+	public GeometryPropertyType getDefaultGeometryPropertyDeclaration() {
+		for (PropertyType pt : getPropertyDeclarations()) {
+			if (pt instanceof GeometryPropertyType) {
+				return (GeometryPropertyType) pt;
+			}
+		}
+		return null;
+	}
 
-    @Override
-    public Feature newFeatureInstance( String fid, List<Property> props, ExtraProps extraProps ) {
-        return newFeature( fid, props, extraProps );
-    }
+	@Override
+	public Feature newFeatureInstance(String fid, List<Property> props, ExtraProps extraProps) {
+		return newFeature(fid, props, extraProps);
+	}
 
-    @Override
-    public Feature newFeature( String fid, List<Property> props, ExtraProps extraProps ) {
-        return new GenericFeature( this, fid, props, extraProps );
-    }
+	@Override
+	public Feature newFeature(String fid, List<Property> props, ExtraProps extraProps) {
+		return new GenericFeature(this, fid, props, extraProps);
+	}
 
-    @Override
-    public AppSchema getSchema() {
-        return schema;
-    }
+	@Override
+	public AppSchema getSchema() {
+		return schema;
+	}
 
-    /**
-     * Sets the {@link AppSchema} that this feature type belongs to.
-     * 
-     * @param schema
-     *            application schema, must not be <code>null</code>
-     */
-    void setSchema( AppSchema schema ) {
-        this.schema = schema;
-    }
+	/**
+	 * Sets the {@link AppSchema} that this feature type belongs to.
+	 * @param schema application schema, must not be <code>null</code>
+	 */
+	void setSchema(AppSchema schema) {
+		this.schema = schema;
+	}
+
 }

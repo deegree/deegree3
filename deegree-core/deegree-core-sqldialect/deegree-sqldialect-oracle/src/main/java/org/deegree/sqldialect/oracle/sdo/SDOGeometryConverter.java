@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2011 by:
@@ -38,6 +37,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.sqldialect.oracle.sdo;
 
+import static org.deegree.commons.tom.primitive.BaseType.DECIMAL;
+import static org.deegree.commons.utils.TunableParameter.get;
 import static org.deegree.geometry.validation.GeometryFixer.forceOrientation;
 
 import java.sql.SQLException;
@@ -49,14 +50,20 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
+import javax.xml.namespace.QName;
 import oracle.jdbc.OracleConnection;
 import oracle.sql.ARRAY;
 import oracle.sql.Datum;
 import oracle.sql.STRUCT;
-
+import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.gml.property.Property;
+import org.deegree.commons.tom.gml.property.PropertyType;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.feature.property.ExtraProps;
+import org.deegree.feature.property.GenericProperty;
+import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.Geometry.GeometryType;
@@ -87,1062 +94,1155 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Convert between Oracle JDBC STRUCT and deegree Geometry
- * 
+ *
  * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  * @author <a href="mailto:reijer.copier@idgis.nl">Reijer Copier</a>
- * 
- * @version $Revision$, $Date$
  */
 public class SDOGeometryConverter {
-    static final Logger LOG = LoggerFactory.getLogger( SDOGeometryConverter.class );
 
-    public SDOGeometryConverter() {
+	static final Logger LOG = LoggerFactory.getLogger(SDOGeometryConverter.class);
 
-    }
+	private static final boolean DEFAULT_EXPORT_ORIENTED_POINT = get("deegree.sqldialect.oracle.export_oriented_point",
+			false);
 
-    private GeometryFactory _gf = new GeometryFactory();
+	private final SDOInspector inspector;
 
-    enum GeomHolderTyp {
-        GEOMETRY, POINT, CURVE, POLYGON
-    }
+	private boolean exportOrientedPointAsExtra;
 
-    protected static class GeomHolder {
-        public final int gtype;
+	private GeometryFactory _gf = new GeometryFactory();
 
-        public final int srid;
+	public SDOGeometryConverter() {
+		this.inspector = null;
+		this.exportOrientedPointAsExtra = DEFAULT_EXPORT_ORIENTED_POINT;
+	}
 
-        public final int[] elem_info;
+	public SDOGeometryConverter(SDOInspector inspector) {
+		this.inspector = inspector;
+		this.exportOrientedPointAsExtra = DEFAULT_EXPORT_ORIENTED_POINT;
+	}
 
-        public final double[] ordinates;
+	enum GeomHolderTyp {
 
-        public final int gtype_d;
+		GEOMETRY, POINT, CURVE, POLYGON
 
-        public final int gtype_l;
+	}
 
-        public final int gtype_tt;
+	protected static class GeomHolder {
 
-        public final int cnt_o;
+		public final int gtype;
 
-        public final int cnt_e;
+		public final int srid;
 
-        protected List<Geometry> geoms;
+		public final int[] elem_info;
 
-        public ICRS crs;
+		public final double[] ordinates;
 
-        public int elemoff;
+		public final int gtype_d;
 
-        public GeomHolderTyp last;
+		public final int gtype_l;
 
-        public GeomHolder( final int gtype, final int srid, final double point[], final int[] elem_info,
-                           final double[] ordinates, ICRS crs ) {
-            this.gtype = gtype;
-            this.srid = srid;
-            this.crs = crs;
+		public final int gtype_tt;
 
-            this.gtype_tt = gtype % 100;
+		public final int cnt_o;
 
-            // ensure correct range
-            int tdims = gtype / 1000;
-            if ( tdims < 2 || tdims > 4 )
-                this.gtype_d = 2;
-            else
-                this.gtype_d = tdims;
+		public final int cnt_e;
 
-            this.gtype_l = ( gtype % 1000 ) / 100;
+		protected List<Geometry> geoms;
 
-            if ( point != null && point.length > 0 ) {
-                this.elem_info = new int[] { 1, 1, 1 };
-                this.ordinates = new double[this.gtype_d];
-                this.ordinates[0] = point[0];
-                this.ordinates[1] = point[1];
-                if ( this.gtype_d > 2 )
-                    this.ordinates[2] = point[2];
-            } else {
-                this.elem_info = elem_info;
-                this.ordinates = ordinates;
-            }
+		public ICRS crs;
 
-            geoms = new LinkedList<Geometry>();
-
-            this.cnt_o = ( this.ordinates != null ) ? this.ordinates.length : 0;
-            this.cnt_e = ( this.elem_info != null ) ? this.elem_info.length : 0;
-
-            this.elemoff = -3;
-            this.last = null;
-        }
-
-        double[] getOrdinatesEntry( int off ) {
-            double[] out = new double[this.gtype_d];
-            if ( this.gtype_d == 2 ) {
-                out[0] = ordinates[off];
-                out[1] = ordinates[off + 1];
-            } else {
-                for ( int i = off, j = 0; j < this.gtype_d; j++ ) {
-                    out[j] = ordinates[i];
-                    i++;
-                }
-            }
-            return out;
-        }
-
-        public int nxt() {
-            elemoff += 3;
-
-            if ( elemoff >= 0 && elemoff + 1 < cnt_e )
-                return elem_info[elemoff + 1];
-            else
-                return -1;
-        }
-
-        public void prev() {
-            elemoff -= 3;
-        }
-
-        public int cnt() {
-            int end;
-            if ( elemoff + 4 < cnt_e )
-                end = elem_info[elemoff + 3] - 1;
-            else
-                end = cnt_o;
-
-            return ( end - elem_info[elemoff] + 1 ) / this.gtype_d;
-        }
-
-        public void add( GeomHolderTyp typ, Geometry elem ) {
-            if ( last == null )
-                last = typ;
-            else if ( last != typ )
-                last = GeomHolderTyp.GEOMETRY;
-
-            this.geoms.add( elem );
-        }
-    }
-
-    protected static class Triplet {
-        public int a_off;
-
-        public int b_typ;
-
-        public int c_int;
-
-        public Triplet( int offset, int type, int interpretation ) {
-            this( offset, type, interpretation, false );
-        }
-
-        public Triplet( int offset, int type, int interpretation, boolean continueGeom ) {
-            if ( continueGeom && offset > 0 )
-                this.a_off = offset - 1;
-            else
-                this.a_off = offset;
-
-            this.b_typ = type;
-            this.c_int = interpretation;
-        }
-
-        @Override
-        public String toString() {
-            StringBuilder sb = new StringBuilder();
-            sb.append( "[" ).append( this.a_off ).append( ", " );
-            sb.append( this.b_typ ).append( ", " ).append( this.c_int ).append( "]" );
-            return sb.toString();
-
-        }
-    }
-
-    /**
-     * Convert SDO_GEOMETRY (from Oracle STRUCT) to deegree Geometry
-     * 
-     * <h3>NOTE 1 (polygon)</h3>
-     * <ul>
-     * <li>Polygons (simple, multiple or compound) will be treated to have at least one exterior or unknown ring.</li>
-     * <li>When a polygon starts with interior rings the first unknown ring is treaded as exterior ring.</li>
-     * <li>Each N>1 occurrence of an exterior ring is treaded as new polygon.</li>
-     * </ul>
-     * 
-     * @param sdoStruct
-     *            Database Object of type oracle.sql.STRUCT
-     * @param crs
-     *            SRS or null for automatic recognition from srid
-     * @return Geometry
-     * @throws SQLException
-     */
-    public Geometry toGeometry( STRUCT sdoStruct, ICRS crs )
-                            throws SQLException {
-        if ( sdoStruct == null ) {
-            return null;
-        }
-
-        Datum data[] = sdoStruct.getOracleAttributes();
-
-        int gtype = OracleObjectTools.fromInteger( data[0], 0 );
-        int srid = OracleObjectTools.fromInteger( data[1], -1 );
-        double[] point = OracleObjectTools.fromDoubleArray( (STRUCT) data[2], Double.NaN );
-        int[] elemInfo = OracleObjectTools.fromIntegerArray( (ARRAY) data[3] );
-        double[] ordinates = OracleObjectTools.fromDoubleArray( (ARRAY) data[4], Double.NaN );
-
-        int gtype_d, tdims = gtype / 1000;
-        if ( tdims < 2 || tdims > 4 ) {
-            gtype_d = 2;
-        } else {
-            gtype_d = tdims;
-        }
-
-        int gtype_l = ( gtype % 1000 ) / 100;
-        if ( gtype_l > 0 ) { // contains LRS?
-            // create ordinates array without LRS dimension
-            double[] newOrdinates = new double[( ordinates.length / gtype_d ) * ( gtype_d - 1 )];
-
-            int j = 0;
-            for ( int i = 0; i < ordinates.length; i++ ) {
-                if ( i % gtype_d != ( gtype_l - 1 ) ) { // ordinate not in LRS dimension?
-                    newOrdinates[j++] = ordinates[i];
-                }
-            }
-
-            ordinates = newOrdinates;
-
-            // create elemInfo array without LRS dimension
-            int[] newElemInfo = new int[elemInfo.length];
-            for ( int i = 0; i < newElemInfo.length; i++ ) {
-                if ( i % 3 == 0 ) { 
-                    // compute new offset in ordinates array
-                    newElemInfo[i] = ( ( elemInfo[i] - 1 ) / gtype_d ) * ( gtype_d - 1 ) + 1;
-                } else {
-                    newElemInfo[i] = elemInfo[i];
-                }
-            }
-
-            elemInfo = newElemInfo;
-
-            // compute new gtype
-            gtype = gtype - 1000 - gtype_l * 100;
-        }
-
-        GeomHolder sdo = new GeomHolder( gtype, srid, point, elemInfo, ordinates, crs );
-
-        return toGeometry( sdo, crs );
-    }
-
-    @SuppressWarnings("unchecked")
-    protected Geometry toGeometry( GeomHolder sdo, ICRS crs )
-                            throws SQLException {
-        if ( sdo.cnt_o < sdo.gtype_d || sdo.cnt_e < 3 || sdo.cnt_o % sdo.gtype_d > 0 || sdo.cnt_e % 3 > 0 )
-            throw new SQLException( "Illegal Geometry" );
-        else if ( sdo.gtype_tt == SDOGTypeTT.UNKNOWN )
-            throw new SQLException( "Unsupported Geometry" );
-
-        Ring ringe = null;
-        List<Ring> ringi = new ArrayList<Ring>();
-        Set<Ring> ringu = new HashSet<Ring>();
-
-        int etype;
-        while ( ( etype = sdo.nxt() ) != -1 ) {
-            switch ( etype ) {
-            case SDOEType.POINT:
-                handlePoint( sdo );
-                break;
-
-            case SDOEType.LINESTRING:
-                handleLine( sdo );
-                break;
-
-            case SDOEType.POLYGON_RING_INTERIOR: // see above NOTE 1
-            case SDOEType.POLYGON_RING_EXTERIOR:
-            case SDOEType.POLYGON_RING_UNKNOWN:
-                Ring rng = handleSimpleRing( sdo, etype );
-                switch ( etype ) {
-                case SDOEType.POLYGON_RING_INTERIOR:
-                    ringi.add( rng );
-                    break;
-                case SDOEType.POLYGON_RING_EXTERIOR:
-                    if ( ringe != null ) {
-                        sdo.add( GeomHolderTyp.POLYGON, _gf.createPolygon( null, sdo.crs, ringe, ringi ) );
-                        ringi = new ArrayList<Ring>();
-                    }
-                    ringe = rng;
-                    break;
-                case SDOEType.POLYGON_RING_UNKNOWN:
-                    ringu.add( rng );
-                }
-                break;
-
-            case SDOEType.COMPOUND_LINESTRING:
-                sdo.add( GeomHolderTyp.CURVE, handleCompoundCurve( sdo ) );
-                break;
-
-            case SDOEType.COMPOUND_POLYGON_RING_INTERIOR: // see above NOTE 1
-            case SDOEType.COMPOUND_POLYGON_RING_EXTERIOR:
-            case SDOEType.COMPOUND_POLYGON_RING_UNKNOWN:
-                rng = handleCompoundRing( sdo );
-                switch ( etype ) {
-                case SDOEType.COMPOUND_POLYGON_RING_INTERIOR:
-                    ringi.add( rng );
-                    break;
-                case SDOEType.COMPOUND_POLYGON_RING_EXTERIOR:
-                    if ( ringe != null ) {
-                        sdo.add( GeomHolderTyp.POLYGON, _gf.createPolygon( null, sdo.crs, ringe, ringi ) );
-                        ringi = new ArrayList<Ring>();
-                    }
-                    ringe = rng;
-                    break;
-                case SDOEType.COMPOUND_POLYGON_RING_UNKNOWN:
-                    ringu.add( rng );
-                }
-
-                break;
-
-            case SDOEType.UNKNOWN:
-            default: // other / not implemented
-                createUnknownException( sdo );
-                break;
-            }
-        }
-
-        if ( ringe != null ) {
-            sdo.add( GeomHolderTyp.POLYGON, _gf.createPolygon( null, sdo.crs, ringe, ringi ) );
-        }
-
-        if ( !ringu.isEmpty() ) {
-            LOG.warn( "SDO_Geometry with rings of unknown type detected. "
-                      + "Please consider upgrading to the current format using "
-                      + "the SDO_MIGRATE.TO_CURRENT procedure." );
-
-            // maps to store spatial relations between rings
-            Map<Ring, Set<Ring>> contained = new HashMap<Ring, Set<Ring>>();
-            Map<Ring, Set<Ring>> contains = new HashMap<Ring, Set<Ring>>();
-
-            // construct a polygon for every ring in order to be able to utilize isWithin
-            List<Polygon> polygons = new ArrayList<Polygon>( ringu.size() );
-            for ( Ring r : ringu ) {
-                polygons.add( _gf.createPolygon( null, r.getCoordinateSystem(), r, Collections.<Ring> emptyList() ) );
-            }
-
-            // determine spatial relationships between rings
-            for ( Polygon a : polygons ) {
-                for ( Polygon b : polygons ) {
-                    if ( a != b ) {
-                        if ( a.isWithin( b ) ) {
-                            Set<Ring> containedSet = contained.get( a.getExteriorRing() );
-                            if ( containedSet == null ) {
-                                containedSet = new HashSet<Ring>();
-                                contained.put( a.getExteriorRing(), containedSet );
-                            }
-                            containedSet.add( b.getExteriorRing() );
-                        }
-
-                        if ( b.isWithin( a ) ) {
-                            Set<Ring> containsSet = contains.get( a.getExteriorRing() );
-                            if ( containsSet == null ) {
-                                containsSet = new HashSet<Ring>();
-                                contains.put( a.getExteriorRing(), containsSet );
-                            }
-                            containsSet.add( b.getExteriorRing() );
-                        }
-                    }
-                }
-            }
-
-            // iteratively determine whether a ring is 
-            // an exterior or an interior ring until all rings are processed
-            while ( !ringu.isEmpty() ) {
-                List<Ring> used = new ArrayList<Ring>();
-                for ( Ring a : ringu ) {
-                    if ( !contained.containsKey( a ) ) {
-                        used.add( a );
-                        ringi = new ArrayList<Ring>();
-
-                        Set<Ring> rings = contains.get( a );
-                        if ( rings != null ) {
-                            for ( Ring b : rings ) {
-                                Set<Ring> containedSet = contained.get( b );
-                                if ( containedSet == null || containedSet.size() == 1 ) {
-                                    used.add( b );
-                                    ringi.add( b );
-                                }
-                            }
-                        }
-
-                        sdo.add( GeomHolderTyp.POLYGON, _gf.createPolygon( null, sdo.crs, a, ringi ) );
-                    }
-                }
-
-                // we should have solved the problem for at least one
-                // ring this time around (provided the overall problem is solvable at all)
-                if ( used.isEmpty() ) {
-                    throw new IllegalArgumentException(
-                                                        "Illegal Geometry: failed to construct polgyons based on rings of unknown type" );
-                }
-
-                // remove already processed rings
-                for ( Ring r : used ) {
-                    ringu.remove( r );
-
-                    contained.remove( r );
-                    for ( Set<Ring> s : contained.values() ) {
-                        s.remove( r );
-                    }
-
-                    contains.remove( r );
-                    for ( Set<Ring> s : contains.values() ) {
-                        s.remove( r );
-                    }
-                }
-            }
-        }
-
-        if ( sdo.geoms.size() == 0 ) {
-            // no known valid geometry
-            return null;
-        }
-
-        if ( SDOGTypeTT.COLLECTION == sdo.gtype_tt ) {
-            // geometry is in any case a collection
-            return _gf.createMultiGeometry( null, sdo.crs, sdo.geoms );
-        } else if ( SDOGTypeTT.MULTIPOINT == sdo.gtype_tt || SDOGTypeTT.MULTILINE == sdo.gtype_tt
-                    || SDOGTypeTT.MULTIPOLYGON == sdo.gtype_tt || sdo.geoms.size() > 1 ) {
-            // returned geometry is multi* or collection (on different types)
-            List<?> ungeom = sdo.geoms;
-
-            // LOG.debug( "MULTI: Createing of type {}", sdo.last.name() );
-            if ( sdo.last == GeomHolderTyp.POINT ) {
-                return _gf.createMultiPoint( null, crs, (List<Point>) ungeom );
-            } else if ( sdo.last == GeomHolderTyp.CURVE ) {
-                return _gf.createMultiCurve( null, crs, (List<Curve>) ungeom );
-            } else if ( sdo.last == GeomHolderTyp.POLYGON ) {
-                return _gf.createMultiPolygon( null, crs, (List<Polygon>) ungeom );
-            } else {
-                return _gf.createMultiGeometry( null, sdo.crs, sdo.geoms );
-            }
-
-        } else {
-            // single type
-            return sdo.geoms.get( 0 );
-        }
-    }
-
-    private Curve handleCompoundCurve( GeomHolder sdo )
-                            throws SQLException {
-        int subelem = sdo.elem_info[sdo.elemoff + 2];
-
-        List<CurveSegment> lst = new LinkedList<CurveSegment>();
-
-        for ( int i = 0; i < subelem; i++ ) {
-            sdo.nxt();
-            handleCurveSegment( sdo, lst, ( i + 1 ) == subelem );
-        }
-
-        return _gf.createCurve( null, sdo.crs, lst.toArray( new CurveSegment[lst.size()] ) );
-    }
-
-    private Ring handleCompoundRing( GeomHolder sdo )
-                            throws SQLException {
-        int subelem = sdo.elem_info[sdo.elemoff + 2];
-
-        List<CurveSegment> lst = new LinkedList<CurveSegment>();
-        for ( int i = 0; i < subelem; i++ ) {
-            sdo.nxt();
-            handleCurveSegment( sdo, lst, ( i + 1 ) == subelem );
-        }
-
-        List<Curve> clst = new LinkedList<Curve>();
-        clst.add( _gf.createCurve( null, sdo.crs, lst.toArray( new CurveSegment[lst.size()] ) ) );
-        return _gf.createRing( null, sdo.crs, clst );
-    }
-
-    /**
-     * Handle Point Type
-     * 
-     * Interpretation are handled as follow:
-     * <ol>
-     * <li>1) normal point (one set of coordinates)</li>
-     * <li>0) oriented point (second set of coordinates is ignored)</li>
-     * <li>N > 1) point cluster is treated as multiple points (N sets of coordinates)</li>
-     * </ol>
-     */
-    private void handlePoint( GeomHolder sdo )
-                            throws SQLException {
-        int intpr = sdo.elem_info[sdo.elemoff + 2];
-        int off = sdo.elem_info[sdo.elemoff] - 1; // from 1 based to 0 based
-
-        if ( intpr > 1 ) {
-            for ( int i = 0; i < intpr; i++ ) {
-                sdo.add( GeomHolderTyp.POINT,
-                         _gf.createPoint( null, sdo.getOrdinatesEntry( off + ( i * sdo.gtype_d ) ), sdo.crs ) );
-            }
-        } else if ( intpr == 0 || intpr == 1 ) {
-            sdo.add( GeomHolderTyp.POINT, _gf.createPoint( null, sdo.getOrdinatesEntry( off ), sdo.crs ) );
-        } else {
-            createGeometryException( sdo );
-        }
-    }
-
-    // private List<Point> getPoints( GeomHolder sdo, int offset, int cnt ) {
-    // // double[] buf = new double[sdo.dims];
-    // List<Point> members = new LinkedList<Point>();
-    //
-    // // from 1 based to 0 based array
-    // int off = offset - 1;
-    // for ( int i = 0; i < cnt; i++ ) {
-    // members.add( _gf.createPoint( null, sdo.getOrdinatesEntry( off ), sdo.crs ) );
-    // off += sdo.gtype_d;
-    // }
-    //
-    // return members;
-    // }
-
-    private PackedPoints getPackedPoints( GeomHolder sdo, int offset, int cnt ) {
-        double[] pnts = new double[sdo.gtype_d * cnt];
-
-        System.arraycopy( sdo.ordinates, offset - 1, pnts, 0, pnts.length );
-
-        return new PackedPoints( sdo.crs, pnts, sdo.gtype_d );
-    }
-
-    private void handleLine( GeomHolder sdo )
-                            throws SQLException {
-        int intpr = sdo.elem_info[sdo.elemoff + 2];
-        int off = sdo.elem_info[sdo.elemoff];
-        // Points pnts = _gf.createPoints( getPoints( sdo, off, sdo.cnt() ) );
-        PackedPoints pnts = getPackedPoints( sdo, off, sdo.cnt() );
-
-        if ( intpr == 1 ) {
-            sdo.add( GeomHolderTyp.CURVE, _gf.createLineString( null, sdo.crs, pnts ) );
-        } else if ( intpr == 2 ) {
-            sdo.add( GeomHolderTyp.CURVE, _gf.createCurve( null, sdo.crs, _gf.createArcString( pnts ) ) );
-        } else {
-            createGeometryException( sdo );
-        }
-    }
-
-    private void handleCurveSegment( GeomHolder sdo, List<CurveSegment> cseg, boolean last )
-                            throws SQLException {
-        int intpr = sdo.elem_info[sdo.elemoff + 2];
-        int off = sdo.elem_info[sdo.elemoff];
-        // Points pnts = _gf.createPoints( getPoints( sdo, off, ( sdo.cnt() + ( ( last ) ? 0 : 1 ) ) ) );
-        PackedPoints pnts = getPackedPoints( sdo, off, sdo.cnt() + ( ( last ) ? 0 : 1 ) );
-
-        if ( intpr == 1 )
-            cseg.add( _gf.createLineStringSegment( pnts ) );
-        else if ( intpr == 2 && pnts.size() == 3 )
-            cseg.add( _gf.createArc( pnts.get( 0 ), pnts.get( 1 ), pnts.get( 2 ) ) );
-        else if ( intpr == 2 )
-            cseg.add( _gf.createArcString( pnts ) );
-        else
-            createGeometryException( sdo );
-    }
-
-    /**
-     * Handle (simple) ring types of a polygon (POLYGON_RING_EXTERIOR, POLYGON_RING_INTERIOR, POLYGON_RING_UNKNOWN)
-     * 
-     * Interpretation are handled as follow:
-     * <ol>
-     * <li>1) polygon ring; connected sequence of straight lines</li>
-     * <li>2) polygon ring; connected sequence of circular arcs</li>
-     * <li>3) polygon ring / optimized rectangle; described as lower-left and upper-right coordinate</li>
-     * <li>4) circle; three distinct points on the circle</li>
-     * </ol>
-     */
-    private Ring handleSimpleRing( GeomHolder sdo, int etype )
-                            throws SQLException {
-        int intpr = sdo.elem_info[sdo.elemoff + 2];
-        int off = sdo.elem_info[sdo.elemoff];
-        // Points pnts = _gf.createPoints( getPoints( sdo, off, sdo.cnt() ) );
-        PackedPoints pnts = getPackedPoints( sdo, off, sdo.cnt() );
-
-        Ring rng = null;
-        if ( intpr == 1 )
-            rng = _gf.createLinearRing( null, sdo.crs, pnts );
-        else if ( intpr == 2 || intpr == 4 ) {
-            List<Curve> lc = new LinkedList<Curve>();
-            if ( intpr == 2 ) {
-                lc.add( _gf.createCurve( null, sdo.crs, _gf.createArcString( pnts ) ) );
-            } else {
-                if ( pnts.size() != 3 )
-                    createGeometryException( sdo );
-
-                lc.add( _gf.createCurve( null, sdo.crs, _gf.createCircle( pnts.get( 0 ), pnts.get( 1 ), pnts.get( 2 ) ) ) );
-            }
-
-            rng = _gf.createRing( null, sdo.crs, lc );
-        } else if ( intpr == 3 ) {
-            Point ll = pnts.getStartPoint();
-            Point ur = pnts.getEndPoint();
-
-            Point a = _gf.createPoint( null, ll.get0(), ll.get1(), sdo.crs );
-            Point b = _gf.createPoint( null, ll.get0(), ur.get1(), sdo.crs );
-            Point c = _gf.createPoint( null, ur.get0(), ur.get1(), sdo.crs );
-            Point d = _gf.createPoint( null, ur.get0(), ll.get1(), sdo.crs );
-            rng = _gf.createLinearRing( null, sdo.crs, new PointsArray( a, b, c, d, a ) );
-            
-            // enforce orientations if type of ring is known
-            if ( etype == SDOEType.POLYGON_RING_INTERIOR ) {
-                rng = forceOrientation( rng, false );
-            } else if ( etype == SDOEType.POLYGON_RING_EXTERIOR ) {
-                rng = forceOrientation( rng, true );
-            }
-        }
-
-        if ( rng == null ) {
-            createGeometryException( sdo );
-        }
-
-        return rng;
-    }
-
-    private void createUnknownException( GeomHolder sdo ) {
-        sdo.prev();
-        StringBuilder sb = new StringBuilder();
-        sb.append( "Geometry from Type " ).append( sdo.gtype );
-        sb.append( " with first ETYPE " ).append( sdo.nxt() );
-        sb.append( "is not known" );
-        throw new InvalidParameterValueException( sb.toString() );
-    }
-
-    private void createGeometryException( GeomHolder sdo )
-                            throws SQLException {
-        StringBuilder sb = new StringBuilder();
-        sb.append( "Geometry from Type " ).append( sdo.gtype );
-        sb.append( " has a invalid structure [ " );
-        if ( sdo.elem_info == null ) {
-            sb.append( "null " );
-        } else {
-            for ( int i = 0, j = sdo.elem_info.length; i < j; i++ ) {
-                if ( i != 0 )
-                    sb.append( ", " );
-
-                if ( i == sdo.elemoff )
-                    sb.append( "*" );
-
-                sb.append( sdo.elem_info[i] );
-
-                if ( i > 2 && ( i - 2 ) == sdo.elemoff )
-                    sb.append( "* " );
-            }
-        }
-        sb.append( "]" );
-        throw new InvalidParameterValueException( sb.toString() );
-    }
-
-    @Deprecated
-    public Object fromGeometry( OracleConnection conn, int srid, Geometry geometry )
-                            throws SQLException {
-        return fromGeometry( conn, srid, geometry, true );
-    }
-
-    @SuppressWarnings("unchecked")
-    protected GeomHolder fromGeometry( int srid, Geometry geometry, boolean allowJTSfallback ) {
-        List<Triplet> info = new LinkedList<Triplet>();
-        List<Point> pnts = new LinkedList<Point>();
-        int gtypett = SDOGTypeTT.UNKNOWN;
-
-        try {
-            GeometryType typ = geometry.getGeometryType();
-            if ( typ == GeometryType.PRIMITIVE_GEOMETRY ) {
-                gtypett = buildPrimitive( info, pnts, (GeometricPrimitive) geometry );
-            } else if ( typ == GeometryType.MULTI_GEOMETRY ) {
-                gtypett = buildMultiGeometry( info, pnts, (MultiGeometry<Geometry>) geometry );
-            } else if ( typ == GeometryType.ENVELOPE ) {
-                gtypett = buildEnvelope( info, pnts, (Envelope) geometry );
-            } else {
-                // COMPOSITE_GEOMETRY: and others
-                throw new InvalidParameterValueException();
-            }
-        } catch ( InvalidParameterValueException ipve ) {
-            // can not be mapped directly so try JTS if allowed
-            info.clear();
-            pnts.clear();
-        }
-
-        try {
-            if ( info.size() == 0 && allowJTSfallback && geometry instanceof AbstractDefaultGeometry ) {
-                // build geometry with JTS
-                AbstractDefaultGeometry ageom = (AbstractDefaultGeometry) geometry;
-                gtypett = buildJTSGeometry( info, pnts, geometry.getCoordinateSystem(), ageom.getJTSGeometry() );
-            }
-        } catch ( Exception ex ) {
-            // geometry could not completely be build
-            info.clear();
-            pnts.clear();
-        }
-
-        if ( info.size() > 0 ) {
-            // build geometry
-            int dim = 2;
-            for ( Point p : pnts ) {
-                if ( p.getCoordinateDimension() > dim )
-                    dim = p.getCoordinateDimension();
-            }
-            if ( dim > 4 )
-                dim = 4;
-
-            double[] ordinates = buildResultOrdinates( dim, pnts );
-            int[] elemInfo = buildResultElemeInfo( dim, info );
-
-            int gtyp = ( 1000 * dim ) + gtypett;
-            LOG.trace( "fromGeometry: MDSYS.SDO_GEOMETRY( {}, {}, NULL, MDSYS.SDO_ELEM_INFO_ARRAY{}, MDSYS.SDO_ORDINATE_ARRAY{} )",
-                       gtyp, srid, elemInfo, ordinates );
-            
-            return new GeomHolder( gtyp, srid, null, elemInfo, ordinates, null );
-        }
-        
-        // no parse able geometry found
-        return null;
-    }
-
-    
-    public Object fromGeometry( OracleConnection conn, int srid, Geometry geometry, boolean allowJTSfallback )
-                            throws SQLException {
-        
-        GeomHolder holder = fromGeometry( srid, geometry, allowJTSfallback );
-        if ( holder != null ) {
-            return OracleObjectTools.toSDOGeometry( holder, conn );
-        } else {
-            // create error message
-        }
-
-        return null;
-    }
-
-    private double[] buildResultOrdinates( int dim, List<Point> pnts ) {
-        return buildResultOrdinates( dim, pnts, 0.0d );
-    }
-
-    private double[] buildResultOrdinates( int dim, List<Point> pnts, double defaultValue ) {
-        int ord_pos = 0;
-        double ords[] = new double[pnts.size() * dim];
-        Point ord;
-        for ( int i = 0, j = pnts.size(); i < j; i++ ) {
-            ord = pnts.get( i );
-            ords[ord_pos++] = ord.get0();
-            ords[ord_pos++] = ord.get1();
-
-            if ( dim == 3 ) {
-                if ( ord.getCoordinateDimension() > 2 )
-                    ords[ord_pos++] = ord.get( 2 );
-                else
-                    ords[ord_pos++] = defaultValue;
-            } else if ( dim > 3 ) {
-                if ( ord.getCoordinateDimension() > 3 )
-                    ords[ord_pos++] = ord.get( 2 );
-                else
-                    ords[ord_pos++] = defaultValue;
-            }
-        }
-
-        return ords;
-    }
-
-    private int[] buildResultElemeInfo( int dim, List<Triplet> info ) {
-        int elem_info[] = new int[info.size() * 3];
-        int elem_cnt = 0;
-
-        Triplet t;
-        for ( int i = 0, j = info.size(); i < j; i++ ) {
-            t = info.get( i );
-            elem_info[elem_cnt++] = ( t.a_off * dim ) + 1;
-            elem_info[elem_cnt++] = t.b_typ;
-            elem_info[elem_cnt++] = t.c_int;
-        }
-
-        return elem_info;
-    }
-
-    private void addCoordinate( List<Point> pnts, ICRS crs, org.locationtech.jts.geom.Coordinate coord ) {
-        if ( Double.isNaN( coord.z ) ) {
-            pnts.add( _gf.createPoint( null, coord.x, coord.y, crs ) );
-        } else {
-            pnts.add( _gf.createPoint( null, coord.x, coord.y, coord.z, crs ) );
-        }
-    }
-
-    private int buildJTSGeometry( List<Triplet> info, List<Point> pnts, ICRS crs,
-                                  org.locationtech.jts.geom.Geometry geom ) {
-        int gtyp = SDOGTypeTT.UNKNOWN;
-
-        if ( geom instanceof org.locationtech.jts.geom.Point ) {
-            buildJTSPoint( info, pnts, crs, (org.locationtech.jts.geom.Point) geom );
-            gtyp = SDOGTypeTT.POINT;
-        } else if ( geom instanceof org.locationtech.jts.geom.LinearRing ) {
-            buildJTSLineString( info, pnts, crs, (org.locationtech.jts.geom.LineString) geom,
-                                SDOEType.POLYGON_RING_EXTERIOR );
-            gtyp = SDOGTypeTT.POLYGON;
-        } else if ( geom instanceof org.locationtech.jts.geom.LineString ) {
-            buildJTSLineString( info, pnts, crs, (org.locationtech.jts.geom.LineString) geom, SDOEType.LINESTRING );
-            gtyp = SDOGTypeTT.LINE;
-        } else if ( geom instanceof org.locationtech.jts.geom.Polygon ) {
-            org.locationtech.jts.geom.Polygon polygon = (org.locationtech.jts.geom.Polygon) geom;
-            buildJTSLineString( info, pnts, crs, polygon.getExteriorRing(), SDOEType.POLYGON_RING_EXTERIOR );
-            for ( int i = 0, j = polygon.getNumInteriorRing(); i < j; i++ ) {
-                buildJTSLineString( info, pnts, crs, polygon.getInteriorRingN( i ), SDOEType.POLYGON_RING_INTERIOR );
-            }
-            gtyp = SDOGTypeTT.POLYGON;
-        } else if ( geom instanceof org.locationtech.jts.geom.MultiPoint ) {
-            for ( int m = 0, n = geom.getNumGeometries(); m < n; m++ ) {
-                buildJTSPoint( info, pnts, crs, (org.locationtech.jts.geom.Point) geom.getGeometryN( m ) );
-            }
-            gtyp = SDOGTypeTT.MULTIPOINT;
-        } else if ( geom instanceof org.locationtech.jts.geom.MultiLineString ) {
-            for ( int m = 0, n = geom.getNumGeometries(); m < n; m++ ) {
-                buildJTSLineString( info, pnts, crs, (org.locationtech.jts.geom.LineString) geom.getGeometryN( m ),
-                                    SDOEType.LINESTRING );
-            }
-            gtyp = SDOGTypeTT.MULTILINE;
-        } else if ( geom instanceof org.locationtech.jts.geom.MultiPolygon ) {
-            org.locationtech.jts.geom.Polygon polygon = null;
-            for ( int m = 0, n = geom.getNumGeometries(); m < n; m++ ) {
-                polygon = (org.locationtech.jts.geom.Polygon) geom.getGeometryN( m );
-                buildJTSLineString( info, pnts, crs, polygon.getExteriorRing(), SDOEType.POLYGON_RING_EXTERIOR );
-                for ( int i = 0, j = polygon.getNumInteriorRing(); i < j; i++ ) {
-                    buildJTSLineString( info, pnts, crs, polygon.getInteriorRingN( i ), SDOEType.POLYGON_RING_INTERIOR );
-                }
-            }
-            gtyp = SDOGTypeTT.MULTIPOLYGON;
-        } else if ( geom instanceof org.locationtech.jts.geom.GeometryCollection ) {
-            org.locationtech.jts.geom.Geometry subgeom = null;
-            for ( int m = 0, n = geom.getNumGeometries(); m < n; m++ ) {
-                subgeom = geom.getGeometryN( m );
-
-                if ( subgeom instanceof org.locationtech.jts.geom.Point
-                     || subgeom instanceof org.locationtech.jts.geom.LinearRing
-                     || subgeom instanceof org.locationtech.jts.geom.LineString
-                     || subgeom instanceof org.locationtech.jts.geom.Polygon
-                     || subgeom instanceof org.locationtech.jts.geom.MultiPoint
-                     || subgeom instanceof org.locationtech.jts.geom.MultiLineString
-                     || subgeom instanceof org.locationtech.jts.geom.MultiPolygon ) {
-                    // only non cascading types
-                    buildJTSGeometry( info, pnts, crs, subgeom );
-                } else {
-                    throw new InvalidParameterValueException();
-                }
-            }
-            gtyp = SDOGTypeTT.COLLECTION;
-        } else {
-            // other unknown
-            throw new InvalidParameterValueException();
-        }
-
-        return gtyp;
-    }
-
-    private void buildJTSPoint( List<Triplet> info, List<Point> pnts, ICRS crs, org.locationtech.jts.geom.Point geom ) {
-        info.add( new Triplet( pnts.size(), 1, 1 ) );
-        addCoordinate( pnts, crs, ( (org.locationtech.jts.geom.Point) geom ).getCoordinate() );
-    }
-
-    private void buildJTSLineString( List<Triplet> info, List<Point> pnts, ICRS crs,
-                                     org.locationtech.jts.geom.LineString geom, int etype ) {
-        info.add( new Triplet( pnts.size(), etype, 1 ) );
-        for ( org.locationtech.jts.geom.Coordinate coord : geom.getCoordinates() ) {
-            addCoordinate( pnts, crs, coord );
-        }
-    }
-
-    private int buildMultiGeometry( List<Triplet> info, List<Point> pnts, MultiGeometry<Geometry> geom ) {
-        MultiGeometryType mtyp = geom.getMultiGeometryType();
-
-        int gtyp = SDOGTypeTT.COLLECTION;
-        if ( mtyp == MultiGeometryType.MULTI_POINT ) {
-            gtyp = SDOGTypeTT.MULTIPOINT;
-        } else if ( mtyp == MultiGeometryType.MULTI_CURVE || mtyp == MultiGeometryType.MULTI_LINE_STRING ) {
-            gtyp = SDOGTypeTT.MULTILINE;
-        } else if ( mtyp == MultiGeometryType.MULTI_SURFACE || mtyp == MultiGeometryType.MULTI_POLYGON ) {
-            gtyp = SDOGTypeTT.MULTIPOLYGON;
-        } else if ( mtyp == MultiGeometryType.MULTI_SOLID ) {
-            // not supported
-            throw new InvalidParameterValueException();
-        }
-
-        for ( Geometry geometry : geom ) {
-            GeometryType typ = geometry.getGeometryType();
-            if ( typ == GeometryType.PRIMITIVE_GEOMETRY ) {
-                buildPrimitive( info, pnts, (GeometricPrimitive) geometry );
-            } else if ( typ == GeometryType.ENVELOPE ) {
-                buildEnvelope( info, pnts, (Envelope) geometry );
-            } else {
-                // COMPOSITE_GEOMETRY
-                // MULTI_GEOMETRY inside a MULTI_GEOMETRY
-                // SOLID
-                // and others
-                throw new InvalidParameterValueException();
-            }
-        }
-        return gtyp;
-    }
-
-    private int buildEnvelope( List<Triplet> info, List<Point> pnts, Envelope geom ) {
-        info.add( new Triplet( pnts.size(), SDOEType.POLYGON_RING_EXTERIOR, 3 ) );
-        pnts.add( geom.getMin() );
-        pnts.add( geom.getMax() );
-
-        return SDOGTypeTT.POLYGON;
-    }
-
-    protected int buildPrimitive( List<Triplet> info, List<Point> pnts, GeometricPrimitive geom ) {
-        PrimitiveType typ = geom.getPrimitiveType();
-        int gtyp;
-
-        if ( typ == PrimitiveType.Curve ) {
-            buildCurve( info, pnts, (Curve) geom );
-            gtyp = SDOGTypeTT.LINE;
-        } else if ( typ == PrimitiveType.Point ) {
-            info.add( new Triplet( pnts.size(), 1, 1 ) );
-            pnts.add( (Point) geom );
-            gtyp = SDOGTypeTT.POINT;
-        } else if ( typ == PrimitiveType.Surface ) {
-            buildSurface( info, pnts, (Surface) geom );
-            gtyp = SDOGTypeTT.POLYGON;
-        } else {
-            // unsupported
-            throw new InvalidParameterValueException();
-        }
-
-        return gtyp;
-    }
-
-    private void buildSurface( List<Triplet> info, List<Point> pnts, Surface geometry ) {
-        for ( SurfacePatch sp : geometry.getPatches() ) {
-            if ( sp.getSurfacePatchType() != SurfacePatchType.POLYGON_PATCH )
-                throw new InvalidParameterValueException();
-
-            PolygonPatch pp = (PolygonPatch) sp;
-
-            boolean isSimple = true;
-            boolean hasCicrcle = false;
-
-            for ( Ring r : pp.getBoundaryRings() ) {
-                List<CurveSegment> csegs = r.getCurveSegments();
-                if ( csegs.size() > 1 ) {
-                    // compund
-                    isSimple = false;
-                }
-
-                for ( CurveSegment cseg : csegs ) {
-                    CurveSegmentType csegt = cseg.getSegmentType();
-
-                    if ( csegt == CurveSegmentType.CIRCLE ) {
-                        // acepted simple types (only with other simple)
-                        hasCicrcle = true;
-                    } else if ( csegt == CurveSegmentType.ARC || csegt == CurveSegmentType.ARC_STRING
-                                || csegt == CurveSegmentType.LINE_STRING_SEGMENT ) {
-                        // acepted simple types
-                    } else {
-                        // others not supported
-                        throw new InvalidParameterValueException();
-                    }
-                }
-            }
-
-            if ( !isSimple && hasCicrcle ) {
-                // circles and compund not supported
-                throw new InvalidParameterValueException();
-            }
-
-            List<CurveSegment> eseg = forceOrientation( pp.getExteriorRing(), true ).getCurveSegments();
-            // handle exterior
-            if ( isSimple ) {
-                buildCurveSegmentSimple( info, pnts, eseg.get( 0 ), true );
-            } else {
-                info.add( new Triplet( pnts.size(), SDOEType.COMPOUND_POLYGON_RING_EXTERIOR, eseg.size() ) );
-                for ( int i = 0, j = eseg.size(); i < j; i++ ) {
-                    buildCurveSegment( info, pnts, eseg.get( i ), i > 0 );
-                }
-            }
-
-            for ( Ring rint : pp.getInteriorRings() ) {
-                // handle interior
-                List<CurveSegment> iseg = forceOrientation( rint, false ).getCurveSegments();
-
-                if ( isSimple ) {
-                    buildCurveSegmentSimple( info, pnts, iseg.get( 0 ), false );
-                } else {
-                    info.add( new Triplet( pnts.size(), SDOEType.COMPOUND_POLYGON_RING_INTERIOR, iseg.size() ) );
-                    for ( int i = 0, j = iseg.size(); i < j; i++ ) {
-                        buildCurveSegment( info, pnts, iseg.get( i ), i > 0 );
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Add points to internal point list
-     * 
-     * <p>
-     * <strong>Note:</strong>if the first points equals the lasts point and the geometry should be continued the first
-     * point will be skipped. This is reduces duplicate points for example with AAA / ALKIS geometries.
-     * </p>
-     * 
-     * @param pnts
-     *            current list of points
-     * @param add
-     *            points to add
-     * @param continueGeom
-     *            skipp first point if it equals last point in list
-     */
-    private void addPnts( List<Point> pnts, Points add, boolean continueGeom ) {
-        int off = 0;
-
-        // if the last geometry is continued, do not duplicate points (last == first)
-        if ( continueGeom && pnts.size() > 0 && add.size() > 0 && pnts.get( pnts.size() - 1 ).equals( add.get( 0 ) ) )
-            off = 1;
-
-        for ( int i = off, j = add.size(); i < j; i++ ) {
-            pnts.add( add.get( i ) );
-        }
-    }
-
-    private void buildCurveSegmentSimple( List<Triplet> info, List<Point> pnts, CurveSegment geom, boolean exterior ) {
-        CurveSegmentType typ = geom.getSegmentType();
-        int etype = exterior ? SDOEType.POLYGON_RING_EXTERIOR : SDOEType.POLYGON_RING_INTERIOR;
-
-        if ( typ == CurveSegmentType.ARC_STRING || typ == CurveSegmentType.ARC ) {
-            info.add( new Triplet( pnts.size(), etype, 2 ) );
-            addPnts( pnts, ( (ArcString) geom ).getControlPoints(), false );
-        } else if ( typ == CurveSegmentType.LINE_STRING_SEGMENT ) {
-            info.add( new Triplet( pnts.size(), etype, 1 ) );
-            addPnts( pnts, ( (LineStringSegment) geom ).getControlPoints(), false );
-        } else if ( typ == CurveSegmentType.CIRCLE ) {
-            info.add( new Triplet( pnts.size(), etype, 4 ) );
-            addPnts( pnts, ( (Circle) geom ).getControlPoints(), false );
-        } else {
-            // should never happen
-            throw new InvalidParameterValueException();
-        }
-    }
-
-    private void buildCurve( List<Triplet> info, List<Point> pnts, Curve geom ) {
-        List<CurveSegment> segs = geom.getCurveSegments();
-
-        // make only compound if more than one segment is available
-        if ( segs.size() > 1 ) {
-            info.add( new Triplet( pnts.size(), SDOEType.COMPOUND_LINESTRING, segs.size() ) );
-        }
-
-        for ( int i = 0, j = segs.size(); i < j; i++ ) {
-            CurveSegment cs = segs.get( i );
-            buildCurveSegment( info, pnts, cs, i > 0 );
-        }
-    }
-
-    private void buildCurveSegment( List<Triplet> info, List<Point> pnts, CurveSegment geom, boolean continuedGeom ) {
-        switch ( geom.getSegmentType() ) {
-        case CIRCLE:
-            // multiple circles in line not mapable
-            if ( ( (ArcString) geom ).getControlPoints().size() > 3 )
-                throw new InvalidParameterValueException();
-        case ARC:
-        case ARC_STRING:
-            info.add( new Triplet( pnts.size(), SDOEType.LINESTRING, 2, continuedGeom ) );
-            addPnts( pnts, ( (ArcString) geom ).getControlPoints(), continuedGeom );
-            break;
-        case LINE_STRING_SEGMENT:
-            info.add( new Triplet( pnts.size(), SDOEType.LINESTRING, 1, continuedGeom ) );
-            addPnts( pnts, ( (LineStringSegment) geom ).getControlPoints(), continuedGeom );
-            break;
-
-        default:
-            // unmappable
-            throw new InvalidParameterValueException();
-        }
-    }
+		public int elemoff;
+
+		public GeomHolderTyp last;
+
+		public GeomHolder(SDOGeometry sdo, ICRS crs) {
+			this(sdo.gtype, sdo.srid, sdo.point, sdo.elem_info, sdo.ordinates, crs);
+		}
+
+		public GeomHolder(final int gtype, final int srid, final double point[], final int[] elem_info,
+				final double[] ordinates, ICRS crs) {
+			this.gtype = gtype;
+			this.srid = srid;
+			this.crs = crs;
+
+			this.gtype_tt = gtype % 100;
+
+			// ensure correct range
+			int tdims = gtype / 1000;
+			if (tdims < 2 || tdims > 4)
+				this.gtype_d = 2;
+			else
+				this.gtype_d = tdims;
+
+			this.gtype_l = (gtype % 1000) / 100;
+
+			if (point != null && point.length > 0) {
+				this.elem_info = new int[] { 1, 1, 1 };
+				this.ordinates = new double[this.gtype_d];
+				this.ordinates[0] = point[0];
+				this.ordinates[1] = point[1];
+				if (this.gtype_d > 2)
+					this.ordinates[2] = point[2];
+			}
+			else {
+				this.elem_info = elem_info;
+				this.ordinates = ordinates;
+			}
+
+			geoms = new LinkedList<Geometry>();
+
+			this.cnt_o = (this.ordinates != null) ? this.ordinates.length : 0;
+			this.cnt_e = (this.elem_info != null) ? this.elem_info.length : 0;
+
+			this.elemoff = -3;
+			this.last = null;
+		}
+
+		double[] getOrdinatesEntry(int off) {
+			double[] out = new double[this.gtype_d];
+			if (this.gtype_d == 2) {
+				out[0] = ordinates[off];
+				out[1] = ordinates[off + 1];
+			}
+			else {
+				for (int i = off, j = 0; j < this.gtype_d; j++) {
+					out[j] = ordinates[i];
+					i++;
+				}
+			}
+			return out;
+		}
+
+		double[] getOrdinates() {
+			int off = elem_info[elemoff];
+			int nxt = (elemoff + 4 < cnt_e) ? elem_info[elemoff + 3] : cnt_o + 1;
+			double[] out = new double[nxt - off];
+
+			System.arraycopy(ordinates, off - 1, out, 0, nxt - off);
+
+			return out;
+		}
+
+		public int nxt() {
+			elemoff += 3;
+
+			if (elemoff >= 0 && elemoff + 1 < cnt_e)
+				return elem_info[elemoff + 1];
+			else
+				return -1;
+		}
+
+		public void prev() {
+			elemoff -= 3;
+		}
+
+		public int cnt() {
+			int end;
+			if (elemoff + 4 < cnt_e)
+				end = elem_info[elemoff + 3] - 1;
+			else
+				end = cnt_o;
+
+			return (end - elem_info[elemoff] + 1) / this.gtype_d;
+		}
+
+		public void add(GeomHolderTyp typ, Geometry elem) {
+			if (last == null)
+				last = typ;
+			else if (last != typ)
+				last = GeomHolderTyp.GEOMETRY;
+
+			this.geoms.add(elem);
+		}
+
+	}
+
+	protected static class Triplet {
+
+		public int a_off;
+
+		public int b_typ;
+
+		public int c_int;
+
+		public Triplet(int offset, int type, int interpretation) {
+			this(offset, type, interpretation, false);
+		}
+
+		public Triplet(int offset, int type, int interpretation, boolean continueGeom) {
+			if (continueGeom && offset > 0)
+				this.a_off = offset - 1;
+			else
+				this.a_off = offset;
+
+			this.b_typ = type;
+			this.c_int = interpretation;
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder();
+			sb.append("[").append(this.a_off).append(", ");
+			sb.append(this.b_typ).append(", ").append(this.c_int).append("]");
+			return sb.toString();
+
+		}
+
+	}
+
+	/**
+	 * Convert SDO_GEOMETRY (from Oracle STRUCT) to deegree Geometry
+	 *
+	 * <h3>NOTE 1 (polygon)</h3>
+	 * <ul>
+	 * <li>Polygons (simple, multiple or compound) will be treated to have at least one
+	 * exterior or unknown ring.</li>
+	 * <li>When a polygon starts with interior rings the first unknown ring is treaded as
+	 * exterior ring.</li>
+	 * <li>Each N>1 occurrence of an exterior ring is treaded as new polygon.</li>
+	 * </ul>
+	 * @param sdoStruct Database Object of type oracle.sql.STRUCT
+	 * @param crs SRS or null for automatic recognition from srid
+	 * @return Geometry
+	 * @throws SQLException
+	 */
+	public Geometry toGeometry(STRUCT sdoStruct, ICRS crs) throws SQLException {
+		if (sdoStruct == null) {
+			return null;
+		}
+
+		Datum data[] = sdoStruct.getOracleAttributes();
+		SDOGeometry sdo = new SDOGeometry();
+
+		sdo.gtype = OracleObjectTools.fromInteger(data[0], 0);
+		sdo.srid = OracleObjectTools.fromInteger(data[1], -1);
+		sdo.point = OracleObjectTools.fromDoubleArray((STRUCT) data[2], Double.NaN);
+		sdo.elem_info = OracleObjectTools.fromIntegerArray((ARRAY) data[3]);
+		sdo.ordinates = OracleObjectTools.fromDoubleArray((ARRAY) data[4], Double.NaN);
+
+		removeLinearReferencingSystem(sdo);
+
+		if (inspector != null) {
+			inspector.toGeometry(sdo);
+		}
+
+		return toGeometry(sdo, crs);
+	}
+
+	protected void removeLinearReferencingSystem(SDOGeometry sdo) {
+		int gtype_d, tdims = sdo.gtype / 1000;
+		if (tdims < 2 || tdims > 4) {
+			gtype_d = 2;
+		}
+		else {
+			gtype_d = tdims;
+		}
+
+		int gtype_l = (sdo.gtype % 1000) / 100;
+		if (gtype_l > 0) { // contains LRS?
+			// create ordinates array without LRS dimension
+			double[] newOrdinates = new double[(sdo.ordinates.length / gtype_d) * (gtype_d - 1)];
+
+			int j = 0;
+			for (int i = 0; i < sdo.ordinates.length; i++) {
+				if (i % gtype_d != (gtype_l - 1)) { // ordinate not in LRS dimension?
+					newOrdinates[j++] = sdo.ordinates[i];
+				}
+			}
+
+			sdo.ordinates = newOrdinates;
+
+			// create elemInfo array without LRS dimension
+			int[] newElemInfo = new int[sdo.elem_info.length];
+			for (int i = 0; i < newElemInfo.length; i++) {
+				if (i % 3 == 0) {
+					// compute new offset in ordinates array
+					newElemInfo[i] = ((sdo.elem_info[i] - 1) / gtype_d) * (gtype_d - 1) + 1;
+				}
+				else {
+					newElemInfo[i] = sdo.elem_info[i];
+				}
+			}
+
+			sdo.elem_info = newElemInfo;
+
+			// compute new gtype
+			sdo.gtype = sdo.gtype - 1000 - gtype_l * 100;
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	protected Geometry toGeometry(SDOGeometry geom, ICRS crs) throws SQLException {
+		GeomHolder sdo = new GeomHolder(geom, crs);
+
+		if (sdo.cnt_o < sdo.gtype_d || sdo.cnt_e < 3 || sdo.cnt_o % sdo.gtype_d > 0 || sdo.cnt_e % 3 > 0)
+			throw new SQLException("Illegal Geometry");
+		else if (sdo.gtype_tt == SDOGTypeTT.UNKNOWN)
+			throw new SQLException("Unsupported Geometry");
+
+		Ring ringe = null;
+		List<Ring> ringi = new ArrayList<Ring>();
+		Set<Ring> ringu = new HashSet<Ring>();
+
+		int etype;
+		while ((etype = sdo.nxt()) != -1) {
+			switch (etype) {
+				case SDOEType.POINT:
+					handlePoint(sdo);
+					break;
+
+				case SDOEType.LINESTRING:
+					handleLine(sdo);
+					break;
+
+				case SDOEType.POLYGON_RING_INTERIOR: // see above NOTE 1
+				case SDOEType.POLYGON_RING_EXTERIOR:
+				case SDOEType.POLYGON_RING_UNKNOWN:
+					Ring rng = handleSimpleRing(sdo, etype);
+					switch (etype) {
+						case SDOEType.POLYGON_RING_INTERIOR:
+							ringi.add(rng);
+							break;
+						case SDOEType.POLYGON_RING_EXTERIOR:
+							if (ringe != null) {
+								sdo.add(GeomHolderTyp.POLYGON, _gf.createPolygon(null, sdo.crs, ringe, ringi));
+								ringi = new ArrayList<Ring>();
+							}
+							ringe = rng;
+							break;
+						case SDOEType.POLYGON_RING_UNKNOWN:
+							ringu.add(rng);
+					}
+					break;
+
+				case SDOEType.COMPOUND_LINESTRING:
+					sdo.add(GeomHolderTyp.CURVE, handleCompoundCurve(sdo));
+					break;
+
+				case SDOEType.COMPOUND_POLYGON_RING_INTERIOR: // see above NOTE 1
+				case SDOEType.COMPOUND_POLYGON_RING_EXTERIOR:
+				case SDOEType.COMPOUND_POLYGON_RING_UNKNOWN:
+					rng = handleCompoundRing(sdo);
+					switch (etype) {
+						case SDOEType.COMPOUND_POLYGON_RING_INTERIOR:
+							ringi.add(rng);
+							break;
+						case SDOEType.COMPOUND_POLYGON_RING_EXTERIOR:
+							if (ringe != null) {
+								sdo.add(GeomHolderTyp.POLYGON, _gf.createPolygon(null, sdo.crs, ringe, ringi));
+								ringi = new ArrayList<Ring>();
+							}
+							ringe = rng;
+							break;
+						case SDOEType.COMPOUND_POLYGON_RING_UNKNOWN:
+							ringu.add(rng);
+					}
+
+					break;
+
+				case SDOEType.UNKNOWN:
+				default: // other / not implemented
+					createUnknownException(sdo);
+					break;
+			}
+		}
+
+		if (ringe != null) {
+			sdo.add(GeomHolderTyp.POLYGON, _gf.createPolygon(null, sdo.crs, ringe, ringi));
+		}
+
+		if (!ringu.isEmpty()) {
+			LOG.warn("SDO_Geometry with rings of unknown type detected. "
+					+ "Please consider upgrading to the current format using "
+					+ "the SDO_MIGRATE.TO_CURRENT procedure.");
+
+			// maps to store spatial relations between rings
+			Map<Ring, Set<Ring>> contained = new HashMap<Ring, Set<Ring>>();
+			Map<Ring, Set<Ring>> contains = new HashMap<Ring, Set<Ring>>();
+
+			// construct a polygon for every ring in order to be able to utilize isWithin
+			List<Polygon> polygons = new ArrayList<Polygon>(ringu.size());
+			for (Ring r : ringu) {
+				polygons.add(_gf.createPolygon(null, r.getCoordinateSystem(), r, Collections.<Ring>emptyList()));
+			}
+
+			// determine spatial relationships between rings
+			for (Polygon a : polygons) {
+				for (Polygon b : polygons) {
+					if (a != b) {
+						if (a.isWithin(b)) {
+							Set<Ring> containedSet = contained.get(a.getExteriorRing());
+							if (containedSet == null) {
+								containedSet = new HashSet<Ring>();
+								contained.put(a.getExteriorRing(), containedSet);
+							}
+							containedSet.add(b.getExteriorRing());
+						}
+
+						if (b.isWithin(a)) {
+							Set<Ring> containsSet = contains.get(a.getExteriorRing());
+							if (containsSet == null) {
+								containsSet = new HashSet<Ring>();
+								contains.put(a.getExteriorRing(), containsSet);
+							}
+							containsSet.add(b.getExteriorRing());
+						}
+					}
+				}
+			}
+
+			// iteratively determine whether a ring is
+			// an exterior or an interior ring until all rings are processed
+			while (!ringu.isEmpty()) {
+				List<Ring> used = new ArrayList<Ring>();
+				for (Ring a : ringu) {
+					if (!contained.containsKey(a)) {
+						used.add(a);
+						ringi = new ArrayList<Ring>();
+
+						Set<Ring> rings = contains.get(a);
+						if (rings != null) {
+							for (Ring b : rings) {
+								Set<Ring> containedSet = contained.get(b);
+								if (containedSet == null || containedSet.size() == 1) {
+									used.add(b);
+									ringi.add(b);
+								}
+							}
+						}
+
+						sdo.add(GeomHolderTyp.POLYGON, _gf.createPolygon(null, sdo.crs, a, ringi));
+					}
+				}
+
+				// we should have solved the problem for at least one
+				// ring this time around (provided the overall problem is solvable at all)
+				if (used.isEmpty()) {
+					throw new IllegalArgumentException(
+							"Illegal Geometry: failed to construct polgyons based on rings of unknown type");
+				}
+
+				// remove already processed rings
+				for (Ring r : used) {
+					ringu.remove(r);
+
+					contained.remove(r);
+					for (Set<Ring> s : contained.values()) {
+						s.remove(r);
+					}
+
+					contains.remove(r);
+					for (Set<Ring> s : contains.values()) {
+						s.remove(r);
+					}
+				}
+			}
+		}
+
+		if (sdo.geoms.size() == 0) {
+			// no known valid geometry
+			return null;
+		}
+
+		if (SDOGTypeTT.COLLECTION == sdo.gtype_tt) {
+			// geometry is in any case a collection
+			return _gf.createMultiGeometry(null, sdo.crs, sdo.geoms);
+		}
+		else if (SDOGTypeTT.MULTIPOINT == sdo.gtype_tt || SDOGTypeTT.MULTILINE == sdo.gtype_tt
+				|| SDOGTypeTT.MULTIPOLYGON == sdo.gtype_tt || sdo.geoms.size() > 1) {
+			// returned geometry is multi* or collection (on different types)
+			List<?> ungeom = sdo.geoms;
+
+			// LOG.debug( "MULTI: Createing of type {}", sdo.last.name() );
+			if (sdo.last == GeomHolderTyp.POINT) {
+				return _gf.createMultiPoint(null, crs, (List<Point>) ungeom);
+			}
+			else if (sdo.last == GeomHolderTyp.CURVE) {
+				return _gf.createMultiCurve(null, crs, (List<Curve>) ungeom);
+			}
+			else if (sdo.last == GeomHolderTyp.POLYGON) {
+				return _gf.createMultiPolygon(null, crs, (List<Polygon>) ungeom);
+			}
+			else {
+				return _gf.createMultiGeometry(null, sdo.crs, sdo.geoms);
+			}
+
+		}
+		else {
+			// single type
+			return sdo.geoms.get(0);
+		}
+	}
+
+	private Curve handleCompoundCurve(GeomHolder sdo) throws SQLException {
+		int subelem = sdo.elem_info[sdo.elemoff + 2];
+
+		List<CurveSegment> lst = new LinkedList<CurveSegment>();
+
+		for (int i = 0; i < subelem; i++) {
+			sdo.nxt();
+			handleCurveSegment(sdo, lst, (i + 1) == subelem);
+		}
+
+		return _gf.createCurve(null, sdo.crs, lst.toArray(new CurveSegment[lst.size()]));
+	}
+
+	private Ring handleCompoundRing(GeomHolder sdo) throws SQLException {
+		int subelem = sdo.elem_info[sdo.elemoff + 2];
+
+		List<CurveSegment> lst = new LinkedList<CurveSegment>();
+		for (int i = 0; i < subelem; i++) {
+			sdo.nxt();
+			handleCurveSegment(sdo, lst, (i + 1) == subelem);
+		}
+
+		List<Curve> clst = new LinkedList<Curve>();
+		clst.add(_gf.createCurve(null, sdo.crs, lst.toArray(new CurveSegment[lst.size()])));
+		return _gf.createRing(null, sdo.crs, clst);
+	}
+
+	/**
+	 * Handle Point Type
+	 *
+	 * Interpretation are handled as follow:
+	 * <ol>
+	 * <li>1) normal point (one set of coordinates)</li>
+	 * <li>0) oriented point (only read as extra props on request)</li>
+	 * <li>N > 1) point cluster is treated as multiple points (N sets of coordinates)</li>
+	 * </ol>
+	 */
+	private void handlePoint(GeomHolder sdo) throws SQLException {
+		int intpr = sdo.elem_info[sdo.elemoff + 2];
+		int off = sdo.elem_info[sdo.elemoff] - 1; // from 1 based to 0 based
+
+		if (intpr > 1) {
+			for (int i = 0; i < intpr; i++) {
+				sdo.add(GeomHolderTyp.POINT,
+						_gf.createPoint(null, sdo.getOrdinatesEntry(off + (i * sdo.gtype_d)), sdo.crs));
+			}
+		}
+		else if (intpr == 1) {
+			sdo.add(GeomHolderTyp.POINT, _gf.createPoint(null, sdo.getOrdinatesEntry(off), sdo.crs));
+		}
+		else if (intpr == 0) {
+			if (!exportOrientedPointAsExtra) {
+				// Ignore the orientation defined as separate ordinates
+				return;
+			}
+
+			double[] orients = sdo.getOrdinates();
+			if (sdo.geoms.size() > 0) {
+				Geometry lastGeom = sdo.geoms.get(sdo.geoms.size() - 1);
+				final org.deegree.commons.tom.primitive.PrimitiveType pt;
+				pt = new org.deegree.commons.tom.primitive.PrimitiveType(DECIMAL);
+				final List<Property> props = new ArrayList<>();
+				for (int i = 0, j = orients.length; i < j; i++) {
+					final PropertyType decimalPt = new SimplePropertyType(
+							new QName(ExtraProps.EXTRA_PROP_NS, "orientation" + i), 1, 1, DECIMAL, null, null);
+					final TypedObjectNode value = new PrimitiveValue(Double.valueOf(orients[i]), pt);
+					props.add(new GenericProperty(decimalPt, value));
+				}
+				lastGeom.setProperties(props);
+			}
+		}
+		else {
+			createGeometryException(sdo);
+		}
+	}
+
+	private PackedPoints getPackedPoints(GeomHolder sdo, int offset, int cnt) {
+		double[] pnts = new double[sdo.gtype_d * cnt];
+
+		System.arraycopy(sdo.ordinates, offset - 1, pnts, 0, pnts.length);
+
+		return new PackedPoints(sdo.crs, pnts, sdo.gtype_d);
+	}
+
+	private void handleLine(GeomHolder sdo) throws SQLException {
+		int intpr = sdo.elem_info[sdo.elemoff + 2];
+		int off = sdo.elem_info[sdo.elemoff];
+		// Points pnts = _gf.createPoints( getPoints( sdo, off, sdo.cnt() ) );
+		PackedPoints pnts = getPackedPoints(sdo, off, sdo.cnt());
+
+		if (intpr == 1) {
+			sdo.add(GeomHolderTyp.CURVE, _gf.createLineString(null, sdo.crs, pnts));
+		}
+		else if (intpr == 2) {
+			sdo.add(GeomHolderTyp.CURVE, _gf.createCurve(null, sdo.crs, _gf.createArcString(pnts)));
+		}
+		else {
+			createGeometryException(sdo);
+		}
+	}
+
+	private void handleCurveSegment(GeomHolder sdo, List<CurveSegment> cseg, boolean last) throws SQLException {
+		int intpr = sdo.elem_info[sdo.elemoff + 2];
+		int off = sdo.elem_info[sdo.elemoff];
+		// Points pnts = _gf.createPoints( getPoints( sdo, off, ( sdo.cnt() + ( ( last ) ?
+		// 0 : 1 ) ) ) );
+		PackedPoints pnts = getPackedPoints(sdo, off, sdo.cnt() + ((last) ? 0 : 1));
+
+		if (intpr == 1)
+			cseg.add(_gf.createLineStringSegment(pnts));
+		else if (intpr == 2 && pnts.size() == 3)
+			cseg.add(_gf.createArc(pnts.get(0), pnts.get(1), pnts.get(2)));
+		else if (intpr == 2)
+			cseg.add(_gf.createArcString(pnts));
+		else
+			createGeometryException(sdo);
+	}
+
+	/**
+	 * Handle (simple) ring types of a polygon (POLYGON_RING_EXTERIOR,
+	 * POLYGON_RING_INTERIOR, POLYGON_RING_UNKNOWN)
+	 *
+	 * Interpretation are handled as follow:
+	 * <ol>
+	 * <li>1) polygon ring; connected sequence of straight lines</li>
+	 * <li>2) polygon ring; connected sequence of circular arcs</li>
+	 * <li>3) polygon ring / optimized rectangle; described as lower-left and upper-right
+	 * coordinate</li>
+	 * <li>4) circle; three distinct points on the circle</li>
+	 * </ol>
+	 */
+	private Ring handleSimpleRing(GeomHolder sdo, int etype) throws SQLException {
+		int intpr = sdo.elem_info[sdo.elemoff + 2];
+		int off = sdo.elem_info[sdo.elemoff];
+		// Points pnts = _gf.createPoints( getPoints( sdo, off, sdo.cnt() ) );
+		PackedPoints pnts = getPackedPoints(sdo, off, sdo.cnt());
+
+		Ring rng = null;
+		if (intpr == 1)
+			rng = _gf.createLinearRing(null, sdo.crs, pnts);
+		else if (intpr == 2 || intpr == 4) {
+			List<Curve> lc = new LinkedList<Curve>();
+			if (intpr == 2) {
+				lc.add(_gf.createCurve(null, sdo.crs, _gf.createArcString(pnts)));
+			}
+			else {
+				if (pnts.size() != 3)
+					createGeometryException(sdo);
+
+				lc.add(_gf.createCurve(null, sdo.crs, _gf.createCircle(pnts.get(0), pnts.get(1), pnts.get(2))));
+			}
+
+			rng = _gf.createRing(null, sdo.crs, lc);
+		}
+		else if (intpr == 3) {
+			Point ll = pnts.getStartPoint();
+			Point ur = pnts.getEndPoint();
+
+			Point a = _gf.createPoint(null, ll.get0(), ll.get1(), sdo.crs);
+			Point b = _gf.createPoint(null, ll.get0(), ur.get1(), sdo.crs);
+			Point c = _gf.createPoint(null, ur.get0(), ur.get1(), sdo.crs);
+			Point d = _gf.createPoint(null, ur.get0(), ll.get1(), sdo.crs);
+			rng = _gf.createLinearRing(null, sdo.crs, new PointsArray(a, b, c, d, a));
+
+			// enforce orientations if type of ring is known
+			if (etype == SDOEType.POLYGON_RING_INTERIOR) {
+				rng = forceOrientation(rng, false);
+			}
+			else if (etype == SDOEType.POLYGON_RING_EXTERIOR) {
+				rng = forceOrientation(rng, true);
+			}
+		}
+
+		if (rng == null) {
+			createGeometryException(sdo);
+		}
+
+		return rng;
+	}
+
+	private void createUnknownException(GeomHolder sdo) {
+		sdo.prev();
+		StringBuilder sb = new StringBuilder();
+		sb.append("Geometry from Type ").append(sdo.gtype);
+		sb.append(" with first ETYPE ").append(sdo.nxt());
+		sb.append("is not known");
+		throw new InvalidParameterValueException(sb.toString());
+	}
+
+	private void createGeometryException(GeomHolder sdo) throws SQLException {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Geometry from Type ").append(sdo.gtype);
+		sb.append(" has a invalid structure [ ");
+		if (sdo.elem_info == null) {
+			sb.append("null ");
+		}
+		else {
+			for (int i = 0, j = sdo.elem_info.length; i < j; i++) {
+				if (i != 0)
+					sb.append(", ");
+
+				if (i == sdo.elemoff)
+					sb.append("*");
+
+				sb.append(sdo.elem_info[i]);
+
+				if (i > 2 && (i - 2) == sdo.elemoff)
+					sb.append("* ");
+			}
+		}
+		sb.append("]");
+		throw new InvalidParameterValueException(sb.toString());
+	}
+
+	@Deprecated
+	public Object fromGeometry(OracleConnection conn, int srid, Geometry geometry) throws SQLException {
+		return fromGeometry(conn, srid, geometry, true);
+	}
+
+	@SuppressWarnings("unchecked")
+	protected SDOGeometry fromGeometry(int srid, Geometry geometry, boolean allowJTSfallback) {
+		List<Triplet> info = new LinkedList<Triplet>();
+		List<Point> pnts = new LinkedList<Point>();
+		int gtypett = SDOGTypeTT.UNKNOWN;
+
+		try {
+			GeometryType typ = geometry.getGeometryType();
+			if (typ == GeometryType.PRIMITIVE_GEOMETRY) {
+				gtypett = buildPrimitive(info, pnts, (GeometricPrimitive) geometry);
+			}
+			else if (typ == GeometryType.MULTI_GEOMETRY) {
+				gtypett = buildMultiGeometry(info, pnts, (MultiGeometry<Geometry>) geometry);
+			}
+			else if (typ == GeometryType.ENVELOPE) {
+				gtypett = buildEnvelope(info, pnts, (Envelope) geometry);
+			}
+			else {
+				// COMPOSITE_GEOMETRY: and others
+				throw new InvalidParameterValueException();
+			}
+		}
+		catch (InvalidParameterValueException ipve) {
+			// can not be mapped directly so try JTS if allowed
+			info.clear();
+			pnts.clear();
+		}
+
+		try {
+			if (info.size() == 0 && allowJTSfallback && geometry instanceof AbstractDefaultGeometry) {
+				// build geometry with JTS
+				AbstractDefaultGeometry ageom = (AbstractDefaultGeometry) geometry;
+				gtypett = buildJTSGeometry(info, pnts, geometry.getCoordinateSystem(), ageom.getJTSGeometry());
+			}
+		}
+		catch (Exception ex) {
+			// geometry could not completely be build
+			info.clear();
+			pnts.clear();
+		}
+
+		if (info.size() > 0) {
+			// build geometry
+			int dim = 2;
+			for (Point p : pnts) {
+				if (p.getCoordinateDimension() > dim)
+					dim = p.getCoordinateDimension();
+			}
+			if (dim > 4)
+				dim = 4;
+
+			double[] ordinates = buildResultOrdinates(dim, pnts);
+			int[] elemInfo = buildResultElemeInfo(dim, info);
+
+			int gtyp = (1000 * dim) + gtypett;
+			LOG.trace(
+					"fromGeometry: MDSYS.SDO_GEOMETRY( {}, {}, NULL, MDSYS.SDO_ELEM_INFO_ARRAY{}, MDSYS.SDO_ORDINATE_ARRAY{} )",
+					gtyp, srid, elemInfo, ordinates);
+			return new SDOGeometry(gtyp, srid, null, elemInfo, ordinates);
+		}
+
+		// no parse able geometry found
+		return null;
+	}
+
+	public Object fromGeometry(OracleConnection conn, int srid, Geometry geometry, boolean allowJTSfallback)
+			throws SQLException {
+
+		SDOGeometry geom = fromGeometry(srid, geometry, allowJTSfallback);
+		if (inspector != null) {
+			inspector.fromGeometry(geom);
+		}
+		if (geom != null) {
+			return OracleObjectTools.toSDOGeometry(geom, conn);
+		}
+		else {
+			// create error message
+		}
+
+		return null;
+	}
+
+	private double[] buildResultOrdinates(int dim, List<Point> pnts) {
+		return buildResultOrdinates(dim, pnts, 0.0d);
+	}
+
+	private double[] buildResultOrdinates(int dim, List<Point> pnts, double defaultValue) {
+		int ord_pos = 0;
+		double ords[] = new double[pnts.size() * dim];
+		Point ord;
+		for (int i = 0, j = pnts.size(); i < j; i++) {
+			ord = pnts.get(i);
+			ords[ord_pos++] = ord.get0();
+			ords[ord_pos++] = ord.get1();
+
+			if (dim == 3) {
+				if (ord.getCoordinateDimension() > 2)
+					ords[ord_pos++] = ord.get(2);
+				else
+					ords[ord_pos++] = defaultValue;
+			}
+			else if (dim > 3) {
+				if (ord.getCoordinateDimension() > 3)
+					ords[ord_pos++] = ord.get(2);
+				else
+					ords[ord_pos++] = defaultValue;
+			}
+		}
+
+		return ords;
+	}
+
+	private int[] buildResultElemeInfo(int dim, List<Triplet> info) {
+		int elem_info[] = new int[info.size() * 3];
+		int elem_cnt = 0;
+
+		Triplet t;
+		for (int i = 0, j = info.size(); i < j; i++) {
+			t = info.get(i);
+			elem_info[elem_cnt++] = (t.a_off * dim) + 1;
+			elem_info[elem_cnt++] = t.b_typ;
+			elem_info[elem_cnt++] = t.c_int;
+		}
+
+		return elem_info;
+	}
+
+	private void addCoordinate(List<Point> pnts, ICRS crs, org.locationtech.jts.geom.Coordinate coord) {
+		if (Double.isNaN(coord.z)) {
+			pnts.add(_gf.createPoint(null, coord.x, coord.y, crs));
+		}
+		else {
+			pnts.add(_gf.createPoint(null, coord.x, coord.y, coord.z, crs));
+		}
+	}
+
+	private int buildJTSGeometry(List<Triplet> info, List<Point> pnts, ICRS crs,
+			org.locationtech.jts.geom.Geometry geom) {
+		int gtyp = SDOGTypeTT.UNKNOWN;
+
+		if (geom instanceof org.locationtech.jts.geom.Point) {
+			buildJTSPoint(info, pnts, crs, (org.locationtech.jts.geom.Point) geom);
+			gtyp = SDOGTypeTT.POINT;
+		}
+		else if (geom instanceof org.locationtech.jts.geom.LinearRing) {
+			buildJTSLineString(info, pnts, crs, (org.locationtech.jts.geom.LineString) geom,
+					SDOEType.POLYGON_RING_EXTERIOR);
+			gtyp = SDOGTypeTT.POLYGON;
+		}
+		else if (geom instanceof org.locationtech.jts.geom.LineString) {
+			buildJTSLineString(info, pnts, crs, (org.locationtech.jts.geom.LineString) geom, SDOEType.LINESTRING);
+			gtyp = SDOGTypeTT.LINE;
+		}
+		else if (geom instanceof org.locationtech.jts.geom.Polygon) {
+			org.locationtech.jts.geom.Polygon polygon = (org.locationtech.jts.geom.Polygon) geom;
+			buildJTSLineString(info, pnts, crs, polygon.getExteriorRing(), SDOEType.POLYGON_RING_EXTERIOR);
+			for (int i = 0, j = polygon.getNumInteriorRing(); i < j; i++) {
+				buildJTSLineString(info, pnts, crs, polygon.getInteriorRingN(i), SDOEType.POLYGON_RING_INTERIOR);
+			}
+			gtyp = SDOGTypeTT.POLYGON;
+		}
+		else if (geom instanceof org.locationtech.jts.geom.MultiPoint) {
+			for (int m = 0, n = geom.getNumGeometries(); m < n; m++) {
+				buildJTSPoint(info, pnts, crs, (org.locationtech.jts.geom.Point) geom.getGeometryN(m));
+			}
+			gtyp = SDOGTypeTT.MULTIPOINT;
+		}
+		else if (geom instanceof org.locationtech.jts.geom.MultiLineString) {
+			for (int m = 0, n = geom.getNumGeometries(); m < n; m++) {
+				buildJTSLineString(info, pnts, crs, (org.locationtech.jts.geom.LineString) geom.getGeometryN(m),
+						SDOEType.LINESTRING);
+			}
+			gtyp = SDOGTypeTT.MULTILINE;
+		}
+		else if (geom instanceof org.locationtech.jts.geom.MultiPolygon) {
+			org.locationtech.jts.geom.Polygon polygon = null;
+			for (int m = 0, n = geom.getNumGeometries(); m < n; m++) {
+				polygon = (org.locationtech.jts.geom.Polygon) geom.getGeometryN(m);
+				buildJTSLineString(info, pnts, crs, polygon.getExteriorRing(), SDOEType.POLYGON_RING_EXTERIOR);
+				for (int i = 0, j = polygon.getNumInteriorRing(); i < j; i++) {
+					buildJTSLineString(info, pnts, crs, polygon.getInteriorRingN(i), SDOEType.POLYGON_RING_INTERIOR);
+				}
+			}
+			gtyp = SDOGTypeTT.MULTIPOLYGON;
+		}
+		else if (geom instanceof org.locationtech.jts.geom.GeometryCollection) {
+			org.locationtech.jts.geom.Geometry subgeom = null;
+			for (int m = 0, n = geom.getNumGeometries(); m < n; m++) {
+				subgeom = geom.getGeometryN(m);
+
+				if (subgeom instanceof org.locationtech.jts.geom.Point
+						|| subgeom instanceof org.locationtech.jts.geom.LinearRing
+						|| subgeom instanceof org.locationtech.jts.geom.LineString
+						|| subgeom instanceof org.locationtech.jts.geom.Polygon
+						|| subgeom instanceof org.locationtech.jts.geom.MultiPoint
+						|| subgeom instanceof org.locationtech.jts.geom.MultiLineString
+						|| subgeom instanceof org.locationtech.jts.geom.MultiPolygon) {
+					// only non cascading types
+					buildJTSGeometry(info, pnts, crs, subgeom);
+				}
+				else {
+					throw new InvalidParameterValueException();
+				}
+			}
+			gtyp = SDOGTypeTT.COLLECTION;
+		}
+		else {
+			// other unknown
+			throw new InvalidParameterValueException();
+		}
+
+		return gtyp;
+	}
+
+	private void buildJTSPoint(List<Triplet> info, List<Point> pnts, ICRS crs, org.locationtech.jts.geom.Point geom) {
+		info.add(new Triplet(pnts.size(), 1, 1));
+		addCoordinate(pnts, crs, ((org.locationtech.jts.geom.Point) geom).getCoordinate());
+	}
+
+	private void buildJTSLineString(List<Triplet> info, List<Point> pnts, ICRS crs,
+			org.locationtech.jts.geom.LineString geom, int etype) {
+		info.add(new Triplet(pnts.size(), etype, 1));
+		for (org.locationtech.jts.geom.Coordinate coord : geom.getCoordinates()) {
+			addCoordinate(pnts, crs, coord);
+		}
+	}
+
+	private int buildMultiGeometry(List<Triplet> info, List<Point> pnts, MultiGeometry<Geometry> geom) {
+		MultiGeometryType mtyp = geom.getMultiGeometryType();
+
+		int gtyp = SDOGTypeTT.COLLECTION;
+		if (mtyp == MultiGeometryType.MULTI_POINT) {
+			gtyp = SDOGTypeTT.MULTIPOINT;
+		}
+		else if (mtyp == MultiGeometryType.MULTI_CURVE || mtyp == MultiGeometryType.MULTI_LINE_STRING) {
+			gtyp = SDOGTypeTT.MULTILINE;
+		}
+		else if (mtyp == MultiGeometryType.MULTI_SURFACE || mtyp == MultiGeometryType.MULTI_POLYGON) {
+			gtyp = SDOGTypeTT.MULTIPOLYGON;
+		}
+		else if (mtyp == MultiGeometryType.MULTI_SOLID) {
+			// not supported
+			throw new InvalidParameterValueException();
+		}
+
+		for (Geometry geometry : geom) {
+			GeometryType typ = geometry.getGeometryType();
+			if (typ == GeometryType.PRIMITIVE_GEOMETRY) {
+				buildPrimitive(info, pnts, (GeometricPrimitive) geometry);
+			}
+			else if (typ == GeometryType.ENVELOPE) {
+				buildEnvelope(info, pnts, (Envelope) geometry);
+			}
+			else {
+				// COMPOSITE_GEOMETRY
+				// MULTI_GEOMETRY inside a MULTI_GEOMETRY
+				// SOLID
+				// and others
+				throw new InvalidParameterValueException();
+			}
+		}
+		return gtyp;
+	}
+
+	private int buildEnvelope(List<Triplet> info, List<Point> pnts, Envelope geom) {
+		info.add(new Triplet(pnts.size(), SDOEType.POLYGON_RING_EXTERIOR, 3));
+		pnts.add(geom.getMin());
+		pnts.add(geom.getMax());
+
+		return SDOGTypeTT.POLYGON;
+	}
+
+	protected int buildPrimitive(List<Triplet> info, List<Point> pnts, GeometricPrimitive geom) {
+		PrimitiveType typ = geom.getPrimitiveType();
+		int gtyp;
+
+		if (typ == PrimitiveType.Curve) {
+			buildCurve(info, pnts, (Curve) geom);
+			gtyp = SDOGTypeTT.LINE;
+		}
+		else if (typ == PrimitiveType.Point) {
+			info.add(new Triplet(pnts.size(), 1, 1));
+			pnts.add((Point) geom);
+			gtyp = SDOGTypeTT.POINT;
+		}
+		else if (typ == PrimitiveType.Surface) {
+			buildSurface(info, pnts, (Surface) geom);
+			gtyp = SDOGTypeTT.POLYGON;
+		}
+		else {
+			// unsupported
+			throw new InvalidParameterValueException();
+		}
+
+		return gtyp;
+	}
+
+	private void buildSurface(List<Triplet> info, List<Point> pnts, Surface geometry) {
+		for (SurfacePatch sp : geometry.getPatches()) {
+			if (sp.getSurfacePatchType() != SurfacePatchType.POLYGON_PATCH)
+				throw new InvalidParameterValueException();
+
+			PolygonPatch pp = (PolygonPatch) sp;
+
+			boolean isSimple = true;
+			boolean hasCicrcle = false;
+
+			for (Ring r : pp.getBoundaryRings()) {
+				List<CurveSegment> csegs = r.getCurveSegments();
+				if (csegs.size() > 1) {
+					// compund
+					isSimple = false;
+				}
+
+				for (CurveSegment cseg : csegs) {
+					CurveSegmentType csegt = cseg.getSegmentType();
+
+					if (csegt == CurveSegmentType.CIRCLE) {
+						// acepted simple types (only with other simple)
+						hasCicrcle = true;
+					}
+					else if (csegt == CurveSegmentType.ARC || csegt == CurveSegmentType.ARC_STRING
+							|| csegt == CurveSegmentType.LINE_STRING_SEGMENT) {
+						// acepted simple types
+					}
+					else {
+						// others not supported
+						throw new InvalidParameterValueException();
+					}
+				}
+			}
+
+			if (!isSimple && hasCicrcle) {
+				// circles and compund not supported
+				throw new InvalidParameterValueException();
+			}
+
+			List<CurveSegment> eseg = forceOrientation(pp.getExteriorRing(), true).getCurveSegments();
+			// handle exterior
+			if (isSimple) {
+				buildCurveSegmentSimple(info, pnts, eseg.get(0), true);
+			}
+			else {
+				info.add(new Triplet(pnts.size(), SDOEType.COMPOUND_POLYGON_RING_EXTERIOR, eseg.size()));
+				for (int i = 0, j = eseg.size(); i < j; i++) {
+					buildCurveSegment(info, pnts, eseg.get(i), i > 0);
+				}
+			}
+
+			for (Ring rint : pp.getInteriorRings()) {
+				// handle interior
+				List<CurveSegment> iseg = forceOrientation(rint, false).getCurveSegments();
+
+				if (isSimple) {
+					buildCurveSegmentSimple(info, pnts, iseg.get(0), false);
+				}
+				else {
+					info.add(new Triplet(pnts.size(), SDOEType.COMPOUND_POLYGON_RING_INTERIOR, iseg.size()));
+					for (int i = 0, j = iseg.size(); i < j; i++) {
+						buildCurveSegment(info, pnts, iseg.get(i), i > 0);
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Add points to internal point list
+	 *
+	 * <p>
+	 * <strong>Note:</strong>if the first points equals the lasts point and the geometry
+	 * should be continued the first point will be skipped. This is reduces duplicate
+	 * points for example with AAA / ALKIS geometries.
+	 * </p>
+	 * @param pnts current list of points
+	 * @param add points to add
+	 * @param continueGeom skipp first point if it equals last point in list
+	 */
+	private void addPnts(List<Point> pnts, Points add, boolean continueGeom) {
+		int off = 0;
+
+		// if the last geometry is continued, do not duplicate points (last == first)
+		if (continueGeom && pnts.size() > 0 && add.size() > 0 && pnts.get(pnts.size() - 1).equals(add.get(0)))
+			off = 1;
+
+		for (int i = off, j = add.size(); i < j; i++) {
+			pnts.add(add.get(i));
+		}
+	}
+
+	private void buildCurveSegmentSimple(List<Triplet> info, List<Point> pnts, CurveSegment geom, boolean exterior) {
+		CurveSegmentType typ = geom.getSegmentType();
+		int etype = exterior ? SDOEType.POLYGON_RING_EXTERIOR : SDOEType.POLYGON_RING_INTERIOR;
+
+		if (typ == CurveSegmentType.ARC_STRING || typ == CurveSegmentType.ARC) {
+			info.add(new Triplet(pnts.size(), etype, 2));
+			addPnts(pnts, ((ArcString) geom).getControlPoints(), false);
+		}
+		else if (typ == CurveSegmentType.LINE_STRING_SEGMENT) {
+			info.add(new Triplet(pnts.size(), etype, 1));
+			addPnts(pnts, ((LineStringSegment) geom).getControlPoints(), false);
+		}
+		else if (typ == CurveSegmentType.CIRCLE) {
+			info.add(new Triplet(pnts.size(), etype, 4));
+			addPnts(pnts, ((Circle) geom).getControlPoints(), false);
+		}
+		else {
+			// should never happen
+			throw new InvalidParameterValueException();
+		}
+	}
+
+	private void buildCurve(List<Triplet> info, List<Point> pnts, Curve geom) {
+		List<CurveSegment> segs = geom.getCurveSegments();
+
+		// make only compound if more than one segment is available
+		if (segs.size() > 1) {
+			info.add(new Triplet(pnts.size(), SDOEType.COMPOUND_LINESTRING, segs.size()));
+		}
+
+		for (int i = 0, j = segs.size(); i < j; i++) {
+			CurveSegment cs = segs.get(i);
+			buildCurveSegment(info, pnts, cs, i > 0);
+		}
+	}
+
+	private void buildCurveSegment(List<Triplet> info, List<Point> pnts, CurveSegment geom, boolean continuedGeom) {
+		switch (geom.getSegmentType()) {
+			case CIRCLE:
+				// multiple circles in line not mapable
+				if (((ArcString) geom).getControlPoints().size() > 3)
+					throw new InvalidParameterValueException();
+			case ARC:
+			case ARC_STRING:
+				info.add(new Triplet(pnts.size(), SDOEType.LINESTRING, 2, continuedGeom));
+				addPnts(pnts, ((ArcString) geom).getControlPoints(), continuedGeom);
+				break;
+			case LINE_STRING_SEGMENT:
+				info.add(new Triplet(pnts.size(), SDOEType.LINESTRING, 1, continuedGeom));
+				addPnts(pnts, ((LineStringSegment) geom).getControlPoints(), continuedGeom);
+				break;
+
+			default:
+				// unmappable
+				throw new InvalidParameterValueException();
+		}
+	}
+
+	public void setExportOrientedPointAsExtra(boolean exportOrientedPointAsExtra) {
+		this.exportOrientedPointAsExtra = exportOrientedPointAsExtra;
+	}
+
 }

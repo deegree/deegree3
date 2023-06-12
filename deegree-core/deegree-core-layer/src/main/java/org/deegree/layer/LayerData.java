@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aschmitz@wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -39,17 +38,13 @@ import org.deegree.feature.FeatureCollection;
 import org.deegree.rendering.r2d.context.RenderContext;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 public interface LayerData {
 
-    void render( RenderContext context ) throws InterruptedException;
+	void render(RenderContext context) throws InterruptedException;
 
-    // think about using a infocontext or something here
-    FeatureCollection info();
+	// think about using a infocontext or something here
+	FeatureCollection info();
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -39,17 +38,14 @@ package org.deegree.geometry.primitive;
  * TODO add documentation here
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- *
- * @version $Revision$, $Date$
  */
 public interface LinearRing extends Ring {
 
-    /**
-     * Must always return {@link Ring.RingType#LinearRing}.
-     *
-     * @return {@link Ring.RingType#LinearRing}
-     */
-    @Override
-    public RingType getRingType();
+	/**
+	 * Must always return {@link Ring.RingType#LinearRing}.
+	 * @return {@link Ring.RingType#LinearRing}
+	 */
+	@Override
+	public RingType getRingType();
+
 }

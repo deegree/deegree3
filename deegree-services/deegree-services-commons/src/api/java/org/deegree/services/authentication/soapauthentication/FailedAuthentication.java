@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -43,9 +42,7 @@ import org.deegree.services.authentication.SecurityException;
  * SOAP-Fault if the authentication fails regarding to the credentials provided in the SOAP security header.
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
  */
 public class FailedAuthentication extends SecurityException {
 

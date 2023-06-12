@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -54,88 +53,85 @@ import org.deegree.protocol.wfs.query.StandardPresentationParams;
 import org.deegree.protocol.wfs.query.kvp.QueryKVPAdapter;
 
 /**
- * Adapter between KVP <code>GetPropertyValue</code> requests and {@link GetPropertyValue} objects.
+ * Adapter between KVP <code>GetPropertyValue</code> requests and {@link GetPropertyValue}
+ * objects.
  * <p>
  * Supported WFS versions:
  * <ul>
  * <li>2.0.0</li>
  * </ul>
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class GetPropertyValueKVPAdapter extends QueryKVPAdapter {
 
-    /**
-     * Parses a normalized KVP-map as a WFS {@link GetPropertyValue} request.
-     * 
-     * @param kvpParams
-     *            normalized KVP-map; keys must be uppercase, each key only has one associated value
-     * @return parsed {@link GetPropertyValue} request
-     * @throws Exception
-     */
-    public static GetPropertyValue parse( Map<String, String> kvpParams )
-                            throws Exception {
+	/**
+	 * Parses a normalized KVP-map as a WFS {@link GetPropertyValue} request.
+	 * @param kvpParams normalized KVP-map; keys must be uppercase, each key only has one
+	 * associated value
+	 * @return parsed {@link GetPropertyValue} request
+	 * @throws Exception
+	 */
+	public static GetPropertyValue parse(Map<String, String> kvpParams) throws Exception {
 
-        Version version = Version.parseVersion( KVPUtils.getRequired( kvpParams, "VERSION" ) );
+		Version version = Version.parseVersion(KVPUtils.getRequired(kvpParams, "VERSION"));
 
-        GetPropertyValue result = null;
+		GetPropertyValue result = null;
 
-        if ( VERSION_200.equals( version ) ) {
-            result = parse200( kvpParams );
-        } else {
-            String msg = "Version '" + version
-                         + "' is not supported for GetPropertyValue requests. The only supported version is 2.0.0.";
-            throw new Exception( msg );
-        }
-        return result;
-    }
+		if (VERSION_200.equals(version)) {
+			result = parse200(kvpParams);
+		}
+		else {
+			String msg = "Version '" + version
+					+ "' is not supported for GetPropertyValue requests. The only supported version is 2.0.0.";
+			throw new Exception(msg);
+		}
+		return result;
+	}
 
-    private static GetPropertyValue parse200( Map<String, String> kvpParams )
-                            throws Exception {
+	private static GetPropertyValue parse200(Map<String, String> kvpParams) throws Exception {
 
-        // optional: 'NAMESPACE'
-        String namespaceValue = kvpParams.get( "NAMESPACE" );
-        if ( namespaceValue == null ) {
-            namespaceValue = kvpParams.get( "NAMESPACES" );
-        }
+		// optional: 'NAMESPACE'
+		String namespaceValue = kvpParams.get("NAMESPACE");
+		if (namespaceValue == null) {
+			namespaceValue = kvpParams.get("NAMESPACES");
+		}
 
-        Map<String, String> nsBindings = extractNamespaceBindings200( namespaceValue );
-        if ( nsBindings == null ) {
-            nsBindings = Collections.emptyMap();
-        }
+		Map<String, String> nsBindings = extractNamespaceBindings200(namespaceValue);
+		if (nsBindings == null) {
+			nsBindings = Collections.emptyMap();
+		}
 
-        NamespaceBindings nsContext = new NamespaceBindings();
-        if ( nsBindings != null ) {
-            for ( String key : nsBindings.keySet() ) {
-                nsContext.addNamespace( key, nsBindings.get( key ) );
-            }
-        }
+		NamespaceBindings nsContext = new NamespaceBindings();
+		if (nsBindings != null) {
+			for (String key : nsBindings.keySet()) {
+				nsContext.addNamespace(key, nsBindings.get(key));
+			}
+		}
 
-        StandardPresentationParams presentationParams = parseStandardPresentationParameters200( kvpParams );
+		StandardPresentationParams presentationParams = parseStandardPresentationParameters200(kvpParams);
 
-        ResolveParams resolveParams = parseStandardResolveParameters200( kvpParams );
+		ResolveParams resolveParams = parseStandardResolveParameters200(kvpParams);
 
-        // mandatory: VALUEREFERENCE
-        ValueReference valueReference = new ValueReference( getRequired( kvpParams, "VALUEREFERENCE" ), nsContext );
+		// mandatory: VALUEREFERENCE
+		ValueReference valueReference = new ValueReference(getRequired(kvpParams, "VALUEREFERENCE"), nsContext);
 
-        // optional: RESOLVEPATH
-        ValueReference resolvePath = null;
-        String resolvePathStr = kvpParams.get( "RESOLVEPATH" );
-        if ( resolvePathStr != null ) {
-            resolvePath = new ValueReference( resolvePathStr, nsContext );
-        }
+		// optional: RESOLVEPATH
+		ValueReference resolvePath = null;
+		String resolvePathStr = kvpParams.get("RESOLVEPATH");
+		if (resolvePathStr != null) {
+			resolvePath = new ValueReference(resolvePathStr, nsContext);
+		}
 
-        List<Query> queries = parseQueries200( kvpParams );
-        if ( queries.size() > 1 ) {
-            String msg = "Multiple queries for GetPropertyValue requests are not allowed.";
-            throw new Exception( msg );
-        }
+		List<Query> queries = parseQueries200(kvpParams, resolveParams);
+		if (queries.size() > 1) {
+			String msg = "Multiple queries for GetPropertyValue requests are not allowed.";
+			throw new Exception(msg);
+		}
 
-        return new GetPropertyValue( VERSION_200, null, presentationParams, resolveParams, valueReference, resolvePath,
-                                     queries.get( 0 ) );
-    }
+		return new GetPropertyValue(VERSION_200, null, presentationParams, resolveParams, valueReference, resolvePath,
+				queries.get(0));
+	}
+
 }

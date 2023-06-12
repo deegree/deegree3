@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -39,7 +38,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.List;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -50,204 +48,183 @@ import org.deegree.cs.transformations.TransformationFactory;
 import org.slf4j.Logger;
 
 /**
- * Abstract base class for all transformers. Stores a target coordinate system and creates {@link Transformation}
- * objects for a given source CRS.
- * 
+ * Abstract base class for all transformers. Stores a target coordinate system and creates
+ * {@link Transformation} objects for a given source CRS.
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
-@LoggingNotes(debug = "Get information about created transformation chain.")
 public abstract class Transformer {
 
-    private static final Logger LOG = getLogger( Transformer.class );
+	private static final Logger LOG = getLogger(Transformer.class);
 
-    private final ICRS targetCRS;
+	private final ICRS targetCRS;
 
-    // private final ICoordinateSystemReference tCRS;
+	// private final ICoordinateSystemReference tCRS;
 
-    private Transformation definedTransformation = null;
+	private Transformation definedTransformation = null;
 
-    /**
-     * Creates a new Transformer object, with the given target CRS.
-     * 
-     * @param targetCRS
-     *            to transform incoming coordinates to.
-     * @throws IllegalArgumentException
-     *             if the given ICoordinateSystem is <code>null</code>
-     */
-    protected Transformer( final ICRS targetCRS ) throws IllegalArgumentException {
-        if ( targetCRS == null ) {
-            throw new IllegalArgumentException( Messages.getMessage( "CRS_PARAMETER_NOT_NULL",
-                                                                     "Transformer(CoordinateSystem)", "targetCRS" ) );
-        }
-        this.targetCRS = targetCRS;
-        // this.tCRS = new ICoordinateSystemReference( targetCRS );
-    }
+	/**
+	 * Creates a new Transformer object, with the given target CRS.
+	 * @param targetCRS to transform incoming coordinates to.
+	 * @throws IllegalArgumentException if the given ICoordinateSystem is
+	 * <code>null</code>
+	 */
+	protected Transformer(final ICRS targetCRS) throws IllegalArgumentException {
+		if (targetCRS == null) {
+			throw new IllegalArgumentException(
+					Messages.getMessage("CRS_PARAMETER_NOT_NULL", "Transformer(CoordinateSystem)", "targetCRS"));
+		}
+		this.targetCRS = targetCRS;
+		// this.tCRS = new ICoordinateSystemReference( targetCRS );
+	}
 
-    /**
-     * Creates a new Transformer object, with the given id as the target CRS.
-     * 
-     * @param targetCRS
-     *            an identifier to which all incoming coordinates shall be transformed.
-     * @throws UnknownCRSException
-     *             if the given crs name could not be mapped to a valid (configured) crs.
-     * @throws IllegalArgumentException
-     *             if the given parameter is null.
-     */
-    protected Transformer( String targetCRS ) throws UnknownCRSException, IllegalArgumentException {
-        if ( targetCRS == null ) {
-            throw new IllegalArgumentException( Messages.getMessage( "CRS_PARAMETER_NOT_NULL", "Transformer(String)",
-                                                                     "targetCRS" ) );
-        }
-        this.targetCRS = CRSManager.lookup( targetCRS );
-        // this.tCRS = new ICoordinateSystemReference( targetCRS );
-    }
+	/**
+	 * Creates a new Transformer object, with the given id as the target CRS.
+	 * @param targetCRS an identifier to which all incoming coordinates shall be
+	 * transformed.
+	 * @throws UnknownCRSException if the given crs name could not be mapped to a valid
+	 * (configured) crs.
+	 * @throws IllegalArgumentException if the given parameter is null.
+	 */
+	protected Transformer(String targetCRS) throws UnknownCRSException, IllegalArgumentException {
+		if (targetCRS == null) {
+			throw new IllegalArgumentException(
+					Messages.getMessage("CRS_PARAMETER_NOT_NULL", "Transformer(String)", "targetCRS"));
+		}
+		this.targetCRS = CRSManager.lookup(targetCRS);
+		// this.tCRS = new ICoordinateSystemReference( targetCRS );
+	}
 
-    // /**
-    // * Creates a new Transformer object, with the given target CRS.
-    // *
-    // * @param targetCRS
-    // * to transform incoming coordinates to.
-    // * @throws IllegalArgumentException
-    // * if the given ICoordinateSystem is <code>null</code>
-    // * @throws UnknownCRSException
-    // * if the wrapped crs was null
-    // */
-    // protected Transformer( final AbstractCoordinateSystem targetCRS ) throws IllegalArgumentException,
-    // UnknownCRSException {
-    // if ( targetCRS == null ) {
-    // throw new IllegalArgumentException( Messages.getMessage( "CRS_PARAMETER_NOT_NULL",
-    // "Transformer(CoordinateSystem)", "targetCRS" ) );
-    // }
-    // this.targetCRS = targetCRS;
-    // // this.targetCRS = targetCRS.getWrappedCRS();
-    // // this.tCRS = targetCRS;
-    // }
+	// /**
+	// * Creates a new Transformer object, with the given target CRS.
+	// *
+	// * @param targetCRS
+	// * to transform incoming coordinates to.
+	// * @throws IllegalArgumentException
+	// * if the given ICoordinateSystem is <code>null</code>
+	// * @throws UnknownCRSException
+	// * if the wrapped crs was null
+	// */
+	// protected Transformer( final AbstractCoordinateSystem targetCRS ) throws
+	// IllegalArgumentException,
+	// UnknownCRSException {
+	// if ( targetCRS == null ) {
+	// throw new IllegalArgumentException( Messages.getMessage( "CRS_PARAMETER_NOT_NULL",
+	// "Transformer(CoordinateSystem)", "targetCRS" ) );
+	// }
+	// this.targetCRS = targetCRS;
+	// // this.targetCRS = targetCRS.getWrappedCRS();
+	// // this.tCRS = targetCRS;
+	// }
 
-    /**
-     * @param definedTransformation
-     *            to use instead of the CRSFactory.
-     * @throws IllegalArgumentException
-     *             if the given parameter is null.
-     */
-    protected Transformer( Transformation definedTransformation ) {
-        if ( definedTransformation == null ) {
-            throw new IllegalArgumentException( Messages.getMessage( "CRS_PARAMETER_NOT_NULL",
-                                                                     "Transformer(Transformation)",
-                                                                     "definedTransformation" ) );
-        }
-        targetCRS = definedTransformation.getTargetCRS();
-        // this.tCRS = new ICoordinateSystemReference( targetCRS );
-        this.definedTransformation = definedTransformation;
-    }
+	/**
+	 * @param definedTransformation to use instead of the CRSFactory.
+	 * @throws IllegalArgumentException if the given parameter is null.
+	 */
+	protected Transformer(Transformation definedTransformation) {
+		if (definedTransformation == null) {
+			throw new IllegalArgumentException(Messages.getMessage("CRS_PARAMETER_NOT_NULL",
+					"Transformer(Transformation)", "definedTransformation"));
+		}
+		targetCRS = definedTransformation.getTargetCRS();
+		// this.tCRS = new ICoordinateSystemReference( targetCRS );
+		this.definedTransformation = definedTransformation;
+	}
 
-    /**
-     * Creates a transformation chain, which can be used to transform incoming coordinates (in the given source CRS)
-     * into this Transformer's targetCRS.
-     * 
-     * @param sourceCRS
-     *            in which the coordinates are defined.
-     * @return the Transformation chain.
-     * @throws TransformationException
-     *             if no transformation chain could be created.
-     * @throws IllegalArgumentException
-     *             if the given ICoordinateSystem is <code>null</code>
-     * 
-     */
-    protected Transformation createCRSTransformation( ICRS sourceCRS )
-                            throws TransformationException, IllegalArgumentException {
-        return createCRSTransformation( sourceCRS, null );
-    }
+	/**
+	 * Creates a transformation chain, which can be used to transform incoming coordinates
+	 * (in the given source CRS) into this Transformer's targetCRS.
+	 * @param sourceCRS in which the coordinates are defined.
+	 * @return the Transformation chain.
+	 * @throws TransformationException if no transformation chain could be created.
+	 * @throws IllegalArgumentException if the given ICoordinateSystem is
+	 * <code>null</code>
+	 *
+	 */
+	protected Transformation createCRSTransformation(ICRS sourceCRS)
+			throws TransformationException, IllegalArgumentException {
+		return createCRSTransformation(sourceCRS, null);
+	}
 
-    /**
-     * Creates a transformation chain, which can be used to transform incoming coordinates (in the given source CRS)
-     * into this Transformer's targetCRS. The list of transformations can be used to define separate transformations
-     * which <b>must</b> be used into the resulting transformation chain.
-     * 
-     * @param sourceCRS
-     *            in which the coordinates are defined.
-     * @param toBeUsedTransformations
-     *            a list of transformations which must be used on the resulting transformation chain.
-     * 
-     * @return the Transformation chain.
-     * @throws TransformationException
-     * @throws TransformationException
-     *             if no transformation chain could be created.
-     * @throws IllegalArgumentException
-     *             if the given ICoordinateSystem is <code>null</code>
-     * 
-     */
-    protected Transformation createCRSTransformation( ICRS sourceCRS, List<Transformation> toBeUsedTransformations )
-                            throws TransformationException {
-        if ( sourceCRS == null ) {
-            throw new IllegalArgumentException( Messages.getMessage( "CRS_PARAMETER_NOT_NULL",
-                                                                     "createCRSTransformation( ICoordinateSystem )",
-                                                                     "sourceCRS" ) );
-        }
-        return checkOrCreateTransformation( sourceCRS, toBeUsedTransformations );
-    }
+	/**
+	 * Creates a transformation chain, which can be used to transform incoming coordinates
+	 * (in the given source CRS) into this Transformer's targetCRS. The list of
+	 * transformations can be used to define separate transformations which <b>must</b> be
+	 * used into the resulting transformation chain.
+	 * @param sourceCRS in which the coordinates are defined.
+	 * @param toBeUsedTransformations a list of transformations which must be used on the
+	 * resulting transformation chain.
+	 * @return the Transformation chain.
+	 * @throws TransformationException
+	 * @throws TransformationException if no transformation chain could be created.
+	 * @throws IllegalArgumentException if the given ICoordinateSystem is
+	 * <code>null</code>
+	 *
+	 */
+	protected Transformation createCRSTransformation(ICRS sourceCRS, List<Transformation> toBeUsedTransformations)
+			throws TransformationException {
+		if (sourceCRS == null) {
+			throw new IllegalArgumentException(Messages.getMessage("CRS_PARAMETER_NOT_NULL",
+					"createCRSTransformation( ICoordinateSystem )", "sourceCRS"));
+		}
+		return checkOrCreateTransformation(sourceCRS, toBeUsedTransformations);
+	}
 
-    /**
-     * Creates a transformation chain, which can be used to transform incoming coordinates (in the given source CRS)
-     * into this Transformer's targetCRS.
-     * 
-     * @param sourceCRS
-     *            in which the coordinates are defined.
-     * @return the Transformation chain.
-     * @throws TransformationException
-     *             if no transformation chain could be created.
-     * @throws IllegalArgumentException
-     *             if the given ICoordinateSystem is <code>null</code>
-     * @throws UnknownCRSException
-     *             if the given crs name could not be mapped to a valid (configured) crs.
-     * 
-     */
-    protected Transformation createCRSTransformation( String sourceCRS )
-                            throws TransformationException, IllegalArgumentException, UnknownCRSException {
-        if ( sourceCRS == null ) {
-            throw new IllegalArgumentException( Messages.getMessage( "CRS_PARAMETER_NOT_NULL",
-                                                                     "createCRSTransformation( ICoordinateSystem )",
-                                                                     "sourceCRS" ) );
-        }
-        return CRSManager.getTransformation( null, CRSManager.lookup( sourceCRS ), targetCRS );
-    }
+	/**
+	 * Creates a transformation chain, which can be used to transform incoming coordinates
+	 * (in the given source CRS) into this Transformer's targetCRS.
+	 * @param sourceCRS in which the coordinates are defined.
+	 * @return the Transformation chain.
+	 * @throws TransformationException if no transformation chain could be created.
+	 * @throws IllegalArgumentException if the given ICoordinateSystem is
+	 * <code>null</code>
+	 * @throws UnknownCRSException if the given crs name could not be mapped to a valid
+	 * (configured) crs.
+	 *
+	 */
+	protected Transformation createCRSTransformation(String sourceCRS)
+			throws TransformationException, IllegalArgumentException, UnknownCRSException {
+		if (sourceCRS == null) {
+			throw new IllegalArgumentException(Messages.getMessage("CRS_PARAMETER_NOT_NULL",
+					"createCRSTransformation( ICoordinateSystem )", "sourceCRS"));
+		}
+		return CRSManager.getTransformation(null, CRSManager.lookup(sourceCRS), targetCRS);
+	}
 
-    /**
-     * @return the targetCRS
-     */
-    public final ICRS getTargetCRS() {
-        return targetCRS;
-    }
+	/**
+	 * @return the targetCRS
+	 */
+	public final ICRS getTargetCRS() {
+		return targetCRS;
+	}
 
-    /**
-     * Simple method to check for the CRS transformation to use. If the Transformer was initialized with a
-     * {@link Transformation} this will be used (if the sourceCRS fits). If it does not fit or no transformation was
-     * given, a new Transformation will be created using the {@link TransformationFactory}
-     * 
-     * @param sourceCRS
-     * @param toBeUsedTransformations
-     * @return the transformation needed to convert from given source to the constructed target crs.
-     * @throws TransformationException
-     */
-    private synchronized Transformation checkOrCreateTransformation( ICRS sourceCRS,
-                                                                     List<Transformation> toBeUsedTransformations )
-                            throws TransformationException {
-        if ( definedTransformation == null
-             || !( definedTransformation.getSourceCRS().equals( sourceCRS ) && definedTransformation.getTargetCRS().equals(
-                                                                                                                            targetCRS ) ) ) {
-            definedTransformation = CRSManager.getTransformation( null, sourceCRS, targetCRS, toBeUsedTransformations );
-            if ( LOG.isDebugEnabled() ) {
-                if ( definedTransformation == null ) {
-                    LOG.debug( "Identity transformation (null)." );
-                } else {
-                    LOG.debug( "Resulting transform: {}",
-                               definedTransformation.getTransformationPath( null ).toString() );
-                }
-            }
-        }
-        return definedTransformation;
-    }
+	/**
+	 * Simple method to check for the CRS transformation to use. If the Transformer was
+	 * initialized with a {@link Transformation} this will be used (if the sourceCRS
+	 * fits). If it does not fit or no transformation was given, a new Transformation will
+	 * be created using the {@link TransformationFactory}
+	 * @param sourceCRS
+	 * @param toBeUsedTransformations
+	 * @return the transformation needed to convert from given source to the constructed
+	 * target crs.
+	 * @throws TransformationException
+	 */
+	private synchronized Transformation checkOrCreateTransformation(ICRS sourceCRS,
+			List<Transformation> toBeUsedTransformations) throws TransformationException {
+		if (definedTransformation == null || !(definedTransformation.getSourceCRS().equals(sourceCRS)
+				&& definedTransformation.getTargetCRS().equals(targetCRS))) {
+			definedTransformation = CRSManager.getTransformation(null, sourceCRS, targetCRS, toBeUsedTransformations);
+			if (LOG.isDebugEnabled()) {
+				if (definedTransformation == null) {
+					LOG.debug("Identity transformation (null).");
+				}
+				else {
+					LOG.debug("Resulting transform: {}", definedTransformation.getTransformationPath(null).toString());
+				}
+			}
+		}
+		return definedTransformation;
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -49,36 +48,33 @@ import org.slf4j.Logger;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class ParameterPhaseListener implements PhaseListener {
 
-    private static final long serialVersionUID = 4319821487773977882L;
+	private static final long serialVersionUID = 4319821487773977882L;
 
-    private static final Logger LOG = getLogger( ParameterPhaseListener.class );
+	private static final Logger LOG = getLogger(ParameterPhaseListener.class);
 
-    public void afterPhase( PhaseEvent event ) {
-    }
+	public void afterPhase(PhaseEvent event) {
+	}
 
-    public void beforePhase( PhaseEvent event ) {
-        FacesContext fc = FacesContext.getCurrentInstance();
-        Map<String, String> map = fc.getExternalContext().getRequestParameterMap();
-        for ( String key : map.keySet() ) {
-            StringBuilder sbm = new StringBuilder();
-            sbm.append( "Parameter: " );
-            sbm.append( key );
-            sbm.append( " = " );
-            sbm.append( map.get( key ) );
-            LOG.debug( sbm.toString() );
-        }
-    }
+	public void beforePhase(PhaseEvent event) {
+		FacesContext fc = FacesContext.getCurrentInstance();
+		Map<String, String> map = fc.getExternalContext().getRequestParameterMap();
+		for (String key : map.keySet()) {
+			StringBuilder sbm = new StringBuilder();
+			sbm.append("Parameter: ");
+			sbm.append(key);
+			sbm.append(" = ");
+			sbm.append(map.get(key));
+			LOG.debug(sbm.toString());
+		}
+	}
 
-    public PhaseId getPhaseId() {
-        return PhaseId.RESTORE_VIEW;
-    }
+	public PhaseId getPhaseId() {
+		return PhaseId.RESTORE_VIEW;
+	}
 
 }

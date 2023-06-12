@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -57,227 +56,225 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 @Tool(value = "Validates single metadata records or metadata records from directory against the ISO Schema.")
 public class ISO19139Validator {
 
-    private static final String OPT_SRC = "source";
+	private static final String OPT_SRC = "source";
 
-    public enum SCHEMAVERSION {
-        V2006, V2007
-    }
+	public enum SCHEMAVERSION {
 
-    private static final String OPT_SCHEMA_VERSION = "schemaVersion";
+		V2006, V2007
 
-    private static final String OPT_RESULT = "result";
+	}
 
-    private static final String DEFAULT_FILENAME = "validationResult";
+	private static final String OPT_SCHEMA_VERSION = "schemaVersion";
 
-    private final boolean verbose;
+	private static final String OPT_RESULT = "result";
 
-    /**
-     * @param verbose
-     */
-    public ISO19139Validator( boolean verbose ) {
-        this.verbose = verbose;
-    }
+	private static final String DEFAULT_FILENAME = "validationResult";
 
-    /**
-     * @param srcOpt
-     * @param schemaOpt
-     * @param resultOpt
-     * @throws IOException
-     * @throws SAXException
-     */
-    public void run( String srcOpt, String schemaOpt, String resultOpt )
-                            throws IOException, SAXException {
-        File src = new File( srcOpt );
-        if ( !src.exists() ) {
-            throw new IllegalArgumentException( "src does not exist: " + srcOpt + ". Check parameter " + OPT_SRC );
-        }
-        File result;
-        if ( resultOpt != null && resultOpt.length() > 0 ) {
-            result = new File( resultOpt );
-            if ( !result.exists() ) {
-                result.createNewFile();
-            }
-        } else {
-            result = File.createTempFile( DEFAULT_FILENAME, ".txt" );
-        }
+	private final boolean verbose;
 
-        SCHEMAVERSION schemaVersion = SCHEMAVERSION.V2007;
-        if ( schemaOpt != null ) {
-            try {
-                schemaVersion = SCHEMAVERSION.valueOf( schemaOpt );
-            } catch ( Exception e ) {
-                throw new IllegalArgumentException( "Invalid argument for " + OPT_SCHEMA_VERSION + ": " + schemaOpt );
-            }
-        }
+	/**
+	 * @param verbose
+	 */
+	public ISO19139Validator(boolean verbose) {
+		this.verbose = verbose;
+	}
 
-        String schema = "/META-INF/SCHEMAS_OPENGIS_NET/iso/19139/20070417/gmd/metadataEntity.xsd";
-        if ( SCHEMAVERSION.V2006.equals( schemaVersion ) ) {
-            schema = "/META-INF/SCHEMAS_OPENGIS_NET/iso/19139/20060504/gmd/metadataEntity.xsd";
-        }
-        URL u = ISO19139Validator.class.getResource( schema );
-        XMLReader parser = XMLReaderFactory.createXMLReader();
-        parser.setFeature( "http://xml.org/sax/features/validation", true );
-        parser.setFeature( "http://apache.org/xml/features/validation/schema", true );
-        parser.setProperty( "http://apache.org/xml/properties/schema/external-schemaLocation",
-                            "http://www.isotc211.org/2005/gmd " + u.toExternalForm() );
+	/**
+	 * @param srcOpt
+	 * @param schemaOpt
+	 * @param resultOpt
+	 * @throws IOException
+	 * @throws SAXException
+	 */
+	public void run(String srcOpt, String schemaOpt, String resultOpt) throws IOException, SAXException {
+		File src = new File(srcOpt);
+		if (!src.exists()) {
+			throw new IllegalArgumentException("src does not exist: " + srcOpt + ". Check parameter " + OPT_SRC);
+		}
+		File result;
+		if (resultOpt != null && resultOpt.length() > 0) {
+			result = new File(resultOpt);
+			if (!result.exists()) {
+				result.createNewFile();
+			}
+		}
+		else {
+			result = File.createTempFile(DEFAULT_FILENAME, ".txt");
+		}
 
-        final FileWriter fw = new FileWriter( result );
+		SCHEMAVERSION schemaVersion = SCHEMAVERSION.V2007;
+		if (schemaOpt != null) {
+			try {
+				schemaVersion = SCHEMAVERSION.valueOf(schemaOpt);
+			}
+			catch (Exception e) {
+				throw new IllegalArgumentException("Invalid argument for " + OPT_SCHEMA_VERSION + ": " + schemaOpt);
+			}
+		}
 
-        File[] filesToValidate;
-        if ( src.isDirectory() ) {
-            filesToValidate = src.listFiles();
-            fw.write( "validate " + filesToValidate.length + " files from directory " + src );
-            fw.write( "\n" );
-        } else {
-            filesToValidate = new File[] { src };
-        }
-        System.out.println( "Start validation" );
-        int noOfValidRecords = 0;
-        for ( int i = 0; i < filesToValidate.length; i++ ) {
-            FileErrorHandler feh = new FileErrorHandler( fw );
-            parser.setErrorHandler( feh );
-            if ( filesToValidate.length > 1 ) {
-                fw.write( "validate record " + i + " of " + filesToValidate.length );
-                fw.write( "\n" );
-            }
-            File fileToValidate = filesToValidate[i];
-            System.out.println( fileToValidate );
-            fw.write( "validate file " + fileToValidate.getAbsolutePath() );
-            fw.write( "\n" );
-            try {
-                parser.parse( new InputSource( new FileInputStream( fileToValidate ) ) );
-            } catch ( Exception e ) {
-                String msg = "Could not validate current occured: " + e.getMessage() + ". Continue with next record";
-                System.err.println( msg );
-                fw.write( msg );
-                fw.write( "\n" );
-                continue;
-            }
-            fw.flush();
-            if ( feh.isValid() )
-                noOfValidRecords++;
-        }
-        fw.write( noOfValidRecords + " of " + filesToValidate.length + " records are valid." );
-        fw.close();
-        System.out.println( "Validation finished, result file: " + result.getAbsolutePath() );
-    }
+		String schema = "/META-INF/SCHEMAS_OPENGIS_NET/iso/19139/20070417/gmd/metadataEntity.xsd";
+		if (SCHEMAVERSION.V2006.equals(schemaVersion)) {
+			schema = "/META-INF/SCHEMAS_OPENGIS_NET/iso/19139/20060504/gmd/metadataEntity.xsd";
+		}
+		URL u = ISO19139Validator.class.getResource(schema);
+		XMLReader parser = XMLReaderFactory.createXMLReader();
+		parser.setFeature("http://xml.org/sax/features/validation", true);
+		parser.setFeature("http://apache.org/xml/features/validation/schema", true);
+		parser.setProperty("http://apache.org/xml/properties/schema/external-schemaLocation",
+				"http://www.isotc211.org/2005/gmd " + u.toExternalForm());
 
-    private void write( FileWriter fw, String level, SAXParseException arg0 ) {
-        try {
-            fw.write( "[" + level + "] " );
-            fw.write( arg0.getMessage() );
-            fw.write( "\n" );
-        } catch ( IOException e ) {
-            System.err.println( e.getMessage() );
-            if ( verbose )
-                e.printStackTrace();
-        }
-    }
+		final FileWriter fw = new FileWriter(result);
 
-    public static void main( String[] args )
-                            throws Exception {
+		File[] filesToValidate;
+		if (src.isDirectory()) {
+			filesToValidate = src.listFiles();
+			fw.write("validate " + filesToValidate.length + " files from directory " + src);
+			fw.write("\n");
+		}
+		else {
+			filesToValidate = new File[] { src };
+		}
+		System.out.println("Start validation");
+		int noOfValidRecords = 0;
+		for (int i = 0; i < filesToValidate.length; i++) {
+			FileErrorHandler feh = new FileErrorHandler(fw);
+			parser.setErrorHandler(feh);
+			if (filesToValidate.length > 1) {
+				fw.write("validate record " + i + " of " + filesToValidate.length);
+				fw.write("\n");
+			}
+			File fileToValidate = filesToValidate[i];
+			System.out.println(fileToValidate);
+			fw.write("validate file " + fileToValidate.getAbsolutePath());
+			fw.write("\n");
+			try {
+				parser.parse(new InputSource(new FileInputStream(fileToValidate)));
+			}
+			catch (Exception e) {
+				String msg = "Could not validate current occured: " + e.getMessage() + ". Continue with next record";
+				System.err.println(msg);
+				fw.write(msg);
+				fw.write("\n");
+				continue;
+			}
+			fw.flush();
+			if (feh.isValid())
+				noOfValidRecords++;
+		}
+		fw.write(noOfValidRecords + " of " + filesToValidate.length + " records are valid.");
+		fw.close();
+		System.out.println("Validation finished, result file: " + result.getAbsolutePath());
+	}
 
-        if ( args.length == 0 || ( args.length > 0 && ( args[0].contains( "help" ) || args[0].contains( "?" ) ) ) ) {
-            printHelp( initOptions() );
-        }
-        boolean verbose = true;
-        try {
-            CommandLine cmdline = new PosixParser().parse( initOptions(), args );
-            verbose = cmdline.hasOption( CommandUtils.OPT_VERBOSE );
-            try {
-                String srcOpt = cmdline.getOptionValue( OPT_SRC );
-                String resultOpt = cmdline.getOptionValue( OPT_RESULT );
-                String schemaOpt = cmdline.getOptionValue( OPT_SCHEMA_VERSION );
+	private void write(FileWriter fw, String level, SAXParseException arg0) {
+		try {
+			fw.write("[" + level + "] ");
+			fw.write(arg0.getMessage());
+			fw.write("\n");
+		}
+		catch (IOException e) {
+			System.err.println(e.getMessage());
+			if (verbose)
+				e.printStackTrace();
+		}
+	}
 
-                ISO19139Validator v = new ISO19139Validator( verbose );
-                v.run( srcOpt, schemaOpt, resultOpt );
-            } catch ( Exception e ) {
-                System.out.println( e.getMessage() );
-                if ( verbose )
-                    e.printStackTrace();
-            }
-        } catch ( ParseException exp ) {
-            System.err.println( "Could nor parse command line:" + exp.getMessage() );
-            if ( verbose )
-                exp.printStackTrace();
-        }
-    }
+	public static void main(String[] args) throws Exception {
 
-    private static Options initOptions() {
-        Options opts = new Options();
+		if (args.length == 0 || (args.length > 0 && (args[0].contains("help") || args[0].contains("?")))) {
+			printHelp(initOptions());
+		}
+		boolean verbose = true;
+		try {
+			CommandLine cmdline = new PosixParser().parse(initOptions(), args);
+			verbose = cmdline.hasOption(CommandUtils.OPT_VERBOSE);
+			try {
+				String srcOpt = cmdline.getOptionValue(OPT_SRC);
+				String resultOpt = cmdline.getOptionValue(OPT_RESULT);
+				String schemaOpt = cmdline.getOptionValue(OPT_SCHEMA_VERSION);
 
-        Option opt = new Option( "s", OPT_SRC, true,
-                                 "the directory containing the metadada records or a single metadata record" );
-        opt.setRequired( true );
-        opts.addOption( opt );
+				ISO19139Validator v = new ISO19139Validator(verbose);
+				v.run(srcOpt, schemaOpt, resultOpt);
+			}
+			catch (Exception e) {
+				System.out.println(e.getMessage());
+				if (verbose)
+					e.printStackTrace();
+			}
+		}
+		catch (ParseException exp) {
+			System.err.println("Could nor parse command line:" + exp.getMessage());
+			if (verbose)
+				exp.printStackTrace();
+		}
+	}
 
-        opt = new Option(
-                          "r",
-                          OPT_RESULT,
-                          true,
-                          "A file to store the output of the validation. If the file exist, the result will be appended. The file will be created if not existing. If this parameter is missing a tmp file is created." );
-        opt.setRequired( false );
-        opts.addOption( opt );
+	private static Options initOptions() {
+		Options opts = new Options();
 
-        opt = new Option( "l", OPT_SCHEMA_VERSION, true, "the schema version to specify the schemas. Must be "
-                                                         + SCHEMAVERSION.V2006 + " or " + SCHEMAVERSION.V2007
-                                                         + ", default is " + SCHEMAVERSION.V2007 );
-        opt.setRequired( false );
-        opts.addOption( opt );
+		Option opt = new Option("s", OPT_SRC, true,
+				"the directory containing the metadada records or a single metadata record");
+		opt.setRequired(true);
+		opts.addOption(opt);
 
-        CommandUtils.addDefaultOptions( opts );
-        return opts;
-    }
+		opt = new Option("r", OPT_RESULT, true,
+				"A file to store the output of the validation. If the file exist, the result will be appended. The file will be created if not existing. If this parameter is missing a tmp file is created.");
+		opt.setRequired(false);
+		opts.addOption(opt);
 
-    private static void printHelp( Options options ) {
-        String help = "Validates single metadata records or metadata records from directory against the ISO Schema.";
-        CommandUtils.printHelp( options, ISO19139Validator.class.getSimpleName(), help, null );
-    }
+		opt = new Option("l", OPT_SCHEMA_VERSION, true, "the schema version to specify the schemas. Must be "
+				+ SCHEMAVERSION.V2006 + " or " + SCHEMAVERSION.V2007 + ", default is " + SCHEMAVERSION.V2007);
+		opt.setRequired(false);
+		opts.addOption(opt);
 
-    private class FileErrorHandler implements ErrorHandler {
+		CommandUtils.addDefaultOptions(opts);
+		return opts;
+	}
 
-        private final FileWriter fw;
+	private static void printHelp(Options options) {
+		String help = "Validates single metadata records or metadata records from directory against the ISO Schema.";
+		CommandUtils.printHelp(options, ISO19139Validator.class.getSimpleName(), help, null);
+	}
 
-        private boolean isValid = true;
+	private class FileErrorHandler implements ErrorHandler {
 
-        public FileErrorHandler( FileWriter fw ) {
-            this.fw = fw;
+		private final FileWriter fw;
 
-        }
+		private boolean isValid = true;
 
-        @Override
-        public void warning( SAXParseException arg0 )
-                                throws SAXException {
-            isValid = false;
-            write( fw, "WARN", arg0 );
-        }
+		public FileErrorHandler(FileWriter fw) {
+			this.fw = fw;
 
-        @Override
-        public void fatalError( SAXParseException arg0 )
-                                throws SAXException {
-            isValid = false;
-            write( fw, "FATAL", arg0 );
-        }
+		}
 
-        @Override
-        public void error( SAXParseException arg0 )
-                                throws SAXException {
-            isValid = false;
-            write( fw, "ERROR", arg0 );
-        }
+		@Override
+		public void warning(SAXParseException arg0) throws SAXException {
+			isValid = false;
+			write(fw, "WARN", arg0);
+		}
 
-        public boolean isValid() {
-            return isValid;
-        }
-    }
+		@Override
+		public void fatalError(SAXParseException arg0) throws SAXException {
+			isValid = false;
+			write(fw, "FATAL", arg0);
+		}
+
+		@Override
+		public void error(SAXParseException arg0) throws SAXException {
+			isValid = false;
+			write(fw, "ERROR", arg0);
+		}
+
+		public boolean isValid() {
+			return isValid;
+		}
+
+	}
 
 }

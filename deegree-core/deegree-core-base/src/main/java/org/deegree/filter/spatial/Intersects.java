@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -41,6 +40,7 @@ import org.deegree.feature.Feature;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.slf4j.Logger;
@@ -48,99 +48,106 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Responsible for representing and evaluating the <code>Intersects</code> operator.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * 
- * @version $Revision:$, $Date:$
  */
 public class Intersects extends SpatialOperator {
 
-    private static final Logger LOG = LoggerFactory.getLogger( Intersects.class );
+	private static final Logger LOG = LoggerFactory.getLogger(Intersects.class);
 
-    private final Geometry geometry;
+	/**
+	 * Instantiates a {@link Intersects} operator with geometry as second parameter.
+	 * @param propName may actually be <code>null</code> (deegree extension to cope with
+	 * features that have only hidden geometry props)
+	 * @param geometry never <code>null</code>
+	 */
+	public Intersects(Expression propName, Geometry geometry) {
+		super(propName, geometry);
+	}
 
-    /**
-     * @param propName
-     *            may actually be <code>null</code> (deegree extension to cope with features that have only hidden
-     *            geometry props)
-     * @param geometry
-     */
-    public Intersects( Expression propName, Geometry geometry ) {
-        super( propName );
-        this.geometry = geometry;
-    }
+	/**
+	 * Instantiates a {@link Intersects} operator with value reference as second
+	 * parameter.
+	 * @param propName may actually be <code>null</code> (deegree extension to cope with
+	 * features that have only hidden geometry props)
+	 * @param valueReference never <code>null</code>
+	 */
+	public Intersects(Expression propName, ValueReference valueReference) {
+		super(propName, valueReference);
+	}
 
-    @Override
-    public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
-                            throws FilterEvaluationException {
+	@Override
+	public <T> boolean evaluate(T obj, XPathEvaluator<T> xpathEvaluator) throws FilterEvaluationException {
+		if (param2AsGeometry == null)
+			return false;
 
-        Expression param1 = getParam1();
-        if ( param1 != null ) {
-            for ( TypedObjectNode paramValue : param1.evaluate( obj, xpathEvaluator ) ) {
-                Geometry param1Value = checkGeometryOrNull( paramValue );
-                if ( param1Value != null ) {
-                    Geometry transformedGeom = getCompatibleGeometry( param1Value, geometry );
-                    return transformedGeom.intersects( param1Value );
-                }
-            }
-        } else if ( obj instanceof Feature ) {
-            // handle the case where the property name is empty
-            Feature f = (Feature) obj;
-            boolean foundGeom = false;
-            for ( Property prop : f.getProperties() ) {
-                if ( prop.getValue() instanceof Geometry ) {
-                    foundGeom = true;
-                    Geometry geom = (Geometry) prop.getValue();
-                    Geometry transformedGeom = getCompatibleGeometry( geometry, geom );
-                    if ( transformedGeom.intersects( geometry ) ) {
-                        return true;
-                    }
-                }
-            }
-            if ( !foundGeom ) {
-                Envelope env = f.getEnvelope();
-                if ( env != null ) {
-                    Geometry g = getCompatibleGeometry( geometry, env );
-                    if ( g.intersects( geometry ) ) {
-                        return true;
-                    }
-                }
-            }
-            if ( f.getExtraProperties() != null ) {
-                for ( Property prop : f.getExtraProperties().getProperties() ) {
-                    if ( prop.getValue() instanceof Geometry ) {
-                        Geometry geom = (Geometry) prop.getValue();
-                        Geometry transformedGeom = getCompatibleGeometry( geometry, geom );
-                        if ( transformedGeom.intersects( geometry ) ) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        } else {
-            LOG.warn( "Evaluating Intersects on non-Feature object and property name not specified." );
-        }
-        return false;
-    }
+		Expression param1 = getParam1();
+		if (param1 != null) {
+			for (TypedObjectNode paramValue : param1.evaluate(obj, xpathEvaluator)) {
+				Geometry param1Value = checkGeometryOrNull(paramValue);
+				if (param1Value != null) {
+					Geometry transformedGeom = getCompatibleGeometry(param1Value, param2AsGeometry);
+					return transformedGeom.intersects(param1Value);
+				}
+			}
+		}
+		else if (obj instanceof Feature) {
+			// handle the case where the property name is empty
+			Feature f = (Feature) obj;
+			boolean foundGeom = false;
+			for (Property prop : f.getProperties()) {
+				if (prop.getValue() instanceof Geometry) {
+					foundGeom = true;
+					Geometry geom = (Geometry) prop.getValue();
+					Geometry transformedGeom = getCompatibleGeometry(param2AsGeometry, geom);
+					if (transformedGeom.intersects(param2AsGeometry)) {
+						return true;
+					}
+				}
+			}
+			if (!foundGeom) {
+				Envelope env = f.getEnvelope();
+				if (env != null) {
+					Geometry g = getCompatibleGeometry(param2AsGeometry, env);
+					if (g.intersects(param2AsGeometry)) {
+						return true;
+					}
+				}
+			}
+			if (f.getExtraProperties() != null) {
+				for (Property prop : f.getExtraProperties().getProperties()) {
+					if (prop.getValue() instanceof Geometry) {
+						Geometry geom = (Geometry) prop.getValue();
+						Geometry transformedGeom = getCompatibleGeometry(param2AsGeometry, geom);
+						if (transformedGeom.intersects(param2AsGeometry)) {
+							return true;
+						}
+					}
+				}
+			}
+		}
+		else {
+			LOG.warn("Evaluating Intersects on non-Feature object and property name not specified.");
+		}
+		return false;
+	}
 
-    /**
-     * @return the geometry
-     */
-    public Geometry getGeometry() {
-        return geometry;
-    }
+	@Override
+	public String toString(String indent) {
+		String s = indent + "-Intersects\n";
+		s += indent + param1 + "\n";
+		if (param2AsGeometry != null)
+			s += indent + param2AsGeometry;
+		if (param2AsValueReference != null)
+			s += indent + param2AsValueReference;
+		return s;
+	}
 
-    @Override
-    public String toString( String indent ) {
-        String s = indent + "-Intersects\n";
-        s += indent + propName + "\n";
-        s += indent + geometry;
-        return s;
-    }
+	@Override
+	public Object[] getParams() {
+		if (param2AsValueReference != null)
+			return new Object[] { param1, param2AsValueReference };
+		return new Object[] { param1, param2AsGeometry };
+	}
 
-    @Override
-    public Object[] getParams() {
-        return new Object[] { propName, geometry };
-    }
 }

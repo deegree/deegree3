@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -38,33 +37,29 @@ package org.deegree.commons.tom.array;
 import org.deegree.commons.tom.TypedObjectNode;
 
 /**
- * Represents an array of {@link TypedObjectNode} instances, e.g. the value of a "gml:featureMembers" element of a GML
- * feature collection.
- * 
+ * Represents an array of {@link TypedObjectNode} instances, e.g. the value of a
+ * "gml:featureMembers" element of a GML feature collection.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
- * @param <T>
- *            type of the contained {@link TypedObjectNode}s
+ * @param <T> type of the contained {@link TypedObjectNode}s
  */
 public class TypedObjectNodeArray<T extends TypedObjectNode> implements TypedObjectNode {
 
-    private T[] elements;
+	private T[] elements;
 
-    /**
-     * @param elements
-     * 
-     */
-    public TypedObjectNodeArray( T[] elements ) {
-        this.elements = elements;
-    }
+	/**
+	 * @param elements
+	 *
+	 */
+	public TypedObjectNodeArray(T[] elements) {
+		this.elements = elements;
+	}
 
-    /**
-     * @return the elements, never <code>null</code>
-     */
-    public T[] getElements() {
-        return elements;
-    }
+	/**
+	 * @return the elements, never <code>null</code>
+	 */
+	public T[] getElements() {
+		return elements;
+	}
+
 }

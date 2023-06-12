@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -47,84 +46,78 @@ import org.deegree.services.wps.Processlet;
  * <p>
  * A {@link ProcessletInputImpl} instance is always one of the following:
  * <ul>
- * <li>{@link LiteralInputImpl}: Literal data of a simple quantity (e.g., one number) with optional UOM (unit-of-measure)
- * information.</li>
+ * <li>{@link LiteralInputImpl}: Literal data of a simple quantity (e.g., one number) with
+ * optional UOM (unit-of-measure) information.</li>
  * <li>{@link BoundingBoxInputImpl}: A spatial {@link Envelope}.</li>
- * <li>{@link ComplexInputImpl}: A complex parameter (e.g. a data structure encoded in XML or a raw stream).</li>
+ * <li>{@link ComplexInputImpl}: A complex parameter (e.g. a data structure encoded in XML
+ * or a raw stream).</li>
  * </ul>
  * </p>
  *
  * @author <a href="mailto:apadberg@uni-bonn.de">Alexander Padberg</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- *
- * @version $Revision: $, $Date: $
  */
 public abstract class ProcessletInputImpl implements ProcessletInput {
 
-    /** Corresponding input argument definition from process description. */
-    protected ProcessletInputDefinition definition;
+	/** Corresponding input argument definition from process description. */
+	protected ProcessletInputDefinition definition;
 
-    private LanguageString title;
+	private LanguageString title;
 
-    private LanguageString summary;
+	private LanguageString summary;
 
-    /**
-     * Creates a new {@link ProcessletInputImpl} instance.
-     *
-     * @param definition
-     *            corresponding input definition from process description
-     * @param title
-     *            optional title supplied with the input parameter, may be null
-     * @param summary
-     *            optional narrative description supplied with the input parameter, may be null
-     */
-    protected ProcessletInputImpl( ProcessletInputDefinition definition, LanguageString title, LanguageString summary ) {
-        this.definition = definition;
-        this.title = title;
-        this.summary = summary;
-    }
+	/**
+	 * Creates a new {@link ProcessletInputImpl} instance.
+	 * @param definition corresponding input definition from process description
+	 * @param title optional title supplied with the input parameter, may be null
+	 * @param summary optional narrative description supplied with the input parameter,
+	 * may be null
+	 */
+	protected ProcessletInputImpl(ProcessletInputDefinition definition, LanguageString title, LanguageString summary) {
+		this.definition = definition;
+		this.title = title;
+		this.summary = summary;
+	}
 
-    /**
-     * Returns the type information for this input argument.
-     *
-     * @return the type information
-     */
-    public ProcessletInputDefinition getDefinition() {
-        return definition;
-    }
+	/**
+	 * Returns the type information for this input argument.
+	 * @return the type information
+	 */
+	public ProcessletInputDefinition getDefinition() {
+		return definition;
+	}
 
-    /**
-     * Returns the identifier or name of the input parameter as defined in the process description.
-     *
-     * @return the identifier of the input parameter
-     */
-    public CodeType getIdentifier() {
-        return new CodeType( definition.getIdentifier().getValue(), definition.getIdentifier().getCodeSpace() );
-    }
+	/**
+	 * Returns the identifier or name of the input parameter as defined in the process
+	 * description.
+	 * @return the identifier of the input parameter
+	 */
+	public CodeType getIdentifier() {
+		return new CodeType(definition.getIdentifier().getValue(), definition.getIdentifier().getCodeSpace());
+	}
 
-    /**
-     * Returns the title that has been supplied with the input parameter, normally available for display to a human.
-     *
-     * @return the title provided with the input, may be null
-     */
-    public LanguageString getTitle() {
-        return title;
-    }
+	/**
+	 * Returns the title that has been supplied with the input parameter, normally
+	 * available for display to a human.
+	 * @return the title provided with the input, may be null
+	 */
+	public LanguageString getTitle() {
+		return title;
+	}
 
-    /**
-     * Returns the narrative description that has been supplied with the input parameter, normally available for display
-     * to a human.
-     *
-     * @return the abstract provided with the input, may be null
-     */
-    public LanguageString getAbstract() {
-        return summary;
-    }
+	/**
+	 * Returns the narrative description that has been supplied with the input parameter,
+	 * normally available for display to a human.
+	 * @return the abstract provided with the input, may be null
+	 */
+	public LanguageString getAbstract() {
+		return summary;
+	}
 
-    @Override
-    public String toString() {
-        return "Input parameter, identifier='" + getIdentifier() + "', title='" + title + "', abstract='" + summary
-               + "'";
-    }
+	@Override
+	public String toString() {
+		return "Input parameter, identifier='" + getIdentifier() + "', title='" + title + "', abstract='" + summary
+				+ "'";
+	}
+
 }

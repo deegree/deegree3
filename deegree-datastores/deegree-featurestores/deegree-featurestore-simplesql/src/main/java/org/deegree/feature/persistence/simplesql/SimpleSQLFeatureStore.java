@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -50,7 +49,6 @@ import java.util.TreeMap;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.jdbc.ResultSetIterator;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.property.Property;
@@ -98,359 +96,350 @@ import org.slf4j.Logger;
 import org.locationtech.jts.io.ParseException;
 
 /**
- * {@link FeatureStore} implementation that is backed by an SQL database and configured by providing an SQL statement /
- * an SQL connection.
- * 
+ * {@link FeatureStore} implementation that is backed by an SQL database and configured by
+ * providing an SQL statement / an SQL connection.
+ *
  * @see FeatureStore
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
-@LoggingNotes(info = "logs problems when connecting to the DB/getting data from the DB", debug = "logs the SQL statements sent to the SQL server", trace = "logs stack traces")
 public class SimpleSQLFeatureStore implements FeatureStore {
 
-    static final Logger LOG = getLogger( SimpleSQLFeatureStore.class );
+	static final Logger LOG = getLogger(SimpleSQLFeatureStore.class);
 
-    private final QName ftName;
+	private final QName ftName;
 
-    private boolean available = false;
+	private boolean available = false;
 
-    ICRS storageCrs;
+	ICRS storageCrs;
 
-    private AppSchema schema;
+	private AppSchema schema;
 
-    private GeometryFactory fac = new GeometryFactory();
+	private GeometryFactory fac = new GeometryFactory();
 
-    GenericFeatureType featureType;
+	GenericFeatureType featureType;
 
-    private String bbox;
+	private String bbox;
 
-    private GeometryTransformer transformer;
+	private GeometryTransformer transformer;
 
-    private TreeMap<Integer, String> lods;
+	private TreeMap<Integer, String> lods;
 
-    private Pair<Long, Envelope> cachedEnvelope = new Pair<Long, Envelope>();
+	private Pair<Long, Envelope> cachedEnvelope = new Pair<Long, Envelope>();
 
-    static int currentid = 0;
+	static int currentid = 0;
 
-    private ResourceMetadata<FeatureStore> metadata;
+	private ResourceMetadata<FeatureStore> metadata;
 
-    private ConnectionProvider connProvider;
+	private ConnectionProvider connProvider;
 
-    private boolean strict;
+	private boolean strict;
 
-    /**
-     * @param connId
-     * @param storageCrs
-     * @param sql
-     * @param ftLocalName
-     * @param ftNamespace
-     * @param ftPrefix
-     * @param bbox
-     * @param lods
-     * @param metadata
-     */
-    public SimpleSQLFeatureStore( ConnectionProvider connProvider, String storageCrs, String sql, String ftLocalName,
-                                  String ftNamespace, String ftPrefix, String bbox, List<Pair<Integer, String>> lods,
-                                  ResourceMetadata<FeatureStore> metadata ) {
-        this.connProvider = connProvider;
-        this.metadata = metadata;
+	/**
+	 * @param connId
+	 * @param storageCrs
+	 * @param sql
+	 * @param ftLocalName
+	 * @param ftNamespace
+	 * @param ftPrefix
+	 * @param bbox
+	 * @param lods
+	 * @param metadata
+	 */
+	public SimpleSQLFeatureStore(ConnectionProvider connProvider, String storageCrs, String sql, String ftLocalName,
+			String ftNamespace, String ftPrefix, String bbox, List<Pair<Integer, String>> lods,
+			ResourceMetadata<FeatureStore> metadata) {
+		this.connProvider = connProvider;
+		this.metadata = metadata;
 
-        sql = sql.trim();
-        if ( sql.endsWith( ";" ) ) {
-            sql = sql.substring( 0, sql.length() - 1 );
-        }
-        this.bbox = bbox;
+		sql = sql.trim();
+		if (sql.endsWith(";")) {
+			sql = sql.substring(0, sql.length() - 1);
+		}
+		this.bbox = bbox;
 
-        // TODO allow null namespaces / empty prefix
-        // NOTE: verify that the WFS code for dealing with that (e.g. repairing unqualified names) works with that first
-        ftLocalName = ( ftLocalName != null && !ftLocalName.isEmpty() ) ? ftLocalName : "Feature";
-        ftNamespace = ( ftNamespace != null && !ftNamespace.isEmpty() ) ? ftNamespace : "http://www.deegree.org/app";
-        ftPrefix = ( ftPrefix != null && !ftPrefix.isEmpty() ) ? ftPrefix : "app";
-        this.ftName = new QName( ftNamespace, ftLocalName, ftPrefix );
+		// TODO allow null namespaces / empty prefix
+		// NOTE: verify that the WFS code for dealing with that (e.g. repairing
+		// unqualified names) works with that first
+		ftLocalName = (ftLocalName != null && !ftLocalName.isEmpty()) ? ftLocalName : "Feature";
+		ftNamespace = (ftNamespace != null && !ftNamespace.isEmpty()) ? ftNamespace : "http://www.deegree.org/app";
+		ftPrefix = (ftPrefix != null && !ftPrefix.isEmpty()) ? ftPrefix : "app";
+		this.ftName = new QName(ftNamespace, ftLocalName, ftPrefix);
 
-        try {
-            this.storageCrs = CRSManager.lookup( storageCrs );
-            transformer = new GeometryTransformer( this.storageCrs );
-        } catch ( IllegalArgumentException e ) {
-            LOG.error( "The invalid crs '{}' was specified for the simple SQL data store.", storageCrs );
-            LOG.trace( "Stack trace:", e );
-        } catch ( UnknownCRSException e ) {
-            LOG.error( "The invalid crs '{}' was specified for the simple SQL data store.", storageCrs );
-            LOG.trace( "Stack trace:", e );
-        }
-        this.lods = new TreeMap<Integer, String>();
-        this.lods.put( -1, sql );
-        for ( Pair<Integer, String> p : lods ) {
-            this.lods.put( p.first, p.second );
-        }
-    }
+		try {
+			this.storageCrs = CRSManager.lookup(storageCrs);
+			transformer = new GeometryTransformer(this.storageCrs);
+		}
+		catch (IllegalArgumentException e) {
+			LOG.error("The invalid crs '{}' was specified for the simple SQL data store.", storageCrs);
+			LOG.trace("Stack trace:", e);
+		}
+		catch (UnknownCRSException e) {
+			LOG.error("The invalid crs '{}' was specified for the simple SQL data store.", storageCrs);
+			LOG.trace("Stack trace:", e);
+		}
+		this.lods = new TreeMap<Integer, String>();
+		this.lods.put(-1, sql);
+		for (Pair<Integer, String> p : lods) {
+			this.lods.put(p.first, p.second);
+		}
+	}
 
-    public FeatureStoreTransaction acquireTransaction()
-                            throws FeatureStoreException {
-        throw new FeatureStoreException( "Transactions are not implemented for the simple SQL datastore." );
-    }
+	public FeatureStoreTransaction acquireTransaction() throws FeatureStoreException {
+		throw new FeatureStoreException("Transactions are not implemented for the simple SQL datastore.");
+	}
 
-    @Override
-    public Envelope getEnvelope( QName ftName )
-                            throws FeatureStoreException {
-        return calcEnvelope( ftName );
-    }
+	@Override
+	public Envelope getEnvelope(QName ftName) throws FeatureStoreException {
+		return calcEnvelope(ftName);
+	}
 
-    public Envelope calcEnvelope( QName ftName ) {
-        synchronized ( cachedEnvelope ) {
-            long current = currentTimeMillis();
-            if ( cachedEnvelope.first != null && ( current - cachedEnvelope.first ) < 1000 ) {
-                return cachedEnvelope.second;
-            }
-            ResultSet set = null;
-            PreparedStatement stmt = null;
-            Connection conn = null;
-            try {
-                conn = connProvider.getConnection();
-                stmt = conn.prepareStatement( bbox );
-                LOG.debug( "Getting bbox with query '{}'.", stmt );
-                stmt.execute();
-                set = stmt.getResultSet();
-                if ( set.next() ) {
-                    String bboxString = set.getString( "bbox" );
-                    if ( bboxString == null ) {
-                        LOG.info( "Could not determine envelope of database table, using world bbox instead." );
-                        return fac.createEnvelope( -180, -90, 180, 90, CRSUtils.EPSG_4326 );
-                    }
-                    Geometry g = new WKTReader( storageCrs ).read( bboxString );
-                    cachedEnvelope.first = current;
-                    cachedEnvelope.second = g.getEnvelope();
-                    return cachedEnvelope.second;
-                }
-            } catch ( SQLException e ) {
-                LOG.info( "BBox could not be read: '{}'.", e.getLocalizedMessage() );
-                LOG.trace( "Stack trace:", e );
-                available = false;
-                return null;
-            } catch ( ParseException e ) {
-                LOG.info( "BBox could not be read: '{}'.", e.getLocalizedMessage() );
-                LOG.trace( "Stack trace:", e );
-                available = false;
-                return null;
-            } finally {
-                JDBCUtils.close( set, stmt, conn, LOG );
-            }
-            return null;
-        }
-    }
+	public Envelope calcEnvelope(QName ftName) {
+		synchronized (cachedEnvelope) {
+			long current = currentTimeMillis();
+			if (cachedEnvelope.first != null && (current - cachedEnvelope.first) < 1000) {
+				return cachedEnvelope.second;
+			}
+			ResultSet set = null;
+			PreparedStatement stmt = null;
+			Connection conn = null;
+			try {
+				conn = connProvider.getConnection();
+				stmt = conn.prepareStatement(bbox);
+				LOG.debug("Getting bbox with query '{}'.", stmt);
+				stmt.execute();
+				set = stmt.getResultSet();
+				if (set.next()) {
+					String bboxString = set.getString("bbox");
+					if (bboxString == null) {
+						LOG.info("Could not determine envelope of database table, using world bbox instead.");
+						return fac.createEnvelope(-180, -90, 180, 90, CRSUtils.EPSG_4326);
+					}
+					Geometry g = new WKTReader(storageCrs).read(bboxString);
+					cachedEnvelope.first = current;
+					cachedEnvelope.second = g.getEnvelope();
+					return cachedEnvelope.second;
+				}
+			}
+			catch (SQLException e) {
+				LOG.info("BBox could not be read: '{}'.", e.getLocalizedMessage());
+				LOG.trace("Stack trace:", e);
+				available = false;
+				return null;
+			}
+			catch (ParseException e) {
+				LOG.info("BBox could not be read: '{}'.", e.getLocalizedMessage());
+				LOG.trace("Stack trace:", e);
+				available = false;
+				return null;
+			}
+			finally {
+				JDBCUtils.close(set, stmt, conn, LOG);
+			}
+			return null;
+		}
+	}
 
+	@Override
+	public Pair<Date, Date> getTemporalExtent(QName ftName, QName datetimeProperty) throws FeatureStoreException {
+		return null;
+	}
 
-    @Override
-    public Pair<Date, Date> getTemporalExtent( QName ftName, QName datetimeProperty )
-                    throws FeatureStoreException {
-        return null;
-    }
+	@Override
+	public Pair<Date, Date> calcTemporalExtent(QName ftName, QName datetimeProperty) throws FeatureStoreException {
+		return null;
+	}
 
-    @Override
-    public Pair<Date, Date> calcTemporalExtent( QName ftName, QName datetimeProperty )
-                    throws FeatureStoreException {
-        return null;
-    }
+	public LockManager getLockManager() throws FeatureStoreException {
+		throw new FeatureStoreException("Transactions are not implemented for the simple SQL datastore.");
+	}
 
-    public LockManager getLockManager()
-                            throws FeatureStoreException {
-        throw new FeatureStoreException( "Transactions are not implemented for the simple SQL datastore." );
-    }
+	public GMLObject getObjectById(String id) throws FeatureStoreException {
+		throw new FeatureStoreException("Getting objects by id is not implemented for the simple SQL datastore.");
+	}
 
-    public GMLObject getObjectById( String id )
-                            throws FeatureStoreException {
-        throw new FeatureStoreException( "Getting objects by id is not implemented for the simple SQL datastore." );
-    }
+	public AppSchema getSchema() {
+		return schema;
+	}
 
-    public AppSchema getSchema() {
-        return schema;
-    }
+	@Override
+	public boolean isMapped(QName ftName) {
+		return schema.getFeatureType(ftName) != null;
+	}
 
-    @Override
-    public boolean isMapped( QName ftName ) {
-        return schema.getFeatureType( ftName ) != null;
-    }
+	/**
+	 * @return the feature type (it can have only one)
+	 */
+	public GenericFeatureType getFeatureType() {
+		return featureType;
+	}
 
-    /**
-     * @return the feature type (it can have only one)
-     */
-    public GenericFeatureType getFeatureType() {
-        return featureType;
-    }
+	@Override
+	public boolean isAvailable() {
+		return available;
+	}
 
-    @Override
-    public boolean isAvailable() {
-        return available;
-    }
+	@Override
+	public boolean isMaxFeaturesAndStartIndexApplicable(Query[] queries) {
+		return false;
+	}
 
-    @Override
-    public boolean isMaxFeaturesAndStartIndexApplicable( Query[] queries ) {
-        return false;
-    }
+	public FeatureInputStream query(Query query) throws FeatureStoreException, FilterEvaluationException {
+		return query(new Query[] { query });
+	}
 
-    public FeatureInputStream query( Query query )
-                            throws FeatureStoreException, FilterEvaluationException {
-        return query( new Query[] { query } );
-    }
+	public FeatureInputStream query(final Query[] queries) throws FeatureStoreException, FilterEvaluationException {
+		PreparedStatement stmt = null;
+		Connection conn = null;
+		FeatureInputStream set = null;
+		try {
 
-    public FeatureInputStream query( final Query[] queries )
-                            throws FeatureStoreException, FilterEvaluationException {
-        PreparedStatement stmt = null;
-        Connection conn = null;
-        FeatureInputStream set = null;
-        try {
+			LinkedList<FeatureInputStream> list = new LinkedList<FeatureInputStream>();
 
-            LinkedList<FeatureInputStream> list = new LinkedList<FeatureInputStream>();
+			for (final Query q : queries) {
 
-            for ( final Query q : queries ) {
+				Envelope bbox = q.getPrefilterBBoxEnvelope();
+				if (bbox == null) {
+					bbox = calcEnvelope(ftName);
+				}
 
-                Envelope bbox = q.getPrefilterBBoxEnvelope();
-                if ( bbox == null ) {
-                    bbox = calcEnvelope( ftName );
-                }
+				Object scaleHint = q.getHint(HINT_SCALE);
+				int scale = -1;
+				if (scaleHint != null) {
+					scale = (Integer) scaleHint;
+				}
+				String sql = null;
+				for (Integer i : lods.keySet()) {
+					if (i <= scale) {
+						LOG.debug("Considering use of LOD with scale {}.", i);
+						sql = lods.get(i);
+					}
+				}
 
-                Object scaleHint = q.getHint( HINT_SCALE );
-                int scale = -1;
-                if ( scaleHint != null ) {
-                    scale = (Integer) scaleHint;
-                }
-                String sql = null;
-                for ( Integer i : lods.keySet() ) {
-                    if ( i <= scale ) {
-                        LOG.debug( "Considering use of LOD with scale {}.", i );
-                        sql = lods.get( i );
-                    }
-                }
+				conn = connProvider.getConnection();
 
-                conn = connProvider.getConnection();
+				if (q.getMaxFeatures() > 0 && connProvider.getDialect() instanceof PostGISDialect) {
+					sql += " limit " + q.getMaxFeatures();
+				}
 
-                if ( q.getMaxFeatures() > 0 && connProvider.getDialect() instanceof PostGISDialect ) {
-                    sql += " limit " + q.getMaxFeatures();
-                }
+				stmt = conn.prepareStatement(sql);
+				try {
+					bbox = transformer.transform(bbox);
+				}
+				catch (UnknownCRSException e) {
+					LOG.info("Bounding box could not be transformed: '{}'.", e.getLocalizedMessage());
+					LOG.trace("Stack trace:", e);
+				}
+				catch (TransformationException e) {
+					LOG.info("Bounding box could not be transformed: '{}'.", e.getLocalizedMessage());
+					LOG.trace("Stack trace:", e);
+				}
+				int parameterCount = stmt.getParameterMetaData().getParameterCount();
+				if (parameterCount == 0) {
+					LOG.info("No parameter for the bbox was found, requesting without bbox!");
+				}
+				else if (parameterCount > 1) {
+					LOG.warn("Too many parameters specified ({}), cannot go further!", parameterCount);
+					return null;
+				}
+				stmt.setString(1, WKTWriter.write(bbox));
+				LOG.debug("Statement to fetch features was '{}'.",
+						connProvider.getClass().getSimpleName().equals("OracleDialect") ? sql : stmt);
+				stmt.execute();
 
-                stmt = conn.prepareStatement( sql );
-                try {
-                    bbox = transformer.transform( bbox );
-                } catch ( UnknownCRSException e ) {
-                    LOG.info( "Bounding box could not be transformed: '{}'.", e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace:", e );
-                } catch ( TransformationException e ) {
-                    LOG.info( "Bounding box could not be transformed: '{}'.", e.getLocalizedMessage() );
-                    LOG.trace( "Stack trace:", e );
-                }
-                int parameterCount = stmt.getParameterMetaData().getParameterCount();
-                if ( parameterCount == 0 ) {
-                    LOG.info( "No parameter for the bbox was found, requesting without bbox!" );
-                } else if ( parameterCount > 1 ) {
-                    LOG.warn( "Too many parameters specified ({}), cannot go further!", parameterCount );
-                    return null;
-                }
-                stmt.setString( 1, WKTWriter.write( bbox ) );
-                LOG.debug( "Statement to fetch features was '{}'.",
-                           connProvider.getClass().getSimpleName().equals( "OracleDialect" ) ? sql : stmt );
-                stmt.execute();
+				set = new IteratorFeatureInputStream(new ResultSetIterator<Feature>(stmt.getResultSet(), conn, stmt) {
 
-                set = new IteratorFeatureInputStream(
-                                                      new ResultSetIterator<Feature>( stmt.getResultSet(), conn, stmt ) {
+					@Override
+					protected Feature createElement(ResultSet rs) throws SQLException {
 
-                                                          @Override
-                                                          protected Feature createElement( ResultSet rs )
-                                                                                  throws SQLException {
+						LinkedList<Property> props = new LinkedList<Property>();
+						for (PropertyType pt : featureType.getPropertyDeclarations()) {
+							if (pt instanceof GeometryPropertyType) {
+								byte[] bs = rs.getBytes(pt.getName().getLocalPart());
+								if (bs != null) {
+									try {
+										Geometry geom = WKBReader.read(bs, storageCrs);
+										props.add(new GenericProperty(pt, geom));
+									}
+									catch (ParseException e) {
+										LOG.info("WKB from the DB could not be parsed: '{}'.", e.getLocalizedMessage());
+										LOG.info(
+												"For PostGIS users: you have to select the geometry field 'asbinary(geometry)'.");
+										LOG.trace("Stack trace:", e);
+									}
+								}
+							}
+							else {
+								Object obj = rs.getObject(pt.getName().getLocalPart());
+								if (obj != null) {
+									SimplePropertyType spt = (SimplePropertyType) pt;
+									props.add(new SimpleProperty(spt, "" + obj));
+								}
+							}
+						}
+						return new GenericFeature(featureType, "ID_" + (++currentid), props, null);
+					}
+				});
 
-                                                              LinkedList<Property> props = new LinkedList<Property>();
-                                                              for ( PropertyType pt : featureType.getPropertyDeclarations() ) {
-                                                                  if ( pt instanceof GeometryPropertyType ) {
-                                                                      byte[] bs = rs.getBytes( pt.getName().getLocalPart() );
-                                                                      if ( bs != null ) {
-                                                                          try {
-                                                                              Geometry geom = WKBReader.read( bs,
-                                                                                                              storageCrs );
-                                                                              props.add( new GenericProperty( pt, geom ) );
-                                                                          } catch ( ParseException e ) {
-                                                                              LOG.info( "WKB from the DB could not be parsed: '{}'.",
-                                                                                        e.getLocalizedMessage() );
-                                                                              LOG.info( "For PostGIS users: you have to select the geometry field 'asbinary(geometry)'." );
-                                                                              LOG.trace( "Stack trace:", e );
-                                                                          }
-                                                                      }
-                                                                  } else {
-                                                                      Object obj = rs.getObject( pt.getName().getLocalPart() );
-                                                                      if ( obj != null ) {
-                                                                          SimplePropertyType spt = (SimplePropertyType) pt;
-                                                                          props.add( new SimpleProperty( spt, "" + obj ) );
-                                                                      }
-                                                                  }
-                                                              }
-                                                              return new GenericFeature( featureType,
-                                                                                         "ID_" + ( ++currentid ),
-                                                                                         props, null );
-                                                          }
-                                                      } );
+				if (q.getFilter() != null) {
+					set = new FilteredFeatureInputStream(set, q.getFilter());
+				}
 
-                if ( q.getFilter() != null ) {
-                    set = new FilteredFeatureInputStream( set, q.getFilter() );
-                }
+				list.add(set);
+			}
 
-                list.add( set );
-            }
+			return new CombinedFeatureInputStream(list.iterator());
+		}
+		catch (SQLException e) {
+			LOG.info("Data store could not be accessed: '{}'.", e.getLocalizedMessage());
+			LOG.trace("Stack trace:", e);
+			available = false;
+			throw new FeatureStoreException("Data store could not be accessed.");
+		}
+	}
 
-            return new CombinedFeatureInputStream( list.iterator() );
-        } catch ( SQLException e ) {
-            LOG.info( "Data store could not be accessed: '{}'.", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-            available = false;
-            throw new FeatureStoreException( "Data store could not be accessed." );
-        }
-    }
+	public int queryHits(Query query) throws FeatureStoreException, FilterEvaluationException {
+		// TODO SELECT COUNT
+		return query(query).count();
+	}
 
-    public int queryHits( Query query )
-                            throws FeatureStoreException, FilterEvaluationException {
-        // TODO SELECT COUNT
-        return query( query ).count();
-    }
+	@Override
+	public int[] queryHits(Query[] queries) throws FeatureStoreException, FilterEvaluationException {
+		int[] hits = new int[queries.length];
+		for (int i = 0; i < queries.length; i++) {
+			hits[i] = queryHits(queries[i]);
+		}
+		return hits;
+	}
 
-    @Override
-    public int[] queryHits( Query[] queries )
-                            throws FeatureStoreException, FilterEvaluationException {
-        int[] hits = new int[queries.length];
-        for ( int i = 0; i < queries.length; i++ ) {
-            hits[i] = queryHits( queries[i] );
-        }
-        return hits;
-    }
+	/**
+	 * Returns the CRS of the geometry column.
+	 * @return the CRS of the geometry column, never <code>null</code>
+	 */
+	@Override
+	public ICRS getStorageCrs() {
+		return storageCrs;
+	}
 
-    /**
-     * Returns the CRS of the geometry column.
-     * 
-     * @return the CRS of the geometry column, never <code>null</code>
-     */
-    @Override
-    public ICRS getStorageCrs() {
-        return storageCrs;
-    }
+	@Override
+	public ResourceMetadata<? extends Resource> getMetadata() {
+		return metadata;
+	}
 
-    @Override
-    public ResourceMetadata<? extends Resource> getMetadata() {
-        return metadata;
-    }
+	@Override
+	public void init() {
+		featureType = DbFeatureUtils.determineFeatureType(ftName, connProvider, lods.values().iterator().next());
+		if (featureType == null) {
+			available = false;
+		}
+		else {
+			schema = new GenericAppSchema(new FeatureType[] { featureType }, null, null, null, null, null);
+			available = true;
+		}
+	}
 
-    @Override
-    public void init() {
-        featureType = DbFeatureUtils.determineFeatureType( ftName, connProvider, lods.values().iterator().next() );
-        if ( featureType == null ) {
-            available = false;
-        } else {
-            schema = new GenericAppSchema( new FeatureType[] { featureType }, null, null, null, null, null );
-            available = true;
-        }
-    }
-
-    @Override
-    public void destroy() {
-        // unused
-    }
+	@Override
+	public void destroy() {
+		// unused
+	}
 
 }

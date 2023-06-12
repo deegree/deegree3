@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -52,45 +51,40 @@ import org.junit.Test;
 
 /**
  * Tests for {@link RemoteWMTSProvider}.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class RemoteWMTSProviderTest {
 
-    private DefaultWorkspace workspace;
+	private DefaultWorkspace workspace;
 
-    @Before
-    public void setup()
-                            throws IOException {
-        File f = File.createTempFile( "workspace", "test" );
-        f.delete();
-        workspace = new DefaultWorkspace( f );
-        workspace.initAll();
-    }
+	@Before
+	public void setup() throws IOException {
+		File f = File.createTempFile("workspace", "test");
+		f.delete();
+		workspace = new DefaultWorkspace(f);
+		workspace.initAll();
+	}
 
-    @After
-    public void destroy() {
-        workspace.destroy();
-    }
+	@After
+	public void destroy() {
+		workspace.destroy();
+	}
 
-    @Test
-    public void testCreateFromLocalCapabilitiesUrl()
-                            throws ResourceInitException, IOException, URISyntaxException {
-        URL configUrl = RemoteWMTSProviderTest.class.getResource( "example.xml" );
-        File file = new File( configUrl.toURI() );
-        RemoteWMTS wmts = (RemoteWMTS) WorkspaceUtils.activateFromFile( workspace, RemoteOWSProvider.class, "example",
-                                                                        file );
-        assertNotNull( wmts );
-    }
+	@Test
+	public void testCreateFromLocalCapabilitiesUrl() throws ResourceInitException, IOException, URISyntaxException {
+		URL configUrl = RemoteWMTSProviderTest.class.getResource("example.xml");
+		File file = new File(configUrl.toURI());
+		RemoteWMTS wmts = (RemoteWMTS) WorkspaceUtils.activateFromFile(workspace, RemoteOWSProvider.class, "example",
+				file);
+		assertNotNull(wmts);
+	}
 
-    @Test(expected = ResourceInitException.class)
-    public void testCreateFromInvalidConfig()
-                            throws ResourceInitException, IOException, URISyntaxException {
-        URL configUrl = RemoteWMTSProviderTest.class.getResource( "example.invalid" );
-        File file = new File( configUrl.toURI() );
-        WorkspaceUtils.activateFromFile( workspace, RemoteOWSProvider.class, "example", file );
-    }
+	@Test(expected = ResourceInitException.class)
+	public void testCreateFromInvalidConfig() throws ResourceInitException, IOException, URISyntaxException {
+		URL configUrl = RemoteWMTSProviderTest.class.getResource("example.invalid");
+		File file = new File(configUrl.toURI());
+		WorkspaceUtils.activateFromFile(workspace, RemoteOWSProvider.class, "example", file);
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2015 by:
@@ -39,24 +38,21 @@ import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 
 /**
  * Thrown to indicate that a lock has expired.
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
 public class LockHasExpiredException extends InvalidParameterValueException {
 
-    private static final long serialVersionUID = -5937588941973626816L;
+	private static final long serialVersionUID = -5937588941973626816L;
 
-    /**
-     * Constructs a new {@link LockHasExpiredException} with the specified detail message.
-     * 
-     * @param msg
-     *            the detail message (which is saved for later retrieval by the <code>Throwable.getMessage()</code>
-     *            method).
-     * @param parameter
-     *            the name of the missing parameter
-     */
-    public LockHasExpiredException( String msg, String parameter ) {
-        super( msg, parameter );
-    }
+	/**
+	 * Constructs a new {@link LockHasExpiredException} with the specified detail message.
+	 * @param msg the detail message (which is saved for later retrieval by the
+	 * <code>Throwable.getMessage()</code> method).
+	 * @param parameter the name of the missing parameter
+	 */
+	public LockHasExpiredException(String msg, String parameter) {
+		super(msg, parameter);
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -42,56 +41,50 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 /**
- * {@link Temporal} for representing dates with time information (e.g. <code>xs:dateTime</code>).
- * 
+ * {@link Temporal} for representing dates with time information (e.g.
+ * <code>xs:dateTime</code>).
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class DateTime extends Temporal {
 
-    /**
-     * Creates a new {@link DateTime} instance.
-     * 
-     * @param cal
-     *            point in time, must not be <code>null</code>
-     * @param isUnknown
-     *            <code>true</code>, if the time zone was not available when creating the <code>Calendar</code> 
-     *            (system's local time zone was assumed), <code>false</code> otherwise (time zone was available and
-     *            used)
-     */
-    public DateTime( Calendar cal, boolean isUnknown ) {
-        super( cal, isUnknown );
-    }
+	/**
+	 * Creates a new {@link DateTime} instance.
+	 * @param cal point in time, must not be <code>null</code>
+	 * @param isUnknown <code>true</code>, if the time zone was not available when
+	 * creating the <code>Calendar</code> (system's local time zone was assumed),
+	 * <code>false</code> otherwise (time zone was available and used)
+	 */
+	public DateTime(Calendar cal, boolean isUnknown) {
+		super(cal, isUnknown);
+	}
 
-    /**
-     * Creates a new {@link DateTime} instance.
-     * 
-     * @param date
-     *            point in time, must not be <code>null</code>
-     * @param tz
-     *            time zone, can be <code>null</code> (no timezone information, <code>Date</code> will be interpreted
-     *            according to system's local time zone)
-     */
-    public DateTime( java.util.Date date, TimeZone tz ) {
-        super( date, tz );
-    }
+	/**
+	 * Creates a new {@link DateTime} instance.
+	 * @param date point in time, must not be <code>null</code>
+	 * @param tz time zone, can be <code>null</code> (no timezone information,
+	 * <code>Date</code> will be interpreted according to system's local time zone)
+	 */
+	public DateTime(java.util.Date date, TimeZone tz) {
+		super(date, tz);
+	}
 
-    @Override
-    public DateTime toTimeZone( TimeZone tz ) {
-        Calendar cal = null;
-        if ( tz == null ) {
-            cal = getInstance();
-        } else {
-            cal = getInstance( tz );
-        }
-        cal.setTimeInMillis( this.cal.getTimeInMillis() );
-        return new DateTime( cal, tz == null );
-    }
+	@Override
+	public DateTime toTimeZone(TimeZone tz) {
+		Calendar cal = null;
+		if (tz == null) {
+			cal = getInstance();
+		}
+		else {
+			cal = getInstance(tz);
+		}
+		cal.setTimeInMillis(this.cal.getTimeInMillis());
+		return new DateTime(cal, tz == null);
+	}
 
-    @Override
-    public String toString() {
-        return printDateTime( getCalendar() );
-    }
+	@Override
+	public String toString() {
+		return printDateTime(getCalendar());
+	}
+
 }

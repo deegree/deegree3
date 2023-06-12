@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -50,50 +49,48 @@ import org.deegree.protocol.wfs.storedquery.CreateStoredQuery;
 import org.deegree.protocol.wfs.storedquery.StoredQueryDefinition;
 
 /**
- * Adapter between XML <code>CreateStoredQuery</code> requests and {@link CreateStoredQuery} objects.
+ * Adapter between XML <code>CreateStoredQuery</code> requests and
+ * {@link CreateStoredQuery} objects.
  * <p>
  * Supported WFS versions:
  * <ul>
  * <li>2.0.0</li>
  * </ul>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class CreateStoredQueryXMLAdapter extends AbstractWFSRequestXMLAdapter {
 
-    /**
-     * Parses a WFS <code>CreateStoredQuery</code> document into a {@link CreateStoredQuery} request.
-     * 
-     * @return parsed {@link CreateStoredQuery} request, never <code>null</code>
-     * @throws InvalidParameterValueException
-     *             if a parameter contains a syntax error
-     */
-    public CreateStoredQuery parse()
-                            throws InvalidParameterValueException {
+	/**
+	 * Parses a WFS <code>CreateStoredQuery</code> document into a
+	 * {@link CreateStoredQuery} request.
+	 * @return parsed {@link CreateStoredQuery} request, never <code>null</code>
+	 * @throws InvalidParameterValueException if a parameter contains a syntax error
+	 */
+	public CreateStoredQuery parse() throws InvalidParameterValueException {
 
-        // <xsd:attribute name="version" type="xsd:string" use="required" fixed="2.0.0"/>
-        Version version = Version.parseVersion( getRequiredNodeAsString( rootElement, new XPath( "@version", nsContext ) ) );
-        if ( !( VERSION_200.equals( version ) ) ) {
-            String msg = Messages.get( "UNSUPPORTED_VERSION", version, Version.getVersionsString( VERSION_200 ) );
-            throw new InvalidParameterValueException( msg );
-        }
+		// <xsd:attribute name="version" type="xsd:string" use="required" fixed="2.0.0"/>
+		Version version = Version.parseVersion(getRequiredNodeAsString(rootElement, new XPath("@version", nsContext)));
+		if (!(VERSION_200.equals(version))) {
+			String msg = Messages.get("UNSUPPORTED_VERSION", version, Version.getVersionsString(VERSION_200));
+			throw new InvalidParameterValueException(msg);
+		}
 
-        // <xsd:attribute name="handle" type="xsd:string"/>
-        String handle = getNodeAsString( rootElement, new XPath( "@handle", nsContext ), null );
+		// <xsd:attribute name="handle" type="xsd:string"/>
+		String handle = getNodeAsString(rootElement, new XPath("@handle", nsContext), null);
 
-        // <xsd:element name="StoredQueryDefinition" type="wfs:StoredQueryDescriptionType" minOccurs="0"
-        // maxOccurs="unbounded"/>
-        List<OMElement> els = getElements( rootElement, new XPath( "wfs200:StoredQueryDefinition", nsContext ) );
-        List<StoredQueryDefinition> queryDefinitions = new ArrayList<StoredQueryDefinition>();
-        for ( OMElement el : els ) {
-            StoredQueryDefinitionXMLAdapter queryDefAdapter = new StoredQueryDefinitionXMLAdapter();
-            queryDefAdapter.setRootElement( el );
-            queryDefinitions.add( queryDefAdapter.parse() );
-        }
+		// <xsd:element name="StoredQueryDefinition" type="wfs:StoredQueryDescriptionType"
+		// minOccurs="0"
+		// maxOccurs="unbounded"/>
+		List<OMElement> els = getElements(rootElement, new XPath("wfs200:StoredQueryDefinition", nsContext));
+		List<StoredQueryDefinition> queryDefinitions = new ArrayList<StoredQueryDefinition>();
+		for (OMElement el : els) {
+			StoredQueryDefinitionXMLAdapter queryDefAdapter = new StoredQueryDefinitionXMLAdapter();
+			queryDefAdapter.setRootElement(el);
+			queryDefinitions.add(queryDefAdapter.parse());
+		}
 
-        return new CreateStoredQuery( version, handle, queryDefinitions );
-    }
+		return new CreateStoredQuery(version, handle, queryDefinitions);
+	}
+
 }

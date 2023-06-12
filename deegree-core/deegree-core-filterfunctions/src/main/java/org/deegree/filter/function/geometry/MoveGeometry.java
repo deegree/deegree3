@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -57,83 +56,81 @@ import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class MoveGeometry implements FunctionProvider {
 
-    static final Logger LOG = getLogger( MoveGeometry.class );
+	static final Logger LOG = getLogger(MoveGeometry.class);
 
-    private static final String NAME = "MoveGeometry";
+	private static final String NAME = "MoveGeometry";
 
-    private static final List<ParameterType> INPUTS = new ArrayList<ParameterType>( 3 );
+	private static final List<ParameterType> INPUTS = new ArrayList<ParameterType>(3);
 
-    static {
-        INPUTS.add( GEOMETRY );
-        INPUTS.add( DOUBLE );
-        INPUTS.add( DOUBLE );
-    }
+	static {
+		INPUTS.add(GEOMETRY);
+		INPUTS.add(DOUBLE);
+		INPUTS.add(DOUBLE);
+	}
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
+	@Override
+	public String getName() {
+		return NAME;
+	}
 
-    @Override
-    public List<ParameterType> getArgs() {
-        return Collections.singletonList( GEOMETRY );
-    }
+	@Override
+	public List<ParameterType> getArgs() {
+		return Collections.singletonList(GEOMETRY);
+	}
 
-    @Override
-    public ParameterType getReturnType() {
-        return DOUBLE;
-    }
+	@Override
+	public ParameterType getReturnType() {
+		return DOUBLE;
+	}
 
-    @Override
-    public Function create( List<Expression> params ) {
-        return new Function( NAME, params ) {
+	@Override
+	public Function create(List<Expression> params) {
+		return new Function(NAME, params) {
 
-            @Override
-            public <T> TypedObjectNode[] evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
-                                    throws FilterEvaluationException {
-                TypedObjectNode[] geometry = getParams()[0].evaluate( obj, xpathEvaluator );
-                TypedObjectNode[] offx = getParams()[1].evaluate( obj, xpathEvaluator );
-                TypedObjectNode[] offy = getParams()[2].evaluate( obj, xpathEvaluator );
-                if ( geometry.length != 1 ) {
-                    throw new FilterEvaluationException( "The MoveGeometry function's first argument must "
-                                                         + "evaluate to exactly one value." );
-                }
-                if ( offx.length != 1 ) {
-                    throw new FilterEvaluationException( "The MoveGeometry function's second argument must "
-                                                         + "evaluate to exactly one value." );
-                }
-                if ( offy.length != 1 ) {
-                    throw new FilterEvaluationException( "The MoveGeometry function's third argument must "
-                                                         + "evaluate to exactly one value." );
-                }
-                try {
-                    double movex = Double.parseDouble( offx[0].toString() );
-                    double movey = Double.parseDouble( offy[0].toString() );
-                    Geometry geom = getGeometryValue( geometry[0] );
-                    return new TypedObjectNode[] { move( geom, movex, movey ) };
-                } catch ( NumberFormatException e ) {
-                    throw new FilterEvaluationException( "The MoveGeometry function's second and third argument must "
-                                                         + "evaluate to numeric values." );
-                }
-            }
-        };
-    }
+			@Override
+			public <T> TypedObjectNode[] evaluate(T obj, XPathEvaluator<T> xpathEvaluator)
+					throws FilterEvaluationException {
+				TypedObjectNode[] geometry = getParams()[0].evaluate(obj, xpathEvaluator);
+				TypedObjectNode[] offx = getParams()[1].evaluate(obj, xpathEvaluator);
+				TypedObjectNode[] offy = getParams()[2].evaluate(obj, xpathEvaluator);
+				if (geometry.length != 1) {
+					throw new FilterEvaluationException(
+							"The MoveGeometry function's first argument must " + "evaluate to exactly one value.");
+				}
+				if (offx.length != 1) {
+					throw new FilterEvaluationException(
+							"The MoveGeometry function's second argument must " + "evaluate to exactly one value.");
+				}
+				if (offy.length != 1) {
+					throw new FilterEvaluationException(
+							"The MoveGeometry function's third argument must " + "evaluate to exactly one value.");
+				}
+				try {
+					double movex = Double.parseDouble(offx[0].toString());
+					double movey = Double.parseDouble(offy[0].toString());
+					Geometry geom = getGeometryValue(geometry[0]);
+					return new TypedObjectNode[] { move(geom, movex, movey) };
+				}
+				catch (NumberFormatException e) {
+					throw new FilterEvaluationException("The MoveGeometry function's second and third argument must "
+							+ "evaluate to numeric values.");
+				}
+			}
+		};
+	}
 
-    @Override
-    public void init( Workspace ws ) {
-        // nothing to do
-    }
+	@Override
+	public void init(Workspace ws) {
+		// nothing to do
+	}
 
-    @Override
-    public void destroy() {
-        // nothing to do
-    }
+	@Override
+	public void destroy() {
+		// nothing to do
+	}
+
 }

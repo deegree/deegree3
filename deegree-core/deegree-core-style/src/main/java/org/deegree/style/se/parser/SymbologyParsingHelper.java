@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -54,93 +53,89 @@ import org.slf4j.Logger;
 
 /**
  * Responsible for parsing common elements in SE files.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 class SymbologyParsingHelper {
 
-    static final Logger LOG = getLogger( SymbologyParsingHelper.class );
+	static final Logger LOG = getLogger(SymbologyParsingHelper.class);
 
-    static void parseCommon( Common common, XMLStreamReader in )
-                            throws XMLStreamException {
-        if ( in.getLocalName().equals( "Name" ) ) {
-            common.name = in.getElementText();
-        }
-        Location l = in.getLocation();
-        if ( in.getLocalName().startsWith( "Geometry" ) ) {
-            common.loc = l.getSystemId();
-            common.line = l.getLineNumber();
-            common.col = l.getColumnNumber();
-            in.nextTag();
-            common.geometry = parseExpression( in );
-            in.nextTag();
-        }
-        if ( in.getLocalName().equals( "Description" ) ) {
-            parseDescription( in, common, l );
-        }
-        // in case of SLD 1.0.0:
-        if ( in.getLocalName().equals( "Title" ) ) {
-            common.title = in.getElementText();
-            in.nextTag();
-        }
-        if ( in.getLocalName().equals( "Abstract" ) ) {
-            common.abstract_ = in.getElementText();
-            in.nextTag();
-        }
-    }
+	static void parseCommon(Common common, XMLStreamReader in) throws XMLStreamException {
+		if (in.getLocalName().equals("Name")) {
+			common.name = in.getElementText();
+		}
+		Location l = in.getLocation();
+		if (in.getLocalName().startsWith("Geometry")) {
+			common.loc = l.getSystemId();
+			common.line = l.getLineNumber();
+			common.col = l.getColumnNumber();
+			in.nextTag();
+			common.geometry = parseExpression(in);
+			in.nextTag();
+		}
+		if (in.getLocalName().equals("Description")) {
+			parseDescription(in, common, l);
+		}
+		// in case of SLD 1.0.0:
+		if (in.getLocalName().equals("Title")) {
+			common.title = in.getElementText();
+			in.nextTag();
+		}
+		if (in.getLocalName().equals("Abstract")) {
+			common.abstract_ = in.getElementText();
+			in.nextTag();
+		}
+	}
 
-    private static void parseDescription( XMLStreamReader in, Common common, Location loc )
-                            throws XMLStreamException {
-        while ( !( in.isEndElement() && in.getLocalName().equals( "Description" ) ) ) {
-            in.nextTag();
-            if ( in.getLocalName().equals( "Title" ) ) {
-                common.title = in.getElementText();
-            } else if ( in.getLocalName().equals( "Abstract" ) ) {
-                common.abstract_ = in.getElementText();
-            } else if ( in.isStartElement() ) {
-                LOG.error( "Found unknown element '{}' at line {}, column {}, skipping.",
-                           new Object[] { in.getLocalName(), loc.getLineNumber(), loc.getColumnNumber() } );
-                skipElement( in );
-            }
-        }
-    }
+	private static void parseDescription(XMLStreamReader in, Common common, Location loc) throws XMLStreamException {
+		while (!(in.isEndElement() && in.getLocalName().equals("Description"))) {
+			in.nextTag();
+			if (in.getLocalName().equals("Title")) {
+				common.title = in.getElementText();
+			}
+			else if (in.getLocalName().equals("Abstract")) {
+				common.abstract_ = in.getElementText();
+			}
+			else if (in.isStartElement()) {
+				LOG.error("Found unknown element '{}' at line {}, column {}, skipping.",
+						new Object[] { in.getLocalName(), loc.getLineNumber(), loc.getColumnNumber() });
+				skipElement(in);
+			}
+		}
+	}
 
-    /**
-     * <code>Common</code>
-     * 
-     * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-     * @author last edited by: $Author: aschmitz $
-     * 
-     * @version $Revision: 31398 $, $Date: 2011-08-02 09:03:40 +0200 (Tue, 02 Aug 2011) $
-     */
-    public static class Common {
-        public Common() {
-            // without location
-        }
+	/**
+	 * <code>Common</code>
+	 *
+	 * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+	 */
+	public static class Common {
 
-        Common( Location loc ) {
-            this.loc = loc.getSystemId();
-            line = loc.getLineNumber();
-            col = loc.getColumnNumber();
-        }
+		public Common() {
+			// without location
+		}
 
-        /***/
-        public String name;
+		Common(Location loc) {
+			this.loc = loc.getSystemId();
+			line = loc.getLineNumber();
+			col = loc.getColumnNumber();
+		}
 
-        /***/
-        public String title;
+		/***/
+		public String name;
 
-        /***/
-        public String abstract_;
+		/***/
+		public String title;
 
-        Expression geometry;
+		/***/
+		public String abstract_;
 
-        String loc;
+		Expression geometry;
 
-        int line, col;
-    }
+		String loc;
+
+		int line, col;
+
+	}
 
 }

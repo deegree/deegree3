@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -43,34 +42,32 @@ import org.deegree.filter.i18n.Messages;
 import org.deegree.geometry.Geometry;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class FilterUtils {
 
-    /**
-     * @param node
-     * @return null, if the node cannot be interpreted as geometry
-     */
-    public static Geometry getGeometryValue( TypedObjectNode node ) {
-        Geometry geom = null;
-        if ( node instanceof Geometry ) {
-            geom = (Geometry) node;
-        } else if ( node instanceof Property && ( (Property) node ).getValue() instanceof Geometry ) {
-            geom = (Geometry) ( (Property) node ).getValue();
-        } else if ( node instanceof GenericXMLElement ) {
-            GenericXMLElement xml = (GenericXMLElement) node;
-            if ( xml.getChildren() != null && xml.getChildren().size() == 1 ) {
-                TypedObjectNode maybeGeom = xml.getChildren().get( 0 );
-                if ( maybeGeom instanceof Geometry ) {
-                    geom = (Geometry) maybeGeom;
-                }
-            }
-        }
-        return geom;
-    }
+	/**
+	 * @param node
+	 * @return null, if the node cannot be interpreted as geometry
+	 */
+	public static Geometry getGeometryValue(TypedObjectNode node) {
+		Geometry geom = null;
+		if (node instanceof Geometry) {
+			geom = (Geometry) node;
+		}
+		else if (node instanceof Property && ((Property) node).getValue() instanceof Geometry) {
+			geom = (Geometry) ((Property) node).getValue();
+		}
+		else if (node instanceof GenericXMLElement) {
+			GenericXMLElement xml = (GenericXMLElement) node;
+			if (xml.getChildren() != null && xml.getChildren().size() == 1) {
+				TypedObjectNode maybeGeom = xml.getChildren().get(0);
+				if (maybeGeom instanceof Geometry) {
+					geom = (Geometry) maybeGeom;
+				}
+			}
+		}
+		return geom;
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2013 by:
@@ -44,46 +43,39 @@ import org.deegree.geometry.Geometry;
  * Visitor interface for the {@link GMLObjectWalker}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- *
- * @version $Revision$, $Date$
  */
 public interface GMLObjectVisitor {
 
-    /**
-     * Called when a {@link Geometry} node is encountered.
-     *
-     * @param geom
-     *            geometry, never <code>null</code>
-     * @return <code>true</code>, if children of this node shall be traversed, <code>false</code> otherwise
-     */
-    public boolean visitGeometry( Geometry geom );
+	/**
+	 * Called when a {@link Geometry} node is encountered.
+	 * @param geom geometry, never <code>null</code>
+	 * @return <code>true</code>, if children of this node shall be traversed,
+	 * <code>false</code> otherwise
+	 */
+	public boolean visitGeometry(Geometry geom);
 
-    /**
-     * Called when a {@link Feature} node is encountered.
-     *
-     * @param feature
-     *            feature, never <code>null</code>
-     * @return <code>true</code>, if children of this node shall be traversed, <code>false</code> otherwise
-     */
-    public boolean visitFeature( Feature feature );
+	/**
+	 * Called when a {@link Feature} node is encountered.
+	 * @param feature feature, never <code>null</code>
+	 * @return <code>true</code>, if children of this node shall be traversed,
+	 * <code>false</code> otherwise
+	 */
+	public boolean visitFeature(Feature feature);
 
-    /**
-     * Called when a {@link GMLObject} node (not geometry, not feature) is encountered.
-     *
-     * @param o
-     *            object, never <code>null</code>
-     * @return <code>true</code>, if children of this node shall be traversed, <code>false</code> otherwise
-     */
-    public boolean visitObject( GMLObject o );
+	/**
+	 * Called when a {@link GMLObject} node (not geometry, not feature) is encountered.
+	 * @param o object, never <code>null</code>
+	 * @return <code>true</code>, if children of this node shall be traversed,
+	 * <code>false</code> otherwise
+	 */
+	public boolean visitObject(GMLObject o);
 
-    /**
-     * Called when a {@link Reference} node is encountered.
-     *
-     * @param ref
-     *            reference, never <code>null</code>
-     * @return <code>true</code>, if the referenced object shall be traversed, <code>false</code> otherwise
-     */
-    public boolean visitReference( Reference<?> ref );
+	/**
+	 * Called when a {@link Reference} node is encountered.
+	 * @param ref reference, never <code>null</code>
+	 * @return <code>true</code>, if the referenced object shall be traversed,
+	 * <code>false</code> otherwise
+	 */
+	public boolean visitReference(Reference<?> ref);
 
 }

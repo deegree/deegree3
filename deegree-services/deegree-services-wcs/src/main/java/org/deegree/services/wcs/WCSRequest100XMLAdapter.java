@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -49,82 +48,69 @@ import org.deegree.protocol.wcs.WCSConstants;
 
 /**
  * Base class for all WCS 1.0.0 XMLAdapter. Defines the WCS XML namespace.
- * 
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class WCSRequest100XMLAdapter extends XMLAdapter {
 
-    /**
-     * Prefix which is bound to the wcs_100 namespace
-     */
-    protected static final String WCS_PREFIX = "wcs";
+	/**
+	 * Prefix which is bound to the wcs_100 namespace
+	 */
+	protected static final String WCS_PREFIX = "wcs";
 
-    /**
-     * namespace context with wcs ns
-     */
-    protected final static NamespaceBindings wcsNSContext;
+	/**
+	 * namespace context with wcs ns
+	 */
+	protected final static NamespaceBindings wcsNSContext;
 
-    static {
-        wcsNSContext = new NamespaceBindings( XMLAdapter.nsContext );
-        wcsNSContext.addNamespace( WCS_PREFIX, WCS_100_NS );
-        wcsNSContext.addNamespace( GML_PREFIX, GMLNS );
-    }
+	static {
+		wcsNSContext = new NamespaceBindings(XMLAdapter.nsContext);
+		wcsNSContext.addNamespace(WCS_PREFIX, WCS_100_NS);
+		wcsNSContext.addNamespace(GML_PREFIX, GMLNS);
+	}
 
-    /**
-     * Check that the value is not <code>null</code>, throws OWSException otherwise.
-     * 
-     * @param nodeName
-     *            the name of the required node, used in the exception
-     * @param requiredValue
-     *            the value to check
-     * @throws OWSException
-     *             if requiredValue is <code>null</code>
-     */
-    protected void checkRequiredString( String nodeName, String requiredValue )
-                            throws OWSException {
-        if ( requiredValue == null ) {
-            throw new OWSException( "Missing " + nodeName + " in request", OWSException.MISSING_PARAMETER_VALUE,
-                                    nodeName );
-        }
-    }
+	/**
+	 * Check that the value is not <code>null</code>, throws OWSException otherwise.
+	 * @param nodeName the name of the required node, used in the exception
+	 * @param requiredValue the value to check
+	 * @throws OWSException if requiredValue is <code>null</code>
+	 */
+	protected void checkRequiredString(String nodeName, String requiredValue) throws OWSException {
+		if (requiredValue == null) {
+			throw new OWSException("Missing " + nodeName + " in request", OWSException.MISSING_PARAMETER_VALUE,
+					nodeName);
+		}
+	}
 
-    /**
-     * Check that the requiredElem is not <code>null</code>, throws OWSException otherwise.
-     * 
-     * @param nodeName
-     *            the name of the required node, used in the exception
-     * @param requiredElem
-     *            the element to check
-     * @throws OWSException
-     *             if requiredElement is <code>null</code>
-     */
-    protected void checkRequiredElement( String nodeName, OMElement requiredElem )
-                            throws OWSException {
-        if ( requiredElem == null ) {
-            throw new OWSException( "Missing " + nodeName + " in request", OWSException.MISSING_PARAMETER_VALUE,
-                                    nodeName );
-        }
-    }
+	/**
+	 * Check that the requiredElem is not <code>null</code>, throws OWSException
+	 * otherwise.
+	 * @param nodeName the name of the required node, used in the exception
+	 * @param requiredElem the element to check
+	 * @throws OWSException if requiredElement is <code>null</code>
+	 */
+	protected void checkRequiredElement(String nodeName, OMElement requiredElem) throws OWSException {
+		if (requiredElem == null) {
+			throw new OWSException("Missing " + nodeName + " in request", OWSException.MISSING_PARAMETER_VALUE,
+					nodeName);
+		}
+	}
 
-    /**
-     * Checks that the given element contains a version attribute.
-     * 
-     * @param root
-     * @return the {@link WCSConstants#VERSION_100} if it was valid.
-     * @throws OWSException
-     */
-    protected Version checkVersion( OMElement root )
-                            throws OWSException {
-        String version = getNodeAsString( root, new XPath( "@version", wcsNSContext ), null );
-        if ( version == null ) {
-            throw new OWSException( "Missing version attribute", OWSException.MISSING_PARAMETER_VALUE, "version" );
-        }
-        if ( !"1.0.0".equals( version ) ) {
-            throw new OWSException( "Invalid version attribute", OWSException.INVALID_PARAMETER_VALUE, "version" );
-        }
-        return WCSConstants.VERSION_100;
-    }
+	/**
+	 * Checks that the given element contains a version attribute.
+	 * @param root
+	 * @return the {@link WCSConstants#VERSION_100} if it was valid.
+	 * @throws OWSException
+	 */
+	protected Version checkVersion(OMElement root) throws OWSException {
+		String version = getNodeAsString(root, new XPath("@version", wcsNSContext), null);
+		if (version == null) {
+			throw new OWSException("Missing version attribute", OWSException.MISSING_PARAMETER_VALUE, "version");
+		}
+		if (!"1.0.0".equals(version)) {
+			throw new OWSException("Invalid version attribute", OWSException.INVALID_PARAMETER_VALUE, "version");
+		}
+		return WCSConstants.VERSION_100;
+	}
+
 }

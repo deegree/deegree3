@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -40,55 +39,50 @@ import org.deegree.remoteows.RemoteOWS;
 import org.deegree.workspace.ResourceMetadata;
 
 /**
- * {@link RemoteOWS} implementation for remote <a href="http://www.opengeospatial.org/standards/wmts">Web Map Tile
- * Services</a>.
- * 
+ * {@link RemoteOWS} implementation for remote
+ * <a href="http://www.opengeospatial.org/standards/wmts">Web Map Tile Services</a>.
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class RemoteWMTS implements RemoteOWS {
 
-    private final WMTSClient client;
+	private final WMTSClient client;
 
-    private ResourceMetadata<RemoteOWS> metadata;
+	private ResourceMetadata<RemoteOWS> metadata;
 
-    /**
-     * Creates a new {@link RemoteWMTS} instance.
-     * 
-     * @param client
-     *            client to use for accessing the remote WMTS, must not be <code>null</code>
-     * @param metadata
-     *            resource metadata, must not be <code>null</code> if resource is managed
-     */
-    public RemoteWMTS( WMTSClient client, ResourceMetadata<RemoteOWS> metadata ) {
-        this.client = client;
-        this.metadata = metadata;
-    }
+	/**
+	 * Creates a new {@link RemoteWMTS} instance.
+	 * @param client client to use for accessing the remote WMTS, must not be
+	 * <code>null</code>
+	 * @param metadata resource metadata, must not be <code>null</code> if resource is
+	 * managed
+	 */
+	public RemoteWMTS(WMTSClient client, ResourceMetadata<RemoteOWS> metadata) {
+		this.client = client;
+		this.metadata = metadata;
+	}
 
-    /**
-     * Returns the client for accessing the remote WMTS.
-     * 
-     * @return client for accessing the remote WMTS, never <code>null</code>
-     */
-    public WMTSClient getClient() {
-        return client;
-    }
+	/**
+	 * Returns the client for accessing the remote WMTS.
+	 * @return client for accessing the remote WMTS, never <code>null</code>
+	 */
+	public WMTSClient getClient() {
+		return client;
+	}
 
-    @Override
-    public void destroy() {
-        // nothing to do
-    }
+	@Override
+	public void destroy() {
+		// nothing to do
+	}
 
-    @Override
-    public void init() {
-        // nothing to do
-    }
+	@Override
+	public void init() {
+		// nothing to do
+	}
 
-    @Override
-    public ResourceMetadata<RemoteOWS> getMetadata() {
-        return metadata;
-    }
+	@Override
+	public ResourceMetadata<RemoteOWS> getMetadata() {
+		return metadata;
+	}
 
 }

@@ -106,13 +106,9 @@ The following deegree resources support Oracle Spatial databases:
 * ISOMetadataStore
 
 In order to enable Oracle connectivity for these resources, you need to
-add two JAR files (see <<anchor-adding-jars>>):
-
-* A compatible Oracle JDBC driver (e.g.
-_ojdbc11.jar_)footnote:[http://www.oracle.com/technetwork/database/features/jdbc/index-091264.html
-(registration required)]
-* Module
-deegree-sqldialect-oraclefootnote:[https://repo.deegree.org/content/repositories/public/org/deegree/deegree-sqldialect-oracle/${project.version}/deegree-sqldialect-oracle-${project.version}.jar]
+add a compatible Oracle JDBC driver (e.g.
+_ojdbc11.jar_)footnote:[https://www.oracle.com/database/technologies/appdev/jdbc-downloads.html]
+(see <<anchor-adding-jars>>).
 
 ==== Adding Oracle GeoRaster support
 
@@ -122,8 +118,7 @@ in Oracle databases.
 In order to enable Oracle connectivity for these resources, you need to
 add the following JAR files (see <<anchor-adding-jars>>):
 
-* A compatible Oracle JDBC-driverfootnote:[http://www.oracle.com/technetwork/database/features/jdbc/index-091264.html
-(registration required)]
+* A compatible Oracle JDBC-driverfootnote:[https://www.oracle.com/database/technologies/appdev/jdbc-downloads.html]
 ** ojdbc11.jar
 * The Oracle Spatial and GeoRaster libraries and their dependencies
 ** sdoapi.jar
@@ -132,8 +127,6 @@ add the following JAR files (see <<anchor-adding-jars>>):
 ** sdoutl.jar
 ** xdb6.jar
 ** xmlparserv2_sans_jaxp_services.jar
-* Module
-deegree-coveragestore-oracle-georasterfootnote:[https://repo.deegree.org/content/repositories/public/org/deegree/deegree-coveragestore-oracle-georaster/${project.version}/deegree-coveragestore-oracle-georaster-${project.version}.jar]
 
 NOTE: The Oracle Spatial and GeoRaster libraries can be found, without version
 number in filename, inside the Oracle Database installation directory.
@@ -156,9 +149,6 @@ The following deegree resources support Microsoft SQL Server:
 * ISOMetadataStore
 
 In order to enable Microsoft SQL Server connectivity for these
-resources, you need to add two JAR files (see <<anchor-adding-jars>>):
-
-* A compatible Microsoft JDBC driver (e.g.
-_sqljdbc4.jar_)footnote:[http://msdn.microsoft.com/en-us/sqlserver/aa937724.aspx]
-* Module
-deegree-sqldialect-mssqlfootnote:[https://repo.deegree.org/content/repositories/public/org/deegree/deegree-sqldialect-mssql/${project.version}/deegree-sqldialect-mssql-${project.version}.jar]
+resources, you need to add a compatible Microsoft JDBC driver (e.g.
+_sqljdbc4.jar_)footnote:[https://learn.microsoft.com/en-us/sql/connect/jdbc/download-microsoft-jdbc-driver-for-sql-server] 
+(see <<anchor-adding-jars>>).

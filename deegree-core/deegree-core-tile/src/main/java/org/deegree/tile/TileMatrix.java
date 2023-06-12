@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -46,146 +45,134 @@ import org.deegree.geometry.metadata.SpatialMetadata;
 
 /**
  * Describes the structure of a {@link TileDataLevel}.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 public class TileMatrix {
 
-    private final String identifier;
+	private final String identifier;
 
-    private final SpatialMetadata spatialMetadata;
+	private final SpatialMetadata spatialMetadata;
 
-    private final BigInteger numTilesX, numTilesY;
+	private final BigInteger numTilesX, numTilesY;
 
-    private final BigInteger tileSizeX, tileSizeY;
+	private final BigInteger tileSizeX, tileSizeY;
 
-    private final double resolution, tileWidth, tileHeight;
+	private final double resolution, tileWidth, tileHeight;
 
-    /**
-     * All fields must be set. The width/height of the tiles in world coordinates is calculated automatically.
-     * 
-     * @param identifier
-     *            to identify the tile matrix
-     * @param spatialMetadata
-     *            the envelope and coordinate system, never null
-     * @param tileSizeX
-     *            the width of a tile in pixels, must be positive and not <code>null</code>
-     * @param tileSizeY
-     *            the height of a tile in pixels, must be positive and not <code>null</code>
-     * @param resolution
-     *            the resolution of a pixel in world coordinates
-     * @param numTilesX
-     *            the number of tiles in x direction, must be positive and not <code>null</code>
-     * @param numTilesY
-     *            the number of tiles in y direction, must be positive and not <code>null</code>
-     */
-    public TileMatrix( String identifier, SpatialMetadata spatialMetadata, BigInteger tileSizeX, BigInteger tileSizeY,
-                       double resolution, BigInteger numTilesX, BigInteger numTilesY ) {
-        this.identifier = identifier;
-        this.spatialMetadata = spatialMetadata;
-        this.tileSizeX = tileSizeX;
-        this.tileSizeY = tileSizeY;
-        this.resolution = resolution;
-        this.numTilesX = numTilesX;
-        this.numTilesY = numTilesY;
-        this.tileWidth = tileSizeX.longValue() * resolution;
-        this.tileHeight = tileSizeY.longValue() * resolution;
-    }
+	/**
+	 * All fields must be set. The width/height of the tiles in world coordinates is
+	 * calculated automatically.
+	 * @param identifier to identify the tile matrix
+	 * @param spatialMetadata the envelope and coordinate system, never null
+	 * @param tileSizeX the width of a tile in pixels, must be positive and not
+	 * <code>null</code>
+	 * @param tileSizeY the height of a tile in pixels, must be positive and not
+	 * <code>null</code>
+	 * @param resolution the resolution of a pixel in world coordinates
+	 * @param numTilesX the number of tiles in x direction, must be positive and not
+	 * <code>null</code>
+	 * @param numTilesY the number of tiles in y direction, must be positive and not
+	 * <code>null</code>
+	 */
+	public TileMatrix(String identifier, SpatialMetadata spatialMetadata, BigInteger tileSizeX, BigInteger tileSizeY,
+			double resolution, BigInteger numTilesX, BigInteger numTilesY) {
+		this.identifier = identifier;
+		this.spatialMetadata = spatialMetadata;
+		this.tileSizeX = tileSizeX;
+		this.tileSizeY = tileSizeY;
+		this.resolution = resolution;
+		this.numTilesX = numTilesX;
+		this.numTilesY = numTilesY;
+		this.tileWidth = tileSizeX.longValue() * resolution;
+		this.tileHeight = tileSizeY.longValue() * resolution;
+	}
 
-    /**
-     * All fields must be set. The width/height of the tiles in world coordinates is calculated automatically.
-     * 
-     * @param identifier
-     *            to identify the tile matrix
-     * @param spatialMetadata
-     *            the envelope and coordinate system, never null
-     * @param tileSizeX
-     *            the width of a tile in pixels, must be positive
-     * @param tileSizeY
-     *            the height of a tile in pixels, must be positive
-     * @param resolution
-     *            the resolution of a pixel in world coordinates
-     * @param numTilesX
-     *            the number of tiles in x direction, must be positive
-     * @param numTilesY
-     *            the number of tiles in y direction, must be positive
-     */
-    public TileMatrix( String identifier, SpatialMetadata spatialMetadata, long tileSizeX, long tileSizeY,
-                       double resolution, long numTilesX, long numTilesY ) {
-        this.identifier = identifier;
-        this.spatialMetadata = spatialMetadata;
-        this.tileSizeX = BigInteger.valueOf( tileSizeX );
-        this.tileSizeY = BigInteger.valueOf( tileSizeY );
-        this.resolution = resolution;
-        this.numTilesX = BigInteger.valueOf( numTilesX );
-        this.numTilesY = BigInteger.valueOf( numTilesY );
-        this.tileWidth = tileSizeX * resolution;
-        this.tileHeight = tileSizeY * resolution;
-    }
+	/**
+	 * All fields must be set. The width/height of the tiles in world coordinates is
+	 * calculated automatically.
+	 * @param identifier to identify the tile matrix
+	 * @param spatialMetadata the envelope and coordinate system, never null
+	 * @param tileSizeX the width of a tile in pixels, must be positive
+	 * @param tileSizeY the height of a tile in pixels, must be positive
+	 * @param resolution the resolution of a pixel in world coordinates
+	 * @param numTilesX the number of tiles in x direction, must be positive
+	 * @param numTilesY the number of tiles in y direction, must be positive
+	 */
+	public TileMatrix(String identifier, SpatialMetadata spatialMetadata, long tileSizeX, long tileSizeY,
+			double resolution, long numTilesX, long numTilesY) {
+		this.identifier = identifier;
+		this.spatialMetadata = spatialMetadata;
+		this.tileSizeX = BigInteger.valueOf(tileSizeX);
+		this.tileSizeY = BigInteger.valueOf(tileSizeY);
+		this.resolution = resolution;
+		this.numTilesX = BigInteger.valueOf(numTilesX);
+		this.numTilesY = BigInteger.valueOf(numTilesY);
+		this.tileWidth = tileSizeX * resolution;
+		this.tileHeight = tileSizeY * resolution;
+	}
 
-    /**
-     * @return the envelope and crs, never null
-     */
-    public SpatialMetadata getSpatialMetadata() {
-        return spatialMetadata;
-    }
+	/**
+	 * @return the envelope and crs, never null
+	 */
+	public SpatialMetadata getSpatialMetadata() {
+		return spatialMetadata;
+	}
 
-    /**
-     * @return the width of a tile in pixels
-     */
-    public long getTilePixelsX() {
-        return tileSizeX.longValue();
-    }
+	/**
+	 * @return the width of a tile in pixels
+	 */
+	public long getTilePixelsX() {
+		return tileSizeX.longValue();
+	}
 
-    /**
-     * @return the height of a tile in pixels
-     */
-    public long getTilePixelsY() {
-        return tileSizeY.longValue();
-    }
+	/**
+	 * @return the height of a tile in pixels
+	 */
+	public long getTilePixelsY() {
+		return tileSizeY.longValue();
+	}
 
-    /**
-     * @return the resolution of a pixel in world coordinates
-     */
-    public double getResolution() {
-        return resolution;
-    }
+	/**
+	 * @return the resolution of a pixel in world coordinates
+	 */
+	public double getResolution() {
+		return resolution;
+	}
 
-    /**
-     * @return the number of tiles in x direction
-     */
-    public long getNumTilesX() {
-        return numTilesX.longValue();
-    }
+	/**
+	 * @return the number of tiles in x direction
+	 */
+	public long getNumTilesX() {
+		return numTilesX.longValue();
+	}
 
-    /**
-     * @return the number of tiles in y direction
-     */
-    public long getNumTilesY() {
-        return numTilesY.longValue();
-    }
+	/**
+	 * @return the number of tiles in y direction
+	 */
+	public long getNumTilesY() {
+		return numTilesY.longValue();
+	}
 
-    /**
-     * @return the width of a tile in world coordinates (outer edges)
-     */
-    public double getTileWidth() {
-        return tileWidth;
-    }
+	/**
+	 * @return the width of a tile in world coordinates (outer edges)
+	 */
+	public double getTileWidth() {
+		return tileWidth;
+	}
 
-    /**
-     * @return the height of a tile in world coordinates (outer edges)
-     */
-    public double getTileHeight() {
-        return tileHeight;
-    }
+	/**
+	 * @return the height of a tile in world coordinates (outer edges)
+	 */
+	public double getTileHeight() {
+		return tileHeight;
+	}
 
-    /**
-     * @return the identifier
-     */
-    public String getIdentifier() {
-        return identifier;
-    }
+	/**
+	 * @return the identifier
+	 */
+	public String getIdentifier() {
+		return identifier;
+	}
+
 }

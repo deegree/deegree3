@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -41,50 +40,44 @@ import org.deegree.protocol.wps.describeprocess.DescribeProcessRequest;
 
 /**
  * Abstract base class for WPS specific requests.
- * 
+ *
  * @see DescribeProcessRequest
- * 
  * @author <a href="mailto:apadberg@uni-bonn.de">Alexander Padberg</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public abstract class WPSRequest {
 
-    private Version version;
+	private Version version;
 
-    private String language;
+	private String language;
 
-    /**
-     * Creates a new {@link WPSRequest} instance.
-     * 
-     * @param version
-     *            WPS protocol version
-     * @param language
-     *            RFC 4646 language code of the human-readable text
-     */
-    protected WPSRequest( Version version, String language ) {
-        this.version = version;
-        this.language = language;
-    }
+	/**
+	 * Creates a new {@link WPSRequest} instance.
+	 * @param version WPS protocol version
+	 * @param language RFC 4646 language code of the human-readable text
+	 */
+	protected WPSRequest(Version version, String language) {
+		this.version = version;
+		this.language = language;
+	}
 
-    /**
-     * @return the version
-     */
-    public Version getVersion() {
-        return version;
-    }
+	/**
+	 * @return the version
+	 */
+	public Version getVersion() {
+		return version;
+	}
 
-    /**
-     * @return the language
-     */
-    public String getLanguage() {
-        return language;
-    }
+	/**
+	 * @return the language
+	 */
+	public String getLanguage() {
+		return language;
+	}
 
-    @Override
-    public String toString() {
-        return ( "Version: " + version + ", Language: " + language );
-    }
+	@Override
+	public String toString() {
+		return ("Version: " + version + ", Language: " + language);
+	}
+
 }

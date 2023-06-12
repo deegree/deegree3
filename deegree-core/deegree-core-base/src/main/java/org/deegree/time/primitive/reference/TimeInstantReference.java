@@ -43,23 +43,23 @@ import org.deegree.time.primitive.TimeInstant;
 
 public class TimeInstantReference extends TimeGeometricPrimitiveReference<TimeInstant> implements TimeInstant {
 
-    public TimeInstantReference( final ReferenceResolver resolver, final String uri, final String baseURL ) {
-        super( resolver, uri, baseURL );
-    }
+	public TimeInstantReference(final ReferenceResolver resolver, final String uri, final String baseURL) {
+		super(resolver, uri, baseURL);
+	}
 
-    @Override
-    public String getFrame() {
-        return getReferencedObject().getFrame();
-    }
+	@Override
+	public String getFrame() {
+		return getReferencedObject().getFrame();
+	}
 
-    @Override
-    public List<RelatedTime> getRelatedTimes() {
-        return getReferencedObject().getRelatedTimes();
-    }
+	@Override
+	public List<RelatedTime> getRelatedTimes() {
+		return getReferencedObject().getRelatedTimes();
+	}
 
-    @Override
-    public TimePosition getPosition() {
-        return getReferencedObject().getPosition();
-    }
+	@Override
+	public TimePosition getPosition() {
+		return getReferencedObject().getPosition();
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -42,46 +41,42 @@ import java.io.OutputStream;
 
 /**
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  */
 public class Utils {
 
-    /**
-     * Output stream that loses all data.
-     */
-    public static final OutputStream DEV_NULL = new OutputStream() {
-        @Override
-        public void write( int b )
-                        throws IOException {
-            // lost
-        }
-    };
+	/**
+	 * Output stream that loses all data.
+	 */
+	public static final OutputStream DEV_NULL = new OutputStream() {
+		@Override
+		public void write(int b) throws IOException {
+			// lost
+		}
+	};
 
-    /**
-     * Makes pixel by pixel comparison and determines the percentage of equal pixel.
-     *
-     * @param in1
-     * @param in2
-     * @return the percentage (0..1)
-     */
-    public static double determineSimilarity( RenderedImage in1, RenderedImage in2 ) {
-        Raster data1 = in1.getData();
-        Raster data2 = in2.getData();
-        long equal = 0;
-        for ( int b = 0; b < data1.getNumBands(); b++ ) {
-            for ( int x = 0; x < data1.getWidth(); x++ ) {
-                for ( int y = 0; y < data1.getHeight(); y++ ) {
-                    if ( b < data2.getNumBands() && x < data2.getWidth() && y < data2.getHeight() ) {
-                        if ( data1.getSample( x, y, b ) == data2.getSample( x, y, b ) ) {
-                            ++equal;
-                        }
-                    }
-                }
-            }
-        }
-        int comparedPixels = data1.getNumBands() * data1.getWidth() * data1.getHeight();
-        return equal / (double) comparedPixels;
-    }
+	/**
+	 * Makes pixel by pixel comparison and determines the percentage of equal pixel.
+	 * @param in1
+	 * @param in2
+	 * @return the percentage (0..1)
+	 */
+	public static double determineSimilarity(RenderedImage in1, RenderedImage in2) {
+		Raster data1 = in1.getData();
+		Raster data2 = in2.getData();
+		long equal = 0;
+		for (int b = 0; b < data1.getNumBands(); b++) {
+			for (int x = 0; x < data1.getWidth(); x++) {
+				for (int y = 0; y < data1.getHeight(); y++) {
+					if (b < data2.getNumBands() && x < data2.getWidth() && y < data2.getHeight()) {
+						if (data1.getSample(x, y, b) == data2.getSample(x, y, b)) {
+							++equal;
+						}
+					}
+				}
+			}
+		}
+		int comparedPixels = data1.getNumBands() * data1.getWidth() * data1.getHeight();
+		return equal / (double) comparedPixels;
+	}
 
 }

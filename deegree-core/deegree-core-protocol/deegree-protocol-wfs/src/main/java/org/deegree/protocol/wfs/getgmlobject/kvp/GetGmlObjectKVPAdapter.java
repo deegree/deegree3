@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -49,76 +48,71 @@ import org.deegree.protocol.wfs.AbstractWFSRequestKVPAdapter;
 import org.deegree.protocol.wfs.getgmlobject.GetGmlObject;
 
 /**
- * Adapter between KVP <code>GetGmlObject</code> requests and {@link GetGmlObject} objects.
+ * Adapter between KVP <code>GetGmlObject</code> requests and {@link GetGmlObject}
+ * objects.
  * <p>
  * TODO code for exporting to KVP form
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class GetGmlObjectKVPAdapter extends AbstractWFSRequestKVPAdapter {
 
-    /**
-     * Parses a normalized KVP-map as a WFS {@link GetGmlObject} request.
-     * <p>
-     * Supported versions:
-     * <ul>
-     * <li>WFS 1.1.0</li>
-     * </ul>
-     * 
-     * @param kvpParams
-     *            normalized KVP-map; keys must be uppercase, each key only has one associated value
-     * @return parsed {@link GetGmlObject} request
-     * @throws MissingParameterException
-     *             if the request version is unsupported
-     * @throws InvalidParameterValueException
-     *             if a parameter contains a syntax error
-     */
-    public static GetGmlObject parse( Map<String, String> kvpParams )
-                            throws MissingParameterException, InvalidParameterValueException {
+	/**
+	 * Parses a normalized KVP-map as a WFS {@link GetGmlObject} request.
+	 * <p>
+	 * Supported versions:
+	 * <ul>
+	 * <li>WFS 1.1.0</li>
+	 * </ul>
+	 * @param kvpParams normalized KVP-map; keys must be uppercase, each key only has one
+	 * associated value
+	 * @return parsed {@link GetGmlObject} request
+	 * @throws MissingParameterException if the request version is unsupported
+	 * @throws InvalidParameterValueException if a parameter contains a syntax error
+	 */
+	public static GetGmlObject parse(Map<String, String> kvpParams)
+			throws MissingParameterException, InvalidParameterValueException {
 
-        Version version = Version.parseVersion( KVPUtils.getRequired( kvpParams, "VERSION" ) );
+		Version version = Version.parseVersion(KVPUtils.getRequired(kvpParams, "VERSION"));
 
-        GetGmlObject result = null;
-        if ( VERSION_110.equals( version ) ) {
-            result = parse110( kvpParams );
-        } else {
-            String msg = Messages.get( "UNSUPPORTED_VERSION", version, Version.getVersionsString( VERSION_110 ) );
-            throw new InvalidParameterValueException( msg );
-        }
-        return result;
-    }
+		GetGmlObject result = null;
+		if (VERSION_110.equals(version)) {
+			result = parse110(kvpParams);
+		}
+		else {
+			String msg = Messages.get("UNSUPPORTED_VERSION", version, Version.getVersionsString(VERSION_110));
+			throw new InvalidParameterValueException(msg);
+		}
+		return result;
+	}
 
-    /**
-     * Parses a normalized KVP-map as a WFS 1.1.0 {@link GetGmlObject} request.
-     * 
-     * @param kvpParams
-     *            normalized KVP-map; keys must be uppercase, each key only has one associated value
-     * @return parsed {@link GetGmlObject} request
-     * @throws InvalidParameterValueException
-     *             if a parameter contains a syntax error
-     */
-    public static GetGmlObject parse110( Map<String, String> kvpParams )
-                            throws InvalidParameterValueException {
+	/**
+	 * Parses a normalized KVP-map as a WFS 1.1.0 {@link GetGmlObject} request.
+	 * @param kvpParams normalized KVP-map; keys must be uppercase, each key only has one
+	 * associated value
+	 * @return parsed {@link GetGmlObject} request
+	 * @throws InvalidParameterValueException if a parameter contains a syntax error
+	 */
+	public static GetGmlObject parse110(Map<String, String> kvpParams) throws InvalidParameterValueException {
 
-        // optional: 'OUTPUTFORMAT' (actually not specified in spec., but appears to be forgotten)
-        String outputFormat = kvpParams.get( "OUTPUTFORMAT" );
+		// optional: 'OUTPUTFORMAT' (actually not specified in spec., but appears to be
+		// forgotten)
+		String outputFormat = kvpParams.get("OUTPUTFORMAT");
 
-        // required: 'TRAVERSEXLINKDEPTH'
-        String traverseXlinkDepth = KVPUtils.getRequired( kvpParams, "TRAVERSEXLINKDEPTH" );
+		// required: 'TRAVERSEXLINKDEPTH'
+		String traverseXlinkDepth = KVPUtils.getRequired(kvpParams, "TRAVERSEXLINKDEPTH");
 
-        // optional: 'TRAVERSEXLINKEXPIRY'
-        Integer traverseXlinkExpiry = KVPUtils.getInt( kvpParams, "TRAVERSEXLINKEXPIRY", -1 );
-        if ( traverseXlinkExpiry < 0 ) {
-            traverseXlinkExpiry = null;
-        }
+		// optional: 'TRAVERSEXLINKEXPIRY'
+		Integer traverseXlinkExpiry = KVPUtils.getInt(kvpParams, "TRAVERSEXLINKEXPIRY", -1);
+		if (traverseXlinkExpiry < 0) {
+			traverseXlinkExpiry = null;
+		}
 
-        // required: 'GMLOBJECTID'
-        String requestedId = KVPUtils.getRequired( kvpParams, "GMLOBJECTID" );
+		// required: 'GMLOBJECTID'
+		String requestedId = KVPUtils.getRequired(kvpParams, "GMLOBJECTID");
 
-        return new GetGmlObject( VERSION_110, null, requestedId, outputFormat, traverseXlinkDepth, traverseXlinkExpiry );
-    }
+		return new GetGmlObject(VERSION_110, null, requestedId, outputFormat, traverseXlinkDepth, traverseXlinkExpiry);
+	}
+
 }

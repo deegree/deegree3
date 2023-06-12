@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -58,90 +57,88 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Encapsulates the method for parsing a {@link GetRecordById} XML request via Http-POST.
- * 
+ *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: thomas $
- * 
- * @version $Revision: $, $Date: $
  */
 public class GetRecordByIdXMLAdapter extends AbstractCSWRequestXMLAdapter {
-    private static final Logger LOG = LoggerFactory.getLogger( GetRecordByIdXMLAdapter.class );
 
-    /**
-     * Parses the {@link GetRecordById} XML request by deciding which version has to be parsed because of the requested
-     * version.
-     * 
-     * @param requestVersion
-     * @return {@link GetRecordById}
-     */
-    public GetRecordById parse( Version requestVersion, String defaultOutputFormat, String defaultOutputSchema ) {
+	private static final Logger LOG = LoggerFactory.getLogger(GetRecordByIdXMLAdapter.class);
 
-        if ( requestVersion == null ) {
-            requestVersion = Version.parseVersion( getRequiredNodeAsString( rootElement, new XPath( "@version",
-                                                                                                    nsContext ) ) );
-        }
+	/**
+	 * Parses the {@link GetRecordById} XML request by deciding which version has to be
+	 * parsed because of the requested version.
+	 * @param requestVersion
+	 * @return {@link GetRecordById}
+	 */
+	public GetRecordById parse(Version requestVersion, String defaultOutputFormat, String defaultOutputSchema) {
 
-        GetRecordById result = null;
+		if (requestVersion == null) {
+			requestVersion = Version
+				.parseVersion(getRequiredNodeAsString(rootElement, new XPath("@version", nsContext)));
+		}
 
-        if ( VERSION_202.equals( requestVersion ) ) {
-            result = parse202( defaultOutputFormat, defaultOutputSchema );
-        } else {
-            String msg = Messages.get( "UNSUPPORTED_VERSION", requestVersion, Version.getVersionsString( VERSION_202 ) );
-            throw new InvalidParameterValueException( msg );
-        }
+		GetRecordById result = null;
 
-        return result;
-    }
+		if (VERSION_202.equals(requestVersion)) {
+			result = parse202(defaultOutputFormat, defaultOutputSchema);
+		}
+		else {
+			String msg = Messages.get("UNSUPPORTED_VERSION", requestVersion, Version.getVersionsString(VERSION_202));
+			throw new InvalidParameterValueException(msg);
+		}
 
-    /**
-     * Parses the {@link GetRecordById} request on the basis of CSW version 2.0.2
-     * 
-     * @return {@link GetRecordById}
-     */
-    @SuppressWarnings("unchecked")
-    private GetRecordById parse202( String defaultOutputFormat, String defaultOutputSchema ) {
-        // outputFormat (optional)
-        String outputFormat = getNodeAsString( rootElement, new XPath( "@outputFormat", nsContext ),
-                                               defaultOutputFormat );
+		return result;
+	}
 
-        String elementSetNameString = getNodeAsString( rootElement, new XPath( "csw:ElementSetName", nsContext ),
-                                                       ReturnableElement.summary.name() );
+	/**
+	 * Parses the {@link GetRecordById} request on the basis of CSW version 2.0.2
+	 * @return {@link GetRecordById}
+	 */
+	@SuppressWarnings("unchecked")
+	private GetRecordById parse202(String defaultOutputFormat, String defaultOutputSchema) {
+		// outputFormat (optional)
+		String outputFormat = getNodeAsString(rootElement, new XPath("@outputFormat", nsContext), defaultOutputFormat);
 
-        ReturnableElement elementSetName = ReturnableElement.determineReturnableElement( elementSetNameString );
+		String elementSetNameString = getNodeAsString(rootElement, new XPath("csw:ElementSetName", nsContext),
+				ReturnableElement.summary.name());
 
-        QName[] typeNames = null;
-        OMElement elSetNameEl = getElement( rootElement, new XPath( "csw:ElementSetName", nsContext ) );
-        String typeElementSetName = getNodeAsString( elSetNameEl, new XPath( "@typeNames", nsContext ), "" ).trim();
-        if ( typeElementSetName != null && !typeElementSetName.isEmpty() ) {
-            String[] elementSetNameTypeNamesString = StringUtils.split( typeElementSetName, " " );
-            typeNames = new QName[elementSetNameTypeNamesString.length];
-            for ( int i = 0; i < elementSetNameTypeNamesString.length; i++ ) {
-                typeNames[i] = parseQName( elementSetNameTypeNamesString[i], elSetNameEl );
-            }
-        }
+		ReturnableElement elementSetName = ReturnableElement.determineReturnableElement(elementSetNameString);
 
-        String outputSchemaString = getNodeAsString( rootElement, new XPath( "@outputSchema", nsContext ),
-                                                     defaultOutputSchema );
-        URI outputSchema = URI.create( outputSchemaString );
+		QName[] typeNames = null;
+		OMElement elSetNameEl = getElement(rootElement, new XPath("csw:ElementSetName", nsContext));
+		String typeElementSetName = getNodeAsString(elSetNameEl, new XPath("@typeNames", nsContext), "").trim();
+		if (typeElementSetName != null && !typeElementSetName.isEmpty()) {
+			String[] elementSetNameTypeNamesString = StringUtils.split(typeElementSetName, " ");
+			typeNames = new QName[elementSetNameTypeNamesString.length];
+			for (int i = 0; i < elementSetNameTypeNamesString.length; i++) {
+				typeNames[i] = parseQName(elementSetNameTypeNamesString[i], elSetNameEl);
+			}
+		}
 
-        // elementName List<String>
-        List<String> ids = null;
-        try {
-            List<OMElement> idList = getRequiredNodes( rootElement, new XPath( "csw:Id", nsContext ) );
-            LOG.debug( "idList: " + idList );
-            ids = new ArrayList<String>();
-            for ( OMElement elem : idList ) {
-                String idString = getNodeAsString( elem, new XPath( "text()", nsContext ), "" );
-                if ( !ids.contains( idString ) ) {
-                    ids.add( idString );
-                }
-            }
-        } catch ( XMLParsingException e ) {
-            String msg = "No ID provided, please check the mandatory element 'id'. ";
-            LOG.info( msg );
-            throw new MissingParameterException( msg );
-        }
+		String outputSchemaString = getNodeAsString(rootElement, new XPath("@outputSchema", nsContext),
+				defaultOutputSchema);
+		URI outputSchema = URI.create(outputSchemaString);
 
-        return new GetRecordById( VERSION_202, outputFormat, elementSetName, outputSchema, ids, typeNames );
-    }
+		// elementName List<String>
+		List<String> ids = null;
+		try {
+			List<OMElement> idList = getRequiredNodes(rootElement, new XPath("csw:Id", nsContext));
+			LOG.debug("idList: " + idList);
+			ids = new ArrayList<String>();
+			for (OMElement elem : idList) {
+				String idString = getNodeAsString(elem, new XPath("text()", nsContext), "");
+				if (!ids.contains(idString)) {
+					ids.add(idString);
+				}
+			}
+		}
+		catch (XMLParsingException e) {
+			String msg = "No ID provided, please check the mandatory element 'id'. ";
+			LOG.info(msg);
+			throw new MissingParameterException(msg);
+		}
+
+		return new GetRecordById(VERSION_202, outputFormat, elementSetName, outputSchema, ids, typeNames);
+	}
+
 }

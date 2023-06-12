@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-metadata/src/test/java/org/deegree/metadata/iso/persistence/AbstractISOTest.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -65,128 +64,127 @@ import org.slf4j.Logger;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31239 $, $Date: 2011-07-07 17:23:05 +0200 (Do, 07. Jul 2011) $
  */
 public abstract class AbstractISOTest {
 
-    private static final Logger LOG = getLogger( AbstractISOTest.class );
+	private static final Logger LOG = getLogger(AbstractISOTest.class);
 
-    protected static final NamespaceBindings nsContext = CommonNamespaces.getNamespaceContext();
+	protected static final NamespaceBindings nsContext = CommonNamespaces.getNamespaceContext();
 
-    protected ISOMetadataStore store;
+	protected ISOMetadataStore store;
 
-    protected String jdbcURL;
+	protected String jdbcURL;
 
-    protected String jdbcUser;
+	protected String jdbcUser;
 
-    protected String jdbcPass;
+	protected String jdbcPass;
 
-    protected MetadataResultSet<?> resultSet;
+	protected MetadataResultSet<?> resultSet;
 
-    protected Workspace workspace;
+	protected Workspace workspace;
 
-    static {
-        nsContext.addNamespace( "ows", OWS_NS );
-    }
+	static {
+		nsContext.addNamespace("ows", OWS_NS);
+	}
 
-    /**
-     * @throws java.lang.Exception
-     */
-    @Before
-    public void setUp()
-                            throws Exception {
-        jdbcURL = TestProperties.getProperty( "iso_store_url" );
-        jdbcUser = TestProperties.getProperty( "iso_store_user" );
-        jdbcPass = TestProperties.getProperty( "iso_store_pass" );
+	/**
+	 * @throws java.lang.Exception
+	 */
+	@Before
+	public void setUp() throws Exception {
+		jdbcURL = TestProperties.getProperty("iso_store_url");
+		jdbcUser = TestProperties.getProperty("iso_store_user");
+		jdbcPass = TestProperties.getProperty("iso_store_pass");
 
-        workspace = new DefaultWorkspace( new File( "/tmp/" ) );
-        workspace.startup();
-        workspace.getLocationHandler().addExtraResource( getSyntheticProvider( "iso_pg_set_up_tables", jdbcURL,
-                                                                               jdbcUser, jdbcPass ) );
-        workspace.initAll();
-        ConnectionProvider prov = workspace.getResource( ConnectionProviderProvider.class, "iso_pg_set_up_tables" );
+		workspace = new DefaultWorkspace(new File("/tmp/"));
+		workspace.startup();
+		workspace.getLocationHandler()
+			.addExtraResource(getSyntheticProvider("iso_pg_set_up_tables", jdbcURL, jdbcUser, jdbcPass));
+		workspace.initAll();
+		ConnectionProvider prov = workspace.getResource(ConnectionProviderProvider.class, "iso_pg_set_up_tables");
 
-        assumeNotNull( prov );
+		assumeNotNull(prov);
 
-        Connection conn = prov.getConnection();
-        try {
-            setUpTables( conn );
-        } catch ( Exception e ) {
-            // ignore
-        }
-        try {
-            deleteFromTables( conn );
-        } catch ( Exception e ) {
-            // ignore
-        }
+		Connection conn = prov.getConnection();
+		try {
+			setUpTables(conn);
+		}
+		catch (Exception e) {
+			// ignore
+		}
+		try {
+			deleteFromTables(conn);
+		}
+		catch (Exception e) {
+			// ignore
+		}
 
-        conn.close();
-    }
+		conn.close();
+	}
 
-    private void setUpTables( Connection conn )
-                            throws SQLException, UnsupportedEncodingException, IOException, MetadataStoreException {
+	private void setUpTables(Connection conn)
+			throws SQLException, UnsupportedEncodingException, IOException, MetadataStoreException {
 
-        ConnectionProvider prov = workspace.getResource( ConnectionProviderProvider.class, "iso_pg_set_up_tables" );
+		ConnectionProvider prov = workspace.getResource(ConnectionProviderProvider.class, "iso_pg_set_up_tables");
 
-        Statement stmt = null;
-        try {
-            stmt = conn.createStatement();
-            for ( String sql : new ISOMetadataStoreProvider().getDropStatements( prov.getDialect() ) ) {
-                try {
-                    stmt.executeUpdate( sql );
-                } catch ( Exception e ) {
-                    // TODO: handle exception
-                    System.out.println( e.getMessage() );
-                }
-            }
+		Statement stmt = null;
+		try {
+			stmt = conn.createStatement();
+			for (String sql : new ISOMetadataStoreProvider().getDropStatements(prov.getDialect())) {
+				try {
+					stmt.executeUpdate(sql);
+				}
+				catch (Exception e) {
+					// TODO: handle exception
+					System.out.println(e.getMessage());
+				}
+			}
 
-            for ( String sql : new ISOMetadataStoreProvider().getCreateStatements( prov.getDialect() ) ) {
-                stmt.execute( sql );
-            }
+			for (String sql : new ISOMetadataStoreProvider().getCreateStatements(prov.getDialect())) {
+				stmt.execute(sql);
+			}
 
-            conn.commit();
-        } finally {
-            if ( stmt != null ) {
-                stmt.close();
-            }
-        }
-    }
+			conn.commit();
+		}
+		finally {
+			if (stmt != null) {
+				stmt.close();
+			}
+		}
+	}
 
-    @After
-    public void tearDown()
-                            throws SQLException, UnsupportedEncodingException, IOException, MetadataStoreException {
-        if ( resultSet != null ) {
-            LOG.info( "------------------" );
-            LOG.info( "Tear down the test" );
-            LOG.info( "------------------" );
-            resultSet.close();
-        }
-        workspace.destroy();
-    }
+	@After
+	public void tearDown() throws SQLException, UnsupportedEncodingException, IOException, MetadataStoreException {
+		if (resultSet != null) {
+			LOG.info("------------------");
+			LOG.info("Tear down the test");
+			LOG.info("------------------");
+			resultSet.close();
+		}
+		workspace.destroy();
+	}
 
-    private void deleteFromTables( Connection conn )
-                            throws SQLException, UnsupportedEncodingException, IOException {
-        Statement stmt = null;
-        try {
-            stmt = conn.createStatement();
-            String sql = "DELETE from idxtb_main;";
-            stmt.executeUpdate( sql );
+	private void deleteFromTables(Connection conn) throws SQLException, UnsupportedEncodingException, IOException {
+		Statement stmt = null;
+		try {
+			stmt = conn.createStatement();
+			String sql = "DELETE from idxtb_main;";
+			stmt.executeUpdate(sql);
 
-        } finally {
-            if ( stmt != null ) {
-                stmt.close();
-            }
-        }
-    }
+		}
+		finally {
+			if (stmt != null) {
+				stmt.close();
+			}
+		}
+	}
 
-    protected void initStore( URL url ) {
-        if ( workspace.getResource( ConnectionProviderProvider.class, "iso_pg_set_up_tables" ) != null ) {
-            store = (ISOMetadataStore) activateFromUrl( workspace, MetadataStoreProvider.class, "id", url );
-        }
-    }
+	protected void initStore(URL url) {
+		if (workspace.getResource(ConnectionProviderProvider.class, "iso_pg_set_up_tables") != null) {
+			store = (ISOMetadataStore) activateFromUrl(workspace, MetadataStoreProvider.class, "id", url);
+		}
+	}
 
 }

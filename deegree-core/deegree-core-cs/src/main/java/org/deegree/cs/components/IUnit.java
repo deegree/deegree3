@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -39,57 +38,47 @@ import org.deegree.cs.CRSResource;
 
 /**
  * Interface describing a Unit
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public interface IUnit extends CRSResource {
 
-    /**
-     * Check if amount of the specified unit can be converted into amount of this unit.
-     * 
-     * @param other
-     * @return true if this unit can be converted into the other unit
-     */
-    boolean canConvert( final IUnit other );
+	/**
+	 * Check if amount of the specified unit can be converted into amount of this unit.
+	 * @param other
+	 * @return true if this unit can be converted into the other unit
+	 */
+	boolean canConvert(final IUnit other);
 
-    /**
-     * Convert a value in this unit to the given unit if possible.
-     * 
-     * @param value
-     *            to be converted
-     * @param targetUnit
-     *            to convert to
-     * @return the converted value or the same value if this unit equals given unit.
-     * @throws IllegalArgumentException
-     *             if no conversion can be applied.
-     */
-    double convert( final double value, final IUnit targetUnit );
+	/**
+	 * Convert a value in this unit to the given unit if possible.
+	 * @param value to be converted
+	 * @param targetUnit to convert to
+	 * @return the converted value or the same value if this unit equals given unit.
+	 * @throws IllegalArgumentException if no conversion can be applied.
+	 */
+	double convert(final double value, final IUnit targetUnit);
 
-    /**
-     * Convert a value in this unit to the base unit, e.g. degree->radians
-     * 
-     * @param value
-     *            to be converted
-     * @return the converted value or the same value if this unit is a base unit.
-     */
-    double toBaseUnits( final double value );
+	/**
+	 * Convert a value in this unit to the base unit, e.g. degree->radians
+	 * @param value to be converted
+	 * @return the converted value or the same value if this unit is a base unit.
+	 */
+	double toBaseUnits(final double value);
 
-    /**
-     * @return the scale to convert to the base unit.
-     */
-    double getScale();
+	/**
+	 * @return the scale to convert to the base unit.
+	 */
+	double getScale();
 
-    /**
-     * @return the base unit.
-     */
-    IUnit getBaseType();
+	/**
+	 * @return the base unit.
+	 */
+	IUnit getBaseType();
 
-    /**
-     * @return true if this is a base type
-     */
-    boolean isBaseType();
+	/**
+	 * @return true if this is a base type
+	 */
+	boolean isBaseType();
 
 }

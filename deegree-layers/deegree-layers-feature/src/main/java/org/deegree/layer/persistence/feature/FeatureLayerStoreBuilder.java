@@ -41,49 +41,49 @@ import org.slf4j.Logger;
 
 /**
  * This class is responsible for building feature layer stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class FeatureLayerStoreBuilder implements ResourceBuilder<LayerStore> {
 
-    private static final Logger LOG = getLogger( FeatureLayerStoreBuilder.class );
+	private static final Logger LOG = getLogger(FeatureLayerStoreBuilder.class);
 
-    private FeatureLayers config;
+	private FeatureLayers config;
 
-    private ResourceMetadata<LayerStore> metadata;
+	private ResourceMetadata<LayerStore> metadata;
 
-    private Workspace workspace;
+	private Workspace workspace;
 
-    public FeatureLayerStoreBuilder( FeatureLayers config, ResourceMetadata<LayerStore> metadata, Workspace workspace ) {
-        this.config = config;
-        this.metadata = metadata;
-        this.workspace = workspace;
-    }
+	public FeatureLayerStoreBuilder(FeatureLayers config, ResourceMetadata<LayerStore> metadata, Workspace workspace) {
+		this.config = config;
+		this.metadata = metadata;
+		this.workspace = workspace;
+	}
 
-    @Override
-    public LayerStore build() {
-        try {
-            if ( config.getAutoLayers() != null ) {
-                AutoFeatureLayerBuilder builder = new AutoFeatureLayerBuilder( workspace, metadata );
-                return builder.createInAutoMode( config.getAutoLayers() );
-            }
+	@Override
+	public LayerStore build() {
+		try {
+			if (config.getAutoLayers() != null) {
+				AutoFeatureLayerBuilder builder = new AutoFeatureLayerBuilder(workspace, metadata);
+				return builder.createInAutoMode(config.getAutoLayers());
+			}
 
-            LOG.debug( "Creating configured feature layers only." );
+			LOG.debug("Creating configured feature layers only.");
 
-            String id = config.getFeatureStoreId();
-            FeatureStore store = workspace.getResource( FeatureStoreProvider.class, id );
-            if ( store == null ) {
-                throw new ResourceInitException( "Feature layer config was invalid, feature store with id " + id
-                                                 + " is not available." );
-            }
+			String id = config.getFeatureStoreId();
+			FeatureStore store = workspace.getResource(FeatureStoreProvider.class, id);
+			if (store == null) {
+				throw new ResourceInitException(
+						"Feature layer config was invalid, feature store with id " + id + " is not available.");
+			}
 
-            ManualFeatureLayerBuilder builder = new ManualFeatureLayerBuilder( config, metadata, store, workspace );
-            return builder.buildFeatureLayers();
-        } catch ( Exception e ) {
-            throw new ResourceInitException( "Could not parse layer configuration file: " + e.getLocalizedMessage(), e );
-        }
-    }
+			ManualFeatureLayerBuilder builder = new ManualFeatureLayerBuilder(config, metadata, store, workspace);
+			return builder.buildFeatureLayers();
+		}
+		catch (Exception e) {
+			throw new ResourceInitException("Could not parse layer configuration file: " + e.getLocalizedMessage(), e);
+		}
+	}
 
 }

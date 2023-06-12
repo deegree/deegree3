@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -40,68 +39,68 @@ import javax.faces.component.UICommand;
 
 /**
  * <code>HtmlExternalLink</code> a link component ignoring the JSF navigation
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 @FacesComponent(value = "HtmlExternalLink")
 public class HtmlExternalLink extends UICommand {
 
-    public HtmlExternalLink() {
-        setRendererType( "org.deegree.ExternalLink" );
-    }
+	public HtmlExternalLink() {
+		setRendererType("org.deegree.ExternalLink");
+	}
 
-    private static enum AdditionalPropertyKeys {
-        href, onclick, style, styleClass, title, target
-    }
+	private static enum AdditionalPropertyKeys {
 
-    public void setHref( String href ) {
-        getStateHelper().put( AdditionalPropertyKeys.href, href );
-    }
+		href, onclick, style, styleClass, title, target
 
-    public String getHref() {
-        return (String) getStateHelper().eval( AdditionalPropertyKeys.href, "href" );
-    }
+	}
 
-    public void setTarget( String target ) {
-        getStateHelper().put( AdditionalPropertyKeys.target, target );
-    }
+	public void setHref(String href) {
+		getStateHelper().put(AdditionalPropertyKeys.href, href);
+	}
 
-    public String getTarget() {
-        return (String) getStateHelper().eval( AdditionalPropertyKeys.target, "target" );
-    }
+	public String getHref() {
+		return (String) getStateHelper().eval(AdditionalPropertyKeys.href, "href");
+	}
 
-    public void setTitle( String title ) {
-        getStateHelper().put( AdditionalPropertyKeys.title, title );
-    }
+	public void setTarget(String target) {
+		getStateHelper().put(AdditionalPropertyKeys.target, target);
+	}
 
-    public String getTitle() {
-        return (String) getStateHelper().eval( AdditionalPropertyKeys.title, null );
-    }
+	public String getTarget() {
+		return (String) getStateHelper().eval(AdditionalPropertyKeys.target, "target");
+	}
 
-    public void setStyleClass( String styleClass ) {
-        getStateHelper().put( AdditionalPropertyKeys.styleClass, styleClass );
-    }
+	public void setTitle(String title) {
+		getStateHelper().put(AdditionalPropertyKeys.title, title);
+	}
 
-    public String getStyleClass() {
-        return (String) getStateHelper().eval( AdditionalPropertyKeys.styleClass, "styleClass" );
-    }
+	public String getTitle() {
+		return (String) getStateHelper().eval(AdditionalPropertyKeys.title, null);
+	}
 
-    public void setStyle( String style ) {
-        getStateHelper().put( AdditionalPropertyKeys.style, style );
-    }
+	public void setStyleClass(String styleClass) {
+		getStateHelper().put(AdditionalPropertyKeys.styleClass, styleClass);
+	}
 
-    public String getStyle() {
-        return (String) getStateHelper().eval( AdditionalPropertyKeys.style, "style" );
-    }
+	public String getStyleClass() {
+		return (String) getStateHelper().eval(AdditionalPropertyKeys.styleClass, "styleClass");
+	}
 
-    public void setOnclick( String onclick ) {
-        getStateHelper().put( AdditionalPropertyKeys.onclick, onclick );
-    }
+	public void setStyle(String style) {
+		getStateHelper().put(AdditionalPropertyKeys.style, style);
+	}
 
-    public String getOnclick() {
-        return (String) getStateHelper().eval( AdditionalPropertyKeys.onclick, null );
-    }
+	public String getStyle() {
+		return (String) getStateHelper().eval(AdditionalPropertyKeys.style, "style");
+	}
+
+	public void setOnclick(String onclick) {
+		getStateHelper().put(AdditionalPropertyKeys.onclick, onclick);
+	}
+
+	public String getOnclick() {
+		return (String) getStateHelper().eval(AdditionalPropertyKeys.onclick, null);
+	}
+
 }

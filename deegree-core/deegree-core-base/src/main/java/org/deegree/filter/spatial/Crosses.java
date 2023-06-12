@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -39,55 +38,62 @@ import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.geometry.Geometry;
 
 /**
- * TODO add documentation here
- * 
+ * If a geometry is spatially crossing in an other geometry.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * 
- * @version $Revision:$, $Date:$
  */
 public class Crosses extends SpatialOperator {
 
-    private final Geometry geometry;
+	/**
+	 * @param param1 geometry to compare to, can be <code>null</code> (use default
+	 * geometry)
+	 * @param param2 geometry argument for testing, never <code>null</code>
+	 */
+	public Crosses(Expression param1, Geometry param2) {
+		super(param1, param2);
+	}
 
-    public Crosses( Expression propName, Geometry geometry ) {
-        super( propName );
-        this.geometry = geometry;
-    }
+	/**
+	 * @param param1 geometry to compare to, can be <code>null</code> (use default
+	 * geometry)
+	 * @param param2 value reference argument for testing, never <code>null</code>
+	 */
+	public Crosses(Expression param1, ValueReference param2) {
+		super(param1, param2);
+	}
 
-    @Override
-    public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
-                            throws FilterEvaluationException {
-        for ( TypedObjectNode paramValue : propName.evaluate( obj, xpathEvaluator ) ) {
-            Geometry geom = checkGeometryOrNull( paramValue );
-            if ( geom != null ) {
-                Geometry transformedLiteral = getCompatibleGeometry( geom, geometry );
-                return geom.crosses( transformedLiteral );
-            }
-        }
-        return false;
-    }
+	@Override
+	public <T> boolean evaluate(T obj, XPathEvaluator<T> xpathEvaluator) throws FilterEvaluationException {
+		for (TypedObjectNode paramValue : param1.evaluate(obj, xpathEvaluator)) {
+			Geometry geom = checkGeometryOrNull(paramValue);
+			if (geom != null) {
+				Geometry transformedLiteral = getCompatibleGeometry(geom, param2AsGeometry);
+				return geom.crosses(transformedLiteral);
+			}
+		}
+		return false;
+	}
 
-    /**
-     * @return the geometry
-     */
-    public Geometry getGeometry() {
-        return geometry;
-    }
+	@Override
+	public String toString(String indent) {
+		String s = indent + "-Within\n";
+		s += indent + param1 + "\n";
+		if (param2AsGeometry != null)
+			s += indent + param2AsGeometry;
+		if (param2AsValueReference != null)
+			s += indent + param2AsValueReference;
+		return s;
+	}
 
-    @Override
-    public String toString( String indent ) {
-        String s = indent + "-Within\n";
-        s += indent + propName + "\n";
-        s += indent + geometry;
-        return s;
-    }
+	@Override
+	public Object[] getParams() {
+		if (param2AsValueReference != null)
+			return new Object[] { param1, param2AsValueReference };
+		return new Object[] { param1, param2AsGeometry };
+	}
 
-    @Override
-    public Object[] getParams() {
-        return new Object[] { propName, geometry };
-    }
 }

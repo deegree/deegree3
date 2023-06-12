@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2009 by:
@@ -45,44 +44,42 @@ import java.nio.ByteBuffer;
 import org.slf4j.Logger;
 
 /**
- * The <code>ByteBufferPool</code> will be the central place for buffering byte buffers used for rasters. Currently only
- * new byte buffers are created, no pooling is done.
- * 
+ * The <code>ByteBufferPool</code> will be the central place for buffering byte buffers
+ * used for rasters. Currently only new byte buffers are created, no pooling is done.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class ByteBufferPool {
-    private static final Logger LOG = getLogger( ByteBufferPool.class );
 
-    /**
-     * Frees up raster memory and than allocates the ByteBuffer.
-     * 
-     * @param size
-     * @param direct
-     * @param forCache
-     * @return an allocated byte buffer of the given size.
-     */
-    public static ByteBuffer allocate( int size, boolean direct, boolean forCache ) {
-        if ( forCache ) {
-            LOG.debug( "Requested{}memory: {} MB", ( forCache ? " cache " : " " ), ( size / ( 1024 * 1024d ) ) );
-            RasterCache.freeMemory( size );
-        }
-        if ( direct ) {
-            return ByteBuffer.allocateDirect( size );
-        }
+	private static final Logger LOG = getLogger(ByteBufferPool.class);
 
-        return ByteBuffer.allocate( size );
-    }
+	/**
+	 * Frees up raster memory and than allocates the ByteBuffer.
+	 * @param size
+	 * @param direct
+	 * @param forCache
+	 * @return an allocated byte buffer of the given size.
+	 */
+	public static ByteBuffer allocate(int size, boolean direct, boolean forCache) {
+		if (forCache) {
+			LOG.debug("Requested{}memory: {} MB", (forCache ? " cache " : " "), (size / (1024 * 1024d)));
+			RasterCache.freeMemory(size);
+		}
+		if (direct) {
+			return ByteBuffer.allocateDirect(size);
+		}
 
-    /**
-     * @param size
-     * @param directAllocation
-     *            if the allocation should be direct
-     * @return the newly created ByteBuffer.
-     */
-    public static ByteBuffer allocate( int size, boolean directAllocation ) {
-        return allocate( size, directAllocation, false );
-    }
+		return ByteBuffer.allocate(size);
+	}
+
+	/**
+	 * @param size
+	 * @param directAllocation if the allocation should be direct
+	 * @return the newly created ByteBuffer.
+	 */
+	public static ByteBuffer allocate(int size, boolean directAllocation) {
+		return allocate(size, directAllocation, false);
+	}
+
 }

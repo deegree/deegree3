@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2008 by:
@@ -53,127 +52,119 @@ import org.junit.Test;
 
 /**
  * Tests for {@link GetPropertyValueXMLAdapter}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class GetPropertyValueXMLAdapterTest {
 
-    @Test
-    public void test200Example2()
-                            throws Exception {
-        GetPropertyValueXMLAdapter parser = new GetPropertyValueXMLAdapter();
-        parser.load( GetPropertyValueXMLAdapterTest.class.getResource( "wfs200/example2.xml" ) );
-        GetPropertyValue request = parser.parse();
-        assertEquals( VERSION_200, request.getVersion() );
-        assertEquals( "myns:location", request.getValueReference().getAsText() );
-        assertNull( request.getPresentationParams().getStartIndex() );
-        assertNull( request.getPresentationParams().getCount() );
-        assertEquals( "application/xml; subtype=gml/3.2", request.getPresentationParams().getOutputFormat() );
-        assertEquals( ResolveMode.LOCAL, request.getResolveParams().getMode() );
-        assertEquals( "*", request.getResolveParams().getDepth() );
-        assertEquals( null, request.getResolveParams().getTimeout() );
-        FilterQuery query = (FilterQuery) request.getQuery();
-        OperatorFilter filter = (OperatorFilter) query.getFilter();
-        Assert.assertTrue( filter.getOperator() instanceof And );
-    }
+	@Test
+	public void test200Example2() throws Exception {
+		GetPropertyValueXMLAdapter parser = new GetPropertyValueXMLAdapter();
+		parser.load(GetPropertyValueXMLAdapterTest.class.getResource("wfs200/example2.xml"));
+		GetPropertyValue request = parser.parse();
+		assertEquals(VERSION_200, request.getVersion());
+		assertEquals("myns:location", request.getValueReference().getAsText());
+		assertNull(request.getPresentationParams().getStartIndex());
+		assertNull(request.getPresentationParams().getCount());
+		assertEquals("application/xml; subtype=gml/3.2", request.getPresentationParams().getOutputFormat());
+		assertEquals(ResolveMode.LOCAL, request.getResolveParams().getMode());
+		assertEquals("*", request.getResolveParams().getDepth());
+		assertEquals(null, request.getResolveParams().getTimeout());
+		FilterQuery query = (FilterQuery) request.getQuery();
+		OperatorFilter filter = (OperatorFilter) query.getFilter();
+		Assert.assertTrue(filter.getOperator() instanceof And);
+	}
 
-    @Test
-    public void test200Example4()
-                            throws Exception {
-        GetPropertyValueXMLAdapter parser = new GetPropertyValueXMLAdapter();
-        parser.load( GetPropertyValueXMLAdapterTest.class.getResource( "wfs200/example4.xml" ) );
-        GetPropertyValue request = parser.parse();
-        assertEquals( VERSION_200, request.getVersion() );
-        assertEquals( "valueOf(myns:livesIn)/valueOf(myns:frontsOn)/abc:numLanes",
-                      request.getValueReference().getAsText() );
-        assertNull( request.getPresentationParams().getStartIndex() );
-        assertNull( request.getPresentationParams().getCount() );
-        assertEquals( "application/xml; subtype=gml/3.2", request.getPresentationParams().getOutputFormat() );
-        assertNull( request.getResolveParams().getMode() );
-        assertNull( request.getResolveParams().getDepth() );
-        assertNull( request.getResolveParams().getTimeout() );
-        FilterQuery query = (FilterQuery) request.getQuery();
-        OperatorFilter filter = (OperatorFilter) query.getFilter();
-        Assert.assertTrue( filter.getOperator() instanceof And );
-    }
+	@Test
+	public void test200Example4() throws Exception {
+		GetPropertyValueXMLAdapter parser = new GetPropertyValueXMLAdapter();
+		parser.load(GetPropertyValueXMLAdapterTest.class.getResource("wfs200/example4.xml"));
+		GetPropertyValue request = parser.parse();
+		assertEquals(VERSION_200, request.getVersion());
+		assertEquals("valueOf(myns:livesIn)/valueOf(myns:frontsOn)/abc:numLanes",
+				request.getValueReference().getAsText());
+		assertNull(request.getPresentationParams().getStartIndex());
+		assertNull(request.getPresentationParams().getCount());
+		assertEquals("application/xml; subtype=gml/3.2", request.getPresentationParams().getOutputFormat());
+		assertNull(request.getResolveParams().getMode());
+		assertNull(request.getResolveParams().getDepth());
+		assertNull(request.getResolveParams().getTimeout());
+		FilterQuery query = (FilterQuery) request.getQuery();
+		OperatorFilter filter = (OperatorFilter) query.getFilter();
+		Assert.assertTrue(filter.getOperator() instanceof And);
+	}
 
-    @Test
-    public void test200Example6()
-                            throws Exception {
-        GetPropertyValueXMLAdapter parser = new GetPropertyValueXMLAdapter();
-        parser.load( GetPropertyValueXMLAdapterTest.class.getResource( "wfs200/example6.xml" ) );
-        GetPropertyValue request = parser.parse();
-        assertEquals( VERSION_200, request.getVersion() );
-        assertEquals( "valueOf(myns:livesIn)/valueof(myns:mailAddress)/myns:postalCode",
-                      request.getValueReference().getAsText() );
-        assertNull( request.getPresentationParams().getStartIndex() );
-        assertNull( request.getPresentationParams().getCount() );
-        assertEquals( "application/xml; subtype=gml/3.2", request.getPresentationParams().getOutputFormat() );
-        assertNull( request.getResolveParams().getMode() );
-        assertNull( request.getResolveParams().getDepth() );
-        assertNull( request.getResolveParams().getTimeout() );
-        FilterQuery query = (FilterQuery) request.getQuery();
-        OperatorFilter filter = (OperatorFilter) query.getFilter();
-        Assert.assertTrue( filter.getOperator() instanceof And );
-    }
+	@Test
+	public void test200Example6() throws Exception {
+		GetPropertyValueXMLAdapter parser = new GetPropertyValueXMLAdapter();
+		parser.load(GetPropertyValueXMLAdapterTest.class.getResource("wfs200/example6.xml"));
+		GetPropertyValue request = parser.parse();
+		assertEquals(VERSION_200, request.getVersion());
+		assertEquals("valueOf(myns:livesIn)/valueof(myns:mailAddress)/myns:postalCode",
+				request.getValueReference().getAsText());
+		assertNull(request.getPresentationParams().getStartIndex());
+		assertNull(request.getPresentationParams().getCount());
+		assertEquals("application/xml; subtype=gml/3.2", request.getPresentationParams().getOutputFormat());
+		assertNull(request.getResolveParams().getMode());
+		assertNull(request.getResolveParams().getDepth());
+		assertNull(request.getResolveParams().getTimeout());
+		FilterQuery query = (FilterQuery) request.getQuery();
+		OperatorFilter filter = (OperatorFilter) query.getFilter();
+		Assert.assertTrue(filter.getOperator() instanceof And);
+	}
 
-    @Test
-    public void test200Example7()
-                            throws Exception {
-        GetPropertyValueXMLAdapter parser = new GetPropertyValueXMLAdapter();
-        parser.load( GetPropertyValueXMLAdapterTest.class.getResource( "wfs200/example7.xml" ) );
-        GetPropertyValue request = parser.parse();
-        assertEquals( VERSION_200, request.getVersion() );
-        assertEquals( "myns:age", request.getValueReference().getAsText() );
-        assertNull( request.getPresentationParams().getStartIndex() );
-        assertNull( request.getPresentationParams().getCount() );
-        assertEquals( "application/xml; subtype=gml/3.2", request.getPresentationParams().getOutputFormat() );
-        assertNull( request.getResolveParams().getMode() );
-        assertNull( request.getResolveParams().getDepth() );
-        assertNull( request.getResolveParams().getTimeout() );
-        FilterQuery query = (FilterQuery) request.getQuery();
-        OperatorFilter filter = (OperatorFilter) query.getFilter();
-        Assert.assertTrue( filter.getOperator() instanceof And );
-    }
+	@Test
+	public void test200Example7() throws Exception {
+		GetPropertyValueXMLAdapter parser = new GetPropertyValueXMLAdapter();
+		parser.load(GetPropertyValueXMLAdapterTest.class.getResource("wfs200/example7.xml"));
+		GetPropertyValue request = parser.parse();
+		assertEquals(VERSION_200, request.getVersion());
+		assertEquals("myns:age", request.getValueReference().getAsText());
+		assertNull(request.getPresentationParams().getStartIndex());
+		assertNull(request.getPresentationParams().getCount());
+		assertEquals("application/xml; subtype=gml/3.2", request.getPresentationParams().getOutputFormat());
+		assertNull(request.getResolveParams().getMode());
+		assertNull(request.getResolveParams().getDepth());
+		assertNull(request.getResolveParams().getTimeout());
+		FilterQuery query = (FilterQuery) request.getQuery();
+		OperatorFilter filter = (OperatorFilter) query.getFilter();
+		Assert.assertTrue(filter.getOperator() instanceof And);
+	}
 
-    @Test
-    public void test200Example8()
-                            throws Exception {
-        GetPropertyValueXMLAdapter parser = new GetPropertyValueXMLAdapter();
-        parser.load( GetPropertyValueXMLAdapterTest.class.getResource( "wfs200/example8.xml" ) );
-        GetPropertyValue request = parser.parse();
-        assertEquals( VERSION_200, request.getVersion() );
-        assertEquals( "myns:phone", request.getValueReference().getAsText() );
-        assertNull( request.getPresentationParams().getStartIndex() );
-        assertNull( request.getPresentationParams().getCount() );
-        assertEquals( "application/xml; subtype=gml/3.2", request.getPresentationParams().getOutputFormat() );
-        assertNull( request.getResolveParams().getMode() );
-        assertNull( request.getResolveParams().getDepth() );
-        assertNull( request.getResolveParams().getTimeout() );
-        FilterQuery query = (FilterQuery) request.getQuery();
-        OperatorFilter filter = (OperatorFilter) query.getFilter();
-        Assert.assertTrue( filter.getOperator() instanceof And );
-    }
+	@Test
+	public void test200Example8() throws Exception {
+		GetPropertyValueXMLAdapter parser = new GetPropertyValueXMLAdapter();
+		parser.load(GetPropertyValueXMLAdapterTest.class.getResource("wfs200/example8.xml"));
+		GetPropertyValue request = parser.parse();
+		assertEquals(VERSION_200, request.getVersion());
+		assertEquals("myns:phone", request.getValueReference().getAsText());
+		assertNull(request.getPresentationParams().getStartIndex());
+		assertNull(request.getPresentationParams().getCount());
+		assertEquals("application/xml; subtype=gml/3.2", request.getPresentationParams().getOutputFormat());
+		assertNull(request.getResolveParams().getMode());
+		assertNull(request.getResolveParams().getDepth());
+		assertNull(request.getResolveParams().getTimeout());
+		FilterQuery query = (FilterQuery) request.getQuery();
+		OperatorFilter filter = (OperatorFilter) query.getFilter();
+		Assert.assertTrue(filter.getOperator() instanceof And);
+	}
 
-    @Test
-    public void test200Example9()
-                            throws Exception {
-        GetPropertyValueXMLAdapter parser = new GetPropertyValueXMLAdapter();
-        parser.load( GetPropertyValueXMLAdapterTest.class.getResource( "wfs200/example9.xml" ) );
-        GetPropertyValue request = parser.parse();
-        assertEquals( VERSION_200, request.getVersion() );
-        assertEquals( "myns:phone[2]", request.getValueReference().getAsText() );
-        assertNull( request.getPresentationParams().getStartIndex() );
-        assertNull( request.getPresentationParams().getCount() );
-        assertEquals( "application/xml; subtype=gml/3.2", request.getPresentationParams().getOutputFormat() );
-        assertNull( request.getResolveParams().getMode() );
-        assertNull( request.getResolveParams().getDepth() );
-        assertNull( request.getResolveParams().getTimeout() );
-        FilterQuery query = (FilterQuery) request.getQuery();
-        OperatorFilter filter = (OperatorFilter) query.getFilter();
-        Assert.assertTrue( filter.getOperator() instanceof And );
-    }
+	@Test
+	public void test200Example9() throws Exception {
+		GetPropertyValueXMLAdapter parser = new GetPropertyValueXMLAdapter();
+		parser.load(GetPropertyValueXMLAdapterTest.class.getResource("wfs200/example9.xml"));
+		GetPropertyValue request = parser.parse();
+		assertEquals(VERSION_200, request.getVersion());
+		assertEquals("myns:phone[2]", request.getValueReference().getAsText());
+		assertNull(request.getPresentationParams().getStartIndex());
+		assertNull(request.getPresentationParams().getCount());
+		assertEquals("application/xml; subtype=gml/3.2", request.getPresentationParams().getOutputFormat());
+		assertNull(request.getResolveParams().getMode());
+		assertNull(request.getResolveParams().getDepth());
+		assertNull(request.getResolveParams().getTimeout());
+		FilterQuery query = (FilterQuery) request.getQuery();
+		OperatorFilter filter = (OperatorFilter) query.getFilter();
+		Assert.assertTrue(filter.getOperator() instanceof And);
+	}
+
 }

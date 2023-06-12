@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -54,154 +53,151 @@ import org.deegree.client.core.utils.MessageUtils;
 import org.deegree.client.core.utils.RendererUtils;
 
 /**
- * Render a {@link HtmlInputMultiple} 
- * 
+ * Render a {@link HtmlInputMultiple}
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 @FacesRenderer(componentFamily = "javax.faces.Input", rendererType = "org.deegree.InputMultiple")
 public class InputMultipleRenderer extends Renderer {
 
-    private static final String ADD_EVENT = "AddItem";
+	private static final String ADD_EVENT = "AddItem";
 
-    private static final String DELETE_EVENT = "DeleteItem";
+	private static final String DELETE_EVENT = "DeleteItem";
 
-    private static final String INDEX_PARAM = "index";
+	private static final String INDEX_PARAM = "index";
 
-    @Override
-    public void decode( FacesContext context, UIComponent component ) {
-        ExternalContext external = context.getExternalContext();
-        Map<String, String> params = external.getRequestParameterMap();
-        String behaviorEvent = params.get( "javax.faces.behavior.event" );
+	@Override
+	public void decode(FacesContext context, UIComponent component) {
+		ExternalContext external = context.getExternalContext();
+		Map<String, String> params = external.getRequestParameterMap();
+		String behaviorEvent = params.get("javax.faces.behavior.event");
 
-        HtmlInputMultiple multiple = (HtmlInputMultiple) component;
+		HtmlInputMultiple multiple = (HtmlInputMultiple) component;
 
-        if ( ADD_EVENT.equals( behaviorEvent ) ) {
-            List<Object> value = (List<Object>) multiple.getValue();
-            value.add( null );
-            multiple.setSubmittedValue( value );
-        } else if ( DELETE_EVENT.equals( behaviorEvent ) ) {
-            if ( params.containsKey( INDEX_PARAM ) ) {
-                int index = Integer.parseInt( params.get( INDEX_PARAM ) );
-                List<Object> value = (List<Object>) multiple.getValue();
-                value.remove( index );
-                multiple.setSubmittedValue( value );
-            }
-        } else {
-            System.out.println( "save values!" );
-        }
-    }
+		if (ADD_EVENT.equals(behaviorEvent)) {
+			List<Object> value = (List<Object>) multiple.getValue();
+			value.add(null);
+			multiple.setSubmittedValue(value);
+		}
+		else if (DELETE_EVENT.equals(behaviorEvent)) {
+			if (params.containsKey(INDEX_PARAM)) {
+				int index = Integer.parseInt(params.get(INDEX_PARAM));
+				List<Object> value = (List<Object>) multiple.getValue();
+				value.remove(index);
+				multiple.setSubmittedValue(value);
+			}
+		}
+		else {
+			System.out.println("save values!");
+		}
+	}
 
-    @Override
-    public void encodeBegin( FacesContext context, UIComponent component )
-                            throws IOException {
-        ResponseWriter writer = context.getResponseWriter();
-        String clientId = component.getClientId();
-        HtmlInputMultiple multiple = (HtmlInputMultiple) component;
+	@Override
+	public void encodeBegin(FacesContext context, UIComponent component) throws IOException {
+		ResponseWriter writer = context.getResponseWriter();
+		String clientId = component.getClientId();
+		HtmlInputMultiple multiple = (HtmlInputMultiple) component;
 
-        writer.startElement( "div", component );
-        writer.writeAttribute( "name", clientId, "clientId" );
-        writer.writeAttribute( "id", clientId, "clientId" );
+		writer.startElement("div", component);
+		writer.writeAttribute("name", clientId, "clientId");
+		writer.writeAttribute("id", clientId, "clientId");
 
-        writer.startElement( "input", component );
-        writer.writeAttribute( "name", clientId, "clientId" );
-        writer.writeAttribute( "type", "hidden", null );
-        writer.endElement( "input" );
+		writer.startElement("input", component);
+		writer.writeAttribute("name", clientId, "clientId");
+		writer.writeAttribute("type", "hidden", null);
+		writer.endElement("input");
 
-        writer.startElement( "div", component );
-        String styleClass = multiple.getStyleClass();
-        if ( styleClass == null ) {
-            styleClass = "multipleComponent";
-        } else {
-            styleClass += " multipleComponent";
-        }
-        writer.writeAttribute( "class", styleClass, "styleClass" );
+		writer.startElement("div", component);
+		String styleClass = multiple.getStyleClass();
+		if (styleClass == null) {
+			styleClass = "multipleComponent";
+		}
+		else {
+			styleClass += " multipleComponent";
+		}
+		writer.writeAttribute("class", styleClass, "styleClass");
 
-        String style = multiple.getStyle();
-        if ( style != null ) {
-            writer.writeAttribute( "style", style, "style" );
-        }
+		String style = multiple.getStyle();
+		if (style != null) {
+			writer.writeAttribute("style", style, "style");
+		}
 
-        renderChilds( context, writer, multiple );
-    }
+		renderChilds(context, writer, multiple);
+	}
 
-    private void renderChilds( FacesContext context, ResponseWriter writer, HtmlInputMultiple multiple )
-                            throws IOException {
-        List<Object> list = multiple.getValue();
-        for ( Object v : list ) {
-            int index = list.indexOf( v );
-            boolean collapsed = multiple.isCollapsed( index );
-            writer.startElement( "div", null );
+	private void renderChilds(FacesContext context, ResponseWriter writer, HtmlInputMultiple multiple)
+			throws IOException {
+		List<Object> list = multiple.getValue();
+		for (Object v : list) {
+			int index = list.indexOf(v);
+			boolean collapsed = multiple.isCollapsed(index);
+			writer.startElement("div", null);
 
-            // min /max /close
-            writer.startElement( "div", null );
-            writer.writeAttribute( "class", "menu", null );
-            if ( collapsed ) {
-                String js = "javascript:toggle(this, " + index + "); return false;";
-                RendererUtils.writeClickImage( context, writer, "max", "deegree", "images/page_max.gif", js );
-            } else {
-                String js = "javascript:toggle(this, " + index + "); return false;";
-                RendererUtils.writeClickImage( context, writer, "min", "deegree", "images/page_min.gif", js );
-            }
-            RendererUtils.writeClickImage( context, writer, "close", "deegree", "images/page_close.gif",
-                                           getDeleteBehaviour( writer, multiple.getClientId(), index ) );
-            writer.endElement( "div" );
+			// min /max /close
+			writer.startElement("div", null);
+			writer.writeAttribute("class", "menu", null);
+			if (collapsed) {
+				String js = "javascript:toggle(this, " + index + "); return false;";
+				RendererUtils.writeClickImage(context, writer, "max", "deegree", "images/page_max.gif", js);
+			}
+			else {
+				String js = "javascript:toggle(this, " + index + "); return false;";
+				RendererUtils.writeClickImage(context, writer, "min", "deegree", "images/page_min.gif", js);
+			}
+			RendererUtils.writeClickImage(context, writer, "close", "deegree", "images/page_close.gif",
+					getDeleteBehaviour(writer, multiple.getClientId(), index));
+			writer.endElement("div");
 
-            writer.startElement( "div", null );
-            writer.writeAttribute( "style", "display:" + ( collapsed ? "none;" : "inline;" ), null );
-            UIInput input = multiple.getInputInstance();
-            input.setId( createChildId( multiple.getId(), index ) );
-            input.setValue( v );
-            input.encodeAll( context );
-            writer.endElement( "div" );
+			writer.startElement("div", null);
+			writer.writeAttribute("style", "display:" + (collapsed ? "none;" : "inline;"), null);
+			UIInput input = multiple.getInputInstance();
+			input.setId(createChildId(multiple.getId(), index));
+			input.setValue(v);
+			input.encodeAll(context);
+			writer.endElement("div");
 
-            writer.startElement( "br", null );
-            writer.endElement( "br" );
-            writer.endElement( "div" );
-        }
-    }
+			writer.startElement("br", null);
+			writer.endElement("br");
+			writer.endElement("div");
+		}
+	}
 
-    private String createChildId( String id, int index ) {
-        return id + "_" + index;
-    }
+	private String createChildId(String id, int index) {
+		return id + "_" + index;
+	}
 
-    @Override
-    public void encodeEnd( FacesContext context, UIComponent component )
-                            throws IOException {
-        ResponseWriter writer = context.getResponseWriter();
-        writer.endElement( "div" );
+	@Override
+	public void encodeEnd(FacesContext context, UIComponent component) throws IOException {
+		ResponseWriter writer = context.getResponseWriter();
+		writer.endElement("div");
 
-        writer.startElement( "div", null );
-        writer.writeAttribute( "class", "add", null );
-        RendererUtils.writeClickImage( context, writer, "add", "deegree", "images/add.png",
-                                       getAddBehaviour( context, writer, component.getClientId() ) );
-        writer.endElement( "div" );
-        writer.endElement( "div" );
-    }
+		writer.startElement("div", null);
+		writer.writeAttribute("class", "add", null);
+		RendererUtils.writeClickImage(context, writer, "add", "deegree", "images/add.png",
+				getAddBehaviour(context, writer, component.getClientId()));
+		writer.endElement("div");
+		writer.endElement("div");
+	}
 
-    private String getDeleteBehaviour( ResponseWriter writer, String clientId, int index )
-                            throws IOException {
-        Map<String, String> options = new HashMap<String, String>();
-        options.put( "javax.faces.behavior.event", DELETE_EVENT );
-        options.put( "execute", clientId );
-        options.put( "render", clientId );
-        options.put( INDEX_PARAM, "" + index );
+	private String getDeleteBehaviour(ResponseWriter writer, String clientId, int index) throws IOException {
+		Map<String, String> options = new HashMap<String, String>();
+		options.put("javax.faces.behavior.event", DELETE_EVENT);
+		options.put("execute", clientId);
+		options.put("render", clientId);
+		options.put(INDEX_PARAM, "" + index);
 
-        String msg = MessageUtils.getResourceText( null,
-                                                   "org.deegree.client.core.renderer.InputMultipleRenderer.CONFIRM_MSG" );
-        return "javascript:confirmDelete('" + msg + "');" + JavaScriptUtils.getAjaxRequest( options, clientId )
-               + " return false;";
-    }
+		String msg = MessageUtils.getResourceText(null,
+				"org.deegree.client.core.renderer.InputMultipleRenderer.CONFIRM_MSG");
+		return "javascript:confirmDelete('" + msg + "');" + JavaScriptUtils.getAjaxRequest(options, clientId)
+				+ " return false;";
+	}
 
-    private String getAddBehaviour( FacesContext context, ResponseWriter writer, String clientId )
-                            throws IOException {
-        Map<String, String> options = new HashMap<String, String>();
-        options.put( "javax.faces.behavior.event", ADD_EVENT );
-        options.put( "execute", clientId );
-        options.put( "render", clientId );
-        return JavaScriptUtils.getAjaxRequest( options, clientId ) + " return false;";
-    }
+	private String getAddBehaviour(FacesContext context, ResponseWriter writer, String clientId) throws IOException {
+		Map<String, String> options = new HashMap<String, String>();
+		options.put("javax.faces.behavior.event", ADD_EVENT);
+		options.put("execute", clientId);
+		options.put("render", clientId);
+		return JavaScriptUtils.getAjaxRequest(options, clientId) + " return false;";
+	}
 
 }

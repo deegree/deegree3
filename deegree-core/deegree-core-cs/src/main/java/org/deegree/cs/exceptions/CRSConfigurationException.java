@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -37,50 +36,44 @@
 package org.deegree.cs.exceptions;
 
 /**
- * The <code>CRSConfigurationException</code> can be used to inform the user of an configuration exception. Because the
- * Configuration cannot recover from this error, it is a subclass of RuntimeException, as described in
- * http://java.sun.com/docs/books/tutorial/essential/exceptions/runtime.html (last ref: 02.01.2008).
- * 
+ * The <code>CRSConfigurationException</code> can be used to inform the user of an
+ * configuration exception. Because the Configuration cannot recover from this error, it
+ * is a subclass of RuntimeException, as described in
+ * http://java.sun.com/docs/books/tutorial/essential/exceptions/runtime.html (last ref:
+ * 02.01.2008).
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 
 public class CRSConfigurationException extends RuntimeException {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 2531439320900413725L;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 2531439320900413725L;
 
-    /**
-     * @param message
-     *            which describes the exception.
-     * 
-     */
-    public CRSConfigurationException( String message ) {
-        super( message );
-    }
+	/**
+	 * @param message which describes the exception.
+	 *
+	 */
+	public CRSConfigurationException(String message) {
+		super(message);
+	}
 
-    /**
-     * @param message
-     *            another message.
-     * @param e
-     *            which caused this CRSConfigurationException
-     */
-    public CRSConfigurationException( String message, Exception e ) {
-        super( message, e );
-    }
+	/**
+	 * @param message another message.
+	 * @param e which caused this CRSConfigurationException
+	 */
+	public CRSConfigurationException(String message, Exception e) {
+		super(message, e);
+	}
 
-    /**
-     * @param e
-     *            cause of this CRSConfigurationException
-     */
-    public CRSConfigurationException( Exception e ) {
-        super( e );
-    }
+	/**
+	 * @param e cause of this CRSConfigurationException
+	 */
+	public CRSConfigurationException(Exception e) {
+		super(e);
+	}
 
 }

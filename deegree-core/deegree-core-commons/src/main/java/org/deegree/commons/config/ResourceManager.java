@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -40,90 +39,81 @@ import java.io.InputStream;
 import org.deegree.commons.config.ResourceState.StateType;
 
 /**
- * Responsible for managing and creating a specific type of {@link Resource}s from configuration documents.
- * 
+ * Responsible for managing and creating a specific type of {@link Resource}s from
+ * configuration documents.
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface ResourceManager {
 
-    /**
-     * Is called upon workspace startup.
-     */
-    public void startup( DeegreeWorkspace workspace )
-                            throws ResourceInitException;
+	/**
+	 * Is called upon workspace startup.
+	 */
+	public void startup(DeegreeWorkspace workspace) throws ResourceInitException;
 
-    /**
-     * Is called upon workspace shutdown.
-     */
-    public void shutdown();
+	/**
+	 * Is called upon workspace shutdown.
+	 */
+	public void shutdown();
 
-    /**
-     * @return an empty array if there are no dependencies
-     */
-    public Class<? extends ResourceManager>[] getDependencies();
+	/**
+	 * @return an empty array if there are no dependencies
+	 */
+	public Class<? extends ResourceManager>[] getDependencies();
 
-    /**
-     * @return a metadata object, may be null
-     */
-    public ResourceManagerMetadata getMetadata();
+	/**
+	 * @return a metadata object, may be null
+	 */
+	public ResourceManagerMetadata getMetadata();
 
-    /**
-     * Returns the state of all resources.
-     * 
-     * @return the states, never <code>null</code>
-     */
-    public ResourceState<?>[] getStates();
+	/**
+	 * Returns the state of all resources.
+	 * @return the states, never <code>null</code>
+	 */
+	public ResourceState<?>[] getStates();
 
-    /**
-     * Returns the state of the resource.
-     * 
-     * @param id
-     *            resource identifier, must not be <code>null</code>
-     * @return the state or <code>null</code> (if the specified resource does not exist)
-     */
-    public ResourceState<?> getState( String id );
+	/**
+	 * Returns the state of the resource.
+	 * @param id resource identifier, must not be <code>null</code>
+	 * @return the state or <code>null</code> (if the specified resource does not exist)
+	 */
+	public ResourceState<?> getState(String id);
 
-    /**
-     * Activates the resource with the given identifier.
-     * 
-     * @param id
-     *            resource identifier, must not be <code>null</code>
-     * @return resource state after activation (may be unsuccessful), but never <code>null</code>
-     */
-    public ResourceState<?> activate( String id );
+	/**
+	 * Activates the resource with the given identifier.
+	 * @param id resource identifier, must not be <code>null</code>
+	 * @return resource state after activation (may be unsuccessful), but never
+	 * <code>null</code>
+	 */
+	public ResourceState<?> activate(String id);
 
-    /**
-     * Deactivates the resource with the given identifier.
-     * 
-     * @param id
-     *            resource identifier, must not be <code>null</code>
-     * @return resource state after deactivation (may be unsuccessful), but never <code>null</code>
-     */
-    public ResourceState<?> deactivate( String id );
+	/**
+	 * Deactivates the resource with the given identifier.
+	 * @param id resource identifier, must not be <code>null</code>
+	 * @return resource state after deactivation (may be unsuccessful), but never
+	 * <code>null</code>
+	 */
+	public ResourceState<?> deactivate(String id);
 
-    /**
-     * Creates a new {@link Resource} (which is initially in state {@link StateType#deactivated}).
-     * 
-     * @param id
-     *            resource identifier, must not be <code>null</code>
-     * @param config
-     *            provides the configuration file content, must not be <code>null</code>
-     * @return resource state after creation ({@link StateType#deactivated}), never <code>null</code>
-     * @throws IllegalArgumentException
-     *             if a resource with the specified identifier already exists
-     */
-    public ResourceState<?> createResource( String id, InputStream config )
-                            throws IllegalArgumentException;
+	/**
+	 * Creates a new {@link Resource} (which is initially in state
+	 * {@link StateType#deactivated}).
+	 * @param id resource identifier, must not be <code>null</code>
+	 * @param config provides the configuration file content, must not be
+	 * <code>null</code>
+	 * @return resource state after creation ({@link StateType#deactivated}), never
+	 * <code>null</code>
+	 * @throws IllegalArgumentException if a resource with the specified identifier
+	 * already exists
+	 */
+	public ResourceState<?> createResource(String id, InputStream config) throws IllegalArgumentException;
 
-    /**
-     * Removes the specified resource and deletes the corresponding configuration file.
-     * 
-     * @param id
-     *            resource identifier, must not be <code>null</code>
-     * @return resource state after deletion, usually <code>null</code> (if not, deletion failed)
-     */
-    public ResourceState<?> deleteResource( String id );
+	/**
+	 * Removes the specified resource and deletes the corresponding configuration file.
+	 * @param id resource identifier, must not be <code>null</code>
+	 * @return resource state after deletion, usually <code>null</code> (if not, deletion
+	 * failed)
+	 */
+	public ResourceState<?> deleteResource(String id);
+
 }

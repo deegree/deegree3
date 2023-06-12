@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -70,124 +69,125 @@ import org.deegree.tile.TileIOException;
 
 /**
  * {@link Tile} implementation used by the {@link RemoteWMSTileDataLevel}.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 class RemoteWMSTile implements Tile {
 
-    private final WMSClient client;
+	private final WMSClient client;
 
-    private final GetMap gm;
+	private final GetMap gm;
 
-    private final String outputFormat;
+	private final String outputFormat;
 
-    private Map<String, String> defaultGetFeatureInfo;
+	private Map<String, String> defaultGetFeatureInfo;
 
-    private Map<String, String> hardGetFeatureInfo;
+	private Map<String, String> hardGetFeatureInfo;
 
-    /**
-     * Creates a new {@link RemoteWMSTile} instance.
-     * 
-     * @param client
-     *            client to use for performing the {@link GetMap} request, never <code>null</code>
-     * @param gm
-     *            request for retrieving the tile image, never <code>null</code>
-     * @param outputFormat
-     *            if not null, images will be recoded into specified output format (use ImageIO like formats, eg. 'png')
-     * @param defaultGetFeatureInfo
-     *            default parameters for remote GFI requests
-     * @param hardGetFeatureInfo
-     *            replace parameters for remote GFI requests
-     */
-    RemoteWMSTile( WMSClient client, GetMap gm, String outputFormat, Map<String, String> defaultGetFeatureInfo,
-                   Map<String, String> hardGetFeatureInfo ) {
-        this.client = client;
-        this.gm = gm;
-        this.outputFormat = outputFormat;
-        this.defaultGetFeatureInfo = defaultGetFeatureInfo;
-        this.hardGetFeatureInfo = hardGetFeatureInfo;
-    }
+	/**
+	 * Creates a new {@link RemoteWMSTile} instance.
+	 * @param client client to use for performing the {@link GetMap} request, never
+	 * <code>null</code>
+	 * @param gm request for retrieving the tile image, never <code>null</code>
+	 * @param outputFormat if not null, images will be recoded into specified output
+	 * format (use ImageIO like formats, eg. 'png')
+	 * @param defaultGetFeatureInfo default parameters for remote GFI requests
+	 * @param hardGetFeatureInfo replace parameters for remote GFI requests
+	 */
+	RemoteWMSTile(WMSClient client, GetMap gm, String outputFormat, Map<String, String> defaultGetFeatureInfo,
+			Map<String, String> hardGetFeatureInfo) {
+		this.client = client;
+		this.gm = gm;
+		this.outputFormat = outputFormat;
+		this.defaultGetFeatureInfo = defaultGetFeatureInfo;
+		this.hardGetFeatureInfo = hardGetFeatureInfo;
+	}
 
-    @Override
-    public BufferedImage getAsImage()
-                            throws TileIOException {
-        InputStream in = null;
-        try {
-            return ImageIO.read( in = getAsStream() );
-        } catch ( IOException e ) {
-            throw new TileIOException( "Error decoding image : " + e.getMessage(), e );
-        } finally {
-            IOUtils.closeQuietly( in );
-        }
-    }
+	@Override
+	public BufferedImage getAsImage() throws TileIOException {
+		InputStream in = null;
+		try {
+			return ImageIO.read(in = getAsStream());
+		}
+		catch (IOException e) {
+			throw new TileIOException("Error decoding image : " + e.getMessage(), e);
+		}
+		finally {
+			IOUtils.closeQuietly(in);
+		}
+	}
 
-    @Override
-    public InputStream getAsStream()
-                            throws TileIOException {
-        try {
-            InputStream map = client.getMap( gm );
+	@Override
+	public InputStream getAsStream() throws TileIOException {
+		try {
+			InputStream map = client.getMap(gm);
 
-            if ( map == null ) {
-                throw new TileIOException( "A tile could not be fetched from remote WMS for an unknown reason." );
-            }
+			if (map == null) {
+				throw new TileIOException("A tile could not be fetched from remote WMS for an unknown reason.");
+			}
 
-            if ( outputFormat != null ) {
-                BufferedImage img = ImageIO.read( map );
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                ImageIO.write( img, outputFormat, out );
-                out.close();
-                return new ByteArrayInputStream( out.toByteArray() );
-            }
-            return map;
-        } catch ( SocketTimeoutException e ) {
-            String msg = "Error performing GetMap request, read timed out (timeout configured is "
-                         + client.getReadTimeout() + " seconds).";
-            throw new TileIOException( msg );
-        } catch ( UnknownHostException e ) {
-            throw new TileIOException( "Error performing GetMap request, host could not be resolved: " + e.getMessage() );
-        } catch ( IOException e ) {
-            throw new TileIOException( "Error performing GetMap request: " + e.getMessage(), e );
-        } catch ( OWSException e ) {
-            throw new TileIOException( "Error performing GetMap request: " + e.getMessage(), e );
-        }
-    }
+			if (outputFormat != null) {
+				BufferedImage img = ImageIO.read(map);
+				ByteArrayOutputStream out = new ByteArrayOutputStream();
+				ImageIO.write(img, outputFormat, out);
+				out.close();
+				return new ByteArrayInputStream(out.toByteArray());
+			}
+			return map;
+		}
+		catch (SocketTimeoutException e) {
+			String msg = "Error performing GetMap request, read timed out (timeout configured is "
+					+ client.getReadTimeout() + " seconds).";
+			throw new TileIOException(msg);
+		}
+		catch (UnknownHostException e) {
+			throw new TileIOException("Error performing GetMap request, host could not be resolved: " + e.getMessage());
+		}
+		catch (IOException e) {
+			throw new TileIOException("Error performing GetMap request: " + e.getMessage(), e);
+		}
+		catch (OWSException e) {
+			throw new TileIOException("Error performing GetMap request: " + e.getMessage(), e);
+		}
+	}
 
-    @Override
-    public Envelope getEnvelope() {
-        return gm.getBoundingBox();
-    }
+	@Override
+	public Envelope getEnvelope() {
+		return gm.getBoundingBox();
+	}
 
-    @Override
-    public FeatureCollection getFeatures( int i, int j, int limit ) {
-        FeatureCollection fc = null;
-        try {
-            List<String> layers = new ArrayList<String>();
-            for ( LayerRef layerRef : gm.getLayers() ) {
-                layers.add( layerRef.getName() );
-            }
-            int width = gm.getWidth();
-            int height = gm.getHeight();
-            Envelope bbox = gm.getBoundingBox();
-            ICRS crs = gm.getCoordinateSystem();
-            GetFeatureInfo request = new GetFeatureInfo( layers, width, height, i, j, bbox, crs, limit );
-            Map<String, String> overriddenParameters = new HashMap<String, String>();
-            RequestUtils.replaceParameters( overriddenParameters, RequestUtils.getCurrentThreadRequestParameters().get(),
-                                     defaultGetFeatureInfo, hardGetFeatureInfo );
-            fc = client.doGetFeatureInfo( request, overriddenParameters );
-        } catch ( SocketTimeoutException e ) {
-            String msg = "Error performing GetFeatureInfo request, read timed out (timeout configured is "
-                         + client.getReadTimeout() + " seconds).";
-            throw new TileIOException( msg );
-        } catch ( UnknownHostException e ) {
-            throw new TileIOException( "Error performing GetFeatureInfo request, host could not be resolved: "
-                                       + e.getMessage() );
-        } catch ( Exception e ) {
-            String msg = "Error executing GetFeatureInfo request on remote server: " + e.getMessage();
-            throw new RuntimeException( msg, e );
-        }
-        return fc;
-    }
+	@Override
+	public FeatureCollection getFeatures(int i, int j, int limit) {
+		FeatureCollection fc = null;
+		try {
+			List<String> layers = new ArrayList<String>();
+			for (LayerRef layerRef : gm.getLayers()) {
+				layers.add(layerRef.getName());
+			}
+			int width = gm.getWidth();
+			int height = gm.getHeight();
+			Envelope bbox = gm.getBoundingBox();
+			ICRS crs = gm.getCoordinateSystem();
+			GetFeatureInfo request = new GetFeatureInfo(layers, width, height, i, j, bbox, crs, limit);
+			Map<String, String> overriddenParameters = new HashMap<String, String>();
+			RequestUtils.replaceParameters(overriddenParameters, RequestUtils.getCurrentThreadRequestParameters().get(),
+					defaultGetFeatureInfo, hardGetFeatureInfo);
+			fc = client.doGetFeatureInfo(request, overriddenParameters);
+		}
+		catch (SocketTimeoutException e) {
+			String msg = "Error performing GetFeatureInfo request, read timed out (timeout configured is "
+					+ client.getReadTimeout() + " seconds).";
+			throw new TileIOException(msg);
+		}
+		catch (UnknownHostException e) {
+			throw new TileIOException(
+					"Error performing GetFeatureInfo request, host could not be resolved: " + e.getMessage());
+		}
+		catch (Exception e) {
+			String msg = "Error executing GetFeatureInfo request on remote server: " + e.getMessage();
+			throw new RuntimeException(msg, e);
+		}
+		return fc;
+	}
+
 }

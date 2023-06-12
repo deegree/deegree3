@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2015 by:
@@ -51,40 +50,40 @@ import org.deegree.services.wms.controller.WMSController;
 
 /**
  * Serializes an exception as blank image.
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
 public class BlankExceptionSerializer implements ExceptionsSerializer {
 
-    private WMSController controller;
+	private WMSController controller;
 
-    /**
-     * @param controller
-     *            never <code>null</code>
-     */
-    public BlankExceptionSerializer( WMSController controller ) {
-        this.controller = controller;
-    }
+	/**
+	 * @param controller never <code>null</code>
+	 */
+	public BlankExceptionSerializer(WMSController controller) {
+		this.controller = controller;
+	}
 
-    @Override
-    public void serializeException( HttpResponseBuffer response, OWSException ex,
-                                    XMLExceptionSerializer exceptionSerializer, Map<String, String> map )
-                            throws SerializingException {
+	@Override
+	public void serializeException(HttpResponseBuffer response, OWSException ex,
+			XMLExceptionSerializer exceptionSerializer, Map<String, String> map) throws SerializingException {
 
-        int width = Integer.parseInt( map.get( "WIDTH" ) );
-        int height = Integer.parseInt( map.get( "HEIGHT" ) );
-        boolean transparent = map.get( "TRANSPARENT" ) != null && map.get( "TRANSPARENT" ).equalsIgnoreCase( "true" );
-        String format = map.get( "FORMAT" );
-        Color color = map.get( "BGCOLOR" ) == null ? white : decode( map.get( "BGCOLOR" ) );
+		int width = Integer.parseInt(map.get("WIDTH"));
+		int height = Integer.parseInt(map.get("HEIGHT"));
+		boolean transparent = map.get("TRANSPARENT") != null && map.get("TRANSPARENT").equalsIgnoreCase("true");
+		String format = map.get("FORMAT");
+		Color color = map.get("BGCOLOR") == null ? white : decode(map.get("BGCOLOR"));
 
-        BufferedImage img = prepareImage( format, width, height, transparent, color );
-        try {
-            controller.sendImage( img, response, format );
-        } catch ( OWSException e ) {
-            throw new SerializingException( e );
-        } catch ( IOException e ) {
-            throw new SerializingException( e );
-        }
-    }
+		BufferedImage img = prepareImage(format, width, height, transparent, color);
+		try {
+			controller.sendImage(img, response, format);
+		}
+		catch (OWSException e) {
+			throw new SerializingException(e);
+		}
+		catch (IOException e) {
+			throw new SerializingException(e);
+		}
+	}
 
 }

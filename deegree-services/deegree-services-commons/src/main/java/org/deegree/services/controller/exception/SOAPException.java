@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -42,107 +41,97 @@ import org.deegree.commons.ows.exception.OWSException;
 
 /**
  * The <code>SoapException</code> class wraps the soap specific fault parameters.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class SOAPException extends OWSException {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = -8628066105740690101L;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = -8628066105740690101L;
 
-    /**
-     * SOAP error code, the receiver expects a different SOAP version.
-     */
-    public static final String VERSION_MISMATCH = "VersionMismatch";
+	/**
+	 * SOAP error code, the receiver expects a different SOAP version.
+	 */
+	public static final String VERSION_MISMATCH = "VersionMismatch";
 
-    /**
-     * SOAP error code, the receiver does not understand the required functionality
-     */
-    public static final String MUST_UNDERSTAND = "MustUnderstand";
+	/**
+	 * SOAP error code, the receiver does not understand the required functionality
+	 */
+	public static final String MUST_UNDERSTAND = "MustUnderstand";
 
-    /**
-     * SOAP error code, the receiver does not support given character encoding
-     */
-    public static final String DATA_ENCODING = "DataEncodingUnknown";
+	/**
+	 * SOAP error code, the receiver does not support given character encoding
+	 */
+	public static final String DATA_ENCODING = "DataEncodingUnknown";
 
-    /**
-     * SOAP error code, the receiver is not able to handle the request given in the body.
-     */
-    public static final String SENDER = "Sender";
+	/**
+	 * SOAP error code, the receiver is not able to handle the request given in the body.
+	 */
+	public static final String SENDER = "Sender";
 
-    /**
-     * SOAP error code, the receiver is not able to handle the request without knowing the contents of the body.
-     */
-    public static final String RECEIVER = "Receiver";
+	/**
+	 * SOAP error code, the receiver is not able to handle the request without knowing the
+	 * contents of the body.
+	 */
+	public static final String RECEIVER = "Receiver";
 
-    private OWSException detail;
+	private OWSException detail;
 
-    private final String[] subcodes;
+	private final String[] subcodes;
 
-    /**
-     * @param reason
-     *            of this error
-     * @param code
-     *            of this exception, one of the above
-     */
-    public SOAPException( String reason, String code ) {
-        super( reason, code );
-        subcodes = null;
-    }
+	/**
+	 * @param reason of this error
+	 * @param code of this exception, one of the above
+	 */
+	public SOAPException(String reason, String code) {
+		super(reason, code);
+		subcodes = null;
+	}
 
-    /**
-     * @param reason
-     *            of this error
-     * @param code
-     *            of this exception, one of the above
-     * @param subcodes
-     *            an array of strings which will be added in the subcodes of the Fault/Code node.
-     */
-    public SOAPException( String reason, String code, String[] subcodes ) {
-        super( reason, code );
-        this.subcodes = subcodes == null ? null : copyOf( subcodes, subcodes.length );
-    }
+	/**
+	 * @param reason of this error
+	 * @param code of this exception, one of the above
+	 * @param subcodes an array of strings which will be added in the subcodes of the
+	 * Fault/Code node.
+	 */
+	public SOAPException(String reason, String code, String[] subcodes) {
+		super(reason, code);
+		this.subcodes = subcodes == null ? null : copyOf(subcodes, subcodes.length);
+	}
 
-    /**
-     * @param reason
-     *            of this error
-     * @param code
-     *            of this exception, one of the above
-     * @param detail
-     *            an ows exeption which will be put in the detail information
-     */
-    public SOAPException( String reason, String code, OWSException detail ) {
-        super( reason, code );
-        this.detail = detail;
-        subcodes = null;
-    }
+	/**
+	 * @param reason of this error
+	 * @param code of this exception, one of the above
+	 * @param detail an ows exeption which will be put in the detail information
+	 */
+	public SOAPException(String reason, String code, OWSException detail) {
+		super(reason, code);
+		this.detail = detail;
+		subcodes = null;
+	}
 
-    /**
-     * @return the reason of this exception, which is the same as calling getMessage
-     */
-    public final String getReason() {
-        return getLocalizedMessage();
-    }
+	/**
+	 * @return the reason of this exception, which is the same as calling getMessage
+	 */
+	public final String getReason() {
+		return getLocalizedMessage();
+	}
 
-    /**
-     * @return the detail
-     */
-    public final OWSException getDetail() {
-        return detail;
-    }
+	/**
+	 * @return the detail
+	 */
+	public final OWSException getDetail() {
+		return detail;
+	}
 
-    /**
-     * @return the subcodes
-     */
-    public final String[] getSubcodes() {
-        return subcodes == null ? null : copyOf( subcodes, subcodes.length );
-    }
+	/**
+	 * @return the subcodes
+	 */
+	public final String[] getSubcodes() {
+		return subcodes == null ? null : copyOf(subcodes, subcodes.length);
+	}
 
 }

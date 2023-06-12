@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -52,33 +51,34 @@ import org.slf4j.LoggerFactory;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class GMLGeometryVersionHelper {
 
-    private static Logger LOG = LoggerFactory.getLogger( GMLGeometryVersionHelper.class );
+	private static Logger LOG = LoggerFactory.getLogger(GMLGeometryVersionHelper.class);
 
-    public static GMLGeometryReader getGeometryReader( QName elName, XMLStreamReader xmlStream )
-                            throws XMLStreamException {
+	public static GMLGeometryReader getGeometryReader(QName elName, XMLStreamReader xmlStream)
+			throws XMLStreamException {
 
-        String ns = elName.getNamespaceURI();
-        GMLVersion gmlVersion = null;
-        if ( GMLNS.equals( ns ) ) {
-            if ( "Box".equals( elName.getLocalPart() ) ) {
-                gmlVersion = GML_2;
-            } else {
-                gmlVersion = GML_31;
-            }
-        } else if ( GML3_2_NS.equals( ns ) ) {
-            gmlVersion = GML_32;
-        } else {
-            LOG.warn( "Unable to determine GML version for element: " + elName + ". Falling back to GML 2." );
-            gmlVersion = GML_2;
-        }
-        return GMLInputFactory.createGMLStreamReader( gmlVersion, xmlStream ).getGeometryReader();
-    }
+		String ns = elName.getNamespaceURI();
+		GMLVersion gmlVersion = null;
+		if (GMLNS.equals(ns)) {
+			if ("Box".equals(elName.getLocalPart())) {
+				gmlVersion = GML_2;
+			}
+			else {
+				gmlVersion = GML_31;
+			}
+		}
+		else if (GML3_2_NS.equals(ns)) {
+			gmlVersion = GML_32;
+		}
+		else {
+			LOG.warn("Unable to determine GML version for element: " + elName + ". Falling back to GML 2.");
+			gmlVersion = GML_2;
+		}
+		return GMLInputFactory.createGMLStreamReader(gmlVersion, xmlStream).getGeometryReader();
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -61,108 +60,104 @@ import org.slf4j.LoggerFactory;
 
 /**
  * <code>InputFileRenderer</code> rendering an input form element of type file.
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 @ResourceDependencies({ @ResourceDependency(library = "deegree", name = "css/inputFile.css") })
 @FacesRenderer(componentFamily = "javax.faces.Input", rendererType = "org.deegree.InputFile")
 public class InputFileRenderer extends Renderer {
 
-    private static Logger LOG = LoggerFactory.getLogger( HtmlInputFile.class );
+	private static Logger LOG = LoggerFactory.getLogger(HtmlInputFile.class);
 
-    @Override
-    public void encodeBegin( FacesContext context, UIComponent component )
-                            throws IOException {
-        HtmlInputFile input = (HtmlInputFile) component;
+	@Override
+	public void encodeBegin(FacesContext context, UIComponent component) throws IOException {
+		HtmlInputFile input = (HtmlInputFile) component;
 
-        ResponseWriter writer = context.getResponseWriter();
-        String clientId = component.getClientId();
+		ResponseWriter writer = context.getResponseWriter();
+		String clientId = component.getClientId();
 
-        writer.startElement( "input", null );
-        writer.writeAttribute( "id", clientId, "id" );
-        writer.writeAttribute( "name", clientId, "clientId" );
-        writer.writeAttribute( "type", "file", "file" );
+		writer.startElement("input", null);
+		writer.writeAttribute("id", clientId, "id");
+		writer.writeAttribute("name", clientId, "clientId");
+		writer.writeAttribute("type", "file", "file");
 
-        String styleClass = input.getStyleClass();
-        if ( styleClass != null ) {
-            writer.writeAttribute( "class", styleClass, "styleClass" );
-        }
-        String style = input.getStyle();
-        if ( style != null ) {
-            writer.writeAttribute( "style", style, "style" );
-        }
+		String styleClass = input.getStyleClass();
+		if (styleClass != null) {
+			writer.writeAttribute("class", styleClass, "styleClass");
+		}
+		String style = input.getStyle();
+		if (style != null) {
+			writer.writeAttribute("style", style, "style");
+		}
 
-        writer.endElement( "input" );
-        writer.flush();
-    }
+		writer.endElement("input");
+		writer.flush();
+	}
 
-    @Override
-    public void decode( FacesContext context, UIComponent component ) {
-        ExternalContext external = context.getExternalContext();
-        HttpServletRequest request = (HttpServletRequest) external.getRequest();
-        String clientId = component.getClientId( context );
+	@Override
+	public void decode(FacesContext context, UIComponent component) {
+		ExternalContext external = context.getExternalContext();
+		HttpServletRequest request = (HttpServletRequest) external.getRequest();
+		String clientId = component.getClientId(context);
 
-        FileItem item = (FileItem) request.getAttribute( clientId );
+		FileItem item = (FileItem) request.getAttribute(clientId);
 
-        HtmlInputFile fileComponent = (HtmlInputFile) component;
-        UploadedFile uploadedFile = new UploadedFile();
-        if ( item != null ) {
-            try {
-                String target = fileComponent.getTarget();
-                URL url = getUrl( request, target, item.getName() );
-                ServletContext sc = (ServletContext) external.getContext();
-                File file = getTargetFile( sc, target, item.getName() );
-                item.write( file );
-                uploadedFile.setFileItem( item );
-                uploadedFile.setUrl( url );
-                uploadedFile.setAbsolutePath( file.getAbsolutePath() );
-            } catch ( Throwable t ) {
-                t.printStackTrace();
-            }
-        }
-        fileComponent.setSubmittedValue( uploadedFile );
-    }
+		HtmlInputFile fileComponent = (HtmlInputFile) component;
+		UploadedFile uploadedFile = new UploadedFile();
+		if (item != null) {
+			try {
+				String target = fileComponent.getTarget();
+				URL url = getUrl(request, target, item.getName());
+				ServletContext sc = (ServletContext) external.getContext();
+				File file = getTargetFile(sc, target, item.getName());
+				item.write(file);
+				uploadedFile.setFileItem(item);
+				uploadedFile.setUrl(url);
+				uploadedFile.setAbsolutePath(file.getAbsolutePath());
+			}
+			catch (Throwable t) {
+				t.printStackTrace();
+			}
+		}
+		fileComponent.setSubmittedValue(uploadedFile);
+	}
 
-    private File getTargetFile( ServletContext sc, String target, String fileName )
-                            throws IOException {
-        File targetFile = null;
-        if ( target != null ) {
-            if ( !target.endsWith( "/" ) ) {
-                target += "/";
-            }
-            targetFile = new File( sc.getRealPath( target + fileName ) );
-        } else {
-            // use deegree's temp directory
-            File tempDir = TempFileManager.getBaseDir();
-            targetFile = File.createTempFile( "upload", "", tempDir );
-        }
+	private File getTargetFile(ServletContext sc, String target, String fileName) throws IOException {
+		File targetFile = null;
+		if (target != null) {
+			if (!target.endsWith("/")) {
+				target += "/";
+			}
+			targetFile = new File(sc.getRealPath(target + fileName));
+		}
+		else {
+			// use deegree's temp directory
+			File tempDir = TempFileManager.getBaseDir();
+			targetFile = File.createTempFile("upload", "", tempDir);
+		}
 
-        LOG.info( "Uploading file '" + fileName + "' to: '" + targetFile + "'" );
-        return targetFile;
-    }
+		LOG.info("Uploading file '" + fileName + "' to: '" + targetFile + "'");
+		return targetFile;
+	}
 
-    private URL getUrl( HttpServletRequest request, String target, String fileName )
-                            throws MalformedURLException {
-        if ( target == null ) {
-            target = "";
-        }
-        if ( !target.startsWith( "/" ) ) {
-            target = "/" + target;
-        }
-        if ( !target.endsWith( "/" ) ) {
-            target += "/";
-        }
-        return new URL( request.getScheme(), request.getServerName(), request.getServerPort(), request.getContextPath()
-                                                                                               + target + fileName );
-    }
+	private URL getUrl(HttpServletRequest request, String target, String fileName) throws MalformedURLException {
+		if (target == null) {
+			target = "";
+		}
+		if (!target.startsWith("/")) {
+			target = "/" + target;
+		}
+		if (!target.endsWith("/")) {
+			target += "/";
+		}
+		return new URL(request.getScheme(), request.getServerName(), request.getServerPort(),
+				request.getContextPath() + target + fileName);
+	}
 
-    @Override
-    public Object getConvertedValue( FacesContext context, UIComponent component, Object submittedValue )
-                            throws ConverterException {
-        return submittedValue;
-    }
+	@Override
+	public Object getConvertedValue(FacesContext context, UIComponent component, Object submittedValue)
+			throws ConverterException {
+		return submittedValue;
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -40,52 +39,45 @@ import java.util.List;
 import org.deegree.geometry.primitive.Curve;
 
 /**
- * {@link GeometryValidationEvent} that indicates that a {@link Curve} has a discontinuity, i.e. the end point of one of the
- * curve's segments does not coincide with the start point of the next one.
- * 
+ * {@link GeometryValidationEvent} that indicates that a {@link Curve} has a
+ * discontinuity, i.e. the end point of one of the curve's segments does not coincide with
+ * the start point of the next one.
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * 
- * @version $Revision: $, $Date: $
  */
 public class CurveDiscontinuity extends AbstractGeometryValidationEvent {
 
-    private final Curve curve;
+	private final Curve curve;
 
-    private final int segmentIdx;
+	private final int segmentIdx;
 
-    /**
-     * Creates a new {@link CurveDiscontinuity} instance.
-     * 
-     * @param curve
-     *            affected {@link Curve} geometry, must not be <code>null</code>
-     * @param segmentIdx
-     *            the index of the segment with the end point (starting at 0)
-     * @param geometryParticleHierarchy
-     *            list of affected geometry particles (that the curve is a part of), must not be <code>null</code>
-     */
-    public CurveDiscontinuity( Curve curve, int segmentIdx, List<Object> geometryParticleHierarchy ) {
-        super( geometryParticleHierarchy );
-        this.curve = curve;
-        this.segmentIdx = segmentIdx;
-    }
+	/**
+	 * Creates a new {@link CurveDiscontinuity} instance.
+	 * @param curve affected {@link Curve} geometry, must not be <code>null</code>
+	 * @param segmentIdx the index of the segment with the end point (starting at 0)
+	 * @param geometryParticleHierarchy list of affected geometry particles (that the
+	 * curve is a part of), must not be <code>null</code>
+	 */
+	public CurveDiscontinuity(Curve curve, int segmentIdx, List<Object> geometryParticleHierarchy) {
+		super(geometryParticleHierarchy);
+		this.curve = curve;
+		this.segmentIdx = segmentIdx;
+	}
 
-    /**
-     * Returns the affected {@link Curve} geometry.
-     * 
-     * @return the affected curve, never <code>null</code>
-     */
-    public Curve getCurve() {
-        return curve;
-    }
+	/**
+	 * Returns the affected {@link Curve} geometry.
+	 * @return the affected curve, never <code>null</code>
+	 */
+	public Curve getCurve() {
+		return curve;
+	}
 
-    /**
-     * Returns the index of the segment with the end point.
-     * 
-     * @return index of the segment with the end point (starting at 0)
-     */
-    public int getEndPointSegmentIndex() {
-        return segmentIdx;
-    }
+	/**
+	 * Returns the index of the segment with the end point.
+	 * @return index of the segment with the end point (starting at 0)
+	 */
+	public int getEndPointSegmentIndex() {
+		return segmentIdx;
+	}
 
 }

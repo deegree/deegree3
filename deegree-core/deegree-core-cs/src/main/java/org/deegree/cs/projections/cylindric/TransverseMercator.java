@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -48,7 +47,6 @@ import static org.deegree.cs.utilities.ProjectionUtils.normalizeLongitude;
 
 import javax.vecmath.Point2d;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.CRSResource;
 import org.deegree.cs.EPSGCode;
@@ -63,390 +61,350 @@ import org.slf4j.LoggerFactory;
  * <ul>
  * <li>Cylindrical (transverse)</li>
  * <li>Conformal</li>
- * <li>The central meridian, each meridian 90° from central meridian and the equator are straight lines</li>
+ * <li>The central meridian, each meridian 90° from central meridian and the equator are
+ * straight lines</li>
  * <li>All other meridians and parallels are complex curves</li>
- * <li>Scale is true along central meridian or along two straight lines equidistant from and parallel to central
- * merdian. (These lines are only approximately straight for the ellipsoid)</li>
+ * <li>Scale is true along central meridian or along two straight lines equidistant from
+ * and parallel to central merdian. (These lines are only approximately straight for the
+ * ellipsoid)</li>
  * <li>Scale becomes infinite on sphere 90° from central meridian</li>
  * <li>Used extensively for quadrangle maps at scales from 1:24.000 to 1:250.000</li>
  * <li>Often used to show regions with greater north-south extent</li>
  * <li>presented by lambert in 1772</li>
  * </ul>
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
-@LoggingNotes(debug = "Get information about incoming ordinates of the (inverse) projection.")
 public class TransverseMercator extends CylindricalProjection implements ITransverseMercator {
 
-    private static Logger LOG = LoggerFactory.getLogger( TransverseMercator.class );
+	private static Logger LOG = LoggerFactory.getLogger(TransverseMercator.class);
 
-    /**
-     * Constants used for the forward and inverse transform for the elliptical case of the Transverse Mercator.
-     */
-    private static final double FC1 = 1., // 1/1
-                            FC2 = 0.5, // 1/2
-                            FC3 = 0.16666666666666666666666, // 1/6
-                            FC4 = 0.08333333333333333333333, // 1/12
-                            FC5 = 0.05, // 1/20
-                            FC6 = 0.03333333333333333333333, // 1/30
-                            FC7 = 0.02380952380952380952380, // 1/42
-                            FC8 = 0.01785714285714285714285; // 1/56
+	/**
+	 * Constants used for the forward and inverse transform for the elliptical case of the
+	 * Transverse Mercator.
+	 */
+	private static final double FC1 = 1., // 1/1
+			FC2 = 0.5, // 1/2
+			FC3 = 0.16666666666666666666666, // 1/6
+			FC4 = 0.08333333333333333333333, // 1/12
+			FC5 = 0.05, // 1/20
+			FC6 = 0.03333333333333333333333, // 1/30
+			FC7 = 0.02380952380952380952380, // 1/42
+			FC8 = 0.01785714285714285714285; // 1/56
 
-    // 1 for northern hemisphere -1 for southern.
-    private int hemisphere;
+	// 1 for northern hemisphere -1 for southern.
+	private int hemisphere;
 
-    /**
-     * @param northernHemisphere
-     *            true if on the northern hemisphere false otherwise.
-     * @param geographicCRS
-     * @param falseNorthing
-     * @param falseEasting
-     * @param naturalOrigin
-     * @param units
-     * @param scale
-     * @param id
-     *            an identifiable instance containing information about this projection
-     */
-    public TransverseMercator( boolean northernHemisphere, double falseNorthing, double falseEasting,
-                               Point2d naturalOrigin, IUnit units, double scale, CRSResource id ) {
-        super( falseNorthing, falseEasting, naturalOrigin, units, scale, true,// always conformal
-               false/* not equalArea */, id );
-        this.hemisphere = ( northernHemisphere ) ? 1 : -1;
-    }
+	/**
+	 * @param northernHemisphere true if on the northern hemisphere false otherwise.
+	 * @param geographicCRS
+	 * @param falseNorthing
+	 * @param falseEasting
+	 * @param naturalOrigin
+	 * @param units
+	 * @param scale
+	 * @param id an identifiable instance containing information about this projection
+	 */
+	public TransverseMercator(boolean northernHemisphere, double falseNorthing, double falseEasting,
+			Point2d naturalOrigin, IUnit units, double scale, CRSResource id) {
+		super(falseNorthing, falseEasting, naturalOrigin, units, scale, true, // always
+																				// conformal
+				false/* not equalArea */, id);
+		this.hemisphere = (northernHemisphere) ? 1 : -1;
+	}
 
-    /**
-     * Sets the id to EPSG:9807
-     * 
-     * @param northernHemisphere
-     *            true if on the northern hemisphere false otherwise.
-     * @param geographicCRS
-     * @param falseNorthing
-     * @param falseEasting
-     * @param naturalOrigin
-     * @param units
-     * @param scale
-     */
-    public TransverseMercator( boolean northernHemisphere, double falseNorthing, double falseEasting,
-                               Point2d naturalOrigin, IUnit units, double scale ) {
-        this( northernHemisphere, falseNorthing, falseEasting, naturalOrigin, units, scale,
-              new CRSIdentifiable( new EPSGCode( 9807 ) ) );
-    }
+	/**
+	 * Sets the id to EPSG:9807
+	 * @param northernHemisphere true if on the northern hemisphere false otherwise.
+	 * @param geographicCRS
+	 * @param falseNorthing
+	 * @param falseEasting
+	 * @param naturalOrigin
+	 * @param units
+	 * @param scale
+	 */
+	public TransverseMercator(boolean northernHemisphere, double falseNorthing, double falseEasting,
+			Point2d naturalOrigin, IUnit units, double scale) {
+		this(northernHemisphere, falseNorthing, falseEasting, naturalOrigin, units, scale,
+				new CRSIdentifiable(new EPSGCode(9807)));
+	}
 
-    /**
-     * Sets the false-easting to 50000, false-northing to 0 or 10000000 (depending on the hemisphere), the
-     * projection-longitude is calculated from the zone and the projection-latitude is set to 0. The scale will be
-     * 0.9996.
-     * 
-     * @param zone
-     *            to add
-     * @param northernHemisphere
-     *            true if the projection is on the northern hemisphere
-     * @param geographicCRS
-     * @param units
-     * @param id
-     *            an identifiable instance containing information about this projection
-     */
-    public TransverseMercator( int zone, boolean northernHemisphere, IUnit units, CRSResource id ) {
-        super( ( northernHemisphere ? 0 : 10000000 ), 500000,
-               new Point2d( ( --zone + .5 ) * Math.PI / 30. - Math.PI, 0 ), units, 0.9996, true /* always conformal */,
-               false /* not equalArea */, id );
-        this.hemisphere = ( northernHemisphere ) ? 1 : -1;
-    }
+	/**
+	 * Sets the false-easting to 50000, false-northing to 0 or 10000000 (depending on the
+	 * hemisphere), the projection-longitude is calculated from the zone and the
+	 * projection-latitude is set to 0. The scale will be 0.9996.
+	 * @param zone to add
+	 * @param northernHemisphere true if the projection is on the northern hemisphere
+	 * @param geographicCRS
+	 * @param units
+	 * @param id an identifiable instance containing information about this projection
+	 */
+	public TransverseMercator(int zone, boolean northernHemisphere, IUnit units, CRSResource id) {
+		super((northernHemisphere ? 0 : 10000000), 500000, new Point2d((--zone + .5) * Math.PI / 30. - Math.PI, 0),
+				units, 0.9996, true /* always conformal */, false /* not equalArea */, id);
+		this.hemisphere = (northernHemisphere) ? 1 : -1;
+	}
 
-    /**
-     * Sets the false-easting to 50000, false-northing to 0 or 10000000 (depending on the hemisphere), the
-     * projection-longitude is calculated from the zone and the projection-latitude is set to 0. The scale will be
-     * 0.9996.
-     * 
-     * @param zone
-     *            to add
-     * @param northernHemisphere
-     *            true if the projection is on the northern hemisphere
-     * @param geographicCRS
-     * @param units
-     */
-    public TransverseMercator( int zone, boolean northernHemisphere, IUnit units ) {
-        this( zone, northernHemisphere, units, new CRSIdentifiable( new EPSGCode( 9807 ) ) );
-    }
+	/**
+	 * Sets the false-easting to 50000, false-northing to 0 or 10000000 (depending on the
+	 * hemisphere), the projection-longitude is calculated from the zone and the
+	 * projection-latitude is set to 0. The scale will be 0.9996.
+	 * @param zone to add
+	 * @param northernHemisphere true if the projection is on the northern hemisphere
+	 * @param geographicCRS
+	 * @param units
+	 */
+	public TransverseMercator(int zone, boolean northernHemisphere, IUnit units) {
+		this(zone, northernHemisphere, units, new CRSIdentifiable(new EPSGCode(9807)));
+	}
 
-    /**
-     * A northern hemisphere conformal transverse mercator projection with a scale of one. Using the given datum.
-     * 
-     * @param geographicCRS
-     * @param falseNorthing
-     * @param falseEasting
-     * @param naturalOrigin
-     * @param units
-     */
-    public TransverseMercator( double falseNorthing, double falseEasting, Point2d naturalOrigin, IUnit units ) {
-        this( true, falseNorthing, falseEasting, naturalOrigin, units, 1. );
-    }
+	/**
+	 * A northern hemisphere conformal transverse mercator projection with a scale of one.
+	 * Using the given datum.
+	 * @param geographicCRS
+	 * @param falseNorthing
+	 * @param falseEasting
+	 * @param naturalOrigin
+	 * @param units
+	 */
+	public TransverseMercator(double falseNorthing, double falseEasting, Point2d naturalOrigin, IUnit units) {
+		this(true, falseNorthing, falseEasting, naturalOrigin, units, 1.);
+	}
 
-    /**
-     * A northern hemisphere conformal transverse mercator projection with a scale of one. Using the given datum.
-     * 
-     * @param geographicCRS
-     * @param falseNorthing
-     * @param falseEasting
-     * @param naturalOrigin
-     * @param units
-     * @param id
-     *            an identifiable instance containing information about this projection
-     */
-    public TransverseMercator( double falseNorthing, double falseEasting, Point2d naturalOrigin, IUnit units,
-                               CRSResource id ) {
-        this( true, falseNorthing, falseEasting, naturalOrigin, units, 1., id );
-    }
+	/**
+	 * A northern hemisphere conformal transverse mercator projection with a scale of one.
+	 * Using the given datum.
+	 * @param geographicCRS
+	 * @param falseNorthing
+	 * @param falseEasting
+	 * @param naturalOrigin
+	 * @param units
+	 * @param id an identifiable instance containing information about this projection
+	 */
+	public TransverseMercator(double falseNorthing, double falseEasting, Point2d naturalOrigin, IUnit units,
+			CRSResource id) {
+		this(true, falseNorthing, falseEasting, naturalOrigin, units, 1., id);
+	}
 
-    @Override
-    public synchronized Point2d doInverseProjection( IGeographicCRS geographicCRS, double x, double y )
-                            throws ProjectionException {
-        Point2d result = new Point2d( 0, 0 );
-        LOG.debug( "InverseProjection, incoming points x: " + x + " y: " + y );
-        x = ( x - getFalseEasting() ) / getScaleFactor( geographicCRS );
-        y = ( y - getFalseNorthing() ) / getScaleFactor( geographicCRS );
-        y *= hemisphere;
+	@Override
+	public synchronized Point2d doInverseProjection(IGeographicCRS geographicCRS, double x, double y)
+			throws ProjectionException {
+		Point2d result = new Point2d(0, 0);
+		LOG.debug("InverseProjection, incoming points x: " + x + " y: " + y);
+		x = (x - getFalseEasting()) / getScaleFactor(geographicCRS);
+		y = (y - getFalseNorthing()) / getScaleFactor(geographicCRS);
+		y *= hemisphere;
 
-        if ( isSpherical( geographicCRS ) ) {
-            // h holds e^x, the sinh = 0.5*(e^x - e^-x), cosh = 0.5(e^x + e^-x)
-            double h = Math.exp( x / getScaleFactor( geographicCRS ) );
-            // sinh holds the sinh from Snyder (p.60 8-7)
-            double sinh = .5 * ( h - 1. / h );
+		if (isSpherical(geographicCRS)) {
+			// h holds e^x, the sinh = 0.5*(e^x - e^-x), cosh = 0.5(e^x + e^-x)
+			double h = Math.exp(x / getScaleFactor(geographicCRS));
+			// sinh holds the sinh from Snyder (p.60 8-7)
+			double sinh = .5 * (h - 1. / h);
 
-            // Snyder (p.60 8-8)
-            // reuse variable
-            double cosD = Math.cos( getProjectionLatitude() + ( y/* / getScale() */) );
-            /**
-             * To calc phi from Snyder (p.60 8-6), use following trick! sin^2(D) + cos^2(D) = 1 => sin(D) = sqrt( 1-
-             * cos^2(D) ) and cosh^2(x) - sin^2(x) = 1 => cosh(x) = sqrt( 1+sin^2(x) )
-             */
-            result.y = asinScaled( Math.sqrt( ( 1. - cosD * cosD ) / ( 1. + sinh * sinh ) ) );
-            // if ( y < 0 ) {// southern hemisphere
-            // out.y = -out.y;
-            // }
-            result.x = Math.atan2( sinh, cosD );
-        } else {
-            // out.y will hold the phi_1 from Snyder (p.63 8-18).
-            result.y = calcPhiFromMeridianDistance( calculateMl0( geographicCRS ) + ( y/* / getScale() */),
-                                                    getSquaredEccentricity( geographicCRS ),
-                                                    calculateEn( geographicCRS ) );
-            // result.y = calcPhiFromMeridianDistance( ml0 + ( y / getScale() ),
-            // getSquaredEccentricity(),
-            // en );
-            if ( Math.abs( result.y ) >= HALFPI ) {
-                result.y = y < 0. ? -HALFPI : HALFPI;
-                result.x = 0;
-            } else {
+			// Snyder (p.60 8-8)
+			// reuse variable
+			double cosD = Math.cos(getProjectionLatitude() + (y/* / getScale() */));
+			/**
+			 * To calc phi from Snyder (p.60 8-6), use following trick! sin^2(D) +
+			 * cos^2(D) = 1 => sin(D) = sqrt( 1- cos^2(D) ) and cosh^2(x) - sin^2(x) = 1
+			 * => cosh(x) = sqrt( 1+sin^2(x) )
+			 */
+			result.y = asinScaled(Math.sqrt((1. - cosD * cosD) / (1. + sinh * sinh)));
+			// if ( y < 0 ) {// southern hemisphere
+			// out.y = -out.y;
+			// }
+			result.x = Math.atan2(sinh, cosD);
+		}
+		else {
+			// out.y will hold the phi_1 from Snyder (p.63 8-18).
+			result.y = calcPhiFromMeridianDistance(
+					calculateMl0(geographicCRS) + (y/* / getScale() */), getSquaredEccentricity(geographicCRS),
+					calculateEn(geographicCRS));
+			// result.y = calcPhiFromMeridianDistance( ml0 + ( y / getScale() ),
+			// getSquaredEccentricity(),
+			// en );
+			if (Math.abs(result.y) >= HALFPI) {
+				result.y = y < 0. ? -HALFPI : HALFPI;
+				result.x = 0;
+			}
+			else {
 
-                double sinphi = Math.sin( result.y );
-                double cosphi = Math.cos( result.y );
-                // largeT Will hold the tan^2(phi) Snyder (p.64 8-22).
-                double largeT = ( Math.abs( cosphi ) > EPS10 ) ? sinphi / cosphi : 0;
+				double sinphi = Math.sin(result.y);
+				double cosphi = Math.cos(result.y);
+				// largeT Will hold the tan^2(phi) Snyder (p.64 8-22).
+				double largeT = (Math.abs(cosphi) > EPS10) ? sinphi / cosphi : 0;
 
-                // will hold the C_1 from Synder (p.64 8-21)
-                double largeC = calculateEsp( geographicCRS ) * cosphi * cosphi;
+				// will hold the C_1 from Synder (p.64 8-21)
+				double largeC = calculateEsp(geographicCRS) * cosphi * cosphi;
 
-                // Holds a modified N from Synder (p.64 8-23), multiplied with the largeT, it is the first term fo the
-                // calculation of phi e.g. N*T/R
-                double con = 1. - ( getSquaredEccentricity( geographicCRS ) * sinphi * sinphi );
-                // largeD holds the D from Snyder (p.64 8-25). (x/(1/N) = x*N)
-                // double largeD = x * Math.sqrt( con ) / getScaleFactor();
-                double largeD = x * Math.sqrt( con )/* / getScale() */;
-                con *= largeT;
-                largeT *= largeT;
-                double ds = largeD * largeD;
+				// Holds a modified N from Synder (p.64 8-23), multiplied with the largeT,
+				// it is the first term fo the
+				// calculation of phi e.g. N*T/R
+				double con = 1. - (getSquaredEccentricity(geographicCRS) * sinphi * sinphi);
+				// largeD holds the D from Snyder (p.64 8-25). (x/(1/N) = x*N)
+				// double largeD = x * Math.sqrt( con ) / getScaleFactor();
+				double largeD = x * Math.sqrt(con)/* / getScale() */;
+				con *= largeT;
+				largeT *= largeT;
+				double ds = largeD * largeD;
 
-                /**
-                 * As for the forward projection, I'm not sure if this is correct, this should be checked!
-                 */
-                result.y -= ( con * ds / ( 1. - getSquaredEccentricity( geographicCRS ) ) )
-                            * FC2
-                            * ( 1. - ds
-                                     * FC4
-                                     * ( 5. + largeT * ( 3. - 9. * largeC ) + largeC * ( 1. - 4 * largeC ) - ds
-                                                                                                             * FC6
-                                                                                                             * ( 61.
-                                                                                                                 + largeT
-                                                                                                                 * ( 90. - 252. * largeC + 45. * largeT )
-                                                                                                                 + 46.
-                                                                                                                 * largeC - ds
-                                                                                                                            * FC8
-                                                                                                                            * ( 1385. + largeT
-                                                                                                                                        * ( 3633. + largeT
-                                                                                                                                                    * ( 4095. + 1574. * largeT ) ) ) ) ) );
-                result.x = largeD
-                           * ( FC1 - ds
-                                     * FC3
-                                     * ( 1. + 2. * largeT + largeC - ds
-                                                                     * FC5
-                                                                     * ( 5. + largeT
-                                                                         * ( 28. + 24. * largeT + 8. * largeC ) + 6.
-                                                                         * largeC - ds
-                                                                                    * FC7
-                                                                                    * ( 61. + largeT
-                                                                                              * ( 662. + largeT
-                                                                                                         * ( 1320. + 720. * largeT ) ) ) ) ) )
-                           / cosphi;
-            }
-        }
-        // result.y += getProjectionLatitude();
-        result.x += getProjectionLongitude();
+				/**
+				 * As for the forward projection, I'm not sure if this is correct, this
+				 * should be checked!
+				 */
+				result.y -= (con * ds / (1. - getSquaredEccentricity(geographicCRS))) * FC2
+						* (1. - ds * FC4
+								* (5. + largeT * (3. - 9. * largeC) + largeC * (1. - 4 * largeC) - ds * FC6 * (61.
+										+ largeT * (90. - 252. * largeC + 45. * largeT) + 46. * largeC
+										- ds * FC8 * (1385. + largeT * (3633. + largeT * (4095. + 1574. * largeT))))));
+				result.x = largeD
+						* (FC1 - ds * FC3 * (1. + 2. * largeT + largeC - ds * FC5
+								* (5. + largeT * (28. + 24. * largeT + 8. * largeC) + 6. * largeC
+										- ds * FC7 * (61. + largeT * (662. + largeT * (1320. + 720. * largeT))))))
+						/ cosphi;
+			}
+		}
+		// result.y += getProjectionLatitude();
+		result.x += getProjectionLongitude();
 
-        return result;
-    }
+		return result;
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.cs.projections.Projection#doProjection(double, double)
-     */
-    @Override
-    public synchronized Point2d doProjection( IGeographicCRS geographicCRS, double lambda, double phi )
-                            throws ProjectionException {
-        // LOG.debug( "Projection, incoming points lambda: " + lambda + " phi: " + phi );
-        LOG.debug( "Projection, incoming points lambda: " + Math.toDegrees( lambda ) + " phi: " + Math.toDegrees( phi ) );
-        Point2d result = new Point2d( 0, 0 );
-        lambda -= getProjectionLongitude();
-        // phi -= getProjectionLatitude();
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see org.deegree.cs.projections.Projection#doProjection(double, double)
+	 */
+	@Override
+	public synchronized Point2d doProjection(IGeographicCRS geographicCRS, double lambda, double phi)
+			throws ProjectionException {
+		// LOG.debug( "Projection, incoming points lambda: " + lambda + " phi: " + phi );
+		LOG.debug("Projection, incoming points lambda: " + Math.toDegrees(lambda) + " phi: " + Math.toDegrees(phi));
+		Point2d result = new Point2d(0, 0);
+		lambda -= getProjectionLongitude();
+		// phi -= getProjectionLatitude();
 
-        phi *= hemisphere;
-        double cosphi = Math.cos( phi );
-        if ( isSpherical( geographicCRS ) ) {
-            double b = cosphi * Math.sin( lambda );
+		phi *= hemisphere;
+		double cosphi = Math.cos(phi);
+		if (isSpherical(geographicCRS)) {
+			double b = cosphi * Math.sin(lambda);
 
-            // Snyder (p.58 8-1)
-            result.x = calculateMl0( geographicCRS ) * getScaleFactor( geographicCRS )
-                       * Math.log( ( 1. + b ) / ( 1. - b ) );
+			// Snyder (p.58 8-1)
+			result.x = calculateMl0(geographicCRS) * getScaleFactor(geographicCRS) * Math.log((1. + b) / (1. - b));
 
-            // reformed and inserted the k from (p.58 8-4), so no tangens has to be calculated.
-            double ty = cosphi * Math.cos( lambda ) / Math.sqrt( 1. - b * b );
-            ty = acosScaled( ty );
-            if ( phi < 0.0 ) {
-                ty = -ty;
-            }
-            // esp just holds the scale
-            result.y = calculateEsp( geographicCRS ) * ( ty - getProjectionLatitude() );
-        } else {
-            double sinphi = Math.sin( phi );
-            double largeT = ( Math.abs( cosphi ) > EPS10 ) ? sinphi / cosphi : 0.0;
-            // largeT holds Snyder (p.61 8-13).
-            largeT *= largeT;
-            double largeA = cosphi * lambda;
-            double squaredLargeA = largeA * largeA;
-            // largeA now holds A/N Snyder (p.61 4-20 and 8-15)
-            largeA /= Math.sqrt( 1. - ( getSquaredEccentricity( geographicCRS ) * sinphi * sinphi ) );
+			// reformed and inserted the k from (p.58 8-4), so no tangens has to be
+			// calculated.
+			double ty = cosphi * Math.cos(lambda) / Math.sqrt(1. - b * b);
+			ty = acosScaled(ty);
+			if (phi < 0.0) {
+				ty = -ty;
+			}
+			// esp just holds the scale
+			result.y = calculateEsp(geographicCRS) * (ty - getProjectionLatitude());
+		}
+		else {
+			double sinphi = Math.sin(phi);
+			double largeT = (Math.abs(cosphi) > EPS10) ? sinphi / cosphi : 0.0;
+			// largeT holds Snyder (p.61 8-13).
+			largeT *= largeT;
+			double largeA = cosphi * lambda;
+			double squaredLargeA = largeA * largeA;
+			// largeA now holds A/N Snyder (p.61 4-20 and 8-15)
+			largeA /= Math.sqrt(1. - (getSquaredEccentricity(geographicCRS) * sinphi * sinphi));
 
-            // largeA *= getSemiMajorAxis();
+			// largeA *= getSemiMajorAxis();
 
-            // largeC will hold Snyder (p.61 8-14), esp holds Snyder (p.61 8-12).
-            double largeC = calculateEsp( geographicCRS ) * cosphi * cosphi;
-            double largeM = getDistanceAlongMeridian( phi, sinphi, cosphi, calculateEn( geographicCRS ) );
+			// largeC will hold Snyder (p.61 8-14), esp holds Snyder (p.61 8-12).
+			double largeC = calculateEsp(geographicCRS) * cosphi * cosphi;
+			double largeM = getDistanceAlongMeridian(phi, sinphi, cosphi, calculateEn(geographicCRS));
 
-            result.x = largeA
-                       * ( FC1 + FC3
-                                 * squaredLargeA
-                                 * ( 1. - largeT + largeC + FC5
-                                                            * squaredLargeA
-                                                            * ( 5. + largeT * ( largeT - 18. ) + largeC
-                                                                * ( 14. - 58. * largeT ) + FC7
-                                                                                           * squaredLargeA
-                                                                                           * ( 61. + largeT
-                                                                                                     * ( largeT
-                                                                                                         * ( 179. - largeT ) - 479. ) ) ) ) );
+			result.x = largeA
+					* (FC1 + FC3 * squaredLargeA
+							* (1. - largeT + largeC + FC5 * squaredLargeA * (5. + largeT * (largeT - 18.)
+									+ largeC * (14. - 58. * largeT)
+									+ FC7 * squaredLargeA * (61. + largeT * (largeT * (179. - largeT) - 479.)))));
 
-            result.y = ( largeM - calculateMl0( geographicCRS ) )
-                       + sinphi
-                       * largeA
-                       * lambda
-                       * FC2
-                       * ( 1. + FC4
-                                * squaredLargeA
-                                * ( 5. - largeT + largeC * ( 9. + 4. * largeC ) + FC6
-                                                                                  * squaredLargeA
-                                                                                  * ( 61. + largeT * ( largeT - 58. )
-                                                                                      + largeC * ( 270. - 330 * largeT ) + FC8
-                                                                                                                           * squaredLargeA
-                                                                                                                           * ( 1385. + largeT
-                                                                                                                                       * ( largeT
-                                                                                                                                           * ( 543. - largeT ) - 3111. ) ) ) ) );
+			result.y = (largeM - calculateMl0(geographicCRS)) + sinphi * largeA * lambda * FC2
+					* (1. + FC4 * squaredLargeA
+							* (5. - largeT + largeC * (9. + 4. * largeC) + FC6 * squaredLargeA * (61.
+									+ largeT * (largeT - 58.) + largeC * (270. - 330 * largeT)
+									+ FC8 * squaredLargeA * (1385. + largeT * (largeT * (543. - largeT) - 3111.)))));
 
-        }
+		}
 
-        result.x = ( result.x * getScaleFactor( geographicCRS ) ) + getFalseEasting();
-        result.y = ( result.y * getScaleFactor( geographicCRS ) ) + getFalseNorthing();
+		result.x = (result.x * getScaleFactor(geographicCRS)) + getFalseEasting();
+		result.y = (result.y * getScaleFactor(geographicCRS)) + getFalseNorthing();
 
-        return result;
-    }
+		return result;
+	}
 
-    /**
-     * @param latitude
-     *            to get the nearest paralles to.
-     * @return the nearest parallel in radians of given latitude
-     */
-    public int getRowFromNearestParallel( double latitude ) {
-        int degrees = (int) Math.round( Math.toDegrees( normalizeLatitude( latitude ) ) );
-        if ( degrees < -80 || degrees > 84 ) {
-            return 0;
-        }
-        if ( degrees > 80 ) {
-            return 24; // last parallel
-        }
-        return ( ( degrees + 80 ) / 8 ) + 3;
-    }
+	/**
+	 * @param latitude to get the nearest paralles to.
+	 * @return the nearest parallel in radians of given latitude
+	 */
+	public int getRowFromNearestParallel(double latitude) {
+		int degrees = (int) Math.round(Math.toDegrees(normalizeLatitude(latitude)));
+		if (degrees < -80 || degrees > 84) {
+			return 0;
+		}
+		if (degrees > 80) {
+			return 24; // last parallel
+		}
+		return ((degrees + 80) / 8) + 3;
+	}
 
-    /**
-     * the utm zone from a given meridian
-     * 
-     * @param longitude
-     *            in radians
-     * @return the utm zone.
-     */
-    public int getZoneFromNearestMeridian( double longitude ) {
-        int zone = (int) Math.floor( ( normalizeLongitude( longitude ) + Math.PI ) * 30.0 / Math.PI ) + 1;
-        if ( zone < 1 ) {
-            zone = 1;
-        } else if ( zone > 60 ) {
-            zone = 60;
-        }
-        return zone;
-    }
+	/**
+	 * the utm zone from a given meridian
+	 * @param longitude in radians
+	 * @return the utm zone.
+	 */
+	public int getZoneFromNearestMeridian(double longitude) {
+		int zone = (int) Math.floor((normalizeLongitude(longitude) + Math.PI) * 30.0 / Math.PI) + 1;
+		if (zone < 1) {
+			zone = 1;
+		}
+		else if (zone > 60) {
+			zone = 60;
+		}
+		return zone;
+	}
 
-    @Override
-    public String getImplementationName() {
-        return "transverseMercator";
-    }
+	@Override
+	public String getImplementationName() {
+		return "transverseMercator";
+	}
 
-    /**
-     * @return the true if defined on the northern hemisphere.
-     */
-    public final boolean getHemisphere() {
-        return ( hemisphere == 1 );
-    }
+	/**
+	 * @return the true if defined on the northern hemisphere.
+	 */
+	public final boolean getHemisphere() {
+		return (hemisphere == 1);
+	}
 
-    private synchronized double[] calculateEn( IGeographicCRS geographicCRS ) {
-        return getRectifiyingLatitudeValues( getSquaredEccentricity( geographicCRS ) );
-    }
+	private synchronized double[] calculateEn(IGeographicCRS geographicCRS) {
+		return getRectifiyingLatitudeValues(getSquaredEccentricity(geographicCRS));
+	}
 
-    // esp will can hold two values, for the sphere it will hold the scale, for the ellipsoid Snyder (p.61 8-12).
-    private synchronized double calculateEsp( IGeographicCRS geographicCRS ) {
-        if ( isSpherical( geographicCRS ) ) {
-            return getScale();
-        } else {
-            return getSquaredEccentricity( geographicCRS ) / ( 1. - getSquaredEccentricity( geographicCRS ) );
-        }
-    }
+	// esp will can hold two values, for the sphere it will hold the scale, for the
+	// ellipsoid Snyder (p.61 8-12).
+	private synchronized double calculateEsp(IGeographicCRS geographicCRS) {
+		if (isSpherical(geographicCRS)) {
+			return getScale();
+		}
+		else {
+			return getSquaredEccentricity(geographicCRS) / (1. - getSquaredEccentricity(geographicCRS));
+		}
+	}
 
-    private synchronized double calculateMl0( IGeographicCRS geographicCRS ) {
-        if ( isSpherical( geographicCRS ) ) {
-            return .5 * calculateEsp( geographicCRS );
-        } else {
-            return getDistanceAlongMeridian( getProjectionLatitude(), getSinphi0(), getCosphi0(),
-                                             calculateEn( geographicCRS ) );
-        }
-    }
+	private synchronized double calculateMl0(IGeographicCRS geographicCRS) {
+		if (isSpherical(geographicCRS)) {
+			return .5 * calculateEsp(geographicCRS);
+		}
+		else {
+			return getDistanceAlongMeridian(getProjectionLatitude(), getSinphi0(), getCosphi0(),
+					calculateEn(geographicCRS));
+		}
+	}
+
 }
