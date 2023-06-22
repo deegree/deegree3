@@ -312,6 +312,12 @@ public class XmlEditorBean implements Serializable {
 	public boolean checkValidity() {
 		try {
 			InputStream xml = new ByteArrayInputStream(content.getBytes("UTF-8"));
+			// Workaround to allow relative imports (as these are not working with fully
+			// qualified URLs)
+			if (schemaUrl != null && schemaUrl.startsWith("jar:file") && schemaUrl.indexOf('!') > 0) {
+				schemaUrl = schemaUrl.substring(schemaUrl.indexOf('!') + 1);
+			}
+
 			String[] schemas = new String[] { schemaUrl };
 			List<SchemaValidationEvent> events = SchemaValidator.validate(xml, schemas);
 			if (!events.isEmpty()) {
