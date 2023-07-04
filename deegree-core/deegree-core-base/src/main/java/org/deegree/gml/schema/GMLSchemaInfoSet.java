@@ -52,6 +52,8 @@ import static org.deegree.commons.xml.CommonNamespaces.ISO_2005_GCO_NS;
 import static org.deegree.commons.xml.CommonNamespaces.ISO_2005_GSR_NS;
 import static org.deegree.commons.xml.CommonNamespaces.ISO_2005_GSS_NS;
 import static org.deegree.commons.xml.CommonNamespaces.ISO_2005_GTS_NS;
+import static org.deegree.commons.xml.CommonNamespaces.SMIL_20;
+import static org.deegree.commons.xml.CommonNamespaces.SMIL_20_LANGUAGE;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XMLNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSNS;
@@ -417,6 +419,9 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
 			appNamespaces.remove(ISO_2005_GSR_NS);
 			appNamespaces.remove(ISO_2005_GSS_NS);
 			appNamespaces.remove(ISO_2005_GTS_NS);
+			appNamespaces.remove(SMIL_20);
+			appNamespaces.remove(SMIL_20_LANGUAGE);
+
 		}
 		return appNamespaces;
 	}

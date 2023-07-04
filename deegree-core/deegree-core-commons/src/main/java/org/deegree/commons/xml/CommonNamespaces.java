@@ -135,6 +135,10 @@ public class CommonNamespaces {
 
 	public static final String ISO_2005_GTS_NS = "http://www.isotc211.org/2005/gts";
 
+	public static final String SMIL_20 = "http://www.w3.org/2001/SMIL20/";
+
+	public static final String SMIL_20_LANGUAGE = "http://www.w3.org/2001/SMIL20/Language";
+
 	/**
 	 * The APISO namespace is bound to: "http://www.opengis.net/cat/csw/apiso/1.0"
 	 */
