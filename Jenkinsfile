@@ -63,7 +63,7 @@ pipeline {
         }
         stage ('Release') {
             when {
-                allOf{
+                allOf {
                     triggeredBy cause: "UserIdCause", detail: "tmc"
                     expression { return params.PERFORM_RELEASE }
                 }
@@ -74,8 +74,8 @@ pipeline {
             }
             post {
                 success {
-                    archiveArtifacts artifacts: 'checkout/**/target/deegree-webservices-*.war', fingerprint: true
-                    archiveArtifacts artifacts: 'checkout/**/target/deegree-webservices-handbook*.zip', fingerprint: true
+                    archiveArtifacts artifacts: '**/target/deegree-webservices-*.war', fingerprint: true
+                    archiveArtifacts artifacts: '**/target/deegree-webservices-handbook*.zip', fingerprint: true
                 }
             }
         }
