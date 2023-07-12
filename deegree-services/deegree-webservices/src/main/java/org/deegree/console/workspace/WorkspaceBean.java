@@ -95,8 +95,8 @@ public class WorkspaceBean implements Serializable {
 	// only used when no build (Maven) module version information is available
 	private static final String DEFAULT_VERSION = "UNKNOWN";
 
-	private static final String[] WS_LIST = { "deegree-workspace-csw", "deegree-workspace-inspire",
-			"deegree-workspace-utah", "deegree-workspace-wps" };
+	private static final String[] WS_LIST = { "deegree-workspace-csw", "deegree-workspace-utah",
+			"deegree-workspace-wps" };
 
 	private final HashMap<String, String> workspaceLocations = new HashMap<String, String>();
 
