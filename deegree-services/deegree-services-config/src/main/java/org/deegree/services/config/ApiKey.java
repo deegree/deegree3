@@ -158,7 +158,8 @@ public class ApiKey {
 		}
 		else {
 			LOG.info("***");
-			LOG.info("*** NOTE: The REST API is secured, so that the key set in file '{}' is required to access it.");
+			LOG.info("*** NOTE: The REST API is secured, so that the key set in file '{}' is required to access it.",
+					file);
 			LOG.info("***");
 		}
 
