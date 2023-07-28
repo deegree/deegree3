@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -50,28 +49,28 @@ import org.deegree.workspace.Workspace;
 
 /**
  * SPI provider implementation for SLD style stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class SLDStyleStoreProvider extends StyleStoreProvider {
 
-    private static final URL CONFIG_SCHEMA = SLDStyleStoreProvider.class.getResource( "/META-INF/SCHEMAS_OPENGIS_NET/sld/1.1.0/StyledLayerDescriptor.xsd" );
+	private static final URL CONFIG_SCHEMA = SLDStyleStoreProvider.class
+		.getResource("/META-INF/SCHEMAS_OPENGIS_NET/sld/1.1.0/StyledLayerDescriptor.xsd");
 
-    @Override
-    public String getNamespace() {
-        return "http://www.opengis.net/sld";
-    }
+	@Override
+	public String getNamespace() {
+		return "http://www.opengis.net/sld";
+	}
 
-    @Override
-    public ResourceMetadata<StyleStore> createFromLocation( Workspace workspace, ResourceLocation<StyleStore> location ) {
-        return new SldStyleStoreMetadata( workspace, location, this );
-    }
+	@Override
+	public ResourceMetadata<StyleStore> createFromLocation(Workspace workspace, ResourceLocation<StyleStore> location) {
+		return new SldStyleStoreMetadata(workspace, location, this);
+	}
 
-    @Override
-    public URL getSchema() {
-        return CONFIG_SCHEMA;
-    }
+	@Override
+	public URL getSchema() {
+		return CONFIG_SCHEMA;
+	}
 
 }

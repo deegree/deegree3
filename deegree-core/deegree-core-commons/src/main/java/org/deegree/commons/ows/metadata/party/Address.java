@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -39,126 +38,124 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The <code>Address</code> bean encapsulates the corresponding GetCapabilities response metadata element.
- * 
+ * The <code>Address</code> bean encapsulates the corresponding GetCapabilities response
+ * metadata element.
+ *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class Address {
 
-    private List<String> deliveryPoint;
+	private List<String> deliveryPoint;
 
-    private String city;
+	private String city;
 
-    private String administrativeArea;
+	private String administrativeArea;
 
-    private String postalCode;
+	private String postalCode;
 
-    private String country;
+	private String country;
 
-    private List<String> electronicMailAddress;
+	private List<String> electronicMailAddress;
 
-    /**
-     * @param deliveryPoint
-     *            the deliveryPoint to set
-     */
-    public void setDeliveryPoint( List<String> deliveryPoint ) {
-        this.deliveryPoint = deliveryPoint;
-    }
+	/**
+	 * @param deliveryPoint the deliveryPoint to set
+	 */
+	public void setDeliveryPoint(List<String> deliveryPoint) {
+		this.deliveryPoint = deliveryPoint;
+	}
 
-    /**
-     * @param electronicMailAddress
-     *            the electronicMailAddress to set
-     */
-    public void setElectronicMailAddress( List<String> electronicMailAddress ) {
-        this.electronicMailAddress = electronicMailAddress;
-    }
+	/**
+	 * @param electronicMailAddress the electronicMailAddress to set
+	 */
+	public void setElectronicMailAddress(List<String> electronicMailAddress) {
+		this.electronicMailAddress = electronicMailAddress;
+	}
 
-    /**
-     * @return deliveryPoint, never <code>null</code>
-     */
-    public List<String> getDeliveryPoint() {
-        if ( deliveryPoint == null ) {
-            deliveryPoint = new ArrayList<String>();
-        }
-        return deliveryPoint;
-    }
+	/**
+	 * @return deliveryPoint, never <code>null</code>
+	 */
+	public List<String> getDeliveryPoint() {
+		if (deliveryPoint == null) {
+			deliveryPoint = new ArrayList<String>();
+		}
+		return deliveryPoint;
+	}
 
-    /**
-     * @param city
-     */
-    public void setCity( String city ) {
-        this.city = city;
-    }
+	/**
+	 * @param city
+	 */
+	public void setCity(String city) {
+		this.city = city;
+	}
 
-    /**
-     * @return city, may be <code>null</code>
-     */
-    public String getCity() {
-        return city;
-    }
+	/**
+	 * @return city, may be <code>null</code>
+	 */
+	public String getCity() {
+		return city;
+	}
 
-    /**
-     * @param administrativeArea
-     */
-    public void setAdministrativeArea( String administrativeArea ) {
-        this.administrativeArea = administrativeArea;
-    }
+	/**
+	 * @param administrativeArea
+	 */
+	public void setAdministrativeArea(String administrativeArea) {
+		this.administrativeArea = administrativeArea;
+	}
 
-    /**
-     * @return administrativeArea, may be <code>null</code>
-     */
-    public String getAdministrativeArea() {
-        return administrativeArea;
-    }
+	/**
+	 * @return administrativeArea, may be <code>null</code>
+	 */
+	public String getAdministrativeArea() {
+		return administrativeArea;
+	}
 
-    /**
-     * @param postalCode
-     */
-    public void setPostalCode( String postalCode ) {
-        this.postalCode = postalCode;
-    }
+	/**
+	 * @param postalCode
+	 */
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
+	}
 
-    /**
-     * @return postalCode, may be <code>null</code>
-     */
-    public String getPostalCode() {
-        return postalCode;
-    }
+	/**
+	 * @return postalCode, may be <code>null</code>
+	 */
+	public String getPostalCode() {
+		return postalCode;
+	}
 
-    /**
-     * @param country
-     */
-    public void setCountry( String country ) {
-        this.country = country;
-    }
+	/**
+	 * @param country
+	 */
+	public void setCountry(String country) {
+		this.country = country;
+	}
 
-    /**
-     * @return country, may be <code>null</code>
-     */
-    public String getCountry() {
-        return country;
-    }
+	/**
+	 * @return country, may be <code>null</code>
+	 */
+	public String getCountry() {
+		return country;
+	}
 
-    /**
-     * @return electronicMailAddress, never <code>null</code>
-     */
-    public List<String> getElectronicMailAddress() {
-        if ( electronicMailAddress == null ) {
-            electronicMailAddress = new ArrayList<String>();
-        }
-        return electronicMailAddress;
-    }
+	/**
+	 * @return electronicMailAddress, never <code>null</code>
+	 */
+	public List<String> getElectronicMailAddress() {
+		if (electronicMailAddress == null) {
+			electronicMailAddress = new ArrayList<String>();
+		}
+		return electronicMailAddress;
+	}
 
-    /**
-     * Returns whether any information on the physical address is available.
-     * 
-     * @returns <code>true</code>, if any physical information is available, <code>false</code> otherwise
-     */
-    public boolean isPhysicalInfoAvailable() {
-        return !getDeliveryPoint().isEmpty() || getCity() != null || getAdministrativeArea() != null
-               || getPostalCode() != null || getCountry() != null;
-    }
+	/**
+	 * Returns whether any information on the physical address is available.
+	 *
+	 * @returns <code>true</code>, if any physical information is available,
+	 * <code>false</code> otherwise
+	 */
+	public boolean isPhysicalInfoAvailable() {
+		return !getDeliveryPoint().isEmpty() || getCity() != null || getAdministrativeArea() != null
+				|| getPostalCode() != null || getCountry() != null;
+	}
+
 }

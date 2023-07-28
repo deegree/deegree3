@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -47,58 +46,58 @@ import org.deegree.tile.TileIOException;
 import org.deegree.tile.persistence.AbstractTileStoreTransaction;
 
 /**
- * {@link org.deegree.tile.persistence.TileStoreTransaction} for the {@link FileSystemTileStore}.
- * 
+ * {@link org.deegree.tile.persistence.TileStoreTransaction} for the
+ * {@link FileSystemTileStore}.
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 class FileSystemTileStoreTransaction extends AbstractTileStoreTransaction {
 
-    // private static final Logger LOG = getLogger( FileSystemTileStoreTransaction.class );
+	// private static final Logger LOG = getLogger( FileSystemTileStoreTransaction.class
+	// );
 
-    /**
-     * Creates a new {@link org.deegree.tile.persistence.TileStoreTransaction}.
-     * 
-     * @param store
-     *            tile store, must not be <code>null</code>
-     */
-    FileSystemTileStoreTransaction( String id, FileSystemTileStore store ) {
-        super( store, id );
-    }
+	/**
+	 * Creates a new {@link org.deegree.tile.persistence.TileStoreTransaction}.
+	 * @param store tile store, must not be <code>null</code>
+	 */
+	FileSystemTileStoreTransaction(String id, FileSystemTileStore store) {
+		super(store, id);
+	}
 
-    @Override
-    public void put( String matrixId, Tile tile, long x, long y )
-                            throws TileIOException {
-        DiskLayout layout = ( (FileSystemTileDataLevel) this.store.getTileDataSet( this.tileMatrixSet ).getTileDataLevel( matrixId ) ).getLayout();
-        FileOutputStream fos = null;
-        try {
-            File file = layout.resolve( matrixId, x, y );
-            synchronized ( store ) {
-                if ( !file.getParentFile().exists() && !file.getParentFile().mkdirs() ) {
-                    throw new TileIOException( "Unable to create parent directories for " + file );
-                }
-            }
-            fos = new FileOutputStream( file );
-            ImageIO.write( tile.getAsImage(), layout.getFileType(), fos );
-        } catch ( IOException e ) {
-            throw new TileIOException( "Error retrieving image: " + e.getMessage(), e );
-        } finally {
-            IOUtils.closeQuietly( fos );
-        }
-    }
+	@Override
+	public void put(String matrixId, Tile tile, long x, long y) throws TileIOException {
+		DiskLayout layout = ((FileSystemTileDataLevel) this.store.getTileDataSet(this.tileMatrixSet)
+			.getTileDataLevel(matrixId)).getLayout();
+		FileOutputStream fos = null;
+		try {
+			File file = layout.resolve(matrixId, x, y);
+			synchronized (store) {
+				if (!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
+					throw new TileIOException("Unable to create parent directories for " + file);
+				}
+			}
+			fos = new FileOutputStream(file);
+			ImageIO.write(tile.getAsImage(), layout.getFileType(), fos);
+		}
+		catch (IOException e) {
+			throw new TileIOException("Error retrieving image: " + e.getMessage(), e);
+		}
+		finally {
+			IOUtils.closeQuietly(fos);
+		}
+	}
 
-    @Override
-    public void delete( String matrixId, long x, long y )
-                            throws TileIOException {
-        DiskLayout layout = ( (FileSystemTileDataLevel) this.store.getTileDataSet( this.tileMatrixSet ).getTileDataLevel( matrixId ) ).getLayout();
-        File file = layout.resolve( matrixId, x, y );
-        if ( file.exists() ) {
-            if ( !file.delete() ) {
-                throw new TileIOException( "Unable to delete tile file " + file );
-            }
-        }
-    }
+	@Override
+	public void delete(String matrixId, long x, long y) throws TileIOException {
+		DiskLayout layout = ((FileSystemTileDataLevel) this.store.getTileDataSet(this.tileMatrixSet)
+			.getTileDataLevel(matrixId)).getLayout();
+		File file = layout.resolve(matrixId, x, y);
+		if (file.exists()) {
+			if (!file.delete()) {
+				throw new TileIOException("Unable to delete tile file " + file);
+			}
+		}
+	}
+
 }

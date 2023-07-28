@@ -19,18 +19,18 @@ import org.deegree.time.position.TimePosition;
 
 public class TimePositionAdapter {
 
-    public Property getAsXMLElement( final QName name, final TimePosition timeInstant ) {
-        final Map<QName, PrimitiveValue> attrs = new HashMap<QName, PrimitiveValue>();
-        if ( timeInstant.getIndeterminatePosition() != null ) {
-            final String indeterminateValue = timeInstant.getIndeterminatePosition().name().toLowerCase();
-            final PrimitiveValue pv = new PrimitiveValue( indeterminateValue, new PrimitiveType( STRING ) );
-            attrs.put( new QName( "indeterminatePosition" ), pv );
-        }
-        final PrimitiveValue value = new PrimitiveValue( timeInstant.getValue() );
-        final List<TypedObjectNode> children = new ArrayList<TypedObjectNode>();
-        children.add( value );
-        final GenericXMLElement xmlElement = new GenericXMLElement( name, null, attrs, children );
-        return new GenericProperty( null, name, xmlElement, attrs, children );
-    }
+	public Property getAsXMLElement(final QName name, final TimePosition timeInstant) {
+		final Map<QName, PrimitiveValue> attrs = new HashMap<QName, PrimitiveValue>();
+		if (timeInstant.getIndeterminatePosition() != null) {
+			final String indeterminateValue = timeInstant.getIndeterminatePosition().name().toLowerCase();
+			final PrimitiveValue pv = new PrimitiveValue(indeterminateValue, new PrimitiveType(STRING));
+			attrs.put(new QName("indeterminatePosition"), pv);
+		}
+		final PrimitiveValue value = new PrimitiveValue(timeInstant.getValue());
+		final List<TypedObjectNode> children = new ArrayList<TypedObjectNode>();
+		children.add(value);
+		final GenericXMLElement xmlElement = new GenericXMLElement(name, attrs, children);
+		return new GenericProperty(null, name, xmlElement, attrs, children);
+	}
 
 }

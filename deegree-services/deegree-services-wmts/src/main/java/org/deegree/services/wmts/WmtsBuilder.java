@@ -36,28 +36,27 @@ import org.deegree.workspace.Workspace;
 
 /**
  * This class is responsible for building WMTS services.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class WmtsBuilder implements ResourceBuilder<OWS> {
 
-    private ResourceMetadata<OWS> metadata;
+	private ResourceMetadata<OWS> metadata;
 
-    private Workspace workspace;
+	private Workspace workspace;
 
-    private DeegreeWMTS config;
+	private DeegreeWMTS config;
 
-    public WmtsBuilder( ResourceMetadata<OWS> metadata, Workspace workspace, DeegreeWMTS config ) {
-        this.metadata = metadata;
-        this.workspace = workspace;
-        this.config = config;
-    }
+	public WmtsBuilder(ResourceMetadata<OWS> metadata, Workspace workspace, DeegreeWMTS config) {
+		this.metadata = metadata;
+		this.workspace = workspace;
+		this.config = config;
+	}
 
-    @Override
-    public OWS build() {
-        return new WMTSController( metadata, workspace, config );
-    }
+	@Override
+	public OWS build() {
+		return new WMTSController(metadata, workspace, config);
+	}
 
 }

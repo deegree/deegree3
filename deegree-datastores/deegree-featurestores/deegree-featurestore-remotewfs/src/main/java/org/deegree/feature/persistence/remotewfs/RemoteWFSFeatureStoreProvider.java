@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -45,54 +44,57 @@ import org.deegree.workspace.Workspace;
 
 /**
  * {@link FeatureStoreProvider} for the {@link RemoteWFSFeatureStore}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class RemoteWFSFeatureStoreProvider extends FeatureStoreProvider {
 
-    // private static final Logger LOG = LoggerFactory.getLogger( RemoteWFSFeatureStoreProvider.class );
+	// private static final Logger LOG = LoggerFactory.getLogger(
+	// RemoteWFSFeatureStoreProvider.class );
 
-    private static final String CONFIG_NS = "http://www.deegree.org/datasource/feature/remotewfs";
+	private static final String CONFIG_NS = "http://www.deegree.org/datasource/feature/remotewfs";
 
-    // private static final String CONFIG_JAXB_PACKAGE = "org.deegree.feature.persistence.remotewfs.jaxb";
+	// private static final String CONFIG_JAXB_PACKAGE =
+	// "org.deegree.feature.persistence.remotewfs.jaxb";
 
-    private static final URL CONFIG_SCHEMA = RemoteWFSFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/feature/remotewfs/remotewfs.xsd" );
+	private static final URL CONFIG_SCHEMA = RemoteWFSFeatureStoreProvider.class
+		.getResource("/META-INF/schemas/datasource/feature/remotewfs/remotewfs.xsd");
 
-    // // @Override
-    // public RemoteWFSFeatureStore create( URL configURL )
-    // throws ResourceInitException {
-    //
-    // RemoteWFSFeatureStore fs = null;
-    // try {
-    // RemoteWFSFeatureStoreConfig config = (RemoteWFSFeatureStoreConfig) unmarshall( CONFIG_JAXB_PACKAGE,
-    // CONFIG_SCHEMA, configURL,
-    // workspace );
-    //
-    // fs = new RemoteWFSFeatureStore( config );
-    // } catch ( JAXBException e ) {
-    // String msg = "Error in feature store configuration file '" + configURL + "': " + e.getMessage();
-    // LOG.error( msg );
-    // throw new ResourceInitException( msg, e );
-    // }
-    // return fs;
-    // }
+	// // @Override
+	// public RemoteWFSFeatureStore create( URL configURL )
+	// throws ResourceInitException {
+	//
+	// RemoteWFSFeatureStore fs = null;
+	// try {
+	// RemoteWFSFeatureStoreConfig config = (RemoteWFSFeatureStoreConfig) unmarshall(
+	// CONFIG_JAXB_PACKAGE,
+	// CONFIG_SCHEMA, configURL,
+	// workspace );
+	//
+	// fs = new RemoteWFSFeatureStore( config );
+	// } catch ( JAXBException e ) {
+	// String msg = "Error in feature store configuration file '" + configURL + "': " +
+	// e.getMessage();
+	// LOG.error( msg );
+	// throw new ResourceInitException( msg, e );
+	// }
+	// return fs;
+	// }
 
-    @Override
-    public ResourceMetadata<FeatureStore> createFromLocation( Workspace workspace,
-                                                              ResourceLocation<FeatureStore> location ) {
-        return null;
-    }
+	@Override
+	public ResourceMetadata<FeatureStore> createFromLocation(Workspace workspace,
+			ResourceLocation<FeatureStore> location) {
+		return null;
+	}
 
-    @Override
-    public URL getSchema() {
-        return CONFIG_SCHEMA;
-    }
+	@Override
+	public URL getSchema() {
+		return CONFIG_SCHEMA;
+	}
 
-    @Override
-    public String getNamespace() {
-        return CONFIG_NS;
-    }
+	@Override
+	public String getNamespace() {
+		return CONFIG_NS;
+	}
+
 }

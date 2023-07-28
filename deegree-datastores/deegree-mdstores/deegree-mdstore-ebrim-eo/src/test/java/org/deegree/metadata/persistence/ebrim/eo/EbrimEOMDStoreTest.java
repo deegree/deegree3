@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://buesching@criador.lat-lon.de/srv/svn/deegree-intern/trunk/latlon-mdstore-ebrim-eo/src/test/java/de/latlon/metadata/persistence/ebrim/eo/EbrimEOMDStoreTest.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -82,169 +81,162 @@ import org.slf4j.Logger;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * 
- * @version $Revision: 182 $, $Date: 2011-05-11 18:00:02 +0200 (Mi, 11. Mai 2011) $
  */
 public class EbrimEOMDStoreTest {
 
-    private static final Logger LOG = getLogger( EbrimEOMDStoreTest.class );
+	private static final Logger LOG = getLogger(EbrimEOMDStoreTest.class);
 
-    private static final String MDSTORE_ID = "ebrimEO";
+	private static final String MDSTORE_ID = "ebrimEO";
 
-    private EbrimEOMDStore store = null;
+	private EbrimEOMDStore store = null;
 
-    private Workspace ws;
+	private Workspace ws;
 
-    private static final NamespaceBindings ns = CommonNamespaces.getNamespaceContext();
+	private static final NamespaceBindings ns = CommonNamespaces.getNamespaceContext();
 
-    private static boolean insertSuccess = false;
+	private static boolean insertSuccess = false;
 
-    private static final String id_rec1 = "urn:ogc:def:EOP:RE00:IMG_MSI_3A:5230420:RP";
+	private static final String id_rec1 = "urn:ogc:def:EOP:RE00:IMG_MSI_3A:5230420:RP";
 
-    static {
-        ns.addNamespace( "rim", "urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" );
-        ns.addNamespace( "wrs", "http://www.opengis.net/cat/wrs/1.0" );
-    }
+	static {
+		ns.addNamespace("rim", "urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0");
+		ns.addNamespace("wrs", "http://www.opengis.net/cat/wrs/1.0");
+	}
 
-    @Before
-    public void setUp()
-                            throws Exception {
-        File wsDir = new File( EbrimEOMDStore.class.getResource( "eotest" ).toURI() );
-        ws = new DefaultWorkspace( wsDir );
-        ws.initAll();
-        store = (EbrimEOMDStore) ws.getResource( MetadataStoreProvider.class, MDSTORE_ID );
-    }
+	@Before
+	public void setUp() throws Exception {
+		File wsDir = new File(EbrimEOMDStore.class.getResource("eotest").toURI());
+		ws = new DefaultWorkspace(wsDir);
+		ws.initAll();
+		store = (EbrimEOMDStore) ws.getResource(MetadataStoreProvider.class, MDSTORE_ID);
+	}
 
-    @After
-    public void tearDown()
-                            throws Exception {
-        ws.destroy();
-    }
+	@After
+	public void tearDown() throws Exception {
+		ws.destroy();
+	}
 
-    @Test
-    public void testGetRecordById()
-                            throws SQLException, MetadataStoreException, UnsupportedEncodingException, IOException,
-                            MetadataInspectorException {
-        if ( insertSuccess ) {
-            LOG.info( "Could not insert test datasets, skip testGetRecordById" );
-            return;
-        }
+	@Test
+	public void testGetRecordById() throws SQLException, MetadataStoreException, UnsupportedEncodingException,
+			IOException, MetadataInspectorException {
+		if (insertSuccess) {
+			LOG.info("Could not insert test datasets, skip testGetRecordById");
+			return;
+		}
 
-        Connection conn = getConnection();
-        if ( conn == null ) {
-            LOG.info( "Could not get database connection, skip testGetRecordById" );
-            return;
-        }
-        MetadataResultSet<RegistryObject> recordById = store.getRecordById( Collections.singletonList( id_rec1 ), null );
+		Connection conn = getConnection();
+		if (conn == null) {
+			LOG.info("Could not get database connection, skip testGetRecordById");
+			return;
+		}
+		MetadataResultSet<RegistryObject> recordById = store.getRecordById(Collections.singletonList(id_rec1), null);
 
-        assertNotNull( recordById );
+		assertNotNull(recordById);
 
-        recordById.next();
+		recordById.next();
 
-        RegistryObject record = recordById.getRecord();
-        Assert.assertNotNull( record );
+		RegistryObject record = recordById.getRecord();
+		Assert.assertNotNull(record);
 
-        assertEquals( id_rec1, record.getIdentifier() );
-    }
+		assertEquals(id_rec1, record.getIdentifier());
+	}
 
-    // @Test
-    // public void testGetRecordCountAll()
-    // throws SQLException, MetadataStoreException, UnsupportedEncodingException, IOException,
-    // MetadataInspectorException {
-    // if ( insertSuccess ) {
-    // LOG.info( "Could not insert test datasets, skip testGetRecordCountAll" );
-    // return;
-    // }
-    // Connection conn = getConnection();
-    // if ( conn == null ) {
-    // LOG.info( "Could not get database connection, skip testGetRecordCountAll" );
-    // return;
-    // }
-    // QueryHandler qh = new QueryHandler( conn, Type.PostgreSQL, null );
-    // int countRecords = qh.countRecords( null );
-    // assertEquals( 1, countRecords );
-    // }
+	// @Test
+	// public void testGetRecordCountAll()
+	// throws SQLException, MetadataStoreException, UnsupportedEncodingException,
+	// IOException,
+	// MetadataInspectorException {
+	// if ( insertSuccess ) {
+	// LOG.info( "Could not insert test datasets, skip testGetRecordCountAll" );
+	// return;
+	// }
+	// Connection conn = getConnection();
+	// if ( conn == null ) {
+	// LOG.info( "Could not get database connection, skip testGetRecordCountAll" );
+	// return;
+	// }
+	// QueryHandler qh = new QueryHandler( conn, Type.PostgreSQL, null );
+	// int countRecords = qh.countRecords( null );
+	// assertEquals( 1, countRecords );
+	// }
 
-    @Test
-    public void testGetRecordsAll()
-                            throws SQLException, MetadataStoreException, UnsupportedEncodingException, IOException,
-                            MetadataInspectorException {
-        if ( insertSuccess ) {
-            LOG.info( "Could not insert test datasets, skip testGetRecordsAll" );
-            return;
-        }
-        Connection conn = getConnection();
-        if ( conn == null ) {
-            LOG.info( "Could not get database connection, skip testGetRecordsAll" );
-            return;
-        }
-        MetadataQuery query = new MetadataQuery( null, null, null, null, 1, 20 );
-        MetadataResultSet<RegistryObject> records = store.getRecords( query );
+	@Test
+	public void testGetRecordsAll() throws SQLException, MetadataStoreException, UnsupportedEncodingException,
+			IOException, MetadataInspectorException {
+		if (insertSuccess) {
+			LOG.info("Could not insert test datasets, skip testGetRecordsAll");
+			return;
+		}
+		Connection conn = getConnection();
+		if (conn == null) {
+			LOG.info("Could not get database connection, skip testGetRecordsAll");
+			return;
+		}
+		MetadataQuery query = new MetadataQuery(null, null, null, null, 1, 20);
+		MetadataResultSet<RegistryObject> records = store.getRecords(query);
 
-        Assert.assertNotNull( records );
+		Assert.assertNotNull(records);
 
-        int count = 0;
-        while ( records.next() ) {
-            count++;
-        }
-        assertEquals( 2, count );
-    }
+		int count = 0;
+		while (records.next()) {
+			count++;
+		}
+		assertEquals(2, count);
+	}
 
-    @Test
-    public void testGetRecordsFilter()
-                            throws SQLException, MetadataStoreException, UnsupportedEncodingException, IOException,
-                            MetadataInspectorException {
-        if ( insertSuccess ) {
-            LOG.info( "Could not insert test datasets, skip testGetRecordsFilter" );
-            return;
-        }
-        Connection conn = getConnection();
-        if ( conn == null ) {
-            LOG.info( "Could not get database connection, skip testGetRecordsFilter" );
-            return;
-        }
+	@Test
+	public void testGetRecordsFilter() throws SQLException, MetadataStoreException, UnsupportedEncodingException,
+			IOException, MetadataInspectorException {
+		if (insertSuccess) {
+			LOG.info("Could not insert test datasets, skip testGetRecordsFilter");
+			return;
+		}
+		Connection conn = getConnection();
+		if (conn == null) {
+			LOG.info("Could not get database connection, skip testGetRecordsFilter");
+			return;
+		}
 
-        Expression propName = new ValueReference( "/rim:RegistryPackage/@id", ns );
-        Expression lit = new Literal<PrimitiveValue>( id_rec1 );
-        Operator rootOperator = new PropertyIsEqualTo( propName, lit, true, null );
-        Filter filter = new OperatorFilter( rootOperator );
-        MetadataQuery query = new MetadataQuery( null, null, filter, null, 1, 20 );
-        MetadataResultSet<RegistryObject> recordById = store.getRecords( query );
+		Expression propName = new ValueReference("/rim:RegistryPackage/@id", ns);
+		Expression lit = new Literal<PrimitiveValue>(id_rec1);
+		Operator rootOperator = new PropertyIsEqualTo(propName, lit, true, null);
+		Filter filter = new OperatorFilter(rootOperator);
+		MetadataQuery query = new MetadataQuery(null, null, filter, null, 1, 20);
+		MetadataResultSet<RegistryObject> recordById = store.getRecords(query);
 
-        Assert.assertNotNull( recordById );
+		Assert.assertNotNull(recordById);
 
-        recordById.next();
+		recordById.next();
 
-        RegistryObject record = recordById.getRecord();
-        Assert.assertNotNull( record );
+		RegistryObject record = recordById.getRecord();
+		Assert.assertNotNull(record);
 
-        Assert.assertEquals( id_rec1, record.getIdentifier() );
-    }
+		Assert.assertEquals(id_rec1, record.getIdentifier());
+	}
 
-    @BeforeClass
-    public static void insertTestDatasets()
-                            throws UnsupportedEncodingException, SQLException, IOException, MetadataStoreException,
-                            MetadataInspectorException {
+	@BeforeClass
+	public static void insertTestDatasets() throws UnsupportedEncodingException, SQLException, IOException,
+			MetadataStoreException, MetadataInspectorException {
 
-        Connection conn = getConnection();
-        if ( conn == null ) {
-            LOG.info( "Could nor get database connection, skip testInsert" );
-            return;
-        }
-        setUpTables( conn );
-        EbrimEOMDStoreTransaction t = new EbrimEOMDStoreTransaction( conn, JDBCUtils.useLegayPostGISPredicates( conn,
-                                                                                                                LOG ) );
-        InputStream is1 = EbrimEOTransactionTest.class.getResourceAsStream( "io/ebrimRecord1.xml" );
-        InputStream is2 = EbrimEOTransactionTest.class.getResourceAsStream( "io/ebrimRecord2.xml" );
-        List<RegistryPackage> recs = new ArrayList<RegistryPackage>();
-        recs.add( new RegistryPackage( new XMLAdapter( is1 ).getRootElement() ) );
-        recs.add( new RegistryPackage( new XMLAdapter( is2 ).getRootElement() ) );
-        InsertOperation io = new InsertOperation( recs, null, null );
-        t.performInsert( io );
-        t.commit();
-        insertSuccess = true;
-    }
+		Connection conn = getConnection();
+		if (conn == null) {
+			LOG.info("Could nor get database connection, skip testInsert");
+			return;
+		}
+		setUpTables(conn);
+		EbrimEOMDStoreTransaction t = new EbrimEOMDStoreTransaction(conn,
+				JDBCUtils.useLegayPostGISPredicates(conn, LOG));
+		InputStream is1 = EbrimEOTransactionTest.class.getResourceAsStream("io/ebrimRecord1.xml");
+		InputStream is2 = EbrimEOTransactionTest.class.getResourceAsStream("io/ebrimRecord2.xml");
+		List<RegistryPackage> recs = new ArrayList<RegistryPackage>();
+		recs.add(new RegistryPackage(new XMLAdapter(is1).getRootElement()));
+		recs.add(new RegistryPackage(new XMLAdapter(is2).getRootElement()));
+		InsertOperation io = new InsertOperation(recs, null, null);
+		t.performInsert(io);
+		t.commit();
+		insertSuccess = true;
+	}
+
 }

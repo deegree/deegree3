@@ -76,7 +76,7 @@ sections:
 
 For example, to offer a Web Feature Service, a feature store (based on a
 shapefile, database, etc) must be configured. With a rasterfile, like a
-GeoTIFF, you can configured a tile store and a coverage store to offer a
+GeoTIFF, you can configure a tile store and a coverage store to offer a
 Web Map Service.
 
 .Workspace configuration dependencies
@@ -84,38 +84,39 @@ image::workspace-configuration-dependencies.png[Workspace configuration dependen
 
 === Location of the deegree workspace directory
 
-The active deegree workspace is part of the _.deegree_ directory which
+The active deegree workspace is part of the deegree workspace directory which
 stores a few global configuration files along with the workspace. The
 location of this directory depends on your operating system.
 
-==== Linux/Solaris/Mac OS X
+==== UNIX-like/Linux/macOS
 
-On UNIX-like systems (Linux/Solaris/MacOS X), deegree's configuration
-files are located in folder _<$HOME/.deegree/_. Note that _$HOME_ is
+On UNIX-like systems (Linux/macOS), deegree's configuration
+files are located in folder _$HOME/.deegree/_. Note that _$HOME_ is
 determined by the user that started the web application container that
 runs deegree. If you started the Java Servlet container as user
 "kelvin", then the directory will be something like
 _/home/kelvin/.deegree_.
 
 TIP: In order to use a different folder for deegree's configuration files,
-you can set the system environment variable _DEEGREE_WORKSPACE_ROOT_.
-Note that the user running the web application container must have
-read/write access to this directory.
+you can set the environment variable _DEEGREE_WORKSPACE_ROOT_, for example with `export DEEGREE_WORKSPACE_ROOT=/var/lib/tomcat9/.deegree`. When using Tomcat you can also set the path by defining a Java system property and appending the `JAVA_OPTS` or `CATALINA_OPTS` environment variable with `CATALINA_OPTS=-DDEEGREE_WORKSPACE_ROOT=/var/lib/tomcat9/.deegree`.
+
+IMPORTANT: Note that the user running the web application container must have
+read/write access to this directory! Since Debian 11 you have to grant explicitly write access to the default home directory by setting `ReadWritePaths=/var/lib/tomcat9/.deegree` in _/etc/systemd/system/multi-user.target.wants/tomcat9.service_!
 
 ==== Windows
 
-On Windows, deegree's configuration files are located in folder
+On a Windows operating system, deegree's configuration files are located in folder
 _%USERPROFILE%/.deegree/_. Note that _%USERPROFILE%_ is determined
 by the user that started the web application container that runs
 deegree. If you started the Java Servlet container as user "kelvin",
 then the directory will be something like _C:\Users\kelvin\.deegree_
-or _C:\Dokumente und Einstellungen\kelvin\.deegree_.
+or _C:\Documents and Settings\kelvin\.deegree_.
 
 TIP: In order to use a different folder for deegree's configuration files,
-you can set the system environment variable _DEEGREE_WORKSPACE_ROOT_.
-Note that the user running the web application container must have
-read/write access to this directory.
+you can set the system environment variable _DEEGREE_WORKSPACE_ROOT_, for example with `set DEEGREE_WORKSPACE_ROOT=C:\Program Files\Apache Tomcat\deegree`. When using Tomcat you can also set the path by defining a Java system property and appending the `JAVA_OPTS` or `CATALINA_OPTS` environment variable with `CATALINA_OPTS=-DDEEGREE_WORKSPACE_ROOT=C:\Program Files\Apache Tomcat\deegree`.
 
+IMPORTANT: Note that the user running the web application container must have
+read/write access to this directory!
 
 [[anchor-global-configuration]]
 ==== Global configuration files and the active workspace
@@ -138,9 +139,10 @@ files exist:
 |console.pw |Password for services console
 |proxy.xml |Proxy settings
 |webapps.properties |Selects the active workspace
+|config.apikey |Contains the key to protect the REST API
 |===
 
-Note that only a single workspace can be active at a time. The
+NOTE: Only one single workspace can be active at a time! The
 information on the active one is stored in file _webapps.properties_.
 
 TIP: Usually, you don't need to care about the three files that are located
@@ -149,12 +151,17 @@ modifies them as required (e.g. when switching to a different
 workspace). In order to create a deegree webservices setup, you will
 need to create or edit resource configuration files in the active
 workspace directory. The remaining documentation will always refer to
-files in the (active) workspace directory.
+files in the active workspace directory.
 
 TIP: When multiple deegree webservices instances run on a single machine,
 every instance can use a different workspace. The file
 _webapps.properties_ stores the active workspace for every deegree
 webapp separately.
+
+TIP: If there is no _config.apikey_ file, one will be generated on startup
+with an random value. Alternatively, a value of `*` in config.apikey will 
+turn off security for the REST API. We strongly advise against doing this
+in productive environments.
 
 === Structure of the deegree workspace directory
 
@@ -271,7 +278,7 @@ documented for each resource configuration format.
 ==== Proxy configuration
 
 The configuration format for the deegree proxy configuration is defined
-by schema file http://schemas.deegree.org/3.5/proxy/proxy.xsd. The
+by schema file https://schemas.deegree.org/core/3.5/proxy/proxy.xsd. The
 following table lists all available configuration options. When
 specifiying them, their order must be respected.
 
@@ -327,7 +334,7 @@ specifiying them, their order must be respected.
 <ProxyConfiguration
                     xmlns="http://www.deegree.org/proxy"
                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                    xsi:schemaLocation="http://www.deegree.org/proxy http://schemas.deegree.org/3.5/proxy/proxy.xsd"
+                    xsi:schemaLocation="http://www.deegree.org/proxy https://schemas.deegree.org/core/3.5/proxy/proxy.xsd"
                     overrideSystemSettings="true">
 
     <HttpProxyHost>proxy.example.com</HttpProxyHost>
@@ -581,7 +588,7 @@ any schema-aware editor should work.
 
 TIP: In case you are able to understand XML schema, you can also use the
 schema file to find out about the available config options. deegree's
-schema files are hosted at http://schemas.deegree.org.
+schema files are hosted at https://schemas.deegree.org.
 
 ==== Check the resource status and error messages
 

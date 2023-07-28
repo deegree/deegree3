@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-metadata/src/main/java/org/deegree/metadata/iso/persistence/parsing/ReturnableProperties.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -38,143 +37,134 @@ package org.deegree.metadata.iso.parsing;
 import java.util.List;
 
 /**
- * Properties that are just returnable by applicationprofiles such as ISO and Dublin Core. <br>
- * E.g. the "creator" can not be queried but is an element in Dublin Core Metadata profile. So it has to be extracted
- * from an insertable record.
- * 
+ * Properties that are just returnable by applicationprofiles such as ISO and Dublin Core.
+ * <br>
+ * E.g. the "creator" can not be queried but is an element in Dublin Core Metadata
+ * profile. So it has to be extracted from an insertable record.
+ *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 30651 $, $Date: 2011-05-05 11:40:31 +0200 (Do, 05. Mai 2011) $
  */
 public class ReturnableProperties {
 
-    private String graphicOverview;
+	private String graphicOverview;
 
-    private String creator;
+	private String creator;
 
-    private String publisher;
+	private String publisher;
 
-    private String contributor;
+	private String contributor;
 
-    private List<String> rights;
+	private List<String> rights;
 
-    private List<String> sources;
+	private List<String> sources;
 
-    private List<String> relation;
+	private List<String> relation;
 
-    /**
-     * @return the creator
-     */
-    public String getCreator() {
-        return creator;
-    }
+	/**
+	 * @return the creator
+	 */
+	public String getCreator() {
+		return creator;
+	}
 
-    /**
-     * @param creator
-     *            the creator to set
-     */
-    public void setCreator( String creator ) {
-        this.creator = creator;
-    }
+	/**
+	 * @param creator the creator to set
+	 */
+	public void setCreator(String creator) {
+		this.creator = creator;
+	}
 
-    /**
-     * @return the publisher
-     */
-    public String getPublisher() {
-        return publisher;
-    }
+	/**
+	 * @return the publisher
+	 */
+	public String getPublisher() {
+		return publisher;
+	}
 
-    /**
-     * @param publisher
-     *            the publisher to set
-     */
-    public void setPublisher( String publisher ) {
-        this.publisher = publisher;
-    }
+	/**
+	 * @param publisher the publisher to set
+	 */
+	public void setPublisher(String publisher) {
+		this.publisher = publisher;
+	}
 
-    /**
-     * @return the contributor
-     */
-    public String getContributor() {
-        return contributor;
-    }
+	/**
+	 * @return the contributor
+	 */
+	public String getContributor() {
+		return contributor;
+	}
 
-    /**
-     * @param contributor
-     *            the contributor to set
-     */
-    public void setContributor( String contributor ) {
-        this.contributor = contributor;
-    }
+	/**
+	 * @param contributor the contributor to set
+	 */
+	public void setContributor(String contributor) {
+		this.contributor = contributor;
+	}
 
-    /**
-     * @return the graphicOverview
-     */
-    public String getGraphicOverview() {
-        return graphicOverview;
-    }
+	/**
+	 * @return the graphicOverview
+	 */
+	public String getGraphicOverview() {
+		return graphicOverview;
+	}
 
-    /**
-     * @param graphicOverview
-     *            the graphicOverview to set
-     */
-    public void setGraphicOverview( String graphicOverview ) {
-        this.graphicOverview = graphicOverview;
-    }
+	/**
+	 * @param graphicOverview the graphicOverview to set
+	 */
+	public void setGraphicOverview(String graphicOverview) {
+		this.graphicOverview = graphicOverview;
+	}
 
-    /**
-     * @return the rights
-     */
-    public List<String> getRights() {
-        return rights;
-    }
+	/**
+	 * @return the rights
+	 */
+	public List<String> getRights() {
+		return rights;
+	}
 
-    /**
-     * @param rights
-     *            the rights to set
-     */
-    public void setRights( List<String> rights ) {
-        this.rights = rights;
-    }
+	/**
+	 * @param rights the rights to set
+	 */
+	public void setRights(List<String> rights) {
+		this.rights = rights;
+	}
 
-    /**
-     * @return the firstsource
-     */
-    public String getSource() {
-        if ( sources != null && !sources.isEmpty() )
-            return sources.get( 0 );
-        return null;
-    }
+	/**
+	 * @return the firstsource
+	 */
+	public String getSource() {
+		if (sources != null && !sources.isEmpty())
+			return sources.get(0);
+		return null;
+	}
 
-    /**
-     * @return the sources
-     */
-    public List<String> getSources() {
-        return sources;
-    }
+	/**
+	 * @return the sources
+	 */
+	public List<String> getSources() {
+		return sources;
+	}
 
-    /**
-     * @param sources
-     *            the sources to set
-     */
-    public void setSources( List<String> sources ) {
-        this.sources = sources;
-    }
+	/**
+	 * @param sources the sources to set
+	 */
+	public void setSources(List<String> sources) {
+		this.sources = sources;
+	}
 
-    /**
-     * @return the relation
-     */
-    public List<String> getRelation() {
-        return relation;
-    }
+	/**
+	 * @return the relation
+	 */
+	public List<String> getRelation() {
+		return relation;
+	}
 
-    /**
-     * @param relation
-     *            the relation to set
-     */
-    public void setRelation( List<String> relation ) {
-        this.relation = relation;
-    }
+	/**
+	 * @param relation the relation to set
+	 */
+	public void setRelation(List<String> relation) {
+		this.relation = relation;
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -41,22 +40,19 @@ import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 
 /**
- * Implementations are {@link ParticleConverter} that can be plugged into the maaping process via configuration.
- * 
+ * Implementations are {@link ParticleConverter} that can be plugged into the maaping
+ * process via configuration.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface CustomParticleConverter<T extends TypedObjectNode> extends ParticleConverter<T> {
 
-    /**
-     * Called during the init of the {@link SQLFeatureStore} that this converter is attached to.
-     * 
-     * @param mapping
-     *            mapping that this converter is attached to, never <code>null</code>
-     * @param fs
-     *            feature store, never <code>null</code>
-     */
-    public void init( Mapping mapping, SQLFeatureStore fs );
+	/**
+	 * Called during the init of the {@link SQLFeatureStore} that this converter is
+	 * attached to.
+	 * @param mapping mapping that this converter is attached to, never <code>null</code>
+	 * @param fs feature store, never <code>null</code>
+	 */
+	public void init(Mapping mapping, SQLFeatureStore fs);
+
 }

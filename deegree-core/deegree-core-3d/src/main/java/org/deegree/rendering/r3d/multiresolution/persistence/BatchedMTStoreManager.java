@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -40,17 +39,14 @@ import org.deegree.workspace.standard.DefaultResourceManagerMetadata;
 
 /**
  * The <code></code> class TODO add class documentation here.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class BatchedMTStoreManager extends DefaultResourceManager<BatchedMTStore> {
 
-    public BatchedMTStoreManager() {
-        super( new DefaultResourceManagerMetadata<BatchedMTStore>( BatchedMTStoreProvider.class, "batched mt stores",
-                                                                   "datasources/batchedmt" ) );
-    }
+	public BatchedMTStoreManager() {
+		super(new DefaultResourceManagerMetadata<BatchedMTStore>(BatchedMTStoreProvider.class, "batched mt stores",
+				"datasources/batchedmt"));
+	}
 
 }

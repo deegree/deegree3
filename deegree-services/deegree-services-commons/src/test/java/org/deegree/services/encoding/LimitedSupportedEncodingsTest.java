@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2014 by:
@@ -53,41 +52,42 @@ import org.junit.Test;
  */
 public class LimitedSupportedEncodingsTest {
 
-    private LimitedSupportedEncodings limitedSupportedEncodings = prepareLimitedSupportedEncodings();
+	private LimitedSupportedEncodings limitedSupportedEncodings = prepareLimitedSupportedEncodings();
 
-    @Test
-    public void testIsEncodingSupportedUnsupportedRequestType() {
-        assertFalse( limitedSupportedEncodings.isEncodingSupported( GetFeatureWithLock, "xml" ) );
-        assertFalse( limitedSupportedEncodings.isEncodingSupported( GetFeatureWithLock, "kvp" ) );
-        assertFalse( limitedSupportedEncodings.isEncodingSupported( GetFeatureWithLock, "soap" ) );
-    }
+	@Test
+	public void testIsEncodingSupportedUnsupportedRequestType() {
+		assertFalse(limitedSupportedEncodings.isEncodingSupported(GetFeatureWithLock, "xml"));
+		assertFalse(limitedSupportedEncodings.isEncodingSupported(GetFeatureWithLock, "kvp"));
+		assertFalse(limitedSupportedEncodings.isEncodingSupported(GetFeatureWithLock, "soap"));
+	}
 
-    @Test
-    public void testIsEncodingSupportedSupportedRequestType() {
-        assertTrue( limitedSupportedEncodings.isEncodingSupported( GetCapabilities, "xml" ) );
-        assertTrue( limitedSupportedEncodings.isEncodingSupported( GetCapabilities, "kvp" ) );
-        assertTrue( limitedSupportedEncodings.isEncodingSupported( GetCapabilities, "soap" ) );
-    }
+	@Test
+	public void testIsEncodingSupportedSupportedRequestType() {
+		assertTrue(limitedSupportedEncodings.isEncodingSupported(GetCapabilities, "xml"));
+		assertTrue(limitedSupportedEncodings.isEncodingSupported(GetCapabilities, "kvp"));
+		assertTrue(limitedSupportedEncodings.isEncodingSupported(GetCapabilities, "soap"));
+	}
 
-    @Test
-    public void testIsEncodingSupportedPartlySupportedRequestType() {
-        assertFalse( limitedSupportedEncodings.isEncodingSupported( DescribeFeatureType, "xml" ) );
-        assertTrue( limitedSupportedEncodings.isEncodingSupported( DescribeFeatureType, "kvp" ) );
-        assertTrue( limitedSupportedEncodings.isEncodingSupported( DescribeFeatureType, "soap" ) );
-    }
+	@Test
+	public void testIsEncodingSupportedPartlySupportedRequestType() {
+		assertFalse(limitedSupportedEncodings.isEncodingSupported(DescribeFeatureType, "xml"));
+		assertTrue(limitedSupportedEncodings.isEncodingSupported(DescribeFeatureType, "kvp"));
+		assertTrue(limitedSupportedEncodings.isEncodingSupported(DescribeFeatureType, "soap"));
+	}
 
-    private LimitedSupportedEncodings prepareLimitedSupportedEncodings() {
-        LimitedSupportedEncodings limitedSupportedEncodings = new LimitedSupportedEncodings();
-        limitedSupportedEncodings.addEnabledEncodings( CreateStoredQuery, new HashSet<String>( singletonList( "kvp" ) ) );
-        limitedSupportedEncodings.addEnabledEncodings( DescribeFeatureType,
-                                                       new HashSet<String>( asList( "kvp", "soap" ) ) );
-        limitedSupportedEncodings.addEnabledEncodings( GetCapabilities,
-                                                       new HashSet<String>( asList( "kvp", "soap", "xml" ) ) );
-        return limitedSupportedEncodings;
-    }
+	private LimitedSupportedEncodings prepareLimitedSupportedEncodings() {
+		LimitedSupportedEncodings limitedSupportedEncodings = new LimitedSupportedEncodings();
+		limitedSupportedEncodings.addEnabledEncodings(CreateStoredQuery, new HashSet<String>(singletonList("kvp")));
+		limitedSupportedEncodings.addEnabledEncodings(DescribeFeatureType, new HashSet<String>(asList("kvp", "soap")));
+		limitedSupportedEncodings.addEnabledEncodings(GetCapabilities,
+				new HashSet<String>(asList("kvp", "soap", "xml")));
+		return limitedSupportedEncodings;
+	}
 
-    enum RequestType {
-        GetCapabilities, GetFeatureWithLock, DescribeFeatureType, CreateStoredQuery
-    }
+	enum RequestType {
+
+		GetCapabilities, GetFeatureWithLock, DescribeFeatureType, CreateStoredQuery
+
+	}
 
 }

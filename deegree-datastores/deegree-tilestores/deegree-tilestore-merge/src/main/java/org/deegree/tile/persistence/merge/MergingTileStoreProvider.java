@@ -37,30 +37,31 @@ import org.deegree.workspace.Workspace;
 
 /**
  * {@link TileStoreProvider} for {@link MergingTileStore}.
- * 
+ *
  * @author <a href="mailto:Reijer.Copier@idgis.nl">Reijer Copier</a>
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * 
  * @since 3.4
  */
 public class MergingTileStoreProvider extends TileStoreProvider {
 
-    private static final String CONFIG_NAMESPACE = "http://www.deegree.org/datasource/tile/merge";
+	private static final String CONFIG_NAMESPACE = "http://www.deegree.org/datasource/tile/merge";
 
-    private static final URL SCHEMA = MergingTileStoreProvider.class.getResource( "/META-INF/schemas/datasource/tile/merge/merge.xsd" );
+	private static final URL SCHEMA = MergingTileStoreProvider.class
+		.getResource("/META-INF/schemas/datasource/tile/merge/merge.xsd");
 
-    @Override
-    public String getNamespace() {
-        return CONFIG_NAMESPACE;
-    }
+	@Override
+	public String getNamespace() {
+		return CONFIG_NAMESPACE;
+	}
 
-    @Override
-    public ResourceMetadata<TileStore> createFromLocation( Workspace workspace, ResourceLocation<TileStore> location ) {
-        return new MergingTileStoreMetadata( workspace, location, this );
-    }
+	@Override
+	public ResourceMetadata<TileStore> createFromLocation(Workspace workspace, ResourceLocation<TileStore> location) {
+		return new MergingTileStoreMetadata(workspace, location, this);
+	}
 
-    @Override
-    public URL getSchema() {
-        return SCHEMA;
-    }
+	@Override
+	public URL getSchema() {
+		return SCHEMA;
+	}
+
 }

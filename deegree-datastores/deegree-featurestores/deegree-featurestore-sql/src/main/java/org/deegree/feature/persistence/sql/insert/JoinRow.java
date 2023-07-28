@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -40,27 +39,21 @@ import org.deegree.feature.persistence.sql.expressions.TableJoin;
 
 /**
  * An {@link InsertRow} for a row of a joined table.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 class JoinRow extends InsertRow {
 
-    /**
-     * Creates a new {@link JoinRow} instance.
-     * 
-     * @param mgr
-     *            manager for the insert rows, must not be <code>null</code>
-     * @param join
-     *            table join that leads to this join row, must not be <code>null</code>
-     * @throws FeatureStoreException
-     */
-    JoinRow( InsertRowManager mgr, TableJoin join ) throws FeatureStoreException {
-        super( mgr );
-        this.table = join.getToTable();
-        generateImmediateKeys( join.getKeyColumnToGenerator() );
-    }
+	/**
+	 * Creates a new {@link JoinRow} instance.
+	 * @param mgr manager for the insert rows, must not be <code>null</code>
+	 * @param join table join that leads to this join row, must not be <code>null</code>
+	 * @throws FeatureStoreException
+	 */
+	JoinRow(InsertRowManager mgr, TableJoin join) throws FeatureStoreException {
+		super(mgr);
+		this.table = join.getToTable();
+		generateImmediateKeys(join.getKeyColumnToGenerator());
+	}
 
 }

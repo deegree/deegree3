@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -75,223 +74,223 @@ import org.deegree.protocol.wfs.transaction.action.Update;
 
 /**
  * {@link TransactionXmlReader} for WFS 1.1.0.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 class TransactionXmlReader110 extends AbstractTransactionXmlReader {
 
-    @Override
-    public Transaction read( XMLStreamReader xmlStream )
-                            throws XMLStreamException {
+	@Override
+	public Transaction read(XMLStreamReader xmlStream) throws XMLStreamException {
 
-        xmlStream.require( START_ELEMENT, WFS_NS, "Transaction" );
+		xmlStream.require(START_ELEMENT, WFS_NS, "Transaction");
 
-        // optional: '@handle'
-        String handle = getAttributeValue( xmlStream, "handle" );
+		// optional: '@handle'
+		String handle = getAttributeValue(xmlStream, "handle");
 
-        // optional: '@releaseAction'
-        String releaseActionString = getAttributeValue( xmlStream, "releaseAction" );
-        ReleaseAction releaseAction = parseReleaseAction( releaseActionString );
+		// optional: '@releaseAction'
+		String releaseActionString = getAttributeValue(xmlStream, "releaseAction");
+		ReleaseAction releaseAction = parseReleaseAction(releaseActionString);
 
-        // optional: 'wfs:LockId'
-        String lockId = null;
-        requireNextTag( xmlStream, START_ELEMENT );
-        if ( xmlStream.getName().equals( new QName( WFS_NS, "LockId" ) ) ) {
-            lockId = xmlStream.getElementText().trim();
-            requireNextTag( xmlStream, START_ELEMENT );
-        }
+		// optional: 'wfs:LockId'
+		String lockId = null;
+		requireNextTag(xmlStream, START_ELEMENT);
+		if (xmlStream.getName().equals(new QName(WFS_NS, "LockId"))) {
+			lockId = xmlStream.getElementText().trim();
+			requireNextTag(xmlStream, START_ELEMENT);
+		}
 
-        LazyTransactionActionsReader iterable = new LazyTransactionActionsReader( xmlStream, this );
-        return new Transaction( VERSION_110, handle, lockId, releaseAction, iterable, null );
-    }
+		LazyTransactionActionsReader iterable = new LazyTransactionActionsReader(xmlStream, this);
+		return new Transaction(VERSION_110, handle, lockId, releaseAction, iterable, null);
+	}
 
-    @Override
-    public TransactionAction readAction( XMLStreamReader xmlStream )
-                            throws XMLStreamException, XMLParsingException {
-        if ( !WFS_NS.equals( xmlStream.getNamespaceURI() ) ) {
-            String msg = "Unexpected element: " + xmlStream.getName()
-                         + "' is not a WFS 1.1.0 operation element. Not in the wfs namespace.";
-            throw new XMLParsingException( xmlStream, msg );
-        }
+	@Override
+	public TransactionAction readAction(XMLStreamReader xmlStream) throws XMLStreamException, XMLParsingException {
+		if (!WFS_NS.equals(xmlStream.getNamespaceURI())) {
+			String msg = "Unexpected element: " + xmlStream.getName()
+					+ "' is not a WFS 1.1.0 operation element. Not in the wfs namespace.";
+			throw new XMLParsingException(xmlStream, msg);
+		}
 
-        TransactionAction operation = null;
-        String localName = xmlStream.getLocalName();
-        if ( "Delete".equals( localName ) ) {
-            operation = readDelete( xmlStream );
-        } else if ( "Insert".equals( localName ) ) {
-            operation = readInsert( xmlStream );
-        } else if ( "Native".equals( localName ) ) {
-            operation = readNative( xmlStream );
-        } else if ( "Update".equals( localName ) ) {
-            operation = readUpdate( xmlStream );
-        } else {
-            throw new XMLParsingException( xmlStream, "Unexpected operation element " + localName + "." );
-        }
-        return operation;
-    }
+		TransactionAction operation = null;
+		String localName = xmlStream.getLocalName();
+		if ("Delete".equals(localName)) {
+			operation = readDelete(xmlStream);
+		}
+		else if ("Insert".equals(localName)) {
+			operation = readInsert(xmlStream);
+		}
+		else if ("Native".equals(localName)) {
+			operation = readNative(xmlStream);
+		}
+		else if ("Update".equals(localName)) {
+			operation = readUpdate(xmlStream);
+		}
+		else {
+			throw new XMLParsingException(xmlStream, "Unexpected operation element " + localName + ".");
+		}
+		return operation;
+	}
 
-    /**
-     * Returns the object representation of a <code>wfs:Delete</code> element. Consumes all corresponding events from
-     * the given <code>XMLStream</code>.
-     * 
-     * @param xmlStream
-     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;wfs:Delete&gt;), points at the
-     *            corresponding <code>END_ELEMENT</code> event (&lt;/wfs:Delete&gt;) afterwards
-     * @return corresponding {@link Delete} object
-     * @throws XMLStreamException
-     * @throws XMLParsingException
-     */
-    Delete readDelete( XMLStreamReader xmlStream )
-                            throws XMLStreamException {
+	/**
+	 * Returns the object representation of a <code>wfs:Delete</code> element. Consumes
+	 * all corresponding events from the given <code>XMLStream</code>.
+	 * @param xmlStream cursor must point at the <code>START_ELEMENT</code> event
+	 * (&lt;wfs:Delete&gt;), points at the corresponding <code>END_ELEMENT</code> event
+	 * (&lt;/wfs:Delete&gt;) afterwards
+	 * @return corresponding {@link Delete} object
+	 * @throws XMLStreamException
+	 * @throws XMLParsingException
+	 */
+	Delete readDelete(XMLStreamReader xmlStream) throws XMLStreamException {
 
-        // optional: '@handle'
-        String handle = xmlStream.getAttributeValue( null, "handle" );
+		// optional: '@handle'
+		String handle = xmlStream.getAttributeValue(null, "handle");
 
-        // required: '@typeName'
-        QName ftName = getRequiredAttributeValueAsQName( xmlStream, null, "typeName" );
+		// required: '@typeName'
+		QName ftName = getRequiredAttributeValueAsQName(xmlStream, null, "typeName");
 
-        // required: 'ogc:Filter'
-        nextElement( xmlStream );
-        try {
-            xmlStream.require( START_ELEMENT, OGCNS, "Filter" );
-        } catch ( XMLStreamException e ) {
-            // CITE compliance (wfs:wfs-1.1.0-Transaction-tc12.1)
-            throw new MissingParameterException( "Mandatory 'ogc:Filter' element is missing in request." );
-        }
+		// required: 'ogc:Filter'
+		nextElement(xmlStream);
+		try {
+			xmlStream.require(START_ELEMENT, OGCNS, "Filter");
+		}
+		catch (XMLStreamException e) {
+			// CITE compliance (wfs:wfs-1.1.0-Transaction-tc12.1)
+			throw new MissingParameterException("Mandatory 'ogc:Filter' element is missing in request.");
+		}
 
-        Filter filter = readFilter( xmlStream );
-        nextElement( xmlStream );
-        return new Delete( handle, ftName, filter );
-    }
+		Filter filter = readFilter(xmlStream);
+		nextElement(xmlStream);
+		return new Delete(handle, ftName, filter);
+	}
 
-    /**
-     * Returns the object representation for the given <code>wfs:Insert</code> element.
-     * <p>
-     * NOTE: In order to allow stream-oriented processing, this method does *not* consume all events corresponding to
-     * the <code>wfs:Insert</code> element from the given <code>XMLStream</code>. After a call to this method, the XML
-     * stream points at the <code>START_ELEMENT</code> of the insert payload.
-     * </p>
-     * 
-     * @param xmlStream
-     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;wfs:Insert&gt;)
-     * @return corresponding {@link Insert} object, never <code>null</code>
-     * @throws NoSuchElementException
-     * @throws XMLStreamException
-     * @throws XMLParsingException
-     */
-    Insert readInsert( XMLStreamReader xmlStream )
-                            throws XMLStreamException {
+	/**
+	 * Returns the object representation for the given <code>wfs:Insert</code> element.
+	 * <p>
+	 * NOTE: In order to allow stream-oriented processing, this method does *not* consume
+	 * all events corresponding to the <code>wfs:Insert</code> element from the given
+	 * <code>XMLStream</code>. After a call to this method, the XML stream points at the
+	 * <code>START_ELEMENT</code> of the insert payload.
+	 * </p>
+	 * @param xmlStream cursor must point at the <code>START_ELEMENT</code> event
+	 * (&lt;wfs:Insert&gt;)
+	 * @return corresponding {@link Insert} object, never <code>null</code>
+	 * @throws NoSuchElementException
+	 * @throws XMLStreamException
+	 * @throws XMLParsingException
+	 */
+	Insert readInsert(XMLStreamReader xmlStream) throws XMLStreamException {
 
-        // optional: '@idgen'
-        String idGenString = xmlStream.getAttributeValue( null, "idgen" );
-        IDGenMode idGen = null;
-        if ( idGenString != null ) {
-            if ( "GenerateNew".equals( idGenString ) ) {
-                idGen = GENERATE_NEW;
-            } else if ( "ReplaceDuplicate".equals( idGenString ) ) {
-                idGen = REPLACE_DUPLICATE;
-            } else if ( "UseExisting".equals( idGenString ) ) {
-                idGen = USE_EXISTING;
-            } else {
-                String msg = Messages.get( "WFS_UNKNOWN_IDGEN_MODE", idGenString, "1.1.0",
-                                           "'GenerateNew', 'ReplaceDuplicate' and 'UseExisting'" );
-                throw new XMLParsingException( xmlStream, msg );
-            }
-        }
+		// optional: '@idgen'
+		String idGenString = xmlStream.getAttributeValue(null, "idgen");
+		IDGenMode idGen = null;
+		if (idGenString != null) {
+			if ("GenerateNew".equals(idGenString)) {
+				idGen = GENERATE_NEW;
+			}
+			else if ("ReplaceDuplicate".equals(idGenString)) {
+				idGen = REPLACE_DUPLICATE;
+			}
+			else if ("UseExisting".equals(idGenString)) {
+				idGen = USE_EXISTING;
+			}
+			else {
+				String msg = Messages.get("WFS_UNKNOWN_IDGEN_MODE", idGenString, "1.1.0",
+						"'GenerateNew', 'ReplaceDuplicate' and 'UseExisting'");
+				throw new XMLParsingException(xmlStream, msg);
+			}
+		}
 
-        // optional: '@handle'
-        String handle = xmlStream.getAttributeValue( null, "handle" );
+		// optional: '@handle'
+		String handle = xmlStream.getAttributeValue(null, "handle");
 
-        // optional: '@inputFormat'
-        String inputFormat = xmlStream.getAttributeValue( null, "inputFormat" );
+		// optional: '@inputFormat'
+		String inputFormat = xmlStream.getAttributeValue(null, "inputFormat");
 
-        // optional: '@srsName'
-        String srsName = xmlStream.getAttributeValue( null, "srsName" );
+		// optional: '@srsName'
+		String srsName = xmlStream.getAttributeValue(null, "srsName");
 
-        nextElement( xmlStream );
-        if ( !xmlStream.isStartElement() ) {
-            throw new XMLParsingException( xmlStream, Messages.get( "WFS_INSERT_MISSING_FEATURE_ELEMENT" ) );
-        }
-        return new Insert( handle, idGen, inputFormat, srsName, xmlStream );
-    }
+		nextElement(xmlStream);
+		if (!xmlStream.isStartElement()) {
+			throw new XMLParsingException(xmlStream, Messages.get("WFS_INSERT_MISSING_FEATURE_ELEMENT"));
+		}
+		return new Insert(handle, idGen, inputFormat, srsName, xmlStream);
+	}
 
-    Update readUpdate( XMLStreamReader xmlStream )
-                            throws XMLStreamException {
+	Update readUpdate(XMLStreamReader xmlStream) throws XMLStreamException {
 
-        // optional: '@handle'
-        String handle = xmlStream.getAttributeValue( null, "handle" );
+		// optional: '@handle'
+		String handle = xmlStream.getAttributeValue(null, "handle");
 
-        // required: '@typeName'
-        QName ftName = getRequiredAttributeValueAsQName( xmlStream, null, "typeName" );
+		// required: '@typeName'
+		QName ftName = getRequiredAttributeValueAsQName(xmlStream, null, "typeName");
 
-        // optional: '@inputFormat'
-        String inputFormat = xmlStream.getAttributeValue( null, "inputFormat" );
+		// optional: '@inputFormat'
+		String inputFormat = xmlStream.getAttributeValue(null, "inputFormat");
 
-        // optional: '@srsName'
-        String srsName = xmlStream.getAttributeValue( null, "srsName" );
+		// optional: '@srsName'
+		String srsName = xmlStream.getAttributeValue(null, "srsName");
 
-        // skip to first "wfs:Property" element
-        xmlStream.nextTag();
-        xmlStream.require( START_ELEMENT, WFS_NS, "Property" );
+		// skip to first "wfs:Property" element
+		xmlStream.nextTag();
+		xmlStream.require(START_ELEMENT, WFS_NS, "Property");
 
-        return new Update( handle, VERSION_110, ftName, inputFormat, srsName, xmlStream, this );
-    }
+		return new Update(handle, VERSION_110, ftName, inputFormat, srsName, xmlStream, this);
+	}
 
-    /**
-     * Returns the object representation for the given <code>wfs:Native</code> element.
-     * <p>
-     * NOTE: In order to allow stream-oriented processing, this method does *not* consume all events corresponding to
-     * the <code>wfs:Native</code> element from the given <code>XMLStream</code>. After a call to this method, the XML
-     * stream still points at the <code>START_ELEMENT</code> of the <code>wfs:Native</code> element.
-     * </p>
-     * 
-     * @param xmlStream
-     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;wfs:Native&gt;)
-     * @return corresponding {@link Insert} object, never <code>null</code>
-     * @throws NoSuchElementException
-     * @throws XMLStreamException
-     * @throws XMLParsingException
-     */
-    Native readNative( XMLStreamReader xmlStream ) {
-        // optional: '@handle'
-        String handle = xmlStream.getAttributeValue( null, "handle" );
+	/**
+	 * Returns the object representation for the given <code>wfs:Native</code> element.
+	 * <p>
+	 * NOTE: In order to allow stream-oriented processing, this method does *not* consume
+	 * all events corresponding to the <code>wfs:Native</code> element from the given
+	 * <code>XMLStream</code>. After a call to this method, the XML stream still points at
+	 * the <code>START_ELEMENT</code> of the <code>wfs:Native</code> element.
+	 * </p>
+	 * @param xmlStream cursor must point at the <code>START_ELEMENT</code> event
+	 * (&lt;wfs:Native&gt;)
+	 * @return corresponding {@link Insert} object, never <code>null</code>
+	 * @throws NoSuchElementException
+	 * @throws XMLStreamException
+	 * @throws XMLParsingException
+	 */
+	Native readNative(XMLStreamReader xmlStream) {
+		// optional: '@handle'
+		String handle = xmlStream.getAttributeValue(null, "handle");
 
-        // required: '@vendorId'
-        String vendorId = getRequiredAttributeValue( xmlStream, "vendorId" );
+		// required: '@vendorId'
+		String vendorId = getRequiredAttributeValue(xmlStream, "vendorId");
 
-        // required: '@safeToIgnore'
-        boolean safeToIgnore = getRequiredAttributeValueAsBoolean( xmlStream, null, "safeToIgnore" );
-        return new Native( handle, vendorId, safeToIgnore, xmlStream );
-    }
+		// required: '@safeToIgnore'
+		boolean safeToIgnore = getRequiredAttributeValueAsBoolean(xmlStream, null, "safeToIgnore");
+		return new Native(handle, vendorId, safeToIgnore, xmlStream);
+	}
 
-    @Override
-    public Filter readFilter( XMLStreamReader xmlStream )
-                            throws XMLParsingException, XMLStreamException {
-        return Filter110XMLDecoder.parse( xmlStream );
-    }
+	@Override
+	public Filter readFilter(XMLStreamReader xmlStream) throws XMLParsingException, XMLStreamException {
+		return Filter110XMLDecoder.parse(xmlStream);
+	}
 
-    public PropertyReplacement readProperty( XMLStreamReader xmlStream )
-                            throws XMLStreamException {
+	public PropertyReplacement readProperty(XMLStreamReader xmlStream) throws XMLStreamException {
 
-        xmlStream.require( START_ELEMENT, WFS_NS, "Property" );
-        xmlStream.nextTag();
-        xmlStream.require( START_ELEMENT, WFS_NS, "Name" );
-        QName propName = getElementTextAsQName( xmlStream );
-        xmlStream.nextTag();
+		xmlStream.require(START_ELEMENT, WFS_NS, "Property");
+		xmlStream.nextTag();
+		xmlStream.require(START_ELEMENT, WFS_NS, "Name");
+		QName propName = getElementTextAsQName(xmlStream);
+		xmlStream.nextTag();
 
-        PropertyReplacement replacement = null;
-        if ( new QName( WFS_NS, "Value" ).equals( xmlStream.getName() ) ) {
-            replacement = new PropertyReplacement( new ValueReference( propName ), xmlStream, null );
-        } else {
-            // if the wfs:Value element is omitted, the property shall be removed (CITE 1.1.0 test,
-            // wfs:wfs-1.1.0-Transaction-tc11.1)
-            xmlStream.require( END_ELEMENT, WFS_NS, "Property" );
-            replacement = new PropertyReplacement( new ValueReference( propName ), null, null );
-            xmlStream.nextTag();
-        }
-        return replacement;
-    }
+		PropertyReplacement replacement = null;
+		if (new QName(WFS_NS, "Value").equals(xmlStream.getName())) {
+			replacement = new PropertyReplacement(new ValueReference(propName), xmlStream, null);
+		}
+		else {
+			// if the wfs:Value element is omitted, the property shall be removed (CITE
+			// 1.1.0 test,
+			// wfs:wfs-1.1.0-Transaction-tc11.1)
+			xmlStream.require(END_ELEMENT, WFS_NS, "Property");
+			replacement = new PropertyReplacement(new ValueReference(propName), null, null);
+			xmlStream.nextTag();
+		}
+		return replacement;
+	}
+
 }

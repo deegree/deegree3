@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -46,41 +45,39 @@ import org.deegree.services.controller.exception.serializer.XMLExceptionSerializ
 /**
  * {@link XMLExceptionSerializer} for OWS Commons 1.0.0 ExceptionReports.
  * <p>
- * NOTE: In contrast to OWS Commons 1.1.0 and later specifications, the HTTP status code is not defined. WFS 1.1.0 CITE
- * test expects status code 200, therefore this implementation always uses 200.
+ * NOTE: In contrast to OWS Commons 1.1.0 and later specifications, the HTTP status code
+ * is not defined. WFS 1.1.0 CITE test expects status code 200, therefore this
+ * implementation always uses 200.
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class OWS100ExceptionReportSerializer extends XMLExceptionSerializer {
 
-    private static final String OWS_NS = "http://www.opengis.net/ows";
+	private static final String OWS_NS = "http://www.opengis.net/ows";
 
-    private static final String OWS_SCHEMA = "http://schemas.opengis.net/ows/1.0.0/owsExceptionReport.xsd";
+	private static final String OWS_SCHEMA = "http://schemas.opengis.net/ows/1.0.0/owsExceptionReport.xsd";
 
-    @Override
-    public void serializeExceptionToXML( XMLStreamWriter writer, OWSException ex )
-                            throws XMLStreamException {
-        if ( ex == null || writer == null ) {
-            return;
-        }
-        writer.writeStartElement( "ows", "ExceptionReport", OWS_NS );
-        writer.writeNamespace( "ows", OWS_NS );
-        writer.writeNamespace( "xsi", XSINS );
-        writer.writeAttribute( XSINS, "schemaLocation", OWS_NS + " " + OWS_SCHEMA );
-        writer.writeAttribute( "version", "1.0.0" );
-        writer.writeStartElement( OWS_NS, "Exception" );
-        writer.writeAttribute( "exceptionCode", ex.getExceptionCode() );
-        if ( ex.getLocator() != null && !"".equals( ex.getLocator().trim() ) ) {
-            writer.writeAttribute( "locator", ex.getLocator() );
-        }
-        writer.writeStartElement( OWS_NS, "ExceptionText" );
-        writer.writeCharacters( ex.getMessage() != null ? ex.getMessage() : "not available" );
-        writer.writeEndElement();
-        writer.writeEndElement(); // Exception
-        writer.writeEndElement(); // ExceptionReport
-    }
+	@Override
+	public void serializeExceptionToXML(XMLStreamWriter writer, OWSException ex) throws XMLStreamException {
+		if (ex == null || writer == null) {
+			return;
+		}
+		writer.writeStartElement("ows", "ExceptionReport", OWS_NS);
+		writer.writeNamespace("ows", OWS_NS);
+		writer.writeNamespace("xsi", XSINS);
+		writer.writeAttribute(XSINS, "schemaLocation", OWS_NS + " " + OWS_SCHEMA);
+		writer.writeAttribute("version", "1.0.0");
+		writer.writeStartElement(OWS_NS, "Exception");
+		writer.writeAttribute("exceptionCode", ex.getExceptionCode());
+		if (ex.getLocator() != null && !"".equals(ex.getLocator().trim())) {
+			writer.writeAttribute("locator", ex.getLocator());
+		}
+		writer.writeStartElement(OWS_NS, "ExceptionText");
+		writer.writeCharacters(ex.getMessage() != null ? ex.getMessage() : "not available");
+		writer.writeEndElement();
+		writer.writeEndElement(); // Exception
+		writer.writeEndElement(); // ExceptionReport
+	}
+
 }

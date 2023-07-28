@@ -45,9 +45,7 @@ import org.deegree.protocol.sos.SOSRequest100XMLAdapter;
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * 
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
  * 
  */
 public class GetFeatureOfInterest100XMLAdapter extends SOSRequest100XMLAdapter {

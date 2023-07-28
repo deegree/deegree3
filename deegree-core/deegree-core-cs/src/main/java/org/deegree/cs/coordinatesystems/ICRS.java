@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -50,113 +49,107 @@ import org.deegree.cs.transformations.Transformation;
 
 /**
  * Interface describing a general CoordinateSytem
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public interface ICRS extends CRSResource {
 
-    /**
-     * @return the dimension of this CRS.
-     */
-    int getDimension();
+	/**
+	 * @return the dimension of this CRS.
+	 */
+	int getDimension();
 
-    /**
-     * @return one of the *_CRS types defined in this class.
-     */
-    CRSType getType();
+	/**
+	 * @return one of the *_CRS types defined in this class.
+	 */
+	CRSType getType();
 
-    /**
-     * @return (all) axis' in their defined order.
-     */
-    IAxis[] getAxis();
+	/**
+	 * @return (all) axis' in their defined order.
+	 */
+	IAxis[] getAxis();
 
-    /**
-     * @return the usedDatum or <code>null</code> if the datum was not a Geodetic one.
-     */
-    IGeodeticDatum getGeodeticDatum();
+	/**
+	 * @return the usedDatum or <code>null</code> if the datum was not a Geodetic one.
+	 */
+	IGeodeticDatum getGeodeticDatum();
 
-    /**
-     * @return the datum of this coordinate system.
-     */
-    IDatum getDatum();
+	/**
+	 * @return the datum of this coordinate system.
+	 */
+	IDatum getDatum();
 
-    /**
-     * @return the units of all axis of the ICoordinateSystem.
-     */
-    IUnit[] getUnits();
+	/**
+	 * @return the units of all axis of the ICoordinateSystem.
+	 */
+	IUnit[] getUnits();
 
-    /**
-     * @param targetCRS
-     *            to get the alternative Transformation for.
-     * @return true if this crs has an alternative transformation for the given ICoordinateSystem, false otherwise.
-     */
-    boolean hasDirectTransformation( ICRS targetCRS );
+	/**
+	 * @param targetCRS to get the alternative Transformation for.
+	 * @return true if this crs has an alternative transformation for the given
+	 * ICoordinateSystem, false otherwise.
+	 */
+	boolean hasDirectTransformation(ICRS targetCRS);
 
-    /**
-     * @param targetCRS
-     *            to get the alternative transformation for.
-     * @return the transformation associated with the given crs, <code>null</code> otherwise.
-     */
-    Transformation getDirectTransformation( ICRS targetCRS );
+	/**
+	 * @param targetCRS to get the alternative transformation for.
+	 * @return the transformation associated with the given crs, <code>null</code>
+	 * otherwise.
+	 */
+	Transformation getDirectTransformation(ICRS targetCRS);
 
-    /**
-     * @return the polynomial transformations.
-     */
-    List<Transformation> getTransformations();
+	/**
+	 * @return the polynomial transformations.
+	 */
+	List<Transformation> getTransformations();
 
-    /**
-     * Return the axis index associated with an easting value, if the axis could not be determined {@link Axis#AO_OTHER}
-     * 0 will be returned.
-     * 
-     * @return the index of the axis which represents the easting/westing component of a coordinate tuple.
-     */
-    int getEasting();
+	/**
+	 * Return the axis index associated with an easting value, if the axis could not be
+	 * determined {@link Axis#AO_OTHER} 0 will be returned.
+	 * @return the index of the axis which represents the easting/westing component of a
+	 * coordinate tuple.
+	 */
+	int getEasting();
 
-    /**
-     * Return the axis index associated with a northing value, if the axis could not be determined (e.g not is
-     * {@link Axis#AO_NORTH} {@link Axis#AO_SOUTH} or {@link Axis#AO_UP} or {@link Axis#AO_DOWN}) 1 will be returned.
-     * 
-     * @return the index of the axis which represents the easting/westing component of a coordinate tuple.
-     */
-    int getNorthing();
+	/**
+	 * Return the axis index associated with a northing value, if the axis could not be
+	 * determined (e.g not is {@link Axis#AO_NORTH} {@link Axis#AO_SOUTH} or
+	 * {@link Axis#AO_UP} or {@link Axis#AO_DOWN}) 1 will be returned.
+	 * @return the index of the axis which represents the easting/westing component of a
+	 * coordinate tuple.
+	 */
+	int getNorthing();
 
-    /**
-     * Returns the approximate domain of validity of this coordinate system. The returned array will contain the values
-     * in the appropriate coordinate system and with the appropriate axis order.
-     * 
-     * @return the real world coordinates of the domain of validity of this crs, or <code>null</code> if the valid
-     *         domain could not be determined
-     */
-    double[] getValidDomain();
+	/**
+	 * Returns the approximate domain of validity of this coordinate system. The returned
+	 * array will contain the values in the appropriate coordinate system and with the
+	 * appropriate axis order.
+	 * @return the real world coordinates of the domain of validity of this crs, or
+	 * <code>null</code> if the valid domain could not be determined
+	 */
+	double[] getValidDomain();
 
-    /**
-     * Converts the given coordinates in given to the unit of the respective axis.
-     * 
-     * @param coordinates
-     *            to convert to.
-     * @param units
-     *            in which the coordinates were given.
-     * @param invert
-     *            if the operation should be inverted, e.g. the coordinates are given in the axis units and should be
-     *            converted to the given units.
-     * @return the converted coordinates.
-     */
-    public Point3d convertToAxis( Point3d coordinates, IUnit[] units, boolean invert );
+	/**
+	 * Converts the given coordinates in given to the unit of the respective axis.
+	 * @param coordinates to convert to.
+	 * @param units in which the coordinates were given.
+	 * @param invert if the operation should be inverted, e.g. the coordinates are given
+	 * in the axis units and should be converted to the given units.
+	 * @return the converted coordinates.
+	 */
+	public Point3d convertToAxis(Point3d coordinates, IUnit[] units, boolean invert);
 
-    /**
-     * @return an alias of the crs
-     */
-    public String getAlias();
+	/**
+	 * @return an alias of the crs
+	 */
+	public String getAlias();
 
-    /**
-     * TODO: this methode should become redundant with the reworked identifer concept!
-     * 
-     * @param other
-     * @return true, if this and other are from the same type differes only in a flipped axis order.
-     */
-    boolean equalsWithFlippedAxis( Object other );
+	/**
+	 * TODO: this methode should become redundant with the reworked identifer concept!
+	 * @param other
+	 * @return true, if this and other are from the same type differes only in a flipped
+	 * axis order.
+	 */
+	boolean equalsWithFlippedAxis(Object other);
 
 }

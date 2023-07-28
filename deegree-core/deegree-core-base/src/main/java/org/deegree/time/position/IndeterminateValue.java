@@ -38,16 +38,26 @@ package org.deegree.time.position;
  * Describes an inexact {@link TimePosition}.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- *
  * @since 3.4
  */
 public enum IndeterminateValue {
-    /** Actual temporal position is unknown, but it is known to be after the specified value */
-    AFTER,
-    /** Actual temporal position is unknown, but it is known to be before the specified value */
-    BEFORE,
-    /** Specified value shall be replaced with the current temporal position whenever the value is accessed */
-    NOW,
-    /** No specific value for temporal position is provided */
-    UNKNOWN
+
+	/**
+	 * Actual temporal position is unknown, but it is known to be after the specified
+	 * value
+	 */
+	AFTER,
+	/**
+	 * Actual temporal position is unknown, but it is known to be before the specified
+	 * value
+	 */
+	BEFORE,
+	/**
+	 * Specified value shall be replaced with the current temporal position whenever the
+	 * value is accessed
+	 */
+	NOW,
+	/** No specific value for temporal position is provided */
+	UNKNOWN
+
 }

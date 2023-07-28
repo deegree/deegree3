@@ -44,56 +44,53 @@ import org.deegree.commons.tom.gml.property.Property;
 
 abstract class AbstractTimePrimitive implements TimePrimitive {
 
-    private final String id;
+	private final String id;
 
-    private final List<Property> props;
+	private final List<Property> props;
 
-    private final List<RelatedTime> relatedTimes;
+	private final List<RelatedTime> relatedTimes;
 
-    /**
-     * Creates a new {@link AbstractTimePrimitive} instance.
-     *
-     * @param id
-     *            gml id, can be <code>null</code>
-     * @param props
-     *            can be empty, but must not be <code>null</code>
-     * @param relatedTimes
-     *            can be empty, but must not be <code>null</code>
-     */
-    protected AbstractTimePrimitive( final String id, final List<Property> props, final List<RelatedTime> relatedTimes ) {
-        this.id = id;
-        this.props = props;
-        this.relatedTimes = relatedTimes;
-    }
+	/**
+	 * Creates a new {@link AbstractTimePrimitive} instance.
+	 * @param id gml id, can be <code>null</code>
+	 * @param props can be empty, but must not be <code>null</code>
+	 * @param relatedTimes can be empty, but must not be <code>null</code>
+	 */
+	protected AbstractTimePrimitive(final String id, final List<Property> props, final List<RelatedTime> relatedTimes) {
+		this.id = id;
+		this.props = props;
+		this.relatedTimes = relatedTimes;
+	}
 
-    @Override
-    public String getId() {
-        return id;
-    }
+	@Override
+	public String getId() {
+		return id;
+	}
 
-    @Override
-    public GMLObjectType getType() {
-        return null;
-    }
+	@Override
+	public GMLObjectType getType() {
+		return null;
+	}
 
-    @Override
-    public List<Property> getProperties() {
-        return props;
-    }
+	@Override
+	public List<Property> getProperties() {
+		return props;
+	}
 
-    @Override
-    public List<Property> getProperties( final QName propName ) {
-        final List<Property> namedProps = new ArrayList<Property>( props.size() );
-        for ( final Property property : props ) {
-            if ( propName.equals( property.getName() ) ) {
-                namedProps.add( property );
-            }
-        }
-        return namedProps;
-    }
+	@Override
+	public List<Property> getProperties(final QName propName) {
+		final List<Property> namedProps = new ArrayList<Property>(props.size());
+		for (final Property property : props) {
+			if (propName.equals(property.getName())) {
+				namedProps.add(property);
+			}
+		}
+		return namedProps;
+	}
 
-    @Override
-    public List<RelatedTime> getRelatedTimes() {
-        return relatedTimes;
-    }
+	@Override
+	public List<RelatedTime> getRelatedTimes() {
+		return relatedTimes;
+	}
+
 }

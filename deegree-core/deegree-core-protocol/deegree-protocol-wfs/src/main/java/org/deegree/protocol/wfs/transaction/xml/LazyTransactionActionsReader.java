@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -48,75 +47,73 @@ import org.deegree.protocol.wfs.transaction.TransactionAction;
 
 /**
  * Parser for the actions contained in a WFS <code>Transaction</code> document.
- * 
+ *
  * @see TransactionXmlReader
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 class LazyTransactionActionsReader implements Iterable<TransactionAction> {
 
-    private final XMLStreamReader xmlStream;
+	private final XMLStreamReader xmlStream;
 
-    private final TransactionXmlReader transactionReader;
+	private final TransactionXmlReader transactionReader;
 
-    private boolean createdIterator;
+	private boolean createdIterator;
 
-    /**
-     * Creates a new {@link LazyTransactionActionsReader} that provides sequential access to the given XML-encoded
-     * {@link TransactionAction}s.
-     * 
-     * @param xmlStream
-     * @param transactionReader
-     */
-    LazyTransactionActionsReader( XMLStreamReader xmlStream, TransactionXmlReader transactionReader ) {
-        this.xmlStream = xmlStream;
-        this.transactionReader = transactionReader;
-    }
+	/**
+	 * Creates a new {@link LazyTransactionActionsReader} that provides sequential access
+	 * to the given XML-encoded {@link TransactionAction}s.
+	 * @param xmlStream
+	 * @param transactionReader
+	 */
+	LazyTransactionActionsReader(XMLStreamReader xmlStream, TransactionXmlReader transactionReader) {
+		this.xmlStream = xmlStream;
+		this.transactionReader = transactionReader;
+	}
 
-    @Override
-    public synchronized Iterator<TransactionAction> iterator() {
-        if ( createdIterator ) {
-            throw new RuntimeException( "Iteration over the transaction actions can only be done once." );
-        }
-        createdIterator = true;
-        return new Iterator<TransactionAction>() {
+	@Override
+	public synchronized Iterator<TransactionAction> iterator() {
+		if (createdIterator) {
+			throw new RuntimeException("Iteration over the transaction actions can only be done once.");
+		}
+		createdIterator = true;
+		return new Iterator<TransactionAction>() {
 
-            boolean needsNextElement = false;
+			boolean needsNextElement = false;
 
-            @Override
-            public boolean hasNext() {
-                if ( needsNextElement ) {
-                    try {
-                        nextElement( xmlStream );
-                        needsNextElement = false;
-                    } catch ( Exception e ) {
-                        throw new XMLParsingException( xmlStream, "Error parsing transaction action: " + e.getMessage() );
-                    }
-                }
-                return xmlStream.isStartElement();
-            }
+			@Override
+			public boolean hasNext() {
+				if (needsNextElement) {
+					try {
+						nextElement(xmlStream);
+						needsNextElement = false;
+					}
+					catch (Exception e) {
+						throw new XMLParsingException(xmlStream, "Error parsing transaction action: " + e.getMessage());
+					}
+				}
+				return xmlStream.isStartElement();
+			}
 
-            @Override
-            public TransactionAction next() {
-                if ( !hasNext() ) {
-                    throw new NoSuchElementException();
-                }
-                try {
-                    TransactionAction action = transactionReader.readAction( xmlStream );
-                    needsNextElement = true;
-                    return action;
-                } catch ( XMLStreamException e ) {
-                    throw new XMLParsingException( xmlStream, "Error parsing transaction action: " + e.getMessage() );
-                }
-            }
+			@Override
+			public TransactionAction next() {
+				if (!hasNext()) {
+					throw new NoSuchElementException();
+				}
+				try {
+					TransactionAction action = transactionReader.readAction(xmlStream);
+					needsNextElement = true;
+					return action;
+				}
+				catch (XMLStreamException e) {
+					throw new XMLParsingException(xmlStream, "Error parsing transaction action: " + e.getMessage());
+				}
+			}
 
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException();
-            }
-        };
-    }
+			@Override
+			public void remove() {
+				throw new UnsupportedOperationException();
+			}
+		};
+	}
+
 }

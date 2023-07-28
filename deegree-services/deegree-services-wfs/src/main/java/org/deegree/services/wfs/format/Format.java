@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -44,62 +43,50 @@ import org.deegree.services.wfs.WebFeatureService;
 
 /**
  * Implementations provide input/output formats for the {@link WebFeatureService}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface Format {
 
-    /**
-     * Called by the {@link WebFeatureService} to indicate that this {@link Format} is taken out of service.
-     */
-    public void destroy();
+	/**
+	 * Called by the {@link WebFeatureService} to indicate that this {@link Format} is
+	 * taken out of service.
+	 */
+	public void destroy();
 
-    /**
-     * Invoked by the {@link WebFeatureService} to perform a <code>DescribeFeatureType</code> request for this format.
-     * 
-     * @param request
-     *            request to be performed, never <code>null</code>
-     * @param response
-     *            sink for writing the response, never <code>null</code>
-     */
-    public void doDescribeFeatureType( DescribeFeatureType request, HttpResponseBuffer response, boolean isSoap )
-                            throws Exception;
+	/**
+	 * Invoked by the {@link WebFeatureService} to perform a
+	 * <code>DescribeFeatureType</code> request for this format.
+	 * @param request request to be performed, never <code>null</code>
+	 * @param response sink for writing the response, never <code>null</code>
+	 */
+	public void doDescribeFeatureType(DescribeFeatureType request, HttpResponseBuffer response, boolean isSoap)
+			throws Exception;
 
-    /**
-     * Invoked by the {@link WebFeatureService} to perform a <code>GetFeature</code> request for this format.
-     * 
-     * @param request
-     *            request to be performed, never <code>null</code>
-     * @param response
-     *            sink for writing the response, never <code>null</code>
-     */
-    public void doGetFeature( GetFeature request, HttpResponseBuffer response )
-                            throws Exception;
+	/**
+	 * Invoked by the {@link WebFeatureService} to perform a <code>GetFeature</code>
+	 * request for this format.
+	 * @param request request to be performed, never <code>null</code>
+	 * @param response sink for writing the response, never <code>null</code>
+	 */
+	public void doGetFeature(GetFeature request, HttpResponseBuffer response) throws Exception;
 
-    /**
-     * Invoked by the {@link WebFeatureService} to perform a <code>GetGmlObject</code> request for this format.
-     * 
-     * @param request
-     *            request to be performed, never <code>null</code>
-     * @param response
-     *            sink for writing the response, never <code>null</code>
-     * @throws Exception
-     */
-    public void doGetGmlObject( GetGmlObject request, HttpResponseBuffer response )
-                            throws Exception;
+	/**
+	 * Invoked by the {@link WebFeatureService} to perform a <code>GetGmlObject</code>
+	 * request for this format.
+	 * @param request request to be performed, never <code>null</code>
+	 * @param response sink for writing the response, never <code>null</code>
+	 * @throws Exception
+	 */
+	public void doGetGmlObject(GetGmlObject request, HttpResponseBuffer response) throws Exception;
 
-    /**
-     * Invoked by the {@link WebFeatureService} to perform a <code>GetPropertyValue</code> request for this format.
-     * 
-     * @param request
-     *            request to be performed, never <code>null</code>
-     * @param response
-     *            sink for writing the response, never <code>null</code>
-     * @throws Exception
-     */
-    public void doGetPropertyValue( GetPropertyValue getPropertyValue, HttpResponseBuffer response )
-                            throws Exception;
+	/**
+	 * Invoked by the {@link WebFeatureService} to perform a <code>GetPropertyValue</code>
+	 * request for this format.
+	 * @param request request to be performed, never <code>null</code>
+	 * @param response sink for writing the response, never <code>null</code>
+	 * @throws Exception
+	 */
+	public void doGetPropertyValue(GetPropertyValue getPropertyValue, HttpResponseBuffer response) throws Exception;
+
 }

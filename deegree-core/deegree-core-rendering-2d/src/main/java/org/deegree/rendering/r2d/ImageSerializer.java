@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -43,17 +42,16 @@ import org.deegree.rendering.r2d.context.RenderingInfo;
 
 /**
  * <code>ImageSerializer</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author <a href="mailto:niklasch@grit.de">Sebastian Niklasch</a>
  */
 public interface ImageSerializer {
 
-    /**
-     * @param img
-     * @param out
-     */
-    void serialize( RenderingInfo rinfo, BufferedImage img, OutputStream out )
-                            throws IOException;
+	/**
+	 * @param img
+	 * @param out
+	 */
+	void serialize(RenderingInfo rinfo, BufferedImage img, OutputStream out) throws IOException;
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -54,85 +53,84 @@ import org.deegree.workspace.ResourceMetadata;
 
 /**
  * SLD style store resource implementation.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class SLDStyleStore implements StyleStore {
 
-    private final Map<String, LinkedList<Style>> styles;
+	private final Map<String, LinkedList<Style>> styles;
 
-    private HashMap<String, Style> stylesByName = new HashMap<String, Style>();
+	private HashMap<String, Style> stylesByName = new HashMap<String, Style>();
 
-    private ResourceMetadata<StyleStore> metadata;
+	private ResourceMetadata<StyleStore> metadata;
 
-    public SLDStyleStore( Map<String, LinkedList<Style>> styles, ResourceMetadata<StyleStore> metadata ) {
-        this.styles = styles;
-        this.metadata = metadata;
-        for ( List<Style> l : styles.values() ) {
-            for ( Style s : l ) {
-                if ( s.getName() != null ) {
-                    stylesByName.put( s.getName(), s );
-                }
-            }
-        }
-    }
+	public SLDStyleStore(Map<String, LinkedList<Style>> styles, ResourceMetadata<StyleStore> metadata) {
+		this.styles = styles;
+		this.metadata = metadata;
+		for (List<Style> l : styles.values()) {
+			for (Style s : l) {
+				if (s.getName() != null) {
+					stylesByName.put(s.getName(), s);
+				}
+			}
+		}
+	}
 
-    @Override
-    public void init() {
-        // nothing to do
-    }
+	@Override
+	public void init() {
+		// nothing to do
+	}
 
-    @Override
-    public void destroy() {
-        // nothing to do
-    }
+	@Override
+	public void destroy() {
+		// nothing to do
+	}
 
-    @Override
-    public Style getStyle( String styleName ) {
-        return stylesByName.get( styleName );
-    }
+	@Override
+	public Style getStyle(String styleName) {
+		return stylesByName.get(styleName);
+	}
 
-    @Override
-    public Style getStyle( String layerName, String styleName ) {
-        if ( layerName == null ) {
-            return getStyle( styleName );
-        }
-        if ( styleName == null ) {
-            styleName = "default";
-        }
-        List<Style> l = styles.get( layerName );
-        if ( l != null ) {
-            for ( Style s : l ) {
-                if ( s.getName() != null ) {
-                    if ( s.getName().equalsIgnoreCase( styleName ) ) {
-                        return s;
-                    }
-                }
-            }
-        }
-        return null;
-    }
+	@Override
+	public Style getStyle(String layerName, String styleName) {
+		if (layerName == null) {
+			return getStyle(styleName);
+		}
+		if (styleName == null) {
+			styleName = "default";
+		}
+		List<Style> l = styles.get(layerName);
+		if (l != null) {
+			for (Style s : l) {
+				if (s.getName() != null) {
+					if (s.getName().equalsIgnoreCase(styleName)) {
+						return s;
+					}
+				}
+			}
+		}
+		return null;
+	}
 
-    @Override
-    public List<Style> getAll( String layerName ) {
-        if ( layerName == null ) {
-            return getAll();
-        }
-        return styles.get( layerName );
-    }
+	@Override
+	public List<Style> getAll(String layerName) {
+		if (layerName == null) {
+			return getAll();
+		}
+		return styles.get(layerName);
+	}
 
-    @Override
-    public List<Style> getAll() {
-        List<Style> list = new ArrayList<Style>();
-        Collections.addAll( list, styles.values().toArray( new Style[0] ) );
-        return list;
-    }
+	@Override
+	public List<Style> getAll() {
+		List<Style> list = new ArrayList<Style>();
+		Collections.addAll(list, styles.values().toArray(new Style[0]));
+		return list;
+	}
 
-    @Override
-    public ResourceMetadata<? extends Resource> getMetadata() {
-        return metadata;
-    }
+	@Override
+	public ResourceMetadata<? extends Resource> getMetadata() {
+		return metadata;
+	}
 
 }

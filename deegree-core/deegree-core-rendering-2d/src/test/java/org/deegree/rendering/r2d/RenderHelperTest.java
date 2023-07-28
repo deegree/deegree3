@@ -1,4 +1,3 @@
-//$$HeadURL$$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -17,7 +16,7 @@
  59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
  Contact information:
- 
+
  IDgis bv
  Boomkamp 16, 7461 AX Rijssen
  The Netherlands
@@ -51,58 +50,53 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * <code>RenderHelperTest</code>
- * 
+ *
  * @author <a href="mailto:reijer.copier@idgis.nl">Reijer Copier</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class RenderHelperTest {
 
-    private GeometryFactory geometryFactory = new GeometryFactory();
+	private GeometryFactory geometryFactory = new GeometryFactory();
 
-    @Test
-    public void testWGS84ShortIdTransform()
-                            throws Exception {
+	@Test
+	public void testWGS84ShortIdTransform() throws Exception {
 
-        final double[] min = new double[] { 4.835947, 52.442229 };
-        final double[] max = new double[] { 4.871100, 52.453817 };
+		final double[] min = new double[] { 4.835947, 52.442229 };
+		final double[] max = new double[] { 4.871100, 52.453817 };
 
-        final AffineTransform worldToScreen = new AffineTransform();
-        final Envelope bbox = geometryFactory.createEnvelope( min, max, CRSManager.lookup( "EPSG:4326" ) );
-        RenderHelper.getWorldToScreenTransform( worldToScreen, bbox, 42, 47 );
+		final AffineTransform worldToScreen = new AffineTransform();
+		final Envelope bbox = geometryFactory.createEnvelope(min, max, CRSManager.lookup("EPSG:4326"));
+		RenderHelper.getWorldToScreenTransform(worldToScreen, bbox, 42, 47);
 
-        final double[] transformedPoint = new double[2];
+		final double[] transformedPoint = new double[2];
 
-        worldToScreen.transform( min, 0, transformedPoint, 0, 1 );
-        assertEquals( 0, transformedPoint[0], 0.1 );
-        assertEquals( 47, transformedPoint[1], 0.1 );
+		worldToScreen.transform(min, 0, transformedPoint, 0, 1);
+		assertEquals(0, transformedPoint[0], 0.1);
+		assertEquals(47, transformedPoint[1], 0.1);
 
-        worldToScreen.transform( max, 0, transformedPoint, 0, 1 );
-        assertEquals( 42, transformedPoint[0], 0.1 );
-        assertEquals( 0, transformedPoint[1], 0.1 );
-    }
+		worldToScreen.transform(max, 0, transformedPoint, 0, 1);
+		assertEquals(42, transformedPoint[0], 0.1);
+		assertEquals(0, transformedPoint[1], 0.1);
+	}
 
-    @Test
-    public void testWGS84LongIdTransform()
-                            throws Exception {
+	@Test
+	public void testWGS84LongIdTransform() throws Exception {
 
-        final double[] min = new double[] { 52.442229, 4.835947 };
-        final double[] max = new double[] { 52.453817, 4.871100 };
+		final double[] min = new double[] { 52.442229, 4.835947 };
+		final double[] max = new double[] { 52.453817, 4.871100 };
 
-        final AffineTransform worldToScreen = new AffineTransform();
-        final Envelope bbox = geometryFactory.createEnvelope( min, max,
-                                                              CRSManager.lookup( "urn:ogc:def:crs:EPSG::4326" ) );
-        RenderHelper.getWorldToScreenTransform( worldToScreen, bbox, 42, 47 );
+		final AffineTransform worldToScreen = new AffineTransform();
+		final Envelope bbox = geometryFactory.createEnvelope(min, max, CRSManager.lookup("urn:ogc:def:crs:EPSG::4326"));
+		RenderHelper.getWorldToScreenTransform(worldToScreen, bbox, 42, 47);
 
-        final double[] transformedPoint = new double[2];
+		final double[] transformedPoint = new double[2];
 
-        worldToScreen.transform( min, 0, transformedPoint, 0, 1 );
-        assertEquals( 0, transformedPoint[0], 0.1 );
-        assertEquals( 47, transformedPoint[1], 0.1 );
+		worldToScreen.transform(min, 0, transformedPoint, 0, 1);
+		assertEquals(0, transformedPoint[0], 0.1);
+		assertEquals(47, transformedPoint[1], 0.1);
 
-        worldToScreen.transform( max, 0, transformedPoint, 0, 1 );
-        assertEquals( 42, transformedPoint[0], 0.1 );
-        assertEquals( 0, transformedPoint[1], 0.1 );
-    }
+		worldToScreen.transform(max, 0, transformedPoint, 0, 1);
+		assertEquals(42, transformedPoint[0], 0.1);
+		assertEquals(0, transformedPoint[1], 0.1);
+	}
+
 }

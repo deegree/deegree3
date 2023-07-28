@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -56,24 +55,20 @@ import org.junit.Test;
 
 /**
  * <code>XMLStreamUtilsTest</code>
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 
 public class XMLStreamUtilsTest {
 
-    @Test
-    public void testAsRelaxedQName()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
-        URL url = XMLStreamUtilsTest.class.getResource( "xmlstreamutils.xml" );
-        XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( url.openStream() );
-        XMLStreamUtils.skipToRequiredElement( reader, new QName( "http://www.opengis.net/sld", "FeatureTypeName" ) );
-        QName name = XMLStreamUtils.getElementTextAsRelaxedQName( reader );
-        assertEquals( "Namespace not detected properly", "http://www.deegree.org/app", name.getNamespaceURI() );
-        assertEquals( "Local name not detected properly", "SGID500_ZipCodes", name.getLocalPart() );
-    }
+	@Test
+	public void testAsRelaxedQName() throws XMLStreamException, FactoryConfigurationError, IOException {
+		URL url = XMLStreamUtilsTest.class.getResource("xmlstreamutils.xml");
+		XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(url.openStream());
+		XMLStreamUtils.skipToRequiredElement(reader, new QName("http://www.opengis.net/sld", "FeatureTypeName"));
+		QName name = XMLStreamUtils.getElementTextAsRelaxedQName(reader);
+		assertEquals("Namespace not detected properly", "http://www.deegree.org/app", name.getNamespaceURI());
+		assertEquals("Local name not detected properly", "SGID500_ZipCodes", name.getLocalPart());
+	}
 
 }

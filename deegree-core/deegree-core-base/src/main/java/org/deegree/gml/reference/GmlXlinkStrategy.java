@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -40,51 +39,43 @@ import org.deegree.commons.tom.gml.GMLReference;
 
 /**
  * Controls how to export xlinks to {@link GMLObject}s.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface GmlXlinkStrategy {
 
-    /**
-     * Returns the options for the resolving of references.
-     * 
-     * @return options for the resolving of references, never <code>null</code>
-     */
-    public GmlXlinkOptions getResolveOptions();
+	/**
+	 * Returns the options for the resolving of references.
+	 * @return options for the resolving of references, never <code>null</code>
+	 */
+	public GmlXlinkOptions getResolveOptions();
 
-    public void addExportedId( String gmlId );
-    
-    /**
-     * Returns whether a {@link GMLObject} with the specified id has already been exported.
-     * 
-     * @param gmlId
-     *            id of the object, must not be <code>null</code>
-     * @return <code>true</code>, if the object has been exported, <code>false</code> otherwise
-     */
-    public boolean isObjectExported( String gmlId );
+	public void addExportedId(String gmlId);
 
-    /**
-     * Invoked when the target of the given {@link GMLReference} has to be included in the exported document.
-     * 
-     * @param ref
-     *            reference, never <code>null</code>
-     * @param options
-     *            resolve options for the reference, never <code>null</code>
-     * @return URI to write, never <code>null</code>
-     */
-    public String requireObject( GMLReference<?> ref, GmlXlinkOptions options );
+	/**
+	 * Returns whether a {@link GMLObject} with the specified id has already been
+	 * exported.
+	 * @param gmlId id of the object, must not be <code>null</code>
+	 * @return <code>true</code>, if the object has been exported, <code>false</code>
+	 * otherwise
+	 */
+	public boolean isObjectExported(String gmlId);
 
-    /**
-     * Invoked when the target of the given {@link GMLReference} may be an external reference or a forward reference to
-     * an object exported later.
-     * 
-     * @param ref
-     *            reference, never <code>null</code>
-     * @return URI to write, never <code>null</code>
-     */
-    public String handleReference( GMLReference<?> ref );
+	/**
+	 * Invoked when the target of the given {@link GMLReference} has to be included in the
+	 * exported document.
+	 * @param ref reference, never <code>null</code>
+	 * @param options resolve options for the reference, never <code>null</code>
+	 * @return URI to write, never <code>null</code>
+	 */
+	public String requireObject(GMLReference<?> ref, GmlXlinkOptions options);
+
+	/**
+	 * Invoked when the target of the given {@link GMLReference} may be an external
+	 * reference or a forward reference to an object exported later.
+	 * @param ref reference, never <code>null</code>
+	 * @return URI to write, never <code>null</code>
+	 */
+	public String handleReference(GMLReference<?> ref);
 
 }

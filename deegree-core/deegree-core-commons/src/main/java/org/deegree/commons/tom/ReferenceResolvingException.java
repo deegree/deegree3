@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -37,48 +36,39 @@ package org.deegree.commons.tom;
 
 /**
  * Indicates that a {@link Reference} cannot be resolved.
- * 
+ *
  * @see Reference
  * @see ReferenceResolver
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class ReferenceResolvingException extends RuntimeException {
 
-    private static final long serialVersionUID = -7702695645031124014L;
+	private static final long serialVersionUID = -7702695645031124014L;
 
-    /**
-     * Creates a new {@link ReferenceResolvingException} with the given detail message.
-     * 
-     * @param msg
-     *            detail message
-     */
-    public ReferenceResolvingException( String msg ) {
-        super( msg );
-    }
+	/**
+	 * Creates a new {@link ReferenceResolvingException} with the given detail message.
+	 * @param msg detail message
+	 */
+	public ReferenceResolvingException(String msg) {
+		super(msg);
+	}
 
-    /**
-     * Creates a new {@link ReferenceResolvingException} with the given cause.
-     * 
-     * @param cause
-     *            causing exception
-     */
-    public ReferenceResolvingException( Throwable cause ) {
-        super( cause );
-    }
+	/**
+	 * Creates a new {@link ReferenceResolvingException} with the given cause.
+	 * @param cause causing exception
+	 */
+	public ReferenceResolvingException(Throwable cause) {
+		super(cause);
+	}
 
-    /**
-     * Creates a new {@link ReferenceResolvingException} with the given detail message and cause.
-     * 
-     * @param msg
-     *            detail message
-     * @param cause
-     *            causing exception
-     */
-    public ReferenceResolvingException( String msg, Throwable cause ) {
-        super( msg, cause );
-    }
+	/**
+	 * Creates a new {@link ReferenceResolvingException} with the given detail message and
+	 * cause.
+	 * @param msg detail message
+	 * @param cause causing exception
+	 */
+	public ReferenceResolvingException(String msg, Throwable cause) {
+		super(msg, cause);
+	}
+
 }

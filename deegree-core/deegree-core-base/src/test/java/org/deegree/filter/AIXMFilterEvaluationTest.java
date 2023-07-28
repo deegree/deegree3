@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -66,78 +65,73 @@ import org.junit.Test;
  * Tests the correct evaluation of filter expressions on AIXM features / geometries.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- *
- * @version $Revision: $, $Date: $
  */
 public class AIXMFilterEvaluationTest {
 
-    private FeatureCollection fc;
+	private FeatureCollection fc;
 
-    private SimpleNamespaceContext nsContext;
+	private SimpleNamespaceContext nsContext;
 
-    @Before
-    public void setUp()
-                            throws Exception {
+	@Before
+	public void setUp() throws Exception {
 
-        Workspace workspace = new DefaultWorkspace( new File( "nix" ) );
-        workspace.initAll();
+		Workspace workspace = new DefaultWorkspace(new File("nix"));
+		workspace.initAll();
 
-        URL docURL = this.getClass().getResource( "../gml/aixm/feature/AIXM51_BasicMessage.gml" );
-        GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader( GML_32, docURL );
-        fc = (FeatureCollection) gmlStream.readFeature();
-        gmlStream.getIdContext().resolveLocalRefs();
+		URL docURL = this.getClass().getResource("../gml/aixm/feature/AIXM51_BasicMessage.gml");
+		GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader(GML_32, docURL);
+		fc = (FeatureCollection) gmlStream.readFeature();
+		gmlStream.getIdContext().resolveLocalRefs();
 
-        nsContext = new SimpleNamespaceContext();
-        nsContext.addNamespace( "gml", "http://www.opengis.net/gml/3.2" );
-        nsContext.addNamespace( "aixm", "http://www.aixm.aero/schema/5.1" );
-        new FunctionManager().init( workspace );
-    }
+		nsContext = new SimpleNamespaceContext();
+		nsContext.addNamespace("gml", "http://www.opengis.net/gml/3.2");
+		nsContext.addNamespace("aixm", "http://www.aixm.aero/schema/5.1");
+		new FunctionManager().init(workspace);
+	}
 
-    @Test
-    public void filterByGMLIdentifier()
-                            throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
-        Filter filter = parseFilter( "aixm_by_gml_identifier.xml" );
-        assertResultSet( fc.getMembers( filter, new TypedObjectNodeXPathEvaluator() ), "ORGCIVIL_AVIATION" );
-    }
+	@Test
+	public void filterByGMLIdentifier()
+			throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
+		Filter filter = parseFilter("aixm_by_gml_identifier.xml");
+		assertResultSet(fc.getMembers(filter, new TypedObjectNodeXPathEvaluator()), "ORGCIVIL_AVIATION");
+	}
 
-    @Test
-    public void filterByAIXMCustomGeometryProperty()
-                            throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
-        final Filter filter = parseFilter( "aixm_custom_geometry_property.xml" );
-        assertResultSet( fc.getMembers( filter, new TypedObjectNodeXPathEvaluator() ), "EADD" );
-    }
+	@Test
+	public void filterByAIXMCustomGeometryProperty()
+			throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
+		final Filter filter = parseFilter("aixm_custom_geometry_property.xml");
+		assertResultSet(fc.getMembers(filter, new TypedObjectNodeXPathEvaluator()), "EADD");
+	}
 
-    @Test
-    public void filterByAIXMCustomGeometryBBOX()
-                            throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
-        final Filter filter = parseFilter( "aixm_custom_geometry_bbox.xml" );
-        assertResultSet( fc.getMembers( filter, new TypedObjectNodeXPathEvaluator() ), "EADH" );
-    }
+	@Test
+	public void filterByAIXMCustomGeometryBBOX()
+			throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
+		final Filter filter = parseFilter("aixm_custom_geometry_bbox.xml");
+		assertResultSet(fc.getMembers(filter, new TypedObjectNodeXPathEvaluator()), "EADH");
+	}
 
-    @Test
-    public void filterByTimeInstant()
-                            throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
-        final Filter filter = parseFilter( "aixm_timeinstant_begin.xml" );
-        assertResultSet( fc.getMembers( filter, new TypedObjectNodeXPathEvaluator() ), "EADD", "EADH" );
-    }
+	@Test
+	public void filterByTimeInstant() throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
+		final Filter filter = parseFilter("aixm_timeinstant_begin.xml");
+		assertResultSet(fc.getMembers(filter, new TypedObjectNodeXPathEvaluator()), "EADD", "EADH");
+	}
 
-    private void assertResultSet( FeatureCollection fc, String... expectedIds ) {
-        Assert.assertEquals( expectedIds.length, fc.size() );
-        Set<String> ids = new HashSet<String>();
-        for ( Feature feature : fc ) {
-            ids.add( feature.getId() );
-        }
-        for ( String string : expectedIds ) {
-            Assert.assertTrue( ids.contains( string ) );
-        }
-    }
+	private void assertResultSet(FeatureCollection fc, String... expectedIds) {
+		Assert.assertEquals(expectedIds.length, fc.size());
+		Set<String> ids = new HashSet<String>();
+		for (Feature feature : fc) {
+			ids.add(feature.getId());
+		}
+		for (String string : expectedIds) {
+			Assert.assertTrue(ids.contains(string));
+		}
+	}
 
-    private Filter parseFilter( String resourceName )
-                            throws XMLStreamException, FactoryConfigurationError {
-        InputStream is = AIXMFilterEvaluationTest.class.getResourceAsStream( "xml/v200/" + resourceName );
-        XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( is );
-        xmlStream.nextTag();
-        return Filter200XMLDecoder.parse( xmlStream );
-    }
+	private Filter parseFilter(String resourceName) throws XMLStreamException, FactoryConfigurationError {
+		InputStream is = AIXMFilterEvaluationTest.class.getResourceAsStream("xml/v200/" + resourceName);
+		XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader(is);
+		xmlStream.nextTag();
+		return Filter200XMLDecoder.parse(xmlStream);
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -60,55 +59,52 @@ import org.deegree.tile.persistence.cache.CachingTileStore;
 
 /**
  * <code>Invalidate</code>
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 
 public class Invalidate {
 
-    public static void invalidate( String path, String qstring, HttpServletResponse resp )
-                            throws IOException {
-        Pair<DeegreeWorkspace, String> p = getWorkspaceAndPath( path );
+	public static void invalidate(String path, String qstring, HttpServletResponse resp) throws IOException {
+		Pair<DeegreeWorkspace, String> p = getWorkspaceAndPath(path);
 
-        resp.setContentType( "text/plain" );
+		resp.setContentType("text/plain");
 
-        String id = path.split( "/" )[0];
-        String tmsid = path.split( "/" )[1];
-        Envelope bbox = null;
-        if ( qstring != null && qstring.toLowerCase().startsWith( "bbox=" ) ) {
-            String s = qstring.substring( 5 );
-            s = URLDecoder.decode( s, "UTF-8" );
-            double[] ds = ArrayUtils.splitAsDoubles( s, "," );
-            if ( ds.length != 4 ) {
-                resp.setStatus( 404 );
-                IOUtils.write( "The value of the bbox parameter was invalid.\n", resp.getOutputStream() );
-                return;
-            }
-            bbox = new GeometryFactory().createEnvelope( ds[0], ds[1], ds[2], ds[3], null );
-        }
+		String id = path.split("/")[0];
+		String tmsid = path.split("/")[1];
+		Envelope bbox = null;
+		if (qstring != null && qstring.toLowerCase().startsWith("bbox=")) {
+			String s = qstring.substring(5);
+			s = URLDecoder.decode(s, "UTF-8");
+			double[] ds = ArrayUtils.splitAsDoubles(s, ",");
+			if (ds.length != 4) {
+				resp.setStatus(404);
+				IOUtils.write("The value of the bbox parameter was invalid.\n", resp.getOutputStream());
+				return;
+			}
+			bbox = new GeometryFactory().createEnvelope(ds[0], ds[1], ds[2], ds[3], null);
+		}
 
-        TileStore ts = p.first.getNewWorkspace().getResource( TileStoreProvider.class, id );
-        if ( ts == null ) {
-            resp.setStatus( 404 );
-            IOUtils.write( "No such tile store.\n", resp.getOutputStream() );
-            return;
-        }
+		TileStore ts = p.first.getNewWorkspace().getResource(TileStoreProvider.class, id);
+		if (ts == null) {
+			resp.setStatus(404);
+			IOUtils.write("No such tile store.\n", resp.getOutputStream());
+			return;
+		}
 
-        if ( !( ts instanceof CachingTileStore ) ) {
-            resp.setStatus( 403 );
-            IOUtils.write( "The tile store is no caching tile store.\n", resp.getOutputStream() );
-            return;
-        }
+		if (!(ts instanceof CachingTileStore)) {
+			resp.setStatus(403);
+			IOUtils.write("The tile store is no caching tile store.\n", resp.getOutputStream());
+			return;
+		}
 
-        if ( bbox != null ) {
-            bbox.setCoordinateSystem( ts.getTileDataSet( tmsid ).getTileMatrixSet().getSpatialMetadata().getCoordinateSystems().get( 0 ) );
-        }
+		if (bbox != null) {
+			bbox.setCoordinateSystem(
+					ts.getTileDataSet(tmsid).getTileMatrixSet().getSpatialMetadata().getCoordinateSystems().get(0));
+		}
 
-        long num = ( (CachingTileStore) ts ).invalidateCache( tmsid, bbox );
-        IOUtils.write( "Removed " + num + " elements from the cache.\n", resp.getOutputStream() );
-    }
+		long num = ((CachingTileStore) ts).invalidateCache(tmsid, bbox);
+		IOUtils.write("Removed " + num + " elements from the cache.\n", resp.getOutputStream());
+	}
 
 }

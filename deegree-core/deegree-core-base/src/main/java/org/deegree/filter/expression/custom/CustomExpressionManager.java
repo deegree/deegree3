@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -45,54 +44,52 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Entry point for retrieving {@link CustomExpression} instances that are registered via Java SPI.
- * 
+ * Entry point for retrieving {@link CustomExpression} instances that are registered via
+ * Java SPI.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class CustomExpressionManager {
 
-    private static final Logger LOG = LoggerFactory.getLogger( CustomExpressionManager.class );
+	private static final Logger LOG = LoggerFactory.getLogger(CustomExpressionManager.class);
 
-    private static ServiceLoader<CustomExpression> customExpressionLoader = ServiceLoader.load( CustomExpression.class );
+	private static ServiceLoader<CustomExpression> customExpressionLoader = ServiceLoader.load(CustomExpression.class);
 
-    private static Map<QName, CustomExpression> elNameToExpression;
+	private static Map<QName, CustomExpression> elNameToExpression;
 
-    /**
-     * Returns all available {@link CustomExpression}s.
-     * 
-     * @return all available functions, keys: name, value: CustomExpression
-     */
-    public static synchronized Map<QName, CustomExpression> getCustomExpressions() {
-        if ( elNameToExpression == null ) {
-            elNameToExpression = new HashMap<QName, CustomExpression>();
-            try {
-                for ( CustomExpression expr : customExpressionLoader ) {
-                    LOG.debug( "Expression: " + expr + ", element name: " + expr.getElementName() );
-                    if ( elNameToExpression.containsKey( expr.getElementName() ) ) {
-                        LOG.error( "Multiple CustomExpression instances for element name: '" + expr.getElementName()
-                                   + "' on classpath -- omitting '" + expr.getClass().getName() + "'." );
-                        continue;
-                    }
-                    elNameToExpression.put( expr.getElementName(), expr );
-                }
-            } catch ( Exception e ) {
-                LOG.error( e.getMessage(), e );
-            }
-        }
-        return elNameToExpression;
-    }
+	/**
+	 * Returns all available {@link CustomExpression}s.
+	 * @return all available functions, keys: name, value: CustomExpression
+	 */
+	public static synchronized Map<QName, CustomExpression> getCustomExpressions() {
+		if (elNameToExpression == null) {
+			elNameToExpression = new HashMap<QName, CustomExpression>();
+			try {
+				for (CustomExpression expr : customExpressionLoader) {
+					LOG.debug("Expression: " + expr + ", element name: " + expr.getElementName());
+					if (elNameToExpression.containsKey(expr.getElementName())) {
+						LOG.error("Multiple CustomExpression instances for element name: '" + expr.getElementName()
+								+ "' on classpath -- omitting '" + expr.getClass().getName() + "'.");
+						continue;
+					}
+					elNameToExpression.put(expr.getElementName(), expr);
+				}
+			}
+			catch (Exception e) {
+				LOG.error(e.getMessage(), e);
+			}
+		}
+		return elNameToExpression;
+	}
 
-    /**
-     * Returns the {@link CustomExpression} for the given element name.
-     * 
-     * @param elName
-     *            name of the element, must not be <code>null</code>
-     * @return custom expression instance, or <code>null</code> if there is no expression with this name
-     */
-    public static CustomExpression getExpression( QName elName ) {
-        return getCustomExpressions().get( elName );
-    }
+	/**
+	 * Returns the {@link CustomExpression} for the given element name.
+	 * @param elName name of the element, must not be <code>null</code>
+	 * @return custom expression instance, or <code>null</code> if there is no expression
+	 * with this name
+	 */
+	public static CustomExpression getExpression(QName elName) {
+		return getCustomExpressions().get(elName);
+	}
+
 }

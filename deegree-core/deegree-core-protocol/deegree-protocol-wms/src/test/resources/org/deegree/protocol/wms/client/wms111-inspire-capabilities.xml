@@ -384,31 +384,31 @@ xmlns:inspire_common CDATA #FIXED
 <WMT_MS_Capabilities updateSequence="1.1.0" version="1.1.1">
   <Service>
     <Name>WMS</Name>
-    <Title>deegree wms</Title>
-    <Abstract>wms reference implementation</Abstract>
+    <Title>deegree WMS capabilities</Title>
+    <Abstract>An example template for the deegree WMS</Abstract>
     <KeywordList>
       <Keyword>deegree</Keyword>
-      <Keyword>wms</Keyword>
+      <Keyword>WMS</Keyword>
     </KeywordList>
-    <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://demo.deegree.org:80/deegree-wms/services?"
+    <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://example.com/deegree-wms/services?"
       xlink:type="simple" />
     <ContactInformation>
       <ContactPersonPrimary>
-        <ContactPerson>Andreas Poth</ContactPerson>
-        <ContactOrganization>lat/lon</ContactOrganization>
+        <ContactPerson>Gerhard Mercator</ContactPerson>
+        <ContactOrganization>deegree</ContactOrganization>
       </ContactPersonPrimary>
-      <ContactPosition>Technical Director</ContactPosition>
+      <ContactPosition>Geographer</ContactPosition>
       <ContactAddress>
         <AddressType>postal</AddressType>
-        <Address>Aennchenstr. 19</Address>
-        <City>Bonn</City>
-        <StateOrProvince>NRW</StateOrProvince>
-        <PostCode>53177</PostCode>
-        <Country>Germany</Country>
+        <Address>9450 SW Gemini Dr #42523</Address>
+        <City>Beaverton</City>
+        <StateOrProvince>OR</StateOrProvince>
+        <PostCode>97008</PostCode>
+        <Country>USA</Country>
       </ContactAddress>
-      <ContactVoiceTelephone>0049228184960</ContactVoiceTelephone>
-      <ContactFacsimileTelephone>00492281849629</ContactFacsimileTelephone>
-      <ContactElectronicMailAddress>info@lat-lon.de</ContactElectronicMailAddress>
+      <ContactVoiceTelephone>0000/000000</ContactVoiceTelephone>
+      <ContactFacsimileTelephone>0000/000000</ContactFacsimileTelephone>
+      <ContactElectronicMailAddress>info@example.com</ContactElectronicMailAddress>
     </ContactInformation>
     <Fees>none</Fees>
     <AccessConstraints>none</AccessConstraints>

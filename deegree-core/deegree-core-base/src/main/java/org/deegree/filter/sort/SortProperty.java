@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -39,47 +38,41 @@ package org.deegree.filter.sort;
 import org.deegree.filter.expression.ValueReference;
 
 /**
- * A sort criterion that consist of a property name plus sort order (ascending or descending).
+ * A sort criterion that consist of a property name plus sort order (ascending or
+ * descending).
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- *
- * @version $Revision: $, $Date: $
  */
 public class SortProperty {
 
-    private ValueReference propName;
+	private ValueReference propName;
 
-    private boolean sortAscending;
+	private boolean sortAscending;
 
-    /**
-     * Creates a new {@link SortProperty}.
-     *
-     * @param propName
-     *            property that acts as the sort criterion
-     * @param sortAscending
-     *            true: sort ascending, false: descending
-     */
-    public SortProperty( ValueReference propName, boolean sortAscending ) {
-        this.propName = propName;
-        this.sortAscending = sortAscending;
-    }
+	/**
+	 * Creates a new {@link SortProperty}.
+	 * @param propName property that acts as the sort criterion
+	 * @param sortAscending true: sort ascending, false: descending
+	 */
+	public SortProperty(ValueReference propName, boolean sortAscending) {
+		this.propName = propName;
+		this.sortAscending = sortAscending;
+	}
 
-    /**
-     * Returns the property that acts as the sort criterion.
-     *
-     * @return the property that acts as the sort criterion
-     */
-    public ValueReference getSortProperty() {
-        return this.propName;
-    }
+	/**
+	 * Returns the property that acts as the sort criterion.
+	 * @return the property that acts as the sort criterion
+	 */
+	public ValueReference getSortProperty() {
+		return this.propName;
+	}
 
-    /**
-     * Returns the sort order.
-     *
-     * @return true, if the sort order is ascending, false if it is descending
-     */
-    public boolean getSortOrder() {
-        return this.sortAscending;
-    }
+	/**
+	 * Returns the sort order.
+	 * @return true, if the sort order is ascending, false if it is descending
+	 */
+	public boolean getSortOrder() {
+		return this.sortAscending;
+	}
+
 }

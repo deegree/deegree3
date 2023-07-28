@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -42,64 +41,59 @@ import org.deegree.cs.components.Axis;
 
 /**
  * Abstract base class for {@link GeometryValidationEvent} implementations.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * 
- * @version $Revision: $, $Date: $
  */
 abstract class AbstractGeometryValidationEvent implements GeometryValidationEvent {
 
-    private final List<Object> geometryParticleHierachy;
+	private final List<Object> geometryParticleHierachy;
 
-    /**
-     * Creates a new {@link AbstractGeometryValidationEvent} instance.
-     * 
-     * @param geometryParticleHierarchy
-     *            list of affected geometry particles (that the geometry particle belongs to), must not be
-     *            <code>null</code>
-     */
-    protected AbstractGeometryValidationEvent( List<Object> geometryParticleHierarchy ) {
-        this.geometryParticleHierachy = geometryParticleHierarchy;
-    }
+	/**
+	 * Creates a new {@link AbstractGeometryValidationEvent} instance.
+	 * @param geometryParticleHierarchy list of affected geometry particles (that the
+	 * geometry particle belongs to), must not be <code>null</code>
+	 */
+	protected AbstractGeometryValidationEvent(List<Object> geometryParticleHierarchy) {
+		this.geometryParticleHierachy = geometryParticleHierarchy;
+	}
 
-    @Override
-    public List<Object> getGeometryParticleHierarchy() {
-        return geometryParticleHierachy;
-    }
+	@Override
+	public List<Object> getGeometryParticleHierarchy() {
+		return geometryParticleHierachy;
+	}
 
-    /**
-     * Returns true if the geometry has a left handed CRS.
-     * 
-     * @return <code>true</code> if geometry has a left handed CRS, <code>false</code> if CRS is right handed
-     */
-    protected boolean isLeftHanded( ICRS crs ) {
-        // get number of dimensions (it should be 2)
-        if ( crs.getDimension() == 2 ) {
-            int axis1 = crs.getAxis()[0].getOrientation();
-            int axis2 = crs.getAxis()[1].getOrientation();
+	/**
+	 * Returns true if the geometry has a left handed CRS.
+	 * @return <code>true</code> if geometry has a left handed CRS, <code>false</code> if
+	 * CRS is right handed
+	 */
+	protected boolean isLeftHanded(ICRS crs) {
+		// get number of dimensions (it should be 2)
+		if (crs.getDimension() == 2) {
+			int axis1 = crs.getAxis()[0].getOrientation();
+			int axis2 = crs.getAxis()[1].getOrientation();
 
-            // check if CRS is left handed
-            if ( axis1 == Axis.AO_EAST || axis1 == Axis.AO_WEST ) {
-                if ( axis1 == Axis.AO_EAST && ( axis2 == Axis.AO_SOUTH || axis2 == Axis.AO_DOWN ) ) {
-                    return true;
-                }
-                else if ( axis1 == Axis.AO_WEST && ( axis2 == Axis.AO_NORTH || axis2 == Axis.AO_UP ) ) {
-                    return true;
-                }
-            }
-            else {
-                if ( ( axis1 == Axis.AO_SOUTH || axis1 == Axis.AO_DOWN ) && axis2 == Axis.AO_WEST ) {
-                    return true;
-                }
-                else if ( ( axis1 == Axis.AO_NORTH || axis1 == Axis.AO_UP ) && axis2 == Axis.AO_EAST ) {
-                    return true;
-                }
-            }
-        }
+			// check if CRS is left handed
+			if (axis1 == Axis.AO_EAST || axis1 == Axis.AO_WEST) {
+				if (axis1 == Axis.AO_EAST && (axis2 == Axis.AO_SOUTH || axis2 == Axis.AO_DOWN)) {
+					return true;
+				}
+				else if (axis1 == Axis.AO_WEST && (axis2 == Axis.AO_NORTH || axis2 == Axis.AO_UP)) {
+					return true;
+				}
+			}
+			else {
+				if ((axis1 == Axis.AO_SOUTH || axis1 == Axis.AO_DOWN) && axis2 == Axis.AO_WEST) {
+					return true;
+				}
+				else if ((axis1 == Axis.AO_NORTH || axis1 == Axis.AO_UP) && axis2 == Axis.AO_EAST) {
+					return true;
+				}
+			}
+		}
 
-        // return false in any other case
-        return false;
-    }
+		// return false in any other case
+		return false;
+	}
 
 }

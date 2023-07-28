@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -59,42 +58,39 @@ import org.deegree.style.styling.Styling;
 
 /**
  * Builds legend items.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 class LegendItemBuilder {
 
-    static List<LegendItem> prepareLegend( Style style, Java2DRenderer renderer, Java2DTextRenderer textRenderer,
-                                           Java2DRasterRenderer rasterRenderer ) {
-        List<LegendItem> items = new LinkedList<LegendItem>();
-        LinkedList<Class<?>> ruleTypes = style.getRuleTypes();
-        Iterator<Class<?>> types = ruleTypes.iterator();
-        LinkedList<String> ruleTitles = style.getRuleTitles();
-        Iterator<String> titles = ruleTitles.iterator();
-        LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>> rules;
-        rules = new LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>>( style.getRules() );
-        Iterator<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>> ruleIterator = rules.iterator();
-        ArrayList<LinkedList<Styling>> bases = style.getBases();
+	static List<LegendItem> prepareLegend(Style style, Java2DRenderer renderer, Java2DTextRenderer textRenderer,
+			Java2DRasterRenderer rasterRenderer) {
+		List<LegendItem> items = new LinkedList<LegendItem>();
+		LinkedList<Class<?>> ruleTypes = style.getRuleTypes();
+		Iterator<Class<?>> types = ruleTypes.iterator();
+		LinkedList<String> ruleTitles = style.getRuleTitles();
+		Iterator<String> titles = ruleTitles.iterator();
+		LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>> rules;
+		rules = new LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>>(style.getRules());
+		Iterator<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>> ruleIterator = rules.iterator();
+		ArrayList<LinkedList<Styling>> bases = style.getBases();
 
-        for ( LinkedList<Styling> styles : bases ) {
-            boolean raster = false;
-            for ( Styling s : styles ) {
-                if ( s instanceof RasterStyling ) {
-                    items.add( new RasterLegendItem( (RasterStyling) s, renderer, rasterRenderer, textRenderer ) );
-                    raster = true;
-                }
-            }
-            if ( !raster ) {
-                LegendItem item = new StandardLegendItem( styles, ruleIterator.next().first, types.next(),
-                                                          titles.next(), renderer, textRenderer );
-                items.add( item );
-            }
-        }
+		for (LinkedList<Styling> styles : bases) {
+			boolean raster = false;
+			for (Styling s : styles) {
+				if (s instanceof RasterStyling) {
+					items.add(new RasterLegendItem((RasterStyling) s, renderer, rasterRenderer, textRenderer));
+					raster = true;
+				}
+			}
+			if (!raster) {
+				LegendItem item = new StandardLegendItem(styles, ruleIterator.next().first, types.next(), titles.next(),
+						renderer, textRenderer);
+				items.add(item);
+			}
+		}
 
-        return items;
-    }
+		return items;
+	}
 
 }

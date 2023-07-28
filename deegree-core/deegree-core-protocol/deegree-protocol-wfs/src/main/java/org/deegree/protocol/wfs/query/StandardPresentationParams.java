@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -40,80 +39,73 @@ import java.math.BigInteger;
 import org.deegree.protocol.wfs.getfeature.ResultType;
 
 /**
- * Encapsulates standard parameters for controlling the presentation of {@link Query} results.
- * 
+ * Encapsulates standard parameters for controlling the presentation of {@link Query}
+ * results.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class StandardPresentationParams {
 
-    private final BigInteger startIndex;
+	private final BigInteger startIndex;
 
-    private final BigInteger count;
+	private final BigInteger count;
 
-    private final ResultType resultType;
+	private final ResultType resultType;
 
-    private final String outputFormat;
+	private final String outputFormat;
 
-    /**
-     * Creates a new {@link StandardPresentationParams} instance.
-     * 
-     * @param startIndex
-     *            index within the result set from which the server shall begin returning results (conting starts at 0),
-     *            can be <code>null</code> (unspecified)
-     * @param count
-     *            limit for the number of returned results (non-negative integer), can be <code>null</code>
-     *            (unspecified)
-     * @param resultType
-     *            requested query mode (result or hits), can be <code>null</code> (unspecified)
-     * @param outputFormat
-     *            requested output format, can be <code>null</code> (unspecified)
-     */
-    public StandardPresentationParams( BigInteger startIndex, BigInteger count, ResultType resultType,
-                                       String outputFormat ) {
-        this.startIndex = startIndex;
-        this.count = count;
-        this.resultType = resultType;
-        this.outputFormat = outputFormat;
-    }
+	/**
+	 * Creates a new {@link StandardPresentationParams} instance.
+	 * @param startIndex index within the result set from which the server shall begin
+	 * returning results (conting starts at 0), can be <code>null</code> (unspecified)
+	 * @param count limit for the number of returned results (non-negative integer), can
+	 * be <code>null</code> (unspecified)
+	 * @param resultType requested query mode (result or hits), can be <code>null</code>
+	 * (unspecified)
+	 * @param outputFormat requested output format, can be <code>null</code> (unspecified)
+	 */
+	public StandardPresentationParams(BigInteger startIndex, BigInteger count, ResultType resultType,
+			String outputFormat) {
+		this.startIndex = startIndex;
+		this.count = count;
+		this.resultType = resultType;
+		this.outputFormat = outputFormat;
+	}
 
-    /**
-     * Returns the index within the result set from which the server shall begin returning results (counting starts at
-     * 0).
-     * 
-     * @return index within the result set from which the server shall begin returning results (non-negative integer,
-     *         counting starts at 0), can be <code>null</code> (unspecified)
-     */
-    public BigInteger getStartIndex() {
-        return startIndex;
-    }
+	/**
+	 * Returns the index within the result set from which the server shall begin returning
+	 * results (counting starts at 0).
+	 * @return index within the result set from which the server shall begin returning
+	 * results (non-negative integer, counting starts at 0), can be <code>null</code>
+	 * (unspecified)
+	 */
+	public BigInteger getStartIndex() {
+		return startIndex;
+	}
 
-    /**
-     * Returns the limit for the number of returned results.
-     * 
-     * @return limit for the number of returned results (non-negative integer), can be <code>null</code> (unspecified)
-     */
-    public BigInteger getCount() {
-        return count;
-    }
+	/**
+	 * Returns the limit for the number of returned results.
+	 * @return limit for the number of returned results (non-negative integer), can be
+	 * <code>null</code> (unspecified)
+	 */
+	public BigInteger getCount() {
+		return count;
+	}
 
-    /**
-     * Returns the requested query mode (result or hits).
-     * 
-     * @return requested query mode, or <code>null</code> (unspecified)
-     */
-    public ResultType getResultType() {
-        return resultType;
-    }
+	/**
+	 * Returns the requested query mode (result or hits).
+	 * @return requested query mode, or <code>null</code> (unspecified)
+	 */
+	public ResultType getResultType() {
+		return resultType;
+	}
 
-    /**
-     * Returns the requested output format.
-     * 
-     * @return requested output format, or <code>null</code> if unspecified
-     */
-    public String getOutputFormat() {
-        return outputFormat;
-    }
+	/**
+	 * Returns the requested output format.
+	 * @return requested output format, or <code>null</code> if unspecified
+	 */
+	public String getOutputFormat() {
+		return outputFormat;
+	}
+
 }

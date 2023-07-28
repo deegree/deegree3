@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -68,128 +67,121 @@ import org.deegree.workspace.Workspace;
 
 /**
  * Builds tile data sets from jaxb config beans.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 class TileDataSetBuilder {
 
-    private final RemoteWMSTileStoreJAXB config;
+	private final RemoteWMSTileStoreJAXB config;
 
-    private final RemoteWMS wms;
+	private final RemoteWMS wms;
 
-    private final Workspace workspace;
+	private final Workspace workspace;
 
-    TileDataSetBuilder( RemoteWMSTileStoreJAXB config, RemoteWMS wms, Workspace workspace ) {
-        this.config = config;
-        this.wms = wms;
-        this.workspace = workspace;
-    }
+	TileDataSetBuilder(RemoteWMSTileStoreJAXB config, RemoteWMS wms, Workspace workspace) {
+		this.config = config;
+		this.wms = wms;
+		this.workspace = workspace;
+	}
 
-    Map<String, TileDataSet> extractTileDataSets()
-                            throws ResourceInitException {
-        Map<String, TileDataSet> map = new HashMap<String, TileDataSet>();
-        for ( RemoteWMSTileStoreJAXB.TileDataSet cfg : config.getTileDataSet() ) {
-            String id = cfg.getIdentifier();
-            String tmsId = cfg.getTileMatrixSetId();
-            TileMatrixSet tms = workspace.getResource( TileMatrixSetProvider.class, tmsId );
-            if ( tms == null ) {
-                throw new ResourceInitException( "The tile matrix set with id " + tmsId + " was not available." );
-            }
+	Map<String, TileDataSet> extractTileDataSets() throws ResourceInitException {
+		Map<String, TileDataSet> map = new HashMap<String, TileDataSet>();
+		for (RemoteWMSTileStoreJAXB.TileDataSet cfg : config.getTileDataSet()) {
+			String id = cfg.getIdentifier();
+			String tmsId = cfg.getTileMatrixSetId();
+			TileMatrixSet tms = workspace.getResource(TileMatrixSetProvider.class, tmsId);
+			if (tms == null) {
+				throw new ResourceInitException("The tile matrix set with id " + tmsId + " was not available.");
+			}
 
-            RequestParams params = cfg.getRequestParams();
-            map.put( id, buildTileDataSet( params, tms, wms.getClient(), cfg.getOutputFormat() ) );
-        }
-        return map;
-    }
+			RequestParams params = cfg.getRequestParams();
+			map.put(id, buildTileDataSet(params, tms, wms.getClient(), cfg.getOutputFormat()));
+		}
+		return map;
+	}
 
-    private DefaultTileDataSet buildTileDataSet( RequestParams requestParams, TileMatrixSet tms, WMSClient client,
-                                                 String outputFormat )
-                            throws ResourceInitException {
-        List<String> layers = splitNullSafe( requestParams.getLayers() );
+	private DefaultTileDataSet buildTileDataSet(RequestParams requestParams, TileMatrixSet tms, WMSClient client,
+			String outputFormat) throws ResourceInitException {
+		List<String> layers = splitNullSafe(requestParams.getLayers());
 
-        for ( String l : layers ) {
-            if ( !client.hasLayer( l ) ) {
-                throw new ResourceInitException( "The layer named " + l + " is not available from the remote WMS." );
-            }
-        }
+		for (String l : layers) {
+			if (!client.hasLayer(l)) {
+				throw new ResourceInitException("The layer named " + l + " is not available from the remote WMS.");
+			}
+		}
 
-        List<String> styles = splitNullSafe( requestParams.getStyles() );
-        String format = requestParams.getFormat();
-        String crs = requestParams.getCRS();
-        Map<String, String> defaultGetMap = new HashMap<String, String>();
-        Map<String, String> defaultGetFeatureInfo = new HashMap<String, String>();
-        Map<String, String> hardGetMap = new HashMap<String, String>();
-        Map<String, String> hardGetFeatureInfo = new HashMap<String, String>();
-        extractParameters( requestParams.getParameter(), defaultGetMap, defaultGetFeatureInfo, hardGetMap,
-                           hardGetFeatureInfo );
+		List<String> styles = splitNullSafe(requestParams.getStyles());
+		String format = requestParams.getFormat();
+		String crs = requestParams.getCRS();
+		Map<String, String> defaultGetMap = new HashMap<String, String>();
+		Map<String, String> defaultGetFeatureInfo = new HashMap<String, String>();
+		Map<String, String> hardGetMap = new HashMap<String, String>();
+		Map<String, String> hardGetFeatureInfo = new HashMap<String, String>();
+		extractParameters(requestParams.getParameter(), defaultGetMap, defaultGetFeatureInfo, hardGetMap,
+				hardGetFeatureInfo);
 
-        if ( outputFormat.startsWith( "image/" ) ) {
-            outputFormat = outputFormat.substring( 6 );
-        }
+		if (outputFormat.startsWith("image/")) {
+			outputFormat = outputFormat.substring(6);
+		}
 
-        List<TileDataLevel> dataLevels = new ArrayList<TileDataLevel>();
-        for ( TileMatrix tm : tms.getTileMatrices() ) {
-            TileDataLevel m = new RemoteWMSTileDataLevel( tm, format, layers, styles, client, outputFormat, crs,
-                                                          defaultGetMap, defaultGetFeatureInfo, hardGetMap,
-                                                          hardGetFeatureInfo );
-            dataLevels.add( 0, m );
-        }
-        return new DefaultTileDataSet( dataLevels, tms, "image/" + outputFormat );
-    }
+		List<TileDataLevel> dataLevels = new ArrayList<TileDataLevel>();
+		for (TileMatrix tm : tms.getTileMatrices()) {
+			TileDataLevel m = new RemoteWMSTileDataLevel(tm, format, layers, styles, client, outputFormat, crs,
+					defaultGetMap, defaultGetFeatureInfo, hardGetMap, hardGetFeatureInfo);
+			dataLevels.add(0, m);
+		}
+		return new DefaultTileDataSet(dataLevels, tms, "image/" + outputFormat);
+	}
 
-    private static List<String> splitNullSafe( String csv ) {
-        if ( csv == null ) {
-            return emptyList();
-        }
-        String[] tokens = StringUtils.split( csv, "," );
-        return asList( tokens );
-    }
+	private static List<String> splitNullSafe(String csv) {
+		if (csv == null) {
+			return emptyList();
+		}
+		String[] tokens = StringUtils.split(csv, ",");
+		return asList(tokens);
+	}
 
-    private static void extractParameters( List<Parameter> params, Map<String, String> defaultParametersGetMap,
-                                           Map<String, String> defaultParametersGetFeatureInfo,
-                                           Map<String, String> hardParametersGetMap,
-                                           Map<String, String> hardParametersGetFeatureInfo ) {
-        if ( params != null && !params.isEmpty() ) {
-            for ( Parameter p : params ) {
-                String name = p.getName();
-                String value = p.getValue();
-                ParameterUseType use = p.getUse();
-                ParameterScopeType scope = p.getScope();
-                switch ( use ) {
-                case ALLOW_OVERRIDE:
-                    switch ( scope ) {
-                    case GET_MAP:
-                        defaultParametersGetMap.put( name, value );
-                        break;
-                    case GET_FEATURE_INFO:
-                        defaultParametersGetFeatureInfo.put( name, value );
-                        break;
-                    default:
-                        defaultParametersGetMap.put( name, value );
-                        defaultParametersGetFeatureInfo.put( name, value );
-                        break;
-                    }
-                    break;
-                case FIXED:
-                    switch ( scope ) {
-                    case GET_MAP:
-                        hardParametersGetMap.put( name, value );
-                        break;
-                    case GET_FEATURE_INFO:
-                        hardParametersGetFeatureInfo.put( name, value );
-                        break;
-                    default:
-                        hardParametersGetMap.put( name, value );
-                        hardParametersGetFeatureInfo.put( name, value );
-                        break;
-                    }
-                    break;
-                }
-            }
-        }
-    }
+	private static void extractParameters(List<Parameter> params, Map<String, String> defaultParametersGetMap,
+			Map<String, String> defaultParametersGetFeatureInfo, Map<String, String> hardParametersGetMap,
+			Map<String, String> hardParametersGetFeatureInfo) {
+		if (params != null && !params.isEmpty()) {
+			for (Parameter p : params) {
+				String name = p.getName();
+				String value = p.getValue();
+				ParameterUseType use = p.getUse();
+				ParameterScopeType scope = p.getScope();
+				switch (use) {
+					case ALLOW_OVERRIDE:
+						switch (scope) {
+							case GET_MAP:
+								defaultParametersGetMap.put(name, value);
+								break;
+							case GET_FEATURE_INFO:
+								defaultParametersGetFeatureInfo.put(name, value);
+								break;
+							default:
+								defaultParametersGetMap.put(name, value);
+								defaultParametersGetFeatureInfo.put(name, value);
+								break;
+						}
+						break;
+					case FIXED:
+						switch (scope) {
+							case GET_MAP:
+								hardParametersGetMap.put(name, value);
+								break;
+							case GET_FEATURE_INFO:
+								hardParametersGetFeatureInfo.put(name, value);
+								break;
+							default:
+								hardParametersGetMap.put(name, value);
+								hardParametersGetFeatureInfo.put(name, value);
+								break;
+						}
+						break;
+				}
+			}
+		}
+	}
 
 }

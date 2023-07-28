@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -46,28 +45,25 @@ import org.slf4j.Logger;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class DebugPhaseListener implements PhaseListener {
 
-    private static final long serialVersionUID = -2995584920005634458L;
+	private static final long serialVersionUID = -2995584920005634458L;
 
-    private static final Logger LOG = getLogger( DebugPhaseListener.class );
+	private static final Logger LOG = getLogger(DebugPhaseListener.class);
 
-    public void afterPhase( PhaseEvent event ) {
-        LOG.debug( "After phase: " + event.getPhaseId() );
-    }
+	public void afterPhase(PhaseEvent event) {
+		LOG.debug("After phase: " + event.getPhaseId());
+	}
 
-    public void beforePhase( PhaseEvent event ) {
-        LOG.debug( "Before phase: " + event.getPhaseId() );
-    }
+	public void beforePhase(PhaseEvent event) {
+		LOG.debug("Before phase: " + event.getPhaseId());
+	}
 
-    public PhaseId getPhaseId() {
-        return PhaseId.ANY_PHASE;
-    }
+	public PhaseId getPhaseId() {
+		return PhaseId.ANY_PHASE;
+	}
 
 }

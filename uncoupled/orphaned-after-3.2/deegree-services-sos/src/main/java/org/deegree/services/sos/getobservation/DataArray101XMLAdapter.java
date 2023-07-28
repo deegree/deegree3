@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -50,9 +49,7 @@ import org.deegree.observation.model.Property;
  * This is an xml adapter for DataArray elements after the SWE 1.0.1 spec.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
  * 
  */
 public class DataArray101XMLAdapter extends XMLAdapter {

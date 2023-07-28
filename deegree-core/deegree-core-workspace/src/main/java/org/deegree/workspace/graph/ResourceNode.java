@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -50,139 +49,133 @@ import org.deegree.workspace.ResourceMetadata;
 
 /**
  * A node in the dependency graph. Coupled with a resource metadata object.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class ResourceNode<T extends Resource> {
 
-    private ResourceGraph graph;
+	private ResourceGraph graph;
 
-    private ResourceMetadata<T> metadata;
+	private ResourceMetadata<T> metadata;
 
-    private List<ResourceNode<? extends Resource>> dependencies = new ArrayList<ResourceNode<? extends Resource>>();
+	private List<ResourceNode<? extends Resource>> dependencies = new ArrayList<ResourceNode<? extends Resource>>();
 
-    private List<ResourceNode<? extends Resource>> softDependencies = new ArrayList<ResourceNode<? extends Resource>>();
+	private List<ResourceNode<? extends Resource>> softDependencies = new ArrayList<ResourceNode<? extends Resource>>();
 
-    private List<ResourceNode<? extends Resource>> dependents = new ArrayList<ResourceNode<? extends Resource>>();
+	private List<ResourceNode<? extends Resource>> dependents = new ArrayList<ResourceNode<? extends Resource>>();
 
-    /**
-     * @param graph
-     *            never <code>null</code>
-     * @param metadata
-     *            never <code>null</code>
-     */
-    public ResourceNode( ResourceGraph graph, ResourceMetadata<T> metadata ) {
-        this.graph = graph;
-        this.metadata = metadata;
-    }
+	/**
+	 * @param graph never <code>null</code>
+	 * @param metadata never <code>null</code>
+	 */
+	public ResourceNode(ResourceGraph graph, ResourceMetadata<T> metadata) {
+		this.graph = graph;
+		this.metadata = metadata;
+	}
 
-    /**
-     * @param node
-     *            never <code>null</code>
-     */
-    public void addDependent( ResourceNode<? extends Resource> node ) {
-        if ( !dependents.contains( node ) ) {
-            dependents.add( node );
-        }
-    }
+	/**
+	 * @param node never <code>null</code>
+	 */
+	public void addDependent(ResourceNode<? extends Resource> node) {
+		if (!dependents.contains(node)) {
+			dependents.add(node);
+		}
+	}
 
-    /**
-     * @param node
-     *            never <code>null</code>
-     */
-    public void addDependency( ResourceNode<? extends Resource> node ) {
-        if ( !dependencies.contains( node ) ) {
-            dependencies.add( node );
-        }
-    }
+	/**
+	 * @param node never <code>null</code>
+	 */
+	public void addDependency(ResourceNode<? extends Resource> node) {
+		if (!dependencies.contains(node)) {
+			dependencies.add(node);
+		}
+	}
 
-    public void addSoftDependency( ResourceNode<? extends Resource> node ) {
-        if ( !softDependencies.contains( node ) ) {
-            softDependencies.add( node );
-        }
-    }
+	public void addSoftDependency(ResourceNode<? extends Resource> node) {
+		if (!softDependencies.contains(node)) {
+			softDependencies.add(node);
+		}
+	}
 
-    /**
-     * @return the metadata, never <code>null</code>
-     */
-    public ResourceMetadata<T> getMetadata() {
-        return metadata;
-    }
+	/**
+	 * @return the metadata, never <code>null</code>
+	 */
+	public ResourceMetadata<T> getMetadata() {
+		return metadata;
+	}
 
-    /**
-     * @return true, if all dependencies are available
-     */
-    public boolean areDependenciesAvailable() {
-        for ( ResourceIdentifier<? extends Resource> id : metadata.getDependencies() ) {
-            if ( graph.getNode( id ) == null ) {
-                return false;
-            }
-        }
-        return true;
-    }
+	/**
+	 * @return true, if all dependencies are available
+	 */
+	public boolean areDependenciesAvailable() {
+		for (ResourceIdentifier<? extends Resource> id : metadata.getDependencies()) {
+			if (graph.getNode(id) == null) {
+				return false;
+			}
+		}
+		return true;
+	}
 
-    /**
-     * @return the list of dependency nodes, never <code>null</code>
-     */
-    public List<ResourceNode<? extends Resource>> getDependencies() {
-        return dependencies;
-    }
+	/**
+	 * @return the list of dependency nodes, never <code>null</code>
+	 */
+	public List<ResourceNode<? extends Resource>> getDependencies() {
+		return dependencies;
+	}
 
-    /**
-     * @return the list of soft dependency nodes, never <code>null</code>
-     */
-    public List<ResourceNode<? extends Resource>> getSoftDependencies() {
-        return softDependencies;
-    }
+	/**
+	 * @return the list of soft dependency nodes, never <code>null</code>
+	 */
+	public List<ResourceNode<? extends Resource>> getSoftDependencies() {
+		return softDependencies;
+	}
 
-    /**
-     * @return the list of dependent nodes, never <code>null</code>
-     */
-    public List<ResourceNode<? extends Resource>> getDependents() {
-        return dependents;
-    }
+	/**
+	 * @return the list of dependent nodes, never <code>null</code>
+	 */
+	public List<ResourceNode<? extends Resource>> getDependents() {
+		return dependents;
+	}
 
-    /**
-     * A {!} signals that dependencies are unavailable at a specific node.
-     * 
-     * @return a string representation of all nodes related to this one
-     */
-    public String print() {
-        return printDependencies( this ) + metadata.getIdentifier() + printDependents( this );
-    }
+	/**
+	 * A {!} signals that dependencies are unavailable at a specific node.
+	 * @return a string representation of all nodes related to this one
+	 */
+	public String print() {
+		return printDependencies(this) + metadata.getIdentifier() + printDependents(this);
+	}
 
-    private String printDependents( ResourceNode<? extends Resource> node ) {
-        StringBuilder sb = new StringBuilder();
+	private String printDependents(ResourceNode<? extends Resource> node) {
+		StringBuilder sb = new StringBuilder();
 
-        sb.append( " -> { " );
-        for ( ResourceNode<? extends Resource> n : node.getDependents() ) {
-            sb.append( n.getMetadata().getIdentifier() + printDependents( n ) );
-            sb.append( " " );
-        }
-        sb.append( "}" );
+		sb.append(" -> { ");
+		for (ResourceNode<? extends Resource> n : node.getDependents()) {
+			sb.append(n.getMetadata().getIdentifier() + printDependents(n));
+			sb.append(" ");
+		}
+		sb.append("}");
 
-        return sb.toString();
-    }
+		return sb.toString();
+	}
 
-    private String printDependencies( ResourceNode<? extends Resource> node ) {
-        if ( !node.areDependenciesAvailable() ) {
-            return "{!} -> ";
-        }
-        StringBuilder sb = new StringBuilder();
-        sb.append( "{ " );
-        for ( ResourceNode<? extends Resource> n : node.getDependencies() ) {
-            sb.append( printDependencies( n ) + n.getMetadata().getIdentifier() );
-            sb.append( " " );
-        }
-        sb.append( "} -> " );
-        return sb.toString();
-    }
+	private String printDependencies(ResourceNode<? extends Resource> node) {
+		if (!node.areDependenciesAvailable()) {
+			return "{!} -> ";
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append("{ ");
+		for (ResourceNode<? extends Resource> n : node.getDependencies()) {
+			sb.append(printDependencies(n) + n.getMetadata().getIdentifier());
+			sb.append(" ");
+		}
+		sb.append("} -> ");
+		return sb.toString();
+	}
 
-    @Override
-    public String toString() {
-        return metadata.getIdentifier().toString();
-    }
+	@Override
+	public String toString() {
+		return metadata.getIdentifier().toString();
+	}
 
 }

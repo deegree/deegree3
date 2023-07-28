@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://goerke@criador:2222/srv/svn/deegree-intern/trunk/latlon-sqldialect-mssql/src/main/java/de/latlon/deegree/sqldialect/mssql/MSSQLDialectProvider.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2013 by:
@@ -44,33 +43,31 @@ import org.deegree.sqldialect.SQLDialect;
 import org.slf4j.Logger;
 
 /**
- * {@link SqlDialectProvider} for Microsoft SQL databases.
- * 
+ * {@link SqlDialectProvider} for Microsoft SQL Server databases.
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: schneider $
- * 
- * @version $Revision: 295 $, $Date: 2011-06-09 16:48:47 +0200 (Do, 09 Jun 2011) $
  */
 public class MSSQLDialectProvider implements SqlDialectProvider {
 
-    private static final Logger LOG = getLogger( MSSQLDialectProvider.class );
+	private static final Logger LOG = getLogger(MSSQLDialectProvider.class);
 
-    @Override
-    public boolean supportsConnection( Connection connection ) {
-        String url = null;
-        try {
-            url = connection.getMetaData().getURL();
-        } catch ( Exception e ) {
-            LOG.debug( "Could not determine metadata/url of connection: {}", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-            return false;
-        }
-        return url.startsWith( "jdbc:sqlserver:" );
-    }
+	@Override
+	public boolean supportsConnection(Connection connection) {
+		String url = null;
+		try {
+			url = connection.getMetaData().getURL();
+		}
+		catch (Exception e) {
+			LOG.debug("Could not determine metadata/url of connection: {}", e.getLocalizedMessage());
+			LOG.trace("Stack trace:", e);
+			return false;
+		}
+		return url.startsWith("jdbc:sqlserver:");
+	}
 
-    @Override
-    public SQLDialect createDialect( Connection connection ) {
-        return new MSSQLDialect();
-    }
+	@Override
+	public SQLDialect createDialect(Connection connection) {
+		return new MSSQLDialect();
+	}
 
 }

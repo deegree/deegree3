@@ -67,274 +67,284 @@ import org.springframework.core.io.Resource;
  *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz </a>
  */
-public class GmlReader extends AbstractItemStreamItemReader<Feature> implements
-                                                                    ResourceAwareItemReaderItemStream<Feature> {
+public class GmlReader extends AbstractItemStreamItemReader<Feature>
+		implements ResourceAwareItemReaderItemStream<Feature> {
 
-    private static final Logger LOG = getLogger( GmlReader.class );
+	private static final Logger LOG = getLogger(GmlReader.class);
 
-    public static final QName WFS_20_MEMBER = new QName( WFS_200_NS, "member" );
+	public static final QName WFS_20_MEMBER = new QName(WFS_200_NS, "member");
 
-    public static final QName GML_MEMBER = new QName( GMLNS, "featureMember" );
+	public static final QName GML_MEMBER = new QName(GMLNS, "featureMember");
 
-    public static final QName GML_MEMBERS = new QName( GMLNS, "featureMembers" );
+	public static final QName GML_MEMBERS = new QName(GMLNS, "featureMembers");
 
-    private final SQLFeatureStore sqlFeatureStore;
+	private final SQLFeatureStore sqlFeatureStore;
 
-    private Resource resource;
+	private Resource resource;
 
-    private InputStream inputStream;
+	private InputStream inputStream;
 
-    private XMLStreamReader xmlStreamReader;
+	private XMLStreamReader xmlStreamReader;
 
-    private FeatureInputStream featureStream;
+	private FeatureInputStream featureStream;
 
-    private Iterator<Feature> featureIterator;
+	private Iterator<Feature> featureIterator;
 
-    private int noOfFeaturesRead = 0;
+	private int noOfFeaturesRead = 0;
 
-    private List<String> disabledResources;
+	private List<String> disabledResources;
 
-    private ServiceLoader<FeatureStreamFactory> featureStreamFactories = ServiceLoader.load(FeatureStreamFactory.class);
+	private ServiceLoader<FeatureStreamFactory> featureStreamFactories = ServiceLoader.load(FeatureStreamFactory.class);
 
-    /**
-     * @param sqlFeatureStore
-     *            the {@link SQLFeatureStore} used for insert, may be <code>null</code>
-     */
-    public GmlReader( SQLFeatureStore sqlFeatureStore ) {
-        this.sqlFeatureStore = sqlFeatureStore;
-    }
+	/**
+	 * @param sqlFeatureStore the {@link SQLFeatureStore} used for insert, may be
+	 * <code>null</code>
+	 */
+	public GmlReader(SQLFeatureStore sqlFeatureStore) {
+		this.sqlFeatureStore = sqlFeatureStore;
+	}
 
-    @Override
-    public void setResource( Resource resource ) {
-        this.resource = resource;
-    }
+	@Override
+	public void setResource(Resource resource) {
+		this.resource = resource;
+	}
 
-    @Override
-    public Feature read()
-                            throws Exception {
-        if ( this.featureStream == null || this.featureIterator == null ) {
-            return null;
-        }
-        if ( !featureIterator.hasNext() )
-            return null;
-        Feature feature = this.featureIterator.next();
-        if ( feature != null )
-            LOG.info( "Read feature with id " + feature.getId() + " (number " + ++noOfFeaturesRead + ") " );
-        return feature;
-    }
+	@Override
+	public Feature read() throws Exception {
+		if (this.featureStream == null || this.featureIterator == null) {
+			return null;
+		}
+		if (!featureIterator.hasNext())
+			return null;
+		Feature feature = this.featureIterator.next();
+		if (feature != null)
+			LOG.info("Read feature with id " + feature.getId() + " (number " + ++noOfFeaturesRead + ") ");
+		return feature;
+	}
 
-    @Override
-    public void open( ExecutionContext executionContext ) {
-        super.open( executionContext );
-        if ( this.resource == null )
-            throw new IllegalStateException( "Input resource must not be null." );
-        if ( !this.resource.exists() )
-            throw new IllegalStateException( "Input resource must exist." );
-        if ( !this.resource.isReadable() )
-            throw new IllegalStateException( "Input resource must be readable." );
+	@Override
+	public void open(ExecutionContext executionContext) {
+		super.open(executionContext);
+		if (this.resource == null)
+			throw new IllegalStateException("Input resource must not be null.");
+		if (!this.resource.exists())
+			throw new IllegalStateException("Input resource must exist.");
+		if (!this.resource.isReadable())
+			throw new IllegalStateException("Input resource must be readable.");
 
-        LOG.info( "Opening file {}", getResourceFileName() );
+		LOG.info("Opening file {}", getResourceFileName());
 
-        openFeatureStream();
-    }
+		openFeatureStream();
+	}
 
-    @Override
-    public void close() {
-        super.close();
-        try {
-            if ( this.featureStream != null ) {
-                this.featureStream.close();
-            }
-            if ( this.xmlStreamReader != null ) {
-                this.xmlStreamReader.close();
-            }
-            if ( this.inputStream != null ) {
-                this.inputStream.close();
-            }
-        } catch ( Exception var2 ) {
-            throw new ItemStreamException( "Error while closing item reader", var2 );
-        } finally {
-            this.featureStream = null;
-            this.xmlStreamReader = null;
-            this.inputStream = null;
-        }
-        LOG.info( "Finished file {}", getResourceFileName() );
-    }
+	@Override
+	public void close() {
+		super.close();
+		try {
+			if (this.featureStream != null) {
+				this.featureStream.close();
+			}
+			if (this.xmlStreamReader != null) {
+				this.xmlStreamReader.close();
+			}
+			if (this.inputStream != null) {
+				this.inputStream.close();
+			}
+		}
+		catch (Exception var2) {
+			throw new ItemStreamException("Error while closing item reader", var2);
+		}
+		finally {
+			this.featureStream = null;
+			this.xmlStreamReader = null;
+			this.inputStream = null;
+		}
+		LOG.info("Finished file {}", getResourceFileName());
+	}
 
-    public void setDisabledResources( List<String> disabledResources ) {
-        this.disabledResources = disabledResources;
-    }
-    
-    private void openFeatureStream() {
-        try {
-            this.inputStream = this.resource.getInputStream();
-            String fname = getResourceFileName();
-            if ( fname != null && fname.toLowerCase().endsWith( ".gz" )) {
-                this.inputStream = new GZIPInputStream( this.inputStream );
-            }
-            GMLVersion version = GMLVersion.GML_32;
-            XMLInputFactory xmlInputFactory = XMLInputFactory.newFactory();
-            xmlInputFactory.setProperty( XMLInputFactory.IS_COALESCING, true );
-            this.xmlStreamReader = xmlInputFactory.createXMLStreamReader( this.inputStream );
-            XMLStreamReaderWrapper xmlStream = new XMLStreamReaderWrapper( xmlStreamReader, null );
-            GMLStreamReader gmlStreamReader = GMLInputFactory.createGMLStreamReader( version, xmlStream );
-            gmlStreamReader.setApplicationSchema( findSchema() );
-            SkipInternalGmlDocumentIdContext resolver = new SkipInternalGmlDocumentIdContext( version );
-            resolver.setReferencePatternMatcher( parseDisabledResources() );
-            gmlStreamReader.setResolver( resolver );
+	public void setDisabledResources(List<String> disabledResources) {
+		this.disabledResources = disabledResources;
+	}
 
-            boolean featureStreamFromFactory = false;
-            {
-                Iterator<FeatureStreamFactory> it = featureStreamFactories.iterator();
-                while (it.hasNext()) {
-                    FeatureStreamFactory fac = it.next();
-                    if ( fac.isApplicableToDocumentRoot(  xmlStream.getName() ) ) {
-                        featureStreamFromFactory = true;
-                        this.featureStream = fac.createStream( xmlStream, gmlStreamReader);
-                    }
-                }
-            }
-            if ( featureStreamFromFactory ) {
-                // loaded from external factory
-            } else if ( new QName( WFS_200_NS, "FeatureCollection" ).equals( xmlStream.getName() ) ) {
-                LOG.debug( "Features embedded in wfs20:FeatureCollection" );
-                this.featureStream = new WfsFeatureInputStream( xmlStream, gmlStreamReader, WFS_20_MEMBER );
-            } else if ( new QName( WFS_NS, "FeatureCollection" ).equals( xmlStream.getName() ) ) {
-                LOG.debug( "Features embedded in wfs:FeatureCollection" );
-                this.featureStream = new WfsFeatureInputStream( xmlStream, gmlStreamReader, GML_MEMBER, GML_MEMBERS );
-            } else {
-                LOG.debug( "Features embedded in gml:FeatureCollection" );
-                this.featureStream = gmlStreamReader.readFeatureCollectionStream();
-            }
+	private void openFeatureStream() {
+		try {
+			this.inputStream = this.resource.getInputStream();
+			String fname = getResourceFileName();
+			if (fname != null && fname.toLowerCase().endsWith(".gz")) {
+				this.inputStream = new GZIPInputStream(this.inputStream);
+			}
+			GMLVersion version = GMLVersion.GML_32;
+			XMLInputFactory xmlInputFactory = XMLInputFactory.newFactory();
+			xmlInputFactory.setProperty(XMLInputFactory.IS_COALESCING, true);
+			this.xmlStreamReader = xmlInputFactory.createXMLStreamReader(this.inputStream);
+			XMLStreamReaderWrapper xmlStream = new XMLStreamReaderWrapper(xmlStreamReader, null);
+			GMLStreamReader gmlStreamReader = GMLInputFactory.createGMLStreamReader(version, xmlStream);
+			gmlStreamReader.setApplicationSchema(findSchema());
+			SkipInternalGmlDocumentIdContext resolver = new SkipInternalGmlDocumentIdContext(version);
+			resolver.setReferencePatternMatcher(parseDisabledResources());
+			gmlStreamReader.setResolver(resolver);
 
-            this.featureIterator = featureStream.iterator();
-        } catch ( Exception e ) {
-            throw new ItemStreamException( "Failed to initialize the reader", e );
-        }
-    }
+			boolean featureStreamFromFactory = false;
+			{
+				Iterator<FeatureStreamFactory> it = featureStreamFactories.iterator();
+				while (it.hasNext()) {
+					FeatureStreamFactory fac = it.next();
+					if (fac.isApplicableToDocumentRoot(xmlStream.getName())) {
+						featureStreamFromFactory = true;
+						this.featureStream = fac.createStream(xmlStream, gmlStreamReader);
+					}
+				}
+			}
+			if (featureStreamFromFactory) {
+				// loaded from external factory
+			}
+			else if (new QName(WFS_200_NS, "FeatureCollection").equals(xmlStream.getName())) {
+				LOG.debug("Features embedded in wfs20:FeatureCollection");
+				this.featureStream = new WfsFeatureInputStream(xmlStream, gmlStreamReader, WFS_20_MEMBER);
+			}
+			else if (new QName(WFS_NS, "FeatureCollection").equals(xmlStream.getName())) {
+				LOG.debug("Features embedded in wfs:FeatureCollection");
+				this.featureStream = new WfsFeatureInputStream(xmlStream, gmlStreamReader, GML_MEMBER, GML_MEMBERS);
+			}
+			else {
+				LOG.debug("Features embedded in gml:FeatureCollection");
+				this.featureStream = gmlStreamReader.readFeatureCollectionStream();
+			}
 
-    private AppSchema findSchema() {
-        if ( sqlFeatureStore != null )
-            return sqlFeatureStore.getSchema();
-        return null;
-    }
+			this.featureIterator = featureStream.iterator();
+		}
+		catch (Exception e) {
+			throw new ItemStreamException("Failed to initialize the reader", e);
+		}
+	}
 
-    private class WfsFeatureInputStream implements FeatureInputStream {
+	private AppSchema findSchema() {
+		if (sqlFeatureStore != null)
+			return sqlFeatureStore.getSchema();
+		return null;
+	}
 
-        private final XMLStreamReader xmlStream;
+	private class WfsFeatureInputStream implements FeatureInputStream {
 
-        private final GMLStreamReader gmlStream;
+		private final XMLStreamReader xmlStream;
 
-        private final List<QName> matchingNames;
+		private final GMLStreamReader gmlStream;
 
-        private Feature next;
+		private final List<QName> matchingNames;
 
-        public WfsFeatureInputStream( XMLStreamReader xmlStream, GMLStreamReader gmlStream, QName... matchingNames ) {
-            this.xmlStream = xmlStream;
-            this.gmlStream = gmlStream;
-            this.matchingNames = Arrays.asList( matchingNames );
-            this.next = retrieveNext( xmlStream, gmlStream, this.matchingNames );
-        }
+		private Feature next;
 
-        @Override
-        public Iterator<Feature> iterator() {
+		public WfsFeatureInputStream(XMLStreamReader xmlStream, GMLStreamReader gmlStream, QName... matchingNames) {
+			this.xmlStream = xmlStream;
+			this.gmlStream = gmlStream;
+			this.matchingNames = Arrays.asList(matchingNames);
+			this.next = retrieveNext(xmlStream, gmlStream, this.matchingNames);
+		}
 
-            return new Iterator<Feature>() {
-                @Override
-                public boolean hasNext() {
-                    return next != null;
-                }
+		@Override
+		public Iterator<Feature> iterator() {
 
-                @Override
-                public Feature next() {
-                    if ( next == null ) {
-                        throw new NoSuchElementException();
-                    }
-                    Feature currentFeature = next;
-                    next = retrieveNext( xmlStream, gmlStream, matchingNames );
-                    return currentFeature;
-                }
-            };
+			return new Iterator<Feature>() {
+				@Override
+				public boolean hasNext() {
+					return next != null;
+				}
 
-        }
+				@Override
+				public Feature next() {
+					if (next == null) {
+						throw new NoSuchElementException();
+					}
+					Feature currentFeature = next;
+					next = retrieveNext(xmlStream, gmlStream, matchingNames);
+					return currentFeature;
+				}
+			};
 
-        @Override
-        public void close() {
+		}
 
-        }
+		@Override
+		public void close() {
 
-        @Override
-        public FeatureCollection toCollection() {
-            return null;
-        }
+		}
 
-        @Override
-        public int count() {
-            return 0;
-        }
-    }
+		@Override
+		public FeatureCollection toCollection() {
+			return null;
+		}
 
-    private Feature retrieveNext( XMLStreamReader xmlStream, GMLStreamReader gmlStream, List<QName> matchingNames ) {
-        try {
-            while ( xmlStream.nextTag() == START_ELEMENT ) {
-                QName elName = xmlStream.getName();
-                if ( matchingNames.contains( elName ) ) {
-                    xmlStream.nextTag();
-                    Feature feature = gmlStream.readFeature();
-                    xmlStream.nextTag();
-                    return feature;
-                } else {
-                    LOG.debug( "Ignoring element '" + elName + "'" );
-                    XMLStreamUtils.skipElement( xmlStream );
-                }
-            }
-        } catch ( Exception e ) {
-            LOG.error( "Failed", e );
-        }
-        return null;
-    }
+		@Override
+		public int count() {
+			return 0;
+		}
 
-    private ReferencePatternMatcher parseDisabledResources() {
-        if ( disabledResources != null && !disabledResources.isEmpty() ) {
-            MultipleReferencePatternMatcher matcher = new MultipleReferencePatternMatcher();
-            for ( String disabledResource : disabledResources ) {
-                LOG.debug( "Added disabled resource pattern " + disabledResource );
-                BaseUrlReferencePatternMatcher baseUrlMatcher = new BaseUrlReferencePatternMatcher( disabledResource );
-                matcher.addMatcherToApply( baseUrlMatcher );
-            }
-            return matcher;
-        }
-        return null;
-    }
+	}
 
-    private class SkipInternalGmlDocumentIdContext extends GmlDocumentIdContext {
+	private Feature retrieveNext(XMLStreamReader xmlStream, GMLStreamReader gmlStream, List<QName> matchingNames) {
+		try {
+			while (xmlStream.nextTag() == START_ELEMENT) {
+				QName elName = xmlStream.getName();
+				if (matchingNames.contains(elName)) {
+					xmlStream.nextTag();
+					Feature feature = gmlStream.readFeature();
+					xmlStream.nextTag();
+					return feature;
+				}
+				else {
+					LOG.debug("Ignoring element '" + elName + "'");
+					XMLStreamUtils.skipElement(xmlStream);
+				}
+			}
+		}
+		catch (Exception e) {
+			LOG.error("Failed", e);
+		}
+		return null;
+	}
 
-        public SkipInternalGmlDocumentIdContext( GMLVersion version ) {
-            super( version );
-        }
+	private ReferencePatternMatcher parseDisabledResources() {
+		if (disabledResources != null && !disabledResources.isEmpty()) {
+			MultipleReferencePatternMatcher matcher = new MultipleReferencePatternMatcher();
+			for (String disabledResource : disabledResources) {
+				LOG.debug("Added disabled resource pattern " + disabledResource);
+				BaseUrlReferencePatternMatcher baseUrlMatcher = new BaseUrlReferencePatternMatcher(disabledResource);
+				matcher.addMatcherToApply(baseUrlMatcher);
+			}
+			return matcher;
+		}
+		return null;
+	}
 
-        @Override
-        public GMLObject getObject( String id ) {
-            if ( id.startsWith( "#" ) )
-                return null;
-            return super.getObject( id );
-        }
-    }
+	private class SkipInternalGmlDocumentIdContext extends GmlDocumentIdContext {
 
-    /**
-     * Gets the file name of the resource
-     * 
-     * @return the name of the resource, may be <code>null</code>
-     */
-    private String getResourceFileName() {
-        String name = null;
-        try {
-            if ( this.resource != null ) {
-                name = this.resource.getFilename();
-            }
-        } catch ( Exception ex ) {
-            LOG.trace( "Could not determine filename of resource", ex );
-        }
-        return name;
-    }
+		public SkipInternalGmlDocumentIdContext(GMLVersion version) {
+			super(version);
+		}
+
+		@Override
+		public GMLObject getObject(String id) {
+			if (id.startsWith("#"))
+				return null;
+			return super.getObject(id);
+		}
+
+	}
+
+	/**
+	 * Gets the file name of the resource
+	 * @return the name of the resource, may be <code>null</code>
+	 */
+	private String getResourceFileName() {
+		String name = null;
+		try {
+			if (this.resource != null) {
+				name = this.resource.getFilename();
+			}
+		}
+		catch (Exception ex) {
+			LOG.trace("Could not determine filename of resource", ex);
+		}
+		return name;
+	}
+
 }

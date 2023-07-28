@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -51,155 +50,151 @@ import com.sun.opengl.util.texture.Texture;
 import com.sun.opengl.util.texture.TextureIO;
 
 /**
- * The <code>TexturePool</code> holds static references to texture files, used in the scene.
- * 
+ * The <code>TexturePool</code> holds static references to texture files, used in the
+ * scene.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class TexturePool {
 
-    private final transient static Logger LOG = LoggerFactory.getLogger( TexturePool.class );
+	private final transient static Logger LOG = LoggerFactory.getLogger(TexturePool.class);
 
-    private static Map<String, Texture> idToTexture = new HashMap<String, Texture>();
+	private static Map<String, Texture> idToTexture = new HashMap<String, Texture>();
 
-    private static Map<String, String> idToFile = new HashMap<String, String>();
+	private static Map<String, String> idToFile = new HashMap<String, String>();
 
-    /**
-     * Add all files from the given directory to the pool, use the file name as the key.
-     * 
-     * @param textureDir
-     *            to scan for files.
-     */
-    public static synchronized void addTexturesFromDirectory( File textureDir ) {
-        if ( textureDir.exists() ) {
-            if ( textureDir.isDirectory() ) {
-                File[] files = textureDir.listFiles();
-                if ( files != null ) {
-                    for ( File f : files ) {
-                        if ( f != null ) {
-                            String key = f.getName();
-                            idToFile.put( key, f.getAbsolutePath() );
-                            // loadTextureFromFile( key );
-                        }
-                    }
-                }
-            }
-        }
-    }
+	/**
+	 * Add all files from the given directory to the pool, use the file name as the key.
+	 * @param textureDir to scan for files.
+	 */
+	public static synchronized void addTexturesFromDirectory(File textureDir) {
+		if (textureDir.exists()) {
+			if (textureDir.isDirectory()) {
+				File[] files = textureDir.listFiles();
+				if (files != null) {
+					for (File f : files) {
+						if (f != null) {
+							String key = f.getName();
+							idToFile.put(key, f.getAbsolutePath());
+							// loadTextureFromFile( key );
+						}
+					}
+				}
+			}
+		}
+	}
 
-    /**
-     * @param f
-     *            file to be added to the pool
-     * @return the key for the file.
-     */
-    public static synchronized String addTexture( File f ) {
-        String result = null;
-        if ( f != null && f.exists() && !f.isDirectory() ) {
-            result = f.getName();
-            idToFile.put( result, f.getAbsolutePath() );
-        }
-        return result;
-    }
+	/**
+	 * @param f file to be added to the pool
+	 * @return the key for the file.
+	 */
+	public static synchronized String addTexture(File f) {
+		String result = null;
+		if (f != null && f.exists() && !f.isDirectory()) {
+			result = f.getName();
+			idToFile.put(result, f.getAbsolutePath());
+		}
+		return result;
+	}
 
-    /**
-     * Add the given file with the given key to the map.
-     * 
-     * @param key
-     *            to be used.
-     * @param textureFile
-     *            to be added.
-     */
-    public static synchronized void addTexture( String key, File textureFile ) {
-        if ( key != null && !"".equals( key ) && textureFile.exists() && !textureFile.isDirectory() ) {
-            if ( idToFile.containsKey( key ) ) {
-                LOG.warn( "Ignoring texture key: " + key
-                          + " because it is already present in the texture pool with file: " + idToFile.get( key ) );
-            } else {
-                idToFile.put( key, textureFile.getAbsolutePath() );
-            }
-        } else {
-            LOG.warn( "Ignoring texture key: " + key
-                      + " because it is null, empty or the file does not exist or is a directory." );
-        }
-    }
+	/**
+	 * Add the given file with the given key to the map.
+	 * @param key to be used.
+	 * @param textureFile to be added.
+	 */
+	public static synchronized void addTexture(String key, File textureFile) {
+		if (key != null && !"".equals(key) && textureFile.exists() && !textureFile.isDirectory()) {
+			if (idToFile.containsKey(key)) {
+				LOG.warn("Ignoring texture key: " + key
+						+ " because it is already present in the texture pool with file: " + idToFile.get(key));
+			}
+			else {
+				idToFile.put(key, textureFile.getAbsolutePath());
+			}
+		}
+		else {
+			LOG.warn("Ignoring texture key: " + key
+					+ " because it is null, empty or the file does not exist or is a directory.");
+		}
+	}
 
-    /**
-     * @param glRenderContext
-     * @param texture
-     * @return the texture mapped to the given string or <code>null</code> if no texture with that id was found.
-     */
-    public static synchronized Texture getTexture( RenderContext glRenderContext, String texture ) {
-        return getTexture( texture );
-    }
+	/**
+	 * @param glRenderContext
+	 * @param texture
+	 * @return the texture mapped to the given string or <code>null</code> if no texture
+	 * with that id was found.
+	 */
+	public static synchronized Texture getTexture(RenderContext glRenderContext, String texture) {
+		return getTexture(texture);
+	}
 
-    /**
-     * @param glRenderContext
-     * @param texture
-     */
-    public static synchronized void loadTexture( RenderContext glRenderContext, String texture ) {
+	/**
+	 * @param glRenderContext
+	 * @param texture
+	 */
+	public static synchronized void loadTexture(RenderContext glRenderContext, String texture) {
 
-        Texture tex = getTexture( glRenderContext, texture );
-        if ( tex == null ) {
-            LOG.warn( "No texture for id: " + texture );
-            return;
-        }
-        tex.bind();
-    }
+		Texture tex = getTexture(glRenderContext, texture);
+		if (tex == null) {
+			LOG.warn("No texture for id: " + texture);
+			return;
+		}
+		tex.bind();
+	}
 
-    private synchronized static Texture getTexture( String id ) {
-        Texture tex = idToTexture.get( id );
-        if ( tex == null ) {
-            tex = loadTextureFromFile( id );
-        }
-        return tex;
-    }
+	private synchronized static Texture getTexture(String id) {
+		Texture tex = idToTexture.get(id);
+		if (tex == null) {
+			tex = loadTextureFromFile(id);
+		}
+		return tex;
+	}
 
-    /**
-     * @param texture
-     */
-    public static void dispose( String texture ) {
+	/**
+	 * @param texture
+	 */
+	public static void dispose(String texture) {
 
-        Texture tex = idToTexture.get( texture );
-        if ( tex != null ) {
-            tex.dispose();
-        }
-    }
+		Texture tex = idToTexture.get(texture);
+		if (tex != null) {
+			tex.dispose();
+		}
+	}
 
-    private static synchronized Texture loadTextureFromFile( String textureID ) {
-        Texture result = null;
-        String fileName = idToFile.get( textureID );
-        if ( fileName != null && !"".equals( fileName.trim() ) ) {
-            File f = new File( fileName );
-            try {
-                result = TextureIO.newTexture( f, true );
-            } catch ( GLException e ) {
-                LOG.error( "Error while trying to load texture with fileName:" + fileName + " cause: "
-                           + e.getLocalizedMessage(), e );
-            } catch ( IOException e ) {
-                LOG.error( "Error while trying to load texture with fileName:" + fileName + " cause: "
-                           + e.getLocalizedMessage(), e );
-            }
-            if ( result != null ) {
-                idToTexture.put( textureID, result );
-            }
-        }
-        return result;
-    }
+	private static synchronized Texture loadTextureFromFile(String textureID) {
+		Texture result = null;
+		String fileName = idToFile.get(textureID);
+		if (fileName != null && !"".equals(fileName.trim())) {
+			File f = new File(fileName);
+			try {
+				result = TextureIO.newTexture(f, true);
+			}
+			catch (GLException e) {
+				LOG.error("Error while trying to load texture with fileName:" + fileName + " cause: "
+						+ e.getLocalizedMessage(), e);
+			}
+			catch (IOException e) {
+				LOG.error("Error while trying to load texture with fileName:" + fileName + " cause: "
+						+ e.getLocalizedMessage(), e);
+			}
+			if (result != null) {
+				idToTexture.put(textureID, result);
+			}
+		}
+		return result;
+	}
 
-    /**
-     * @param texture
-     * @return the width of the referenced texture of 0 if the texture was not found.
-     */
-    public static int getWidth( String texture ) {
-        Texture tex = getTexture( texture );
-        if ( tex != null ) {
-            return tex.getWidth();
-        }
-        return 0;
-    }
+	/**
+	 * @param texture
+	 * @return the width of the referenced texture of 0 if the texture was not found.
+	 */
+	public static int getWidth(String texture) {
+		Texture tex = getTexture(texture);
+		if (tex != null) {
+			return tex.getWidth();
+		}
+		return 0;
+	}
 
 }

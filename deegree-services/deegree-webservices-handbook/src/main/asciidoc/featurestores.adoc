@@ -136,7 +136,7 @@ example looks like this:
   xmlns="http://www.deegree.org/datasource/feature/shape"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/feature/shape
-  http://schemas.deegree.org/3.5/datasource/feature/shape/shape.xsd">
+  https://schemas.deegree.org/core/3.5/datasource/feature/shape/shape.xsd">
 
   <!-- Required: Path to shape file on file system (can be relative) -->
   <File>/tmp/rivers.shp</File>
@@ -171,7 +171,7 @@ A more complex example that uses all available configuration options:
   xmlns="http://www.deegree.org/datasource/feature/shape"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/feature/shape
-  http://schemas.deegree.org/3.5/datasource/feature/shape/shape.xsd">
+  https://schemas.deegree.org/core/3.5/datasource/feature/shape/shape.xsd">
   <StorageCRS>EPSG:4326</StorageCRS>
   <FeatureTypeName>River</FeatureTypeName>
   <FeatureTypeNamespace>http://www.deegree.org/app</FeatureTypeNamespace>
@@ -206,7 +206,7 @@ file
 
 The configuration format for the deegree shape feature store is defined
 by schema file
-http://schemas.deegree.org/3.5/datasource/feature/shape/shape.xsd. The
+https://schemas.deegree.org/core/3.5/datasource/feature/shape/shape.xsd. The
 following table lists all available configuration options. When
 specifiying them, their order must be respected.
 
@@ -254,7 +254,7 @@ configuration example looks like this:
   xmlns="http://www.deegree.org/datasource/feature/memory"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/feature/memory
-  http://schemas.deegree.org/3.5/datasource/feature/memory/memory.xsd">
+  https://schemas.deegree.org/core/3.5/datasource/feature/memory/memory.xsd">
 
   <!-- Required: GML application schema file / directory to read feature types from -->
   <GMLSchema version="GML_32">../../appschemas/inspire/annex1/addresses.xsd</GMLSchema>
@@ -282,7 +282,7 @@ A more complex example that uses all available configuration options:
 <MemoryFeatureStore xmlns="http://www.deegree.org/datasource/feature/memory"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/feature/memory
-  http://schemas.deegree.org/3.5/datasource/feature/memory/memory.xsd">
+  https://schemas.deegree.org/core/3.5/datasource/feature/memory/memory.xsd">
   <StorageCRS>urn:ogc:def:crs:EPSG::4258</StorageCRS>
   <GMLSchema version="GML_32">../../appschemas/inspire/annex1/</GMLSchema>
   <GMLFeatureCollection version="GML_32">../../data/gml/address.gml</GMLFeatureCollection>
@@ -308,8 +308,7 @@ _urn:ogc:def:crs:EPSG::4258_.
 ==== Configuration options
 
 The configuration format for the deegree memory feature store is defined
-by schema file
-http://schemas.deegree.org/3.5/datasource/feature/memory/memory.xsd.
+by schema file https://schemas.deegree.org/core/3.5/datasource/feature/memory/memory.xsd.
 The following table lists all available configuration options (the
 complex ones contain nested options themselves). When specifiying them,
 their order must be respected.
@@ -351,7 +350,7 @@ _BBoxStatement_. A minimal configuration example looks like this:
   xmlns="http://www.deegree.org/datasource/feature/simplesql"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/feature/simplesql
-  http://schemas.deegree.org/3.5/datasource/feature/simplesql/simplesql.xsd">
+  https://schemas.deegree.org/core/3.5/datasource/feature/simplesql/simplesql.xsd">
 
   <!-- Required: Database connection -->
   <JDBCConnId>connid</JDBCConnId>
@@ -378,7 +377,7 @@ _BBoxStatement_. A minimal configuration example looks like this:
   xmlns="http://www.deegree.org/datasource/feature/simplesql"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/feature/simplesql
-  http://schemas.deegree.org/3.5/datasource/feature/simplesql/simplesql.xsd">
+  https://schemas.deegree.org/core/3.5/datasource/feature/simplesql/simplesql.xsd">
 
   <!-- Required: Database connection -->
   <JDBCConnId>connid</JDBCConnId>
@@ -398,7 +397,7 @@ _BBoxStatement_. A minimal configuration example looks like this:
 ==== Configuration options
 
 The configuration format is defined by schema file
-http://schemas.deegree.org/3.5/datasource/feature/simplesql/simplesql.xsd.
+https://schemas.deegree.org/core/3.5/datasource/feature/simplesql/simplesql.xsd.
 The following table lists all available configuration options (the
 complex ones contain nested options themselves). When specifiying them,
 their order must be respected.
@@ -456,7 +455,7 @@ A very minimal valid configuration example looks like this:
   xmlns="http://www.deegree.org/datasource/feature/sql"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/feature/sql
-  http://schemas.deegree.org/3.5/datasource/feature/sql/sql.xsd">
+  https://schemas.deegree.org/core/3.5/datasource/feature/sql/sql.xsd">
   <JDBCConnId>postgis</JDBCConnId>
   <FeatureTypeMapping table="country"/>
 </SQLFeatureStore>
@@ -493,7 +492,7 @@ A more complex example:
 <SQLFeatureStore xmlns="http://www.deegree.org/datasource/feature/sql" xmlns:xlink="http://www.w3.org/1999/xlink"
   xmlns:base="urn:x-inspire:specification:gmlas:BaseTypes:3.2" xmlns:ad="urn:x-inspire:specification:gmlas:Addresses:3.0"
   xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/datasource/feature/sql http://schemas.deegree.org/3.5/datasource/feature/sql/sql.xsd">
+  xsi:schemaLocation="http://www.deegree.org/datasource/feature/sql https://schemas.deegree.org/core/3.5/datasource/feature/sql/sql.xsd">
   <JDBCConnId>inspire</JDBCConnId>
   <StorageCRS srid="-1" dim="2D">EPSG:4258</StorageCRS>
   <GMLSchema>../../appschemas/inspire/annex1/Addresses.xsd</GMLSchema>
@@ -602,7 +601,7 @@ PostgreSQL)
 ==== Overview of configuration options
 
 The SQL feature store configuration format is defined by schema file
-http://schemas.deegree.org/3.5/datasource/feature/sql/sql.xsd. The
+https://schemas.deegree.org/core/3.5/datasource/feature/sql/sql.xsd. The
 following table lists all available configuration options (the complex
 ones contain nested options themselves). When specifying them, their
 order must be respected:
@@ -648,7 +647,7 @@ between one table and one feature type:
 xmlns="http://www.deegree.org/datasource/feature/sql"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://www.deegree.org/datasource/feature/sql
-  http://schemas.deegree.org/3.5/datasource/feature/sql/sql.xsd">
+  https://schemas.deegree.org/core/3.5/datasource/feature/sql/sql.xsd">
 <JDBCConnId>postgis</JDBCConnId>
 <FeatureTypeMapping table="country"/>
 </SQLFeatureStore>
@@ -680,7 +679,7 @@ _cities_.
   xmlns="http://www.deegree.org/datasource/feature/sql"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/feature/sql
-  http://schemas.deegree.org/3.5/datasource/feature/sql/sql.xsd">
+  https://schemas.deegree.org/core/3.5/datasource/feature/sql/sql.xsd">
   <JDBCConnId>postgis</JDBCConnId>
   <FeatureTypeMapping table="country"/>
   <FeatureTypeMapping table="city"/>
@@ -951,7 +950,10 @@ NOTE: If you want to create a relational mapping for an existing GML
 application schema (e.g. INSPIRE Data Themes, GeoSciML, CityGML,
 XPlanung, AAA), always copy the schema files into the _appschemas/_
 directory of your workspace and reference the schema in your
-configuration.
+configuration. You can use tools such as https://github.com/mfalaize/schema-fetcher[schema-fetcher] to retrieve all
+schema files and store them locally. You may need to adjust `include` and `import` elements
+to apply the local file references.
+The schemas from https://schemas.opengis.net/ (downloaded at 2023-05-12) are already provided internally and must not be stored locally.
 
 In schema-driven mode, the SQL feature store extracts detailed feature
 type definitions and property declarations from GML application schema
@@ -967,7 +969,7 @@ GML application schema files:
   xmlns="http://www.deegree.org/datasource/feature/sql"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/feature/sql
-  http://schemas.deegree.org/3.5/datasource/feature/sql/sql.xsd">
+  https://schemas.deegree.org/core/3.5/datasource/feature/sql/sql.xsd">
 
   <JDBCConnId>postgis</JDBCConnId>
   <StorageCRS dim="2D" srid="-1">EPSG:4258</StorageCRS>
@@ -2009,3 +2011,19 @@ After entering the URL, click *Import*:
 
 .Imported INSPIRE datasets via the Loader
 image::console_featurestore_mapping20.jpg[Imported INSPIRE datasets via the Loader,scaledwidth=50.0%]
+
+==== Spatial extent of FeatureTypes
+
+The spatial extent of all feature types defined in all SQLFeatureStore configurations are cached in a file named _bbox_cache.properties_. The file is created when the workspace is initialised.
+The file contains the bounding box with its coordinate system assigned to the qualified name of each feature type, e.g.:
+
+----
+{http\://www.deegree.org/app}Lakes=epsg\:4326,11.16,51.29,14.83,53.59
+{http\://www.deegree.org/app}Railroads=epsg\:4326,11.16,51.29,14.83,53.59
+----
+
+Inserting new features via WFS-T results in an increased bounding box in the _bbox_cache.properties_ file, if the extent did not include the features.
+The file can also be used to configure the bounding box to a larger extent than the data, e.g. if the extent is already known but not all data imported.
+The extent of a FeatureType is written in the capabilities as WGS84BoundingBox (WFS 2.0) of the FeatureType.
+
+TIP: It is possible to configure a _bbox_cache_<FeatureStoreId>.properties_ per SQLFeatureStore, this FeatureStore specific configuration is preferred over the bbox_cache.properties.

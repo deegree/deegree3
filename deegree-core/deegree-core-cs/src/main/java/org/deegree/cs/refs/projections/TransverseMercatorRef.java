@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -44,50 +43,44 @@ import org.deegree.cs.projections.cylindric.TransverseMercator;
 
 /**
  * {@link ProjectionRef} to a {@link TransverseMercator}
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class TransverseMercatorRef extends ProjectionRef implements Serializable, ITransverseMercator {
 
-    private static final long serialVersionUID = 179754691716158093L;
+	private static final long serialVersionUID = 179754691716158093L;
 
-    /**
-     * Creates a reference to {@link TransverseMercator}
-     * 
-     * @param resolver
-     *            used for resolving the reference, must not be <code>null</code>
-     * @param uri
-     *            the object's uri, must not be <code>null</code>
-     * @param baseURL
-     *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
-     */
-    public TransverseMercatorRef( ReferenceResolver resolver, String uri, String baseURL ) {
-        super( resolver, uri, baseURL );
-    }
+	/**
+	 * Creates a reference to {@link TransverseMercator}
+	 * @param resolver used for resolving the reference, must not be <code>null</code>
+	 * @param uri the object's uri, must not be <code>null</code>
+	 * @param baseURL base URL for resolving the uri, may be <code>null</code> (no
+	 * resolving of relative URLs)
+	 */
+	public TransverseMercatorRef(ReferenceResolver resolver, String uri, String baseURL) {
+		super(resolver, uri, baseURL);
+	}
 
-    public int getRowFromNearestParallel( double latitude ) {
-        return getReferencedObject().getRowFromNearestParallel( latitude );
-    }
+	public int getRowFromNearestParallel(double latitude) {
+		return getReferencedObject().getRowFromNearestParallel(latitude);
+	}
 
-    public int getZoneFromNearestMeridian( double longitude ) {
-        return getReferencedObject().getZoneFromNearestMeridian( longitude );
-    }
+	public int getZoneFromNearestMeridian(double longitude) {
+		return getReferencedObject().getZoneFromNearestMeridian(longitude);
+	}
 
-    public boolean getHemisphere() {
-        return getReferencedObject().getHemisphere();
-    }
+	public boolean getHemisphere() {
+		return getReferencedObject().getHemisphere();
+	}
 
-    @Override
-    public boolean equals( Object obj ) {
-        return super.equals( obj ) ? true : getReferencedObject().equals( obj );
-    }
+	@Override
+	public boolean equals(Object obj) {
+		return super.equals(obj) ? true : getReferencedObject().equals(obj);
+	}
 
-    @Override
-    public TransverseMercator getReferencedObject()
-                            throws ReferenceResolvingException {
-        return (TransverseMercator) super.getReferencedObject();
-    }
+	@Override
+	public TransverseMercator getReferencedObject() throws ReferenceResolvingException {
+		return (TransverseMercator) super.getReferencedObject();
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -40,52 +39,49 @@ import org.deegree.sqldialect.filter.MappingExpression;
 
 /**
  * Various static methods for performing standard tasks on {@link Mapping} objects.
- * 
+ *
  * @see Mapping
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class Mappings {
 
-    public static GeometryMapping getGeometryMapping( Mapping mapping ) {
-        if ( mapping instanceof GeometryMapping ) {
-            return (GeometryMapping) mapping;
-        }
-        if ( mapping instanceof CompoundMapping ) {
-            CompoundMapping cm = (CompoundMapping) mapping;
-            for ( Mapping child : cm.getParticles() ) {
-                GeometryMapping gm = getGeometryMapping( child );
-                if ( gm != null ) {
-                    return gm;
-                }
-            }
-        }
-        return null;
-    }
+	public static GeometryMapping getGeometryMapping(Mapping mapping) {
+		if (mapping instanceof GeometryMapping) {
+			return (GeometryMapping) mapping;
+		}
+		if (mapping instanceof CompoundMapping) {
+			CompoundMapping cm = (CompoundMapping) mapping;
+			for (Mapping child : cm.getParticles()) {
+				GeometryMapping gm = getGeometryMapping(child);
+				if (gm != null) {
+					return gm;
+				}
+			}
+		}
+		return null;
+	}
 
-    public static DBField getDBField( Mapping mapping )
-                            throws UnsupportedOperationException, IllegalArgumentException {
-        MappingExpression me = getMappingExpression( mapping );
-        if ( !( me instanceof DBField ) ) {
-            throw new IllegalArgumentException( "Mapping '" + mapping + "' does not " );
-        }
-        return (DBField) me;
-    }
+	public static DBField getDBField(Mapping mapping) throws UnsupportedOperationException, IllegalArgumentException {
+		MappingExpression me = getMappingExpression(mapping);
+		if (!(me instanceof DBField)) {
+			throw new IllegalArgumentException("Mapping '" + mapping + "' does not ");
+		}
+		return (DBField) me;
+	}
 
-    public static MappingExpression getMappingExpression( Mapping mapping )
-                            throws UnsupportedOperationException {
-        MappingExpression me = null;
-        if ( mapping instanceof PrimitiveMapping ) {
-            me = ( (PrimitiveMapping) mapping ).getMapping();
-        } else if ( mapping instanceof GeometryMapping ) {
-            me = ( (GeometryMapping) mapping ).getMapping();
-        } else {
-            throw new UnsupportedOperationException( "Mappings of type '" + mapping.getClass()
-                                                     + "' are not handled yet." );
-        }
-        return me;
-    }
+	public static MappingExpression getMappingExpression(Mapping mapping) throws UnsupportedOperationException {
+		MappingExpression me = null;
+		if (mapping instanceof PrimitiveMapping) {
+			me = ((PrimitiveMapping) mapping).getMapping();
+		}
+		else if (mapping instanceof GeometryMapping) {
+			me = ((GeometryMapping) mapping).getMapping();
+		}
+		else {
+			throw new UnsupportedOperationException(
+					"Mappings of type '" + mapping.getClass() + "' are not handled yet.");
+		}
+		return me;
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-datastores/deegree-featurestore/deegree-featurestore-sql/src/main/java/org/deegree/sqldialect/postgis/PostGISDialect.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -85,217 +84,214 @@ import org.slf4j.LoggerFactory;
  * <li>2.0</li>
  * </ul>
  * </p>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31186 $, $Date: 2011-07-01 18:01:58 +0200 (Fr, 01. Jul 2011) $
  */
 public class PostGISDialect extends AbstractSQLDialect implements SQLDialect {
 
-    private static Logger LOG = LoggerFactory.getLogger( PostGISDialect.class );
+	private static Logger LOG = LoggerFactory.getLogger(PostGISDialect.class);
 
-    private final String undefinedSrid;
+	private final String undefinedSrid;
 
-    private final boolean useLegacyPredicates;
+	private final boolean useLegacyPredicates;
 
-    private final char escapeChar = '"';
+	private final char escapeChar = '"';
 
-    /**
-     * Creates a new {@link PostGISDialect} instance.
-     * 
-     * @param version
-     *            version string, as returned by "SELECT postgis_version()", can be <code>null</code> (unknown)
-     */
-    public PostGISDialect( String version ) {
-        this.undefinedSrid = getUndefinedSrid( version );
-        this.useLegacyPredicates = determineUseLegacyPredicates( version );
-    }
+	/**
+	 * Creates a new {@link PostGISDialect} instance.
+	 * @param version version string, as returned by "SELECT postgis_version()", can be
+	 * <code>null</code> (unknown)
+	 */
+	public PostGISDialect(String version) {
+		this.undefinedSrid = getUndefinedSrid(version);
+		this.useLegacyPredicates = determineUseLegacyPredicates(version);
+	}
 
-    private String getUndefinedSrid( String version ) {
-        if ( version == null || version.startsWith( "0." ) || version.startsWith( "1." ) ) {
-            LOG.debug( "PostGIS version is " + version + " -- SRID identifier for undefined: -1" );
-            return "-1";
-        }
-        LOG.debug( "PostGIS version is " + version + " -- SRID identifier for undefined: 0" );
-        return "0";
-    }
+	private String getUndefinedSrid(String version) {
+		if (version == null || version.startsWith("0.") || version.startsWith("1.")) {
+			LOG.debug("PostGIS version is " + version + " -- SRID identifier for undefined: -1");
+			return "-1";
+		}
+		LOG.debug("PostGIS version is " + version + " -- SRID identifier for undefined: 0");
+		return "0";
+	}
 
-    private boolean determineUseLegacyPredicates( String version ) {
-        if ( version == null || version.startsWith( "0." ) || version.startsWith( "1.0" )
-             || version.startsWith( "1.1" ) || version.startsWith( "1.2" ) ) {
-            LOG.debug( "PostGIS version is " + version + " -- using legacy (pre-SQL-MM) predicates." );
-            return true;
-        }
-        LOG.debug( "PostGIS version is " + version + " -- using modern (SQL-MM) predicates." );
-        return false;
-    }
+	private boolean determineUseLegacyPredicates(String version) {
+		if (version == null || version.startsWith("0.") || version.startsWith("1.0") || version.startsWith("1.1")
+				|| version.startsWith("1.2")) {
+			LOG.debug("PostGIS version is " + version + " -- using legacy (pre-SQL-MM) predicates.");
+			return true;
+		}
+		LOG.debug("PostGIS version is " + version + " -- using modern (SQL-MM) predicates.");
+		return false;
+	}
 
-    @Override
-    public int getMaxColumnNameLength() {
-        return 63;
-    }
+	@Override
+	public int getMaxColumnNameLength() {
+		return 63;
+	}
 
-    @Override
-    public int getMaxTableNameLength() {
-        return 63;
-    }
+	@Override
+	public int getMaxTableNameLength() {
+		return 63;
+	}
 
-    public String getDefaultSchema() {
-        return "public";
-    }
+	public String getDefaultSchema() {
+		return "public";
+	}
 
-    public String stringPlus() {
-        return "||";
-    }
+	public String stringPlus() {
+		return "||";
+	}
 
-    public String stringIndex( String pattern, String string ) {
-        return "POSITION(" + pattern + " IN " + string + ")";
-    }
+	public String stringIndex(String pattern, String string) {
+		return "POSITION(" + pattern + " IN " + string + ")";
+	}
 
-    public String cast( String expr, String type ) {
-        return expr + "::" + type;
-    }
+	public String cast(String expr, String type) {
+		return expr + "::" + type;
+	}
 
-    @Override
-    public String geometryMetadata( TableName qTable, String column, boolean isGeographical ) {
-        String dbSchema = qTable.getSchema() != null ? qTable.getSchema() : getDefaultSchema();
-        String table = qTable.getTable();
-        if ( !isGeographical ) {
-            return "SELECT coord_dimension,srid,type FROM public.geometry_columns WHERE f_table_schema='"
-                   + dbSchema.toLowerCase() + "' AND f_table_name='" + table.toLowerCase()
-                   + "' AND f_geometry_column='" + column.toLowerCase() + "'";
-        }
-        return "SELECT coord_dimension,srid,type FROM public.geography_columns WHERE f_table_schema='"
-               + dbSchema.toLowerCase() + "' AND f_table_name='" + table.toLowerCase() + "' AND f_geography_column='"
-               + column.toLowerCase() + "'";
-    }
+	@Override
+	public String geometryMetadata(TableName qTable, String column, boolean isGeographical) {
+		String dbSchema = qTable.getSchema() != null ? qTable.getSchema() : getDefaultSchema();
+		String table = qTable.getTable();
+		if (!isGeographical) {
+			return "SELECT coord_dimension,srid,type FROM public.geometry_columns WHERE f_table_schema='"
+					+ dbSchema.toLowerCase() + "' AND f_table_name='" + table.toLowerCase()
+					+ "' AND f_geometry_column='" + column.toLowerCase() + "'";
+		}
+		return "SELECT coord_dimension,srid,type FROM public.geography_columns WHERE f_table_schema='"
+				+ dbSchema.toLowerCase() + "' AND f_table_name='" + table.toLowerCase() + "' AND f_geography_column='"
+				+ column.toLowerCase() + "'";
+	}
 
-    @Override
-    public AbstractWhereBuilder getWhereBuilder( PropertyNameMapper mapper, OperatorFilter filter,
-                                                 SortProperty[] sortCrit, List<SortCriterion> defaultSortCriteria, boolean allowPartialMappings )
-                            throws UnmappableException, FilterEvaluationException {
-        return new PostGISWhereBuilder( this, mapper, filter, sortCrit, defaultSortCriteria, allowPartialMappings, useLegacyPredicates );
-    }
+	@Override
+	public AbstractWhereBuilder getWhereBuilder(PropertyNameMapper mapper, OperatorFilter filter,
+			SortProperty[] sortCrit, List<SortCriterion> defaultSortCriteria, boolean allowPartialMappings)
+			throws UnmappableException, FilterEvaluationException {
+		return new PostGISWhereBuilder(this, mapper, filter, sortCrit, defaultSortCriteria, allowPartialMappings,
+				useLegacyPredicates);
+	}
 
-    @Override
-    public String getUndefinedSrid() {
-        return undefinedSrid;
-    }
+	@Override
+	public String getUndefinedSrid() {
+		return undefinedSrid;
+	}
 
-    @Override
-    public String getBBoxAggregateSnippet( String column ) {
-        StringBuilder sql = new StringBuilder();
-        if ( useLegacyPredicates ) {
-            sql.append( "extent" );
-        } else {
-            sql.append( "ST_Extent" );
-        }
-        sql.append( "(" );
-        sql.append( column );
-        sql.append( ")::BOX2D" );
-        return sql.toString();
-    }
+	@Override
+	public String getBBoxAggregateSnippet(String column) {
+		StringBuilder sql = new StringBuilder();
+		if (useLegacyPredicates) {
+			sql.append("extent");
+		}
+		else {
+			sql.append("ST_Extent");
+		}
+		sql.append("(");
+		sql.append(column);
+		sql.append(")::BOX2D");
+		return sql.toString();
+	}
 
-    @Override
-    public Envelope getBBoxAggregateValue( ResultSet rs, int colIdx, ICRS crs )
-                            throws SQLException {
-        Envelope env = null;
-        PGboxbase pgBox = (PGboxbase) rs.getObject( colIdx );
-        if ( pgBox != null ) {
-            org.deegree.geometry.primitive.Point min = buildPoint( pgBox.getLLB(), crs );
-            org.deegree.geometry.primitive.Point max = buildPoint( pgBox.getURT(), crs );
-            env = new DefaultEnvelope( null, crs, null, min, max );
-        }
-        return env;
-    }
+	@Override
+	public Envelope getBBoxAggregateValue(ResultSet rs, int colIdx, ICRS crs) throws SQLException {
+		Envelope env = null;
+		PGboxbase pgBox = (PGboxbase) rs.getObject(colIdx);
+		if (pgBox != null) {
+			org.deegree.geometry.primitive.Point min = buildPoint(pgBox.getLLB(), crs);
+			org.deegree.geometry.primitive.Point max = buildPoint(pgBox.getURT(), crs);
+			env = new DefaultEnvelope(null, crs, null, min, max);
+		}
+		return env;
+	}
 
-    private org.deegree.geometry.primitive.Point buildPoint( org.postgis.Point p, ICRS crs ) {
-        double[] coords = new double[p.getDimension()];
-        coords[0] = p.getX();
-        coords[1] = p.getY();
-        if ( p.getDimension() > 2 ) {
-            coords[2] = p.getZ();
-        }
-        return new DefaultPoint( null, crs, null, coords );
-    }
+	private org.deegree.geometry.primitive.Point buildPoint(org.postgis.Point p, ICRS crs) {
+		double[] coords = new double[p.getDimension()];
+		coords[0] = p.getX();
+		coords[1] = p.getY();
+		if (p.getDimension() > 2) {
+			coords[2] = p.getZ();
+		}
+		return new DefaultPoint(null, crs, null, coords);
+	}
 
-    @Override
-    public GeometryParticleConverter getGeometryConverter( String column, ICRS crs, String srid, boolean is2D ) {
-        return new PostGISGeometryConverter( column, crs, srid, useLegacyPredicates );
-    }
+	@Override
+	public GeometryParticleConverter getGeometryConverter(String column, ICRS crs, String srid, boolean is2D) {
+		return new PostGISGeometryConverter(column, crs, srid, useLegacyPredicates);
+	}
 
-    @Override
-    public PrimitiveParticleConverter getPrimitiveConverter( String column, PrimitiveType pt ) {
-        return new DefaultPrimitiveConverter( pt, column );
-    }
+	@Override
+	public PrimitiveParticleConverter getPrimitiveConverter(String column, PrimitiveType pt) {
+		return new DefaultPrimitiveConverter(pt, column);
+	}
 
-    @Override
-    public void createDB( Connection adminConn, String dbName )
-                            throws SQLException {
+	@Override
+	public void createDB(Connection adminConn, String dbName) throws SQLException {
 
-        String sql = "CREATE DATABASE \"" + dbName + "\" WITH template=template_postgis";
+		String sql = "CREATE DATABASE \"" + dbName + "\" WITH template=template_postgis";
 
-        Statement stmt = null;
-        try {
-            stmt = adminConn.createStatement();
-            stmt.executeUpdate( sql );
-        } finally {
-            JDBCUtils.close( null, stmt, null, LOG );
-        }
-    }
+		Statement stmt = null;
+		try {
+			stmt = adminConn.createStatement();
+			stmt.executeUpdate(sql);
+		}
+		finally {
+			JDBCUtils.close(null, stmt, null, LOG);
+		}
+	}
 
-    @Override
-    public void dropDB( Connection adminConn, String dbName )
-                            throws SQLException {
+	@Override
+	public void dropDB(Connection adminConn, String dbName) throws SQLException {
 
-        String sql = "DROP DATABASE \"" + dbName + "\"";
-        Statement stmt = null;
-        try {
-            stmt = adminConn.createStatement();
-            stmt.executeUpdate( sql );
-        } finally {
-            JDBCUtils.close( null, stmt, null, LOG );
-        }
-    }
+		String sql = "DROP DATABASE \"" + dbName + "\"";
+		Statement stmt = null;
+		try {
+			stmt = adminConn.createStatement();
+			stmt.executeUpdate(sql);
+		}
+		finally {
+			JDBCUtils.close(null, stmt, null, LOG);
+		}
+	}
 
-    @Override
-    public void createAutoColumn( StringBuffer currentStmt, List<StringBuffer> additionalSmts, SQLIdentifier column,
-                                  SQLIdentifier table ) {
-        currentStmt.append( column );
-        currentStmt.append( " serial" );
-    }
+	@Override
+	public void createAutoColumn(StringBuffer currentStmt, List<StringBuffer> additionalSmts, SQLIdentifier column,
+			SQLIdentifier table) {
+		currentStmt.append(column);
+		currentStmt.append(" serial");
+	}
 
-    @Override
-    public ResultSet getTableColumnMetadata( DatabaseMetaData md, TableName qTable )
-                            throws SQLException {
-        String schema = qTable.getSchema() != null ? qTable.getSchema() : getDefaultSchema();
-        String table = qTable.getTable();
-        return md.getColumns( null, schema.toLowerCase(), table.toLowerCase(), null );
-    }
+	@Override
+	public ResultSet getTableColumnMetadata(DatabaseMetaData md, TableName qTable) throws SQLException {
+		String schema = qTable.getSchema() != null ? qTable.getSchema() : getDefaultSchema();
+		String table = qTable.getTable();
+		return md.getColumns(null, schema.toLowerCase(), table.toLowerCase(), null);
+	}
 
-    /**
-     * See http://postgresql.1045698.n5.nabble.com/BUG-3383-Postmaster-Service-Problem-td2123537.html.
-     */
-    @Override
-    public boolean requiresTransactionForCursorMode() {
-        return true;
-    }
+	/**
+	 * See
+	 * http://postgresql.1045698.n5.nabble.com/BUG-3383-Postmaster-Service-Problem-td2123537.html.
+	 */
+	@Override
+	public boolean requiresTransactionForCursorMode() {
+		return true;
+	}
 
-    @Override
-    public String getSelectSequenceNextVal( String sequence ) {
-        return "SELECT nextval('" + sequence + "')";
-    }
+	@Override
+	public String getSelectSequenceNextVal(String sequence) {
+		return "SELECT nextval('" + sequence + "')";
+	}
 
-    @Override
-    public char getLeadingEscapeChar() {
-        return escapeChar;
-    }
+	@Override
+	public char getLeadingEscapeChar() {
+		return escapeChar;
+	}
 
-    @Override
-    public char getTailingEscapeChar() {
-        return escapeChar;
-    }
+	@Override
+	public char getTailingEscapeChar() {
+		return escapeChar;
+	}
 
 }

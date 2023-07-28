@@ -10,99 +10,90 @@ import javax.sql.DataSource;
 
 public class DataSourceMock implements DataSource {
 
-    private String stringProperty;
+	private String stringProperty;
 
-    private int intProperty;
+	private int intProperty;
 
-    private String stringConstructorArg;
+	private String stringConstructorArg;
 
-    private int intConstructorArg;
+	private int intConstructorArg;
 
-    public DataSourceMock() {
+	public DataSourceMock() {
 
-    }
+	}
 
-    public DataSourceMock( String stringConstructorArg, int intConstructorArg ) {
-        this.stringConstructorArg = stringConstructorArg;
-        this.intConstructorArg = intConstructorArg;
-    }
+	public DataSourceMock(String stringConstructorArg, int intConstructorArg) {
+		this.stringConstructorArg = stringConstructorArg;
+		this.intConstructorArg = intConstructorArg;
+	}
 
-    public String getStringConstructorArg() {
-        return stringConstructorArg;
-    }
+	public String getStringConstructorArg() {
+		return stringConstructorArg;
+	}
 
-    public int getIntConstructorArg() {
-        return intConstructorArg;
-    }
+	public int getIntConstructorArg() {
+		return intConstructorArg;
+	}
 
-    public String getStringProperty() {
-        return stringProperty;
-    }
+	public String getStringProperty() {
+		return stringProperty;
+	}
 
-    public void setStringProperty( String stringProperty ) {
-        this.stringProperty = stringProperty;
-    }
+	public void setStringProperty(String stringProperty) {
+		this.stringProperty = stringProperty;
+	}
 
-    public int getIntProperty() {
-        return intProperty;
-    }
+	public int getIntProperty() {
+		return intProperty;
+	}
 
-    public void setIntProperty( int intProperty ) {
-        this.intProperty = intProperty;
-    }
+	public void setIntProperty(int intProperty) {
+		this.intProperty = intProperty;
+	}
 
-    @Override
-    public PrintWriter getLogWriter()
-                            throws SQLException {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public PrintWriter getLogWriter() throws SQLException {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public int getLoginTimeout()
-                            throws SQLException {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public int getLoginTimeout() throws SQLException {
+		throw new UnsupportedOperationException();
+	}
 
-    // Overrides a method of the CommonDataSource interface in Java 1.7.
-    public Logger getParentLogger()
-                            throws SQLFeatureNotSupportedException {
-        throw new UnsupportedOperationException();
-    }
+	// Overrides a method of the CommonDataSource interface in Java 1.7.
+	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public void setLogWriter( PrintWriter out )
-                            throws SQLException {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public void setLogWriter(PrintWriter out) throws SQLException {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public void setLoginTimeout( int seconds )
-                            throws SQLException {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public void setLoginTimeout(int seconds) throws SQLException {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public boolean isWrapperFor( Class<?> iface )
-                            throws SQLException {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public boolean isWrapperFor(Class<?> iface) throws SQLException {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public <T> T unwrap( Class<T> iface )
-                            throws SQLException {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public <T> T unwrap(Class<T> iface) throws SQLException {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public Connection getConnection()
-                            throws SQLException {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Connection getConnection() throws SQLException {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public Connection getConnection( String username, String password )
-                            throws SQLException {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Connection getConnection(String username, String password) throws SQLException {
+		throw new UnsupportedOperationException();
+	}
 
 }

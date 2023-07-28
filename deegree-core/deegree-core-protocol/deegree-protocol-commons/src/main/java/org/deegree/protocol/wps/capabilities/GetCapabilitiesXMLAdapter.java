@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/svn_classfile_header_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -50,55 +49,52 @@ import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 
 /**
  * Parser for WPS GetCapabilities requests.
- * 
+ *
  * @author <a href="mailto:apadberg@uni-bonn.de">Alexander Padberg</a>
- * @author last edited by: $Author: $
- * 
- * @version $Revision: $, $Date: $
  */
 public class GetCapabilitiesXMLAdapter extends XMLAdapter {
 
-    private static final String OWS_PREFIX = "ows";
+	private static final String OWS_PREFIX = "ows";
 
-    private static final String OWS_NS = "http://www.opengis.net/ows/1.1";
+	private static final String OWS_NS = "http://www.opengis.net/ows/1.1";
 
-    private static final String WPS_PREFIX = "wps";
+	private static final String WPS_PREFIX = "wps";
 
-    private static final String WPS_NS = "http://www.opengis.net/wps/1.0.0";
+	private static final String WPS_NS = "http://www.opengis.net/wps/1.0.0";
 
-    private static NamespaceBindings nsContext;
+	private static NamespaceBindings nsContext;
 
-    static {
-        nsContext = new NamespaceBindings( XMLAdapter.nsContext );
-        nsContext.addNamespace( OWS_PREFIX, OWS_NS );
-        nsContext.addNamespace( WPS_PREFIX, WPS_NS );
-    }
+	static {
+		nsContext = new NamespaceBindings(XMLAdapter.nsContext);
+		nsContext.addNamespace(OWS_PREFIX, OWS_NS);
+		nsContext.addNamespace(WPS_PREFIX, WPS_NS);
+	}
 
-    /**
-     * Parses a WPS 1.0.0 GetCapabilities request.
-     * <p>
-     * NOTE: Because GetCapabilities-requests from the WPS specification 1.0.0 do not match OWS-Commons
-     * GetCapabilities-requests, this individual XMLAdapter is needed for WPS GetCapabilities-requests. Although the
-     * adapter has to be different, the common request bean can be used.
-     * </p>
-     * 
-     * @return the parsed request
-     * @throws InvalidParameterValueException
-     */
-    public GetCapabilities parse100()
-                            throws InvalidParameterValueException {
+	/**
+	 * Parses a WPS 1.0.0 GetCapabilities request.
+	 * <p>
+	 * NOTE: Because GetCapabilities-requests from the WPS specification 1.0.0 do not
+	 * match OWS-Commons GetCapabilities-requests, this individual XMLAdapter is needed
+	 * for WPS GetCapabilities-requests. Although the adapter has to be different, the
+	 * common request bean can be used.
+	 * </p>
+	 * @return the parsed request
+	 * @throws InvalidParameterValueException
+	 */
+	public GetCapabilities parse100() throws InvalidParameterValueException {
 
-        // ows:AcceptVersions (optional)
-        String[] versions = getNodesAsStrings( rootElement, new XPath( "ows:AcceptVersions/ows:Version/text()",
-                                                                       nsContext ) );
+		// ows:AcceptVersions (optional)
+		String[] versions = getNodesAsStrings(rootElement,
+				new XPath("ows:AcceptVersions/ows:Version/text()", nsContext));
 
-        // @language (optional)
-        List<String> languages = null;
-        String languageString = rootElement.getAttributeValue( new QName( "language" ) );
-        if ( languageString != null ) {
-            languages = new ArrayList<String>();
-            languages.add( languageString );
-        }
-        return new GetCapabilities( "1.0.0", Arrays.asList( versions ), null, null, null, languages );
-    }
+		// @language (optional)
+		List<String> languages = null;
+		String languageString = rootElement.getAttributeValue(new QName("language"));
+		if (languageString != null) {
+			languages = new ArrayList<String>();
+			languages.add(languageString);
+		}
+		return new GetCapabilities("1.0.0", Arrays.asList(versions), null, null, null, languages);
+	}
+
 }

@@ -1,4 +1,3 @@
-//$Header: /deegreerepository/deegree/resources/eclipse/svn_classfile_header_template.xml,v 1.2 2007/03/06 09:44:09 bezema Exp $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -48,46 +47,39 @@ import org.deegree.protocol.wps.WPSRequest;
  *
  * @author <a href="mailto:apadberg@uni-bonn.de">Alexander Padberg</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: padberg$
- *
- * @version $Revision$, $Date: 08.05.2008 14:22:05$
  */
 public class DescribeProcessRequest extends WPSRequest {
 
-    private List<CodeType> identifiers = new ArrayList<CodeType>();
+	private List<CodeType> identifiers = new ArrayList<CodeType>();
 
-    /**
-     * Creates a new {@link DescribeProcessRequest} instance.
-     *
-     * @param version
-     *            WPS protocol version
-     * @param language
-     *            RFC 4646 language code of the human-readable text
-     * @param identifiers
-     *            identifiers for the processes to be described
-     */
-    public DescribeProcessRequest( Version version, String language, List<CodeType> identifiers ) {
-        super( version, language );
-        this.identifiers = identifiers;
-    }
+	/**
+	 * Creates a new {@link DescribeProcessRequest} instance.
+	 * @param version WPS protocol version
+	 * @param language RFC 4646 language code of the human-readable text
+	 * @param identifiers identifiers for the processes to be described
+	 */
+	public DescribeProcessRequest(Version version, String language, List<CodeType> identifiers) {
+		super(version, language);
+		this.identifiers = identifiers;
+	}
 
-    /**
-     * Returns the identifiers of the processes to be described.
-     *
-     * @return the identifiers, contains at least one identifier (or 'ALL')
-     */
-    public List<CodeType> getIdentifiers() {
-        return identifiers;
-    }
+	/**
+	 * Returns the identifiers of the processes to be described.
+	 * @return the identifiers, contains at least one identifier (or 'ALL')
+	 */
+	public List<CodeType> getIdentifiers() {
+		return identifiers;
+	}
 
-    @Override
-    public String toString() {
-        StringBuffer sb = new StringBuffer( " Request: DescribeProcess\n" + super.toString() + ", identifiers: [ " );
-        for ( CodeType identifier : identifiers ) {
-            sb.append( identifier );
-            sb.append( " " );
-        }
-        sb.append( "]" );
-        return sb.toString();
-    }
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer(" Request: DescribeProcess\n" + super.toString() + ", identifiers: [ ");
+		for (CodeType identifier : identifiers) {
+			sb.append(identifier);
+			sb.append(" ");
+		}
+		sb.append("]");
+		return sb.toString();
+	}
+
 }

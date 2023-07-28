@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -49,79 +48,77 @@ import org.deegree.rendering.r3d.opengl.rendering.model.geometry.RenderableGeome
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.RenderableQualityModel;
 
 /**
- * The <code>PrototypePool</code> holds a set of prototyes which can be referenced by supplying their id. Before the
- * rendering of the prototype the translation, rotation and scale will ge applied to the modelview matrix. This implies,
- * that each prototype should be defined between [0,1] at the origin.
- * 
+ * The <code>PrototypePool</code> holds a set of prototyes which can be referenced by
+ * supplying their id. Before the rendering of the prototype the translation, rotation and
+ * scale will ge applied to the modelview matrix. This implies, that each prototype should
+ * be defined between [0,1] at the origin.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class PrototypePool {
-    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( PrototypePool.class );
 
-    private static final Map<String, RenderablePrototype> prototypes = new HashMap<String, RenderablePrototype>();
+	private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(PrototypePool.class);
 
-    static {
-        prototypes.put( "box", createBoxPrototype() );
-    }
+	private static final Map<String, RenderablePrototype> prototypes = new HashMap<String, RenderablePrototype>();
 
-    /**
-     * @param glRenderContext
-     * @param prototype
-     * @param buffer
-     *            to be used for rendering.
-     */
-    public synchronized static void render( RenderContext glRenderContext, PrototypeReference prototype,
-                                            DirectGeometryBuffer buffer ) {
-        if ( prototype == null || prototype.getPrototypeID() == null ) {
-            return;
-        }
-        RenderablePrototype model = prototypes.get( prototype.getPrototypeID() );
+	static {
+		prototypes.put("box", createBoxPrototype());
+	}
 
-        if ( model == null ) {
-            LOG.warn( "No model found for prototype: " + prototype.getPrototypeID() );
-            return;
-        }
+	/**
+	 * @param glRenderContext
+	 * @param prototype
+	 * @param buffer to be used for rendering.
+	 */
+	public synchronized static void render(RenderContext glRenderContext, PrototypeReference prototype,
+			DirectGeometryBuffer buffer) {
+		if (prototype == null || prototype.getPrototypeID() == null) {
+			return;
+		}
+		RenderablePrototype model = prototypes.get(prototype.getPrototypeID());
 
-        GL context = glRenderContext.getContext();
+		if (model == null) {
+			LOG.warn("No model found for prototype: " + prototype.getPrototypeID());
+			return;
+		}
 
-        context.glPushMatrix();
+		GL context = glRenderContext.getContext();
 
-        float[] loc = prototype.getLocation();
-        context.glTranslatef( loc[0], loc[1], loc[2] );
-        context.glRotatef( prototype.getAngle(), 0, 0, 1 );
-        context.glScalef( prototype.getWidth(), prototype.getDepth(), prototype.getHeight() );
-        if ( buffer == null ) {
-            model.render( null );
-        } else {
-            model.renderPrepared( glRenderContext, buffer );
-        }
-        context.glPopMatrix();
-    }
+		context.glPushMatrix();
 
-    private static RenderablePrototype createBoxPrototype() {
-        RenderableQualityModel rqm = new RenderableQualityModel();
+		float[] loc = prototype.getLocation();
+		context.glTranslatef(loc[0], loc[1], loc[2]);
+		context.glRotatef(prototype.getAngle(), 0, 0, 1);
+		context.glScalef(prototype.getWidth(), prototype.getDepth(), prototype.getHeight());
+		if (buffer == null) {
+			model.render(null);
+		}
+		else {
+			model.renderPrepared(glRenderContext, buffer);
+		}
+		context.glPopMatrix();
+	}
 
-        RenderableGeometry rg = new BOXGeometry();
-        rqm.addQualityModelPart( rg );
-        Envelope env = new GeometryFactory().createEnvelope( 0, 0, 1, 1, null );
-        return new RenderablePrototype( "box", "yeah", env, rqm );
-    }
+	private static RenderablePrototype createBoxPrototype() {
+		RenderableQualityModel rqm = new RenderableQualityModel();
 
-    /**
-     * @param id
-     * @param model
-     */
-    public static synchronized void addPrototype( String id, RenderablePrototype model ) {
-        if ( id == null || "".equals( id ) || model == null || prototypes.containsKey( id ) ) {
-            LOG.info( "Ignoring prototype because no id/model was given." );
-            return;
-        }
-        prototypes.put( id, model );
-    }
+		RenderableGeometry rg = new BOXGeometry();
+		rqm.addQualityModelPart(rg);
+		Envelope env = new GeometryFactory().createEnvelope(0, 0, 1, 1, null);
+		return new RenderablePrototype("box", "yeah", env, rqm);
+	}
+
+	/**
+	 * @param id
+	 * @param model
+	 */
+	public static synchronized void addPrototype(String id, RenderablePrototype model) {
+		if (id == null || "".equals(id) || model == null || prototypes.containsKey(id)) {
+			LOG.info("Ignoring prototype because no id/model was given.");
+			return;
+		}
+		prototypes.put(id, model);
+	}
 
 }

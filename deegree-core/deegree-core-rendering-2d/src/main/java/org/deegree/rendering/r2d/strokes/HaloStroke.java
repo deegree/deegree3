@@ -66,32 +66,32 @@ import org.deegree.style.utils.UomCalculator;
 
 /**
  * <code>HaloStroke</code> drawing a halo around a text.
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
 public class HaloStroke extends TextStroke {
 
-    private final Halo halo;
+	private final Halo halo;
 
-    private final UOM uom;
+	private final UOM uom;
 
-    private final UomCalculator uomCalculator;
+	private final UomCalculator uomCalculator;
 
-    public HaloStroke( String text, Font font, LinePlacement linePlacement, Halo halo, UOM uom,
-                       UomCalculator uomCalculator ) {
-        super( text, font, linePlacement );
-        this.halo = halo;
-        this.uom = uom;
-        this.uomCalculator = uomCalculator;
-    }
+	public HaloStroke(String text, Font font, LinePlacement linePlacement, Halo halo, UOM uom,
+			UomCalculator uomCalculator) {
+		super(text, font, linePlacement);
+		this.halo = halo;
+		this.uom = uom;
+		this.uomCalculator = uomCalculator;
+	}
 
-    @Override
-    protected void appendShape( GeneralPath result, Shape transformedShape ) {
-        BasicStroke stroke = new BasicStroke( round( 2 * uomCalculator.considerUOM( halo.radius, uom ) ), CAP_BUTT,
-                                              JOIN_ROUND );
+	@Override
+	protected void appendShape(GeneralPath result, Shape transformedShape) {
+		BasicStroke stroke = new BasicStroke(round(2 * uomCalculator.considerUOM(halo.radius, uom)), CAP_BUTT,
+				JOIN_ROUND);
 
-        Shape haloShape = stroke.createStrokedShape( transformedShape );
-        result.append( haloShape, false );
-    }
+		Shape haloShape = stroke.createStrokedShape(transformedShape);
+		result.append(haloShape, false);
+	}
 
 }

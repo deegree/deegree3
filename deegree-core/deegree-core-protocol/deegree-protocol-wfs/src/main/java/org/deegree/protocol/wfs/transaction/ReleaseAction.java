@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -37,26 +36,26 @@ package org.deegree.protocol.wfs.transaction;
 
 /**
  * Controls how locked features are treated when a transaction request is completed.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public enum ReleaseAction {
 
-    /**
-     * Indicates that the locks on all feature instances locked using the associated lockId should be released when the
-     * transaction completes, regardless of whether or not a particular feature instance in the locked set was actually
-     * operated upon.
-     */
-    ALL,
+	/**
+	 * Indicates that the locks on all feature instances locked using the associated
+	 * lockId should be released when the transaction completes, regardless of whether or
+	 * not a particular feature instance in the locked set was actually operated upon.
+	 */
+	ALL,
 
-    /**
-     * Indicates that only the locks on feature instances modified by the transaction should be released. The other,
-     * unmodified, feature instances should remain locked using the same lockId so that subsequent transactions can
-     * operate on those feature instances. If an expiry period was specified, the expiry counter must be reset to zero
-     * after each transaction unless all feature instances in the locked set have been operated upon.
-     */
-    SOME
+	/**
+	 * Indicates that only the locks on feature instances modified by the transaction
+	 * should be released. The other, unmodified, feature instances should remain locked
+	 * using the same lockId so that subsequent transactions can operate on those feature
+	 * instances. If an expiry period was specified, the expiry counter must be reset to
+	 * zero after each transaction unless all feature instances in the locked set have
+	 * been operated upon.
+	 */
+	SOME
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -54,87 +53,84 @@ import org.junit.Test;
 
 /**
  * Tests for resource metadata.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 public class AbstractResourceMetadataTest {
 
-    @Test
-    public void testSorting() {
-        final ResourceIdentifier id1 = new DefaultResourceIdentifier( ResourceProvider.class, "md1" );
-        DefaultResourceLocation loc1 = new DefaultResourceLocation( new File( "/tmp/" ), id1 );
-        final ResourceIdentifier id2 = new DefaultResourceIdentifier( ResourceProvider.class, "md2" );
-        DefaultResourceLocation loc2 = new DefaultResourceLocation( new File( "/tmp/" ), id2 );
-        final ResourceIdentifier id3 = new DefaultResourceIdentifier( ResourceProvider.class, "md3" );
-        DefaultResourceLocation loc3 = new DefaultResourceLocation( new File( "/tmp/" ), id3 );
-        final ResourceIdentifier id4 = new DefaultResourceIdentifier( ResourceProvider.class, "md4" );
-        DefaultResourceLocation loc4 = new DefaultResourceLocation( new File( "/tmp/" ), id4 );
-        final AbstractResourceMetadata md4 = new AbstractResourceMetadata( null, loc4, null ) {
-            @Override
-            public ResourceBuilder prepare() {
-                return null;
-            }
-        };
-        final AbstractResourceMetadata md3 = new AbstractResourceMetadata( null, loc3, null ) {
-            @Override
-            public ResourceBuilder prepare() {
-                dependencies.add( id4 );
-                return null;
-            }
-        };
-        final AbstractResourceMetadata md2 = new AbstractResourceMetadata( null, loc2, null ) {
-            @Override
-            public ResourceBuilder prepare() {
-                dependencies.add( id4 );
-                return null;
-            }
-        };
-        final AbstractResourceMetadata md1 = new AbstractResourceMetadata( null, loc1, null ) {
-            @Override
-            public ResourceBuilder prepare() {
-                dependencies.add( id2 );
-                dependencies.add( id3 );
-                return null;
-            }
-        };
+	@Test
+	public void testSorting() {
+		final ResourceIdentifier id1 = new DefaultResourceIdentifier(ResourceProvider.class, "md1");
+		DefaultResourceLocation loc1 = new DefaultResourceLocation(new File("/tmp/"), id1);
+		final ResourceIdentifier id2 = new DefaultResourceIdentifier(ResourceProvider.class, "md2");
+		DefaultResourceLocation loc2 = new DefaultResourceLocation(new File("/tmp/"), id2);
+		final ResourceIdentifier id3 = new DefaultResourceIdentifier(ResourceProvider.class, "md3");
+		DefaultResourceLocation loc3 = new DefaultResourceLocation(new File("/tmp/"), id3);
+		final ResourceIdentifier id4 = new DefaultResourceIdentifier(ResourceProvider.class, "md4");
+		DefaultResourceLocation loc4 = new DefaultResourceLocation(new File("/tmp/"), id4);
+		final AbstractResourceMetadata md4 = new AbstractResourceMetadata(null, loc4, null) {
+			@Override
+			public ResourceBuilder prepare() {
+				return null;
+			}
+		};
+		final AbstractResourceMetadata md3 = new AbstractResourceMetadata(null, loc3, null) {
+			@Override
+			public ResourceBuilder prepare() {
+				dependencies.add(id4);
+				return null;
+			}
+		};
+		final AbstractResourceMetadata md2 = new AbstractResourceMetadata(null, loc2, null) {
+			@Override
+			public ResourceBuilder prepare() {
+				dependencies.add(id4);
+				return null;
+			}
+		};
+		final AbstractResourceMetadata md1 = new AbstractResourceMetadata(null, loc1, null) {
+			@Override
+			public ResourceBuilder prepare() {
+				dependencies.add(id2);
+				dependencies.add(id3);
+				return null;
+			}
+		};
 
-        md1.prepare();
-        md2.prepare();
-        md3.prepare();
-        md4.prepare();
+		md1.prepare();
+		md2.prepare();
+		md3.prepare();
+		md4.prepare();
 
-        ResourceGraph graph = new ResourceGraph();
+		ResourceGraph graph = new ResourceGraph();
 
-        graph.insertNode( md1 );
-        ResourceNode node1 = graph.getNode( md1.getIdentifier() );
+		graph.insertNode(md1);
+		ResourceNode node1 = graph.getNode(md1.getIdentifier());
 
-        graph.insertNode( md4 );
-        ResourceNode node4 = graph.getNode( md4.getIdentifier() );
+		graph.insertNode(md4);
+		ResourceNode node4 = graph.getNode(md4.getIdentifier());
 
-        graph.insertNode( md2 );
-        ResourceNode node2 = graph.getNode( md2.getIdentifier() );
+		graph.insertNode(md2);
+		ResourceNode node2 = graph.getNode(md2.getIdentifier());
 
-        graph.insertNode( md3 );
-        ResourceNode node3 = graph.getNode( md3.getIdentifier() );
+		graph.insertNode(md3);
+		ResourceNode node3 = graph.getNode(md3.getIdentifier());
 
-        List deps = node1.getDependencies();
-        Assert.assertEquals( 2, deps.size() );
-        Assert.assertTrue( deps.contains( node2 ) );
-        Assert.assertTrue( deps.contains( node3 ) );
+		List deps = node1.getDependencies();
+		Assert.assertEquals(2, deps.size());
+		Assert.assertTrue(deps.contains(node2));
+		Assert.assertTrue(deps.contains(node3));
 
-        deps = node2.getDependencies();
-        Assert.assertEquals( 1, deps.size() );
-        Assert.assertTrue( deps.contains( node4 ) );
+		deps = node2.getDependencies();
+		Assert.assertEquals(1, deps.size());
+		Assert.assertTrue(deps.contains(node4));
 
-        deps = node3.getDependencies();
-        Assert.assertEquals( 1, deps.size() );
-        Assert.assertTrue( deps.contains( node4 ) );
+		deps = node3.getDependencies();
+		Assert.assertEquals(1, deps.size());
+		Assert.assertTrue(deps.contains(node4));
 
-        deps = node4.getDependencies();
-        Assert.assertTrue( deps.isEmpty() );
-    }
+		deps = node4.getDependencies();
+		Assert.assertTrue(deps.isEmpty());
+	}
 
 }

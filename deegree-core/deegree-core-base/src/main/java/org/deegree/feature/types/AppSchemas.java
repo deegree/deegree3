@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -50,34 +49,31 @@ import org.deegree.commons.tom.gml.property.PropertyType;
 
 /**
  * <code>AppSchemas</code>
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 
 public class AppSchemas {
 
-    /**
-     * Collects all property names of a given feature type, or all feature types if the given name is null.
-     * 
-     * @param schema
-     * @param featureType
-     * @return a set of property qnames
-     */
-    public static Set<QName> collectProperyNames( AppSchema schema, QName featureType ) {
-        HashSet<QName> set = new HashSet<QName>();
+	/**
+	 * Collects all property names of a given feature type, or all feature types if the
+	 * given name is null.
+	 * @param schema
+	 * @param featureType
+	 * @return a set of property qnames
+	 */
+	public static Set<QName> collectProperyNames(AppSchema schema, QName featureType) {
+		HashSet<QName> set = new HashSet<QName>();
 
-        for ( FeatureType ft : schema.getFeatureTypes() ) {
-            if ( featureType == null || featureType.equals( ft.getName() ) ) {
-                for ( PropertyType pt : ft.getPropertyDeclarations() ) {
-                    set.add( pt.getName() );
-                }
-            }
-        }
+		for (FeatureType ft : schema.getFeatureTypes()) {
+			if (featureType == null || featureType.equals(ft.getName())) {
+				for (PropertyType pt : ft.getPropertyDeclarations()) {
+					set.add(pt.getName());
+				}
+			}
+		}
 
-        return set;
-    }
+		return set;
+	}
 
 }

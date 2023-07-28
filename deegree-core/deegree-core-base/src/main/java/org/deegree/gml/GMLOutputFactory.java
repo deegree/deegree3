@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -42,28 +41,24 @@ import org.deegree.commons.tom.gml.GMLObject;
 
 /**
  * Factory for creating {@link GMLStreamWriter} instances.
- * 
+ *
  * @see GMLObject
  * @see GMLStreamWriter
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class GMLOutputFactory {
 
-    /**
-     * Creates a new {@link GMLStreamWriter} instance for generating GML of the specified version.
-     * 
-     * @param version
-     *            GML version, must not be null
-     * @param xmlStream
-     *            XML stream used to write the output, must not be <code>null</code>
-     * @return initialized {@link GMLStreamWriter}
-     * @throws XMLStreamException 
-     */
-    public static GMLStreamWriter createGMLStreamWriter( GMLVersion version, XMLStreamWriter xmlStream ) throws XMLStreamException {
-        return new GMLStreamWriter( version, xmlStream );
-    }
+	/**
+	 * Creates a new {@link GMLStreamWriter} instance for generating GML of the specified
+	 * version.
+	 * @param version GML version, must not be null
+	 * @param xmlStream XML stream used to write the output, must not be <code>null</code>
+	 * @return initialized {@link GMLStreamWriter}
+	 * @throws XMLStreamException
+	 */
+	public static GMLStreamWriter createGMLStreamWriter(GMLVersion version, XMLStreamWriter xmlStream)
+			throws XMLStreamException {
+		return new GMLStreamWriter(version, xmlStream);
+	}
+
 }

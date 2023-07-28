@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -62,167 +61,164 @@ import org.deegree.wpsclient.controller.ProcessExecuter;
 import org.slf4j.Logger;
 
 /**
- * <code>ExecuteBean</code> receives the parameters to execute the WPS and holds the response.
- * 
+ * <code>ExecuteBean</code> receives the parameters to execute the WPS and holds the
+ * response.
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 @ManagedBean
 @RequestScoped
 public class ExecuteBean implements Serializable {
 
-    private static final long serialVersionUID = 5702665270758227972L;
+	private static final long serialVersionUID = 5702665270758227972L;
 
-    private static final Logger LOG = getLogger( ExecuteBean.class );
+	private static final Logger LOG = getLogger(ExecuteBean.class);
 
-    public static final String PROCESS_ATTRIBUTE_KEY = "process";
+	public static final String PROCESS_ATTRIBUTE_KEY = "process";
 
-    private Map<String, StringPair> literalInputs = new HashMap<String, StringPair>();
+	private Map<String, StringPair> literalInputs = new HashMap<String, StringPair>();
 
-    private Map<String, UploadedFile> xmlInputs = new HashMap<String, UploadedFile>();
+	private Map<String, UploadedFile> xmlInputs = new HashMap<String, UploadedFile>();
 
-    private Map<String, String> xmlRefInputs = new HashMap<String, String>();
+	private Map<String, String> xmlRefInputs = new HashMap<String, String>();
 
-    private Map<String, UploadedFile> binaryInputs = new HashMap<String, UploadedFile>();
+	private Map<String, UploadedFile> binaryInputs = new HashMap<String, UploadedFile>();
 
-    private Map<String, BBox> bboxInputs = new HashMap<String, BBox>();
+	private Map<String, BBox> bboxInputs = new HashMap<String, BBox>();
 
-    private List<LiteralOutput> literalOutputs = new ArrayList<LiteralOutput>();
+	private List<LiteralOutput> literalOutputs = new ArrayList<LiteralOutput>();
 
-    private List<BBoxOutput> bboxOutputs = new ArrayList<BBoxOutput>();
+	private List<BBoxOutput> bboxOutputs = new ArrayList<BBoxOutput>();
 
-    private List<ComplexOutput> xmlOutputs = new ArrayList<ComplexOutput>();
+	private List<ComplexOutput> xmlOutputs = new ArrayList<ComplexOutput>();
 
-    private List<ComplexOutput> binaryOutputs = new ArrayList<ComplexOutput>();
+	private List<ComplexOutput> binaryOutputs = new ArrayList<ComplexOutput>();
 
-    private List<String> outputs = new ArrayList<String>();
+	private List<String> outputs = new ArrayList<String>();
 
-    private Map<String, ComplexFormat> complexInputFormats = new HashMap<String, ComplexFormat>();
-    
-    private Map<String, ComplexFormat> complexOutputFormats = new HashMap<String, ComplexFormat>();
-    
+	private Map<String, ComplexFormat> complexInputFormats = new HashMap<String, ComplexFormat>();
 
-    /**
-     * ajax listener to execute the process (the source component of this event must contain an attribute with key
-     * {@link PROCESS_ATTRIBUTE_KEY} from type {@link Process} containing the selected process.
-     * 
-     * @param event
-     */
+	private Map<String, ComplexFormat> complexOutputFormats = new HashMap<String, ComplexFormat>();
 
-    public Object executeProcess() {
-        FacesContext fc = FacesContext.getCurrentInstance();
-        ClientBean cb = (ClientBean) fc.getELContext().getELResolver().getValue( fc.getELContext(), null, "clientBean" );
-        Process selectedProcess = cb.getSelectedProcess();
+	/**
+	 * ajax listener to execute the process (the source component of this event must
+	 * contain an attribute with key {@link PROCESS_ATTRIBUTE_KEY} from type
+	 * {@link Process} containing the selected process.
+	 * @param event
+	 */
 
-        if ( selectedProcess != null ) {
-            if ( outputs.size() == 0 ) {
-                try {
-                    outputs.add( selectedProcess.getOutputTypes()[0].getId().toString() );
-                } catch ( Exception e ) {
-                    if ( LOG.isDebugEnabled() ) {
-                        e.printStackTrace();
-                    }
-                    FacesMessage msg = getFacesMessage( FacesMessage.SEVERITY_ERROR, "ERROR.REQUEST_WPS",
-                                                        e.getMessage() );
-                    fc.addMessage( "ExecuteBean.execute.ERROR_REQUEST", msg );
-                }
-            }
+	public Object executeProcess() {
+		FacesContext fc = FacesContext.getCurrentInstance();
+		ClientBean cb = (ClientBean) fc.getELContext().getELResolver().getValue(fc.getELContext(), null, "clientBean");
+		Process selectedProcess = cb.getSelectedProcess();
 
-            ProcessExecuter executer = new ProcessExecuter();
+		if (selectedProcess != null) {
+			if (outputs.size() == 0) {
+				try {
+					outputs.add(selectedProcess.getOutputTypes()[0].getId().toString());
+				}
+				catch (Exception e) {
+					if (LOG.isDebugEnabled()) {
+						e.printStackTrace();
+					}
+					FacesMessage msg = getFacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR.REQUEST_WPS",
+							e.getMessage());
+					fc.addMessage("ExecuteBean.execute.ERROR_REQUEST", msg);
+				}
+			}
 
-            ExecutionOutput[] executionOutput = executer.execute( selectedProcess, literalInputs, bboxInputs,
-                                                                  xmlInputs, xmlRefInputs, binaryInputs,
-                                                                  complexInputFormats, outputs, complexOutputFormats );
+			ProcessExecuter executer = new ProcessExecuter();
 
-            if ( executionOutput != null ) {
-                for ( int i = 0; i < executionOutput.length; i++ ) {
-                    ExecutionOutput output = executionOutput[i];
-                    if ( output instanceof LiteralOutput ) {
-                        literalOutputs.add( (LiteralOutput) output );
-                    } else if ( output instanceof BBoxOutput ) {
-                        bboxOutputs.add( (BBoxOutput) output );
-                    } else if ( output instanceof ComplexOutput ) {
-                        ComplexFormat format = ( (ComplexOutput) output ).getFormat();
-                        if ( format.getMimeType() != null && format.getMimeType().contains( "xml" ) ) {
-                            xmlOutputs.add( (ComplexOutput) output );
-                        } else {
-                            binaryOutputs.add( (ComplexOutput) output );
-                        }
-                    }
-                }
-                FacesMessage msg = getFacesMessage( FacesMessage.SEVERITY_INFO, "INFO.REQUEST_SUCCESS" );
-                fc.addMessage( "ExecuteBean.execute.REQUEST", msg );
-            }
-        }
-        return null;
-    }
+			ExecutionOutput[] executionOutput = executer.execute(selectedProcess, literalInputs, bboxInputs, xmlInputs,
+					xmlRefInputs, binaryInputs, complexInputFormats, outputs, complexOutputFormats);
 
+			if (executionOutput != null) {
+				for (int i = 0; i < executionOutput.length; i++) {
+					ExecutionOutput output = executionOutput[i];
+					if (output instanceof LiteralOutput) {
+						literalOutputs.add((LiteralOutput) output);
+					}
+					else if (output instanceof BBoxOutput) {
+						bboxOutputs.add((BBoxOutput) output);
+					}
+					else if (output instanceof ComplexOutput) {
+						ComplexFormat format = ((ComplexOutput) output).getFormat();
+						if (format.getMimeType() != null && format.getMimeType().contains("xml")) {
+							xmlOutputs.add((ComplexOutput) output);
+						}
+						else {
+							binaryOutputs.add((ComplexOutput) output);
+						}
+					}
+				}
+				FacesMessage msg = getFacesMessage(FacesMessage.SEVERITY_INFO, "INFO.REQUEST_SUCCESS");
+				fc.addMessage("ExecuteBean.execute.REQUEST", msg);
+			}
+		}
+		return null;
+	}
 
-    /******************* GETTER / SETTER ******************/
-    public List<String> getOutputs() {
-        return outputs;
-    }
+	/******************* GETTER / SETTER ******************/
+	public List<String> getOutputs() {
+		return outputs;
+	}
 
-    public void setOutputs( List<String> outputs ) {
-        this.outputs = outputs;
-    }
+	public void setOutputs(List<String> outputs) {
+		this.outputs = outputs;
+	}
 
-    // INPUTS
-    public Map<String, StringPair> getLiteralInputs() {
-        return literalInputs;
-    }
+	// INPUTS
+	public Map<String, StringPair> getLiteralInputs() {
+		return literalInputs;
+	}
 
-    public Map<String, UploadedFile> getXmlInputs() {
-        return xmlInputs;
-    }
+	public Map<String, UploadedFile> getXmlInputs() {
+		return xmlInputs;
+	}
 
-    public Map<String, String> getXmlRefInputs() {
-        return xmlRefInputs;
-    }
+	public Map<String, String> getXmlRefInputs() {
+		return xmlRefInputs;
+	}
 
-    public Map<String, UploadedFile> getBinaryInputs() {
-        return binaryInputs;
-    }
+	public Map<String, UploadedFile> getBinaryInputs() {
+		return binaryInputs;
+	}
 
-    public Map<String, BBox> getBboxInputs() {
-        return bboxInputs;
-    }
+	public Map<String, BBox> getBboxInputs() {
+		return bboxInputs;
+	}
 
-    // OUTPUTS
-    public List<LiteralOutput> getLiteralOutputs() {
-        return literalOutputs;
-    }
+	// OUTPUTS
+	public List<LiteralOutput> getLiteralOutputs() {
+		return literalOutputs;
+	}
 
-    public List<BBoxOutput> getBboxOutputs() {
-        return bboxOutputs;
-    }
+	public List<BBoxOutput> getBboxOutputs() {
+		return bboxOutputs;
+	}
 
-    public List<ComplexOutput> getXmlOutputs() {
-        return xmlOutputs;
-    }
+	public List<ComplexOutput> getXmlOutputs() {
+		return xmlOutputs;
+	}
 
-    public List<ComplexOutput> getBinaryOutputs() {
-        return binaryOutputs;
-    }
+	public List<ComplexOutput> getBinaryOutputs() {
+		return binaryOutputs;
+	}
 
-    public void setComplexInputFormats( Map<String, ComplexFormat> complexInputFormats ) {
-        this.complexInputFormats = complexInputFormats;
-    }
+	public void setComplexInputFormats(Map<String, ComplexFormat> complexInputFormats) {
+		this.complexInputFormats = complexInputFormats;
+	}
 
-    public Map<String, ComplexFormat> getComplexInputFormats() {
-        return complexInputFormats;
-    }
+	public Map<String, ComplexFormat> getComplexInputFormats() {
+		return complexInputFormats;
+	}
 
+	public void setComplexOutputFormats(Map<String, ComplexFormat> complexOutputFormats) {
+		this.complexOutputFormats = complexOutputFormats;
+	}
 
-    public void setComplexOutputFormats( Map<String, ComplexFormat> complexOutputFormats ) {
-        this.complexOutputFormats = complexOutputFormats;
-    }
-
-
-    public Map<String, ComplexFormat> getComplexOutputFormats() {
-        return complexOutputFormats;
-    }
+	public Map<String, ComplexFormat> getComplexOutputFormats() {
+		return complexOutputFormats;
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-base/src/main/java/org/deegree/filter/sql/UnmappableException.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -39,24 +38,21 @@ import org.deegree.filter.Filter;
 import org.deegree.sqldialect.filter.expression.SQLExpression;
 
 /**
- * Indicates that (a part of) a {@link Filter} expression cannot be mapped to an equivalent {@link SQLExpression}.
- * 
+ * Indicates that (a part of) a {@link Filter} expression cannot be mapped to an
+ * equivalent {@link SQLExpression}.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 24519 $, $Date: 2010-05-20 20:35:27 +0200 (Do, 20. Mai 2010) $
  */
 public class UnmappableException extends Exception {
 
-    private static final long serialVersionUID = 1433526718588574837L;
+	private static final long serialVersionUID = 1433526718588574837L;
 
-    /**
-     * Constructs a new {@link UnmappableException} with the given detail message.
-     * 
-     * @param msg
-     *            the detail message
-     */
-    public UnmappableException( String msg ) {
-        super( msg );
-    }
+	/**
+	 * Constructs a new {@link UnmappableException} with the given detail message.
+	 * @param msg the detail message
+	 */
+	public UnmappableException(String msg) {
+		super(msg);
+	}
+
 }

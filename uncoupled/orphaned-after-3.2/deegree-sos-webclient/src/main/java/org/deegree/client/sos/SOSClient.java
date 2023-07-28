@@ -35,9 +35,7 @@ import org.slf4j.LoggerFactory;
  * sos and parse it. The parsed values are then either forwarded to a JSP or displayed by the Writer-class.<br>
  * 
  * @author <a href="mailto:neumeister@lat-lon.de">Ulrich Neumeister</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
  */
 public class SOSClient extends HttpServlet {
 

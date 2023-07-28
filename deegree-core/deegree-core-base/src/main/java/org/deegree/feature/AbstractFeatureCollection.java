@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -48,59 +47,55 @@ import org.deegree.geometry.Envelope;
 
 /**
  * Abstract base class for common {@link FeatureCollection} implementations.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * 
- * @version $Revision:$, $Date:$
  */
 public abstract class AbstractFeatureCollection extends AbstractFeature implements FeatureCollection {
 
-    /**
-     * Creates a new {@link AbstractFeatureCollection} instance.
-     * 
-     * @param fid
-     *            feature id or <code>null</code> if the feature is anonymous (discouraged for most use cases)
-     * @param ft
-     *            feature type, must not be <code>null</code>
-     * @param extraProps
-     *            extra properties, may be <code>null</code>
-     */
-    protected AbstractFeatureCollection( String fid, FeatureCollectionType ft, ExtraProps extraProps ) {
-        super( fid, ft, extraProps );
-    }
+	/**
+	 * Creates a new {@link AbstractFeatureCollection} instance.
+	 * @param fid feature id or <code>null</code> if the feature is anonymous (discouraged
+	 * for most use cases)
+	 * @param ft feature type, must not be <code>null</code>
+	 * @param extraProps extra properties, may be <code>null</code>
+	 */
+	protected AbstractFeatureCollection(String fid, FeatureCollectionType ft, ExtraProps extraProps) {
+		super(fid, ft, extraProps);
+	}
 
-    @Override
-    public FeatureCollectionType getType() {
-        return (FeatureCollectionType) ft;
-    }
+	@Override
+	public FeatureCollectionType getType() {
+		return (FeatureCollectionType) ft;
+	}
 
-    @Override
-    public FeatureCollection getMembers( Filter filter, XPathEvaluator<TypedObjectNode> evaluator )
-                            throws FilterEvaluationException {
+	@Override
+	public FeatureCollection getMembers(Filter filter, XPathEvaluator<TypedObjectNode> evaluator)
+			throws FilterEvaluationException {
 
-        List<Feature> matchingFeatures = new ArrayList<Feature>();
-        for ( Feature feature : this ) {
-            if ( filter.evaluate( feature, evaluator ) ) {
-                matchingFeatures.add( feature );
-            }
-        }
-        return new GenericFeatureCollection( null, matchingFeatures );
-    }
+		List<Feature> matchingFeatures = new ArrayList<Feature>();
+		for (Feature feature : this) {
+			if (filter.evaluate(feature, evaluator)) {
+				matchingFeatures.add(feature);
+			}
+		}
+		return new GenericFeatureCollection(null, matchingFeatures);
+	}
 
-    @Override
-    public Envelope calcEnvelope() {
-        Envelope fcBBox = null;
-        for ( Feature feature : this ) {
-            Envelope memberBBox = feature.getEnvelope();
-            if ( memberBBox != null ) {
-                if ( fcBBox != null ) {
-                    fcBBox = fcBBox.merge( memberBBox );
-                } else {
-                    fcBBox = memberBBox;
-                }
-            }
-        }
-        return fcBBox;
-    }
+	@Override
+	public Envelope calcEnvelope() {
+		Envelope fcBBox = null;
+		for (Feature feature : this) {
+			Envelope memberBBox = feature.getEnvelope();
+			if (memberBBox != null) {
+				if (fcBBox != null) {
+					fcBBox = fcBBox.merge(memberBBox);
+				}
+				else {
+					fcBBox = memberBBox;
+				}
+			}
+		}
+		return fcBBox;
+	}
+
 }

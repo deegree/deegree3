@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -45,154 +44,155 @@ import org.deegree.cs.CRSResource;
 import org.slf4j.Logger;
 
 /**
- * Represents a reference to a {@link CRSResource}, which is usually expressed using an <code>xlink:href</code>
- * attribute in GML (may be document-local or remote).
- * 
+ * Represents a reference to a {@link CRSResource}, which is usually expressed using an
+ * <code>xlink:href</code> attribute in GML (may be document-local or remote).
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public abstract class CRSResourceRef<T extends CRSResource> extends Reference<T> implements CRSResource {
 
-    private static final Logger LOG = getLogger( CRSResourceRef.class );
+	private static final Logger LOG = getLogger(CRSResourceRef.class);
 
-    /**
-     * @param resolver
-     * @param uri
-     * @param baseURL
-     */
-    public CRSResourceRef( ReferenceResolver resolver, String uri, String baseURL ) {
-        super( resolver, uri, baseURL );
-    }
+	/**
+	 * @param resolver
+	 * @param uri
+	 * @param baseURL
+	 */
+	public CRSResourceRef(ReferenceResolver resolver, String uri, String baseURL) {
+		super(resolver, uri, baseURL);
+	}
 
-    public String getAreaOfUse() {
-        return getReferencedObject().getAreaOfUse();
-    }
+	public String getAreaOfUse() {
+		return getReferencedObject().getAreaOfUse();
+	}
 
-    public String getName() {
-        return getReferencedObject().getName();
-    }
+	public String getName() {
+		return getReferencedObject().getName();
+	}
 
-    public double[] getAreaOfUseBBox() {
-        return getReferencedObject().getAreaOfUseBBox();
-    }
+	public double[] getAreaOfUseBBox() {
+		return getReferencedObject().getAreaOfUseBBox();
+	}
 
-    public String getDescription() {
-        return getReferencedObject().getDescription();
-    }
+	public String getDescription() {
+		return getReferencedObject().getDescription();
+	}
 
-    public CRSCodeType getCode() {
-        return getReferencedObject().getCode();
-    }
+	public CRSCodeType getCode() {
+		return getReferencedObject().getCode();
+	}
 
-    public String getVersion() {
-        return getReferencedObject().getVersion();
-    }
+	public String getVersion() {
+		return getReferencedObject().getVersion();
+	}
 
-    public String getCodeAndName() {
-        return getReferencedObject().getCodeAndName();
-    }
+	public String getCodeAndName() {
+		return getReferencedObject().getCodeAndName();
+	}
 
-    public String[] getAreasOfUse() {
-        return getReferencedObject().getAreasOfUse();
-    }
+	public String[] getAreasOfUse() {
+		return getReferencedObject().getAreasOfUse();
+	}
 
-    public String[] getDescriptions() {
-        return getReferencedObject().getDescriptions();
-    }
+	public String[] getDescriptions() {
+		return getReferencedObject().getDescriptions();
+	}
 
-    public CRSCodeType[] getCodes() {
-        return getReferencedObject().getCodes();
-    }
+	public CRSCodeType[] getCodes() {
+		return getReferencedObject().getCodes();
+	}
 
-    public String[] getOrignalCodeStrings() {
-        return getReferencedObject().getOrignalCodeStrings();
-    }
+	public String[] getOrignalCodeStrings() {
+		return getReferencedObject().getOrignalCodeStrings();
+	}
 
-    public String[] getNames() {
-        return getReferencedObject().getNames();
-    }
+	public String[] getNames() {
+		return getReferencedObject().getNames();
+	}
 
-    public String[] getVersions() {
-        return getReferencedObject().getVersions();
-    }
+	public String[] getVersions() {
+		return getReferencedObject().getVersions();
+	}
 
-    public boolean hasCode( CRSCodeType id ) {
-        return getReferencedObject().hasCode( id );
-    }
+	public boolean hasCode(CRSCodeType id) {
+		return getReferencedObject().hasCode(id);
+	}
 
-    public boolean hasIdOrName( String idOrName, boolean caseSensitive, boolean exact ) {
-        return getReferencedObject().hasIdOrName( idOrName, caseSensitive, exact );
-    }
+	public boolean hasIdOrName(String idOrName, boolean caseSensitive, boolean exact) {
+		return getReferencedObject().hasIdOrName(idOrName, caseSensitive, exact);
+	}
 
-    public boolean hasId( String id, boolean caseSensitive, boolean exact ) {
-        return getReferencedObject().hasId( id, caseSensitive, exact );
-    }
+	public boolean hasId(String id, boolean caseSensitive, boolean exact) {
+		return getReferencedObject().hasId(id, caseSensitive, exact);
+	}
 
-    public void setDefaultId( CRSCodeType newCodeType, boolean override ) {
-        getReferencedObject().setDefaultId( newCodeType, override );
-    }
+	public void setDefaultId(CRSCodeType newCodeType, boolean override) {
+		getReferencedObject().setDefaultId(newCodeType, override);
+	}
 
-    public void setDefaultAreaOfUse( double[] bbox ) {
-        getReferencedObject().setDefaultAreaOfUse( bbox );
-    }
+	public void setDefaultAreaOfUse(double[] bbox) {
+		getReferencedObject().setDefaultAreaOfUse(bbox);
+	}
 
-    public void addAreaOfUse( String areaOfUse ) {
-        getReferencedObject().addAreaOfUse( areaOfUse );
-    }
+	public void addAreaOfUse(String areaOfUse) {
+		getReferencedObject().addAreaOfUse(areaOfUse);
+	}
 
-    public void addName( String name ) {
-        getReferencedObject().addName( name );
-    }
+	public void addName(String name) {
+		getReferencedObject().addName(name);
+	}
 
-    public void setDefaultName( String defaultName, boolean override ) {
-        getReferencedObject().setDefaultName( defaultName, override );
-    }
+	public void setDefaultName(String defaultName, boolean override) {
+		getReferencedObject().setDefaultName(defaultName, override);
+	}
 
-    public void setDefaultDescription( String newDescription, boolean override ) {
-        getReferencedObject().setDefaultDescription( newDescription, override );
-    }
+	public void setDefaultDescription(String newDescription, boolean override) {
+		getReferencedObject().setDefaultDescription(newDescription, override);
+	}
 
-    public void setDefaultVersion( String newVersion, boolean override ) {
-        getReferencedObject().setDefaultVersion( newVersion, override );
-    }
+	public void setDefaultVersion(String newVersion, boolean override) {
+		getReferencedObject().setDefaultVersion(newVersion, override);
+	}
 
-    @Override
-    public boolean equals( java.lang.Object obj ) {
-        if ( this == obj )
-            return true;
-        if ( obj == null )
-            return false;
+	@Override
+	public boolean equals(java.lang.Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
 
-        T referencedObject = getReferencedObject();
-        try {
-            if ( referencedObject != null ) {
-                return referencedObject.equals( obj );
-            }
-        } catch ( ReferenceResolvingException e ) {
-            LOG.debug( "CRSResource reference could not be resolved: {}", e.getLocalizedMessage() );
-        }
-        if ( obj instanceof Reference<?> ) {
-            Reference<?> other = (Reference<?>) obj;
-            if ( getURI() == null ) {
-                if ( other.getURI() != null )
-                    return false;
-            } else if ( !getURI().equals( other.getURI() ) )
-                return false;
-        }
-        return getURI().equals( obj );
-    }
+		T referencedObject = getReferencedObject();
+		try {
+			if (referencedObject != null) {
+				return referencedObject.equals(obj);
+			}
+		}
+		catch (ReferenceResolvingException e) {
+			LOG.debug("CRSResource reference could not be resolved: {}", e.getLocalizedMessage());
+		}
+		if (obj instanceof Reference<?>) {
+			Reference<?> other = (Reference<?>) obj;
+			if (getURI() == null) {
+				if (other.getURI() != null)
+					return false;
+			}
+			else if (!getURI().equals(other.getURI()))
+				return false;
+		}
+		return getURI().equals(obj);
+	}
 
-    @Override
-    public int hashCode() {
-        try {
-            if ( getReferencedObject() != null ) {
-                return getReferencedObject().hashCode();
-            }
-        } catch ( ReferenceResolvingException e ) {
-            LOG.debug( "CRSResource reference could not be resolved: {}", e.getLocalizedMessage() );
-        }
-        return getURI().hashCode();
-    }
+	@Override
+	public int hashCode() {
+		try {
+			if (getReferencedObject() != null) {
+				return getReferencedObject().hashCode();
+			}
+		}
+		catch (ReferenceResolvingException e) {
+			LOG.debug("CRSResource reference could not be resolved: {}", e.getLocalizedMessage());
+		}
+		return getURI().hashCode();
+	}
+
 }

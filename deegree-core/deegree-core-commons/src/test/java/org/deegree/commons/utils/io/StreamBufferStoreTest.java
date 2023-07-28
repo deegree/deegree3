@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -44,29 +43,26 @@ import org.junit.Test;
 
 /**
  * Tests the {@link StreamBufferStore}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class StreamBufferStoreTest {
 
-    @Test
-    public void test()
-                            throws IOException {
+	@Test
+	public void test() throws IOException {
 
-        StreamBufferStore os = new StreamBufferStore( 1025 );
-        for ( int i = 0; i < 10000; i++ ) {
-            os.write( i % Byte.MAX_VALUE + 1 );
-        }
-        os.close();
+		StreamBufferStore os = new StreamBufferStore(1025);
+		for (int i = 0; i < 10000; i++) {
+			os.write(i % Byte.MAX_VALUE + 1);
+		}
+		os.close();
 
-        InputStream is = os.getInputStream();
-        for ( int i = 0; i < 10000; i++ ) {
-            int b = is.read();
-            Assert.assertEquals( i % Byte.MAX_VALUE + 1, b );
-        }
-        os.close();
-    }
+		InputStream is = os.getInputStream();
+		for (int i = 0; i < 10000; i++) {
+			int b = is.read();
+			Assert.assertEquals(i % Byte.MAX_VALUE + 1, b);
+		}
+		os.close();
+	}
+
 }

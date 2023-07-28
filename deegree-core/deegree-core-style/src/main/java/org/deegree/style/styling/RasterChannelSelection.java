@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aschmitz@deegree.wald.intevation.de/deegree/deegree3/trunk/deegree-core/deegree-core-rendering-2d/src/main/java/org/deegree/rendering/r2d/styling/RasterChannelSelection.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -44,128 +43,124 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 
+ *
  * <code>ChannelSelection</code>
- * 
+ *
  * TODO: move the evaluation code somewhere else
- * 
+ *
  * @author <a href="mailto:a.aiordachioaie@jacobs-university.de">Andrei Aiordachioaie</a>
- * @author last edited by: $Author: aschmitz $
- * 
- * @version $Revision: 22327 $, $Date: 2010-02-02 09:32:51 +0100 (Tue, 02 Feb 2010) $
  */
 public class RasterChannelSelection implements Copyable<RasterChannelSelection> {
 
-    private Logger LOG = LoggerFactory.getLogger( RasterChannelSelection.class );
+	private Logger LOG = LoggerFactory.getLogger(RasterChannelSelection.class);
 
-    /** Output channel names. */
-    private String redChannel, greenChannel, blueChannel, grayChannel;
+	/** Output channel names. */
+	private String redChannel, greenChannel, blueChannel, grayChannel;
 
-    /** Contrast Enhancements for all channels. */
-    public HashMap<String, ContrastEnhancement> channelContrastEnhancements = new HashMap<String, ContrastEnhancement>();
+	/** Contrast Enhancements for all channels. */
+	public HashMap<String, ContrastEnhancement> channelContrastEnhancements = new HashMap<String, ContrastEnhancement>();
 
-    /**
-     * 
-     * <code>ChannelSelectionMode</code>
-     * 
-     * @author <a href="mailto:a.aiordachioaie@jacobs-university.de">Andrei Aiordachioaie</a>
-     * @author last edited by: $Author: aaiordachioaie$
-     * 
-     * @version $Revision: 22327 $, $Date: 2010-02-02 09:32:51 +0100 (Tue, 02 Feb 2010) $
-     */
-    public static enum ChannelSelectionMode {
-        /***/
-        RGB, /***/
-        GRAY, /***/
-        INVALID, /***/
-        NONE
-    }
+	/**
+	 *
+	 * <code>ChannelSelectionMode</code>
+	 *
+	 * @author <a href="mailto:a.aiordachioaie@jacobs-university.de">Andrei
+	 * Aiordachioaie</a>
+	 */
+	public static enum ChannelSelectionMode {
 
-    /**
-     * @param redChannel
-     * @param greenChannel
-     * @param blueChannel
-     * @param grayChannel
-     * @param enhancements
-     */
-    public RasterChannelSelection( String redChannel, String greenChannel, String blueChannel, String grayChannel,
-                                   HashMap<String, ContrastEnhancement> enhancements ) {
-        this.redChannel = redChannel;
-        this.greenChannel = greenChannel;
-        this.blueChannel = blueChannel;
-        this.grayChannel = grayChannel;
-        this.channelContrastEnhancements = enhancements;
-    }
+		/***/
+		RGB,
+		/***/
+		GRAY,
+		/***/
+		INVALID,
+		/***/
+		NONE
 
-    @Override
-    public RasterChannelSelection copy() {
-        RasterChannelSelection copy = new RasterChannelSelection( redChannel, greenChannel, blueChannel, grayChannel,
-                                                                  channelContrastEnhancements );
-        return copy;
-    }
+	}
 
-    /**
-     * Compute the indexes of selected channel for a particular raster (given its channels)
-     * 
-     * @param bands
-     *            array of information about each band
-     * @return index information for all bands
-     */
-    public int[] evaluate( BandType[] bands ) {
-        return new int[] { findChannelIndex( redChannel, bands ), findChannelIndex( greenChannel, bands ),
-                          findChannelIndex( blueChannel, bands ), findChannelIndex( grayChannel, bands ) };
-    }
+	/**
+	 * @param redChannel
+	 * @param greenChannel
+	 * @param blueChannel
+	 * @param grayChannel
+	 * @param enhancements
+	 */
+	public RasterChannelSelection(String redChannel, String greenChannel, String blueChannel, String grayChannel,
+			HashMap<String, ContrastEnhancement> enhancements) {
+		this.redChannel = redChannel;
+		this.greenChannel = greenChannel;
+		this.blueChannel = blueChannel;
+		this.grayChannel = grayChannel;
+		this.channelContrastEnhancements = enhancements;
+	}
 
-    /**
-     * Search the index of a channel in the list of bands.
-     * 
-     * @param cName
-     *            Channel name or index, as string
-     * @param bands
-     *            array of band information for the current raster
-     * @return index of the channel
-     * @throws RasterRenderingException
-     *             if the channel is not found
-     */
-    private int findChannelIndex( String cName, BandType[] bands ) {
-        int i = -1;
-        if ( cName == null ) {
-            return -1;
-        }
-        try {
-            i = Integer.parseInt( cName ) - 1;
-            if ( i < 0 || i >= bands.length ) {
-                LOG.error( "Cannot evaluate band '{}', raster data has only {} bands", i, bands.length );
-                throw new RuntimeException( "Cannot evaluate band " + i + ", raster data has only " + bands.length
-                                            + " bands. " );
-            }
-            return i;
-        } catch ( NumberFormatException e ) {
-            for ( i = 0; i < bands.length; i++ ) {
-                if ( bands[i].name().equals( cName ) ) {
-                    return i;
-                }
-            }
-        }
+	@Override
+	public RasterChannelSelection copy() {
+		RasterChannelSelection copy = new RasterChannelSelection(redChannel, greenChannel, blueChannel, grayChannel,
+				channelContrastEnhancements);
+		return copy;
+	}
 
-        LOG.error( "Could not evaluate band with name '{}'", cName );
-        throw new RuntimeException( "Could not evaluate band with name '" + cName + "'" );
-    }
+	/**
+	 * Compute the indexes of selected channel for a particular raster (given its
+	 * channels)
+	 * @param bands array of information about each band
+	 * @return index information for all bands
+	 */
+	public int[] evaluate(BandType[] bands) {
+		return new int[] { findChannelIndex(redChannel, bands), findChannelIndex(greenChannel, bands),
+				findChannelIndex(blueChannel, bands), findChannelIndex(grayChannel, bands) };
+	}
 
-    /**
-     * @return the mode of selection
-     */
-    public ChannelSelectionMode getMode() {
-        if ( redChannel != null && greenChannel != null && blueChannel != null && grayChannel == null ) {
-            return ChannelSelectionMode.RGB;
-        }
-        if ( grayChannel != null && redChannel == null && greenChannel == null && blueChannel == null ) {
-            return ChannelSelectionMode.GRAY;
-        }
-        if ( redChannel == null && greenChannel == null && blueChannel == null && grayChannel == null ) {
-            return ChannelSelectionMode.NONE;
-        }
-        return ChannelSelectionMode.INVALID;
-    }
+	/**
+	 * Search the index of a channel in the list of bands.
+	 * @param cName Channel name or index, as string
+	 * @param bands array of band information for the current raster
+	 * @return index of the channel
+	 * @throws RasterRenderingException if the channel is not found
+	 */
+	private int findChannelIndex(String cName, BandType[] bands) {
+		int i = -1;
+		if (cName == null) {
+			return -1;
+		}
+		try {
+			i = Integer.parseInt(cName) - 1;
+			if (i < 0 || i >= bands.length) {
+				LOG.error("Cannot evaluate band '{}', raster data has only {} bands", i, bands.length);
+				throw new RuntimeException(
+						"Cannot evaluate band " + i + ", raster data has only " + bands.length + " bands. ");
+			}
+			return i;
+		}
+		catch (NumberFormatException e) {
+			for (i = 0; i < bands.length; i++) {
+				if (bands[i].name().equals(cName)) {
+					return i;
+				}
+			}
+		}
+
+		LOG.error("Could not evaluate band with name '{}'", cName);
+		throw new RuntimeException("Could not evaluate band with name '" + cName + "'");
+	}
+
+	/**
+	 * @return the mode of selection
+	 */
+	public ChannelSelectionMode getMode() {
+		if (redChannel != null && greenChannel != null && blueChannel != null && grayChannel == null) {
+			return ChannelSelectionMode.RGB;
+		}
+		if (grayChannel != null && redChannel == null && greenChannel == null && blueChannel == null) {
+			return ChannelSelectionMode.GRAY;
+		}
+		if (redChannel == null && greenChannel == null && blueChannel == null && grayChannel == null) {
+			return ChannelSelectionMode.NONE;
+		}
+		return ChannelSelectionMode.INVALID;
+	}
 
 }

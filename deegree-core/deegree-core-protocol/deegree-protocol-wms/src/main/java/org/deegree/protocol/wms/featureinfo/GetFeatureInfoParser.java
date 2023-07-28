@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2015 by:
@@ -63,140 +62,137 @@ import org.deegree.protocol.wms.ops.GetFeatureInfo;
 import org.deegree.protocol.wms.ops.GetMap;
 
 /**
- * Adapter between XML <code>GetFeatureInfo</code> requests and {@link GetFeatureInfo} objects.
+ * Adapter between XML <code>GetFeatureInfo</code> requests and {@link GetFeatureInfo}
+ * objects.
  * <p>
  * Supported WMS versions:
  * <ul>
  * <li>1.3.0</li>
  * </ul>
  * </p>
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
 public class GetFeatureInfoParser extends AbstractWmsParser {
 
-    private static final QName QUERYLAYER_ELEMENT = new QName( OWS_NS, "QueryLayer" );
+	private static final QName QUERYLAYER_ELEMENT = new QName(OWS_NS, "QueryLayer");
 
-    private static final QName I_ELEMENT = new QName( OWS_NS, "I" );
+	private static final QName I_ELEMENT = new QName(OWS_NS, "I");
 
-    private static final QName J_ELEMENT = new QName( OWS_NS, "J" );
+	private static final QName J_ELEMENT = new QName(OWS_NS, "J");
 
-    private static final QName Output_ELEMENT = new QName( OWS_NS, "Output" );
+	private static final QName Output_ELEMENT = new QName(OWS_NS, "Output");
 
-    private static final QName InfoFormat_ELEMENT = new QName( OWS_NS, "InfoFormat" );
+	private static final QName InfoFormat_ELEMENT = new QName(OWS_NS, "InfoFormat");
 
-    private static final QName FeatureCount_ELEMENT = new QName( OWS_NS, "FeatureCount" );
+	private static final QName FeatureCount_ELEMENT = new QName(OWS_NS, "FeatureCount");
 
-    private static final QName Exceptions_ELEMENT = new QName( OWS_NS, "Exceptions" );
+	private static final QName Exceptions_ELEMENT = new QName(OWS_NS, "Exceptions");
 
-    /**
-     * Parses a WMS <code>GetFeatureInfo</code> document into a {@link GetFeatureInfo} object.
-     * 
-     * <p>
-     * Supported WMS versions:
-     * <ul>
-     * <li>1.3.0</li>
-     * </ul>
-     * </p>
-     * 
-     * @return parsed {@link GetFeatureInfo} request, never <code>null</code>
-     * @throws XMLStreamException
-     *             if an error occurs during parsing the xml
-     * @throws InvalidParameterException
-     *             if the request version is not supported
-     * @throws OWSException
-     *             if the CRS is not supported or an error occurred during parsing a value
-     */
-    public GetFeatureInfo parse( XMLStreamReader getMap )
-                            throws OWSException, XMLStreamException {
-        Version version = forwardToStartAndDetermineVersion( getMap );
-        if ( !WMSConstants.VERSION_130.equals( version ) )
-            throw new InvalidParameterException( "Version " + version + " is not supported (yet)." );
-        try {
-            return parse130( getMap );
-        } catch ( UnknownCRSException e ) {
-            throw new OWSException( e.getMessage(), OWSException.NO_APPLICABLE_CODE );
-        } catch ( ParseException e ) {
-            throw new OWSException( e.getMessage(), OWSException.NO_APPLICABLE_CODE );
-        }
-    }
+	/**
+	 * Parses a WMS <code>GetFeatureInfo</code> document into a {@link GetFeatureInfo}
+	 * object.
+	 *
+	 * <p>
+	 * Supported WMS versions:
+	 * <ul>
+	 * <li>1.3.0</li>
+	 * </ul>
+	 * </p>
+	 * @return parsed {@link GetFeatureInfo} request, never <code>null</code>
+	 * @throws XMLStreamException if an error occurs during parsing the xml
+	 * @throws InvalidParameterException if the request version is not supported
+	 * @throws OWSException if the CRS is not supported or an error occurred during
+	 * parsing a value
+	 */
+	public GetFeatureInfo parse(XMLStreamReader getMap) throws OWSException, XMLStreamException {
+		Version version = forwardToStartAndDetermineVersion(getMap);
+		if (!WMSConstants.VERSION_130.equals(version))
+			throw new InvalidParameterException("Version " + version + " is not supported (yet).");
+		try {
+			return parse130(getMap);
+		}
+		catch (UnknownCRSException e) {
+			throw new OWSException(e.getMessage(), OWSException.NO_APPLICABLE_CODE);
+		}
+		catch (ParseException e) {
+			throw new OWSException(e.getMessage(), OWSException.NO_APPLICABLE_CODE);
+		}
+	}
 
-    private GetFeatureInfo parse130( XMLStreamReader in )
-                            throws UnknownCRSException, XMLStreamException, OWSException, ParseException {
-        skipToRequiredElement( in, new QName( SLDNS, "GetMap" ) );
+	private GetFeatureInfo parse130(XMLStreamReader in)
+			throws UnknownCRSException, XMLStreamException, OWSException, ParseException {
+		skipToRequiredElement(in, new QName(SLDNS, "GetMap"));
 
-        GetMapParser getMapParser = new GetMapParser();
-        GetMap parsedGetMap = getMapParser.parse( in );
+		GetMapParser getMapParser = new GetMapParser();
+		GetMap parsedGetMap = getMapParser.parse(in);
 
-        skipToRequiredElement( in, QUERYLAYER_ELEMENT );
-        List<String> queryLayers = parseQueryLayers( in );
+		skipToRequiredElement(in, QUERYLAYER_ELEMENT);
+		List<String> queryLayers = parseQueryLayers(in);
 
-        skipToRequiredElement( in, I_ELEMENT );
-        int i = XMLStreamUtils.getRequiredElementTextAsInteger( in, I_ELEMENT, true );
+		skipToRequiredElement(in, I_ELEMENT);
+		int i = XMLStreamUtils.getRequiredElementTextAsInteger(in, I_ELEMENT, true);
 
-        skipToRequiredElement( in, J_ELEMENT );
-        int j = XMLStreamUtils.getRequiredElementTextAsInteger( in, J_ELEMENT, true );
+		skipToRequiredElement(in, J_ELEMENT);
+		int j = XMLStreamUtils.getRequiredElementTextAsInteger(in, J_ELEMENT, true);
 
-        skipToRequiredElement( in, Output_ELEMENT );
-        Output output = parseOutput( in );
-        String exceptions = parseExceptions( in );
+		skipToRequiredElement(in, Output_ELEMENT);
+		Output output = parseOutput(in);
+		String exceptions = parseExceptions(in);
 
-        return createGetFeatureInfo( parsedGetMap, queryLayers, i, j, output, exceptions );
-    }
+		return createGetFeatureInfo(parsedGetMap, queryLayers, i, j, output, exceptions);
+	}
 
-    private GetFeatureInfo createGetFeatureInfo( GetMap getMap, List<String> queryLayers, int i, int j, Output output,
-                                                 String exceptions )
-                            throws OWSException {
-        HashMap<String, String> parameterMap = new HashMap<String, String>();
-        if ( exceptions != null )
-            parameterMap.put( "EXCEPTIONS", exceptions );
-        return new GetFeatureInfo( getMap.getLayers(), getMap.getStyles(), queryLayers, getMap.getWidth(),
-                                   getMap.getHeight(), i, j, getMap.getBoundingBox(), getMap.getCoordinateSystem(),
-                                   output.featureCount, output.infoFormat, parameterMap, getMap.getDimensions() );
-    }
+	private GetFeatureInfo createGetFeatureInfo(GetMap getMap, List<String> queryLayers, int i, int j, Output output,
+			String exceptions) throws OWSException {
+		HashMap<String, String> parameterMap = new HashMap<String, String>();
+		if (exceptions != null)
+			parameterMap.put("EXCEPTIONS", exceptions);
+		return new GetFeatureInfo(getMap.getLayers(), getMap.getStyles(), queryLayers, getMap.getWidth(),
+				getMap.getHeight(), i, j, getMap.getBoundingBox(), getMap.getCoordinateSystem(), output.featureCount,
+				output.infoFormat, parameterMap, getMap.getDimensions());
+	}
 
-    private List<String> parseQueryLayers( XMLStreamReader in )
-                            throws XMLStreamException {
-        List<String> queryLayers = new ArrayList<String>();
-        while ( QUERYLAYER_ELEMENT.equals( in.getName() ) ) {
-            String queryLayer = getText( in, QUERYLAYER_ELEMENT, null, true );
-            if ( queryLayer != null )
-                queryLayers.add( queryLayer );
-        }
-        return queryLayers;
-    }
+	private List<String> parseQueryLayers(XMLStreamReader in) throws XMLStreamException {
+		List<String> queryLayers = new ArrayList<String>();
+		while (QUERYLAYER_ELEMENT.equals(in.getName())) {
+			String queryLayer = getText(in, QUERYLAYER_ELEMENT, null, true);
+			if (queryLayer != null)
+				queryLayers.add(queryLayer);
+		}
+		return queryLayers;
+	}
 
-    private Output parseOutput( XMLStreamReader in )
-                            throws XMLStreamException {
-        skipToRequiredElement( in, InfoFormat_ELEMENT );
-        String infoFormat = getText( in, InfoFormat_ELEMENT, null, true );
-        int featureCount = 1;
-        if ( FeatureCount_ELEMENT.equals( in.getName() ) ) {
-            featureCount = XMLStreamUtils.getElementTextAsInteger( in );
-            nextElement( in );
-        }
-        skipElement( in );
-        nextElement( in );
-        return new Output( infoFormat, featureCount );
-    }
+	private Output parseOutput(XMLStreamReader in) throws XMLStreamException {
+		skipToRequiredElement(in, InfoFormat_ELEMENT);
+		String infoFormat = getText(in, InfoFormat_ELEMENT, null, true);
+		int featureCount = 1;
+		if (FeatureCount_ELEMENT.equals(in.getName())) {
+			featureCount = XMLStreamUtils.getElementTextAsInteger(in);
+			nextElement(in);
+		}
+		skipElement(in);
+		nextElement(in);
+		return new Output(infoFormat, featureCount);
+	}
 
-    private String parseExceptions( XMLStreamReader in )
-                            throws XMLStreamException {
-        if ( Exceptions_ELEMENT.equals( in.getName() ) )
-            return getText( in, Exceptions_ELEMENT, null, true );
-        return null;
-    }
+	private String parseExceptions(XMLStreamReader in) throws XMLStreamException {
+		if (Exceptions_ELEMENT.equals(in.getName()))
+			return getText(in, Exceptions_ELEMENT, null, true);
+		return null;
+	}
 
-    private class Output {
+	private class Output {
 
-        String infoFormat;
+		String infoFormat;
 
-        int featureCount;
+		int featureCount;
 
-        public Output( String infoFormat, int featureCount ) {
-            this.infoFormat = infoFormat;
-            this.featureCount = featureCount;
-        }
+		public Output(String infoFormat, int featureCount) {
+			this.infoFormat = infoFormat;
+			this.featureCount = featureCount;
+		}
 
-    }
+	}
+
 }

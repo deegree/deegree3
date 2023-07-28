@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -50,71 +49,67 @@ import org.deegree.filter.XPathEvaluator;
 
 /**
  * TODO add documentation here
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class PropertyIsNil extends ComparisonOperator {
 
-    private final static QName XSI_NIL = new QName( CommonNamespaces.XSINS, "nil" );
+	private final static QName XSI_NIL = new QName(CommonNamespaces.XSINS, "nil");
 
-    private final Expression propName;
+	private final Expression propName;
 
-    private final String nilReason;
+	private final String nilReason;
 
-    public PropertyIsNil( Expression propName, String nilReason, MatchAction matchAction ) {
-        super( true, matchAction );
-        this.propName = propName;
-        this.nilReason = nilReason;
-    }
+	public PropertyIsNil(Expression propName, String nilReason, MatchAction matchAction) {
+		super(true, matchAction);
+		this.propName = propName;
+		this.nilReason = nilReason;
+	}
 
-    public Expression getPropertyName() {
-        return propName;
-    }
+	public Expression getPropertyName() {
+		return propName;
+	}
 
-    @Override
-    public SubType getSubType() {
-        return PROPERTY_IS_NIL;
-    }
+	@Override
+	public SubType getSubType() {
+		return PROPERTY_IS_NIL;
+	}
 
-    @Override
-    public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
-                            throws FilterEvaluationException {
+	@Override
+	public <T> boolean evaluate(T obj, XPathEvaluator<T> xpathEvaluator) throws FilterEvaluationException {
 
-        TypedObjectNode[] paramValues = propName.evaluate( obj, xpathEvaluator );
-        if ( paramValues.length == 0 ) {
-            return true;
-        }
-        for ( TypedObjectNode value : paramValues ) {
-            if ( !( value instanceof ElementNode ) ) {
-                return false;
-            }
-            PrimitiveValue nil = ( (ElementNode) value ).getAttributes().get( XSI_NIL );
-            if ( nil != null && nil.getValue() instanceof Boolean ) {
-                if ( (Boolean) nil.getValue() ) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
+		TypedObjectNode[] paramValues = propName.evaluate(obj, xpathEvaluator);
+		if (paramValues.length == 0) {
+			return true;
+		}
+		for (TypedObjectNode value : paramValues) {
+			if (!(value instanceof ElementNode)) {
+				return false;
+			}
+			PrimitiveValue nil = ((ElementNode) value).getAttributes().get(XSI_NIL);
+			if (nil != null && nil.getValue() instanceof Boolean) {
+				if ((Boolean) nil.getValue()) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
-    @Override
-    public String toString( String indent ) {
-        String s = indent + "-PropertyIsNil\n";
-        s += propName.toString( indent + "  " );
-        return s;
-    }
+	@Override
+	public String toString(String indent) {
+		String s = indent + "-PropertyIsNil\n";
+		s += propName.toString(indent + "  ");
+		return s;
+	}
 
-    @Override
-    public Expression[] getParams() {
-        return new Expression[] { propName };
-    }
+	@Override
+	public Expression[] getParams() {
+		return new Expression[] { propName };
+	}
 
-    public String getNilReason() {
-        return nilReason;
-    }
+	public String getNilReason() {
+		return nilReason;
+	}
 
 }

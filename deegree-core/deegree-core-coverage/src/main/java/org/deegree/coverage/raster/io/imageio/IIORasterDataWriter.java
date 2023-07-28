@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -47,61 +46,47 @@ import javax.imageio.ImageIO;
 import org.deegree.coverage.raster.data.RasterData;
 
 /**
- * 
- * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class IIORasterDataWriter {
 
-    /**
-     * Saves a RasterData to file.
-     * 
-     * The format must be supported by JAI (i.e. BMP, JPEG, PNG, PNM, TIFF)
-     * 
-     * @param sourceRaster
-     *            RasterData to save
-     * @param file
-     *            file for output raster image
-     * @param format
-     *            format for output raster
-     * @throws IOException
-     */
-    public static void saveRasterDataToFile( RasterData sourceRaster, File file, String format )
-                            throws IOException {
-        BufferedImage result = rasterDataToImage( sourceRaster );
-        boolean written = ImageIO.write( result, format, file );
-        if ( !written ) {
-            throw new IOException( "Could't write raster with ImageIO for format: " + format );
-        }
-    }
+	/**
+	 * Saves a RasterData to file.
+	 *
+	 * The format must be supported by JAI (i.e. BMP, JPEG, PNG, PNM, TIFF)
+	 * @param sourceRaster RasterData to save
+	 * @param file file for output raster image
+	 * @param format format for output raster
+	 * @throws IOException
+	 */
+	public static void saveRasterDataToFile(RasterData sourceRaster, File file, String format) throws IOException {
+		BufferedImage result = rasterDataToImage(sourceRaster);
+		boolean written = ImageIO.write(result, format, file);
+		if (!written) {
+			throw new IOException("Could't write raster with ImageIO for format: " + format);
+		}
+	}
 
-    /**
-     * Saves a RasterData to stream.
-     * 
-     * The format must be supported by JAI (i.e. BMP, JPEG, PNG, PNM, TIFF)
-     * 
-     * @param sourceRaster
-     *            RasterData to save
-     * @param out
-     *            stream for output raster image
-     * @param format
-     *            format for output raster
-     * @throws IOException
-     */
-    public static void saveRasterDataToStream( RasterData sourceRaster, OutputStream out, String format )
-                            throws IOException {
-        BufferedImage result = rasterDataToImage( sourceRaster );
-        boolean written = ImageIO.write( result, format, out );
-        out.flush();
+	/**
+	 * Saves a RasterData to stream.
+	 *
+	 * The format must be supported by JAI (i.e. BMP, JPEG, PNG, PNM, TIFF)
+	 * @param sourceRaster RasterData to save
+	 * @param out stream for output raster image
+	 * @param format format for output raster
+	 * @throws IOException
+	 */
+	public static void saveRasterDataToStream(RasterData sourceRaster, OutputStream out, String format)
+			throws IOException {
+		BufferedImage result = rasterDataToImage(sourceRaster);
+		boolean written = ImageIO.write(result, format, out);
+		out.flush();
 
-        if ( !written ) {
-            throw new IOException( "could't find ImageIO writer for " + format );
-        }
+		if (!written) {
+			throw new IOException("could't find ImageIO writer for " + format);
+		}
 
-    }
+	}
 
 }

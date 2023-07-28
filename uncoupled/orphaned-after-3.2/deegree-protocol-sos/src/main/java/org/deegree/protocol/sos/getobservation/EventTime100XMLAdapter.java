@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -60,9 +59,7 @@ import org.deegree.observation.time.TimePeriod;
  * This is an xml adapter for SOS 1.0.0 EventTimes.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
  * 
  */
 public class EventTime100XMLAdapter extends XMLAdapter {
@@ -236,9 +233,7 @@ public class EventTime100XMLAdapter extends XMLAdapter {
      * <code>EventTimeXMLParsingException</code> is a hack to get correct OWSException codes.
      * 
      * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-     * @author last edited by: $Author$
      * 
-     * @version $Revision$, $Date$
      */
     public static class EventTimeXMLParsingException extends XMLParsingException {
         private static final long serialVersionUID = -1778773749005062747L;

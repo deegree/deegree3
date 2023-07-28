@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -40,44 +39,40 @@ import org.deegree.commons.tom.ows.LanguageString;
 
 /**
  * {@link InputType} that defines a bounding box input.
- * 
+ *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class BBoxInputType extends InputType {
 
-    private String defaultCrs;
+	private String defaultCrs;
 
-    private String[] supportedCrs;
+	private String[] supportedCrs;
 
-    public BBoxInputType( CodeType id, LanguageString inputTitle, LanguageString inputAbstract, String minOccurs,
-                          String maxOccurs, String defaultCRS, String[] supportedCRSs ) {
-        super( id, inputTitle, inputAbstract, minOccurs, maxOccurs );
-        this.defaultCrs = defaultCRS;
-        this.supportedCrs = supportedCRSs;
-    }
+	public BBoxInputType(CodeType id, LanguageString inputTitle, LanguageString inputAbstract, String minOccurs,
+			String maxOccurs, String defaultCRS, String[] supportedCRSs) {
+		super(id, inputTitle, inputAbstract, minOccurs, maxOccurs);
+		this.defaultCrs = defaultCRS;
+		this.supportedCrs = supportedCRSs;
+	}
 
-    @Override
-    public Type getType() {
-        return Type.BBOX;
-    }
-    
-    /**
-     * 
-     * @return the default CRS used for this respective input.
-     */
-    public String getDefaultCRS() {
-        return defaultCrs;
-    }
+	@Override
+	public Type getType() {
+		return Type.BBOX;
+	}
 
-    /**
-     * 
-     * @return the supported CRSs that can be used for this respective input.
-     */
-    public String[] getSupportedCrs() {
-        return supportedCrs;
-    }
+	/**
+	 * @return the default CRS used for this respective input.
+	 */
+	public String getDefaultCRS() {
+		return defaultCrs;
+	}
+
+	/**
+	 * @return the supported CRSs that can be used for this respective input.
+	 */
+	public String[] getSupportedCrs() {
+		return supportedCrs;
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -60,118 +59,117 @@ import org.deegree.sqldialect.filter.expression.SQLExpression;
 
 /**
  * This class converts the dbf file into a H2 database, to enable proper filtering.
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class DBFIndex {
 
-    private ConnectionProvider connProvider;
+	private ConnectionProvider connProvider;
 
-    /**
-     * @param dbf
-     * @param file
-     * @param envelopes
-     * @throws IOException
-     */
-    public DBFIndex( DBFReader dbf, File file, Pair<ArrayList<Pair<float[], Long>>, Boolean> envelopes,
-                     List<Mapping> mappings ) throws IOException {
-        connProvider = new DbfIndexImporter( dbf, file, envelopes, mappings ).createIndex();
-    }
+	/**
+	 * @param dbf
+	 * @param file
+	 * @param envelopes
+	 * @throws IOException
+	 */
+	public DBFIndex(DBFReader dbf, File file, Pair<ArrayList<Pair<float[], Long>>, Boolean> envelopes,
+			List<Mapping> mappings) throws IOException {
+		connProvider = new DbfIndexImporter(dbf, file, envelopes, mappings).createIndex();
+	}
 
-    /**
-     * @param available
-     *            is modified in place to contain only matches!
-     * @param filter
-     * @param sort
-     * @return null, if there was an error, else a pair of left overs (with possibly null values if everything could be
-     *         mapped)
-     * @throws FilterEvaluationException
-     * @throws UnmappableException
-     */
-    public Pair<Filter, SortProperty[]> query( List<Pair<Integer, Long>> available, Filter filter, SortProperty[] sort )
-                            throws FilterEvaluationException {
+	/**
+	 * @param available is modified in place to contain only matches!
+	 * @param filter
+	 * @param sort
+	 * @return null, if there was an error, else a pair of left overs (with possibly null
+	 * values if everything could be mapped)
+	 * @throws FilterEvaluationException
+	 * @throws UnmappableException
+	 */
+	public Pair<Filter, SortProperty[]> query(List<Pair<Integer, Long>> available, Filter filter, SortProperty[] sort)
+			throws FilterEvaluationException {
 
-        if ( filter == null && ( sort == null || sort.length == 0 ) ) {
-            return new Pair<Filter, SortProperty[]>();
-        }
+		if (filter == null && (sort == null || sort.length == 0)) {
+			return new Pair<Filter, SortProperty[]>();
+		}
 
-        if ( filter == null ) {
-            return null;
-        }
+		if (filter == null) {
+			return null;
+		}
 
-        H2WhereBuilder where = null;
-        SQLExpression generated = null;
-        if ( filter instanceof OperatorFilter ) {
-            where = new H2WhereBuilder( null, (OperatorFilter) filter, sort );
-            generated = where.getWhere();
-            if ( generated == null ) {
-                return null;
-            }
-        }
+		H2WhereBuilder where = null;
+		SQLExpression generated = null;
+		if (filter instanceof OperatorFilter) {
+			where = new H2WhereBuilder(null, (OperatorFilter) filter, sort);
+			generated = where.getWhere();
+			if (generated == null) {
+				return null;
+			}
+		}
 
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet set = null;
-        try {
-            conn = connProvider.getConnection();
-            if ( generated == null ) {
-                StringBuilder sb = new StringBuilder();
-                for ( ResourceId rid : ( (IdFilter) filter ).getSelectedIds() ) {
-                    String id = rid.getRid();
-                    sb.append( id.substring( id.lastIndexOf( "_" ) + 1 ) );
-                    sb.append( "," );
-                }
-                sb.deleteCharAt( sb.length() - 1 );
-                stmt = conn.prepareStatement( "select record_number,file_index from dbf_index where record_number in ("
-                                              + sb + ")" );
-            } else {
-                String clause = generated.getSQL().toString();
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet set = null;
+		try {
+			conn = connProvider.getConnection();
+			if (generated == null) {
+				StringBuilder sb = new StringBuilder();
+				for (ResourceId rid : ((IdFilter) filter).getSelectedIds()) {
+					String id = rid.getRid();
+					sb.append(id.substring(id.lastIndexOf("_") + 1));
+					sb.append(",");
+				}
+				sb.deleteCharAt(sb.length() - 1);
+				stmt = conn.prepareStatement(
+						"select record_number,file_index from dbf_index where record_number in (" + sb + ")");
+			}
+			else {
+				String clause = generated.getSQL().toString();
 
-                stmt = conn.prepareStatement( "select record_number,file_index from dbf_index where " + clause );
+				stmt = conn.prepareStatement("select record_number,file_index from dbf_index where " + clause);
 
-                int i = 1;
-                for ( SQLArgument lit : generated.getArguments() ) {
-                    lit.setArgument( stmt, i++ );
-                    // TODO what about ElementNode?
-                    // Object o = lit.getValue();
-                    // if ( o instanceof PrimitiveValue ) {
-                    // o = ( (PrimitiveValue) o ).getValue();
-                    // }
-                    // if ( o instanceof ElementNode ) {
-                    // stmt.setString( i++, o.toString() );
-                    // } else {
-                    // stmt.setObject( i++, o );
-                    // }
-                }
-            }
+				int i = 1;
+				for (SQLArgument lit : generated.getArguments()) {
+					lit.setArgument(stmt, i++);
+					// TODO what about ElementNode?
+					// Object o = lit.getValue();
+					// if ( o instanceof PrimitiveValue ) {
+					// o = ( (PrimitiveValue) o ).getValue();
+					// }
+					// if ( o instanceof ElementNode ) {
+					// stmt.setString( i++, o.toString() );
+					// } else {
+					// stmt.setObject( i++, o );
+					// }
+				}
+			}
 
-            set = stmt.executeQuery();
+			set = stmt.executeQuery();
 
-            while ( set.next() ) {
-                available.add( new Pair<Integer, Long>( set.getInt( "record_number" ), set.getLong( "file_index" ) ) );
-            }
+			while (set.next()) {
+				available.add(new Pair<Integer, Long>(set.getInt("record_number"), set.getLong("file_index")));
+			}
 
-            if ( where == null ) {
-                return new Pair<Filter, SortProperty[]>( null, sort );
-            }
-            return new Pair<Filter, SortProperty[]>( where.getPostFilter(), where.getPostSortCriteria() );
-        } catch ( SQLException e ) {
-            e.printStackTrace();
-        } finally {
-            JDBCUtils.close( set );
-            JDBCUtils.close( stmt );
-            JDBCUtils.close( conn );
-        }
+			if (where == null) {
+				return new Pair<Filter, SortProperty[]>(null, sort);
+			}
+			return new Pair<Filter, SortProperty[]>(where.getPostFilter(), where.getPostSortCriteria());
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		finally {
+			JDBCUtils.close(set);
+			JDBCUtils.close(stmt);
+			JDBCUtils.close(conn);
+		}
 
-        return null;
+		return null;
 
-    }
+	}
 
-    public void destroy() {
-        connProvider.destroy();
-    }
+	public void destroy() {
+		connProvider.destroy();
+	}
 
 }

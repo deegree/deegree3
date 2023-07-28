@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -58,88 +57,90 @@ import org.deegree.tools.rendering.manager.buildings.importers.CityGMLImporter;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class File3dImporter {
 
-    public static List<GeometryQualityModel> gm;
+	public static List<GeometryQualityModel> gm;
 
-    public static List<WorldRenderableObject> open( Frame parent, String fileName ) {
+	public static List<WorldRenderableObject> open(Frame parent, String fileName) {
 
-        if ( fileName == null || "".equals( fileName.trim() ) ) {
-            throw new InvalidParameterException( "the file name may not be null or empty" );
-        }
-        fileName = fileName.trim();
+		if (fileName == null || "".equals(fileName.trim())) {
+			throw new InvalidParameterException("the file name may not be null or empty");
+		}
+		fileName = fileName.trim();
 
-        CityGMLImporter openFile2;
-        XMLInputFactory fac = XMLInputFactory.newInstance();
-        InputStream in = null;
-        try {
-            XMLStreamReader reader = fac.createXMLStreamReader( in = new FileInputStream( fileName ) );
-            reader.next();
-            String ns = "http://www.opengis.net/citygml/1.0";
-            openFile2 = new CityGMLImporter( null, null, null, reader.getNamespaceURI().equals( ns ) );
-        } catch ( Throwable t ) {
-            openFile2 = new CityGMLImporter( null, null, null, false );
-        } finally {
-            IOUtils.closeQuietly( in );
-        }
+		CityGMLImporter openFile2;
+		XMLInputFactory fac = XMLInputFactory.newInstance();
+		InputStream in = null;
+		try {
+			XMLStreamReader reader = fac.createXMLStreamReader(in = new FileInputStream(fileName));
+			reader.next();
+			String ns = "http://www.opengis.net/citygml/1.0";
+			openFile2 = new CityGMLImporter(null, null, null, reader.getNamespaceURI().equals(ns));
+		}
+		catch (Throwable t) {
+			openFile2 = new CityGMLImporter(null, null, null, false);
+		}
+		finally {
+			IOUtils.closeQuietly(in);
+		}
 
-        final CityGMLImporter openFile = openFile2;
+		final CityGMLImporter openFile = openFile2;
 
-        final JDialog dialog = new JDialog( parent, "Loading", true );
+		final JDialog dialog = new JDialog(parent, "Loading", true);
 
-        dialog.getContentPane().setLayout( new BorderLayout() );
-        dialog.getContentPane().add( new JLabel( "<HTML>Loading file:<br>" + fileName + "<br>Please wait!</HTML>",
-                                                 SwingConstants.CENTER ), BorderLayout.NORTH );
-        final JProgressBar progressBar = new JProgressBar();
-        progressBar.setStringPainted( true );
-        progressBar.setIndeterminate( false );
-        dialog.getContentPane().add( progressBar, BorderLayout.CENTER );
+		dialog.getContentPane().setLayout(new BorderLayout());
+		dialog.getContentPane()
+			.add(new JLabel("<HTML>Loading file:<br>" + fileName + "<br>Please wait!</HTML>", SwingConstants.CENTER),
+					BorderLayout.NORTH);
+		final JProgressBar progressBar = new JProgressBar();
+		progressBar.setStringPainted(true);
+		progressBar.setIndeterminate(false);
+		dialog.getContentPane().add(progressBar, BorderLayout.CENTER);
 
-        dialog.pack();
-        dialog.setDefaultCloseOperation( WindowConstants.DO_NOTHING_ON_CLOSE );
-        dialog.setResizable( false );
-        dialog.setLocationRelativeTo( parent );
+		dialog.pack();
+		dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+		dialog.setResizable(false);
+		dialog.setLocationRelativeTo(parent);
 
-        final Thread openThread = new Thread() {
-            /**
-             * Opens the file in a separate thread.
-             */
-            @Override
-            public void run() {
-                // openFile.openFile( progressBar );
-                if ( dialog.isDisplayable() ) {
-                    dialog.setVisible( false );
-                    dialog.dispose();
-                }
-            }
-        };
-        openThread.start();
+		final Thread openThread = new Thread() {
+			/**
+			 * Opens the file in a separate thread.
+			 */
+			@Override
+			public void run() {
+				// openFile.openFile( progressBar );
+				if (dialog.isDisplayable()) {
+					dialog.setVisible(false);
+					dialog.dispose();
+				}
+			}
+		};
+		openThread.start();
 
-        dialog.setVisible( true );
-        List<WorldRenderableObject> result = null;
-        try {
-            result = openFile.importFromFile( fileName, 6, 2 );
-        } catch ( IOException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        gm = openFile.getQmList();
+		dialog.setVisible(true);
+		List<WorldRenderableObject> result = null;
+		try {
+			result = openFile.importFromFile(fileName, 6, 2);
+		}
+		catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		gm = openFile.getQmList();
 
-        //
-        // if ( result != null ) {
-        // openGLEventListener.addDataObjectToScene( result );
-        // File f = new File( fileName );
-        // setTitle( WIN_TITLE + f.getName() );
-        // } else {
-        // showExceptionDialog( "The file: " + fileName
-        // + " could not be read,\nSee error log for detailed information." );
-        // }
-        return result;
-    }
+		//
+		// if ( result != null ) {
+		// openGLEventListener.addDataObjectToScene( result );
+		// File f = new File( fileName );
+		// setTitle( WIN_TITLE + f.getName() );
+		// } else {
+		// showExceptionDialog( "The file: " + fileName
+		// + " could not be read,\nSee error log for detailed information." );
+		// }
+		return result;
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -58,158 +57,154 @@ import org.deegree.gml.schema.GMLSchemaInfoSet;
  * {@link AppSchema} that allows to add {@link FeatureTypes} during runtime.
  *
  * @author <a href="schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- *
- * @version $Revision$, $Date$
  */
 public class DynamicAppSchema implements AppSchema {
 
-    private final LinkedHashMap<QName, DynamicFeatureType> ftNameToFt = new LinkedHashMap<QName, DynamicFeatureType>();
+	private final LinkedHashMap<QName, DynamicFeatureType> ftNameToFt = new LinkedHashMap<QName, DynamicFeatureType>();
 
-    private final Set<String> namespaces = new HashSet<String>();
+	private final Set<String> namespaces = new HashSet<String>();
 
-    // key: namespace prefix, value: namespace URI
-    private final Map<String, String> prefixToNs = new HashMap<String, String>();
+	// key: namespace prefix, value: namespace URI
+	private final Map<String, String> prefixToNs = new HashMap<String, String>();
 
-    /**
-     * Adds a new {@link DynamicFeatureType} for the given feature type name.
-     *
-     * @param ftName
-     *            feature type name, must not be <code>null</code>
-     * @return new (and added) feature type instance, never <code>null</code>
-     */
-    public DynamicFeatureType addFeatureType( QName ftName ) {
-        DynamicFeatureType ft = new DynamicFeatureType( ftName, this );
-        ftNameToFt.put( ftName, ft );
-        namespaces.add( ftName.getNamespaceURI() );
-        prefixToNs.put( ftName.getPrefix(), ftName.getNamespaceURI() );
-        return ft;
-    }
+	/**
+	 * Adds a new {@link DynamicFeatureType} for the given feature type name.
+	 * @param ftName feature type name, must not be <code>null</code>
+	 * @return new (and added) feature type instance, never <code>null</code>
+	 */
+	public DynamicFeatureType addFeatureType(QName ftName) {
+		DynamicFeatureType ft = new DynamicFeatureType(ftName, this);
+		ftNameToFt.put(ftName, ft);
+		namespaces.add(ftName.getNamespaceURI());
+		prefixToNs.put(ftName.getPrefix(), ftName.getNamespaceURI());
+		return ft;
+	}
 
-    @Override
-    public FeatureType[] getFeatureTypes() {
-        return ftNameToFt.values().toArray( new FeatureType[ftNameToFt.size()] );
-    }
+	@Override
+	public FeatureType[] getFeatureTypes() {
+		return ftNameToFt.values().toArray(new FeatureType[ftNameToFt.size()]);
+	}
 
-    @Override
-    public List<FeatureType> getFeatureTypes( String namespace, boolean includeCollections, boolean includeAbstracts ) {
-        return new ArrayList<FeatureType>( ftNameToFt.values() );
-    }
+	@Override
+	public List<FeatureType> getFeatureTypes(String namespace, boolean includeCollections, boolean includeAbstracts) {
+		return new ArrayList<FeatureType>(ftNameToFt.values());
+	}
 
-    @Override
-    public FeatureType[] getRootFeatureTypes() {
-        return getFeatureTypes();
-    }
+	@Override
+	public FeatureType[] getRootFeatureTypes() {
+		return getFeatureTypes();
+	}
 
-    @Override
-    public DynamicFeatureType getFeatureType( QName ftName ) {
-        return ftNameToFt.get( ftName );
-    }
+	@Override
+	public DynamicFeatureType getFeatureType(QName ftName) {
+		return ftNameToFt.get(ftName);
+	}
 
-    @Override
-    public FeatureType[] getDirectSubtypes( FeatureType ft ) {
-        return new FeatureType[0];
-    }
+	@Override
+	public FeatureType[] getDirectSubtypes(FeatureType ft) {
+		return new FeatureType[0];
+	}
 
-    @Override
-    public FeatureType getParent( FeatureType ft ) {
-        return null;
-    }
+	@Override
+	public FeatureType getParent(FeatureType ft) {
+		return null;
+	}
 
-    @Override
-    public FeatureType[] getSubtypes( FeatureType ft ) {
-        return new FeatureType[0];
-    }
+	@Override
+	public FeatureType[] getSubtypes(FeatureType ft) {
+		return new FeatureType[0];
+	}
 
-    @Override
-    public FeatureType[] getConcreteSubtypes( FeatureType ft ) {
-        return new FeatureType[0];
-    }
+	@Override
+	public FeatureType[] getConcreteSubtypes(FeatureType ft) {
+		return new FeatureType[0];
+	}
 
-    @Override
-    public GMLSchemaInfoSet getGMLSchema() {
-        return null;
-    }
+	@Override
+	public GMLSchemaInfoSet getGMLSchema() {
+		return null;
+	}
 
-    @Override
-    public boolean isSubType( FeatureType ft, FeatureType substitution ) {
-        return ft == null || ft == substitution;
-    }
+	@Override
+	public boolean isSubType(FeatureType ft, FeatureType substitution) {
+		return ft == null || ft == substitution;
+	}
 
-    @Override
-    public List<PropertyType> getNewPropertyDecls( FeatureType ft ) {
-        return ft.getPropertyDeclarations();
-    }
+	@Override
+	public List<PropertyType> getNewPropertyDecls(FeatureType ft) {
+		return ft.getPropertyDeclarations();
+	}
 
-    @Override
-    public Map<FeatureType, FeatureType> getFtToSuperFt() {
-        return emptyMap();
-    }
+	@Override
+	public Map<FeatureType, FeatureType> getFtToSuperFt() {
+		return emptyMap();
+	}
 
-    @Override
-    public Map<String, String> getNamespaceBindings() {
-        return prefixToNs;
-    }
+	@Override
+	public Map<String, String> getNamespaceBindings() {
+		return prefixToNs;
+	}
 
-    @Override
-    public Set<String> getAppNamespaces() {
-        return namespaces;
-    }
+	@Override
+	public Set<String> getAppNamespaces() {
+		return namespaces;
+	}
 
-    @Override
-    public List<String> getNamespacesDependencies( String ns ) {
-        return emptyList();
-    }
+	@Override
+	public List<String> getNamespacesDependencies(String ns) {
+		return emptyList();
+	}
 
-    @Override
-    public List<GMLObjectType> getGeometryTypes() {
-        return Collections.emptyList();
-    }
+	@Override
+	public List<GMLObjectType> getGeometryTypes() {
+		return Collections.emptyList();
+	}
 
-    @Override
-    public GMLObjectType getGeometryType( QName name ) {
-        return null;
-    }
+	@Override
+	public GMLObjectType getGeometryType(QName name) {
+		return null;
+	}
 
-    @Override
-    public List<GMLObjectType> getSubstitutions( QName name ) {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	@Override
+	public List<GMLObjectType> getSubstitutions(QName name) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    @Override
-    public List<GMLObjectType> getDirectSubstitutions( QName name ) {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	@Override
+	public List<GMLObjectType> getDirectSubstitutions(QName name) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    @Override
-    public AppSchemaGeometryHierarchy getGeometryHierarchy() {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	@Override
+	public AppSchemaGeometryHierarchy getGeometryHierarchy() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    @Override
-    public Map<GMLObjectType, GMLObjectType> getGeometryToSuperType() {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	@Override
+	public Map<GMLObjectType, GMLObjectType> getGeometryToSuperType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    @Override
-    public GMLObjectType getGmlObjectType( QName name ) {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	@Override
+	public GMLObjectType getGmlObjectType(QName name) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    @Override
-    public List<GMLObjectType> getGmlObjectTypes( GMLObjectCategory timeObject ) {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	@Override
+	public List<GMLObjectType> getGmlObjectTypes(GMLObjectCategory timeObject) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    @Override
-    public List<GMLObjectType> getGmlObjectTypes() {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	@Override
+	public List<GMLObjectType> getGmlObjectTypes() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

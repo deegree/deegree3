@@ -47,42 +47,44 @@ import org.deegree.workspace.standard.DefaultResourceLocation;
 
 /**
  * This class is responsible for building SLD style stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class SldStyleStoreBuilder implements ResourceBuilder<StyleStore> {
 
-    private ResourceMetadata<StyleStore> metadata;
+	private ResourceMetadata<StyleStore> metadata;
 
-    public SldStyleStoreBuilder( ResourceMetadata<StyleStore> metadata ) {
-        this.metadata = metadata;
-    }
+	public SldStyleStoreBuilder(ResourceMetadata<StyleStore> metadata) {
+		this.metadata = metadata;
+	}
 
-    @Override
-    public StyleStore build() {
-        InputStream in = null;
-        XMLStreamReader reader = null;
-        try {
-            in = metadata.getLocation().getAsStream();
-            DefaultResourceLocation<StyleStore> loc = (DefaultResourceLocation<StyleStore>) metadata.getLocation();
-            XMLInputFactory fac = XMLInputFactory.newInstance();
-            reader = fac.createXMLStreamReader( loc.getAsFile().toString(), in );
-            Map<String, LinkedList<Style>> map = getStyles( reader );
-            return new SLDStyleStore( map, metadata );
-        } catch ( Exception e ) {
-            throw new ResourceInitException( "Could not read SLD style config.", e );
-        } finally {
-            try {
-                if ( reader != null ) {
-                    reader.close();
-                }
-            } catch ( XMLStreamException e ) {
-                // eat it
-            }
-            closeQuietly( in );
-        }
-    }
+	@Override
+	public StyleStore build() {
+		InputStream in = null;
+		XMLStreamReader reader = null;
+		try {
+			in = metadata.getLocation().getAsStream();
+			DefaultResourceLocation<StyleStore> loc = (DefaultResourceLocation<StyleStore>) metadata.getLocation();
+			XMLInputFactory fac = XMLInputFactory.newInstance();
+			reader = fac.createXMLStreamReader(loc.getAsFile().toString(), in);
+			Map<String, LinkedList<Style>> map = getStyles(reader);
+			return new SLDStyleStore(map, metadata);
+		}
+		catch (Exception e) {
+			throw new ResourceInitException("Could not read SLD style config.", e);
+		}
+		finally {
+			try {
+				if (reader != null) {
+					reader.close();
+				}
+			}
+			catch (XMLStreamException e) {
+				// eat it
+			}
+			closeQuietly(in);
+		}
+	}
 
 }

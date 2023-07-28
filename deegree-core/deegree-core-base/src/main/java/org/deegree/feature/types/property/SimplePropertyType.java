@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -46,55 +45,51 @@ import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 
 /**
- * A {@link PropertyType} that defines a property with a primitive value, i.e. a value that can be represented as a
- * single {@link String}.
- * 
+ * A {@link PropertyType} that defines a property with a primitive value, i.e. a value
+ * that can be represented as a single {@link String}.
+ *
  * @see BaseType
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * 
- * @version $Revision: $, $Date: $
  */
 public class SimplePropertyType extends AbstractPropertyType {
 
-    private final PrimitiveType pt;
+	private final PrimitiveType pt;
 
-    private String codeList;
+	private String codeList;
 
-    public SimplePropertyType( QName name, int minOccurs, int maxOccurs, BaseType type, XSElementDeclaration elDecl,
-                               List<PropertyType> substitutions ) {
-        super( name, minOccurs, maxOccurs, elDecl, substitutions );
-        this.pt = new PrimitiveType( type );
-    }
+	public SimplePropertyType(QName name, int minOccurs, int maxOccurs, BaseType type, XSElementDeclaration elDecl,
+			List<PropertyType> substitutions) {
+		super(name, minOccurs, maxOccurs, elDecl, substitutions);
+		this.pt = new PrimitiveType(type);
+	}
 
-    public SimplePropertyType( QName name, int minOccurs, int maxOccurs, BaseType type, XSElementDeclaration elDecl,
-                               List<PropertyType> substitutions, XSSimpleTypeDefinition xsdType ) {
-        super( name, minOccurs, maxOccurs, elDecl, substitutions );
-        this.pt = new PrimitiveType( xsdType );
-    }
+	public SimplePropertyType(QName name, int minOccurs, int maxOccurs, BaseType type, XSElementDeclaration elDecl,
+			List<PropertyType> substitutions, XSSimpleTypeDefinition xsdType) {
+		super(name, minOccurs, maxOccurs, elDecl, substitutions);
+		this.pt = new PrimitiveType(xsdType);
+	}
 
-    public void setCodeList( String codeList ) {
-        this.codeList = codeList;
-    }
+	public void setCodeList(String codeList) {
+		this.codeList = codeList;
+	}
 
-    public String getCodeList() {
-        return codeList;
-    }
+	public String getCodeList() {
+		return codeList;
+	}
 
-    /**
-     * Returns the primitive type.
-     * 
-     * @return the primitive type, never <code>null</code>
-     */
-    public PrimitiveType getPrimitiveType() {
-        return pt;
-    }
+	/**
+	 * Returns the primitive type.
+	 * @return the primitive type, never <code>null</code>
+	 */
+	public PrimitiveType getPrimitiveType() {
+		return pt;
+	}
 
-    @Override
-    public String toString() {
-        String s = "- simple property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs
-                   + ", type: " + pt;
-        return s;
-    }
+	@Override
+	public String toString() {
+		String s = "- simple property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs
+				+ ", type: " + pt;
+		return s;
+	}
+
 }

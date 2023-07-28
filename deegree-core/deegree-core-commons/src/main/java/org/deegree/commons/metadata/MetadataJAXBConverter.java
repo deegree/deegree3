@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aschmitz@wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -47,47 +46,43 @@ import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.commons.utils.Pair;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 public class MetadataJAXBConverter {
 
-    public static final Mapper<LanguageString, LanguageStringType> LANG_LANG_MAPPER = new Mapper<LanguageString, LanguageStringType>() {
-        @Override
-        public LanguageString apply( LanguageStringType u ) {
-            return new LanguageString( u.getValue(), u.getLang() );
-        }
-    };
+	public static final Mapper<LanguageString, LanguageStringType> LANG_LANG_MAPPER = new Mapper<LanguageString, LanguageStringType>() {
+		@Override
+		public LanguageString apply(LanguageStringType u) {
+			return new LanguageString(u.getValue(), u.getLang());
+		}
+	};
 
-    /**
-     * Maps a string to language string.
-     */
-    public static final Mapper<LanguageString, String> LANG_MAPPER = new Mapper<LanguageString, String>() {
-        @Override
-        public LanguageString apply( String u ) {
-            return new LanguageString( u, null );
-        }
-    };
+	/**
+	 * Maps a string to language string.
+	 */
+	public static final Mapper<LanguageString, String> LANG_MAPPER = new Mapper<LanguageString, String>() {
+		@Override
+		public LanguageString apply(String u) {
+			return new LanguageString(u, null);
+		}
+	};
 
-    public static final Mapper<CodeType, org.deegree.commons.metadata.description.jaxb.CodeType> CODETYPE_MAPPER = new Mapper<CodeType, org.deegree.commons.metadata.description.jaxb.CodeType>() {
-        @Override
-        public CodeType apply( org.deegree.commons.metadata.description.jaxb.CodeType u ) {
-            if ( u == null ) {
-                return null;
-            }
-            return new CodeType( u.getValue(), u.getCodeSpace() );
-        }
-    };
+	public static final Mapper<CodeType, org.deegree.commons.metadata.description.jaxb.CodeType> CODETYPE_MAPPER = new Mapper<CodeType, org.deegree.commons.metadata.description.jaxb.CodeType>() {
+		@Override
+		public CodeType apply(org.deegree.commons.metadata.description.jaxb.CodeType u) {
+			if (u == null) {
+				return null;
+			}
+			return new CodeType(u.getValue(), u.getCodeSpace());
+		}
+	};
 
-    public static final Mapper<Pair<List<LanguageString>, CodeType>, KeywordsType> KW_MAPPER = new Mapper<Pair<List<LanguageString>, CodeType>, KeywordsType>() {
-        @Override
-        public Pair<List<LanguageString>, CodeType> apply( KeywordsType u ) {
-            return new Pair<List<LanguageString>, CodeType>( map( u.getKeyword(), LANG_LANG_MAPPER ),
-                                                             CODETYPE_MAPPER.apply( u.getType() ) );
-        }
-    };
+	public static final Mapper<Pair<List<LanguageString>, CodeType>, KeywordsType> KW_MAPPER = new Mapper<Pair<List<LanguageString>, CodeType>, KeywordsType>() {
+		@Override
+		public Pair<List<LanguageString>, CodeType> apply(KeywordsType u) {
+			return new Pair<List<LanguageString>, CodeType>(map(u.getKeyword(), LANG_LANG_MAPPER),
+					CODETYPE_MAPPER.apply(u.getType()));
+		}
+	};
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -41,51 +40,46 @@ import org.deegree.protocol.wps.client.param.ComplexFormat;
 
 /**
  * {@link InputType} that defines a complex input (XML or binary).
- * 
+ *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class ComplexInputType extends InputType {
 
-    // private int maximumFileSize;
+	// private int maximumFileSize;
 
-    private ComplexFormat defaultFormat;
+	private ComplexFormat defaultFormat;
 
-    private ComplexFormat[] supportedFormats;
+	private ComplexFormat[] supportedFormats;
 
-    public ComplexInputType( CodeType id, LanguageString inputTitle, LanguageString inputAbstract, String minOccurs,
-                             String maxOccurs, ComplexFormat defaultFormat, ComplexFormat[] supportedFormats ) {
-        super( id, inputTitle, inputAbstract, minOccurs, maxOccurs );
-        this.defaultFormat = defaultFormat;
-        this.supportedFormats = supportedFormats;
-    }
+	public ComplexInputType(CodeType id, LanguageString inputTitle, LanguageString inputAbstract, String minOccurs,
+			String maxOccurs, ComplexFormat defaultFormat, ComplexFormat[] supportedFormats) {
+		super(id, inputTitle, inputAbstract, minOccurs, maxOccurs);
+		this.defaultFormat = defaultFormat;
+		this.supportedFormats = supportedFormats;
+	}
 
-    @Override
-    public Type getType() {
-        return Type.COMPLEX;
-    }
+	@Override
+	public Type getType() {
+		return Type.COMPLEX;
+	}
 
-    /**
-     * Returns a {@link ComplexFormat} instance (that encapsulates encoding, mime type and schema) as default format for
-     * this input.
-     * 
-     * @return the default format used for this input.
-     */
-    public ComplexFormat getDefaultFormat() {
-        return defaultFormat;
-    }
+	/**
+	 * Returns a {@link ComplexFormat} instance (that encapsulates encoding, mime type and
+	 * schema) as default format for this input.
+	 * @return the default format used for this input.
+	 */
+	public ComplexFormat getDefaultFormat() {
+		return defaultFormat;
+	}
 
-    /**
-     * Returns an array of {@link ComplexFormat} instances (that encapsulates encoding, mime type and schema) as
-     * supported formats for this input.
-     * 
-     * @return the supported format used for this input.
-     */
-    public ComplexFormat[] getSupportedFormats() {
-        return supportedFormats;
-    }
+	/**
+	 * Returns an array of {@link ComplexFormat} instances (that encapsulates encoding,
+	 * mime type and schema) as supported formats for this input.
+	 * @return the supported format used for this input.
+	 */
+	public ComplexFormat[] getSupportedFormats() {
+		return supportedFormats;
+	}
 
 }

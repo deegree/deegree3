@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -44,50 +43,49 @@ import java.util.Set;
 import org.deegree.protocol.wfs.transaction.TransactionAction;
 
 /**
- * Keeps track of the feature ids created or modified by a single type of {@link TransactionAction}.
- * 
+ * Keeps track of the feature ids created or modified by a single type of
+ * {@link TransactionAction}.
+ *
  * @see TransactionHandler
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 class ActionResults {
 
-    private final Map<String, List<String>> handleToFids = new LinkedHashMap<String, List<String>>();
+	private final Map<String, List<String>> handleToFids = new LinkedHashMap<String, List<String>>();
 
-    private final List<String> fidsWithoutHandle = new LinkedList<String>();
+	private final List<String> fidsWithoutHandle = new LinkedList<String>();
 
-    private int count;
+	private int count;
 
-    void add( String fid, String handle ) {
-        if ( handle == null ) {
-            fidsWithoutHandle.add( fid );
-        } else {
-            List<String> fids = handleToFids.get( handle );
-            if ( fids == null ) {
-                fids = new LinkedList<String>();
-                handleToFids.put( handle, fids );
-            }
-            fids.add( fid );
-        }
-        count++;
-    }
+	void add(String fid, String handle) {
+		if (handle == null) {
+			fidsWithoutHandle.add(fid);
+		}
+		else {
+			List<String> fids = handleToFids.get(handle);
+			if (fids == null) {
+				fids = new LinkedList<String>();
+				handleToFids.put(handle, fids);
+			}
+			fids.add(fid);
+		}
+		count++;
+	}
 
-    int getTotal() {
-        return count;
-    }
+	int getTotal() {
+		return count;
+	}
 
-    Set<String> getHandles() {
-        return handleToFids.keySet();
-    }
+	Set<String> getHandles() {
+		return handleToFids.keySet();
+	}
 
-    List<String> getFids( String handle ) {
-        return handleToFids.get( handle );
-    }
+	List<String> getFids(String handle) {
+		return handleToFids.get(handle);
+	}
 
-    List<String> getFidsWithoutHandle() {
-        return fidsWithoutHandle;
-    }
+	List<String> getFidsWithoutHandle() {
+		return fidsWithoutHandle;
+	}
+
 }

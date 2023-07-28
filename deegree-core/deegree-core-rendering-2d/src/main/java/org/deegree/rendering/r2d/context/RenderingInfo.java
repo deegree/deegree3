@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -45,144 +44,138 @@ import org.deegree.rendering.r2d.ImageSerializer;
 import org.deegree.rendering.r2d.RenderHelper;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class RenderingInfo {
 
-    private String format;
+	private String format;
 
-    private int width, height;
+	private int width, height;
 
-    private boolean transparent;
+	private boolean transparent;
 
-    private Color bgcolor;
+	private Color bgcolor;
 
-    private Envelope envelope;
+	private Envelope envelope;
 
-    private double pixelSize;
+	private double pixelSize;
 
-    // for GetFeatureInfo
-    private int x, y, featureCount;
+	// for GetFeatureInfo
+	private int x, y, featureCount;
 
-    private Map<String, String> parameters;
-    
-    private ImageSerializer serializer;
+	private Map<String, String> parameters;
 
-    public RenderingInfo( String format, int width, int height, boolean transparent, Color bgcolor, Envelope envelope,
-                          double pixelSize, Map<String, String> parameters ) {
-        this(format, width, height, transparent, bgcolor, envelope, pixelSize, parameters, null);
-    }
-    
-    public RenderingInfo( String format, int width, int height, boolean transparent, Color bgcolor, Envelope envelope,
-                          double pixelSize, Map<String, String> parameters, ImageSerializer serializer ) {
-        this.format = format;
-        this.width = width;
-        this.height = height;
-        this.transparent = transparent;
-        this.bgcolor = bgcolor;
-        this.envelope = envelope;
-        this.pixelSize = pixelSize;
-        this.parameters = parameters;
-        this.serializer = serializer;
-    }
+	private ImageSerializer serializer;
 
-    public void setFormat( String format ) {
-        this.format = format;
-    }
+	public RenderingInfo(String format, int width, int height, boolean transparent, Color bgcolor, Envelope envelope,
+			double pixelSize, Map<String, String> parameters) {
+		this(format, width, height, transparent, bgcolor, envelope, pixelSize, parameters, null);
+	}
 
-    public String getFormat() {
-        return format;
-    }
+	public RenderingInfo(String format, int width, int height, boolean transparent, Color bgcolor, Envelope envelope,
+			double pixelSize, Map<String, String> parameters, ImageSerializer serializer) {
+		this.format = format;
+		this.width = width;
+		this.height = height;
+		this.transparent = transparent;
+		this.bgcolor = bgcolor;
+		this.envelope = envelope;
+		this.pixelSize = pixelSize;
+		this.parameters = parameters;
+		this.serializer = serializer;
+	}
 
-    public int getWidth() {
-        return width;
-    }
+	public void setFormat(String format) {
+		this.format = format;
+	}
 
-    public int getHeight() {
-        return height;
-    }
+	public String getFormat() {
+		return format;
+	}
 
-    public boolean getTransparent() {
-        return transparent;
-    }
+	public int getWidth() {
+		return width;
+	}
 
-    public Color getBgColor() {
-        return bgcolor;
-    }
+	public int getHeight() {
+		return height;
+	}
 
-    public Envelope getEnvelope() {
-        return envelope;
-    }
+	public boolean getTransparent() {
+		return transparent;
+	}
 
-    public double getPixelSize() {
-        return pixelSize;
-    }
+	public Color getBgColor() {
+		return bgcolor;
+	}
 
-    /**
-     * @return the x
-     */
-    public int getX() {
-        return x;
-    }
+	public Envelope getEnvelope() {
+		return envelope;
+	}
 
-    /**
-     * @param x
-     *            the x to set
-     */
-    public void setX( int x ) {
-        this.x = x;
-    }
+	public double getPixelSize() {
+		return pixelSize;
+	}
 
-    /**
-     * @return the y
-     */
-    public int getY() {
-        return y;
-    }
+	/**
+	 * @return the x
+	 */
+	public int getX() {
+		return x;
+	}
 
-    /**
-     * @param y
-     *            the y to set
-     */
-    public void setY( int y ) {
-        this.y = y;
-    }
+	/**
+	 * @param x the x to set
+	 */
+	public void setX(int x) {
+		this.x = x;
+	}
 
-    /**
-     * @return the featureCount
-     */
-    public int getFeatureCount() {
-        return featureCount;
-    }
+	/**
+	 * @return the y
+	 */
+	public int getY() {
+		return y;
+	}
 
-    /**
-     * @param featureCount
-     *            the featureCount to set
-     */
-    public void setFeatureCount( int featureCount ) {
-        this.featureCount = featureCount;
-    }
+	/**
+	 * @param y the y to set
+	 */
+	public void setY(int y) {
+		this.y = y;
+	}
 
-    /**
-     * @return the original request parameters, if set
-     */
-    public Map<String, String> getParameterMap() {
-        return parameters;
-    }
+	/**
+	 * @return the featureCount
+	 */
+	public int getFeatureCount() {
+		return featureCount;
+	}
 
-    public double getScale() {
-        return calcScaleWMS130( width, height, envelope, envelope.getCoordinateSystem(), pixelSize );
-    }
+	/**
+	 * @param featureCount the featureCount to set
+	 */
+	public void setFeatureCount(int featureCount) {
+		this.featureCount = featureCount;
+	}
 
-    public double getResolution() {
-        return RenderHelper.calcResolution( envelope, width, height );
-    }
-    
-    public ImageSerializer getSerializer() {
-        return serializer;
-    }
+	/**
+	 * @return the original request parameters, if set
+	 */
+	public Map<String, String> getParameterMap() {
+		return parameters;
+	}
+
+	public double getScale() {
+		return calcScaleWMS130(width, height, envelope, envelope.getCoordinateSystem(), pixelSize);
+	}
+
+	public double getResolution() {
+		return RenderHelper.calcResolution(envelope, width, height);
+	}
+
+	public ImageSerializer getSerializer() {
+		return serializer;
+	}
+
 }

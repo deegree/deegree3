@@ -61,92 +61,95 @@ import org.deegree.workspace.Workspace;
 
 /**
  * This class is responsible for building GDAL layer stores.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * 
  * @since 3.4
  */
 class GdalLayerStoreBuilder implements ResourceBuilder<LayerStore> {
 
-    private final GDALLayers cfg;
+	private final GDALLayers cfg;
 
-    private final Workspace workspace;
+	private final Workspace workspace;
 
-    private final ResourceMetadata<LayerStore> metadata;
+	private final ResourceMetadata<LayerStore> metadata;
 
-    private final GdalSettings gdalSettings;
+	private final GdalSettings gdalSettings;
 
-    GdalLayerStoreBuilder( GDALLayers cfg, Workspace workspace, ResourceMetadata<LayerStore> metadata ) {
-        this.cfg = cfg;
-        this.workspace = workspace;
-        this.metadata = metadata;
-        gdalSettings = workspace.getInitializable( GdalSettings.class );
-    }
+	GdalLayerStoreBuilder(GDALLayers cfg, Workspace workspace, ResourceMetadata<LayerStore> metadata) {
+		this.cfg = cfg;
+		this.workspace = workspace;
+		this.metadata = metadata;
+		gdalSettings = workspace.getInitializable(GdalSettings.class);
+	}
 
-    @Override
-    public LayerStore build() {
-        Map<String, Layer> layerNameToLayer = new HashMap<String, Layer>();
-        for ( GDALLayerType gdalLayerCfg : cfg.getGDALLayer() ) {
+	@Override
+	public LayerStore build() {
+		Map<String, Layer> layerNameToLayer = new HashMap<String, Layer>();
+		for (GDALLayerType gdalLayerCfg : cfg.getGDALLayer()) {
 
-            List<ICRS> crsList = fromJaxb( gdalLayerCfg.getCRS() );
-            ICRS crs = crsList.isEmpty() ? null : crsList.get( 0 );
-            List<File> datasets = buildDatasets( gdalLayerCfg.getFile(), crs );
-            LayerMetadata md = buildLayerMetadata( gdalLayerCfg, datasets );
-            Pair<Map<String, Style>, Map<String, Style>> p = parseStyles( workspace, gdalLayerCfg.getName(),
-                                                                          gdalLayerCfg.getStyleRef() );
-            md.setStyles( p.first );
-            md.setLegendStyles( p.second );
-            Layer layer = new GdalLayer( md, datasets, gdalSettings );
-            layerNameToLayer.put( gdalLayerCfg.getName(), layer );
-        }
-        return new MultipleLayerStore( layerNameToLayer, metadata );
-    }
+			List<ICRS> crsList = fromJaxb(gdalLayerCfg.getCRS());
+			ICRS crs = crsList.isEmpty() ? null : crsList.get(0);
+			List<File> datasets = buildDatasets(gdalLayerCfg.getFile(), crs);
+			LayerMetadata md = buildLayerMetadata(gdalLayerCfg, datasets);
+			Pair<Map<String, Style>, Map<String, Style>> p = parseStyles(workspace, gdalLayerCfg.getName(),
+					gdalLayerCfg.getStyleRef());
+			md.setStyles(p.first);
+			md.setLegendStyles(p.second);
+			Layer layer = new GdalLayer(md, datasets, gdalSettings);
+			layerNameToLayer.put(gdalLayerCfg.getName(), layer);
+		}
+		return new MultipleLayerStore(layerNameToLayer, metadata);
+	}
 
-    private List<File> buildDatasets( List<String> files, ICRS crs ) {
-        List<File> datasets = new ArrayList<File>( files.size() );
-        for ( String path : files ) {
-            try {
-                File file = metadata.getLocation().resolveToFile( path ).getCanonicalFile();
-                gdalSettings.getDatasetPool().addDataset( file, crs );
-                datasets.add( file );
-            } catch ( IOException e ) {
-                throw new IllegalArgumentException( e.getMessage(), e );
-            }
-        }
-        return datasets;
-    }
+	private List<File> buildDatasets(List<String> files, ICRS crs) {
+		List<File> datasets = new ArrayList<File>(files.size());
+		for (String path : files) {
+			try {
+				File file = metadata.getLocation().resolveToFile(path).getCanonicalFile();
+				gdalSettings.getDatasetPool().addDataset(file, crs);
+				datasets.add(file);
+			}
+			catch (IOException e) {
+				throw new IllegalArgumentException(e.getMessage(), e);
+			}
+		}
+		return datasets;
+	}
 
-    private LayerMetadata buildLayerMetadata( GDALLayerType lay, List<File> datasets ) {
-        SpatialMetadata smd = fromJaxb( lay.getEnvelope(), lay.getCRS() );
-        Description desc = fromJaxb( lay.getTitle(), lay.getAbstract(), lay.getKeywords() );
-        LayerMetadata md = new LayerMetadata( lay.getName(), desc, smd );
-        md.setDimensions( parseDimensions( md.getName(), lay.getDimension() ) );
-        md.setMapOptions( ConfigUtils.parseLayerOptions( lay.getLayerOptions() ) );
-        md.setMetadataId( lay.getMetadataSetId() );
-        if ( smd.getEnvelope() == null ) {
-            Envelope env = null;
-            try {
-                for ( File file : datasets ) {
-                    if ( env == null ) {
-                        env = gdalSettings.getDatasetPool().getEnvelope( file );
-                    } else {
-                        env = env.merge( gdalSettings.getDatasetPool().getEnvelope( file ) );
-                    }
-                }
-            } catch ( Exception e ) {
-                e.printStackTrace();
-            }
-            smd.setEnvelope( env );
-        }
-        if ( smd.getCoordinateSystems() == null || smd.getCoordinateSystems().isEmpty() ) {
-            List<ICRS> crs = new ArrayList<ICRS>();
-            crs.add( smd.getEnvelope().getCoordinateSystem() );
-            smd.setCoordinateSystems( crs );
-        }
-        ScaleDenominatorsType denoms = lay.getScaleDenominators();
-        if ( denoms != null ) {
-            md.setScaleDenominators( new DoublePair( denoms.getMin(), denoms.getMax() ) );
-        }
-        return md;
-    }
+	private LayerMetadata buildLayerMetadata(GDALLayerType lay, List<File> datasets) {
+		SpatialMetadata smd = fromJaxb(lay.getEnvelope(), lay.getCRS());
+		Description desc = fromJaxb(lay.getTitle(), lay.getAbstract(), lay.getKeywords());
+		LayerMetadata md = new LayerMetadata(lay.getName(), desc, smd);
+		md.setDimensions(parseDimensions(md.getName(), lay.getDimension()));
+		md.setMapOptions(ConfigUtils.parseLayerOptions(lay.getLayerOptions()));
+		md.setMetadataId(lay.getMetadataSetId());
+		if (smd.getEnvelope() == null) {
+			Envelope env = null;
+			try {
+				for (File file : datasets) {
+					if (env == null) {
+						env = gdalSettings.getDatasetPool().getEnvelope(file);
+					}
+					else {
+						env = env.merge(gdalSettings.getDatasetPool().getEnvelope(file));
+					}
+				}
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+			smd.setEnvelope(env);
+		}
+		if (smd.getCoordinateSystems() == null || smd.getCoordinateSystems().isEmpty()) {
+			List<ICRS> crs = new ArrayList<ICRS>();
+			crs.add(smd.getEnvelope().getCoordinateSystem());
+			smd.setCoordinateSystems(crs);
+		}
+		ScaleDenominatorsType denoms = lay.getScaleDenominators();
+		if (denoms != null) {
+			md.setScaleDenominators(new DoublePair(denoms.getMin(), denoms.getMax()));
+		}
+		return md;
+	}
+
 }

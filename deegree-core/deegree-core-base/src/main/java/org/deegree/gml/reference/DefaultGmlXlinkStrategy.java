@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -42,58 +41,59 @@ import org.deegree.commons.tom.gml.GMLReference;
 
 public class DefaultGmlXlinkStrategy implements GmlXlinkStrategy {
 
-    private final String remoteXlinkTemplate;
+	private final String remoteXlinkTemplate;
 
-    private final GmlXlinkOptions resolveOptions;
+	private final GmlXlinkOptions resolveOptions;
 
-    private final Set<String> exportedIds = new HashSet<String>();
+	private final Set<String> exportedIds = new HashSet<String>();
 
-    public DefaultGmlXlinkStrategy() {
-        this.remoteXlinkTemplate = "#{}";
-        this.resolveOptions = new GmlXlinkOptions();
-    }
+	public DefaultGmlXlinkStrategy() {
+		this.remoteXlinkTemplate = "#{}";
+		this.resolveOptions = new GmlXlinkOptions();
+	}
 
-    /**
-     * 
-     * @param remoteXlinkTemplate
-     *            template used to create references to document-remote objects, e.g.
-     *            <code>http://localhost:8080/d3_wfs_lab/services?SERVICE=WFS&REQUEST=GetGmlObject&VERSION=1.1.0&TRAVERSEXLINKDEPTH=1&GMLOBJECTID={}</code>
-     *            , the substring <code>{}</code> is replaced by the object id, must not be <code>null</code>
-     * @param resolveOptions
-     */
-    public DefaultGmlXlinkStrategy( String remoteXlinkTemplate, GmlXlinkOptions resolveOptions ) {
-        this.remoteXlinkTemplate = remoteXlinkTemplate;
-        this.resolveOptions = resolveOptions;
-    }
+	/**
+	 * @param remoteXlinkTemplate template used to create references to document-remote
+	 * objects, e.g.
+	 * <code>http://localhost:8080/d3_wfs_lab/services?SERVICE=WFS&REQUEST=GetGmlObject&VERSION=1.1.0&TRAVERSEXLINKDEPTH=1&GMLOBJECTID={}</code>
+	 * , the substring <code>{}</code> is replaced by the object id, must not be
+	 * <code>null</code>
+	 * @param resolveOptions
+	 */
+	public DefaultGmlXlinkStrategy(String remoteXlinkTemplate, GmlXlinkOptions resolveOptions) {
+		this.remoteXlinkTemplate = remoteXlinkTemplate;
+		this.resolveOptions = resolveOptions;
+	}
 
-    @Override
-    public String requireObject( GMLReference<?> ref, GmlXlinkOptions resolveState ) {
-        if ( ref.isLocal() ) {
-            return remoteXlinkTemplate.replace( "{}", ref.getId() );
-        }
-        return ref.getURI();
-    }
+	@Override
+	public String requireObject(GMLReference<?> ref, GmlXlinkOptions resolveState) {
+		if (ref.isLocal()) {
+			return remoteXlinkTemplate.replace("{}", ref.getId());
+		}
+		return ref.getURI();
+	}
 
-    @Override
-    public String handleReference( GMLReference<?> ref ) {
-        if ( ref.isLocal() ) {
-            return remoteXlinkTemplate.replace( "{}", ref.getId() );
-        }
-        return ref.getURI();
-    }
+	@Override
+	public String handleReference(GMLReference<?> ref) {
+		if (ref.isLocal()) {
+			return remoteXlinkTemplate.replace("{}", ref.getId());
+		}
+		return ref.getURI();
+	}
 
-    @Override
-    public GmlXlinkOptions getResolveOptions() {
-        return resolveOptions;
-    }
+	@Override
+	public GmlXlinkOptions getResolveOptions() {
+		return resolveOptions;
+	}
 
-    @Override
-    public void addExportedId( String gmlId ) {
-        exportedIds.add( gmlId );
-    }
+	@Override
+	public void addExportedId(String gmlId) {
+		exportedIds.add(gmlId);
+	}
 
-    @Override
-    public boolean isObjectExported( String gmlId ) {
-        return exportedIds.contains( gmlId );
-    }
+	@Override
+	public boolean isObjectExported(String gmlId) {
+		return exportedIds.contains(gmlId);
+	}
+
 }

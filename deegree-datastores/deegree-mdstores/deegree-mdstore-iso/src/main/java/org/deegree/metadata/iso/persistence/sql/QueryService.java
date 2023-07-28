@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-metadata/src/main/java/org/deegree/metadata/iso/persistence/TransactionHelper.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -46,22 +45,17 @@ import org.deegree.sqldialect.filter.UnmappableException;
 
 /**
  * Interface describing read access to sql backend.
- * 
+ *
  * @author <a href="mailto:erben@lat-lon.de">Alexander Erben</a>
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public interface QueryService {
 
-    ISOMetadataResultSet execute( MetadataQuery query, Connection conn )
-                            throws MetadataStoreException;
+	ISOMetadataResultSet execute(MetadataQuery query, Connection conn) throws MetadataStoreException;
 
-    int executeCounting( MetadataQuery query, Connection conn )
-                            throws MetadataStoreException, FilterEvaluationException, UnmappableException;
+	int executeCounting(MetadataQuery query, Connection conn)
+			throws MetadataStoreException, FilterEvaluationException, UnmappableException;
 
-    ISOMetadataResultSet executeGetRecordById( List<String> idList, Connection conn )
-                            throws MetadataStoreException;
+	ISOMetadataResultSet executeGetRecordById(List<String> idList, Connection conn) throws MetadataStoreException;
 
 }

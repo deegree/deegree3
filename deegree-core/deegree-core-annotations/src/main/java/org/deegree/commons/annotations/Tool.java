@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2009 by:
@@ -45,14 +44,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The <code>Tool</code> annotation can be used to define a class with a main method as a tool. Such a tool should
- * supply a short description (as well as a main method of course).
- * 
+ * The <code>Tool</code> annotation can be used to define a class with a main method as a
+ * tool. Such a tool should supply a short description (as well as a main method of
+ * course).
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  * @deprecated This annotation is deprecated as of version 3.4 of deegree.
- * 
+ *
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
@@ -60,9 +58,9 @@ import java.lang.annotation.Target;
 @Deprecated
 public @interface Tool {
 
-    /**
-     * @return the short description of this tool.
-     */
-    String value();
+	/**
+	 * @return the short description of this tool.
+	 */
+	String value();
 
 }

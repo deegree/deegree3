@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -53,53 +52,49 @@ import org.deegree.services.wps.output.LiteralOutput;
 
 /**
  * The <code></code> class TODO add class documentation here.
- * 
+ *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * 
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class DistanceProcesslet implements Processlet {
 
-    @Override
-    public void destroy() {
-        // TODO Auto-generated method stub
+	@Override
+	public void destroy() {
+		// TODO Auto-generated method stub
 
-    }
+	}
 
-    @Override
-    public void init() {
-        // TODO Auto-generated method stub
+	@Override
+	public void init() {
+		// TODO Auto-generated method stub
 
-    }
+	}
 
-    @Override
-    public void process( ProcessletInputs in, ProcessletOutputs out, ProcessletExecutionInfo info )
-                            throws ProcessletException {
-        ComplexInput gmlInput1 = (ComplexInput) in.getParameter( "GMLInput1" );
-        ComplexInput gmlInput2 = (ComplexInput) in.getParameter( "GMLInput2" );
+	@Override
+	public void process(ProcessletInputs in, ProcessletOutputs out, ProcessletExecutionInfo info)
+			throws ProcessletException {
+		ComplexInput gmlInput1 = (ComplexInput) in.getParameter("GMLInput1");
+		ComplexInput gmlInput2 = (ComplexInput) in.getParameter("GMLInput2");
 
-        Geometry geometry1 = readGeometry( gmlInput1 );
-        Geometry geometry2 = readGeometry( gmlInput2 );
+		Geometry geometry1 = readGeometry(gmlInput1);
+		Geometry geometry2 = readGeometry(gmlInput2);
 
-        Measure distance = geometry1.getDistance( geometry2, null );
+		Measure distance = geometry1.getDistance(geometry2, null);
 
-        LiteralOutput distanceOutput = (LiteralOutput) out.getParameter( "Distance" );
-        distanceOutput.setValue( String.valueOf( distance.getValueAsDouble() ) );
-    }
+		LiteralOutput distanceOutput = (LiteralOutput) out.getParameter("Distance");
+		distanceOutput.setValue(String.valueOf(distance.getValueAsDouble()));
+	}
 
-    private Geometry readGeometry( ComplexInput gmlInput )
-                            throws ProcessletException {
-        try {
-            XMLStreamReader xmlReader = gmlInput.getValueAsXMLStream();
-            GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_31, xmlReader );
-            return gmlReader.readGeometry();
-        } catch ( Exception e ) {
-            throw new ProcessletException( "Error parsing parameter " + gmlInput.getIdentifier() + ": "
-                                           + e.getMessage() );
-        }
-    }
+	private Geometry readGeometry(ComplexInput gmlInput) throws ProcessletException {
+		try {
+			XMLStreamReader xmlReader = gmlInput.getValueAsXMLStream();
+			GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader(GML_31, xmlReader);
+			return gmlReader.readGeometry();
+		}
+		catch (Exception e) {
+			throw new ProcessletException(
+					"Error parsing parameter " + gmlInput.getIdentifier() + ": " + e.getMessage());
+		}
+	}
 
 }

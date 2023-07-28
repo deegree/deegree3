@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -46,87 +45,86 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Entry point for retrieving {@link FunctionProvider} instances that are registered via Java SPI.
- * 
+ * Entry point for retrieving {@link FunctionProvider} instances that are registered via
+ * Java SPI.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class FunctionManager implements Initializable, Destroyable {
 
-    private static final Logger LOG = LoggerFactory.getLogger( FunctionManager.class );
+	private static final Logger LOG = LoggerFactory.getLogger(FunctionManager.class);
 
-    private static Map<String, FunctionProvider> nameToFunction;
+	private static Map<String, FunctionProvider> nameToFunction;
 
-    private static ServiceLoader<FunctionProvider> functionLoader;
+	private static ServiceLoader<FunctionProvider> functionLoader;
 
-    /**
-     * Returns all available {@link FunctionProvider}s. Multiple functions with the same case ignored name are not
-     * allowed.
-     * 
-     * @return all available functions, keys: name, value: FunctionProvider
-     */
-    public static synchronized Map<String, FunctionProvider> getFunctionProviders() {
-        if ( nameToFunction == null ) {
-            nameToFunction = new HashMap<String, FunctionProvider>();
-            try {
-                for ( FunctionProvider function : functionLoader ) {
-                    LOG.debug( "Function: " + function + ", name: " + function.getName() );
-                    String name = function.getName().toLowerCase();
-                    if ( nameToFunction.containsKey( name ) ) {
-                        LOG.error( "Multiple CustomFunction instances for name: '" + name
-                                   + "' on classpath -- omitting '" + function.getClass().getName() + "'." );
-                        continue;
-                    }
-                    nameToFunction.put( name, function );
-                }
-            } catch ( Exception e ) {
-                LOG.error( e.getMessage(), e );
-            }
-        }
-        return nameToFunction;
-    }
+	/**
+	 * Returns all available {@link FunctionProvider}s. Multiple functions with the same
+	 * case ignored name are not allowed.
+	 * @return all available functions, keys: name, value: FunctionProvider
+	 */
+	public static synchronized Map<String, FunctionProvider> getFunctionProviders() {
+		if (nameToFunction == null) {
+			nameToFunction = new HashMap<String, FunctionProvider>();
+			try {
+				for (FunctionProvider function : functionLoader) {
+					LOG.debug("Function: " + function + ", name: " + function.getName());
+					String name = function.getName().toLowerCase();
+					if (nameToFunction.containsKey(name)) {
+						LOG.error("Multiple CustomFunction instances for name: '" + name
+								+ "' on classpath -- omitting '" + function.getClass().getName() + "'.");
+						continue;
+					}
+					nameToFunction.put(name, function);
+				}
+			}
+			catch (Exception e) {
+				LOG.error(e.getMessage(), e);
+			}
+		}
+		return nameToFunction;
+	}
 
-    /**
-     * Returns the {@link FunctionProvider} for the given name.
-     * 
-     * @param name
-     *            name of the function, must not be <code>null</code>
-     * @return custom function instance, or <code>null</code> if there is no function with this name
-     */
-    public static FunctionProvider getFunctionProvider( String name ) {
-        return getFunctionProviders().get( name.toLowerCase() );
-    }
+	/**
+	 * Returns the {@link FunctionProvider} for the given name.
+	 * @param name name of the function, must not be <code>null</code>
+	 * @return custom function instance, or <code>null</code> if there is no function with
+	 * this name
+	 */
+	public static FunctionProvider getFunctionProvider(String name) {
+		return getFunctionProviders().get(name.toLowerCase());
+	}
 
-    @Override
-    public void init( Workspace ws ) {
-        LOG.info( "Loading functions..." );
-        functionLoader = ServiceLoader.load( FunctionProvider.class, ws.getModuleClassLoader() );
-        for ( FunctionProvider fp : functionLoader ) {
-            try {
-                LOG.debug( "Loading function {}", fp.getName() );
-                fp.init( ws );
-            } catch ( Throwable t ) {
-                LOG.error( "Initialization of FunctionProvider " + fp.getName() + " failed: " + t.getMessage() );
-            }
-        }
-    }
+	@Override
+	public void init(Workspace ws) {
+		LOG.info("Loading functions...");
+		functionLoader = ServiceLoader.load(FunctionProvider.class, ws.getModuleClassLoader());
+		for (FunctionProvider fp : functionLoader) {
+			try {
+				LOG.debug("Loading function {}", fp.getName());
+				fp.init(ws);
+			}
+			catch (Throwable t) {
+				LOG.error("Initialization of FunctionProvider " + fp.getName() + " failed: " + t.getMessage());
+			}
+		}
+	}
 
-    @Override
-    public void destroy( Workspace workspace ) {
-        for ( FunctionProvider fp : functionLoader ) {
-            try {
-                fp.destroy();
-            } catch ( Throwable t ) {
-                LOG.error( "Destroying of FunctionProvider " + fp.getName() + " failed: " + t.getMessage() );
-            }
-        }
-        functionLoader = null;
-        if ( nameToFunction != null ) {
-            nameToFunction.clear();
-        }
-        nameToFunction = null;
-    }
+	@Override
+	public void destroy(Workspace workspace) {
+		for (FunctionProvider fp : functionLoader) {
+			try {
+				fp.destroy();
+			}
+			catch (Throwable t) {
+				LOG.error("Destroying of FunctionProvider " + fp.getName() + " failed: " + t.getMessage());
+			}
+		}
+		functionLoader = null;
+		if (nameToFunction != null) {
+			nameToFunction.clear();
+		}
+		nameToFunction = null;
+	}
 
 }

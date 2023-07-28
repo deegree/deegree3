@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -66,60 +65,58 @@ import org.junit.Test;
 /**
  * Basic test cases for the {@link RemoteWMSTileStore}.
  * <p>
- * These tests only check the correct extraction of metadata and the generation of the {@link TileDataSet}. Actual
- * fetching of tile data is realized as integration tests (module deegree-wmts-tests).
+ * These tests only check the correct extraction of metadata and the generation of the
+ * {@link TileDataSet}. Actual fetching of tile data is realized as integration tests
+ * (module deegree-wmts-tests).
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$
  */
 public class RemoteWMSTileStoreTest {
 
-    private Workspace ws;
+	private Workspace ws;
 
-    @Before
-    public void setup()
-                            throws UnknownCRSException, IOException, URISyntaxException, ResourceInitException {
-        URL wsUrl = RemoteWMSTileStoreTest.class.getResource( "workspace" );
-        ws = new DefaultWorkspace( new File( wsUrl.toURI() ) );
-        ws.initAll();
-    }
+	@Before
+	public void setup() throws UnknownCRSException, IOException, URISyntaxException, ResourceInitException {
+		URL wsUrl = RemoteWMSTileStoreTest.class.getResource("workspace");
+		ws = new DefaultWorkspace(new File(wsUrl.toURI()));
+		ws.initAll();
+	}
 
-    @After
-    public void tearDown() {
-        ws.destroy();
-    }
+	@After
+	public void tearDown() {
+		ws.destroy();
+	}
 
-    @Test
-    public void testGetMetdataEPSG26912() {
-        GenericTileStore store = (GenericTileStore) ws.getResource( TileStoreProvider.class, "tiles26912" );
-        SpatialMetadata metadata = store.getTileDataSet( "tiles26912" ).getTileMatrixSet().getSpatialMetadata();
-        assertEquals( 1, metadata.getCoordinateSystems().size() );
+	@Test
+	public void testGetMetdataEPSG26912() {
+		GenericTileStore store = (GenericTileStore) ws.getResource(TileStoreProvider.class, "tiles26912");
+		SpatialMetadata metadata = store.getTileDataSet("tiles26912").getTileMatrixSet().getSpatialMetadata();
+		assertEquals(1, metadata.getCoordinateSystems().size());
 
-        assertTrue( metadata.getCoordinateSystems().get(0).hasId("urn:opengis:def:crs:epsg::26912", false, true) );
-        assertEquals( 228563.303, metadata.getEnvelope().getMin().get0(), 0.001 );
-        assertEquals( 4103089.15, metadata.getEnvelope().getMin().get1(), 0.001 );
-        assertEquals( 779065.703, metadata.getEnvelope().getMax().get0(), 0.001 );
-        assertEquals( 4653591.55, metadata.getEnvelope().getMax().get1(), 0.001 );
-    }
+		assertTrue(metadata.getCoordinateSystems().get(0).hasId("urn:opengis:def:crs:epsg::26912", false, true));
+		assertEquals(228563.303, metadata.getEnvelope().getMin().get0(), 0.001);
+		assertEquals(4103089.15, metadata.getEnvelope().getMin().get1(), 0.001);
+		assertEquals(779065.703, metadata.getEnvelope().getMax().get0(), 0.001);
+		assertEquals(4653591.55, metadata.getEnvelope().getMax().get1(), 0.001);
+	}
 
-    @Test
-    public void testGetTileMatrixSetEPSG26912() {
-        GenericTileStore store = (GenericTileStore) ws.getResource( TileStoreProvider.class, "tiles26912" );
-        TileDataSet dataSet = store.getTileDataSet( "tiles26912" );
+	@Test
+	public void testGetTileMatrixSetEPSG26912() {
+		GenericTileStore store = (GenericTileStore) ws.getResource(TileStoreProvider.class, "tiles26912");
+		TileDataSet dataSet = store.getTileDataSet("tiles26912");
 
-        assertEquals( 10, dataSet.getTileDataLevels().size() );
-        double scale = 1000.0;
-        double resolution = MapUtils.DEFAULT_PIXEL_SIZE * scale;
-        for ( TileDataLevel matrix : dataSet.getTileDataLevels() ) {
-            TileMatrix md = matrix.getMetadata();
-            assertEquals( resolution, md.getResolution(), 0.001 );
-            assertEquals( resolution * md.getTilePixelsX(), md.getTileWidth(), 0.001 );
-            assertEquals( resolution * md.getTilePixelsY(), md.getTileHeight(), 0.001 );
-            scale *= 2.0;
-            resolution *= 2.0;
-        }
-    }
+		assertEquals(10, dataSet.getTileDataLevels().size());
+		double scale = 1000.0;
+		double resolution = MapUtils.DEFAULT_PIXEL_SIZE * scale;
+		for (TileDataLevel matrix : dataSet.getTileDataLevels()) {
+			TileMatrix md = matrix.getMetadata();
+			assertEquals(resolution, md.getResolution(), 0.001);
+			assertEquals(resolution * md.getTilePixelsX(), md.getTileWidth(), 0.001);
+			assertEquals(resolution * md.getTilePixelsY(), md.getTileHeight(), 0.001);
+			scale *= 2.0;
+			resolution *= 2.0;
+		}
+	}
+
 }

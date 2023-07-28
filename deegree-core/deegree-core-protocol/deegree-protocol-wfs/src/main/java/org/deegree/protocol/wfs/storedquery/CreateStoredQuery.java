@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -50,41 +49,35 @@ import org.deegree.protocol.wfs.AbstractWFSRequest;
  * <li>WFS 2.0.0</li>
  * </ul>
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class CreateStoredQuery extends AbstractWFSRequest {
 
-    private final List<StoredQueryDefinition> queryDefinitions;
+	private final List<StoredQueryDefinition> queryDefinitions;
 
-    /**
-     * Creates a new {@link CreateStoredQuery} instance.
-     * 
-     * @param version
-     *            protocol version, must not be <code>null</code>
-     * @param handle
-     *            client-generated identifier, may be <code>null</code>
-     * @param queryDefinitions
-     *            query definitions to add, may be <code>null</code>
-     */
-    public CreateStoredQuery( Version version, String handle, List<StoredQueryDefinition> queryDefinitions ) {
-        super( version, handle );
-        if ( queryDefinitions == null ) {
-            this.queryDefinitions = emptyList();
-        } else {
-            this.queryDefinitions = queryDefinitions;
-        }
-    }
+	/**
+	 * Creates a new {@link CreateStoredQuery} instance.
+	 * @param version protocol version, must not be <code>null</code>
+	 * @param handle client-generated identifier, may be <code>null</code>
+	 * @param queryDefinitions query definitions to add, may be <code>null</code>
+	 */
+	public CreateStoredQuery(Version version, String handle, List<StoredQueryDefinition> queryDefinitions) {
+		super(version, handle);
+		if (queryDefinitions == null) {
+			this.queryDefinitions = emptyList();
+		}
+		else {
+			this.queryDefinitions = queryDefinitions;
+		}
+	}
 
-    /**
-     * Returns the {@link StoredQueryDefinition}s to be added.
-     * 
-     * @return query definitions to be added, never <code>null</code>
-     */
-    public List<StoredQueryDefinition> getQueryDefinitions() {
-        return queryDefinitions;
-    }
+	/**
+	 * Returns the {@link StoredQueryDefinition}s to be added.
+	 * @return query definitions to be added, never <code>null</code>
+	 */
+	public List<StoredQueryDefinition> getQueryDefinitions() {
+		return queryDefinitions;
+	}
+
 }

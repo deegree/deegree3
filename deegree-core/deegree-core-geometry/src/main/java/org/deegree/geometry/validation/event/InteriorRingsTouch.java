@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -41,81 +40,69 @@ import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
 
 /**
- * {@link GeometryValidationEvent} that indicates that a planar surface patch (={@link PolygonPatch}) has two holes (interior
- * rings) that touch.
- * 
+ * {@link GeometryValidationEvent} that indicates that a planar surface patch
+ * (={@link PolygonPatch}) has two holes (interior rings) that touch.
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * 
- * @version $Revision: $, $Date: $
  */
 public class InteriorRingsTouch extends AbstractGeometryValidationEvent {
 
-    private final PolygonPatch patch;
+	private final PolygonPatch patch;
 
-    private final int ring1Idx;
+	private final int ring1Idx;
 
-    private final int ring2Idx;
+	private final int ring2Idx;
 
-    private final Point location;
+	private final Point location;
 
-    /**
-     * Creates a new {@link InteriorRingsTouch} instance.
-     * 
-     * @param patch
-     *            affected patch, never <code>null</code>
-     * @param ring1Idx
-     *            index of the first interior ring affected (starting at 0)
-     * @param ring2Idx
-     *            index of the second interior ring affected (starting at 0)
-     * @param location
-     *            location of the intersection, may be <code>null</code>
-     * @param geometryParticleHierarchy
-     *            list of affected geometry particles (that the patch is part of), must not be <code>null</code>
-     */
-    public InteriorRingsTouch( PolygonPatch patch, int ring1Idx, int ring2Idx, Point location,
-                               List<Object> geometryParticleHierarchy ) {
-        super( geometryParticleHierarchy );
-        this.patch = patch;
-        this.ring1Idx = ring1Idx;
-        this.ring2Idx = ring2Idx;
-        this.location = location;
-    }
+	/**
+	 * Creates a new {@link InteriorRingsTouch} instance.
+	 * @param patch affected patch, never <code>null</code>
+	 * @param ring1Idx index of the first interior ring affected (starting at 0)
+	 * @param ring2Idx index of the second interior ring affected (starting at 0)
+	 * @param location location of the intersection, may be <code>null</code>
+	 * @param geometryParticleHierarchy list of affected geometry particles (that the
+	 * patch is part of), must not be <code>null</code>
+	 */
+	public InteriorRingsTouch(PolygonPatch patch, int ring1Idx, int ring2Idx, Point location,
+			List<Object> geometryParticleHierarchy) {
+		super(geometryParticleHierarchy);
+		this.patch = patch;
+		this.ring1Idx = ring1Idx;
+		this.ring2Idx = ring2Idx;
+		this.location = location;
+	}
 
-    /**
-     * Returns the affected {@link PolygonPatch} geometry.
-     * 
-     * @return affected patch, never <code>null</code>
-     */
-    public PolygonPatch getPatch() {
-        return patch;
-    }
+	/**
+	 * Returns the affected {@link PolygonPatch} geometry.
+	 * @return affected patch, never <code>null</code>
+	 */
+	public PolygonPatch getPatch() {
+		return patch;
+	}
 
-    /**
-     * Returns the index of the first affected interior ring.
-     * 
-     * @return index of first affected interior ring (starting at 0)
-     */
-    public int getRing1Idx() {
-        return ring1Idx;
-    }
+	/**
+	 * Returns the index of the first affected interior ring.
+	 * @return index of first affected interior ring (starting at 0)
+	 */
+	public int getRing1Idx() {
+		return ring1Idx;
+	}
 
-    /**
-     * Returns the index of the second affected interior ring.
-     * 
-     * @return index of second affected interior ring (starting at 0)
-     */
-    public int getRing2Idx() {
-        return ring2Idx;
-    }
+	/**
+	 * Returns the index of the second affected interior ring.
+	 * @return index of second affected interior ring (starting at 0)
+	 */
+	public int getRing2Idx() {
+		return ring2Idx;
+	}
 
-    /**
-     * Returns the location of the intersection.
-     * 
-     * @return location of intersection, may be <code>null</code>
-     */
-    public Point getLocation() {
-        return location;
-    }
+	/**
+	 * Returns the location of the intersection.
+	 * @return location of intersection, may be <code>null</code>
+	 */
+	public Point getLocation() {
+		return location;
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -45,59 +44,53 @@ import org.deegree.geometry.standard.curvesegments.DefaultLineStringSegment;
 
 /**
  * Default implementation of {@link Ring}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class DefaultLinearRing extends DefaultRing implements LinearRing {
 
-    private Points controlPoints;
+	private Points controlPoints;
 
-    /**
-     * Creates a new <code>DefaultLinearRing</code> instance from the given parameters.
-     * 
-     * @param id
-     *            identifier, may be null
-     * @param crs
-     *            coordinate reference system, may be null
-     * @param pm
-     *            precision model, may be null
-     * @param controlPoints
-     */
-    public DefaultLinearRing( String id, ICRS crs, PrecisionModel pm, Points controlPoints ) {
-        super( id, crs, pm, new DefaultLineStringSegment( controlPoints ) );
-        this.controlPoints = controlPoints;
-    }
+	/**
+	 * Creates a new <code>DefaultLinearRing</code> instance from the given parameters.
+	 * @param id identifier, may be null
+	 * @param crs coordinate reference system, may be null
+	 * @param pm precision model, may be null
+	 * @param controlPoints
+	 */
+	public DefaultLinearRing(String id, ICRS crs, PrecisionModel pm, Points controlPoints) {
+		super(id, crs, pm, new DefaultLineStringSegment(controlPoints));
+		this.controlPoints = controlPoints;
+	}
 
-    @Override
-    public int getCoordinateDimension() {
-        return controlPoints.getDimension();
-    }
+	@Override
+	public int getCoordinateDimension() {
+		return controlPoints.getDimension();
+	}
 
-    @Override
-    public CurveType getCurveType() {
-        return CurveType.Ring;
-    }
+	@Override
+	public CurveType getCurveType() {
+		return CurveType.Ring;
+	}
 
-    @Override
-    public RingType getRingType() {
-        return RingType.LinearRing;
-    }
+	@Override
+	public RingType getRingType() {
+		return RingType.LinearRing;
+	}
 
-    @Override
-    public LineString getAsLineString() {
-        return (LineString) members.get( 0 );
-    }
+	@Override
+	public LineString getAsLineString() {
+		return (LineString) members.get(0);
+	}
 
-    @Override
-    public Points getControlPoints() {
-        return ( (LineString) members.get( 0 ) ).getControlPoints();
-    }
+	@Override
+	public Points getControlPoints() {
+		return ((LineString) members.get(0)).getControlPoints();
+	}
 
-    @Override
-    protected org.locationtech.jts.geom.LinearRing buildJTSGeometry() {
-        return jtsFactory.createLinearRing( controlPoints );
-    }
+	@Override
+	protected org.locationtech.jts.geom.LinearRing buildJTSGeometry() {
+		return jtsFactory.createLinearRing(controlPoints);
+	}
+
 }

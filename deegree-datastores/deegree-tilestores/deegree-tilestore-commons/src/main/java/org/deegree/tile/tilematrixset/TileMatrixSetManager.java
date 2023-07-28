@@ -33,16 +33,15 @@ import org.deegree.workspace.standard.DefaultResourceManagerMetadata;
 
 /**
  * This class is responsible for finding tile matrix set resources.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class TileMatrixSetManager extends DefaultResourceManager<TileMatrixSet> {
 
-    public TileMatrixSetManager() {
-        super( new DefaultResourceManagerMetadata<TileMatrixSet>( TileMatrixSetProvider.class, "tile matrix sets",
-                                                                  "datasources/tile/tilematrixset" ) );
-    }
+	public TileMatrixSetManager() {
+		super(new DefaultResourceManagerMetadata<TileMatrixSet>(TileMatrixSetProvider.class, "tile matrix sets",
+				"datasources/tile/tilematrixset"));
+	}
 
 }

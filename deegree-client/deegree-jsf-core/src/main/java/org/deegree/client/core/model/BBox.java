@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -37,57 +36,55 @@ package org.deegree.client.core.model;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class BBox {
 
-    private String crs;
+	private String crs;
 
-    private double maxy;
+	private double maxy;
 
-    private double miny;
+	private double miny;
 
-    private double maxx;
+	private double maxx;
 
-    private double minx;
+	private double minx;
 
-    public BBox() {
-    }
+	public BBox() {
+	}
 
-    public BBox( String crs, double minx, double miny, double maxx, double maxy ) {
-        this.crs = crs;
-        this.minx = minx;
-        this.miny = miny;
-        this.maxx = maxx;
-        this.maxy = maxy;
-    }
+	public BBox(String crs, double minx, double miny, double maxx, double maxy) {
+		this.crs = crs;
+		this.minx = minx;
+		this.miny = miny;
+		this.maxx = maxx;
+		this.maxy = maxy;
+	}
 
-    public String getCrs() {
-        return crs;
-    }
+	public String getCrs() {
+		return crs;
+	}
 
-    public double getMaxY() {
-        return maxy;
-    }
+	public double getMaxY() {
+		return maxy;
+	}
 
-    public double getMinY() {
-        return miny;
-    }
+	public double getMinY() {
+		return miny;
+	}
 
-    public double getMaxX() {
-        return maxx;
-    }
+	public double getMaxX() {
+		return maxx;
+	}
 
-    public double getMinx() {
-        return minx;
-    }
+	public double getMinx() {
+		return minx;
+	}
 
-    @Override
-    public String toString() {
-        return "min: " + minx + ", " + miny + " max: " + maxx + ", " + maxy + " (" + crs + ")";
-    }
+	@Override
+	public String toString() {
+		return "min: " + minx + ", " + miny + " max: " + maxx + ", " + maxy + " (" + crs + ")";
+	}
+
 }

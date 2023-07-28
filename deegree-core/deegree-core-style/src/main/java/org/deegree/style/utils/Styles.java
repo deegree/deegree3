@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aschmitz@deegree.wald.intevation.de/deegree/deegree3/trunk/deegree-core/deegree-core-rendering-2d/src/main/java/org/deegree/rendering/r2d/utils/Styles.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -51,70 +50,67 @@ import org.deegree.style.se.unevaluated.Style;
 import org.deegree.style.se.unevaluated.Symbolizer;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: aschmitz $
- * 
- * @version $Revision: 31075 $, $Date: 2011-06-17 14:51:51 +0200 (Fri, 17 Jun 2011) $
  */
 public class Styles {
 
-    public static OperatorFilter getStyleFilters( Style style, double scale ) {
-        OperatorFilter sldFilter = null;
-        outer: if ( style != null ) {
-            // the full use of generics here will defeat the compiler
-            LinkedList<Pair> rules = (LinkedList) style.filter( scale ).getRules();
-            for ( Pair p : rules ) {
-                if ( p.first == null ) {
-                    sldFilter = null;
-                    break outer;
-                }
-                if ( p.first instanceof FilterContinuation ) {
-                    FilterContinuation contn = (FilterContinuation) p.first;
-                    if ( contn.filter == ELSEFILTER ) {
-                        sldFilter = null;
-                        break outer;
-                    }
-                    if ( contn.filter == null ) {
-                        sldFilter = null;
-                        break outer;
-                    }
-                    if ( sldFilter == null ) {
-                        sldFilter = (OperatorFilter) contn.filter;
-                    } else {
-                        Operator op1 = sldFilter.getOperator();
-                        Operator op2 = ( (OperatorFilter) contn.filter ).getOperator();
-                        sldFilter = new OperatorFilter( new Or( op1, op2 ) );
-                    }
-                }
-            }
-        }
+	public static OperatorFilter getStyleFilters(Style style, double scale) {
+		OperatorFilter sldFilter = null;
+		outer: if (style != null) {
+			// the full use of generics here will defeat the compiler
+			LinkedList<Pair> rules = (LinkedList) style.filter(scale).getRules();
+			for (Pair p : rules) {
+				if (p.first == null) {
+					sldFilter = null;
+					break outer;
+				}
+				if (p.first instanceof FilterContinuation) {
+					FilterContinuation contn = (FilterContinuation) p.first;
+					if (contn.filter == ELSEFILTER) {
+						sldFilter = null;
+						break outer;
+					}
+					if (contn.filter == null) {
+						sldFilter = null;
+						break outer;
+					}
+					if (sldFilter == null) {
+						sldFilter = (OperatorFilter) contn.filter;
+					}
+					else {
+						Operator op1 = sldFilter.getOperator();
+						Operator op2 = ((OperatorFilter) contn.filter).getOperator();
+						sldFilter = new OperatorFilter(new Or(op1, op2));
+					}
+				}
+			}
+		}
 
-        return sldFilter;
-    }
+		return sldFilter;
+	}
 
-    public static List<Expression> getGeometryExpressions( Style style ) {
-        List<Expression> list = new ArrayList<Expression>();
+	public static List<Expression> getGeometryExpressions(Style style) {
+		List<Expression> list = new ArrayList<Expression>();
 
-        if ( style == null ) {
-            return list;
-        }
+		if (style == null) {
+			return list;
+		}
 
-        // do not use full generics here, else compilation will fail
-        // it's always fun to see how easy the compiler can be defeated...
-        LinkedList<Pair> rules = (LinkedList) style.getRules();
-        for ( Pair rule : rules ) {
-            if ( rule.first instanceof FilterContinuation ) {
-                for ( Symbolizer<?> s : ( (FilterContinuation) rule.first ).getSymbolizers() ) {
-                    Expression expr = s.getGeometryExpression();
-                    if ( expr != null && !list.contains( expr ) ) {
-                        list.add( expr );
-                    }
-                }
-            }
-        }
+		// do not use full generics here, else compilation will fail
+		// it's always fun to see how easy the compiler can be defeated...
+		LinkedList<Pair> rules = (LinkedList) style.getRules();
+		for (Pair rule : rules) {
+			if (rule.first instanceof FilterContinuation) {
+				for (Symbolizer<?> s : ((FilterContinuation) rule.first).getSymbolizers()) {
+					Expression expr = s.getGeometryExpression();
+					if (expr != null && !list.contains(expr)) {
+						list.add(expr);
+					}
+				}
+			}
+		}
 
-        return list;
-    }
+		return list;
+	}
 
 }

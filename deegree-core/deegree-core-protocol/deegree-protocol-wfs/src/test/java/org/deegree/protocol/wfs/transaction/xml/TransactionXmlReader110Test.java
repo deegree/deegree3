@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2012 by:
@@ -67,181 +66,172 @@ import org.junit.Test;
 
 /**
  * Test cases for {@link TransactionXmlReader110}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class TransactionXmlReader110Test extends TestCase {
 
-    private final String DELETE_110 = "wfs110/delete.xml";
+	private final String DELETE_110 = "wfs110/delete.xml";
 
-    private final String INSERT_110 = "wfs110/insert.invalidxml";
+	private final String INSERT_110 = "wfs110/insert.invalidxml";
 
-    private final String UPDATE_110 = "wfs110/update.xml";
+	private final String UPDATE_110 = "wfs110/update.xml";
 
-    private final String COMPLEX_110 = "wfs110/complex.invalidxml";
+	private final String COMPLEX_110 = "wfs110/complex.invalidxml";
 
-    @Test
-    public void testDelete110()
-                            throws Exception {
+	@Test
+	public void testDelete110() throws Exception {
 
-        Transaction ta = parse( DELETE_110 );
-        assertEquals( WFSConstants.VERSION_110, ta.getVersion() );
-        assertEquals( "TA_1", ta.getHandle() );
-        assertEquals( null, ta.getReleaseAction() );
+		Transaction ta = parse(DELETE_110);
+		assertEquals(WFSConstants.VERSION_110, ta.getVersion());
+		assertEquals("TA_1", ta.getHandle());
+		assertEquals(null, ta.getReleaseAction());
 
-        Iterator<TransactionAction> iter = ta.getActions().iterator();
-        TransactionAction operation = iter.next();
-        assertEquals( TransactionActionType.DELETE, operation.getType() );
-        Delete delete = (Delete) operation;
-        assertEquals( "delete1", delete.getHandle() );
-        assertEquals( new QName( "http://www.deegree.org/app", "Philosopher" ), delete.getTypeName() );
-        assertEquals( Filter.Type.OPERATOR_FILTER, delete.getFilter().getType() );
-        assertFalse( iter.hasNext() );
-    }
+		Iterator<TransactionAction> iter = ta.getActions().iterator();
+		TransactionAction operation = iter.next();
+		assertEquals(TransactionActionType.DELETE, operation.getType());
+		Delete delete = (Delete) operation;
+		assertEquals("delete1", delete.getHandle());
+		assertEquals(new QName("http://www.deegree.org/app", "Philosopher"), delete.getTypeName());
+		assertEquals(Filter.Type.OPERATOR_FILTER, delete.getFilter().getType());
+		assertFalse(iter.hasNext());
+	}
 
-    @Test
-    public void testInsert110()
-                            throws Exception {
+	@Test
+	public void testInsert110() throws Exception {
 
-        Transaction ta = parse( INSERT_110 );
-        assertEquals( WFSConstants.VERSION_110, ta.getVersion() );
-        assertEquals( null, ta.getHandle() );
-        assertEquals( null, ta.getReleaseAction() );
+		Transaction ta = parse(INSERT_110);
+		assertEquals(WFSConstants.VERSION_110, ta.getVersion());
+		assertEquals(null, ta.getHandle());
+		assertEquals(null, ta.getReleaseAction());
 
-        Iterator<TransactionAction> iter = ta.getActions().iterator();
-        TransactionAction operation = iter.next();
-        assertEquals( TransactionActionType.INSERT, operation.getType() );
-        Insert insert = (Insert) operation;
-        assertEquals( "insert", insert.getHandle() );
-        assertEquals( IDGenMode.GENERATE_NEW, insert.getIdGen() );
-        assertEquals( null, insert.getInputFormat() );
-        assertEquals( null, insert.getSrsName() );
-        XMLStreamReader xmlStream = insert.getFeatures();
-        xmlStream.require( XMLStreamReader.START_ELEMENT, "http://www.opengis.net/wfs", "FeatureCollection" );
-        XMLStreamUtils.skipElement( xmlStream );
-        XMLStreamUtils.nextElement( xmlStream );
-        assertFalse( iter.hasNext() );
-        assertFalse( iter.hasNext() );
-    }
+		Iterator<TransactionAction> iter = ta.getActions().iterator();
+		TransactionAction operation = iter.next();
+		assertEquals(TransactionActionType.INSERT, operation.getType());
+		Insert insert = (Insert) operation;
+		assertEquals("insert", insert.getHandle());
+		assertEquals(IDGenMode.GENERATE_NEW, insert.getIdGen());
+		assertEquals(null, insert.getInputFormat());
+		assertEquals(null, insert.getSrsName());
+		XMLStreamReader xmlStream = insert.getFeatures();
+		xmlStream.require(XMLStreamReader.START_ELEMENT, "http://www.opengis.net/wfs", "FeatureCollection");
+		XMLStreamUtils.skipElement(xmlStream);
+		XMLStreamUtils.nextElement(xmlStream);
+		assertFalse(iter.hasNext());
+		assertFalse(iter.hasNext());
+	}
 
-    @Test
-    public void testUpdate110()
-                            throws Exception {
+	@Test
+	public void testUpdate110() throws Exception {
 
-        Transaction ta = parse( UPDATE_110 );
-        assertEquals( WFSConstants.VERSION_110, ta.getVersion() );
-        assertEquals( null, ta.getHandle() );
-        assertEquals( null, ta.getReleaseAction() );
+		Transaction ta = parse(UPDATE_110);
+		assertEquals(WFSConstants.VERSION_110, ta.getVersion());
+		assertEquals(null, ta.getHandle());
+		assertEquals(null, ta.getReleaseAction());
 
-        Iterator<TransactionAction> iter = ta.getActions().iterator();
-        TransactionAction operation = iter.next();
-        assertEquals( TransactionActionType.UPDATE, operation.getType() );
-        Update update = (Update) operation;
-        assertEquals( "update1", update.getHandle() );
-        assertEquals( new QName( "http://www.deegree.org/app", "Philosopher" ), update.getTypeName() );
-        assertEquals( null, update.getInputFormat() );
-        assertEquals( null, update.getSRSName() );
+		Iterator<TransactionAction> iter = ta.getActions().iterator();
+		TransactionAction operation = iter.next();
+		assertEquals(TransactionActionType.UPDATE, operation.getType());
+		Update update = (Update) operation;
+		assertEquals("update1", update.getHandle());
+		assertEquals(new QName("http://www.deegree.org/app", "Philosopher"), update.getTypeName());
+		assertEquals(null, update.getInputFormat());
+		assertEquals(null, update.getSRSName());
 
-        Iterator<PropertyReplacement> iter2 = update.getReplacementProps();
-        PropertyReplacement replacementProp1 = iter2.next();
-        assertEquals( new QName( "http://www.deegree.org/app", "name" ),
-                      replacementProp1.getPropertyName().getAsQName() );
-        XMLStreamReader prop1ValueStream = replacementProp1.getReplacementValue();
-        assertEquals( "Albert Camus", prop1ValueStream.getElementText() );
-        prop1ValueStream.nextTag();
-        prop1ValueStream.nextTag();
-        PropertyReplacement replacementProp2 = iter2.next();
-        assertEquals( new QName( "http://www.deegree.org/app", "subject" ),
-                      replacementProp2.getPropertyName().getAsQName() );
-        XMLStreamReader prop2ValueStream = replacementProp2.getReplacementValue();
-        assertEquals( "existentialism", prop1ValueStream.getElementText() );
-        prop2ValueStream.nextTag();
-        prop2ValueStream.nextTag();
+		Iterator<PropertyReplacement> iter2 = update.getReplacementProps();
+		PropertyReplacement replacementProp1 = iter2.next();
+		assertEquals(new QName("http://www.deegree.org/app", "name"), replacementProp1.getPropertyName().getAsQName());
+		XMLStreamReader prop1ValueStream = replacementProp1.getReplacementValue();
+		assertEquals("Albert Camus", prop1ValueStream.getElementText());
+		prop1ValueStream.nextTag();
+		prop1ValueStream.nextTag();
+		PropertyReplacement replacementProp2 = iter2.next();
+		assertEquals(new QName("http://www.deegree.org/app", "subject"),
+				replacementProp2.getPropertyName().getAsQName());
+		XMLStreamReader prop2ValueStream = replacementProp2.getReplacementValue();
+		assertEquals("existentialism", prop1ValueStream.getElementText());
+		prop2ValueStream.nextTag();
+		prop2ValueStream.nextTag();
 
-        Filter filter = update.getFilter();
-        assertEquals( Filter.Type.OPERATOR_FILTER, filter.getType() );
-        prop2ValueStream.require( XMLStreamReader.END_ELEMENT, "http://www.opengis.net/wfs", "Update" );
-        assertFalse( iter.hasNext() );
-    }
+		Filter filter = update.getFilter();
+		assertEquals(Filter.Type.OPERATOR_FILTER, filter.getType());
+		prop2ValueStream.require(XMLStreamReader.END_ELEMENT, "http://www.opengis.net/wfs", "Update");
+		assertFalse(iter.hasNext());
+	}
 
-    @Test
-    public void testComplex110()
-                            throws Exception {
+	@Test
+	public void testComplex110() throws Exception {
 
-        Transaction ta = parse( COMPLEX_110 );
-        assertEquals( WFSConstants.VERSION_110, ta.getVersion() );
-        assertEquals( "COMPLEX", ta.getHandle() );
-        assertEquals( null, ta.getReleaseAction() );
+		Transaction ta = parse(COMPLEX_110);
+		assertEquals(WFSConstants.VERSION_110, ta.getVersion());
+		assertEquals("COMPLEX", ta.getHandle());
+		assertEquals(null, ta.getReleaseAction());
 
-        Iterator<TransactionAction> operationIter = ta.getActions().iterator();
+		Iterator<TransactionAction> operationIter = ta.getActions().iterator();
 
-        // first operation: delete1
-        TransactionAction operation = operationIter.next();
-        assertEquals( TransactionActionType.DELETE, operation.getType() );
-        Delete delete = (Delete) operation;
-        assertEquals( "delete1", delete.getHandle() );
-        assertEquals( new QName( "http://www.deegree.org/app", "Philosopher" ), delete.getTypeName() );
-        assertEquals( Filter.Type.OPERATOR_FILTER, delete.getFilter().getType() );
-        assertTrue( operationIter.hasNext() );
+		// first operation: delete1
+		TransactionAction operation = operationIter.next();
+		assertEquals(TransactionActionType.DELETE, operation.getType());
+		Delete delete = (Delete) operation;
+		assertEquals("delete1", delete.getHandle());
+		assertEquals(new QName("http://www.deegree.org/app", "Philosopher"), delete.getTypeName());
+		assertEquals(Filter.Type.OPERATOR_FILTER, delete.getFilter().getType());
+		assertTrue(operationIter.hasNext());
 
-        // second operation: insert
-        Insert insert = (Insert) operationIter.next();
-        assertEquals( "insert", insert.getHandle() );
-        assertEquals( IDGenMode.GENERATE_NEW, insert.getIdGen() );
-        assertEquals( null, insert.getInputFormat() );
-        assertEquals( null, insert.getSrsName() );
-        XMLStreamReader xmlStream = insert.getFeatures();
-        // contract: read until feature/featureCollection END_ELEMENT
-        skipElement( xmlStream );
-        // contract: skip to wfs:Insert END_ELEMENT
-        nextElement( xmlStream );
-        assertTrue( operationIter.hasNext() );
+		// second operation: insert
+		Insert insert = (Insert) operationIter.next();
+		assertEquals("insert", insert.getHandle());
+		assertEquals(IDGenMode.GENERATE_NEW, insert.getIdGen());
+		assertEquals(null, insert.getInputFormat());
+		assertEquals(null, insert.getSrsName());
+		XMLStreamReader xmlStream = insert.getFeatures();
+		// contract: read until feature/featureCollection END_ELEMENT
+		skipElement(xmlStream);
+		// contract: skip to wfs:Insert END_ELEMENT
+		nextElement(xmlStream);
+		assertTrue(operationIter.hasNext());
 
-        // third operation: update1
-        Update update = (Update) operationIter.next();
-        assertEquals( "update1", update.getHandle() );
-        assertEquals( new QName( "http://www.deegree.org/app", "Philosopher" ), update.getTypeName() );
-        assertEquals( null, update.getInputFormat() );
-        assertEquals( null, update.getSRSName() );
+		// third operation: update1
+		Update update = (Update) operationIter.next();
+		assertEquals("update1", update.getHandle());
+		assertEquals(new QName("http://www.deegree.org/app", "Philosopher"), update.getTypeName());
+		assertEquals(null, update.getInputFormat());
+		assertEquals(null, update.getSRSName());
 
-        Iterator<PropertyReplacement> iter2 = update.getReplacementProps();
-        PropertyReplacement replacementProp1 = iter2.next();
-        assertEquals( new QName( "http://www.deegree.org/app", "name" ),
-                      replacementProp1.getPropertyName().getAsQName() );
-        XMLStreamReader prop1ValueStream = replacementProp1.getReplacementValue();
-        assertEquals( "Albert Camus", prop1ValueStream.getElementText() );
-        prop1ValueStream.nextTag();
-        prop1ValueStream.nextTag();
-        PropertyReplacement replacementProp2 = iter2.next();
-        assertEquals( new QName( "http://www.deegree.org/app", "subject" ),
-                      replacementProp2.getPropertyName().getAsQName() );
-        XMLStreamReader prop2ValueStream = replacementProp2.getReplacementValue();
-        assertEquals( "existentialism", prop1ValueStream.getElementText() );
-        // contract: skip to wfs:Property END_ELEMENT
-        prop2ValueStream.nextTag();
-        // contract: skip to next tag
-        prop2ValueStream.nextTag();
-        Filter filter = update.getFilter();
-        assertEquals( Filter.Type.OPERATOR_FILTER, filter.getType() );
-        assertTrue( operationIter.hasNext() );
+		Iterator<PropertyReplacement> iter2 = update.getReplacementProps();
+		PropertyReplacement replacementProp1 = iter2.next();
+		assertEquals(new QName("http://www.deegree.org/app", "name"), replacementProp1.getPropertyName().getAsQName());
+		XMLStreamReader prop1ValueStream = replacementProp1.getReplacementValue();
+		assertEquals("Albert Camus", prop1ValueStream.getElementText());
+		prop1ValueStream.nextTag();
+		prop1ValueStream.nextTag();
+		PropertyReplacement replacementProp2 = iter2.next();
+		assertEquals(new QName("http://www.deegree.org/app", "subject"),
+				replacementProp2.getPropertyName().getAsQName());
+		XMLStreamReader prop2ValueStream = replacementProp2.getReplacementValue();
+		assertEquals("existentialism", prop1ValueStream.getElementText());
+		// contract: skip to wfs:Property END_ELEMENT
+		prop2ValueStream.nextTag();
+		// contract: skip to next tag
+		prop2ValueStream.nextTag();
+		Filter filter = update.getFilter();
+		assertEquals(Filter.Type.OPERATOR_FILTER, filter.getType());
+		assertTrue(operationIter.hasNext());
 
-        // fourth operation: delete2
-        delete = (Delete) operationIter.next();
-        assertEquals( "delete2", delete.getHandle() );
-        assertEquals( new QName( "http://www.deegree.org/app", "Philosopher" ), delete.getTypeName() );
-        assertEquals( Filter.Type.OPERATOR_FILTER, delete.getFilter().getType() );
-        assertFalse( operationIter.hasNext() );
-    }
+		// fourth operation: delete2
+		delete = (Delete) operationIter.next();
+		assertEquals("delete2", delete.getHandle());
+		assertEquals(new QName("http://www.deegree.org/app", "Philosopher"), delete.getTypeName());
+		assertEquals(Filter.Type.OPERATOR_FILTER, delete.getFilter().getType());
+		assertFalse(operationIter.hasNext());
+	}
 
-    private Transaction parse( String resourceName )
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
-        URL exampleURL = this.getClass().getResource( resourceName );
-        XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( exampleURL.toString(),
-                                                                                         exampleURL.openStream() );
-        XMLStreamUtils.skipStartDocument( xmlStream );
-        return new TransactionXmlReader110().read( xmlStream );
-    }
+	private Transaction parse(String resourceName) throws XMLStreamException, FactoryConfigurationError, IOException {
+		URL exampleURL = this.getClass().getResource(resourceName);
+		XMLStreamReader xmlStream = XMLInputFactory.newInstance()
+			.createXMLStreamReader(exampleURL.toString(), exampleURL.openStream());
+		XMLStreamUtils.skipStartDocument(xmlStream);
+		return new TransactionXmlReader110().read(xmlStream);
+	}
+
 }

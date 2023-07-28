@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -54,137 +53,141 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Converts between internal object values and XML strings.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class XMLValueMangler {
 
-    private static final Logger LOG = LoggerFactory.getLogger( XMLValueMangler.class );
+	private static final Logger LOG = LoggerFactory.getLogger(XMLValueMangler.class);
 
-    /**
-     * Returns the internal representation for the given XML string and {@link BaseType}.
-     * 
-     * @param s
-     * @param pt
-     * @return
-     * @throws IllegalArgumentException
-     */
-    public static Object xmlToInternal( String s, BaseType pt )
-                            throws IllegalArgumentException {
-        Object value = s;
-        switch ( pt ) {
-        case BOOLEAN: {
-            if ( s.equals( "true" ) || s.equals( "1" ) ) {
-                value = Boolean.TRUE;
-            } else if ( s.equals( "false" ) || s.equals( "0" ) ) {
-                value = Boolean.FALSE;
-            } else {
-                String msg = "Value ('" + s + "') is not valid with respect to the xs:boolean type. "
-                             + "Valid values are 'true', 'false', '1' and '0'.";
-                throw new IllegalArgumentException( msg );
-            }
-            break;
-        }
-        case DATE: {
-            value = parseDate( s );
-            break;
-        }
-        case DATE_TIME: {
-            value = parseDateTime( s );
-            break;
-        }
-        case DECIMAL: {
-            value = new BigDecimal( s );
-            break;
-        }
-        case DOUBLE: {
-            value = new Double( s );
-            break;
-        }
-        case INTEGER: {
-            value = new BigInteger( s );
-            break;
-        }
-        case STRING: {
-            break;
-        }
-        case TIME: {
-            try {
-                value = parseTime( s );
-            } catch ( Exception e ) {
-                String msg = "Value ('" + s + "') is not valid with respect to the xs:time type.";
-                throw new IllegalArgumentException( msg );
-            }
-            break;
-        }
-        default: {
-            LOG.warn( "Unhandled primitive type " + pt + " -- treating as string value." );
-        }
-        }
-        return value;
-    }
+	/**
+	 * Returns the internal representation for the given XML string and {@link BaseType}.
+	 * @param s
+	 * @param pt
+	 * @return
+	 * @throws IllegalArgumentException
+	 */
+	public static Object xmlToInternal(String s, BaseType pt) throws IllegalArgumentException {
+		Object value = s;
+		switch (pt) {
+			case BOOLEAN: {
+				if (s.equals("true") || s.equals("1")) {
+					value = Boolean.TRUE;
+				}
+				else if (s.equals("false") || s.equals("0")) {
+					value = Boolean.FALSE;
+				}
+				else {
+					String msg = "Value ('" + s + "') is not valid with respect to the xs:boolean type. "
+							+ "Valid values are 'true', 'false', '1' and '0'.";
+					throw new IllegalArgumentException(msg);
+				}
+				break;
+			}
+			case DATE: {
+				value = parseDate(s);
+				break;
+			}
+			case DATE_TIME: {
+				value = parseDateTime(s);
+				break;
+			}
+			case DECIMAL: {
+				value = new BigDecimal(s);
+				break;
+			}
+			case DOUBLE: {
+				value = new Double(s);
+				break;
+			}
+			case INTEGER: {
+				value = new BigInteger(s);
+				break;
+			}
+			case STRING: {
+				break;
+			}
+			case TIME: {
+				try {
+					value = parseTime(s);
+				}
+				catch (Exception e) {
+					String msg = "Value ('" + s + "') is not valid with respect to the xs:time type.";
+					throw new IllegalArgumentException(msg);
+				}
+				break;
+			}
+			default: {
+				LOG.warn("Unhandled primitive type " + pt + " -- treating as string value.");
+			}
+		}
+		return value;
+	}
 
-    static String internalToXML( Object o, BaseType pt ) {
-        String xml = null;
-        if ( o != null ) {
-            if ( pt != null ) {
-                switch ( pt ) {
-                case DATE:
-                    if ( o instanceof Date ) {
-                        xml = "" + formatDate( (Temporal) o );
-                    } else {
-                        LOG.warn( "Unhandled Date class " + o.getClass() + " -- converting via #toString()" );
-                        xml = "" + o;
-                    }
-                    break;
-                case DATE_TIME:
-                    if ( o instanceof DateTime ) {
-                        xml = "" + formatDateTime( (Temporal) o );
-                    } else {
-                        LOG.warn( "Unhandled Date class " + o.getClass() + " -- converting via #toString()" );
-                        xml = "" + o;
-                    }
-                    break;
-                case TIME: {
-                    if ( o instanceof Time ) {
-                        xml = "" + formatTime( (Temporal) o );
-                    } else {
-                        LOG.warn( "Unhandled Date class " + o.getClass() + " -- converting via #toString()" );
-                        xml = "" + o;
-                    }
-                    break;
-                }
-                case STRING:
-                    xml = "" + o;
-                    break;
-                case BOOLEAN:
-                    xml = "" + o;
-                    break;
-                case DECIMAL:
-                    if ( o instanceof BigDecimal ) {
-                        xml = ( (BigDecimal) o ).toPlainString();
-                    } else {
-                        xml = "" + o;
-                    }
-                    break;
-                case DOUBLE:
-                    xml = "" + o;
-                    break;
-                case INTEGER:
-                    xml = "" + o;
-                    break;
-                default: {
-                    LOG.warn( "Unhandled primitive type " + pt + " -- treating as string value." );
-                    xml = "" + o;
-                }
-                }
-            } else {
-                xml = "" + o;
-            }
-        }
-        return xml;
-    }
+	static String internalToXML(Object o, BaseType pt) {
+		String xml = null;
+		if (o != null) {
+			if (pt != null) {
+				switch (pt) {
+					case DATE:
+						if (o instanceof Date) {
+							xml = "" + formatDate((Temporal) o);
+						}
+						else {
+							LOG.warn("Unhandled Date class " + o.getClass() + " -- converting via #toString()");
+							xml = "" + o;
+						}
+						break;
+					case DATE_TIME:
+						if (o instanceof DateTime) {
+							xml = "" + formatDateTime((Temporal) o);
+						}
+						else {
+							LOG.warn("Unhandled Date class " + o.getClass() + " -- converting via #toString()");
+							xml = "" + o;
+						}
+						break;
+					case TIME: {
+						if (o instanceof Time) {
+							xml = "" + formatTime((Temporal) o);
+						}
+						else {
+							LOG.warn("Unhandled Date class " + o.getClass() + " -- converting via #toString()");
+							xml = "" + o;
+						}
+						break;
+					}
+					case STRING:
+						xml = "" + o;
+						break;
+					case BOOLEAN:
+						xml = "" + o;
+						break;
+					case DECIMAL:
+						if (o instanceof BigDecimal) {
+							xml = ((BigDecimal) o).toPlainString();
+						}
+						else {
+							xml = "" + o;
+						}
+						break;
+					case DOUBLE:
+						xml = "" + o;
+						break;
+					case INTEGER:
+						xml = "" + o;
+						break;
+					default: {
+						LOG.warn("Unhandled primitive type " + pt + " -- treating as string value.");
+						xml = "" + o;
+					}
+				}
+			}
+			else {
+				xml = "" + o;
+			}
+		}
+		return xml;
+	}
+
 }

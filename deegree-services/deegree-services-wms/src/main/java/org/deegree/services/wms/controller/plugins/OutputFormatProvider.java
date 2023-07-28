@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -42,23 +41,19 @@ import org.deegree.rendering.r2d.context.RenderContext;
 import org.deegree.rendering.r2d.context.RenderingInfo;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface OutputFormatProvider {
 
-    /**
-     * @return a collection of supported output format mime types
-     */
-    Collection<String> getSupportedOutputFormats();
+	/**
+	 * @return a collection of supported output format mime types
+	 */
+	Collection<String> getSupportedOutputFormats();
 
-    /**
-     * @param info
-     * @return the render context that produces the output formats
-     */
-    RenderContext getRenderers( RenderingInfo info, OutputStream outputStream );
+	/**
+	 * @param info
+	 * @return the render context that produces the output formats
+	 */
+	RenderContext getRenderers(RenderingInfo info, OutputStream outputStream);
 
 }

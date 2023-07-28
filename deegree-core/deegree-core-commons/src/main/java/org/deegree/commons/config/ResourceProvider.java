@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -38,25 +37,21 @@ package org.deegree.commons.config;
 import java.net.URL;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface ResourceProvider {
 
-    /**
-     * Returns the namespace for configuration documents that this provider handles.
-     * 
-     * @return the namespace for configuration documents, never <code>null</code>
-     */
-    String getConfigNamespace();
+	/**
+	 * Returns the namespace for configuration documents that this provider handles.
+	 * @return the namespace for configuration documents, never <code>null</code>
+	 */
+	String getConfigNamespace();
 
-    /**
-     * Returns the URL for retrieving the configuration document schema.
-     * 
-     * @return the URL for retrieving the configuration document schema, may be <code>null</code>
-     */
-    URL getConfigSchema();
+	/**
+	 * Returns the URL for retrieving the configuration document schema.
+	 * @return the URL for retrieving the configuration document schema, may be
+	 * <code>null</code>
+	 */
+	URL getConfigSchema();
+
 }

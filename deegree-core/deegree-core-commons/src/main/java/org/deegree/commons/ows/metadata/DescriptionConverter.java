@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aschmitz@wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -45,27 +44,23 @@ import org.deegree.commons.metadata.description.jaxb.KeywordsType;
 import org.deegree.commons.metadata.description.jaxb.LanguageStringType;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 public class DescriptionConverter {
 
-    public static Description fromJaxb( List<LanguageStringType> titles, List<LanguageStringType> abstracts,
-                                        List<KeywordsType> keywords ) {
-        Description desc = new Description( null, null, null, null );
-        if ( titles != null ) {
-            desc.setTitles( map( titles, LANG_LANG_MAPPER ) );
-        }
-        if ( abstracts != null ) {
-            desc.setAbstracts( map( abstracts, LANG_LANG_MAPPER ) );
-        }
-        if ( keywords != null ) {
-            desc.setKeywords( map( keywords, KW_MAPPER ) );
-        }
-        return desc;
-    }
+	public static Description fromJaxb(List<LanguageStringType> titles, List<LanguageStringType> abstracts,
+			List<KeywordsType> keywords) {
+		Description desc = new Description(null, null, null, null);
+		if (titles != null) {
+			desc.setTitles(map(titles, LANG_LANG_MAPPER));
+		}
+		if (abstracts != null) {
+			desc.setAbstracts(map(abstracts, LANG_LANG_MAPPER));
+		}
+		if (keywords != null) {
+			desc.setKeywords(map(keywords, KW_MAPPER));
+		}
+		return desc;
+	}
 
 }

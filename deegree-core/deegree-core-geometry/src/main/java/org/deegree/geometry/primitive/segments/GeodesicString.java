@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -38,20 +37,18 @@ package org.deegree.geometry.primitive.segments;
 import org.deegree.geometry.points.Points;
 
 /**
- * A <code>GeodesicString</code> is computed from two or more positions and an interpolation using geodesics defined
- * from the geoid (or ellipsoid) of the coordinate reference system being used.
- * 
+ * A <code>GeodesicString</code> is computed from two or more positions and an
+ * interpolation using geodesics defined from the geoid (or ellipsoid) of the coordinate
+ * reference system being used.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface GeodesicString extends CurveSegment {
 
-    /**
-     * Returns the control points of the string.
-     * 
-     * @return the control points of the string
-     */
-    public Points getControlPoints();
+	/**
+	 * Returns the control points of the string.
+	 * @return the control points of the string
+	 */
+	public Points getControlPoints();
+
 }

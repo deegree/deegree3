@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -61,96 +60,95 @@ import org.deegree.workspace.standard.DefaultWorkspace;
 
 /**
  * <code>PostgreSQLImporter</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 @Tool(value = "This tool can be used to import SLD/SE files into a WMS styles database.")
 public class PostgreSQLImporter {
-    private static Options initOptions() {
-        Options opts = new Options();
 
-        Option opt = new Option( "f", "sldfile", true, "input SE/SLD style file" );
-        opt.setRequired( true );
-        opts.addOption( opt );
+	private static Options initOptions() {
+		Options opts = new Options();
 
-        opt = new Option( "d", "dburl", true, "database url, like jdbc:postgresql://localhost/dbname" );
-        opt.setRequired( true );
-        opts.addOption( opt );
+		Option opt = new Option("f", "sldfile", true, "input SE/SLD style file");
+		opt.setRequired(true);
+		opts.addOption(opt);
 
-        opt = new Option( "u", "dbuser", true, "database user, like postgres" );
-        opt.setRequired( true );
-        opts.addOption( opt );
+		opt = new Option("d", "dburl", true, "database url, like jdbc:postgresql://localhost/dbname");
+		opt.setRequired(true);
+		opts.addOption(opt);
 
-        opt = new Option( "p", "dbpassword", true, "database password, if left off, will be set as empty" );
-        opt.setRequired( false );
-        opts.addOption( opt );
+		opt = new Option("u", "dbuser", true, "database user, like postgres");
+		opt.setRequired(true);
+		opts.addOption(opt);
 
-        opt = new Option( "s", "schema", true, "table schema, if left off, public will be used" );
-        opt.setRequired( false );
-        opts.addOption( opt );
+		opt = new Option("p", "dbpassword", true, "database password, if left off, will be set as empty");
+		opt.setRequired(false);
+		opts.addOption(opt);
 
-        CommandUtils.addDefaultOptions( opts );
+		opt = new Option("s", "schema", true, "table schema, if left off, public will be used");
+		opt.setRequired(false);
+		opts.addOption(opt);
 
-        return opts;
+		CommandUtils.addDefaultOptions(opts);
 
-    }
+		return opts;
 
-    /**
-     * @param args
-     * @throws XMLStreamException
-     * @throws FactoryConfigurationError
-     * @throws IOException
-     */
-    public static void main( String[] args )
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
-        Options options = initOptions();
+	}
 
-        // for the moment, using the CLI API there is no way to respond to a help argument; see
-        // https://issues.apache.org/jira/browse/CLI-179
-        if ( args.length == 0 || ( args.length > 0 && ( args[0].contains( "help" ) || args[0].contains( "?" ) ) ) ) {
-            CommandUtils.printHelp( options, PostgreSQLImporter.class.getSimpleName(), null, null );
-        }
+	/**
+	 * @param args
+	 * @throws XMLStreamException
+	 * @throws FactoryConfigurationError
+	 * @throws IOException
+	 */
+	public static void main(String[] args) throws XMLStreamException, FactoryConfigurationError, IOException {
+		Options options = initOptions();
 
-        try {
-            new PosixParser().parse( options, args );
+		// for the moment, using the CLI API there is no way to respond to a help
+		// argument; see
+		// https://issues.apache.org/jira/browse/CLI-179
+		if (args.length == 0 || (args.length > 0 && (args[0].contains("help") || args[0].contains("?")))) {
+			CommandUtils.printHelp(options, PostgreSQLImporter.class.getSimpleName(), null, null);
+		}
 
-            String inputFile = options.getOption( "sldfile" ).getValue();
-            String url = options.getOption( "dburl" ).getValue();
-            String user = options.getOption( "dbuser" ).getValue();
-            String pass = options.getOption( "dbpassword" ).getValue();
-            if ( pass == null ) {
-                pass = "";
-            }
-            String schema = options.getOption( "schema" ).getValue();
-            if ( schema == null ) {
-                schema = "public";
-            }
+		try {
+			new PosixParser().parse(options, args);
 
-            XMLInputFactory fac = XMLInputFactory.newInstance();
-            Style style = new SymbologyParser( true ).parse( fac.createXMLStreamReader( new FileInputStream( inputFile ) ) );
+			String inputFile = options.getOption("sldfile").getValue();
+			String url = options.getOption("dburl").getValue();
+			String user = options.getOption("dbuser").getValue();
+			String pass = options.getOption("dbpassword").getValue();
+			if (pass == null) {
+				pass = "";
+			}
+			String schema = options.getOption("schema").getValue();
+			if (schema == null) {
+				schema = "public";
+			}
 
-            Workspace workspace = new DefaultWorkspace( new File( "nonexistant" ) );
-            ResourceLocation<ConnectionProvider> loc = ConnectionProviderUtils.getSyntheticProvider( "style", url,
-                                                                                                     user, pass );
-            workspace.startup();
-            workspace.getLocationHandler().addExtraResource( loc );
-            workspace.initAll();
+			XMLInputFactory fac = XMLInputFactory.newInstance();
+			Style style = new SymbologyParser(true).parse(fac.createXMLStreamReader(new FileInputStream(inputFile)));
 
-            if ( style.isSimple() ) {
-                new PostgreSQLWriter( "style", schema, workspace ).write( style, null );
-            } else {
-                new PostgreSQLWriter( "style", schema, workspace ).write( new FileInputStream( inputFile ),
-                                                                          style.getName() );
-            }
-            workspace.destroy();
-        } catch ( ParseException exp ) {
-            System.err.println( Messages.getMessage( "TOOL_COMMANDLINE_ERROR", exp.getMessage() ) );
-            // printHelp( options );
-        }
+			Workspace workspace = new DefaultWorkspace(new File("nonexistant"));
+			ResourceLocation<ConnectionProvider> loc = ConnectionProviderUtils.getSyntheticProvider("style", url, user,
+					pass);
+			workspace.startup();
+			workspace.getLocationHandler().addExtraResource(loc);
+			workspace.initAll();
 
-    }
+			if (style.isSimple()) {
+				new PostgreSQLWriter("style", schema, workspace).write(style, null);
+			}
+			else {
+				new PostgreSQLWriter("style", schema, workspace).write(new FileInputStream(inputFile), style.getName());
+			}
+			workspace.destroy();
+		}
+		catch (ParseException exp) {
+			System.err.println(Messages.getMessage("TOOL_COMMANDLINE_ERROR", exp.getMessage()));
+			// printHelp( options );
+		}
+
+	}
 
 }

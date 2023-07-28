@@ -43,84 +43,81 @@ import org.deegree.tile.TileMatrix;
 
 /**
  * {@link TileDataLevel} backed by an {@link GdalDataset}.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * 
  * @since 3.4
  */
 class GdalTileDataLevel implements TileDataLevel {
 
-    private final TileMatrix metadata;
+	private final TileMatrix metadata;
 
-    private final File file;
+	private final File file;
 
-    private final int xMin;
+	private final int xMin;
 
-    private final int yMin;
+	private final int yMin;
 
-    private final int yMax;
+	private final int yMax;
 
-    private final int xMax;
+	private final int xMax;
 
-    private final String imageFormat;
+	private final String imageFormat;
 
-    private final GdalSettings gdalSettings;
+	private final GdalSettings gdalSettings;
 
-    /**
-     * Creates a new {@link GdalTileDataLevel} instance.
-     * 
-     * @param matrix
-     *            tile matrix, must not be <code>null</code>
-     * @param file
-     *            GDAL raster file, must not be <code>null</code>
-     * @param xMin
-     * @param yMin
-     * @param gdalSettings
-     * @throws Exception
-     */
-    GdalTileDataLevel( TileMatrix matrix, File file, int xMin, int yMin, int xMax, int yMax, String imageFormat,
-                       GdalSettings gdalSettings ) throws Exception {
-        this.metadata = matrix;
-        this.file = file;
-        this.xMin = xMin;
-        this.yMin = yMin;
-        this.xMax = xMax;
-        this.yMax = yMax;
-        this.imageFormat = imageFormat;
-        this.gdalSettings = gdalSettings;
-    }
+	/**
+	 * Creates a new {@link GdalTileDataLevel} instance.
+	 * @param matrix tile matrix, must not be <code>null</code>
+	 * @param file GDAL raster file, must not be <code>null</code>
+	 * @param xMin
+	 * @param yMin
+	 * @param gdalSettings
+	 * @throws Exception
+	 */
+	GdalTileDataLevel(TileMatrix matrix, File file, int xMin, int yMin, int xMax, int yMax, String imageFormat,
+			GdalSettings gdalSettings) throws Exception {
+		this.metadata = matrix;
+		this.file = file;
+		this.xMin = xMin;
+		this.yMin = yMin;
+		this.xMax = xMax;
+		this.yMax = yMax;
+		this.imageFormat = imageFormat;
+		this.gdalSettings = gdalSettings;
+	}
 
-    @Override
-    public TileMatrix getMetadata() {
-        return metadata;
-    }
+	@Override
+	public TileMatrix getMetadata() {
+		return metadata;
+	}
 
-    @Override
-    public Tile getTile( long x, long y ) {
-        if ( !isWithinLimits( x, y ) ) {
-            return null;
-        }
-        double tileWidth = metadata.getTileWidth();
-        double tileHeight = metadata.getTileHeight();
-        Envelope matrixEnvelope = metadata.getSpatialMetadata().getEnvelope();
-        double minX = tileWidth * x + matrixEnvelope.getMin().get0();
-        double maxX = minX + tileWidth;
-        double maxY = matrixEnvelope.getMax().get1() - tileHeight * y;
-        double minY = maxY - tileHeight;
-        ICRS crs = metadata.getSpatialMetadata().getEnvelope().getCoordinateSystem();
-        Point min = new DefaultPoint( null, crs, null, new double[] { minX, minY } );
-        Point max = new DefaultPoint( null, crs, null, new double[] { maxX, maxY } );
-        Envelope tileEnvelope = new DefaultEnvelope( null, crs, null, min, max );
-        return new GdalTile( file, tileEnvelope, (int) metadata.getTilePixelsX(), (int) metadata.getTilePixelsY(),
-                             imageFormat, gdalSettings.getDatasetPool() );
-    }
+	@Override
+	public Tile getTile(long x, long y) {
+		if (!isWithinLimits(x, y)) {
+			return null;
+		}
+		double tileWidth = metadata.getTileWidth();
+		double tileHeight = metadata.getTileHeight();
+		Envelope matrixEnvelope = metadata.getSpatialMetadata().getEnvelope();
+		double minX = tileWidth * x + matrixEnvelope.getMin().get0();
+		double maxX = minX + tileWidth;
+		double maxY = matrixEnvelope.getMax().get1() - tileHeight * y;
+		double minY = maxY - tileHeight;
+		ICRS crs = metadata.getSpatialMetadata().getEnvelope().getCoordinateSystem();
+		Point min = new DefaultPoint(null, crs, null, new double[] { minX, minY });
+		Point max = new DefaultPoint(null, crs, null, new double[] { maxX, maxY });
+		Envelope tileEnvelope = new DefaultEnvelope(null, crs, null, min, max);
+		return new GdalTile(file, tileEnvelope, (int) metadata.getTilePixelsX(), (int) metadata.getTilePixelsY(),
+				imageFormat, gdalSettings.getDatasetPool());
+	}
 
-    private boolean isWithinLimits( long x, long y ) {
-        return x >= xMin && x <= xMax && y >= yMin && y <= yMax;
-    }
+	private boolean isWithinLimits(long x, long y) {
+		return x >= xMin && x <= xMax && y >= yMin && y <= yMax;
+	}
 
-    @Override
-    public List<String> getStyles() {
-        return null;
-    }
+	@Override
+	public List<String> getStyles() {
+		return null;
+	}
+
 }

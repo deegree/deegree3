@@ -51,104 +51,101 @@ import org.deegree.workspace.Workspace;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:name@company.com">Your Name</a>
- * @author last edited by: $Author: schneider $
- * 
- * @version $Revision: $, $Date: $
  */
 public abstract class AbstractResourceManagerBean<T extends ResourceManager<?>> implements Serializable {
 
-    private static final long serialVersionUID = -7795125766411006135L;
+	private static final long serialVersionUID = -7795125766411006135L;
 
-    private String newConfigType;
+	private String newConfigType;
 
-    private List<String> newConfigTypeTemplates;
+	private List<String> newConfigTypeTemplates;
 
-    private String newConfigTypeTemplate;
+	private String newConfigTypeTemplate;
 
-    private String newConfigId;
+	private String newConfigId;
 
-    private transient ResourceManagerMetadata metadata;
+	private transient ResourceManagerMetadata metadata;
 
-    protected transient ResourceManager<?> resourceManager;
+	protected transient ResourceManager<?> resourceManager;
 
-    private transient Workspace workspace;
+	private transient Workspace workspace;
 
-    protected AbstractResourceManagerBean() {
-        // default constructor required
-    }
+	protected AbstractResourceManagerBean() {
+		// default constructor required
+	}
 
-    protected AbstractResourceManagerBean( Class<T> mgrClass ) {
-        workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
-        resourceManager = workspace.getResourceManager( mgrClass );
-        metadata = ResourceManagerMetadata.getMetadata( resourceManager, workspace );
-    }
+	protected AbstractResourceManagerBean(Class<T> mgrClass) {
+		workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
+		resourceManager = workspace.getResourceManager(mgrClass);
+		metadata = ResourceManagerMetadata.getMetadata(resourceManager, workspace);
+	}
 
-    public ResourceManagerMetadata getMetadata() {
-        return metadata;
-    }
+	public ResourceManagerMetadata getMetadata() {
+		return metadata;
+	}
 
-    public List<Config> getConfigs() {
-        List<Config> configs = new ArrayList<Config>();
-        for ( ResourceMetadata<?> md : resourceManager.getResourceMetadata() ) {
-            configs.add( new Config( md, resourceManager, getStartView(), true ) );
-        }
-        Collections.sort( configs );
-        return configs;
-    }
+	public List<Config> getConfigs() {
+		List<Config> configs = new ArrayList<Config>();
+		for (ResourceMetadata<?> md : resourceManager.getResourceMetadata()) {
+			configs.add(new Config(md, resourceManager, getStartView(), true));
+		}
+		Collections.sort(configs);
+		return configs;
+	}
 
-    public List<String> getNewConfigTypeTemplates() {
-        return newConfigTypeTemplates;
-    }
+	public List<String> getNewConfigTypeTemplates() {
+		return newConfigTypeTemplates;
+	}
 
-    public void setNewConfigTypeTemplates( List<String> newConfigTypeTemplates ) {
-        this.newConfigTypeTemplates = newConfigTypeTemplates;
-    }
+	public void setNewConfigTypeTemplates(List<String> newConfigTypeTemplates) {
+		this.newConfigTypeTemplates = newConfigTypeTemplates;
+	}
 
-    public String getNewConfigTypeTemplate() {
-        return newConfigTypeTemplate;
-    }
+	public String getNewConfigTypeTemplate() {
+		return newConfigTypeTemplate;
+	}
 
-    public void setNewConfigTypeTemplate( String newConfigTypeTemplate ) {
-        this.newConfigTypeTemplate = newConfigTypeTemplate;
-    }
+	public void setNewConfigTypeTemplate(String newConfigTypeTemplate) {
+		this.newConfigTypeTemplate = newConfigTypeTemplate;
+	}
 
-    public String getNewConfigId() {
-        return newConfigId;
-    }
+	public String getNewConfigId() {
+		return newConfigId;
+	}
 
-    public void setNewConfigId( String newConfigId ) {
-        this.newConfigId = newConfigId;
-    }
+	public void setNewConfigId(String newConfigId) {
+		this.newConfigId = newConfigId;
+	}
 
-    public String getNewConfigType() {
-        return newConfigType;
-    }
+	public String getNewConfigType() {
+		return newConfigType;
+	}
 
-    public void setNewConfigType( String newConfigType ) {
-        this.newConfigType = newConfigType;
-        ResourceProvider<?> provider = metadata.getProvider( newConfigType );
-        if ( provider == null ) {
-            provider = metadata.getProviders().get( 0 );
-        }
-        ResourceProviderMetadata md = ResourceProviderMetadata.getMetadata( provider );
-        newConfigTypeTemplates = new LinkedList<String>( md.getExamples().keySet() );
-    }
+	public void setNewConfigType(String newConfigType) {
+		this.newConfigType = newConfigType;
+		ResourceProvider<?> provider = metadata.getProvider(newConfigType);
+		if (provider == null) {
+			provider = metadata.getProviders().get(0);
+		}
+		ResourceProviderMetadata md = ResourceProviderMetadata.getMetadata(provider);
+		newConfigTypeTemplates = new LinkedList<String>(md.getExamples().keySet());
+	}
 
-    public String getStartView() {
-        return null;
-    }
+	public String getStartView() {
+		return null;
+	}
 
-    public boolean getHasErrors() {
-        for ( ResourceMetadata<?> md : resourceManager.getResourceMetadata() ) {
-            FeatureStoreConfig config = new FeatureStoreConfig( md, resourceManager );
-            String state = config.getState();
-            if ( "Error".equals( state ) ) {
-                return true;
-            }
-        }
-        return false;
-    }
+	public boolean getHasErrors() {
+		for (ResourceMetadata<?> md : resourceManager.getResourceMetadata()) {
+			FeatureStoreConfig config = new FeatureStoreConfig(md, resourceManager);
+			String state = config.getState();
+			if ("Error".equals(state)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 }

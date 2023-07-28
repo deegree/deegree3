@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-metadata/src/main/java/org/deegree/metadata/iso/persistence/inspectors/HierarchyLevelInspector.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -56,72 +55,71 @@ import org.slf4j.LoggerFactory;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 30651 $, $Date: 2011-05-05 11:40:31 +0200 (Do, 05. Mai 2011) $
  */
 public class HierarchyLevelInspector implements RecordInspector<ISORecord> {
 
-    private static Logger LOG = LoggerFactory.getLogger( HierarchyLevelInspector.class );
+	private static Logger LOG = LoggerFactory.getLogger(HierarchyLevelInspector.class);
 
-    private final NamespaceBindings nsContext = new NamespaceBindings();
+	private final NamespaceBindings nsContext = new NamespaceBindings();
 
-    public HierarchyLevelInspector() {
-        nsContext.addNamespace( "srv", "http://www.isotc211.org/2005/srv" );
-        nsContext.addNamespace( "gmd", "http://www.isotc211.org/2005/gmd" );
-        nsContext.addNamespace( "gco", "http://www.isotc211.org/2005/gco" );
-    }
+	public HierarchyLevelInspector() {
+		nsContext.addNamespace("srv", "http://www.isotc211.org/2005/srv");
+		nsContext.addNamespace("gmd", "http://www.isotc211.org/2005/gmd");
+		nsContext.addNamespace("gco", "http://www.isotc211.org/2005/gco");
+	}
 
-    @Override
-    public ISORecord inspect( ISORecord record, Connection conn, SQLDialect dialect )
-                            throws MetadataInspectorException {
+	@Override
+	public ISORecord inspect(ISORecord record, Connection conn, SQLDialect dialect) throws MetadataInspectorException {
 
-        XMLAdapter a = new XMLAdapter( record.getAsOMElement() );
+		XMLAdapter a = new XMLAdapter(record.getAsOMElement());
 
-        /**
-         * if provided data is a dataset: type = dataset (default)
-         * <p>
-         * if provided data is a datasetCollection: type = series
-         * <p>
-         * if provided data is an application: type = application
-         * <p>
-         * if provided data is a service: type = service
-         */
-        OMElement rootEl = record.getAsOMElement();
-        String type = a.getNodeAsString( rootEl, new XPath( "./gmd:hierarchyLevel/gmd:MD_ScopeCode/@codeListValue",
-                                                            nsContext ), null );
+		/**
+		 * if provided data is a dataset: type = dataset (default)
+		 * <p>
+		 * if provided data is a datasetCollection: type = series
+		 * <p>
+		 * if provided data is an application: type = application
+		 * <p>
+		 * if provided data is a service: type = service
+		 */
+		OMElement rootEl = record.getAsOMElement();
+		String type = a.getNodeAsString(rootEl,
+				new XPath("./gmd:hierarchyLevel/gmd:MD_ScopeCode/@codeListValue", nsContext), null);
 
-        if ( type == null ) {
-            OMElement hln = a.getElement( rootEl, new XPath( "./gmd:hierarchyLevelName", nsContext ) );
-            OMElement contact = rootEl.getFirstChildWithName( new QName( "http://www.isotc211.org/2005/gmd", "contact" ) );
-            if ( hln != null ) {
-                hln.insertSiblingBefore( createHierarchyLevelElement() );
-            } else {
-                if ( contact != null ) {
-                    contact.insertSiblingBefore( createHierarchyLevelElement() );
-                } else {
-                    String msg = Messages.getMessage( "ERROR_MANDATORY_ELEMENT_MISSING", "contact" );
-                    LOG.debug( msg );
-                    throw new MetadataInspectorException( msg );
-                }
-            }
-        }
-        return record;
-    }
+		if (type == null) {
+			OMElement hln = a.getElement(rootEl, new XPath("./gmd:hierarchyLevelName", nsContext));
+			OMElement contact = rootEl.getFirstChildWithName(new QName("http://www.isotc211.org/2005/gmd", "contact"));
+			if (hln != null) {
+				hln.insertSiblingBefore(createHierarchyLevelElement());
+			}
+			else {
+				if (contact != null) {
+					contact.insertSiblingBefore(createHierarchyLevelElement());
+				}
+				else {
+					String msg = Messages.getMessage("ERROR_MANDATORY_ELEMENT_MISSING", "contact");
+					LOG.debug(msg);
+					throw new MetadataInspectorException(msg);
+				}
+			}
+		}
+		return record;
+	}
 
-    private OMElement createHierarchyLevelElement() {
-        OMFactory factory = OMAbstractFactory.getOMFactory();
-        OMNamespace namespaceGMD = factory.createOMNamespace( "http://www.isotc211.org/2005/gmd", "gmd" );
-        OMElement omHierarchieLevel = factory.createOMElement( "hierarchyLevel", namespaceGMD );
-        OMElement omScopeCode = factory.createOMElement( "MD_ScopeCode", namespaceGMD );
-        omHierarchieLevel.addChild( omScopeCode );
-        omScopeCode.addAttribute( "codeList",
-                                  "http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_ScopeCode",
-                                  null );
-        omScopeCode.addAttribute( "codeListValue", "dataset", null );
-        omScopeCode.setText( "dataset" );
-        return omHierarchieLevel;
-    }
+	private OMElement createHierarchyLevelElement() {
+		OMFactory factory = OMAbstractFactory.getOMFactory();
+		OMNamespace namespaceGMD = factory.createOMNamespace("http://www.isotc211.org/2005/gmd", "gmd");
+		OMElement omHierarchieLevel = factory.createOMElement("hierarchyLevel", namespaceGMD);
+		OMElement omScopeCode = factory.createOMElement("MD_ScopeCode", namespaceGMD);
+		omHierarchieLevel.addChild(omScopeCode);
+		omScopeCode.addAttribute("codeList",
+				"http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_ScopeCode",
+				null);
+		omScopeCode.addAttribute("codeListValue", "dataset", null);
+		omScopeCode.setText("dataset");
+		return omHierarchieLevel;
+	}
+
 }

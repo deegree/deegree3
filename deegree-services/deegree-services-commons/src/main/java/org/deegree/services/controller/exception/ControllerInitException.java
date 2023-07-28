@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/svn_classfile_header_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -39,36 +38,32 @@ package org.deegree.services.controller.exception;
 import org.deegree.services.controller.AbstractOWS;
 
 /**
- * Indicates that the initialization of a {@link AbstractOWS} failed (usually due to a configuration error).
+ * Indicates that the initialization of a {@link AbstractOWS} failed (usually due to a
+ * configuration error).
  *
  * @author <a href="mailto:apadberg@uni-bonn.de">Alexander Padberg</a>
- * @author last edited by: $Author: $
- *
- * @version $Revision: $, $Date: $
  */
 public class ControllerInitException extends Exception {
 
-    private static final long serialVersionUID = 1349092248017136937L;
+	private static final long serialVersionUID = 1349092248017136937L;
 
-    /**
-     * Creates a new {@link ControllerInitException} instance with the given detail message.
-     *
-     * @param msg
-     *            describes the reason of the exception
-     */
-    public ControllerInitException( String msg ) {
-        super( msg );
-    }
+	/**
+	 * Creates a new {@link ControllerInitException} instance with the given detail
+	 * message.
+	 * @param msg describes the reason of the exception
+	 */
+	public ControllerInitException(String msg) {
+		super(msg);
+	}
 
-    /**
-     * Creates a new {@link ControllerInitException} instance with the given detail message and causing exception.
-     *
-     * @param msg
-     *            describes the reason of the exception
-     * @param cause
-     *            causing exception
-     */
-    public ControllerInitException( String msg, Throwable cause ) {
-        super( msg, cause );
-    }
+	/**
+	 * Creates a new {@link ControllerInitException} instance with the given detail
+	 * message and causing exception.
+	 * @param msg describes the reason of the exception
+	 * @param cause causing exception
+	 */
+	public ControllerInitException(String msg, Throwable cause) {
+		super(msg, cause);
+	}
+
 }

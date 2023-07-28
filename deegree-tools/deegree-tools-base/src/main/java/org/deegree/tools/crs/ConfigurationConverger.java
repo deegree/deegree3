@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2009 by:
@@ -67,215 +66,218 @@ import org.deegree.cs.transformations.TransformationFactory.DSTransform;
 
 /**
  * The <code>ConfigurationConverger</code> class TODO add class documentation here.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
- * 
+ *
  */
 @Tool("Export the CoordinateSystems from a given Input format to a given Output format and place the result into an output File.")
 public class ConfigurationConverger {
 
-    private static final String OPT_IN_FILE = "input";
+	private static final String OPT_IN_FILE = "input";
 
-    private static final String OPT_IN_FORM = "inFormat";
+	private static final String OPT_IN_FORM = "inFormat";
 
-    private static final String OPT_OUT_FILE = "output";
+	private static final String OPT_OUT_FILE = "output";
 
-    private static final String OPT_OUT_FORM = "outFormat";
+	private static final String OPT_OUT_FORM = "outFormat";
 
-    private enum Format {
-        PROJ4, DEEGREE, GML, DATABASE;
+	private enum Format {
 
-        @Override
-        public String toString() {
-            return name().toLowerCase();
-        }
+		PROJ4, DEEGREE, GML, DATABASE;
 
-        static Format fromString( String format ) {
-            Format result = null;
-            if ( format != null ) {
+		@Override
+		public String toString() {
+			return name().toLowerCase();
+		}
 
-                String f = format.toLowerCase().trim();
-                if ( f.contains( "proj" ) ) {
-                    result = PROJ4;
-                } else if ( f.contains( "dee" ) ) {
-                    result = DEEGREE;
-                } else if ( f.contains( "gml" ) ) {
-                    result = GML;
-                } else if ( f.contains( "data" ) || f.contains( "db" ) ) {
-                    result = DATABASE;
-                }
+		static Format fromString(String format) {
+			Format result = null;
+			if (format != null) {
 
-            }
-            return result;
-        }
+				String f = format.toLowerCase().trim();
+				if (f.contains("proj")) {
+					result = PROJ4;
+				}
+				else if (f.contains("dee")) {
+					result = DEEGREE;
+				}
+				else if (f.contains("gml")) {
+					result = GML;
+				}
+				else if (f.contains("data") || f.contains("db")) {
+					result = DATABASE;
+				}
 
-    }
+			}
+			return result;
+		}
 
-    /**
-     * Export the CoordinateSystems from a given Input format to a given Output format and place the result into an
-     * output File. If the input format is Proj4, an input File will be provided. If the -verify option is provided,
-     * then the program will check whether there is an Input-CRS that is not found in an Output-CRS. If this is so, all
-     * Input CRS's will be exported to the Output format.
-     * 
-     * @param args
-     * @throws Exception
-     */
-    public static void main( String[] args )
-                            throws Exception {
-        CommandLineParser parser = new PosixParser();
+	}
 
-        Options options = initOptions();
-        boolean verbose = false;
+	/**
+	 * Export the CoordinateSystems from a given Input format to a given Output format and
+	 * place the result into an output File. If the input format is Proj4, an input File
+	 * will be provided. If the -verify option is provided, then the program will check
+	 * whether there is an Input-CRS that is not found in an Output-CRS. If this is so,
+	 * all Input CRS's will be exported to the Output format.
+	 * @param args
+	 * @throws Exception
+	 */
+	public static void main(String[] args) throws Exception {
+		CommandLineParser parser = new PosixParser();
 
-        // for the moment, using the CLI API there is no way to respond to a help argument; see
-        // https://issues.apache.org/jira/browse/CLI-179
-        if ( args != null && args.length > 0 ) {
-            for ( String a : args ) {
-                if ( a != null && a.toLowerCase().contains( "help" ) || "-?".equals( a ) ) {
-                    printHelp( options );
-                }
-            }
-        }
-        CommandLine line = null;
-        try {
-            line = parser.parse( options, args );
-            verbose = line.hasOption( OPT_VERBOSE );
-            init( line );
-        } catch ( ParseException exp ) {
-            System.err.println( "ERROR: Invalid command line: " + exp.getMessage() );
-            printHelp( options );
-        } catch ( Exception e ) {
-            System.err.println( "An Exception occurred while transforming your coordinate, error message: "
-                                + e.getMessage() );
-            if ( verbose ) {
-                e.printStackTrace();
-            }
-            System.exit( 1 );
-        }
-    }
+		Options options = initOptions();
+		boolean verbose = false;
 
-    /**
-     * add crs and point here if using eclipse to start.
-     * 
-     * @throws IOException
-     * 
-     * @throws TransformationException
-     * @throws IllegalArgumentException
-     * @throws UnknownCRSException
-     * @throws IOException
-     */
-    private static void init( CommandLine line )
-                            throws IOException {
-        String inFile = line.getOptionValue( OPT_IN_FILE );
-        Format inFormat = mapToKnownFormat( line.getOptionValue( OPT_IN_FORM ) );
+		// for the moment, using the CLI API there is no way to respond to a help
+		// argument; see
+		// https://issues.apache.org/jira/browse/CLI-179
+		if (args != null && args.length > 0) {
+			for (String a : args) {
+				if (a != null && a.toLowerCase().contains("help") || "-?".equals(a)) {
+					printHelp(options);
+				}
+			}
+		}
+		CommandLine line = null;
+		try {
+			line = parser.parse(options, args);
+			verbose = line.hasOption(OPT_VERBOSE);
+			init(line);
+		}
+		catch (ParseException exp) {
+			System.err.println("ERROR: Invalid command line: " + exp.getMessage());
+			printHelp(options);
+		}
+		catch (Exception e) {
+			System.err
+				.println("An Exception occurred while transforming your coordinate, error message: " + e.getMessage());
+			if (verbose) {
+				e.printStackTrace();
+			}
+			System.exit(1);
+		}
+	}
 
-        // File inputFile = new File( inFile );
+	/**
+	 * add crs and point here if using eclipse to start.
+	 * @throws IOException
+	 * @throws TransformationException
+	 * @throws IllegalArgumentException
+	 * @throws UnknownCRSException
+	 * @throws IOException
+	 */
+	private static void init(CommandLine line) throws IOException {
+		String inFile = line.getOptionValue(OPT_IN_FILE);
+		Format inFormat = mapToKnownFormat(line.getOptionValue(OPT_IN_FORM));
 
-        String outFile = line.getOptionValue( OPT_OUT_FILE );
-        Format outFormat = mapToKnownFormat( line.getOptionValue( OPT_OUT_FORM ) );
+		// File inputFile = new File( inFile );
 
-        Properties inProps = new Properties();
-        inProps.put( "crs.configuration", inFile );
+		String outFile = line.getOptionValue(OPT_OUT_FILE);
+		Format outFormat = mapToKnownFormat(line.getOptionValue(OPT_OUT_FORM));
 
-        DSTransform prefTrans = DSTransform.HELMERT;
-        CRSStore in = null;
-        switch ( inFormat ) {
-        case DEEGREE:
-            in = new DeegreeCRSStore( prefTrans, null );
-            break;
-        case GML:
-            in = new GMLCRSStore( prefTrans );
-            break;
-        case PROJ4:
-            in = new PROJ4CRSStore( prefTrans );
-            break;
-        default:
-            throw new IllegalArgumentException( "No crs provider for input format: " + inFormat
-                                                + " could be determined." );
+		Properties inProps = new Properties();
+		inProps.put("crs.configuration", inFile);
 
-        }
+		DSTransform prefTrans = DSTransform.HELMERT;
+		CRSStore in = null;
+		switch (inFormat) {
+			case DEEGREE:
+				in = new DeegreeCRSStore(prefTrans, null);
+				break;
+			case GML:
+				in = new GMLCRSStore(prefTrans);
+				break;
+			case PROJ4:
+				in = new PROJ4CRSStore(prefTrans);
+				break;
+			default:
+				throw new IllegalArgumentException(
+						"No crs provider for input format: " + inFormat + " could be determined.");
 
-        CRSExporterBase exporter = null;
-        switch ( outFormat ) {
+		}
 
-        case DEEGREE:
-            exporter = new CRSExporterBase();
-            break;
-        case GML:
-            break;
-        case PROJ4:
-            break;
-        default:
-            throw new IllegalArgumentException( "No crs provider for output format: " + outFormat
-                                                + " could be determined." );
+		CRSExporterBase exporter = null;
+		switch (outFormat) {
 
-        }
+			case DEEGREE:
+				exporter = new CRSExporterBase();
+				break;
+			case GML:
+				break;
+			case PROJ4:
+				break;
+			default:
+				throw new IllegalArgumentException(
+						"No crs provider for output format: " + outFormat + " could be determined.");
 
-        // List<CoordinateSystem> allSystems = new LinkedList<CoordinateSystem>();
-        // allSystems.add( in.getCRSByCode( new CRSCodeType( "3395", "EPSG" ) ) );
-        List<ICRS> allSystems = in.getAvailableCRSs();
-        StringBuilder sb = new StringBuilder( allSystems.size() * 2000 );
-        if ( exporter != null ) {
-            exporter.export( sb, allSystems );
-            if ( outFile != null && !"".equals( outFile.trim() ) ) {
-                File outputFile = new File( outFile );
-                BufferedWriter writer = new BufferedWriter( new FileWriter( outputFile ) );
-                writer.write( sb.toString() );
-                writer.flush();
-                writer.close();
-            } else {
-                System.out.println( sb.toString() );
-            }
-        } else {
-            throw new UnsupportedOperationException( "No exporter found for output format: " + outFormat );
-        }
+		}
 
-    }
+		// List<CoordinateSystem> allSystems = new LinkedList<CoordinateSystem>();
+		// allSystems.add( in.getCRSByCode( new CRSCodeType( "3395", "EPSG" ) ) );
+		List<ICRS> allSystems = in.getAvailableCRSs();
+		StringBuilder sb = new StringBuilder(allSystems.size() * 2000);
+		if (exporter != null) {
+			exporter.export(sb, allSystems);
+			if (outFile != null && !"".equals(outFile.trim())) {
+				File outputFile = new File(outFile);
+				BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile));
+				writer.write(sb.toString());
+				writer.flush();
+				writer.close();
+			}
+			else {
+				System.out.println(sb.toString());
+			}
+		}
+		else {
+			throw new UnsupportedOperationException("No exporter found for output format: " + outFormat);
+		}
 
-    private static Format mapToKnownFormat( String format ) {
-        Format result = Format.fromString( format );
-        if ( result == null ) {
-            throw new IllegalArgumentException( "Format: " + format + " is not a known format, possibleValues are:"
-                                                + Arrays.toString( Format.values() ) );
-        }
-        return result;
-    }
+	}
 
-    private static Options initOptions() {
-        Options options = new Options();
+	private static Format mapToKnownFormat(String format) {
+		Format result = Format.fromString(format);
+		if (result == null) {
+			throw new IllegalArgumentException("Format: " + format + " is not a known format, possibleValues are:"
+					+ Arrays.toString(Format.values()));
+		}
+		return result;
+	}
 
-        Option option = new Option( "f", OPT_IN_FILE, true, "input file to read the crs defintions from (in inFormat)." );
-        option.setArgs( 1 );
-        option.setRequired( true );
-        options.addOption( option );
+	private static Options initOptions() {
+		Options options = new Options();
 
-        option = new Option( "o", OPT_OUT_FILE, true, "File to write the new defintions to" );
-        option.setArgs( 1 );
-        option.setRequired( true );
-        options.addOption( option );
+		Option option = new Option("f", OPT_IN_FILE, true, "input file to read the crs defintions from (in inFormat).");
+		option.setArgs(1);
+		option.setRequired(true);
+		options.addOption(option);
 
-        option = new Option( "if", OPT_IN_FORM, true, "The expected in format, allowed are: "
-                                                      + Arrays.toString( Format.values() ) );
-        option.setArgs( 1 );
-        option.setRequired( true );
-        options.addOption( option );
+		option = new Option("o", OPT_OUT_FILE, true, "File to write the new defintions to");
+		option.setArgs(1);
+		option.setRequired(true);
+		options.addOption(option);
 
-        option = new Option( "of", OPT_OUT_FORM, true, "The output format, allowed are: "
-                                                       + Arrays.toString( Format.values() ) );
-        option.setArgs( 1 );
-        option.setRequired( true );
-        options.addOption( option );
+		option = new Option("if", OPT_IN_FORM, true,
+				"The expected in format, allowed are: " + Arrays.toString(Format.values()));
+		option.setArgs(1);
+		option.setRequired(true);
+		options.addOption(option);
 
-        CommandUtils.addDefaultOptions( options );
+		option = new Option("of", OPT_OUT_FORM, true,
+				"The output format, allowed are: " + Arrays.toString(Format.values()));
+		option.setArgs(1);
+		option.setRequired(true);
+		options.addOption(option);
 
-        return options;
+		CommandUtils.addDefaultOptions(options);
 
-    }
+		return options;
 
-    private static void printHelp( Options options ) {
-        CommandUtils.printHelp( options, ConfigurationConverger.class.getCanonicalName(), null, null );
-    }
+	}
+
+	private static void printHelp(Options options) {
+		CommandUtils.printHelp(options, ConfigurationConverger.class.getCanonicalName(), null, null);
+	}
 
 }

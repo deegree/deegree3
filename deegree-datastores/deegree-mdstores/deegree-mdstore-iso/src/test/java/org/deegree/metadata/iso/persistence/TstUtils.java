@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-metadata/src/test/java/org/deegree/metadata/iso/persistence/TstUtils.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -51,64 +50,63 @@ import org.slf4j.LoggerFactory;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: lbuesching $
- * 
- * @version $Revision: 30725 $, $Date: 2011-05-09 15:04:20 +0200 (Mo, 09. Mai 2011) $
  */
 public class TstUtils {
 
-    private static Logger LOG = LoggerFactory.getLogger( TstUtils.class );
+	private static Logger LOG = LoggerFactory.getLogger(TstUtils.class);
 
-    public static List<String> insertMetadata( ISOMetadataStore store, URL... URLInput )
-                            throws MetadataStoreException, MetadataInspectorException {
+	public static List<String> insertMetadata(ISOMetadataStore store, URL... URLInput)
+			throws MetadataStoreException, MetadataInspectorException {
 
-        List<ISORecord> records = null;
-        InsertOperation insert = null;
-        MetadataStoreTransaction ta = null;
+		List<ISORecord> records = null;
+		InsertOperation insert = null;
+		MetadataStoreTransaction ta = null;
 
-        List<String> ids = new ArrayList<String>();
-        int countInserted = 0;
-        int countInsert = 0;
-        countInsert = URLInput.length;
+		List<String> ids = new ArrayList<String>();
+		int countInserted = 0;
+		int countInsert = 0;
+		countInsert = URLInput.length;
 
-        for ( URL file : URLInput ) {
-            records = new ArrayList<ISORecord>();
-            ta = store.acquireTransaction();
-            OMElement record = new XMLAdapter( file ).getRootElement();
-            LOG.info( "inserting filename: " + file.getFile() );
-            records.add( new ISORecord( record ) );
-            try {
-                if ( countInsert > 0 ) {
-                    insert = new InsertOperation( records, records.get( 0 ).getAsOMElement().getQName(), "insert" );
-                    ids.addAll( ta.performInsert( insert ) );
-                    ta.commit();
-                }
-            } catch ( MetadataStoreException e ) {
-                String msg = "Error while commit the statement!";
-                if ( ta != null ) {
-                    ta.rollback();
-                    LOG.info( msg );
-                    e.printStackTrace();
-                    // throw new MetadataInspectorException();
-                }
-            } catch ( MetadataInspectorException e ) {
-                String msg = "Error while insert/inspect metadataRecord!";
-                if ( ta != null ) {
-                    ta.rollback();
-                    LOG.info( msg );
-                    throw new MetadataInspectorException();
-                }
-            }
-        }
+		for (URL file : URLInput) {
+			records = new ArrayList<ISORecord>();
+			ta = store.acquireTransaction();
+			OMElement record = new XMLAdapter(file).getRootElement();
+			LOG.info("inserting filename: " + file.getFile());
+			records.add(new ISORecord(record));
+			try {
+				if (countInsert > 0) {
+					insert = new InsertOperation(records, records.get(0).getAsOMElement().getQName(), "insert");
+					ids.addAll(ta.performInsert(insert));
+					ta.commit();
+				}
+			}
+			catch (MetadataStoreException e) {
+				String msg = "Error while commit the statement!";
+				if (ta != null) {
+					ta.rollback();
+					LOG.info(msg);
+					e.printStackTrace();
+					// throw new MetadataInspectorException();
+				}
+			}
+			catch (MetadataInspectorException e) {
+				String msg = "Error while insert/inspect metadataRecord!";
+				if (ta != null) {
+					ta.rollback();
+					LOG.info(msg);
+					throw new MetadataInspectorException();
+				}
+			}
+		}
 
-        if ( !ids.isEmpty() ) {
-            countInserted += ids.size();
-        }
+		if (!ids.isEmpty()) {
+			countInserted += ids.size();
+		}
 
-        LOG.info( countInserted + " from " + countInsert + " Metadata inserted." );
-        return ids;
-    }
+		LOG.info(countInserted + " from " + countInsert + " Metadata inserted.");
+		return ids;
+	}
 
 }

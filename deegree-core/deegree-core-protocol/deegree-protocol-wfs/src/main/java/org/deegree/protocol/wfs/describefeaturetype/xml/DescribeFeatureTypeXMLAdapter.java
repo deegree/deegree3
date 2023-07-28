@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -54,7 +53,8 @@ import org.deegree.protocol.wfs.WFSConstants;
 import org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureType;
 
 /**
- * Adapter between XML <code>DescribeFeatureType</code> requests and {@link DescribeFeatureType} objects.
+ * Adapter between XML <code>DescribeFeatureType</code> requests and
+ * {@link DescribeFeatureType} objects.
  * <p>
  * Supported versions:
  * <ul>
@@ -62,156 +62,147 @@ import org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureType;
  * <li>WFS 1.1.0</li>
  * <li>WFS 2.0.0</li>
  * </ul>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class DescribeFeatureTypeXMLAdapter extends AbstractWFSRequestXMLAdapter {
 
-    /**
-     * Parses an WFS <code>DescribeFeatureType</code> document into a {@link DescribeFeatureType} request.
-     * <p>
-     * Supported versions:
-     * <ul>
-     * <li>WFS 1.0.0</li>
-     * <li>WFS 1.1.0</li>
-     * <li>WFS 2.0.0</li>
-     * </ul>
-     * 
-     * @return parsed {@link DescribeFeatureType} request
-     * @throws XMLParsingException
-     *             if a syntax error occurs in the XML
-     * @throws MissingParameterException
-     *             if the request version is unsupported
-     * @throws InvalidParameterValueException
-     *             if a parameter contains a syntax error
-     */
-    public DescribeFeatureType parse() {
+	/**
+	 * Parses an WFS <code>DescribeFeatureType</code> document into a
+	 * {@link DescribeFeatureType} request.
+	 * <p>
+	 * Supported versions:
+	 * <ul>
+	 * <li>WFS 1.0.0</li>
+	 * <li>WFS 1.1.0</li>
+	 * <li>WFS 2.0.0</li>
+	 * </ul>
+	 * @return parsed {@link DescribeFeatureType} request
+	 * @throws XMLParsingException if a syntax error occurs in the XML
+	 * @throws MissingParameterException if the request version is unsupported
+	 * @throws InvalidParameterValueException if a parameter contains a syntax error
+	 */
+	public DescribeFeatureType parse() {
 
-        Version version = determineVersion110Safe();
+		Version version = determineVersion110Safe();
 
-        DescribeFeatureType result = null;
-        if ( VERSION_100.equals( version ) ) {
-            result = parse100();
-        } else if ( VERSION_110.equals( version ) ) {
-            result = parse110();
-        } else if ( VERSION_200.equals( version ) ) {
-            result = parse200();
-        } else {
-            String msg = Messages.get( "UNSUPPORTED_VERSION", version,
-                                       Version.getVersionsString( VERSION_100, VERSION_110, VERSION_200 ) );
-            throw new InvalidParameterValueException( msg );
-        }
-        return result;
-    }
+		DescribeFeatureType result = null;
+		if (VERSION_100.equals(version)) {
+			result = parse100();
+		}
+		else if (VERSION_110.equals(version)) {
+			result = parse110();
+		}
+		else if (VERSION_200.equals(version)) {
+			result = parse200();
+		}
+		else {
+			String msg = Messages.get("UNSUPPORTED_VERSION", version,
+					Version.getVersionsString(VERSION_100, VERSION_110, VERSION_200));
+			throw new InvalidParameterValueException(msg);
+		}
+		return result;
+	}
 
-    /**
-     * Parses a WFS 1.0.0 <code>DescribeFeatureType</code> document into a {@link DescribeFeatureType} request.
-     * 
-     * @return parsed {@link DescribeFeatureType} request
-     * @throws XMLParsingException
-     *             if a syntax error occurs in the XML
-     * @throws InvalidParameterValueException
-     *             if a parameter contains a syntax error
-     */
-    public DescribeFeatureType parse100()
-                            throws XMLParsingException, InvalidParameterValueException {
+	/**
+	 * Parses a WFS 1.0.0 <code>DescribeFeatureType</code> document into a
+	 * {@link DescribeFeatureType} request.
+	 * @return parsed {@link DescribeFeatureType} request
+	 * @throws XMLParsingException if a syntax error occurs in the XML
+	 * @throws InvalidParameterValueException if a parameter contains a syntax error
+	 */
+	public DescribeFeatureType parse100() throws XMLParsingException, InvalidParameterValueException {
 
-        // optional: '@outputFormat'
-        String outputFormat = rootElement.getAttributeValue( new QName( "outputFormat" ) );
+		// optional: '@outputFormat'
+		String outputFormat = rootElement.getAttributeValue(new QName("outputFormat"));
 
-        // 'wfs:TypeName' elements (minOccurs=0, maxOccurs=unbounded)
-        QName[] typeNames = getNodesAsQNames( rootElement, new XPath( "wfs:TypeName", nsContext ) );
-        String[] typeNames2 = getNodesAsStrings( rootElement, new XPath( "wfs:TypeName", nsContext ) );
-        // TODO remove null namespace hack
-        for ( int i = 0; i < typeNames.length; i++ ) {
-            if ( typeNames[i] == null ) {
-                typeNames[i] = mangleTypeName( typeNames2[i] );
-            } else if ( WFSConstants.WFS_NS.equals( typeNames[i].getNamespaceURI() ) ) {
-                typeNames[i] = new QName( typeNames[i].getLocalPart() );
-            }
-        }
+		// 'wfs:TypeName' elements (minOccurs=0, maxOccurs=unbounded)
+		QName[] typeNames = getNodesAsQNames(rootElement, new XPath("wfs:TypeName", nsContext));
+		String[] typeNames2 = getNodesAsStrings(rootElement, new XPath("wfs:TypeName", nsContext));
+		// TODO remove null namespace hack
+		for (int i = 0; i < typeNames.length; i++) {
+			if (typeNames[i] == null) {
+				typeNames[i] = mangleTypeName(typeNames2[i]);
+			}
+			else if (WFSConstants.WFS_NS.equals(typeNames[i].getNamespaceURI())) {
+				typeNames[i] = new QName(typeNames[i].getLocalPart());
+			}
+		}
 
-        return new DescribeFeatureType( VERSION_100, null, outputFormat, typeNames, null );
-    }
+		return new DescribeFeatureType(VERSION_100, null, outputFormat, typeNames, null);
+	}
 
-    private QName mangleTypeName( String s ) {
-        String localPart = s;
-        String prefix = XMLConstants.DEFAULT_NS_PREFIX;
-        String namespace = "";
+	private QName mangleTypeName(String s) {
+		String localPart = s;
+		String prefix = XMLConstants.DEFAULT_NS_PREFIX;
+		String namespace = "";
 
-        int colonIdx = s.indexOf( ':' );
-        if ( colonIdx >= 0 ) {
-            prefix = s.substring( 0, colonIdx );
-            localPart = s.substring( colonIdx + 1 );
-        }
+		int colonIdx = s.indexOf(':');
+		if (colonIdx >= 0) {
+			prefix = s.substring(0, colonIdx);
+			localPart = s.substring(colonIdx + 1);
+		}
 
-        return new QName( namespace, localPart, prefix );
-    }
+		return new QName(namespace, localPart, prefix);
+	}
 
-    /**
-     * Parses a WFS 1.1.0 <code>DescribeFeatureType</code> document into a {@link DescribeFeatureType} request.
-     * 
-     * @return parsed {@link DescribeFeatureType} request
-     * @throws XMLParsingException
-     *             if a syntax error occurs in the XML
-     * @throws InvalidParameterValueException
-     *             if a parameter contains a syntax error
-     */
-    public DescribeFeatureType parse110()
-                            throws XMLParsingException, InvalidParameterValueException {
+	/**
+	 * Parses a WFS 1.1.0 <code>DescribeFeatureType</code> document into a
+	 * {@link DescribeFeatureType} request.
+	 * @return parsed {@link DescribeFeatureType} request
+	 * @throws XMLParsingException if a syntax error occurs in the XML
+	 * @throws InvalidParameterValueException if a parameter contains a syntax error
+	 */
+	public DescribeFeatureType parse110() throws XMLParsingException, InvalidParameterValueException {
 
-        // optional: '@handle'
-        String handle = rootElement.getAttributeValue( new QName( "handle" ) );
+		// optional: '@handle'
+		String handle = rootElement.getAttributeValue(new QName("handle"));
 
-        // optional: '@outputFormat'
-        String outputFormat = rootElement.getAttributeValue( new QName( "outputFormat" ) );
+		// optional: '@outputFormat'
+		String outputFormat = rootElement.getAttributeValue(new QName("outputFormat"));
 
-        // 'wfs:TypeName' elements (minOccurs=0, maxOccurs=unbounded)
-        QName[] typeNames = getNodesAsQNames( rootElement, new XPath( "wfs:TypeName", nsContext ) );
-        String[] typeNames2 = getNodesAsStrings( rootElement, new XPath( "wfs:TypeName", nsContext ) );
-        // TODO remove null namespace hack
-        for ( int i = 0; i < typeNames.length; i++ ) {
-            if ( typeNames[i] == null ) {
-                typeNames[i] = mangleTypeName( typeNames2[i] );
-            } else if ( WFSConstants.WFS_NS.equals( typeNames[i].getNamespaceURI() ) ) {
-                typeNames[i] = new QName( typeNames[i].getLocalPart() );
-            }
-        }
+		// 'wfs:TypeName' elements (minOccurs=0, maxOccurs=unbounded)
+		QName[] typeNames = getNodesAsQNames(rootElement, new XPath("wfs:TypeName", nsContext));
+		String[] typeNames2 = getNodesAsStrings(rootElement, new XPath("wfs:TypeName", nsContext));
+		// TODO remove null namespace hack
+		for (int i = 0; i < typeNames.length; i++) {
+			if (typeNames[i] == null) {
+				typeNames[i] = mangleTypeName(typeNames2[i]);
+			}
+			else if (WFSConstants.WFS_NS.equals(typeNames[i].getNamespaceURI())) {
+				typeNames[i] = new QName(typeNames[i].getLocalPart());
+			}
+		}
 
-        return new DescribeFeatureType( VERSION_110, handle, outputFormat, typeNames, null );
-    }
+		return new DescribeFeatureType(VERSION_110, handle, outputFormat, typeNames, null);
+	}
 
-    /**
-     * Parses a WFS 2.0.0 <code>DescribeFeatureType</code> document into a {@link DescribeFeatureType} request.
-     * 
-     * @return parsed {@link DescribeFeatureType} request
-     * @throws XMLParsingException
-     *             if a syntax error occurs in the XML
-     * @throws InvalidParameterValueException
-     *             if a parameter contains a syntax error
-     */
-    public DescribeFeatureType parse200()
-                            throws XMLParsingException, InvalidParameterValueException {
+	/**
+	 * Parses a WFS 2.0.0 <code>DescribeFeatureType</code> document into a
+	 * {@link DescribeFeatureType} request.
+	 * @return parsed {@link DescribeFeatureType} request
+	 * @throws XMLParsingException if a syntax error occurs in the XML
+	 * @throws InvalidParameterValueException if a parameter contains a syntax error
+	 */
+	public DescribeFeatureType parse200() throws XMLParsingException, InvalidParameterValueException {
 
-        // optional: '@handle'
-        String handle = rootElement.getAttributeValue( new QName( "handle" ) );
+		// optional: '@handle'
+		String handle = rootElement.getAttributeValue(new QName("handle"));
 
-        // optional: '@outputFormat'
-        String outputFormat = rootElement.getAttributeValue( new QName( "outputFormat" ) );
+		// optional: '@outputFormat'
+		String outputFormat = rootElement.getAttributeValue(new QName("outputFormat"));
 
-        // 'wfs:TypeName' elements (minOccurs=0, maxOccurs=unbounded)
-        QName[] typeNames = getNodesAsQNames( rootElement, new XPath( "wfs200:TypeName", nsContext ) );
-        // TODO remove null namespace hack
-        for ( int i = 0; i < typeNames.length; i++ ) {
-            if ( WFSConstants.WFS_NS.equals( typeNames[i].getNamespaceURI() ) ) {
-                typeNames[i] = new QName( typeNames[i].getLocalPart() );
-            }
-        }
+		// 'wfs:TypeName' elements (minOccurs=0, maxOccurs=unbounded)
+		QName[] typeNames = getNodesAsQNames(rootElement, new XPath("wfs200:TypeName", nsContext));
+		// TODO remove null namespace hack
+		for (int i = 0; i < typeNames.length; i++) {
+			if (WFSConstants.WFS_NS.equals(typeNames[i].getNamespaceURI())) {
+				typeNames[i] = new QName(typeNames[i].getLocalPart());
+			}
+		}
 
-        return new DescribeFeatureType( VERSION_200, handle, outputFormat, typeNames, null );
-    }
+		return new DescribeFeatureType(VERSION_200, handle, outputFormat, typeNames, null);
+	}
+
 }

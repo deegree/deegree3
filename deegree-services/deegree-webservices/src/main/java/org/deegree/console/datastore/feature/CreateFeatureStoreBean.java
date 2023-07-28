@@ -38,19 +38,19 @@ import org.deegree.feature.persistence.FeatureStoreManager;
  * JSF backing bean for "Create new feature store" view.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- *
  * @since 3.4
  */
 @ManagedBean
 @ViewScoped
 public class CreateFeatureStoreBean extends AbstractCreateResourceBean {
 
-    public CreateFeatureStoreBean() {
-        super( FeatureStoreManager.class );
-    }
+	public CreateFeatureStoreBean() {
+		super(FeatureStoreManager.class);
+	}
 
-    @Override
-    protected String getOutcome() {
-        return "/console/datastore/feature/index";
-    }
+	@Override
+	protected String getOutcome() {
+		return "/console/datastore/feature/index";
+	}
+
 }

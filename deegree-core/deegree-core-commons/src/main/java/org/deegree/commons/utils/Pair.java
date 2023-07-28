@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -37,126 +36,122 @@
 package org.deegree.commons.utils;
 
 /**
- * <code>Pair</code> is a convenience class, which pairs two objects. For a pair of <code>String</code>s see
- * {@link StringPair}.
- * 
+ * <code>Pair</code> is a convenience class, which pairs two objects. For a pair of
+ * <code>String</code>s see {@link StringPair}.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
- * @param <T>
- *            the first Object of the pair
- * @param <U>
- *            the second Object of the pair
- * 
+ * @param <T> the first Object of the pair
+ * @param <U> the second Object of the pair
+ *
  */
 public class Pair<T, U> {
-    /**
-     * first value of the pair.
-     */
-    public T first;
 
-    /**
-     * second value of the pair.
-     */
-    public U second;
+	/**
+	 * first value of the pair.
+	 */
+	public T first;
 
-    /**
-     * @param first
-     *            value of the pair.
-     * @param second
-     *            value of the pair.
-     */
-    public Pair( T first, U second ) {
-        this.first = first;
-        this.second = second;
-    }
+	/**
+	 * second value of the pair.
+	 */
+	public U second;
 
-    /**
-     * Create a pair with null objects.
-     */
-    public Pair() {
-        // nothing to do here
-    }
+	/**
+	 * @param first value of the pair.
+	 * @param second value of the pair.
+	 */
+	public Pair(T first, U second) {
+		this.first = first;
+		this.second = second;
+	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public boolean equals( Object other ) {
-        if ( other != null && other instanceof Pair ) {
-            // what ever, unchecked.
-            final Pair that = (Pair) other;
-            return ( first == null ? that.first == null : first.equals( that.first ) )
-                   && ( second == null ? that.second == null : second.equals( that.second ) );
-        }
-        return false;
-    }
+	/**
+	 * Create a pair with null objects.
+	 */
+	public Pair() {
+		// nothing to do here
+	}
 
-    /**
-     * Implementation as proposed by Joshua Block in Effective Java (Addison-Wesley 2001), which supplies an even
-     * distribution and is relatively fast. It is created from field <b>f</b> as follows:
-     * <ul>
-     * <li>boolean -- code = (f ? 0 : 1)</li>
-     * <li>byte, char, short, int -- code = (int)f</li>
-     * <li>long -- code = (int)(f ^ (f &gt;&gt;&gt;32))</li>
-     * <li>float -- code = Float.floatToIntBits(f);</li>
-     * <li>double -- long l = Double.doubleToLongBits(f); code = (int)(l ^ (l &gt;&gt;&gt; 32))</li>
-     * <li>all Objects, (where equals(&nbsp;) calls equals(&nbsp;) for this field) -- code = f.hashCode(&nbsp;)</li>
-     * <li>Array -- Apply above rules to each element</li>
-     * </ul>
-     * <p>
-     * Combining the hash code(s) computed above: result = 37 * result + code;
-     * </p>
-     * 
-     * @return (int) ( result &gt;&gt;&gt; 32 ) ^ (int) result;
-     * 
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-        // the 2nd millionth prime, :-)
-        long code = 32452843;
-        if ( first != null ) {
-            code = first.hashCode() * 37 + code;
-        }
-        if ( second != null ) {
-            code = second.hashCode() * 37 + code;
-        }
-        return (int) ( code >>> 32 ) ^ (int) code;
-    }
+	@SuppressWarnings("unchecked")
+	@Override
+	public boolean equals(Object other) {
+		if (other != null && other instanceof Pair) {
+			// what ever, unchecked.
+			final Pair that = (Pair) other;
+			return (first == null ? that.first == null : first.equals(that.first))
+					&& (second == null ? that.second == null : second.equals(that.second));
+		}
+		return false;
+	}
 
-    @Override
-    public String toString() {
-        return "<" + first + ", " + second + ">";
-    }
+	/**
+	 * Implementation as proposed by Joshua Block in Effective Java (Addison-Wesley 2001),
+	 * which supplies an even distribution and is relatively fast. It is created from
+	 * field <b>f</b> as follows:
+	 * <ul>
+	 * <li>boolean -- code = (f ? 0 : 1)</li>
+	 * <li>byte, char, short, int -- code = (int)f</li>
+	 * <li>long -- code = (int)(f ^ (f &gt;&gt;&gt;32))</li>
+	 * <li>float -- code = Float.floatToIntBits(f);</li>
+	 * <li>double -- long l = Double.doubleToLongBits(f); code = (int)(l ^ (l &gt;&gt;&gt;
+	 * 32))</li>
+	 * <li>all Objects, (where equals(&nbsp;) calls equals(&nbsp;) for this field) -- code
+	 * = f.hashCode(&nbsp;)</li>
+	 * <li>Array -- Apply above rules to each element</li>
+	 * </ul>
+	 * <p>
+	 * Combining the hash code(s) computed above: result = 37 * result + code;
+	 * </p>
+	 * @return (int) ( result &gt;&gt;&gt; 32 ) ^ (int) result;
+	 *
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		// the 2nd millionth prime, :-)
+		long code = 32452843;
+		if (first != null) {
+			code = first.hashCode() * 37 + code;
+		}
+		if (second != null) {
+			code = second.hashCode() * 37 + code;
+		}
+		return (int) (code >>> 32) ^ (int) code;
+	}
 
-    /**
-     * @return true if either the first or the second value is <code>null</code>
-     */
-    public boolean hasNull() {
-        return first == null || second == null;
-    }
+	@Override
+	public String toString() {
+		return "<" + first + ", " + second + ">";
+	}
 
-    /**
-     * @return true if the first and the second value are <code>null</code>
-     */
-    public boolean isNull() {
-        return first == null && second == null;
-    }
+	/**
+	 * @return true if either the first or the second value is <code>null</code>
+	 */
+	public boolean hasNull() {
+		return first == null || second == null;
+	}
 
-    public T getFirst() {
-        return first;
-    }
+	/**
+	 * @return true if the first and the second value are <code>null</code>
+	 */
+	public boolean isNull() {
+		return first == null && second == null;
+	}
 
-    public U getSecond() {
-        return second;
-    }
+	public T getFirst() {
+		return first;
+	}
 
-    public void setFirst( T first ) {
-        this.first = first;
-    }
+	public U getSecond() {
+		return second;
+	}
 
-    public void setSecond( U second ) {
-        this.second = second;
-    }
+	public void setFirst(T first) {
+		this.first = first;
+	}
+
+	public void setSecond(U second) {
+		this.second = second;
+	}
+
 }

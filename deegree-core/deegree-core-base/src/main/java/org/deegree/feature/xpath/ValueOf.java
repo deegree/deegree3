@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -48,43 +47,42 @@ import org.jaxen.FunctionCallException;
 
 /**
  * Provides the <code>wfs:valueOf</code> function needed by WFS 2.0.0.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class ValueOf implements Function {
 
-    @SuppressWarnings("rawtypes")
-    @Override
-    public Object call( Context context, List args )
-                            throws FunctionCallException {
-        List<Object> values = new ArrayList<Object>();
-        for ( Object arg : args ) {
-            if ( arg instanceof List ) {
-                for ( Object o : ( (List) arg ) ) {
-                    if ( o instanceof PropertyNode ) {
-                        Property prop = ( (PropertyNode) o ).getValue();
-                        GMLObject gmlObject = (GMLObject) prop.getValue();
-                        GMLObjectNode elNode = new GMLObjectNode( ( (PropertyNode) o ), gmlObject );
-                        values.add( elNode );
-                    } else {
-                        throw new FunctionCallException(
-                                                         "Arguments of valueOf() must be feature properties, but found: "
-                                                                                 + o.getClass() );
-                    }
-                }
-            } else if ( arg instanceof PropertyNode ) {
-                Property prop = ( (PropertyNode) arg ).getValue();
-                GMLObject gmlObject = (GMLObject) prop.getValue();
-                GMLObjectNode elNode = new GMLObjectNode( ( (PropertyNode) arg ), gmlObject );
-                values.add( elNode );
-            } else {
-                throw new FunctionCallException( "Arguments of valueOf() must be feature properties, but found: "
-                                                 + arg.getClass() );
-            }
-        }
-        return values;
-    }
+	@SuppressWarnings("rawtypes")
+	@Override
+	public Object call(Context context, List args) throws FunctionCallException {
+		List<Object> values = new ArrayList<Object>();
+		for (Object arg : args) {
+			if (arg instanceof List) {
+				for (Object o : ((List) arg)) {
+					if (o instanceof PropertyNode) {
+						Property prop = ((PropertyNode) o).getValue();
+						GMLObject gmlObject = (GMLObject) prop.getValue();
+						GMLObjectNode elNode = new GMLObjectNode(((PropertyNode) o), gmlObject);
+						values.add(elNode);
+					}
+					else {
+						throw new FunctionCallException(
+								"Arguments of valueOf() must be feature properties, but found: " + o.getClass());
+					}
+				}
+			}
+			else if (arg instanceof PropertyNode) {
+				Property prop = ((PropertyNode) arg).getValue();
+				GMLObject gmlObject = (GMLObject) prop.getValue();
+				GMLObjectNode elNode = new GMLObjectNode(((PropertyNode) arg), gmlObject);
+				values.add(elNode);
+			}
+			else {
+				throw new FunctionCallException(
+						"Arguments of valueOf() must be feature properties, but found: " + arg.getClass());
+			}
+		}
+		return values;
+	}
+
 }

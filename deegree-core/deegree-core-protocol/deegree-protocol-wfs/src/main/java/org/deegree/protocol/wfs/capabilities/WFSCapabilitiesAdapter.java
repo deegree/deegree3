@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -42,35 +41,33 @@ import org.deegree.protocol.ows.capabilities.OWSCapabilitiesAdapter;
 import org.deegree.protocol.wfs.metadata.WFSFeatureType;
 
 /**
- * Base interface for {@link OWSCapabilitiesAdapter} implementations that extract metadata from WFS capabilities
- * documents.
- * 
+ * Base interface for {@link OWSCapabilitiesAdapter} implementations that extract metadata
+ * from WFS capabilities documents.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface WFSCapabilitiesAdapter extends OWSCapabilitiesAdapter {
 
-    /**
-     * Extracts the {@link FeatureTypeList} from the underlying XML document.
-     * 
-     * TODO return type
-     * 
-     * @return feature type list, can be <code>null</code> (if the document does not contain such a section)
-     * @throws XMLParsingException
-     *             if the <code>FeatureTypeList</code> section can not be parsed
-     */
-    List<WFSFeatureType> parseFeatureTypeList();
+	/**
+	 * Extracts the {@link FeatureTypeList} from the underlying XML document.
+	 *
+	 * TODO return type
+	 * @return feature type list, can be <code>null</code> (if the document does not
+	 * contain such a section)
+	 * @throws XMLParsingException if the <code>FeatureTypeList</code> section can not be
+	 * parsed
+	 */
+	List<WFSFeatureType> parseFeatureTypeList();
 
-    /**
-     * Extracts the {@link FilterCapabilities} from the underlying XML document.
-     * 
-     * TODO return type
-     * 
-     * @return filter capabilities, can be <code>null</code> (if the document does not contain such a section)
-     * @throws XMLParsingException
-     *             if the <code>FeatureTypeList</code> section can not be parsed
-     */
-    Object parseFilterCapabilities();
+	/**
+	 * Extracts the {@link FilterCapabilities} from the underlying XML document.
+	 *
+	 * TODO return type
+	 * @return filter capabilities, can be <code>null</code> (if the document does not
+	 * contain such a section)
+	 * @throws XMLParsingException if the <code>FeatureTypeList</code> section can not be
+	 * parsed
+	 */
+	Object parseFilterCapabilities();
+
 }

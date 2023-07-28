@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -48,36 +47,32 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 /**
- * 
+ *
  * <code>InputFileFilter</code>
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class InputFileFilter implements Filter {
 
-    @Override
-    public void init( FilterConfig filterConfig )
-                            throws ServletException {
-    }
+	@Override
+	public void init(FilterConfig filterConfig) throws ServletException {
+	}
 
-    @Override
-    public void doFilter( ServletRequest request, ServletResponse response, FilterChain chain )
-                            throws IOException, ServletException {
-        if ( ( request instanceof HttpServletRequest ) ) {
-            HttpServletRequest httpRequest = (HttpServletRequest) request;
-            if ( ServletFileUpload.isMultipartContent( httpRequest ) ) {
-                request = new InputFileWrapper( httpRequest );
-            }
-        }
-        request.setCharacterEncoding( "UTF-8" );
-        chain.doFilter( request, response );
-    }
+	@Override
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+			throws IOException, ServletException {
+		if ((request instanceof HttpServletRequest)) {
+			HttpServletRequest httpRequest = (HttpServletRequest) request;
+			if (ServletFileUpload.isMultipartContent(httpRequest)) {
+				request = new InputFileWrapper(httpRequest);
+			}
+		}
+		request.setCharacterEncoding("UTF-8");
+		chain.doFilter(request, response);
+	}
 
-    @Override
-    public void destroy() {
-    }
+	@Override
+	public void destroy() {
+	}
 
 }

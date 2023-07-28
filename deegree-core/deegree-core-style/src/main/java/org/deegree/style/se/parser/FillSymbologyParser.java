@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -67,84 +66,82 @@ import org.slf4j.Logger;
 
 /**
  * Responsible for parsing SE Fill elements.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 class FillSymbologyParser {
 
-    static final Logger LOG = getLogger( FillSymbologyParser.class );
+	static final Logger LOG = getLogger(FillSymbologyParser.class);
 
-    private SymbologyParserContext context;
+	private SymbologyParserContext context;
 
-    FillSymbologyParser( SymbologyParserContext context ) {
-        this.context = context;
-    }
+	FillSymbologyParser(SymbologyParserContext context) {
+		this.context = context;
+	}
 
-    Pair<Fill, Continuation<Fill>> parseFill( XMLStreamReader in )
-                            throws XMLStreamException {
-        in.require( START_ELEMENT, null, "Fill" );
+	Pair<Fill, Continuation<Fill>> parseFill(XMLStreamReader in) throws XMLStreamException {
+		in.require(START_ELEMENT, null, "Fill");
 
-        Fill base = new Fill();
-        Continuation<Fill> contn = null;
+		Fill base = new Fill();
+		Continuation<Fill> contn = null;
 
-        while ( !( in.isEndElement() && in.getLocalName().equals( "Fill" ) ) ) {
-            in.nextTag();
+		while (!(in.isEndElement() && in.getLocalName().equals("Fill"))) {
+			in.nextTag();
 
-            if ( in.getLocalName().equals( "GraphicFill" ) ) {
-                in.nextTag();
-                final Pair<Graphic, Continuation<Graphic>> pair = context.graphicParser.parseGraphic( in );
-                if ( pair != null ) {
-                    base.graphic = pair.first;
-                    if ( pair.second != null ) {
-                        contn = new Continuation<Fill>( contn ) {
-                            @Override
-                            public void updateStep( Fill base, Feature f, XPathEvaluator<Feature> evaluator ) {
-                                pair.second.evaluate( base.graphic, f, evaluator );
-                            }
-                        };
-                    }
-                }
-                in.nextTag();
-            } else if ( in.getLocalName().endsWith( "Parameter" ) ) {
-                String cssName = in.getAttributeValue( null, "name" );
-                if ( cssName.equals( "fill" ) ) {
-                    contn = context.parser.updateOrContinue( in, "Parameter", base, new Updater<Fill>() {
-                        @Override
-                        public void update( Fill obj, String val ) {
-                            // keep alpha value
-                            int alpha = obj.color.getAlpha();
-                            obj.color = decodeWithAlpha( val );
-                            obj.color = new Color( obj.color.getRed(), obj.color.getGreen(), obj.color.getBlue(), alpha );
-                        }
-                    }, contn ).second;
-                }
+			if (in.getLocalName().equals("GraphicFill")) {
+				in.nextTag();
+				final Pair<Graphic, Continuation<Graphic>> pair = context.graphicParser.parseGraphic(in);
+				if (pair != null) {
+					base.graphic = pair.first;
+					if (pair.second != null) {
+						contn = new Continuation<Fill>(contn) {
+							@Override
+							public void updateStep(Fill base, Feature f, XPathEvaluator<Feature> evaluator) {
+								pair.second.evaluate(base.graphic, f, evaluator);
+							}
+						};
+					}
+				}
+				in.nextTag();
+			}
+			else if (in.getLocalName().endsWith("Parameter")) {
+				String cssName = in.getAttributeValue(null, "name");
+				if (cssName.equals("fill")) {
+					contn = context.parser.updateOrContinue(in, "Parameter", base, new Updater<Fill>() {
+						@Override
+						public void update(Fill obj, String val) {
+							// keep alpha value
+							int alpha = obj.color.getAlpha();
+							obj.color = decodeWithAlpha(val);
+							obj.color = new Color(obj.color.getRed(), obj.color.getGreen(), obj.color.getBlue(), alpha);
+						}
+					}, contn).second;
+				}
 
-                if ( cssName.equals( "fill-opacity" ) ) {
-                    contn = context.parser.updateOrContinue( in, "Parameter", base, new Updater<Fill>() {
-                        @Override
-                        public void update( Fill obj, String val ) {
-                            // keep original color
-                            float alpha = max( 0, min( 1, parseFloat( val ) ) );
-                            float[] cols = obj.color.getRGBColorComponents( null );
-                            obj.color = new Color( cols[0], cols[1], cols[2], alpha );
-                        }
-                    }, contn ).second;
-                }
-            } else if ( in.isStartElement() ) {
-                Location loc = in.getLocation();
-                LOG.error( "Found unknown element '{}' at line {}, column {}, skipping.",
-                           new Object[] { in.getLocalName(), loc.getLineNumber(), loc.getColumnNumber() } );
-                skipElement( in );
-            }
+				if (cssName.equals("fill-opacity")) {
+					contn = context.parser.updateOrContinue(in, "Parameter", base, new Updater<Fill>() {
+						@Override
+						public void update(Fill obj, String val) {
+							// keep original color
+							float alpha = max(0, min(1, parseFloat(val)));
+							float[] cols = obj.color.getRGBColorComponents(null);
+							obj.color = new Color(cols[0], cols[1], cols[2], alpha);
+						}
+					}, contn).second;
+				}
+			}
+			else if (in.isStartElement()) {
+				Location loc = in.getLocation();
+				LOG.error("Found unknown element '{}' at line {}, column {}, skipping.",
+						new Object[] { in.getLocalName(), loc.getLineNumber(), loc.getColumnNumber() });
+				skipElement(in);
+			}
 
-        }
+		}
 
-        in.require( END_ELEMENT, null, "Fill" );
+		in.require(END_ELEMENT, null, "Fill");
 
-        return new Pair<Fill, Continuation<Fill>>( base, contn );
-    }
+		return new Pair<Fill, Continuation<Fill>>(base, contn);
+	}
 
 }

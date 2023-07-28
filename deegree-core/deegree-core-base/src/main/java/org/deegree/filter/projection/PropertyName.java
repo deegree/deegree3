@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -41,59 +40,53 @@ import org.deegree.filter.expression.ValueReference;
 
 /**
  * {@link ProjectionClause} that is based on {@link ValueReference}s.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * 
- * @version $Revision: $, $Date: $
  */
 public class PropertyName implements ProjectionClause {
 
-    private final ValueReference propertyName;
+	private final ValueReference propertyName;
 
-    private final ResolveParams resolveParams;
+	private final ResolveParams resolveParams;
 
-    private final ValueReference resolvePath;
+	private final ValueReference resolvePath;
 
-    /**
-     * Creates a new {@link PropertyName} instance.
-     * 
-     * @param propertyName
-     *            name of the targeted property, must not be <code>null</code>
-     * @param resolveParams
-     *            parameters for controlling the resolution of references of the result set, may be <code>null</code>
-     * @param resolvePath
-     *            ....may be <code>null</code>
-     */
-    public PropertyName( ValueReference propertyName, ResolveParams resolveParams, ValueReference resolvePath ) {
-        this.propertyName = propertyName;
-        if ( resolveParams != null ) {
-            this.resolveParams = resolveParams;
-        } else {
-            this.resolveParams = new ResolveParams( null, null, null );
-        }
-        this.resolvePath = resolvePath;
-    }
+	/**
+	 * Creates a new {@link PropertyName} instance.
+	 * @param propertyName name of the targeted property, must not be <code>null</code>
+	 * @param resolveParams parameters for controlling the resolution of references of the
+	 * result set, may be <code>null</code>
+	 * @param resolvePath ....may be <code>null</code>
+	 */
+	public PropertyName(ValueReference propertyName, ResolveParams resolveParams, ValueReference resolvePath) {
+		this.propertyName = propertyName;
+		if (resolveParams != null) {
+			this.resolveParams = resolveParams;
+		}
+		else {
+			this.resolveParams = new ResolveParams(null, null, null);
+		}
+		this.resolvePath = resolvePath;
+	}
 
-    /**
-     * Returns the targeted property name.
-     * 
-     * @return the targeted property name, never <code>null</code>
-     */
-    public ValueReference getPropertyName() {
-        return propertyName;
-    }
+	/**
+	 * Returns the targeted property name.
+	 * @return the targeted property name, never <code>null</code>
+	 */
+	public ValueReference getPropertyName() {
+		return propertyName;
+	}
 
-    /**
-     * Returns the parameters that control the resolution of references in the response.
-     * 
-     * @return reference resolution control parameters, never <code>null</code>
-     */
-    public ResolveParams getResolveParams() {
-        return resolveParams;
-    }
+	/**
+	 * Returns the parameters that control the resolution of references in the response.
+	 * @return reference resolution control parameters, never <code>null</code>
+	 */
+	public ResolveParams getResolveParams() {
+		return resolveParams;
+	}
 
-    public ValueReference getResolvePath() {
-        return resolvePath;
-    }
+	public ValueReference getResolvePath() {
+		return resolvePath;
+	}
+
 }

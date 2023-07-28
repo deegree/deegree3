@@ -43,35 +43,35 @@ import org.deegree.workspace.standard.DefaultResourceIdentifier;
 
 /**
  * Metadata implementation for remote wms tile stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class RemoteWmsTileStoreMetadata extends AbstractResourceMetadata<TileStore> {
 
-    private static final String JAXB_PACKAGE = "org.deegree.tile.persistence.remotewms.jaxb";
+	private static final String JAXB_PACKAGE = "org.deegree.tile.persistence.remotewms.jaxb";
 
-    public RemoteWmsTileStoreMetadata( Workspace workspace, ResourceLocation<TileStore> location,
-                                       AbstractResourceProvider<TileStore> provider ) {
-        super( workspace, location, provider );
-    }
+	public RemoteWmsTileStoreMetadata(Workspace workspace, ResourceLocation<TileStore> location,
+			AbstractResourceProvider<TileStore> provider) {
+		super(workspace, location, provider);
+	}
 
-    @Override
-    public ResourceBuilder<TileStore> prepare() {
-        try {
-            RemoteWMSTileStoreJAXB config = (RemoteWMSTileStoreJAXB) unmarshall( JAXB_PACKAGE, provider.getSchema(),
-                                                                                 location.getAsStream(), workspace );
+	@Override
+	public ResourceBuilder<TileStore> prepare() {
+		try {
+			RemoteWMSTileStoreJAXB config = (RemoteWMSTileStoreJAXB) unmarshall(JAXB_PACKAGE, provider.getSchema(),
+					location.getAsStream(), workspace);
 
-            String wmsId = config.getRemoteWMSId();
+			String wmsId = config.getRemoteWMSId();
 
-            dependencies.add( new DefaultResourceIdentifier<RemoteOWS>( RemoteOWSProvider.class, wmsId ) );
+			dependencies.add(new DefaultResourceIdentifier<RemoteOWS>(RemoteOWSProvider.class, wmsId));
 
-            return new RemoteWmsTileStoreBuilder( config, this, workspace );
-        } catch ( Exception e ) {
-            throw new ResourceInitException( "Unable to prepare " + location.getIdentifier() + ": "
-                                             + e.getLocalizedMessage(), e );
-        }
-    }
+			return new RemoteWmsTileStoreBuilder(config, this, workspace);
+		}
+		catch (Exception e) {
+			throw new ResourceInitException(
+					"Unable to prepare " + location.getIdentifier() + ": " + e.getLocalizedMessage(), e);
+		}
+	}
 
 }

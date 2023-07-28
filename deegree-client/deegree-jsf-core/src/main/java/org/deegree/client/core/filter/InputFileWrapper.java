@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -53,82 +52,85 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class InputFileWrapper extends HttpServletRequestWrapper {
 
-    private Map<String, String[]> formParameters;
+	private Map<String, String[]> formParameters;
 
-    @SuppressWarnings("unchecked")
-    public InputFileWrapper( HttpServletRequest request ) throws ServletException {
-        super( request );
-        try {
-            ServletFileUpload upload = new ServletFileUpload();
-            DiskFileItemFactory factory = new DiskFileItemFactory();
-            upload.setFileItemFactory( factory );
-            String encoding = request.getCharacterEncoding();
-            List<FileItem> fileItems = upload.parseRequest( request );
-            formParameters = new HashMap<String, String[]>();
-            for ( int i = 0; i < fileItems.size(); i++ ) {
-                FileItem item = fileItems.get( i );
-                if ( item.isFormField() ) {
-                    String[] values;
-                    String v;
-                    if ( encoding != null ) {
-                        v = item.getString( encoding );
-                    } else {
-                        v = item.getString();
-                    }
-                    if ( formParameters.containsKey( item.getFieldName() ) ) {
-                        String[] strings = formParameters.get( item.getFieldName() );
-                        values = new String[strings.length + 1];
-                        for ( int j = 0; j < strings.length; j++ ) {
-                            values[j] = strings[j];
-                        }
-                        values[strings.length] = v;
-                    } else {
-                        values = new String[] { v };
-                    }
-                    formParameters.put( item.getFieldName(), values );
-                } else if ( item.getName() != null && item.getName().length() > 0 && item.getSize() > 0 ) {
-                    request.setAttribute( item.getFieldName(), item );
-                }
-            }
-        } catch ( FileUploadException fe ) {
-            ServletException servletEx = new ServletException();
-            servletEx.initCause( fe );
-            throw servletEx;
-        } catch ( UnsupportedEncodingException e ) {
-            ServletException servletEx = new ServletException();
-            servletEx.initCause( e );
-            throw servletEx;
-        }
-    }
+	@SuppressWarnings("unchecked")
+	public InputFileWrapper(HttpServletRequest request) throws ServletException {
+		super(request);
+		try {
+			ServletFileUpload upload = new ServletFileUpload();
+			DiskFileItemFactory factory = new DiskFileItemFactory();
+			upload.setFileItemFactory(factory);
+			String encoding = request.getCharacterEncoding();
+			List<FileItem> fileItems = upload.parseRequest(request);
+			formParameters = new HashMap<String, String[]>();
+			for (int i = 0; i < fileItems.size(); i++) {
+				FileItem item = fileItems.get(i);
+				if (item.isFormField()) {
+					String[] values;
+					String v;
+					if (encoding != null) {
+						v = item.getString(encoding);
+					}
+					else {
+						v = item.getString();
+					}
+					if (formParameters.containsKey(item.getFieldName())) {
+						String[] strings = formParameters.get(item.getFieldName());
+						values = new String[strings.length + 1];
+						for (int j = 0; j < strings.length; j++) {
+							values[j] = strings[j];
+						}
+						values[strings.length] = v;
+					}
+					else {
+						values = new String[] { v };
+					}
+					formParameters.put(item.getFieldName(), values);
+				}
+				else if (item.getName() != null && item.getName().length() > 0 && item.getSize() > 0) {
+					request.setAttribute(item.getFieldName(), item);
+				}
+			}
+		}
+		catch (FileUploadException fe) {
+			ServletException servletEx = new ServletException();
+			servletEx.initCause(fe);
+			throw servletEx;
+		}
+		catch (UnsupportedEncodingException e) {
+			ServletException servletEx = new ServletException();
+			servletEx.initCause(e);
+			throw servletEx;
+		}
+	}
 
-    @Override
-    public Map<String, String[]> getParameterMap() {
-        return formParameters;
-    }
+	@Override
+	public Map<String, String[]> getParameterMap() {
+		return formParameters;
+	}
 
-    @Override
-    public String[] getParameterValues( String name ) {
-        return (String[]) formParameters.get( name );
-    }
+	@Override
+	public String[] getParameterValues(String name) {
+		return (String[]) formParameters.get(name);
+	}
 
-    @Override
-    public String getParameter( String name ) {
-        String[] params = getParameterValues( name );
-        if ( params == null )
-            return null;
-        return params[0];
-    }
+	@Override
+	public String getParameter(String name) {
+		String[] params = getParameterValues(name);
+		if (params == null)
+			return null;
+		return params[0];
+	}
 
-    @Override
-    public Enumeration<String> getParameterNames() {
-        return Collections.enumeration( formParameters.keySet() );
-    }
+	@Override
+	public Enumeration<String> getParameterNames() {
+		return Collections.enumeration(formParameters.keySet());
+	}
+
 }

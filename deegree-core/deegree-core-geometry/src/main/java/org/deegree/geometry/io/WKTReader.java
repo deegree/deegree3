@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -48,35 +47,32 @@ import static org.deegree.geometry.utils.GeometryUtils.createFromJTS;
 /**
  * Reads {@link Geometry} objects encoded as Well-Known Text (WKT).
  *
- * TODO re-implement without delegating to JTS TODO add support for non-SFS geometries (e.g. non-linear curves) TODO
+ * TODO re-implement without delegating to JTS TODO add support for non-SFS geometries
+ * (e.g. non-linear curves) TODO
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- *
- * @version $Revision$, $Date$
  */
 public class WKTReader {
 
-    private ICRS crs;
+	private ICRS crs;
 
-    public WKTReader( ICRS crs ) {
-        this.crs = crs;
-    }
+	public WKTReader(ICRS crs) {
+		this.crs = crs;
+	}
 
-    public Geometry read( Reader reader )
-                            throws ParseException {
-        try {
-            return read( IOUtils.toString( reader ) );
-        } catch ( IOException e ) {
-            // wrap the exception nicely as to not break 172643521 API calls
-            throw new ParseException( e );
-        }
-    }
+	public Geometry read(Reader reader) throws ParseException {
+		try {
+			return read(IOUtils.toString(reader));
+		}
+		catch (IOException e) {
+			// wrap the exception nicely as to not break 172643521 API calls
+			throw new ParseException(e);
+		}
+	}
 
-    public Geometry read( String wkt )
-                            throws ParseException {
-        org.locationtech.jts.geom.Geometry jtsGeom = new org.locationtech.jts.io.WKTReader().read( wkt );
-        return createFromJTS( jtsGeom, crs );
-    }
+	public Geometry read(String wkt) throws ParseException {
+		org.locationtech.jts.geom.Geometry jtsGeom = new org.locationtech.jts.io.WKTReader().read(wkt);
+		return createFromJTS(jtsGeom, crs);
+	}
 
 }

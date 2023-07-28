@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2009 by:
@@ -53,95 +52,94 @@ import org.deegree.geometry.Envelope;
 import org.deegree.tools.coverage.gridifier.RasterLevel;
 
 /**
- * The <code>MultiResolutionTileGrid</code> class uses a MultiResolutionRaster from the Raster api.
- * 
+ * The <code>MultiResolutionTileGrid</code> class uses a MultiResolutionRaster from the
+ * Raster api.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class MultiResolutionTileGrid implements MultiLevelRasterTileIndex {
 
-    private final MultiResolutionRaster mrr;
+	private final MultiResolutionRaster mrr;
 
-    private final RasterLevel[] rasterLevels;
+	private final RasterLevel[] rasterLevels;
 
-    /**
-     * @param topLevelResolutionDir
-     * @param recursive
-     * @param options
-     *            containing information about the loaded raster.
-     * 
-     */
-    public MultiResolutionTileGrid( java.io.File topLevelResolutionDir, boolean recursive, RasterIOOptions options ) {
-        if ( !topLevelResolutionDir.isDirectory() ) {
-            throw new IllegalArgumentException( "Specified dir: " + topLevelResolutionDir.getAbsolutePath()
-                                                + " is not a directory." );
-        }
-        mrr = new RasterBuilder().buildMultiResolutionRaster( topLevelResolutionDir, recursive, options );
-        rasterLevels = new RasterLevel[mrr.getResolutions().size()];
-        double currentMin = 0;
-        List<Double> resolutions = mrr.getResolutions();
-        for ( int i = 0; i < rasterLevels.length; ++i ) {
-            rasterLevels[i] = new RasterLevel( i, i, currentMin, resolutions.get( i ) );
-            currentMin = resolutions.get( i );
-        }
+	/**
+	 * @param topLevelResolutionDir
+	 * @param recursive
+	 * @param options containing information about the loaded raster.
+	 *
+	 */
+	public MultiResolutionTileGrid(java.io.File topLevelResolutionDir, boolean recursive, RasterIOOptions options) {
+		if (!topLevelResolutionDir.isDirectory()) {
+			throw new IllegalArgumentException(
+					"Specified dir: " + topLevelResolutionDir.getAbsolutePath() + " is not a directory.");
+		}
+		mrr = new RasterBuilder().buildMultiResolutionRaster(topLevelResolutionDir, recursive, options);
+		rasterLevels = new RasterLevel[mrr.getResolutions().size()];
+		double currentMin = 0;
+		List<Double> resolutions = mrr.getResolutions();
+		for (int i = 0; i < rasterLevels.length; ++i) {
+			rasterLevels[i] = new RasterLevel(i, i, currentMin, resolutions.get(i));
+			currentMin = resolutions.get(i);
+		}
 
-    }
+	}
 
-    @Override
-    public RasterLevel[] getRasterLevels() {
-        return rasterLevels;
-    }
+	@Override
+	public RasterLevel[] getRasterLevels() {
+		return rasterLevels;
+	}
 
-    @Override
-    public Set<TileFile> getTiles( Envelope env, double metersPerPixel ) {
-        TiledRaster raster = (TiledRaster) mrr.getRaster( metersPerPixel );
-        TileContainer container = raster.getTileContainer();
-        List<AbstractRaster> tiles = container.getTiles( env );
-        Set<TileFile> result = new HashSet<TileFile>();
-        int level = -1;
+	@Override
+	public Set<TileFile> getTiles(Envelope env, double metersPerPixel) {
+		TiledRaster raster = (TiledRaster) mrr.getRaster(metersPerPixel);
+		TileContainer container = raster.getTileContainer();
+		List<AbstractRaster> tiles = container.getTiles(env);
+		Set<TileFile> result = new HashSet<TileFile>();
+		int level = -1;
 
-        for ( Double res : mrr.getResolutions() ) {
-            if ( metersPerPixel <= res ) {
-                level++;
-            } else {
-                break;
-            }
-        }
-        // make sure it will get to level 0
-        level = Math.max( 0, level );
+		for (Double res : mrr.getResolutions()) {
+			if (metersPerPixel <= res) {
+				level++;
+			}
+			else {
+				break;
+			}
+		}
+		// make sure it will get to level 0
+		level = Math.max(0, level);
 
-        for ( AbstractRaster r : tiles ) {
-            if ( r != null ) {
-                int id = r.hashCode();
-                result.add( new MyTile( id, level, r.getAsSimpleRaster() ) );
-            }
-        }
-        return result;
-    }
+		for (AbstractRaster r : tiles) {
+			if (r != null) {
+				int id = r.hashCode();
+				result.add(new MyTile(id, level, r.getAsSimpleRaster()));
+			}
+		}
+		return result;
+	}
 
-    private static class MyTile extends TileFile {
+	private static class MyTile extends TileFile {
 
-        private SimpleRaster raster;
+		private SimpleRaster raster;
 
-        /**
-         * 
-         * @param id
-         * @param level
-         * @param raster
-         */
-        public MyTile( int id, int level, SimpleRaster raster ) {
-            super( id, level, raster.getEnvelope(), null, null, (float) raster.getRasterReference().getResolutionX(),
-                   (float) raster.getRasterReference().getResolutionY(),
-                   raster.getRasterReference().getOriginLocation() );
-            this.raster = raster;
-        }
+		/**
+		 * @param id
+		 * @param level
+		 * @param raster
+		 */
+		public MyTile(int id, int level, SimpleRaster raster) {
+			super(id, level, raster.getEnvelope(), null, null, (float) raster.getRasterReference().getResolutionX(),
+					(float) raster.getRasterReference().getResolutionY(),
+					raster.getRasterReference().getOriginLocation());
+			this.raster = raster;
+		}
 
-        @Override
-        public SimpleRaster loadRaster( String fileName ) {
-            return raster;
-        }
+		@Override
+		public SimpleRaster loadRaster(String fileName) {
+			return raster;
+		}
 
-    }
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -68,71 +67,69 @@ import org.slf4j.Logger;
 
 /**
  * Builds tile layers from jaxb beans.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 class TileLayerBuilder {
 
-    private static final Logger LOG = getLogger( TileLayerStoreProvider.class );
+	private static final Logger LOG = getLogger(TileLayerStoreProvider.class);
 
-    private Workspace workspace;
+	private Workspace workspace;
 
-    TileLayerBuilder( Workspace workspace ) {
-        this.workspace = workspace;
-    }
+	TileLayerBuilder(Workspace workspace) {
+		this.workspace = workspace;
+	}
 
-    TileLayer createLayer( TileLayerType cfg ) {
-        List<TileDataSet> datasets = new ArrayList<TileDataSet>();
-        Envelope envelope = null;
-        Set<ICRS> crsSet = new LinkedHashSet<ICRS>();
-        for ( TileLayerType.TileDataSet tds : cfg.getTileDataSet() ) {
-            String id = tds.getTileStoreId();
-            TileStore store = workspace.getResource( TileStoreProvider.class, id );
+	TileLayer createLayer(TileLayerType cfg) {
+		List<TileDataSet> datasets = new ArrayList<TileDataSet>();
+		Envelope envelope = null;
+		Set<ICRS> crsSet = new LinkedHashSet<ICRS>();
+		for (TileLayerType.TileDataSet tds : cfg.getTileDataSet()) {
+			String id = tds.getTileStoreId();
+			TileStore store = workspace.getResource(TileStoreProvider.class, id);
 
-            String tdsId = tds.getValue();
+			String tdsId = tds.getValue();
 
-            if ( store == null ) {
-                throw new ResourceInitException( "The tile store with id " + id + " was not available." );
-            }
+			if (store == null) {
+				throw new ResourceInitException("The tile store with id " + id + " was not available.");
+			}
 
-            TileDataSet dataset = store.getTileDataSet( tdsId );
-            if ( dataset == null ) {
-                LOG.warn( "Tile data set with id {} not found in tile store {}, skipping.", tdsId, id );
-                continue;
-            }
+			TileDataSet dataset = store.getTileDataSet(tdsId);
+			if (dataset == null) {
+				LOG.warn("Tile data set with id {} not found in tile store {}, skipping.", tdsId, id);
+				continue;
+			}
 
-            datasets.add( dataset );
+			datasets.add(dataset);
 
-            SpatialMetadata smd = dataset.getTileMatrixSet().getSpatialMetadata();
-            crsSet.addAll( smd.getCoordinateSystems() );
-            Envelope env = smd.getEnvelope();
-            if ( envelope == null ) {
-                envelope = env;
-            } else {
-                envelope = envelope.merge( env );
-            }
-        }
+			SpatialMetadata smd = dataset.getTileMatrixSet().getSpatialMetadata();
+			crsSet.addAll(smd.getCoordinateSystems());
+			Envelope env = smd.getEnvelope();
+			if (envelope == null) {
+				envelope = env;
+			}
+			else {
+				envelope = envelope.merge(env);
+			}
+		}
 
-        SpatialMetadata smd = fromJaxb( cfg.getEnvelope(), cfg.getCRS() );
-        if ( smd.getEnvelope() == null ) {
-            smd.setEnvelope( envelope );
-        }
-        if ( smd.getCoordinateSystems().isEmpty() ) {
-            smd.getCoordinateSystems().addAll( crsSet );
-        }
-        Description desc = fromJaxb( cfg.getTitle(), cfg.getAbstract(), cfg.getKeywords() );
-        LayerMetadata md = new LayerMetadata( cfg.getName(), desc, smd );
-        md.setMapOptions( ConfigUtils.parseLayerOptions( cfg.getLayerOptions() ) );
-        ScaleDenominatorsType sd = cfg.getScaleDenominators();
-        if ( sd != null ) {
-            DoublePair p = new DoublePair( sd.getMin(), sd.getMax() );
-            md.setScaleDenominators( p );
-        }
-        md.setMetadataId( cfg.getMetadataSetId() );
-        return new TileLayer( md, datasets );
-    }
+		SpatialMetadata smd = fromJaxb(cfg.getEnvelope(), cfg.getCRS());
+		if (smd.getEnvelope() == null) {
+			smd.setEnvelope(envelope);
+		}
+		if (smd.getCoordinateSystems().isEmpty()) {
+			smd.getCoordinateSystems().addAll(crsSet);
+		}
+		Description desc = fromJaxb(cfg.getTitle(), cfg.getAbstract(), cfg.getKeywords());
+		LayerMetadata md = new LayerMetadata(cfg.getName(), desc, smd);
+		md.setMapOptions(ConfigUtils.parseLayerOptions(cfg.getLayerOptions()));
+		ScaleDenominatorsType sd = cfg.getScaleDenominators();
+		if (sd != null) {
+			DoublePair p = new DoublePair(sd.getMin(), sd.getMax());
+			md.setScaleDenominators(p);
+		}
+		md.setMetadataId(cfg.getMetadataSetId());
+		return new TileLayer(md, datasets);
+	}
 
 }

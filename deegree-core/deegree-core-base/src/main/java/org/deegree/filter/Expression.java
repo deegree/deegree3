@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -45,85 +44,98 @@ import org.deegree.filter.expression.Sub;
 import org.deegree.filter.expression.ValueReference;
 
 /**
- * An <code>Expression</code> describes a rule to obtain a value that may be derived from the properties of an object.
+ * An <code>Expression</code> describes a rule to obtain a value that may be derived from
+ * the properties of an object.
  * <p>
- * Note that the objects returned by {@link #evaluate(Object, XPathEvaluator)} is an <code>TypedObjectNode[]</code>, as
- * an expression may evaluate to multiple values, e.g. a {@link ValueReference} that targets a multi property of a
- * feature. Values in the returned array may also be <code>null</code>.
+ * Note that the objects returned by {@link #evaluate(Object, XPathEvaluator)} is an
+ * <code>TypedObjectNode[]</code>, as an expression may evaluate to multiple values, e.g.
+ * a {@link ValueReference} that targets a multi property of a feature. Values in the
+ * returned array may also be <code>null</code>.
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * 
- * @version $Revision:$, $Date:$
  */
 public interface Expression {
 
-    /**
-     * Convenience enum type for discriminating the different expression types.
-     */
-    public enum Type {
-        /** Value is computed by adding two values. The {@link Expression} is an instance of {@link Add}. */
-        ADD,
-        /** Value is computed by subtracting two values. The {@link Expression} is an instance of {@link Sub}. */
-        SUB,
-        /** Value is computed by multipliying two values. The {@link Expression} is an instance of {@link Mul}. */
-        MUL,
-        /** Value is computed by dividing two values. The {@link Expression} is an instance of {@link Div}. */
-        DIV,
-        /**
-         * Expression references a property of an object (aka PropertyName). The {@link Expression} is an instance of
-         * {@link PropertyName}.
-         */
-        VALUE_REFERENCE,
-        /**
-         * Value is given as a literal. The {@link Expression} is an instance of {@link Literal}.
-         */
-        LITERAL,
-        /**
-         * Value is given as a function. The {@link Expression} is an instance of {@link Function}.
-         */
-        FUNCTION,
-        /**
-         * Value is given as a custom expression. The {@link Expression} is an instance of
-         * {@link CustomExpressionProvider}.
-         */
-        CUSTOM;
-    }
+	/**
+	 * Convenience enum type for discriminating the different expression types.
+	 */
+	public enum Type {
 
-    /**
-     * Returns the type of expression. Use this to safely determine the subtype of {@link Expression}.
-     * 
-     * @return type of expression
-     */
-    public Type getType();
+		/**
+		 * Value is computed by adding two values. The {@link Expression} is an instance
+		 * of {@link Add}.
+		 */
+		ADD,
+		/**
+		 * Value is computed by subtracting two values. The {@link Expression} is an
+		 * instance of {@link Sub}.
+		 */
+		SUB,
+		/**
+		 * Value is computed by multipliying two values. The {@link Expression} is an
+		 * instance of {@link Mul}.
+		 */
+		MUL,
+		/**
+		 * Value is computed by dividing two values. The {@link Expression} is an instance
+		 * of {@link Div}.
+		 */
+		DIV,
+		/**
+		 * Expression references a property of an object (aka PropertyName). The
+		 * {@link Expression} is an instance of {@link PropertyName}.
+		 */
+		VALUE_REFERENCE,
+		/**
+		 * Value is given as a literal. The {@link Expression} is an instance of
+		 * {@link Literal}.
+		 */
+		LITERAL,
+		/**
+		 * Value is given as a function. The {@link Expression} is an instance of
+		 * {@link Function}.
+		 */
+		FUNCTION,
+		/**
+		 * Value is given as a custom expression. The {@link Expression} is an instance of
+		 * {@link CustomExpressionProvider}.
+		 */
+		CUSTOM;
 
-    /**
-     * Determines the values of the expression for the given context object.
-     * <p>
-     * Note that this returns an <code>TypedObjectNode[]</code>, as an expression may evaluate to multiple values, e.g.
-     * a {@link ValueReference} that targets a multi property of a feature.
-     * </p>
-     * 
-     * @param <T>
-     *            type of the context object
-     * @param obj
-     *            object that the expression is evaluated upon, must not be <code>null</code>
-     * @param xpathEvaluator
-     *            used for evaluation of XPath expressions, must not be <code>null</code>
-     * @return the values of the expression, may be empty (and even contain <code>null</code> values), but never
-     *         <code>null</code>
-     * @throws FilterEvaluationException
-     */
-    public <T> TypedObjectNode[] evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
-                            throws FilterEvaluationException;
+	}
 
-    /**
-     * Returns the expression's paramters.
-     * 
-     * @return the parameters of the expression
-     */
-    public abstract Expression[] getParams();
+	/**
+	 * Returns the type of expression. Use this to safely determine the subtype of
+	 * {@link Expression}.
+	 * @return type of expression
+	 */
+	public Type getType();
 
-    public String toString( String indent );
+	/**
+	 * Determines the values of the expression for the given context object.
+	 * <p>
+	 * Note that this returns an <code>TypedObjectNode[]</code>, as an expression may
+	 * evaluate to multiple values, e.g. a {@link ValueReference} that targets a multi
+	 * property of a feature.
+	 * </p>
+	 * @param <T> type of the context object
+	 * @param obj object that the expression is evaluated upon, must not be
+	 * <code>null</code>
+	 * @param xpathEvaluator used for evaluation of XPath expressions, must not be
+	 * <code>null</code>
+	 * @return the values of the expression, may be empty (and even contain
+	 * <code>null</code> values), but never <code>null</code>
+	 * @throws FilterEvaluationException
+	 */
+	public <T> TypedObjectNode[] evaluate(T obj, XPathEvaluator<T> xpathEvaluator) throws FilterEvaluationException;
+
+	/**
+	 * Returns the expression's paramters.
+	 * @return the parameters of the expression
+	 */
+	public abstract Expression[] getParams();
+
+	public String toString(String indent);
+
 }

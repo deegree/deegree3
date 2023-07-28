@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -41,85 +40,83 @@ import static org.junit.Assert.assertEquals;
  * This is a simple class to validate a HTTP response.
  *
  * <p>
- * It checks if the result code is 200 and the Content-type is 'text/xml'. You should overwrite the
- * <code>responseCode</code> an <code>contentType</code> or the {@link #validateStatus(int)} and
- * {@link #validateHeaders()} methods to alter the validation process.
+ * It checks if the result code is 200 and the Content-type is 'text/xml'. You should
+ * overwrite the <code>responseCode</code> an <code>contentType</code> or the
+ * {@link #validateStatus(int)} and {@link #validateHeaders()} methods to alter the
+ * validation process.
  *
  * <p>
- * If the checks fail, the methods will throw assert exceptions. Therefore this class should be used within junit tests.
+ * If the checks fail, the methods will throw assert exceptions. Therefore this class
+ * should be used within junit tests.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- *
- * @version $Revision$, $Date$
  *
  */
 public class HTTPResponseValidator {
-    /**
-     * The expected HTTP response code
-     */
-    public int responseCode = 200;
 
-    /**
-     * The expected HTTP Content-type
-     */
-    public String contentType = "text/xml";
+	/**
+	 * The expected HTTP response code
+	 */
+	public int responseCode = 200;
 
-    /**
-     * Don't validate the response.
-     */
-    public static final HTTPResponseValidator NONE = new HTTPResponseValidator() {
-        @Override
-        public void validate( HTTPTempFile http ) {
-            // no validation
-        }
-    };
+	/**
+	 * The expected HTTP Content-type
+	 */
+	public String contentType = "text/xml";
 
-    private HTTPTempFile http;
+	/**
+	 * Don't validate the response.
+	 */
+	public static final HTTPResponseValidator NONE = new HTTPResponseValidator() {
+		@Override
+		public void validate(HTTPTempFile http) {
+			// no validation
+		}
+	};
 
-    /**
-     * @param http
-     */
-    public void validate( HTTPTempFile http ) {
-        this.http = http;
-        validateStatus( http.getStatus() );
-        validateHeaders();
-    }
+	private HTTPTempFile http;
 
-    /**
-     * Validates the headers.
-     * <p>
-     * Overwrite this method and check single headers with {@link #validateHeader(String, String)}.
-     */
-    public void validateHeaders() {
-        validateHeader( "Content-type", contentType );
-    }
+	/**
+	 * @param http
+	 */
+	public void validate(HTTPTempFile http) {
+		this.http = http;
+		validateStatus(http.getStatus());
+		validateHeaders();
+	}
 
-    /**
-     * @param key
-     *            the header name
-     * @return the value of the header or <code>null</code>
-     */
-    public String getHeader( String key ) {
-        return http.getHeader( key );
-    }
+	/**
+	 * Validates the headers.
+	 * <p>
+	 * Overwrite this method and check single headers with
+	 * {@link #validateHeader(String, String)}.
+	 */
+	public void validateHeaders() {
+		validateHeader("Content-type", contentType);
+	}
 
-    /**
-     * Validate the HTTP response code.
-     *
-     * @param responseStatus
-     */
-    public void validateStatus( int responseStatus ) {
-        assertEquals( "expected another http response code", responseCode, responseStatus );
-    }
+	/**
+	 * @param key the header name
+	 * @return the value of the header or <code>null</code>
+	 */
+	public String getHeader(String key) {
+		return http.getHeader(key);
+	}
 
-    /**
-     * @param key
-     *            the header name to check
-     * @param expectedValue
-     *            the expected value
-     */
-    public final void validateHeader( String key, String expectedValue ) {
-        assertEquals( "expected another value for header " + key, expectedValue, http.getHeader( key ) );
-    }
+	/**
+	 * Validate the HTTP response code.
+	 * @param responseStatus
+	 */
+	public void validateStatus(int responseStatus) {
+		assertEquals("expected another http response code", responseCode, responseStatus);
+	}
+
+	/**
+	 * @param key the header name to check
+	 * @param expectedValue the expected value
+	 */
+	public final void validateHeader(String key, String expectedValue) {
+		assertEquals("expected another value for header " + key, expectedValue, http.getHeader(key));
+	}
+
 }

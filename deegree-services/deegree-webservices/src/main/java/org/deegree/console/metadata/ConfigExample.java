@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -39,35 +38,33 @@ import java.net.URL;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class ConfigExample {
 
-    private final URL location;
+	private final URL location;
 
-    private final String displayName;
+	private final String displayName;
 
-    private final String description;
+	private final String description;
 
-    public ConfigExample( URL location, String displayName, String description ) {
-        this.location = location;
-        this.displayName = displayName;
-        this.description = description;
-    }
+	public ConfigExample(URL location, String displayName, String description) {
+		this.location = location;
+		this.displayName = displayName;
+		this.description = description;
+	}
 
-    public String getDisplayName() {
-        return displayName;
-    }
+	public String getDisplayName() {
+		return displayName;
+	}
 
-    public String getDescription() {
-        return description;
-    }
+	public String getDescription() {
+		return description;
+	}
 
-    public URL getContentLocation() {
-        return location;
-    }
+	public URL getContentLocation() {
+		return location;
+	}
+
 }

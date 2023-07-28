@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -57,69 +56,63 @@ import org.slf4j.Logger;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.org">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class ISOMetadataStoreTest extends AbstractISOTest {
 
-    private static final Logger LOG = getLogger( ISOMetadataStoreTest.class );
+	private static final Logger LOG = getLogger(ISOMetadataStoreTest.class);
 
-    @Test
-    public void testBBoxFilter()
-                            throws Exception {
-        LOG.info( "START Test: testInsert" );
-        initStore( TstConstants.configURL );
-        Assume.assumeNotNull( store );
+	@Test
+	public void testBBoxFilter() throws Exception {
+		LOG.info("START Test: testInsert");
+		initStore(TstConstants.configURL);
+		Assume.assumeNotNull(store);
 
-        TstUtils.insertMetadata( store, TstConstants.tst_9, TstConstants.tst_10, TstConstants.tst_1 );
-        GeometryFactory gf = new GeometryFactory();
-        ValueReference pn = new ValueReference( "ows:BoundingBox", nsContext );
-        Operator op = new BBOX( pn, gf.createEnvelope( 7.30, 49.30, 10.70, 51.70, CRSUtils.EPSG_4326 ) );
-        Filter filter = new OperatorFilter( op );
-        MetadataQuery query = new MetadataQuery( null, null, filter, null, 1, 10 );
-        store.getRecordCount( query );
-    }
+		TstUtils.insertMetadata(store, TstConstants.tst_9, TstConstants.tst_10, TstConstants.tst_1);
+		GeometryFactory gf = new GeometryFactory();
+		ValueReference pn = new ValueReference("ows:BoundingBox", nsContext);
+		Operator op = new BBOX(pn, gf.createEnvelope(7.30, 49.30, 10.70, 51.70, CRSUtils.EPSG_4326));
+		Filter filter = new OperatorFilter(op);
+		MetadataQuery query = new MetadataQuery(null, null, filter, null, 1, 10);
+		store.getRecordCount(query);
+	}
 
-    @Test
-    public void testKeywordFilter()
-                            throws Exception {
-        LOG.info( "START Test: testInsert" );
-        initStore( TstConstants.configURL );
-        Assume.assumeNotNull( store );
+	@Test
+	public void testKeywordFilter() throws Exception {
+		LOG.info("START Test: testInsert");
+		initStore(TstConstants.configURL);
+		Assume.assumeNotNull(store);
 
-        TstUtils.insertMetadata( store, TstConstants.tst_9, TstConstants.tst_10, TstConstants.tst_1 );
-        Literal<PrimitiveValue> lit1 = new Literal<PrimitiveValue>( "Hessen Wasser Analyser" );
-        Operator op1 = new PropertyIsEqualTo( new ValueReference( "Title", nsContext ), lit1, true, null );
+		TstUtils.insertMetadata(store, TstConstants.tst_9, TstConstants.tst_10, TstConstants.tst_1);
+		Literal<PrimitiveValue> lit1 = new Literal<PrimitiveValue>("Hessen Wasser Analyser");
+		Operator op1 = new PropertyIsEqualTo(new ValueReference("Title", nsContext), lit1, true, null);
 
-        Literal<PrimitiveValue> lit2 = new Literal<PrimitiveValue>( "%Karte%" );
-        Operator op2 = new PropertyIsLike( new ValueReference( "Subject", nsContext ), lit2, "%", "_", "?", true, null );
+		Literal<PrimitiveValue> lit2 = new Literal<PrimitiveValue>("%Karte%");
+		Operator op2 = new PropertyIsLike(new ValueReference("Subject", nsContext), lit2, "%", "_", "?", true, null);
 
-        Operator op = new And( op1, op2 );
-        Filter filter = new OperatorFilter( op );
-        MetadataQuery query = new MetadataQuery( null, null, filter, null, 1, 10 );
-        store.getRecordCount( query );
-    }
+		Operator op = new And(op1, op2);
+		Filter filter = new OperatorFilter(op);
+		MetadataQuery query = new MetadataQuery(null, null, filter, null, 1, 10);
+		store.getRecordCount(query);
+	}
 
-    @Test
-    public void testEqualKeywordFilter()
-                            throws Exception {
-        LOG.info( "START Test: testInsert" );
-        initStore( TstConstants.configURL );
-        Assume.assumeNotNull( store );
+	@Test
+	public void testEqualKeywordFilter() throws Exception {
+		LOG.info("START Test: testInsert");
+		initStore(TstConstants.configURL);
+		Assume.assumeNotNull(store);
 
-        TstUtils.insertMetadata( store, TstConstants.tst_9, TstConstants.tst_10 );
-        Literal<PrimitiveValue> lit2 = new Literal<PrimitiveValue>( "SPOT 5" );
-        Operator op = new PropertyIsEqualTo( new ValueReference( "Subject", nsContext ), lit2, true, null );
+		TstUtils.insertMetadata(store, TstConstants.tst_9, TstConstants.tst_10);
+		Literal<PrimitiveValue> lit2 = new Literal<PrimitiveValue>("SPOT 5");
+		Operator op = new PropertyIsEqualTo(new ValueReference("Subject", nsContext), lit2, true, null);
 
-        Filter filter = new OperatorFilter( op );
-        MetadataQuery query = new MetadataQuery( null, null, filter, null, 1, 10 );
-        int recordCount = store.getRecordCount( query );
+		Filter filter = new OperatorFilter(op);
+		MetadataQuery query = new MetadataQuery(null, null, filter, null, 1, 10);
+		int recordCount = store.getRecordCount(query);
 
-        Assert.assertEquals( 1, recordCount );
+		Assert.assertEquals(1, recordCount);
 
-    }
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -53,103 +52,93 @@ import org.junit.Test;
 
 /**
  * Test cases for {@link WMTSClient}.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class WMTSClientTest {
 
-    private OwsHttpClientMock httpClientMock;
+	private OwsHttpClientMock httpClientMock;
 
-    private WMTSClient client;
+	private WMTSClient client;
 
-    @Before
-    public void setup()
-                            throws OWSExceptionReport, XMLStreamException, IOException {
-        URL capaUrl = WMTSClientTest.class.getResource( "wmts100_capabilities_example.xml" );
-        httpClientMock = new OwsHttpClientMock();
-        client = new WMTSClient( capaUrl, httpClientMock );
-    }
+	@Before
+	public void setup() throws OWSExceptionReport, XMLStreamException, IOException {
+		URL capaUrl = WMTSClientTest.class.getResource("wmts100_capabilities_example.xml");
+		httpClientMock = new OwsHttpClientMock();
+		client = new WMTSClient(capaUrl, httpClientMock);
+	}
 
-    /**
-     * Test method for
-     * {@link org.deegree.protocol.wmts.client.WMTSClient#getTile(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, int, int)}
-     * .
-     */
-    @Test
-    public void testGetTileOK()
-                            throws IOException, OWSExceptionReport, XMLStreamException {
+	/**
+	 * Test method for
+	 * {@link org.deegree.protocol.wmts.client.WMTSClient#getTile(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, int, int)}
+	 * .
+	 */
+	@Test
+	public void testGetTileOK() throws IOException, OWSExceptionReport, XMLStreamException {
 
-        URL responseUrl = WMTSClientTest.class.getResource( "gettile_response1.png" );
-        httpClientMock.setResponse( responseUrl, "image/png", 200 );
-        GetTile request = buildExampleRequest();
-        GetTileResponse response = client.getTile( request );
-        assertNotNull( response );
-    }
+		URL responseUrl = WMTSClientTest.class.getResource("gettile_response1.png");
+		httpClientMock.setResponse(responseUrl, "image/png", 200);
+		GetTile request = buildExampleRequest();
+		GetTileResponse response = client.getTile(request);
+		assertNotNull(response);
+	}
 
-    /**
-     * Test method for
-     * {@link org.deegree.protocol.wmts.client.WMTSClient#getTile(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, int, int)}
-     * .
-     */
-    @Test(expected = OWSExceptionReport.class)
-    public void testGetTileHttpStatus500()
-                            throws IOException, OWSExceptionReport, XMLStreamException {
+	/**
+	 * Test method for
+	 * {@link org.deegree.protocol.wmts.client.WMTSClient#getTile(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, int, int)}
+	 * .
+	 */
+	@Test(expected = OWSExceptionReport.class)
+	public void testGetTileHttpStatus500() throws IOException, OWSExceptionReport, XMLStreamException {
 
-        URL responseUrl = WMTSClientTest.class.getResource( "gettile_response1.png" );
-        httpClientMock.setResponse( responseUrl, "image/png", 500 );
-        GetTile request = buildExampleRequest();
-        client.getTile( request );
-    }
+		URL responseUrl = WMTSClientTest.class.getResource("gettile_response1.png");
+		httpClientMock.setResponse(responseUrl, "image/png", 500);
+		GetTile request = buildExampleRequest();
+		client.getTile(request);
+	}
 
-    /**
-     * Test method for
-     * {@link org.deegree.protocol.wmts.client.WMTSClient#getTile(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, int, int)}
-     * .
-     */
-    @Test(expected = OWSExceptionReport.class)
-    public void testGetTileExceptionReport()
-                            throws IOException, OWSExceptionReport, XMLStreamException {
+	/**
+	 * Test method for
+	 * {@link org.deegree.protocol.wmts.client.WMTSClient#getTile(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, int, int)}
+	 * .
+	 */
+	@Test(expected = OWSExceptionReport.class)
+	public void testGetTileExceptionReport() throws IOException, OWSExceptionReport, XMLStreamException {
 
-        URL responseUrl = WMTSClientTest.class.getResource( "wmts100_exception_report.xml" );
-        httpClientMock.setResponse( responseUrl, "text/xml", 200 );
-        GetTile request = buildExampleRequest();
-        GetTileResponse response = client.getTile( request );
-        response.getAsImage();
-    }
+		URL responseUrl = WMTSClientTest.class.getResource("wmts100_exception_report.xml");
+		httpClientMock.setResponse(responseUrl, "text/xml", 200);
+		GetTile request = buildExampleRequest();
+		GetTileResponse response = client.getTile(request);
+		response.getAsImage();
+	}
 
-    @Test
-    public void testGetLayers()
-                            throws XMLStreamException {
-        List<Layer> clientLayers = client.getLayers();
-        Assert.assertNotNull( clientLayers );
-    }
+	@Test
+	public void testGetLayers() throws XMLStreamException {
+		List<Layer> clientLayers = client.getLayers();
+		Assert.assertNotNull(clientLayers);
+	}
 
-    @Test
-    public void testGetTileMatrixSets()
-                            throws XMLStreamException {
-        List<TileMatrixSet> matrixSets = client.getTileMatrixSets();
-        Assert.assertNotNull( matrixSets );
-    }
+	@Test
+	public void testGetTileMatrixSets() throws XMLStreamException {
+		List<TileMatrixSet> matrixSets = client.getTileMatrixSets();
+		Assert.assertNotNull(matrixSets);
+	}
 
-    @Test
-    public void testGetTileMatrixSet()
-                            throws XMLStreamException {
-        TileMatrixSet matrixSet = client.getTileMatrixSet( "Satellite_Provo" );
-        Assert.assertNotNull( matrixSet );
-    }
+	@Test
+	public void testGetTileMatrixSet() throws XMLStreamException {
+		TileMatrixSet matrixSet = client.getTileMatrixSet("Satellite_Provo");
+		Assert.assertNotNull(matrixSet);
+	}
 
-    @Test
-    public void testGetTileMatrixSetNotExists()
-                            throws XMLStreamException {
-        TileMatrixSet matrixSet = client.getTileMatrixSet( "Satellite_PROVO" );
-        Assert.assertNull( matrixSet );
-    }
+	@Test
+	public void testGetTileMatrixSetNotExists() throws XMLStreamException {
+		TileMatrixSet matrixSet = client.getTileMatrixSet("Satellite_PROVO");
+		Assert.assertNull(matrixSet);
+	}
 
-    private GetTile buildExampleRequest() {
-        return new GetTile( "medford:hydro", "_null", "image/png", "EPSG:900913", "EPSG:900913:24", 6203400, 2660870,
-                            null );
-    }
+	private GetTile buildExampleRequest() {
+		return new GetTile("medford:hydro", "_null", "image/png", "EPSG:900913", "EPSG:900913:24", 6203400, 2660870,
+				null);
+	}
+
 }

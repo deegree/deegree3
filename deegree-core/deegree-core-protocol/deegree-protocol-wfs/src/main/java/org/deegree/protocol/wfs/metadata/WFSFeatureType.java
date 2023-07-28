@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -47,92 +46,90 @@ import org.deegree.geometry.Envelope;
 
 /**
  * {@link FeatureType} metadata announced by a <code>WFS</code>.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class WFSFeatureType {
 
-    private final QName name;
+	private final QName name;
 
-    private final List<LanguageString> titles;
+	private final List<LanguageString> titles;
 
-    private final List<LanguageString> abstracts;
+	private final List<LanguageString> abstracts;
 
-    private final List<String> outputFormats;
+	private final List<String> outputFormats;
 
-    private final List<Object> keywords;
+	private final List<Object> keywords;
 
-    private final CRSRef defaultCrs;
+	private final CRSRef defaultCrs;
 
-    private final List<CRSRef> otherCrs;
+	private final List<CRSRef> otherCrs;
 
-    private Envelope wgs84BBox;
+	private Envelope wgs84BBox;
 
-    private final List<Envelope> wgs84BBoxes;
+	private final List<Envelope> wgs84BBoxes;
 
-    private final List<Object> mdReferences;
+	private final List<Object> mdReferences;
 
-//    private final Object extendedDescription;
+	// private final Object extendedDescription;
 
-    public WFSFeatureType( QName name, List<LanguageString> titles, List<LanguageString> abstracts,
-                           List<String> outputFormats, List<Object> keywords, CRSRef defaultCrs, List<CRSRef> otherCrs,
-                           List<Envelope> wgs84BBoxes, List<Object> mdReferences, Object extendedDescription ) {
-        this.name = name;
-        this.titles = titles;
-        this.abstracts = abstracts;
-        this.outputFormats = outputFormats;
-        this.keywords = keywords;
-        this.defaultCrs = defaultCrs;
-        this.otherCrs = otherCrs;
-        this.wgs84BBoxes = wgs84BBoxes;
-        wgs84BBox = wgs84BBoxes.isEmpty() ? null : wgs84BBoxes.get( 0 );
-        for ( int i = 1; i < wgs84BBoxes.size(); i++ ) {
-            wgs84BBox = wgs84BBox.merge( wgs84BBoxes.get( i ) );
-        }
-        this.mdReferences = Collections.emptyList();
-//        this.extendedDescription = extendedDescription;
-    }
+	public WFSFeatureType(QName name, List<LanguageString> titles, List<LanguageString> abstracts,
+			List<String> outputFormats, List<Object> keywords, CRSRef defaultCrs, List<CRSRef> otherCrs,
+			List<Envelope> wgs84BBoxes, List<Object> mdReferences, Object extendedDescription) {
+		this.name = name;
+		this.titles = titles;
+		this.abstracts = abstracts;
+		this.outputFormats = outputFormats;
+		this.keywords = keywords;
+		this.defaultCrs = defaultCrs;
+		this.otherCrs = otherCrs;
+		this.wgs84BBoxes = wgs84BBoxes;
+		wgs84BBox = wgs84BBoxes.isEmpty() ? null : wgs84BBoxes.get(0);
+		for (int i = 1; i < wgs84BBoxes.size(); i++) {
+			wgs84BBox = wgs84BBox.merge(wgs84BBoxes.get(i));
+		}
+		this.mdReferences = Collections.emptyList();
+		// this.extendedDescription = extendedDescription;
+	}
 
-    public QName getName() {
-        return name;
-    }
+	public QName getName() {
+		return name;
+	}
 
-    public List<LanguageString> getTitles() {
-        return titles;
-    }
+	public List<LanguageString> getTitles() {
+		return titles;
+	}
 
-    public List<LanguageString> getAbstracts() {
-        return abstracts;
-    }
+	public List<LanguageString> getAbstracts() {
+		return abstracts;
+	}
 
-    public List<String> getOutputFormats() {
-        return outputFormats;
-    }
+	public List<String> getOutputFormats() {
+		return outputFormats;
+	}
 
-    public List<Object> getKeywords() {
-        return keywords;
-    }
+	public List<Object> getKeywords() {
+		return keywords;
+	}
 
-    public CRSRef getDefaultCrs() {
-        return defaultCrs;
-    }
+	public CRSRef getDefaultCrs() {
+		return defaultCrs;
+	}
 
-    public List<CRSRef> getOtherCrs() {
-        return otherCrs;
-    }
+	public List<CRSRef> getOtherCrs() {
+		return otherCrs;
+	}
 
-    public Envelope getWGS84BoundingBox() {
-        return wgs84BBox;
-    }
+	public Envelope getWGS84BoundingBox() {
+		return wgs84BBox;
+	}
 
-    public List<Envelope> getWGS84BoundingBoxes() {
-        return wgs84BBoxes;
-    }
+	public List<Envelope> getWGS84BoundingBoxes() {
+		return wgs84BBoxes;
+	}
 
-    public List<Object> getMetadataReferences() {
-        return mdReferences;
-    }
+	public List<Object> getMetadataReferences() {
+		return mdReferences;
+	}
+
 }

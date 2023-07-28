@@ -1,4 +1,3 @@
-//$Header: /deegreerepository/deegree/resources/eclipse/svn_classfile_header_template.xml,v 1.2 2007/03/06 09:44:09 bezema Exp $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -51,64 +50,62 @@ import org.deegree.protocol.wps.WPSConstants;
 
 /**
  * Parser for WPS <code>DescribeProcess</code> XML requests.
- * 
+ *
  * @author <a href="mailto:apadberg@uni-bonn.de">Alexander Padberg</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: padberg$
- * 
- * @version $Revision$, $Date: 09.05.2008 11:44:19$
  */
 public class DescribeProcessRequestXMLAdapter extends XMLAdapter {
 
-    private static final String OWS_PREFIX = "ows";
+	private static final String OWS_PREFIX = "ows";
 
-    private static final String OWS_NS = "http://www.opengis.net/ows/1.1";
+	private static final String OWS_NS = "http://www.opengis.net/ows/1.1";
 
-    private static NamespaceBindings nsContext;
+	private static NamespaceBindings nsContext;
 
-    static {
-        nsContext = new NamespaceBindings( XMLAdapter.nsContext );
-        nsContext.addNamespace( OWS_PREFIX, OWS_NS );
-        nsContext.addNamespace( WPSConstants.WPS_PREFIX, WPSConstants.WPS_100_NS );
-    }
+	static {
+		nsContext = new NamespaceBindings(XMLAdapter.nsContext);
+		nsContext.addNamespace(OWS_PREFIX, OWS_NS);
+		nsContext.addNamespace(WPSConstants.WPS_PREFIX, WPSConstants.WPS_100_NS);
+	}
 
-    /**
-     * Parses the encapsulated WPS 1.0.0 &lt;<code>DescribeProcess</code>&gt; element.
-     * <p>
-     * Prerequisites (not checked by this method):
-     * <ul>
-     * <li>The name of the encapsulated element is a &lt;<code>wps:DescribeProcess</code>&gt;
-     * (wps="http://www.opengis.net/wps/1.0.0").</li>
-     * <li>The <code>version</code> attribute of the element must have the value <code>1.0.0</code>.</li>
-     * </p>
-     * 
-     * @return corresponding <code>DescribeProcessRequest</code> object
-     * @throws XMLParsingException
-     *             if a syntactical or semantical error has been encountered in the request document
-     */
-    public DescribeProcessRequest parse100()
-                            throws XMLParsingException {
+	/**
+	 * Parses the encapsulated WPS 1.0.0 &lt;<code>DescribeProcess</code>&gt; element.
+	 * <p>
+	 * Prerequisites (not checked by this method):
+	 * <ul>
+	 * <li>The name of the encapsulated element is a
+	 * &lt;<code>wps:DescribeProcess</code>&gt;
+	 * (wps="http://www.opengis.net/wps/1.0.0").</li>
+	 * <li>The <code>version</code> attribute of the element must have the value
+	 * <code>1.0.0</code>.</li>
+	 * </p>
+	 * @return corresponding <code>DescribeProcessRequest</code> object
+	 * @throws XMLParsingException if a syntactical or semantical error has been
+	 * encountered in the request document
+	 */
+	public DescribeProcessRequest parse100() throws XMLParsingException {
 
-        // language attribute (optional)
-        String language = getNodeAsString( rootElement, new XPath( "@language", nsContext ), null );
+		// language attribute (optional)
+		String language = getNodeAsString(rootElement, new XPath("@language", nsContext), null);
 
-        // ows:Identifier elements (minOccurs="1", maxOccurs="unbounded")
-        List<CodeType> identifiers = new ArrayList<CodeType>();
-        List<OMElement> identifierElements = getRequiredElements( rootElement, new XPath( "ows:Identifier", nsContext ) );
-        for ( OMElement identifierElement : identifierElements ) {
-            identifiers.add( parseCodeType( identifierElement ) );
-        }
-        return new DescribeProcessRequest( WPSConstants.VERSION_100, language, identifiers );
-    }
+		// ows:Identifier elements (minOccurs="1", maxOccurs="unbounded")
+		List<CodeType> identifiers = new ArrayList<CodeType>();
+		List<OMElement> identifierElements = getRequiredElements(rootElement, new XPath("ows:Identifier", nsContext));
+		for (OMElement identifierElement : identifierElements) {
+			identifiers.add(parseCodeType(identifierElement));
+		}
+		return new DescribeProcessRequest(WPSConstants.VERSION_100, language, identifiers);
+	}
 
-    private CodeType parseCodeType( OMElement codeTypeElement ) {
+	private CodeType parseCodeType(OMElement codeTypeElement) {
 
-        // codeSpace attribute (optional)
-        String codeSpace = codeTypeElement.getAttributeValue( new QName( "codeSpace" ) );
+		// codeSpace attribute (optional)
+		String codeSpace = codeTypeElement.getAttributeValue(new QName("codeSpace"));
 
-        // text value
-        String value = codeTypeElement.getText();
+		// text value
+		String value = codeTypeElement.getText();
 
-        return new CodeType( value, codeSpace );
-    }
+		return new CodeType(value, codeSpace);
+	}
+
 }

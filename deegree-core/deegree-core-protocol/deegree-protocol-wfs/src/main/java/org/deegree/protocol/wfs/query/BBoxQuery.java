@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/src/org/deegree/ogcwebservices/wfs/operation/DescribeFeatureType.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -44,52 +43,45 @@ import org.deegree.protocol.wfs.getfeature.TypeName;
 /**
  * A {@link AdHocQuery} that selects features using an {@link Envelope}.
  * <p>
- * NOTE: Only KVP-based queries can be of this type. For XML-requests its only possible to use a filter constraint.
- * 
+ * NOTE: Only KVP-based queries can be of this type. For XML-requests its only possible to
+ * use a filter constraint.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * 
- * @version $Revision: $, $Date: $
  */
 public class BBoxQuery extends AdHocQuery {
 
-    private final Envelope bbox;
+	private final Envelope bbox;
 
-    /**
-     * Creates a new {@link BBoxQuery} instance.
-     * 
-     * @param handle
-     *            client-generated query identifier, may be <code>null</code>
-     * @param typeNames
-     *            requested feature types (with optional aliases), must not be <code>null</code> and must always contain
-     *            at least one entry
-     * @param featureVersion
-     *            version of the feature instances to be retrieved, may be <code>null</code>
-     * @param srsName
-     *            WFS-supported SRS that shall be used for returned feature geometries, may be <code>null</code>
-     * @param projectionClauses
-     *            limits the properties of the features that should be retrieved, may be <code>null</code>
-     * @param sortBy
-     *            properties whose values should be used to order the set of feature instances that satisfy the query,
-     *            may be <code>null</code>
-     * @param bbox
-     *            envelope that constraints the query, must not be <code>null</code>
-     */
-    public BBoxQuery( String handle, TypeName[] typeNames, String featureVersion, ICRS srsName,
-                      PropertyName[] projectionClauses, SortProperty[] sortBy, Envelope bbox ) {
-        super( handle, typeNames, featureVersion, srsName, projectionClauses, sortBy );
-        if ( bbox == null ) {
-            throw new IllegalArgumentException();
-        }
-        this.bbox = bbox;
-    }
+	/**
+	 * Creates a new {@link BBoxQuery} instance.
+	 * @param handle client-generated query identifier, may be <code>null</code>
+	 * @param typeNames requested feature types (with optional aliases), must not be
+	 * <code>null</code> and must always contain at least one entry
+	 * @param featureVersion version of the feature instances to be retrieved, may be
+	 * <code>null</code>
+	 * @param srsName WFS-supported SRS that shall be used for returned feature
+	 * geometries, may be <code>null</code>
+	 * @param projectionClauses limits the properties of the features that should be
+	 * retrieved, may be <code>null</code>
+	 * @param sortBy properties whose values should be used to order the set of feature
+	 * instances that satisfy the query, may be <code>null</code>
+	 * @param bbox envelope that constraints the query, must not be <code>null</code>
+	 */
+	public BBoxQuery(String handle, TypeName[] typeNames, String featureVersion, ICRS srsName,
+			PropertyName[] projectionClauses, SortProperty[] sortBy, Envelope bbox) {
+		super(handle, typeNames, featureVersion, srsName, projectionClauses, sortBy);
+		if (bbox == null) {
+			throw new IllegalArgumentException();
+		}
+		this.bbox = bbox;
+	}
 
-    /**
-     * Returns the bounding box constraint.
-     * 
-     * @return the bounding box constraint, never null
-     */
-    public Envelope getBBox() {
-        return bbox;
-    }
+	/**
+	 * Returns the bounding box constraint.
+	 * @return the bounding box constraint, never null
+	 */
+	public Envelope getBBox() {
+		return bbox;
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -43,59 +42,63 @@ import org.deegree.protocol.wps.client.param.ComplexFormat;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 @FacesComponent(value = "HtmlSelectFormat")
 public class HtmlSelectFormat extends UISelectOne {
 
-    /**
-     * <p>
-     * The standard component type for this component.
-     * </p>
-     */
-    public static final String COMPONENT_TYPE = "HtmlSelectFormat";
+	/**
+	 * <p>
+	 * The standard component type for this component.
+	 * </p>
+	 */
+	public static final String COMPONENT_TYPE = "HtmlSelectFormat";
 
-    private static enum AdditionalPropertyKeys {
-        styleClass, defaultFormat, supportedFormats, onchange
-    }
+	private static enum AdditionalPropertyKeys {
 
-    public HtmlSelectFormat() {
-        setRendererType( "org.deegree.SelectFormat" );
-    }
+		styleClass, defaultFormat, supportedFormats, onchange
 
-    public String getOnchange() {
-        return (String) getStateHelper().eval( AdditionalPropertyKeys.onchange, null );
-    }
+	}
 
-    public void setOnchange( String onchange ) {
-        getStateHelper().put( AdditionalPropertyKeys.onchange, onchange );
-    }
-    
-    public String getStyleClass() {
-        return (String) getStateHelper().eval( AdditionalPropertyKeys.styleClass, null );
-    }
+	public HtmlSelectFormat() {
+		setRendererType("org.deegree.SelectFormat");
+	}
 
-    public void setStyleClass( String styleClass ) {
-        getStateHelper().put( AdditionalPropertyKeys.styleClass, styleClass );
-    }
+	public String getOnchange() {
+		return (String) getStateHelper().eval(AdditionalPropertyKeys.onchange, null);
+	}
 
-    public ComplexFormat getDefaultFormat() {
-        return (ComplexFormat) getStateHelper().eval( AdditionalPropertyKeys.defaultFormat, null );
-    }
+	public void setOnchange(String onchange) {
+		getStateHelper().put(AdditionalPropertyKeys.onchange, onchange);
+	}
 
-    public void setDefaultFormat( ComplexFormat defaultFormat ) {
-        getStateHelper().put( AdditionalPropertyKeys.defaultFormat, defaultFormat );
-    }
-    
-    /* (non-Javadoc)
-     * @see javax.faces.component.UISelectOne#validateValue(javax.faces.context.FacesContext, java.lang.Object)
-     */
-    @Override
-    protected void validateValue( FacesContext context, Object value ) {
-        super.validateValue( context, value );
-    }
+	public String getStyleClass() {
+		return (String) getStateHelper().eval(AdditionalPropertyKeys.styleClass, null);
+	}
+
+	public void setStyleClass(String styleClass) {
+		getStateHelper().put(AdditionalPropertyKeys.styleClass, styleClass);
+	}
+
+	public ComplexFormat getDefaultFormat() {
+		return (ComplexFormat) getStateHelper().eval(AdditionalPropertyKeys.defaultFormat, null);
+	}
+
+	public void setDefaultFormat(ComplexFormat defaultFormat) {
+		getStateHelper().put(AdditionalPropertyKeys.defaultFormat, defaultFormat);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * javax.faces.component.UISelectOne#validateValue(javax.faces.context.FacesContext,
+	 * java.lang.Object)
+	 */
+	@Override
+	protected void validateValue(FacesContext context, Object value) {
+		super.validateValue(context, value);
+	}
+
 }

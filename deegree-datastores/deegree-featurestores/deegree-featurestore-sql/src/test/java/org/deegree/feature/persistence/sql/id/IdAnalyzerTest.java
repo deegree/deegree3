@@ -55,79 +55,84 @@ import org.deegree.feature.types.GenericFeatureType;
 import org.junit.Test;
 
 /**
- * {@link IdAnalyzer} tests for checking the correct deriving of a feature type from a feature id.
+ * {@link IdAnalyzer} tests for checking the correct deriving of a feature type from a
+ * feature id.
  */
 public class IdAnalyzerTest {
 
-    private IdAnalyzer idAnalyzer;
+	private IdAnalyzer idAnalyzer;
 
-    @Test
-    public void analyzeFeatureIds() {
-        idAnalyzer = setupAnalyzerScenario( "APP_FEATURE1_", "APP_FEATURE2_", "APP_FEATURE3_" );
-        assertEquals( "APP_FEATURE1_", analyzeFeatureType( "APP_FEATURE1_1" ) );
-        assertEquals( "APP_FEATURE2_", analyzeFeatureType( "APP_FEATURE2_1" ) );
-        assertEquals( "APP_FEATURE3_", analyzeFeatureType( "APP_FEATURE3_1" ) );
-    }
+	@Test
+	public void analyzeFeatureIds() {
+		idAnalyzer = setupAnalyzerScenario("APP_FEATURE1_", "APP_FEATURE2_", "APP_FEATURE3_");
+		assertEquals("APP_FEATURE1_", analyzeFeatureType("APP_FEATURE1_1"));
+		assertEquals("APP_FEATURE2_", analyzeFeatureType("APP_FEATURE2_1"));
+		assertEquals("APP_FEATURE3_", analyzeFeatureType("APP_FEATURE3_1"));
+	}
 
-    @Test
-    public void analyzeGeometryIds() {
-        idAnalyzer = setupAnalyzerScenario( "APP_FEATURE1_", "APP_FEATURE2_", "APP_FEATURE3_" );
-        assertEquals( "APP_FEATURE1_", analyzeFeatureType( "APP_FEATURE1_1_APP_GEOM" ) );
-        assertEquals( "APP_FEATURE2_", analyzeFeatureType( "APP_FEATURE2_1_APP_GEOM" ) );
-        assertEquals( "APP_FEATURE3_", analyzeFeatureType( "APP_FEATURE3_1_APP_GEOM" ) );
-    }
+	@Test
+	public void analyzeGeometryIds() {
+		idAnalyzer = setupAnalyzerScenario("APP_FEATURE1_", "APP_FEATURE2_", "APP_FEATURE3_");
+		assertEquals("APP_FEATURE1_", analyzeFeatureType("APP_FEATURE1_1_APP_GEOM"));
+		assertEquals("APP_FEATURE2_", analyzeFeatureType("APP_FEATURE2_1_APP_GEOM"));
+		assertEquals("APP_FEATURE3_", analyzeFeatureType("APP_FEATURE3_1_APP_GEOM"));
+	}
 
-    @Test(expected = IllegalArgumentException.class)
-    public void analyzeNoMatch() {
-        idAnalyzer = setupAnalyzerScenario( "APP_FEATURE_" );
-        analyzeFeatureType( "BPP_FEATURE_1" );
-    }
+	@Test(expected = IllegalArgumentException.class)
+	public void analyzeNoMatch() {
+		idAnalyzer = setupAnalyzerScenario("APP_FEATURE_");
+		analyzeFeatureType("BPP_FEATURE_1");
+	}
 
-    @Test
-    public void analyzeFeatureIdMultiplePrefixMatches() {
-        // these tests used to fail with Java 8 (see https://github.com/deegree/deegree3/issues/848)
-        idAnalyzer = setupAnalyzerScenario( "APP_FEATURE_", "APP_FEATURE_X_" );
-        assertEquals( "APP_FEATURE_X_", analyzeFeatureType( "APP_FEATURE_X_1" ) );
-        // actual production case that used to fail
-        idAnalyzer = setupAnalyzerScenario( "IMRO_GEOMETRIESTRUCTUURVISIEOBJECT_", "IMRO_GEOMETRIESTRUCTUURVISIEOBJECT_P_" );
-        assertEquals( "IMRO_GEOMETRIESTRUCTUURVISIEOBJECT_P_", analyzeFeatureType( "IMRO_GEOMETRIESTRUCTUURVISIEOBJECT_P_1" ) );
-    }
+	@Test
+	public void analyzeFeatureIdMultiplePrefixMatches() {
+		// these tests used to fail with Java 8 (see
+		// https://github.com/deegree/deegree3/issues/848)
+		idAnalyzer = setupAnalyzerScenario("APP_FEATURE_", "APP_FEATURE_X_");
+		assertEquals("APP_FEATURE_X_", analyzeFeatureType("APP_FEATURE_X_1"));
+		// actual production case that used to fail
+		idAnalyzer = setupAnalyzerScenario("IMRO_GEOMETRIESTRUCTUURVISIEOBJECT_",
+				"IMRO_GEOMETRIESTRUCTUURVISIEOBJECT_P_");
+		assertEquals("IMRO_GEOMETRIESTRUCTUURVISIEOBJECT_P_",
+				analyzeFeatureType("IMRO_GEOMETRIESTRUCTUURVISIEOBJECT_P_1"));
+	}
 
-    private String analyzeFeatureType( final String fid ) {
-        return idAnalyzer.analyze( fid ).getFeatureType().getName().getLocalPart();
-    }
+	private String analyzeFeatureType(final String fid) {
+		return idAnalyzer.analyze(fid).getFeatureType().getName().getLocalPart();
+	}
 
-    private IdAnalyzer setupAnalyzerScenario( final String... idPrefixes ) {
-        final FeatureType[] fts = new FeatureType[idPrefixes.length];
-        final FeatureTypeMapping[] ftMappings = new FeatureTypeMapping[idPrefixes.length];
-        int i = 0;
-        for ( final String idPrefix : idPrefixes ) {
-            fts[i] = buildFeatureType( idPrefix );
-            ftMappings[i] = buildFeatureTypeMapping( fts[i], idPrefix );
-            i++;
-        }
-        final MappedAppSchema schema = new MappedAppSchema( fts, null, null, null, ftMappings, null, null, null, false,
-                                                            null, null, null );
-        return new IdAnalyzer( schema );
-    }
+	private IdAnalyzer setupAnalyzerScenario(final String... idPrefixes) {
+		final FeatureType[] fts = new FeatureType[idPrefixes.length];
+		final FeatureTypeMapping[] ftMappings = new FeatureTypeMapping[idPrefixes.length];
+		int i = 0;
+		for (final String idPrefix : idPrefixes) {
+			fts[i] = buildFeatureType(idPrefix);
+			ftMappings[i] = buildFeatureTypeMapping(fts[i], idPrefix);
+			i++;
+		}
+		final MappedAppSchema schema = new MappedAppSchema(fts, null, null, null, ftMappings, null, null, null, false,
+				null, null, null);
+		return new IdAnalyzer(schema);
+	}
 
-    private FeatureType buildFeatureType( final String localName ) {
-        return new GenericFeatureType( buildQName( localName ), Collections.<PropertyType> emptyList(), false );
-    }
+	private FeatureType buildFeatureType(final String localName) {
+		return new GenericFeatureType(buildQName(localName), Collections.<PropertyType>emptyList(), false);
+	}
 
-    private FeatureTypeMapping buildFeatureTypeMapping( final FeatureType ft, final String fidPrefix ) {
-        final FIDMapping fidMapping = buildFidMapping( fidPrefix );
-        return new FeatureTypeMapping( ft.getName(), new TableName( ft.getName().getLocalPart() ), fidMapping,
-                                       Collections.<Mapping> emptyList(), Collections.emptyList() );
-    }
+	private FeatureTypeMapping buildFeatureTypeMapping(final FeatureType ft, final String fidPrefix) {
+		final FIDMapping fidMapping = buildFidMapping(fidPrefix);
+		return new FeatureTypeMapping(ft.getName(), new TableName(ft.getName().getLocalPart()), fidMapping,
+				Collections.<Mapping>emptyList(), Collections.emptyList());
+	}
 
-    private FIDMapping buildFidMapping( final String fidPrefix ) {
-        final List<Pair<SQLIdentifier, BaseType>> fidColumns = new ArrayList<Pair<SQLIdentifier, BaseType>>();
-        fidColumns.add( new Pair<SQLIdentifier, BaseType>( new SQLIdentifier( "id" ), BaseType.INTEGER ) );
-        return new FIDMapping( fidPrefix, "_", fidColumns, null );
-    }
+	private FIDMapping buildFidMapping(final String fidPrefix) {
+		final List<Pair<SQLIdentifier, BaseType>> fidColumns = new ArrayList<Pair<SQLIdentifier, BaseType>>();
+		fidColumns.add(new Pair<SQLIdentifier, BaseType>(new SQLIdentifier("id"), BaseType.INTEGER));
+		return new FIDMapping(fidPrefix, "_", fidColumns, null);
+	}
 
-    private QName buildQName( final String localPart ) {
-        return new QName( "http://www.deegree.org/app", localPart, "app" );
-    }
+	private QName buildQName(final String localPart) {
+		return new QName("http://www.deegree.org/app", localPart, "app");
+	}
+
 }

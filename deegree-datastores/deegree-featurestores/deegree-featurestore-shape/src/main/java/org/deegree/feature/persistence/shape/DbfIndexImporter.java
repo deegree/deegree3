@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -74,244 +73,240 @@ import org.slf4j.Logger;
  * Copies the dbf contents into the h2 db.
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- *
- * @version $Revision: $, $Date: $
  */
 class DbfIndexImporter {
 
-    private static final Logger LOG = getLogger( DbfIndexImporter.class );
+	private static final Logger LOG = getLogger(DbfIndexImporter.class);
 
-    private DBFReader dbf;
+	private DBFReader dbf;
 
-    private Pair<ArrayList<Pair<float[], Long>>, Boolean> envelopes;
+	private Pair<ArrayList<Pair<float[], Long>>, Boolean> envelopes;
 
-    private ArrayList<String> fields = new ArrayList<>();
+	private ArrayList<String> fields = new ArrayList<>();
 
-    private List<Mapping> mappings;
+	private List<Mapping> mappings;
 
-    private File file;
+	private File file;
 
-    private Map<String, Mapping> fieldMap;
+	private Map<String, Mapping> fieldMap;
 
-    private LegacyConnectionProvider connProvider;
+	private LegacyConnectionProvider connProvider;
 
-    DbfIndexImporter( DBFReader dbf, File file, Pair<ArrayList<Pair<float[], Long>>, Boolean> envelopes,
-                      List<Mapping> mappings ) {
-        this.dbf = dbf;
-        this.file = file.getAbsoluteFile();
-        this.envelopes = envelopes;
-        this.mappings = mappings;
-    }
+	DbfIndexImporter(DBFReader dbf, File file, Pair<ArrayList<Pair<float[], Long>>, Boolean> envelopes,
+			List<Mapping> mappings) {
+		this.dbf = dbf;
+		this.file = file.getAbsoluteFile();
+		this.envelopes = envelopes;
+		this.mappings = mappings;
+	}
 
-    private void createTable( StringBuilder sb ) {
-        sb.append( "create table dbf_index (record_number integer,file_index bigint" );
-    }
+	private void createTable(StringBuilder sb) {
+		sb.append("create table dbf_index (record_number integer,file_index bigint");
+	}
 
-    private Map<String, Mapping> createMappingMap( List<Mapping> mappings ) {
-        Map<String, Mapping> fieldMap = null;
-        if ( mappings != null ) {
-            fieldMap = new HashMap<>();
-            for ( Mapping m : mappings ) {
-                if ( m.propname != null ) {
-                    fieldMap.put( m.propname, m );
-                }
-            }
-        }
-        return fieldMap;
-    }
+	private Map<String, Mapping> createMappingMap(List<Mapping> mappings) {
+		Map<String, Mapping> fieldMap = null;
+		if (mappings != null) {
+			fieldMap = new HashMap<>();
+			for (Mapping m : mappings) {
+				if (m.propname != null) {
+					fieldMap.put(m.propname, m);
+				}
+			}
+		}
+		return fieldMap;
+	}
 
-    private void appendFields( StringBuilder create ) {
-        for ( PropertyType pt : dbf.getFields() ) {
-            if ( pt instanceof SimplePropertyType ) {
-                SimplePropertyType spt = (SimplePropertyType) pt;
-                if ( fieldMap != null && !fieldMap.containsKey( spt.getName().getLocalPart() ) ) {
-                    continue;
-                }
+	private void appendFields(StringBuilder create) {
+		for (PropertyType pt : dbf.getFields()) {
+			if (pt instanceof SimplePropertyType) {
+				SimplePropertyType spt = (SimplePropertyType) pt;
+				if (fieldMap != null && !fieldMap.containsKey(spt.getName().getLocalPart())) {
+					continue;
+				}
 
-                create.append( ", " );
-                String sqlType = null;
-                switch ( spt.getPrimitiveType().getBaseType() ) {
-                case BOOLEAN:
-                    sqlType = "boolean";
-                    break;
-                case DATE:
-                case DATE_TIME:
-                case TIME:
-                    sqlType = "timestamp";
-                    break;
-                case DECIMAL:
-                case DOUBLE:
-                    sqlType = "double";
-                    break;
-                case INTEGER:
-                    sqlType = "integer";
-                    break;
-                case STRING:
-                    sqlType = "varchar";
-                    break;
-                }
-                String field = pt.getName().getLocalPart().toLowerCase();
-                fields.add( field );
-                create.append( field + " " + sqlType );
-            }
-        }
-        create.append( ")" );
-    }
+				create.append(", ");
+				String sqlType = null;
+				switch (spt.getPrimitiveType().getBaseType()) {
+					case BOOLEAN:
+						sqlType = "boolean";
+						break;
+					case DATE:
+					case DATE_TIME:
+					case TIME:
+						sqlType = "timestamp";
+						break;
+					case DECIMAL:
+					case DOUBLE:
+						sqlType = "double";
+						break;
+					case INTEGER:
+						sqlType = "integer";
+						break;
+					case STRING:
+						sqlType = "varchar";
+						break;
+				}
+				String field = pt.getName().getLocalPart().toLowerCase();
+				fields.add(field);
+				create.append(field + " " + sqlType);
+			}
+		}
+		create.append(")");
+	}
 
-    private String createInsertStatement( Map<SimplePropertyType, Property> entry ) {
-        StringBuilder sb = new StringBuilder();
-        StringBuilder qms = new StringBuilder();
-        sb.setLength( 0 );
-        qms.setLength( 0 );
-        qms.append( "?,?" );
-        sb.append( "insert into dbf_index (record_number,file_index" );
-        for ( SimplePropertyType spt : entry.keySet() ) {
-            if ( fieldMap != null && !fieldMap.containsKey( spt.getName().getLocalPart() ) ) {
-                continue;
-            }
-            sb.append( "," );
-            qms.append( ",?" );
-            sb.append( spt.getName().getLocalPart().toLowerCase() );
-        }
-        sb.append( ") values (" ).append( qms ).append( ")" );
-        return sb.toString();
-    }
+	private String createInsertStatement(Map<SimplePropertyType, Property> entry) {
+		StringBuilder sb = new StringBuilder();
+		StringBuilder qms = new StringBuilder();
+		sb.setLength(0);
+		qms.setLength(0);
+		qms.append("?,?");
+		sb.append("insert into dbf_index (record_number,file_index");
+		for (SimplePropertyType spt : entry.keySet()) {
+			if (fieldMap != null && !fieldMap.containsKey(spt.getName().getLocalPart())) {
+				continue;
+			}
+			sb.append(",");
+			qms.append(",?");
+			sb.append(spt.getName().getLocalPart().toLowerCase());
+		}
+		sb.append(") values (").append(qms).append(")");
+		return sb.toString();
+	}
 
-    private void setValue( PrimitiveValue primVal, SimplePropertyType spt, int idx, PreparedStatement stmt )
-                            throws SQLException {
-        if ( primVal.getValue() == null ) {
-            switch ( spt.getPrimitiveType().getBaseType() ) {
-            case BOOLEAN:
-                stmt.setNull( idx, Types.BOOLEAN );
-                break;
-            case DATE:
-            case DATE_TIME:
-            case TIME:
-                stmt.setNull( idx, Types.DATE );
-                break;
-            case DECIMAL:
-            case DOUBLE:
-                stmt.setNull( idx, Types.DECIMAL );
-                break;
-            case INTEGER:
-                stmt.setNull( idx, Types.INTEGER );
-                break;
-            case STRING:
-                stmt.setNull( idx, Types.VARCHAR );
-                break;
-            }
-            return;
-        }
-        switch ( spt.getPrimitiveType().getBaseType() ) {
-        case BOOLEAN:
-            stmt.setBoolean( idx, (Boolean) primVal.getValue() );
-            break;
-        case DATE:
-        case DATE_TIME:
-        case TIME:
-            // TODO should this use the corresponding subclass of java.sql.Date?
-            stmt.setDate( idx, new java.sql.Date( ( (Date) primVal.getValue() ).getTimeInMilliseconds() ) );
-            break;
-        case DECIMAL:
-        case DOUBLE:
-            stmt.setBigDecimal( idx, (BigDecimal) primVal.getValue() );
-            break;
-        case INTEGER:
-            stmt.setInt( idx, ( (BigInteger) primVal.getValue() ).intValue() );
-            break;
-        case STRING:
-            stmt.setString( idx, (String) primVal.getValue() );
-            break;
-        }
-    }
+	private void setValue(PrimitiveValue primVal, SimplePropertyType spt, int idx, PreparedStatement stmt)
+			throws SQLException {
+		if (primVal.getValue() == null) {
+			switch (spt.getPrimitiveType().getBaseType()) {
+				case BOOLEAN:
+					stmt.setNull(idx, Types.BOOLEAN);
+					break;
+				case DATE:
+				case DATE_TIME:
+				case TIME:
+					stmt.setNull(idx, Types.DATE);
+					break;
+				case DECIMAL:
+				case DOUBLE:
+					stmt.setNull(idx, Types.DECIMAL);
+					break;
+				case INTEGER:
+					stmt.setNull(idx, Types.INTEGER);
+					break;
+				case STRING:
+					stmt.setNull(idx, Types.VARCHAR);
+					break;
+			}
+			return;
+		}
+		switch (spt.getPrimitiveType().getBaseType()) {
+			case BOOLEAN:
+				stmt.setBoolean(idx, (Boolean) primVal.getValue());
+				break;
+			case DATE:
+			case DATE_TIME:
+			case TIME:
+				// TODO should this use the corresponding subclass of java.sql.Date?
+				stmt.setDate(idx, new java.sql.Date(((Date) primVal.getValue()).getTimeInMilliseconds()));
+				break;
+			case DECIMAL:
+			case DOUBLE:
+				stmt.setBigDecimal(idx, (BigDecimal) primVal.getValue());
+				break;
+			case INTEGER:
+				stmt.setInt(idx, ((BigInteger) primVal.getValue()).intValue());
+				break;
+			case STRING:
+				stmt.setString(idx, (String) primVal.getValue());
+				break;
+		}
+	}
 
-    private void insertRow( Connection conn, Iterator<Pair<float[], Long>> iter, int recNum )
-                            throws SQLException, IOException {
-        HashMap<SimplePropertyType, Property> entry = dbf.getEntry( recNum );
-        PreparedStatement stmt = conn.prepareStatement( createInsertStatement( entry ) );
+	private void insertRow(Connection conn, Iterator<Pair<float[], Long>> iter, int recNum)
+			throws SQLException, IOException {
+		HashMap<SimplePropertyType, Property> entry = dbf.getEntry(recNum);
+		PreparedStatement stmt = conn.prepareStatement(createInsertStatement(entry));
 
-        int idx = 2;
-        stmt.setInt( 1, recNum );
-        Pair<float[], Long> p = iter.next();
-        stmt.setLong( 2, p.second );
-        for ( SimplePropertyType spt : entry.keySet() ) {
-            if ( fieldMap != null && !fieldMap.containsKey( spt.getName().getLocalPart() ) ) {
-                continue;
-            }
-            PrimitiveValue primVal = ( (SimpleProperty) entry.get( spt ) ).getValue();
-            setValue( primVal, spt, ++idx, stmt );
-        }
+		int idx = 2;
+		stmt.setInt(1, recNum);
+		Pair<float[], Long> p = iter.next();
+		stmt.setLong(2, p.second);
+		for (SimplePropertyType spt : entry.keySet()) {
+			if (fieldMap != null && !fieldMap.containsKey(spt.getName().getLocalPart())) {
+				continue;
+			}
+			PrimitiveValue primVal = ((SimpleProperty) entry.get(spt)).getValue();
+			setValue(primVal, spt, ++idx, stmt);
+		}
 
-        stmt.executeUpdate();
-        stmt.close();
-    }
+		stmt.executeUpdate();
+		stmt.close();
+	}
 
-    private void createIndexes( Connection conn )
-                            throws SQLException {
-        for ( String field : fields ) {
-            if ( fieldMap != null && !fieldMap.get( field ).index ) {
-                continue;
-            }
-            PreparedStatement stmt = conn.prepareStatement( "create index " + field + "_index on dbf_index (" + field
-                                                            + ")" );
-            stmt.executeUpdate();
-            stmt.close();
-        }
-    }
+	private void createIndexes(Connection conn) throws SQLException {
+		for (String field : fields) {
+			if (fieldMap != null && !fieldMap.get(field).index) {
+				continue;
+			}
+			PreparedStatement stmt = conn
+				.prepareStatement("create index " + field + "_index on dbf_index (" + field + ")");
+			stmt.executeUpdate();
+			stmt.close();
+		}
+	}
 
-    private void importDbf( StringBuilder create )
-                            throws IOException {
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        try {
-            conn = connProvider.getConnection();
-            stmt = conn.prepareStatement( create.toString() );
-            stmt.executeUpdate();
-            stmt.close();
+	private void importDbf(StringBuilder create) throws IOException {
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		try {
+			conn = connProvider.getConnection();
+			stmt = conn.prepareStatement(create.toString());
+			stmt.executeUpdate();
+			stmt.close();
 
-            createIndexes( conn );
+			createIndexes(conn);
 
-            conn.setAutoCommit( false );
-            Iterator<Pair<float[], Long>> iter = envelopes.first.iterator();
-            for ( int i = 0; i < dbf.size(); ++i ) {
-                insertRow( conn, iter, i );
-            }
+			conn.setAutoCommit(false);
+			Iterator<Pair<float[], Long>> iter = envelopes.first.iterator();
+			for (int i = 0; i < dbf.size(); ++i) {
+				insertRow(conn, iter, i);
+			}
 
-            conn.commit();
+			conn.commit();
 
-        } catch ( SQLException e ) {
-            e.printStackTrace();
-        } finally {
-            JDBCUtils.close( stmt );
-            JDBCUtils.close( conn );
-        }
-    }
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		finally {
+			JDBCUtils.close(stmt);
+			JDBCUtils.close(conn);
+		}
+	}
 
-    ConnectionProvider createIndex()
-                            throws IOException {
-        LOG.debug( "Creating h2 db index..." );
+	ConnectionProvider createIndex() throws IOException {
+		LOG.debug("Creating h2 db index...");
 
-        StringBuilder create = new StringBuilder();
+		StringBuilder create = new StringBuilder();
 
-        createTable( create );
-        fieldMap = createMappingMap( mappings );
+		createTable(create);
+		fieldMap = createMappingMap(mappings);
 
-        appendFields( create );
+		appendFields(create);
 
-        File dbfile = new File( file.toString().substring( 0, file.toString().lastIndexOf( '.' ) ) );
+		File dbfile = new File(file.toString().substring(0, file.toString().lastIndexOf('.')));
 
-        connProvider = new LegacyConnectionProvider( "jdbc:h2:" + dbfile, "SA", "", false, null );
+		connProvider = new LegacyConnectionProvider("jdbc:h2:" + dbfile, "SA", "", false, null);
 
-        if ( new File( dbfile.toString() + ".mv.db" ).exists() ) {
-            // TODO proper check for database consistency
-            return connProvider;
-        }
+		if (new File(dbfile.toString() + ".mv.db").exists()) {
+			// TODO proper check for database consistency
+			return connProvider;
+		}
 
-        importDbf( create );
+		importDbf(create);
 
-        LOG.debug( "Done creating h2 db index." );
-        return connProvider;
-    }
+		LOG.debug("Done creating h2 db index.");
+		return connProvider;
+	}
 
 }

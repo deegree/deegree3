@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2009 by:
@@ -68,200 +67,193 @@ import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
 
 /**
- * The <code>XMLTransformer</code> transforms any xml documents containing gml geometries. Only the geometries will be
- * transformed all other data (including comments and cdata) will be copied.
- * 
+ * The <code>XMLTransformer</code> transforms any xml documents containing gml geometries.
+ * Only the geometries will be transformed all other data (including comments and cdata)
+ * will be copied.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class XMLTransformer extends GeometryTransformer {
 
-    /**
-     * @param targetCRS
-     * @throws IllegalArgumentException
-     * @throws UnknownCRSException
-     */
-    public XMLTransformer( ICRS targetCRS ) throws IllegalArgumentException {
-        super( targetCRS );
-    }
+	/**
+	 * @param targetCRS
+	 * @throws IllegalArgumentException
+	 * @throws UnknownCRSException
+	 */
+	public XMLTransformer(ICRS targetCRS) throws IllegalArgumentException {
+		super(targetCRS);
+	}
 
-    /**
-     * @param targetCRS
-     * @throws IllegalArgumentException
-     * @throws UnknownCRSException
-     */
-    public XMLTransformer( String targetCRS ) throws IllegalArgumentException, UnknownCRSException {
-        super( targetCRS );
-    }
+	/**
+	 * @param targetCRS
+	 * @throws IllegalArgumentException
+	 * @throws UnknownCRSException
+	 */
+	public XMLTransformer(String targetCRS) throws IllegalArgumentException, UnknownCRSException {
+		super(targetCRS);
+	}
 
-    /**
-     * @param transformation
-     * @throws IllegalArgumentException
-     */
-    public XMLTransformer( Transformation transformation ) throws IllegalArgumentException {
-        super( transformation );
-    }
+	/**
+	 * @param transformation
+	 * @throws IllegalArgumentException
+	 */
+	public XMLTransformer(Transformation transformation) throws IllegalArgumentException {
+		super(transformation);
+	}
 
-    /**
-     * Transforms the given input stream, and streams the input into the output directly. If a geometry is found, the
-     * geometry is transformed into the target crs. All other events are just copied.
-     * 
-     * @param reader
-     *            an XMLStream containing some GML Geometries.
-     * @param writer
-     *            the output will be written to this writer, the writer have been opened (
-     *            {@link XMLStreamWriter#writeStartDocument()}. No {@link XMLStreamWriter#writeEndDocument()} will be
-     *            written as well.
-     * @param sourceCRS
-     *            to be used if the geometries do not define a srsName (or the like) attribute.
-     * @param gmlVersion
-     *            the version of the expected geometries.
-     * @param testValidArea
-     *            true if the incoming geometries should be checked against the valid domain of the crs they are defined
-     *            in.
-     * @param requestedTransformation
-     *            can be <code>null</code>
-     * @throws XMLStreamException
-     * @throws XMLParsingException
-     * @throws IllegalArgumentException
-     * @throws OutsideCRSDomainException
-     * @throws UnknownCRSException
-     * @throws TransformationException
-     */
-    public void transform( XMLStreamReader reader, XMLStreamWriter writer, ICRS sourceCRS,
-                           GMLVersion gmlVersion, boolean testValidArea, List<Transformation> requestedTransformation )
-                            throws XMLStreamException, XMLParsingException, IllegalArgumentException,
-                            OutsideCRSDomainException, UnknownCRSException, TransformationException {
+	/**
+	 * Transforms the given input stream, and streams the input into the output directly.
+	 * If a geometry is found, the geometry is transformed into the target crs. All other
+	 * events are just copied.
+	 * @param reader an XMLStream containing some GML Geometries.
+	 * @param writer the output will be written to this writer, the writer have been
+	 * opened ( {@link XMLStreamWriter#writeStartDocument()}. No
+	 * {@link XMLStreamWriter#writeEndDocument()} will be written as well.
+	 * @param sourceCRS to be used if the geometries do not define a srsName (or the like)
+	 * attribute.
+	 * @param gmlVersion the version of the expected geometries.
+	 * @param testValidArea true if the incoming geometries should be checked against the
+	 * valid domain of the crs they are defined in.
+	 * @param requestedTransformation can be <code>null</code>
+	 * @throws XMLStreamException
+	 * @throws XMLParsingException
+	 * @throws IllegalArgumentException
+	 * @throws OutsideCRSDomainException
+	 * @throws UnknownCRSException
+	 * @throws TransformationException
+	 */
+	public void transform(XMLStreamReader reader, XMLStreamWriter writer, ICRS sourceCRS, GMLVersion gmlVersion,
+			boolean testValidArea, List<Transformation> requestedTransformation)
+			throws XMLStreamException, XMLParsingException, IllegalArgumentException, OutsideCRSDomainException,
+			UnknownCRSException, TransformationException {
 
-        if ( reader == null ) {
-            throw new NullPointerException( "The input stream may not be null" );
-        }
-        if ( writer == null ) {
-            throw new NullPointerException( "The output stream may not be null" );
-        }
+		if (reader == null) {
+			throw new NullPointerException("The input stream may not be null");
+		}
+		if (writer == null) {
+			throw new NullPointerException("The output stream may not be null");
+		}
 
-        GMLStreamReader gmlReader = createGMLStreamReader( gmlVersion, reader );
-        GMLStreamWriter gmlWriter = createGMLStreamWriter( gmlVersion, writer );
-        transformStream( gmlReader, gmlWriter, sourceCRS, testValidArea, requestedTransformation );
-    }
+		GMLStreamReader gmlReader = createGMLStreamReader(gmlVersion, reader);
+		GMLStreamWriter gmlWriter = createGMLStreamWriter(gmlVersion, writer);
+		transformStream(gmlReader, gmlWriter, sourceCRS, testValidArea, requestedTransformation);
+	}
 
-    /**
-     * Transforms the given input stream, and streams the input into the output directly. If a geometry is found, the
-     * geometry is transformed into the target crs. All other events are just copied.
-     * 
-     * @param reader
-     *            an XMLStream containing some GML Geometries.
-     * @param writer
-     *            the output will be written to this writer, the writer have been opened (
-     *            {@link XMLStreamWriter#writeStartDocument()}. No {@link XMLStreamWriter#writeEndDocument()} will be
-     *            written as well.
-     * @param gmlVersion
-     *            the version of the expected geometries.
-     * @throws XMLStreamException
-     * @throws XMLParsingException
-     * @throws IllegalArgumentException
-     * @throws OutsideCRSDomainException
-     * @throws UnknownCRSException
-     * @throws TransformationException
-     */
-    public void transform( XMLStreamReader reader, XMLStreamWriter writer, GMLVersion gmlVersion )
-                            throws XMLStreamException, XMLParsingException, IllegalArgumentException,
-                            OutsideCRSDomainException, UnknownCRSException, TransformationException {
-        transform( reader, writer, null, gmlVersion, false, null );
-    }
+	/**
+	 * Transforms the given input stream, and streams the input into the output directly.
+	 * If a geometry is found, the geometry is transformed into the target crs. All other
+	 * events are just copied.
+	 * @param reader an XMLStream containing some GML Geometries.
+	 * @param writer the output will be written to this writer, the writer have been
+	 * opened ( {@link XMLStreamWriter#writeStartDocument()}. No
+	 * {@link XMLStreamWriter#writeEndDocument()} will be written as well.
+	 * @param gmlVersion the version of the expected geometries.
+	 * @throws XMLStreamException
+	 * @throws XMLParsingException
+	 * @throws IllegalArgumentException
+	 * @throws OutsideCRSDomainException
+	 * @throws UnknownCRSException
+	 * @throws TransformationException
+	 */
+	public void transform(XMLStreamReader reader, XMLStreamWriter writer, GMLVersion gmlVersion)
+			throws XMLStreamException, XMLParsingException, IllegalArgumentException, OutsideCRSDomainException,
+			UnknownCRSException, TransformationException {
+		transform(reader, writer, null, gmlVersion, false, null);
+	}
 
-    private void transformStream( GMLStreamReader gmlReader, GMLStreamWriter gmlWriter, ICRS sourceCRS,
-                                  boolean testValidArea, List<Transformation> toBeUsedTransformations )
-                            throws XMLStreamException, XMLParsingException, UnknownCRSException,
-                            IllegalArgumentException, TransformationException, OutsideCRSDomainException {
-        XMLStreamReader input = gmlReader.getXMLReader();
-        int eventType = input.getEventType();
-        if ( eventType == XMLStreamConstants.START_DOCUMENT ) {
-            XMLStreamUtils.nextElement( input );
-        }
-        eventType = input.getEventType();
-        if ( input.getEventType() != XMLStreamConstants.START_ELEMENT ) {
-            throw new XMLStreamException( "Input stream does not point to a START_ELEMENT event." );
-        }
-        XMLStreamWriter output = gmlWriter.getXMLStream();
-        int openElements = 0;
-        boolean firstRun = true;
-        while ( firstRun || openElements > 0 ) {
-            firstRun = false;
-            eventType = input.getEventType();
-            switch ( eventType ) {
-            case COMMENT:
-                output.writeComment( input.getText() );
-                break;
-            case CDATA: {
-                output.writeCData( input.getText() );
-                break;
-            }
-            case CHARACTERS: {
-                output.writeCharacters( input.getTextCharacters(), input.getTextStart(), input.getTextLength() );
-                break;
-            }
-            case END_ELEMENT: {
-                output.writeEndElement();
-                openElements--;
-                break;
-            }
-            case START_ELEMENT: {
-                QName name = input.getName();
-                if ( gmlReader.isGeometryOrEnvelopeElement() ) {
-                    Geometry geom = gmlReader.readGeometryOrEnvelope();
-                    if ( geom != null ) {
-                        ICRS geomCRS = sourceCRS;
-                        if ( geomCRS == null ) {
-                            ICRS gCRS = geom.getCoordinateSystem();
-                            if ( gCRS != null ) {
-                                geomCRS = gCRS;
-                            } else {
-                                throw new TransformationException(
-                                                                   "Could not determine Coordinate System of geometry: "
-                                                                                           + geom );
-                            }
-                        }
-                        geom = super.transform( geom, geomCRS, testValidArea, toBeUsedTransformations );
-                        // write transformed geometry
-                        gmlWriter.write( geom );
-                    }
-                } else {
-                    output.writeStartElement( name.getPrefix() == null ? "" : name.getPrefix(), input.getLocalName(),
-                                              input.getNamespaceURI() );
+	private void transformStream(GMLStreamReader gmlReader, GMLStreamWriter gmlWriter, ICRS sourceCRS,
+			boolean testValidArea, List<Transformation> toBeUsedTransformations)
+			throws XMLStreamException, XMLParsingException, UnknownCRSException, IllegalArgumentException,
+			TransformationException, OutsideCRSDomainException {
+		XMLStreamReader input = gmlReader.getXMLReader();
+		int eventType = input.getEventType();
+		if (eventType == XMLStreamConstants.START_DOCUMENT) {
+			XMLStreamUtils.nextElement(input);
+		}
+		eventType = input.getEventType();
+		if (input.getEventType() != XMLStreamConstants.START_ELEMENT) {
+			throw new XMLStreamException("Input stream does not point to a START_ELEMENT event.");
+		}
+		XMLStreamWriter output = gmlWriter.getXMLStream();
+		int openElements = 0;
+		boolean firstRun = true;
+		while (firstRun || openElements > 0) {
+			firstRun = false;
+			eventType = input.getEventType();
+			switch (eventType) {
+				case COMMENT:
+					output.writeComment(input.getText());
+					break;
+				case CDATA: {
+					output.writeCData(input.getText());
+					break;
+				}
+				case CHARACTERS: {
+					output.writeCharacters(input.getTextCharacters(), input.getTextStart(), input.getTextLength());
+					break;
+				}
+				case END_ELEMENT: {
+					output.writeEndElement();
+					openElements--;
+					break;
+				}
+				case START_ELEMENT: {
+					QName name = input.getName();
+					if (gmlReader.isGeometryOrEnvelopeElement()) {
+						Geometry geom = gmlReader.readGeometryOrEnvelope();
+						if (geom != null) {
+							ICRS geomCRS = sourceCRS;
+							if (geomCRS == null) {
+								ICRS gCRS = geom.getCoordinateSystem();
+								if (gCRS != null) {
+									geomCRS = gCRS;
+								}
+								else {
+									throw new TransformationException(
+											"Could not determine Coordinate System of geometry: " + geom);
+								}
+							}
+							geom = super.transform(geom, geomCRS, testValidArea, toBeUsedTransformations);
+							// write transformed geometry
+							gmlWriter.write(geom);
+						}
+					}
+					else {
+						output.writeStartElement(name.getPrefix() == null ? "" : name.getPrefix(), input.getLocalName(),
+								input.getNamespaceURI());
 
-                    // copy all namespace bindings
-                    for ( int i = 0; i < input.getNamespaceCount(); i++ ) {
-                        String nsPrefix = input.getNamespacePrefix( i );
-                        String nsURI = input.getNamespaceURI( i );
-                        output.writeNamespace( nsPrefix, nsURI );
-                    }
+						// copy all namespace bindings
+						for (int i = 0; i < input.getNamespaceCount(); i++) {
+							String nsPrefix = input.getNamespacePrefix(i);
+							String nsURI = input.getNamespaceURI(i);
+							output.writeNamespace(nsPrefix, nsURI);
+						}
 
-                    // copy all attributes
-                    for ( int i = 0; i < input.getAttributeCount(); i++ ) {
-                        String localName = input.getAttributeLocalName( i );
-                        String nsPrefix = input.getAttributePrefix( i );
-                        String value = input.getAttributeValue( i );
-                        String nsURI = input.getAttributeNamespace( i );
-                        if ( nsURI == null ) {
-                            output.writeAttribute( localName, value );
-                        } else {
-                            output.writeAttribute( nsPrefix, nsURI, localName, value );
-                        }
-                    }
-                    openElements++;
-                    break;
-                }
-            }
-            default: {
-                break;
-            }
-            }
-            if ( openElements > 0 ) {
-                input.next();
-            }
-        }
-    }
+						// copy all attributes
+						for (int i = 0; i < input.getAttributeCount(); i++) {
+							String localName = input.getAttributeLocalName(i);
+							String nsPrefix = input.getAttributePrefix(i);
+							String value = input.getAttributeValue(i);
+							String nsURI = input.getAttributeNamespace(i);
+							if (nsURI == null) {
+								output.writeAttribute(localName, value);
+							}
+							else {
+								output.writeAttribute(nsPrefix, nsURI, localName, value);
+							}
+						}
+						openElements++;
+						break;
+					}
+				}
+				default: {
+					break;
+				}
+			}
+			if (openElements > 0) {
+				input.next();
+			}
+		}
+	}
+
 }

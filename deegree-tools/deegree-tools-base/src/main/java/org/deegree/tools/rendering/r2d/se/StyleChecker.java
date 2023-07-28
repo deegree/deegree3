@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -67,207 +66,215 @@ import org.slf4j.Logger;
 
 /**
  * <code>StyleChecker</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 @Tool(value = "This tool can be used to check and remove faulty styles in a WMS style database (PostgreSQL).")
 public class StyleChecker {
-    private static final Logger LOG = getLogger( StyleChecker.class );
 
-    private static HashSet<Integer> faultyStyles = new HashSet<Integer>();
+	private static final Logger LOG = getLogger(StyleChecker.class);
 
-    private static ConnectionProvider connProvider;
+	private static HashSet<Integer> faultyStyles = new HashSet<Integer>();
 
-    private static Options initOptions() {
-        Options opts = new Options();
+	private static ConnectionProvider connProvider;
 
-        Option opt = new Option( "d", "dburl", true, "database url, like jdbc:postgresql://localhost/dbname" );
-        opt.setRequired( true );
-        opts.addOption( opt );
+	private static Options initOptions() {
+		Options opts = new Options();
 
-        opt = new Option( "u", "dbuser", true, "database user, like postgres" );
-        opt.setRequired( true );
-        opts.addOption( opt );
+		Option opt = new Option("d", "dburl", true, "database url, like jdbc:postgresql://localhost/dbname");
+		opt.setRequired(true);
+		opts.addOption(opt);
 
-        opt = new Option( "p", "dbpassword", true, "database password, if left off, will be set as empty" );
-        opt.setRequired( false );
-        opts.addOption( opt );
+		opt = new Option("u", "dbuser", true, "database user, like postgres");
+		opt.setRequired(true);
+		opts.addOption(opt);
 
-        opt = new Option( "s", "schema", true, "table schema, if left off, public will be used" );
-        opt.setRequired( false );
-        opts.addOption( opt );
+		opt = new Option("p", "dbpassword", true, "database password, if left off, will be set as empty");
+		opt.setRequired(false);
+		opts.addOption(opt);
 
-        opt = new Option( "c", "clean", false,
-                          "if set, faulty styles will be deleted (currently only in the styles table)" );
-        opt.setRequired( false );
-        opts.addOption( opt );
+		opt = new Option("s", "schema", true, "table schema, if left off, public will be used");
+		opt.setRequired(false);
+		opts.addOption(opt);
 
-        CommandUtils.addDefaultOptions( opts );
+		opt = new Option("c", "clean", false,
+				"if set, faulty styles will be deleted (currently only in the styles table)");
+		opt.setRequired(false);
+		opts.addOption(opt);
 
-        return opts;
+		CommandUtils.addDefaultOptions(opts);
 
-    }
+		return opts;
 
-    private static void check( String schema ) {
-        PostgreSQLReader reader = new PostgreSQLReader( connProvider, schema, null );
+	}
 
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        boolean bad = false;
-        try {
-            conn = connProvider.getConnection();
-            stmt = conn.prepareStatement( "select id from " + schema + ".styles" );
-            rs = stmt.executeQuery();
-            while ( rs.next() ) {
-                int id = rs.getInt( "id" );
-                Style s = reader.getStyle( id );
-                if ( s == null ) {
-                    bad = true;
-                    LOG.info( "Style with id {} could not be loaded.", id );
-                    faultyStyles.add( id );
-                }
-            }
-            if ( bad ) {
-                LOG.info( "Some styles could not be loaded." );
-            } else {
-                LOG.info( "Style DB is fine." );
-            }
-        } catch ( SQLException e ) {
-            LOG.info( "DB connection error: {}", e );
-            LOG.trace( "Stack trace:", e );
-        } finally {
-            if ( rs != null ) {
-                try {
-                    rs.close();
-                } catch ( SQLException e ) {
-                    LOG.info( "DB connection error: {}", e );
-                    LOG.trace( "Stack trace:", e );
-                }
-            }
-            if ( stmt != null ) {
-                try {
-                    stmt.close();
-                } catch ( SQLException e ) {
-                    LOG.info( "DB connection error: {}", e );
-                    LOG.trace( "Stack trace:", e );
-                }
-            }
-            if ( conn != null ) {
-                try {
-                    conn.close();
-                } catch ( SQLException e ) {
-                    LOG.info( "DB connection error: {}", e );
-                    LOG.trace( "Stack trace:", e );
-                }
-            }
-        }
-    }
+	private static void check(String schema) {
+		PostgreSQLReader reader = new PostgreSQLReader(connProvider, schema, null);
 
-    /**
-     * 
-     */
-    public static void clean( String schema ) {
-        if ( faultyStyles.isEmpty() ) {
-            return;
-        }
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		boolean bad = false;
+		try {
+			conn = connProvider.getConnection();
+			stmt = conn.prepareStatement("select id from " + schema + ".styles");
+			rs = stmt.executeQuery();
+			while (rs.next()) {
+				int id = rs.getInt("id");
+				Style s = reader.getStyle(id);
+				if (s == null) {
+					bad = true;
+					LOG.info("Style with id {} could not be loaded.", id);
+					faultyStyles.add(id);
+				}
+			}
+			if (bad) {
+				LOG.info("Some styles could not be loaded.");
+			}
+			else {
+				LOG.info("Style DB is fine.");
+			}
+		}
+		catch (SQLException e) {
+			LOG.info("DB connection error: {}", e);
+			LOG.trace("Stack trace:", e);
+		}
+		finally {
+			if (rs != null) {
+				try {
+					rs.close();
+				}
+				catch (SQLException e) {
+					LOG.info("DB connection error: {}", e);
+					LOG.trace("Stack trace:", e);
+				}
+			}
+			if (stmt != null) {
+				try {
+					stmt.close();
+				}
+				catch (SQLException e) {
+					LOG.info("DB connection error: {}", e);
+					LOG.trace("Stack trace:", e);
+				}
+			}
+			if (conn != null) {
+				try {
+					conn.close();
+				}
+				catch (SQLException e) {
+					LOG.info("DB connection error: {}", e);
+					LOG.trace("Stack trace:", e);
+				}
+			}
+		}
+	}
 
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        try {
-            conn = connProvider.getConnection();
-            StringBuilder sql = new StringBuilder( "delete from " + schema + ".styles where id in (" );
-            for ( int i = 0; i < faultyStyles.size() - 1; ++i ) {
-                sql.append( "?, " );
-            }
-            sql.append( "?)" );
-            stmt = conn.prepareStatement( sql.toString() );
+	/**
+	 *
+	 */
+	public static void clean(String schema) {
+		if (faultyStyles.isEmpty()) {
+			return;
+		}
 
-            int i = 1;
-            for ( Integer id : faultyStyles ) {
-                stmt.setInt( i++, id );
-            }
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		try {
+			conn = connProvider.getConnection();
+			StringBuilder sql = new StringBuilder("delete from " + schema + ".styles where id in (");
+			for (int i = 0; i < faultyStyles.size() - 1; ++i) {
+				sql.append("?, ");
+			}
+			sql.append("?)");
+			stmt = conn.prepareStatement(sql.toString());
 
-            int res = stmt.executeUpdate();
-            LOG.info( "{} styles have been deleted.", res );
-        } catch ( SQLException e ) {
-            LOG.info( "DB connection error: {}", e );
-            LOG.trace( "Stack trace:", e );
-        } finally {
-            if ( stmt != null ) {
-                try {
-                    stmt.close();
-                } catch ( SQLException e ) {
-                    LOG.info( "DB connection error: {}", e );
-                    LOG.trace( "Stack trace:", e );
-                }
-            }
-            if ( conn != null ) {
-                try {
-                    conn.close();
-                } catch ( SQLException e ) {
-                    LOG.info( "DB connection error: {}", e );
-                    LOG.trace( "Stack trace:", e );
-                }
-            }
-        }
-    }
+			int i = 1;
+			for (Integer id : faultyStyles) {
+				stmt.setInt(i++, id);
+			}
 
-    /**
-     * @param args
-     * @throws XMLStreamException
-     * @throws FactoryConfigurationError
-     * @throws IOException
-     */
-    public static void main( String[] args )
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
-        Options options = initOptions();
+			int res = stmt.executeUpdate();
+			LOG.info("{} styles have been deleted.", res);
+		}
+		catch (SQLException e) {
+			LOG.info("DB connection error: {}", e);
+			LOG.trace("Stack trace:", e);
+		}
+		finally {
+			if (stmt != null) {
+				try {
+					stmt.close();
+				}
+				catch (SQLException e) {
+					LOG.info("DB connection error: {}", e);
+					LOG.trace("Stack trace:", e);
+				}
+			}
+			if (conn != null) {
+				try {
+					conn.close();
+				}
+				catch (SQLException e) {
+					LOG.info("DB connection error: {}", e);
+					LOG.trace("Stack trace:", e);
+				}
+			}
+		}
+	}
 
-        // for the moment, using the CLI API there is no way to respond to a help argument; see
-        // https://issues.apache.org/jira/browse/CLI-179
-        if ( args.length == 0 || ( args.length > 0 && ( args[0].contains( "help" ) || args[0].contains( "?" ) ) ) ) {
-            CommandUtils.printHelp( options, StyleChecker.class.getSimpleName(), null, null );
-        }
+	/**
+	 * @param args
+	 * @throws XMLStreamException
+	 * @throws FactoryConfigurationError
+	 * @throws IOException
+	 */
+	public static void main(String[] args) throws XMLStreamException, FactoryConfigurationError, IOException {
+		Options options = initOptions();
 
-        try {
-            CommandLine line = new PosixParser().parse( options, args );
+		// for the moment, using the CLI API there is no way to respond to a help
+		// argument; see
+		// https://issues.apache.org/jira/browse/CLI-179
+		if (args.length == 0 || (args.length > 0 && (args[0].contains("help") || args[0].contains("?")))) {
+			CommandUtils.printHelp(options, StyleChecker.class.getSimpleName(), null, null);
+		}
 
-            String url = line.getOptionValue( "dburl" );
-            String user = line.getOptionValue( "dbuser" );
-            String pass = line.getOptionValue( "dbpassword" );
-            if ( pass == null ) {
-                pass = "";
-            }
-            String schema = options.getOption( "schema" ).getValue();
-            if ( schema == null ) {
-                schema = "public";
-            }
+		try {
+			CommandLine line = new PosixParser().parse(options, args);
 
-            File file = File.createTempFile( "deegree", "workspace" );
-            file.delete();
-            file.mkdir();
-            Workspace workspace = new DefaultWorkspace( file );
-            workspace.getLocationHandler().addExtraResource( ConnectionProviderUtils.getSyntheticProvider( "style",
-                                                                                                           url, user,
-                                                                                                           pass ) );
-            workspace.initAll();
-            connProvider = workspace.getResource( ConnectionProviderProvider.class, "style" );
+			String url = line.getOptionValue("dburl");
+			String user = line.getOptionValue("dbuser");
+			String pass = line.getOptionValue("dbpassword");
+			if (pass == null) {
+				pass = "";
+			}
+			String schema = options.getOption("schema").getValue();
+			if (schema == null) {
+				schema = "public";
+			}
 
-            check( schema );
-            if ( line.hasOption( "clean" ) ) {
-                clean( schema );
-            }
+			File file = File.createTempFile("deegree", "workspace");
+			file.delete();
+			file.mkdir();
+			Workspace workspace = new DefaultWorkspace(file);
+			workspace.getLocationHandler()
+				.addExtraResource(ConnectionProviderUtils.getSyntheticProvider("style", url, user, pass));
+			workspace.initAll();
+			connProvider = workspace.getResource(ConnectionProviderProvider.class, "style");
 
-            file.delete();
-            workspace.destroy();
-        } catch ( ParseException exp ) {
-            System.err.println( Messages.getMessage( "TOOL_COMMANDLINE_ERROR", exp.getMessage() ) );
-            CommandUtils.printHelp( options, StyleChecker.class.getSimpleName(), null, null );
-        }
+			check(schema);
+			if (line.hasOption("clean")) {
+				clean(schema);
+			}
 
-    }
+			file.delete();
+			workspace.destroy();
+		}
+		catch (ParseException exp) {
+			System.err.println(Messages.getMessage("TOOL_COMMANDLINE_ERROR", exp.getMessage()));
+			CommandUtils.printHelp(options, StyleChecker.class.getSimpleName(), null, null);
+		}
+
+	}
 
 }

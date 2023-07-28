@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -45,78 +44,71 @@ import org.deegree.geometry.Geometry;
 
 /**
  * If geometries are within the specified distance of one another.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * 
- * @version $Revision:$, $Date:$
  */
 public class DWithin extends SpatialOperator {
 
-    private final Measure distance;
+	private final Measure distance;
 
-    /**
-     * @param param1
-     *            geometry to compare to, can be <code>null</code> (use default geometry)
-     * @param param2
-     *            geometry argument for testing, never <code>null</code>
-     * @param distance
-     *            never <code>null</code>
-     */
-    public DWithin( Expression param1, Geometry param2, Measure distance ) {
-        super( param1, param2 );
-        this.distance = distance;
-    }
+	/**
+	 * @param param1 geometry to compare to, can be <code>null</code> (use default
+	 * geometry)
+	 * @param param2 geometry argument for testing, never <code>null</code>
+	 * @param distance never <code>null</code>
+	 */
+	public DWithin(Expression param1, Geometry param2, Measure distance) {
+		super(param1, param2);
+		this.distance = distance;
+	}
 
-    /**
-     * @param param1
-     *            geometry to compare to, can be <code>null</code> (use default geometry)
-     * @param param2
-     *            value reference argument for testing, never <code>null</code>
-     * @param distance
-     *            never <code>null</code>
-     */
-    public DWithin( Expression param1, ValueReference param2, Measure distance ) {
-        super( param1, param2 );
-        this.distance = distance;
-    }
+	/**
+	 * @param param1 geometry to compare to, can be <code>null</code> (use default
+	 * geometry)
+	 * @param param2 value reference argument for testing, never <code>null</code>
+	 * @param distance never <code>null</code>
+	 */
+	public DWithin(Expression param1, ValueReference param2, Measure distance) {
+		super(param1, param2);
+		this.distance = distance;
+	}
 
-    @Override
-    public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
-                            throws FilterEvaluationException {
-        for ( TypedObjectNode param1Value : param1.evaluate( obj, xpathEvaluator ) ) {
-            Geometry geom = checkGeometryOrNull( param1Value );
-            if ( geom != null ) {
-                Geometry transformedLiteral = getCompatibleGeometry( geom, param2AsGeometry );
-                // TODO what about the units of the distance when transforming?
-                return geom.isWithinDistance( transformedLiteral, distance );
-            }
-        }
-        return false;
-    }
+	@Override
+	public <T> boolean evaluate(T obj, XPathEvaluator<T> xpathEvaluator) throws FilterEvaluationException {
+		for (TypedObjectNode param1Value : param1.evaluate(obj, xpathEvaluator)) {
+			Geometry geom = checkGeometryOrNull(param1Value);
+			if (geom != null) {
+				Geometry transformedLiteral = getCompatibleGeometry(geom, param2AsGeometry);
+				// TODO what about the units of the distance when transforming?
+				return geom.isWithinDistance(transformedLiteral, distance);
+			}
+		}
+		return false;
+	}
 
-    /**
-     * @return the distance
-     */
-    public Measure getDistance() {
-        return distance;
-    }
+	/**
+	 * @return the distance
+	 */
+	public Measure getDistance() {
+		return distance;
+	}
 
-    public String toString( String indent ) {
-        String s = indent + "-DWithin\n";
-        s += indent + param1 + "\n";
-        if ( param2AsGeometry != null )
-            s += indent + param2AsGeometry + "\n";
-        if ( param2AsValueReference != null )
-            s += indent + param2AsValueReference + "\n";
-        s += indent + distance;
-        return s;
-    }
+	public String toString(String indent) {
+		String s = indent + "-DWithin\n";
+		s += indent + param1 + "\n";
+		if (param2AsGeometry != null)
+			s += indent + param2AsGeometry + "\n";
+		if (param2AsValueReference != null)
+			s += indent + param2AsValueReference + "\n";
+		s += indent + distance;
+		return s;
+	}
 
-    @Override
-    public Object[] getParams() {
-        if ( param2AsValueReference != null )
-            return new Object[] { param1, param2AsValueReference };
-        return new Object[] { param1, param2AsGeometry };
-    }
+	@Override
+	public Object[] getParams() {
+		if (param2AsValueReference != null)
+			return new Object[] { param1, param2AsValueReference };
+		return new Object[] { param1, param2AsGeometry };
+	}
+
 }

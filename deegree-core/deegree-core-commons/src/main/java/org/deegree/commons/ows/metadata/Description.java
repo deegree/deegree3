@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -46,162 +45,156 @@ import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.Pair;
 
 /**
- * Encapsulates descriptive information on an object described by OGC web service metadata.
+ * Encapsulates descriptive information on an object described by OGC web service
+ * metadata.
  * <p>
- * Data model has been designed to capture the expressiveness of all OWS specifications and versions and was verified
- * against the following specifications:
+ * Data model has been designed to capture the expressiveness of all OWS specifications
+ * and versions and was verified against the following specifications:
  * <ul>
  * <li>OWS Common 2.0</li>
  * </ul>
  * </p>
  * <p>
- * From OWS Common 2.0: <cite>Human-readable descriptive information for the object it is included within. This type
- * shall be extended if needed for specific OWS use to include additional metadata for each type of information. This
- * type shall not be restricted for a specific OWS to change the multiplicity (or optionality) of some elements. If the
- * xml:lang attribute is not included in a Title, Abstract or Keyword element, then no language is specified for that
- * element unless specified by another means. All Title, Abstract and Keyword elements in the same Description that
- * share the same xml:lang attribute value represent the description of the parent object in that language. Multiple
- * Title or Abstract elements shall not exist in the same Description with the same xml:lang attribute value unless
- * otherwise specified.</cite>
+ * From OWS Common 2.0: <cite>Human-readable descriptive information for the object it is
+ * included within. This type shall be extended if needed for specific OWS use to include
+ * additional metadata for each type of information. This type shall not be restricted for
+ * a specific OWS to change the multiplicity (or optionality) of some elements. If the
+ * xml:lang attribute is not included in a Title, Abstract or Keyword element, then no
+ * language is specified for that element unless specified by another means. All Title,
+ * Abstract and Keyword elements in the same Description that share the same xml:lang
+ * attribute value represent the description of the parent object in that language.
+ * Multiple Title or Abstract elements shall not exist in the same Description with the
+ * same xml:lang attribute value unless otherwise specified.</cite>
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class Description {
 
-    private final String name;
+	private final String name;
 
-    private List<LanguageString> titles;
+	private List<LanguageString> titles;
 
-    private Map<String, LanguageString> langToTitle;
+	private Map<String, LanguageString> langToTitle;
 
-    private List<LanguageString> abstracts;
+	private List<LanguageString> abstracts;
 
-    private Map<String, LanguageString> langToAbstract;
+	private Map<String, LanguageString> langToAbstract;
 
-    private List<Pair<List<LanguageString>, CodeType>> keywords;
+	private List<Pair<List<LanguageString>, CodeType>> keywords;
 
-    private Map<String, List<CodeType>> langToKeywords;
+	private Map<String, List<CodeType>> langToKeywords;
 
-    /**
-     * Creates a new {@link Description} instance.
-     * 
-     * @param name
-     *            name of the object, can be <code>null</code>
-     * @param titles
-     *            (multilingual) titles for the object, can be <code>null</code>
-     * @param abstracts
-     *            (multilingual) abstracts for the object, can be <code>null</code>
-     * @param keywords
-     *            (multilingual) keywords for the object, can be <code>null</code>
-     */
-    public Description( String name, List<LanguageString> titles, List<LanguageString> abstracts,
-                        List<Pair<List<LanguageString>, CodeType>> keywords ) {
-        this.name = name;
-        setTitles( titles );
-        setAbstracts( abstracts );
-        setKeywords( keywords );
-    }
+	/**
+	 * Creates a new {@link Description} instance.
+	 * @param name name of the object, can be <code>null</code>
+	 * @param titles (multilingual) titles for the object, can be <code>null</code>
+	 * @param abstracts (multilingual) abstracts for the object, can be <code>null</code>
+	 * @param keywords (multilingual) keywords for the object, can be <code>null</code>
+	 */
+	public Description(String name, List<LanguageString> titles, List<LanguageString> abstracts,
+			List<Pair<List<LanguageString>, CodeType>> keywords) {
+		this.name = name;
+		setTitles(titles);
+		setAbstracts(abstracts);
+		setKeywords(keywords);
+	}
 
-    /**
-     * Returns the name of the object.
-     * 
-     * @deprecated This information is only provided by some older OWS specifications (e.g. WFS 1.0.0). Newer service
-     *             specifications don't define it.
-     * @return name of the object, can be <code>null</code>
-     */
-    public String getName() {
-        return name;
-    }
+	/**
+	 * Returns the name of the object.
+	 * @deprecated This information is only provided by some older OWS specifications
+	 * (e.g. WFS 1.0.0). Newer service specifications don't define it.
+	 * @return name of the object, can be <code>null</code>
+	 */
+	public String getName() {
+		return name;
+	}
 
-    /**
-     * Returns the title in the specified language.
-     * 
-     * @param lang
-     *            RFC 4646 language code, may be <code>null</code> (unspecified)
-     * @return title in the specified language, can be <code>null</code>
-     */
-    public LanguageString getTitle( String lang ) {
-        return langToTitle.get( lang );
-    }
+	/**
+	 * Returns the title in the specified language.
+	 * @param lang RFC 4646 language code, may be <code>null</code> (unspecified)
+	 * @return title in the specified language, can be <code>null</code>
+	 */
+	public LanguageString getTitle(String lang) {
+		return langToTitle.get(lang);
+	}
 
-    /**
-     * @return titles, never <code>null</code>
-     */
-    public List<LanguageString> getTitles() {
-        return titles;
-    }
+	/**
+	 * @return titles, never <code>null</code>
+	 */
+	public List<LanguageString> getTitles() {
+		return titles;
+	}
 
-    public void setTitles( List<LanguageString> titles ) {
-        if ( titles != null ) {
-            this.titles = titles;
-        } else {
-            this.titles = emptyList();
-        }
-        langToTitle = new HashMap<String, LanguageString>();
-        for ( LanguageString title : this.titles ) {
-            langToTitle.put( title.getLanguage(), title );
-        }
-    }
+	public void setTitles(List<LanguageString> titles) {
+		if (titles != null) {
+			this.titles = titles;
+		}
+		else {
+			this.titles = emptyList();
+		}
+		langToTitle = new HashMap<String, LanguageString>();
+		for (LanguageString title : this.titles) {
+			langToTitle.put(title.getLanguage(), title);
+		}
+	}
 
-    /**
-     * Returns the abstract in the specified language.
-     * 
-     * @param lang
-     *            RFC 4646 language code, may be <code>null</code> (unspecified)
-     * @return abstract in the specified language, can be <code>null</code>
-     */
-    public LanguageString getAbstract( String lang ) {
-        return langToAbstract.get( lang );
-    }
+	/**
+	 * Returns the abstract in the specified language.
+	 * @param lang RFC 4646 language code, may be <code>null</code> (unspecified)
+	 * @return abstract in the specified language, can be <code>null</code>
+	 */
+	public LanguageString getAbstract(String lang) {
+		return langToAbstract.get(lang);
+	}
 
-    /**
-     * @return abstracts, never <code>null</code>
-     */
-    public List<LanguageString> getAbstracts() {
-        return abstracts;
-    }
+	/**
+	 * @return abstracts, never <code>null</code>
+	 */
+	public List<LanguageString> getAbstracts() {
+		return abstracts;
+	}
 
-    public void setAbstracts( List<LanguageString> abstracts ) {
-        if ( abstracts != null ) {
-            this.abstracts = abstracts;
-        } else {
-            this.abstracts = emptyList();
-        }
-        langToAbstract = new HashMap<String, LanguageString>();
-        for ( LanguageString abstr : this.abstracts ) {
-            langToAbstract.put( abstr.getLanguage(), abstr );
-        }
-    }
+	public void setAbstracts(List<LanguageString> abstracts) {
+		if (abstracts != null) {
+			this.abstracts = abstracts;
+		}
+		else {
+			this.abstracts = emptyList();
+		}
+		langToAbstract = new HashMap<String, LanguageString>();
+		for (LanguageString abstr : this.abstracts) {
+			langToAbstract.put(abstr.getLanguage(), abstr);
+		}
+	}
 
-    // /**
-    // * Returns the keywords in the specified language.
-    // *
-    // * @param lang
-    // * RFC 4646 language code, may be <code>null</code> (unspecified)
-    // * @return abstract in the specified language, can be <code>null</code>
-    // */
-    // public List<CodeType> getKeywords( String lang ) {
-    // return langToKeywords.get( lang );
-    // }
+	// /**
+	// * Returns the keywords in the specified language.
+	// *
+	// * @param lang
+	// * RFC 4646 language code, may be <code>null</code> (unspecified)
+	// * @return abstract in the specified language, can be <code>null</code>
+	// */
+	// public List<CodeType> getKeywords( String lang ) {
+	// return langToKeywords.get( lang );
+	// }
 
-    /**
-     * @return keywords, never <code>null</code>
-     */
-    public List<Pair<List<LanguageString>, CodeType>> getKeywords() {
-        return keywords;
-    }
+	/**
+	 * @return keywords, never <code>null</code>
+	 */
+	public List<Pair<List<LanguageString>, CodeType>> getKeywords() {
+		return keywords;
+	}
 
-    public void setKeywords( List<Pair<List<LanguageString>, CodeType>> keywords ) {
+	public void setKeywords(List<Pair<List<LanguageString>, CodeType>> keywords) {
 
-        if ( keywords != null ) {
-            this.keywords = keywords;
-        } else {
-            this.keywords = emptyList();
-        }
-    }
+		if (keywords != null) {
+			this.keywords = keywords;
+		}
+		else {
+			this.keywords = emptyList();
+		}
+	}
+
 }

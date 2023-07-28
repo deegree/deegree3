@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aschmitz@deegree.wald.intevation.de/deegree/deegree3/trunk/deegree-datastores/deegree-featurestore/deegree-featurestore-shape/src/main/java/org/deegree/feature/persistence/shape/ShapeFeatureStoreProvider.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -56,9 +55,7 @@ import org.slf4j.LoggerFactory;
  * {@link FeatureStoreProvider} for the {@link GeoCouchFeatureStore}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: aschmitz $
  * 
- * @version $Revision: 30164 $, $Date: 2011-03-25 09:17:32 +0100 (Fri, 25 Mar 2011) $
  */
 public class GeoCouchFeatureStoreProvider implements FeatureStoreProvider {
 

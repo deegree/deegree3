@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -38,61 +37,59 @@ package org.deegree.services.wpvs.controller.getview;
 
 /**
  * The <code>GetViewResponseParameters</code> class wraps the response parameters.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class GetViewResponseParameters {
 
-    private final boolean transparency;
+	private final boolean transparency;
 
-    private final String format;
+	private final String format;
 
-    private final double quality;
+	private final double quality;
 
-    private final String exceptionFormat;
+	private final String exceptionFormat;
 
-    /**
-     * @param transparency
-     * @param format
-     * @param quality
-     * @param exceptionFormat
-     */
-    public GetViewResponseParameters( boolean transparency, String format, double quality, String exceptionFormat ) {
-        this.transparency = transparency;
-        this.format = format;
-        this.quality = quality;
-        this.exceptionFormat = exceptionFormat;
-    }
+	/**
+	 * @param transparency
+	 * @param format
+	 * @param quality
+	 * @param exceptionFormat
+	 */
+	public GetViewResponseParameters(boolean transparency, String format, double quality, String exceptionFormat) {
+		this.transparency = transparency;
+		this.format = format;
+		this.quality = quality;
+		this.exceptionFormat = exceptionFormat;
+	}
 
-    /**
-     * @return the transparency
-     */
-    public final boolean isTransparency() {
-        return transparency;
-    }
+	/**
+	 * @return the transparency
+	 */
+	public final boolean isTransparency() {
+		return transparency;
+	}
 
-    /**
-     * @return the format
-     */
-    public final String getFormat() {
-        return format;
-    }
+	/**
+	 * @return the format
+	 */
+	public final String getFormat() {
+		return format;
+	}
 
-    /**
-     * @return the quality
-     */
-    public final double getQuality() {
-        return quality;
-    }
+	/**
+	 * @return the quality
+	 */
+	public final double getQuality() {
+		return quality;
+	}
 
-    /**
-     * @return the exceptionFormat
-     */
-    public final String getExceptionFormat() {
-        return exceptionFormat;
-    }
+	/**
+	 * @return the exceptionFormat
+	 */
+	public final String getExceptionFormat() {
+		return exceptionFormat;
+	}
 
 }

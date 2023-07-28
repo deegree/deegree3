@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -49,77 +48,75 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Keeps track of {@link GMLObject} references that have to be included in a {@link GetFeature} response.
- * 
+ * Keeps track of {@link GMLObject} references that have to be included in a
+ * {@link GetFeature} response.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: markus $
- * 
- * @version $Revision: $, $Date: $
  */
 class XlinkedObjectsHandler implements GmlXlinkStrategy {
 
-    private static Logger LOG = LoggerFactory.getLogger( XlinkedObjectsHandler.class );
+	private static Logger LOG = LoggerFactory.getLogger(XlinkedObjectsHandler.class);
 
-    private LinkedHashMap<String, GMLReference<?>> objectIdToRef = new LinkedHashMap<String, GMLReference<?>>();
+	private LinkedHashMap<String, GMLReference<?>> objectIdToRef = new LinkedHashMap<String, GMLReference<?>>();
 
-    private final boolean localReferencesPossible;
+	private final boolean localReferencesPossible;
 
-    private final String remoteXlinkTemplate;
+	private final String remoteXlinkTemplate;
 
-    private final GmlXlinkOptions resolveOptions;
+	private final GmlXlinkOptions resolveOptions;
 
-    private final Set<String> exportedIds = new HashSet<String>();
+	private final Set<String> exportedIds = new HashSet<String>();
 
-    XlinkedObjectsHandler( boolean localReferencesPossible, String xlinkTemplate, GmlXlinkOptions resolveOptions ) {
-        this.localReferencesPossible = localReferencesPossible;
-        this.remoteXlinkTemplate = xlinkTemplate;
-        this.resolveOptions = resolveOptions;
-    }
+	XlinkedObjectsHandler(boolean localReferencesPossible, String xlinkTemplate, GmlXlinkOptions resolveOptions) {
+		this.localReferencesPossible = localReferencesPossible;
+		this.remoteXlinkTemplate = xlinkTemplate;
+		this.resolveOptions = resolveOptions;
+	}
 
-    @Override
-    public String requireObject( GMLReference<?> ref, GmlXlinkOptions resolveState ) {
-        LOG.debug( "Exporting forward reference to object {} which must be included in the output.", ref.getId() );
-        objectIdToRef.put( ref.getId(), ref );
-        return "#" + ref.getId();
-    }
+	@Override
+	public String requireObject(GMLReference<?> ref, GmlXlinkOptions resolveState) {
+		LOG.debug("Exporting forward reference to object {} which must be included in the output.", ref.getId());
+		objectIdToRef.put(ref.getId(), ref);
+		return "#" + ref.getId();
+	}
 
-    @Override
-    public String handleReference( GMLReference<?> ref ) {
-        if ( localReferencesPossible ) {
-            LOG.debug( "Exporting potential forward reference to object {} which may or may not be exported later.",
-                       ref.getId() );
-            // try {
-            // xmlStream.activateBuffering();
-            // } catch ( XMLStreamException e ) {
-            // throw new RuntimeException( e.getMessage(), e );
-            // }
-            return "{" + ref.getId() + "}";
-        }
-        LOG.debug( "Exporting reference to object {} as remote reference.", ref.getId() );
-        return remoteXlinkTemplate.replace( "{}", ref.getId() );
-    }
+	@Override
+	public String handleReference(GMLReference<?> ref) {
+		if (localReferencesPossible) {
+			LOG.debug("Exporting potential forward reference to object {} which may or may not be exported later.",
+					ref.getId());
+			// try {
+			// xmlStream.activateBuffering();
+			// } catch ( XMLStreamException e ) {
+			// throw new RuntimeException( e.getMessage(), e );
+			// }
+			return "{" + ref.getId() + "}";
+		}
+		LOG.debug("Exporting reference to object {} as remote reference.", ref.getId());
+		return remoteXlinkTemplate.replace("{}", ref.getId());
+	}
 
-    Collection<GMLReference<?>> getAdditionalRefs() {
-        return objectIdToRef.values();
-    }
+	Collection<GMLReference<?>> getAdditionalRefs() {
+		return objectIdToRef.values();
+	}
 
-    void clear() {
-        objectIdToRef = new LinkedHashMap<String, GMLReference<?>>();
-    }
+	void clear() {
+		objectIdToRef = new LinkedHashMap<String, GMLReference<?>>();
+	}
 
-    @Override
-    public GmlXlinkOptions getResolveOptions() {
-        return resolveOptions;
-    }
+	@Override
+	public GmlXlinkOptions getResolveOptions() {
+		return resolveOptions;
+	}
 
-    @Override
-    public void addExportedId( String gmlId ) {
-        exportedIds.add( gmlId );
-    }
+	@Override
+	public void addExportedId(String gmlId) {
+		exportedIds.add(gmlId);
+	}
 
-    @Override
-    public boolean isObjectExported( String gmlId ) {
-        return exportedIds.contains( gmlId );
-    }
+	@Override
+	public boolean isObjectExported(String gmlId) {
+		return exportedIds.contains(gmlId);
+	}
 
 }

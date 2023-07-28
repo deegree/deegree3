@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -66,137 +65,136 @@ import org.deegree.workspace.standard.DefaultWorkspace;
 import org.slf4j.Logger;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class SecurityConfiguration implements Initializable {
 
-    private static final Logger LOG = getLogger( SecurityConfiguration.class );
+	private static final Logger LOG = getLogger(SecurityConfiguration.class);
 
-    private static HashMap<String, AuthenticationAuthorityProvider> authenticationAuthorityProviders = new HashMap<String, AuthenticationAuthorityProvider>();
+	private static HashMap<String, AuthenticationAuthorityProvider> authenticationAuthorityProviders = new HashMap<String, AuthenticationAuthorityProvider>();
 
-    private static SecurityConfiguration INSTANCE;
+	private static SecurityConfiguration INSTANCE;
 
-    private CredentialsProvider providers;
+	private CredentialsProvider providers;
 
-    private ArrayList<AuthenticationAuthority> authorities = new ArrayList<AuthenticationAuthority>();
+	private ArrayList<AuthenticationAuthority> authorities = new ArrayList<AuthenticationAuthority>();
 
-    static {
-        ServiceLoader<AuthenticationAuthorityProvider> loader = ServiceLoader.load( AuthenticationAuthorityProvider.class );
-        for ( AuthenticationAuthorityProvider auth : loader ) {
-            authenticationAuthorityProviders.put( auth.getConfigNamespace(), auth );
-        }
-    }
+	static {
+		ServiceLoader<AuthenticationAuthorityProvider> loader = ServiceLoader
+			.load(AuthenticationAuthorityProvider.class);
+		for (AuthenticationAuthorityProvider auth : loader) {
+			authenticationAuthorityProviders.put(auth.getConfigNamespace(), auth);
+		}
+	}
 
-    public static SecurityConfiguration getInstance() {
-        return INSTANCE;
-    }
+	public static SecurityConfiguration getInstance() {
+		return INSTANCE;
+	}
 
-    @Override
-    public void init( Workspace workspace ) {
-        INSTANCE = this;
+	@Override
+	public void init(Workspace workspace) {
+		INSTANCE = this;
 
-        File securityFile = new File( ( (DefaultWorkspace) workspace ).getLocation(), "services" + separator
-                                                                                      + "security" + separator
-                                                                                      + "security.xml" );
-        if ( !securityFile.exists() ) {
-            LOG.info( "No security.xml found." );
-            return;
-        }
+		File securityFile = new File(((DefaultWorkspace) workspace).getLocation(),
+				"services" + separator + "security" + separator + "security.xml");
+		if (!securityFile.exists()) {
+			LOG.info("No security.xml found.");
+			return;
+		}
 
-        String contextName = "org.deegree.services.jaxb.security";
-        try {
-            JAXBContext jc = JAXBContext.newInstance( contextName );
-            Unmarshaller unmarshaller = jc.createUnmarshaller();
-            org.deegree.services.jaxb.security.SecurityConfiguration config;
-            config = (org.deegree.services.jaxb.security.SecurityConfiguration) unmarshaller.unmarshal( securityFile );
-            if ( config.getCredentialsProvider() != null ) {
-                providers = CredentialsProviderManager.create( config.getCredentialsProvider() );
-            }
-        } catch ( JAXBException e ) {
-            LOG.warn( "Could not load security.xml: '{}'", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-        }
+		String contextName = "org.deegree.services.jaxb.security";
+		try {
+			JAXBContext jc = JAXBContext.newInstance(contextName);
+			Unmarshaller unmarshaller = jc.createUnmarshaller();
+			org.deegree.services.jaxb.security.SecurityConfiguration config;
+			config = (org.deegree.services.jaxb.security.SecurityConfiguration) unmarshaller.unmarshal(securityFile);
+			if (config.getCredentialsProvider() != null) {
+				providers = CredentialsProviderManager.create(config.getCredentialsProvider());
+			}
+		}
+		catch (JAXBException e) {
+			LOG.warn("Could not load security.xml: '{}'", e.getLocalizedMessage());
+			LOG.trace("Stack trace:", e);
+		}
 
-        File authorities = new File( ( (DefaultWorkspace) workspace ).getLocation(), "services" + separator
-                                                                                     + "security" + separator
-                                                                                     + "authorities" );
-        XMLInputFactory fac = XMLInputFactory.newInstance();
-        if ( authorities.exists() && authorities.isDirectory() ) {
-            for ( File f : authorities.listFiles( new FileFilter() {
-                public boolean accept( File f ) {
-                    return f.toString().toLowerCase().endsWith( ".xml" );
-                }
-            } ) ) {
-                try {
-                    XMLStreamReader in = fac.createXMLStreamReader( new FileInputStream( f ) );
-                    in.next();
-                    String ns = in.getNamespaceURI();
-                    if ( ns == null ) {
-                        LOG.info( "The namespace in '{}' was not set, skipping file.", f );
-                        continue;
-                    }
-                    AuthenticationAuthorityProvider prov = authenticationAuthorityProviders.get( ns );
-                    if ( prov == null ) {
-                        LOG.info( "No authentication authority provider for"
-                                  + " namepace '{}', in file '{}', skipping.", ns, f );
-                        continue;
-                    }
-                    this.authorities.add( prov.getAuthenticationAuthority( f.toURI().toURL() ) );
-                } catch ( FileNotFoundException e ) {
-                    LOG.debug( "File '{}' could not be found?!?", f );
-                    LOG.trace( "Stack trace:", e );
-                } catch ( XMLStreamException e ) {
-                    LOG.debug( "File '{}' could not be parsed as XML, skipping.", f );
-                    LOG.trace( "Stack trace:", e );
-                } catch ( MalformedURLException e ) {
-                    LOG.debug( "File '{}' could not be found?!?", f );
-                    LOG.trace( "Stack trace:", e );
-                }
-            }
-        }
-    }
+		File authorities = new File(((DefaultWorkspace) workspace).getLocation(),
+				"services" + separator + "security" + separator + "authorities");
+		XMLInputFactory fac = XMLInputFactory.newInstance();
+		if (authorities.exists() && authorities.isDirectory()) {
+			for (File f : authorities.listFiles(new FileFilter() {
+				public boolean accept(File f) {
+					return f.toString().toLowerCase().endsWith(".xml");
+				}
+			})) {
+				try {
+					XMLStreamReader in = fac.createXMLStreamReader(new FileInputStream(f));
+					in.next();
+					String ns = in.getNamespaceURI();
+					if (ns == null) {
+						LOG.info("The namespace in '{}' was not set, skipping file.", f);
+						continue;
+					}
+					AuthenticationAuthorityProvider prov = authenticationAuthorityProviders.get(ns);
+					if (prov == null) {
+						LOG.info("No authentication authority provider for" + " namepace '{}', in file '{}', skipping.",
+								ns, f);
+						continue;
+					}
+					this.authorities.add(prov.getAuthenticationAuthority(f.toURI().toURL()));
+				}
+				catch (FileNotFoundException e) {
+					LOG.debug("File '{}' could not be found?!?", f);
+					LOG.trace("Stack trace:", e);
+				}
+				catch (XMLStreamException e) {
+					LOG.debug("File '{}' could not be parsed as XML, skipping.", f);
+					LOG.trace("Stack trace:", e);
+				}
+				catch (MalformedURLException e) {
+					LOG.debug("File '{}' could not be found?!?", f);
+					LOG.trace("Stack trace:", e);
+				}
+			}
+		}
+	}
 
-    /**
-     * @return the credentials provider or null, if none was defined
-     */
-    public CredentialsProvider getCredentialsProvider() {
-        return providers;
-    }
+	/**
+	 * @return the credentials provider or null, if none was defined
+	 */
+	public CredentialsProvider getCredentialsProvider() {
+		return providers;
+	}
 
-    /**
-     * @param creds
-     * @return true, if an authentication authority does
-     */
-    public boolean checkCredentials( Credentials creds ) {
-        for ( AuthenticationAuthority auth : authorities ) {
-            if ( auth.isAuthorized( creds ) ) {
-                return true;
-            }
-        }
-        return false;
-    }
+	/**
+	 * @param creds
+	 * @return true, if an authentication authority does
+	 */
+	public boolean checkCredentials(Credentials creds) {
+		for (AuthenticationAuthority auth : authorities) {
+			if (auth.isAuthorized(creds)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
-    /**
-     * @param creds
-     * @param address
-     * @return true, if an authentication authority does
-     */
-    public boolean verifyAddress( Credentials creds, String address ) {
-        for ( AuthenticationAuthority auth : authorities ) {
-            if ( auth.verifyAddress( creds, address ) ) {
-                return true;
-            }
-        }
-        return false;
-    }
+	/**
+	 * @param creds
+	 * @param address
+	 * @return true, if an authentication authority does
+	 */
+	public boolean verifyAddress(Credentials creds, String address) {
+		for (AuthenticationAuthority auth : authorities) {
+			if (auth.verifyAddress(creds, address)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
-    @SuppressWarnings("unchecked")
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] {};
-    }
+	@SuppressWarnings("unchecked")
+	public Class<? extends ResourceManager>[] getDependencies() {
+		return new Class[] {};
+	}
 
 }

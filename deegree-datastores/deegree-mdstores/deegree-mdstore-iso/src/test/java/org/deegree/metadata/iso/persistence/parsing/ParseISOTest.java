@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-metadata/src/test/java/org/deegree/metadata/iso/persistence/parsing/ParseISOTest.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -60,98 +59,95 @@ import org.slf4j.LoggerFactory;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: lbuesching $
- * 
- * @version $Revision: 30725 $, $Date: 2011-05-09 15:04:20 +0200 (Mo, 09. Mai 2011) $
  */
 public class ParseISOTest extends AbstractISOTest {
 
-    private static Logger LOG = LoggerFactory.getLogger( ParseISOTest.class );
+	private static Logger LOG = LoggerFactory.getLogger(ParseISOTest.class);
 
-    protected static final NamespaceBindings nsContext = CommonNamespaces.getNamespaceContext();
+	protected static final NamespaceBindings nsContext = CommonNamespaces.getNamespaceContext();
 
-    @Test
-    public void testVariousElements()
-                            throws MetadataStoreException, FactoryConfigurationError, MetadataInspectorException,
-                            ResourceInitException {
-        LOG.info( "START Test: test various elements for one metadataRecord " );
+	@Test
+	public void testVariousElements() throws MetadataStoreException, FactoryConfigurationError,
+			MetadataInspectorException, ResourceInitException {
+		LOG.info("START Test: test various elements for one metadataRecord ");
 
-        initStore( TstConstants.configURL );
-        Assume.assumeNotNull( store );
+		initStore(TstConstants.configURL);
+		Assume.assumeNotNull(store);
 
-        List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_10 );
-        if ( ids != null ) {
-            // test query
-            MetadataQuery query = new MetadataQuery( null, null, null, null, 1, 10 );
-            resultSet = store.getRecords( query );
-            // identifier
-            String identifier = null;
-            String[] title = null;
-            String type = null;
-            String[] subject = null;
-            String[] format = null;
-            String[] _abstract = null;
-            String[] rights = null;
-            String source = null;
-            Envelope[] bbox = null;
-            while ( resultSet.next() ) {
-                MetadataRecord m = resultSet.getRecord();
-                identifier = m.getIdentifier();
-                title = m.getTitle();
-                type = m.getType();
-                subject = m.getSubject();
-                format = m.getFormat();
-                _abstract = m.getAbstract();
-                rights = m.getRights();
-                source = m.getSource();
-                bbox = m.getBoundingBox();
-            }
-            StringBuilder s_ident = new StringBuilder();
-            s_ident.append( identifier );
-            StringBuilder s_title = new StringBuilder();
-            for ( String t : title ) {
-                s_title.append( t );
-            }
-            StringBuilder s_sub = new StringBuilder();
-            for ( String sub : subject ) {
-                s_sub.append( sub ).append( ' ' );
-            }
-            StringBuilder s_form = new StringBuilder();
-            for ( String f : format ) {
-                s_form.append( f ).append( ' ' );
-            }
-            StringBuilder s_ab = new StringBuilder();
-            for ( String a : _abstract ) {
-                s_ab.append( a );
-            }
-            StringBuilder s_ri = new StringBuilder();
-            for ( String r : rights ) {
-                s_ri.append( r ).append( ' ' );
-            }
-            StringBuilder s_b = new StringBuilder();
-            for ( Envelope e : bbox ) {
-                s_b.append( e.getMin().get0() ).append( ' ' ).append( e.getMin().get1() ).append( ' ' );
-                s_b.append( e.getMax().get0() ).append( ' ' ).append( e.getMax().get1() ).append( ' ' );
-                s_b.append( e.getCoordinateSystem().getAlias() );
-                LOG.debug( "boundingBox: " + s_b.toString() );
-            }
+		List<String> ids = TstUtils.insertMetadata(store, TstConstants.tst_10);
+		if (ids != null) {
+			// test query
+			MetadataQuery query = new MetadataQuery(null, null, null, null, 1, 10);
+			resultSet = store.getRecords(query);
+			// identifier
+			String identifier = null;
+			String[] title = null;
+			String type = null;
+			String[] subject = null;
+			String[] format = null;
+			String[] _abstract = null;
+			String[] rights = null;
+			String source = null;
+			Envelope[] bbox = null;
+			while (resultSet.next()) {
+				MetadataRecord m = resultSet.getRecord();
+				identifier = m.getIdentifier();
+				title = m.getTitle();
+				type = m.getType();
+				subject = m.getSubject();
+				format = m.getFormat();
+				_abstract = m.getAbstract();
+				rights = m.getRights();
+				source = m.getSource();
+				bbox = m.getBoundingBox();
+			}
+			StringBuilder s_ident = new StringBuilder();
+			s_ident.append(identifier);
+			StringBuilder s_title = new StringBuilder();
+			for (String t : title) {
+				s_title.append(t);
+			}
+			StringBuilder s_sub = new StringBuilder();
+			for (String sub : subject) {
+				s_sub.append(sub).append(' ');
+			}
+			StringBuilder s_form = new StringBuilder();
+			for (String f : format) {
+				s_form.append(f).append(' ');
+			}
+			StringBuilder s_ab = new StringBuilder();
+			for (String a : _abstract) {
+				s_ab.append(a);
+			}
+			StringBuilder s_ri = new StringBuilder();
+			for (String r : rights) {
+				s_ri.append(r).append(' ');
+			}
+			StringBuilder s_b = new StringBuilder();
+			for (Envelope e : bbox) {
+				s_b.append(e.getMin().get0()).append(' ').append(e.getMin().get1()).append(' ');
+				s_b.append(e.getMax().get0()).append(' ').append(e.getMax().get1()).append(' ');
+				s_b.append(e.getCoordinateSystem().getAlias());
+				LOG.debug("boundingBox: " + s_b.toString());
+			}
 
-            Assert.assertEquals( "identifier: ", "d0e5c36eec7f473b91b8b249da87d522", s_ident.toString() );
-            Assert.assertEquals( "title: ", "SPOT 5 RAW 2007-01-23T10:25:14", s_title.toString() );
-            Assert.assertEquals( "type: ", "dataset", type.toString() );
-            Assert.assertEquals( "subjects: ", "SPOT 5 PATH 50 ROW 242 Orthoimagery imageryBaseMapsEarthCover ",
-                                 s_sub.toString() );
-            Assert.assertEquals( "formats: ", "RAW ECW ", s_form.toString() );
-            Assert.assertEquals( "abstract: ", "Raw (source) image from CwRS campaigns.", s_ab.toString() );
-            Assert.assertEquals( "rights: ", "otherRestrictions license ", s_ri.toString() );
-            Assert.assertEquals( "source: ", "Raw (Source) image as delivered by image provider.", source.toString() );
-            Assert.assertEquals( "bbox: ", "9.342556163 52.6984540464 10.4685111912 53.3646726483 epsg:4326",
-                                 s_b.toString() );
-        } else {
-            throw new MetadataStoreException( "something went wrong in creation of the metadataRecord" );
-        }
-    }
+			Assert.assertEquals("identifier: ", "d0e5c36eec7f473b91b8b249da87d522", s_ident.toString());
+			Assert.assertEquals("title: ", "SPOT 5 RAW 2007-01-23T10:25:14", s_title.toString());
+			Assert.assertEquals("type: ", "dataset", type.toString());
+			Assert.assertEquals("subjects: ", "SPOT 5 PATH 50 ROW 242 Orthoimagery imageryBaseMapsEarthCover ",
+					s_sub.toString());
+			Assert.assertEquals("formats: ", "RAW ECW ", s_form.toString());
+			Assert.assertEquals("abstract: ", "Raw (source) image from CwRS campaigns.", s_ab.toString());
+			Assert.assertEquals("rights: ", "otherRestrictions license ", s_ri.toString());
+			Assert.assertEquals("source: ", "Raw (Source) image as delivered by image provider.", source.toString());
+			Assert.assertEquals("bbox: ", "9.342556163 52.6984540464 10.4685111912 53.3646726483 epsg:4326",
+					s_b.toString());
+		}
+		else {
+			throw new MetadataStoreException("something went wrong in creation of the metadataRecord");
+		}
+	}
 
 }

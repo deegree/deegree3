@@ -46,15 +46,15 @@ import org.deegree.tile.persistence.TileStoreManager;
 @ViewScoped
 public class TileStoreManagerBean extends AbstractResourceManagerBean<TileStoreManager> implements Serializable {
 
-    private static final long serialVersionUID = -5495759423259752805L;
+	private static final long serialVersionUID = -5495759423259752805L;
 
-    public TileStoreManagerBean() {
-        super( TileStoreManager.class );
-    }
+	public TileStoreManagerBean() {
+		super(TileStoreManager.class);
+	}
 
-    @Override
-    public String getStartView() {
-        return "/console/datastore/tile/index";
-    }
+	@Override
+	public String getStartView() {
+		return "/console/datastore/tile/index";
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -45,34 +44,32 @@ import org.deegree.style.styling.components.UOM;
 
 /**
  * Calculates pixels from any value in a specific unit of measure.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 public class UomCalculator {
 
-    private final double pixelSize, resolution;
+	private final double pixelSize, resolution;
 
-    public UomCalculator( double pixelSize, double resolution ) {
-        this.pixelSize = pixelSize;
-        this.resolution = resolution;
-    }
+	public UomCalculator(double pixelSize, double resolution) {
+		this.pixelSize = pixelSize;
+		this.resolution = resolution;
+	}
 
-    public final double considerUOM( final double in, final UOM uom ) {
-        switch ( uom ) {
-        case Pixel:
-            return in * 0.28 / pixelSize;
-        case Foot:
-            // TODO properly convert the res to foot
-            return in / resolution;
-        case Metre:
-            return in / resolution;
-        case mm:
-            return in / pixelSize;
-        }
-        return in;
-    }
+	public final double considerUOM(final double in, final UOM uom) {
+		switch (uom) {
+			case Pixel:
+				return in * 0.28 / pixelSize;
+			case Foot:
+				// Note: Use 1 foot as 12 inches => 30,48 cm
+				// @see http://en.wikipedia.org/wiki/Foot_%28unit%29
+				return in * 0.3048d / resolution;
+			case Metre:
+				return in / resolution;
+			case mm:
+				return in / pixelSize;
+		}
+		return in;
+	}
 
 }

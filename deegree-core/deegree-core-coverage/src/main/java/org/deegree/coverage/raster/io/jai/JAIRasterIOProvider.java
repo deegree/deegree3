@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -45,76 +44,73 @@ import org.deegree.coverage.raster.io.RasterReader;
 import org.deegree.coverage.raster.io.RasterWriter;
 
 /**
- * This class is a RasterIOProvider and makes the JAIRasterReader and JAIRasterWriter available to the deegree raster
- * IO.
- * 
+ * This class is a RasterIOProvider and makes the JAIRasterReader and JAIRasterWriter
+ * available to the deegree raster IO.
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class JAIRasterIOProvider implements RasterIOProvider {
 
-    /** Holds the list of supported image formats of the JAI library. */
-    protected static final Set<String> SUPPORTED_TYPES;
+	/** Holds the list of supported image formats of the JAI library. */
+	protected static final Set<String> SUPPORTED_TYPES;
 
-    // maps a file extension to the JAI type name
-    private static Map<String, String> EXT_TO_FORMAT;
+	// maps a file extension to the JAI type name
+	private static Map<String, String> EXT_TO_FORMAT;
 
-    static {
+	static {
 
-        // rb: where to get the supported file types from?
-        EXT_TO_FORMAT = new HashMap<String, String>();
-        EXT_TO_FORMAT.put( "bmp", "BMP" );
-        EXT_TO_FORMAT.put( "gif", "GIF" );
-        EXT_TO_FORMAT.put( "j2k", "JPEG2000" );
-        EXT_TO_FORMAT.put( "jp2", "JPEG2000" );
-        EXT_TO_FORMAT.put( "jpg", "JPEG" );
-        EXT_TO_FORMAT.put( "jpeg", "JPEG" );
-        EXT_TO_FORMAT.put( "png", "PNG" );
-        EXT_TO_FORMAT.put( "pnm", "PNM" );
-        EXT_TO_FORMAT.put( "tif", "TIFF" );
-        EXT_TO_FORMAT.put( "tiff", "TIFF" );
+		// rb: where to get the supported file types from?
+		EXT_TO_FORMAT = new HashMap<String, String>();
+		EXT_TO_FORMAT.put("bmp", "BMP");
+		EXT_TO_FORMAT.put("gif", "GIF");
+		EXT_TO_FORMAT.put("j2k", "JPEG2000");
+		EXT_TO_FORMAT.put("jp2", "JPEG2000");
+		EXT_TO_FORMAT.put("jpg", "JPEG");
+		EXT_TO_FORMAT.put("jpeg", "JPEG");
+		EXT_TO_FORMAT.put("png", "PNG");
+		EXT_TO_FORMAT.put("pnm", "PNM");
+		EXT_TO_FORMAT.put("tif", "TIFF");
+		EXT_TO_FORMAT.put("tiff", "TIFF");
 
-        SUPPORTED_TYPES = new HashSet<String>();
-        // SUPPORTED_TYPES.add( JAIRasterReader.class.getCanonicalName() );
-        // SUPPORTED_TYPES.add( "jai" );
-        // SUPPORTED_TYPES.add( "jai-reader" );
-        SUPPORTED_TYPES.addAll( EXT_TO_FORMAT.keySet() );
-    }
+		SUPPORTED_TYPES = new HashSet<String>();
+		// SUPPORTED_TYPES.add( JAIRasterReader.class.getCanonicalName() );
+		// SUPPORTED_TYPES.add( "jai" );
+		// SUPPORTED_TYPES.add( "jai-reader" );
+		SUPPORTED_TYPES.addAll(EXT_TO_FORMAT.keySet());
+	}
 
-    /**
-     * @param extension
-     * @return the JAI format name for extension
-     */
-    static String getJAIFormat( String extension ) {
-        return EXT_TO_FORMAT.get( extension );
-    }
+	/**
+	 * @param extension
+	 * @return the JAI format name for extension
+	 */
+	static String getJAIFormat(String extension) {
+		return EXT_TO_FORMAT.get(extension);
+	}
 
-    @Override
-    public RasterReader getRasterReader( String type ) {
-        if ( !SUPPORTED_TYPES.contains( type.toLowerCase() ) ) {
-            return null;
-        }
-        return new JAIRasterReader();
-    }
+	@Override
+	public RasterReader getRasterReader(String type) {
+		if (!SUPPORTED_TYPES.contains(type.toLowerCase())) {
+			return null;
+		}
+		return new JAIRasterReader();
+	}
 
-    @Override
-    public RasterWriter getRasterWriter( String type ) {
-        if ( !SUPPORTED_TYPES.contains( type.toLowerCase() ) ) {
-            return null;
-        }
-        return new JAIRasterWriter();
-    }
+	@Override
+	public RasterWriter getRasterWriter(String type) {
+		if (!SUPPORTED_TYPES.contains(type.toLowerCase())) {
+			return null;
+		}
+		return new JAIRasterWriter();
+	}
 
-    @Override
-    public Set<String> getRasterReaderFormats() {
-        return SUPPORTED_TYPES;
-    }
+	@Override
+	public Set<String> getRasterReaderFormats() {
+		return SUPPORTED_TYPES;
+	}
 
-    @Override
-    public Set<String> getRasterWriterFormats() {
-        return SUPPORTED_TYPES;
-    }
+	@Override
+	public Set<String> getRasterWriterFormats() {
+		return SUPPORTED_TYPES;
+	}
 
 }

@@ -40,17 +40,14 @@ import org.deegree.workspace.standard.DefaultResourceManagerMetadata;
 
 /**
  * Entry point for creating {@link MetadataStore} providers and instances.
- * 
+ *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  */
 public class MetadataStoreManager extends DefaultResourceManager<MetadataStore<? extends MetadataRecord>> {
 
-    public MetadataStoreManager() {
-        super(
-               new DefaultResourceManagerMetadata<MetadataStore<? extends MetadataRecord>>(
-                                                                                            MetadataStoreProvider.class,
-                                                                                            "metadata stores",
-                                                                                            "datasources/metadata" ) );
-    }
+	public MetadataStoreManager() {
+		super(new DefaultResourceManagerMetadata<MetadataStore<? extends MetadataRecord>>(MetadataStoreProvider.class,
+				"metadata stores", "datasources/metadata"));
+	}
 
 }

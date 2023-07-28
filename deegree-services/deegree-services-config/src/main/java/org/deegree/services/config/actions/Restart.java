@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -54,66 +53,64 @@ import org.deegree.workspace.Workspace;
 import org.deegree.workspace.WorkspaceUtils;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class Restart {
 
-    public static void restart( String path, HttpServletResponse resp )
-                            throws IOException {
-        Pair<DeegreeWorkspace, String> p = getWorkspaceAndPath( path );
-        resp.setContentType( "text/plain" );
-        try {
-            DeegreeWorkspace workspace = p.first;
-            if ( p.second == null ) {
-                restartWorkspace( resp, workspace.getName() );
-            } else {
-                String resourcePath = p.second;
-                restartResource( resp, workspace, resourcePath );
-            }
-        } catch ( Exception e ) {
-            write( "Error while reloading: " + e.getLocalizedMessage() + "\n", resp.getOutputStream() );
-            return;
-        }
+	public static void restart(String path, HttpServletResponse resp) throws IOException {
+		Pair<DeegreeWorkspace, String> p = getWorkspaceAndPath(path);
+		resp.setContentType("text/plain");
+		try {
+			DeegreeWorkspace workspace = p.first;
+			if (p.second == null) {
+				restartWorkspace(resp, workspace.getName());
+			}
+			else {
+				String resourcePath = p.second;
+				restartResource(resp, workspace, resourcePath);
+			}
+		}
+		catch (Exception e) {
+			write("Error while reloading: " + e.getLocalizedMessage() + "\n", resp.getOutputStream());
+			return;
+		}
 
-    }
+	}
 
-    private static void restartWorkspace( HttpServletResponse resp, String workspaceName )
-                            throws IOException, URISyntaxException, ServletException {
-        OGCFrontController fc = OGCFrontController.getInstance();
-        fc.setActiveWorkspaceName( workspaceName );
-        fc.reload();
-        write( "Restart of workspace " + workspaceName + " completed.", resp.getOutputStream() );
-    }
+	private static void restartWorkspace(HttpServletResponse resp, String workspaceName)
+			throws IOException, URISyntaxException, ServletException {
+		OGCFrontController fc = OGCFrontController.getInstance();
+		fc.setActiveWorkspaceName(workspaceName);
+		fc.reload();
+		write("Restart of workspace " + workspaceName + " completed.", resp.getOutputStream());
+	}
 
-    private static void restartResource( HttpServletResponse resp, DeegreeWorkspace workspace, String path )
-                            throws IOException {
-        List<String> initialisedIds = reinitializeChain( workspace, path );
-        if ( initialisedIds.isEmpty() ) {
-            write( "Could not find a resource to restart in workspace " + workspace.getName() + "",
-                   resp.getOutputStream() );
-        } else {
-            write( "Restart of workspace " + workspace.getName() + " completed. Restarted resources: \n",
-                   resp.getOutputStream() );
-            for ( String initialisedId : initialisedIds ) {
-                write( "\n", resp.getOutputStream() );
-                write( "   - " + initialisedId, resp.getOutputStream() );
-            }
-        }
-    }
+	private static void restartResource(HttpServletResponse resp, DeegreeWorkspace workspace, String path)
+			throws IOException {
+		List<String> initialisedIds = reinitializeChain(workspace, path);
+		if (initialisedIds.isEmpty()) {
+			write("Could not find a resource to restart in workspace " + workspace.getName() + "",
+					resp.getOutputStream());
+		}
+		else {
+			write("Restart of workspace " + workspace.getName() + " completed. Restarted resources: \n",
+					resp.getOutputStream());
+			for (String initialisedId : initialisedIds) {
+				write("\n", resp.getOutputStream());
+				write("   - " + initialisedId, resp.getOutputStream());
+			}
+		}
+	}
 
-    private static List<String> reinitializeChain( DeegreeWorkspace workspace, String resourcePath ) {
-        List<String> allInitialisedIds = new ArrayList<>();
-        Workspace ws = workspace.getNewWorkspace();
-        List<ResourceIdentifier<?>> ids = WorkspaceUtils.getPossibleIdentifiers( ws, resourcePath );
-        for ( ResourceIdentifier<?> id : ids ) {
-            List<String> initialisedIds = WorkspaceUtils.reinitializeChain( ws, id );
-            allInitialisedIds.addAll( initialisedIds );
-        }
-        return allInitialisedIds;
-    }
+	private static List<String> reinitializeChain(DeegreeWorkspace workspace, String resourcePath) {
+		List<String> allInitialisedIds = new ArrayList<>();
+		Workspace ws = workspace.getNewWorkspace();
+		List<ResourceIdentifier<?>> ids = WorkspaceUtils.getPossibleIdentifiers(ws, resourcePath);
+		for (ResourceIdentifier<?> id : ids) {
+			List<String> initialisedIds = WorkspaceUtils.reinitializeChain(ws, id);
+			allInitialisedIds.addAll(initialisedIds);
+		}
+		return allInitialisedIds;
+	}
 
 }

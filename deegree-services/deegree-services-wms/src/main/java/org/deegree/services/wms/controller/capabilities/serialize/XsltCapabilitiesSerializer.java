@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2015 by:
@@ -47,42 +46,42 @@ import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 /**
- * Transforms the incoming capabilities XML via XSLT and writes the output in the response stream.
- * 
+ * Transforms the incoming capabilities XML via XSLT and writes the output in the response
+ * stream.
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
 public class XsltCapabilitiesSerializer implements CapabilitiesSerializer {
 
-    private static final Logger LOG = getLogger( XsltCapabilitiesSerializer.class );
+	private static final Logger LOG = getLogger(XsltCapabilitiesSerializer.class);
 
-    private final URL xslt;
+	private final URL xslt;
 
-    private Workspace workspace;
+	private Workspace workspace;
 
-    /**
-     * @param xslt
-     *            path to the xslt file, never <code>null</code>
-     * @param workspace
-     *            never <code>null</code>
-     */
-    public XsltCapabilitiesSerializer( URL xslt, Workspace workspace ) {
-        this.xslt = xslt;
-        this.workspace = workspace;
-    }
+	/**
+	 * @param xslt path to the xslt file, never <code>null</code>
+	 * @param workspace never <code>null</code>
+	 */
+	public XsltCapabilitiesSerializer(URL xslt, Workspace workspace) {
+		this.xslt = xslt;
+		this.workspace = workspace;
+	}
 
-    @Override
-    public void serialize( InputStream capabilitiesXmlStream, OutputStream responseStream )
-                            throws IOException {
-        ClassLoader loader = Thread.currentThread().getContextClassLoader();
-        Thread.currentThread().setContextClassLoader( workspace.getModuleClassLoader() );
-        try {
-            XsltUtils.transform( capabilitiesXmlStream, this.xslt, responseStream );
-        } catch ( Exception e ) {
-            LOG.warn( "Unable to transform Capabilities: {}.", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-        } finally {
-            Thread.currentThread().setContextClassLoader( loader );
-        }
-    }
+	@Override
+	public void serialize(InputStream capabilitiesXmlStream, OutputStream responseStream) throws IOException {
+		ClassLoader loader = Thread.currentThread().getContextClassLoader();
+		Thread.currentThread().setContextClassLoader(workspace.getModuleClassLoader());
+		try {
+			XsltUtils.transform(capabilitiesXmlStream, this.xslt, responseStream);
+		}
+		catch (Exception e) {
+			LOG.warn("Unable to transform Capabilities: {}.", e.getLocalizedMessage());
+			LOG.trace("Stack trace:", e);
+		}
+		finally {
+			Thread.currentThread().setContextClassLoader(loader);
+		}
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -71,108 +70,100 @@ import org.slf4j.Logger;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:goltz@deegree.org">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class EbrimEOTransactionTest {
 
-    private static final Logger LOG = getLogger( EbrimEOTransactionTest.class );
+	private static final Logger LOG = getLogger(EbrimEOTransactionTest.class);
 
-    private static final NamespaceBindings nsContext = CommonNamespaces.getNamespaceContext();
+	private static final NamespaceBindings nsContext = CommonNamespaces.getNamespaceContext();
 
-    static {
-        nsContext.addNamespace( "rim", RegistryObject.RIM_NS );
-    }
+	static {
+		nsContext.addNamespace("rim", RegistryObject.RIM_NS);
+	}
 
-    @Test
-    public void testInsert()
-                            throws SQLException, MetadataStoreException, MetadataInspectorException,
-                            UnsupportedEncodingException, IOException {
-        Connection conn = getConnection();
-        if ( conn == null ) {
-            LOG.info( "Could nor get database connection, skip testInsert" );
-            return;
-        }
-        setUpTables( conn );
-        EbrimEOMDStoreTransaction t = new EbrimEOMDStoreTransaction( conn, JDBCUtils.useLegayPostGISPredicates( conn,
-                                                                                                                LOG ) );
-        InputStream is = EbrimEOTransactionTest.class.getResourceAsStream( "io/ebrimRecord2.xml" );
-        RegistryPackage rec = new RegistryPackage( new XMLAdapter( is ).getRootElement() );
-        InsertOperation io = new InsertOperation( Collections.singletonList( rec ), null, null );
-        t.performInsert( io );
-        t.commit();
+	@Test
+	public void testInsert() throws SQLException, MetadataStoreException, MetadataInspectorException,
+			UnsupportedEncodingException, IOException {
+		Connection conn = getConnection();
+		if (conn == null) {
+			LOG.info("Could nor get database connection, skip testInsert");
+			return;
+		}
+		setUpTables(conn);
+		EbrimEOMDStoreTransaction t = new EbrimEOMDStoreTransaction(conn,
+				JDBCUtils.useLegayPostGISPredicates(conn, LOG));
+		InputStream is = EbrimEOTransactionTest.class.getResourceAsStream("io/ebrimRecord2.xml");
+		RegistryPackage rec = new RegistryPackage(new XMLAdapter(is).getRootElement());
+		InsertOperation io = new InsertOperation(Collections.singletonList(rec), null, null);
+		t.performInsert(io);
+		t.commit();
 
-        // TODO
-        // assertEquals( 1, countRecsInDB() );
-    }
+		// TODO
+		// assertEquals( 1, countRecsInDB() );
+	}
 
-    @Test
-    public void testInsertProfile()
-                            throws SQLException, MetadataStoreException, MetadataInspectorException,
-                            UnsupportedEncodingException, IOException {
-        Connection conn = getConnection();
-        if ( conn == null ) {
-            LOG.info( "Could nor get database connection, skip testInsert" );
-            return;
-        }
-        setUpTables( conn );
-        EbrimEOMDStoreTransaction t = new EbrimEOMDStoreTransaction( conn, JDBCUtils.useLegayPostGISPredicates( conn,
-                                                                                                                LOG ) );
-        InputStream is = EbrimEOTransactionTest.class.getResourceAsStream( "io/eo_profile_extension_package.xml" );
-        RegistryPackage rec = new RegistryPackage( new XMLAdapter( is ).getRootElement() );
-        InsertOperation io = new InsertOperation( Collections.singletonList( rec ), null, null );
-        t.performInsert( io );
-        t.commit();
+	@Test
+	public void testInsertProfile() throws SQLException, MetadataStoreException, MetadataInspectorException,
+			UnsupportedEncodingException, IOException {
+		Connection conn = getConnection();
+		if (conn == null) {
+			LOG.info("Could nor get database connection, skip testInsert");
+			return;
+		}
+		setUpTables(conn);
+		EbrimEOMDStoreTransaction t = new EbrimEOMDStoreTransaction(conn,
+				JDBCUtils.useLegayPostGISPredicates(conn, LOG));
+		InputStream is = EbrimEOTransactionTest.class.getResourceAsStream("io/eo_profile_extension_package.xml");
+		RegistryPackage rec = new RegistryPackage(new XMLAdapter(is).getRootElement());
+		InsertOperation io = new InsertOperation(Collections.singletonList(rec), null, null);
+		t.performInsert(io);
+		t.commit();
 
-        // TODO
-        // assertEquals( 1, countRecsInDB() );
-    }
+		// TODO
+		// assertEquals( 1, countRecsInDB() );
+	}
 
-    @Test
-    public void testDelete()
-                            throws SQLException, MetadataStoreException, MetadataInspectorException,
-                            UnsupportedEncodingException, IOException {
-        Connection conn = getConnection();
-        if ( conn == null ) {
-            LOG.info( "Could nor get database connection, skip testDelete" );
-            return;
-        }
-        setUpTables( conn );
+	@Test
+	public void testDelete() throws SQLException, MetadataStoreException, MetadataInspectorException,
+			UnsupportedEncodingException, IOException {
+		Connection conn = getConnection();
+		if (conn == null) {
+			LOG.info("Could nor get database connection, skip testDelete");
+			return;
+		}
+		setUpTables(conn);
 
-        EbrimEOMDStoreTransaction t = new EbrimEOMDStoreTransaction( conn, JDBCUtils.useLegayPostGISPredicates( conn,
-                                                                                                                LOG ) );
-        InputStream is1 = EbrimEOTransactionTest.class.getResourceAsStream( "io/ebrimRecord1.xml" );
-        InputStream is2 = EbrimEOTransactionTest.class.getResourceAsStream( "io/ebrimRecord2.xml" );
-        List<RegistryPackage> recs = new ArrayList<RegistryPackage>();
-        recs.add( new RegistryPackage( new XMLAdapter( is1 ).getRootElement() ) );
-        recs.add( new RegistryPackage( new XMLAdapter( is2 ).getRootElement() ) );
-        InsertOperation io = new InsertOperation( recs, null, null );
-        t.performInsert( io );
-        t.commit();
+		EbrimEOMDStoreTransaction t = new EbrimEOMDStoreTransaction(conn,
+				JDBCUtils.useLegayPostGISPredicates(conn, LOG));
+		InputStream is1 = EbrimEOTransactionTest.class.getResourceAsStream("io/ebrimRecord1.xml");
+		InputStream is2 = EbrimEOTransactionTest.class.getResourceAsStream("io/ebrimRecord2.xml");
+		List<RegistryPackage> recs = new ArrayList<RegistryPackage>();
+		recs.add(new RegistryPackage(new XMLAdapter(is1).getRootElement()));
+		recs.add(new RegistryPackage(new XMLAdapter(is2).getRootElement()));
+		InsertOperation io = new InsertOperation(recs, null, null);
+		t.performInsert(io);
+		t.commit();
 
-        // TODO
-        // assertEquals( 1, countRecsInDB() );
+		// TODO
+		// assertEquals( 1, countRecsInDB() );
 
-        conn = getConnection();
-        EbrimEOMDStoreTransaction t1 = new EbrimEOMDStoreTransaction( conn, JDBCUtils.useLegayPostGISPredicates( conn,
-                                                                                                                 LOG ) );
+		conn = getConnection();
+		EbrimEOMDStoreTransaction t1 = new EbrimEOMDStoreTransaction(conn,
+				JDBCUtils.useLegayPostGISPredicates(conn, LOG));
 
-        ValueReference propertyName = new ValueReference( "rim:RegistryPackage/@id", nsContext );
-        Literal<PrimitiveValue> lit = new Literal<PrimitiveValue>(
-                                                                   new PrimitiveValue(
-                                                                                       "urn:ogc:def:EOP:RE00:IMG_MSI_3A:5230420:RP",
-                                                                                       new PrimitiveType(
-                                                                                                          BaseType.STRING ) ),
-                                                                   null );
-        Filter constraint = new OperatorFilter( new PropertyIsEqualTo( propertyName, lit, true, null ) );
-        DeleteOperation deleteOp = new DeleteOperation( null, null, constraint );
-        t1.performDelete( deleteOp );
-        t1.commit();
+		ValueReference propertyName = new ValueReference("rim:RegistryPackage/@id", nsContext);
+		Literal<PrimitiveValue> lit = new Literal<PrimitiveValue>(
+				new PrimitiveValue("urn:ogc:def:EOP:RE00:IMG_MSI_3A:5230420:RP", new PrimitiveType(BaseType.STRING)),
+				null);
+		Filter constraint = new OperatorFilter(new PropertyIsEqualTo(propertyName, lit, true, null));
+		DeleteOperation deleteOp = new DeleteOperation(null, null, constraint);
+		t1.performDelete(deleteOp);
+		t1.commit();
 
-        // TODO
-        // assertEquals( 1, countRecsInDB() );
-    }
+		// TODO
+		// assertEquals( 1, countRecsInDB() );
+	}
+
 }

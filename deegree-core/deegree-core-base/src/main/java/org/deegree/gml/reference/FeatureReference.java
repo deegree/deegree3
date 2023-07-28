@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -55,149 +54,139 @@ import org.slf4j.LoggerFactory;
 
 /**
  * A {@link GMLReference} that targets a {@link Feature}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class FeatureReference extends GMLReference<Feature> implements Feature {
 
-    private static final Logger LOG = LoggerFactory.getLogger( FeatureReference.class );
+	private static final Logger LOG = LoggerFactory.getLogger(FeatureReference.class);
 
-    private final GMLReferenceResolver internalResolver;
-    
-    private boolean internalResolved = false;
+	private final GMLReferenceResolver internalResolver;
 
-    /**
-     * Creates a new {@link FeatureReference} instance.
-     * 
-     * @param resolver
-     *            used for resolving the reference, must not be <code>null</code>
-     * @param uri
-     *            the feature's uri, must not be <code>null</code>
-     * @param baseURL
-     *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
-     */
-    public FeatureReference( GMLReferenceResolver resolver, String uri, String baseURL ) {
-        this( resolver, null, uri, baseURL );
-    }
+	private boolean internalResolved = false;
 
-    /**
-     * Creates a new {@link FeatureReference} instance.
-     *
-     * @param resolver
-     *            used for resolving the reference, must not be <code>null</code>
-     * @param internalResolver
-     *            used for resolving references, may be <code>null</code>
-     * @param uri
-     *            the feature's uri, must not be <code>null</code>
-     * @param baseURL
-     *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
-     */
-    public FeatureReference( GMLReferenceResolver resolver, GMLReferenceResolver internalResolver, String uri, String baseURL ) {
-        super( resolver, uri, baseURL );
-        this.internalResolver = internalResolver;
-    }
+	/**
+	 * Creates a new {@link FeatureReference} instance.
+	 * @param resolver used for resolving the reference, must not be <code>null</code>
+	 * @param uri the feature's uri, must not be <code>null</code>
+	 * @param baseURL base URL for resolving the uri, may be <code>null</code> (no
+	 * resolving of relative URLs)
+	 */
+	public FeatureReference(GMLReferenceResolver resolver, String uri, String baseURL) {
+		this(resolver, null, uri, baseURL);
+	}
 
-    @Override
-    public Envelope getEnvelope() {
-        return getReferencedObject().getEnvelope();
-    }
+	/**
+	 * Creates a new {@link FeatureReference} instance.
+	 * @param resolver used for resolving the reference, must not be <code>null</code>
+	 * @param internalResolver used for resolving references, may be <code>null</code>
+	 * @param uri the feature's uri, must not be <code>null</code>
+	 * @param baseURL base URL for resolving the uri, may be <code>null</code> (no
+	 * resolving of relative URLs)
+	 */
+	public FeatureReference(GMLReferenceResolver resolver, GMLReferenceResolver internalResolver, String uri,
+			String baseURL) {
+		super(resolver, uri, baseURL);
+		this.internalResolver = internalResolver;
+	}
 
-    @Override
-    public void setEnvelope( Envelope env ) {
-        getReferencedObject().setEnvelope( env );
-    }
+	@Override
+	public Envelope getEnvelope() {
+		return getReferencedObject().getEnvelope();
+	}
 
-    @Override
-    public Envelope calcEnvelope() {
-        return getReferencedObject().calcEnvelope();
-    }
+	@Override
+	public void setEnvelope(Envelope env) {
+		getReferencedObject().setEnvelope(env);
+	}
 
-    @Override
-    public List<Property> getGeometryProperties() {
-        return getReferencedObject().getGeometryProperties();
-    }
+	@Override
+	public Envelope calcEnvelope() {
+		return getReferencedObject().calcEnvelope();
+	}
 
-    @Override
-    public QName getName() {
-        return getReferencedObject().getName();
-    }
+	@Override
+	public List<Property> getGeometryProperties() {
+		return getReferencedObject().getGeometryProperties();
+	}
 
-    @Override
-    public List<Property> getProperties() {
-        return getReferencedObject().getProperties();
-    }
+	@Override
+	public QName getName() {
+		return getReferencedObject().getName();
+	}
 
-    @Override
-    public List<Property> getProperties( QName propName ) {
-        return getReferencedObject().getProperties( propName );
-    }
+	@Override
+	public List<Property> getProperties() {
+		return getReferencedObject().getProperties();
+	}
 
-    @Override
-    public FeatureType getType() {
-        return getReferencedObject().getType();
-    }
+	@Override
+	public List<Property> getProperties(QName propName) {
+		return getReferencedObject().getProperties(propName);
+	}
 
-    @Override
-    public void setId( String id ) {
-        getReferencedObject().setId( id );
-    }
+	@Override
+	public FeatureType getType() {
+		return getReferencedObject().getType();
+	}
 
-    @Override
-    public void setProperties( List<Property> props )
-                            throws IllegalArgumentException {
-        getReferencedObject().setProperties( props );
-    }
+	@Override
+	public void setId(String id) {
+		getReferencedObject().setId(id);
+	}
 
-    @Override
-    public void setPropertyValue( QName propName, int occurence, TypedObjectNode value ) {
-        getReferencedObject().setPropertyValue( propName, occurence, value );
-    }
+	@Override
+	public void setProperties(List<Property> props) throws IllegalArgumentException {
+		getReferencedObject().setProperties(props);
+	}
 
-    @Override
-    public ExtraProps getExtraProperties() {
-        return getReferencedObject().getExtraProperties();
-    }
+	@Override
+	public void setPropertyValue(QName propName, int occurence, TypedObjectNode value) {
+		getReferencedObject().setPropertyValue(propName, occurence, value);
+	}
 
-    @Override
-    public void setExtraProperties( ExtraProps extraProps ) {
-        getReferencedObject().setExtraProperties( extraProps );
-    }
+	@Override
+	public ExtraProps getExtraProperties() {
+		return getReferencedObject().getExtraProperties();
+	}
 
-    @Override
-    public synchronized Feature getReferencedObject()
-                            throws ReferenceResolvingException {
-        try {
-            return super.getReferencedObject();
-        } catch ( ReferenceResolvingException e ) {
-            if ( internalResolver == null )
-                throw e;
-            return resolveInternalFeature( e );
-        }
-    }
+	@Override
+	public void setExtraProperties(ExtraProps extraProps) {
+		getReferencedObject().setExtraProperties(extraProps);
+	}
 
-    @Override
-    public boolean isInternalResolved() {
-        return internalResolved;
-    }
+	@Override
+	public synchronized Feature getReferencedObject() throws ReferenceResolvingException {
+		try {
+			return super.getReferencedObject();
+		}
+		catch (ReferenceResolvingException e) {
+			if (internalResolver == null)
+				throw e;
+			return resolveInternalFeature(e);
+		}
+	}
 
-    private Feature resolveInternalFeature( ReferenceResolvingException e ) {
-        String uri = getURI();
-        GMLObject object = this.internalResolver.getObject( uri, getBaseURL() );
-        if ( object != null ) {
-            if ( object instanceof Feature ) {
-                LOG.info( "Feature with uri {} could be resolved by the internal resolver.", uri );
-                resolve( (Feature) object );
-                this.internalResolved = true;
-                return (Feature) object;
-            }
-            String msg = "Object with uri '" + uri
-                         + "' could be resolved from internal resolver but is no Feature instance.";
-            throw exception = new ReferenceResolvingException( msg );
-        }
-        throw e;
-    }
+	@Override
+	public boolean isInternalResolved() {
+		return internalResolved;
+	}
+
+	private Feature resolveInternalFeature(ReferenceResolvingException e) {
+		String uri = getURI();
+		GMLObject object = this.internalResolver.getObject(uri, getBaseURL());
+		if (object != null) {
+			if (object instanceof Feature) {
+				LOG.info("Feature with uri {} could be resolved by the internal resolver.", uri);
+				resolve((Feature) object);
+				this.internalResolved = true;
+				return (Feature) object;
+			}
+			String msg = "Object with uri '" + uri
+					+ "' could be resolved from internal resolver but is no Feature instance.";
+			throw exception = new ReferenceResolvingException(msg);
+		}
+		throw e;
+	}
 
 }

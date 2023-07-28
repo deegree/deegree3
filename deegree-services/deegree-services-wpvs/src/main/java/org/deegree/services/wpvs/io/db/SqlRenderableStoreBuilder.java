@@ -49,76 +49,77 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This class is responsible for building sql renderable stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class SqlRenderableStoreBuilder implements ResourceBuilder<RenderableStore> {
 
-    private static final Logger LOG = LoggerFactory.getLogger( SqlRenderableStoreBuilder.class );
+	private static final Logger LOG = LoggerFactory.getLogger(SqlRenderableStoreBuilder.class);
 
-    private RenderableSQLStoreConfig config;
+	private RenderableSQLStoreConfig config;
 
-    private ResourceMetadata<RenderableStore> metadata;
+	private ResourceMetadata<RenderableStore> metadata;
 
-    private Workspace workspace;
+	private Workspace workspace;
 
-    public SqlRenderableStoreBuilder( RenderableSQLStoreConfig config, ResourceMetadata<RenderableStore> metadata,
-                                      Workspace workspace ) {
-        this.config = config;
-        this.metadata = metadata;
-        this.workspace = workspace;
-    }
+	public SqlRenderableStoreBuilder(RenderableSQLStoreConfig config, ResourceMetadata<RenderableStore> metadata,
+			Workspace workspace) {
+		this.config = config;
+		this.metadata = metadata;
+		this.workspace = workspace;
+	}
 
-    @Override
-    public RenderableStore build() {
-        RenderableStore rs = null;
-        try {
+	@Override
+	public RenderableStore build() {
+		RenderableStore rs = null;
+		try {
 
-            String connId = config.getJDBCConnId();
-            ConnectionProvider prov = workspace.getResource( ConnectionProviderProvider.class, connId );
-            Connection connection = prov.getConnection();
-            connection.close();
+			String connId = config.getJDBCConnId();
+			ConnectionProvider prov = workspace.getResource(ConnectionProviderProvider.class, connId);
+			Connection connection = prov.getConnection();
+			connection.close();
 
-            rs = new PostgisBackend( connId, ( config.isIsBillboard() ? ModelBackend.Type.TREE
-                                                                     : ModelBackend.Type.BUILDING ), workspace,
-                                     metadata );
-            // instantiate the texture dir
-            List<String> tDirs = config.getTextureDirectory();
-            for ( String tDir : tDirs ) {
-                if ( tDir != null ) {
-                    File tD = resolveFile( tDir, false, null );
-                    TexturePool.addTexturesFromDirectory( tD );
-                }
-            }
+			rs = new PostgisBackend(connId,
+					(config.isIsBillboard() ? ModelBackend.Type.TREE : ModelBackend.Type.BUILDING), workspace,
+					metadata);
+			// instantiate the texture dir
+			List<String> tDirs = config.getTextureDirectory();
+			for (String tDir : tDirs) {
+				if (tDir != null) {
+					File tD = resolveFile(tDir, false, null);
+					TexturePool.addTexturesFromDirectory(tD);
+				}
+			}
 
-        } catch ( Exception e ) {
-            throw new ResourceInitException( e.getLocalizedMessage(), e );
-        }
-        return rs;
-    }
+		}
+		catch (Exception e) {
+			throw new ResourceInitException(e.getLocalizedMessage(), e);
+		}
+		return rs;
+	}
 
-    private File resolveFile( String fileName, boolean required, String msg ) {
-        URI resolve = resolveURI( fileName );
-        if ( resolve == null ) {
-            if ( required ) {
-                throw new IllegalArgumentException( msg );
-            }
-            return null;
-        }
-        return new File( resolve );
-    }
+	private File resolveFile(String fileName, boolean required, String msg) {
+		URI resolve = resolveURI(fileName);
+		if (resolve == null) {
+			if (required) {
+				throw new IllegalArgumentException(msg);
+			}
+			return null;
+		}
+		return new File(resolve);
+	}
 
-    private URI resolveURI( String fileName ) {
-        URI resolve = null;
-        try {
-            URL url = metadata.getLocation().resolveToUrl( fileName );
-            resolve = url.toURI();
-        } catch ( URISyntaxException e ) {
-            LOG.warn( "Error while resolving url for file: " + fileName + "." );
-        }
-        return resolve;
-    }
+	private URI resolveURI(String fileName) {
+		URI resolve = null;
+		try {
+			URL url = metadata.getLocation().resolveToUrl(fileName);
+			resolve = url.toURI();
+		}
+		catch (URISyntaxException e) {
+			LOG.warn("Error while resolving url for file: " + fileName + ".");
+		}
+		return resolve;
+	}
 
 }

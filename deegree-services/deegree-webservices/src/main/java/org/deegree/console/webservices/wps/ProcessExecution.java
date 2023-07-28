@@ -39,78 +39,78 @@ import static org.deegree.protocol.wps.WPSConstants.ExecutionState.SUCCEEDED;
 import java.text.SimpleDateFormat;
 
 /**
- * Encapsulates all information for displaying a {@link org.deegree.services.wps.ProcessExecution}.
- * 
+ * Encapsulates all information for displaying a
+ * {@link org.deegree.services.wps.ProcessExecution}.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 29926 $, $Date: 2011-03-08 11:47:59 +0100 (Di, 08. Mär 2011) $
  */
 public class ProcessExecution {
 
-    public String id;
+	public String id;
 
-    public String state;
+	public String state;
 
-    public String percentage = "100";
+	public String percentage = "100";
 
-    public String startTime;
+	public String startTime;
 
-    public String finishTime = "-";
+	public String finishTime = "-";
 
-    public String duration = "-";
+	public String duration = "-";
 
-    public String getId() {
-        return id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public String getState() {
-        return state;
-    }
+	public String getState() {
+		return state;
+	}
 
-    public String getPercentage() {
-        return percentage;
-    }
+	public String getPercentage() {
+		return percentage;
+	}
 
-    public String getStartTime() {
-        return startTime;
-    }
+	public String getStartTime() {
+		return startTime;
+	}
 
-    public String getFinishTime() {
-        return finishTime;
-    }
+	public String getFinishTime() {
+		return finishTime;
+	}
 
-    public String getDuration() {
-        return duration;
-    }
+	public String getDuration() {
+		return duration;
+	}
 
-    /**
-     * @param p
-     */
-    ProcessExecution( org.deegree.services.wps.ProcessExecution p ) {
-        SimpleDateFormat df = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
-        long duration = -1;
-        if ( p.getFinishTime() > 0 ) {
-            duration = p.getFinishTime() - p.getStartTime();
-        } else if ( p.getStartTime() > 0 ) {
-            duration = new java.util.Date().getTime() - p.getStartTime();
-        }
-        if ( duration >= 0 ) {
-            duration /= 1000;
-            long seconds = duration % 60;
-            long minutes = ( duration % 3600 ) / 60;
-            long hours = duration / 3600;
-            this.duration = String.format( "%02d:%02d:%02d", hours, minutes, seconds );
-        }
-        this.id = p.getProcessId().toString();
-        this.state = p.getExecutionState().toString();
-        if ( p.getExecutionState() != SUCCEEDED ) {
-            this.percentage = "" + p.getPercentCompleted();
-        }
-        this.startTime = df.format( p.getStartTime() );
-        this.startTime = df.format( p.getStartTime() );
-        if ( p.getFinishTime() > 0 ) {
-            this.finishTime = df.format( p.getFinishTime() );
-        }
-    }
+	/**
+	 * @param p
+	 */
+	ProcessExecution(org.deegree.services.wps.ProcessExecution p) {
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		long duration = -1;
+		if (p.getFinishTime() > 0) {
+			duration = p.getFinishTime() - p.getStartTime();
+		}
+		else if (p.getStartTime() > 0) {
+			duration = new java.util.Date().getTime() - p.getStartTime();
+		}
+		if (duration >= 0) {
+			duration /= 1000;
+			long seconds = duration % 60;
+			long minutes = (duration % 3600) / 60;
+			long hours = duration / 3600;
+			this.duration = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+		}
+		this.id = p.getProcessId().toString();
+		this.state = p.getExecutionState().toString();
+		if (p.getExecutionState() != SUCCEEDED) {
+			this.percentage = "" + p.getPercentCompleted();
+		}
+		this.startTime = df.format(p.getStartTime());
+		this.startTime = df.format(p.getStartTime());
+		if (p.getFinishTime() > 0) {
+			this.finishTime = df.format(p.getFinishTime());
+		}
+	}
+
 }

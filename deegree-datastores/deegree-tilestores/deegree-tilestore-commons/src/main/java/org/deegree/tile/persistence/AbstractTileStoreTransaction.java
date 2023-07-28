@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -48,54 +47,50 @@ import org.deegree.tile.Tiles;
 
 /**
  * Provides common base functionality for implementations of {@link TileStoreTransaction}.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 public abstract class AbstractTileStoreTransaction implements TileStoreTransaction {
 
-    protected final TileStore store;
+	protected final TileStore store;
 
-    protected final String tileMatrixSet;
+	protected final String tileMatrixSet;
 
-    /**
-     * Creates a new {@link AbstractTileStoreTransaction} instance.
-     * 
-     * @param store
-     *            associated tile store, must not be <code>null</code>
-     * @param tileMatrixSet
-     *            the id of the tile matrix set, must not be <code>null</code>
-     */
-    protected AbstractTileStoreTransaction( TileStore store, String tileMatrixSet ) {
-        this.store = store;
-        this.tileMatrixSet = tileMatrixSet;
-    }
+	/**
+	 * Creates a new {@link AbstractTileStoreTransaction} instance.
+	 * @param store associated tile store, must not be <code>null</code>
+	 * @param tileMatrixSet the id of the tile matrix set, must not be <code>null</code>
+	 */
+	protected AbstractTileStoreTransaction(TileStore store, String tileMatrixSet) {
+		this.store = store;
+		this.tileMatrixSet = tileMatrixSet;
+	}
 
-    @Override
-    public void delete( String tileMatrixId, Envelope env ) throws TileIOException {
-        if ( tileMatrixId == null ) {
-            for ( TileDataLevel matrix : store.getTileDataSet( tileMatrixSet ).getTileDataLevels() ) {
-                delete( matrix, env );
-            }
-        } else {
-            TileDataLevel matrix = store.getTileDataSet( tileMatrixSet ).getTileDataLevel( tileMatrixId );
-            delete( matrix, env );
-        }
-    }
+	@Override
+	public void delete(String tileMatrixId, Envelope env) throws TileIOException {
+		if (tileMatrixId == null) {
+			for (TileDataLevel matrix : store.getTileDataSet(tileMatrixSet).getTileDataLevels()) {
+				delete(matrix, env);
+			}
+		}
+		else {
+			TileDataLevel matrix = store.getTileDataSet(tileMatrixSet).getTileDataLevel(tileMatrixId);
+			delete(matrix, env);
+		}
+	}
 
-    private void delete( TileDataLevel matrix, Envelope env ) throws TileIOException {
-        long[] tileIndexRange = Tiles.getTileIndexRange( matrix, env );
-        long minX = tileIndexRange[0];
-        long minY = tileIndexRange[1];
-        long maxX = tileIndexRange[2];
-        long maxY = tileIndexRange[3];
-        for ( long x = minX; x <= maxX; x++ ) {
-            for ( long y = minY; y <= maxY; y++ ) {
-                delete( matrix.getMetadata().getIdentifier(), x, y );
-            }
-        }
-    }
+	private void delete(TileDataLevel matrix, Envelope env) throws TileIOException {
+		long[] tileIndexRange = Tiles.getTileIndexRange(matrix, env);
+		long minX = tileIndexRange[0];
+		long minY = tileIndexRange[1];
+		long maxX = tileIndexRange[2];
+		long maxY = tileIndexRange[3];
+		for (long x = minX; x <= maxX; x++) {
+			for (long y = minY; y <= maxY; y++) {
+				delete(matrix.getMetadata().getIdentifier(), x, y);
+			}
+		}
+	}
+
 }

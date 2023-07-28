@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -47,165 +46,164 @@ import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.Envelope;
 
 /**
- * <code>Array</code>-based {@link Points} implementation that allows to hold identifiable {@link Point} objects (with
- * id or even references to local or remote {@link Point} instances}.
+ * <code>Array</code>-based {@link Points} implementation that allows to hold identifiable
+ * {@link Point} objects (with id or even references to local or remote {@link Point}
+ * instances}.
  * <p>
- * This implementation is rather expensive, as every contained point is represented as an individual {@link Point}
- * object. Whenever possible, {@link PackedPoints} or {@link PointsPoints} should be used instead.
+ * This implementation is rather expensive, as every contained point is represented as an
+ * individual {@link Point} object. Whenever possible, {@link PackedPoints} or
+ * {@link PointsPoints} should be used instead.
  * </p>
- * 
+ *
  * @see PackedPoints
  * @see PointsPoints
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class PointsArray implements Points {
 
-    private Point[] points;
+	private Point[] points;
 
-    /**
-     * Creates a new {@link PointsArray} instance based on the given array.
-     * 
-     * @param points
-     */
-    public PointsArray( Point... points ) {
-        this.points = points;
-    }
+	/**
+	 * Creates a new {@link PointsArray} instance based on the given array.
+	 * @param points
+	 */
+	public PointsArray(Point... points) {
+		this.points = points;
+	}
 
-    @Override
-    public int getDimension() {
-        return points[0].getCoordinateDimension();
-    }
+	@Override
+	public int getDimension() {
+		return points[0].getCoordinateDimension();
+	}
 
-    @Override
-    public int size() {
-        return points.length;
-    }
+	@Override
+	public int size() {
+		return points.length;
+	}
 
-    @Override
-    public Iterator<Point> iterator() {
-        return new Iterator<Point>() {
+	@Override
+	public Iterator<Point> iterator() {
+		return new Iterator<Point>() {
 
-            int i = 0;
+			int i = 0;
 
-            @Override
-            public boolean hasNext() {
-                return i < points.length;
-            }
+			@Override
+			public boolean hasNext() {
+				return i < points.length;
+			}
 
-            @Override
-            public Point next() {
-                if ( !hasNext() ) {
-                    throw new NoSuchElementException();
-                }
-                return points[i++];
-            }
+			@Override
+			public Point next() {
+				if (!hasNext()) {
+					throw new NoSuchElementException();
+				}
+				return points[i++];
+			}
 
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException();
-            }
-        };
-    }
+			@Override
+			public void remove() {
+				throw new UnsupportedOperationException();
+			}
+		};
+	}
 
-    @Override
-    public Point get( int i ) {
-        return points[i];
-    }
+	@Override
+	public Point get(int i) {
+		return points[i];
+	}
 
-    @Override
-    public double[] getAsArray() {
-        double[] coords = new double[getDimension() * size()];
-        int i = 0;
-        for ( Point p : this ) {
-            for ( double coord : p.getAsArray() ) {
-                coords[i++] = coord;
-            }
-        }
-        return coords;
-    }
+	@Override
+	public double[] getAsArray() {
+		double[] coords = new double[getDimension() * size()];
+		int i = 0;
+		for (Point p : this) {
+			for (double coord : p.getAsArray()) {
+				coords[i++] = coord;
+			}
+		}
+		return coords;
+	}
 
-    @Override
-    public Point getEndPoint() {
-        return get( size() - 1 );
-    }
+	@Override
+	public Point getEndPoint() {
+		return get(size() - 1);
+	}
 
-    @Override
-    public Point getStartPoint() {
-        return get( 0 );
-    }
+	@Override
+	public Point getStartPoint() {
+		return get(0);
+	}
 
-    // -----------------------------------------------------------------------
-    // Implementation of JTS methods
-    // -----------------------------------------------------------------------
+	// -----------------------------------------------------------------------
+	// Implementation of JTS methods
+	// -----------------------------------------------------------------------
 
-    @Override
-    public Envelope expandEnvelope( Envelope env ) {
-        for ( Point p : points ) {
-            env.expandToInclude( p.get0(), p.get1() );
-        }
-        return env;
-    }
+	@Override
+	public Envelope expandEnvelope(Envelope env) {
+		for (Point p : points) {
+			env.expandToInclude(p.get0(), p.get1());
+		}
+		return env;
+	}
 
-    @Override
-    public Coordinate getCoordinate( int index ) {
-        Point point = get( index );
-        return new Coordinate( point.get0(), point.get1(), point.get2() );
-    }
+	@Override
+	public Coordinate getCoordinate(int index) {
+		Point point = get(index);
+		return new Coordinate(point.get0(), point.get1(), point.get2());
+	}
 
-    @Override
-    public void getCoordinate( int index, Coordinate coord ) {
-        Point point = get( index );
-        coord.x = point.get0();
-        coord.y = point.get1();
-        coord.z = point.get2();
-    }
+	@Override
+	public void getCoordinate(int index, Coordinate coord) {
+		Point point = get(index);
+		coord.x = point.get0();
+		coord.y = point.get1();
+		coord.z = point.get2();
+	}
 
-    @Override
-    public Coordinate getCoordinateCopy( int index ) {
-        Point point = get( index );
-        return new Coordinate( point.get0(), point.get1(), point.get2() );
-    }
+	@Override
+	public Coordinate getCoordinateCopy(int index) {
+		Point point = get(index);
+		return new Coordinate(point.get0(), point.get1(), point.get2());
+	}
 
-    @Override
-    public double getOrdinate( int index, int ordinateIndex ) {
-        return get( index ).get( ordinateIndex );
-    }
+	@Override
+	public double getOrdinate(int index, int ordinateIndex) {
+		return get(index).get(ordinateIndex);
+	}
 
-    @Override
-    public double getX( int index ) {
-        return get( index ).get0();
-    }
+	@Override
+	public double getX(int index) {
+		return get(index).get0();
+	}
 
-    @Override
-    public double getY( int index ) {
-        return get( index ).get1();
-    }
+	@Override
+	public double getY(int index) {
+		return get(index).get1();
+	}
 
-    @Override
-    public void setOrdinate( int index, int ordinateIndex, double value ) {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public void setOrdinate(int index, int ordinateIndex, double value) {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public Coordinate[] toCoordinateArray() {
-        Coordinate[] coords = new Coordinate[size()];
-        int i = 0;
-        for ( Point p : this ) {
-            coords[i++] = new Coordinate( p.get0(), p.get1() );
-        }
-        return coords;
-    }
+	@Override
+	public Coordinate[] toCoordinateArray() {
+		Coordinate[] coords = new Coordinate[size()];
+		int i = 0;
+		for (Point p : this) {
+			coords[i++] = new Coordinate(p.get0(), p.get1());
+		}
+		return coords;
+	}
 
-    @Override
-    public Object clone() {
-        return new PointsArray( Arrays.copyOf( points, points.length ) );
-    }
+	@Override
+	public Object clone() {
+		return new PointsArray(Arrays.copyOf(points, points.length));
+	}
 
-    @Override
-    public CoordinateSequence copy() {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public CoordinateSequence copy() {
+		throw new UnsupportedOperationException();
+	}
+
 }

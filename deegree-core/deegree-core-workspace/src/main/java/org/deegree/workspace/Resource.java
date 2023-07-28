@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -42,28 +41,28 @@
 package org.deegree.workspace;
 
 /**
- * Base interface of all resources. A workspace resource must make sure it knows its metadata, which can be used to
- * restart/rebuild the resource and its dependencies.
- * 
+ * Base interface of all resources. A workspace resource must make sure it knows its
+ * metadata, which can be used to restart/rebuild the resource and its dependencies.
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public interface Resource {
 
-    /**
-     * @return the resource metadata object which has been used to create the resource, never <code>null</code>
-     */
-    ResourceMetadata<? extends Resource> getMetadata();
+	/**
+	 * @return the resource metadata object which has been used to create the resource,
+	 * never <code>null</code>
+	 */
+	ResourceMetadata<? extends Resource> getMetadata();
 
-    /**
-     * Can be used to prepare the resource for operation before use.
-     */
-    void init();
+	/**
+	 * Can be used to prepare the resource for operation before use.
+	 */
+	void init();
 
-    /**
-     * Can be used to clean up before this object is put out of use.
-     */
-    void destroy();
+	/**
+	 * Can be used to clean up before this object is put out of use.
+	 */
+	void destroy();
 
 }

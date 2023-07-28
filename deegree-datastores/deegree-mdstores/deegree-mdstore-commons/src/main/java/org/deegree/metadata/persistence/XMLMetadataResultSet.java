@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -51,83 +50,80 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * abstract base class for {@link MetadataResultSet}s. The reults set must contain the XML representation of the
- * metadata record as binary at the first position!
- * 
+ * abstract base class for {@link MetadataResultSet}s. The reults set must contain the XML
+ * representation of the metadata record as binary at the first position!
+ *
  * @author <a href="mailto:goltz@deegree.org">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public abstract class XMLMetadataResultSet<T extends MetadataRecord> implements MetadataResultSet<T> {
 
-    private static Logger LOG = LoggerFactory.getLogger( XMLMetadataResultSet.class );
+	private static Logger LOG = LoggerFactory.getLogger(XMLMetadataResultSet.class);
 
-    private final ResultSet rs;
+	private final ResultSet rs;
 
-    private final Connection conn;
+	private final Connection conn;
 
-    private final PreparedStatement stmt;
+	private final PreparedStatement stmt;
 
-    public XMLMetadataResultSet( ResultSet rs, Connection conn, PreparedStatement stmt ) {
-        this.rs = rs;
-        this.conn = conn;
-        this.stmt = stmt;
-    }
+	public XMLMetadataResultSet(ResultSet rs, Connection conn, PreparedStatement stmt) {
+		this.rs = rs;
+		this.conn = conn;
+		this.stmt = stmt;
+	}
 
-    @Override
-    public void close()
-                            throws MetadataStoreException {
-        JDBCUtils.close( rs, stmt, conn, LOG );
-    }
+	@Override
+	public void close() throws MetadataStoreException {
+		JDBCUtils.close(rs, stmt, conn, LOG);
+	}
 
-    @Override
-    public T getRecord()
-                            throws MetadataStoreException {
-        try {
-            BufferedInputStream bais = new BufferedInputStream( rs.getBinaryStream( 1 ) );
-            XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( bais );
-            return getRecord( xmlReader );
-        } catch ( Exception e ) {
-            throw new MetadataStoreException( "Error re-creating MetadataRecord from result set: " + e.getMessage() );
-        }
-    }
+	@Override
+	public T getRecord() throws MetadataStoreException {
+		try {
+			BufferedInputStream bais = new BufferedInputStream(rs.getBinaryStream(1));
+			XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader(bais);
+			return getRecord(xmlReader);
+		}
+		catch (Exception e) {
+			throw new MetadataStoreException("Error re-creating MetadataRecord from result set: " + e.getMessage());
+		}
+	}
 
-    @Override
-    public void skip( int rows )
-                            throws MetadataStoreException {
-        try {
-            for ( int i = 0; i < rows; i++ ) {
-                rs.next();
-            }
-        } catch ( SQLException e ) {
-            throw new MetadataStoreException( e.getMessage(), e );
-        }
-    }
+	@Override
+	public void skip(int rows) throws MetadataStoreException {
+		try {
+			for (int i = 0; i < rows; i++) {
+				rs.next();
+			}
+		}
+		catch (SQLException e) {
+			throw new MetadataStoreException(e.getMessage(), e);
+		}
+	}
 
-    @Override
-    public int getRemaining()
-                            throws MetadataStoreException {
-        int i = 0;
-        try {
-            while ( rs.next() ) {
-                i++;
-            }
-        } catch ( SQLException e ) {
-            throw new MetadataStoreException( e.getMessage(), e );
-        }
-        return i;
-    }
+	@Override
+	public int getRemaining() throws MetadataStoreException {
+		int i = 0;
+		try {
+			while (rs.next()) {
+				i++;
+			}
+		}
+		catch (SQLException e) {
+			throw new MetadataStoreException(e.getMessage(), e);
+		}
+		return i;
+	}
 
-    @Override
-    public boolean next()
-                            throws MetadataStoreException {
-        try {
-            return rs.next();
-        } catch ( SQLException e ) {
-            throw new MetadataStoreException( e.getMessage(), e );
-        }
-    }
+	@Override
+	public boolean next() throws MetadataStoreException {
+		try {
+			return rs.next();
+		}
+		catch (SQLException e) {
+			throw new MetadataStoreException(e.getMessage(), e);
+		}
+	}
 
-    protected abstract T getRecord( XMLStreamReader xmlReader );
+	protected abstract T getRecord(XMLStreamReader xmlReader);
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -47,35 +46,32 @@ import org.deegree.cs.transformations.Transformation;
 
 /**
  * Denote an identity transform, which does nothing.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class IdentityTransform extends Transformation {
 
-    /**
-     * @param sourceCRS
-     * @param targetCRS
-     */
-    public IdentityTransform( ICRS sourceCRS, ICRS targetCRS ) {
-        super( sourceCRS, targetCRS, new CRSIdentifiable( new CRSCodeType( "id" ) ) );
-    }
+	/**
+	 * @param sourceCRS
+	 * @param targetCRS
+	 */
+	public IdentityTransform(ICRS sourceCRS, ICRS targetCRS) {
+		super(sourceCRS, targetCRS, new CRSIdentifiable(new CRSCodeType("id")));
+	}
 
-    @Override
-    public List<Point3d> doTransform( List<Point3d> srcPts )
-                            throws TransformationException {
-        return srcPts;
-    }
+	@Override
+	public List<Point3d> doTransform(List<Point3d> srcPts) throws TransformationException {
+		return srcPts;
+	}
 
-    @Override
-    public String getImplementationName() {
-        return "Identity";
-    }
+	@Override
+	public String getImplementationName() {
+		return "Identity";
+	}
 
-    @Override
-    public boolean isIdentity() {
-        return true;
-    }
+	@Override
+	public boolean isIdentity() {
+		return true;
+	}
+
 }

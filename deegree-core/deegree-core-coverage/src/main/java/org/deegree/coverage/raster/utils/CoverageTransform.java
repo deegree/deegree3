@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -46,42 +45,37 @@ import org.deegree.geometry.Envelope;
 import org.slf4j.Logger;
 
 /**
- * 
- * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class CoverageTransform {
 
-    private static final Logger LOG = getLogger( CoverageTransform.class );
+	private static final Logger LOG = getLogger(CoverageTransform.class);
 
-    /**
-     * Returns a subset of the raster, transformed into to SRS of the target envelope.
-     * 
-     * @param raster
-     * @param env
-     * @param grid
-     * @param interpolation
-     * @return the transformation result
-     * @throws TransformationException
-     *             if the transformation fails
-     */
-    public static AbstractRaster transform( AbstractRaster raster, Envelope env, Grid grid, String interpolation )
-                            throws TransformationException {
-        LOG.debug( "Transforming raster with envelope '{}' and grid '{}', interpolation method '{}'.",
-                   new Object[] { env, grid, interpolation } );
-        AbstractRaster result;
-        try {
-            RasterTransformer transf = new RasterTransformer( env.getCoordinateSystem() );
-            result = transf.transform( raster, env, grid.getWidth(), grid.getHeight(),
-                                       InterpolationType.fromString( interpolation ) );
-        } catch ( Exception e ) {
-            LOG.debug( "Original stack trace", e );
-            throw new TransformationException( "error while transforming raster result: " + e.getMessage(), e );
-        }
-        return result;
-    }
+	/**
+	 * Returns a subset of the raster, transformed into to SRS of the target envelope.
+	 * @param raster
+	 * @param env
+	 * @param grid
+	 * @param interpolation
+	 * @return the transformation result
+	 * @throws TransformationException if the transformation fails
+	 */
+	public static AbstractRaster transform(AbstractRaster raster, Envelope env, Grid grid, String interpolation)
+			throws TransformationException {
+		LOG.debug("Transforming raster with envelope '{}' and grid '{}', interpolation method '{}'.",
+				new Object[] { env, grid, interpolation });
+		AbstractRaster result;
+		try {
+			RasterTransformer transf = new RasterTransformer(env.getCoordinateSystem());
+			result = transf.transform(raster, env, grid.getWidth(), grid.getHeight(),
+					InterpolationType.fromString(interpolation));
+		}
+		catch (Exception e) {
+			LOG.debug("Original stack trace", e);
+			throw new TransformationException("error while transforming raster result: " + e.getMessage(), e);
+		}
+		return result;
+	}
+
 }

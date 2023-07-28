@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -42,27 +41,23 @@ import org.deegree.time.primitive.TimeGeometricPrimitive;
  * {@link TemporalOperator} that...
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- *
- * @version $Revision$, $Date$
  */
 public class AnyInteracts extends TemporalOperator {
 
-    /**
-     * Creates a new instance of {@link AnyInteracts}.
-     *
-     * @param param1
-     *            first temporal expression (time instant or period), must not be <code>null</code>
-     * @param param2
-     *            second temporal expression (time instant or period), must not be <code>null</code>
-     */
-    public AnyInteracts( Expression param1, Expression param2 ) {
-        super( param1, param2 );
-    }
+	/**
+	 * Creates a new instance of {@link AnyInteracts}.
+	 * @param param1 first temporal expression (time instant or period), must not be
+	 * <code>null</code>
+	 * @param param2 second temporal expression (time instant or period), must not be
+	 * <code>null</code>
+	 */
+	public AnyInteracts(Expression param1, Expression param2) {
+		super(param1, param2);
+	}
 
-    @Override
-    protected boolean evaluate( final TimeGeometricPrimitive t1, final TimeGeometricPrimitive t2 ) {
-        return new org.deegree.time.operator.AnyInteracts().evaluate( t1, t2 );
-    }
+	@Override
+	protected boolean evaluate(final TimeGeometricPrimitive t1, final TimeGeometricPrimitive t2) {
+		return new org.deegree.time.operator.AnyInteracts().evaluate(t1, t2);
+	}
 
 }

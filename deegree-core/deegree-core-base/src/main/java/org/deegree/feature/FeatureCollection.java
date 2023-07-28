@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/commons/trunk/src/org/deegree/model/feature/Feature.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -46,38 +45,32 @@ import org.deegree.filter.XPathEvaluator;
 /**
  * A feature collection is a collection of {@link Feature} instances.
  * <p>
- * Note that a {@link FeatureCollection} is a {@link Feature} itself, which complies to GML feature collection
- * definitions.
+ * Note that a {@link FeatureCollection} is a {@link Feature} itself, which complies to
+ * GML feature collection definitions.
  * </p>
- * 
+ *
  * @see Feature
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 13814 $, $Date: 2008-09-02 20:28:13 +0200 (Di, 02 Sep 2008) $
  */
 public interface FeatureCollection extends Feature, Collection<Feature> {
 
-    /**
-     * Returns the type information for this feature collection.
-     * 
-     * @return the type information, never <code>null</code>
-     */
-    @Override
-    public FeatureCollectionType getType();
+	/**
+	 * Returns the type information for this feature collection.
+	 * @return the type information, never <code>null</code>
+	 */
+	@Override
+	public FeatureCollectionType getType();
 
-    /**
-     * Returns the member features that match the given {@link Filter}.
-     * 
-     * @param filter
-     *            <code>Filter</code> to be applied, must not be <code>null</code>
-     * @param evaluator
-     *            evaluator to use for evaluating XPath expressions, must not be <code>null</code>
-     * @return matching feature instances as a new <code>FeatureCollection</code>
-     * @throws FilterEvaluationException
-     *             if an exception occurs during the evaluation of the <code>Filter</code>
-     */
-    public FeatureCollection getMembers( Filter filter, XPathEvaluator<TypedObjectNode> evaluator )
-                            throws FilterEvaluationException;
+	/**
+	 * Returns the member features that match the given {@link Filter}.
+	 * @param filter <code>Filter</code> to be applied, must not be <code>null</code>
+	 * @param evaluator evaluator to use for evaluating XPath expressions, must not be
+	 * <code>null</code>
+	 * @return matching feature instances as a new <code>FeatureCollection</code>
+	 * @throws FilterEvaluationException if an exception occurs during the evaluation of
+	 * the <code>Filter</code>
+	 */
+	public FeatureCollection getMembers(Filter filter, XPathEvaluator<TypedObjectNode> evaluator)
+			throws FilterEvaluationException;
+
 }

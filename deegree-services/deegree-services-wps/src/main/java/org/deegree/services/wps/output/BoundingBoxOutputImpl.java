@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -42,38 +41,37 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.process.jaxb.java.BoundingBoxOutputDefinition;
 
 /**
- * Identifies this {@link ProcessletOutput} to be a bounding box and provides a method for setting it.
- * 
+ * Identifies this {@link ProcessletOutput} to be a bounding box and provides a method for
+ * setting it.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * 
- * @version $Revision: $, $Date: $
  */
 public class BoundingBoxOutputImpl extends ProcessletOutputImpl implements BoundingBoxOutput {
 
-    private Envelope value;
+	private Envelope value;
 
-    private static GeometryFactory geomFac = new GeometryFactory();
+	private static GeometryFactory geomFac = new GeometryFactory();
 
-    public BoundingBoxOutputImpl( BoundingBoxOutputDefinition outputType, boolean isRequested ) {
-        super( outputType, isRequested );
-    }
+	public BoundingBoxOutputImpl(BoundingBoxOutputDefinition outputType, boolean isRequested) {
+		super(outputType, isRequested);
+	}
 
-    @Override
-    public void setValue( double lowerX, double lowerY, double upperX, double upperY, String crsName ) {
-        setValue( new double[] { lowerX, lowerY }, new double[] { upperX, upperY }, crsName );
-    }
+	@Override
+	public void setValue(double lowerX, double lowerY, double upperX, double upperY, String crsName) {
+		setValue(new double[] { lowerX, lowerY }, new double[] { upperX, upperY }, crsName);
+	}
 
-    @Override
-    public void setValue( double[] lower, double[] upper, String crsName ) {
-        setValue( geomFac.createEnvelope( lower, upper, CRSManager.getCRSRef( crsName ) ) );
-    }
+	@Override
+	public void setValue(double[] lower, double[] upper, String crsName) {
+		setValue(geomFac.createEnvelope(lower, upper, CRSManager.getCRSRef(crsName)));
+	}
 
-    public void setValue( Envelope value ) {
-        this.value = value;
-    }
+	public void setValue(Envelope value) {
+		this.value = value;
+	}
 
-    public Envelope getValue() {
-        return value;
-    }
+	public Envelope getValue() {
+		return value;
+	}
+
 }

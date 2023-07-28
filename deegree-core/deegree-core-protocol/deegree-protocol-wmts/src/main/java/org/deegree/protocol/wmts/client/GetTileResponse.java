@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -48,62 +47,55 @@ import org.deegree.protocol.ows.http.OwsHttpResponse;
 /**
  * The server response to a WMTS <code>GetTile</code> request.
  * <p>
- * NOTE: The receiver <b>must</b> either call {@link #getAsImage()} or {@link #close()} eventually, otherwise the HTTP
- * connection will stay open.
+ * NOTE: The receiver <b>must</b> either call {@link #getAsImage()} or {@link #close()}
+ * eventually, otherwise the HTTP connection will stay open.
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$
  */
 public class GetTileResponse {
 
-    private final OwsHttpResponse rawResponse;
+	private final OwsHttpResponse rawResponse;
 
-    GetTileResponse( OwsHttpResponse rawResponse ) {
-        this.rawResponse = rawResponse;
-    }
+	GetTileResponse(OwsHttpResponse rawResponse) {
+		this.rawResponse = rawResponse;
+	}
 
-    /**
-     * Returns the tile as an image.
-     * 
-     * @return image, never <code>null</code>
-     * @throws IOException
-     * @throws XMLStreamException
-     * @throws OWSExceptionReport
-     */
-    public BufferedImage getAsImage()
-                            throws IOException, OWSExceptionReport, XMLStreamException {
+	/**
+	 * Returns the tile as an image.
+	 * @return image, never <code>null</code>
+	 * @throws IOException
+	 * @throws XMLStreamException
+	 * @throws OWSExceptionReport
+	 */
+	public BufferedImage getAsImage() throws IOException, OWSExceptionReport, XMLStreamException {
 
-        rawResponse.assertNoXmlContentTypeAndExceptionReport();
+		rawResponse.assertNoXmlContentTypeAndExceptionReport();
 
-        BufferedImage image = null;
-        try {
-            InputStream is = rawResponse.getAsBinaryStream();
-            image = HttpUtils.IMAGE.work( is );
-        } finally {
-            rawResponse.close();
-        }
-        return image;
-    }
+		BufferedImage image = null;
+		try {
+			InputStream is = rawResponse.getAsBinaryStream();
+			image = HttpUtils.IMAGE.work(is);
+		}
+		finally {
+			rawResponse.close();
+		}
+		return image;
+	}
 
-    /**
-     * Provides access to the raw server response.
-     * 
-     * @return the raw server response, never <code>null</code>
-     */
-    public OwsHttpResponse getAsRawResponse() {
-        return rawResponse;
-    }
+	/**
+	 * Provides access to the raw server response.
+	 * @return the raw server response, never <code>null</code>
+	 */
+	public OwsHttpResponse getAsRawResponse() {
+		return rawResponse;
+	}
 
-    /**
-     * 
-     * @throws IOException
-     */
-    public void close()
-                            throws IOException {
-        rawResponse.close();
-    }
+	/**
+	 * @throws IOException
+	 */
+	public void close() throws IOException {
+		rawResponse.close();
+	}
 
 }

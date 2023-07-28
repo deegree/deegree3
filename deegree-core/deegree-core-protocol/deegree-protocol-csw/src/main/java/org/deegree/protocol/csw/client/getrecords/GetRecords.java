@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -55,168 +54,145 @@ import org.deegree.protocol.csw.client.AbstractDiscoveryRequest;
  * <li>CSW 2.0.2</li>
  * </ul>
  * </p>
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class GetRecords extends AbstractDiscoveryRequest {
 
-    private int startPosition = 1;
+	private int startPosition = 1;
 
-    private int maxRecords = 10;
+	private int maxRecords = 10;
 
-    private ResultType resultType = ResultType.hits;
+	private ResultType resultType = ResultType.hits;
 
-    private List<QName> typeNames = Collections.singletonList( new QName( CSWConstants.CSW_202_NS, "Record",
-                                                                          CSWConstants.CSW_202_PREFIX ) );
+	private List<QName> typeNames = Collections
+		.singletonList(new QName(CSWConstants.CSW_202_NS, "Record", CSWConstants.CSW_202_PREFIX));
 
-    private final Filter constraint;
+	private final Filter constraint;
 
-    private int hopCount = 0;
+	private int hopCount = 0;
 
-    /**
-     * @param version
-     *            the version of the CSW, currently only 2.0.2 is supported
-     * @param startPosition
-     *            the index of the first record to return (1 based), must be equal to or greater than 1
-     * @param maxRecords
-     *            maximum number of record to return, must be a positive integer equal to or greater than 1
-     * @param outputFormat
-     *            never <code>null</code>
-     * @param outputSchema
-     *            never <code>null</code>
-     * @param typeNames
-     *            never <code>null</code>
-     * @param resultType
-     *            never <code>null</code>
-     * @param elementSetName
-     *            never <code>null</code>
-     * @param constraint
-     *            may be <code>null</code> if the response should not be filtered
-     */
-    public GetRecords( Version version, int startPosition, int maxRecords, String outputFormat, String outputSchema,
-                       List<QName> typeNames, ResultType resultType, ReturnableElement elementSetName, Filter constraint ) {
-        super( version, elementSetName, outputFormat, outputSchema );
-        if ( startPosition <= 0 ) {
-            throw new IllegalArgumentException( "StartPosition mus be greater than or equal to 1!" );
-        }
-        this.startPosition = startPosition;
-        this.maxRecords = maxRecords;
-        this.typeNames = typeNames;
-        this.resultType = resultType;
-        this.constraint = constraint;
-    }
+	/**
+	 * @param version the version of the CSW, currently only 2.0.2 is supported
+	 * @param startPosition the index of the first record to return (1 based), must be
+	 * equal to or greater than 1
+	 * @param maxRecords maximum number of record to return, must be a positive integer
+	 * equal to or greater than 1
+	 * @param outputFormat never <code>null</code>
+	 * @param outputSchema never <code>null</code>
+	 * @param typeNames never <code>null</code>
+	 * @param resultType never <code>null</code>
+	 * @param elementSetName never <code>null</code>
+	 * @param constraint may be <code>null</code> if the response should not be filtered
+	 */
+	public GetRecords(Version version, int startPosition, int maxRecords, String outputFormat, String outputSchema,
+			List<QName> typeNames, ResultType resultType, ReturnableElement elementSetName, Filter constraint) {
+		super(version, elementSetName, outputFormat, outputSchema);
+		if (startPosition <= 0) {
+			throw new IllegalArgumentException("StartPosition mus be greater than or equal to 1!");
+		}
+		this.startPosition = startPosition;
+		this.maxRecords = maxRecords;
+		this.typeNames = typeNames;
+		this.resultType = resultType;
+		this.constraint = constraint;
+	}
 
-    /**
-     * @param version
-     *            the version of the CSW, currently only 2.0.2 is supported
-     * @param startPosition
-     *            the index of the first record to return (1 based), must be equal to or greater than 1
-     * @param maxRecords
-     *            maximum number of record to return, must be a positive integer equal to or greater than 1
-     * @param outputFormat
-     *            never <code>null</code>
-     * @param outputSchema
-     *            never <code>null</code>
-     * @param typeNames
-     *            never <code>null</code>
-     * @param resultType
-     *            never <code>null</code>
-     * @param elementSetName
-     *            never <code>null</code>
-     * @param constraint
-     *            may be <code>null</code> if the response should not be filtered
-     * @param hopCount
-     *            the maximum number of message hops before the search is terminated. Each catalogue node decrements
-     *            this value when the request is received, and must not forward the request if hopCount=0. If negative 0
-     *            is assumed.
-     */
-    public GetRecords( Version version, int startPosition, int maxRecords, String outputFormat, String outputSchema,
-                       List<QName> typeNames, ResultType resultType, ReturnableElement elementSetName,
-                       Filter constraint, int hopCount ) {
-        super( version, elementSetName, outputFormat, outputSchema );
-        if ( startPosition <= 0 ) {
-            throw new IllegalArgumentException( "StartPosition mus be greater than or equal to 1!" );
-        }
-        this.startPosition = startPosition;
-        this.maxRecords = maxRecords;
-        this.typeNames = typeNames;
-        this.resultType = resultType;
-        this.constraint = constraint;
-        if ( hopCount >= 0 ) {
-            this.hopCount = hopCount;
-        }
-    }
+	/**
+	 * @param version the version of the CSW, currently only 2.0.2 is supported
+	 * @param startPosition the index of the first record to return (1 based), must be
+	 * equal to or greater than 1
+	 * @param maxRecords maximum number of record to return, must be a positive integer
+	 * equal to or greater than 1
+	 * @param outputFormat never <code>null</code>
+	 * @param outputSchema never <code>null</code>
+	 * @param typeNames never <code>null</code>
+	 * @param resultType never <code>null</code>
+	 * @param elementSetName never <code>null</code>
+	 * @param constraint may be <code>null</code> if the response should not be filtered
+	 * @param hopCount the maximum number of message hops before the search is terminated.
+	 * Each catalogue node decrements this value when the request is received, and must
+	 * not forward the request if hopCount=0. If negative 0 is assumed.
+	 */
+	public GetRecords(Version version, int startPosition, int maxRecords, String outputFormat, String outputSchema,
+			List<QName> typeNames, ResultType resultType, ReturnableElement elementSetName, Filter constraint,
+			int hopCount) {
+		super(version, elementSetName, outputFormat, outputSchema);
+		if (startPosition <= 0) {
+			throw new IllegalArgumentException("StartPosition mus be greater than or equal to 1!");
+		}
+		this.startPosition = startPosition;
+		this.maxRecords = maxRecords;
+		this.typeNames = typeNames;
+		this.resultType = resultType;
+		this.constraint = constraint;
+		if (hopCount >= 0) {
+			this.hopCount = hopCount;
+		}
+	}
 
-    /**
-     * Creates a new {@link GetRecords} instance with default values:
-     * 
-     * <pre>
-     *  outputSchema=http://www.opengis.net/cat/csw/2.0.2.
-     *  outputFormat=application/xml
-     *  startPosition=1
-     *  maxRecords=10
-     *  hopCount=not specified
-     * </pre>
-     * 
-     * @param version
-     *            the version of the CSW, currently only 2.0.2 is supported
-     * @param resultType
-     *            never <code>null</code>
-     * @param elementSetName
-     *            never <code>null</code>
-     * @param constraint
-     *            may be <code>null</code> if the response should not be filtered
-     * @param hopCount
-     */
-    public GetRecords( Version version, ResultType resultType, ReturnableElement elementSetName, Filter constraint ) {
-        super( version, elementSetName, "application/xml", "http://www.opengis.net/cat/csw/2.0.2." );
-        this.resultType = resultType;
-        this.constraint = constraint;
-    }
+	/**
+	 * Creates a new {@link GetRecords} instance with default values:
+	 *
+	 * <pre>
+	 *  outputSchema=http://www.opengis.net/cat/csw/2.0.2.
+	 *  outputFormat=application/xml
+	 *  startPosition=1
+	 *  maxRecords=10
+	 *  hopCount=not specified
+	 * </pre>
+	 * @param version the version of the CSW, currently only 2.0.2 is supported
+	 * @param resultType never <code>null</code>
+	 * @param elementSetName never <code>null</code>
+	 * @param constraint may be <code>null</code> if the response should not be filtered
+	 * @param hopCount
+	 */
+	public GetRecords(Version version, ResultType resultType, ReturnableElement elementSetName, Filter constraint) {
+		super(version, elementSetName, "application/xml", "http://www.opengis.net/cat/csw/2.0.2.");
+		this.resultType = resultType;
+		this.constraint = constraint;
+	}
 
-    /**
-     * @return the startPosition
-     */
-    public int getStartPosition() {
-        return startPosition;
-    }
+	/**
+	 * @return the startPosition
+	 */
+	public int getStartPosition() {
+		return startPosition;
+	}
 
-    /**
-     * @return the maxRecords
-     */
-    public int getMaxRecords() {
-        return maxRecords;
-    }
+	/**
+	 * @return the maxRecords
+	 */
+	public int getMaxRecords() {
+		return maxRecords;
+	}
 
-    /**
-     * @return the typeNames
-     */
-    public List<QName> getTypeNames() {
-        return typeNames;
-    }
+	/**
+	 * @return the typeNames
+	 */
+	public List<QName> getTypeNames() {
+		return typeNames;
+	}
 
-    /**
-     * @return the resultType
-     */
-    public ResultType getResultType() {
-        return resultType;
-    }
+	/**
+	 * @return the resultType
+	 */
+	public ResultType getResultType() {
+		return resultType;
+	}
 
-    /**
-     * @return the constraint
-     */
-    public Filter getConstraint() {
-        return constraint;
-    }
+	/**
+	 * @return the constraint
+	 */
+	public Filter getConstraint() {
+		return constraint;
+	}
 
-    /**
-     * @return the hopCount
-     */
-    public int getHopCount() {
-        return hopCount;
-    }
+	/**
+	 * @return the hopCount
+	 */
+	public int getHopCount() {
+		return hopCount;
+	}
 
 }

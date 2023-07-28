@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -54,102 +53,98 @@ import org.deegree.workspace.ResourceMetadata;
 
 /**
  * Example {@link ProcessProvider} implementation for process provider tutorial.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class ExampleProcessProvider implements ProcessProvider {
 
-    private final Map<CodeType, WPSProcess> idToProcess = new HashMap<CodeType, WPSProcess>();
+	private final Map<CodeType, WPSProcess> idToProcess = new HashMap<CodeType, WPSProcess>();
 
-    private ResourceMetadata<ProcessProvider> metadata;
+	private ResourceMetadata<ProcessProvider> metadata;
 
-    /**
-     * @param processIdToReturnValue
-     */
-    ExampleProcessProvider( Map<String, String> processIdToReturnValue, ResourceMetadata<ProcessProvider> metadata ) {
-        this.metadata = metadata;
-        for ( Entry<String, String> entry : processIdToReturnValue.entrySet() ) {
-            String processId = entry.getKey();
-            String returnValue = entry.getValue();
-            WPSProcess process = createProcess( processId, returnValue );
-            idToProcess.put( new CodeType( processId ), process );
-        }
-    }
+	/**
+	 * @param processIdToReturnValue
+	 */
+	ExampleProcessProvider(Map<String, String> processIdToReturnValue, ResourceMetadata<ProcessProvider> metadata) {
+		this.metadata = metadata;
+		for (Entry<String, String> entry : processIdToReturnValue.entrySet()) {
+			String processId = entry.getKey();
+			String returnValue = entry.getValue();
+			WPSProcess process = createProcess(processId, returnValue);
+			idToProcess.put(new CodeType(processId), process);
+		}
+	}
 
-    private WPSProcess createProcess( String processId, String returnValue ) {
+	private WPSProcess createProcess(String processId, String returnValue) {
 
-        // create Processlet instance dynamically
-        ConstantProcesslet processlet = new ConstantProcesslet( returnValue );
+		// create Processlet instance dynamically
+		ConstantProcesslet processlet = new ConstantProcesslet(returnValue);
 
-        // create process definition dynamically
-        ProcessDefinition definition = createProcessDefinition( processId );
+		// create process definition dynamically
+		ProcessDefinition definition = createProcessDefinition(processId);
 
-        // build WPSProcess from processlet and process definition
-        return new GenericWPSProcess( definition, processlet );
-    }
+		// build WPSProcess from processlet and process definition
+		return new GenericWPSProcess(definition, processlet);
+	}
 
-    private ProcessDefinition createProcessDefinition( String processId ) {
+	private ProcessDefinition createProcessDefinition(String processId) {
 
-        ProcessDefinition definition = new ProcessDefinition();
+		ProcessDefinition definition = new ProcessDefinition();
 
-        org.deegree.process.jaxb.java.CodeType id = new org.deegree.process.jaxb.java.CodeType();
-        id.setValue( processId );
-        definition.setIdentifier( id );
-        definition.setProcessVersion( "0.0.1" );
-        definition.setStatusSupported( false );
-        definition.setStoreSupported( false );
+		org.deegree.process.jaxb.java.CodeType id = new org.deegree.process.jaxb.java.CodeType();
+		id.setValue(processId);
+		definition.setIdentifier(id);
+		definition.setProcessVersion("0.0.1");
+		definition.setStatusSupported(false);
+		definition.setStoreSupported(false);
 
-        LanguageStringType title = new LanguageStringType();
-        title.setValue( processId + " process" );
-        definition.setTitle( title );
-        OutputParameters outputs = new OutputParameters();
-        LiteralOutputDefinition literalOutput = new LiteralOutputDefinition();
-        id = new org.deegree.process.jaxb.java.CodeType();
-        id.setValue( "LiteralOutput" );
-        literalOutput.setIdentifier( id );
+		LanguageStringType title = new LanguageStringType();
+		title.setValue(processId + " process");
+		definition.setTitle(title);
+		OutputParameters outputs = new OutputParameters();
+		LiteralOutputDefinition literalOutput = new LiteralOutputDefinition();
+		id = new org.deegree.process.jaxb.java.CodeType();
+		id.setValue("LiteralOutput");
+		literalOutput.setIdentifier(id);
 
-        title = new LanguageStringType();
-        title.setValue( "Constant" );
-        literalOutput.setTitle( title );
+		title = new LanguageStringType();
+		title.setValue("Constant");
+		literalOutput.setTitle(title);
 
-        JAXBElement<LiteralOutputDefinition> outputEl = new JAXBElement<LiteralOutputDefinition>(
-                                                                                                  new QName( "", "" ),
-                                                                                                  LiteralOutputDefinition.class,
-                                                                                                  literalOutput );
-        outputs.getProcessOutput().add( outputEl );
-        definition.setOutputParameters( outputs );
-        return definition;
-    }
+		JAXBElement<LiteralOutputDefinition> outputEl = new JAXBElement<LiteralOutputDefinition>(new QName("", ""),
+				LiteralOutputDefinition.class, literalOutput);
+		outputs.getProcessOutput().add(outputEl);
+		definition.setOutputParameters(outputs);
+		return definition;
+	}
 
-    @Override
-    public void init() {
-        for ( WPSProcess process : idToProcess.values() ) {
-            process.getProcesslet().init();
-        }
-    }
+	@Override
+	public void init() {
+		for (WPSProcess process : idToProcess.values()) {
+			process.getProcesslet().init();
+		}
+	}
 
-    @Override
-    public void destroy() {
-        for ( WPSProcess process : idToProcess.values() ) {
-            process.getProcesslet().destroy();
-        }
-    }
+	@Override
+	public void destroy() {
+		for (WPSProcess process : idToProcess.values()) {
+			process.getProcesslet().destroy();
+		}
+	}
 
-    @Override
-    public WPSProcess getProcess( CodeType id ) {
-        return idToProcess.get( id );
-    }
+	@Override
+	public WPSProcess getProcess(CodeType id) {
+		return idToProcess.get(id);
+	}
 
-    @Override
-    public Map<CodeType, WPSProcess> getProcesses() {
-        return idToProcess;
-    }
+	@Override
+	public Map<CodeType, WPSProcess> getProcesses() {
+		return idToProcess;
+	}
 
-    @Override
-    public ResourceMetadata<? extends Resource> getMetadata() {
-        return metadata;
-    }
+	@Override
+	public ResourceMetadata<? extends Resource> getMetadata() {
+		return metadata;
+	}
+
 }

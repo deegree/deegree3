@@ -14,24 +14,26 @@ import org.deegree.time.primitive.TimeInstant;
 
 public class TemporalConverter {
 
-    public Temporal convert( final String gmlTimePositionUnion ) {
-        return parseDateTime( gmlTimePositionUnion );
-    }
+	public Temporal convert(final String gmlTimePositionUnion) {
+		return parseDateTime(gmlTimePositionUnion);
+	}
 
-    public Temporal convert( final TimeInstant t ) {
-        return convert( t.getPosition() );
-    }
+	public Temporal convert(final TimeInstant t) {
+		return convert(t.getPosition());
+	}
 
-    public Temporal convert( final TimePosition t ) {
-        final IndeterminateValue indeterminateness = t.getIndeterminatePosition();
-        if ( indeterminateness == NOW ) {
-            return new DateTime( new Date(), null );
-        } else if ( indeterminateness == UNKNOWN ) {
-            return null;
-        } else if ( indeterminateness != null ) {
-            throw new UnsupportedOperationException();
-        }
-        return convert( t.getValue() );
-    }
+	public Temporal convert(final TimePosition t) {
+		final IndeterminateValue indeterminateness = t.getIndeterminatePosition();
+		if (indeterminateness == NOW) {
+			return new DateTime(new Date(), null);
+		}
+		else if (indeterminateness == UNKNOWN) {
+			return null;
+		}
+		else if (indeterminateness != null) {
+			throw new UnsupportedOperationException();
+		}
+		return convert(t.getValue());
+	}
 
 }

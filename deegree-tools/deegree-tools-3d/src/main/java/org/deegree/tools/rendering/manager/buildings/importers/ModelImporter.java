@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -45,24 +44,19 @@ import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderable
  * The <code>ModelImporter</code> defines a common interface for all importers
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  *
  */
 public interface ModelImporter {
 
-    /**
-     *
-     * @param fileName
-     *            pointing to a location to load an exportable file from.
-     * @param numberOfQualityLevels
-     *            each resulting {@link WorldRenderableObject} should have.
-     * @param qualityLevel
-     *            of the models in the given file.
-     * @return the list of qualitymodels loaded from the given filename.
-     * @throws IOException
-     */
-    public List<WorldRenderableObject> importFromFile( String fileName, int numberOfQualityLevels, int qualityLevel )
-                            throws IOException;
+	/**
+	 * @param fileName pointing to a location to load an exportable file from.
+	 * @param numberOfQualityLevels each resulting {@link WorldRenderableObject} should
+	 * have.
+	 * @param qualityLevel of the models in the given file.
+	 * @return the list of qualitymodels loaded from the given filename.
+	 * @throws IOException
+	 */
+	public List<WorldRenderableObject> importFromFile(String fileName, int numberOfQualityLevels, int qualityLevel)
+			throws IOException;
 
 }

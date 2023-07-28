@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -51,126 +50,122 @@ import org.deegree.cs.refs.CRSResourceRef;
 
 /**
  * General {@link CRSResourceRef} referncing a {@link Projection}
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class ProjectionRef extends CRSResourceRef<IProjection> implements Serializable, IProjection {
 
-    private static final long serialVersionUID = -5633208582212339185L;
+	private static final long serialVersionUID = -5633208582212339185L;
 
-    /**
-     * @param resolver
-     * @param uri
-     * @param baseURL
-     * @param geoCRS
-     */
-    public ProjectionRef( ReferenceResolver resolver, String uri, String baseURL ) {
-        super( resolver, uri, baseURL );
-    }
+	/**
+	 * @param resolver
+	 * @param uri
+	 * @param baseURL
+	 * @param geoCRS
+	 */
+	public ProjectionRef(ReferenceResolver resolver, String uri, String baseURL) {
+		super(resolver, uri, baseURL);
+	}
 
-    public Point2d doProjection( IGeographicCRS geographicCRS, double lambda, double phi )
-                            throws ProjectionException {
-        return getReferencedObject().doProjection( geographicCRS, lambda, phi );
-    }
+	public Point2d doProjection(IGeographicCRS geographicCRS, double lambda, double phi) throws ProjectionException {
+		return getReferencedObject().doProjection(geographicCRS, lambda, phi);
+	}
 
-    public Point2d doInverseProjection( IGeographicCRS geographicCRS, double x, double y )
-                            throws ProjectionException {
-        return getReferencedObject().doInverseProjection( geographicCRS, x, y );
-    }
+	public Point2d doInverseProjection(IGeographicCRS geographicCRS, double x, double y) throws ProjectionException {
+		return getReferencedObject().doInverseProjection(geographicCRS, x, y);
+	}
 
-    public String getImplementationName() {
-        return getReferencedObject().getImplementationName();
-    }
+	public String getImplementationName() {
+		return getReferencedObject().getImplementationName();
+	}
 
-    public boolean isConformal() {
-        return getReferencedObject().isConformal();
-    }
+	public boolean isConformal() {
+		return getReferencedObject().isConformal();
+	}
 
-    public boolean isEqualArea() {
-        return getReferencedObject().isEqualArea();
-    }
+	public boolean isEqualArea() {
+		return getReferencedObject().isEqualArea();
+	}
 
-    public double getScale() {
-        return getReferencedObject().getScale();
-    }
+	public double getScale() {
+		return getReferencedObject().getScale();
+	}
 
-    public void setScale( double scale ) {
-        getReferencedObject().setScale( scale );
-    }
+	public void setScale(double scale) {
+		getReferencedObject().setScale(scale);
+	}
 
-    public double getScaleFactor( IGeographicCRS geographicCRS ) {
-        return getReferencedObject().getScaleFactor( geographicCRS );
-    }
+	public double getScaleFactor(IGeographicCRS geographicCRS) {
+		return getReferencedObject().getScaleFactor(geographicCRS);
+	}
 
-    public double getFalseEasting() {
-        return getReferencedObject().getFalseEasting();
-    }
+	public double getFalseEasting() {
+		return getReferencedObject().getFalseEasting();
+	}
 
-    public void setFalseEasting( double newFalseEasting ) {
-        getReferencedObject().setFalseEasting( newFalseEasting );
-    }
+	public void setFalseEasting(double newFalseEasting) {
+		getReferencedObject().setFalseEasting(newFalseEasting);
+	}
 
-    public double getFalseNorthing() {
-        return getReferencedObject().getFalseNorthing();
-    }
+	public double getFalseNorthing() {
+		return getReferencedObject().getFalseNorthing();
+	}
 
-    public Point2d getNaturalOrigin() {
-        return getReferencedObject().getNaturalOrigin();
-    }
+	public Point2d getNaturalOrigin() {
+		return getReferencedObject().getNaturalOrigin();
+	}
 
-    public IUnit getUnits() {
-        return getReferencedObject().getUnits();
-    }
+	public IUnit getUnits() {
+		return getReferencedObject().getUnits();
+	}
 
-    public IPrimeMeridian getPrimeMeridian( IGeographicCRS geographicCRS ) {
-        return getReferencedObject().getPrimeMeridian( geographicCRS );
-    }
+	public IPrimeMeridian getPrimeMeridian(IGeographicCRS geographicCRS) {
+		return getReferencedObject().getPrimeMeridian(geographicCRS);
+	}
 
-    public IEllipsoid getEllipsoid( IGeographicCRS geographicCRS ) {
-        return getReferencedObject().getEllipsoid( geographicCRS );
-    }
+	public IEllipsoid getEllipsoid(IGeographicCRS geographicCRS) {
+		return getReferencedObject().getEllipsoid(geographicCRS);
+	}
 
-    public double getEccentricity( IGeographicCRS geographicCRS ) {
-        return getReferencedObject().getEccentricity( geographicCRS );
-    }
+	public double getEccentricity(IGeographicCRS geographicCRS) {
+		return getReferencedObject().getEccentricity(geographicCRS);
+	}
 
-    public double getSquaredEccentricity( IGeographicCRS geographicCRS ) {
-        return getReferencedObject().getSquaredEccentricity( geographicCRS );
-    }
+	public double getSquaredEccentricity(IGeographicCRS geographicCRS) {
+		return getReferencedObject().getSquaredEccentricity(geographicCRS);
+	}
 
-    public double getSemiMajorAxis( IGeographicCRS geographicCRS ) {
-        return getReferencedObject().getSemiMajorAxis( geographicCRS );
-    }
+	public double getSemiMajorAxis(IGeographicCRS geographicCRS) {
+		return getReferencedObject().getSemiMajorAxis(geographicCRS);
+	}
 
-    public double getSemiMinorAxis( IGeographicCRS geographicCRS ) {
-        return getReferencedObject().getSemiMinorAxis( geographicCRS );
-    }
+	public double getSemiMinorAxis(IGeographicCRS geographicCRS) {
+		return getReferencedObject().getSemiMinorAxis(geographicCRS);
+	}
 
-    public boolean isSpherical( IGeographicCRS geographicCRS ) {
-        return getReferencedObject().isSpherical( geographicCRS );
-    }
+	public boolean isSpherical(IGeographicCRS geographicCRS) {
+		return getReferencedObject().isSpherical(geographicCRS);
+	}
 
-    public double getProjectionLatitude() {
-        return getReferencedObject().getProjectionLatitude();
-    }
+	public double getProjectionLatitude() {
+		return getReferencedObject().getProjectionLatitude();
+	}
 
-    public double getProjectionLongitude() {
-        return getReferencedObject().getProjectionLongitude();
-    }
+	public double getProjectionLongitude() {
+		return getReferencedObject().getProjectionLongitude();
+	}
 
-    public double getSinphi0() {
-        return getReferencedObject().getSinphi0();
-    }
+	public double getSinphi0() {
+		return getReferencedObject().getSinphi0();
+	}
 
-    public double getCosphi0() {
-        return getReferencedObject().getCosphi0();
-    }
+	public double getCosphi0() {
+		return getReferencedObject().getCosphi0();
+	}
 
-    @Override
-    public boolean equals( Object obj ) {
-        return super.equals( obj ) ? true : getReferencedObject().equals( obj );
-    }
+	@Override
+	public boolean equals(Object obj) {
+		return super.equals(obj) ? true : getReferencedObject().equals(obj);
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/services/trunk/src/org/deegree/services/sos/SOSService.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -51,9 +50,7 @@ import org.deegree.services.jaxb.sos.ServiceConfiguration;
  * This is an xml adapter for the deegree SOS ServiceConfiguration.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
  * 
- * @version $Revision:$, $Date:$
  */
 public class ServiceConfigurationXMLAdapter extends XMLAdapter {
 

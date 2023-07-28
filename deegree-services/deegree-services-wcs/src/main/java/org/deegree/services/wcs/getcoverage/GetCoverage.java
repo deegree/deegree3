@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -41,131 +40,126 @@ import org.deegree.coverage.raster.geom.Grid;
 import org.deegree.geometry.Envelope;
 
 /**
- * 
- * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class GetCoverage {
 
-    private final String coverage;
+	private final String coverage;
 
-    private final Envelope requestEnvelope;
+	private final Envelope requestEnvelope;
 
-    private final Grid outputGrid;
+	private final Grid outputGrid;
 
-    private final String interpolation;
+	private final String interpolation;
 
-    private final String outputFormat;
+	private final String outputFormat;
 
-    private final String outputCRS;
+	private final String outputCRS;
 
-    private final boolean storeOutput;
+	private final boolean storeOutput;
 
-    private final String exceptionFormat;
+	private final String exceptionFormat;
 
-    private final RangeSet rangeSet;
+	private final RangeSet rangeSet;
 
-    private final Version version;
+	private final Version version;
 
-    /**
-     * @param version
-     * @param coverage
-     * @param requestEnvelope
-     * @param outputCRS
-     * @param outputFormat
-     * @param outputGrid
-     * @param interpolation
-     * @param exceptionFormat
-     * @param storeOutput
-     * @param rangeSet
-     */
-    public GetCoverage( Version version, String coverage, Envelope requestEnvelope, String outputCRS,
-                        String outputFormat, Grid outputGrid, String interpolation, String exceptionFormat,
-                        boolean storeOutput, RangeSet rangeSet ) {
-        this.version = version;
-        this.coverage = coverage;
-        this.requestEnvelope = requestEnvelope;
-        this.outputCRS = outputCRS;
-        this.outputFormat = outputFormat;
-        this.outputGrid = outputGrid;
-        this.interpolation = interpolation;
-        this.exceptionFormat = exceptionFormat;
-        this.storeOutput = storeOutput;
-        this.rangeSet = rangeSet;
-    }
+	/**
+	 * @param version
+	 * @param coverage
+	 * @param requestEnvelope
+	 * @param outputCRS
+	 * @param outputFormat
+	 * @param outputGrid
+	 * @param interpolation
+	 * @param exceptionFormat
+	 * @param storeOutput
+	 * @param rangeSet
+	 */
+	public GetCoverage(Version version, String coverage, Envelope requestEnvelope, String outputCRS,
+			String outputFormat, Grid outputGrid, String interpolation, String exceptionFormat, boolean storeOutput,
+			RangeSet rangeSet) {
+		this.version = version;
+		this.coverage = coverage;
+		this.requestEnvelope = requestEnvelope;
+		this.outputCRS = outputCRS;
+		this.outputFormat = outputFormat;
+		this.outputGrid = outputGrid;
+		this.interpolation = interpolation;
+		this.exceptionFormat = exceptionFormat;
+		this.storeOutput = storeOutput;
+		this.rangeSet = rangeSet;
+	}
 
-    /**
-     * @return the coverage
-     */
-    public String getCoverage() {
-        return coverage;
-    }
+	/**
+	 * @return the coverage
+	 */
+	public String getCoverage() {
+		return coverage;
+	}
 
-    /**
-     * @return the requestEnvelope
-     */
-    public Envelope getRequestEnvelope() {
-        return requestEnvelope;
-    }
+	/**
+	 * @return the requestEnvelope
+	 */
+	public Envelope getRequestEnvelope() {
+		return requestEnvelope;
+	}
 
-    /**
-     * @return the outputGrid
-     */
-    public Grid getOutputGrid() {
-        return outputGrid;
-    }
+	/**
+	 * @return the outputGrid
+	 */
+	public Grid getOutputGrid() {
+		return outputGrid;
+	}
 
-    /**
-     * @return the interpolation
-     */
-    public String getInterpolation() {
-        return interpolation;
-    }
+	/**
+	 * @return the interpolation
+	 */
+	public String getInterpolation() {
+		return interpolation;
+	}
 
-    /**
-     * @return the outputFormat
-     */
-    public String getOutputFormat() {
-        return outputFormat;
-    }
+	/**
+	 * @return the outputFormat
+	 */
+	public String getOutputFormat() {
+		return outputFormat;
+	}
 
-    /**
-     * @return the outputCRS
-     */
-    public String getOutputCRS() {
-        return outputCRS;
-    }
+	/**
+	 * @return the outputCRS
+	 */
+	public String getOutputCRS() {
+		return outputCRS;
+	}
 
-    /**
-     * @return the storeOutput
-     */
-    public boolean isStoreOutput() {
-        return storeOutput;
-    }
+	/**
+	 * @return the storeOutput
+	 */
+	public boolean isStoreOutput() {
+		return storeOutput;
+	}
 
-    /**
-     * @return the exceptionFormat
-     */
-    public final String getExceptionFormat() {
-        return exceptionFormat;
-    }
+	/**
+	 * @return the exceptionFormat
+	 */
+	public final String getExceptionFormat() {
+		return exceptionFormat;
+	}
 
-    /**
-     * @return the rangeSet
-     */
-    public final RangeSet getRangeSet() {
-        return rangeSet;
-    }
+	/**
+	 * @return the rangeSet
+	 */
+	public final RangeSet getRangeSet() {
+		return rangeSet;
+	}
 
-    /**
-     * @return the version
-     */
-    public final Version getVersion() {
-        return version;
-    }
+	/**
+	 * @return the version
+	 */
+	public final Version getVersion() {
+		return version;
+	}
 
 }

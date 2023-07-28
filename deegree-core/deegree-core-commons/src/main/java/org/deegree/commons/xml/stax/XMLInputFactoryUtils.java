@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2013 by
@@ -39,11 +38,9 @@
 
 /**
  * <code>XMLInputFactoryUtils</code>
- * 
+ *
  * @author <a href="mailto:reijer.copier@idgis.nl">Reijer Copier</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
+ *
  */
 package org.deegree.commons.xml.stax;
 
@@ -51,18 +48,18 @@ import javax.xml.stream.XMLInputFactory;
 
 public class XMLInputFactoryUtils {
 
-    /**
-     * Creates an XMLInputFactory with unsafe features disabled. Such an XMLInputFactory is to be used for parsing
-     * untrusted xml such as incoming post requests.
-     * 
-     * @return
-     */
-    public static XMLInputFactory newSafeInstance() {
-        XMLInputFactory inputFactory = XMLInputFactory.newInstance();
+	/**
+	 * Creates an XMLInputFactory with unsafe features disabled. Such an XMLInputFactory
+	 * is to be used for parsing untrusted xml such as incoming post requests.
+	 * @return
+	 */
+	public static XMLInputFactory newSafeInstance() {
+		XMLInputFactory inputFactory = XMLInputFactory.newInstance();
 
-        inputFactory.setProperty( XMLInputFactory.SUPPORT_DTD, false );
-	inputFactory.setProperty( XMLInputFactory.IS_COALESCING, true );
+		inputFactory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+		inputFactory.setProperty(XMLInputFactory.IS_COALESCING, true);
 
-        return inputFactory;
-    }
+		return inputFactory;
+	}
+
 }

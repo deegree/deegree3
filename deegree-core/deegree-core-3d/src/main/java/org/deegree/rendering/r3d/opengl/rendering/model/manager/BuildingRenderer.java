@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -51,95 +50,95 @@ import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderable
 
 /**
  * The <code>BuildingRenderer</code> organizes buildings in a scene by using a quadtree.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class BuildingRenderer extends RenderableManager<WorldRenderableObject> {
 
-    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( BuildingRenderer.class );
+	private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(BuildingRenderer.class);
 
-    private final DirectGeometryBuffer geometryBuffer;
+	private final DirectGeometryBuffer geometryBuffer;
 
-    private LODSwitcher switchLevels;
+	private LODSwitcher switchLevels;
 
-    /**
-     * @param sceneDomain
-     * @param numberOfObjectsInLeaf
-     * @param geometryBuffer
-     *            wrapper holding all geometries in a single direct {@link FloatBuffer}
-     * @param maxPixelError
-     * @param levels
-     *            configured values for switching between different lods of the buildings.
-     */
-    public BuildingRenderer( Envelope sceneDomain, int numberOfObjectsInLeaf, DirectGeometryBuffer geometryBuffer,
-                             double maxPixelError, LODSwitcher levels ) {
-        super( sceneDomain, numberOfObjectsInLeaf, maxPixelError );
-        this.geometryBuffer = geometryBuffer;
-        this.switchLevels = levels;
-    }
+	/**
+	 * @param sceneDomain
+	 * @param numberOfObjectsInLeaf
+	 * @param geometryBuffer wrapper holding all geometries in a single direct
+	 * {@link FloatBuffer}
+	 * @param maxPixelError
+	 * @param levels configured values for switching between different lods of the
+	 * buildings.
+	 */
+	public BuildingRenderer(Envelope sceneDomain, int numberOfObjectsInLeaf, DirectGeometryBuffer geometryBuffer,
+			double maxPixelError, LODSwitcher levels) {
+		super(sceneDomain, numberOfObjectsInLeaf, maxPixelError);
+		this.geometryBuffer = geometryBuffer;
+		this.switchLevels = levels;
+	}
 
-    @Override
-    public boolean add( WorldRenderableObject renderable ) {
-        renderable.setSwitchLevels( switchLevels );
-        return super.add( renderable );
-    }
+	@Override
+	public boolean add(WorldRenderableObject renderable) {
+		renderable.setSwitchLevels(switchLevels);
+		return super.add(renderable);
+	}
 
-    @Override
-    public boolean addAll( Collection<? extends WorldRenderableObject> c ) {
-        boolean result = true;
-        for ( WorldRenderableObject p : c ) {
-            if ( !result ) {
-                break;
-            }
-            result = add( p );
-        }
-        return result;
-    }
+	@Override
+	public boolean addAll(Collection<? extends WorldRenderableObject> c) {
+		boolean result = true;
+		for (WorldRenderableObject p : c) {
+			if (!result) {
+				break;
+			}
+			result = add(p);
+		}
+		return result;
+	}
 
-    @Override
-    public void render( RenderContext glRenderContext ) {
-        long begin = System.currentTimeMillis();
-        ViewParams params = glRenderContext.getViewParams();
-        GL context = glRenderContext.getContext();
-        params.getViewFrustum().getEyePos();
-        Set<WorldRenderableObject> buildings = getObjects( params );
-        if ( !buildings.isEmpty() ) {
-            // List<WorldRenderableObject> allBuildings = new ArrayList<WorldRenderableObject>( buildings );
-            // back to front
-            // Collections.sort( allBuildings, new DistComparator( eye ) );
-            // LOG.debug( "Sorting of " + allBillBoards.size() + " buildings took: "
-            // + ( System.currentTimeMillis() - begin ) + " ms" );
-            if ( LOG.isDebugEnabled() ) {
-                LOG.debug( "Number of buildings from viewparams: " + buildings.size() );
-                LOG.debug( "Total number of buildings : " + size() );
-            }
-            context.glPushAttrib( GL.GL_CURRENT_BIT | GL.GL_LIGHTING_BIT );
-            Iterator<WorldRenderableObject> it = buildings.iterator();
-            while ( it.hasNext() ) {
-                WorldRenderableObject b = it.next();
-                context.glPushMatrix();
-                b.renderPrepared( glRenderContext, geometryBuffer );
-                context.glPopMatrix();
-            }
-            context.glPopAttrib();
-            if ( LOG.isDebugEnabled() ) {
-                LOG.debug( "Rendering of " + buildings.size() + " buildings took: "
-                           + ( System.currentTimeMillis() - begin ) + " ms" );
-            }
-        } else {
-            LOG.debug( "Not rendering any buildings." );
-        }
+	@Override
+	public void render(RenderContext glRenderContext) {
+		long begin = System.currentTimeMillis();
+		ViewParams params = glRenderContext.getViewParams();
+		GL context = glRenderContext.getContext();
+		params.getViewFrustum().getEyePos();
+		Set<WorldRenderableObject> buildings = getObjects(params);
+		if (!buildings.isEmpty()) {
+			// List<WorldRenderableObject> allBuildings = new
+			// ArrayList<WorldRenderableObject>( buildings );
+			// back to front
+			// Collections.sort( allBuildings, new DistComparator( eye ) );
+			// LOG.debug( "Sorting of " + allBillBoards.size() + " buildings took: "
+			// + ( System.currentTimeMillis() - begin ) + " ms" );
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("Number of buildings from viewparams: " + buildings.size());
+				LOG.debug("Total number of buildings : " + size());
+			}
+			context.glPushAttrib(GL.GL_CURRENT_BIT | GL.GL_LIGHTING_BIT);
+			Iterator<WorldRenderableObject> it = buildings.iterator();
+			while (it.hasNext()) {
+				WorldRenderableObject b = it.next();
+				context.glPushMatrix();
+				b.renderPrepared(glRenderContext, geometryBuffer);
+				context.glPopMatrix();
+			}
+			context.glPopAttrib();
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("Rendering of " + buildings.size() + " buildings took: "
+						+ (System.currentTimeMillis() - begin) + " ms");
+			}
+		}
+		else {
+			LOG.debug("Not rendering any buildings.");
+		}
 
-    }
+	}
 
-    /**
-     * @return the geometry buffer used for rendering.
-     */
-    public DirectGeometryBuffer getGeometryBuffer() {
-        return geometryBuffer;
-    }
+	/**
+	 * @return the geometry buffer used for rendering.
+	 */
+	public DirectGeometryBuffer getGeometryBuffer() {
+		return geometryBuffer;
+	}
 
 }

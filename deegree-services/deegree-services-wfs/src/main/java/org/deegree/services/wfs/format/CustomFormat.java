@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -39,21 +38,17 @@ import org.deegree.services.wfs.WebFeatureService;
 
 /**
  * Implementations provide input / output formats for the {@link WebFeatureService}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface CustomFormat extends Format {
 
-    /**
-     * Called by the {@link WebFeatureService} to initialize and configure this {@link CustomFormat}.
-     * 
-     * @param master
-     *            wfs controller, never <code>null</code>
-     * @param config
-     *            content of the Config element (from CustomFormat element)
-     */
-    public void init( WebFeatureService master, Object config );
+	/**
+	 * Called by the {@link WebFeatureService} to initialize and configure this
+	 * {@link CustomFormat}.
+	 * @param master wfs controller, never <code>null</code>
+	 * @param config content of the Config element (from CustomFormat element)
+	 */
+	public void init(WebFeatureService master, Object config);
+
 }

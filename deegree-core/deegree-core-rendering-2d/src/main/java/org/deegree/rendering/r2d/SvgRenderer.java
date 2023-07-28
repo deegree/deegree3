@@ -40,99 +40,75 @@
 
 package org.deegree.rendering.r2d;
 
-import static javax.media.jai.JAI.create;
 import static org.apache.batik.transcoder.SVGAbstractTranscoder.KEY_HEIGHT;
 import static org.apache.batik.transcoder.SVGAbstractTranscoder.KEY_WIDTH;
-import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.deegree.commons.utils.math.MathUtils.round;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import javax.media.jai.RenderedOp;
-
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
-import org.apache.batik.transcoder.TranscoderOutput;
-import org.apache.batik.transcoder.image.PNGTranscoder;
-import org.deegree.commons.utils.ComparablePair;
 import org.deegree.commons.utils.TunableParameter;
 import org.deegree.style.styling.components.Graphic;
 import org.slf4j.Logger;
 
-import com.sun.media.jai.codec.MemoryCacheSeekableStream;
-
 /**
  * Renders svg images onto buffered images.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  */
 class SvgRenderer {
 
-    private static final Logger LOG = getLogger( SvgRenderer.class );
+	private static final Logger LOG = getLogger(SvgRenderer.class);
 
-    private final int cacheSize = TunableParameter.get( "deegree.cache.svgrenderer", 256 );
+	private final int cacheSize = TunableParameter.get("deegree.cache.svgrenderer", 256);
 
-    final LinkedHashMap<String, BufferedImage> svgCache = new LinkedHashMap<>( cacheSize ) {
-        private static final long serialVersionUID = -6847956873232942891L;
+	final LinkedHashMap<String, BufferedImage> svgCache = new LinkedHashMap<>(cacheSize) {
+		private static final long serialVersionUID = -6847956873232942891L;
 
-        @Override
-        protected boolean removeEldestEntry( Map.Entry<String, BufferedImage> eldest ) {
-            return size() > cacheSize;
-        }
-    };
+		@Override
+		protected boolean removeEldestEntry(Map.Entry<String, BufferedImage> eldest) {
+			return size() > cacheSize;
+		}
+	};
 
-    BufferedImage prepareSvg( Rectangle2D.Double rect, Graphic g ) {
-        BufferedImage img = null;
-        final String cacheKey = createCacheKey( g.imageURL, rect.width, rect.height );
-        if ( svgCache.containsKey( cacheKey ) ) {
-            img = svgCache.get( cacheKey );
-        } else {
-            PNGTranscoder t = new PNGTranscoder();
+	BufferedImage prepareSvg(Rectangle2D.Double rect, Graphic g) {
+		BufferedImage img = null;
+		final String cacheKey = createCacheKey(g.imageURL, rect.width, rect.height);
+		if (svgCache.containsKey(cacheKey)) {
+			img = svgCache.get(cacheKey);
+		}
+		else {
+			SvgImageTranscoder t = new SvgImageTranscoder();
 
-            if ( rect.width > 0.0d ) {
-                t.addTranscodingHint( KEY_WIDTH, new Float( rect.width ) );
-            }
-            if ( rect.height > 0.0d ) {
-                t.addTranscodingHint( KEY_HEIGHT, new Float( rect.height ) );
-            }
+			if (rect.width > 0.0d) {
+				t.addTranscodingHint(KEY_WIDTH, new Float(rect.width));
+			}
+			if (rect.height > 0.0d) {
+				t.addTranscodingHint(KEY_HEIGHT, new Float(rect.height));
+			}
 
-            TranscoderInput input = new TranscoderInput( g.imageURL );
+			TranscoderInput input = new TranscoderInput(g.imageURL);
+			SvgImageTranscoder.SvgImageOutput output = t.createOutput();
 
-            // TODO improve performance by writing a custom transcoder output directly rendering on an image, or
-            // even on the target graphics
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            TranscoderOutput output = new TranscoderOutput( out );
-            InputStream in = null;
+			try {
+				t.transcode(input, output);
+				img = output.getBufferedImage();
+				svgCache.put(cacheKey, img);
+			}
+			catch (TranscoderException e) {
+				LOG.warn("Could not rasterize svg '{}': {}", g.imageURL, e.getLocalizedMessage());
+			}
+		}
+		return img;
+	}
 
-            try {
-                t.transcode( input, output );
-                out.flush();
-                in = new ByteArrayInputStream( out.toByteArray() );
-                MemoryCacheSeekableStream mcss = new MemoryCacheSeekableStream( in );
-                RenderedOp rop = create( "stream", mcss );
-                img = rop.getAsBufferedImage();
-                svgCache.put( cacheKey, img );
-            } catch ( TranscoderException e ) {
-                LOG.warn( "Could not rasterize svg '{}': {}", g.imageURL, e.getLocalizedMessage() );
-            } catch ( IOException e ) {
-                LOG.warn( "Could not rasterize svg '{}': {}", g.imageURL, e.getLocalizedMessage() );
-            } finally {
-                closeQuietly( out );
-                closeQuietly( in );
-            }
-        }
-        return img;
-    }
+	String createCacheKey(String url, double width, double height) {
+		return String.format("%s_%d_%d", url, round(width), round(height));
+	}
 
-    String createCacheKey( String url, double width, double height ) {
-        return String.format( "%s_%d_%d", url, round( width ), round( height ) );
-    }
 }

@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aionita@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -58,140 +57,129 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The <code>WPVSClient</code> class supports the functionality of sending requests to the Web Perspective View Service
- * (WPVS).
- * 
+ * The <code>WPVSClient</code> class supports the functionality of sending requests to the
+ * Web Perspective View Service (WPVS).
+ *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author: ionita $
- * 
- * @version $Revision: $, $Date: $
  */
 public class WPVSClient {
 
-    private final static Logger LOG = LoggerFactory.getLogger( WPVSClient.class );
+	private final static Logger LOG = LoggerFactory.getLogger(WPVSClient.class);
 
-    private final NamespaceBindings nsContext;
+	private final NamespaceBindings nsContext;
 
-    private XMLAdapter capabilities;
+	private XMLAdapter capabilities;
 
-    /**
-     * 
-     * @param url
-     *            to retrieve the capabilities from
-     */
-    public WPVSClient( URL url ) {
-        this( new XMLAdapter( url ) );
-    }
+	/**
+	 * @param url to retrieve the capabilities from
+	 */
+	public WPVSClient(URL url) {
+		this(new XMLAdapter(url));
+	}
 
-    /**
-     * retrieve the capabilities from an xml file
-     * 
-     * @param capabilities
-     */
-    @SuppressWarnings("unchecked")
-    public WPVSClient( XMLAdapter capabilities ) {
-        this.capabilities = capabilities;
-        // add namespaces to namespace context, to be used later with xpath
-        nsContext = new NamespaceBindings();
-        // get all defined namespaces from getCapabilities in order to define the namespace context
-        Iterator<OMNamespace> nss = this.capabilities.getRootElement().getAllDeclaredNamespaces();
-        while ( nss.hasNext() ) {
-            OMNamespace omNs = nss.next();
-            if ( omNs != null ) {
-                nsContext.addNamespace( omNs.getPrefix(), omNs.getNamespaceURI() );
-            }
-        }
-    }
+	/**
+	 * retrieve the capabilities from an xml file
+	 * @param capabilities
+	 */
+	@SuppressWarnings("unchecked")
+	public WPVSClient(XMLAdapter capabilities) {
+		this.capabilities = capabilities;
+		// add namespaces to namespace context, to be used later with xpath
+		nsContext = new NamespaceBindings();
+		// get all defined namespaces from getCapabilities in order to define the
+		// namespace context
+		Iterator<OMNamespace> nss = this.capabilities.getRootElement().getAllDeclaredNamespaces();
+		while (nss.hasNext()) {
+			OMNamespace omNs = nss.next();
+			if (omNs != null) {
+				nsContext.addNamespace(omNs.getPrefix(), omNs.getNamespaceURI());
+			}
+		}
+	}
 
-    /**
-     * 
-     * @return all datasets that are queryable
-     */
-    public synchronized List<String> getQueryableDatasets() {
-        List<String> res = new LinkedList<String>();
-        XPath xp = new XPath( "//wpvs:Dataset[@queryable='true']", nsContext );
-        List<OMElement> datasets = capabilities.getElements( capabilities.getRootElement(), xp );
-        for ( OMElement node : datasets ) {
-            if ( node != null ) {
-                XPath xpName = new XPath( "wpvs:Name", nsContext );
-                String name = capabilities.getNodeAsString( node, xpName, null );
-                if ( name != null ) {
-                    res.add( name );
-                    LOG.info( "dataset found in GetCapabilities: " + name );
-                }
-            } else
-                LOG.warn( "Found an empty dataset!" );
-        }
-        return res;
-    }
+	/**
+	 * @return all datasets that are queryable
+	 */
+	public synchronized List<String> getQueryableDatasets() {
+		List<String> res = new LinkedList<String>();
+		XPath xp = new XPath("//wpvs:Dataset[@queryable='true']", nsContext);
+		List<OMElement> datasets = capabilities.getElements(capabilities.getRootElement(), xp);
+		for (OMElement node : datasets) {
+			if (node != null) {
+				XPath xpName = new XPath("wpvs:Name", nsContext);
+				String name = capabilities.getNodeAsString(node, xpName, null);
+				if (name != null) {
+					res.add(name);
+					LOG.info("dataset found in GetCapabilities: " + name);
+				}
+			}
+			else
+				LOG.warn("Found an empty dataset!");
+		}
+		return res;
+	}
 
-    /**
-     * 
-     * @return all elevation models defined
-     */
-    public synchronized List<String> getElevationModels() {
-        List<String> res = new LinkedList<String>();
-        XPath xp = new XPath( "//wpvs:ElevationModel", nsContext );
-        List<OMElement> elModels = capabilities.getElements( capabilities.getRootElement(), xp );
-        for ( OMElement node : elModels )
-            if ( node != null ) {
-                XPath xpName = new XPath( "wpvs:Name", nsContext );
-                String name = capabilities.getNodeAsString( node, xpName, null );
-                if ( name != null )
-                    res.add( name );
-            }
-        return res;
-    }
+	/**
+	 * @return all elevation models defined
+	 */
+	public synchronized List<String> getElevationModels() {
+		List<String> res = new LinkedList<String>();
+		XPath xp = new XPath("//wpvs:ElevationModel", nsContext);
+		List<OMElement> elModels = capabilities.getElements(capabilities.getRootElement(), xp);
+		for (OMElement node : elModels)
+			if (node != null) {
+				XPath xpName = new XPath("wpvs:Name", nsContext);
+				String name = capabilities.getNodeAsString(node, xpName, null);
+				if (name != null)
+					res.add(name);
+			}
+		return res;
+	}
 
-    /**
-     * 
-     * @param request
-     *            the type of {@link WPVSRequestType}
-     * @return whether the request is defined in the getCapabilities xml file
-     */
-    public synchronized boolean isOperationSupported( WPVSRequestType request ) {
-        XPath xp = new XPath( "//ows:Operation[@name='" + request.name() + "']", nsContext );
-        return capabilities.getElement( capabilities.getRootElement(), xp ) != null;
-    }
+	/**
+	 * @param request the type of {@link WPVSRequestType}
+	 * @return whether the request is defined in the getCapabilities xml file
+	 */
+	public synchronized boolean isOperationSupported(WPVSRequestType request) {
+		XPath xp = new XPath("//ows:Operation[@name='" + request.name() + "']", nsContext);
+		return capabilities.getElement(capabilities.getRootElement(), xp) != null;
+	}
 
-    /**
-     * 
-     * @param request
-     *            the type of {@link WPVSRequestType}
-     * @param get
-     *            whether it is a Get or a Post request
-     * @return the url of the requested operation
-     */
-    public synchronized String getAddress( WPVSRequestType request, boolean get ) {
-        if ( !isOperationSupported( request ) )
-            return null;
+	/**
+	 * @param request the type of {@link WPVSRequestType}
+	 * @param get whether it is a Get or a Post request
+	 * @return the url of the requested operation
+	 */
+	public synchronized String getAddress(WPVSRequestType request, boolean get) {
+		if (!isOperationSupported(request))
+			return null;
 
-        String xpathStr = "//ows:Operation[@name=\"" + request.name() + "\"]";
-        xpathStr += "/ows:DCP/ows:HTTP/" + ( get ? "ows:Get" : "ows:Post" ) + "/@xlink:href";
+		String xpathStr = "//ows:Operation[@name=\"" + request.name() + "\"]";
+		xpathStr += "/ows:DCP/ows:HTTP/" + (get ? "ows:Get" : "ows:Post") + "/@xlink:href";
 
-        OMElement root = capabilities.getRootElement();
-        String res = capabilities.getNodeAsString( root, new XPath( xpathStr, nsContext ), null );
-        return res;
-    }
+		OMElement root = capabilities.getRootElement();
+		String res = capabilities.getNodeAsString(root, new XPath(xpathStr, nsContext), null);
+		return res;
+	}
 
-    /**
-     * 
-     * @param url
-     * @return a {@link Pair} of {@link BufferedImage} and {@link String}. In case the WPVS returns an image the former
-     *         will be used, otherwise an XML response ( as a String ) will be returned in the second value.
-     * @throws IOException
-     */
-    public synchronized Pair<BufferedImage, String> getView( URL url )
-                            throws IOException {
-        Pair<BufferedImage, String> res = new Pair<BufferedImage, String>();
-        InputStream inStream = url.openStream();
-        res.first = IMAGE.work( inStream );
-        // rb: the following will never happen (I guess)
-        if ( res.first == null ) {
-            res.second = XmlHttpUtils.XML.work( url.openStream() ).toString();
-        }
-        inStream.close();
+	/**
+	 * @param url
+	 * @return a {@link Pair} of {@link BufferedImage} and {@link String}. In case the
+	 * WPVS returns an image the former will be used, otherwise an XML response ( as a
+	 * String ) will be returned in the second value.
+	 * @throws IOException
+	 */
+	public synchronized Pair<BufferedImage, String> getView(URL url) throws IOException {
+		Pair<BufferedImage, String> res = new Pair<BufferedImage, String>();
+		InputStream inStream = url.openStream();
+		res.first = IMAGE.work(inStream);
+		// rb: the following will never happen (I guess)
+		if (res.first == null) {
+			res.second = XmlHttpUtils.XML.work(url.openStream()).toString();
+		}
+		inStream.close();
 
-        return res;
-    }
+		return res;
+	}
+
 }

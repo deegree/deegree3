@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -41,27 +40,24 @@ import java.util.List;
 
 /**
  * <code>Index</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class Index {
 
-    /**
-     * @param <T>
-     * @param sb
-     * @param val
-     * @param vals
-     */
-    public <T> void eval( StringBuilder sb, T val, List<T> vals ) {
-        sb.append( vals.indexOf( val ) + 1 );
-    }
+	/**
+	 * @param <T>
+	 * @param sb
+	 * @param val
+	 * @param vals
+	 */
+	public <T> void eval(StringBuilder sb, T val, List<T> vals) {
+		sb.append(vals.indexOf(val) + 1);
+	}
 
-    @Override
-    public String toString() {
-        return generateToString( this );
-    }
+	@Override
+	public String toString() {
+		return generateToString(this);
+	}
 
 }

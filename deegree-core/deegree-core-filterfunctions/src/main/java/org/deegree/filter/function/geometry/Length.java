@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -57,60 +56,57 @@ import org.deegree.geometry.primitive.Surface;
 import org.deegree.workspace.Workspace;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class Length implements FunctionProvider {
 
-    private static final String NAME = "Length";
+	private static final String NAME = "Length";
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
+	@Override
+	public String getName() {
+		return NAME;
+	}
 
-    @Override
-    public List<ParameterType> getArgs() {
-        return Collections.singletonList( GEOMETRY );
-    }
+	@Override
+	public List<ParameterType> getArgs() {
+		return Collections.singletonList(GEOMETRY);
+	}
 
-    @Override
-    public ParameterType getReturnType() {
-        return DOUBLE;
-    }
+	@Override
+	public ParameterType getReturnType() {
+		return DOUBLE;
+	}
 
-    @Override
-    public Function create( List<Expression> params ) {
-        return new Function( NAME, params ) {
-            @Override
-            public <T> TypedObjectNode[] evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
-                                    throws FilterEvaluationException {
-                TypedObjectNode[] inputs = getParams()[0].evaluate( obj, xpathEvaluator );
-                List<TypedObjectNode> lengths = new ArrayList<TypedObjectNode>( inputs.length );
-                for ( TypedObjectNode val : inputs ) {
-                    Geometry geom = getGeometryValue( val );
-                    if ( geom != null && geom instanceof Surface ) {
-                        lengths.add( new PrimitiveValue( ( (Surface) geom ).getPerimeter( null ).getValue() ) );
-                    }
-                    if ( geom != null && geom instanceof Curve ) {
-                        lengths.add( new PrimitiveValue( ( (Curve) geom ).getLength( null ).getValue() ) );
-                    }
-                }
-                return lengths.toArray( new TypedObjectNode[lengths.size()] );
-            }
-        };
-    }
+	@Override
+	public Function create(List<Expression> params) {
+		return new Function(NAME, params) {
+			@Override
+			public <T> TypedObjectNode[] evaluate(T obj, XPathEvaluator<T> xpathEvaluator)
+					throws FilterEvaluationException {
+				TypedObjectNode[] inputs = getParams()[0].evaluate(obj, xpathEvaluator);
+				List<TypedObjectNode> lengths = new ArrayList<TypedObjectNode>(inputs.length);
+				for (TypedObjectNode val : inputs) {
+					Geometry geom = getGeometryValue(val);
+					if (geom != null && geom instanceof Surface) {
+						lengths.add(new PrimitiveValue(((Surface) geom).getPerimeter(null).getValue()));
+					}
+					if (geom != null && geom instanceof Curve) {
+						lengths.add(new PrimitiveValue(((Curve) geom).getLength(null).getValue()));
+					}
+				}
+				return lengths.toArray(new TypedObjectNode[lengths.size()]);
+			}
+		};
+	}
 
-    @Override
-    public void init( Workspace ws ) {
-        // nothing to do
-    }
+	@Override
+	public void init(Workspace ws) {
+		// nothing to do
+	}
 
-    @Override
-    public void destroy() {
-        // nothing to do
-    }
+	@Override
+	public void destroy() {
+		// nothing to do
+	}
+
 }

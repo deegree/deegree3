@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -52,81 +51,81 @@ import org.deegree.workspace.ResourceMetadata;
 
 /**
  * Standard theme implementation.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class StandardTheme implements Theme {
 
-    private final List<Theme> themes;
+	private final List<Theme> themes;
 
-    private final List<Layer> layers;
+	private final List<Layer> layers;
 
-    private LayerMetadata metadata;
+	private LayerMetadata metadata;
 
-    private ResourceMetadata<Theme> resourceMetadata;
+	private ResourceMetadata<Theme> resourceMetadata;
 
-    public StandardTheme( LayerMetadata metadata, List<Theme> themes, List<Layer> layers,
-                          ResourceMetadata<Theme> resourceMetadata ) {
-        this.metadata = metadata;
-        this.themes = themes;
-        this.layers = layers;
-        this.resourceMetadata = resourceMetadata;
-    }
+	public StandardTheme(LayerMetadata metadata, List<Theme> themes, List<Layer> layers,
+			ResourceMetadata<Theme> resourceMetadata) {
+		this.metadata = metadata;
+		this.themes = themes;
+		this.layers = layers;
+		this.resourceMetadata = resourceMetadata;
+	}
 
-    @Override
-    public void init() {
-        // nothing to do
-    }
+	@Override
+	public void init() {
+		// nothing to do
+	}
 
-    @Override
-    public void destroy() {
-        // nothing to do
-    }
+	@Override
+	public void destroy() {
+		// nothing to do
+	}
 
-    @Override
-    public LayerMetadata getLayerMetadata() {
-        return metadata;
-    }
+	@Override
+	public LayerMetadata getLayerMetadata() {
+		return metadata;
+	}
 
-    @Override
-    public List<Layer> getLayers() {
-        return layers;
-    }
+	@Override
+	public List<Layer> getLayers() {
+		return layers;
+	}
 
-    @Override
-    public List<Theme> getThemes() {
-        return themes;
-    }
+	@Override
+	public List<Theme> getThemes() {
+		return themes;
+	}
 
-    public String toString( int indent ) {
-        StringBuilder sb = new StringBuilder();
-        sb.append( repeat( indent, "  " ) );
-        sb.append( " - " );
-        sb.append( metadata.getName() );
-        sb.append( " " );
-        sb.append( layers.size() );
-        sb.append( " layers\n" );
-        indent += 2;
-        for ( Theme t : themes ) {
-            if ( t instanceof StandardTheme ) {
-                sb.append( ( (StandardTheme) t ).toString( indent ) );
-            } else {
-                sb.append( t );
-            }
-        }
-        return sb.toString();
-    }
+	public String toString(int indent) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(repeat(indent, "  "));
+		sb.append(" - ");
+		sb.append(metadata.getName());
+		sb.append(" ");
+		sb.append(layers.size());
+		sb.append(" layers\n");
+		indent += 2;
+		for (Theme t : themes) {
+			if (t instanceof StandardTheme) {
+				sb.append(((StandardTheme) t).toString(indent));
+			}
+			else {
+				sb.append(t);
+			}
+		}
+		return sb.toString();
+	}
 
-    @Override
-    public String toString() {
-        return toString( 0 );
-    }
+	@Override
+	public String toString() {
+		return toString(0);
+	}
 
-    @Override
-    public ResourceMetadata<? extends Resource> getMetadata() {
-        return resourceMetadata;
-    }
+	@Override
+	public ResourceMetadata<? extends Resource> getMetadata() {
+		return resourceMetadata;
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -47,59 +46,57 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Converts between internal object values and SQL objects.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class SQLValueMangler {
 
-    private static final Logger LOG = LoggerFactory.getLogger( SQLValueMangler.class );
+	private static final Logger LOG = LoggerFactory.getLogger(SQLValueMangler.class);
 
-    /**
-     * Converts the given {@link PrimitiveValue} value to the corresponding SQL object type.
-     * 
-     * @param pv
-     * @return
-     */
-    public static Object internalToSQL( PrimitiveValue pv ) {
-        Object sqlValue = null;
-        Object value = pv.getValue();
-        if ( value != null ) {
-            BaseType pt = pv.getType().getBaseType();
-            switch ( pt ) {
-            case BOOLEAN:
-                sqlValue = value;
-                break;
-            case DATE:
-                // TODO handling of SQL timezone                
-                sqlValue = new java.sql.Date( ( (Temporal) value ).getTimeInMilliseconds() );
-                break;
-            case DATE_TIME:
-                // TODO handling of SQL timezone                
-                sqlValue = new Timestamp( ( (Temporal) value ).getTimeInMilliseconds() );
-                break;
-            case TIME:
-                // TODO handling of SQL timezone                
-                sqlValue = new Time( ( (Temporal) value ).getTimeInMilliseconds() );
-                break;
-            case DECIMAL:
-                sqlValue = ( (BigDecimal) value ).doubleValue();
-                break;
-            case DOUBLE:
-                sqlValue = value;
-                break;
-            case INTEGER:
-                sqlValue = Integer.parseInt( value.toString() );
-                break;
-            case STRING:
-                sqlValue = value;
-                break;
-            default:
-                throw new IllegalArgumentException( "SQL type conversion for '" + pt + "' is not implemented yet." );
-            }
-        }
-        return sqlValue;
-    }
+	/**
+	 * Converts the given {@link PrimitiveValue} value to the corresponding SQL object
+	 * type.
+	 * @param pv
+	 * @return
+	 */
+	public static Object internalToSQL(PrimitiveValue pv) {
+		Object sqlValue = null;
+		Object value = pv.getValue();
+		if (value != null) {
+			BaseType pt = pv.getType().getBaseType();
+			switch (pt) {
+				case BOOLEAN:
+					sqlValue = value;
+					break;
+				case DATE:
+					// TODO handling of SQL timezone
+					sqlValue = new java.sql.Date(((Temporal) value).getTimeInMilliseconds());
+					break;
+				case DATE_TIME:
+					// TODO handling of SQL timezone
+					sqlValue = new Timestamp(((Temporal) value).getTimeInMilliseconds());
+					break;
+				case TIME:
+					// TODO handling of SQL timezone
+					sqlValue = new Time(((Temporal) value).getTimeInMilliseconds());
+					break;
+				case DECIMAL:
+					sqlValue = ((BigDecimal) value).doubleValue();
+					break;
+				case DOUBLE:
+					sqlValue = value;
+					break;
+				case INTEGER:
+					sqlValue = Integer.parseInt(value.toString());
+					break;
+				case STRING:
+					sqlValue = value;
+					break;
+				default:
+					throw new IllegalArgumentException("SQL type conversion for '" + pt + "' is not implemented yet.");
+			}
+		}
+		return sqlValue;
+	}
+
 }

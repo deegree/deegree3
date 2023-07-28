@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -45,13 +44,12 @@ import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
  * SPI provider class for feature stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public abstract class FeatureStoreProvider extends AbstractResourceProvider<FeatureStore> {
 
-    // marker class to specialize type parameter
+	// marker class to specialize type parameter
 
 }

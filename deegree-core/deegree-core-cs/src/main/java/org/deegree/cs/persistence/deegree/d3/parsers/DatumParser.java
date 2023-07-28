@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2009 by:
@@ -64,98 +63,94 @@ import org.slf4j.Logger;
 
 /**
  * Stax-based configuration parser for datum objects.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class DatumParser extends DefinitionParser {
-    private static final Logger LOG = getLogger( DatumParser.class );
 
-    private static final QName DATUM_ELEM = new QName( CRS_NS, "GeodeticDatum" );
+	private static final Logger LOG = getLogger(DatumParser.class);
 
-    private static final QName ROOT = new QName( CRS_NS, "DatumDefinitions" );
+	private static final QName DATUM_ELEM = new QName(CRS_NS, "GeodeticDatum");
 
-    /**
-     * 
-     * @param provider
-     * @param configURL
-     */
-    public DatumParser( DeegreeCRSStore provider, URL configURL ) {
-        super( provider, configURL );
-    }
+	private static final QName ROOT = new QName(CRS_NS, "DatumDefinitions");
 
-    /**
-     * @param datumID
-     * @return the
-     * @throws CRSConfigurationException
-     */
-    public GeodeticDatum getGeodeticDatumForId( String datumID )
-                            throws CRSConfigurationException {
-        if ( datumID == null || "".equals( datumID.trim() ) ) {
-            return null;
-        }
-        String tmpDatumID = datumID.trim();
-        GeodeticDatum result = getStore().getCachedIdentifiable( GeodeticDatum.class, tmpDatumID );
-        if ( result == null ) {
-            try {
-                result = parseDatum( getConfigReader() );
-                while ( result != null && !result.hasId( tmpDatumID, false, true ) ) {
-                    result = parseDatum( getConfigReader() );
-                }
+	/**
+	 * @param provider
+	 * @param configURL
+	 */
+	public DatumParser(DeegreeCRSStore provider, URL configURL) {
+		super(provider, configURL);
+	}
 
-            } catch ( XMLStreamException e ) {
-                throw new CRSConfigurationException( e );
-            }
-        }
-        return result;
-    }
+	/**
+	 * @param datumID
+	 * @return the
+	 * @throws CRSConfigurationException
+	 */
+	public GeodeticDatum getGeodeticDatumForId(String datumID) throws CRSConfigurationException {
+		if (datumID == null || "".equals(datumID.trim())) {
+			return null;
+		}
+		String tmpDatumID = datumID.trim();
+		GeodeticDatum result = getStore().getCachedIdentifiable(GeodeticDatum.class, tmpDatumID);
+		if (result == null) {
+			try {
+				result = parseDatum(getConfigReader());
+				while (result != null && !result.hasId(tmpDatumID, false, true)) {
+					result = parseDatum(getConfigReader());
+				}
 
-    /**
-     * @param reader
-     *            to
-     * @return the next datum on the stream.
-     * @throws XMLStreamException
-     */
-    protected GeodeticDatum parseDatum( XMLStreamReader reader )
-                            throws XMLStreamException {
-        if ( reader == null || !moveReaderToFirstMatch( reader, DATUM_ELEM ) ) {
-            LOG.debug( "Could not get datum, no more definitions left." );
-            return null;
-        }
+			}
+			catch (XMLStreamException e) {
+				throw new CRSConfigurationException(e);
+			}
+		}
+		return result;
+	}
 
-        // get the identifiable.
-        CRSResource id = parseIdentifiable( reader );
+	/**
+	 * @param reader to
+	 * @return the next datum on the stream.
+	 * @throws XMLStreamException
+	 */
+	protected GeodeticDatum parseDatum(XMLStreamReader reader) throws XMLStreamException {
+		if (reader == null || !moveReaderToFirstMatch(reader, DATUM_ELEM)) {
+			LOG.debug("Could not get datum, no more definitions left.");
+			return null;
+		}
 
-        // get the ellipsoid.
-        String ellipsID = XMLStreamUtils.getRequiredText( reader, new QName( CRS_NS, "UsedEllipsoid" ), true );
-        if ( ellipsID == null || ellipsID.trim().length() == 0 ) {
-            throw new CRSConfigurationException( Messages.getMessage( "CRS_STAX_CONFIG_DATUM_HAS_NO_ELLIPSOID",
-                                                                      reader.getLocation() ) );
-        }
-        IEllipsoid ellipsoid = new EllipsoidRef( store.getResolver( RESOURCETYPE.ELLIPSOID ), '#' + ellipsID, null );
+		// get the identifiable.
+		CRSResource id = parseIdentifiable(reader);
 
-        // get the primemeridian if any.
-        String pMeridianID = XMLStreamUtils.getText( getConfigReader(), new QName( CRS_NS, "UsedPrimeMeridian" ), null,
-                                                     true );
-        IPrimeMeridian pMeridian = null;
-        if ( pMeridianID != null && pMeridianID.trim().length() > 0 ) {
-            pMeridian = new PrimeMeridianRef( store.getResolver( RESOURCETYPE.PM ), '#' + pMeridianID, null );
-        }
-        nextElement( reader );// end document
+		// get the ellipsoid.
+		String ellipsID = XMLStreamUtils.getRequiredText(reader, new QName(CRS_NS, "UsedEllipsoid"), true);
+		if (ellipsID == null || ellipsID.trim().length() == 0) {
+			throw new CRSConfigurationException(
+					Messages.getMessage("CRS_STAX_CONFIG_DATUM_HAS_NO_ELLIPSOID", reader.getLocation()));
+		}
+		IEllipsoid ellipsoid = new EllipsoidRef(store.getResolver(RESOURCETYPE.ELLIPSOID), '#' + ellipsID, null);
 
-        GeodeticDatum result = getStore().addIdToCache( new GeodeticDatum( ellipsoid, pMeridian, id ), false );
+		// get the primemeridian if any.
+		String pMeridianID = XMLStreamUtils.getText(getConfigReader(), new QName(CRS_NS, "UsedPrimeMeridian"), null,
+				true);
+		IPrimeMeridian pMeridian = null;
+		if (pMeridianID != null && pMeridianID.trim().length() > 0) {
+			pMeridian = new PrimeMeridianRef(store.getResolver(RESOURCETYPE.PM), '#' + pMeridianID, null);
+		}
+		nextElement(reader);// end document
 
-        return result;
-    }
+		GeodeticDatum result = getStore().addIdToCache(new GeodeticDatum(ellipsoid, pMeridian, id), false);
 
-    @Override
-    protected QName expectedRootName() {
-        return ROOT;
-    }
+		return result;
+	}
 
-    public GeodeticDatum getObject( String uri, String baseURL ) {
-        return getGeodeticDatumForId( uri );
-    }
+	@Override
+	protected QName expectedRootName() {
+		return ROOT;
+	}
+
+	public GeodeticDatum getObject(String uri, String baseURL) {
+		return getGeodeticDatumForId(uri);
+	}
+
 }

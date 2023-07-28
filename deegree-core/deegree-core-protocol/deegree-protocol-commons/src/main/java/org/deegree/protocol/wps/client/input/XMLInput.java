@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -51,104 +50,88 @@ import org.deegree.protocol.wps.client.param.ComplexFormat;
 
 /**
  * {@link ExecutionInput} that encapsulates an XML value.
- * 
+ *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class XMLInput extends ExecutionInput {
 
-    private final ComplexFormat complexAttribs;
+	private final ComplexFormat complexAttribs;
 
-    private URI uri;
+	private URI uri;
 
-    private XMLStreamReader reader;
+	private XMLStreamReader reader;
 
-    private boolean isWebAccessible;
+	private boolean isWebAccessible;
 
-    /**
-     * Creates a new {@link XMLInput} instance.
-     * 
-     * @param id
-     *            parameter identifier, must not be <code>null</code>
-     * @param uri
-     *            URI for accessing the XML resource, must not be <code>null</code>
-     * @param isWebAccessible
-     *            if true, the data will be submitted to the process as reference, otherwise it will be encoded in the
-     *            request
-     * @param mimeType
-     *            mime type of the XML resource, may be <code>null</code> (unspecified)
-     * @param encoding
-     *            encoding, may be <code>null</code> (unspecified)
-     * @param schema
-     *            XML schema, may be <code>null</code> (unspecified)
-     */
-    public XMLInput( CodeType id, URI uri, boolean isWebAccessible, String mimeType, String encoding, String schema ) {
-        super( id );
-        this.uri = uri;
-        this.isWebAccessible = isWebAccessible;
-        
-        this.complexAttribs = new ComplexFormat( mimeType, encoding, schema );
-    }
+	/**
+	 * Creates a new {@link XMLInput} instance.
+	 * @param id parameter identifier, must not be <code>null</code>
+	 * @param uri URI for accessing the XML resource, must not be <code>null</code>
+	 * @param isWebAccessible if true, the data will be submitted to the process as
+	 * reference, otherwise it will be encoded in the request
+	 * @param mimeType mime type of the XML resource, may be <code>null</code>
+	 * (unspecified)
+	 * @param encoding encoding, may be <code>null</code> (unspecified)
+	 * @param schema XML schema, may be <code>null</code> (unspecified)
+	 */
+	public XMLInput(CodeType id, URI uri, boolean isWebAccessible, String mimeType, String encoding, String schema) {
+		super(id);
+		this.uri = uri;
+		this.isWebAccessible = isWebAccessible;
 
-    /**
-     * Creates a new {@link XMLInput} instance.
-     * 
-     * @param id
-     *            parameter identifier, must not be <code>null</code>
-     * @param reader
-     *            xml stream that provides the data, must not be <code>null</code> and point to a START_ELEMENT event
-     * @param mimeType
-     *            mime type of the XML resource, may be <code>null</code> (unspecified)
-     * @param encoding
-     *            encoding, may be <code>null</code> (unspecified)
-     * @param schema
-     *            XML schema, may be <code>null</code> (unspecified)
-     */
-    public XMLInput( CodeType id, XMLStreamReader reader, String mimeType, String encoding, String schema ) {
-        super( id );
-        if ( reader.getEventType() != START_ELEMENT ) {
-            String msg = "The given XML stream does not point to a START_ELEMENT event.";
-            throw new IllegalArgumentException( msg );
-        }
-        this.reader = reader;
-        this.isWebAccessible = false;
-        this.complexAttribs = new ComplexFormat( mimeType, encoding, schema );
-    }
+		this.complexAttribs = new ComplexFormat(mimeType, encoding, schema);
+	}
 
-    /**
-     * Returns the format of the input.
-     * 
-     * @return the format of the input, never <code>null</code>
-     */
-    public ComplexFormat getFormat() {
-        return complexAttribs;
-    }
+	/**
+	 * Creates a new {@link XMLInput} instance.
+	 * @param id parameter identifier, must not be <code>null</code>
+	 * @param reader xml stream that provides the data, must not be <code>null</code> and
+	 * point to a START_ELEMENT event
+	 * @param mimeType mime type of the XML resource, may be <code>null</code>
+	 * (unspecified)
+	 * @param encoding encoding, may be <code>null</code> (unspecified)
+	 * @param schema XML schema, may be <code>null</code> (unspecified)
+	 */
+	public XMLInput(CodeType id, XMLStreamReader reader, String mimeType, String encoding, String schema) {
+		super(id);
+		if (reader.getEventType() != START_ELEMENT) {
+			String msg = "The given XML stream does not point to a START_ELEMENT event.";
+			throw new IllegalArgumentException(msg);
+		}
+		this.reader = reader;
+		this.isWebAccessible = false;
+		this.complexAttribs = new ComplexFormat(mimeType, encoding, schema);
+	}
 
-    /**
-     * Returns the XML value as an {@link XMLStreamReader}.
-     * 
-     * @return an xml stream, current event is START_ELEMENT
-     * @throws IOException
-     *             if accessing the value fails
-     * @throws XMLStreamException
-     */
-    public XMLStreamReader getAsXMLStream()
-                            throws XMLStreamException, IOException {
-        if ( reader == null ) {
-            XMLInputFactory inFactory = XMLInputFactory.newInstance();
-            reader = inFactory.createXMLStreamReader( uri.toURL().openStream() );
-        }
-        if ( reader.getEventType() == XMLStreamConstants.START_DOCUMENT ) {
-            XMLStreamUtils.nextElement( reader );
-        }
-        return reader;
-    }
+	/**
+	 * Returns the format of the input.
+	 * @return the format of the input, never <code>null</code>
+	 */
+	public ComplexFormat getFormat() {
+		return complexAttribs;
+	}
 
-    @Override
-    public URI getWebAccessibleURI() {
-        return isWebAccessible ? uri : null;
-    }
+	/**
+	 * Returns the XML value as an {@link XMLStreamReader}.
+	 * @return an xml stream, current event is START_ELEMENT
+	 * @throws IOException if accessing the value fails
+	 * @throws XMLStreamException
+	 */
+	public XMLStreamReader getAsXMLStream() throws XMLStreamException, IOException {
+		if (reader == null) {
+			XMLInputFactory inFactory = XMLInputFactory.newInstance();
+			reader = inFactory.createXMLStreamReader(uri.toURL().openStream());
+		}
+		if (reader.getEventType() == XMLStreamConstants.START_DOCUMENT) {
+			XMLStreamUtils.nextElement(reader);
+		}
+		return reader;
+	}
+
+	@Override
+	public URI getWebAccessibleURI() {
+		return isWebAccessible ? uri : null;
+	}
+
 }

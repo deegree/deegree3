@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -56,89 +55,81 @@ import org.junit.Test;
 
 /**
  * Test cases for {@link WMS130CapabilitiesAdapter}
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class WMS130CapabilitiesAdapterTest extends WMSCapabilitiesAdapterTest {
 
-    private static final String GETMAP_URL = "http://demo.deegree.org/deegree-wms-ri-130/services?";
+	private static final String GETMAP_URL = "http://demo.deegree.org/deegree-wms-ri-130/services?";
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testNullWMS130Capabilities() {
-        new WMS130CapabilitiesAdapter( null );
-    }
+	@Test(expected = IllegalArgumentException.class)
+	public void testNullWMS130Capabilities() {
+		new WMS130CapabilitiesAdapter(null);
+	}
 
-    @Test
-    public void testWMS130CapabilitiesCoordinateSystem()
-                            throws XMLStreamException {
-        WMSCapabilitiesAdapter capabilities = createCapabilities();
+	@Test
+	public void testWMS130CapabilitiesCoordinateSystem() throws XMLStreamException {
+		WMSCapabilitiesAdapter capabilities = createCapabilities();
 
-        LinkedList<String> coordinateSystems = capabilities.getCoordinateSystems( "cite:NamedPlaces" );
-        assertEquals( 2, coordinateSystems.size() );
-    }
+		LinkedList<String> coordinateSystems = capabilities.getCoordinateSystems("cite:NamedPlaces");
+		assertEquals(2, coordinateSystems.size());
+	}
 
-    @Test
-    public void testWMS130CapabilitiesgetBoundingBox()
-                            throws XMLStreamException, UnknownCRSException {
-        WMSCapabilitiesAdapter capabilities = createCapabilities();
-        Envelope boundingBox = capabilities.getBoundingBox( "EPSG:4326", "citelayers" );
-        assertNotNull( boundingBox );
-        Envelope bbox = ( new GeometryFactory() ).createEnvelope( -90, -180, 90, 180, CRSManager.lookup( "EPSG:4326" ) );
-        assertTrue( boundingBox.equals( bbox ) );
-    }
+	@Test
+	public void testWMS130CapabilitiesgetBoundingBox() throws XMLStreamException, UnknownCRSException {
+		WMSCapabilitiesAdapter capabilities = createCapabilities();
+		Envelope boundingBox = capabilities.getBoundingBox("EPSG:4326", "citelayers");
+		assertNotNull(boundingBox);
+		Envelope bbox = (new GeometryFactory()).createEnvelope(-90, -180, 90, 180, CRSManager.lookup("EPSG:4326"));
+		assertTrue(boundingBox.equals(bbox));
+	}
 
-    @Test
-    public void testWMS130CapabilitiesgetLatLonBoundingBox()
-                            throws XMLStreamException, UnknownCRSException {
-        WMSCapabilitiesAdapter capabilities = createCapabilities();
-        Envelope boundingBox = capabilities.getLatLonBoundingBox( "citelayers" );
-        assertNotNull( boundingBox );
-        Envelope bbox = ( new GeometryFactory() ).createEnvelope( -180, -90, 180, 90, CRSManager.getCRSRef( WGS84 ) );
-        assertTrue( boundingBox.equals( bbox ) );
-    }
+	@Test
+	public void testWMS130CapabilitiesgetLatLonBoundingBox() throws XMLStreamException, UnknownCRSException {
+		WMSCapabilitiesAdapter capabilities = createCapabilities();
+		Envelope boundingBox = capabilities.getLatLonBoundingBox("citelayers");
+		assertNotNull(boundingBox);
+		Envelope bbox = (new GeometryFactory()).createEnvelope(-180, -90, 180, 90, CRSManager.getCRSRef(WGS84));
+		assertTrue(boundingBox.equals(bbox));
+	}
 
-    @Override
-    protected WMSCapabilitiesAdapter createCapabilities()
-                            throws XMLStreamException {
-        return createCapabilities( "wms130.xml" );
-    }
+	@Override
+	protected WMSCapabilitiesAdapter createCapabilities() throws XMLStreamException {
+		return createCapabilities("wms130.xml");
+	}
 
-    @Override
-    protected WMSCapabilitiesAdapter createInspireCapabilities()
-                            throws XMLStreamException {
-        return createCapabilities( "wms130-inspire-capabilities.xml" );
-    }
+	@Override
+	protected WMSCapabilitiesAdapter createInspireCapabilities() throws XMLStreamException {
+		return createCapabilities("wms130-inspire-capabilities.xml");
+	}
 
-    private WMSCapabilitiesAdapter createCapabilities( String capabilitiesFile )
-                            throws XMLStreamException {
-        InputStream is = WMS130CapabilitiesAdapterTest.class.getResourceAsStream( capabilitiesFile );
-        StAXOMBuilder builder = new StAXOMBuilder( is );
-        OMElement capabilities = builder.getDocumentElement();
-        WMSCapabilitiesAdapter adapter = new WMS130CapabilitiesAdapter( capabilities );
-        adapter.parseWMSSpecificCapabilities( adapter.parseOperationsMetadata() );
-        return adapter;
-    }
+	private WMSCapabilitiesAdapter createCapabilities(String capabilitiesFile) throws XMLStreamException {
+		InputStream is = WMS130CapabilitiesAdapterTest.class.getResourceAsStream(capabilitiesFile);
+		StAXOMBuilder builder = new StAXOMBuilder(is);
+		OMElement capabilities = builder.getDocumentElement();
+		WMSCapabilitiesAdapter adapter = new WMS130CapabilitiesAdapter(capabilities);
+		adapter.parseWMSSpecificCapabilities(adapter.parseOperationsMetadata());
+		return adapter;
+	}
 
-    @Override
-    protected String getGetGetMapUrl() {
-        return GETMAP_URL;
-    }
+	@Override
+	protected String getGetGetMapUrl() {
+		return GETMAP_URL;
+	}
 
-    @Override
-    protected String getPostGetMapUrl() {
-        return GETMAP_URL;
-    }
+	@Override
+	protected String getPostGetMapUrl() {
+		return GETMAP_URL;
+	}
 
-    @Override
-    protected int getNoOfChildrenOfRootLayer() {
-        return 1;
-    }
+	@Override
+	protected int getNoOfChildrenOfRootLayer() {
+		return 1;
+	}
 
-    @Override
-    protected Version getServiceVersion() {
-        return new Version( 1, 3, 0 );
-    }
+	@Override
+	protected Version getServiceVersion() {
+		return new Version(1, 3, 0);
+	}
+
 }

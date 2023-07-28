@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -40,22 +39,20 @@ import java.util.List;
 import org.deegree.geometry.primitive.Curve;
 
 /**
- * A {@link CompositeCurve} is a geometry with the same topological properties as a (primitive) {@link Curve}. It is
- * defined by a sequence of member curves such that the each curve in the sequence ends at the start point of the
- * subsequent curve in the list.
- * 
+ * A {@link CompositeCurve} is a geometry with the same topological properties as a
+ * (primitive) {@link Curve}. It is defined by a sequence of member curves such that the
+ * each curve in the sequence ends at the start point of the subsequent curve in the list.
+ *
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
- * @author last edited by: $Author$
- * 
- * @version. $Revision$, $Date$
+ *
  */
 public interface CompositeCurve extends Curve, List<Curve> {
 
-    /**
-     * Must always return {@link Curve.CurveType#CompositeCurve}.
-     * 
-     * @return {@link Curve.CurveType#CompositeCurve}
-     */
-    @Override
-    public CurveType getCurveType();
+	/**
+	 * Must always return {@link Curve.CurveType#CompositeCurve}.
+	 * @return {@link Curve.CurveType#CompositeCurve}
+	 */
+	@Override
+	public CurveType getCurveType();
+
 }

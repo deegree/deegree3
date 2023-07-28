@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -60,289 +59,283 @@ import org.deegree.services.wpvs.io.serializer.ObjectSerializer;
 
 /**
  * The <code>ModelFile</code> class TODO add class documentation here.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
  * @param <P>
- * 
+ *
  */
 class ModelFile<P extends PositionableModel> {
-    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( ModelFile.class );
 
-    private final IndexFile index;
+	private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ModelFile.class);
 
-    private final DataFile<P> data;
+	private final IndexFile index;
 
-    private ModelBackendInfo info;
+	private final DataFile<P> data;
 
-    private final File infoFile;
+	private ModelBackendInfo info;
 
-    private Envelope datasetEnvelope;
+	private final File infoFile;
 
-    /**
-     * @param prototypeIndex
-     * @param treeData
-     * @param serializer
-     * @throws IOException
-     */
-    ModelFile( IndexFile index, DataFile<P> data, File infoFile ) throws IOException {
-        this.data = data;
-        this.index = index;
-        this.infoFile = infoFile;
-        this.info = readBackendInfo( infoFile );
-        datasetEnvelope = this.info.getDatasetEnvelope();
-    }
+	private Envelope datasetEnvelope;
 
-    /**
-     * @param file
-     * @return
-     * @throws IOException
-     */
-    private ModelBackendInfo readBackendInfo( File file )
-                            throws IOException {
+	/**
+	 * @param prototypeIndex
+	 * @param treeData
+	 * @param serializer
+	 * @throws IOException
+	 */
+	ModelFile(IndexFile index, DataFile<P> data, File infoFile) throws IOException {
+		this.data = data;
+		this.index = index;
+		this.infoFile = infoFile;
+		this.info = readBackendInfo(infoFile);
+		datasetEnvelope = this.info.getDatasetEnvelope();
+	}
 
-        if ( !file.exists() || ( file.length() == 0 ) ) {
-            return new ModelBackendInfo();
-        }
+	/**
+	 * @param file
+	 * @return
+	 * @throws IOException
+	 */
+	private ModelBackendInfo readBackendInfo(File file) throws IOException {
 
-        RandomAccessFile raf = new RandomAccessFile( file, "r" );
-        FileChannel channel = raf.getChannel();
-        ByteBuffer bb = ByteBuffer.allocate( (int) raf.length() );
-        channel.read( bb );
-        channel.close();
-        raf.close();
-        bb.rewind();
+		if (!file.exists() || (file.length() == 0)) {
+			return new ModelBackendInfo();
+		}
 
-        return new ModelBackendInfo( bb.getInt(), bb.getInt(), readEnvelope( bb ) );
-    }
+		RandomAccessFile raf = new RandomAccessFile(file, "r");
+		FileChannel channel = raf.getChannel();
+		ByteBuffer bb = ByteBuffer.allocate((int) raf.length());
+		channel.read(bb);
+		channel.close();
+		raf.close();
+		bb.rewind();
 
-    private Envelope readEnvelope( ByteBuffer bb ) {
-        Envelope result = null;
-        if ( ( bb.position() + ( 6 * ( AllocatedHeapMemory.DOUBLE_SIZE ) ) ) < bb.capacity() ) {
-            double[] min = new double[] { bb.getDouble(), bb.getDouble(), bb.getDouble() };
-            double[] max = new double[] { bb.getDouble(), bb.getDouble(), bb.getDouble() };
-            String crs = ObjectSerializer.readString( bb );
-            result = new GeometryFactory().createEnvelope( min, max, CRSManager.getCRSRef( crs ) );
-        }
-        return result;
-    }
+		return new ModelBackendInfo(bb.getInt(), bb.getInt(), readEnvelope(bb));
+	}
 
-    /**
-     * @return the prototypeIndex
-     */
-    public final IndexFile getIndexFile() {
-        return index;
-    }
+	private Envelope readEnvelope(ByteBuffer bb) {
+		Envelope result = null;
+		if ((bb.position() + (6 * (AllocatedHeapMemory.DOUBLE_SIZE))) < bb.capacity()) {
+			double[] min = new double[] { bb.getDouble(), bb.getDouble(), bb.getDouble() };
+			double[] max = new double[] { bb.getDouble(), bb.getDouble(), bb.getDouble() };
+			String crs = ObjectSerializer.readString(bb);
+			result = new GeometryFactory().createEnvelope(min, max, CRSManager.getCRSRef(crs));
+		}
+		return result;
+	}
 
-    /**
-     * @return the treeData
-     */
-    public final DataFile<P> getDataFile() {
-        return data;
-    }
+	/**
+	 * @return the prototypeIndex
+	 */
+	public final IndexFile getIndexFile() {
+		return index;
+	}
 
-    /**
-     * Add the given billboard with the given id.
-     * 
-     * @param id
-     * @param time
-     * @param object
-     * @return true if the object was inserted truly.
-     * @throws IOException
-     */
-    boolean add( DataObjectInfo<P> object )
-                            throws IOException {
-        boolean result = true;
-        long indexInData = index.getPositionForId( object.getUuid() );
-        long dataPosition = 0;
-        if ( indexInData == -1 ) {
-            // just do an add
-            dataPosition = data.add( object );
-            if ( dataPosition != -1 ) {
-                if ( object.getData() instanceof WorldRenderableObject ) {
-                    info.addOrdinates( object );
-                }
-                index.addId( object.getUuid(), dataPosition );
-                Envelope objEnv = object.getEnvelope();
-                if ( objEnv != null ) {
-                    if ( this.datasetEnvelope == null ) {
-                        this.datasetEnvelope = objEnv;
-                    } else {
-                        this.datasetEnvelope = this.datasetEnvelope.merge( objEnv );
-                    }
-                }
-            } else {
-                result = false;
-                LOG.error( "Could not add the given object to the file." );
-            }
-        } else {
-            LOG.error( "Updating is not supported for file backend, not adding object with id: " + object.getUuid() );
-            result = false;
-        }
-        return result;
-    }
+	/**
+	 * @return the treeData
+	 */
+	public final DataFile<P> getDataFile() {
+		return data;
+	}
 
-    /**
-     * Returns true if the id is available in the filebackend.
-     * 
-     * @param id
-     *            to check
-     * @return true if the id is already present in the filebackend.
-     */
-    boolean contains( String id ) {
-        return index.getPositionForId( id ) != -1;
-    }
+	/**
+	 * Add the given billboard with the given id.
+	 * @param id
+	 * @param time
+	 * @param object
+	 * @return true if the object was inserted truly.
+	 * @throws IOException
+	 */
+	boolean add(DataObjectInfo<P> object) throws IOException {
+		boolean result = true;
+		long indexInData = index.getPositionForId(object.getUuid());
+		long dataPosition = 0;
+		if (indexInData == -1) {
+			// just do an add
+			dataPosition = data.add(object);
+			if (dataPosition != -1) {
+				if (object.getData() instanceof WorldRenderableObject) {
+					info.addOrdinates(object);
+				}
+				index.addId(object.getUuid(), dataPosition);
+				Envelope objEnv = object.getEnvelope();
+				if (objEnv != null) {
+					if (this.datasetEnvelope == null) {
+						this.datasetEnvelope = objEnv;
+					}
+					else {
+						this.datasetEnvelope = this.datasetEnvelope.merge(objEnv);
+					}
+				}
+			}
+			else {
+				result = false;
+				LOG.error("Could not add the given object to the file.");
+			}
+		}
+		else {
+			LOG.error("Updating is not supported for file backend, not adding object with id: " + object.getUuid());
+			result = false;
+		}
+		return result;
+	}
 
-    /**
-     * Writes added data to the files and closes all files.
-     * 
-     * @throws IOException
-     */
-    void close()
-                            throws IOException {
-        index.close();
-        data.close();
-        writeBackendInfo();
-    }
+	/**
+	 * Returns true if the id is available in the filebackend.
+	 * @param id to check
+	 * @return true if the id is already present in the filebackend.
+	 */
+	boolean contains(String id) {
+		return index.getPositionForId(id) != -1;
+	}
 
-    /**
-     * @throws IOException
-     * 
-     */
-    private void writeBackendInfo()
-                            throws IOException {
-        if ( info.getOrdinateCount() > 0 || info.getTextureOrdinateCount() > 0 ) {
-            if ( !infoFile.exists() ) {
-                LOG.info( "Creating the info file." );
-                infoFile.createNewFile();
-            }
-            RandomAccessFile raf = null;
-            try {
-                raf = new RandomAccessFile( infoFile, "rw" );
-            } catch ( FileNotFoundException e ) {
-                throw new IOException( "Could not create infofile because: " + e.getLocalizedMessage(), e );
-            }
-            FileChannel channel = raf.getChannel();
-            int bytes = 2 * AllocatedHeapMemory.INT_SIZE;
-            if ( this.datasetEnvelope != null ) {
-                // min and max in 3d space
-                bytes += AllocatedHeapMemory.DOUBLE_SIZE * 3 * 2;
-                if ( this.datasetEnvelope.getCoordinateSystem() != null ) {
-                    bytes += ObjectSerializer.sizeOfString( this.datasetEnvelope.getCoordinateSystem().getAlias() );
-                }
-            }
-            ByteBuffer bb = ByteBuffer.allocate( bytes );
-            bb.putInt( info.getOrdinateCount() );
-            bb.putInt( info.getTextureOrdinateCount() );
-            // write the envelope
-            if ( this.datasetEnvelope != null ) {
-                double[] min = this.datasetEnvelope.getMin().getAsArray();
-                double[] max = this.datasetEnvelope.getMax().getAsArray();
-                for ( double d : min ) {
-                    bb.putDouble( d );
-                }
-                for ( double d : max ) {
-                    bb.putDouble( d );
-                }
-                if ( this.datasetEnvelope.getCoordinateSystem() != null ) {
-                    ObjectSerializer.writeString( bb, this.datasetEnvelope.getCoordinateSystem().getAlias() );
-                }
-            }
+	/**
+	 * Writes added data to the files and closes all files.
+	 * @throws IOException
+	 */
+	void close() throws IOException {
+		index.close();
+		data.close();
+		writeBackendInfo();
+	}
 
-            bb.rewind();
-            channel.write( bb, 0 );
-            channel.close();
-            raf.close();
-        }
-    }
+	/**
+	 * @throws IOException
+	 *
+	 */
+	private void writeBackendInfo() throws IOException {
+		if (info.getOrdinateCount() > 0 || info.getTextureOrdinateCount() > 0) {
+			if (!infoFile.exists()) {
+				LOG.info("Creating the info file.");
+				infoFile.createNewFile();
+			}
+			RandomAccessFile raf = null;
+			try {
+				raf = new RandomAccessFile(infoFile, "rw");
+			}
+			catch (FileNotFoundException e) {
+				throw new IOException("Could not create infofile because: " + e.getLocalizedMessage(), e);
+			}
+			FileChannel channel = raf.getChannel();
+			int bytes = 2 * AllocatedHeapMemory.INT_SIZE;
+			if (this.datasetEnvelope != null) {
+				// min and max in 3d space
+				bytes += AllocatedHeapMemory.DOUBLE_SIZE * 3 * 2;
+				if (this.datasetEnvelope.getCoordinateSystem() != null) {
+					bytes += ObjectSerializer.sizeOfString(this.datasetEnvelope.getCoordinateSystem().getAlias());
+				}
+			}
+			ByteBuffer bb = ByteBuffer.allocate(bytes);
+			bb.putInt(info.getOrdinateCount());
+			bb.putInt(info.getTextureOrdinateCount());
+			// write the envelope
+			if (this.datasetEnvelope != null) {
+				double[] min = this.datasetEnvelope.getMin().getAsArray();
+				double[] max = this.datasetEnvelope.getMax().getAsArray();
+				for (double d : min) {
+					bb.putDouble(d);
+				}
+				for (double d : max) {
+					bb.putDouble(d);
+				}
+				if (this.datasetEnvelope.getCoordinateSystem() != null) {
+					ObjectSerializer.writeString(bb, this.datasetEnvelope.getCoordinateSystem().getAlias());
+				}
+			}
 
-    List<DataObjectInfo<P>> readAllFromFile( ICRS baseCRS )
-                            throws IOException {
-        List<DataObjectInfo<P>> result = new ArrayList<DataObjectInfo<P>>();
+			bb.rewind();
+			channel.write(bb, 0);
+			channel.close();
+			raf.close();
+		}
+	}
 
-        List<Long> positions = index.getPositions();
+	List<DataObjectInfo<P>> readAllFromFile(ICRS baseCRS) throws IOException {
+		List<DataObjectInfo<P>> result = new ArrayList<DataObjectInfo<P>>();
 
-        long size = data.getSize();
+		List<Long> positions = index.getPositions();
 
-        List<Pair<Long, Long>> createBatches = createBatches( positions, size );
+		long size = data.getSize();
 
-        int i = 0;
+		List<Pair<Long, Long>> createBatches = createBatches(positions, size);
 
-        boolean updateOldInfoFile = this.datasetEnvelope == null;
-        Envelope dsEnv = null;
-        for ( Pair<Long, Long> pair : createBatches ) {
-            LOG.info( "Deserialized " + ( ++i ) + " of " + createBatches.size() + " from file: " + data.getFileName() );
-            Pair<Envelope, List<DataObjectInfo<P>>> fromFile = data.readAllFromFile( pair.first, pair.second, dsEnv,
-                                                                                     baseCRS );
-            if ( fromFile != null ) {
-                result.addAll( fromFile.second );
-                dsEnv = fromFile.first;
-            } else {
-                LOG.warn( "Could not retrieve data from positions: " + pair.first + " till: " + pair.second
-                          + " from file: " + data.getFileName() );
-            }
-        }
-        if ( updateOldInfoFile && dsEnv != null ) {
-            double[] min = dsEnv.getMin().getAsArray();
-            double[] max = dsEnv.getMax().getAsArray();
-            double[] tMin = Arrays.copyOf( min, min.length );
-            double[] tMax = Arrays.copyOf( max, max.length );
-            // tMin[0] += ( -toLocal[0] );
-            // tMin[1] += ( -toLocal[1] );
-            // tMax[0] += ( -toLocal[0] );
-            // tMax[1] += ( -toLocal[1] );
-            this.datasetEnvelope = new GeometryFactory().createEnvelope( tMin, tMax, baseCRS );
+		int i = 0;
 
-            this.info.setDatasetEnvelope( this.datasetEnvelope );
-            this.writeBackendInfo();
-        }
-        return result;
-    }
+		boolean updateOldInfoFile = this.datasetEnvelope == null;
+		Envelope dsEnv = null;
+		for (Pair<Long, Long> pair : createBatches) {
+			LOG.info("Deserialized " + (++i) + " of " + createBatches.size() + " from file: " + data.getFileName());
+			Pair<Envelope, List<DataObjectInfo<P>>> fromFile = data.readAllFromFile(pair.first, pair.second, dsEnv,
+					baseCRS);
+			if (fromFile != null) {
+				result.addAll(fromFile.second);
+				dsEnv = fromFile.first;
+			}
+			else {
+				LOG.warn("Could not retrieve data from positions: " + pair.first + " till: " + pair.second
+						+ " from file: " + data.getFileName());
+			}
+		}
+		if (updateOldInfoFile && dsEnv != null) {
+			double[] min = dsEnv.getMin().getAsArray();
+			double[] max = dsEnv.getMax().getAsArray();
+			double[] tMin = Arrays.copyOf(min, min.length);
+			double[] tMax = Arrays.copyOf(max, max.length);
+			// tMin[0] += ( -toLocal[0] );
+			// tMin[1] += ( -toLocal[1] );
+			// tMax[0] += ( -toLocal[0] );
+			// tMax[1] += ( -toLocal[1] );
+			this.datasetEnvelope = new GeometryFactory().createEnvelope(tMin, tMax, baseCRS);
 
-    private List<Pair<Long, Long>> createBatches( List<Long> positions, long dataSize ) {
-        long step = 25 * 1048576; // mb
-        long begin = 0;
-        long end = 0;
-        long nextStep = step;
-        List<Pair<Long, Long>> result = new java.util.LinkedList<Pair<Long, Long>>();
-        for ( Long position : positions ) {
-            end = position;
-            if ( end > nextStep ) {
-                result.add( new Pair<Long, Long>( begin, end ) );
-                begin = end;
-                nextStep += step;
-            }
-            if ( end > dataSize ) {
-                LOG.warn( "The data position: " + end + " is larger than the size of the datafile: " + dataSize
-                          + " this is strange." );
-            }
-        }
-        result.add( new Pair<Long, Long>( begin, dataSize ) );
-        return result;
+			this.info.setDatasetEnvelope(this.datasetEnvelope);
+			this.writeBackendInfo();
+		}
+		return result;
+	}
 
-    }
+	private List<Pair<Long, Long>> createBatches(List<Long> positions, long dataSize) {
+		long step = 25 * 1048576; // mb
+		long begin = 0;
+		long end = 0;
+		long nextStep = step;
+		List<Pair<Long, Long>> result = new java.util.LinkedList<Pair<Long, Long>>();
+		for (Long position : positions) {
+			end = position;
+			if (end > nextStep) {
+				result.add(new Pair<Long, Long>(begin, end));
+				begin = end;
+				nextStep += step;
+			}
+			if (end > dataSize) {
+				LOG.warn("The data position: " + end + " is larger than the size of the datafile: " + dataSize
+						+ " this is strange.");
+			}
+		}
+		result.add(new Pair<Long, Long>(begin, dataSize));
+		return result;
 
-    /**
-     * @param uuid
-     * @return
-     * @throws IOException
-     */
+	}
 
-    Object getObject( String uuid )
-                            throws IOException {
-        long position = index.getPositionForId( uuid );
-        if ( position != -1 ) {
-            data.get( position );
-        }
-        return null;
-    }
+	/**
+	 * @param uuid
+	 * @return
+	 * @throws IOException
+	 */
 
-    /**
-     * @return the info file
-     */
-    public ModelBackendInfo getBackendInfo() {
-        return info;
-    }
+	Object getObject(String uuid) throws IOException {
+		long position = index.getPositionForId(uuid);
+		if (position != -1) {
+			data.get(position);
+		}
+		return null;
+	}
+
+	/**
+	 * @return the info file
+	 */
+	public ModelBackendInfo getBackendInfo() {
+		return info;
+	}
 
 }

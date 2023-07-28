@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -41,37 +40,32 @@ import org.deegree.geometry.primitive.GeometricPrimitive;
 
 /**
  * The <code></code> class TODO add class documentation here.
- * 
+ *
  * @param <T>
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
-public class GeometricPrimitiveReference<T extends GeometricPrimitive> extends GeometryReference<T> implements
-                                                                                                   GeometricPrimitive {
-    /**
-     * Creates a new {@link GeometricPrimitiveReference} instance.
-     * 
-     * @param resolver
-     *            used for resolving the reference, must not be <code>null</code>
-     * @param uri
-     *            the geometry's uri, must not be <code>null</code>
-     * @param baseURL
-     *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
-     */
-    public GeometricPrimitiveReference( GMLReferenceResolver resolver, String uri, String baseURL ) {
-        super( resolver, uri, baseURL );
-    }
+public class GeometricPrimitiveReference<T extends GeometricPrimitive> extends GeometryReference<T>
+		implements GeometricPrimitive {
 
-    @Override
-    public GeometryType getGeometryType() {
-        return GeometryType.PRIMITIVE_GEOMETRY;
-    }
+	/**
+	 * Creates a new {@link GeometricPrimitiveReference} instance.
+	 * @param resolver used for resolving the reference, must not be <code>null</code>
+	 * @param uri the geometry's uri, must not be <code>null</code>
+	 * @param baseURL base URL for resolving the uri, may be <code>null</code> (no
+	 * resolving of relative URLs)
+	 */
+	public GeometricPrimitiveReference(GMLReferenceResolver resolver, String uri, String baseURL) {
+		super(resolver, uri, baseURL);
+	}
 
-    @Override
-    public PrimitiveType getPrimitiveType() {
-        return getReferencedObject().getPrimitiveType();
-    }
+	@Override
+	public GeometryType getGeometryType() {
+		return GeometryType.PRIMITIVE_GEOMETRY;
+	}
+
+	@Override
+	public PrimitiveType getPrimitiveType() {
+		return getReferencedObject().getPrimitiveType();
+	}
+
 }

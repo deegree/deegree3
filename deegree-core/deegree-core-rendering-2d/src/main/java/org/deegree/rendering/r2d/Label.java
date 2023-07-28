@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -49,63 +48,67 @@ import org.deegree.style.styling.TextStyling;
 
 /**
  * A rectangular text label, ready to be drawn
- * 
+ *
  * @author Florian Bingel
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 
 public class Label {
-    
-    public TextLayout mLayout;
-    public TextStyling mStyling;
-    public Font mFont;
-    public String mText;
-    public Point2D.Double mOrigin;
-    public Point2D.Double mDrawPosition;
-    
-    Label(TextLayout pLayout, TextStyling pStyling, Font pFont, String pText, Point2D.Double pOrigin, RendererContext context){
-        mLayout = pLayout;
-        mStyling = pStyling;
-        mFont = pFont;
-        mText = pText;
-        mOrigin = pOrigin;
 
-        double ox = mOrigin.x + context.uomCalculator.considerUOM( mStyling.displacementX, mStyling.uom );
-        double oy = mOrigin.y - context.uomCalculator.considerUOM( mStyling.displacementY, mStyling.uom );
-        
-        double px = ox - ( mStyling.anchorPointX * mLayout.getBounds().getWidth() );
-        double py = oy + ( mStyling.anchorPointY * mLayout.getBounds().getHeight() );
-        mDrawPosition =  new Point2D.Double(px,py);
-        
-    }
-    
-    public TextLayout getLayout() {
-        return mLayout;
-    }
+	public TextLayout mLayout;
 
-    public TextStyling getStyling() {
-        return mStyling;
-    }
+	public TextStyling mStyling;
 
-    public Font getFont() {
-        return mFont;
-    }
+	public Font mFont;
 
-    public String getText() {
-        return mText;
-    }
+	public String mText;
 
-    public Point2D.Double getOrigin() {
-        return mOrigin;
-    }
+	public Point2D.Double mOrigin;
 
-    public Point2D.Double getDrawPosition() {
-        return mDrawPosition;
-    }
-    
-    public void setDrawPosition(Point2D.Double dp) {
-        mDrawPosition = dp;
-    }
+	public Point2D.Double mDrawPosition;
+
+	Label(TextLayout pLayout, TextStyling pStyling, Font pFont, String pText, Point2D.Double pOrigin,
+			RendererContext context) {
+		mLayout = pLayout;
+		mStyling = pStyling;
+		mFont = pFont;
+		mText = pText;
+		mOrigin = pOrigin;
+
+		double ox = mOrigin.x + context.uomCalculator.considerUOM(mStyling.displacementX, mStyling.uom);
+		double oy = mOrigin.y - context.uomCalculator.considerUOM(mStyling.displacementY, mStyling.uom);
+
+		double px = ox - (mStyling.anchorPointX * mLayout.getBounds().getWidth());
+		double py = oy + (mStyling.anchorPointY * mLayout.getBounds().getHeight());
+		mDrawPosition = new Point2D.Double(px, py);
+
+	}
+
+	public TextLayout getLayout() {
+		return mLayout;
+	}
+
+	public TextStyling getStyling() {
+		return mStyling;
+	}
+
+	public Font getFont() {
+		return mFont;
+	}
+
+	public String getText() {
+		return mText;
+	}
+
+	public Point2D.Double getOrigin() {
+		return mOrigin;
+	}
+
+	public Point2D.Double getDrawPosition() {
+		return mDrawPosition;
+	}
+
+	public void setDrawPosition(Point2D.Double dp) {
+		mDrawPosition = dp;
+	}
+
 }

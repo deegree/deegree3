@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-metadata/src/main/java/org/deegree/metadata/iso/persistence/parsing/QueryableProperties.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -47,727 +46,687 @@ import org.deegree.metadata.iso.types.Keyword;
 import org.deegree.metadata.iso.types.OperatesOnData;
 
 /**
- * Properties that are queryable by applicationprofiles such as ISO application profile version 1.0 document 07-045.
- * 
+ * Properties that are queryable by applicationprofiles such as ISO application profile
+ * version 1.0 document 07-045.
+ *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: lbuesching $
- * 
- * @version $Revision: 31021 $, $Date: 2011-06-09 08:40:00 +0200 (Do, 09. Jun 2011) $
  */
 public class QueryableProperties {
 
-    // ---<common queryable properties>
-    // dc:subject
-    private List<Keyword> keywords;
+	// ---<common queryable properties>
+	// dc:subject
+	private List<Keyword> keywords;
 
-    private List<String> title;
+	private List<String> title;
 
-    private List<String> _abstract;
+	private List<String> _abstract;
 
-    private String anyText;
+	private String anyText;
 
-    private List<Format> format;
+	private List<Format> format;
 
-    private String identifier;
+	private String identifier;
 
-    private Date modified;
+	private Date modified;
 
-    private String type;
+	private String type;
 
-    private List<BoundingBox> boundingBox;
+	private List<BoundingBox> boundingBox;
 
-    private List<CRS> crs;
+	private List<CRS> crs;
 
-    // ---</common queryable properties>
+	// ---</common queryable properties>
 
-    // ---<additional common queryable properties>
+	// ---<additional common queryable properties>
 
-    private Date revisionDate;
+	private Date revisionDate;
 
-    private List<String> alternateTitle;
+	private List<String> alternateTitle;
 
-    private Date creationDate;
+	private Date creationDate;
 
-    private Date publicationDate;
+	private Date publicationDate;
 
-    private String organisationName;
+	private String organisationName;
 
-    private boolean hasSecurityConstraints;
+	private boolean hasSecurityConstraints;
 
-    private String language;
+	private String language;
 
-    private List<String> resourceIdentifiers;
+	private List<String> resourceIdentifiers;
 
-    private String parentIdentifier;
+	private String parentIdentifier;
 
-    private List<String> resourceLanguages;
+	private List<String> resourceLanguages;
 
-    private List<String> topicCategory;
+	private List<String> topicCategory;
 
-    private List<OperatesOnData> operatesOnData;
+	private List<OperatesOnData> operatesOnData;
 
-    private int denominator;
+	private int denominator;
 
-    private float distanceValue;
+	private float distanceValue;
 
-    private String distanceUOM;
+	private String distanceUOM;
 
-    private Date temporalExtentBegin;
+	private Date temporalExtentBegin;
 
-    private Date temporalExtentEnd;
+	private Date temporalExtentEnd;
 
-    // ---</additional common queryable properties>
+	// ---</additional common queryable properties>
 
-    // ---<additional common queryable properties for SERVICE>
+	// ---<additional common queryable properties for SERVICE>
 
-    private String serviceType;
+	private String serviceType;
 
-    private List<String> serviceTypeVersion;
+	private List<String> serviceTypeVersion;
 
-    private List<String> geographicDescriptionCode_service;
+	private List<String> geographicDescriptionCode_service;
 
-    private List<String> operation;
+	private List<String> operation;
 
-    private String couplingType;
+	private String couplingType;
 
-    // ---</additional common queryable properties for SERVICE>
+	// ---</additional common queryable properties for SERVICE>
 
-    // ---<additional common queryable properties for INSPIRE>
+	// ---<additional common queryable properties for INSPIRE>
 
-    private boolean degree;
+	private boolean degree;
 
-    private List<String> specificationTitle;
+	private List<String> specificationTitle;
 
-    private String specificationDateType;
+	private String specificationDateType;
 
-    private Date specificationDate;
+	private Date specificationDate;
 
-    private List<Constraint> constraints;
+	private List<Constraint> constraints;
 
-    private String respPartyRole;
+	private String respPartyRole;
 
-    /**
-     * @return the degree
-     */
-    public boolean isDegree() {
-        return degree;
-    }
+	/**
+	 * @return the degree
+	 */
+	public boolean isDegree() {
+		return degree;
+	}
 
-    /**
-     * @param degree
-     *            the degree to set
-     */
-    public void setDegree( boolean degree ) {
-        this.degree = degree;
-    }
-
-    /**
-     * @return the specificationTitle
-     */
-    public List<String> getSpecificationTitle() {
-        return specificationTitle;
-    }
-
-    /**
-     * @param specificationTitle
-     *            the specificationTitle to set
-     */
-    public void setSpecificationTitle( List<String> specificationTitle ) {
-        this.specificationTitle = specificationTitle;
-    }
-
-    /**
-     * @return the specificationDateType
-     */
-    public String getSpecificationDateType() {
-        return specificationDateType;
-    }
-
-    /**
-     * @param specificationDateType
-     *            the specificationDateType to set
-     */
-    public void setSpecificationDateType( String specificationDateType ) {
-        this.specificationDateType = specificationDateType;
-    }
-
-    /**
-     * @return the specificationDate
-     */
-    public Date getSpecificationDate() {
-        return specificationDate;
-    }
-
-    /**
-     * @param specificationDate
-     *            the specificationDate to set
-     */
-    public void setSpecificationDate( Date specificationDate ) {
-        this.specificationDate = specificationDate;
-    }
-
-    /**
-     * @return the constraints
-     */
-    public List<Constraint> getConstraints() {
-        return constraints;
-    }
-
-    /**
-     * @param constraints
-     *            the constraints to set
-     */
-    public void setConstraints( List<Constraint> constraints ) {
-        this.constraints = constraints;
-    }
-
-    /**
-     * @return the lineage
-     */
-    public List<String> getLineages() {
-        return lineages;
-    }
-
-    /**
-     * @param lineage
-     *            the lineage to set
-     */
-    public void setLineages( List<String> lineages ) {
-        this.lineages = new ArrayList<String>();
-        for ( String lineage : lineages ) {
-            this.lineages.add( lineage.replace( "'", "''" ) );
-        }
-    }
-
-    private List<String> lineages;
-
-    // ---</additional common queryable properties for INSPIRE>
-
-    /**
-     * @return _abstract
-     */
-    public List<String> get_abstract() {
-        return _abstract;
-    }
-
-    /**
-     * 
-     * @param _abstract
-     */
-    public void set_abstract( List<String> _abstract ) {
-        this._abstract = _abstract;
-    }
-
-    /**
-     * @return the anyText
-     */
-    public String getAnyText() {
-        return anyText;
-    }
-
-    /**
-     * @param anyText
-     *            the anyText to set
-     */
-    public void setAnyText( String anyText ) {
-        if ( anyText != null ) {
-            anyText = anyText.replace( "'", "''" );
-
-        }
-        this.anyText = anyText;
-    }
-
-    /**
-     * @return the format
-     */
-    public List<Format> getFormat() {
-        return format;
-    }
-
-    /**
-     * @param format
-     *            the format to set
-     */
-    public void setFormat( List<Format> format ) {
-        this.format = format;
-    }
-
-    /**
-     * @return the identifier
-     */
-    public String getIdentifier() {
-        return identifier;
-    }
-
-    /**
-     * @param identifier
-     *            the identifier to set
-     */
-    public void setIdentifier( String identifier ) {
-        this.identifier = identifier;
-    }
-
-    /**
-     * @return the modified
-     */
-    public Date getModified() {
-        return modified;
-    }
-
-    /**
-     * @param modified
-     *            the modified to set
-     */
-    public void setModified( Date modified ) {
-        this.modified = modified;
-    }
-
-    /**
-     * @return the type
-     */
-    public String getType() {
-        return type;
-    }
-
-    /**
-     * @param type
-     *            the type to set
-     */
-    public void setType( String type ) {
-        this.type = type;
-    }
-
-    /**
-     * @return the crs
-     */
-    public List<CRS> getCrs() {
-        return crs;
-    }
-
-    /**
-     * @param crs
-     *            the crs to set
-     */
-    public void setCrs( List<CRS> crs ) {
-        this.crs = crs;
-    }
-
-    /**
-     * @return the title
-     */
-    public List<String> getTitle() {
-        return title;
-    }
-
-    /**
-     * @param title
-     *            the title to set
-     */
-    public void setTitle( List<String> title ) {
-        this.title = title;
-    }
-
-    /**
-     * @return the boundingBox
-     */
-    public List<BoundingBox> getBoundingBox() {
-        return boundingBox;
-    }
-
-    /**
-     * @param boundingBox
-     *            the boundingBox to set
-     */
-    public void setBoundingBox( List<BoundingBox> boundingBox ) {
-        this.boundingBox = boundingBox;
-    }
-
-    /**
-     * @return the keywords
-     */
-    public List<Keyword> getKeywords() {
-        return keywords;
-    }
-
-    /**
-     * @param keywords
-     *            the keywords to set
-     */
-    public void setKeywords( List<Keyword> keywords ) {
-        this.keywords = keywords;
-    }
-
-    /**
-     * @return the alternateTitle
-     */
-    public List<String> getAlternateTitle() {
-        return alternateTitle;
-    }
-
-    /**
-     * @param alternateTitle
-     *            the alternateTitle to set
-     */
-    public void setAlternateTitle( List<String> alternateTitle ) {
-        this.alternateTitle = alternateTitle;
-    }
-
-    /**
-     * @return the resourceLanguage
-     */
-    public String getResourceLanguage() {
-        if ( resourceLanguages != null && !resourceLanguages.isEmpty() )
-            return resourceLanguages.get( 0 );
-        return null;
-    }
-
-    /**
-     * @return the resourceLanguages
-     */
-    public List<String> getResourceLanguages() {
-        return resourceLanguages;
-    }
-
-    /**
-     * @param resourceLanguages
-     *            the resourceLanguages to set
-     */
-    public void setResourceLanguages( List<String> resourceLanguages ) {
-        this.resourceLanguages = resourceLanguages;
-    }
-
-    /**
-     * @return the revisionDate
-     */
-    public Date getRevisionDate() {
-        return revisionDate;
-    }
-
-    /**
-     * @param revisionDate
-     *            the revisionDate to set
-     */
-    public void setRevisionDate( Date revisionDate ) {
-        this.revisionDate = revisionDate;
-    }
-
-    /**
-     * @return the creationDate
-     */
-    public Date getCreationDate() {
-        return creationDate;
-    }
-
-    /**
-     * @param creationDate
-     *            the creationDate to set
-     */
-    public void setCreationDate( Date creationDate ) {
-        this.creationDate = creationDate;
-    }
-
-    /**
-     * @return the publicationDate
-     */
-    public Date getPublicationDate() {
-        return publicationDate;
-    }
-
-    /**
-     * @param publicationDate
-     *            the publicationDate to set
-     */
-    public void setPublicationDate( Date publicationDate ) {
-        this.publicationDate = publicationDate;
-    }
-
-    /**
-     * @return the organisationName
-     */
-    public String getOrganisationName() {
-        return organisationName;
-    }
-
-    /**
-     * @param organisationName
-     *            the organisationName to set
-     */
-    public void setOrganisationName( String organisationName ) {
-        if ( organisationName != null ) {
-            organisationName = organisationName.replace( "'", "''" );
-        }
-        this.organisationName = organisationName;
-    }
-
-    /**
-     * @return the hasSecurityConstraints
-     */
-    public boolean isHasSecurityConstraints() {
-        return hasSecurityConstraints;
-    }
-
-    /**
-     * @param hasSecurityConstraints
-     *            the hasSecurityConstraints to set
-     */
-    public void setHasSecurityConstraints( boolean hasSecurityConstraints ) {
-        this.hasSecurityConstraints = hasSecurityConstraints;
-    }
-
-    /**
-     * @return the language
-     */
-    public String getLanguage() {
-        return language;
-    }
-
-    /**
-     * @param language
-     *            the language to set
-     */
-    public void setLanguage( String language ) {
-        this.language = language;
-    }
-
-    /**
-     * @return the resourceIdentifier
-     */
-    public String getResourceIdentifier() {
-        if ( resourceIdentifiers != null && !resourceIdentifiers.isEmpty() )
-            return resourceIdentifiers.get( 0 );
-        return null;
-    }
-
-    /**
-     * @return the resourceIdentifiers
-     */
-    public List<String> getResourceIdentifiers() {
-        return resourceIdentifiers;
-    }
-
-    /**
-     * @param resourceIdentifiers
-     *            the resourceIdentifiers to set
-     */
-    public void setResourceIdentifiers( List<String> resourceIdentifiers ) {
-        this.resourceIdentifiers = resourceIdentifiers;
-    }
-
-    /**
-     * @return the parentIdentifier
-     */
-    public String getParentIdentifier() {
-        return parentIdentifier;
-    }
-
-    /**
-     * @param parentIdentifier
-     *            the parentIdentifier to set
-     */
-    public void setParentIdentifier( String parentIdentifier ) {
-        this.parentIdentifier = parentIdentifier;
-    }
-
-    /**
-     * @return the topicCategory
-     */
-    public List<String> getTopicCategory() {
-        return topicCategory;
-    }
-
-    /**
-     * @param topicCategory
-     *            the topicCategory to set
-     */
-    public void setTopicCategory( List<String> topicCategory ) {
-        this.topicCategory = topicCategory;
-    }
-
-    /**
-     * @return the serviceType
-     */
-    public String getServiceType() {
-        return serviceType;
-    }
-
-    /**
-     * @param serviceType
-     *            the serviceType to set
-     */
-    public void setServiceType( String serviceType ) {
-        this.serviceType = serviceType;
-    }
-
-    /**
-     * @return the serviceTypeVersion
-     */
-    public List<String> getServiceTypeVersion() {
-        return serviceTypeVersion;
-    }
-
-    /**
-     * @param serviceTypeVersion
-     *            the serviceTypeVersion to set
-     */
-    public void setServiceTypeVersion( List<String> serviceTypeVersion ) {
-        this.serviceTypeVersion = serviceTypeVersion;
-    }
-
-    /**
-     * @return the geographicDescriptionCode_service
-     */
-    public List<String> getGeographicDescriptionCode_service() {
-        return geographicDescriptionCode_service;
-    }
-
-    /**
-     * @param geographicDescriptionCodeService
-     *            the geographicDescriptionCode_service to set
-     */
-    public void setGeographicDescriptionCode_service( List<String> geographicDescriptionCodeService ) {
-        geographicDescriptionCode_service = geographicDescriptionCodeService;
-    }
-
-    /**
-     * @return the operation
-     */
-    public List<String> getOperation() {
-        return operation;
-    }
-
-    /**
-     * @param operation
-     *            the operation to set
-     */
-    public void setOperation( List<String> operation ) {
-        this.operation = operation;
-    }
-
-    /**
-     * @return the couplingType
-     */
-    public String getCouplingType() {
-        return couplingType;
-    }
-
-    /**
-     * @param couplingType
-     *            the couplingType to set
-     */
-    public void setCouplingType( String couplingType ) {
-
-        this.couplingType = couplingType;
-    }
-
-    /**
-     * @return the operatesOnData
-     */
-    public List<OperatesOnData> getOperatesOnData() {
-        return operatesOnData;
-    }
-
-    /**
-     * @param operatesOnData
-     *            the operatesOnData to set
-     */
-    public void setOperatesOnData( List<OperatesOnData> operatesOnData ) {
-        this.operatesOnData = operatesOnData;
-    }
-
-    /**
-     * @return the denominator
-     */
-    public int getDenominator() {
-        return denominator;
-    }
-
-    /**
-     * @param denominator
-     *            the denominator to set
-     */
-    public void setDenominator( int denominator ) {
-        this.denominator = denominator;
-    }
-
-    /**
-     * @return the distanceValue
-     */
-    public float getDistanceValue() {
-        return distanceValue;
-    }
-
-    /**
-     * @param distanceValue
-     *            the distanceValue to set
-     */
-    public void setDistanceValue( float distanceValue ) {
-        this.distanceValue = distanceValue;
-    }
-
-    /**
-     * @return the distanceUOM
-     */
-    public String getDistanceUOM() {
-        return distanceUOM;
-    }
-
-    /**
-     * @param distanceUOM
-     *            the distanceUOM to set
-     */
-    public void setDistanceUOM( String distanceUOM ) {
-        if ( distanceUOM != null ) {
-            distanceUOM = distanceUOM.replace( "'", "''" );
-        }
-        this.distanceUOM = distanceUOM;
-    }
-
-    /**
-     * @return the temporalExtentBegin
-     */
-    public Date getTemporalExtentBegin() {
-        return temporalExtentBegin;
-    }
-
-    /**
-     * @param temporalExtentBegin
-     *            the temporalExtentBegin to set
-     */
-    public void setTemporalExtentBegin( Date temporalExtentBegin ) {
-        this.temporalExtentBegin = temporalExtentBegin;
-    }
-
-    /**
-     * @return the temporalExtentEnd
-     */
-    public Date getTemporalExtentEnd() {
-        return temporalExtentEnd;
-    }
-
-    /**
-     * @param temporalExtentEnd
-     *            the temporalExtentEnd to set
-     */
-    public void setTemporalExtentEnd( Date temporalExtentEnd ) {
-        this.temporalExtentEnd = temporalExtentEnd;
-    }
-
-    /**
-     * @return the respPartyRole
-     */
-    public String getRespPartyRole() {
-        return respPartyRole;
-    }
-
-    /**
-     * @param respPartyRole
-     *            the respPartyRole to set
-     */
-    public void setRespPartyRole( String respPartyRole ) {
-        if ( respPartyRole != null ) {
-            respPartyRole = respPartyRole.replace( "'", "''" );
-        }
-        this.respPartyRole = respPartyRole;
-    }
+	/**
+	 * @param degree the degree to set
+	 */
+	public void setDegree(boolean degree) {
+		this.degree = degree;
+	}
+
+	/**
+	 * @return the specificationTitle
+	 */
+	public List<String> getSpecificationTitle() {
+		return specificationTitle;
+	}
+
+	/**
+	 * @param specificationTitle the specificationTitle to set
+	 */
+	public void setSpecificationTitle(List<String> specificationTitle) {
+		this.specificationTitle = specificationTitle;
+	}
+
+	/**
+	 * @return the specificationDateType
+	 */
+	public String getSpecificationDateType() {
+		return specificationDateType;
+	}
+
+	/**
+	 * @param specificationDateType the specificationDateType to set
+	 */
+	public void setSpecificationDateType(String specificationDateType) {
+		this.specificationDateType = specificationDateType;
+	}
+
+	/**
+	 * @return the specificationDate
+	 */
+	public Date getSpecificationDate() {
+		return specificationDate;
+	}
+
+	/**
+	 * @param specificationDate the specificationDate to set
+	 */
+	public void setSpecificationDate(Date specificationDate) {
+		this.specificationDate = specificationDate;
+	}
+
+	/**
+	 * @return the constraints
+	 */
+	public List<Constraint> getConstraints() {
+		return constraints;
+	}
+
+	/**
+	 * @param constraints the constraints to set
+	 */
+	public void setConstraints(List<Constraint> constraints) {
+		this.constraints = constraints;
+	}
+
+	/**
+	 * @return the lineage
+	 */
+	public List<String> getLineages() {
+		return lineages;
+	}
+
+	/**
+	 * @param lineage the lineage to set
+	 */
+	public void setLineages(List<String> lineages) {
+		this.lineages = new ArrayList<String>();
+		for (String lineage : lineages) {
+			this.lineages.add(lineage.replace("'", "''"));
+		}
+	}
+
+	private List<String> lineages;
+
+	// ---</additional common queryable properties for INSPIRE>
+
+	/**
+	 * @return _abstract
+	 */
+	public List<String> get_abstract() {
+		return _abstract;
+	}
+
+	/**
+	 * @param _abstract
+	 */
+	public void set_abstract(List<String> _abstract) {
+		this._abstract = _abstract;
+	}
+
+	/**
+	 * @return the anyText
+	 */
+	public String getAnyText() {
+		return anyText;
+	}
+
+	/**
+	 * @param anyText the anyText to set
+	 */
+	public void setAnyText(String anyText) {
+		if (anyText != null) {
+			anyText = anyText.replace("'", "''");
+
+		}
+		this.anyText = anyText;
+	}
+
+	/**
+	 * @return the format
+	 */
+	public List<Format> getFormat() {
+		return format;
+	}
+
+	/**
+	 * @param format the format to set
+	 */
+	public void setFormat(List<Format> format) {
+		this.format = format;
+	}
+
+	/**
+	 * @return the identifier
+	 */
+	public String getIdentifier() {
+		return identifier;
+	}
+
+	/**
+	 * @param identifier the identifier to set
+	 */
+	public void setIdentifier(String identifier) {
+		this.identifier = identifier;
+	}
+
+	/**
+	 * @return the modified
+	 */
+	public Date getModified() {
+		return modified;
+	}
+
+	/**
+	 * @param modified the modified to set
+	 */
+	public void setModified(Date modified) {
+		this.modified = modified;
+	}
+
+	/**
+	 * @return the type
+	 */
+	public String getType() {
+		return type;
+	}
+
+	/**
+	 * @param type the type to set
+	 */
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	/**
+	 * @return the crs
+	 */
+	public List<CRS> getCrs() {
+		return crs;
+	}
+
+	/**
+	 * @param crs the crs to set
+	 */
+	public void setCrs(List<CRS> crs) {
+		this.crs = crs;
+	}
+
+	/**
+	 * @return the title
+	 */
+	public List<String> getTitle() {
+		return title;
+	}
+
+	/**
+	 * @param title the title to set
+	 */
+	public void setTitle(List<String> title) {
+		this.title = title;
+	}
+
+	/**
+	 * @return the boundingBox
+	 */
+	public List<BoundingBox> getBoundingBox() {
+		return boundingBox;
+	}
+
+	/**
+	 * @param boundingBox the boundingBox to set
+	 */
+	public void setBoundingBox(List<BoundingBox> boundingBox) {
+		this.boundingBox = boundingBox;
+	}
+
+	/**
+	 * @return the keywords
+	 */
+	public List<Keyword> getKeywords() {
+		return keywords;
+	}
+
+	/**
+	 * @param keywords the keywords to set
+	 */
+	public void setKeywords(List<Keyword> keywords) {
+		this.keywords = keywords;
+	}
+
+	/**
+	 * @return the alternateTitle
+	 */
+	public List<String> getAlternateTitle() {
+		return alternateTitle;
+	}
+
+	/**
+	 * @param alternateTitle the alternateTitle to set
+	 */
+	public void setAlternateTitle(List<String> alternateTitle) {
+		this.alternateTitle = alternateTitle;
+	}
+
+	/**
+	 * @return the resourceLanguage
+	 */
+	public String getResourceLanguage() {
+		if (resourceLanguages != null && !resourceLanguages.isEmpty())
+			return resourceLanguages.get(0);
+		return null;
+	}
+
+	/**
+	 * @return the resourceLanguages
+	 */
+	public List<String> getResourceLanguages() {
+		return resourceLanguages;
+	}
+
+	/**
+	 * @param resourceLanguages the resourceLanguages to set
+	 */
+	public void setResourceLanguages(List<String> resourceLanguages) {
+		this.resourceLanguages = resourceLanguages;
+	}
+
+	/**
+	 * @return the revisionDate
+	 */
+	public Date getRevisionDate() {
+		return revisionDate;
+	}
+
+	/**
+	 * @param revisionDate the revisionDate to set
+	 */
+	public void setRevisionDate(Date revisionDate) {
+		this.revisionDate = revisionDate;
+	}
+
+	/**
+	 * @return the creationDate
+	 */
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	/**
+	 * @param creationDate the creationDate to set
+	 */
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+
+	/**
+	 * @return the publicationDate
+	 */
+	public Date getPublicationDate() {
+		return publicationDate;
+	}
+
+	/**
+	 * @param publicationDate the publicationDate to set
+	 */
+	public void setPublicationDate(Date publicationDate) {
+		this.publicationDate = publicationDate;
+	}
+
+	/**
+	 * @return the organisationName
+	 */
+	public String getOrganisationName() {
+		return organisationName;
+	}
+
+	/**
+	 * @param organisationName the organisationName to set
+	 */
+	public void setOrganisationName(String organisationName) {
+		if (organisationName != null) {
+			organisationName = organisationName.replace("'", "''");
+		}
+		this.organisationName = organisationName;
+	}
+
+	/**
+	 * @return the hasSecurityConstraints
+	 */
+	public boolean isHasSecurityConstraints() {
+		return hasSecurityConstraints;
+	}
+
+	/**
+	 * @param hasSecurityConstraints the hasSecurityConstraints to set
+	 */
+	public void setHasSecurityConstraints(boolean hasSecurityConstraints) {
+		this.hasSecurityConstraints = hasSecurityConstraints;
+	}
+
+	/**
+	 * @return the language
+	 */
+	public String getLanguage() {
+		return language;
+	}
+
+	/**
+	 * @param language the language to set
+	 */
+	public void setLanguage(String language) {
+		this.language = language;
+	}
+
+	/**
+	 * @return the resourceIdentifier
+	 */
+	public String getResourceIdentifier() {
+		if (resourceIdentifiers != null && !resourceIdentifiers.isEmpty())
+			return resourceIdentifiers.get(0);
+		return null;
+	}
+
+	/**
+	 * @return the resourceIdentifiers
+	 */
+	public List<String> getResourceIdentifiers() {
+		return resourceIdentifiers;
+	}
+
+	/**
+	 * @param resourceIdentifiers the resourceIdentifiers to set
+	 */
+	public void setResourceIdentifiers(List<String> resourceIdentifiers) {
+		this.resourceIdentifiers = resourceIdentifiers;
+	}
+
+	/**
+	 * @return the parentIdentifier
+	 */
+	public String getParentIdentifier() {
+		return parentIdentifier;
+	}
+
+	/**
+	 * @param parentIdentifier the parentIdentifier to set
+	 */
+	public void setParentIdentifier(String parentIdentifier) {
+		this.parentIdentifier = parentIdentifier;
+	}
+
+	/**
+	 * @return the topicCategory
+	 */
+	public List<String> getTopicCategory() {
+		return topicCategory;
+	}
+
+	/**
+	 * @param topicCategory the topicCategory to set
+	 */
+	public void setTopicCategory(List<String> topicCategory) {
+		this.topicCategory = topicCategory;
+	}
+
+	/**
+	 * @return the serviceType
+	 */
+	public String getServiceType() {
+		return serviceType;
+	}
+
+	/**
+	 * @param serviceType the serviceType to set
+	 */
+	public void setServiceType(String serviceType) {
+		this.serviceType = serviceType;
+	}
+
+	/**
+	 * @return the serviceTypeVersion
+	 */
+	public List<String> getServiceTypeVersion() {
+		return serviceTypeVersion;
+	}
+
+	/**
+	 * @param serviceTypeVersion the serviceTypeVersion to set
+	 */
+	public void setServiceTypeVersion(List<String> serviceTypeVersion) {
+		this.serviceTypeVersion = serviceTypeVersion;
+	}
+
+	/**
+	 * @return the geographicDescriptionCode_service
+	 */
+	public List<String> getGeographicDescriptionCode_service() {
+		return geographicDescriptionCode_service;
+	}
+
+	/**
+	 * @param geographicDescriptionCodeService the geographicDescriptionCode_service to
+	 * set
+	 */
+	public void setGeographicDescriptionCode_service(List<String> geographicDescriptionCodeService) {
+		geographicDescriptionCode_service = geographicDescriptionCodeService;
+	}
+
+	/**
+	 * @return the operation
+	 */
+	public List<String> getOperation() {
+		return operation;
+	}
+
+	/**
+	 * @param operation the operation to set
+	 */
+	public void setOperation(List<String> operation) {
+		this.operation = operation;
+	}
+
+	/**
+	 * @return the couplingType
+	 */
+	public String getCouplingType() {
+		return couplingType;
+	}
+
+	/**
+	 * @param couplingType the couplingType to set
+	 */
+	public void setCouplingType(String couplingType) {
+
+		this.couplingType = couplingType;
+	}
+
+	/**
+	 * @return the operatesOnData
+	 */
+	public List<OperatesOnData> getOperatesOnData() {
+		return operatesOnData;
+	}
+
+	/**
+	 * @param operatesOnData the operatesOnData to set
+	 */
+	public void setOperatesOnData(List<OperatesOnData> operatesOnData) {
+		this.operatesOnData = operatesOnData;
+	}
+
+	/**
+	 * @return the denominator
+	 */
+	public int getDenominator() {
+		return denominator;
+	}
+
+	/**
+	 * @param denominator the denominator to set
+	 */
+	public void setDenominator(int denominator) {
+		this.denominator = denominator;
+	}
+
+	/**
+	 * @return the distanceValue
+	 */
+	public float getDistanceValue() {
+		return distanceValue;
+	}
+
+	/**
+	 * @param distanceValue the distanceValue to set
+	 */
+	public void setDistanceValue(float distanceValue) {
+		this.distanceValue = distanceValue;
+	}
+
+	/**
+	 * @return the distanceUOM
+	 */
+	public String getDistanceUOM() {
+		return distanceUOM;
+	}
+
+	/**
+	 * @param distanceUOM the distanceUOM to set
+	 */
+	public void setDistanceUOM(String distanceUOM) {
+		if (distanceUOM != null) {
+			distanceUOM = distanceUOM.replace("'", "''");
+		}
+		this.distanceUOM = distanceUOM;
+	}
+
+	/**
+	 * @return the temporalExtentBegin
+	 */
+	public Date getTemporalExtentBegin() {
+		return temporalExtentBegin;
+	}
+
+	/**
+	 * @param temporalExtentBegin the temporalExtentBegin to set
+	 */
+	public void setTemporalExtentBegin(Date temporalExtentBegin) {
+		this.temporalExtentBegin = temporalExtentBegin;
+	}
+
+	/**
+	 * @return the temporalExtentEnd
+	 */
+	public Date getTemporalExtentEnd() {
+		return temporalExtentEnd;
+	}
+
+	/**
+	 * @param temporalExtentEnd the temporalExtentEnd to set
+	 */
+	public void setTemporalExtentEnd(Date temporalExtentEnd) {
+		this.temporalExtentEnd = temporalExtentEnd;
+	}
+
+	/**
+	 * @return the respPartyRole
+	 */
+	public String getRespPartyRole() {
+		return respPartyRole;
+	}
+
+	/**
+	 * @param respPartyRole the respPartyRole to set
+	 */
+	public void setRespPartyRole(String respPartyRole) {
+		if (respPartyRole != null) {
+			respPartyRole = respPartyRole.replace("'", "''");
+		}
+		this.respPartyRole = respPartyRole;
+	}
 
 }

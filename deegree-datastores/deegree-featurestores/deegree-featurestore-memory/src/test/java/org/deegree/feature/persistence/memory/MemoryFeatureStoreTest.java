@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2013 by:
@@ -84,136 +83,126 @@ import org.junit.Test;
 
 /**
  * The <code></code> class TODO add class documentation here.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * 
- * @version $Revision: $, $Date: $
  */
 public class MemoryFeatureStoreTest {
 
-    private static final String BASE_DIR = "../../../gml/feature/testdata/features/";
+	private static final String BASE_DIR = "../../../gml/feature/testdata/features/";
 
-    private MemoryFeatureStore store;
+	private MemoryFeatureStore store;
 
-    private DefaultWorkspace workspace;
+	private DefaultWorkspace workspace;
 
-    @Before
-    public void setUp()
-                            throws XMLParsingException, XMLStreamException, UnknownCRSException,
-                            FactoryConfigurationError, IOException, FeatureStoreException, ReferenceResolvingException,
-                            ClassCastException, ClassNotFoundException, InstantiationException, IllegalAccessException,
-                            ResourceInitException {
+	@Before
+	public void setUp() throws XMLParsingException, XMLStreamException, UnknownCRSException, FactoryConfigurationError,
+			IOException, FeatureStoreException, ReferenceResolvingException, ClassCastException, ClassNotFoundException,
+			InstantiationException, IllegalAccessException, ResourceInitException {
 
-        workspace = new DefaultWorkspace( new File( "nix" ) );
-        workspace.initAll();
-        String schemaURL = this.getClass().getResource( "/org/deegree/gml/feature/testdata/schema/Philosopher.xsd" ).toString();
-        GMLAppSchemaReader adapter = new GMLAppSchemaReader( GML_31, null, schemaURL );
-        AppSchema schema = adapter.extractAppSchema();
+		workspace = new DefaultWorkspace(new File("nix"));
+		workspace.initAll();
+		String schemaURL = this.getClass()
+			.getResource("/org/deegree/gml/feature/testdata/schema/Philosopher.xsd")
+			.toString();
+		GMLAppSchemaReader adapter = new GMLAppSchemaReader(GML_31, null, schemaURL);
+		AppSchema schema = adapter.extractAppSchema();
 
-        URL docURL = getClass().getResource( BASE_DIR + "Philosopher_FeatureCollection.xml" );
-        ConnectionProvider prov = workspace.getResource( ConnectionProviderProvider.class, "LOCK_DB" );
-        store = new MemoryFeatureStore( schema, null, null, prov );
+		URL docURL = getClass().getResource(BASE_DIR + "Philosopher_FeatureCollection.xml");
+		ConnectionProvider prov = workspace.getResource(ConnectionProviderProvider.class, "LOCK_DB");
+		store = new MemoryFeatureStore(schema, null, null, prov);
 
-        GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader( GML_31, docURL );
-        gmlStream.setApplicationSchema( schema );
-        FeatureCollection fc = (FeatureCollection) gmlStream.readFeature();
-        gmlStream.getIdContext().resolveLocalRefs();
+		GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader(GML_31, docURL);
+		gmlStream.setApplicationSchema(schema);
+		FeatureCollection fc = (FeatureCollection) gmlStream.readFeature();
+		gmlStream.getIdContext().resolveLocalRefs();
 
-        FeatureStoreTransaction ta = store.acquireTransaction();
-        ta.performInsert( fc, USE_EXISTING ).size();
-        ta.commit();
-    }
+		FeatureStoreTransaction ta = store.acquireTransaction();
+		ta.performInsert(fc, USE_EXISTING).size();
+		ta.commit();
+	}
 
-    @After
-    public void shutDown() {
-        workspace.destroy();
-    }
+	@After
+	public void shutDown() {
+		workspace.destroy();
+	}
 
-    @Test
-    public void testQueryAllPhilosophers()
-                            throws FilterEvaluationException, FeatureStoreException {
-        TypeName[] typeNames = new TypeName[] { new TypeName(
-                                                              QName.valueOf( "{http://www.deegree.org/app}Philosopher" ),
-                                                              null ) };
-        Query query = new Query( typeNames, null, null, null, null );
-        FeatureCollection fc = store.query( query ).toCollection();
-        Assert.assertEquals( typeNames[0].getFeatureTypeName(), fc.iterator().next().getName() );
-        Assert.assertEquals( 7, fc.size() );
-    }
+	@Test
+	public void testQueryAllPhilosophers() throws FilterEvaluationException, FeatureStoreException {
+		TypeName[] typeNames = new TypeName[] {
+				new TypeName(QName.valueOf("{http://www.deegree.org/app}Philosopher"), null) };
+		Query query = new Query(typeNames, null, null, null, null);
+		FeatureCollection fc = store.query(query).toCollection();
+		Assert.assertEquals(typeNames[0].getFeatureTypeName(), fc.iterator().next().getName());
+		Assert.assertEquals(7, fc.size());
+	}
 
-    @Test
-    public void testQueryAllPlaces()
-                            throws FilterEvaluationException, FeatureStoreException {
-        TypeName[] typeNames = new TypeName[] { new TypeName( QName.valueOf( "{http://www.deegree.org/app}Place" ),
-                                                              null ) };
-        Query query = new Query( typeNames, null, null, null, null );
-        FeatureCollection fc = store.query( query ).toCollection();
-        Assert.assertEquals( typeNames[0].getFeatureTypeName(), fc.iterator().next().getName() );
-        Assert.assertEquals( 7, fc.size() );
-    }
+	@Test
+	public void testQueryAllPlaces() throws FilterEvaluationException, FeatureStoreException {
+		TypeName[] typeNames = new TypeName[] {
+				new TypeName(QName.valueOf("{http://www.deegree.org/app}Place"), null) };
+		Query query = new Query(typeNames, null, null, null, null);
+		FeatureCollection fc = store.query(query).toCollection();
+		Assert.assertEquals(typeNames[0].getFeatureTypeName(), fc.iterator().next().getName());
+		Assert.assertEquals(7, fc.size());
+	}
 
-    @Test
-    public void testQueryAllCountries()
-                            throws FilterEvaluationException, FeatureStoreException {
-        TypeName[] typeNames = new TypeName[] { new TypeName( QName.valueOf( "{http://www.deegree.org/app}Country" ),
-                                                              null ) };
-        Query query = new Query( typeNames, null, null, null, null );
-        FeatureCollection fc = store.query( query ).toCollection();
-        Assert.assertEquals( typeNames[0].getFeatureTypeName(), fc.iterator().next().getName() );
-        Assert.assertEquals( 4, fc.size() );
-    }
+	@Test
+	public void testQueryAllCountries() throws FilterEvaluationException, FeatureStoreException {
+		TypeName[] typeNames = new TypeName[] {
+				new TypeName(QName.valueOf("{http://www.deegree.org/app}Country"), null) };
+		Query query = new Query(typeNames, null, null, null, null);
+		FeatureCollection fc = store.query(query).toCollection();
+		Assert.assertEquals(typeNames[0].getFeatureTypeName(), fc.iterator().next().getName());
+		Assert.assertEquals(4, fc.size());
+	}
 
-    // @Test
-    public void testQueryAllBooks()
-                            throws FilterEvaluationException, FeatureStoreException {
-        TypeName[] typeNames = new TypeName[] { new TypeName( QName.valueOf( "{http://www.deegree.org/app}Book" ), null ) };
-        Query query = new Query( typeNames, null, null, null, null );
-        FeatureCollection fc = store.query( query ).toCollection();
-        Assert.assertEquals( typeNames[0].getFeatureTypeName(), fc.iterator().next().getName() );
-        Assert.assertEquals( 1, fc.size() );
-    }
+	// @Test
+	public void testQueryAllBooks() throws FilterEvaluationException, FeatureStoreException {
+		TypeName[] typeNames = new TypeName[] { new TypeName(QName.valueOf("{http://www.deegree.org/app}Book"), null) };
+		Query query = new Query(typeNames, null, null, null, null);
+		FeatureCollection fc = store.query(query).toCollection();
+		Assert.assertEquals(typeNames[0].getFeatureTypeName(), fc.iterator().next().getName());
+		Assert.assertEquals(1, fc.size());
+	}
 
-    @Test
-    public void testQueryPhilosopherById()
-                            throws FilterEvaluationException, FeatureStoreException {
-        TypeName[] typeNames = new TypeName[] { new TypeName(
-                                                              QName.valueOf( "{http://www.deegree.org/app}Philosopher" ),
-                                                              null ) };
-        Filter filter = new IdFilter( "PHILOSOPHER_1", "PHILOSOPHER_2" );
-        Query query = new Query( typeNames, filter, null, null, null );
-        FeatureCollection fc = store.query( query ).toCollection();
-        Assert.assertEquals( typeNames[0].getFeatureTypeName(), fc.iterator().next().getName() );
-        Assert.assertEquals( 2, fc.size() );
-    }
+	@Test
+	public void testQueryPhilosopherById() throws FilterEvaluationException, FeatureStoreException {
+		TypeName[] typeNames = new TypeName[] {
+				new TypeName(QName.valueOf("{http://www.deegree.org/app}Philosopher"), null) };
+		Filter filter = new IdFilter("PHILOSOPHER_1", "PHILOSOPHER_2");
+		Query query = new Query(typeNames, filter, null, null, null);
+		FeatureCollection fc = store.query(query).toCollection();
+		Assert.assertEquals(typeNames[0].getFeatureTypeName(), fc.iterator().next().getName());
+		Assert.assertEquals(2, fc.size());
+	}
 
-    @Test
-    public void testGetObjectByIdFeature() {
-        Object o = store.getObjectById( "PHILOSOPHER_7" );
-        Assert.assertTrue( o instanceof Feature );
-    }
+	@Test
+	public void testGetObjectByIdFeature() {
+		Object o = store.getObjectById("PHILOSOPHER_7");
+		Assert.assertTrue(o instanceof Feature);
+	}
 
-    @Test
-    public void testGetObjectByIdGeometry1() {
-        Object o = store.getObjectById( "MULTIPOLYGON_1" );
-        Assert.assertTrue( o instanceof Geometry );
-    }
+	@Test
+	public void testGetObjectByIdGeometry1() {
+		Object o = store.getObjectById("MULTIPOLYGON_1");
+		Assert.assertTrue(o instanceof Geometry);
+	}
 
-    @Test
-    public void testGetObjectByIdGeometry2()
-                            throws FileNotFoundException, XMLStreamException, UnknownCRSException,
-                            TransformationException {
-        Object o = store.getObjectById( "RING_1" );
-        Assert.assertTrue( o instanceof Ring );
+	@Test
+	public void testGetObjectByIdGeometry2()
+			throws FileNotFoundException, XMLStreamException, UnknownCRSException, TransformationException {
+		Object o = store.getObjectById("RING_1");
+		Assert.assertTrue(o instanceof Ring);
 
-        XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
-        outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
-        OutputStream out = new FileOutputStream( System.getProperty( "java.io.tmpdir" ) + File.separatorChar
-                                                 + "exported_ring.gml" );
-        XMLStreamWriter writer = outputFactory.createXMLStreamWriter( out );
-        writer.setDefaultNamespace( "http://www.opengis.net/gml" );
+		XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
+		outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", new Boolean(true));
+		OutputStream out = new FileOutputStream(
+				System.getProperty("java.io.tmpdir") + File.separatorChar + "exported_ring.gml");
+		XMLStreamWriter writer = outputFactory.createXMLStreamWriter(out);
+		writer.setDefaultNamespace("http://www.opengis.net/gml");
 
-        GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( GMLVersion.GML_31, writer );
-        gmlStream.write( (Geometry) o );
-    }
+		GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter(GMLVersion.GML_31, writer);
+		gmlStream.write((Geometry) o);
+	}
+
 }

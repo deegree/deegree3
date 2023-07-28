@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -77,157 +76,157 @@ import org.xml.sax.SAXException;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:goltz@deegree.org">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class ISORecordSerializeTest extends AbstractISOTest {
 
-    private static final Logger LOG = getLogger( ISORecordSerializeTest.class );
+	private static final Logger LOG = getLogger(ISORecordSerializeTest.class);
 
-    @Test
-    public void testNamespaces()
-                            throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException,
-                            MetadataInspectorException, ResourceInitException {
-        LOG.info( "START Test: testNamespaces" );
+	@Test
+	public void testNamespaces() throws MetadataStoreException, XMLStreamException, FactoryConfigurationError,
+			IOException, MetadataInspectorException, ResourceInitException {
+		LOG.info("START Test: testNamespaces");
 
-        initStore( TstConstants.configURL );
-        Assume.assumeNotNull( store );
+		initStore(TstConstants.configURL);
+		Assume.assumeNotNull(store);
 
-        List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_12 );
-        resultSet = store.getRecordById( ids, null );
+		List<String> ids = TstUtils.insertMetadata(store, TstConstants.tst_12);
+		resultSet = store.getRecordById(ids, null);
 
-        // create the is output
-        // String file = "/home/thomas/Desktop/zTestBrief.xml";
-        String file = null;
-        StringBuilder streamActual = stringBuilderFromResultSet( resultSet, ReturnableElement.brief, file,
-                                                                 XMLStreamConstants.NAMESPACE );
-        if ( streamActual == null ) {
-            return;
-        }
-        StringBuilder streamExpected = new StringBuilder();
-        streamExpected.append( "=http://www.isotc211.org/2005/gmd" ).append( ' ' );
-        streamExpected.append( "srv=http://www.isotc211.org/2005/srv" ).append( ' ' );
-        streamExpected.append( "gml=http://www.opengis.net/gml" ).append( ' ' );
-        streamExpected.append( "gmd=http://www.isotc211.org/2005/gmd" ).append( ' ' );
-        streamExpected.append( "gco=http://www.isotc211.org/2005/gco" ).append( ' ' );
-        streamExpected.append( "gts=http://www.isotc211.org/2005/gts" ).append( ' ' );
-        streamExpected.append( "xsi=http://www.w3.org/2001/XMLSchema-instance" ).append( ' ' );
+		// create the is output
+		// String file = "/home/thomas/Desktop/zTestBrief.xml";
+		String file = null;
+		StringBuilder streamActual = stringBuilderFromResultSet(resultSet, ReturnableElement.brief, file,
+				XMLStreamConstants.NAMESPACE);
+		if (streamActual == null) {
+			return;
+		}
+		StringBuilder streamExpected = new StringBuilder();
+		streamExpected.append("=http://www.isotc211.org/2005/gmd").append(' ');
+		streamExpected.append("srv=http://www.isotc211.org/2005/srv").append(' ');
+		streamExpected.append("gml=http://www.opengis.net/gml").append(' ');
+		streamExpected.append("gmd=http://www.isotc211.org/2005/gmd").append(' ');
+		streamExpected.append("gco=http://www.isotc211.org/2005/gco").append(' ');
+		streamExpected.append("gts=http://www.isotc211.org/2005/gts").append(' ');
+		streamExpected.append("xsi=http://www.w3.org/2001/XMLSchema-instance").append(' ');
 
-        LOG.info( "streamThis: " + streamExpected.toString() );
-        LOG.info( "streamThat: " + streamActual.toString() );
-        System.out.println( streamActual );
-        Assert.assertEquals( streamExpected.toString(), streamActual.toString() );
+		LOG.info("streamThis: " + streamExpected.toString());
+		LOG.info("streamThat: " + streamActual.toString());
+		System.out.println(streamActual);
+		Assert.assertEquals(streamExpected.toString(), streamActual.toString());
 
-    }
+	}
 
-    // @Test
-    public void testOutputBrief()
-                            throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException,
-                            MetadataInspectorException, ResourceInitException {
-        LOG.info( "START Test: is output ISO brief? " );
+	// @Test
+	public void testOutputBrief() throws MetadataStoreException, XMLStreamException, FactoryConfigurationError,
+			IOException, MetadataInspectorException, ResourceInitException {
+		LOG.info("START Test: is output ISO brief? ");
 
-        XMLOutputFactory of = XMLOutputFactory.newInstance();
-        StringWriter sw = new StringWriter();
-        XMLStreamWriter writer = of.createXMLStreamWriter( sw );
+		XMLOutputFactory of = XMLOutputFactory.newInstance();
+		StringWriter sw = new StringWriter();
+		XMLStreamWriter writer = of.createXMLStreamWriter(sw);
 
-        XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( TstConstants.fullRecord.openStream() );
-        ISORecord rec = new ISORecord( xmlStream );
-        rec.serialize( writer, ReturnableElement.brief );
-        writer.close();
-        xmlStream.close();
+		XMLStreamReader xmlStream = XMLInputFactory.newInstance()
+			.createXMLStreamReader(TstConstants.fullRecord.openStream());
+		ISORecord rec = new ISORecord(xmlStream);
+		rec.serialize(writer, ReturnableElement.brief);
+		writer.close();
+		xmlStream.close();
 
-        StringReader input = new StringReader( sw.toString() );
-        sw.close();
-        Assert.assertTrue( validate( input ) );
-    }
+		StringReader input = new StringReader(sw.toString());
+		sw.close();
+		Assert.assertTrue(validate(input));
+	}
 
-    // @Test
-    public void testOutputSummary()
-                            throws MetadataStoreException, XMLStreamException, FactoryConfigurationError, IOException,
-                            MetadataInspectorException, ResourceInitException {
-        LOG.info( "START Test: is output ISO summary? " );
+	// @Test
+	public void testOutputSummary() throws MetadataStoreException, XMLStreamException, FactoryConfigurationError,
+			IOException, MetadataInspectorException, ResourceInitException {
+		LOG.info("START Test: is output ISO summary? ");
 
-        XMLOutputFactory of = XMLOutputFactory.newInstance();
-        StringWriter sw = new StringWriter();
-        XMLStreamWriter writer = of.createXMLStreamWriter( sw );
+		XMLOutputFactory of = XMLOutputFactory.newInstance();
+		StringWriter sw = new StringWriter();
+		XMLStreamWriter writer = of.createXMLStreamWriter(sw);
 
-        XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( TstConstants.fullRecord.openStream() );
-        ISORecord rec = new ISORecord( xmlStream );
-        rec.serialize( writer, ReturnableElement.summary );
-        writer.close();
-        xmlStream.close();
+		XMLStreamReader xmlStream = XMLInputFactory.newInstance()
+			.createXMLStreamReader(TstConstants.fullRecord.openStream());
+		ISORecord rec = new ISORecord(xmlStream);
+		rec.serialize(writer, ReturnableElement.summary);
+		writer.close();
+		xmlStream.close();
 
-        StringReader input = new StringReader( sw.toString() );
-        sw.close();
-        Assert.assertTrue( validate( input ) );
-    }
+		StringReader input = new StringReader(sw.toString());
+		sw.close();
+		Assert.assertTrue(validate(input));
+	}
 
-    private boolean validate( Reader toValidate ) {
-        try {
-            SchemaFactory factory = SchemaFactory.newInstance( "http://www.w3.org/2001/XMLSchema" );
-            Schema schema = factory.newSchema( new URL(
-                                                        "http://schemas.opengis.net/iso/19139/20070417/gmd/metadataEntity.xsd" ) );
-            Validator validator = schema.newValidator();
-            Source source = new StreamSource( toValidate );
-            validator.validate( source );
-            return true;
-        } catch ( SAXException ex ) {
-            ex.printStackTrace();
-        } catch ( IOException e ) {
-            e.printStackTrace();
-        }
-        return false;
+	private boolean validate(Reader toValidate) {
+		try {
+			SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
+			Schema schema = factory
+				.newSchema(new URL("http://schemas.opengis.net/iso/19139/20070417/gmd/metadataEntity.xsd"));
+			Validator validator = schema.newValidator();
+			Source source = new StreamSource(toValidate);
+			validator.validate(source);
+			return true;
+		}
+		catch (SAXException ex) {
+			ex.printStackTrace();
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		return false;
 
-    }
+	}
 
-    private static StringBuilder stringBuilderFromResultSet( MetadataResultSet<?> resultSet,
-                                                             ReturnableElement returnableElement, String file,
-                                                             int searchEvent )
-                            throws XMLStreamException, FileNotFoundException, MetadataStoreException {
-        OutputStream fout = null;
-        if ( file == null ) {
-            fout = new ByteArrayOutputStream();
-        } else {
-            fout = new FileOutputStream( file );
-        }
+	private static StringBuilder stringBuilderFromResultSet(MetadataResultSet<?> resultSet,
+			ReturnableElement returnableElement, String file, int searchEvent)
+			throws XMLStreamException, FileNotFoundException, MetadataStoreException {
+		OutputStream fout = null;
+		if (file == null) {
+			fout = new ByteArrayOutputStream();
+		}
+		else {
+			fout = new FileOutputStream(file);
+		}
 
-        XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter( fout );
+		XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter(fout);
 
-        while ( resultSet.next() ) {
-            resultSet.getRecord().serialize( writer, returnableElement );
-        }
-        writer.flush();
+		while (resultSet.next()) {
+			resultSet.getRecord().serialize(writer, returnableElement);
+		}
+		writer.flush();
 
-        StringBuilder streamThat = new StringBuilder();
-        if ( fout instanceof FileOutputStream ) {
-            LOG.warn( "The output is written into a file: " + file );
-            return null;
-        } else if ( fout instanceof ByteArrayOutputStream ) {
-            InputStream in = new ByteArrayInputStream( ( (ByteArrayOutputStream) fout ).toByteArray() );
-            XMLStreamReader xmlStreamThat = XMLInputFactory.newInstance().createXMLStreamReader( in );
-            // xmlStreamThat.nextTag();
-            while ( xmlStreamThat.hasNext() ) {
-                xmlStreamThat.next();
+		StringBuilder streamThat = new StringBuilder();
+		if (fout instanceof FileOutputStream) {
+			LOG.warn("The output is written into a file: " + file);
+			return null;
+		}
+		else if (fout instanceof ByteArrayOutputStream) {
+			InputStream in = new ByteArrayInputStream(((ByteArrayOutputStream) fout).toByteArray());
+			XMLStreamReader xmlStreamThat = XMLInputFactory.newInstance().createXMLStreamReader(in);
+			// xmlStreamThat.nextTag();
+			while (xmlStreamThat.hasNext()) {
+				xmlStreamThat.next();
 
-                if ( xmlStreamThat.getEventType() == XMLStreamConstants.START_ELEMENT ) {
-                    if ( searchEvent == XMLStreamConstants.START_ELEMENT ) {
-                        streamThat.append( xmlStreamThat.getName() ).append( ' ' );
-                    } else if ( searchEvent == XMLStreamConstants.NAMESPACE ) {
-                        // copy all namespace bindings
-                        for ( int i = 0; i < xmlStreamThat.getNamespaceCount(); i++ ) {
-                            String nsPrefix = xmlStreamThat.getNamespacePrefix( i );
-                            String nsURI = xmlStreamThat.getNamespaceURI( i );
-                            streamThat.append( nsPrefix ).append( '=' ).append( nsURI ).append( ' ' );
-                        }
-                    }
-                }
-            }
-        }
+				if (xmlStreamThat.getEventType() == XMLStreamConstants.START_ELEMENT) {
+					if (searchEvent == XMLStreamConstants.START_ELEMENT) {
+						streamThat.append(xmlStreamThat.getName()).append(' ');
+					}
+					else if (searchEvent == XMLStreamConstants.NAMESPACE) {
+						// copy all namespace bindings
+						for (int i = 0; i < xmlStreamThat.getNamespaceCount(); i++) {
+							String nsPrefix = xmlStreamThat.getNamespacePrefix(i);
+							String nsURI = xmlStreamThat.getNamespaceURI(i);
+							streamThat.append(nsPrefix).append('=').append(nsURI).append(' ');
+						}
+					}
+				}
+			}
+		}
 
-        return streamThat;
-    }
+		return streamThat;
+	}
 
 }

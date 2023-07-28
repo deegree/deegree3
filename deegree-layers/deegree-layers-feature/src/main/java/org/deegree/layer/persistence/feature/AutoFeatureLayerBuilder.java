@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -64,74 +63,70 @@ import org.slf4j.Logger;
 
 /**
  * Responsible for building feature layers from jaxb configs in auto mode.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 class AutoFeatureLayerBuilder {
 
-    private static final Logger LOG = getLogger( AutoFeatureLayerBuilder.class );
+	private static final Logger LOG = getLogger(AutoFeatureLayerBuilder.class);
 
-    private Workspace workspace;
+	private Workspace workspace;
 
-    private ResourceMetadata<LayerStore> metadata;
+	private ResourceMetadata<LayerStore> metadata;
 
-    AutoFeatureLayerBuilder( Workspace workspace, ResourceMetadata<LayerStore> metadata ) {
-        this.workspace = workspace;
-        this.metadata = metadata;
-    }
+	AutoFeatureLayerBuilder(Workspace workspace, ResourceMetadata<LayerStore> metadata) {
+		this.workspace = workspace;
+		this.metadata = metadata;
+	}
 
-    MultipleLayerStore createInAutoMode( AutoLayers auto )
-                            throws ResourceInitException {
-        LOG.debug( "Creating feature layers for all feature types automatically." );
+	MultipleLayerStore createInAutoMode(AutoLayers auto) throws ResourceInitException {
+		LOG.debug("Creating feature layers for all feature types automatically.");
 
-        Map<String, Layer> map = new LinkedHashMap<String, Layer>();
-        String id = auto.getFeatureStoreId();
-        FeatureStore store = workspace.getResource( FeatureStoreProvider.class, id );
-        if ( store == null ) {
-            throw new ResourceInitException( "Feature layer config was invalid, feature store with id " + id
-                                             + " is not available." );
-        }
-        id = auto.getStyleStoreId();
-        StyleStore sstore = null;
-        if ( id != null ) {
-            sstore = workspace.getResource( StyleStoreProvider.class, id );
-        }
-        if ( id != null && sstore == null ) {
-            throw new ResourceInitException( "Feature layer config was invalid, style store with id " + id
-                                             + " is not available." );
-        }
+		Map<String, Layer> map = new LinkedHashMap<String, Layer>();
+		String id = auto.getFeatureStoreId();
+		FeatureStore store = workspace.getResource(FeatureStoreProvider.class, id);
+		if (store == null) {
+			throw new ResourceInitException(
+					"Feature layer config was invalid, feature store with id " + id + " is not available.");
+		}
+		id = auto.getStyleStoreId();
+		StyleStore sstore = null;
+		if (id != null) {
+			sstore = workspace.getResource(StyleStoreProvider.class, id);
+		}
+		if (id != null && sstore == null) {
+			throw new ResourceInitException(
+					"Feature layer config was invalid, style store with id " + id + " is not available.");
+		}
 
-        for ( FeatureType ft : store.getSchema().getFeatureTypes() ) {
-            addLayer( store, ft, sstore, map );
-        }
+		for (FeatureType ft : store.getSchema().getFeatureTypes()) {
+			addLayer(store, ft, sstore, map);
+		}
 
-        return new MultipleLayerStore( map, metadata );
-    }
+		return new MultipleLayerStore(map, metadata);
+	}
 
-    private void addLayer( FeatureStore store, FeatureType ft, StyleStore sstore, Map<String, Layer> map ) {
-        String name = ft.getName().getLocalPart();
-        LOG.debug( "Adding layer {}.", name );
-        LayerMetadata md = LayerMetadataBuilder.buildMetadataForAutoMode( store, ft, name );
-        Map<String, Style> styles = new LinkedHashMap<String, Style>();
-        if ( sstore != null && sstore.getAll( name ) != null ) {
-            for ( Style s : sstore.getAll( name ) ) {
-                LOG.debug( "Adding style with name {}.", s.getName() );
-                styles.put( s.getName(), s );
-                if ( !styles.containsKey( "default" ) ) {
-                    styles.put( "default", s );
-                }
-            }
-        }
-        if ( !styles.containsKey( "default" ) ) {
-            LOG.debug( "No styles found, using gray default style." );
-            styles.put( "default", new Style() );
-        }
-        md.setStyles( styles );
-        Layer l = new FeatureLayer( md, store, ft.getName(), null, null, null );
-        map.put( name, l );
-    }
+	private void addLayer(FeatureStore store, FeatureType ft, StyleStore sstore, Map<String, Layer> map) {
+		String name = ft.getName().getLocalPart();
+		LOG.debug("Adding layer {}.", name);
+		LayerMetadata md = LayerMetadataBuilder.buildMetadataForAutoMode(store, ft, name);
+		Map<String, Style> styles = new LinkedHashMap<String, Style>();
+		if (sstore != null && sstore.getAll(name) != null) {
+			for (Style s : sstore.getAll(name)) {
+				LOG.debug("Adding style with name {}.", s.getName());
+				styles.put(s.getName(), s);
+				if (!styles.containsKey("default")) {
+					styles.put("default", s);
+				}
+			}
+		}
+		if (!styles.containsKey("default")) {
+			LOG.debug("No styles found, using gray default style.");
+			styles.put("default", new Style());
+		}
+		md.setStyles(styles);
+		Layer l = new FeatureLayer(md, store, ft.getName(), null, null, null);
+		map.put(name, l);
+	}
 
 }

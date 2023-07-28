@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -39,33 +38,28 @@ import org.deegree.commons.tom.ows.CodeType;
 
 /**
  * Abstract base class for output parameters returned by a process execution.
- * 
+ *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public abstract class ExecutionOutput {
 
-    private CodeType id;
+	private CodeType id;
 
-    /**
-     * Creates a new {@link ExecutionOutput} instance.
-     * 
-     * @param id
-     *            parameter identifier, must not be <code>null</code>
-     */
-    protected ExecutionOutput( CodeType id ) {
-        this.id = id;
-    }
+	/**
+	 * Creates a new {@link ExecutionOutput} instance.
+	 * @param id parameter identifier, must not be <code>null</code>
+	 */
+	protected ExecutionOutput(CodeType id) {
+		this.id = id;
+	}
 
-    /**
-     * Returns the parameter identifier.
-     * 
-     * @return the parameter identifier, never <code>null</code>
-     */
-    public CodeType getId() {
-        return id;
-    }
+	/**
+	 * Returns the parameter identifier.
+	 * @return the parameter identifier, never <code>null</code>
+	 */
+	public CodeType getId() {
+		return id;
+	}
+
 }

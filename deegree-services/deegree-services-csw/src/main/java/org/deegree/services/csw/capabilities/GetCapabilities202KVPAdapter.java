@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -42,30 +41,25 @@ import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilitiesKVPParser;
 
 /**
- * Encapsulates the method for parsing a kvp request via Http-GET. Due to the fact that the GetCapabilities operation is
- * common OWS specific for all webservices the parsing is delegated to the deegree core module.
- * 
+ * Encapsulates the method for parsing a kvp request via Http-GET. Due to the fact that
+ * the GetCapabilities operation is common OWS specific for all webservices the parsing is
+ * delegated to the deegree core module.
+ *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: thomas $
- * 
- * @version $Revision: $, $Date: $
  */
 
 public class GetCapabilities202KVPAdapter {
 
-    /**
-     * Parses an incoming KVP request via Http-GET
-     * 
-     * @param version
-     *            that is parsed from the request in the GetCapabilities
-     * @param kvpParams
-     *            that are requested as key to a value.
-     * @return {@link GetCapabilities} request
-     * @throws InvalidParameterValueException
-     *             if VERSION parameter contains a syntactical error
-     */
-    public static GetCapabilities parse( Map<String, String> kvpParams ) {
-        return GetCapabilitiesKVPParser.parse( kvpParams );
-    }
+	/**
+	 * Parses an incoming KVP request via Http-GET
+	 * @param version that is parsed from the request in the GetCapabilities
+	 * @param kvpParams that are requested as key to a value.
+	 * @return {@link GetCapabilities} request
+	 * @throws InvalidParameterValueException if VERSION parameter contains a syntactical
+	 * error
+	 */
+	public static GetCapabilities parse(Map<String, String> kvpParams) {
+		return GetCapabilitiesKVPParser.parse(kvpParams);
+	}
 
 }

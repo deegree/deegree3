@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -52,81 +51,79 @@ import org.deegree.protocol.wfs.query.StandardPresentationParams;
 import org.deegree.protocol.wfs.query.xml.QueryXMLAdapter;
 
 /**
- * Adapter between XML <code>GetPropertyValue</code> requests and {@link GetPropertyValue} objects.
+ * Adapter between XML <code>GetPropertyValue</code> requests and {@link GetPropertyValue}
+ * objects.
  * <p>
  * Supported WFS versions:
  * <ul>
  * <li>2.0.0</li>
  * </ul>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class GetPropertyValueXMLAdapter extends QueryXMLAdapter {
 
-    /**
-     * Parses a <code>GetPropertyValue</code> element into a {@link GetPropertyValue} object.
-     * 
-     * @return parsed {@link GetPropertyValue} request, never <code>null</code>
-     * @throws OWSException
-     */
-    public GetPropertyValue parse()
-                            throws OWSException {
+	/**
+	 * Parses a <code>GetPropertyValue</code> element into a {@link GetPropertyValue}
+	 * object.
+	 * @return parsed {@link GetPropertyValue} request, never <code>null</code>
+	 * @throws OWSException
+	 */
+	public GetPropertyValue parse() throws OWSException {
 
-        Version version = Version.parseVersion( getNodeAsString( rootElement, new XPath( "@version", nsContext ), null ) );
+		Version version = Version.parseVersion(getNodeAsString(rootElement, new XPath("@version", nsContext), null));
 
-        GetPropertyValue result = null;
+		GetPropertyValue result = null;
 
-        if ( VERSION_200.equals( version ) ) {
-            result = parse200();
-        } else {
-            String msg = "Version '" + version
-                         + "' is not supported for GetPropertyValue requests. The only supported version is 2.0.0.";
-            throw new OWSException( msg, VERSION_NEGOTIATION_FAILED, null );
-        }
-        return result;
-    }
+		if (VERSION_200.equals(version)) {
+			result = parse200();
+		}
+		else {
+			String msg = "Version '" + version
+					+ "' is not supported for GetPropertyValue requests. The only supported version is 2.0.0.";
+			throw new OWSException(msg, VERSION_NEGOTIATION_FAILED, null);
+		}
+		return result;
+	}
 
-    /**
-     * Parses a WFS 2.0.0 <code>GetPropertyValue</code> document into a {@link GetPropertyValue} object.
-     * 
-     * @return corresponding GetPropertyValue instance, never <code>null</code>
-     * @throws OWSException
-     */
-    private GetPropertyValue parse200()
-                            throws OWSException {
+	/**
+	 * Parses a WFS 2.0.0 <code>GetPropertyValue</code> document into a
+	 * {@link GetPropertyValue} object.
+	 * @return corresponding GetPropertyValue instance, never <code>null</code>
+	 * @throws OWSException
+	 */
+	private GetPropertyValue parse200() throws OWSException {
 
-        // <xsd:attribute name="handle" type="xsd:string"/>
-        String handle = getNodeAsString( rootElement, new XPath( "@handle", nsContext ), null );
+		// <xsd:attribute name="handle" type="xsd:string"/>
+		String handle = getNodeAsString(rootElement, new XPath("@handle", nsContext), null);
 
-        // <xsd:attributeGroup ref="wfs:StandardPresentationParams"/>
-        StandardPresentationParams presentationParams = parseStandardPresentationParameters200( rootElement );
+		// <xsd:attributeGroup ref="wfs:StandardPresentationParams"/>
+		StandardPresentationParams presentationParams = parseStandardPresentationParameters200(rootElement);
 
-        // <xsd:attributeGroup ref="wfs:StandardResolveParameters"/>
-        ResolveParams resolveParams = parseStandardResolveParameters200( rootElement );
+		// <xsd:attributeGroup ref="wfs:StandardResolveParameters"/>
+		ResolveParams resolveParams = parseStandardResolveParameters200(rootElement);
 
-        // <xsd:attribute name="valueReference" type="xsd:string" use="required"/>
-        String valueRefStr = getRequiredNodeAsString( rootElement, new XPath( "@valueReference", nsContext ) );
-        if ( valueRefStr.isEmpty() ) {
-            throw new OWSException( "The valueReference attribute was empty.", INVALID_PARAMETER_VALUE,
-                                    "valueReference" );
-        }
-        ValueReference valueReference = new ValueReference( valueRefStr, getNamespaceContext( rootElement ) );
+		// <xsd:attribute name="valueReference" type="xsd:string" use="required"/>
+		String valueRefStr = getRequiredNodeAsString(rootElement, new XPath("@valueReference", nsContext));
+		if (valueRefStr.isEmpty()) {
+			throw new OWSException("The valueReference attribute was empty.", INVALID_PARAMETER_VALUE,
+					"valueReference");
+		}
+		ValueReference valueReference = new ValueReference(valueRefStr, getNamespaceContext(rootElement));
 
-        // <xsd:attribute name="resolvePath" type="xsd:string"/>
-        ValueReference resolvePath = null;
-        String resolvePathStr = getNodeAsString( rootElement, new XPath( "@resolvePath", nsContext ), null );
-        if ( resolvePathStr != null ) {
-            resolvePath = new ValueReference( resolvePathStr, getNamespaceContext( rootElement ) );
-        }
+		// <xsd:attribute name="resolvePath" type="xsd:string"/>
+		ValueReference resolvePath = null;
+		String resolvePathStr = getNodeAsString(rootElement, new XPath("@resolvePath", nsContext), null);
+		if (resolvePathStr != null) {
+			resolvePath = new ValueReference(resolvePathStr, getNamespaceContext(rootElement));
+		}
 
-        // <xsd:element ref="fes:AbstractQueryExpression" maxOccurs="unbounded"/>
-        OMElement queryEl = getRequiredElement( rootElement, new XPath( "*", nsContext ) );
-        Query query = parseAbstractQuery200( queryEl );
+		// <xsd:element ref="fes:AbstractQueryExpression" maxOccurs="unbounded"/>
+		OMElement queryEl = getRequiredElement(rootElement, new XPath("*", nsContext));
+		Query query = parseAbstractQuery200(queryEl);
 
-        return new GetPropertyValue( VERSION_200, handle, presentationParams, resolveParams, valueReference,
-                                     resolvePath, query );
-    }
+		return new GetPropertyValue(VERSION_200, handle, presentationParams, resolveParams, valueReference, resolvePath,
+				query);
+	}
+
 }

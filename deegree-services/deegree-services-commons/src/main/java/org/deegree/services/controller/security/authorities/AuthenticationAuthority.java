@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -38,25 +37,22 @@ package org.deegree.services.controller.security.authorities;
 import org.deegree.services.controller.Credentials;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface AuthenticationAuthority {
 
-    /**
-     * @param creds
-     * @return true, if the authority determines the credentials to be valid
-     */
-    boolean isAuthorized( Credentials creds );
+	/**
+	 * @param creds
+	 * @return true, if the authority determines the credentials to be valid
+	 */
+	boolean isAuthorized(Credentials creds);
 
-    /**
-     * @param creds
-     * @param address
-     * @return true, if the authority determines the credentials may access the remote service specified by the address
-     */
-    boolean verifyAddress( Credentials creds, String address );
+	/**
+	 * @param creds
+	 * @param address
+	 * @return true, if the authority determines the credentials may access the remote
+	 * service specified by the address
+	 */
+	boolean verifyAddress(Credentials creds, String address);
 
 }

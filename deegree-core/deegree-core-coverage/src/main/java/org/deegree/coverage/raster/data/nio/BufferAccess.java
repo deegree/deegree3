@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2009 by:
@@ -52,350 +51,346 @@ import org.deegree.coverage.raster.io.RasterReader;
 import org.slf4j.Logger;
 
 /**
- * The <code>BufferAccess</code> glue between the databuffer and the reader (which has access to the real data).
- * 
+ * The <code>BufferAccess</code> glue between the databuffer and the reader (which has
+ * access to the real data).
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class BufferAccess {
-    private static final Logger LOG = getLogger( BufferAccess.class );
 
-    private DataView view;
+	private static final Logger LOG = getLogger(BufferAccess.class);
 
-    /**
-     * the raster data info of the original data, not the view.
-     */
-    protected RasterDataInfo dataInfo;
+	private DataView view;
 
-    /**
-     * The raster data itself, will always be the size of the rasterWidthxRasterHeight
-     */
-    private ByteBuffer data;
+	/**
+	 * the raster data info of the original data, not the view.
+	 */
+	protected RasterDataInfo dataInfo;
 
-    private RasterReader reader;
+	/**
+	 * The raster data itself, will always be the size of the rasterWidthxRasterHeight
+	 */
+	private ByteBuffer data;
 
-    private int lineStride;
+	private RasterReader reader;
 
-    private int pixelStride;
+	private int lineStride;
 
-    private int bandStride;
+	private int pixelStride;
 
-    private RasterRect maxViewData;
+	private int bandStride;
 
-    private int maxDataWidth;
+	private RasterRect maxViewData;
 
-    private int maxDataHeight;
+	private int maxDataWidth;
 
-    private final Object LOCK = new Object();
+	private int maxDataHeight;
 
-    // /** Intersection of the view with the values from the byte buffer. */
-    // private RasterRect dataRect;
+	private final Object LOCK = new Object();
 
-    /**
-     * Glue
-     * 
-     * @param rasterReader
-     * @param maxDataWidth
-     * @param maxDataHeight
-     * @param view
-     * @param dataInfo
-     * @param pixelStride
-     * @param lineStride
-     * @param bandStride
-     */
-    public BufferAccess( RasterReader rasterReader, int maxDataWidth, int maxDataHeight, DataView view,
-                         RasterDataInfo dataInfo, int pixelStride, int lineStride, int bandStride ) {
-        this.reader = rasterReader;
-        this.pixelStride = pixelStride;
-        this.bandStride = bandStride;
-        this.view = view;
-        this.dataInfo = dataInfo;
-        this.maxDataWidth = maxDataWidth;
-        this.maxDataHeight = maxDataHeight;
-        RasterRect origData = new RasterRect( 0, 0, maxDataWidth, maxDataHeight );
-        maxViewData = RasterRect.intersection( origData, view );
-        if ( maxViewData == null ) {
-            maxViewData = new RasterRect( 0, 0, 0, 0 );
-        }
-        // this.lineStride = view.width * pixelStride;
-        this.lineStride = maxViewData.width * pixelStride;
-        // the byte buffer intersection is the whole view
-        // dataRect = new RasterRect( 0, 0, view.width, view.height );
-    }
+	// /** Intersection of the view with the values from the byte buffer. */
+	// private RasterRect dataRect;
 
-    /**
-     * @param viewOnData
-     */
-    private void createMaxView( RasterRect viewOnData ) {
-        // rb: the view on the data is expected to be correct, it may or may not be mappable to the underlying data.
-        maxViewData = viewOnData;
-        this.maxDataHeight = viewOnData.height;
-        this.maxDataWidth = viewOnData.width;
-        // the data was freshly set, the line stride must be recalculated.
-        this.lineStride = maxDataWidth * pixelStride;
+	/**
+	 * Glue
+	 * @param rasterReader
+	 * @param maxDataWidth
+	 * @param maxDataHeight
+	 * @param view
+	 * @param dataInfo
+	 * @param pixelStride
+	 * @param lineStride
+	 * @param bandStride
+	 */
+	public BufferAccess(RasterReader rasterReader, int maxDataWidth, int maxDataHeight, DataView view,
+			RasterDataInfo dataInfo, int pixelStride, int lineStride, int bandStride) {
+		this.reader = rasterReader;
+		this.pixelStride = pixelStride;
+		this.bandStride = bandStride;
+		this.view = view;
+		this.dataInfo = dataInfo;
+		this.maxDataWidth = maxDataWidth;
+		this.maxDataHeight = maxDataHeight;
+		RasterRect origData = new RasterRect(0, 0, maxDataWidth, maxDataHeight);
+		maxViewData = RasterRect.intersection(origData, view);
+		if (maxViewData == null) {
+			maxViewData = new RasterRect(0, 0, 0, 0);
+		}
+		// this.lineStride = view.width * pixelStride;
+		this.lineStride = maxViewData.width * pixelStride;
+		// the byte buffer intersection is the whole view
+		// dataRect = new RasterRect( 0, 0, view.width, view.height );
+	}
 
-    }
+	/**
+	 * @param viewOnData
+	 */
+	private void createMaxView(RasterRect viewOnData) {
+		// rb: the view on the data is expected to be correct, it may or may not be
+		// mappable to the underlying data.
+		maxViewData = viewOnData;
+		this.maxDataHeight = viewOnData.height;
+		this.maxDataWidth = viewOnData.width;
+		// the data was freshly set, the line stride must be recalculated.
+		this.lineStride = maxDataWidth * pixelStride;
 
-    /**
-     * Calculates the position of a pixel in the ByteBuffer.
-     * 
-     * This method calculates the position of a pixel and returns the offset to this pixel in bytes. Use this method for
-     * direct access to ByteBuffers.
-     * 
-     * @param x
-     *            x coordinate
-     * @param y
-     *            y coordinate
-     * @return byte offset to the pixel with the specified coordinate or -1 if outside of the bytebuffer.
-     */
-    public final int calculatePos( int x, int y ) {
-        // check for negative views.
-        int yPos = ( view.y - maxViewData.y ) + y;
-        int xPos = ( view.x - maxViewData.x ) + x;
-        int dataPos = ( xPos * pixelStride ) + ( yPos * lineStride );
-        if ( yPos < 0 || xPos < 0 || yPos >= ( maxViewData.height ) || xPos >= ( maxViewData.width )
-             || dataPos > requiredBufferSize() ) {
-            dataPos = -1;
-        }
-        return dataPos;
-    }
+	}
 
-    /**
-     * Calculates the position of a sample in the ByteBuffer.
-     * 
-     * This method calculates the position of a pixel and returns the offset to this pixel in bytes. Use this method for
-     * direct access to ByteBuffers.
-     * 
-     * @param x
-     *            x coordinate
-     * @param y
-     *            y coordinate
-     * @param bandOfView
-     *            band index of the sample
-     * @return byte offset to the sample with the specified coordinate or -1 if outside of the bytebuffer.
-     */
-    public final int calculatePos( int x, int y, int bandOfView ) {
-        // check for negative views.
-        int yPos = ( view.y - maxViewData.y ) + y;
-        int xPos = ( view.x - maxViewData.x ) + x;
-        int dataPos = ( xPos * pixelStride ) + ( yPos * lineStride ) + ( view.getBandOffset( bandOfView ) * bandStride );
-        if ( yPos < 0 || xPos < 0 || yPos >= ( maxViewData.height ) || xPos >= ( maxViewData.width )
-             || dataPos > requiredBufferSize() || dataPos < 0 ) {
-            dataPos = -1;
-        }
-        return dataPos;
-    }
+	/**
+	 * Calculates the position of a pixel in the ByteBuffer.
+	 *
+	 * This method calculates the position of a pixel and returns the offset to this pixel
+	 * in bytes. Use this method for direct access to ByteBuffers.
+	 * @param x x coordinate
+	 * @param y y coordinate
+	 * @return byte offset to the pixel with the specified coordinate or -1 if outside of
+	 * the bytebuffer.
+	 */
+	public final int calculatePos(int x, int y) {
+		// check for negative views.
+		int yPos = (view.y - maxViewData.y) + y;
+		int xPos = (view.x - maxViewData.x) + x;
+		int dataPos = (xPos * pixelStride) + (yPos * lineStride);
+		if (yPos < 0 || xPos < 0 || yPos >= (maxViewData.height) || xPos >= (maxViewData.width)
+				|| dataPos > requiredBufferSize()) {
+			dataPos = -1;
+		}
+		return dataPos;
+	}
 
-    /**
-     * Calculates the position of a pixel in a view (FloatBuffer, etc.) of the ByteBuffer.
-     * 
-     * This method considers different sample sizes (eg. byte, float) and returns the position in sample strides (not
-     * byte strides). Use this method to get proper positions for ByteBuffer views like FloatBuffer, ShortBuffer, etc..
-     * 
-     * @param x
-     *            x coordinate
-     * @param y
-     *            y coordinate
-     * @return offset to the pixel with the specified coordinates or -1 if outside of the bytebuffer.
-     */
-    public final int calculateViewPos( int x, int y ) {
-        int pos = calculatePos( x, y ) / dataInfo.dataSize;
-        return pos < 0 ? -1 : pos;
-    }
+	/**
+	 * Calculates the position of a sample in the ByteBuffer.
+	 *
+	 * This method calculates the position of a pixel and returns the offset to this pixel
+	 * in bytes. Use this method for direct access to ByteBuffers.
+	 * @param x x coordinate
+	 * @param y y coordinate
+	 * @param bandOfView band index of the sample
+	 * @return byte offset to the sample with the specified coordinate or -1 if outside of
+	 * the bytebuffer.
+	 */
+	public final int calculatePos(int x, int y, int bandOfView) {
+		// check for negative views.
+		int yPos = (view.y - maxViewData.y) + y;
+		int xPos = (view.x - maxViewData.x) + x;
+		int dataPos = (xPos * pixelStride) + (yPos * lineStride) + (view.getBandOffset(bandOfView) * bandStride);
+		if (yPos < 0 || xPos < 0 || yPos >= (maxViewData.height) || xPos >= (maxViewData.width)
+				|| dataPos > requiredBufferSize() || dataPos < 0) {
+			dataPos = -1;
+		}
+		return dataPos;
+	}
 
-    /**
-     * Calculates the position of a sample in a view (FloatBuffer, etc.) of the ByteBuffer.
-     * 
-     * This method considers different sample sizes (eg. byte, float) and returns the position in sample stides (not
-     * byte strides). Use this method to get proper positions for ByteBuffer-views like FloatBuffer, ShortBuffer, etc..
-     * 
-     * @param x
-     *            x coordinate
-     * @param y
-     *            y coordinate
-     * @param band
-     *            band index of the sample
-     * @return offset to the sample with the specified coordinates
-     */
-    public final int calculateViewPos( int x, int y, int band ) {
-        int pos = calculatePos( x, y, band ) / dataInfo.dataSize;
-        return pos < 0 ? -1 : pos;
-    }
+	/**
+	 * Calculates the position of a pixel in a view (FloatBuffer, etc.) of the ByteBuffer.
+	 *
+	 * This method considers different sample sizes (eg. byte, float) and returns the
+	 * position in sample strides (not byte strides). Use this method to get proper
+	 * positions for ByteBuffer views like FloatBuffer, ShortBuffer, etc..
+	 * @param x x coordinate
+	 * @param y y coordinate
+	 * @return offset to the pixel with the specified coordinates or -1 if outside of the
+	 * bytebuffer.
+	 */
+	public final int calculateViewPos(int x, int y) {
+		int pos = calculatePos(x, y) / dataInfo.dataSize;
+		return pos < 0 ? -1 : pos;
+	}
 
-    /**
-     * Prepares the byte buffer for reading / writing thus instantiates it with values (no) data;
-     */
-    public void prepareBuffer() {
-        synchronized ( LOCK ) {
-            if ( data == null ) {
-                data = ByteBufferPool.allocate( requiredBufferSize(), false );
-                boolean noData = false;
-                if ( reader != null ) {
-                    try {
-                        BufferResult dataResult = reader.read( maxViewData, data );
-                        if ( dataResult != null ) {
-                            data = dataResult.getResult();
-                            data.rewind();
-                        }
-                        // RasterRect rect = dataResult.getRect();
-                        // lineStride = pixelStride * rect.width;
-                    } catch ( IOException e ) {
-                        LOG.debug( "No data available: " + e.getLocalizedMessage(), e );
-                        // the data is no longer available, lets just fill it with no data values
-                        noData = true;
-                    }
-                }
-                if ( noData ) {
-                    fillWithNoData();
-                }
-            }
-        }
-    }
+	/**
+	 * Calculates the position of a sample in a view (FloatBuffer, etc.) of the
+	 * ByteBuffer.
+	 *
+	 * This method considers different sample sizes (eg. byte, float) and returns the
+	 * position in sample stides (not byte strides). Use this method to get proper
+	 * positions for ByteBuffer-views like FloatBuffer, ShortBuffer, etc..
+	 * @param x x coordinate
+	 * @param y y coordinate
+	 * @param band band index of the sample
+	 * @return offset to the sample with the specified coordinates
+	 */
+	public final int calculateViewPos(int x, int y, int band) {
+		int pos = calculatePos(x, y, band) / dataInfo.dataSize;
+		return pos < 0 ? -1 : pos;
+	}
 
-    /**
-     * Fills the entire buffer with no data values. Note this operation is only possible on writable buffers.
-     */
-    public void fillWithNoData() {
-        synchronized ( LOCK ) {
-            if ( data == null ) {
-                data = ByteBufferPool.allocate( requiredBufferSize(), false );
-            }
-            if ( !data.isReadOnly() ) {
-                int pos = 0;
-                int cap = data.capacity();
-                byte[] noData = dataInfo.getNoDataPixel( new byte[0] );
-                data.position( 0 );
-                while ( pos < cap ) {
-                    data.put( noData );
-                    pos = data.position();
-                }
-            }
-        }
-    }
+	/**
+	 * Prepares the byte buffer for reading / writing thus instantiates it with values
+	 * (no) data;
+	 */
+	public void prepareBuffer() {
+		synchronized (LOCK) {
+			if (data == null) {
+				data = ByteBufferPool.allocate(requiredBufferSize(), false);
+				boolean noData = false;
+				if (reader != null) {
+					try {
+						BufferResult dataResult = reader.read(maxViewData, data);
+						if (dataResult != null) {
+							data = dataResult.getResult();
+							data.rewind();
+						}
+						// RasterRect rect = dataResult.getRect();
+						// lineStride = pixelStride * rect.width;
+					}
+					catch (IOException e) {
+						LOG.debug("No data available: " + e.getLocalizedMessage(), e);
+						// the data is no longer available, lets just fill it with no data
+						// values
+						noData = true;
+					}
+				}
+				if (noData) {
+					fillWithNoData();
+				}
+			}
+		}
+	}
 
-    /**
-     * Returns the needed size of the ByteBuffer in bytes.
-     * 
-     * @return size of the buffer
-     */
-    public final int requiredBufferSize() {
-        // data.capacity() can not be used if the ByteBuffer was not yet instantiated.
-        return maxViewData.width * maxViewData.height * dataInfo.bands * dataInfo.dataSize;
-    }
+	/**
+	 * Fills the entire buffer with no data values. Note this operation is only possible
+	 * on writable buffers.
+	 */
+	public void fillWithNoData() {
+		synchronized (LOCK) {
+			if (data == null) {
+				data = ByteBufferPool.allocate(requiredBufferSize(), false);
+			}
+			if (!data.isReadOnly()) {
+				int pos = 0;
+				int cap = data.capacity();
+				byte[] noData = dataInfo.getNoDataPixel(new byte[0]);
+				data.position(0);
+				while (pos < cap) {
+					data.put(noData);
+					pos = data.position();
+				}
+			}
+		}
+	}
 
-    /**
-     * @return The internal ByteBuffer.
-     */
-    public ByteBuffer getByteBuffer() {
-        if ( data == null ) {
-            prepareBuffer();
-        }
-        return data;
-    }
+	/**
+	 * Returns the needed size of the ByteBuffer in bytes.
+	 * @return size of the buffer
+	 */
+	public final int requiredBufferSize() {
+		// data.capacity() can not be used if the ByteBuffer was not yet instantiated.
+		return maxViewData.width * maxViewData.height * dataInfo.bands * dataInfo.dataSize;
+	}
 
-    /**
-     * @param newData
-     *            to use.
-     * @param dataRect
-     *            defining the width, height and offset for the data.
-     */
-    void setByteBuffer( ByteBuffer newData, RasterRect dataRect ) {
-        synchronized ( LOCK ) {
-            if ( newData != null ) {
-                if ( dataRect != null ) {
-                    createMaxView( dataRect );
-                }
-                if ( newData.capacity() < requiredBufferSize() ) {
-                    // System.out.println( "required: " + requiredBufferSize() );
-                    // System.out.println( "size: " + newData.capacity() );
-                    LOG.error( "The given byteBuffer does not contain enough space for the current view." );
-                    return;
-                }
-                // update the line stride to match the data.
-            }
-            this.data = newData;
-        }
-    }
+	/**
+	 * @return The internal ByteBuffer.
+	 */
+	public ByteBuffer getByteBuffer() {
+		if (data == null) {
+			prepareBuffer();
+		}
+		return data;
+	}
 
-    /**
-     * @return the reader which supplies this buffer with data, may be <code>null</code> if the buffer is not backed by
-     *         data (a new memory based raster for example).
-     */
-    public RasterReader getReader() {
-        return reader;
-    }
+	/**
+	 * @param newData to use.
+	 * @param dataRect defining the width, height and offset for the data.
+	 */
+	void setByteBuffer(ByteBuffer newData, RasterRect dataRect) {
+		synchronized (LOCK) {
+			if (newData != null) {
+				if (dataRect != null) {
+					createMaxView(dataRect);
+				}
+				if (newData.capacity() < requiredBufferSize()) {
+					// System.out.println( "required: " + requiredBufferSize() );
+					// System.out.println( "size: " + newData.capacity() );
+					LOG.error("The given byteBuffer does not contain enough space for the current view.");
+					return;
+				}
+				// update the line stride to match the data.
+			}
+			this.data = newData;
+		}
+	}
 
-    /**
-     * @return the height of the raster backing this buffer.
-     */
-    protected int getMaxDataHeight() {
-        return this.maxDataHeight;
-    }
+	/**
+	 * @return the reader which supplies this buffer with data, may be <code>null</code>
+	 * if the buffer is not backed by data (a new memory based raster for example).
+	 */
+	public RasterReader getReader() {
+		return reader;
+	}
 
-    /**
-     * @return the width of the raster backing this buffer.
-     */
-    protected int getMaxDataWidth() {
-        return maxDataWidth;
-    }
+	/**
+	 * @return the height of the raster backing this buffer.
+	 */
+	protected int getMaxDataHeight() {
+		return this.maxDataHeight;
+	}
 
-    /**
-     * @return the domain of validity of the bytebuffer.
-     */
-    protected RasterRect getBytebufferDomain() {
-        return maxViewData;
-    }
+	/**
+	 * @return the width of the raster backing this buffer.
+	 */
+	protected int getMaxDataWidth() {
+		return maxDataWidth;
+	}
 
-    /**
-     * @return true if this BufferAccess instantiated it's buffer already.
-     */
-    protected boolean hasDataBuffer() {
-        // rb: no need to synchronize this I think.
-        return data != null;
-    }
+	/**
+	 * @return the domain of validity of the bytebuffer.
+	 */
+	protected RasterRect getBytebufferDomain() {
+		return maxViewData;
+	}
 
-    /**
-     * @return the raster's view on the data, not the rectangle for which the buffer has data.
-     */
-    protected DataView getView() {
-        return view;
-    }
+	/**
+	 * @return true if this BufferAccess instantiated it's buffer already.
+	 */
+	protected boolean hasDataBuffer() {
+		// rb: no need to synchronize this I think.
+		return data != null;
+	}
 
-    /**
-     * @return the rectangle for which the loaded buffer has data.
-     */
-    protected RasterRect getDataRectangle() {
-        return maxViewData;
-    }
+	/**
+	 * @return the raster's view on the data, not the rectangle for which the buffer has
+	 * data.
+	 */
+	protected DataView getView() {
+		return view;
+	}
 
-    /**
-     * Set the memory buffer to null and call dispose on the reader as well.
-     */
-    public void dispose() {
-        synchronized ( LOCK ) {
-            if ( data != null ) {
-                data = null;
-            }
-            if ( reader != null ) {
-                reader.dispose();
-            }
-        }
-    }
+	/**
+	 * @return the rectangle for which the loaded buffer has data.
+	 */
+	protected RasterRect getDataRectangle() {
+		return maxViewData;
+	}
 
-    /**
-     * @return
-     */
-    boolean isWithinDataArea() {
-        return ( view.x >= maxViewData.x && view.x <= maxViewData.width && ( view.x + view.width ) <= maxViewData.width )
-               && ( view.y >= maxViewData.y && view.y <= maxViewData.height && ( view.y + view.height ) <= maxViewData.height );
-    }
+	/**
+	 * Set the memory buffer to null and call dispose on the reader as well.
+	 */
+	public void dispose() {
+		synchronized (LOCK) {
+			if (data != null) {
+				data = null;
+			}
+			if (reader != null) {
+				reader.dispose();
+			}
+		}
+	}
 
-    /**
-     * @return
-     */
-    public boolean isOutside() {
-        return maxViewData.x == 0 && maxViewData.y == 0 && maxViewData.width == 0 && maxViewData.height == 0;
-    }
+	/**
+	 * @return
+	 */
+	boolean isWithinDataArea() {
+		return (view.x >= maxViewData.x && view.x <= maxViewData.width && (view.x + view.width) <= maxViewData.width)
+				&& (view.y >= maxViewData.y && view.y <= maxViewData.height
+						&& (view.y + view.height) <= maxViewData.height);
+	}
+
+	/**
+	 * @return
+	 */
+	public boolean isOutside() {
+		return maxViewData.x == 0 && maxViewData.y == 0 && maxViewData.width == 0 && maxViewData.height == 0;
+	}
+
 }

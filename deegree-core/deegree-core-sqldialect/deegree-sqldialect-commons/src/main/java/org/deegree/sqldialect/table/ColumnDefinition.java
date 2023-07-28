@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-base/src/main/java/org/deegree/sqldialect/SQLDialect.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -42,75 +41,65 @@ import org.deegree.commons.tom.primitive.BaseType;
 
 /**
  * Metadata for a column of a table in an SQL database.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: markus $
- * 
- * @version $Revision: $, $Date: $
  */
 public class ColumnDefinition {
 
-    private SQLIdentifier name;
+	private SQLIdentifier name;
 
-    private BaseType type;
+	private BaseType type;
 
-    private Integer jdbcCode;
+	private Integer jdbcCode;
 
-    private String nativeType;
+	private String nativeType;
 
-    /**
-     * Creates a new <code>ColumnDefinition</code> instance.
-     * 
-     * @param name
-     *            name of the column, must not be <code>null</code>
-     * @param type
-     *            type of the column, must not be <code>null</code>
-     * @param jdbcCode
-     *            type code from {@link Types}, may be <code>null</code>
-     * @param nativeType
-     *            database native type definition (e.g. <code>VARCHAR2(255)</code>), may be <code>null</code>
-     */
-    public ColumnDefinition( SQLIdentifier name, BaseType type, Integer jdbcCode, String nativeType ) {
-        this.name = name;
-        this.type = type;
-        this.jdbcCode = jdbcCode;
-        this.nativeType = nativeType;
-    }
+	/**
+	 * Creates a new <code>ColumnDefinition</code> instance.
+	 * @param name name of the column, must not be <code>null</code>
+	 * @param type type of the column, must not be <code>null</code>
+	 * @param jdbcCode type code from {@link Types}, may be <code>null</code>
+	 * @param nativeType database native type definition (e.g.
+	 * <code>VARCHAR2(255)</code>), may be <code>null</code>
+	 */
+	public ColumnDefinition(SQLIdentifier name, BaseType type, Integer jdbcCode, String nativeType) {
+		this.name = name;
+		this.type = type;
+		this.jdbcCode = jdbcCode;
+		this.nativeType = nativeType;
+	}
 
-    /**
-     * Returns the name of the column.
-     * 
-     * @return name of the column, never <code>null</code>
-     */
-    public SQLIdentifier getName() {
-        return name;
-    }
+	/**
+	 * Returns the name of the column.
+	 * @return name of the column, never <code>null</code>
+	 */
+	public SQLIdentifier getName() {
+		return name;
+	}
 
-    /**
-     * Returns the type of the column.
-     * 
-     * @return name of the column, never <code>null</code>
-     */
-    public BaseType getType() {
-        return type;
-    }
+	/**
+	 * Returns the type of the column.
+	 * @return name of the column, never <code>null</code>
+	 */
+	public BaseType getType() {
+		return type;
+	}
 
-    /**
-     * Returns the type code from {@link Types}.
-     * 
-     * @return type code or <code>null</code> (no JDBC type code available)
-     */
-    public Integer getJdbcCode() {
-        return jdbcCode;
-    }
+	/**
+	 * Returns the type code from {@link Types}.
+	 * @return type code or <code>null</code> (no JDBC type code available)
+	 */
+	public Integer getJdbcCode() {
+		return jdbcCode;
+	}
 
-    /**
-     * Return the database native type definition.
-     * 
-     * @return database native type definition (e.g. <code>VARCHAR2(255)</code>) or <code>null</code> (no native type
-     *         definition available)
-     */
-    public String getNativeType() {
-        return nativeType;
-    }
+	/**
+	 * Return the database native type definition.
+	 * @return database native type definition (e.g. <code>VARCHAR2(255)</code>) or
+	 * <code>null</code> (no native type definition available)
+	 */
+	public String getNativeType() {
+		return nativeType;
+	}
+
 }

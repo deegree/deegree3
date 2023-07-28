@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-metadata/src/main/java/org/deegree/metadata/iso/persistence/inspectors/IdUtils.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -56,113 +55,114 @@ import org.slf4j.Logger;
 
 /**
  * <Code>ParsingUtils</Code>
- * 
+ *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: lbuesching $
- * 
- * @version $Revision: 30992 $, $Date: 2011-05-31 16:09:20 +0200 (Di, 31. Mai 2011) $
  */
 class IdUtils {
 
-    private static final Logger LOG = getLogger( IdUtils.class );
+	private static final Logger LOG = getLogger(IdUtils.class);
 
-    private final Connection conn;
+	private final Connection conn;
 
-    private String mainTable;
+	private String mainTable;
 
-    private String fileIdColumn;
+	private String fileIdColumn;
 
-    IdUtils( Connection conn, SQLDialect dialect ) {
-        this.conn = conn;
-        mainTable = ISOPropertyNameMapper.DatabaseTables.idxtb_main.name();
-        fileIdColumn = ISOPropertyNameMapper.CommonColumnNames.fileidentifier.name();
-    }
+	IdUtils(Connection conn, SQLDialect dialect) {
+		this.conn = conn;
+		mainTable = ISOPropertyNameMapper.DatabaseTables.idxtb_main.name();
+		fileIdColumn = ISOPropertyNameMapper.CommonColumnNames.fileidentifier.name();
+	}
 
-    /**
-     * Method to generate via the Java UUID-API a UUID if there is no identifier available.<br>
-     * If the generated ID begins with a number then this is replaced with a random letter from the ASCII table. This
-     * has to be done because the id attribute in the xml does not support any number at the beginning of an uuid. The
-     * uppercase letters are in range from 65 to 90 whereas the lowercase letters are from 97 to 122. After the
-     * generation there is a check if (in spite of the nearly impossibility) this uuid exists in the database already.
-     * 
-     * 
-     * @return a uuid that is unique in the backend.
-     * @throws MetadataStoreException
-     */
-    String generateUUID()
-                            throws MetadataInspectorException {
+	/**
+	 * Method to generate via the Java UUID-API a UUID if there is no identifier
+	 * available.<br>
+	 * If the generated ID begins with a number then this is replaced with a random letter
+	 * from the ASCII table. This has to be done because the id attribute in the xml does
+	 * not support any number at the beginning of an uuid. The uppercase letters are in
+	 * range from 65 to 90 whereas the lowercase letters are from 97 to 122. After the
+	 * generation there is a check if (in spite of the nearly impossibility) this uuid
+	 * exists in the database already.
+	 * @return a uuid that is unique in the backend.
+	 * @throws MetadataStoreException
+	 */
+	String generateUUID() throws MetadataInspectorException {
 
-        ResultSet rs = null;
-        PreparedStatement stm = null;
-        String uuid = null;
+		ResultSet rs = null;
+		PreparedStatement stm = null;
+		String uuid = null;
 
-        try {
+		try {
 
-            uuid = UUID.randomUUID().toString();
-            char firstChar = uuid.charAt( 0 );
-            Pattern p = Pattern.compile( "[0-9]" );
-            Matcher m = p.matcher( "" + firstChar );
-            if ( m.matches() ) {
-                int i;
-                double ma = Math.random();
-                if ( ma < 0.5 ) {
-                    i = 65;
+			uuid = UUID.randomUUID().toString();
+			char firstChar = uuid.charAt(0);
+			Pattern p = Pattern.compile("[0-9]");
+			Matcher m = p.matcher("" + firstChar);
+			if (m.matches()) {
+				int i;
+				double ma = Math.random();
+				if (ma < 0.5) {
+					i = 65;
 
-                } else {
-                    i = 97;
-                }
+				}
+				else {
+					i = 97;
+				}
 
-                firstChar = (char) ( (int) ( i + ma * 26 ) );
-                uuid = uuid.replaceFirst( "[0-9]", String.valueOf( firstChar ) );
-            }
-            boolean uuidIsEqual = false;
+				firstChar = (char) ((int) (i + ma * 26));
+				uuid = uuid.replaceFirst("[0-9]", String.valueOf(firstChar));
+			}
+			boolean uuidIsEqual = false;
 
-            String compareIdentifier = "SELECT " + fileIdColumn + " FROM " + mainTable + " WHERE " + fileIdColumn
-                                       + " = ?";
-            stm = conn.prepareStatement( compareIdentifier );
-            stm.setObject( 1, uuid );
-            rs = stm.executeQuery();
-            while ( rs.next() ) {
-                uuidIsEqual = true;
+			String compareIdentifier = "SELECT " + fileIdColumn + " FROM " + mainTable + " WHERE " + fileIdColumn
+					+ " = ?";
+			stm = conn.prepareStatement(compareIdentifier);
+			stm.setObject(1, uuid);
+			rs = stm.executeQuery();
+			while (rs.next()) {
+				uuidIsEqual = true;
 
-            }
+			}
 
-            if ( uuidIsEqual == true ) {
-                close( rs );
-                close( stm );
-                return generateUUID();
-            }
-        } catch ( SQLException e ) {
-            String msg = Messages.getMessage( "ERROR_SQL", stm.toString(), e.getMessage() );
-            LOG.debug( msg );
-            throw new MetadataInspectorException( msg );
-        } finally {
-            close( rs );
-            close( stm );
-        }
-        return uuid;
+			if (uuidIsEqual == true) {
+				close(rs);
+				close(stm);
+				return generateUUID();
+			}
+		}
+		catch (SQLException e) {
+			String msg = Messages.getMessage("ERROR_SQL", stm.toString(), e.getMessage());
+			LOG.debug(msg);
+			throw new MetadataInspectorException(msg);
+		}
+		finally {
+			close(rs);
+			close(stm);
+		}
+		return uuid;
 
-    }
+	}
 
-    boolean checkUUIDCompliance( String uuid ) {
+	boolean checkUUIDCompliance(String uuid) {
 
-        char firstChar = uuid.charAt( 0 );
-        Pattern p = Pattern.compile( "[0-9]" );
-        Matcher m = p.matcher( "" + firstChar );
-        if ( m.matches() ) {
-            return false;
-        }
-        return true;
-    }
+		char firstChar = uuid.charAt(0);
+		Pattern p = Pattern.compile("[0-9]");
+		Matcher m = p.matcher("" + firstChar);
+		if (m.matches()) {
+			return false;
+		}
+		return true;
+	}
 
-    boolean checkUUIDCompliance( List<String> list ) {
+	boolean checkUUIDCompliance(List<String> list) {
 
-        for ( String s : list ) {
-            boolean isUUID = checkUUIDCompliance( s );
-            if ( !isUUID ) {
-                return false;
-            }
-        }
-        return true;
-    }
+		for (String s : list) {
+			boolean isUUID = checkUUIDCompliance(s);
+			if (!isUUID) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 }

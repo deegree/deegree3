@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2009 by:
@@ -44,9 +43,7 @@ import org.deegree.commons.ows.exception.OWSException;
  * {@link Processlet} that provides customized exception generation.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
  */
 public interface ExceptionAwareProcesslet extends Processlet {
 

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -42,35 +41,34 @@ import org.slf4j.Logger;
 
 /**
  * <code>GMLId</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class GMLId {
 
-    private static final Logger LOG = getLogger( GMLId.class );
+	private static final Logger LOG = getLogger(GMLId.class);
 
-    /**
-     * @param sb
-     * @param o
-     * @param parent
-     */
-    public void eval( StringBuilder sb, Object o, Feature parent ) {
-        if ( o instanceof Feature ) {
-            String id = ( (Feature) o ).getId();
-            if ( id != null && !id.isEmpty() ) {
-                sb.append( id );
-            }
-        } else if ( parent != null ) {
-            String id = parent.getId();
-            if ( id != null && !id.isEmpty() ) {
-                sb.append( id );
-            }
-        } else {
-            LOG.warn( "Trying to get GML id from property without parent information." );
-        }
-    }
+	/**
+	 * @param sb
+	 * @param o
+	 * @param parent
+	 */
+	public void eval(StringBuilder sb, Object o, Feature parent) {
+		if (o instanceof Feature) {
+			String id = ((Feature) o).getId();
+			if (id != null && !id.isEmpty()) {
+				sb.append(id);
+			}
+		}
+		else if (parent != null) {
+			String id = parent.getId();
+			if (id != null && !id.isEmpty()) {
+				sb.append(id);
+			}
+		}
+		else {
+			LOG.warn("Trying to get GML id from property without parent information.");
+		}
+	}
 
 }

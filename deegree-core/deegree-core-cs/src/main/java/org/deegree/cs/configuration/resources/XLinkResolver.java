@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -39,30 +38,23 @@ package org.deegree.cs.configuration.resources;
 import java.io.IOException;
 
 /**
- * The <code>XLinkResolver</code> interface defines methods for the resolving of an xlink:href uri. Use-cases could be
- * the resolving of an uri in a database, a localfile, a server or anything to which an URI could point.
- * 
+ * The <code>XLinkResolver</code> interface defines methods for the resolving of an
+ * xlink:href uri. Use-cases could be the resolving of an uri in a database, a localfile,
+ * a server or anything to which an URI could point.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * @param <T>
- *            the type of the implementation
- * 
+ * @param <T> the type of the implementation
+ *
  */
 public interface XLinkResolver<T> {
 
-    /**
-     * Opens a stream to a resource which is defined by the uri.
-     * 
-     * @param uri
-     *            to locate
-     * @return an opened InputStream to the given resource or <code>null</code> if no resource was found.
-     * @throws IOException
-     *             If an error occurred while locating or opening the resource.
-     */
-    public T getURIAsType( String uri )
-                            throws IOException;
+	/**
+	 * Opens a stream to a resource which is defined by the uri.
+	 * @param uri to locate
+	 * @return an opened InputStream to the given resource or <code>null</code> if no
+	 * resource was found.
+	 * @throws IOException If an error occurred while locating or opening the resource.
+	 */
+	public T getURIAsType(String uri) throws IOException;
 
 }

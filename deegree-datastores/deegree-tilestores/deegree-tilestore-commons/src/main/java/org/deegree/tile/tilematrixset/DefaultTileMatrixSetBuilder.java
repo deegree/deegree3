@@ -48,52 +48,52 @@ import org.deegree.workspace.ResourceInitException;
 
 /**
  * This class is responsible for building tile matrix sets.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class DefaultTileMatrixSetBuilder implements ResourceBuilder<TileMatrixSet> {
 
-    private TileMatrixSetConfig cfg;
+	private TileMatrixSetConfig cfg;
 
-    private DefaultTileMatrixSetMetadata metadata;
+	private DefaultTileMatrixSetMetadata metadata;
 
-    public DefaultTileMatrixSetBuilder( TileMatrixSetConfig cfg, DefaultTileMatrixSetMetadata metadata ) {
-        this.cfg = cfg;
-        this.metadata = metadata;
-    }
+	public DefaultTileMatrixSetBuilder(TileMatrixSetConfig cfg, DefaultTileMatrixSetMetadata metadata) {
+		this.cfg = cfg;
+		this.metadata = metadata;
+	}
 
-    @Override
-    public TileMatrixSet build() {
-        try {
-            ICRS crs = CRSManager.getCRSRef( cfg.getCRS() );
-            List<TileMatrix> matrices = new ArrayList<TileMatrix>();
-            for ( TileMatrixSetConfig.TileMatrix tm : cfg.getTileMatrix() ) {
-                double res;
-                if ( crs.getUnits()[0].equals( Unit.DEGREE ) ) {
-                    res = MapUtils.calcDegreeResFromScale( tm.getScaleDenominator() );
-                } else {
-                    res = tm.getScaleDenominator() * DEFAULT_PIXEL_SIZE;
-                }
-                double minx = tm.getTopLeftCorner().get( 0 );
-                double maxy = tm.getTopLeftCorner().get( 1 );
-                double maxx = tm.getTileWidth().longValue() * tm.getMatrixWidth().longValue() * res + minx;
-                double miny = maxy - tm.getTileHeight().longValue() * tm.getMatrixHeight().longValue() * res;
-                Envelope env = new GeometryFactory().createEnvelope( minx, miny, maxx, maxy, crs );
-                SpatialMetadata smd = new SpatialMetadata( env, Collections.singletonList( crs ) );
-                TileMatrix md = new TileMatrix( tm.getIdentifier(), smd, tm.getTileWidth(), tm.getTileHeight(), res,
-                                                tm.getMatrixWidth(), tm.getMatrixHeight() );
-                matrices.add( md );
-            }
+	@Override
+	public TileMatrixSet build() {
+		try {
+			ICRS crs = CRSManager.getCRSRef(cfg.getCRS());
+			List<TileMatrix> matrices = new ArrayList<TileMatrix>();
+			for (TileMatrixSetConfig.TileMatrix tm : cfg.getTileMatrix()) {
+				double res;
+				if (crs.getUnits()[0].equals(Unit.DEGREE)) {
+					res = MapUtils.calcDegreeResFromScale(tm.getScaleDenominator());
+				}
+				else {
+					res = tm.getScaleDenominator() * DEFAULT_PIXEL_SIZE;
+				}
+				double minx = tm.getTopLeftCorner().get(0);
+				double maxy = tm.getTopLeftCorner().get(1);
+				double maxx = tm.getTileWidth().longValue() * tm.getMatrixWidth().longValue() * res + minx;
+				double miny = maxy - tm.getTileHeight().longValue() * tm.getMatrixHeight().longValue() * res;
+				Envelope env = new GeometryFactory().createEnvelope(minx, miny, maxx, maxy, crs);
+				SpatialMetadata smd = new SpatialMetadata(env, Collections.singletonList(crs));
+				TileMatrix md = new TileMatrix(tm.getIdentifier(), smd, tm.getTileWidth(), tm.getTileHeight(), res,
+						tm.getMatrixWidth(), tm.getMatrixHeight());
+				matrices.add(md);
+			}
 
-            String identifier = metadata.getIdentifier().getId();
-            String wknScaleSet = cfg.getWellKnownScaleSet();
-            return new TileMatrixSet( identifier, wknScaleSet, matrices, matrices.get( 0 ).getSpatialMetadata(),
-                                      metadata );
-        } catch ( Exception e ) {
-            throw new ResourceInitException( "Could not create tile matrix set. Reason: " + e.getLocalizedMessage(), e );
-        }
-    }
+			String identifier = metadata.getIdentifier().getId();
+			String wknScaleSet = cfg.getWellKnownScaleSet();
+			return new TileMatrixSet(identifier, wknScaleSet, matrices, matrices.get(0).getSpatialMetadata(), metadata);
+		}
+		catch (Exception e) {
+			throw new ResourceInitException("Could not create tile matrix set. Reason: " + e.getLocalizedMessage(), e);
+		}
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -47,63 +46,59 @@ import org.deegree.commons.tom.ows.StringOrRef;
 
 /**
  * Default implementation of {@link Definition}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class GenericDefinition implements Definition {
 
-    private String id;
+	private String id;
 
-    private GMLStdProps gmlProps;
+	private GMLStdProps gmlProps;
 
-    /**
-     * Creates a new {@link GenericDefinition} instance.
-     * 
-     * @param id
-     *            id of the definition, can be <code>null</code>
-     * @param gmlProps
-     *            GML standard properties (which contain description and names), must not be <code>null</code>
-     */
-    public GenericDefinition( String id, GMLStdProps gmlProps ) {
-        this.id = id;
-        this.gmlProps = gmlProps;
-    }
+	/**
+	 * Creates a new {@link GenericDefinition} instance.
+	 * @param id id of the definition, can be <code>null</code>
+	 * @param gmlProps GML standard properties (which contain description and names), must
+	 * not be <code>null</code>
+	 */
+	public GenericDefinition(String id, GMLStdProps gmlProps) {
+		this.id = id;
+		this.gmlProps = gmlProps;
+	}
 
-    @Override
-    public String getId() {
-        return id;
-    }
+	@Override
+	public String getId() {
+		return id;
+	}
 
-    @Override
-    public StringOrRef getDescription() {
-        return gmlProps.getDescription();
-    }
+	@Override
+	public StringOrRef getDescription() {
+		return gmlProps.getDescription();
+	}
 
-    @Override
-    public CodeType[] getNames() {
-        return gmlProps.getNames();
-    }
+	@Override
+	public CodeType[] getNames() {
+		return gmlProps.getNames();
+	}
 
-    @Override
-    public GMLStdProps getGMLProperties() {
-        return gmlProps;
-    }
+	@Override
+	public GMLStdProps getGMLProperties() {
+		return gmlProps;
+	}
 
-    @Override
-    public GMLObjectType getType() {
-        throw new UnsupportedOperationException ("Implement me");
-    }
+	@Override
+	public GMLObjectType getType() {
+		throw new UnsupportedOperationException("Implement me");
+	}
 
-    @Override
-    public List<Property> getProperties() {
-        throw new UnsupportedOperationException ("Implement me");
-    }
+	@Override
+	public List<Property> getProperties() {
+		throw new UnsupportedOperationException("Implement me");
+	}
 
-    @Override
-    public List<Property> getProperties( QName propName ) {
-        throw new UnsupportedOperationException ("Implement me");
-    }
+	@Override
+	public List<Property> getProperties(QName propName) {
+		throw new UnsupportedOperationException("Implement me");
+	}
+
 }

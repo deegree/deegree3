@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -46,48 +45,41 @@ import org.deegree.protocol.wfs.transaction.action.PropertyReplacement;
 
 /**
  * Reader for XML encoded WFS <code>Transaction</code> elements.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface TransactionXmlReader {
 
-    /**
-     * Returns the object representation of the given <code>Transaction</code> element.
-     * <p>
-     * NOTE: In order to allow streaming processing, this method will not necessarily consume all corresponding events
-     * from the given <code>XMLStream</code> .
-     * </p>
-     * 
-     * @param xmlStream
-     *            cursor must point at the <code>START_ELEMENT</code> event, must not be <code>null</code>
-     * @return corresponding {@link Transaction} object, never <code>null</code>
-     * @throws XMLStreamException
-     * @throws XMLParsingException
-     */
-    Transaction read( XMLStreamReader xmlStream )
-                            throws XMLStreamException, XMLParsingException;
+	/**
+	 * Returns the object representation of the given <code>Transaction</code> element.
+	 * <p>
+	 * NOTE: In order to allow streaming processing, this method will not necessarily
+	 * consume all corresponding events from the given <code>XMLStream</code> .
+	 * </p>
+	 * @param xmlStream cursor must point at the <code>START_ELEMENT</code> event, must
+	 * not be <code>null</code>
+	 * @return corresponding {@link Transaction} object, never <code>null</code>
+	 * @throws XMLStreamException
+	 * @throws XMLParsingException
+	 */
+	Transaction read(XMLStreamReader xmlStream) throws XMLStreamException, XMLParsingException;
 
-    /**
-     * Returns the object representation of the given transaction action element.
-     * <p>
-     * NOTE: In order to allow streaming processing, this method will not necessarily consume all corresponding events
-     * from the given <code>XMLStream</code> .
-     * </p>
-     * 
-     * @param xmlStream
-     *            cursor must point at the <code>START_ELEMENT</code> event, must not be <code>null</code>
-     * @return corresponding {@link TransactionAction} object, never <code>null</code>
-     * @throws XMLStreamException
-     * @throws XMLParsingException
-     */
-    TransactionAction readAction( XMLStreamReader xmlStream )
-                            throws XMLStreamException, XMLParsingException;
+	/**
+	 * Returns the object representation of the given transaction action element.
+	 * <p>
+	 * NOTE: In order to allow streaming processing, this method will not necessarily
+	 * consume all corresponding events from the given <code>XMLStream</code> .
+	 * </p>
+	 * @param xmlStream cursor must point at the <code>START_ELEMENT</code> event, must
+	 * not be <code>null</code>
+	 * @return corresponding {@link TransactionAction} object, never <code>null</code>
+	 * @throws XMLStreamException
+	 * @throws XMLParsingException
+	 */
+	TransactionAction readAction(XMLStreamReader xmlStream) throws XMLStreamException, XMLParsingException;
 
-    Filter readFilter( XMLStreamReader xmlStream ) throws XMLParsingException, XMLStreamException;
+	Filter readFilter(XMLStreamReader xmlStream) throws XMLParsingException, XMLStreamException;
 
-    PropertyReplacement readProperty( XMLStreamReader xmlStream )
-                            throws XMLStreamException;
+	PropertyReplacement readProperty(XMLStreamReader xmlStream) throws XMLStreamException;
+
 }

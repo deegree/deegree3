@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -61,7 +60,8 @@ import org.deegree.protocol.wfs.query.Query;
 import org.deegree.protocol.wfs.query.StandardPresentationParams;
 
 /**
- * Adapter between XML <code>GetFeatureWithLock</code> requests and {@link GetFeatureWithLock} objects.
+ * Adapter between XML <code>GetFeatureWithLock</code> requests and
+ * {@link GetFeatureWithLock} objects.
  * <p>
  * Supported versions:
  * <ul>
@@ -69,125 +69,123 @@ import org.deegree.protocol.wfs.query.StandardPresentationParams;
  * <li>WFS 1.1.0</li>
  * <li>WFS 2.0.0</li>
  * </ul>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class GetFeatureWithLockXMLAdapter extends AbstractWFSRequestXMLAdapter {
 
-    /**
-     * Parses a WFS <code>GetFeatureWithLock</code> document into a {@link GetFeatureWithLock} object.
-     * 
-     * @return parsed {@link GetFeatureWithLock} request
-     * @throws Exception
-     * @throws XMLParsingException
-     *             if a syntax error occurs in the XML
-     * @throws MissingParameterException
-     *             if the request version is unsupported
-     * @throws InvalidParameterValueException
-     *             if a parameter contains a syntax error
-     */
-    public GetFeatureWithLock parse()
-                            throws Exception {
+	/**
+	 * Parses a WFS <code>GetFeatureWithLock</code> document into a
+	 * {@link GetFeatureWithLock} object.
+	 * @return parsed {@link GetFeatureWithLock} request
+	 * @throws Exception
+	 * @throws XMLParsingException if a syntax error occurs in the XML
+	 * @throws MissingParameterException if the request version is unsupported
+	 * @throws InvalidParameterValueException if a parameter contains a syntax error
+	 */
+	public GetFeatureWithLock parse() throws Exception {
 
-        Version version = determineVersion110Safe();
+		Version version = determineVersion110Safe();
 
-        GetFeatureWithLock result = null;
-        if ( VERSION_100.equals( version ) ) {
-            result = parse100();
-        } else if ( VERSION_110.equals( version ) ) {
-            result = parse110();
-        } else if ( VERSION_200.equals( version ) ) {
-            result = parse200();
-        } else {
-            throw new Exception( "Version " + version
-                                 + " is not supported for parsing (for now). Only 1.1.0 and 1.0.0 are supported." );
-        }
+		GetFeatureWithLock result = null;
+		if (VERSION_100.equals(version)) {
+			result = parse100();
+		}
+		else if (VERSION_110.equals(version)) {
+			result = parse110();
+		}
+		else if (VERSION_200.equals(version)) {
+			result = parse200();
+		}
+		else {
+			throw new Exception("Version " + version
+					+ " is not supported for parsing (for now). Only 1.1.0 and 1.0.0 are supported.");
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    public GetFeatureWithLock parse100() {
+	public GetFeatureWithLock parse100() {
 
-        GetFeatureXMLAdapter getFeatureXMLAdapter = new GetFeatureXMLAdapter();
-        getFeatureXMLAdapter.setRootElement( rootElement );
-        GetFeature gf = getFeatureXMLAdapter.parse100();
+		GetFeatureXMLAdapter getFeatureXMLAdapter = new GetFeatureXMLAdapter();
+		getFeatureXMLAdapter.setRootElement(rootElement);
+		GetFeature gf = getFeatureXMLAdapter.parse100();
 
-        BigInteger expiryInMinutes = getNodeAsBigInt( rootElement, new XPath( "@expiry", nsContext ), null );
-        BigInteger expiryInSeconds = convertToSeconds( expiryInMinutes );
+		BigInteger expiryInMinutes = getNodeAsBigInt(rootElement, new XPath("@expiry", nsContext), null);
+		BigInteger expiryInSeconds = convertToSeconds(expiryInMinutes);
 
-        StandardPresentationParams presentationParams = gf.getPresentationParams();
-        ResolveParams resolveParams = gf.getResolveParams();
-        List<Query> queries = gf.getQueries();
-        return new GetFeatureWithLock( VERSION_100, null, presentationParams, resolveParams, queries, expiryInSeconds,
-                                       null );
-    }
+		StandardPresentationParams presentationParams = gf.getPresentationParams();
+		ResolveParams resolveParams = gf.getResolveParams();
+		List<Query> queries = gf.getQueries();
+		return new GetFeatureWithLock(VERSION_100, null, presentationParams, resolveParams, queries, expiryInSeconds,
+				null);
+	}
 
-    /**
-     * Parses a WFS 1.1.0 <code>GetFeatureWithLock</code> document into a {@link GetFeatureWithLock} object.
-     * 
-     * @return a GetFeatureWithLock instance
-     */
-    public GetFeatureWithLock parse110() {
+	/**
+	 * Parses a WFS 1.1.0 <code>GetFeatureWithLock</code> document into a
+	 * {@link GetFeatureWithLock} object.
+	 * @return a GetFeatureWithLock instance
+	 */
+	public GetFeatureWithLock parse110() {
 
-        GetFeatureXMLAdapter getFeatureXMLAdapter = new GetFeatureXMLAdapter();
-        getFeatureXMLAdapter.setRootElement( rootElement );
-        GetFeature gf = getFeatureXMLAdapter.parse110();
+		GetFeatureXMLAdapter getFeatureXMLAdapter = new GetFeatureXMLAdapter();
+		getFeatureXMLAdapter.setRootElement(rootElement);
+		GetFeature gf = getFeatureXMLAdapter.parse110();
 
-        BigInteger expiryInMinutes = getNodeAsBigInt( rootElement, new XPath( "@expiry", nsContext ), null );
-        BigInteger expiryInSeconds = convertToSeconds( expiryInMinutes );
+		BigInteger expiryInMinutes = getNodeAsBigInt(rootElement, new XPath("@expiry", nsContext), null);
+		BigInteger expiryInSeconds = convertToSeconds(expiryInMinutes);
 
-        StandardPresentationParams presentationParams = gf.getPresentationParams();
-        ResolveParams resolveParams = gf.getResolveParams();
-        List<Query> queries = gf.getQueries();
-        return new GetFeatureWithLock( VERSION_110, null, presentationParams, resolveParams, queries, expiryInSeconds,
-                                       null );
-    }
+		StandardPresentationParams presentationParams = gf.getPresentationParams();
+		ResolveParams resolveParams = gf.getResolveParams();
+		List<Query> queries = gf.getQueries();
+		return new GetFeatureWithLock(VERSION_110, null, presentationParams, resolveParams, queries, expiryInSeconds,
+				null);
+	}
 
-    public GetFeatureWithLock parse200()
-                            throws OWSException {
+	public GetFeatureWithLock parse200() throws OWSException {
 
-        GetFeatureXMLAdapter getFeatureXMLAdapter = new GetFeatureXMLAdapter();
-        getFeatureXMLAdapter.setRootElement( rootElement );
-        GetFeature gf = getFeatureXMLAdapter.parse200();
+		GetFeatureXMLAdapter getFeatureXMLAdapter = new GetFeatureXMLAdapter();
+		getFeatureXMLAdapter.setRootElement(rootElement);
+		GetFeature gf = getFeatureXMLAdapter.parse200();
 
-        // <xsd:attribute name="expiry" type="xsd:positiveInteger" default="300"/>
-        BigInteger expiryInSeconds = getNodeAsBigInt( rootElement, new XPath( "@expiry", nsContext ), null );
+		// <xsd:attribute name="expiry" type="xsd:positiveInteger" default="300"/>
+		BigInteger expiryInSeconds = getNodeAsBigInt(rootElement, new XPath("@expiry", nsContext), null);
 
-        // <xsd:attribute name="lockAction" type="wfs:AllSomeType" default="ALL"/>
-        String lockActionStr = rootElement.getAttributeValue( new QName( "lockAction" ) );
-        Boolean lockAll = parseLockAction( lockActionStr );
+		// <xsd:attribute name="lockAction" type="wfs:AllSomeType" default="ALL"/>
+		String lockActionStr = rootElement.getAttributeValue(new QName("lockAction"));
+		Boolean lockAll = parseLockAction(lockActionStr);
 
-        String handle = gf.getHandle();
-        StandardPresentationParams presentationParams = gf.getPresentationParams();
-        ResolveParams resolveParams = gf.getResolveParams();
-        List<Query> queries = gf.getQueries();
-        return new GetFeatureWithLock( VERSION_200, handle, presentationParams, resolveParams, queries,
-                                       expiryInSeconds, lockAll );
-    }
+		String handle = gf.getHandle();
+		StandardPresentationParams presentationParams = gf.getPresentationParams();
+		ResolveParams resolveParams = gf.getResolveParams();
+		List<Query> queries = gf.getQueries();
+		return new GetFeatureWithLock(VERSION_200, handle, presentationParams, resolveParams, queries, expiryInSeconds,
+				lockAll);
+	}
 
-    private BigInteger convertToSeconds( BigInteger expiryInMinutes ) {
-        if ( expiryInMinutes == null ) {
-            return null;
-        }
-        return expiryInMinutes.multiply( BigInteger.valueOf( 60 ) );
-    }
+	private BigInteger convertToSeconds(BigInteger expiryInMinutes) {
+		if (expiryInMinutes == null) {
+			return null;
+		}
+		return expiryInMinutes.multiply(BigInteger.valueOf(60));
+	}
 
-    private Boolean parseLockAction( String lockActionStr ) {
-        Boolean lockAll = null;
-        if ( lockActionStr != null ) {
-            if ( "ALL".equals( lockActionStr ) ) {
-                lockAll = true;
-            } else if ( "SOME".equals( lockActionStr ) ) {
-                lockAll = false;
-            } else {
-                String msg = Messages.get( "WFS_UNKNOWN_LOCK_ACTION", lockActionStr );
-                throw new XMLParsingException( this, rootElement, msg );
-            }
-        }
-        return lockAll;
-    }
+	private Boolean parseLockAction(String lockActionStr) {
+		Boolean lockAll = null;
+		if (lockActionStr != null) {
+			if ("ALL".equals(lockActionStr)) {
+				lockAll = true;
+			}
+			else if ("SOME".equals(lockActionStr)) {
+				lockAll = false;
+			}
+			else {
+				String msg = Messages.get("WFS_UNKNOWN_LOCK_ACTION", lockActionStr);
+				throw new XMLParsingException(this, rootElement, msg);
+			}
+		}
+		return lockAll;
+	}
+
 }

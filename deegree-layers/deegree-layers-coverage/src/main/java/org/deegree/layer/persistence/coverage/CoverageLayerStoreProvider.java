@@ -37,28 +37,28 @@ import org.deegree.workspace.Workspace;
 
 /**
  * SPI class for coverage layer stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class CoverageLayerStoreProvider extends LayerStoreProvider {
 
-    private static final URL CONFIG_SCHEMA = CoverageLayerStoreProvider.class.getResource( "/META-INF/schemas/layers/coverage/coverage.xsd" );
+	private static final URL CONFIG_SCHEMA = CoverageLayerStoreProvider.class
+		.getResource("/META-INF/schemas/layers/coverage/coverage.xsd");
 
-    @Override
-    public String getNamespace() {
-        return "http://www.deegree.org/layers/coverage";
-    }
+	@Override
+	public String getNamespace() {
+		return "http://www.deegree.org/layers/coverage";
+	}
 
-    @Override
-    public ResourceMetadata<LayerStore> createFromLocation( Workspace workspace, ResourceLocation<LayerStore> location ) {
-        return new CoverageLayerStoreMetadata( workspace, location, this );
-    }
+	@Override
+	public ResourceMetadata<LayerStore> createFromLocation(Workspace workspace, ResourceLocation<LayerStore> location) {
+		return new CoverageLayerStoreMetadata(workspace, location, this);
+	}
 
-    @Override
-    public URL getSchema() {
-        return CONFIG_SCHEMA;
-    }
+	@Override
+	public URL getSchema() {
+		return CONFIG_SCHEMA;
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -64,175 +63,170 @@ import org.slf4j.Logger;
 
 /**
  * <code>ProcessExecuter</code> is the executer of a process, with the given user entries.
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class ProcessExecuter {
 
-    private static final Logger LOG = getLogger( ProcessExecuter.class );
+	private static final Logger LOG = getLogger(ProcessExecuter.class);
 
-    /**
-     * Executes the given process. After this, the uploaded files (xmlInputs and binaryInputs) will be deleted.
-     * 
-     * @param processToExecute
-     *            the process to execute
-     * @param literalInputs
-     *            all literalInputs; must not be null!
-     * @param bboxInputs
-     *            all bboxInputs; must not be null!
-     * @param xmlInputs
-     *            all xmlInputs; must not be null!
-     * @param xmlRefInputs
-     * @param binaryInputs
-     *            all binaryInputs; must not be null!
-     * @param outputs
-     *            the outputs
-     * @param complexOutputFormats
-     * @return the response of the WPS request
-     */
-    public ExecutionOutput[] execute( Process processToExecute, Map<String, StringPair> literalInputs,
-                                      Map<String, BBox> bboxInputs, Map<String, UploadedFile> xmlInputs,
-                                      Map<String, String> xmlRefInputs, Map<String, UploadedFile> binaryInputs,
-                                      Map<String, ComplexFormat> complexInputFormats, List<String> outputs,
-                                      Map<String, ComplexFormat> complexOutputFormats ) {
+	/**
+	 * Executes the given process. After this, the uploaded files (xmlInputs and
+	 * binaryInputs) will be deleted.
+	 * @param processToExecute the process to execute
+	 * @param literalInputs all literalInputs; must not be null!
+	 * @param bboxInputs all bboxInputs; must not be null!
+	 * @param xmlInputs all xmlInputs; must not be null!
+	 * @param xmlRefInputs
+	 * @param binaryInputs all binaryInputs; must not be null!
+	 * @param outputs the outputs
+	 * @param complexOutputFormats
+	 * @return the response of the WPS request
+	 */
+	public ExecutionOutput[] execute(Process processToExecute, Map<String, StringPair> literalInputs,
+			Map<String, BBox> bboxInputs, Map<String, UploadedFile> xmlInputs, Map<String, String> xmlRefInputs,
+			Map<String, UploadedFile> binaryInputs, Map<String, ComplexFormat> complexInputFormats,
+			List<String> outputs, Map<String, ComplexFormat> complexOutputFormats) {
 
-        FacesContext fc = FacesContext.getCurrentInstance();
-        try {
-            if ( LOG.isDebugEnabled() ) {
-                LOG.debug( "execute selected process " + processToExecute.getId() );
-                LOG.debug( "input parameters (LITERAL): " + literalInputs );
-                LOG.debug( "input parameters (XML): " + xmlInputs );
-                LOG.debug( "input parameters (XML-REFS): " + xmlRefInputs );
-                LOG.debug( "input parameters (BINARY): " + binaryInputs );
-                LOG.debug( "input parameters (BBOX): " + bboxInputs );
-                LOG.debug( "input formats: " + complexInputFormats );
-                LOG.debug( "outputs: " + outputs );
-                LOG.debug( "output formats: " + complexOutputFormats );
-            }
-            ProcessExecution execution = processToExecute.prepareExecution();
-            InputType[] inputDescription = processToExecute.getInputTypes();
-            for ( int i = 0; i < inputDescription.length; i++ ) {
-                InputType input = inputDescription[i];
-                String id = input.getId().toString();
-                if ( input instanceof LiteralInputType ) {
-                    for ( String key : literalInputs.keySet() ) {
-                        if ( matches( id, key ) && literalInputs.get( key ) != null ) {
-                            StringPair literal = literalInputs.get( key );
-                            execution.addLiteralInput( input.getId().getCode(), input.getId().getCodeSpace(),
-                                                       literal.getFirst(), null, literal.getSecond() );
-                        }
-                    }
+		FacesContext fc = FacesContext.getCurrentInstance();
+		try {
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("execute selected process " + processToExecute.getId());
+				LOG.debug("input parameters (LITERAL): " + literalInputs);
+				LOG.debug("input parameters (XML): " + xmlInputs);
+				LOG.debug("input parameters (XML-REFS): " + xmlRefInputs);
+				LOG.debug("input parameters (BINARY): " + binaryInputs);
+				LOG.debug("input parameters (BBOX): " + bboxInputs);
+				LOG.debug("input formats: " + complexInputFormats);
+				LOG.debug("outputs: " + outputs);
+				LOG.debug("output formats: " + complexOutputFormats);
+			}
+			ProcessExecution execution = processToExecute.prepareExecution();
+			InputType[] inputDescription = processToExecute.getInputTypes();
+			for (int i = 0; i < inputDescription.length; i++) {
+				InputType input = inputDescription[i];
+				String id = input.getId().toString();
+				if (input instanceof LiteralInputType) {
+					for (String key : literalInputs.keySet()) {
+						if (matches(id, key) && literalInputs.get(key) != null) {
+							StringPair literal = literalInputs.get(key);
+							execution.addLiteralInput(input.getId().getCode(), input.getId().getCodeSpace(),
+									literal.getFirst(), null, literal.getSecond());
+						}
+					}
 
-                } else if ( input instanceof ComplexInputType ) {
-                    String schema = null, encoding = null, mimeType = null;
-                    for ( String key : complexInputFormats.keySet() ) {
-                        if ( matches( id, key ) && complexInputFormats.get( key ) != null ) {
-                            ComplexFormat complexFormat = complexInputFormats.get( key );
-                            if ( complexFormat != null ) {
-                                schema = complexFormat.getSchema();
-                                mimeType = complexFormat.getMimeType();
-                                encoding = complexFormat.getEncoding();
-                            }
-                        }
-                    }
-                    UploadedFile xml = null;
-                    for ( String key : xmlInputs.keySet() ) {
-                        if ( matches( id, key ) && xmlInputs.get( key ) != null )
-                            xml = xmlInputs.get( key );
-                    }
-                    String xmlRef = null;
-                    for ( String key : xmlRefInputs.keySet() ) {
-                        if ( matches( id, key ) && xmlRefInputs.get( key ) != null )
-                            xmlRef = xmlRefInputs.get( key );
-                    }
-                    if ( xml != null ) {
-                        XMLStreamReader sr = XMLInputFactory.newInstance().createXMLStreamReader( xml.getUrl().openStream() );
-                        while ( sr.getEventType() != XMLStreamReader.START_ELEMENT ) {
-                            sr.next();
-                        }
-                        execution.addXMLInput( input.getId().getCode(), input.getId().getCodeSpace(), sr, mimeType,
-                                               encoding, schema );
-                    } else if ( xmlRef != null && xmlRef.trim().length() > 0 ) {
-                        execution.addXMLInput( input.getId().getCode(), input.getId().getCodeSpace(),
-                                               new URI( xmlRef ), true, mimeType, encoding, schema );
-                    }
-                    for ( String key : binaryInputs.keySet() ) {
-                        execution.addBinaryInput( input.getId().getCode(), input.getId().getCodeSpace(),
-                                                  binaryInputs.get( key ).getUrl().openStream(), mimeType, encoding );
-                    }
-                } else if ( input instanceof BBoxInputType ) {
-                    BBox bbox = bboxInputs.get( id );
-                    if ( bbox != null ) {
-                        execution.addBBoxInput( input.getId().getCode(), input.getId().getCodeSpace(),
-                                                new double[] { bbox.getMinx(), bbox.getMinY() },
-                                                new double[] { bbox.getMaxX(), bbox.getMaxY() }, bbox.getCrs() );
-                    }
-                }
-            }
-            for ( String out : outputs ) {
-                String schema = null, encoding = null, mimeType = null;
-                if ( complexOutputFormats.containsKey( out ) ) {
-                    schema = complexOutputFormats.get( out ).getSchema();
-                    encoding = complexOutputFormats.get( out ).getEncoding();
-                    mimeType = complexOutputFormats.get( out ).getMimeType();
-                }
-                LOG.debug( "Append output " + out + " with format " + schema + ", " + encoding + ", " + mimeType );
-                execution.addOutput( out, null, null, true, mimeType, encoding, schema );
-            }
-            ExecutionOutputs response = execution.execute();
-            // // OR, not yet finished
-            // execution.startAsync();
+				}
+				else if (input instanceof ComplexInputType) {
+					String schema = null, encoding = null, mimeType = null;
+					for (String key : complexInputFormats.keySet()) {
+						if (matches(id, key) && complexInputFormats.get(key) != null) {
+							ComplexFormat complexFormat = complexInputFormats.get(key);
+							if (complexFormat != null) {
+								schema = complexFormat.getSchema();
+								mimeType = complexFormat.getMimeType();
+								encoding = complexFormat.getEncoding();
+							}
+						}
+					}
+					UploadedFile xml = null;
+					for (String key : xmlInputs.keySet()) {
+						if (matches(id, key) && xmlInputs.get(key) != null)
+							xml = xmlInputs.get(key);
+					}
+					String xmlRef = null;
+					for (String key : xmlRefInputs.keySet()) {
+						if (matches(id, key) && xmlRefInputs.get(key) != null)
+							xmlRef = xmlRefInputs.get(key);
+					}
+					if (xml != null) {
+						XMLStreamReader sr = XMLInputFactory.newInstance()
+							.createXMLStreamReader(xml.getUrl().openStream());
+						while (sr.getEventType() != XMLStreamReader.START_ELEMENT) {
+							sr.next();
+						}
+						execution.addXMLInput(input.getId().getCode(), input.getId().getCodeSpace(), sr, mimeType,
+								encoding, schema);
+					}
+					else if (xmlRef != null && xmlRef.trim().length() > 0) {
+						execution.addXMLInput(input.getId().getCode(), input.getId().getCodeSpace(), new URI(xmlRef),
+								true, mimeType, encoding, schema);
+					}
+					for (String key : binaryInputs.keySet()) {
+						execution.addBinaryInput(input.getId().getCode(), input.getId().getCodeSpace(),
+								binaryInputs.get(key).getUrl().openStream(), mimeType, encoding);
+					}
+				}
+				else if (input instanceof BBoxInputType) {
+					BBox bbox = bboxInputs.get(id);
+					if (bbox != null) {
+						execution.addBBoxInput(input.getId().getCode(), input.getId().getCodeSpace(),
+								new double[] { bbox.getMinx(), bbox.getMinY() },
+								new double[] { bbox.getMaxX(), bbox.getMaxY() }, bbox.getCrs());
+					}
+				}
+			}
+			for (String out : outputs) {
+				String schema = null, encoding = null, mimeType = null;
+				if (complexOutputFormats.containsKey(out)) {
+					schema = complexOutputFormats.get(out).getSchema();
+					encoding = complexOutputFormats.get(out).getEncoding();
+					mimeType = complexOutputFormats.get(out).getMimeType();
+				}
+				LOG.debug("Append output " + out + " with format " + schema + ", " + encoding + ", " + mimeType);
+				execution.addOutput(out, null, null, true, mimeType, encoding, schema);
+			}
+			ExecutionOutputs response = execution.execute();
+			// // OR, not yet finished
+			// execution.startAsync();
 
-            delete( xmlInputs, binaryInputs );
-            return response.getAll();
-        } catch ( Exception e ) {
-            if ( LOG.isDebugEnabled() ) {
-                e.printStackTrace();
-            }
-            FacesMessage msg = getFacesMessage( FacesMessage.SEVERITY_ERROR, "ERROR.REQUEST_WPS", e.getMessage() );
-            fc.addMessage( "ExecuteBean.execute.ERROR_REQUEST", msg );
-            return null;
-        }
-    }
+			delete(xmlInputs, binaryInputs);
+			return response.getAll();
+		}
+		catch (Exception e) {
+			if (LOG.isDebugEnabled()) {
+				e.printStackTrace();
+			}
+			FacesMessage msg = getFacesMessage(FacesMessage.SEVERITY_ERROR, "ERROR.REQUEST_WPS", e.getMessage());
+			fc.addMessage("ExecuteBean.execute.ERROR_REQUEST", msg);
+			return null;
+		}
+	}
 
-    private boolean matches( String id, String key ) {
-        return key.matches( "^" + id + ":[0-9]*" );
-    }
+	private boolean matches(String id, String key) {
+		return key.matches("^" + id + ":[0-9]*");
+	}
 
-    private void delete( Map<String, UploadedFile> xmlInputs, Map<String, UploadedFile> binaryInputs ) {
-        for ( String xml : xmlInputs.keySet() ) {
-            UploadedFile xmlToDelete = xmlInputs.get( xml );
-            FileDeleter deleter = new FileDeleter( new File( xmlToDelete.getAbsolutePath() ) );
-            deleter.start();
-        }
-        for ( String xml : binaryInputs.keySet() ) {
-            UploadedFile binaryToDelete = binaryInputs.get( xml );
-            FileDeleter deleter = new FileDeleter( new File( binaryToDelete.getAbsolutePath() ) );
-            deleter.start();
-        }
-    }
+	private void delete(Map<String, UploadedFile> xmlInputs, Map<String, UploadedFile> binaryInputs) {
+		for (String xml : xmlInputs.keySet()) {
+			UploadedFile xmlToDelete = xmlInputs.get(xml);
+			FileDeleter deleter = new FileDeleter(new File(xmlToDelete.getAbsolutePath()));
+			deleter.start();
+		}
+		for (String xml : binaryInputs.keySet()) {
+			UploadedFile binaryToDelete = binaryInputs.get(xml);
+			FileDeleter deleter = new FileDeleter(new File(binaryToDelete.getAbsolutePath()));
+			deleter.start();
+		}
+	}
 
-    private class FileDeleter extends Thread {
+	private class FileDeleter extends Thread {
 
-        private File fileToDelete;
+		private File fileToDelete;
 
-        public FileDeleter( File fileToDelete ) {
-            this.fileToDelete = fileToDelete;
-        }
+		public FileDeleter(File fileToDelete) {
+			this.fileToDelete = fileToDelete;
+		}
 
-        @Override
-        public void run() {
-            if ( fileToDelete != null && fileToDelete.exists() ) {
-                boolean delete = fileToDelete.delete();
-                if ( !delete ) {
-                    LOG.debug( "File " + fileToDelete + " could not be deletet!" );
-                }
-            }
-        }
+		@Override
+		public void run() {
+			if (fileToDelete != null && fileToDelete.exists()) {
+				boolean delete = fileToDelete.delete();
+				if (!delete) {
+					LOG.debug("File " + fileToDelete + " could not be deletet!");
+				}
+			}
+		}
 
-    }
+	}
 
 }

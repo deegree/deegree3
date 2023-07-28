@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -45,12 +44,12 @@ import org.apache.http.client.ResponseHandler;
 
 public class OwsResponseHandler implements ResponseHandler<InputStream> {
 
-    @Override
-    public InputStream handleResponse( HttpResponse response )
-                            throws ClientProtocolException, IOException {
+	@Override
+	public InputStream handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
 
-        // TODO error handling
-        HttpEntity entity = response.getEntity();
-        return entity.getContent();
-    }
+		// TODO error handling
+		HttpEntity entity = response.getEntity();
+		return entity.getContent();
+	}
+
 }

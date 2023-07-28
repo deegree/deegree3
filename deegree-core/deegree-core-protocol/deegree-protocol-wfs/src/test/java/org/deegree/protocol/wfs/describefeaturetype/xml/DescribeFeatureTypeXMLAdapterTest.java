@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2008 by:
@@ -52,59 +51,57 @@ import org.junit.Test;
 
 /**
  * Tests for {@link DescribeFeatureTypeXMLAdapter}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class DescribeFeatureTypeXMLAdapterTest {
 
-    // files are not really fetched from this URL, but taken from cached version (module deegree-ogcschemas)
-    private static final String WFS200_EXAMPLES_BASE_URL = "http://schemas.opengis.net/wfs/2.0/examples/DescribeFeatureType/";
+	// files are not really fetched from this URL, but taken from cached version (module
+	// deegree-ogcschemas)
+	private static final String WFS200_EXAMPLES_BASE_URL = "http://schemas.opengis.net/wfs/2.0/examples/DescribeFeatureType/";
 
-    @Test
-    public void test200Example01()
-                            throws Exception {
+	@Test
+	public void test200Example01() throws Exception {
 
-        DescribeFeatureTypeXMLAdapter parser = new DescribeFeatureTypeXMLAdapter();
-        parser.load( DescribeFeatureTypeXMLAdapterTest.class.getResource(
-                                "wfs200/DescribeFeatureType_Example01_Request.xml" ) );
-        DescribeFeatureType request = parser.parse();
-        assertEquals( VERSION_200, request.getVersion() );
-        assertEquals( null, request.getHandle() );
-        assertEquals( null, request.getOutputFormat() );
-        assertEquals( 2, request.getTypeNames().length );
-        assertEquals( QName.valueOf( "{http://www.myserver.com/myns}TreesA_1M" ), request.getTypeNames()[0] );
-        assertEquals( QName.valueOf( "{http://www.myserver.com/myns}RoadL_1M" ), request.getTypeNames()[1] );
-    }
+		DescribeFeatureTypeXMLAdapter parser = new DescribeFeatureTypeXMLAdapter();
+		parser.load(DescribeFeatureTypeXMLAdapterTest.class
+			.getResource("wfs200/DescribeFeatureType_Example01_Request.xml"));
+		DescribeFeatureType request = parser.parse();
+		assertEquals(VERSION_200, request.getVersion());
+		assertEquals(null, request.getHandle());
+		assertEquals(null, request.getOutputFormat());
+		assertEquals(2, request.getTypeNames().length);
+		assertEquals(QName.valueOf("{http://www.myserver.com/myns}TreesA_1M"), request.getTypeNames()[0]);
+		assertEquals(QName.valueOf("{http://www.myserver.com/myns}RoadL_1M"), request.getTypeNames()[1]);
+	}
 
-    @Test
-    public void test200Example02()
-                            throws Exception {
+	@Test
+	public void test200Example02() throws Exception {
 
-        DescribeFeatureTypeXMLAdapter parser = new DescribeFeatureTypeXMLAdapter();
-        parser.load( DescribeFeatureTypeXMLAdapterTest.class.getResource(
-                                "wfs200/DescribeFeatureType_Example02_Request.xml" ) );
-        DescribeFeatureType request = parser.parse();
-        assertEquals( VERSION_200, request.getVersion() );
-        assertEquals( null, request.getHandle() );
-        assertEquals( "text/xml; subtype=gml/3.2", request.getOutputFormat() );
-        assertEquals( 1, request.getTypeNames().length );
-    }
+		DescribeFeatureTypeXMLAdapter parser = new DescribeFeatureTypeXMLAdapter();
+		parser.load(DescribeFeatureTypeXMLAdapterTest.class
+			.getResource("wfs200/DescribeFeatureType_Example02_Request.xml"));
+		DescribeFeatureType request = parser.parse();
+		assertEquals(VERSION_200, request.getVersion());
+		assertEquals(null, request.getHandle());
+		assertEquals("text/xml; subtype=gml/3.2", request.getOutputFormat());
+		assertEquals(1, request.getTypeNames().length);
+	}
 
-    /**
-     * TODO: Unused until https://github.com/deegree/deegree3/issues/1091 is implemented.
-     * @param name
-     * @return
-     */
-    private URL get200ExampleUrl( String name ) {
-        try {
-            String url = new RedirectingEntityResolver().redirect( WFS200_EXAMPLES_BASE_URL + name );
-            return new URL( url );
-        } catch ( MalformedURLException e ) {
-            // should never happen
-        }
-        return null;
-    }
+	/**
+	 * TODO: Unused until https://github.com/deegree/deegree3/issues/1091 is implemented.
+	 * @param name
+	 * @return
+	 */
+	private URL get200ExampleUrl(String name) {
+		try {
+			String url = new RedirectingEntityResolver().redirect(WFS200_EXAMPLES_BASE_URL + name);
+			return new URL(url);
+		}
+		catch (MalformedURLException e) {
+			// should never happen
+		}
+		return null;
+	}
+
 }

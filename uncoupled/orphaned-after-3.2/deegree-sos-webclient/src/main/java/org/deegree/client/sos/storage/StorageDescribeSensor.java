@@ -8,7 +8,6 @@ import org.apache.axiom.om.OMElement;
  * Storage class containing the contents of a DescribeSensor request.
  * 
  * @author <a href="mailto:neumeister@lat-lon.de">Ulrich Neumeister</a>
- * @author last edited by: $Author$
  * 
  */
 public class StorageDescribeSensor {

@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -45,57 +44,56 @@ import javax.faces.component.UIInput;
 
 /**
  * Input component which allows multiple insert.
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 @ResourceDependencies({ @ResourceDependency(library = "deegree", name = "css/multipleText.css", target = "head"),
-                       @ResourceDependency(name = "javascript/multipleText.js", library = "deegree"),
-                       @ResourceDependency(name = "jsf.js", target = "head", library = "javax.faces") })
+		@ResourceDependency(name = "javascript/multipleText.js", library = "deegree"),
+		@ResourceDependency(name = "jsf.js", target = "head", library = "javax.faces") })
 @FacesComponent(value = "HtmlInputMultipleText")
 public class HtmlInputMultipleText extends UIInput {
 
-    private static enum PropertyKeys {
-        styleClass, style, disabled
-    }
+	private static enum PropertyKeys {
 
-    public HtmlInputMultipleText() {
-        setRendererType( "org.deegree.InputMultipleText" );
-    }
+		styleClass, style, disabled
 
-    public void setStyle( String style ) {
-        getStateHelper().put( PropertyKeys.style, style );
-    }
+	}
 
-    public String getStyle() {
-        return (String) getStateHelper().eval( PropertyKeys.style, null );
-    }
+	public HtmlInputMultipleText() {
+		setRendererType("org.deegree.InputMultipleText");
+	}
 
-    public void setStyleClass( String styleClass ) {
-        getStateHelper().put( PropertyKeys.styleClass, styleClass );
-    }
+	public void setStyle(String style) {
+		getStateHelper().put(PropertyKeys.style, style);
+	}
 
-    public String getStyleClass() {
-        return (String) getStateHelper().eval( PropertyKeys.styleClass, null );
-    }
+	public String getStyle() {
+		return (String) getStateHelper().eval(PropertyKeys.style, null);
+	}
 
-    public void setDisabled( boolean disabled ) {
-        getStateHelper().put( PropertyKeys.disabled, disabled );
-    }
+	public void setStyleClass(String styleClass) {
+		getStateHelper().put(PropertyKeys.styleClass, styleClass);
+	}
 
-    public boolean getDisabled() {
-        return (Boolean) getStateHelper().eval( PropertyKeys.disabled, false );
-    }
+	public String getStyleClass() {
+		return (String) getStateHelper().eval(PropertyKeys.styleClass, null);
+	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<String> getValue() {
-        if ( super.getValue() != null && !( super.getValue() instanceof List<?> ) ) {
-            throw new FacesException( "value of HtmlInputMultiple must be a list" );
-        }
-        return (List<String>) super.getValue();
-    }
+	public void setDisabled(boolean disabled) {
+		getStateHelper().put(PropertyKeys.disabled, disabled);
+	}
+
+	public boolean getDisabled() {
+		return (Boolean) getStateHelper().eval(PropertyKeys.disabled, false);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<String> getValue() {
+		if (super.getValue() != null && !(super.getValue() instanceof List<?>)) {
+			throw new FacesException("value of HtmlInputMultiple must be a list");
+		}
+		return (List<String>) super.getValue();
+	}
 
 }

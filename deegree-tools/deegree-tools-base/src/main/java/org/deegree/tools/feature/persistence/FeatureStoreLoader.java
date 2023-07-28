@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -68,188 +67,193 @@ import org.deegree.workspace.standard.DefaultWorkspace;
 
 /**
  * Imports feature datasets into a feature store.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 @Tool("Imports feature datasets into a feature store")
 public class FeatureStoreLoader {
 
-    // command line parameters
-    private static final String OPT_ACTION = "action";
+	// command line parameters
+	private static final String OPT_ACTION = "action";
 
-    private static final String OPT_WORKSPACE = "workspace";
+	private static final String OPT_WORKSPACE = "workspace";
 
-    private static final String OPT_FS_CONFIG_FILE = "fsconfig";
+	private static final String OPT_FS_CONFIG_FILE = "fsconfig";
 
-    private static final String OPT_DATASET_FILE = "dataset";
+	private static final String OPT_DATASET_FILE = "dataset";
 
-    private static final String OPT_INPUT_FORMAT = "format";
+	private static final String OPT_INPUT_FORMAT = "format";
 
-    private static final String OPT_IDGEN_MODE = "idgen";
+	private static final String OPT_IDGEN_MODE = "idgen";
 
-    private enum Action {
-        insert, stats
-    }
+	private enum Action {
 
-    private static void insert( FeatureStore fs, String datasetFile, GMLVersion gmlVersion, IDGenMode mode )
-                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
-                            UnknownCRSException, FeatureStoreException {
+		insert, stats
 
-        File f = new File( datasetFile );
-        URL url = f.toURI().toURL();
-        System.out.print( "- Reading dataset: '" + datasetFile + "'..." );
-        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( gmlVersion, url );
-        gmlReader.setApplicationSchema( fs.getSchema() );
-        FeatureCollection fc = gmlReader.readFeatureCollection();
-        System.out.println( "done." );
+	}
 
-        FeatureStoreTransaction ta = null;
-        try {
-            ta = fs.acquireTransaction();
-            System.out.print( "- Inserting features..." );
-            List<String> fids = ta.performInsert( fc, mode );
-            System.out.println( "done." );
-            for ( String fid : fids ) {
-                System.out.println( "- Inserted: " + fid );
-            }
-            System.out.println( "\n- Insert succeeded (" + fids.size() + " features). Committing transaction." );
-            ta.commit();
-        } catch ( Exception e ) {
-            e.printStackTrace();
-            System.err.println( "Error performing insert: " + e.getMessage() );
-            if ( ta != null ) {
-                ta.rollback();
-            }
-        }
-    }
+	private static void insert(FeatureStore fs, String datasetFile, GMLVersion gmlVersion, IDGenMode mode)
+			throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException,
+			FeatureStoreException {
 
-    /**
-     * @param args
-     * @throws FeatureStoreException
-     * @throws UnknownCRSException
-     * @throws IOException
-     * @throws FactoryConfigurationError
-     * @throws XMLStreamException
-     * @throws XMLParsingException
-     * @throws ResourceInitException
-     */
-    public static void main( String[] args )
-                            throws FeatureStoreException, XMLParsingException, XMLStreamException,
-                            FactoryConfigurationError, IOException, UnknownCRSException, ResourceInitException {
+		File f = new File(datasetFile);
+		URL url = f.toURI().toURL();
+		System.out.print("- Reading dataset: '" + datasetFile + "'...");
+		GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader(gmlVersion, url);
+		gmlReader.setApplicationSchema(fs.getSchema());
+		FeatureCollection fc = gmlReader.readFeatureCollection();
+		System.out.println("done.");
 
-        // for the moment, using the CLI API there is no way to respond to a help argument; see
-        // https://issues.apache.org/jira/browse/CLI-179
-        if ( args.length == 0 || ( args.length > 0 && ( args[0].contains( "help" ) || args[0].contains( "?" ) ) ) ) {
-            printHelp( initOptions() );
-        }
+		FeatureStoreTransaction ta = null;
+		try {
+			ta = fs.acquireTransaction();
+			System.out.print("- Inserting features...");
+			List<String> fids = ta.performInsert(fc, mode);
+			System.out.println("done.");
+			for (String fid : fids) {
+				System.out.println("- Inserted: " + fid);
+			}
+			System.out.println("\n- Insert succeeded (" + fids.size() + " features). Committing transaction.");
+			ta.commit();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			System.err.println("Error performing insert: " + e.getMessage());
+			if (ta != null) {
+				ta.rollback();
+			}
+		}
+	}
 
-        try {
-            CommandLine cmdline = new PosixParser().parse( initOptions(), args );
+	/**
+	 * @param args
+	 * @throws FeatureStoreException
+	 * @throws UnknownCRSException
+	 * @throws IOException
+	 * @throws FactoryConfigurationError
+	 * @throws XMLStreamException
+	 * @throws XMLParsingException
+	 * @throws ResourceInitException
+	 */
+	public static void main(String[] args) throws FeatureStoreException, XMLParsingException, XMLStreamException,
+			FactoryConfigurationError, IOException, UnknownCRSException, ResourceInitException {
 
-            Action action = null;
-            try {
-                action = Action.valueOf( cmdline.getOptionValue( OPT_ACTION ) );
-            } catch ( IllegalArgumentException e ) {
-                System.out.println( "Unknown action '" + cmdline.getOptionValue( OPT_ACTION )
-                                    + "'. Call with '-help' for displaying available actions." );
-                System.exit( 0 );
-            }
+		// for the moment, using the CLI API there is no way to respond to a help
+		// argument; see
+		// https://issues.apache.org/jira/browse/CLI-179
+		if (args.length == 0 || (args.length > 0 && (args[0].contains("help") || args[0].contains("?")))) {
+			printHelp(initOptions());
+		}
 
-            String workspace = cmdline.getOptionValue( OPT_WORKSPACE );
-            String fsConfigId = cmdline.getOptionValue( OPT_FS_CONFIG_FILE );
+		try {
+			CommandLine cmdline = new PosixParser().parse(initOptions(), args);
 
-            GMLVersion format = null;
-            try {
-                format = GMLVersion.valueOf( cmdline.getOptionValue( OPT_INPUT_FORMAT ) );
-            } catch ( IllegalArgumentException e ) {
-                System.out.println( "Unknown input format '" + cmdline.getOptionValue( OPT_INPUT_FORMAT )
-                                    + "'. Call with '-help' for displaying valid formats." );
-                System.exit( 0 );
-            }
+			Action action = null;
+			try {
+				action = Action.valueOf(cmdline.getOptionValue(OPT_ACTION));
+			}
+			catch (IllegalArgumentException e) {
+				System.out.println("Unknown action '" + cmdline.getOptionValue(OPT_ACTION)
+						+ "'. Call with '-help' for displaying available actions.");
+				System.exit(0);
+			}
 
-            IDGenMode idGenMode = null;
-            try {
-                idGenMode = IDGenMode.valueOf( cmdline.getOptionValue( OPT_IDGEN_MODE ) );
-                if ( idGenMode == IDGenMode.REPLACE_DUPLICATE ) {
-                    throw new IllegalArgumentException();
-                }
-            } catch ( IllegalArgumentException e ) {
-                System.out.println( "Unknown id generation mode '" + cmdline.getOptionValue( OPT_IDGEN_MODE )
-                                    + "'. Call with '-help' for displaying valid modes." );
-                System.exit( 0 );
-            }
+			String workspace = cmdline.getOptionValue(OPT_WORKSPACE);
+			String fsConfigId = cmdline.getOptionValue(OPT_FS_CONFIG_FILE);
 
-            String inputFileName = cmdline.getOptionValue( OPT_DATASET_FILE );
+			GMLVersion format = null;
+			try {
+				format = GMLVersion.valueOf(cmdline.getOptionValue(OPT_INPUT_FORMAT));
+			}
+			catch (IllegalArgumentException e) {
+				System.out.println("Unknown input format '" + cmdline.getOptionValue(OPT_INPUT_FORMAT)
+						+ "'. Call with '-help' for displaying valid formats.");
+				System.exit(0);
+			}
 
-            Workspace ws = new DefaultWorkspace( new File( workspace ) );
-            ws.initAll();
+			IDGenMode idGenMode = null;
+			try {
+				idGenMode = IDGenMode.valueOf(cmdline.getOptionValue(OPT_IDGEN_MODE));
+				if (idGenMode == IDGenMode.REPLACE_DUPLICATE) {
+					throw new IllegalArgumentException();
+				}
+			}
+			catch (IllegalArgumentException e) {
+				System.out.println("Unknown id generation mode '" + cmdline.getOptionValue(OPT_IDGEN_MODE)
+						+ "'. Call with '-help' for displaying valid modes.");
+				System.exit(0);
+			}
 
-            FeatureStore fs = ws.getResource( FeatureStoreProvider.class, fsConfigId );
+			String inputFileName = cmdline.getOptionValue(OPT_DATASET_FILE);
 
-            switch ( action ) {
-            case insert:
-                insert( fs, inputFileName, format, idGenMode );
-                break;
-            case stats:
-                System.out.println( "TODO: Stats..." );
-                break;
-            }
-        } catch ( ParseException exp ) {
-            System.err.println( Messages.getMessage( "TOOL_COMMANDLINE_ERROR", exp.getMessage() ) );
-            // printHelp( options );
-        }
-    }
+			Workspace ws = new DefaultWorkspace(new File(workspace));
+			ws.initAll();
 
-    private static Options initOptions() {
+			FeatureStore fs = ws.getResource(FeatureStoreProvider.class, fsConfigId);
 
-        Options opts = new Options();
+			switch (action) {
+				case insert:
+					insert(fs, inputFileName, format, idGenMode);
+					break;
+				case stats:
+					System.out.println("TODO: Stats...");
+					break;
+			}
+		}
+		catch (ParseException exp) {
+			System.err.println(Messages.getMessage("TOOL_COMMANDLINE_ERROR", exp.getMessage()));
+			// printHelp( options );
+		}
+	}
 
-        String actionsList = "";
-        Action[] actions = Action.values();
-        actionsList += actions[0].toString();
-        for ( int i = 1; i < actions.length; i++ ) {
-            actionsList += ", " + actions[i];
-        }
+	private static Options initOptions() {
 
-        Option opt = new Option( OPT_ACTION, true, "action, one of: " + actionsList + "" );
-        opt.setRequired( true );
-        opts.addOption( opt );
+		Options opts = new Options();
 
-        String formatsList = "";
-        GMLVersion[] formats = GMLVersion.values();
-        formatsList += formats[0].name();
-        for ( int i = 1; i < formats.length; i++ ) {
-            formatsList += ", " + formats[i].name();
-        }
+		String actionsList = "";
+		Action[] actions = Action.values();
+		actionsList += actions[0].toString();
+		for (int i = 1; i < actions.length; i++) {
+			actionsList += ", " + actions[i];
+		}
 
-        opt = new Option( OPT_WORKSPACE, true, "workspace name" );
-        opt.setRequired( true );
-        opts.addOption( opt );
+		Option opt = new Option(OPT_ACTION, true, "action, one of: " + actionsList + "");
+		opt.setRequired(true);
+		opts.addOption(opt);
 
-        opt = new Option( OPT_FS_CONFIG_FILE, true, "feature store config id" );
-        opt.setRequired( true );
-        opts.addOption( opt );
+		String formatsList = "";
+		GMLVersion[] formats = GMLVersion.values();
+		formatsList += formats[0].name();
+		for (int i = 1; i < formats.length; i++) {
+			formatsList += ", " + formats[i].name();
+		}
 
-        opt = new Option( OPT_INPUT_FORMAT, true, "input format, one of: " + formatsList + "" );
-        opt.setRequired( true );
-        opts.addOption( opt );
+		opt = new Option(OPT_WORKSPACE, true, "workspace name");
+		opt.setRequired(true);
+		opts.addOption(opt);
 
-        opt = new Option( OPT_IDGEN_MODE, true, "id generation mode, one of: GENERATE_NEW,USE_EXISTING" );
-        opt.setRequired( true );
-        opts.addOption( opt );
+		opt = new Option(OPT_FS_CONFIG_FILE, true, "feature store config id");
+		opt.setRequired(true);
+		opts.addOption(opt);
 
-        opt = new Option( OPT_DATASET_FILE, true, "dataset filename" );
-        opt.setRequired( true );
-        opts.addOption( opt );
+		opt = new Option(OPT_INPUT_FORMAT, true, "input format, one of: " + formatsList + "");
+		opt.setRequired(true);
+		opts.addOption(opt);
 
-        CommandUtils.addDefaultOptions( opts );
-        return opts;
-    }
+		opt = new Option(OPT_IDGEN_MODE, true, "id generation mode, one of: GENERATE_NEW,USE_EXISTING");
+		opt.setRequired(true);
+		opts.addOption(opt);
 
-    private static void printHelp( Options options ) {
-        CommandUtils.printHelp( options, FeatureStoreLoader.class.getSimpleName(), null, null );
-    }
+		opt = new Option(OPT_DATASET_FILE, true, "dataset filename");
+		opt.setRequired(true);
+		opts.addOption(opt);
+
+		CommandUtils.addDefaultOptions(opts);
+		return opts;
+	}
+
+	private static void printHelp(Options options) {
+		CommandUtils.printHelp(options, FeatureStoreLoader.class.getSimpleName(), null, null);
+	}
+
 }

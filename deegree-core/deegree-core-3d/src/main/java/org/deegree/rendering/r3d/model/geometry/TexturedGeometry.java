@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -44,176 +43,159 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The <code>RenderableTexturedGeometry</code> class TODO add class documentation here.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class TexturedGeometry extends SimpleAccessGeometry {
-    /**
-     *
-     */
-    private static final long serialVersionUID = -8283523043454581251L;
 
-    private final static Logger LOG = LoggerFactory.getLogger( TexturedGeometry.class );
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = -8283523043454581251L;
 
-    private transient String texture;
+	private final static Logger LOG = LoggerFactory.getLogger(TexturedGeometry.class);
 
-    // 2D
-    private transient float[] textureCoordinates;
+	private transient String texture;
 
-    /**
-     * @param geometry
-     * @param style
-     * @param texture
-     *            to use
-     * @param textureCoordinates
-     *            of this data
-     */
-    public TexturedGeometry( float[] geometry, SimpleGeometryStyle style, String texture, float[] textureCoordinates ) {
-        super( geometry, style );
-        this.texture = texture;
-        this.textureCoordinates = textureCoordinates;
-    }
+	// 2D
+	private transient float[] textureCoordinates;
 
-    /**
-     * @param geometry
-     * @param texture
-     * @param textureCoordinates
-     */
-    public TexturedGeometry( float[] geometry, String texture, float[] textureCoordinates ) {
-        super( geometry );
-        this.texture = texture;
-        this.textureCoordinates = textureCoordinates;
-    }
+	/**
+	 * @param geometry
+	 * @param style
+	 * @param texture to use
+	 * @param textureCoordinates of this data
+	 */
+	public TexturedGeometry(float[] geometry, SimpleGeometryStyle style, String texture, float[] textureCoordinates) {
+		super(geometry, style);
+		this.texture = texture;
+		this.textureCoordinates = textureCoordinates;
+	}
 
-    /**
-     * @param geometry
-     * @param innerRings
-     * @param texture
-     * @param textureCoordinates
-     */
-    public TexturedGeometry( float[] geometry, int[] innerRings, String texture, float[] textureCoordinates ) {
-        super( geometry, innerRings );
-        this.texture = texture;
-        this.textureCoordinates = textureCoordinates;
-    }
+	/**
+	 * @param geometry
+	 * @param texture
+	 * @param textureCoordinates
+	 */
+	public TexturedGeometry(float[] geometry, String texture, float[] textureCoordinates) {
+		super(geometry);
+		this.texture = texture;
+		this.textureCoordinates = textureCoordinates;
+	}
 
-    /**
-     * @return the texture
-     */
-    public final String getTexture() {
-        return texture;
-    }
+	/**
+	 * @param geometry
+	 * @param innerRings
+	 * @param texture
+	 * @param textureCoordinates
+	 */
+	public TexturedGeometry(float[] geometry, int[] innerRings, String texture, float[] textureCoordinates) {
+		super(geometry, innerRings);
+		this.texture = texture;
+		this.textureCoordinates = textureCoordinates;
+	}
 
-    /**
-     * @param texture
-     *            the texture to set
-     */
-    public final void setTexture( String texture ) {
-        this.texture = texture;
-    }
+	/**
+	 * @return the texture
+	 */
+	public final String getTexture() {
+		return texture;
+	}
 
-    /**
-     * @return the textureCoordinates
-     */
-    public final float[] getTextureCoordinates() {
-        return textureCoordinates;
-    }
+	/**
+	 * @param texture the texture to set
+	 */
+	public final void setTexture(String texture) {
+		this.texture = texture;
+	}
 
-    /**
-     * @param textureCoordinates
-     *            the textureCoordinates to set
-     */
-    public final void setTextureCoordinates( float[] textureCoordinates ) {
-        this.textureCoordinates = textureCoordinates;
-    }
+	/**
+	 * @return the textureCoordinates
+	 */
+	public final float[] getTextureCoordinates() {
+		return textureCoordinates;
+	}
 
-    /**
-     * @param location
-     *            of the x ordinate of the requested texture coordinate.
-     * @return a copy of the coordinate at the given location (location, location +1)
-     * @throws IndexOutOfBoundsException
-     *             is outside the coordinate array
-     */
-    public float[] getTextureCoordinate( int location ) {
-        if ( location < 0 || location + 1 > textureCoordinates.length ) {
-            throw new IndexOutOfBoundsException( "Location is out of the range" );
-        }
-        return new float[] { textureCoordinates[location], textureCoordinates[location + 1] };
-    }
+	/**
+	 * @param textureCoordinates the textureCoordinates to set
+	 */
+	public final void setTextureCoordinates(float[] textureCoordinates) {
+		this.textureCoordinates = textureCoordinates;
+	}
 
-    /**
-     * @param vertex
-     *            the vertex index(starting at 0), e.g. if you would like to get the texture coordinates for the second
-     *            vertex the vertex index would be 1
-     * @return a copy of the texture coordinates for the given vertex.
-     * @throws IndexOutOfBoundsException
-     *             is outside the coordinate array
-     */
-    public float[] getTextureCoordinateForVertex( int vertex ) {
-        if ( vertex < 0 || ( vertex * 2 ) + 1 > textureCoordinates.length ) {
-            throw new IndexOutOfBoundsException( "No such vertex, the given index is out of range" );
-        }
-        return new float[] { textureCoordinates[vertex * 2], textureCoordinates[( vertex * 2 ) + 1] };
-    }
+	/**
+	 * @param location of the x ordinate of the requested texture coordinate.
+	 * @return a copy of the coordinate at the given location (location, location +1)
+	 * @throws IndexOutOfBoundsException is outside the coordinate array
+	 */
+	public float[] getTextureCoordinate(int location) {
+		if (location < 0 || location + 1 > textureCoordinates.length) {
+			throw new IndexOutOfBoundsException("Location is out of the range");
+		}
+		return new float[] { textureCoordinates[location], textureCoordinates[location + 1] };
+	}
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder( super.toString() );
-        sb.append( "\n textureID: " ).append( texture );
-        if ( textureCoordinates != null && textureCoordinates.length > 0 ) {
-            sb.append( "\n textureCoordinates:\n" );
-            for ( int i = 0; ( i + 1 ) < textureCoordinates.length; i += 2 ) {
-                sb.append( textureCoordinates[i] ).append( "," ).append( textureCoordinates[i + 1] ).append( "\n" );
-            }
-        }
-        return sb.toString();
-    }
+	/**
+	 * @param vertex the vertex index(starting at 0), e.g. if you would like to get the
+	 * texture coordinates for the second vertex the vertex index would be 1
+	 * @return a copy of the texture coordinates for the given vertex.
+	 * @throws IndexOutOfBoundsException is outside the coordinate array
+	 */
+	public float[] getTextureCoordinateForVertex(int vertex) {
+		if (vertex < 0 || (vertex * 2) + 1 > textureCoordinates.length) {
+			throw new IndexOutOfBoundsException("No such vertex, the given index is out of range");
+		}
+		return new float[] { textureCoordinates[vertex * 2], textureCoordinates[(vertex * 2) + 1] };
+	}
 
-    /**
-     * Method called while serializing this object
-     * 
-     * @param out
-     *            to write to.
-     * @throws IOException
-     */
-    private void writeObject( java.io.ObjectOutputStream out )
-                            throws IOException {
-        LOG.trace( "Serializing to object stream" );
-        out.writeUTF( texture );
-        out.writeObject( textureCoordinates );
-    }
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder(super.toString());
+		sb.append("\n textureID: ").append(texture);
+		if (textureCoordinates != null && textureCoordinates.length > 0) {
+			sb.append("\n textureCoordinates:\n");
+			for (int i = 0; (i + 1) < textureCoordinates.length; i += 2) {
+				sb.append(textureCoordinates[i]).append(",").append(textureCoordinates[i + 1]).append("\n");
+			}
+		}
+		return sb.toString();
+	}
 
-    /**
-     * Method called while de-serializing (instancing) this object.
-     * 
-     * @param in
-     *            to create the methods from.
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
-    private void readObject( java.io.ObjectInputStream in )
-                            throws IOException, ClassNotFoundException {
-        LOG.trace( "Deserializing from object stream" );
-        texture = in.readUTF();
-        textureCoordinates = (float[]) in.readObject();
-    }
+	/**
+	 * Method called while serializing this object
+	 * @param out to write to.
+	 * @throws IOException
+	 */
+	private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+		LOG.trace("Serializing to object stream");
+		out.writeUTF(texture);
+		out.writeObject(textureCoordinates);
+	}
 
-    /**
-     * @return the bytes this geometry occupies
-     */
-    @Override
-    public long sizeOf() {
-        long localSize = super.sizeOf();
-        // id
-        localSize += AllocatedHeapMemory.sizeOfString( texture, true, true );
-        // texture coordinates
-        localSize += AllocatedHeapMemory.sizeOfFloatArray( textureCoordinates, true );
-        return localSize;
-    }
+	/**
+	 * Method called while de-serializing (instancing) this object.
+	 * @param in to create the methods from.
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
+	private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+		LOG.trace("Deserializing from object stream");
+		texture = in.readUTF();
+		textureCoordinates = (float[]) in.readObject();
+	}
+
+	/**
+	 * @return the bytes this geometry occupies
+	 */
+	@Override
+	public long sizeOf() {
+		long localSize = super.sizeOf();
+		// id
+		localSize += AllocatedHeapMemory.sizeOfString(texture, true, true);
+		// texture coordinates
+		localSize += AllocatedHeapMemory.sizeOfFloatArray(textureCoordinates, true);
+		return localSize;
+	}
 
 }

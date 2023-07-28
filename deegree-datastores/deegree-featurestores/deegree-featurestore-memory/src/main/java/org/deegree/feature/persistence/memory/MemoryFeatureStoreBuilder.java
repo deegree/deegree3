@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -76,101 +75,106 @@ import org.slf4j.LoggerFactory;
 
 /**
  * <code>MemoryFeatureStoreBuilder</code>
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 public class MemoryFeatureStoreBuilder implements ResourceBuilder<FeatureStore> {
 
-    private static final Logger LOG = LoggerFactory.getLogger( MemoryFeatureStoreBuilder.class );
+	private static final Logger LOG = LoggerFactory.getLogger(MemoryFeatureStoreBuilder.class);
 
-    private MemoryFeatureStoreMetadata metadata;
+	private MemoryFeatureStoreMetadata metadata;
 
-    private MemoryFeatureStoreConfig config;
+	private MemoryFeatureStoreConfig config;
 
-    private Workspace workspace;
+	private Workspace workspace;
 
-    public MemoryFeatureStoreBuilder( MemoryFeatureStoreMetadata metadata, MemoryFeatureStoreConfig config,
-                                      Workspace workspace ) {
-        this.metadata = metadata;
-        this.config = config;
-        this.workspace = workspace;
-    }
+	public MemoryFeatureStoreBuilder(MemoryFeatureStoreMetadata metadata, MemoryFeatureStoreConfig config,
+			Workspace workspace) {
+		this.metadata = metadata;
+		this.config = config;
+		this.workspace = workspace;
+	}
 
-    @Override
-    public FeatureStore build() {
-        MemoryFeatureStore fs;
-        ICRS storageCRS = null;
-        AppSchema schema = null;
-        try {
-            String[] schemaURLs = new String[config.getGMLSchema().size()];
-            int i = 0;
-            GMLVersionType gmlVersionType = null;
-            for ( GMLSchema jaxbSchemaURL : config.getGMLSchema() ) {
-                schemaURLs[i++] = metadata.getLocation().resolveToFile( jaxbSchemaURL.getValue().trim() ).toURI().toURL().toString();
-                // TODO what about different versions at the same time?
-                gmlVersionType = jaxbSchemaURL.getVersion();
-            }
+	@Override
+	public FeatureStore build() {
+		MemoryFeatureStore fs;
+		ICRS storageCRS = null;
+		AppSchema schema = null;
+		try {
+			String[] schemaURLs = new String[config.getGMLSchema().size()];
+			int i = 0;
+			GMLVersionType gmlVersionType = null;
+			for (GMLSchema jaxbSchemaURL : config.getGMLSchema()) {
+				schemaURLs[i++] = metadata.getLocation()
+					.resolveToFile(jaxbSchemaURL.getValue().trim())
+					.toURI()
+					.toURL()
+					.toString();
+				// TODO what about different versions at the same time?
+				gmlVersionType = jaxbSchemaURL.getVersion();
+			}
 
-            GMLAppSchemaReader decoder = null;
-            if ( schemaURLs.length == 1 && schemaURLs[0].startsWith( "file:" ) ) {
-                File file = new File( new URL( schemaURLs[0] ).toURI() );
-                decoder = new GMLAppSchemaReader( GMLVersion.valueOf( gmlVersionType.name() ),
-                                                  getHintMap( config.getNamespaceHint() ), file );
-            } else {
-                decoder = new GMLAppSchemaReader( GMLVersion.valueOf( gmlVersionType.name() ),
-                                                  getHintMap( config.getNamespaceHint() ), schemaURLs );
-            }
-            schema = decoder.extractAppSchema();
-            if ( config.getStorageCRS() != null ) {
-                storageCRS = CRSManager.lookup( config.getStorageCRS() );
-            }
-        } catch ( Exception e ) {
-            String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
-            LOG.error( msg, e );
-            throw new ResourceInitException( msg, e );
-        }
+			GMLAppSchemaReader decoder = null;
+			if (schemaURLs.length == 1 && schemaURLs[0].startsWith("file:")) {
+				File file = new File(new URL(schemaURLs[0]).toURI());
+				decoder = new GMLAppSchemaReader(GMLVersion.valueOf(gmlVersionType.name()),
+						getHintMap(config.getNamespaceHint()), file);
+			}
+			else {
+				decoder = new GMLAppSchemaReader(GMLVersion.valueOf(gmlVersionType.name()),
+						getHintMap(config.getNamespaceHint()), schemaURLs);
+			}
+			schema = decoder.extractAppSchema();
+			if (config.getStorageCRS() != null) {
+				storageCRS = CRSManager.lookup(config.getStorageCRS());
+			}
+		}
+		catch (Exception e) {
+			String msg = Messages.getMessage("STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage());
+			LOG.error(msg, e);
+			throw new ResourceInitException(msg, e);
+		}
 
-        try {
-            ConnectionProvider lockProvider = workspace.getResource( ConnectionProviderProvider.class, "LOCK_DB" );
-            fs = new MemoryFeatureStore( schema, storageCRS, metadata, lockProvider );
-        } catch ( FeatureStoreException ex ) {
-            throw new ResourceInitException( ex.getLocalizedMessage(), ex );
-        }
-        for ( GMLFeatureCollection datasetFile : config.getGMLFeatureCollection() ) {
-            if ( datasetFile != null ) {
-                try {
-                    GMLVersion version = GMLVersion.valueOf( datasetFile.getVersion().name() );
-                    URL docURL = metadata.getLocation().resolveToFile( datasetFile.getValue().trim() ).toURI().toURL();
-                    GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader( version, docURL );
-                    gmlStream.setApplicationSchema( schema );
-                    LOG.info( "Populating feature store with features from file '" + docURL + "'..." );
-                    FeatureCollection fc = (FeatureCollection) gmlStream.readFeature();
-                    gmlStream.getIdContext().resolveLocalRefs();
+		try {
+			ConnectionProvider lockProvider = workspace.getResource(ConnectionProviderProvider.class, "LOCK_DB");
+			fs = new MemoryFeatureStore(schema, storageCRS, metadata, lockProvider);
+		}
+		catch (FeatureStoreException ex) {
+			throw new ResourceInitException(ex.getLocalizedMessage(), ex);
+		}
+		for (GMLFeatureCollection datasetFile : config.getGMLFeatureCollection()) {
+			if (datasetFile != null) {
+				try {
+					GMLVersion version = GMLVersion.valueOf(datasetFile.getVersion().name());
+					URL docURL = metadata.getLocation().resolveToFile(datasetFile.getValue().trim()).toURI().toURL();
+					GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader(version, docURL);
+					gmlStream.setApplicationSchema(schema);
+					LOG.info("Populating feature store with features from file '" + docURL + "'...");
+					FeatureCollection fc = (FeatureCollection) gmlStream.readFeature();
+					gmlStream.getIdContext().resolveLocalRefs();
 
-                    FeatureStoreTransaction ta = fs.acquireTransaction();
-                    int fids = ta.performInsert( fc, USE_EXISTING ).size();
-                    LOG.info( "Inserted " + fids + " features." );
-                    ta.commit();
-                } catch ( Exception e ) {
-                    String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
-                    LOG.error( msg );
-                    LOG.trace( "Stack trace:", e );
-                    throw new ResourceInitException( msg, e );
-                }
-            }
-        }
-        return fs;
-    }
+					FeatureStoreTransaction ta = fs.acquireTransaction();
+					int fids = ta.performInsert(fc, USE_EXISTING).size();
+					LOG.info("Inserted " + fids + " features.");
+					ta.commit();
+				}
+				catch (Exception e) {
+					String msg = Messages.getMessage("STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage());
+					LOG.error(msg);
+					LOG.trace("Stack trace:", e);
+					throw new ResourceInitException(msg, e);
+				}
+			}
+		}
+		return fs;
+	}
 
-    private static Map<String, String> getHintMap( List<NamespaceHint> hints ) {
-        Map<String, String> prefixToNs = new HashMap<String, String>();
-        for ( NamespaceHint namespaceHint : hints ) {
-            prefixToNs.put( namespaceHint.getPrefix(), namespaceHint.getNamespaceURI() );
-        }
-        return prefixToNs;
-    }
+	private static Map<String, String> getHintMap(List<NamespaceHint> hints) {
+		Map<String, String> prefixToNs = new HashMap<String, String>();
+		for (NamespaceHint namespaceHint : hints) {
+			prefixToNs.put(namespaceHint.getPrefix(), namespaceHint.getNamespaceURI());
+		}
+		return prefixToNs;
+	}
 
 }

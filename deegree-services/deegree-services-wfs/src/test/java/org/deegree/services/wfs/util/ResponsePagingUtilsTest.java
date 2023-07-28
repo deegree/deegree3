@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2015 by:
@@ -42,63 +41,63 @@ import org.junit.Test;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
 public class ResponsePagingUtilsTest {
 
-    @Test
-    public void testCalculateNextStartIndex_NoFeaturesMatched() {
-        int nextStartIndex = ResponsePagingUtils.calculateNextStartIndex( 0, 10, 0 );
-        assertThat( nextStartIndex, is( -1 ) );
-    }
+	@Test
+	public void testCalculateNextStartIndex_NoFeaturesMatched() {
+		int nextStartIndex = ResponsePagingUtils.calculateNextStartIndex(0, 10, 0);
+		assertThat(nextStartIndex, is(-1));
+	}
 
-    @Test
-    public void testCalculateNextStartIndex_SecondPage() {
-        int nextStartIndex = ResponsePagingUtils.calculateNextStartIndex( 0, 10, 97 );
-        assertThat( nextStartIndex, is( 10 ) );
-    }
+	@Test
+	public void testCalculateNextStartIndex_SecondPage() {
+		int nextStartIndex = ResponsePagingUtils.calculateNextStartIndex(0, 10, 97);
+		assertThat(nextStartIndex, is(10));
+	}
 
-    @Test
-    public void testCalculateNextStartIndex_LastPage() {
-        int nextStartIndex = ResponsePagingUtils.calculateNextStartIndex( 80, 10, 97 );
-        assertThat( nextStartIndex, is( 90 ) );
-    }
+	@Test
+	public void testCalculateNextStartIndex_LastPage() {
+		int nextStartIndex = ResponsePagingUtils.calculateNextStartIndex(80, 10, 97);
+		assertThat(nextStartIndex, is(90));
+	}
 
-    @Test
-    public void testCalculateNextStartIndex_NextWithOneResult() {
-        int nextStartIndex = ResponsePagingUtils.calculateNextStartIndex( 91, 5, 97 );
-        assertThat( nextStartIndex, is( 96 ) );
-    }
+	@Test
+	public void testCalculateNextStartIndex_NextWithOneResult() {
+		int nextStartIndex = ResponsePagingUtils.calculateNextStartIndex(91, 5, 97);
+		assertThat(nextStartIndex, is(96));
+	}
 
-    @Test
-    public void testCalculateNextStartIndex_NextNotAvailable() {
-        int nextStartIndex = ResponsePagingUtils.calculateNextStartIndex( 92, 5, 97 );
-        assertThat( nextStartIndex, is( -1 ) );
-    }
+	@Test
+	public void testCalculateNextStartIndex_NextNotAvailable() {
+		int nextStartIndex = ResponsePagingUtils.calculateNextStartIndex(92, 5, 97);
+		assertThat(nextStartIndex, is(-1));
+	}
 
-    @Test
-    public void testCalculatePreviosStartIndex_FirstPage() {
-        int nextStartIndex = ResponsePagingUtils.calculatePreviousStartIndex( 10, 20 );
-        assertThat( nextStartIndex, is( 0 ) );
-    }
+	@Test
+	public void testCalculatePreviosStartIndex_FirstPage() {
+		int nextStartIndex = ResponsePagingUtils.calculatePreviousStartIndex(10, 20);
+		assertThat(nextStartIndex, is(0));
+	}
 
-    @Test
-    public void testCalculatePreviosStartIndex_FirstPageStartIndexLessThanCount() {
-        int nextStartIndex = ResponsePagingUtils.calculatePreviousStartIndex( 5, 10 );
-        assertThat( nextStartIndex, is( 0 ) );
-    }
+	@Test
+	public void testCalculatePreviosStartIndex_FirstPageStartIndexLessThanCount() {
+		int nextStartIndex = ResponsePagingUtils.calculatePreviousStartIndex(5, 10);
+		assertThat(nextStartIndex, is(0));
+	}
 
-    @Test
-    public void testCalculatePreviosStartIndex_StartIndexGreaterThanCount() {
-        int nextStartIndex = ResponsePagingUtils.calculatePreviousStartIndex( 30, 10 );
-        assertThat( nextStartIndex, is( 20 ) );
-    }
+	@Test
+	public void testCalculatePreviosStartIndex_StartIndexGreaterThanCount() {
+		int nextStartIndex = ResponsePagingUtils.calculatePreviousStartIndex(30, 10);
+		assertThat(nextStartIndex, is(20));
+	}
 
-    @Test
-    public void testCalculatePreviosStartIndex_StartIndexAtBegin() {
-        int nextStartIndex = ResponsePagingUtils.calculatePreviousStartIndex( 0, 10 );
-        assertThat( nextStartIndex, is( -1 ) );
-    }
+	@Test
+	public void testCalculatePreviosStartIndex_StartIndexAtBegin() {
+		int nextStartIndex = ResponsePagingUtils.calculatePreviousStartIndex(0, 10);
+		assertThat(nextStartIndex, is(-1));
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -46,66 +45,61 @@ import org.deegree.tools.rendering.dem.builder.MacroTriangle;
  * TODO comment me
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- *
- * @version $Revision: $, $Date: $
  */
 public class FragmentInfo implements Serializable {
 
-    private static final long serialVersionUID = -4663061794245767665L;
+	private static final long serialVersionUID = -4663061794245767665L;
 
-    public static final int SIZE = MeshFragment.SIZE;
+	public static final int SIZE = MeshFragment.SIZE;
 
-    int id;
+	int id;
 
-    public int locationCode;
+	public int locationCode;
 
-    public float geometricError;
+	public float geometricError;
 
-    public float minX, minY, minZ;
+	public float minX, minY, minZ;
 
-    public float maxX, maxY, maxZ;
+	public float maxX, maxY, maxZ;
 
-    public long blobPosition;
+	public long blobPosition;
 
-    public int blobLength;
+	public int blobLength;
 
-    public FragmentInfo(MacroTriangle patch, long blobPosition, int blobLength) {
-        this.locationCode = Integer.parseInt("1" + patch.getLocationCode(), 2);
-        this.geometricError = patch.geometryError;
-        float[][] bbox = patch.getBBox();
-        this.minX = bbox[0][0];
-        this.minY = bbox[0][1];
-        this.minZ = bbox[0][2];
-        this.maxX = bbox[1][0];
-        this.maxY = bbox[1][1];
-        this.maxZ = bbox[1][2];
-        this.blobPosition = blobPosition;
-        this.blobLength = blobLength;
-    }
+	public FragmentInfo(MacroTriangle patch, long blobPosition, int blobLength) {
+		this.locationCode = Integer.parseInt("1" + patch.getLocationCode(), 2);
+		this.geometricError = patch.geometryError;
+		float[][] bbox = patch.getBBox();
+		this.minX = bbox[0][0];
+		this.minY = bbox[0][1];
+		this.minZ = bbox[0][2];
+		this.maxX = bbox[1][0];
+		this.maxY = bbox[1][1];
+		this.maxZ = bbox[1][2];
+		this.blobPosition = blobPosition;
+		this.blobLength = blobLength;
+	}
 
-    private String codeToString(int code) {
-        String s = Integer.toString(code, 2);
-        return s.substring(1);
-    }
+	private String codeToString(int code) {
+		String s = Integer.toString(code, 2);
+		return s.substring(1);
+	}
 
-    public String toString() {
-        String s = id + ": (";
-        s += codeToString(locationCode) + "), error: " + geometricError + ", min=(" + minX + ","
-                + minY + "," + minZ + "), max=(" + maxX + "," + maxY + "," + maxZ
-                + "), blob position [" + blobPosition + "-" + (blobPosition + blobLength - 1) + "]";
-        return s;
-    }
+	public String toString() {
+		String s = id + ": (";
+		s += codeToString(locationCode) + "), error: " + geometricError + ", min=(" + minX + "," + minY + "," + minZ
+				+ "), max=(" + maxX + "," + maxY + "," + maxZ + "), blob position [" + blobPosition + "-"
+				+ (blobPosition + blobLength - 1) + "]";
+		return s;
+	}
 
-    void append(ByteBuffer buffer) {
-        MeshFragment.store(buffer, minX, minY, minZ, maxX, maxY, maxZ, geometricError,
-                blobPosition, blobLength);
-    }
+	void append(ByteBuffer buffer) {
+		MeshFragment.store(buffer, minX, minY, minZ, maxX, maxY, maxZ, geometricError, blobPosition, blobLength);
+	}
 
-    public float[][] getBBox() {
-        // TODO Auto-generated method stub
-        return new float[][] { new float[] { minX, minY, minZ },
-                new float[] { maxX, maxY, maxZ } };
-    }
+	public float[][] getBBox() {
+		// TODO Auto-generated method stub
+		return new float[][] { new float[] { minX, minY, minZ }, new float[] { maxX, maxY, maxZ } };
+	}
 
 }

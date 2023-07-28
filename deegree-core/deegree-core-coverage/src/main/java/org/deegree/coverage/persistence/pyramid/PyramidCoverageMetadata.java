@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -54,31 +53,29 @@ import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
  * Metadata for pyramid coverages.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 public class PyramidCoverageMetadata extends AbstractResourceMetadata<Coverage> {
 
-    public PyramidCoverageMetadata( Workspace workspace, ResourceLocation<Coverage> location,
-                                    AbstractResourceProvider<Coverage> provider ) {
-        super( workspace, location, provider );
-    }
+	public PyramidCoverageMetadata(Workspace workspace, ResourceLocation<Coverage> location,
+			AbstractResourceProvider<Coverage> provider) {
+		super(workspace, location, provider);
+	}
 
-    @Override
-    public PyramidCoverageBuilder prepare() {
-        Pyramid config;
-        try {
-            config = (Pyramid) unmarshall( "org.deegree.coverage.persistence.pyramid.jaxb", provider.getSchema(),
-                                           location.getAsStream(), workspace );
-            return new PyramidCoverageBuilder( this, config );
-        } catch ( JAXBException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return null;
-    }
+	@Override
+	public PyramidCoverageBuilder prepare() {
+		Pyramid config;
+		try {
+			config = (Pyramid) unmarshall("org.deegree.coverage.persistence.pyramid.jaxb", provider.getSchema(),
+					location.getAsStream(), workspace);
+			return new PyramidCoverageBuilder(this, config);
+		}
+		catch (JAXBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
 
 }

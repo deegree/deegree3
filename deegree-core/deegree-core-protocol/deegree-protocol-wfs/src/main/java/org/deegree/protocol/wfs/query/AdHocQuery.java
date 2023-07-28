@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -42,104 +41,99 @@ import org.deegree.protocol.wfs.getfeature.TypeName;
 
 /**
  * A self-contained {@link Query}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public abstract class AdHocQuery extends Query {
 
-    private final TypeName[] typeNames;
+	private final TypeName[] typeNames;
 
-    private final String featureVersion;
+	private final String featureVersion;
 
-    private final ICRS srsName;
+	private final ICRS srsName;
 
-    private final ProjectionClause[] projectionClauses;
+	private final ProjectionClause[] projectionClauses;
 
-    private final SortProperty[] sortBy;
+	private final SortProperty[] sortBy;
 
-    /**
-     * Creates a new {@link AdHocQuery} instance.
-     * 
-     * @param handle
-     *            client-generated query identifier, may be <code>null</code>
-     * @param typeNames
-     *            requested feature types (with optional aliases), may be <code>null</code>
-     * @param featureVersion
-     *            version of the feature instances to be retrieved, may be <code>null</code>
-     * @param srsName
-     *            WFS-supported SRS that should be used for returned feature geometries, may be <code>null</code>
-     * @param projectionClauses
-     *            limits the properties of the features that should be retrieved, may be <code>null</code>
-     * @param sortBy
-     *            properties whose values should be used to order the result set may be <code>null</code>
-     */
-    public AdHocQuery( String handle, TypeName[] typeNames, String featureVersion, ICRS srsName,
-                       ProjectionClause[] projectionClauses, SortProperty[] sortBy ) {
-        super( handle );
-        if ( typeNames == null ) {
-            this.typeNames = new TypeName[0];
-        } else {
-            this.typeNames = typeNames;
-        }
-        this.featureVersion = featureVersion;
-        this.srsName = srsName;
-        if ( projectionClauses != null ) {
-            this.projectionClauses = projectionClauses;
-        } else {
-            this.projectionClauses = new ProjectionClause[0];
-        }
-        if ( sortBy != null ) {
-            this.sortBy = sortBy;
-        } else {
-            this.sortBy = new SortProperty[0];
-        }
-    }
+	/**
+	 * Creates a new {@link AdHocQuery} instance.
+	 * @param handle client-generated query identifier, may be <code>null</code>
+	 * @param typeNames requested feature types (with optional aliases), may be
+	 * <code>null</code>
+	 * @param featureVersion version of the feature instances to be retrieved, may be
+	 * <code>null</code>
+	 * @param srsName WFS-supported SRS that should be used for returned feature
+	 * geometries, may be <code>null</code>
+	 * @param projectionClauses limits the properties of the features that should be
+	 * retrieved, may be <code>null</code>
+	 * @param sortBy properties whose values should be used to order the result set may be
+	 * <code>null</code>
+	 */
+	public AdHocQuery(String handle, TypeName[] typeNames, String featureVersion, ICRS srsName,
+			ProjectionClause[] projectionClauses, SortProperty[] sortBy) {
+		super(handle);
+		if (typeNames == null) {
+			this.typeNames = new TypeName[0];
+		}
+		else {
+			this.typeNames = typeNames;
+		}
+		this.featureVersion = featureVersion;
+		this.srsName = srsName;
+		if (projectionClauses != null) {
+			this.projectionClauses = projectionClauses;
+		}
+		else {
+			this.projectionClauses = new ProjectionClause[0];
+		}
+		if (sortBy != null) {
+			this.sortBy = sortBy;
+		}
+		else {
+			this.sortBy = new SortProperty[0];
+		}
+	}
 
-    /**
-     * Returns the requested feature types (with optional aliases).
-     * 
-     * @return the requested feature types, never null and contains always one entry
-     */
-    public TypeName[] getTypeNames() {
-        return typeNames;
-    }
+	/**
+	 * Returns the requested feature types (with optional aliases).
+	 * @return the requested feature types, never null and contains always one entry
+	 */
+	public TypeName[] getTypeNames() {
+		return typeNames;
+	}
 
-    /**
-     * Returns the version of the feature instances to be retrieved.
-     * 
-     * @return the version of the feature instances to be retrieved, may be null
-     */
-    public String getFeatureVersion() {
-        return featureVersion;
-    }
+	/**
+	 * Returns the version of the feature instances to be retrieved.
+	 * @return the version of the feature instances to be retrieved, may be null
+	 */
+	public String getFeatureVersion() {
+		return featureVersion;
+	}
 
-    /**
-     * Returns the SRS that should be used for returned feature geometries.
-     * 
-     * @return the SRS that should be used for returned feature geometries, may be null
-     */
-    public ICRS getSrsName() {
-        return srsName;
-    }
+	/**
+	 * Returns the SRS that should be used for returned feature geometries.
+	 * @return the SRS that should be used for returned feature geometries, may be null
+	 */
+	public ICRS getSrsName() {
+		return srsName;
+	}
 
-    /**
-     * Returns the projections for the features that should be retrieved.
-     * 
-     * @return the projections for features that should be retrieved, may be empty, but never <code>null</code>
-     */
-    public ProjectionClause[] getProjectionClauses() {
-        return projectionClauses;
-    }
+	/**
+	 * Returns the projections for the features that should be retrieved.
+	 * @return the projections for features that should be retrieved, may be empty, but
+	 * never <code>null</code>
+	 */
+	public ProjectionClause[] getProjectionClauses() {
+		return projectionClauses;
+	}
 
-    /**
-     * Returns the properties whose values should be used to order the result set.
-     * 
-     * @return sort criteria, may be empty, but never <code>null</code>
-     */
-    public SortProperty[] getSortBy() {
-        return sortBy;
-    }
+	/**
+	 * Returns the properties whose values should be used to order the result set.
+	 * @return sort criteria, may be empty, but never <code>null</code>
+	 */
+	public SortProperty[] getSortBy() {
+		return sortBy;
+	}
+
 }

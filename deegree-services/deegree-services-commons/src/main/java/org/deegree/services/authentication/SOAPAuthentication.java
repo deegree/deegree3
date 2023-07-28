@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -53,110 +52,101 @@ import org.slf4j.LoggerFactory;
 
 /**
  * SOAP Authentication.
- * 
- * 
+ *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class SOAPAuthentication implements CredentialsProvider {
 
-    private static Logger LOG = LoggerFactory.getLogger( SOAPAuthentication.class );
+	private static Logger LOG = LoggerFactory.getLogger(SOAPAuthentication.class);
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.services.controller.CredentialProvider#doKVP(java.util.Map,
-     * javax.servlet.http.HttpServletRequest)
-     */
-    @Override
-    public Credentials doKVP( Map<String, String> normalizedKVPParams, HttpServletRequest req,
-                              HttpServletResponse response )
-                            throws SecurityException {
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see org.deegree.services.controller.CredentialProvider#doKVP(java.util.Map,
+	 * javax.servlet.http.HttpServletRequest)
+	 */
+	@Override
+	public Credentials doKVP(Map<String, String> normalizedKVPParams, HttpServletRequest req,
+			HttpServletResponse response) throws SecurityException {
 
-        throw new UnsupportedOperationException( "KVP Security is not implementable in SOAP!" );
+		throw new UnsupportedOperationException("KVP Security is not implementable in SOAP!");
 
-    }
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.services.controller.CredentialProvider#doXML(javax.xml.stream.XMLStreamReader,
-     * javax.servlet.http.HttpServletRequest)
-     */
-    @Override
-    public Credentials doXML( XMLStreamReader reader, HttpServletRequest req, HttpServletResponse response )
-                            throws SecurityException {
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see org.deegree.services.controller.CredentialProvider#doXML(javax.xml.stream.
+	 * XMLStreamReader, javax.servlet.http.HttpServletRequest)
+	 */
+	@Override
+	public Credentials doXML(XMLStreamReader reader, HttpServletRequest req, HttpServletResponse response)
+			throws SecurityException {
 
-        throw new UnsupportedOperationException( "XML Security is not implementable in SOAP!" );
+		throw new UnsupportedOperationException("XML Security is not implementable in SOAP!");
 
-    }
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.services.controller.CredentialProvider#doSOAP(javax.xml.stream.XMLStreamReader,
-     * javax.servlet.http.HttpServletRequest)
-     */
-    @Override
-    public Credentials doSOAP( SOAPEnvelope soapDoc, HttpServletRequest req )
-                            throws SecurityException {
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see org.deegree.services.controller.CredentialProvider#doSOAP(javax.xml.stream.
+	 * XMLStreamReader, javax.servlet.http.HttpServletRequest)
+	 */
+	@Override
+	public Credentials doSOAP(SOAPEnvelope soapDoc, HttpServletRequest req) throws SecurityException {
 
-        OMElement requestHeader = soapDoc.getHeader();
-        SoapHeaderXMLAdapter soapXMLHeader = new SoapHeaderXMLAdapter();
-        soapXMLHeader.setRootElement( requestHeader );
-        SoapHeader soapHeader = soapXMLHeader.parseHeader();
+		OMElement requestHeader = soapDoc.getHeader();
+		SoapHeaderXMLAdapter soapXMLHeader = new SoapHeaderXMLAdapter();
+		soapXMLHeader.setRootElement(requestHeader);
+		SoapHeader soapHeader = soapXMLHeader.parseHeader();
 
-        LOG.info( soapHeader.getUsername() + " " + soapHeader.getPassword() );
-        return new Credentials( soapHeader.getUsername(), soapHeader.getPassword() );
+		LOG.info(soapHeader.getUsername() + " " + soapHeader.getPassword());
+		return new Credentials(soapHeader.getUsername(), soapHeader.getPassword());
 
-    }
+	}
 
-    public void handleException( HttpServletResponse response, SecurityException e )
-                            throws IOException {
+	public void handleException(HttpServletResponse response, SecurityException e) throws IOException {
 
-        if ( e instanceof InvalidCredentialsException ) {
-            doInvalidCredentialsExceptionException( response, (InvalidCredentialsException) e );
-        } else if ( e != null ) {
-            doAuthenticationException( response, e );
-        }
+		if (e instanceof InvalidCredentialsException) {
+			doInvalidCredentialsExceptionException(response, (InvalidCredentialsException) e);
+		}
+		else if (e != null) {
+			doAuthenticationException(response, e);
+		}
 
-    }
+	}
 
-    /**
-     * Handles the authentication.
-     * 
-     * @param response
-     * @param e
-     * @throws IOException
-     */
-    private void doAuthenticationException( HttpServletResponse response, SecurityException e )
-                            throws IOException {
+	/**
+	 * Handles the authentication.
+	 * @param response
+	 * @param e
+	 * @throws IOException
+	 */
+	private void doAuthenticationException(HttpServletResponse response, SecurityException e) throws IOException {
 
-        LOG.debug( "WSSE_SecurityException: " );
-        response.reset();
-        response.resetBuffer();
-        response.setHeader( "WWW-Authenticate", "WSSE realm=\" Backroom\", profile=\"UsernameToken\" " );
-        response.setStatus( HttpServletResponse.SC_UNAUTHORIZED );
-        response.flushBuffer();
+		LOG.debug("WSSE_SecurityException: ");
+		response.reset();
+		response.resetBuffer();
+		response.setHeader("WWW-Authenticate", "WSSE realm=\" Backroom\", profile=\"UsernameToken\" ");
+		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+		response.flushBuffer();
 
-    }
+	}
 
-    /**
-     * Handles the authentication.
-     * 
-     * @param response
-     * @param e
-     * @throws IOException
-     */
-    private void doInvalidCredentialsExceptionException( HttpServletResponse response, InvalidCredentialsException e )
-                            throws IOException {
+	/**
+	 * Handles the authentication.
+	 * @param response
+	 * @param e
+	 * @throws IOException
+	 */
+	private void doInvalidCredentialsExceptionException(HttpServletResponse response, InvalidCredentialsException e)
+			throws IOException {
 
-        LOG.debug( "exception should respond Forbidden: " );
+		LOG.debug("exception should respond Forbidden: ");
 
-        response.sendError( 403 );
+		response.sendError(403);
 
-    }
+	}
 
 }

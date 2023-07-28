@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aionita@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -37,46 +36,39 @@
 package org.deegree.cs.exceptions;
 
 /**
- * The <code>WKTParsingException</code> class can be thrown if the parsing of WKT runs into a problem.
- * 
+ * The <code>WKTParsingException</code> class can be thrown if the parsing of WKT runs
+ * into a problem.
+ *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * 
- * @author last edited by: $Author: ionita $
- * 
- * @version $Revision: $, $Date: $
- * 
+ *
  */
 public class WKTParsingException extends RuntimeException {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -4397703070708527581L;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = -4397703070708527581L;
 
-    /**
-     * @param message
-     *            human readable message
-     */
-    public WKTParsingException( String message ) {
-        super( message );
-    }
+	/**
+	 * @param message human readable message
+	 */
+	public WKTParsingException(String message) {
+		super(message);
+	}
 
-    /**
-     * @param message
-     *            human readable message
-     * @param e
-     *            cause
-     */
-    public WKTParsingException( String message, Exception e ) {
-        super( message, e );
-    }
+	/**
+	 * @param message human readable message
+	 * @param e cause
+	 */
+	public WKTParsingException(String message, Exception e) {
+		super(message, e);
+	}
 
-    /**
-     * 
-     * @param e
-     *            cause
-     */
-    public WKTParsingException( Exception e ) {
-        super( e );
-    }
+	/**
+	 * @param e cause
+	 */
+	public WKTParsingException(Exception e) {
+		super(e);
+	}
+
 }

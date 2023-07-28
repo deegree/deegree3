@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -37,12 +36,11 @@ package org.deegree.geometry.primitive.segments;
 
 /**
  * An {@link ArcByCenterPoint} with identical start and end angles to form a full circle.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface CircleByCenterPoint extends ArcByCenterPoint {
-    // nothing new here, this interface is only necessary for a type-based differentiation
+
+	// nothing new here, this interface is only necessary for a type-based differentiation
+
 }

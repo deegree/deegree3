@@ -43,31 +43,31 @@ import org.deegree.workspace.standard.DefaultResourceIdentifier;
 
 /**
  * Resource metadata implementation for remote WMS layer stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class RemoteWmsLayerStoreMetadata extends AbstractResourceMetadata<LayerStore> {
 
-    public RemoteWmsLayerStoreMetadata( Workspace workspace, ResourceLocation<LayerStore> location,
-                                        AbstractResourceProvider<LayerStore> provider ) {
-        super( workspace, location, provider );
-    }
+	public RemoteWmsLayerStoreMetadata(Workspace workspace, ResourceLocation<LayerStore> location,
+			AbstractResourceProvider<LayerStore> provider) {
+		super(workspace, location, provider);
+	}
 
-    @Override
-    public ResourceBuilder<LayerStore> prepare() {
-        try {
-            RemoteWMSLayers cfg = (RemoteWMSLayers) unmarshall( "org.deegree.layer.persistence.remotewms.jaxb",
-                                                                provider.getSchema(), location.getAsStream(), workspace );
-            String id = cfg.getRemoteWMSId();
+	@Override
+	public ResourceBuilder<LayerStore> prepare() {
+		try {
+			RemoteWMSLayers cfg = (RemoteWMSLayers) unmarshall("org.deegree.layer.persistence.remotewms.jaxb",
+					provider.getSchema(), location.getAsStream(), workspace);
+			String id = cfg.getRemoteWMSId();
 
-            dependencies.add( new DefaultResourceIdentifier<RemoteOWS>( RemoteOWSProvider.class, id ) );
+			dependencies.add(new DefaultResourceIdentifier<RemoteOWS>(RemoteOWSProvider.class, id));
 
-            return new RemoteWmsLayerStoreBuilder( cfg, this, workspace );
-        } catch ( Exception e ) {
-            throw new ResourceInitException( "Could not parse remote WMS layer store config.", e );
-        }
-    }
+			return new RemoteWmsLayerStoreBuilder(cfg, this, workspace);
+		}
+		catch (Exception e) {
+			throw new ResourceInitException("Could not parse remote WMS layer store config.", e);
+		}
+	}
 
 }

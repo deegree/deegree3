@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -49,91 +48,87 @@ import org.deegree.workspace.ResourceMetadata;
 
 /**
  * Metadata describing the structure of a {@link TileDataSet}.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 public class TileMatrixSet implements Resource {
 
-    private final String identifier;
+	private final String identifier;
 
-    private final String wknScaleSet;
+	private final String wknScaleSet;
 
-    private final List<TileMatrix> matrices;
+	private final List<TileMatrix> matrices;
 
-    private final SpatialMetadata spatialMetadata;
+	private final SpatialMetadata spatialMetadata;
 
-    private ResourceMetadata<TileMatrixSet> metadata;
+	private ResourceMetadata<TileMatrixSet> metadata;
 
-    /**
-     * Creates a new {@link TileMatrixSet} instance.
-     * 
-     * @param identifier
-     *            identifier for the {@link TileMatrixSet}, must not be <code>null</code>
-     * @param wknScaleSet
-     *            URI of the well-known scale set that this matrix set is compatible with, can be <code>null</code>
-     * @param matrices
-     *            the {@link TileMatrix}es this matrix set consists of, must not be <code>null</code>
-     * @param spatialMetadat
-     *            the spatial metadata (envelope, CRS) of the tile matrix set, must not be <code>null</code>
-     * @param metadata
-     *            the resource metadata object for this resource, must not be <code>null</code>
-     */
-    public TileMatrixSet( String identifier, String wknScaleSet, List<TileMatrix> matrices,
-                          SpatialMetadata spatialMetadata, ResourceMetadata<TileMatrixSet> metadata ) {
-        this.identifier = identifier;
-        this.wknScaleSet = wknScaleSet;
-        this.matrices = matrices;
-        this.spatialMetadata = spatialMetadata;
-        this.metadata = metadata;
-    }
+	/**
+	 * Creates a new {@link TileMatrixSet} instance.
+	 * @param identifier identifier for the {@link TileMatrixSet}, must not be
+	 * <code>null</code>
+	 * @param wknScaleSet URI of the well-known scale set that this matrix set is
+	 * compatible with, can be <code>null</code>
+	 * @param matrices the {@link TileMatrix}es this matrix set consists of, must not be
+	 * <code>null</code>
+	 * @param spatialMetadat the spatial metadata (envelope, CRS) of the tile matrix set,
+	 * must not be <code>null</code>
+	 * @param metadata the resource metadata object for this resource, must not be
+	 * <code>null</code>
+	 */
+	public TileMatrixSet(String identifier, String wknScaleSet, List<TileMatrix> matrices,
+			SpatialMetadata spatialMetadata, ResourceMetadata<TileMatrixSet> metadata) {
+		this.identifier = identifier;
+		this.wknScaleSet = wknScaleSet;
+		this.matrices = matrices;
+		this.spatialMetadata = spatialMetadata;
+		this.metadata = metadata;
+	}
 
-    /**
-     * Returns the identifier.
-     * 
-     * @return identifier, never <code>null</code>
-     */
-    public String getIdentifier() {
-        return identifier;
-    }
+	/**
+	 * Returns the identifier.
+	 * @return identifier, never <code>null</code>
+	 */
+	public String getIdentifier() {
+		return identifier;
+	}
 
-    /**
-     * Returns the URI of the well-known scale set that this matrix set is compatible with.
-     * 
-     * @return URI of the compatible well-known scale set, can be <code>null</code>
-     */
-    public String getWellKnownScaleSet() {
-        return wknScaleSet;
-    }
+	/**
+	 * Returns the URI of the well-known scale set that this matrix set is compatible
+	 * with.
+	 * @return URI of the compatible well-known scale set, can be <code>null</code>
+	 */
+	public String getWellKnownScaleSet() {
+		return wknScaleSet;
+	}
 
-    /**
-     * @return the tile matrices this matrix set consists of
-     */
-    public List<TileMatrix> getTileMatrices() {
-        return matrices;
-    }
+	/**
+	 * @return the tile matrices this matrix set consists of
+	 */
+	public List<TileMatrix> getTileMatrices() {
+		return matrices;
+	}
 
-    /**
-     * @return the extent and CRS of this tile matrix set
-     */
-    public SpatialMetadata getSpatialMetadata() {
-        return spatialMetadata;
-    }
+	/**
+	 * @return the extent and CRS of this tile matrix set
+	 */
+	public SpatialMetadata getSpatialMetadata() {
+		return spatialMetadata;
+	}
 
-    @Override
-    public void destroy() {
-        // nothing to do
-    }
+	@Override
+	public void destroy() {
+		// nothing to do
+	}
 
-    @Override
-    public ResourceMetadata<? extends Resource> getMetadata() {
-        return metadata;
-    }
+	@Override
+	public ResourceMetadata<? extends Resource> getMetadata() {
+		return metadata;
+	}
 
-    @Override
-    public void init() {
-        // nothing to do
-    }
+	@Override
+	public void init() {
+		// nothing to do
+	}
+
 }

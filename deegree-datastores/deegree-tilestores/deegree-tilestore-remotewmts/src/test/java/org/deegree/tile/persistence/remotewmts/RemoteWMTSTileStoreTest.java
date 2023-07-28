@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -62,39 +61,37 @@ import org.junit.Test;
 /**
  * Basic test cases for the {@link RemoteWMSTileStore}.
  * <p>
- * These tests only check the correct extraction of metadata and the generation of the {@link TileDataSet}. Actual
- * fetching of tile data is realized as integration tests (module deegree-wmts-tests).
+ * These tests only check the correct extraction of metadata and the generation of the
+ * {@link TileDataSet}. Actual fetching of tile data is realized as integration tests
+ * (module deegree-wmts-tests).
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$
  */
 public class RemoteWMTSTileStoreTest {
 
-    private Workspace ws;
+	private Workspace ws;
 
-    @Before
-    public void setup()
-                            throws UnknownCRSException, IOException, URISyntaxException, ResourceInitException {
-        URL wsUrl = RemoteWMTSTileStoreTest.class.getResource( "workspace" );
-        ws = new DefaultWorkspace( new File( wsUrl.toURI() ) );
-        ws.initAll();
-    }
+	@Before
+	public void setup() throws UnknownCRSException, IOException, URISyntaxException, ResourceInitException {
+		URL wsUrl = RemoteWMTSTileStoreTest.class.getResource("workspace");
+		ws = new DefaultWorkspace(new File(wsUrl.toURI()));
+		ws.initAll();
+	}
 
-    @After
-    public void tearDown() {
-        ws.destroy();
-    }
+	@After
+	public void tearDown() {
+		ws.destroy();
+	}
 
-    @Test
-    public void testTileDataSet() {
-        TileStore store = ws.getResource( TileStoreProvider.class, "medford_buildings" );
-        assertNotNull( store );
-        assertEquals( 1, store.getTileDataSetIds().size() );
-        TileDataSet tileDataSet = store.getTileDataSet( "medford:buildings" );
-        assertEquals( "image/png", tileDataSet.getNativeImageFormat() );
-        assertEquals( 19, tileDataSet.getTileDataLevels().size() );
-    }
+	@Test
+	public void testTileDataSet() {
+		TileStore store = ws.getResource(TileStoreProvider.class, "medford_buildings");
+		assertNotNull(store);
+		assertEquals(1, store.getTileDataSetIds().size());
+		TileDataSet tileDataSet = store.getTileDataSet("medford:buildings");
+		assertEquals("image/png", tileDataSet.getNativeImageFormat());
+		assertEquals(19, tileDataSet.getTileDataLevels().size());
+	}
+
 }

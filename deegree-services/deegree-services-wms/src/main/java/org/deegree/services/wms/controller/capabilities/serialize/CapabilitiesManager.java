@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2015 by:
@@ -52,83 +51,72 @@ import org.slf4j.Logger;
 
 /**
  * Manages GetCapabilities formats.
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
 public class CapabilitiesManager {
 
-    private static final Logger LOG = getLogger( CapabilitiesManager.class );
+	private static final Logger LOG = getLogger(CapabilitiesManager.class);
 
-    private final Map<String, CapabilitiesSerializer> capabilitiesSerializers = new LinkedHashMap<String, CapabilitiesSerializer>();
+	private final Map<String, CapabilitiesSerializer> capabilitiesSerializers = new LinkedHashMap<String, CapabilitiesSerializer>();
 
-    /**
-     * @param addDefaultFormats
-     *            true if the default format (text/xml) should be enabled.
-     */
-    public CapabilitiesManager( boolean addDefaultFormats ) {
-        if ( addDefaultFormats )
-            capabilitiesSerializers.put( "text/xml", new CopySerializer() );
-    }
+	/**
+	 * @param addDefaultFormats true if the default format (text/xml) should be enabled.
+	 */
+	public CapabilitiesManager(boolean addDefaultFormats) {
+		if (addDefaultFormats)
+			capabilitiesSerializers.put("text/xml", new CopySerializer());
+	}
 
-    /**
-     * Adds the new format or replace a format with the same name if it exists.
-     * 
-     * @param format
-     *            to add, never <code>null</code>
-     * @param xsltUrl
-     *            the url to the cswlt script, never <code>null</code>
-     * @param workspace
-     *            the workspace never <code>null</code>
-     */
-    public void addOrReplaceXsltFormat( String format, URL xsltUrl, Workspace workspace ) {
-        LOG.debug( "Adding xslt feature info format {}", format );
+	/**
+	 * Adds the new format or replace a format with the same name if it exists.
+	 * @param format to add, never <code>null</code>
+	 * @param xsltUrl the url to the cswlt script, never <code>null</code>
+	 * @param workspace the workspace never <code>null</code>
+	 */
+	public void addOrReplaceXsltFormat(String format, URL xsltUrl, Workspace workspace) {
+		LOG.debug("Adding xslt feature info format {}", format);
 
-        XsltCapabilitiesSerializer xslt = new XsltCapabilitiesSerializer( xsltUrl, workspace );
-        capabilitiesSerializers.put( format.toLowerCase(), xslt );
-    }
+		XsltCapabilitiesSerializer xslt = new XsltCapabilitiesSerializer(xsltUrl, workspace);
+		capabilitiesSerializers.put(format.toLowerCase(), xslt);
+	}
 
-    /**
-     * Checks if the requested format is supported.
-     * 
-     * @param format
-     *            never <code>null</code>
-     * @return <code>true</code> if the format is supported, <code>false</code> otherwise
-     */
-    public boolean isSupported( String format ) {
-        return capabilitiesSerializers.containsKey( format );
-    }
+	/**
+	 * Checks if the requested format is supported.
+	 * @param format never <code>null</code>
+	 * @return <code>true</code> if the format is supported, <code>false</code> otherwise
+	 */
+	public boolean isSupported(String format) {
+		return capabilitiesSerializers.containsKey(format);
+	}
 
-    /**
-     * @return all supported formats, never <code>null</code>
-     */
-    public Set<String> getSupportedFormats() {
-        return capabilitiesSerializers.keySet();
-    }
+	/**
+	 * @return all supported formats, never <code>null</code>
+	 */
+	public Set<String> getSupportedFormats() {
+		return capabilitiesSerializers.keySet();
+	}
 
-    /**
-     * Writes the capabilities in the requested format in the response stream.
-     * 
-     * @param format
-     *            requested format, never <code>null</code>
-     * @param capabilitiesXmlStream
-     *            the capabilities xml as stream, never <code>null</code>
-     * @param responseStream
-     *            to write the capabilities in, never <code>null</code>
-     * @throws IOException
-     *             if an error occured
-     * @throws OWSException
-     *             if the requested format is not supported
-     */
-    public void serializeCapabilities( String format, InputStream capabilitiesXmlStream, OutputStream responseStream )
-                            throws IOException, OWSException {
-        LOG.debug( "Generating capabilities output for format: {}", format );
+	/**
+	 * Writes the capabilities in the requested format in the response stream.
+	 * @param format requested format, never <code>null</code>
+	 * @param capabilitiesXmlStream the capabilities xml as stream, never
+	 * <code>null</code>
+	 * @param responseStream to write the capabilities in, never <code>null</code>
+	 * @throws IOException if an error occured
+	 * @throws OWSException if the requested format is not supported
+	 */
+	public void serializeCapabilities(String format, InputStream capabilitiesXmlStream, OutputStream responseStream)
+			throws IOException, OWSException {
+		LOG.debug("Generating capabilities output for format: {}", format);
 
-        CapabilitiesSerializer serializer = capabilitiesSerializers.get( format.toLowerCase() );
-        if ( serializer != null ) {
-            serializer.serialize( capabilitiesXmlStream, responseStream );
-        } else {
-            throw new OWSException( "Capabilities format '" + format + "' is unknown.", INVALID_PARAMETER_VALUE );
-        }
-    }
+		CapabilitiesSerializer serializer = capabilitiesSerializers.get(format.toLowerCase());
+		if (serializer != null) {
+			serializer.serialize(capabilitiesXmlStream, responseStream);
+		}
+		else {
+			throw new OWSException("Capabilities format '" + format + "' is unknown.", INVALID_PARAMETER_VALUE);
+		}
+	}
 
 }

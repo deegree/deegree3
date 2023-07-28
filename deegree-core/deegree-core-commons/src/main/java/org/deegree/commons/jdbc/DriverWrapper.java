@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -46,71 +45,71 @@ import java.util.Properties;
 import java.util.logging.Logger;
 
 /**
- * Workaround class to fix inability of DriverManager to accept classes not loaded with system class loader...
- * 
+ * Workaround class to fix inability of DriverManager to accept classes not loaded with
+ * system class loader...
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class DriverWrapper implements Driver {
 
-    private Driver d;
+	private Driver d;
 
-    public DriverWrapper( Driver d ) {
-        this.d = d;
-    }
+	public DriverWrapper(Driver d) {
+		this.d = d;
+	}
 
-    @Override
-    public boolean acceptsURL( String url )
-                            throws SQLException {
-        return d.acceptsURL( url );
-    }
+	@Override
+	public boolean acceptsURL(String url) throws SQLException {
+		return d.acceptsURL(url);
+	}
 
-    @Override
-    public Connection connect( String url, Properties info )
-                            throws SQLException {
-        return d.connect( url, info );
-    }
+	@Override
+	public Connection connect(String url, Properties info) throws SQLException {
+		return d.connect(url, info);
+	}
 
-    @Override
-    public int getMajorVersion() {
-        return d.getMajorVersion();
-    }
+	@Override
+	public int getMajorVersion() {
+		return d.getMajorVersion();
+	}
 
-    @Override
-    public int getMinorVersion() {
-        return d.getMinorVersion();
-    }
+	@Override
+	public int getMinorVersion() {
+		return d.getMinorVersion();
+	}
 
-    @Override
-    public DriverPropertyInfo[] getPropertyInfo( String url, Properties info )
-                            throws SQLException {
-        return d.getPropertyInfo( url, info );
-    }
+	@Override
+	public DriverPropertyInfo[] getPropertyInfo(String url, Properties info) throws SQLException {
+		return d.getPropertyInfo(url, info);
+	}
 
-    @Override
-    public boolean jdbcCompliant() {
-        return d.jdbcCompliant();
-    }
+	@Override
+	public boolean jdbcCompliant() {
+		return d.jdbcCompliant();
+	}
 
-    public Logger getParentLogger()
-                            throws SQLFeatureNotSupportedException {
-        Logger logger = null;
-        try {
-            Method m = d.getClass().getDeclaredMethod( "getParentLogger", new Class[0] );
-            logger = (Logger) m.invoke( d, new Object[0] );
-        } catch ( NoSuchMethodException e ) {
-            throw new SQLFeatureNotSupportedException( e.getMessage(), e );
-        } catch ( SecurityException e ) {
-            throw new SQLFeatureNotSupportedException( e.getMessage(), e );
-        } catch ( IllegalAccessException e ) {
-            throw new SQLFeatureNotSupportedException( e.getMessage(), e );
-        } catch ( IllegalArgumentException e ) {
-            throw new SQLFeatureNotSupportedException( e.getMessage(), e );
-        } catch ( InvocationTargetException e ) {
-            throw new SQLFeatureNotSupportedException( e.getMessage(), e );
-        }
-        return logger;
-    }
+	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+		Logger logger = null;
+		try {
+			Method m = d.getClass().getDeclaredMethod("getParentLogger", new Class[0]);
+			logger = (Logger) m.invoke(d, new Object[0]);
+		}
+		catch (NoSuchMethodException e) {
+			throw new SQLFeatureNotSupportedException(e.getMessage(), e);
+		}
+		catch (SecurityException e) {
+			throw new SQLFeatureNotSupportedException(e.getMessage(), e);
+		}
+		catch (IllegalAccessException e) {
+			throw new SQLFeatureNotSupportedException(e.getMessage(), e);
+		}
+		catch (IllegalArgumentException e) {
+			throw new SQLFeatureNotSupportedException(e.getMessage(), e);
+		}
+		catch (InvocationTargetException e) {
+			throw new SQLFeatureNotSupportedException(e.getMessage(), e);
+		}
+		return logger;
+	}
+
 }

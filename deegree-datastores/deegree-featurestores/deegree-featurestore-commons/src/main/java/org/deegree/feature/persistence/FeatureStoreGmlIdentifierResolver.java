@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://svn.wald.intevation.org/deegree/deegree3/trunk/deegree-datastores/deegree-featurestores/deegree-featurestore-commons/src/main/java/org/deegree/feature/persistence/FeatureStoreGMLIdResolver.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -58,70 +57,71 @@ import org.deegree.filter.expression.ValueReference;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 
 /**
- * {@link GMLReferenceResolver} that uses a {@link FeatureStore} for resolving local object references by using the
- * gml:identifier (GML 3.2 only) property instead of the GML id. Currently supports urn:uuid: identifiers only.
- * 
+ * {@link GMLReferenceResolver} that uses a {@link FeatureStore} for resolving local
+ * object references by using the gml:identifier (GML 3.2 only) property instead of the
+ * GML id. Currently supports urn:uuid: identifiers only.
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31641 $, $Date: 2011-08-24 21:24:55 +0200 (Wed, 24 Aug 2011) $
  */
 public class FeatureStoreGmlIdentifierResolver implements GMLReferenceResolver {
 
-    private final FeatureStore fs;
+	private final FeatureStore fs;
 
-    private final Pattern pattern = Pattern.compile( "urn\\:uuid\\:(.+)" );
+	private final Pattern pattern = Pattern.compile("urn\\:uuid\\:(.+)");
 
-    private QName identifierName;
+	private QName identifierName;
 
-    /**
-     * Creates a new {@link FeatureStoreGmlIdentifierResolver} instance.
-     * 
-     * @param fs
-     *            feature store to be used for retrieving local features, must not be <code>null</code>
-     */
-    public FeatureStoreGmlIdentifierResolver( FeatureStore fs ) {
-        this.fs = fs;
-        identifierName = new QName( "http://www.opengis.net/gml/3.2", "identifier" );
-    }
+	/**
+	 * Creates a new {@link FeatureStoreGmlIdentifierResolver} instance.
+	 * @param fs feature store to be used for retrieving local features, must not be
+	 * <code>null</code>
+	 */
+	public FeatureStoreGmlIdentifierResolver(FeatureStore fs) {
+		this.fs = fs;
+		identifierName = new QName("http://www.opengis.net/gml/3.2", "identifier");
+	}
 
-    @Override
-    public GMLObject getObject( String uri, String baseURL ) {
-        Matcher m = pattern.matcher( uri );
-        if ( m.find() ) {
-            List<FeatureType> fts = fs.getSchema().getFeatureTypes( null, false, false );
-            TypeName[] typeNames = new TypeName[fts.size()];
-            for ( int i = 0; i < fts.size(); ++i ) {
-                typeNames[i] = new TypeName( fts.get( i ).getName(), null );
-            }
-            String id = m.group( 1 );
-            ValueReference ref = new ValueReference( identifierName );
-            PropertyIsEqualTo eq = new PropertyIsEqualTo( ref, new Literal<PrimitiveValue>( id ), true, MatchAction.ALL );
-            Filter f = new OperatorFilter( eq );
+	@Override
+	public GMLObject getObject(String uri, String baseURL) {
+		Matcher m = pattern.matcher(uri);
+		if (m.find()) {
+			List<FeatureType> fts = fs.getSchema().getFeatureTypes(null, false, false);
+			TypeName[] typeNames = new TypeName[fts.size()];
+			for (int i = 0; i < fts.size(); ++i) {
+				typeNames[i] = new TypeName(fts.get(i).getName(), null);
+			}
+			String id = m.group(1);
+			ValueReference ref = new ValueReference(identifierName);
+			PropertyIsEqualTo eq = new PropertyIsEqualTo(ref, new Literal<PrimitiveValue>(id), true, MatchAction.ALL);
+			Filter f = new OperatorFilter(eq);
 
-            List<Query> queries = new ArrayList<Query>();
-            for ( TypeName tn : typeNames ) {
-                queries.add( new Query( new TypeName[] { tn }, f, null, null, null ) );
-            }
-            for ( Query q : queries ) {
-                FeatureInputStream rs = null;
-                try {
-                    rs = fs.query( q );
-                    Feature obj = rs.iterator().next();
-                    if ( obj != null ) {
-                        return obj;
-                    }
-                } catch ( Throwable e ) {
-                    // then it's not resolvable (?)
-                } finally {
-                    try {
-                        rs.close();
-                    } catch ( Throwable e ) {
-                        // not closable
-                    }
-                }
-            }
-        }// else?
-        return null;
-    }
+			List<Query> queries = new ArrayList<Query>();
+			for (TypeName tn : typeNames) {
+				queries.add(new Query(new TypeName[] { tn }, f, null, null, null));
+			}
+			for (Query q : queries) {
+				FeatureInputStream rs = null;
+				try {
+					rs = fs.query(q);
+					Feature obj = rs.iterator().next();
+					if (obj != null) {
+						return obj;
+					}
+				}
+				catch (Throwable e) {
+					// then it's not resolvable (?)
+				}
+				finally {
+					try {
+						rs.close();
+					}
+					catch (Throwable e) {
+						// not closable
+					}
+				}
+			}
+		} // else?
+		return null;
+	}
+
 }

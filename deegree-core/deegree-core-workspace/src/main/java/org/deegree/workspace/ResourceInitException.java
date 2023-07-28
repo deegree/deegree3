@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -43,21 +42,20 @@ package org.deegree.workspace;
 
 /**
  * An exception class thrown during workspace/resource initialization.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class ResourceInitException extends RuntimeException {
 
-    private static final long serialVersionUID = -231172706516230972L;
+	private static final long serialVersionUID = -231172706516230972L;
 
-    public ResourceInitException( String msg, Exception cause ) {
-        super( msg, cause );
-    }
+	public ResourceInitException(String msg, Exception cause) {
+		super(msg, cause);
+	}
 
-    public ResourceInitException( String msg ) {
-        super( msg );
-    }
+	public ResourceInitException(String msg) {
+		super(msg);
+	}
 
 }

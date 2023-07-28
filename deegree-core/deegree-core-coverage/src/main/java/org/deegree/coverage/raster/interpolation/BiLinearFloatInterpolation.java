@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -45,52 +44,53 @@ import org.deegree.coverage.raster.data.info.DataType;
  * This class implements a bilinear interpolation for float raster.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- *
- * @version $Revision$, $Date$
  *
  */
 public class BiLinearFloatInterpolation implements Interpolation {
-    private RasterData raster;
 
-    private ByteBuffer tmp;
+	private RasterData raster;
 
-    private float[] window = new float[4];
+	private ByteBuffer tmp;
 
-    /**
-     * Create a new bilinear interpolation for given float {@link RasterData}.
-     * @param rasterData
-     */
-    public BiLinearFloatInterpolation( RasterData rasterData ) {
-        if ( rasterData.getDataType() != DataType.FLOAT ) {
-            throw new IllegalArgumentException( this.getClass().getName() + " only supports float raster" );
-        }
-        raster = rasterData;
-        tmp = ByteBuffer.allocate( DataType.FLOAT.getSize() * raster.getBands() );
+	private float[] window = new float[4];
 
-    }
+	/**
+	 * Create a new bilinear interpolation for given float {@link RasterData}.
+	 * @param rasterData
+	 */
+	public BiLinearFloatInterpolation(RasterData rasterData) {
+		if (rasterData.getDataType() != DataType.FLOAT) {
+			throw new IllegalArgumentException(this.getClass().getName() + " only supports float raster");
+		}
+		raster = rasterData;
+		tmp = ByteBuffer.allocate(DataType.FLOAT.getSize() * raster.getBands());
 
-    public final byte[] getPixel( float x, float y, byte[] result ) {
-        try {
-            tmp.position( 0 );
-            float xfrac = Math.abs( x - (int) x ); // the fractional part
-            float yfrac = Math.abs( y - (int) y );
-            for ( int b = 0; b < raster.getBands(); b++ ) {
-                raster.getFloats( (int) x, (int) y, 2, 2, b, window );
-                float h1 = window[0] + ( window[1] - window[0] ) * xfrac;
-                float h2 = window[2] + ( window[3] - window[2] ) * xfrac;
-                tmp.putFloat( h1 + ( h2 - h1 ) * yfrac );
-            }
-            tmp.position( 0 );
-            tmp.get( result );
-        } catch ( IndexOutOfBoundsException ex ) {
-            raster.getNullPixel( result );
-        } catch ( IllegalArgumentException ex ) {
-            raster.getNullPixel( result );
-        } catch ( BufferUnderflowException ex ) {
-            raster.getNullPixel( result );
-        }
-        return result;
-    }
+	}
+
+	public final byte[] getPixel(float x, float y, byte[] result) {
+		try {
+			tmp.position(0);
+			float xfrac = Math.abs(x - (int) x); // the fractional part
+			float yfrac = Math.abs(y - (int) y);
+			for (int b = 0; b < raster.getBands(); b++) {
+				raster.getFloats((int) x, (int) y, 2, 2, b, window);
+				float h1 = window[0] + (window[1] - window[0]) * xfrac;
+				float h2 = window[2] + (window[3] - window[2]) * xfrac;
+				tmp.putFloat(h1 + (h2 - h1) * yfrac);
+			}
+			tmp.position(0);
+			tmp.get(result);
+		}
+		catch (IndexOutOfBoundsException ex) {
+			raster.getNullPixel(result);
+		}
+		catch (IllegalArgumentException ex) {
+			raster.getNullPixel(result);
+		}
+		catch (BufferUnderflowException ex) {
+			raster.getNullPixel(result);
+		}
+		return result;
+	}
+
 }
-

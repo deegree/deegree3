@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -44,77 +43,76 @@ import org.deegree.client.core.utils.MessageUtils;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
-@ResourceDependencies( { @ResourceDependency(library = "deegree", name = "css/ajaxStatus.css"),
-                        @ResourceDependency(name = "javascript/ajaxStatus.js", library = "deegree", target = "head"),
-                        @ResourceDependency(name = "jsf.js", library = "javax.faces", target = "head") })
+@ResourceDependencies({ @ResourceDependency(library = "deegree", name = "css/ajaxStatus.css"),
+		@ResourceDependency(name = "javascript/ajaxStatus.js", library = "deegree", target = "head"),
+		@ResourceDependency(name = "jsf.js", library = "javax.faces", target = "head") })
 @FacesComponent(value = "HtmlAjaxStatus")
 public class HtmlAjaxStatus extends UIComponentBase {
 
-    public static final String COMPONENT_TYPE = "HtmlAjaxStatus";
+	public static final String COMPONENT_TYPE = "HtmlAjaxStatus";
 
-    public static final String FAMILY_TYPE = "org.deegre.Status";
+	public static final String FAMILY_TYPE = "org.deegre.Status";
 
-    private static enum PropertyKeys {
-        styleClass, forComponentId, modal, text, style
-    }
+	private static enum PropertyKeys {
 
-    public HtmlAjaxStatus() {
-        setRendererType( "org.deegree.AjaxStatus" );
-    }
+		styleClass, forComponentId, modal, text, style
 
-    @Override
-    public String getFamily() {
-        return FAMILY_TYPE;
-    }
+	}
 
-    public String getStyleClass() {
-        return (String) getStateHelper().eval( PropertyKeys.styleClass, null );
-    }
+	public HtmlAjaxStatus() {
+		setRendererType("org.deegree.AjaxStatus");
+	}
 
-    public void setStyleClass( String styleClass ) {
-        getStateHelper().put( PropertyKeys.styleClass, styleClass );
-    }
+	@Override
+	public String getFamily() {
+		return FAMILY_TYPE;
+	}
 
-    public String getFor() {
-        return (String) getStateHelper().eval( PropertyKeys.forComponentId, null );
-    }
+	public String getStyleClass() {
+		return (String) getStateHelper().eval(PropertyKeys.styleClass, null);
+	}
 
-    public void setFor( String forComponentId ) {
-        getStateHelper().put( PropertyKeys.forComponentId, forComponentId );
-    }
+	public void setStyleClass(String styleClass) {
+		getStateHelper().put(PropertyKeys.styleClass, styleClass);
+	}
 
-    public boolean getModal() {
-        return (Boolean) getStateHelper().eval( PropertyKeys.modal, false );
-    }
+	public String getFor() {
+		return (String) getStateHelper().eval(PropertyKeys.forComponentId, null);
+	}
 
-    public void setModal( boolean modal ) {
-        getStateHelper().put( PropertyKeys.modal, modal );
-    }
+	public void setFor(String forComponentId) {
+		getStateHelper().put(PropertyKeys.forComponentId, forComponentId);
+	}
 
-    public String getText() {
-        String text = (String) getStateHelper().eval( PropertyKeys.text, null );
-        if ( text == null ) {
-            text = MessageUtils.getResourceText( null, "org.deegree.client.core.component.HtmlAjaxStatus.TEXT" );
-        }
-        return text;
-    }
+	public boolean getModal() {
+		return (Boolean) getStateHelper().eval(PropertyKeys.modal, false);
+	}
 
-    public void setText( String text ) {
-        getStateHelper().put( PropertyKeys.text, text );
-    }
+	public void setModal(boolean modal) {
+		getStateHelper().put(PropertyKeys.modal, modal);
+	}
 
-    public String getStyle() {
-        return (String) getStateHelper().eval( PropertyKeys.style, "" );
-    }
+	public String getText() {
+		String text = (String) getStateHelper().eval(PropertyKeys.text, null);
+		if (text == null) {
+			text = MessageUtils.getResourceText(null, "org.deegree.client.core.component.HtmlAjaxStatus.TEXT");
+		}
+		return text;
+	}
 
-    public void setStyle( String style ) {
-        getStateHelper().put( PropertyKeys.style, style );
-    }
+	public void setText(String text) {
+		getStateHelper().put(PropertyKeys.text, text);
+	}
+
+	public String getStyle() {
+		return (String) getStateHelper().eval(PropertyKeys.style, "");
+	}
+
+	public void setStyle(String style) {
+		getStateHelper().put(PropertyKeys.style, style);
+	}
 
 }

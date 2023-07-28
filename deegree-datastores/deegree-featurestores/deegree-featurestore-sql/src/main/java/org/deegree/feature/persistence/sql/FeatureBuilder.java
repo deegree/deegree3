@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -43,29 +42,25 @@ import org.deegree.feature.Feature;
 
 /**
  * Builds {@link Feature} instances from SQL result sets.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface FeatureBuilder {
 
-    /**
-     * Returns the columns/expression for the SELECT statement that is used to retrieve the {@link ResultSet}.
-     * 
-     * @return list of columns/expression, never <code>null</code>
-     */
-    public List<String> getInitialSelectList();
+	/**
+	 * Returns the columns/expression for the SELECT statement that is used to retrieve
+	 * the {@link ResultSet}.
+	 * @return list of columns/expression, never <code>null</code>
+	 */
+	public List<String> getInitialSelectList();
 
-    /**
-     * Builds a {@link Feature} instance from the current row of the given {@link ResultSet}.
-     * 
-     * @param rs
-     *            SQL result set, must not be <code>null</code>
-     * @return created {@link Feature} instance, never <code>null</code>
-     * @throws SQLException
-     */
-    public Feature buildFeature( ResultSet rs )
-                            throws SQLException;
+	/**
+	 * Builds a {@link Feature} instance from the current row of the given
+	 * {@link ResultSet}.
+	 * @param rs SQL result set, must not be <code>null</code>
+	 * @return created {@link Feature} instance, never <code>null</code>
+	 * @throws SQLException
+	 */
+	public Feature buildFeature(ResultSet rs) throws SQLException;
+
 }

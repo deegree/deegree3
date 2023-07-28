@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -47,55 +46,52 @@ import org.deegree.geometry.standard.curvesegments.DefaultLineStringSegment;
 
 /**
  * Default implementation of {@link LineString}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class DefaultLineString extends DefaultCurve implements LineString {
 
-    private LineStringSegment singleSegment;
+	private LineStringSegment singleSegment;
 
-    /**
-     * 
-     * @param id
-     * @param crs
-     * @param pm
-     * @param controlPoints
-     */
-    public DefaultLineString( String id, ICRS crs, PrecisionModel pm, Points controlPoints ) {
-        super( id, crs, pm, Collections.singletonList( (CurveSegment) new DefaultLineStringSegment( controlPoints ) ) );
-        singleSegment = (LineStringSegment) getCurveSegments().get( 0 );
-    }
+	/**
+	 * @param id
+	 * @param crs
+	 * @param pm
+	 * @param controlPoints
+	 */
+	public DefaultLineString(String id, ICRS crs, PrecisionModel pm, Points controlPoints) {
+		super(id, crs, pm, Collections.singletonList((CurveSegment) new DefaultLineStringSegment(controlPoints)));
+		singleSegment = (LineStringSegment) getCurveSegments().get(0);
+	}
 
-    @Override
-    public CurveType getCurveType() {
-        return CurveType.LineString;
-    }
+	@Override
+	public CurveType getCurveType() {
+		return CurveType.LineString;
+	}
 
-    @Override
-    public Points getControlPoints() {
-        return singleSegment.getControlPoints();
-    }
+	@Override
+	public Points getControlPoints() {
+		return singleSegment.getControlPoints();
+	}
 
-    @Override
-    public int getCoordinateDimension() {
-        return singleSegment.getCoordinateDimension();
-    }
+	@Override
+	public int getCoordinateDimension() {
+		return singleSegment.getCoordinateDimension();
+	}
 
-    @Override
-    public LineString getAsLineString() {
-        return this;
-    }
-    
-    @Override
-    public boolean isSFSCompliant() {
-        return true;
-    }
+	@Override
+	public LineString getAsLineString() {
+		return this;
+	}
 
-    @Override
-    protected org.locationtech.jts.geom.LineString buildJTSGeometry() {
-        return jtsFactory.createLineString( singleSegment.getControlPoints() );
-    }
+	@Override
+	public boolean isSFSCompliant() {
+		return true;
+	}
+
+	@Override
+	protected org.locationtech.jts.geom.LineString buildJTSGeometry() {
+		return jtsFactory.createLineString(singleSegment.getControlPoints());
+	}
+
 }

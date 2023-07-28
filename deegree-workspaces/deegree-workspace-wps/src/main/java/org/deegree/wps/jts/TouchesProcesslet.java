@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -52,51 +51,48 @@ import org.deegree.services.wps.output.LiteralOutput;
 
 /**
  * The <code></code> class TODO add class documentation here.
- * 
+ *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * 
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class TouchesProcesslet implements Processlet {
 
-    @Override
-    public void destroy() {
-        // TODO Auto-generated method stub
+	@Override
+	public void destroy() {
+		// TODO Auto-generated method stub
 
-    }
+	}
 
-    @Override
-    public void init() {
-        // TODO Auto-generated method stub
+	@Override
+	public void init() {
+		// TODO Auto-generated method stub
 
-    }
+	}
 
-    @Override
-    public void process( ProcessletInputs in, ProcessletOutputs out, ProcessletExecutionInfo info )
-                            throws ProcessletException {
-        ComplexInput gmlInput1 = (ComplexInput) in.getParameter( "GMLInput1" );
-        ComplexInput gmlInput2 = (ComplexInput) in.getParameter( "GMLInput2" );
+	@Override
+	public void process(ProcessletInputs in, ProcessletOutputs out, ProcessletExecutionInfo info)
+			throws ProcessletException {
+		ComplexInput gmlInput1 = (ComplexInput) in.getParameter("GMLInput1");
+		ComplexInput gmlInput2 = (ComplexInput) in.getParameter("GMLInput2");
 
-        Geometry geometry1 = readGeometry( gmlInput1 );
-        Geometry geometry2 = readGeometry( gmlInput2 );
+		Geometry geometry1 = readGeometry(gmlInput1);
+		Geometry geometry2 = readGeometry(gmlInput2);
 
-        boolean touches = geometry1.touches( geometry2 );
-        LiteralOutput touchesOutput = (LiteralOutput) out.getParameter( "Touches" );
-        touchesOutput.setValue( String.valueOf( touches ) );
-    }
+		boolean touches = geometry1.touches(geometry2);
+		LiteralOutput touchesOutput = (LiteralOutput) out.getParameter("Touches");
+		touchesOutput.setValue(String.valueOf(touches));
+	}
 
-    private Geometry readGeometry( ComplexInput gmlInput )
-                            throws ProcessletException {
-        try {
-            XMLStreamReader xmlReader = gmlInput.getValueAsXMLStream();
-            GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_31, xmlReader );
-            return gmlReader.readGeometry();
-        } catch ( Exception e ) {
-            throw new ProcessletException( "Error parsing parameter " + gmlInput.getIdentifier() + ": "
-                                           + e.getMessage() );
-        }
-    }
+	private Geometry readGeometry(ComplexInput gmlInput) throws ProcessletException {
+		try {
+			XMLStreamReader xmlReader = gmlInput.getValueAsXMLStream();
+			GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader(GML_31, xmlReader);
+			return gmlReader.readGeometry();
+		}
+		catch (Exception e) {
+			throw new ProcessletException(
+					"Error parsing parameter " + gmlInput.getIdentifier() + ": " + e.getMessage());
+		}
+	}
+
 }

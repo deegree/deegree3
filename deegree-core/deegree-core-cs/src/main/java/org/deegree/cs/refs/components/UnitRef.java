@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -43,63 +42,57 @@ import org.deegree.cs.refs.CRSResourceRef;
 
 /**
  * {@link CRSResourceRef} to a {@link IUnit}
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class UnitRef extends CRSResourceRef<IUnit> implements Serializable, IUnit {
 
-    private static final long serialVersionUID = -8013673655718092689L;
+	private static final long serialVersionUID = -8013673655718092689L;
 
-    /**
-     * Creates a reference to a {@link IUnit}
-     * 
-     * @param resolver
-     *            used for resolving the reference, must not be <code>null</code>
-     * @param uri
-     *            the object's uri, must not be <code>null</code>
-     * @param baseURL
-     *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
-     */
-    public UnitRef( ReferenceResolver resolver, String uri, String baseURL ) {
-        super( resolver, uri, baseURL );
-    }
+	/**
+	 * Creates a reference to a {@link IUnit}
+	 * @param resolver used for resolving the reference, must not be <code>null</code>
+	 * @param uri the object's uri, must not be <code>null</code>
+	 * @param baseURL base URL for resolving the uri, may be <code>null</code> (no
+	 * resolving of relative URLs)
+	 */
+	public UnitRef(ReferenceResolver resolver, String uri, String baseURL) {
+		super(resolver, uri, baseURL);
+	}
 
-    @Override
-    public boolean canConvert( IUnit other ) {
-        return getReferencedObject().canConvert( other );
-    }
+	@Override
+	public boolean canConvert(IUnit other) {
+		return getReferencedObject().canConvert(other);
+	}
 
-    @Override
-    public double convert( double value, IUnit targetUnit ) {
-        return getReferencedObject().convert( value, targetUnit );
-    }
+	@Override
+	public double convert(double value, IUnit targetUnit) {
+		return getReferencedObject().convert(value, targetUnit);
+	}
 
-    @Override
-    public double toBaseUnits( double value ) {
-        return getReferencedObject().toBaseUnits( value );
-    }
+	@Override
+	public double toBaseUnits(double value) {
+		return getReferencedObject().toBaseUnits(value);
+	}
 
-    @Override
-    public double getScale() {
-        return getReferencedObject().getScale();
-    }
+	@Override
+	public double getScale() {
+		return getReferencedObject().getScale();
+	}
 
-    @Override
-    public boolean isBaseType() {
-        return getReferencedObject().isBaseType();
-    }
+	@Override
+	public boolean isBaseType() {
+		return getReferencedObject().isBaseType();
+	}
 
-    @Override
-    public IUnit getBaseType() {
-        return getReferencedObject().getBaseType();
-    }
+	@Override
+	public IUnit getBaseType() {
+		return getReferencedObject().getBaseType();
+	}
 
-    @Override
-    public boolean equals( Object obj ) {
-        return super.equals( obj ) ? true : getReferencedObject().equals( obj );
-    }
+	@Override
+	public boolean equals(Object obj) {
+		return super.equals(obj) ? true : getReferencedObject().equals(obj);
+	}
 
 }

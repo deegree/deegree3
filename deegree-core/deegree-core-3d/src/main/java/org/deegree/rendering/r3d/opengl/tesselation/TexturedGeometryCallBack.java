@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -44,72 +43,68 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The <code>TexturedGeometryCallBack</code> class TODO add class documentation here.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class TexturedGeometryCallBack extends GeometryCallBack {
 
-    private final transient static Logger LOG = LoggerFactory.getLogger( TexturedGeometryCallBack.class );
+	private final transient static Logger LOG = LoggerFactory.getLogger(TexturedGeometryCallBack.class);
 
-    /**
-     * @param geom
-     */
-    public TexturedGeometryCallBack( TexturedGeometry geom ) {
-        super( geom );
-    }
+	/**
+	 * @param geom
+	 */
+	public TexturedGeometryCallBack(TexturedGeometry geom) {
+		super(geom);
+	}
 
-    @Override
-    public void combineData( double[] coords, Object[] coordinateData, float[] weights, Object[] outData,
-                             Object originalVertex ) {
-        LOG.trace( "Tesselation combining textured vertex data." );
-        LOG.trace( "Coordinates of vertex: " + coords[0] + "," + coords[1] + "," + coords[2] );
-        TexturedVertex[] cd = new TexturedVertex[coordinateData.length];
-        for ( int i = 0; i < coordinateData.length; ++i ) {
-            cd[i] = (TexturedVertex) coordinateData[i];
-        }
-        outData[0] = new TexturedVertex( coords, cd, weights );
-    }
+	@Override
+	public void combineData(double[] coords, Object[] coordinateData, float[] weights, Object[] outData,
+			Object originalVertex) {
+		LOG.trace("Tesselation combining textured vertex data.");
+		LOG.trace("Coordinates of vertex: " + coords[0] + "," + coords[1] + "," + coords[2]);
+		TexturedVertex[] cd = new TexturedVertex[coordinateData.length];
+		for (int i = 0; i < coordinateData.length; ++i) {
+			cd[i] = (TexturedVertex) coordinateData[i];
+		}
+		outData[0] = new TexturedVertex(coords, cd, weights);
+	}
 
-    @Override
-    public void vertexData( Object newVertex, Object originalVertex ) {
-        if ( LOG.isTraceEnabled() ) {
-            StringBuilder sb = new StringBuilder( "New tesselate textured vertex:\n" );
-            sb.append( newVertex );
-            LOG.trace( sb.toString() );
-        }
-        addVertex( (TexturedVertex) newVertex );
-    }
+	@Override
+	public void vertexData(Object newVertex, Object originalVertex) {
+		if (LOG.isTraceEnabled()) {
+			StringBuilder sb = new StringBuilder("New tesselate textured vertex:\n");
+			sb.append(newVertex);
+			LOG.trace(sb.toString());
+		}
+		addVertex((TexturedVertex) newVertex);
+	}
 
-    @Override
-    public Vertex createNewVertex( int currentVertexLocation ) {
-        float[] coords = getGeometry().getCoordinateForVertex( currentVertexLocation );
-        float[] texCoords = ( (TexturedGeometry) getGeometry() ).getTextureCoordinateForVertex( currentVertexLocation );
-        return new TexturedVertex( coords, null, texCoords );
-    }
+	@Override
+	public Vertex createNewVertex(int currentVertexLocation) {
+		float[] coords = getGeometry().getCoordinateForVertex(currentVertexLocation);
+		float[] texCoords = ((TexturedGeometry) getGeometry()).getTextureCoordinateForVertex(currentVertexLocation);
+		return new TexturedVertex(coords, null, texCoords);
+	}
 
-    @Override
-    public RenderableGeometry createRenderableGeometry( boolean useDirectBuffers ) {
-        return new RenderableTexturedGeometry( getTesselatedCoordinates(), getOpenGLType(), calculateNormals(),
-                                               getGeometry().getStyle(),
-                                               ( (TexturedGeometry) getGeometry() ).getTexture(),
-                                               getTesselatedTextureCoordinates(), useDirectBuffers );
-    }
+	@Override
+	public RenderableGeometry createRenderableGeometry(boolean useDirectBuffers) {
+		return new RenderableTexturedGeometry(getTesselatedCoordinates(), getOpenGLType(), calculateNormals(),
+				getGeometry().getStyle(), ((TexturedGeometry) getGeometry()).getTexture(),
+				getTesselatedTextureCoordinates(), useDirectBuffers);
+	}
 
-    /**
-     * @return the texture coordinates of the vertices created by the tesselation process.
-     */
-    protected float[] getTesselatedTextureCoordinates() {
-        float[] texture_coords = new float[getTesselatedVertices().size() * 2];
-        for ( int vertex = 0; vertex < getTesselatedVertices().size(); ++vertex ) {
-            TexturedVertex v = (TexturedVertex) getTesselatedVertices().get( vertex );
-            texture_coords[vertex * 2] = v.tex_u;
-            texture_coords[( vertex * 2 ) + 1] = v.tex_v;
-        }
-        return texture_coords;
-    }
+	/**
+	 * @return the texture coordinates of the vertices created by the tesselation process.
+	 */
+	protected float[] getTesselatedTextureCoordinates() {
+		float[] texture_coords = new float[getTesselatedVertices().size() * 2];
+		for (int vertex = 0; vertex < getTesselatedVertices().size(); ++vertex) {
+			TexturedVertex v = (TexturedVertex) getTesselatedVertices().get(vertex);
+			texture_coords[vertex * 2] = v.tex_u;
+			texture_coords[(vertex * 2) + 1] = v.tex_v;
+		}
+		return texture_coords;
+	}
+
 }

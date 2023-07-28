@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -53,126 +52,122 @@ import org.deegree.client.core.utils.RendererUtils;
 
 /**
  * Render a {@link HtmlInputMultiple}
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 @FacesRenderer(componentFamily = "javax.faces.Input", rendererType = "org.deegree.InputMultipleText")
 public class InputMultipleTextRenderer extends Renderer {
 
-    @Override
-    public void decode( FacesContext context, UIComponent component ) {
-        ExternalContext external = context.getExternalContext();
-        Map<String, String> params = external.getRequestParameterMap();
+	@Override
+	public void decode(FacesContext context, UIComponent component) {
+		ExternalContext external = context.getExternalContext();
+		Map<String, String> params = external.getRequestParameterMap();
 
-        List<String> values = new ArrayList<String>();
+		List<String> values = new ArrayList<String>();
 
-        for ( String key : params.keySet() ) {
-            if ( key.startsWith( component.getClientId( context ) + ":child_" ) ) {
-                values.add( params.get( key ) );
-            }
-        }
-        HtmlInputMultipleText multiple = (HtmlInputMultipleText) component;
-        multiple.setSubmittedValue( values );
-    }
+		for (String key : params.keySet()) {
+			if (key.startsWith(component.getClientId(context) + ":child_")) {
+				values.add(params.get(key));
+			}
+		}
+		HtmlInputMultipleText multiple = (HtmlInputMultipleText) component;
+		multiple.setSubmittedValue(values);
+	}
 
-    @Override
-    public void encodeBegin( FacesContext context, UIComponent component )
-                            throws IOException {
-        ResponseWriter writer = context.getResponseWriter();
-        String clientId = component.getClientId();
-        HtmlInputMultipleText multiple = (HtmlInputMultipleText) component;
+	@Override
+	public void encodeBegin(FacesContext context, UIComponent component) throws IOException {
+		ResponseWriter writer = context.getResponseWriter();
+		String clientId = component.getClientId();
+		HtmlInputMultipleText multiple = (HtmlInputMultipleText) component;
 
-        writer.startElement( "div", component );
-        writer.writeAttribute( "name", clientId, "clientId" );
+		writer.startElement("div", component);
+		writer.writeAttribute("name", clientId, "clientId");
 
-        writer.writeAttribute( "id", clientId, "clientId" );
-        String styleClass = multiple.getStyleClass();
-        if ( styleClass == null ) {
-            styleClass = "multipleComponent";
-        } else {
-            styleClass += " multipleComponent";
-        }
-        writer.writeAttribute( "class", styleClass, "styleClass" );
+		writer.writeAttribute("id", clientId, "clientId");
+		String styleClass = multiple.getStyleClass();
+		if (styleClass == null) {
+			styleClass = "multipleComponent";
+		}
+		else {
+			styleClass += " multipleComponent";
+		}
+		writer.writeAttribute("class", styleClass, "styleClass");
 
-        String style = multiple.getStyle();
-        if ( style != null ) {
-            writer.writeAttribute( "style", style, "style" );
-        }
-        boolean disabled = multiple.getDisabled();
+		String style = multiple.getStyle();
+		if (style != null) {
+			writer.writeAttribute("style", style, "style");
+		}
+		boolean disabled = multiple.getDisabled();
 
-        renderChilds( context, writer, multiple, disabled );
-        String templateID = getTemplateID( context, multiple );
-        renderInput( context, writer, null, templateID, true, disabled );
+		renderChilds(context, writer, multiple, disabled);
+		String templateID = getTemplateID(context, multiple);
+		renderInput(context, writer, null, templateID, true, disabled);
 
-    }
+	}
 
-    private void renderChilds( FacesContext context, ResponseWriter writer, HtmlInputMultipleText multiple,
-                               boolean disabled )
-                            throws IOException {
-        List<String> list = multiple.getValue();
-        if ( list != null && list.size() > 0 ) {
-            for ( String v : list ) {
-                String id = multiple.getClientId( context ) + ":child_" + list.indexOf( v );
-                renderInput( context, writer, v, id, false, disabled );
-            }
-        } else {
-            String id = multiple.getClientId( context ) + ":child_" + 0;
-            renderInput( context, writer, null, id, false, disabled );
-        }
+	private void renderChilds(FacesContext context, ResponseWriter writer, HtmlInputMultipleText multiple,
+			boolean disabled) throws IOException {
+		List<String> list = multiple.getValue();
+		if (list != null && list.size() > 0) {
+			for (String v : list) {
+				String id = multiple.getClientId(context) + ":child_" + list.indexOf(v);
+				renderInput(context, writer, v, id, false, disabled);
+			}
+		}
+		else {
+			String id = multiple.getClientId(context) + ":child_" + 0;
+			renderInput(context, writer, null, id, false, disabled);
+		}
 
-    }
+	}
 
-    private void renderInput( FacesContext context, ResponseWriter writer, String value, String id, boolean isHidden,
-                              boolean disabled )
-                            throws IOException {
+	private void renderInput(FacesContext context, ResponseWriter writer, String value, String id, boolean isHidden,
+			boolean disabled) throws IOException {
 
-        writer.startElement( "div", null );
-        if ( isHidden ) {
-            writer.writeAttribute( "style", "display:none;", null );
-        }
-        writer.writeAttribute( "id", id, null );
-        writer.startElement( "input", null );
-        writer.writeAttribute( "type", "text", null );
-        writer.writeAttribute( "name", id, "clientId" );
-        if ( disabled )
-            writer.writeAttribute( "disabled", "disabled", "disabled" );
+		writer.startElement("div", null);
+		if (isHidden) {
+			writer.writeAttribute("style", "display:none;", null);
+		}
+		writer.writeAttribute("id", id, null);
+		writer.startElement("input", null);
+		writer.writeAttribute("type", "text", null);
+		writer.writeAttribute("name", id, "clientId");
+		if (disabled)
+			writer.writeAttribute("disabled", "disabled", "disabled");
 
-        // render default text specified
-        if ( value != null ) {
-            writer.writeAttribute( "value", value, "value" );
-        }
+		// render default text specified
+		if (value != null) {
+			writer.writeAttribute("value", value, "value");
+		}
 
-        writer.endElement( "input" );
+		writer.endElement("input");
 
-        RendererUtils.writeClickImage( context, writer, "close", "deegree", "images/delete.png", getRemoveJS() );
-        writer.endElement( "div" );
-    }
+		RendererUtils.writeClickImage(context, writer, "close", "deegree", "images/delete.png", getRemoveJS());
+		writer.endElement("div");
+	}
 
-    @Override
-    public void encodeEnd( FacesContext context, UIComponent component )
-                            throws IOException {
-        ResponseWriter writer = context.getResponseWriter();
+	@Override
+	public void encodeEnd(FacesContext context, UIComponent component) throws IOException {
+		ResponseWriter writer = context.getResponseWriter();
 
-        writer.startElement( "div", null );
-        writer.writeAttribute( "class", "add", null );
-        RendererUtils.writeClickImage( context, writer, "add", "deegree", "images/add.png",
-                                       getAddJS( getTemplateID( context, component ) ) );
-        writer.endElement( "div" );
-        writer.endElement( "div" );
-    }
+		writer.startElement("div", null);
+		writer.writeAttribute("class", "add", null);
+		RendererUtils.writeClickImage(context, writer, "add", "deegree", "images/add.png",
+				getAddJS(getTemplateID(context, component)));
+		writer.endElement("div");
+		writer.endElement("div");
+	}
 
-    private String getAddJS( String templateId ) {
-        return "javascript:add(this, '" + templateId + "'); return false;";
-    }
+	private String getAddJS(String templateId) {
+		return "javascript:add(this, '" + templateId + "'); return false;";
+	}
 
-    private String getRemoveJS() {
-        return "javascript:remove(this); return false;";
-    }
+	private String getRemoveJS() {
+		return "javascript:remove(this); return false;";
+	}
 
-    private String getTemplateID( FacesContext context, UIComponent component ) {
-        return component.getClientId( context ) + ":template";
-    }
+	private String getTemplateID(FacesContext context, UIComponent component) {
+		return component.getClientId(context) + ":template";
+	}
+
 }

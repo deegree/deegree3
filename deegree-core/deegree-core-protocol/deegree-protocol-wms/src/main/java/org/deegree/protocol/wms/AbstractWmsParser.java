@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2015 by:
@@ -45,33 +44,30 @@ import org.deegree.commons.xml.stax.XMLStreamUtils;
 
 /**
  * Contains common methods for WMS Parsers.
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
 public class AbstractWmsParser {
 
-    private static final String VERSION_130 = "1.3.0";
+	private static final String VERSION_130 = "1.3.0";
 
-    /**
-     * Skips to the start elment of the documents and checks the version attribute.
-     * 
-     * @param request
-     *            WMS request, never <code>null</code>
-     * @return the version from the document, if version is null the namespace is evaluated, never <code>null</code>
-     * @throws XMLStreamException
-     *             if an exeption occured during parsing
-     * @throw {@link InvalidParameterValueException} if the version could not be parsed
-     */
-    protected Version forwardToStartAndDetermineVersion( XMLStreamReader request )
-                            throws XMLStreamException {
-        XMLStreamUtils.skipStartDocument( request );
-        String versionAttributeValue = request.getAttributeValue( null, "version" );
-        if ( CommonNamespaces.WMSNS.equals( request.getNamespaceURI() ) ) {
-            if ( versionAttributeValue.isEmpty() ) {
-                versionAttributeValue = VERSION_130;
-            }
-        }
-        return Version.parseVersion( versionAttributeValue );
-    }
+	/**
+	 * Skips to the start elment of the documents and checks the version attribute.
+	 * @param request WMS request, never <code>null</code>
+	 * @return the version from the document, if version is null the namespace is
+	 * evaluated, never <code>null</code>
+	 * @throws XMLStreamException if an exeption occured during parsing
+	 * @throw {@link InvalidParameterValueException} if the version could not be parsed
+	 */
+	protected Version forwardToStartAndDetermineVersion(XMLStreamReader request) throws XMLStreamException {
+		XMLStreamUtils.skipStartDocument(request);
+		String versionAttributeValue = request.getAttributeValue(null, "version");
+		if (CommonNamespaces.WMSNS.equals(request.getNamespaceURI())) {
+			if (versionAttributeValue.isEmpty()) {
+				versionAttributeValue = VERSION_130;
+			}
+		}
+		return Version.parseVersion(versionAttributeValue);
+	}
 
 }

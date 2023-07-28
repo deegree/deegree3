@@ -35,5 +35,7 @@
 package org.deegree.time.primitive;
 
 public interface RelatedTime {
-    // placeholder
+
+	// placeholder
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -52,93 +51,100 @@ import org.slf4j.Logger;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class MultipleComponentListener implements AjaxBehaviorListener {
 
-    private static final Logger LOG = getLogger( MultipleComponentListener.class );
+	private static final Logger LOG = getLogger(MultipleComponentListener.class);
 
-    public static final String INPUT_ID_PARAM = "INPUT_ID";
+	public static final String INPUT_ID_PARAM = "INPUT_ID";
 
-    public static final String OCC_PARAM = "OCC";
+	public static final String OCC_PARAM = "OCC";
 
-    public static final String TYPE_PARAM = "TYPE_MC";
+	public static final String TYPE_PARAM = "TYPE_MC";
 
-    public static final String INDEX_PARAM = "INDEX_OF_OCC";
+	public static final String INDEX_PARAM = "INDEX_OF_OCC";
 
-    public enum MC_TYPE {
-        add, remove
-    }
+	public enum MC_TYPE {
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public void processAjaxBehavior( AjaxBehaviorEvent event )
-                            throws AbortProcessingException {
-        FacesContext fc = FacesContext.getCurrentInstance();
-        FormBean fb = (FormBean) fc.getApplication().getELResolver().getValue( fc.getELContext(), null, "formBean" );
-        if ( fb != null ) {
-            UIComponent comp = event.getComponent();
-            List<UIComponent> children = comp.getChildren();
-            String id = null;
-            MC_TYPE type = MC_TYPE.add;
-            Map<String, Integer> occurences = null;
-            int index = 0;
-            for ( UIComponent child : children ) {
-                if ( child instanceof UIParameter ) {
-                    UIParameter param = (UIParameter) child;
-                    if ( INPUT_ID_PARAM.equals( param.getName() ) ) {
-                        id = (String) param.getValue();
-                    } else if ( OCC_PARAM.equals( param.getName() ) ) {
-                        try {
-                            occurences = (Map<String, Integer>) param.getValue();
-                        } catch ( Exception e ) {
-                            // Do nothing
-                        }
-                    } else if ( TYPE_PARAM.equals( param.getName() ) ) {
-                        try {
-                            type = (MC_TYPE) param.getValue();
-                        } catch ( Exception e ) {
-                            // Do nothing
-                        }
-                    } else if ( INDEX_PARAM.equals( param.getName() ) ) {
-                        try {
-                            index = (Integer) param.getValue();
-                        } catch ( Exception e ) {
-                            // Do nothing
-                        }
-                    }
-                }
-            }
-            LOG.debug( "Updatie from: " + id + "; type: " + type + "; occ: " + occurences );
-            if ( occurences == null ) {
-                occurences = new HashMap<String, Integer>();
-            }
-            if ( id != null ) {
-                if ( MC_TYPE.remove.equals( type ) && occurences.containsKey( id ) && occurences.get( id ) > 1 ) {
-                    occurences.put( id, occurences.get( id ) - 1 );
-                } else if ( MC_TYPE.add.equals( type ) ) {
-                    if ( !occurences.containsKey( id ) ) {
-                        occurences.put( id, 1 );
-                    }
-                    occurences.put( id, occurences.get( id ) + 1 );
-                }
-                fb.setOccurence( occurences );
-                if ( MC_TYPE.remove.equals( type ) && occurences.containsKey( id ) && occurences.get( id ) > 1 ) {
-                    // remove the value!
-                    ExecuteBean eb = (ExecuteBean) fc.getApplication().getELResolver().getValue( fc.getELContext(),
-                                                                                                 null, "executeBean" );
-                    eb.getXmlInputs().remove( id + ":" + index );
-                    eb.getXmlRefInputs().remove( id + ":" + index );
-                    eb.getBboxInputs().remove( id + ":" + index );
-                    eb.getLiteralInputs().remove( id + ":" + index );
-                    eb.getBinaryInputs().remove( id + ":" + index );
-                    eb.getComplexInputFormats().remove( id + ":" + index );
-                }
-            }
-        }
-    }
+		add, remove
+
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void processAjaxBehavior(AjaxBehaviorEvent event) throws AbortProcessingException {
+		FacesContext fc = FacesContext.getCurrentInstance();
+		FormBean fb = (FormBean) fc.getApplication().getELResolver().getValue(fc.getELContext(), null, "formBean");
+		if (fb != null) {
+			UIComponent comp = event.getComponent();
+			List<UIComponent> children = comp.getChildren();
+			String id = null;
+			MC_TYPE type = MC_TYPE.add;
+			Map<String, Integer> occurences = null;
+			int index = 0;
+			for (UIComponent child : children) {
+				if (child instanceof UIParameter) {
+					UIParameter param = (UIParameter) child;
+					if (INPUT_ID_PARAM.equals(param.getName())) {
+						id = (String) param.getValue();
+					}
+					else if (OCC_PARAM.equals(param.getName())) {
+						try {
+							occurences = (Map<String, Integer>) param.getValue();
+						}
+						catch (Exception e) {
+							// Do nothing
+						}
+					}
+					else if (TYPE_PARAM.equals(param.getName())) {
+						try {
+							type = (MC_TYPE) param.getValue();
+						}
+						catch (Exception e) {
+							// Do nothing
+						}
+					}
+					else if (INDEX_PARAM.equals(param.getName())) {
+						try {
+							index = (Integer) param.getValue();
+						}
+						catch (Exception e) {
+							// Do nothing
+						}
+					}
+				}
+			}
+			LOG.debug("Updatie from: " + id + "; type: " + type + "; occ: " + occurences);
+			if (occurences == null) {
+				occurences = new HashMap<String, Integer>();
+			}
+			if (id != null) {
+				if (MC_TYPE.remove.equals(type) && occurences.containsKey(id) && occurences.get(id) > 1) {
+					occurences.put(id, occurences.get(id) - 1);
+				}
+				else if (MC_TYPE.add.equals(type)) {
+					if (!occurences.containsKey(id)) {
+						occurences.put(id, 1);
+					}
+					occurences.put(id, occurences.get(id) + 1);
+				}
+				fb.setOccurence(occurences);
+				if (MC_TYPE.remove.equals(type) && occurences.containsKey(id) && occurences.get(id) > 1) {
+					// remove the value!
+					ExecuteBean eb = (ExecuteBean) fc.getApplication()
+						.getELResolver()
+						.getValue(fc.getELContext(), null, "executeBean");
+					eb.getXmlInputs().remove(id + ":" + index);
+					eb.getXmlRefInputs().remove(id + ":" + index);
+					eb.getBboxInputs().remove(id + ":" + index);
+					eb.getLiteralInputs().remove(id + ":" + index);
+					eb.getBinaryInputs().remove(id + ":" + index);
+					eb.getComplexInputFormats().remove(id + ":" + index);
+				}
+			}
+		}
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -44,52 +43,47 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 
 /**
- * Base interface for {@link XMLAdapter} implementations that extract metadata from OWS capabilities documents.
- * 
+ * Base interface for {@link XMLAdapter} implementations that extract metadata from OWS
+ * capabilities documents.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface OWSCapabilitiesAdapter {
 
-    /**
-     * Extracts the {@link ServiceIdentification} from the underlying XML document.
-     * 
-     * @return service identification, can be <code>null</code> (if document does not contain such a section)
-     * @throws XMLParsingException
-     *             if the <code>ServiceIdentification</code> section/information can not be parsed
-     */
-    ServiceIdentification parseServiceIdentification()
-                            throws XMLParsingException;
+	/**
+	 * Extracts the {@link ServiceIdentification} from the underlying XML document.
+	 * @return service identification, can be <code>null</code> (if document does not
+	 * contain such a section)
+	 * @throws XMLParsingException if the <code>ServiceIdentification</code>
+	 * section/information can not be parsed
+	 */
+	ServiceIdentification parseServiceIdentification() throws XMLParsingException;
 
-    /**
-     * Extracts the {@link ServiceProvider} from the underlying XML document.
-     * 
-     * @return service provider, can be <code>null</code> (if document does not contain such a section)
-     * @throws XMLParsingException
-     *             if the <code>ServiceProvider</code> section/information can not be parsed
-     */
-    ServiceProvider parseServiceProvider()
-                            throws XMLParsingException;
+	/**
+	 * Extracts the {@link ServiceProvider} from the underlying XML document.
+	 * @return service provider, can be <code>null</code> (if document does not contain
+	 * such a section)
+	 * @throws XMLParsingException if the <code>ServiceProvider</code> section/information
+	 * can not be parsed
+	 */
+	ServiceProvider parseServiceProvider() throws XMLParsingException;
 
-    /**
-     * Extracts the {@link OperationsMetadata} from the underlying XML document.
-     * 
-     * @return operations metadata, can be <code>null</code> (if document does not contain such a section)
-     * @throws XMLParsingException
-     *             if the <code>OperationsMetadata</code> section/information can not be parsed
-     */
-    OperationsMetadata parseOperationsMetadata()
-                            throws XMLParsingException;
+	/**
+	 * Extracts the {@link OperationsMetadata} from the underlying XML document.
+	 * @return operations metadata, can be <code>null</code> (if document does not contain
+	 * such a section)
+	 * @throws XMLParsingException if the <code>OperationsMetadata</code>
+	 * section/information can not be parsed
+	 */
+	OperationsMetadata parseOperationsMetadata() throws XMLParsingException;
 
-    /**
-     * Extracts the supported languages from the underlying XML document.
-     * 
-     * @return supported languages, can be <code>null</code> (if document does not contain such a section)
-     * @throws XMLParsingException
-     *             if the <code>Languages</code> section/information can not be parsed
-     */
-    List<String> parseLanguages()
-                            throws XMLParsingException;
+	/**
+	 * Extracts the supported languages from the underlying XML document.
+	 * @return supported languages, can be <code>null</code> (if document does not contain
+	 * such a section)
+	 * @throws XMLParsingException if the <code>Languages</code> section/information can
+	 * not be parsed
+	 */
+	List<String> parseLanguages() throws XMLParsingException;
+
 }

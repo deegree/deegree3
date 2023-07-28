@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -38,21 +37,21 @@ package org.deegree.commons.ows.metadata.domain;
 /**
  * {@link PossibleValues} that doesn't allow any value.
  * <p>
- * Data model has been designed to capture the expressiveness of all OWS specifications and versions and was verified
- * against the following specifications:
+ * Data model has been designed to capture the expressiveness of all OWS specifications
+ * and versions and was verified against the following specifications:
  * <ul>
  * <li>OWS Common 2.0</li>
  * </ul>
  * </p>
  * <p>
- * From OWS Common 2.0: <cite>Specifies that no values are allowed for this parameter or quantity.</cite>
+ * From OWS Common 2.0: <cite>Specifies that no values are allowed for this parameter or
+ * quantity.</cite>
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class NoValues implements PossibleValues {
-    // nothing in here
+
+	// nothing in here
+
 }

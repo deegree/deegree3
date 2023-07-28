@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -37,18 +36,15 @@ package org.deegree.metadata.iso.types;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class PointOfContact {
 
-    // TODO
-    // identification of, and means of
-    // communication with, person(s) and
-    // organization(s) associated with the
-    // resource(s)
+	// TODO
+	// identification of, and means of
+	// communication with, person(s) and
+	// organization(s) associated with the
+	// resource(s)
 
 }

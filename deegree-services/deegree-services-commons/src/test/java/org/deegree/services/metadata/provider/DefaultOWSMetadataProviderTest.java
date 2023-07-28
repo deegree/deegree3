@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2014 by:
@@ -58,64 +57,61 @@ import org.junit.Test;
 
 /**
  * Unit tests for {@link DefaultOWSMetadataProvider}.
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
 public class DefaultOWSMetadataProviderTest {
 
-    @Test
-    public void testGetDatasetMetadata()
-                            throws Exception {
-        DefaultOWSMetadataProvider metadataProvider = createProvider();
+	@Test
+	public void testGetDatasetMetadata() throws Exception {
+		DefaultOWSMetadataProvider metadataProvider = createProvider();
 
-        List<DatasetMetadata> datasetMetadata = metadataProvider.getDatasetMetadata();
+		List<DatasetMetadata> datasetMetadata = metadataProvider.getDatasetMetadata();
 
-        assertThat( datasetMetadata.size(), is( 3 ) );
-    }
+		assertThat(datasetMetadata.size(), is(3));
+	}
 
-    @Test
-    public void testGetDatasetMetadataByName()
-                            throws Exception {
-        DefaultOWSMetadataProvider metadataProvider = createProvider();
+	@Test
+	public void testGetDatasetMetadataByName() throws Exception {
+		DefaultOWSMetadataProvider metadataProvider = createProvider();
 
-        DatasetMetadata datasetMetadata = metadataProvider.getDatasetMetadata( new QName( "name1" ) );
+		DatasetMetadata datasetMetadata = metadataProvider.getDatasetMetadata(new QName("name1"));
 
-        assertThat( datasetMetadata, is( notNullValue() ) );
-    }
+		assertThat(datasetMetadata, is(notNullValue()));
+	}
 
-    @Test
-    public void testGetAllDatasetMetadataByName()
-                            throws Exception {
-        DefaultOWSMetadataProvider metadataProvider = createProvider();
+	@Test
+	public void testGetAllDatasetMetadataByName() throws Exception {
+		DefaultOWSMetadataProvider metadataProvider = createProvider();
 
-        List<DatasetMetadata> datasetMetadata = metadataProvider.getAllDatasetMetadata( new QName( "name1" ) );
+		List<DatasetMetadata> datasetMetadata = metadataProvider.getAllDatasetMetadata(new QName("name1"));
 
-        assertThat( datasetMetadata.size(), is( 2 ) );
-    }
+		assertThat(datasetMetadata.size(), is(2));
+	}
 
-    private DefaultOWSMetadataProvider createProvider() {
-        List<DatasetMetadata> datasetMetadata = new ArrayList<DatasetMetadata>();
-        datasetMetadata.add( createDatasetMetadata( "name1", "http:/url.org/1" ) );
-        datasetMetadata.add( createDatasetMetadata( "name1", "http:/url.org/2", "http:/url.org/3" ) );
-        datasetMetadata.add( createDatasetMetadata( "name2", "http:/url.org/4" ) );
-        return new DefaultOWSMetadataProvider( null, null, null, datasetMetadata, null, null );
-    }
+	private DefaultOWSMetadataProvider createProvider() {
+		List<DatasetMetadata> datasetMetadata = new ArrayList<DatasetMetadata>();
+		datasetMetadata.add(createDatasetMetadata("name1", "http:/url.org/1"));
+		datasetMetadata.add(createDatasetMetadata("name1", "http:/url.org/2", "http:/url.org/3"));
+		datasetMetadata.add(createDatasetMetadata("name2", "http:/url.org/4"));
+		return new DefaultOWSMetadataProvider(null, null, null, datasetMetadata, null, null);
+	}
 
-    private DatasetMetadata createDatasetMetadata( String name, String... urls ) {
-        List<LanguageString> titles = new ArrayList<LanguageString>();
-        List<LanguageString> abstracts = new ArrayList<LanguageString>();
-        List<Pair<List<LanguageString>, CodeType>> keywords = new ArrayList<Pair<List<LanguageString>, CodeType>>();
-        List<MetadataUrl> metadataUrls = new ArrayList<MetadataUrl>();
-        List<ExternalIdentifier> externalIds = new ArrayList<ExternalIdentifier>();
-        List<UrlWithFormat> dataUrls = new ArrayList<UrlWithFormat>();
-        List<UrlWithFormat> featureListUrls = new ArrayList<UrlWithFormat>();
-        Attribution attribution = null;
-        for ( String url : urls ) {
-            metadataUrls.add( new MetadataUrl( url, "ISO19115:2003", "application/xml" ) );
-        }
-        List<ExtendedDescription> extendedDescriptions = new ArrayList<>();
-        return new DatasetMetadata( new QName( name ), titles, abstracts, keywords, metadataUrls, externalIds,
-                                    dataUrls, featureListUrls, attribution, extendedDescriptions );
-    }
+	private DatasetMetadata createDatasetMetadata(String name, String... urls) {
+		List<LanguageString> titles = new ArrayList<LanguageString>();
+		List<LanguageString> abstracts = new ArrayList<LanguageString>();
+		List<Pair<List<LanguageString>, CodeType>> keywords = new ArrayList<Pair<List<LanguageString>, CodeType>>();
+		List<MetadataUrl> metadataUrls = new ArrayList<MetadataUrl>();
+		List<ExternalIdentifier> externalIds = new ArrayList<ExternalIdentifier>();
+		List<UrlWithFormat> dataUrls = new ArrayList<UrlWithFormat>();
+		List<UrlWithFormat> featureListUrls = new ArrayList<UrlWithFormat>();
+		Attribution attribution = null;
+		for (String url : urls) {
+			metadataUrls.add(new MetadataUrl(url, "ISO19115:2003", "application/xml"));
+		}
+		List<ExtendedDescription> extendedDescriptions = new ArrayList<>();
+		return new DatasetMetadata(new QName(name), titles, abstracts, keywords, metadataUrls, externalIds, dataUrls,
+				featureListUrls, attribution, extendedDescriptions);
+	}
 
 }

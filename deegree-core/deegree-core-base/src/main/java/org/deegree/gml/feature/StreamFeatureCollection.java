@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/src/main/java/org/deegree/feature/StreamFeatureCollection.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -70,220 +69,223 @@ import org.slf4j.LoggerFactory;
 
 /**
  * {@link StreamFeatureCollection} for GML feature collection elements.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: markus $
- * 
- * @version $Revision: $, $Date: $
  */
 public class StreamFeatureCollection implements FeatureInputStream {
 
-    private static Logger LOG = LoggerFactory.getLogger( StreamFeatureCollection.class );
+	private static Logger LOG = LoggerFactory.getLogger(StreamFeatureCollection.class);
 
-    private final String fid;
+	private final String fid;
 
-    private final FeatureCollectionType ft;
+	private final FeatureCollectionType ft;
 
-    private final GMLFeatureReader featureReader;
+	private final GMLFeatureReader featureReader;
 
-    private final XMLStreamReaderWrapper xmlStream;
+	private final XMLStreamReaderWrapper xmlStream;
 
-    private final Iterator<PropertyType> declIter;
+	private final Iterator<PropertyType> declIter;
 
-    private ICRS activeCRS;
+	private ICRS activeCRS;
 
-    private PropertyType activeDecl;
+	private PropertyType activeDecl;
 
-    private int propOccurences;
+	private int propOccurences;
 
-    // stores non-feature member properties
-    private final List<Property> nonMemberProps = new ArrayList<Property>();
+	// stores non-feature member properties
+	private final List<Property> nonMemberProps = new ArrayList<Property>();
 
-    private boolean featureArrayMode;
+	private boolean featureArrayMode;
 
-    /**
-     * Creates a new {@link StreamFeatureCollection} from the given {@link GMLStreamReader}.
-     * 
-     * @param fid
-     * @param ft
-     * @param featureReader
-     * @param xmlStream
-     * @param crs
-     * @throws XMLStreamException
-     */
-    StreamFeatureCollection( String fid, FeatureCollectionType ft, GMLFeatureReader featureReader,
-                             XMLStreamReaderWrapper xmlStream, ICRS crs ) throws XMLStreamException {
-        this.fid = fid;
-        this.ft = ft;
-        this.featureReader = featureReader;
-        this.xmlStream = xmlStream;
-        xmlStream.next();
+	/**
+	 * Creates a new {@link StreamFeatureCollection} from the given
+	 * {@link GMLStreamReader}.
+	 * @param fid
+	 * @param ft
+	 * @param featureReader
+	 * @param xmlStream
+	 * @param crs
+	 * @throws XMLStreamException
+	 */
+	StreamFeatureCollection(String fid, FeatureCollectionType ft, GMLFeatureReader featureReader,
+			XMLStreamReaderWrapper xmlStream, ICRS crs) throws XMLStreamException {
+		this.fid = fid;
+		this.ft = ft;
+		this.featureReader = featureReader;
+		this.xmlStream = xmlStream;
+		xmlStream.next();
 
-        declIter = ft.getPropertyDeclarations().iterator();
-        activeDecl = declIter.next();
-        propOccurences = 0;
-        activeCRS = crs;
-    }
+		declIter = ft.getPropertyDeclarations().iterator();
+		activeDecl = declIter.next();
+		propOccurences = 0;
+		activeCRS = crs;
+	}
 
-    public Feature read()
-                            throws IOException {
-        Feature feature = null;
-        try {
-            while ( feature == null && xmlStream.getEventType() != END_ELEMENT ) {
-                if ( featureArrayMode ) {
-                    feature = readFeatureArray();
-                } else {
-                    feature = readProperty();
-                }
-            }
-        } catch ( Exception e ) {
-            e.printStackTrace();
-            throw new IOException( e.getMessage(), e );
-        }
-        return feature;
-    }
+	public Feature read() throws IOException {
+		Feature feature = null;
+		try {
+			while (feature == null && xmlStream.getEventType() != END_ELEMENT) {
+				if (featureArrayMode) {
+					feature = readFeatureArray();
+				}
+				else {
+					feature = readProperty();
+				}
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			throw new IOException(e.getMessage(), e);
+		}
+		return feature;
+	}
 
-    private Feature readFeatureArray()
-                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
-        Feature feature = null;
-        if ( xmlStream.getEventType() == START_ELEMENT ) {
-            feature = featureReader.parseFeature( xmlStream, activeCRS );
-        }
-        if ( xmlStream.next() == END_ELEMENT ) {
-            LOG.debug( "End of feature array property encountered." );
-            featureArrayMode = false;
-            propOccurences++;
-        }
-        return feature;
-    }
+	private Feature readFeatureArray() throws XMLParsingException, XMLStreamException, UnknownCRSException {
+		Feature feature = null;
+		if (xmlStream.getEventType() == START_ELEMENT) {
+			feature = featureReader.parseFeature(xmlStream, activeCRS);
+		}
+		if (xmlStream.next() == END_ELEMENT) {
+			LOG.debug("End of feature array property encountered.");
+			featureArrayMode = false;
+			propOccurences++;
+		}
+		return feature;
+	}
 
-    private Feature readProperty()
-                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
-        Feature feature = null;
-        int event = xmlStream.getEventType();
-        if ( event == START_ELEMENT ) {
-            QName propName = xmlStream.getName();
-            if ( LOG.isDebugEnabled() ) {
-                LOG.debug( "- property '" + propName + "'" );
-            }
-            if ( featureReader.findConcretePropertyType( propName, activeDecl ) != null ) {
-                // current property element is equal to active declaration
-                if ( activeDecl.getMaxOccurs() != -1 && propOccurences > activeDecl.getMaxOccurs() ) {
-                    String msg = Messages.getMessage( "ERROR_PROPERTY_TOO_MANY_OCCURENCES", propName,
-                                                      activeDecl.getMaxOccurs(), ft.getName() );
-                    throw new XMLParsingException( xmlStream, msg );
-                }
-            } else {
-                // current property element is not equal to active declaration
-                while ( declIter.hasNext() && featureReader.findConcretePropertyType( propName, activeDecl ) == null ) {
-                    if ( propOccurences < activeDecl.getMinOccurs() ) {
-                        String msg = null;
-                        if ( activeDecl.getMinOccurs() == 1 ) {
-                            msg = Messages.getMessage( "ERROR_PROPERTY_MANDATORY", activeDecl.getName(), ft.getName() );
-                        } else {
-                            msg = Messages.getMessage( "ERROR_PROPERTY_TOO_FEW_OCCURENCES", activeDecl.getName(),
-                                                       activeDecl.getMinOccurs(), ft.getName() );
-                        }
-                        throw new XMLParsingException( xmlStream, msg );
-                    }
-                    activeDecl = declIter.next();
-                    propOccurences = 0;
-                }
-                if ( featureReader.findConcretePropertyType( propName, activeDecl ) == null ) {
-                    String msg = Messages.getMessage( "ERROR_PROPERTY_UNEXPECTED", propName, ft.getName() );
-                    throw new XMLParsingException( xmlStream, msg );
-                }
-            }
+	private Feature readProperty() throws XMLParsingException, XMLStreamException, UnknownCRSException {
+		Feature feature = null;
+		int event = xmlStream.getEventType();
+		if (event == START_ELEMENT) {
+			QName propName = xmlStream.getName();
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("- property '" + propName + "'");
+			}
+			if (featureReader.findConcretePropertyType(propName, activeDecl) != null) {
+				// current property element is equal to active declaration
+				if (activeDecl.getMaxOccurs() != -1 && propOccurences > activeDecl.getMaxOccurs()) {
+					String msg = Messages.getMessage("ERROR_PROPERTY_TOO_MANY_OCCURENCES", propName,
+							activeDecl.getMaxOccurs(), ft.getName());
+					throw new XMLParsingException(xmlStream, msg);
+				}
+			}
+			else {
+				// current property element is not equal to active declaration
+				while (declIter.hasNext() && featureReader.findConcretePropertyType(propName, activeDecl) == null) {
+					if (propOccurences < activeDecl.getMinOccurs()) {
+						String msg = null;
+						if (activeDecl.getMinOccurs() == 1) {
+							msg = Messages.getMessage("ERROR_PROPERTY_MANDATORY", activeDecl.getName(), ft.getName());
+						}
+						else {
+							msg = Messages.getMessage("ERROR_PROPERTY_TOO_FEW_OCCURENCES", activeDecl.getName(),
+									activeDecl.getMinOccurs(), ft.getName());
+						}
+						throw new XMLParsingException(xmlStream, msg);
+					}
+					activeDecl = declIter.next();
+					propOccurences = 0;
+				}
+				if (featureReader.findConcretePropertyType(propName, activeDecl) == null) {
+					String msg = Messages.getMessage("ERROR_PROPERTY_UNEXPECTED", propName, ft.getName());
+					throw new XMLParsingException(xmlStream, msg);
+				}
+			}
 
-            PropertyType pt = featureReader.findConcretePropertyType( propName, activeDecl );
-            if ( pt instanceof FeaturePropertyType ) {
-                Property property = featureReader.parseProperty( xmlStream, pt, activeCRS );
-                if ( property != null ) {
-                    feature = (Feature) property.getValue();
-                }
-                propOccurences++;
-            } else if ( pt instanceof ArrayPropertyType ) {
-                LOG.debug( "Switching to feature array state" );
-                featureArrayMode = true;
-            } else {
-                Property property = featureReader.parseProperty( xmlStream, pt, activeCRS );
-                if ( property != null ) {
-                    // if this is the "gml:boundedBy" property, override active CRS
-                    // (see GML spec. (where???))
-                    if ( BOUNDED_BY_GML31.equals( activeDecl.getName() )
-                         || BOUNDED_BY_GML32.equals( activeDecl.getName() ) ) {
-                        Envelope bbox = (Envelope) property.getValue();
-                        if ( bbox.getCoordinateSystem() != null ) {
-                            activeCRS = bbox.getCoordinateSystem();
-                            LOG.debug( "- crs (from boundedBy): '" + activeCRS + "'" );
-                        }
-                    }
+			PropertyType pt = featureReader.findConcretePropertyType(propName, activeDecl);
+			if (pt instanceof FeaturePropertyType) {
+				Property property = featureReader.parseProperty(xmlStream, pt, activeCRS);
+				if (property != null) {
+					feature = (Feature) property.getValue();
+				}
+				propOccurences++;
+			}
+			else if (pt instanceof ArrayPropertyType) {
+				LOG.debug("Switching to feature array state");
+				featureArrayMode = true;
+			}
+			else {
+				Property property = featureReader.parseProperty(xmlStream, pt, activeCRS);
+				if (property != null) {
+					// if this is the "gml:boundedBy" property, override active CRS
+					// (see GML spec. (where???))
+					if (BOUNDED_BY_GML31.equals(activeDecl.getName())
+							|| BOUNDED_BY_GML32.equals(activeDecl.getName())) {
+						Envelope bbox = (Envelope) property.getValue();
+						if (bbox.getCoordinateSystem() != null) {
+							activeCRS = bbox.getCoordinateSystem();
+							LOG.debug("- crs (from boundedBy): '" + activeCRS + "'");
+						}
+					}
 
-                    nonMemberProps.add( property );
-                }
-                propOccurences++;
-            }
-        }
-        xmlStream.next();
-        return feature;
-    }
+					nonMemberProps.add(property);
+				}
+				propOccurences++;
+			}
+		}
+		xmlStream.next();
+		return feature;
+	}
 
-    @Override
-    public void close() {
-        // TODO what to do on close?
-    }
+	@Override
+	public void close() {
+		// TODO what to do on close?
+	}
 
-    @Override
-    public Iterator<Feature> iterator() {
-        final Feature nextFeature;
-        try {
-            nextFeature = read();
-        } catch ( IOException e ) {
-            throw new RuntimeException();
-        }
-        return new Iterator<Feature>() {
+	@Override
+	public Iterator<Feature> iterator() {
+		final Feature nextFeature;
+		try {
+			nextFeature = read();
+		}
+		catch (IOException e) {
+			throw new RuntimeException();
+		}
+		return new Iterator<Feature>() {
 
-            Feature next = nextFeature;
+			Feature next = nextFeature;
 
-            @Override
-            public boolean hasNext() {
-                return next != null;
-            }
+			@Override
+			public boolean hasNext() {
+				return next != null;
+			}
 
-            @Override
-            public Feature next() {
-                if ( next == null ) {
-                    throw new NoSuchElementException();
-                }
-                Feature currentFeature = next;
-                try {
-                    next = read();
-                } catch ( IOException e ) {
-                    throw new RuntimeException();
-                }
-                return currentFeature;
-            }
+			@Override
+			public Feature next() {
+				if (next == null) {
+					throw new NoSuchElementException();
+				}
+				Feature currentFeature = next;
+				try {
+					next = read();
+				}
+				catch (IOException e) {
+					throw new RuntimeException();
+				}
+				return currentFeature;
+			}
 
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException();
-            }
-        };
-    }
+			@Override
+			public void remove() {
+				throw new UnsupportedOperationException();
+			}
+		};
+	}
 
-    @Override
-    public FeatureCollection toCollection() {
-        return Features.toCollection( this );
-    }
+	@Override
+	public FeatureCollection toCollection() {
+		return Features.toCollection(this);
+	}
 
-    @Override
-    public int count() {
-        int i = 0;
-        for ( @SuppressWarnings("unused")
-        Feature f : this ) {
-            i++;
-        }
-        close();
-        return i;
-    }
+	@Override
+	public int count() {
+		int i = 0;
+		for (@SuppressWarnings("unused")
+		Feature f : this) {
+			i++;
+		}
+		close();
+		return i;
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -44,58 +43,49 @@ import org.deegree.workspace.Workspace;
 
 /**
  * Implementations of this class provide {@link Function} implementations.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface FunctionProvider {
 
-    /**
-     * Called by {@link FunctionManager} once when this {@link FunctionProvider} is being taken into service.
-     * 
-     * @param ws
-     *            workspace context, never <code>null</code>
-     * @throws ResourceInitException
-     *             if the initialization fails
-     */
-    public void init( Workspace ws )
-                            throws ResourceInitException;
+	/**
+	 * Called by {@link FunctionManager} once when this {@link FunctionProvider} is being
+	 * taken into service.
+	 * @param ws workspace context, never <code>null</code>
+	 * @throws ResourceInitException if the initialization fails
+	 */
+	public void init(Workspace ws) throws ResourceInitException;
 
-    /**
-     * Called by {@link FunctionManager} once when this {@link FunctionProvider} is being taken out of service.
-     */
-    public void destroy();
+	/**
+	 * Called by {@link FunctionManager} once when this {@link FunctionProvider} is being
+	 * taken out of service.
+	 */
+	public void destroy();
 
-    /**
-     * Returns the name of the provided function.
-     * 
-     * @return the name of the provided function, never <code>null</code>
-     */
-    public String getName();
+	/**
+	 * Returns the name of the provided function.
+	 * @return the name of the provided function, never <code>null</code>
+	 */
+	public String getName();
 
-    /**
-     * Returns the type information for the inputs of the provided function.
-     * 
-     * @return type information for the inputs, can be empty, but never <code>null</code>
-     */
-    public List<ParameterType> getArgs();
+	/**
+	 * Returns the type information for the inputs of the provided function.
+	 * @return type information for the inputs, can be empty, but never <code>null</code>
+	 */
+	public List<ParameterType> getArgs();
 
-    /**
-     * Returns the type information for the output of the provided function.
-     * 
-     * @return type information for the output, never <code>null</code>
-     */
-    public ParameterType getReturnType();
+	/**
+	 * Returns the type information for the output of the provided function.
+	 * @return type information for the output, never <code>null</code>
+	 */
+	public ParameterType getReturnType();
 
-    /**
-     * Creates a new {@link Function} instance.
-     * 
-     * @param params
-     *            params for the new function, may be empty, but never <code>null</code>
-     * @return the new function instance, never <code>null</code>
-     */
-    public Function create( List<Expression> params );
+	/**
+	 * Creates a new {@link Function} instance.
+	 * @param params params for the new function, may be empty, but never
+	 * <code>null</code>
+	 * @return the new function instance, never <code>null</code>
+	 */
+	public Function create(List<Expression> params);
 
 }

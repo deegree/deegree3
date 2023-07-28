@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -36,22 +35,18 @@
 package org.deegree.geometry.io;
 
 /**
- * Determines the string representation of exported coordinates, e.g the number of decimal places or the decimal
- * separator.
- * 
+ * Determines the string representation of exported coordinates, e.g the number of decimal
+ * places or the decimal separator.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface CoordinateFormatter {
 
-    /**
-     * Returns the formatted string representation of the given ordinate.
-     * 
-     * @param ordinate
-     *            ordinate to be formatted
-     * @return the formatted string, never <code>null</code>
-     */
-    public String format( double ordinate );
+	/**
+	 * Returns the formatted string representation of the given ordinate.
+	 * @param ordinate ordinate to be formatted
+	 * @return the formatted string, never <code>null</code>
+	 */
+	public String format(double ordinate);
+
 }

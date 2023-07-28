@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2013 by:
@@ -49,46 +48,41 @@ import org.junit.Test;
 
 /**
  * Checks the parsing of the association object
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class AssociationTest {
 
-    private static Association association;
+	private static Association association;
 
-    @BeforeClass
-    public static void initAssociation()
-                            throws XMLStreamException, FactoryConfigurationError {
-        XMLStreamReader associationAsXml = readAssociationFromXml();
-        association = new Association( associationAsXml );
-    }
+	@BeforeClass
+	public static void initAssociation() throws XMLStreamException, FactoryConfigurationError {
+		XMLStreamReader associationAsXml = readAssociationFromXml();
+		association = new Association(associationAsXml);
+	}
 
-    @Test
-    public void testGetTargetObjectShouldBeParsedFromXml() {
-        String actualTargetObject = association.getTargetObject();
-        assertEquals( "urn:ogc:def:EOP:RE00:MSI_IMG_3A:5397721:eoap", actualTargetObject );
-    }
+	@Test
+	public void testGetTargetObjectShouldBeParsedFromXml() {
+		String actualTargetObject = association.getTargetObject();
+		assertEquals("urn:ogc:def:EOP:RE00:MSI_IMG_3A:5397721:eoap", actualTargetObject);
+	}
 
-    @Test
-    public void testGetSourceObjectShouldBeParsedFromXml() {
-        String actualSourceObject = association.getSourceObject();
-        assertEquals( "urn:ogc:def:EOP:RE00:MSI_IMG_3A:5397721:eo", actualSourceObject );
-    }
+	@Test
+	public void testGetSourceObjectShouldBeParsedFromXml() {
+		String actualSourceObject = association.getSourceObject();
+		assertEquals("urn:ogc:def:EOP:RE00:MSI_IMG_3A:5397721:eo", actualSourceObject);
+	}
 
-    @Test
-    public void testGetAssociationTypeShouldBeParsedFromXml() {
-        String actualAssociationType = association.getAssociationType();
-        assertEquals( "urn:x-ogc:specification:csw-ebrim:AssociationType:EO:AcquiredBy", actualAssociationType );
-    }
+	@Test
+	public void testGetAssociationTypeShouldBeParsedFromXml() {
+		String actualAssociationType = association.getAssociationType();
+		assertEquals("urn:x-ogc:specification:csw-ebrim:AssociationType:EO:AcquiredBy", actualAssociationType);
+	}
 
-    private static XMLStreamReader readAssociationFromXml()
-                            throws XMLStreamException, FactoryConfigurationError {
-        InputStream associationAsStream = AssociationTest.class.getResourceAsStream( "association.xml" );
-        XMLStreamReader associationAsXml = XMLInputFactory.newInstance().createXMLStreamReader( associationAsStream );
-        return associationAsXml;
-    }
+	private static XMLStreamReader readAssociationFromXml() throws XMLStreamException, FactoryConfigurationError {
+		InputStream associationAsStream = AssociationTest.class.getResourceAsStream("association.xml");
+		XMLStreamReader associationAsXml = XMLInputFactory.newInstance().createXMLStreamReader(associationAsStream);
+		return associationAsXml;
+	}
 
 }

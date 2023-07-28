@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -48,31 +47,28 @@ import org.deegree.style.styling.PointStyling;
 
 /**
  * <code>CurveRenderer</code>
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 class CurveRenderer {
 
-    private Java2DRenderer renderer;
+	private Java2DRenderer renderer;
 
-    public CurveRenderer( Java2DRenderer renderer ) {
-        this.renderer = renderer;
-    }
+	public CurveRenderer(Java2DRenderer renderer) {
+		this.renderer = renderer;
+	}
 
-    void render( PointStyling styling, Curve curve ) {
-        if ( curve.getCurveSegments().size() != 1 || !( curve.getCurveSegments().get( 0 ) instanceof LineStringSegment ) ) {
-            // TODO handle non-linear and multiple curve segments
-            throw new IllegalArgumentException();
-        }
-        LineStringSegment segment = ( (LineStringSegment) curve.getCurveSegments().get( 0 ) );
-        // coordinate representation is still subject to change...
-        for ( Point point : segment.getControlPoints() ) {
-            point.setCoordinateSystem( curve.getCoordinateSystem() );
-            renderer.render( styling, point );
-        }
-    }
+	void render(PointStyling styling, Curve curve) {
+		if (curve.getCurveSegments().size() != 1 || !(curve.getCurveSegments().get(0) instanceof LineStringSegment)) {
+			// TODO handle non-linear and multiple curve segments
+			throw new IllegalArgumentException();
+		}
+		LineStringSegment segment = ((LineStringSegment) curve.getCurveSegments().get(0));
+		// coordinate representation is still subject to change...
+		for (Point point : segment.getControlPoints()) {
+			point.setCoordinateSystem(curve.getCoordinateSystem());
+			renderer.render(styling, point);
+		}
+	}
 
 }

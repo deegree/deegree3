@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -45,39 +44,41 @@ import org.deegree.geometry.Envelope;
 
 /**
  * @author stranger
- * 
+ *
  */
 public class FeatureStores {
 
-    /**
-     * Ignores all errors, tries to aggregate all envelopes of all feature types.
-     * 
-     * @param fs
-     * @return null, if none of the feature types had an envelope
-     */
-    public static Envelope getCombinedEnvelope( FeatureStore fs ) {
-        Envelope env = null;
+	/**
+	 * Ignores all errors, tries to aggregate all envelopes of all feature types.
+	 * @param fs
+	 * @return null, if none of the feature types had an envelope
+	 */
+	public static Envelope getCombinedEnvelope(FeatureStore fs) {
+		Envelope env = null;
 
-        for ( FeatureType ft : fs.getSchema().getFeatureTypes() ) {
-            if ( env == null ) {
-                try {
-                    env = fs.getEnvelope( ft.getName() );
-                } catch ( Throwable e ) {
-                    // ignore it
-                }
-            } else {
-                try {
-                    Envelope b = fs.getEnvelope( ft.getName() );
-                    if ( b != null ) {
-                        env = env.merge( b );
-                    }
-                } catch ( Throwable e ) {
-                    // ignore it
-                }
-            }
-        }
+		for (FeatureType ft : fs.getSchema().getFeatureTypes()) {
+			if (env == null) {
+				try {
+					env = fs.getEnvelope(ft.getName());
+				}
+				catch (Throwable e) {
+					// ignore it
+				}
+			}
+			else {
+				try {
+					Envelope b = fs.getEnvelope(ft.getName());
+					if (b != null) {
+						env = env.merge(b);
+					}
+				}
+				catch (Throwable e) {
+					// ignore it
+				}
+			}
+		}
 
-        return env;
-    }
+		return env;
+	}
 
 }

@@ -5,31 +5,31 @@
   xsi:schemaLocation="http://www.opengis.net/wms http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd http://www.opengis.net/sld http://schemas.opengis.net/sld/1.1.0/sld_capabilities.xsd">
   <Service>
     <Name>WMS</Name>
-    <Title>deegree wms</Title>
-    <wms:Abstract xmlns:wms="http://www.opengis.net/wms">wms reference implementation</wms:Abstract>
+    <Title>deegree WMS capabilities</Title>
+    <wms:Abstract xmlns:wms="http://www.opengis.net/wms">An example template for the deegree WMS</wms:Abstract>
     <wms:KeywordList xmlns:wms="http://www.opengis.net/wms">
       <wms:Keyword>deegree</wms:Keyword>
-      <wms:Keyword>wms</wms:Keyword>
+      <wms:Keyword>WMS</wms:Keyword>
     </wms:KeywordList>
-    <wms:OnlineResource xmlns:wms="http://www.opengis.net/wms" xlink:href="http://demo.deegree.org/deegree-wms-ri-130/services?"
+    <wms:OnlineResource xmlns:wms="http://www.opengis.net/wms" xlink:href="http://example.com/deegree-wms/services?"
       xlink:type="simple" />
     <wms:ContactInformation xmlns:wms="http://www.opengis.net/wms">
       <wms:ContactPersonPrimary>
-        <wms:ContactPerson>Andreas Poth</wms:ContactPerson>
-        <wms:ContactOrganization>lat/lon</wms:ContactOrganization>
+        <wms:ContactPerson>Gerhard Mercator</wms:ContactPerson>
+        <wms:ContactOrganization>deegree</wms:ContactOrganization>
       </wms:ContactPersonPrimary>
-      <wms:ContactPosition>Technical Director</wms:ContactPosition>
+      <wms:ContactPosition>Geographer</wms:ContactPosition>
       <wms:ContactAddress>
         <wms:AddressType>postal</wms:AddressType>
-        <wms:Address>Aennchenstr. 19</wms:Address>
-        <wms:City>Bonn</wms:City>
-        <wms:StateOrProvince>NRW</wms:StateOrProvince>
-        <wms:PostCode>53177</wms:PostCode>
-        <wms:Country>Germany</wms:Country>
+        <wms:Address>9450 SW Gemini Dr #42523</wms:Address>
+        <wms:City>Beaverton</wms:City>
+        <wms:StateOrProvince>OR</wms:StateOrProvince>
+        <wms:PostCode>97008</wms:PostCode>
+        <wms:Country>USA</wms:Country>
       </wms:ContactAddress>
-      <wms:ContactVoiceTelephone>0049228184960</wms:ContactVoiceTelephone>
-      <wms:ContactFacsimileTelephone>00492281849629</wms:ContactFacsimileTelephone>
-      <wms:ContactElectronicMailAddress>info@lat-lon.de</wms:ContactElectronicMailAddress>
+      <wms:ContactVoiceTelephone>0000/000000</wms:ContactVoiceTelephone>
+      <wms:ContactFacsimileTelephone>0000/000000</wms:ContactFacsimileTelephone>
+      <wms:ContactElectronicMailAddress>info@example.com</wms:ContactElectronicMailAddress>
     </wms:ContactInformation>
     <wms:Fees xmlns:wms="http://www.opengis.net/wms">none</wms:Fees>
     <wms:AccessConstraints xmlns:wms="http://www.opengis.net/wms">none</wms:AccessConstraints>

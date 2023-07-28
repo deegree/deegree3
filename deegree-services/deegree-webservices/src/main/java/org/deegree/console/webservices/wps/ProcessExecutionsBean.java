@@ -45,36 +45,36 @@ import org.deegree.services.wps.WPService;
 
 /**
  * JSF-Bean for the processes execution info page.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 29926 $, $Date: 2011-03-08 11:47:59 +0100 (Di, 08. Mär 2011) $
  */
 @ManagedBean
 @RequestScoped
 public class ProcessExecutionsBean {
 
-    private final List<ProcessExecution> executions = new ArrayList<ProcessExecution>();
+	private final List<ProcessExecution> executions = new ArrayList<ProcessExecution>();
 
-    private final boolean hasExecutions;
+	private final boolean hasExecutions;
 
-    public List<ProcessExecution> getExecutions() {
-        return executions;
-    }
+	public List<ProcessExecution> getExecutions() {
+		return executions;
+	}
 
-    public boolean isHasExecutions() {
-        return hasExecutions;
-    }
+	public boolean isHasExecutions() {
+		return hasExecutions;
+	}
 
-    /**
-     * Creates a new {@link ProcessExecutionsBean} instance (only used by JSF).
-     */
-    public ProcessExecutionsBean() {
-        WPService service = (WPService) ( OGCFrontController.getServiceConfiguration().getByOWSClass( WPService.class ).get( 0 ) );
-        for ( org.deegree.services.wps.ProcessExecution p : service.getExecutionManager().getAllProcesses() ) {
-            executions.add( new ProcessExecution( p ) );
-        }
-        hasExecutions = !executions.isEmpty();
-    }
+	/**
+	 * Creates a new {@link ProcessExecutionsBean} instance (only used by JSF).
+	 */
+	public ProcessExecutionsBean() {
+		WPService service = (WPService) (OGCFrontController.getServiceConfiguration()
+			.getByOWSClass(WPService.class)
+			.get(0));
+		for (org.deegree.services.wps.ProcessExecution p : service.getExecutionManager().getAllProcesses()) {
+			executions.add(new ProcessExecution(p));
+		}
+		hasExecutions = !executions.isEmpty();
+	}
+
 }

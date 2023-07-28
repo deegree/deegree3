@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -38,30 +37,25 @@ package org.deegree.commons.config;
 import java.net.URL;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface ExtendedResourceProvider<T extends Resource> extends ResourceProvider {
 
-    /**
-     * Will be called before any call to #create.
-     * 
-     * @param workspace
-     */
-    void init( DeegreeWorkspace workspace );
+	/**
+	 * Will be called before any call to #create.
+	 * @param workspace
+	 */
+	void init(DeegreeWorkspace workspace);
 
-    /**
-     * @param configUrl
-     * @return a new resource created from the configuration url, never <code>null</code>
-     */
-    T create( URL configUrl )
-                            throws ResourceInitException;
+	/**
+	 * @param configUrl
+	 * @return a new resource created from the configuration url, never <code>null</code>
+	 */
+	T create(URL configUrl) throws ResourceInitException;
 
-    /**
-     * @return dependencies as resource manager classes, never null
-     */
-    Class<? extends ResourceManager>[] getDependencies();
+	/**
+	 * @return dependencies as resource manager classes, never null
+	 */
+	Class<? extends ResourceManager>[] getDependencies();
+
 }

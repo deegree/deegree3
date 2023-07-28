@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -40,64 +39,53 @@ import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.geometry.primitive.segments.CurveSegment;
 
 /**
- * Enables the inspection of {@link Geometry} objects created in a {@link GeometryFactory}.
+ * Enables the inspection of {@link Geometry} objects created in a
+ * {@link GeometryFactory}.
  * <p>
- * Implementations can perform such tasks as topological validation or repairing of defects.
+ * Implementations can perform such tasks as topological validation or repairing of
+ * defects.
  * </p>
- * 
+ *
  * @see GeometryFactory
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface GeometryInspector {
 
-    /**
-     * Invokes the inspection of the given {@link Geometry}.
-     * 
-     * @param geom
-     *            geometry to be inspected, never <code>null</code>
-     * @return inspected geometry, may be a different (repaired) instance, but must have exactly the same subinterface
-     * @throws GeometryInspectionException
-     *             if the inspector rejects the {@link Geometry}
-     */
-    public Geometry inspect( Geometry geom )
-                            throws GeometryInspectionException;
+	/**
+	 * Invokes the inspection of the given {@link Geometry}.
+	 * @param geom geometry to be inspected, never <code>null</code>
+	 * @return inspected geometry, may be a different (repaired) instance, but must have
+	 * exactly the same subinterface
+	 * @throws GeometryInspectionException if the inspector rejects the {@link Geometry}
+	 */
+	public Geometry inspect(Geometry geom) throws GeometryInspectionException;
 
-    /**
-     * Invokes the inspection of the given {@link CurveSegment}.
-     * 
-     * @param segment
-     *            segment to be inspected, never <code>null</code>
-     * @return inspected segment, may be a different (repaired) instance, but must be the exact same subinterface
-     * @throws GeometryInspectionException
-     *             if the inspector rejects the {@link CurveSegment}
-     */
-    public CurveSegment inspect( CurveSegment segment )
-                            throws GeometryInspectionException;
+	/**
+	 * Invokes the inspection of the given {@link CurveSegment}.
+	 * @param segment segment to be inspected, never <code>null</code>
+	 * @return inspected segment, may be a different (repaired) instance, but must be the
+	 * exact same subinterface
+	 * @throws GeometryInspectionException if the inspector rejects the
+	 * {@link CurveSegment}
+	 */
+	public CurveSegment inspect(CurveSegment segment) throws GeometryInspectionException;
 
-    /**
-     * Invokes the inspection of the given {@link SurfacePatch}.
-     * 
-     * @param patch
-     *            patch to be inspected, never <code>null</code>
-     * @return inspected patch, may be a different (repaired) instance, but must be the exact same subinterface
-     * @throws GeometryInspectionException
-     *             if the inspector rejects the {@link SurfacePatch}
-     */
-    public SurfacePatch inspect( SurfacePatch patch )
-                            throws GeometryInspectionException;
+	/**
+	 * Invokes the inspection of the given {@link SurfacePatch}.
+	 * @param patch patch to be inspected, never <code>null</code>
+	 * @return inspected patch, may be a different (repaired) instance, but must be the
+	 * exact same subinterface
+	 * @throws GeometryInspectionException if the inspector rejects the
+	 * {@link SurfacePatch}
+	 */
+	public SurfacePatch inspect(SurfacePatch patch) throws GeometryInspectionException;
 
-    /**
-     * Invokes the inspection of the given {@link Points}.
-     * 
-     * @param points
-     *            points to be inspected, never <code>null</code>
-     * @return inspected patch, may be a different (repaired) instance
-     * @throws GeometryInspectionException
-     *             if the inspector rejects the {@link Points}
-     */
-    public Points inspect( Points points );
+	/**
+	 * Invokes the inspection of the given {@link Points}.
+	 * @param points points to be inspected, never <code>null</code>
+	 * @return inspected patch, may be a different (repaired) instance
+	 * @throws GeometryInspectionException if the inspector rejects the {@link Points}
+	 */
+	public Points inspect(Points points);
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -56,36 +55,34 @@ import org.deegree.workspace.standard.DefaultWorkspace;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 public class ShapeFeatureStoreMetadata extends AbstractResourceMetadata<FeatureStore> {
 
-    public ShapeFeatureStoreMetadata( Workspace workspace, ResourceLocation<FeatureStore> location,
-                                      AbstractResourceProvider<FeatureStore> provider ) {
-        super( workspace, location, provider );
-    }
+	public ShapeFeatureStoreMetadata(Workspace workspace, ResourceLocation<FeatureStore> location,
+			AbstractResourceProvider<FeatureStore> provider) {
+		super(workspace, location, provider);
+	}
 
-    @Override
-    public ResourceBuilder<FeatureStore> prepare() {
-        try {
-            ShapeFeatureStoreConfig config = (ShapeFeatureStoreConfig) JAXBUtils.unmarshall( ShapeFeatureStoreProvider.CONFIG_JAXB_PACKAGE,
-                                                                                             provider.getSchema(),
-                                                                                             location.getAsStream(),
-                                                                                             workspace );
-            return new ShapeFeatureStoreBuilder( config, location, this );
-        } catch ( Exception e ) {
-            throw new ResourceInitException( e.getLocalizedMessage(), e );
-        }
-    }
+	@Override
+	public ResourceBuilder<FeatureStore> prepare() {
+		try {
+			ShapeFeatureStoreConfig config = (ShapeFeatureStoreConfig) JAXBUtils.unmarshall(
+					ShapeFeatureStoreProvider.CONFIG_JAXB_PACKAGE, provider.getSchema(), location.getAsStream(),
+					workspace);
+			return new ShapeFeatureStoreBuilder(config, location, this);
+		}
+		catch (Exception e) {
+			throw new ResourceInitException(e.getLocalizedMessage(), e);
+		}
+	}
 
-    public static void main( String[] args ) {
-        Workspace ws = new DefaultWorkspace(new File("/home/stranger/.deegree/deegree-workspace-utah-3.2-pre9-20120717.234406-9"));
-        ws.initAll();
-        ws.destroy();
-    }
-    
+	public static void main(String[] args) {
+		Workspace ws = new DefaultWorkspace(
+				new File("/home/stranger/.deegree/deegree-workspace-utah-3.2-pre9-20120717.234406-9"));
+		ws.initAll();
+		ws.destroy();
+	}
+
 }

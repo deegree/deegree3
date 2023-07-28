@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -43,51 +42,41 @@ import org.deegree.commons.utils.io.StreamBufferStore;
 
 /**
  * Performs HTTP requests against remote OWS.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface OwsHttpClient {
 
-    /**
-     * Performs an HTTP-GET request to the specified service endpoint.
-     * <p>
-     * NOTE: The caller <b>must</b> call {@link OwsHttpResponseImpl#close()} on the returned object eventually,
-     * otherwise the HTTP connection will not be freed.
-     * </p>
-     * 
-     * @param endPoint
-     *            service endpoint to send to request to, must not be <code>null</code>
-     * @param params
-     *            KVP parameters, may be <code>null</code>
-     * @param headers
-     *            HTTP headers, may be <code>null</code>
-     * @return service response, never <code>null</code>
-     * @throws IOException
-     */
-    OwsHttpResponse doGet( URL endPoint, Map<String, String> params, Map<String, String> headers )
-                            throws IOException;
+	/**
+	 * Performs an HTTP-GET request to the specified service endpoint.
+	 * <p>
+	 * NOTE: The caller <b>must</b> call {@link OwsHttpResponseImpl#close()} on the
+	 * returned object eventually, otherwise the HTTP connection will not be freed.
+	 * </p>
+	 * @param endPoint service endpoint to send to request to, must not be
+	 * <code>null</code>
+	 * @param params KVP parameters, may be <code>null</code>
+	 * @param headers HTTP headers, may be <code>null</code>
+	 * @return service response, never <code>null</code>
+	 * @throws IOException
+	 */
+	OwsHttpResponse doGet(URL endPoint, Map<String, String> params, Map<String, String> headers) throws IOException;
 
-    /**
-     * Performs an HTTP-POST request to the specified service endpoint.
-     * <p>
-     * NOTE: The caller <b>must</b> call {@link OwsHttpResponseImpl#close()} on the returned object eventually,
-     * otherwise the HTTP connection will not be freed.
-     * </p>
-     * 
-     * @param endPoint
-     *            service endpoint to send to request to, must not be <code>null</code>
-     * @param contentType
-     *            content type, may be <code>null</code>
-     * @param body
-     *            POST body, may be <code>null</code>
-     * @param headers
-     *            HTTP headers, may be <code>null</code>
-     * @return service response, never <code>null</code>
-     * @throws IOException
-     */
-    OwsHttpResponse doPost( URL endPoint, String contentType, StreamBufferStore body, Map<String, String> headers )
-                            throws IOException;
+	/**
+	 * Performs an HTTP-POST request to the specified service endpoint.
+	 * <p>
+	 * NOTE: The caller <b>must</b> call {@link OwsHttpResponseImpl#close()} on the
+	 * returned object eventually, otherwise the HTTP connection will not be freed.
+	 * </p>
+	 * @param endPoint service endpoint to send to request to, must not be
+	 * <code>null</code>
+	 * @param contentType content type, may be <code>null</code>
+	 * @param body POST body, may be <code>null</code>
+	 * @param headers HTTP headers, may be <code>null</code>
+	 * @return service response, never <code>null</code>
+	 * @throws IOException
+	 */
+	OwsHttpResponse doPost(URL endPoint, String contentType, StreamBufferStore body, Map<String, String> headers)
+			throws IOException;
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -44,34 +43,30 @@ import org.deegree.commons.tom.ows.Version;
 
 /**
  * <code>WMTSConstants</code>
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 
 public class WMTSConstants {
 
-    /** Namespace for elements from WMTS specification 1.0.0 */
-    public static final String WMTS_100_NS = "http://www.opengis.net/wmts/1.0";
+	/** Namespace for elements from WMTS specification 1.0.0 */
+	public static final String WMTS_100_NS = "http://www.opengis.net/wmts/1.0";
 
-    /** Common namespace prefix for elements from WMTS specification */
-    public static final String WMTS_PREFIX = "wmts";
+	/** Common namespace prefix for elements from WMTS specification */
+	public static final String WMTS_PREFIX = "wmts";
 
-    /** WMTS protocol version 1.0.0 */
-    public static final Version VERSION_100 = Version.parseVersion( "1.0.0" );
-    
-    /**
-     * <code>WMTSRequestType</code>
-     * 
-     * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
-     * @author last edited by: $Author: mschneider $
-     * 
-     * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
-     */
-    public static enum WMTSRequestType {
-        GetCapabilities, GetTile, GetFeatureInfo
-    }
+	/** WMTS protocol version 1.0.0 */
+	public static final Version VERSION_100 = Version.parseVersion("1.0.0");
+
+	/**
+	 * <code>WMTSRequestType</code>
+	 *
+	 * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
+	 */
+	public static enum WMTSRequestType {
+
+		GetCapabilities, GetTile, GetFeatureInfo
+
+	}
 
 }

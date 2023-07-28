@@ -57,109 +57,106 @@ import org.deegree.workspace.Workspace;
 
 public class HatchingDistance implements FunctionProvider {
 
-    private static final String NAME = "HatchingDistance";
+	private static final String NAME = "HatchingDistance";
 
-    private static final List<ParameterType> INPUTS = new ArrayList<ParameterType>( 2 );
+	private static final List<ParameterType> INPUTS = new ArrayList<ParameterType>(2);
 
-    static {
-        INPUTS.add( DOUBLE );
-        INPUTS.add( DOUBLE );
-    }
+	static {
+		INPUTS.add(DOUBLE);
+		INPUTS.add(DOUBLE);
+	}
 
-    static void checkTwoArguments( String name, TypedObjectNode[] vals1, TypedObjectNode[] vals2 )
-                            throws
-                            FilterEvaluationException {
-        if ( vals1.length == 0 || vals2.length == 0 ) {
-            String msg = "The " + name + " function expects two arguments, but ";
-            if ( vals1.length == 0 && vals2.length == 0 ) {
-                msg += "both arguments were missing.";
-            } else {
-                msg += "the ";
-                msg += vals1.length == 0 ? "first" : "second";
-                msg += " argument was missing.";
-            }
-            throw new FilterEvaluationException( msg );
-        }
-    }
+	static void checkTwoArguments(String name, TypedObjectNode[] vals1, TypedObjectNode[] vals2)
+			throws FilterEvaluationException {
+		if (vals1.length == 0 || vals2.length == 0) {
+			String msg = "The " + name + " function expects two arguments, but ";
+			if (vals1.length == 0 && vals2.length == 0) {
+				msg += "both arguments were missing.";
+			}
+			else {
+				msg += "the ";
+				msg += vals1.length == 0 ? "first" : "second";
+				msg += " argument was missing.";
+			}
+			throw new FilterEvaluationException(msg);
+		}
+	}
 
-    private static String extractAsText( TypedObjectNode tom ) {
-        PrimitiveValue pv = null;
-        if ( tom instanceof PrimitiveValue ) {
-            pv = (PrimitiveValue) tom;
-        } else if ( tom instanceof SimpleProperty ) {
-            pv = ( (SimpleProperty) tom ).getValue();
-        }
-        if ( pv != null ) {
-            return pv.getAsText();
-        }
-        return tom.toString();
-    }
+	private static String extractAsText(TypedObjectNode tom) {
+		PrimitiveValue pv = null;
+		if (tom instanceof PrimitiveValue) {
+			pv = (PrimitiveValue) tom;
+		}
+		else if (tom instanceof SimpleProperty) {
+			pv = ((SimpleProperty) tom).getValue();
+		}
+		if (pv != null) {
+			return pv.getAsText();
+		}
+		return tom.toString();
+	}
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
+	@Override
+	public String getName() {
+		return NAME;
+	}
 
-    @Override
-    public List<ParameterType> getArgs() {
-        return INPUTS;
-    }
+	@Override
+	public List<ParameterType> getArgs() {
+		return INPUTS;
+	}
 
-    @Override
-    public ParameterType getReturnType() {
-        return DOUBLE;
-    }
+	@Override
+	public ParameterType getReturnType() {
+		return DOUBLE;
+	}
 
-    @Override
-    public Function create( List<Expression> params ) {
-        return new Function( NAME, params ) {
+	@Override
+	public Function create(List<Expression> params) {
+		return new Function(NAME, params) {
 
-            private <T> Pair<Double, Double> extractValues( Expression first, Expression second, T f,
-                                                            XPathEvaluator<T> xpathEvaluator )
-                                    throws
-                                    FilterEvaluationException {
-                TypedObjectNode[] vals1 = first.evaluate( f, xpathEvaluator );
-                TypedObjectNode[] vals2 = second.evaluate( f, xpathEvaluator );
+			private <T> Pair<Double, Double> extractValues(Expression first, Expression second, T f,
+					XPathEvaluator<T> xpathEvaluator) throws FilterEvaluationException {
+				TypedObjectNode[] vals1 = first.evaluate(f, xpathEvaluator);
+				TypedObjectNode[] vals2 = second.evaluate(f, xpathEvaluator);
 
-                checkTwoArguments( NAME, vals1, vals2 );
+				checkTwoArguments(NAME, vals1, vals2);
 
-                return new Pair<>( Double.valueOf( extractAsText( vals1[0] ) ),
-                                   Double.valueOf( extractAsText( vals2[0] ) ) );
-            }
+				return new Pair<>(Double.valueOf(extractAsText(vals1[0])), Double.valueOf(extractAsText(vals2[0])));
+			}
 
-            @Override
-            public <T> TypedObjectNode[] evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
-                                    throws
-                                    FilterEvaluationException {
-                Pair<Double, Double> p = extractValues( getParams()[0], getParams()[1], obj, xpathEvaluator );
-                double angle = p.getFirst();
-                double distance;
-                while ( angle < 0.0 )
-                    angle += 90.0d;
-                while ( angle >= 90.0 )
-                    angle -= 90.0d;
+			@Override
+			public <T> TypedObjectNode[] evaluate(T obj, XPathEvaluator<T> xpathEvaluator)
+					throws FilterEvaluationException {
+				Pair<Double, Double> p = extractValues(getParams()[0], getParams()[1], obj, xpathEvaluator);
+				double angle = p.getFirst();
+				double distance;
+				while (angle < 0.0)
+					angle += 90.0d;
+				while (angle >= 90.0)
+					angle -= 90.0d;
 
-                if ( isZero( angle ) ) {
-                    distance = p.getSecond();
-                } else {
-                    double ak = p.getSecond() / Math.sin( Math.toRadians( angle ) );
-                    distance = ak / Math.cos( Math.toRadians( angle ) );
-                }
+				if (isZero(angle)) {
+					distance = p.getSecond();
+				}
+				else {
+					double ak = p.getSecond() / Math.sin(Math.toRadians(angle));
+					distance = ak / Math.cos(Math.toRadians(angle));
+				}
 
-                return new TypedObjectNode[] { new PrimitiveValue( Double.valueOf( distance ) ) };
-            }
-        };
-    }
+				return new TypedObjectNode[] { new PrimitiveValue(Double.valueOf(distance)) };
+			}
+		};
+	}
 
-    @Override
-    public void init( Workspace ws )
-                            throws
-                            ResourceInitException {
-        // nothing to do
-    }
+	@Override
+	public void init(Workspace ws) throws ResourceInitException {
+		// nothing to do
+	}
 
-    @Override
-    public void destroy() {
-        // nothing to do
-    }
+	@Override
+	public void destroy() {
+		// nothing to do
+	}
+
 }

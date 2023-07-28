@@ -2,7 +2,7 @@
   xmlns="http://www.deegree.org/services/wfs"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/services/wfs
-  http://schemas.deegree.org/3.5/services/wfs/wfs_configuration.xsd">
+  https://schemas.deegree.org/core/3.5/services/wfs/wfs_configuration.xsd">
   
   <SupportedVersions>
     <Version>2.0.0</Version>

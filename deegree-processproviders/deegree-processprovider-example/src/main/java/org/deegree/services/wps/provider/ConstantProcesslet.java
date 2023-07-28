@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -44,41 +43,39 @@ import org.deegree.services.wps.output.LiteralOutput;
 
 /**
  * Parametrizable {@link Processlet} used by the {@link ExampleProcessProvider}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 class ConstantProcesslet implements Processlet {
 
-    private String returnValue;
+	private String returnValue;
 
-    /**
-     * Creates a new {@link ConstantProcesslet} instance that will always return the given value in the
-     * {@link #process(ProcessletInputs, ProcessletOutputs, ProcessletExecutionInfo)} method.
-     * 
-     * @param returnValue
-     *            value to be returned by the execution
-     */
-    ConstantProcesslet( String returnValue ) {
-        this.returnValue = returnValue;
-    }
+	/**
+	 * Creates a new {@link ConstantProcesslet} instance that will always return the given
+	 * value in the
+	 * {@link #process(ProcessletInputs, ProcessletOutputs, ProcessletExecutionInfo)}
+	 * method.
+	 * @param returnValue value to be returned by the execution
+	 */
+	ConstantProcesslet(String returnValue) {
+		this.returnValue = returnValue;
+	}
 
-    @Override
-    public void destroy() {
-        // nothing to do
-    }
+	@Override
+	public void destroy() {
+		// nothing to do
+	}
 
-    @Override
-    public void init() {
-        // nothing to do
-    }
+	@Override
+	public void init() {
+		// nothing to do
+	}
 
-    @Override
-    public void process( ProcessletInputs in, ProcessletOutputs out, ProcessletExecutionInfo info )
-                            throws ProcessletException {
-        LiteralOutput literalOutput = (LiteralOutput) out.getParameter( "LiteralOutput" );
-        literalOutput.setValue( returnValue );
-    }
+	@Override
+	public void process(ProcessletInputs in, ProcessletOutputs out, ProcessletExecutionInfo info)
+			throws ProcessletException {
+		LiteralOutput literalOutput = (LiteralOutput) out.getParameter("LiteralOutput");
+		literalOutput.setValue(returnValue);
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -47,43 +46,38 @@ import org.deegree.geometry.primitive.patches.PolygonPatch;
  * The <code></code> class TODO add class documentation here.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- *
- * @version $Revision$, $Date$
  */
 public class PolygonReference extends SurfaceReference<Polygon> implements Polygon {
 
-    /**
-     * Creates a new {@link PolygonReference} instance.
-     * 
-     * @param resolver
-     *            used for resolving the reference, must not be <code>null</code>
-     * @param uri
-     *            the geometry's uri, must not be <code>null</code>
-     * @param baseURL
-     *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
-     */
-    public PolygonReference( GMLReferenceResolver resolver, String uri, String baseURL ) {
-        super( resolver, uri, baseURL );
-    }
+	/**
+	 * Creates a new {@link PolygonReference} instance.
+	 * @param resolver used for resolving the reference, must not be <code>null</code>
+	 * @param uri the geometry's uri, must not be <code>null</code>
+	 * @param baseURL base URL for resolving the uri, may be <code>null</code> (no
+	 * resolving of relative URLs)
+	 */
+	public PolygonReference(GMLReferenceResolver resolver, String uri, String baseURL) {
+		super(resolver, uri, baseURL);
+	}
 
-    @Override
-    public SurfaceType getSurfaceType() {
-        return SurfaceType.Polygon;
-    }
+	@Override
+	public SurfaceType getSurfaceType() {
+		return SurfaceType.Polygon;
+	}
 
-    @Override
-    public Ring getExteriorRing() {
-        return getReferencedObject().getExteriorRing();
-    }
+	@Override
+	public Ring getExteriorRing() {
+		return getReferencedObject().getExteriorRing();
+	}
 
-    @Override
-    public List<Ring> getInteriorRings() {
-        return getReferencedObject().getInteriorRings();
-    }
-    
-    @Override
-    public List<PolygonPatch> getPatches() {
-        return getReferencedObject().getPatches();
-    }
+	@Override
+	public List<Ring> getInteriorRings() {
+		return getReferencedObject().getInteriorRings();
+	}
+
+	@Override
+	public List<PolygonPatch> getPatches() {
+		return getReferencedObject().getPatches();
+	}
+
 }

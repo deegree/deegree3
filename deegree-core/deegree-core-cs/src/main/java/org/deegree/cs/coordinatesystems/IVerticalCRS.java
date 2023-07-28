@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -40,22 +39,19 @@ import org.deegree.cs.components.IVerticalDatum;
 
 /**
  * Interface describing a VerticalCRS
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
-public interface IVerticalCRS extends ICRS{
+public interface IVerticalCRS extends ICRS {
 
-    /**
-     * @return the vertical datum of this crs
-     */
-    IVerticalDatum getVerticalDatum();
+	/**
+	 * @return the vertical datum of this crs
+	 */
+	IVerticalDatum getVerticalDatum();
 
-    /**
-     * @return the axis of this vertical crs.
-     */
-    IAxis getVerticalAxis();
+	/**
+	 * @return the axis of this vertical crs.
+	 */
+	IAxis getVerticalAxis();
 
 }

@@ -45,42 +45,42 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Can be used to cache resource builders while operating on a workspace. Usually used by the workspace internally.
- * 
+ * Can be used to cache resource builders while operating on a workspace. Usually used by
+ * the workspace internally.
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class PreparedResources {
 
-    private Workspace workspace;
+	private Workspace workspace;
 
-    private Map<ResourceMetadata<? extends Resource>, ResourceBuilder<? extends Resource>> map;
+	private Map<ResourceMetadata<? extends Resource>, ResourceBuilder<? extends Resource>> map;
 
-    public PreparedResources( Workspace workspace ) {
-        this.workspace = workspace;
-        map = new HashMap<ResourceMetadata<?>, ResourceBuilder<?>>();
-    }
+	public PreparedResources(Workspace workspace) {
+		this.workspace = workspace;
+		map = new HashMap<ResourceMetadata<?>, ResourceBuilder<?>>();
+	}
 
-    public <T extends Resource> ResourceBuilder<T> getBuilder( ResourceIdentifier<T> id ) {
-        ResourceBuilder<T> builder = (ResourceBuilder<T>) map.get( workspace.getResourceMetadata( id.getProvider(),
-                                                                                                  id.getId() ) );
-        if ( builder == null ) {
-            builder = workspace.prepare( id );
-        }
-        return builder;
-    }
+	public <T extends Resource> ResourceBuilder<T> getBuilder(ResourceIdentifier<T> id) {
+		ResourceBuilder<T> builder = (ResourceBuilder<T>) map
+			.get(workspace.getResourceMetadata(id.getProvider(), id.getId()));
+		if (builder == null) {
+			builder = workspace.prepare(id);
+		}
+		return builder;
+	}
 
-    public <T extends Resource> void addBuilder( ResourceIdentifier<T> id, ResourceBuilder<T> builder ) {
-        map.put( workspace.getResourceMetadata( id.getProvider(), id.getId() ), builder );
-    }
+	public <T extends Resource> void addBuilder(ResourceIdentifier<T> id, ResourceBuilder<T> builder) {
+		map.put(workspace.getResourceMetadata(id.getProvider(), id.getId()), builder);
+	}
 
-    public Set<ResourceMetadata<? extends Resource>> getMetadata() {
-        return map.keySet();
-    }
+	public Set<ResourceMetadata<? extends Resource>> getMetadata() {
+		return map.keySet();
+	}
 
-    public boolean hasBuilder( ResourceMetadata<? extends Resource> md ) {
-        return map.containsKey( md );
-    }
+	public boolean hasBuilder(ResourceMetadata<? extends Resource> md) {
+		return map.containsKey(md);
+	}
 
 }

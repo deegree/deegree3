@@ -3,33 +3,33 @@
   xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0.0"
   xsi:schemaLocation="http://www.opengis.net/wmts/1.0 http://schemas.opengis.net/wmts/1.0/wmtsGetCapabilities_response.xsd">
   <ows:ServiceIdentification>
-    <ows:Title>deegree 3 Utah Demo</ows:Title>
-    <ows:Abstract>WMS and WFS demonstration with Utah data</ows:Abstract>
+    <ows:Title>deegree WMTS capabilities</ows:Title>
+    <ows:Abstract>An example template for the deegree WMTS</ows:Abstract>
     <ows:ServiceType>WMTS</ows:ServiceType>
     <ows:ServiceTypeVersion>1.0.0</ows:ServiceTypeVersion>
   </ows:ServiceIdentification>
   <ows:ServiceProvider>
-    <ows:ProviderName>lat/lon GmbH</ows:ProviderName>
-    <ows:ProviderSite xlink:href="http://www.lat-lon.de" />
+    <ows:ProviderName>deegree</ows:ProviderName>
+    <ows:ProviderSite xlink:href="https://www.deegree.org/" />
     <ows:ServiceContact>
-      <ows:IndividualName>Andreas Schmitz</ows:IndividualName>
-      <ows:PositionName>Software developer</ows:PositionName>
+      <ows:IndividualName>Gerhard Mercator</ows:IndividualName>
+      <ows:PositionName>Geographer</ows:PositionName>
       <ows:ContactInfo>
         <ows:Phone>
-          <ows:Voice>0228/18496-0</ows:Voice>
-          <ows:Facsimile>0228/18496-29</ows:Facsimile>
+          <ows:Voice>0000/000000</ows:Voice>
+          <ows:Facsimile>0000/000000</ows:Facsimile>
         </ows:Phone>
         <ows:Address>
-          <ows:DeliveryPoint>Aennchenstr. 19</ows:DeliveryPoint>
-          <ows:City>Bonn</ows:City>
-          <ows:AdministrativeArea>NRW</ows:AdministrativeArea>
-          <ows:PostalCode>53177</ows:PostalCode>
-          <ows:Country>Germany</ows:Country>
-          <ows:ElectronicMailAddress>info@lat-lon.de</ows:ElectronicMailAddress>
+          <ows:DeliveryPoint>9450 SW Gemini Dr #42523</ows:DeliveryPoint>
+          <ows:City>Beaverton</ows:City>
+          <ows:AdministrativeArea>OR</ows:AdministrativeArea>
+          <ows:PostalCode>97008</ows:PostalCode>
+          <ows:Country>USA</ows:Country>
+          <ows:ElectronicMailAddress>info@example.com</ows:ElectronicMailAddress>
         </ows:Address>
         <ows:OnlineResource xlink:href="http://www.deegree.org" />
         <ows:HoursOfService>24x7</ows:HoursOfService>
-        <ows:ContactInstructions>Do not hesitate to call</ows:ContactInstructions>
+        <ows:ContactInstructions>Do not hesitate to email</ows:ContactInstructions>
       </ows:ContactInfo>
       <ows:Role>PointOfContact</ows:Role>
     </ows:ServiceContact>

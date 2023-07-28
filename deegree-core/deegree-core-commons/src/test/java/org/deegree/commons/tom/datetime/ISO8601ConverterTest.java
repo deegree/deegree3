@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -59,143 +58,140 @@ import org.junit.Test;
 
 /**
  * Test cases for {@link ISO8601Converter}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class ISO8601ConverterTest {
 
-    private final static TimeZone GMT = TimeZone.getTimeZone( "GMT" );
+	private final static TimeZone GMT = TimeZone.getTimeZone("GMT");
 
-    @Test
-    public void testDateUtc() {
-        Date dt = parseDate( "2002-05-30Z" );
-        assertFalse( dt.isTimeZoneUnknown() );
-        assertTestDate( dt );
-        assertEquals( 0, dt.getCalendar().get( HOUR_OF_DAY ) );
-        assertEquals( 0, dt.getCalendar().get( MINUTE ) );
-        assertEquals( 0, dt.getCalendar().get( SECOND ) );
-        assertEquals( 0, dt.getCalendar().get( MILLISECOND ) );
-        assertEquals( 0, dt.getCalendar().getTimeZone().getRawOffset() );
+	@Test
+	public void testDateUtc() {
+		Date dt = parseDate("2002-05-30Z");
+		assertFalse(dt.isTimeZoneUnknown());
+		assertTestDate(dt);
+		assertEquals(0, dt.getCalendar().get(HOUR_OF_DAY));
+		assertEquals(0, dt.getCalendar().get(MINUTE));
+		assertEquals(0, dt.getCalendar().get(SECOND));
+		assertEquals(0, dt.getCalendar().get(MILLISECOND));
+		assertEquals(0, dt.getCalendar().getTimeZone().getRawOffset());
 
-        assertEquals( 1022716800000L, dt.getTimeInMilliseconds() );
-        assertEquals( 1022716800000L, dt.getDate().getTime() );
+		assertEquals(1022716800000L, dt.getTimeInMilliseconds());
+		assertEquals(1022716800000L, dt.getDate().getTime());
 
-        assertEquals( "2002-05-30Z", formatDate( dt ) );
-        assertEquals( "2002-05-30T00:00:00Z", formatDateTime( dt ) );
-    }
+		assertEquals("2002-05-30Z", formatDate(dt));
+		assertEquals("2002-05-30T00:00:00Z", formatDateTime(dt));
+	}
 
-    @Test
-    public void testDateWithOffset() {
-        Date dt = parseDate( "2002-05-30+01:00" );
-        assertFalse( dt.isTimeZoneUnknown() );
-        assertTestDate( dt );
-        assertEquals( 0, dt.getCalendar().get( HOUR_OF_DAY ) );
-        assertEquals( 0, dt.getCalendar().get( MINUTE ) );
-        assertEquals( 0, dt.getCalendar().get( SECOND ) );
-        assertEquals( 0, dt.getCalendar().get( MILLISECOND ) );
-        assertEquals( 3600000, dt.getCalendar().getTimeZone().getRawOffset() );
-        assertEquals( 1022713200000L, dt.getTimeInMilliseconds() );
-        assertEquals( 1022713200000L, dt.getDate().getTime() );
+	@Test
+	public void testDateWithOffset() {
+		Date dt = parseDate("2002-05-30+01:00");
+		assertFalse(dt.isTimeZoneUnknown());
+		assertTestDate(dt);
+		assertEquals(0, dt.getCalendar().get(HOUR_OF_DAY));
+		assertEquals(0, dt.getCalendar().get(MINUTE));
+		assertEquals(0, dt.getCalendar().get(SECOND));
+		assertEquals(0, dt.getCalendar().get(MILLISECOND));
+		assertEquals(3600000, dt.getCalendar().getTimeZone().getRawOffset());
+		assertEquals(1022713200000L, dt.getTimeInMilliseconds());
+		assertEquals(1022713200000L, dt.getDate().getTime());
 
-        assertEquals( "2002-05-30+01:00", formatDate( dt ) );
-        assertEquals( "2002-05-30T00:00:00+01:00", formatDateTime( dt ) );
-        assertEquals( "2002-05-29Z", formatDate( dt.toTimeZone( GMT ) ) );
-    }
+		assertEquals("2002-05-30+01:00", formatDate(dt));
+		assertEquals("2002-05-30T00:00:00+01:00", formatDateTime(dt));
+		assertEquals("2002-05-29Z", formatDate(dt.toTimeZone(GMT)));
+	}
 
-    @Test
-    public void testDateLocalTime() {
-        Date dt = parseDate( "2002-05-30" );
-        assertTrue( dt.isTimeZoneUnknown() );
-        assertTestDate( dt );
-        assertEquals( 0, dt.getCalendar().get( HOUR_OF_DAY ) );
-        assertEquals( 0, dt.getCalendar().get( MINUTE ) );
-        assertEquals( 0, dt.getCalendar().get( SECOND ) );
-        assertEquals( 0, dt.getCalendar().get( MILLISECOND ) );
-        int offset = TimeZone.getDefault().getOffset( dt.getTimeInMilliseconds() );
-        assertEquals( 1022716800000L - offset, dt.getTimeInMilliseconds() );
-        assertEquals( 1022716800000L - offset, dt.getDate().getTime() );
-        assertEquals( "2002-05-30", formatDate( dt ) );
-        assertEquals( "2002-05-30T00:00:00", formatDateTime( dt ) );
-    }
+	@Test
+	public void testDateLocalTime() {
+		Date dt = parseDate("2002-05-30");
+		assertTrue(dt.isTimeZoneUnknown());
+		assertTestDate(dt);
+		assertEquals(0, dt.getCalendar().get(HOUR_OF_DAY));
+		assertEquals(0, dt.getCalendar().get(MINUTE));
+		assertEquals(0, dt.getCalendar().get(SECOND));
+		assertEquals(0, dt.getCalendar().get(MILLISECOND));
+		int offset = TimeZone.getDefault().getOffset(dt.getTimeInMilliseconds());
+		assertEquals(1022716800000L - offset, dt.getTimeInMilliseconds());
+		assertEquals(1022716800000L - offset, dt.getDate().getTime());
+		assertEquals("2002-05-30", formatDate(dt));
+		assertEquals("2002-05-30T00:00:00", formatDateTime(dt));
+	}
 
-    @Test
-    public void testDateTimeUtc() {
-        DateTime dt = parseDateTime( "2002-05-30T09:00:00Z" );
-        assertFalse( dt.isTimeZoneUnknown() );
-        assertTestDate( dt );
-        assertEquals( 9, dt.getCalendar().get( HOUR_OF_DAY ) );
-        assertEquals( 0, dt.getCalendar().get( MINUTE ) );
-        assertEquals( 0, dt.getCalendar().get( SECOND ) );
-        assertEquals( 0, dt.getCalendar().get( MILLISECOND ) );
-        assertEquals( 0, dt.getCalendar().getTimeZone().getRawOffset() );
+	@Test
+	public void testDateTimeUtc() {
+		DateTime dt = parseDateTime("2002-05-30T09:00:00Z");
+		assertFalse(dt.isTimeZoneUnknown());
+		assertTestDate(dt);
+		assertEquals(9, dt.getCalendar().get(HOUR_OF_DAY));
+		assertEquals(0, dt.getCalendar().get(MINUTE));
+		assertEquals(0, dt.getCalendar().get(SECOND));
+		assertEquals(0, dt.getCalendar().get(MILLISECOND));
+		assertEquals(0, dt.getCalendar().getTimeZone().getRawOffset());
 
-        assertEquals( 1022749200000L, dt.getTimeInMilliseconds() );
-        assertEquals( 1022749200000L, dt.getDate().getTime() );
+		assertEquals(1022749200000L, dt.getTimeInMilliseconds());
+		assertEquals(1022749200000L, dt.getDate().getTime());
 
-        assertEquals( "2002-05-30T09:00:00Z", dt.toString() );
-        assertEquals( "2002-05-30T09:00:00Z", formatDateTime( dt ) );
-    }
+		assertEquals("2002-05-30T09:00:00Z", dt.toString());
+		assertEquals("2002-05-30T09:00:00Z", formatDateTime(dt));
+	}
 
-    @Test
-    public void testDateTimeWithOffset() {
-        DateTime dt = parseDateTime( "2002-05-30T09:00:00+01:00" );
-        assertFalse( dt.isTimeZoneUnknown() );
-        assertTestDate( dt );
-        assertEquals( 9, dt.getCalendar().get( HOUR_OF_DAY ) );
-        assertEquals( 0, dt.getCalendar().get( MINUTE ) );
-        assertEquals( 0, dt.getCalendar().get( SECOND ) );
-        assertEquals( 0, dt.getCalendar().get( MILLISECOND ) );
-        assertEquals( 3600000, dt.getCalendar().getTimeZone().getRawOffset() );
-        assertEquals( 1022745600000L, dt.getTimeInMilliseconds() );
-        assertEquals( 1022745600000L, dt.getDate().getTime() );
+	@Test
+	public void testDateTimeWithOffset() {
+		DateTime dt = parseDateTime("2002-05-30T09:00:00+01:00");
+		assertFalse(dt.isTimeZoneUnknown());
+		assertTestDate(dt);
+		assertEquals(9, dt.getCalendar().get(HOUR_OF_DAY));
+		assertEquals(0, dt.getCalendar().get(MINUTE));
+		assertEquals(0, dt.getCalendar().get(SECOND));
+		assertEquals(0, dt.getCalendar().get(MILLISECOND));
+		assertEquals(3600000, dt.getCalendar().getTimeZone().getRawOffset());
+		assertEquals(1022745600000L, dt.getTimeInMilliseconds());
+		assertEquals(1022745600000L, dt.getDate().getTime());
 
-        assertEquals( "2002-05-30T09:00:00+01:00", dt.toString() );
-        assertEquals( "2002-05-30T08:00:00Z", formatDateTime( dt.toTimeZone( GMT ) ) );
-    }
+		assertEquals("2002-05-30T09:00:00+01:00", dt.toString());
+		assertEquals("2002-05-30T08:00:00Z", formatDateTime(dt.toTimeZone(GMT)));
+	}
 
-    @Test
-    public void testDateTimeLocalTime() {
-        DateTime dt = parseDateTime( "2002-05-30T09:00:00" );
-        assertTrue( dt.isTimeZoneUnknown() );
-        assertTestDate( dt );
-        assertEquals( 9, dt.getCalendar().get( HOUR_OF_DAY ) );
-        assertEquals( 0, dt.getCalendar().get( MINUTE ) );
-        assertEquals( 0, dt.getCalendar().get( SECOND ) );
-        assertEquals( 0, dt.getCalendar().get( MILLISECOND ) );
-        int offset = TimeZone.getDefault().getOffset( dt.getTimeInMilliseconds() );
-        assertEquals( 1022749200000L - offset, dt.getTimeInMilliseconds() );
-        assertEquals( 1022749200000L - offset, dt.getDate().getTime() );
-        assertEquals( "2002-05-30T09:00:00", formatDateTime( dt ) );
-    }
+	@Test
+	public void testDateTimeLocalTime() {
+		DateTime dt = parseDateTime("2002-05-30T09:00:00");
+		assertTrue(dt.isTimeZoneUnknown());
+		assertTestDate(dt);
+		assertEquals(9, dt.getCalendar().get(HOUR_OF_DAY));
+		assertEquals(0, dt.getCalendar().get(MINUTE));
+		assertEquals(0, dt.getCalendar().get(SECOND));
+		assertEquals(0, dt.getCalendar().get(MILLISECOND));
+		int offset = TimeZone.getDefault().getOffset(dt.getTimeInMilliseconds());
+		assertEquals(1022749200000L - offset, dt.getTimeInMilliseconds());
+		assertEquals(1022749200000L - offset, dt.getDate().getTime());
+		assertEquals("2002-05-30T09:00:00", formatDateTime(dt));
+	}
 
-    @Test
-    public void testDuration()
-                            throws ParseException {
+	@Test
+	public void testDuration() throws ParseException {
 
-        Duration duration = parseDuration( "P1Y5M5DT3H90M" );
-        assertEquals( 1, duration.getYears() );
-        assertEquals( 5, duration.getMonths() );
-        assertEquals( 5, duration.getDays() );
-        assertEquals( 3, duration.getHours() );
-        assertEquals( 90, duration.getMinutes() );
+		Duration duration = parseDuration("P1Y5M5DT3H90M");
+		assertEquals(1, duration.getYears());
+		assertEquals(5, duration.getMonths());
+		assertEquals(5, duration.getDays());
+		assertEquals(3, duration.getHours());
+		assertEquals(90, duration.getMinutes());
 
-        assertEquals( "P1Y5M5DT3H90M", formatDuration( duration ) );
+		assertEquals("P1Y5M5DT3H90M", formatDuration(duration));
 
-        DateTime dt = parseDateTime( "2002-05-30T09:00:00" );
-        DateTime after = duration.getEnd( dt );
-        assertEquals( "2003-11-04T13:30:00", formatDateTime( after ) );
-        
-        DateTime begin = duration.getBegin( after );
-        assertEquals( "2002-05-30T09:00:00", formatDateTime( begin ) );
-    }
+		DateTime dt = parseDateTime("2002-05-30T09:00:00");
+		DateTime after = duration.getEnd(dt);
+		assertEquals("2003-11-04T13:30:00", formatDateTime(after));
 
-    private static void assertTestDate( Temporal dt ) {
-        assertEquals( 2002, dt.getCalendar().get( YEAR ) );
-        // month is 0-based
-        assertEquals( 4, dt.getCalendar().get( MONTH ) );
-        assertEquals( 30, dt.getCalendar().get( DAY_OF_MONTH ) );
-    }
+		DateTime begin = duration.getBegin(after);
+		assertEquals("2002-05-30T09:00:00", formatDateTime(begin));
+	}
+
+	private static void assertTestDate(Temporal dt) {
+		assertEquals(2002, dt.getCalendar().get(YEAR));
+		// month is 0-based
+		assertEquals(4, dt.getCalendar().get(MONTH));
+		assertEquals(30, dt.getCalendar().get(DAY_OF_MONTH));
+	}
+
 }

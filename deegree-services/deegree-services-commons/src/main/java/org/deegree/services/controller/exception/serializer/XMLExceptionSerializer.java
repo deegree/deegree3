@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -49,62 +48,53 @@ import org.deegree.services.controller.utils.HttpResponseBuffer;
 
 /**
  * The <code>XMLExceptionSerializer</code> class TODO add class documentation here.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$ *
  */
 public abstract class XMLExceptionSerializer implements ExceptionSerializer {
 
-    @Override
-    public void serializeException( HttpResponseBuffer response, OWSException exception )
-                            throws IOException, XMLStreamException {
+	@Override
+	public void serializeException(HttpResponseBuffer response, OWSException exception)
+			throws IOException, XMLStreamException {
 
-        response.reset();
-        response.setCharacterEncoding( "UTF-8" );
-        response.setContentType( "application/vnd.ogc.se_xml" );
-        setExceptionStatusCode( response, exception );
-        setStatusCode( response, exception );
-        serializeExceptionToXML( response.getXMLWriter(), exception );
-    }
+		response.reset();
+		response.setCharacterEncoding("UTF-8");
+		response.setContentType("application/vnd.ogc.se_xml");
+		setExceptionStatusCode(response, exception);
+		setStatusCode(response, exception);
+		serializeExceptionToXML(response.getXMLWriter(), exception);
+	}
 
-    /**
-     * Sets the statusCode to the response.
-     *
-     * @param response
-     * @param exception
-     */
-    public void setExceptionStatusCode( HttpResponseBuffer response, OWSException exception ) {
-        response.setStatus( 200 );
-    }
+	/**
+	 * Sets the statusCode to the response.
+	 * @param response
+	 * @param exception
+	 */
+	public void setExceptionStatusCode(HttpResponseBuffer response, OWSException exception) {
+		response.setStatus(200);
+	}
 
-    /**
-     * Implementations can use the xml writer to serialize the given exception as a specific xml representation.
-     * 
-     * @param writer
-     *            a formatting xml writer, wrapped around an output stream.
-     * @param exception
-     *            to serialize
-     * @throws XMLStreamException
-     *             if an error occurred while serializing the given exception.
-     */
-    public abstract void serializeExceptionToXML( XMLStreamWriter writer, OWSException exception )
-                            throws XMLStreamException;
+	/**
+	 * Implementations can use the xml writer to serialize the given exception as a
+	 * specific xml representation.
+	 * @param writer a formatting xml writer, wrapped around an output stream.
+	 * @param exception to serialize
+	 * @throws XMLStreamException if an error occurred while serializing the given
+	 * exception.
+	 */
+	public abstract void serializeExceptionToXML(XMLStreamWriter writer, OWSException exception)
+			throws XMLStreamException;
 
-    /**
-     * Sets the status code to the response.
-     *
-     * @param exception
-     *            the exception to serialize, never <code>null</code>
-     * @param response
-     *            the response to set the status code for, never <code>null</code>
-     */
-    protected void setStatusCode( HttpResponseBuffer response, OWSException exception ) {
-        if ( NOT_FOUND.equals( exception.getExceptionCode() ) )
-            response.setStatus( SC_NOT_FOUND );
-        else
-            response.setStatus( 200 );
-    }
+	/**
+	 * Sets the status code to the response.
+	 * @param exception the exception to serialize, never <code>null</code>
+	 * @param response the response to set the status code for, never <code>null</code>
+	 */
+	protected void setStatusCode(HttpResponseBuffer response, OWSException exception) {
+		if (NOT_FOUND.equals(exception.getExceptionCode()))
+			response.setStatus(SC_NOT_FOUND);
+		else
+			response.setStatus(200);
+	}
 
 }

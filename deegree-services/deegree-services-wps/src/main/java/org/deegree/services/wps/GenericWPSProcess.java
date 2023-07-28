@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -39,66 +38,67 @@ import org.deegree.process.jaxb.java.ProcessDefinition;
 
 /**
  * Generic {@link WPSProcess} implementation.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class GenericWPSProcess implements WPSProcess {
 
-    private final ProcessDefinition description;
+	private final ProcessDefinition description;
 
-    private final Processlet processlet;
+	private final Processlet processlet;
 
-    private final ExceptionCustomizer exceptionCustomizer;
+	private final ExceptionCustomizer exceptionCustomizer;
 
-    /**
-     * Creates a new {@link GenericWPSProcess} instance.
-     * 
-     * @param description
-     *            description of the process (e.g. parameter types, metadata), must not be <code>null</code>
-     * @param processlet
-     *            process code, must not be <code>null</code>
-     */
-    public GenericWPSProcess( ProcessDefinition description, Processlet processlet ) {
-        this( description, processlet, null );
-    }
+	/**
+	 * Creates a new {@link GenericWPSProcess} instance.
+	 * @param description description of the process (e.g. parameter types, metadata),
+	 * must not be <code>null</code>
+	 * @param processlet process code, must not be <code>null</code>
+	 */
+	public GenericWPSProcess(ProcessDefinition description, Processlet processlet) {
+		this(description, processlet, null);
+	}
 
-    /**
-     * Creates a new {@link GenericWPSProcess} instance with {@link ExceptionCustomizer}.
-     * 
-     * @param description
-     *            description of the process (e.g. parameter types, metadata), must not be <code>null</code>
-     * @param processlet
-     *            process code, must not be <code>null</code>
-     * @param exceptionCustomizer
-     *            exception customizer, can be <code>null</code> (use default exception generation)
-     */
-    public GenericWPSProcess( ProcessDefinition description, Processlet processlet, ExceptionCustomizer exceptionCustomizer ) {
-        this.description = description;
-        this.processlet = processlet;
-        this.exceptionCustomizer = exceptionCustomizer;
-    }
+	/**
+	 * Creates a new {@link GenericWPSProcess} instance with {@link ExceptionCustomizer}.
+	 * @param description description of the process (e.g. parameter types, metadata),
+	 * must not be <code>null</code>
+	 * @param processlet process code, must not be <code>null</code>
+	 * @param exceptionCustomizer exception customizer, can be <code>null</code> (use
+	 * default exception generation)
+	 */
+	public GenericWPSProcess(ProcessDefinition description, Processlet processlet,
+			ExceptionCustomizer exceptionCustomizer) {
+		this.description = description;
+		this.processlet = processlet;
+		this.exceptionCustomizer = exceptionCustomizer;
+	}
 
-    /* (non-Javadoc)
-     * @see org.deegree.services.wps.WPSProcessI#getDescription()
-     */
-    public ProcessDefinition getDescription() {
-        return description;
-    }
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see org.deegree.services.wps.WPSProcessI#getDescription()
+	 */
+	public ProcessDefinition getDescription() {
+		return description;
+	}
 
-    /* (non-Javadoc)
-     * @see org.deegree.services.wps.WPSProcessI#getProcesslet()
-     */
-    public Processlet getProcesslet() {
-        return processlet;
-    }
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see org.deegree.services.wps.WPSProcessI#getProcesslet()
+	 */
+	public Processlet getProcesslet() {
+		return processlet;
+	}
 
-    /* (non-Javadoc)
-     * @see org.deegree.services.wps.WPSProcessI#getExceptionCustomizer()
-     */
-    public ExceptionCustomizer getExceptionCustomizer() {
-        return exceptionCustomizer;
-    }
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see org.deegree.services.wps.WPSProcessI#getExceptionCustomizer()
+	 */
+	public ExceptionCustomizer getExceptionCustomizer() {
+		return exceptionCustomizer;
+	}
+
 }

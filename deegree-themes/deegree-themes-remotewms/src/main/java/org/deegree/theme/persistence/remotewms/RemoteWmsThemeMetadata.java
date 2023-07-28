@@ -45,34 +45,34 @@ import org.deegree.workspace.standard.DefaultResourceIdentifier;
 
 /**
  * Resource metadata implementation for remote WMS themes.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class RemoteWmsThemeMetadata extends AbstractResourceMetadata<Theme> {
 
-    public RemoteWmsThemeMetadata( Workspace workspace, ResourceLocation<Theme> location,
-                                   AbstractResourceProvider<Theme> provider ) {
-        super( workspace, location, provider );
-    }
+	public RemoteWmsThemeMetadata(Workspace workspace, ResourceLocation<Theme> location,
+			AbstractResourceProvider<Theme> provider) {
+		super(workspace, location, provider);
+	}
 
-    @Override
-    public ResourceBuilder<Theme> prepare() {
-        try {
-            RemoteWMSThemes cfg = (RemoteWMSThemes) unmarshall( "org.deegree.theme.persistence.remotewms.jaxb",
-                                                                provider.getSchema(), location.getAsStream(), workspace );
-            String id = cfg.getRemoteWMSId();
+	@Override
+	public ResourceBuilder<Theme> prepare() {
+		try {
+			RemoteWMSThemes cfg = (RemoteWMSThemes) unmarshall("org.deegree.theme.persistence.remotewms.jaxb",
+					provider.getSchema(), location.getAsStream(), workspace);
+			String id = cfg.getRemoteWMSId();
 
-            String lid = cfg.getLayerStoreId();
+			String lid = cfg.getLayerStoreId();
 
-            dependencies.add( new DefaultResourceIdentifier<LayerStore>( LayerStoreProvider.class, lid ) );
-            dependencies.add( new DefaultResourceIdentifier<RemoteOWS>( RemoteOWSProvider.class, id ) );
+			dependencies.add(new DefaultResourceIdentifier<LayerStore>(LayerStoreProvider.class, lid));
+			dependencies.add(new DefaultResourceIdentifier<RemoteOWS>(RemoteOWSProvider.class, id));
 
-            return new RemoteWmsThemeBuilder( this, workspace, cfg );
-        } catch ( Exception e ) {
-            throw new ResourceInitException( "Could not parse remote WMS theme config.", e );
-        }
-    }
+			return new RemoteWmsThemeBuilder(this, workspace, cfg);
+		}
+		catch (Exception e) {
+			throw new ResourceInitException("Could not parse remote WMS theme config.", e);
+		}
+	}
 
 }

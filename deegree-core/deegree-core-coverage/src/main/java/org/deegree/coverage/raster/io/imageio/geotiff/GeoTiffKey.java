@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -36,49 +35,68 @@
 package org.deegree.coverage.raster.io.imageio.geotiff;
 
 /**
- * An interface defining the used geo tiff keys and their allowed values. All constants are in their original geotiff
- * name, and no (opposing java conventions) in upper case.
- * 
+ * An interface defining the used geo tiff keys and their allowed values. All constants
+ * are in their original geotiff name, and no (opposing java conventions) in upper case.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface GeoTiffKey {
 
-    /** ID defining the crs model, http://www.remotesensing.org/geotiff/spec/geotiff6.html#6.3.1.1 */
-    public static final int GTModelTypeGeoKey = 1024;
+	/**
+	 * ID defining the crs model,
+	 * http://www.remotesensing.org/geotiff/spec/geotiff6.html#6.3.1.1
+	 */
+	public static final int GTModelTypeGeoKey = 1024;
 
-    /** ID defining the raster sample type, http://www.remotesensing.org/geotiff/spec/geotiff6.html#6.3.1.2 */
-    public static final int GTRasterTypeGeoKey = 1025;
+	/**
+	 * ID defining the raster sample type,
+	 * http://www.remotesensing.org/geotiff/spec/geotiff6.html#6.3.1.2
+	 */
+	public static final int GTRasterTypeGeoKey = 1025;
 
-    /** ID defining a geographic crs, http://www.remotesensing.org/geotiff/spec/geotiff6.html#6.3.2.1 */
-    public static final int GeographicTypeGeoKey = 2048;
+	/**
+	 * ID defining a geographic crs,
+	 * http://www.remotesensing.org/geotiff/spec/geotiff6.html#6.3.2.1
+	 */
+	public static final int GeographicTypeGeoKey = 2048;
 
-    /** ID defining a projected crs, http://www.remotesensing.org/geotiff/spec/geotiff6.html#6.3.3.1 */
-    public static final int ProjectedCSTypeGeoKey = 3072;
+	/**
+	 * ID defining a projected crs,
+	 * http://www.remotesensing.org/geotiff/spec/geotiff6.html#6.3.3.1
+	 */
+	public static final int ProjectedCSTypeGeoKey = 3072;
 
-    /** http://www.remotesensing.org/geotiff/spec/geotiff6.html#6.3.4.1 */
-    public static final int VerticalCSTypeGeoKey = 4096;
+	/** http://www.remotesensing.org/geotiff/spec/geotiff6.html#6.3.4.1 */
+	public static final int VerticalCSTypeGeoKey = 4096;
 
-    /**
-     * Value defining the raster sample point is center (area),
-     * http://www.remotesensing.org/geotiff/spec/geotiff2.5.html#2.5.2.2
-     */
-    public static final char RasterPixelIsArea = 1;
+	/**
+	 * Value defining the raster sample point is center (area),
+	 * http://www.remotesensing.org/geotiff/spec/geotiff2.5.html#2.5.2.2
+	 */
+	public static final char RasterPixelIsArea = 1;
 
-    /**
-     * Value defining the raster sample point is outer (point),
-     * http://www.remotesensing.org/geotiff/spec/geotiff2.5.html#2.5.2.2
-     */
-    public static final char RasterPixelIsPoint = 2;
+	/**
+	 * Value defining the raster sample point is outer (point),
+	 * http://www.remotesensing.org/geotiff/spec/geotiff2.5.html#2.5.2.2
+	 */
+	public static final char RasterPixelIsPoint = 2;
 
-    /** Value defining the crs to be a projected model, http://www.remotesensing.org/geotiff/spec/geotiff6.html#6.3.1.1 */
-    public static final char ModelTypeProjected = 1;
+	/**
+	 * Value defining the crs to be a projected model,
+	 * http://www.remotesensing.org/geotiff/spec/geotiff6.html#6.3.1.1
+	 */
+	public static final char ModelTypeProjected = 1;
 
-    /** Value defining the crs to be a geographic model, http://www.remotesensing.org/geotiff/spec/geotiff6.html#6.3.1.1 */
-    public static final char ModelTypeGeographic = 2;
+	/**
+	 * Value defining the crs to be a geographic model,
+	 * http://www.remotesensing.org/geotiff/spec/geotiff6.html#6.3.1.1
+	 */
+	public static final char ModelTypeGeographic = 2;
 
-    /** Value defining the crs to be a geocentric model, http://www.remotesensing.org/geotiff/spec/geotiff6.html#6.3.1.1 */
-    public static final char ModelTypeGeocentric = 3;
+	/**
+	 * Value defining the crs to be a geocentric model,
+	 * http://www.remotesensing.org/geotiff/spec/geotiff6.html#6.3.1.1
+	 */
+	public static final char ModelTypeGeocentric = 3;
+
 }

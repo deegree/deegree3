@@ -35,7 +35,6 @@ import org.slf4j.LoggerFactory;
  * GetObservation-response called by a http-post-method.
  * 
  * @author <a href="mailto:neumeister@lat-lon.de">Ulrich Neumeister</a>
- * @author last edited by: $Author$
  * 
  */
 public class HandleGetObservation {

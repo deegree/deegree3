@@ -3,6 +3,7 @@
  * deegree-cli-utility
  * %%
  * Copyright (C) 2016 - 2021 lat/lon GmbH
+ * Copyright (C) 2022 grit graphische Informationstechnik Beratungsgesellschaft mbH
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -24,80 +25,104 @@ package org.deegree.tools.featurestoresql.loader;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.batch.core.StepExecution;
+import javax.xml.namespace.QName;
 
 /**
  * Report summary.
  *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz </a>
+ * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  */
 public class Summary {
 
-    private String commitFailed;
+	private String commitFailed;
 
-    private int numberOfFeatures = 0;
+	private int numberOfFeatures = 0;
 
-    private Set<String> unresolvableReferences = new HashSet<>();
+	private Set<String> unresolvableReferences = new HashSet<>();
 
-    private StepExecution stepExecution;
+	private FeatureStatistics statistics = null;
 
-    /**
-     * @param increaseBy
-     *            integer to add (positive integer or null)
-     */
-    public void increaseNumberOfFeatures( int increaseBy ) {
-        this.numberOfFeatures = this.numberOfFeatures + increaseBy;
-    }
+	/**
+	 * @param increaseBy integer to add (positive integer or null)
+	 */
+	public void increaseNumberOfFeatures(int increaseBy) {
+		this.numberOfFeatures = this.numberOfFeatures + increaseBy;
+	}
 
-    /**
-     * @return the number of features processed (positive integer or null)
-     */
-    public int getNumberOfFeatures() {
-        return numberOfFeatures;
-    }
+	/**
+	 * @param increaseBy integer to add (positive integer or null)
+	 */
+	public void increaseNumberOfFeatures(QName typeName) {
+		if (this.statistics != null) {
+			statistics.increment(typeName);
+		}
+		this.numberOfFeatures++;
+	}
 
-    /**
-     * @param unresolvableReferences
-     *            list of unresolvable references, may be <code>null</code>
-     */
-    public void setUnresolvableReferences( Set<String> unresolvableReferences ) {
-        this.unresolvableReferences = unresolvableReferences;
-    }
+	/**
+	 * @return the number of features processed (positive integer or null)
+	 */
+	public int getNumberOfFeatures() {
+		return numberOfFeatures;
+	}
 
-    /**
-     * @return <code>true</code> if unresolvable references are not empty, <code>false</code> otherwise
-     */
-    public boolean hasUnresolvableReferences() {
-        return unresolvableReferences != null && !unresolvableReferences.isEmpty();
-    }
+	/**
+	 * @param unresolvableReferences list of unresolvable references, may be
+	 * <code>null</code>
+	 */
+	public void setUnresolvableReferences(Set<String> unresolvableReferences) {
+		this.unresolvableReferences = unresolvableReferences;
+	}
 
-    /**
-     * @return list of unresolvable references, may be <code>null</code>
-     */
-    public Set<String> getUnresolvableReferences() {
-        return unresolvableReferences;
-    }
+	/**
+	 * @return <code>true</code> if unresolvable references are not empty,
+	 * <code>false</code> otherwise
+	 */
+	public boolean hasUnresolvableReferences() {
+		return unresolvableReferences != null && !unresolvableReferences.isEmpty();
+	}
 
-    /**
-     * @param commitFailed
-     *            the failure message of the commit
-     */
-    public void setCommitFailed( String commitFailed ) {
-        this.commitFailed = commitFailed;
-    }
+	/**
+	 * @return list of unresolvable references, may be <code>null</code>
+	 */
+	public Set<String> getUnresolvableReferences() {
+		return unresolvableReferences;
+	}
 
-    /**
-     * @return <code>true</code> if the commit failed, <code>false</code> otherwise
-     */
-    public boolean isCommitFailed() {
-        return commitFailed != null;
-    }
+	/**
+	 * @param commitFailed the failure message of the commit
+	 */
+	public void setCommitFailed(String commitFailed) {
+		this.commitFailed = commitFailed;
+	}
 
-    /**
-     * @return the failure message of the commit
-     */
-    public String getCommitFailed() {
-        return this.commitFailed;
-    }
+	/**
+	 * @return <code>true</code> if the commit failed, <code>false</code> otherwise
+	 */
+	public boolean isCommitFailed() {
+		return commitFailed != null;
+	}
+
+	/**
+	 * @return the failure message of the commit
+	 */
+	public String getCommitFailed() {
+		return this.commitFailed;
+	}
+
+	/**
+	 * @return the statistics, may be <code>null</code>
+	 */
+	public FeatureStatistics getStatistics() {
+		return statistics;
+	}
+
+	/**
+	 * @param statistics the statistics to use inside this summary
+	 */
+	public void setStatistics(FeatureStatistics statistics) {
+		this.statistics = statistics;
+	}
 
 }

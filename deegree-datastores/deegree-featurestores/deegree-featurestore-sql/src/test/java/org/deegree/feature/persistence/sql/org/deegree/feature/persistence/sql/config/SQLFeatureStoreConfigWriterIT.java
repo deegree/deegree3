@@ -34,52 +34,51 @@ import static org.xmlunit.matchers.ValidationMatcher.valid;
  */
 public class SQLFeatureStoreConfigWriterIT {
 
-    private static final int MAX_TABLE_NAME_LENGTH_POSTGRES = 63;
+	private static final int MAX_TABLE_NAME_LENGTH_POSTGRES = 63;
 
-    private static final String UNDEFINED_SRID_POSTGRES = "0";
+	private static final String UNDEFINED_SRID_POSTGRES = "0";
 
-    @Test
-    public void testWriteConfig()
-                    throws Exception {
-        URL appSchemaResource = new URL( "http://inspire.ec.europa.eu/schemas/ps/4.0/ProtectedSites.xsd" );
-        List<String> schemaUrls = new ArrayList<String>();
-        AppSchema appSchema = readApplicationSchema( appSchemaResource );
-        MappedAppSchema mappedSchema = mapApplicationSchema( appSchema );
-        String config = writeConfig( mappedSchema, schemaUrls );
+	@Test
+	public void testWriteConfig() throws Exception {
+		URL appSchemaResource = new URL("http://inspire.ec.europa.eu/schemas/ps/4.0/ProtectedSites.xsd");
+		List<String> schemaUrls = new ArrayList<String>();
+		AppSchema appSchema = readApplicationSchema(appSchemaResource);
+		MappedAppSchema mappedSchema = mapApplicationSchema(appSchema);
+		String config = writeConfig(mappedSchema, schemaUrls);
 
-        assertThat( config, valid( Input.fromStream( getClass().getResourceAsStream(
-                        "/META-INF/schemas/datasource/feature/sql/sql.xsd" ) ) ) );
-    }
+		assertThat(config, valid(
+				Input.fromStream(getClass().getResourceAsStream("/META-INF/schemas/datasource/feature/sql/sql.xsd"))));
+	}
 
-    private static AppSchema readApplicationSchema( URL schemaUrl )
-                    throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-        GMLAppSchemaReader decoder = new GMLAppSchemaReader( null, null, schemaUrl.toString() );
-        return decoder.extractAppSchema();
-    }
+	private static AppSchema readApplicationSchema(URL schemaUrl)
+			throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+		GMLAppSchemaReader decoder = new GMLAppSchemaReader(null, null, schemaUrl.toString());
+		return decoder.extractAppSchema();
+	}
 
-    private static String writeConfig( MappedAppSchema mappedSchema, List<String> schemaUrls )
-                    throws XMLStreamException, FactoryConfigurationError {
-        SQLFeatureStoreConfigWriter configWriter = new SQLFeatureStoreConfigWriter( mappedSchema );
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( bos );
-        xmlWriter = new IndentingXMLStreamWriter( xmlWriter );
-        configWriter.writeConfig( xmlWriter, "jdbcId", schemaUrls );
-        xmlWriter.close();
-        return bos.toString();
-    }
+	private static String writeConfig(MappedAppSchema mappedSchema, List<String> schemaUrls)
+			throws XMLStreamException, FactoryConfigurationError {
+		SQLFeatureStoreConfigWriter configWriter = new SQLFeatureStoreConfigWriter(mappedSchema);
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter(bos);
+		xmlWriter = new IndentingXMLStreamWriter(xmlWriter);
+		configWriter.writeConfig(xmlWriter, "jdbcId", schemaUrls);
+		xmlWriter.close();
+		return bos.toString();
+	}
 
-    private static MappedAppSchema mapApplicationSchema( AppSchema appSchema ) {
-        ICRS crs = CRSManager.getCRSRef( "EPSG:4326" );
-        GeometryStorageParams storageParams = new GeometryStorageParams( crs, UNDEFINED_SRID_POSTGRES, DIM_2 );
-        boolean createBlobMapping = false;
-        boolean createRelationalMapping = true;
-        AppSchemaMapper mapper = new AppSchemaMapper( appSchema, createBlobMapping, createRelationalMapping,
-                                                      storageParams, MAX_TABLE_NAME_LENGTH_POSTGRES, false, true );
-        return mapper.getMappedSchema();
-    }
+	private static MappedAppSchema mapApplicationSchema(AppSchema appSchema) {
+		ICRS crs = CRSManager.getCRSRef("EPSG:4326");
+		GeometryStorageParams storageParams = new GeometryStorageParams(crs, UNDEFINED_SRID_POSTGRES, DIM_2);
+		boolean createBlobMapping = false;
+		boolean createRelationalMapping = true;
+		AppSchemaMapper mapper = new AppSchemaMapper(appSchema, createBlobMapping, createRelationalMapping,
+				storageParams, MAX_TABLE_NAME_LENGTH_POSTGRES, false, true);
+		return mapper.getMappedSchema();
+	}
 
-    private Map<String, String> nsContext() {
-        return Collections.singletonMap( "fsc", "http://www.deegree.org/datasource/feature/sql" );
-    }
+	private Map<String, String> nsContext() {
+		return Collections.singletonMap("fsc", "http://www.deegree.org/datasource/feature/sql");
+	}
 
 }

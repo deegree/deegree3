@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -55,199 +54,199 @@ import org.deegree.services.wpvs.io.serializer.ObjectSerializer;
 
 /**
  * The <code>IndexFile</code> class TODO add class documentation here.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class IndexFile {
 
-    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( IndexFile.class );
+	private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(IndexFile.class);
 
-    private static final byte POSITION_SIZE = Long.SIZE / 8;
+	private static final byte POSITION_SIZE = Long.SIZE / 8;
 
-    private Map<String, PositionBlob> cache;
+	private Map<String, PositionBlob> cache;
 
-    private Map<String, PositionBlob> addedData = new HashMap<String, PositionBlob>();
+	private Map<String, PositionBlob> addedData = new HashMap<String, PositionBlob>();
 
-    private LinkedList<Long> freePositions = new LinkedList<Long>();
+	private LinkedList<Long> freePositions = new LinkedList<Long>();
 
-    private int maxIDSize = 0;
+	private int maxIDSize = 0;
 
-    private boolean newFile = false;
+	private boolean newFile = false;
 
-    private long nextFilePosition = LONG_SIZE;
+	private long nextFilePosition = LONG_SIZE;
 
-    private File file;
+	private File file;
 
-    /**
-     * @param file
-     * @throws IOException
-     */
-    IndexFile( File file ) throws IOException {
-        cache = new HashMap<String, PositionBlob>();
-        this.file = file;
-        newFile = ( file.length() == 0 ) || !file.exists();
-        if ( !newFile ) {
-            fillRegistry();
-        }
+	/**
+	 * @param file
+	 * @throws IOException
+	 */
+	IndexFile(File file) throws IOException {
+		cache = new HashMap<String, PositionBlob>();
+		this.file = file;
+		newFile = (file.length() == 0) || !file.exists();
+		if (!newFile) {
+			fillRegistry();
+		}
 
-    }
+	}
 
-    /**
-     * @throws IOException
-     * 
-     */
-    private void fillRegistry()
-                            throws IOException {
-        RandomAccessFile f = new RandomAccessFile( file, "r" );
-        FileChannel channel = f.getChannel();
-        channel.position( 0 );
-        ByteBuffer fileBuffer = ByteBuffer.allocate( (int) channel.size() );
-        channel.read( fileBuffer );
-        channel.close();
+	/**
+	 * @throws IOException
+	 *
+	 */
+	private void fillRegistry() throws IOException {
+		RandomAccessFile f = new RandomAccessFile(file, "r");
+		FileChannel channel = f.getChannel();
+		channel.position(0);
+		ByteBuffer fileBuffer = ByteBuffer.allocate((int) channel.size());
+		channel.read(fileBuffer);
+		channel.close();
 
-        fileBuffer.rewind();
-        nextFilePosition = initialWritePosition( fileBuffer );
-        long currentPosition = fileBuffer.position();
-        int capacity = fileBuffer.capacity();
-        while ( currentPosition < capacity ) {
-            String fileID = ObjectSerializer.readString( fileBuffer );
-            long dataPosition = fileBuffer.getLong();
-            cache.put( fileID, new PositionBlob( fileID, dataPosition, currentPosition ) );
-            currentPosition = fileBuffer.position();
+		fileBuffer.rewind();
+		nextFilePosition = initialWritePosition(fileBuffer);
+		long currentPosition = fileBuffer.position();
+		int capacity = fileBuffer.capacity();
+		while (currentPosition < capacity) {
+			String fileID = ObjectSerializer.readString(fileBuffer);
+			long dataPosition = fileBuffer.getLong();
+			cache.put(fileID, new PositionBlob(fileID, dataPosition, currentPosition));
+			currentPosition = fileBuffer.position();
 
-        }
-        f.close();
-    }
+		}
+		f.close();
+	}
 
-    private long initialWritePosition( ByteBuffer fileBuffer ) {
-        return fileBuffer.getLong();
-    }
+	private long initialWritePosition(ByteBuffer fileBuffer) {
+		return fileBuffer.getLong();
+	}
 
-    /**
-     * @return all positions from the currently available data objects.
-     */
-    public List<Long> getPositions() {
-        List<Long> result = new ArrayList<Long>( cache.size() );
-        for ( PositionBlob bp : cache.values() ) {
-            result.add( bp.dataPosition );
-        }
-        for ( PositionBlob bp : addedData.values() ) {
-            result.add( bp.dataPosition );
-        }
-        Collections.sort( result );
-        return result;
-    }
+	/**
+	 * @return all positions from the currently available data objects.
+	 */
+	public List<Long> getPositions() {
+		List<Long> result = new ArrayList<Long>(cache.size());
+		for (PositionBlob bp : cache.values()) {
+			result.add(bp.dataPosition);
+		}
+		for (PositionBlob bp : addedData.values()) {
+			result.add(bp.dataPosition);
+		}
+		Collections.sort(result);
+		return result;
+	}
 
-    /**
-     * @param uuid
-     * @return the position
-     */
-    public long getPositionForId( String uuid ) {
-        long result = -1;
-        if ( !cache.isEmpty() ) {
-            PositionBlob pb = cache.get( uuid );
-            if ( pb != null ) {
-                result = pb.dataPosition;
-            }
-        }
-        return result;
-    }
+	/**
+	 * @param uuid
+	 * @return the position
+	 */
+	public long getPositionForId(String uuid) {
+		long result = -1;
+		if (!cache.isEmpty()) {
+			PositionBlob pb = cache.get(uuid);
+			if (pb != null) {
+				result = pb.dataPosition;
+			}
+		}
+		return result;
+	}
 
-    void close()
-                            throws IOException {
-        if ( !addedData.isEmpty() ) {
-            // FileOutputStream fout = new FileOutputStream( file, false );
-            if ( !file.exists() ) {
-                LOG.info( "Creating the index file." );
-                file.createNewFile();
-            }
-            RandomAccessFile raf = null;
-            try {
-                raf = new RandomAccessFile( file, "rw" );
-            } catch ( FileNotFoundException e ) {
-                throw new IOException( "Could not create index file because: " + e.getLocalizedMessage(), e );
-            }
+	void close() throws IOException {
+		if (!addedData.isEmpty()) {
+			// FileOutputStream fout = new FileOutputStream( file, false );
+			if (!file.exists()) {
+				LOG.info("Creating the index file.");
+				file.createNewFile();
+			}
+			RandomAccessFile raf = null;
+			try {
+				raf = new RandomAccessFile(file, "rw");
+			}
+			catch (FileNotFoundException e) {
+				throw new IOException("Could not create index file because: " + e.getLocalizedMessage(), e);
+			}
 
-            FileChannel channel = raf.getChannel();
-            if ( !channel.isOpen() ) {
-                throw new IOException( "Could not open file: " + file + " for writing all information will be lost." );
-            }
-            // channel.position( channel.size() );
-            for ( PositionBlob pb : addedData.values() ) {
-                channel.position( pb.filePosition );
-                int size = ObjectSerializer.sizeOfString( pb.id );
-                ByteBuffer bb = ByteBuffer.allocate( size + POSITION_SIZE );
-                // bb.limit( size + POSITION_SIZE );
-                ObjectSerializer.writeString( bb, pb.id );
-                bb.putLong( pb.dataPosition );
-                bb.rewind();
-                channel.write( bb );
-            }
-            ByteBuffer bb = ByteBuffer.allocate( LONG_SIZE );
-            bb.putLong( nextFilePosition );
-            bb.rewind();
-            channel.position( 0 );
-            channel.write( bb );
-            channel.close();
-            raf.close();
-        }
+			FileChannel channel = raf.getChannel();
+			if (!channel.isOpen()) {
+				throw new IOException("Could not open file: " + file + " for writing all information will be lost.");
+			}
+			// channel.position( channel.size() );
+			for (PositionBlob pb : addedData.values()) {
+				channel.position(pb.filePosition);
+				int size = ObjectSerializer.sizeOfString(pb.id);
+				ByteBuffer bb = ByteBuffer.allocate(size + POSITION_SIZE);
+				// bb.limit( size + POSITION_SIZE );
+				ObjectSerializer.writeString(bb, pb.id);
+				bb.putLong(pb.dataPosition);
+				bb.rewind();
+				channel.write(bb);
+			}
+			ByteBuffer bb = ByteBuffer.allocate(LONG_SIZE);
+			bb.putLong(nextFilePosition);
+			bb.rewind();
+			channel.position(0);
+			channel.write(bb);
+			channel.close();
+			raf.close();
+		}
 
-        // } else {
-        // LOG.error( "Updating the index file is currently not supported. " );
-        // }
-    }
+		// } else {
+		// LOG.error( "Updating the index file is currently not supported. " );
+		// }
+	}
 
-    boolean addId( String id, long position ) {
-        if ( !cache.containsKey( id ) ) {
-            PositionBlob pb = new PositionBlob( id, position, getNextWritePosition( id ) );
-            addedData.put( id, pb );
-            cache.put( id, pb );
-        }
+	boolean addId(String id, long position) {
+		if (!cache.containsKey(id)) {
+			PositionBlob pb = new PositionBlob(id, position, getNextWritePosition(id));
+			addedData.put(id, pb);
+			cache.put(id, pb);
+		}
 
-        return cache.containsKey( id );
-    }
+		return cache.containsKey(id);
+	}
 
-    private long getNextWritePosition( String id ) {
-        long result = nextFilePosition;
-        if ( freePositions.isEmpty() ) {
-            int size = ObjectSerializer.sizeOfString( id );
-            maxIDSize = maxIDSize < size ? size : maxIDSize;
-            nextFilePosition += ( size + POSITION_SIZE );
-        } else {
-            result = freePositions.pop();
-        }
-        return result;
-    }
+	private long getNextWritePosition(String id) {
+		long result = nextFilePosition;
+		if (freePositions.isEmpty()) {
+			int size = ObjectSerializer.sizeOfString(id);
+			maxIDSize = maxIDSize < size ? size : maxIDSize;
+			nextFilePosition += (size + POSITION_SIZE);
+		}
+		else {
+			result = freePositions.pop();
+		}
+		return result;
+	}
 
-    private static class PositionBlob {
-        String id;
+	private static class PositionBlob {
 
-        long dataPosition;
+		String id;
 
-        long filePosition;
+		long dataPosition;
 
-        /**
-         * @param id
-         * @param dataPosition
-         * @param filePosition
-         */
-        PositionBlob( String id, long dataPosition, long filePosition ) {
-            this.id = id;
-            this.dataPosition = dataPosition;
-            this.filePosition = filePosition;
-        }
+		long filePosition;
 
-        @Override
-        public boolean equals( Object other ) {
-            if ( other != null && other instanceof PositionBlob ) {
-                final PositionBlob that = (PositionBlob) other;
-                return this.id.equals( that.id ) && this.dataPosition == that.dataPosition;
-            }
-            return false;
-        }
+		/**
+		 * @param id
+		 * @param dataPosition
+		 * @param filePosition
+		 */
+		PositionBlob(String id, long dataPosition, long filePosition) {
+			this.id = id;
+			this.dataPosition = dataPosition;
+			this.filePosition = filePosition;
+		}
 
-    }
+		@Override
+		public boolean equals(Object other) {
+			if (other != null && other instanceof PositionBlob) {
+				final PositionBlob that = (PositionBlob) other;
+				return this.id.equals(that.id) && this.dataPosition == that.dataPosition;
+			}
+			return false;
+		}
+
+	}
+
 }

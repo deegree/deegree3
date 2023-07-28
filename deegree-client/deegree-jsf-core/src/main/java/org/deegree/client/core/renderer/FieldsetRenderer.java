@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -47,47 +46,43 @@ import org.deegree.client.core.component.HtmlFieldset;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 
 @FacesRenderer(componentFamily = "javax.faces.Panel", rendererType = "org.deegree.Fieldset")
 public class FieldsetRenderer extends Renderer {
 
-    @Override
-    public void encodeBegin( FacesContext context, UIComponent component )
-                            throws IOException {
-        if ( component instanceof HtmlFieldset ) {
-            HtmlFieldset fieldset = (HtmlFieldset) component;
-            ResponseWriter writer = FacesContext.getCurrentInstance().getResponseWriter();
-            writer.startElement( "fieldset", component );
-            writer.writeAttribute( "id", fieldset.getClientId(), "id" );
-            String styleClass = fieldset.getStyleClass();
-            if ( styleClass != null ) {
-                writer.writeAttribute( "class", styleClass, "styleClass" );
-            }
-            String style = fieldset.getStyle();
-            if ( style != null ) {
-                writer.writeAttribute( "style", style, "style" );
-            }
-            String legend = fieldset.getLegend();
-            if ( legend != null ) {
-                writer.startElement( "legend", null );
-                writer.write( legend );
-                writer.endElement( "legend" );
-            }
-        }
-    }
+	@Override
+	public void encodeBegin(FacesContext context, UIComponent component) throws IOException {
+		if (component instanceof HtmlFieldset) {
+			HtmlFieldset fieldset = (HtmlFieldset) component;
+			ResponseWriter writer = FacesContext.getCurrentInstance().getResponseWriter();
+			writer.startElement("fieldset", component);
+			writer.writeAttribute("id", fieldset.getClientId(), "id");
+			String styleClass = fieldset.getStyleClass();
+			if (styleClass != null) {
+				writer.writeAttribute("class", styleClass, "styleClass");
+			}
+			String style = fieldset.getStyle();
+			if (style != null) {
+				writer.writeAttribute("style", style, "style");
+			}
+			String legend = fieldset.getLegend();
+			if (legend != null) {
+				writer.startElement("legend", null);
+				writer.write(legend);
+				writer.endElement("legend");
+			}
+		}
+	}
 
-    @Override
-    public void encodeEnd( FacesContext context, UIComponent component )
-                            throws IOException {
-        if ( component instanceof HtmlFieldset ) {
-            ResponseWriter writer = FacesContext.getCurrentInstance().getResponseWriter();
-            writer.endElement( "fieldset" );
-        }
-    }
+	@Override
+	public void encodeEnd(FacesContext context, UIComponent component) throws IOException {
+		if (component instanceof HtmlFieldset) {
+			ResponseWriter writer = FacesContext.getCurrentInstance().getResponseWriter();
+			writer.endElement("fieldset");
+		}
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -43,45 +42,39 @@ import javax.faces.context.ResponseWriter;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public final class RendererUtils {
 
-    public static void writeClickImage( FacesContext context, ResponseWriter writer, String className, String library,
-                                        String resourceName, String js )
-                            throws IOException {
-        writeClickImage( context, writer, className, library, resourceName, js, false );
-    }
+	public static void writeClickImage(FacesContext context, ResponseWriter writer, String className, String library,
+			String resourceName, String js) throws IOException {
+		writeClickImage(context, writer, className, library, resourceName, js, false);
+	}
 
-    public static void writeClickImage( FacesContext context, ResponseWriter writer, String className, String library,
-                                        String resourceName, String js, boolean disabled )
-                            throws IOException {
-        writeClickImage( context, writer, className, library, resourceName, js, null, disabled );
-    }
+	public static void writeClickImage(FacesContext context, ResponseWriter writer, String className, String library,
+			String resourceName, String js, boolean disabled) throws IOException {
+		writeClickImage(context, writer, className, library, resourceName, js, null, disabled);
+	}
 
-    public static void writeClickImage( FacesContext context, ResponseWriter writer, String className, String library,
-                                        String resourceName, String js, String title, boolean disabled )
-                            throws IOException {
-        writer.startElement( "span", null );
-        writer.writeAttribute( "class", className, null );
-        writer.startElement( "input", null );
-        if ( disabled )
-            writer.writeAttribute( "disabled", "disabled", null );
-        if ( title != null )
-            writer.writeAttribute( "title", title, null );
-        if ( js != null )
-            writer.writeAttribute( "onclick", js, null );
-        writer.writeAttribute( "type", "image", null );
-        Resource img = context.getApplication().getResourceHandler().createResource( resourceName, library );
-        if ( img != null ) {
-            writer.writeAttribute( "src", img.getRequestPath(), null );
-        }
-        writer.endElement( "input" );
-        writer.endElement( "span" );
-    }
+	public static void writeClickImage(FacesContext context, ResponseWriter writer, String className, String library,
+			String resourceName, String js, String title, boolean disabled) throws IOException {
+		writer.startElement("span", null);
+		writer.writeAttribute("class", className, null);
+		writer.startElement("input", null);
+		if (disabled)
+			writer.writeAttribute("disabled", "disabled", null);
+		if (title != null)
+			writer.writeAttribute("title", title, null);
+		if (js != null)
+			writer.writeAttribute("onclick", js, null);
+		writer.writeAttribute("type", "image", null);
+		Resource img = context.getApplication().getResourceHandler().createResource(resourceName, library);
+		if (img != null) {
+			writer.writeAttribute("src", img.getRequestPath(), null);
+		}
+		writer.endElement("input");
+		writer.endElement("span");
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -46,123 +45,116 @@ import org.apache.axiom.om.OMElement;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 
 /**
- * A feature type name with an optional alias, as it may be used in WFS 1.1.0 or 2.0.0 queries.
- * 
+ * A feature type name with an optional alias, as it may be used in WFS 1.1.0 or 2.0.0
+ * queries.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * 
- * @version $Revision: $, $Date: $
  */
 public class TypeName {
 
-    private final QName ftName;
+	private final QName ftName;
 
-    private final String alias;
+	private final String alias;
 
-    private final boolean isSchemaElement;
+	private final boolean isSchemaElement;
 
-    /**
-     * Creates a new {@link TypeName} with optional alias.
-     * 
-     * @param ftName
-     *            name of the feature, must not be <code>null</code>
-     * @param alias
-     *            alias for the feature type, may be <code>null</code>
-     */
-    public TypeName( QName ftName, String alias ) {
-        if ( ftName == null ) {
-            throw new InvalidParameterValueException( "Type name cannot be null", "typeName" );
-        }
-        this.ftName = ftName;
-        this.alias = alias;
-        this.isSchemaElement = false;
-    }
+	/**
+	 * Creates a new {@link TypeName} with optional alias.
+	 * @param ftName name of the feature, must not be <code>null</code>
+	 * @param alias alias for the feature type, may be <code>null</code>
+	 */
+	public TypeName(QName ftName, String alias) {
+		if (ftName == null) {
+			throw new InvalidParameterValueException("Type name cannot be null", "typeName");
+		}
+		this.ftName = ftName;
+		this.alias = alias;
+		this.isSchemaElement = false;
+	}
 
-    /**
-     * Creates a new {@link TypeName} with optional alias.
-     * 
-     * @param ftName
-     *            name of the feature, must not be <code>null</code>
-     * @param alias
-     *            alias for the feature type, may be <code>null</code>
-     */
-    public TypeName( QName ftName, String alias, boolean isSchemaElement ) {
-        if ( ftName == null ) {
-            throw new InvalidParameterValueException( "Type name cannot be null", "typeName" );
-        }
-        this.ftName = ftName;
-        this.alias = alias;
-        this.isSchemaElement = isSchemaElement;
-    }
+	/**
+	 * Creates a new {@link TypeName} with optional alias.
+	 * @param ftName name of the feature, must not be <code>null</code>
+	 * @param alias alias for the feature type, may be <code>null</code>
+	 */
+	public TypeName(QName ftName, String alias, boolean isSchemaElement) {
+		if (ftName == null) {
+			throw new InvalidParameterValueException("Type name cannot be null", "typeName");
+		}
+		this.ftName = ftName;
+		this.alias = alias;
+		this.isSchemaElement = isSchemaElement;
+	}
 
-    /**
-     * Extracts an array of {@link TypeNames} from the TypeNameList string, whose pattern is ((\w:)?\w(=\w)?){1,}.
-     * Example: typeName="ns1:Inwatera_1m=A, ns2:CoastL_1M=B" where A is an alias for ns1:Inwatera_1m and B is an alias
-     * for ns2:CoastL_1M. (taken from http://schemas.opengis.net/wfs/1.1.0/wfs.xsd )
-     * 
-     * @param context
-     *            the query element in which the TypeNameList attribute is defined, used to resolve the namespaceURIs
-     *            for the prefixes
-     * @param typeNameStr
-     *            the string that will be parsed
-     * @return an array of {@link TypeName}
-     */
-    public static TypeName[] valuesOf( OMElement context, String typeNameStr ) {
-        List<TypeName> resultList = new ArrayList<TypeName>();
+	/**
+	 * Extracts an array of {@link TypeNames} from the TypeNameList string, whose pattern
+	 * is ((\w:)?\w(=\w)?){1,}. Example: typeName="ns1:Inwatera_1m=A, ns2:CoastL_1M=B"
+	 * where A is an alias for ns1:Inwatera_1m and B is an alias for ns2:CoastL_1M. (taken
+	 * from http://schemas.opengis.net/wfs/1.1.0/wfs.xsd )
+	 * @param context the query element in which the TypeNameList attribute is defined,
+	 * used to resolve the namespaceURIs for the prefixes
+	 * @param typeNameStr the string that will be parsed
+	 * @return an array of {@link TypeName}
+	 */
+	public static TypeName[] valuesOf(OMElement context, String typeNameStr) {
+		List<TypeName> resultList = new ArrayList<TypeName>();
 
-        String[] typeNameComma = typeNameStr.split( "," );
-        for ( int i = 0; i < typeNameComma.length; i++ ) {
-            String[] typeNameEqual = typeNameComma[i].split( "=" );
-            if ( typeNameEqual.length == 2 ) {
-                resultList.add( new TypeName( resolveQName( context, typeNameEqual[0] ), typeNameEqual[1] ) );
-            } else if ( typeNameEqual.length == 1 ) { // no alias
-                resultList.add( new TypeName( resolveQName( context, typeNameEqual[0] ), null ) );
-            } else {
-                // TODO find a suitable exception
-                System.err.println( "More than one equal sign(=) in the declaration of TypeNameList" );
-            }
-        }
+		String[] typeNameComma = typeNameStr.split(",");
+		for (int i = 0; i < typeNameComma.length; i++) {
+			String[] typeNameEqual = typeNameComma[i].split("=");
+			if (typeNameEqual.length == 2) {
+				resultList.add(new TypeName(resolveQName(context, typeNameEqual[0]), typeNameEqual[1]));
+			}
+			else if (typeNameEqual.length == 1) { // no alias
+				resultList.add(new TypeName(resolveQName(context, typeNameEqual[0]), null));
+			}
+			else {
+				// TODO find a suitable exception
+				System.err.println("More than one equal sign(=) in the declaration of TypeNameList");
+			}
+		}
 
-        TypeName[] resultArray = new TypeName[resultList.size()];
-        return resultList.toArray( resultArray );
-    }
+		TypeName[] resultArray = new TypeName[resultList.size()];
+		return resultList.toArray(resultArray);
+	}
 
-    private static QName resolveQName( OMElement context, String name ) {
-        QName qName = null;
-        int colonIdx = name.indexOf( ":" );
-        if ( colonIdx != -1 ) {
-            qName = context.resolveQName( name );
-            if ( qName == null ) {
-                // AXIOM appears to return null for context.resolveQName( name ) for unbound prefices!?
-                String prefix = name.substring( 0, colonIdx );
-                String localPart = name.substring( colonIdx + 1 );
-                qName = new QName( "", localPart, prefix );
-            }
-        } else {
-            qName = new QName( name );
-        }
-        return qName;
-    }
+	private static QName resolveQName(OMElement context, String name) {
+		QName qName = null;
+		int colonIdx = name.indexOf(":");
+		if (colonIdx != -1) {
+			qName = context.resolveQName(name);
+			if (qName == null) {
+				// AXIOM appears to return null for context.resolveQName( name ) for
+				// unbound prefices!?
+				String prefix = name.substring(0, colonIdx);
+				String localPart = name.substring(colonIdx + 1);
+				qName = new QName("", localPart, prefix);
+			}
+		}
+		else {
+			qName = new QName(name);
+		}
+		return qName;
+	}
 
-    /**
-     * Returns the feature type name.
-     * 
-     * @return the feature type name, never <code>null</code>
-     */
-    public QName getFeatureTypeName() {
-        return ftName;
-    }
+	/**
+	 * Returns the feature type name.
+	 * @return the feature type name, never <code>null</code>
+	 */
+	public QName getFeatureTypeName() {
+		return ftName;
+	}
 
-    /**
-     * Returns the alias for the feature type.
-     * 
-     * @return the alias for the feature type, or <code>null</code> if it has none
-     */
-    public String getAlias() {
-        return alias;
-    }
+	/**
+	 * Returns the alias for the feature type.
+	 * @return the alias for the feature type, or <code>null</code> if it has none
+	 */
+	public String getAlias() {
+		return alias;
+	}
 
-    public boolean isSchemaElement() {
-        return isSchemaElement;
-    }
+	public boolean isSchemaElement() {
+		return isSchemaElement;
+	}
+
 }

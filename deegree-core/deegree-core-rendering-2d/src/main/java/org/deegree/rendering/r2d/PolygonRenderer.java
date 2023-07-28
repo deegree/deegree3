@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -58,88 +57,90 @@ import org.deegree.style.styling.PolygonStyling;
 
 /**
  * <code>PolygonRenderer</code>
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 class PolygonRenderer {
 
-    private GeometryHelper geomHelper;
+	private GeometryHelper geomHelper;
 
-    private Java2DFillRenderer fillRenderer;
+	private Java2DFillRenderer fillRenderer;
 
-    private Java2DStrokeRenderer strokeRenderer;
+	private Java2DStrokeRenderer strokeRenderer;
 
-    private Graphics2D graphics;
+	private Graphics2D graphics;
 
-    private Java2DRenderer renderer;
+	private Java2DRenderer renderer;
 
-    PolygonRenderer( GeometryHelper geomHelper, Java2DFillRenderer fillRenderer, Java2DStrokeRenderer strokeRenderer,
-                     Graphics2D graphics, Java2DRenderer renderer ) {
-        this.geomHelper = geomHelper;
-        this.fillRenderer = fillRenderer;
-        this.strokeRenderer = strokeRenderer;
-        this.graphics = graphics;
-        this.renderer = renderer;
-    }
+	PolygonRenderer(GeometryHelper geomHelper, Java2DFillRenderer fillRenderer, Java2DStrokeRenderer strokeRenderer,
+			Graphics2D graphics, Java2DRenderer renderer) {
+		this.geomHelper = geomHelper;
+		this.fillRenderer = fillRenderer;
+		this.strokeRenderer = strokeRenderer;
+		this.graphics = graphics;
+		this.renderer = renderer;
+	}
 
-    void render( PolygonStyling styling, Surface surface ) {
-        for ( SurfacePatch patch : surface.getPatches() ) {
-            if ( patch instanceof PolygonPatch ) {
-                LinkedList<Double> lines = new LinkedList<Double>();
-                PolygonPatch polygonPatch = (PolygonPatch) patch;
+	void render(PolygonStyling styling, Surface surface) {
+		for (SurfacePatch patch : surface.getPatches()) {
+			if (patch instanceof PolygonPatch) {
+				LinkedList<Double> lines = new LinkedList<Double>();
+				PolygonPatch polygonPatch = (PolygonPatch) patch;
 
-                // just appending the holes appears to work, the Java2D rendering mechanism can determine that they lie
-                // inside and thus no substraction etc. is needed. This speeds up things SIGNIFICANTLY
-                GeneralPath polygon = new GeneralPath( WIND_EVEN_ODD );
-                for ( Curve curve : polygonPatch.getBoundaryRings() ) {
-                    Double d = geomHelper.fromCurve( curve, true );
-                    lines.add( d );
-                    polygon.append( d, false );
-                }
+				// just appending the holes appears to work, the Java2D rendering
+				// mechanism can determine that they lie
+				// inside and thus no substraction etc. is needed. This speeds up things
+				// SIGNIFICANTLY
+				GeneralPath polygon = new GeneralPath(WIND_EVEN_ODD);
+				for (Curve curve : polygonPatch.getBoundaryRings()) {
+					Double d = geomHelper.fromCurve(curve, true);
+					lines.add(d);
+					polygon.append(d, false);
+				}
 
-                fillRenderer.applyFill( styling.fill, styling.uom );
-                graphics.fill( polygon );
-                for ( Double d : lines ) {
-                    strokeRenderer.applyStroke( styling.stroke, styling.uom, d, styling.perpendicularOffset,
-                                                styling.perpendicularOffsetType );
-                }
-            } else {
-                throw new IllegalArgumentException( "Cannot render non-planar surfaces." );
-            }
-        }
-    }
+				fillRenderer.applyFill(styling.fill, styling.uom);
+				graphics.fill(polygon);
+				for (Double d : lines) {
+					strokeRenderer.applyStroke(styling.stroke, styling.uom, d, styling.perpendicularOffset,
+							styling.perpendicularOffsetType);
+				}
+			}
+			else {
+				throw new IllegalArgumentException("Cannot render non-planar surfaces.");
+			}
+		}
+	}
 
-    void render( PointStyling styling, Surface surface ) {
-        for ( SurfacePatch patch : surface.getPatches() ) {
-            if ( patch instanceof PolygonPatch ) {
-                PolygonPatch polygonPatch = (PolygonPatch) patch;
-                for ( Curve curve : polygonPatch.getBoundaryRings() ) {
-                    curve.setCoordinateSystem( surface.getCoordinateSystem() );
-                    renderer.render( styling, curve );
-                }
-            } else {
-                throw new IllegalArgumentException( "Cannot render non-planar surfaces." );
-            }
-        }
-    }
+	void render(PointStyling styling, Surface surface) {
+		for (SurfacePatch patch : surface.getPatches()) {
+			if (patch instanceof PolygonPatch) {
+				PolygonPatch polygonPatch = (PolygonPatch) patch;
+				for (Curve curve : polygonPatch.getBoundaryRings()) {
+					curve.setCoordinateSystem(surface.getCoordinateSystem());
+					renderer.render(styling, curve);
+				}
+			}
+			else {
+				throw new IllegalArgumentException("Cannot render non-planar surfaces.");
+			}
+		}
+	}
 
-    void render( LineStyling styling, Surface surface ) {
-        for ( SurfacePatch patch : surface.getPatches() ) {
-            if ( patch instanceof PolygonPatch ) {
-                PolygonPatch polygonPatch = (PolygonPatch) patch;
-                for ( Curve curve : polygonPatch.getBoundaryRings() ) {
-                    if ( curve.getCoordinateSystem() == null ) {
-                        curve.setCoordinateSystem( surface.getCoordinateSystem() );
-                    }
-                    renderer.render( styling, curve );
-                }
-            } else {
-                throw new IllegalArgumentException( "Cannot render non-planar surfaces." );
-            }
-        }
-    }
+	void render(LineStyling styling, Surface surface) {
+		for (SurfacePatch patch : surface.getPatches()) {
+			if (patch instanceof PolygonPatch) {
+				PolygonPatch polygonPatch = (PolygonPatch) patch;
+				for (Curve curve : polygonPatch.getBoundaryRings()) {
+					if (curve.getCoordinateSystem() == null) {
+						curve.setCoordinateSystem(surface.getCoordinateSystem());
+					}
+					renderer.render(styling, curve);
+				}
+			}
+			else {
+				throw new IllegalArgumentException("Cannot render non-planar surfaces.");
+			}
+		}
+	}
 
 }

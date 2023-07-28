@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/src/org/deegree/ogcwebservices/wfs/operation/DescribeFeatureType.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -53,77 +52,70 @@ import org.deegree.protocol.wfs.query.StandardPresentationParams;
  * <li>WFS 2.0.0</li>
  * </ul>
  * </p>
- * 
+ *
  * @see Query
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * 
- * @version $Revision: $, $Date: $
  */
 public class GetFeature extends AbstractWFSRequest {
 
-    private final StandardPresentationParams presentationParams;
+	private final StandardPresentationParams presentationParams;
 
-    private final ResolveParams resolveParams;
+	private final ResolveParams resolveParams;
 
-    private final List<Query> queries;
+	private final List<Query> queries;
 
-    /**
-     * Creates a new {@link GetFeature} request.
-     * 
-     * @param version
-     *            protocol version, must not be <code>null</code>
-     * @param handle
-     *            client-generated identifier, may be <code>null</code>
-     * @param presentationParams
-     *            parameters for controlling the presentation of the result set, may be <code>null</code>
-     * @param resolveParams
-     *            parameters for controlling the resolution of references of the result set, may be <code>null</code>
-     * @param queries
-     *            the queries to be performed in the request, must not be <code>null</code> and must contain at least
-     *            one entry
-     */
-    public GetFeature( Version version, String handle, StandardPresentationParams presentationParams,
-                       ResolveParams resolveParams, List<Query> queries ) {
-        super( version, handle );
-        if ( presentationParams != null ) {
-            this.presentationParams = presentationParams;
-        } else {
-            this.presentationParams = new StandardPresentationParams( null, null, null, null );
-        }
-        if ( resolveParams != null ) {
-            this.resolveParams = resolveParams;
-        } else {
-            this.resolveParams = new ResolveParams( null, null, null );
-        }
-        this.queries = queries;
-    }
+	/**
+	 * Creates a new {@link GetFeature} request.
+	 * @param version protocol version, must not be <code>null</code>
+	 * @param handle client-generated identifier, may be <code>null</code>
+	 * @param presentationParams parameters for controlling the presentation of the result
+	 * set, may be <code>null</code>
+	 * @param resolveParams parameters for controlling the resolution of references of the
+	 * result set, may be <code>null</code>
+	 * @param queries the queries to be performed in the request, must not be
+	 * <code>null</code> and must contain at least one entry
+	 */
+	public GetFeature(Version version, String handle, StandardPresentationParams presentationParams,
+			ResolveParams resolveParams, List<Query> queries) {
+		super(version, handle);
+		if (presentationParams != null) {
+			this.presentationParams = presentationParams;
+		}
+		else {
+			this.presentationParams = new StandardPresentationParams(null, null, null, null);
+		}
+		if (resolveParams != null) {
+			this.resolveParams = resolveParams;
+		}
+		else {
+			this.resolveParams = new ResolveParams(null, null, null);
+		}
+		this.queries = queries;
+	}
 
-    /**
-     * Returns the parameters that control the presentation of the result set.
-     * 
-     * @return presentation control parameters, never <code>null</code>
-     */
-    public StandardPresentationParams getPresentationParams() {
-        return presentationParams;
-    }
+	/**
+	 * Returns the parameters that control the presentation of the result set.
+	 * @return presentation control parameters, never <code>null</code>
+	 */
+	public StandardPresentationParams getPresentationParams() {
+		return presentationParams;
+	}
 
-    /**
-     * Returns the parameters that control the resolution of references in the response.
-     * 
-     * @return reference resolution control parameters, never <code>null</code>
-     */
-    public ResolveParams getResolveParams() {
-        return resolveParams;
-    }
+	/**
+	 * Returns the parameters that control the resolution of references in the response.
+	 * @return reference resolution control parameters, never <code>null</code>
+	 */
+	public ResolveParams getResolveParams() {
+		return resolveParams;
+	}
 
-    /**
-     * The queries to be performed in the request.
-     * 
-     * @return the queries to be performed, never <code>null</code> and must contain at least one entry
-     */
-    public List<Query> getQueries() {
-        return queries;
-    }
+	/**
+	 * The queries to be performed in the request.
+	 * @return the queries to be performed, never <code>null</code> and must contain at
+	 * least one entry
+	 */
+	public List<Query> getQueries() {
+		return queries;
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -44,47 +43,42 @@ import org.deegree.cs.projections.ProjectionBase;
 import org.junit.Test;
 
 /**
- * <code>StereographicAlternativeTest</code> test the lambert azimuthal equal area projection.
- * 
+ * <code>StereographicAlternativeTest</code> test the lambert azimuthal equal area
+ * projection.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class LambertAzimuthalTest extends ProjectionBase {
 
-    private static final LambertAzimuthalEqualArea projection_3035 = new LambertAzimuthalEqualArea(
+	private static final LambertAzimuthalEqualArea projection_3035 = new LambertAzimuthalEqualArea(
 
-    3210000.0, 4321000.0, new Point2d( Math.toRadians( 10 ), Math.toRadians( 52 ) ), Unit.METRE );
+			3210000.0, 4321000.0, new Point2d(Math.toRadians(10), Math.toRadians(52)), Unit.METRE);
 
-    /**
-     * reference point created with proj4 command : <code>
-     * proj -f "%.8f" +proj=laea +ellps=GRS80 +lon_0=10 +lat_0=52 +k=1 +x_0=4321000 +y_0=3210000
-     * 6.610765 53.235916
-     * 4094775.23791324        3352810.22470640
-     * </code>
-     * 
-     * @throws ProjectionException
-     */
-    @Test
-    public void testAccuracy()
-                            throws ProjectionException {
+	/**
+	 * reference point created with proj4 command : <code>
+	 * proj -f "%.8f" +proj=laea +ellps=GRS80 +lon_0=10 +lat_0=52 +k=1 +x_0=4321000 +y_0=3210000
+	 * 6.610765 53.235916
+	 * 4094775.23791324        3352810.22470640
+	 * </code>
+	 * @throws ProjectionException
+	 */
+	@Test
+	public void testAccuracy() throws ProjectionException {
 
-        Point2d sourcePoint = new Point2d( Math.toRadians( 6.610765 ), Math.toRadians( 53.235916 ) );
-        Point2d targetPoint = new Point2d( 4094775.23791324, 3352810.22470640 );
+		Point2d sourcePoint = new Point2d(Math.toRadians(6.610765), Math.toRadians(53.235916));
+		Point2d targetPoint = new Point2d(4094775.23791324, 3352810.22470640);
 
-        doForwardAndInverse( projection_3035, geographic_4258, sourcePoint, targetPoint );
-    }
+		doForwardAndInverse(projection_3035, geographic_4258, sourcePoint, targetPoint);
+	}
 
-    /**
-     * tests the consistency of the {@link LambertAzimuthalEqualArea} projection.
-     */
-    @Test
-    public void testConsistency() {
-        consistencyTest( projection_3035, 3210000, 4321000, new Point2d( Math.toRadians( 10 ), Math.toRadians( 52 ) ),
-                         Unit.METRE, 1, false, true, "lambertAzimuthalEqualArea" );
-    }
+	/**
+	 * tests the consistency of the {@link LambertAzimuthalEqualArea} projection.
+	 */
+	@Test
+	public void testConsistency() {
+		consistencyTest(projection_3035, 3210000, 4321000, new Point2d(Math.toRadians(10), Math.toRadians(52)),
+				Unit.METRE, 1, false, true, "lambertAzimuthalEqualArea");
+	}
 
 }

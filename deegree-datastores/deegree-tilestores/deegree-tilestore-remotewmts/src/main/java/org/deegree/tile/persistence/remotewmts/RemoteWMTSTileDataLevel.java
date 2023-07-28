@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -52,97 +51,89 @@ import org.deegree.tile.TileMatrix;
 
 /**
  * {@link TileDataLevel} that is backed by a remote WMTS instance.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 class RemoteWMTSTileDataLevel implements TileDataLevel {
 
-    private final TileMatrix matrix;
+	private final TileMatrix matrix;
 
-    private final String remoteTileMatrixSetId;
+	private final String remoteTileMatrixSetId;
 
-    private final String remoteTileMatrixId;
+	private final String remoteTileMatrixId;
 
-    private final String requestFormat;
+	private final String requestFormat;
 
-    private final String layer;
+	private final String layer;
 
-    private final String style;
+	private final String style;
 
-    private final WMTSClient client;
+	private final WMTSClient client;
 
-    private final String outputFormat;
+	private final String outputFormat;
 
-    private Map<String, String> defaultGetMap, hardGetMap, defaultGetFeatureInfo, hardGetFeatureInfo;
+	private Map<String, String> defaultGetMap, hardGetMap, defaultGetFeatureInfo, hardGetFeatureInfo;
 
-    /**
-     * Creates a new {@link RemoteWMTSTileDataLevel} instance.
-     * 
-     * @param matrix
-     *            tile matrix, must not be <code>null</code>
-     * @param remoteTileMatrixSetId
-     *            tile matrix set identifier on the remote server, must not be <code>null</code>
-     * @param remoteTileMatrixId
-     *            tile matrix identifier on the remote server, must not be <code>null</code>
-     * @param requestFormat
-     *            format to use for requesting tile images, must not be <code>null</code>
-     * @param layer
-     *            WMTS layer to request, must not be <code>null</code>
-     * @param style
-     *            WMTS style to request, must not be <code>null</code>
-     * @param client
-     *            WMTS client to use, must not be <code>null</code>
-     * @param outputFormat
-     *            if not <code>null</code>, images will be recoded into specified output format (use ImageIO like
-     *            formats, eg. 'png')
-     * @param hardGetMap
-     * @param defaultGetMap
-     */
-    RemoteWMTSTileDataLevel( TileMatrix matrix, String remoteTileMatrixSetId, String remoteTileMatrixId,
-                             String requestFormat, String layer, String style, WMTSClient client, String outputFormat,
-                             Map<String, String> defaultGetMap, Map<String, String> hardGetMap,
-                             Map<String, String> defaultGetFeatureInfo, Map<String, String> hardGetFeatureInfo ) {
-        this.matrix = matrix;
-        this.remoteTileMatrixSetId = remoteTileMatrixSetId;
-        this.remoteTileMatrixId = remoteTileMatrixId;
-        this.requestFormat = requestFormat;
-        this.layer = layer;
-        this.style = style;
-        this.outputFormat = outputFormat;
-        this.client = client;
-        this.defaultGetMap = defaultGetMap;
-        this.hardGetMap = hardGetMap;
-        this.defaultGetFeatureInfo = defaultGetFeatureInfo;
-        this.hardGetFeatureInfo = hardGetFeatureInfo;
-    }
+	/**
+	 * Creates a new {@link RemoteWMTSTileDataLevel} instance.
+	 * @param matrix tile matrix, must not be <code>null</code>
+	 * @param remoteTileMatrixSetId tile matrix set identifier on the remote server, must
+	 * not be <code>null</code>
+	 * @param remoteTileMatrixId tile matrix identifier on the remote server, must not be
+	 * <code>null</code>
+	 * @param requestFormat format to use for requesting tile images, must not be
+	 * <code>null</code>
+	 * @param layer WMTS layer to request, must not be <code>null</code>
+	 * @param style WMTS style to request, must not be <code>null</code>
+	 * @param client WMTS client to use, must not be <code>null</code>
+	 * @param outputFormat if not <code>null</code>, images will be recoded into specified
+	 * output format (use ImageIO like formats, eg. 'png')
+	 * @param hardGetMap
+	 * @param defaultGetMap
+	 */
+	RemoteWMTSTileDataLevel(TileMatrix matrix, String remoteTileMatrixSetId, String remoteTileMatrixId,
+			String requestFormat, String layer, String style, WMTSClient client, String outputFormat,
+			Map<String, String> defaultGetMap, Map<String, String> hardGetMap,
+			Map<String, String> defaultGetFeatureInfo, Map<String, String> hardGetFeatureInfo) {
+		this.matrix = matrix;
+		this.remoteTileMatrixSetId = remoteTileMatrixSetId;
+		this.remoteTileMatrixId = remoteTileMatrixId;
+		this.requestFormat = requestFormat;
+		this.layer = layer;
+		this.style = style;
+		this.outputFormat = outputFormat;
+		this.client = client;
+		this.defaultGetMap = defaultGetMap;
+		this.hardGetMap = hardGetMap;
+		this.defaultGetFeatureInfo = defaultGetFeatureInfo;
+		this.hardGetFeatureInfo = hardGetFeatureInfo;
+	}
 
-    @Override
-    public TileMatrix getMetadata() {
-        return matrix;
-    }
+	@Override
+	public TileMatrix getMetadata() {
+		return matrix;
+	}
 
-    @Override
-    public Tile getTile( long x, long y ) {
-        if ( matrix.getNumTilesX() <= x || matrix.getNumTilesY() <= y || x < 0 || y < 0 ) {
-            return null;
-        }
-        Envelope tileEnvelope = calcTileEnvelope( matrix, x, y );
-        Map<String, String> overriddenParameters = new HashMap<String, String>();
-        RequestUtils.replaceParameters( overriddenParameters, RequestUtils.getCurrentThreadRequestParameters().get(),
-                                        defaultGetMap, hardGetMap );
-        GetTile request = new GetTile( layer, style, requestFormat, remoteTileMatrixSetId, remoteTileMatrixId, x, y,
-                                       overriddenParameters );
-        return new RemoteWMTSTile( client, request, outputFormat, tileEnvelope, defaultGetFeatureInfo,
-                                   hardGetFeatureInfo );
-    }
+	@Override
+	public Tile getTile(long x, long y) {
+		if (matrix.getNumTilesX() <= x || matrix.getNumTilesY() <= y || x < 0 || y < 0) {
+			return null;
+		}
+		Envelope tileEnvelope = calcTileEnvelope(matrix, x, y);
+		Map<String, String> overriddenParameters = new HashMap<String, String>();
+		RequestUtils.replaceParameters(overriddenParameters, RequestUtils.getCurrentThreadRequestParameters().get(),
+				defaultGetMap, hardGetMap);
+		GetTile request = new GetTile(layer, style, requestFormat, remoteTileMatrixSetId, remoteTileMatrixId, x, y,
+				overriddenParameters);
+		return new RemoteWMTSTile(client, request, outputFormat, tileEnvelope, defaultGetFeatureInfo,
+				hardGetFeatureInfo);
+	}
 
-    @Override
-    public List<String> getStyles() {
-        List<String> styles = new ArrayList<String>();
-        styles.add( style );
-        return styles;
-    }
+	@Override
+	public List<String> getStyles() {
+		List<String> styles = new ArrayList<String>();
+		styles.add(style);
+		return styles;
+	}
+
 }

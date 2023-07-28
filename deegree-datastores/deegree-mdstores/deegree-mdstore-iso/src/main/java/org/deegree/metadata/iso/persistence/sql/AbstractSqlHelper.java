@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -45,99 +44,97 @@ import org.deegree.sqldialect.filter.Join;
 import org.deegree.sqldialect.filter.PropertyNameMapping;
 
 /**
- * Encapsulates backend informations (table names, column names...) and creation of common sql snippets.
- * 
+ * Encapsulates backend informations (table names, column names...) and creation of common
+ * sql snippets.
+ *
  * @author <a href="mailto:goltz@lat-lon.org">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 abstract class AbstractSqlHelper {
 
-    protected String idColumn;
+	protected String idColumn;
 
-    protected String fileIdColumn;
+	protected String fileIdColumn;
 
-    protected String recordColumn;
+	protected String recordColumn;
 
-    protected String fk_main;
+	protected String fk_main;
 
-    protected String mainTable;
+	protected String mainTable;
 
-    protected String crsTable;
+	protected String crsTable;
 
-    protected String keywordTable;
+	protected String keywordTable;
 
-    protected String constraintTable;
+	protected String constraintTable;
 
-    protected String opOnTable;
+	protected String opOnTable;
 
-    protected final SQLDialect dialect;
+	protected final SQLDialect dialect;
 
-    protected final List<Queryable> queryables;
+	protected final List<Queryable> queryables;
 
-    AbstractSqlHelper( SQLDialect dialect, List<Queryable> queryables ) {
-        this.dialect = dialect;
-        this.queryables = queryables;
-        idColumn = ISOPropertyNameMapper.CommonColumnNames.id.name();
-        fk_main = ISOPropertyNameMapper.CommonColumnNames.fk_main.name();
-        recordColumn = ISOPropertyNameMapper.CommonColumnNames.recordfull.name();
-        fileIdColumn = ISOPropertyNameMapper.CommonColumnNames.fileidentifier.name();
-        mainTable = ISOPropertyNameMapper.DatabaseTables.idxtb_main.name();
-        crsTable = ISOPropertyNameMapper.DatabaseTables.idxtb_crs.name();
-        keywordTable = ISOPropertyNameMapper.DatabaseTables.idxtb_keyword.name();
-        opOnTable = ISOPropertyNameMapper.DatabaseTables.idxtb_operatesondata.name();
-        constraintTable = ISOPropertyNameMapper.DatabaseTables.idxtb_constraint.name();
-    }
+	AbstractSqlHelper(SQLDialect dialect, List<Queryable> queryables) {
+		this.dialect = dialect;
+		this.queryables = queryables;
+		idColumn = ISOPropertyNameMapper.CommonColumnNames.id.name();
+		fk_main = ISOPropertyNameMapper.CommonColumnNames.fk_main.name();
+		recordColumn = ISOPropertyNameMapper.CommonColumnNames.recordfull.name();
+		fileIdColumn = ISOPropertyNameMapper.CommonColumnNames.fileidentifier.name();
+		mainTable = ISOPropertyNameMapper.DatabaseTables.idxtb_main.name();
+		crsTable = ISOPropertyNameMapper.DatabaseTables.idxtb_crs.name();
+		keywordTable = ISOPropertyNameMapper.DatabaseTables.idxtb_keyword.name();
+		opOnTable = ISOPropertyNameMapper.DatabaseTables.idxtb_operatesondata.name();
+		constraintTable = ISOPropertyNameMapper.DatabaseTables.idxtb_constraint.name();
+	}
 
-    protected StringBuilder getPreparedStatementDatasetIDs( AbstractWhereBuilder builder ) {
+	protected StringBuilder getPreparedStatementDatasetIDs(AbstractWhereBuilder builder) {
 
-        StringBuilder getDatasetIDs = new StringBuilder( 300 );
-        String rootTableAlias = builder.getAliasManager().getRootTableAlias();
-        getDatasetIDs.append( "SELECT DISTINCT " );
-        getDatasetIDs.append( rootTableAlias );
-        getDatasetIDs.append( '.' );
-        getDatasetIDs.append( idColumn );
+		StringBuilder getDatasetIDs = new StringBuilder(300);
+		String rootTableAlias = builder.getAliasManager().getRootTableAlias();
+		getDatasetIDs.append("SELECT DISTINCT ");
+		getDatasetIDs.append(rootTableAlias);
+		getDatasetIDs.append('.');
+		getDatasetIDs.append(idColumn);
 
-        // for SELECT DISTINCT, all ORDER BY columns have to be SELECTed as well
-        if ( builder.getOrderBy() != null ) {
-            // hack to transform the ORDER BY column list in select list
-            String orderColList = builder.getOrderBy().getSQL().toString();
-            int i = 1;
-            while ( orderColList.contains( " ASC" ) || orderColList.contains( "DESC" ) ) {
-                orderColList = orderColList.replaceFirst( " ASC| DESC", " AS crit" + ( i++ ) );
-            }
-            getDatasetIDs.append( ',' );
-            getDatasetIDs.append( orderColList );
-        }
+		// for SELECT DISTINCT, all ORDER BY columns have to be SELECTed as well
+		if (builder.getOrderBy() != null) {
+			// hack to transform the ORDER BY column list in select list
+			String orderColList = builder.getOrderBy().getSQL().toString();
+			int i = 1;
+			while (orderColList.contains(" ASC") || orderColList.contains("DESC")) {
+				orderColList = orderColList.replaceFirst(" ASC| DESC", " AS crit" + (i++));
+			}
+			getDatasetIDs.append(',');
+			getDatasetIDs.append(orderColList);
+		}
 
-        return getDatasetIDs;
-    }
+		return getDatasetIDs;
+	}
 
-    protected void getPSBody( AbstractWhereBuilder builder, StringBuilder getDatasetIDs ) {
+	protected void getPSBody(AbstractWhereBuilder builder, StringBuilder getDatasetIDs) {
 
-        String rootTableAlias = builder.getAliasManager().getRootTableAlias();
-        getDatasetIDs.append( " FROM " );
-        getDatasetIDs.append( mainTable );
-        getDatasetIDs.append( " " );
-        getDatasetIDs.append( rootTableAlias );
+		String rootTableAlias = builder.getAliasManager().getRootTableAlias();
+		getDatasetIDs.append(" FROM ");
+		getDatasetIDs.append(mainTable);
+		getDatasetIDs.append(" ");
+		getDatasetIDs.append(rootTableAlias);
 
-        for ( PropertyNameMapping mappedPropName : builder.getMappedPropertyNames() ) {
-            for ( Join join : mappedPropName.getJoins() ) {
-                getDatasetIDs.append( " LEFT OUTER JOIN " );
-                getDatasetIDs.append( join.getToTable() );
-                getDatasetIDs.append( ' ' );
-                getDatasetIDs.append( join.getToTableAlias() );
-                getDatasetIDs.append( " ON " );
-                getDatasetIDs.append( join.getSQLJoinCondition() );
-            }
-        }
+		for (PropertyNameMapping mappedPropName : builder.getMappedPropertyNames()) {
+			for (Join join : mappedPropName.getJoins()) {
+				getDatasetIDs.append(" LEFT OUTER JOIN ");
+				getDatasetIDs.append(join.getToTable());
+				getDatasetIDs.append(' ');
+				getDatasetIDs.append(join.getToTableAlias());
+				getDatasetIDs.append(" ON ");
+				getDatasetIDs.append(join.getSQLJoinCondition());
+			}
+		}
 
-        if ( builder.getWhere() != null ) {
-            getDatasetIDs.append( " WHERE " );
-            getDatasetIDs.append( builder.getWhere().getSQL() );
-        }
+		if (builder.getWhere() != null) {
+			getDatasetIDs.append(" WHERE ");
+			getDatasetIDs.append(builder.getWhere().getSQL());
+		}
 
-    }
-    
-}   
+	}
+
+}

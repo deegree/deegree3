@@ -39,30 +39,30 @@ import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
  * Resource metadata implementation for java process providers.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class JavaProcessProviderMetadata extends AbstractResourceMetadata<ProcessProvider> {
 
-    private static final String JAXB_CONFIG_PACKAGE = "org.deegree.process.jaxb.java";
+	private static final String JAXB_CONFIG_PACKAGE = "org.deegree.process.jaxb.java";
 
-    public JavaProcessProviderMetadata( Workspace workspace, ResourceLocation<ProcessProvider> location,
-                                        AbstractResourceProvider<ProcessProvider> provider ) {
-        super( workspace, location, provider );
-    }
+	public JavaProcessProviderMetadata(Workspace workspace, ResourceLocation<ProcessProvider> location,
+			AbstractResourceProvider<ProcessProvider> provider) {
+		super(workspace, location, provider);
+	}
 
-    @Override
-    public ResourceBuilder<ProcessProvider> prepare() {
-        try {
-            ProcessDefinition config = (ProcessDefinition) unmarshall( JAXB_CONFIG_PACKAGE, provider.getSchema(),
-                                                                       location.getAsStream(), workspace );
+	@Override
+	public ResourceBuilder<ProcessProvider> prepare() {
+		try {
+			ProcessDefinition config = (ProcessDefinition) unmarshall(JAXB_CONFIG_PACKAGE, provider.getSchema(),
+					location.getAsStream(), workspace);
 
-            return new JavaProcessProviderBuilder( config, this, workspace );
-        } catch ( Exception e ) {
-            throw new ResourceInitException( "Problem when building process provider: " + e.getLocalizedMessage(), e );
-        }
-    }
+			return new JavaProcessProviderBuilder(config, this, workspace);
+		}
+		catch (Exception e) {
+			throw new ResourceInitException("Problem when building process provider: " + e.getLocalizedMessage(), e);
+		}
+	}
 
 }

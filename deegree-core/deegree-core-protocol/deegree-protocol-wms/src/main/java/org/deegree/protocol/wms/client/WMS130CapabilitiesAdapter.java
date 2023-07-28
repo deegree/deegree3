@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -50,74 +49,71 @@ import org.slf4j.LoggerFactory;
 /**
  * {@link WMS130CapabilitiesAdapter} for documents that comply to the <a
  * href="http://www.opengeospatial.org/standards/wms>WMS 1.3.0</a> specification.
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class WMS130CapabilitiesAdapter extends WMSCapabilitiesAdapter {
 
-    private static final Logger LOG = LoggerFactory.getLogger( WMS130CapabilitiesAdapter.class );
+	private static final Logger LOG = LoggerFactory.getLogger(WMS130CapabilitiesAdapter.class);
 
-    static {
-        nsContext.addNamespace( "wms", "http://www.opengis.net/wms" );
-    }
+	static {
+		nsContext.addNamespace("wms", "http://www.opengis.net/wms");
+	}
 
-    /**
-     * Create a new {@link WMS130CapabilitiesAdapter} from the passed root element.
-     * 
-     * @param root
-     *            the capabilies doument, must not be <code>null</code> throws {@link IllegalArgumentException} if root
-     *            is null
-     */
-    public WMS130CapabilitiesAdapter( OMElement root ) {
-        if ( root == null )
-            throw new IllegalArgumentException( "Capablities root element must not be null!" );
-        setRootElement( root );
-    }
+	/**
+	 * Create a new {@link WMS130CapabilitiesAdapter} from the passed root element.
+	 * @param root the capabilies doument, must not be <code>null</code> throws
+	 * {@link IllegalArgumentException} if root is null
+	 */
+	public WMS130CapabilitiesAdapter(OMElement root) {
+		if (root == null)
+			throw new IllegalArgumentException("Capablities root element must not be null!");
+		setRootElement(root);
+	}
 
-    @Override
-    protected Envelope parseLatLonBoundingBox( OMElement elem ) {
-        double[] min = new double[2];
-        double[] max = new double[2];
-        while ( elem.getLocalName().equals( "Layer" ) ) {
-            OMElement bbox = getElement( elem, new XPath( "wms:EX_GeographicBoundingBox", nsContext ) );
-            if ( bbox != null ) {
-                try {
-                    min[0] = getRequiredNodeAsDouble( bbox, new XPath( "wms:westBoundLongitude", nsContext ) );
-                    min[1] = getRequiredNodeAsDouble( bbox, new XPath( "wms:southBoundLatitude", nsContext ) );
-                    max[0] = getRequiredNodeAsDouble( bbox, new XPath( "wms:eastBoundLongitude", nsContext ) );
-                    max[1] = getRequiredNodeAsDouble( bbox, new XPath( "wms:northBoundLatitude", nsContext ) );
-                    return new GeometryFactory().createEnvelope( min, max, CRSManager.getCRSRef( WGS84 ) );
-                } catch ( NumberFormatException nfe ) {
-                    LOG.warn( get( "WMSCLIENT.SERVER_INVALID_NUMERIC_VALUE", nfe.getLocalizedMessage() ) );
-                }
-            } else {
-                elem = (OMElement) elem.getParent();
-            }
-        }
-        return null;
-    }
+	@Override
+	protected Envelope parseLatLonBoundingBox(OMElement elem) {
+		double[] min = new double[2];
+		double[] max = new double[2];
+		while (elem.getLocalName().equals("Layer")) {
+			OMElement bbox = getElement(elem, new XPath("wms:EX_GeographicBoundingBox", nsContext));
+			if (bbox != null) {
+				try {
+					min[0] = getRequiredNodeAsDouble(bbox, new XPath("wms:westBoundLongitude", nsContext));
+					min[1] = getRequiredNodeAsDouble(bbox, new XPath("wms:southBoundLatitude", nsContext));
+					max[0] = getRequiredNodeAsDouble(bbox, new XPath("wms:eastBoundLongitude", nsContext));
+					max[1] = getRequiredNodeAsDouble(bbox, new XPath("wms:northBoundLatitude", nsContext));
+					return new GeometryFactory().createEnvelope(min, max, CRSManager.getCRSRef(WGS84));
+				}
+				catch (NumberFormatException nfe) {
+					LOG.warn(get("WMSCLIENT.SERVER_INVALID_NUMERIC_VALUE", nfe.getLocalizedMessage()));
+				}
+			}
+			else {
+				elem = (OMElement) elem.getParent();
+			}
+		}
+		return null;
+	}
 
-    @Override
-    protected String getPrefix() {
-        return "wms:";
-    }
+	@Override
+	protected String getPrefix() {
+		return "wms:";
+	}
 
-    @Override
-    protected String getLayerCRSElementName() {
-        return "CRS";
-    }
+	@Override
+	protected String getLayerCRSElementName() {
+		return "CRS";
+	}
 
-    @Override
-    protected Version getServiceVersion() {
-        return new Version( 1, 3, 0 );
-    }
+	@Override
+	protected Version getServiceVersion() {
+		return new Version(1, 3, 0);
+	}
 
-    @Override
-    protected String getExtendedCapabilitiesRootXPath() {
-        return "//wms:WMS_Capabilities/wms:Capability";
-    }
+	@Override
+	protected String getExtendedCapabilitiesRootXPath() {
+		return "//wms:WMS_Capabilities/wms:Capability";
+	}
 
 }

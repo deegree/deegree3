@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -39,26 +38,21 @@ package org.deegree.geometry.validation;
 import org.deegree.geometry.validation.event.GeometryValidationEvent;
 
 /**
- * Implementations of this interface are passed to {@link GeometryValidator} on construction.
- * 
+ * Implementations of this interface are passed to {@link GeometryValidator} on
+ * construction.
+ *
  * @see GeometryValidator
  * @see GeometryValidationEvent
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface GeometryValidationEventHandler {
 
-    /**
-     * Called when a {@link GeometryValidationEvent} occurs.
-     * 
-     * @param event
-     *            validation event, never <code>null</code>
-     * @return <code>true</code>, if the event should indicate that the geometry is invalid, otherwise
-     *         <code>false</code>
-     */
-    public boolean fireEvent( GeometryValidationEvent event );
+	/**
+	 * Called when a {@link GeometryValidationEvent} occurs.
+	 * @param event validation event, never <code>null</code>
+	 * @return <code>true</code>, if the event should indicate that the geometry is
+	 * invalid, otherwise <code>false</code>
+	 */
+	public boolean fireEvent(GeometryValidationEvent event);
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -55,54 +54,53 @@ import org.slf4j.Logger;
 
 /**
  * <code>Java2DTileRenderer</code>
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 
 public class Java2DTileRenderer implements TileRenderer {
 
-    private static final Logger LOG = getLogger( Java2DTileRenderer.class );
+	private static final Logger LOG = getLogger(Java2DTileRenderer.class);
 
-    private Graphics2D graphics;
+	private Graphics2D graphics;
 
-    private AffineTransform worldToScreen = new AffineTransform();
+	private AffineTransform worldToScreen = new AffineTransform();
 
-    /**
-     * @param graphics
-     * @param width
-     * @param height
-     * @param envelope
-     */
-    public Java2DTileRenderer( Graphics2D graphics, int width, int height, Envelope envelope ) {
-        this.graphics = graphics;
-        RenderHelper.getWorldToScreenTransform( worldToScreen, envelope, width, height );
-    }
+	/**
+	 * @param graphics
+	 * @param width
+	 * @param height
+	 * @param envelope
+	 */
+	public Java2DTileRenderer(Graphics2D graphics, int width, int height, Envelope envelope) {
+		this.graphics = graphics;
+		RenderHelper.getWorldToScreenTransform(worldToScreen, envelope, width, height);
+	}
 
-    @Override
-    public void render( Tile tile ) {
-        if ( tile == null ) {
-            LOG.debug( "Not rendering null tile." );
-            return;
-        }
-        int minx, miny, maxx, maxy;
-        Envelope env = tile.getEnvelope();
-        Point2D.Double p = (Point2D.Double) worldToScreen.transform( new Point2D.Double( env.getMin().get0(),
-                                                                                         env.getMin().get1() ), null );
-        minx = MathUtils.round( p.x );
-        miny = MathUtils.round( p.y );
-        p = (Point2D.Double) worldToScreen.transform( new Point2D.Double( env.getMax().get0(), env.getMax().get1() ),
-                                                      null );
-        maxx = MathUtils.round( p.x );
-        maxy = MathUtils.round( p.y );
-        try {
-            graphics.drawImage( tile.getAsImage(), minx, miny, maxx - minx, maxy - miny, null );
-        } catch ( TileIOException e ) {
-            LOG.debug( "Error retrieving tile image: " + e.getMessage() );
-            graphics.setColor( RED );
-            graphics.fillRect( minx, miny, maxx - minx, maxy - miny );
-        }
-    }
+	@Override
+	public void render(Tile tile) {
+		if (tile == null) {
+			LOG.debug("Not rendering null tile.");
+			return;
+		}
+		int minx, miny, maxx, maxy;
+		Envelope env = tile.getEnvelope();
+		Point2D.Double p = (Point2D.Double) worldToScreen
+			.transform(new Point2D.Double(env.getMin().get0(), env.getMin().get1()), null);
+		minx = MathUtils.round(p.x);
+		miny = MathUtils.round(p.y);
+		p = (Point2D.Double) worldToScreen.transform(new Point2D.Double(env.getMax().get0(), env.getMax().get1()),
+				null);
+		maxx = MathUtils.round(p.x);
+		maxy = MathUtils.round(p.y);
+		try {
+			graphics.drawImage(tile.getAsImage(), minx, miny, maxx - minx, maxy - miny, null);
+		}
+		catch (TileIOException e) {
+			LOG.debug("Error retrieving tile image: " + e.getMessage());
+			graphics.setColor(RED);
+			graphics.fillRect(minx, miny, maxx - minx, maxy - miny);
+		}
+	}
+
 }

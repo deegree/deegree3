@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -61,206 +60,199 @@ import org.locationtech.jts.geom.MultiLineString;
 
 /**
  * Default implementation of {@link CompositeCurve}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class DefaultCompositeCurve extends AbstractDefaultGeometry implements CompositeCurve {
 
-    private List<Curve> memberCurves;
+	private List<Curve> memberCurves;
 
-    /**
-     * Creates a new {@link DefaultCompositeCurve} from the given parameters.
-     * 
-     * @param id
-     *            identifier, may be null
-     * @param crs
-     *            coordinate reference system, may be null
-     * @param pm
-     *            precision model, may be null
-     * @param memberCurves
-     *            curves that constitute the composited curve, each curve must end at the start point of the subsequent
-     *            curve in the list
-     */
-    public DefaultCompositeCurve( String id, ICRS crs, PrecisionModel pm, List<Curve> memberCurves ) {
-        super( id, crs, pm );
-        this.memberCurves = memberCurves;
-    }
+	/**
+	 * Creates a new {@link DefaultCompositeCurve} from the given parameters.
+	 * @param id identifier, may be null
+	 * @param crs coordinate reference system, may be null
+	 * @param pm precision model, may be null
+	 * @param memberCurves curves that constitute the composited curve, each curve must
+	 * end at the start point of the subsequent curve in the list
+	 */
+	public DefaultCompositeCurve(String id, ICRS crs, PrecisionModel pm, List<Curve> memberCurves) {
+		super(id, crs, pm);
+		this.memberCurves = memberCurves;
+	}
 
-    @Override
-    public GeometryType getGeometryType() {
-        return GeometryType.PRIMITIVE_GEOMETRY;
-    }
+	@Override
+	public GeometryType getGeometryType() {
+		return GeometryType.PRIMITIVE_GEOMETRY;
+	}
 
-    @Override
-    public PrimitiveType getPrimitiveType() {
-        return PrimitiveType.Curve;
-    }
+	@Override
+	public PrimitiveType getPrimitiveType() {
+		return PrimitiveType.Curve;
+	}
 
-    @Override
-    public CurveType getCurveType() {
-        return CurveType.CompositeCurve;
-    }
+	@Override
+	public CurveType getCurveType() {
+		return CurveType.CompositeCurve;
+	}
 
-    @Override
-    public Pair<Point, Point> getBoundary() {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Pair<Point, Point> getBoundary() {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public List<CurveSegment> getCurveSegments() {
-        List<CurveSegment> allSegments = new LinkedList<CurveSegment>();
-        for ( Curve member : memberCurves ) {
-            allSegments.addAll( member.getCurveSegments() );
-        }
-        return allSegments;
-    }
+	@Override
+	public List<CurveSegment> getCurveSegments() {
+		List<CurveSegment> allSegments = new LinkedList<CurveSegment>();
+		for (Curve member : memberCurves) {
+			allSegments.addAll(member.getCurveSegments());
+		}
+		return allSegments;
+	}
 
-    @Override
-    public Point getStartPoint() {
-        return memberCurves.get( 0 ).getStartPoint();
-    }
+	@Override
+	public Point getStartPoint() {
+		return memberCurves.get(0).getStartPoint();
+	}
 
-    @Override
-    public Point getEndPoint() {
-        return memberCurves.get( memberCurves.size() - 1 ).getEndPoint();
-    }
+	@Override
+	public Point getEndPoint() {
+		return memberCurves.get(memberCurves.size() - 1).getEndPoint();
+	}
 
-    @Override
-    public Measure getLength( Unit requestedUnit ) {
-        // TODO
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Measure getLength(Unit requestedUnit) {
+		// TODO
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public boolean isClosed() {
-        return getStartPoint().equals( getEndPoint() );
-    }
+	@Override
+	public boolean isClosed() {
+		return getStartPoint().equals(getEndPoint());
+	}
 
-    @Override
-    public int getCoordinateDimension() {
-        return memberCurves.get( 0 ).getCoordinateDimension();
-    }
+	@Override
+	public int getCoordinateDimension() {
+		return memberCurves.get(0).getCoordinateDimension();
+	}
 
-    @Override
-    protected MultiLineString buildJTSGeometry() {
-        org.locationtech.jts.geom.LineString [] jtsMembers = new org.locationtech.jts.geom.LineString[size()];
-        int i = 0;
-        for ( Curve geometry : memberCurves ) {
-            jtsMembers[i++] = (org.locationtech.jts.geom.LineString) getAsDefaultGeometry( geometry ).getJTSGeometry();
-        }
-        return jtsFactory.createMultiLineString( jtsMembers );
-    }    
-    
-    // -----------------------------------------------------------------------
-    // delegate methods for List<Curve>
-    // -----------------------------------------------------------------------
+	@Override
+	protected MultiLineString buildJTSGeometry() {
+		org.locationtech.jts.geom.LineString[] jtsMembers = new org.locationtech.jts.geom.LineString[size()];
+		int i = 0;
+		for (Curve geometry : memberCurves) {
+			jtsMembers[i++] = (org.locationtech.jts.geom.LineString) getAsDefaultGeometry(geometry).getJTSGeometry();
+		}
+		return jtsFactory.createMultiLineString(jtsMembers);
+	}
 
-    public boolean add( Curve e ) {
-        return memberCurves.add( e );
-    }
+	// -----------------------------------------------------------------------
+	// delegate methods for List<Curve>
+	// -----------------------------------------------------------------------
 
-    public void add( int index, Curve element ) {
-        memberCurves.add( index, element );
-    }
+	public boolean add(Curve e) {
+		return memberCurves.add(e);
+	}
 
-    public boolean addAll( Collection<? extends Curve> c ) {
-        return memberCurves.addAll( c );
-    }
+	public void add(int index, Curve element) {
+		memberCurves.add(index, element);
+	}
 
-    public boolean addAll( int index, Collection<? extends Curve> c ) {
-        return memberCurves.addAll( index, c );
-    }
+	public boolean addAll(Collection<? extends Curve> c) {
+		return memberCurves.addAll(c);
+	}
 
-    public void clear() {
-        memberCurves.clear();
-    }
+	public boolean addAll(int index, Collection<? extends Curve> c) {
+		return memberCurves.addAll(index, c);
+	}
 
-    public boolean contains( Object o ) {
-        return memberCurves.contains( o );
-    }
+	public void clear() {
+		memberCurves.clear();
+	}
 
-    public boolean containsAll( Collection<?> c ) {
-        return memberCurves.containsAll( c );
-    }
+	public boolean contains(Object o) {
+		return memberCurves.contains(o);
+	}
 
-    public Curve get( int index ) {
-        return memberCurves.get( index );
-    }
+	public boolean containsAll(Collection<?> c) {
+		return memberCurves.containsAll(c);
+	}
 
-    public int indexOf( Object o ) {
-        return memberCurves.indexOf( o );
-    }
+	public Curve get(int index) {
+		return memberCurves.get(index);
+	}
 
-    public boolean isEmpty() {
-        return memberCurves.isEmpty();
-    }
+	public int indexOf(Object o) {
+		return memberCurves.indexOf(o);
+	}
 
-    public Iterator<Curve> iterator() {
-        return memberCurves.iterator();
-    }
+	public boolean isEmpty() {
+		return memberCurves.isEmpty();
+	}
 
-    public int lastIndexOf( Object o ) {
-        return memberCurves.lastIndexOf( o );
-    }
+	public Iterator<Curve> iterator() {
+		return memberCurves.iterator();
+	}
 
-    public ListIterator<Curve> listIterator() {
-        return memberCurves.listIterator();
-    }
+	public int lastIndexOf(Object o) {
+		return memberCurves.lastIndexOf(o);
+	}
 
-    public ListIterator<Curve> listIterator( int index ) {
-        return memberCurves.listIterator( index );
-    }
+	public ListIterator<Curve> listIterator() {
+		return memberCurves.listIterator();
+	}
 
-    public Curve remove( int index ) {
-        return memberCurves.remove( index );
-    }
+	public ListIterator<Curve> listIterator(int index) {
+		return memberCurves.listIterator(index);
+	}
 
-    public boolean remove( Object o ) {
-        return memberCurves.remove( o );
-    }
+	public Curve remove(int index) {
+		return memberCurves.remove(index);
+	}
 
-    public boolean removeAll( Collection<?> c ) {
-        return memberCurves.removeAll( c );
-    }
+	public boolean remove(Object o) {
+		return memberCurves.remove(o);
+	}
 
-    public boolean retainAll( Collection<?> c ) {
-        return memberCurves.retainAll( c );
-    }
+	public boolean removeAll(Collection<?> c) {
+		return memberCurves.removeAll(c);
+	}
 
-    public Curve set( int index, Curve element ) {
-        return memberCurves.set( index, element );
-    }
+	public boolean retainAll(Collection<?> c) {
+		return memberCurves.retainAll(c);
+	}
 
-    public int size() {
-        return memberCurves.size();
-    }
+	public Curve set(int index, Curve element) {
+		return memberCurves.set(index, element);
+	}
 
-    public List<Curve> subList( int fromIndex, int toIndex ) {
-        return memberCurves.subList( fromIndex, toIndex );
-    }
+	public int size() {
+		return memberCurves.size();
+	}
 
-    public Object[] toArray() {
-        return memberCurves.toArray();
-    }
+	public List<Curve> subList(int fromIndex, int toIndex) {
+		return memberCurves.subList(fromIndex, toIndex);
+	}
 
-    public <T> T[] toArray( T[] a ) {
-        return memberCurves.toArray( a );
-    }
+	public Object[] toArray() {
+		return memberCurves.toArray();
+	}
 
-    @Override
-    public LineString getAsLineString() {
-        return new DefaultLineString( id, crs, pm, getControlPoints() );
-    }
+	public <T> T[] toArray(T[] a) {
+		return memberCurves.toArray(a);
+	}
 
-    @Override
-    public Points getControlPoints() {
-        List<Points> pointsList = new ArrayList<Points>( memberCurves.size() );
-        for ( Curve curve : memberCurves ) {
-            pointsList.add( curve.getControlPoints() );
-        }
-        return new PointsPoints( pointsList );
-    }
+	@Override
+	public LineString getAsLineString() {
+		return new DefaultLineString(id, crs, pm, getControlPoints());
+	}
+
+	@Override
+	public Points getControlPoints() {
+		List<Points> pointsList = new ArrayList<Points>(memberCurves.size());
+		for (Curve curve : memberCurves) {
+			pointsList.add(curve.getControlPoints());
+		}
+		return new PointsPoints(pointsList);
+	}
+
 }

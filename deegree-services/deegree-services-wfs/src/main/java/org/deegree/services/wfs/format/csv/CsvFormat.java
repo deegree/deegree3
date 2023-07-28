@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2022 by:
@@ -54,49 +53,47 @@ import org.deegree.services.wfs.format.csv.request.CsvGetFeatureHandler;
  */
 public class CsvFormat implements Format {
 
-    private final CsvGetFeatureHandler csvGetFeatureHandler;
+	private final CsvGetFeatureHandler csvGetFeatureHandler;
 
-    /**
-     * Instantiate {@link CsvFormat}
-     *
-     * @param webFeatureService
-     *            the {@link WebFeatureService} using this format, never <code>null</code>
-     */
-    public CsvFormat( WebFeatureService webFeatureService ) {
-        this.csvGetFeatureHandler = new CsvGetFeatureHandler( webFeatureService );
-    }
+	/**
+	 * Instantiate {@link CsvFormat}
+	 * @param webFeatureService the {@link WebFeatureService} using this format, never
+	 * <code>null</code>
+	 */
+	public CsvFormat(WebFeatureService webFeatureService) {
+		this.csvGetFeatureHandler = new CsvGetFeatureHandler(webFeatureService);
+	}
 
-    @Override
-    public void destroy() {
-        // nothing to do
-    }
+	@Override
+	public void destroy() {
+		// nothing to do
+	}
 
-    @Override
-    public void doGetFeature( GetFeature request, HttpResponseBuffer response )
-                            throws Exception {
-        ResultType type = request.getPresentationParams().getResultType();
-        if ( type == RESULTS || type == null ) {
-            this.csvGetFeatureHandler.doGetFeatureResults( request, response );
-        } else {
-            throw new UnsupportedOperationException( "GetFeature with RESULTTYPE=HITS for CSV is not supported" );
-        }
-    }
+	@Override
+	public void doGetFeature(GetFeature request, HttpResponseBuffer response) throws Exception {
+		ResultType type = request.getPresentationParams().getResultType();
+		if (type == RESULTS || type == null) {
+			this.csvGetFeatureHandler.doGetFeatureResults(request, response);
+		}
+		else {
+			throw new UnsupportedOperationException("GetFeature with RESULTTYPE=HITS for CSV is not supported");
+		}
+	}
 
-    @Override
-    public void doDescribeFeatureType( DescribeFeatureType request, HttpResponseBuffer response, boolean isSoap )
-                            throws Exception {
-        throw new UnsupportedOperationException( "DescribeFeatureType for GeoJSON is not supported" );
-    }
+	@Override
+	public void doDescribeFeatureType(DescribeFeatureType request, HttpResponseBuffer response, boolean isSoap)
+			throws Exception {
+		throw new UnsupportedOperationException("DescribeFeatureType for GeoJSON is not supported");
+	}
 
-    @Override
-    public void doGetGmlObject( GetGmlObject request, HttpResponseBuffer response )
-                            throws Exception {
-        throw new UnsupportedOperationException( "GetGmlObject for GeoJSON is not supported" );
-    }
+	@Override
+	public void doGetGmlObject(GetGmlObject request, HttpResponseBuffer response) throws Exception {
+		throw new UnsupportedOperationException("GetGmlObject for GeoJSON is not supported");
+	}
 
-    @Override
-    public void doGetPropertyValue( GetPropertyValue getPropertyValue, HttpResponseBuffer response )
-                            throws Exception {
-        throw new UnsupportedOperationException( "GetPropertyValue for GeoJSON is not supported" );
-    }
+	@Override
+	public void doGetPropertyValue(GetPropertyValue getPropertyValue, HttpResponseBuffer response) throws Exception {
+		throw new UnsupportedOperationException("GetPropertyValue for GeoJSON is not supported");
+	}
+
 }

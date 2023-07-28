@@ -50,29 +50,31 @@ import org.slf4j.LoggerFactory;
 
 public class SvgPathLoader implements WellKnownNameLoader {
 
-    private static final Logger LOG = LoggerFactory.getLogger( SvgPathLoader.class );
+	private static final Logger LOG = LoggerFactory.getLogger(SvgPathLoader.class);
 
-    public static final String PREFIX = "svgpath://";
+	public static final String PREFIX = "svgpath://";
 
-    @Override
-    public Shape parse( String wellKnownName, Function<String, URL> resolver ) {
-        if ( wellKnownName == null || !wellKnownName.startsWith( PREFIX ) )
-            return null;
+	@Override
+	public Shape parse(String wellKnownName, Function<String, URL> resolver) {
+		if (wellKnownName == null || !wellKnownName.startsWith(PREFIX))
+			return null;
 
-        String wkn = wellKnownName.substring( PREFIX.length() );
+		String wkn = wellKnownName.substring(PREFIX.length());
 
-        Shape s = null;
-        AWTPathProducer pathProducer = new AWTPathProducer();
-        PathParser pp = new PathParser();
-        pp.setPathHandler( pathProducer );
-        try {
-            pp.parse( wkn );
-            s = pathProducer.getShape();
-        } catch ( ParseException ex ) {
-            LOG.warn( "Could not Parse SVGPath {}: {}", wkn, ex.getMessage() );
-            LOG.trace( "Exception", ex );
-        }
+		Shape s = null;
+		AWTPathProducer pathProducer = new AWTPathProducer();
+		PathParser pp = new PathParser();
+		pp.setPathHandler(pathProducer);
+		try {
+			pp.parse(wkn);
+			s = pathProducer.getShape();
+		}
+		catch (ParseException ex) {
+			LOG.warn("Could not Parse SVGPath {}: {}", wkn, ex.getMessage());
+			LOG.trace("Exception", ex);
+		}
 
-        return s;
-    }
+		return s;
+	}
+
 }

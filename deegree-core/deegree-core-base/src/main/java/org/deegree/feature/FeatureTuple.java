@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2015 by:
@@ -47,126 +46,125 @@ import org.deegree.geometry.Envelope;
 
 /**
  * Encapsulates a tuple of features as described in WFS 2.0 as result set for joins.
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
 public class FeatureTuple implements Feature {
 
-    private final List<Feature> features;
+	private final List<Feature> features;
 
-    private String id;
+	private String id;
 
-    private Envelope envelope;
+	private Envelope envelope;
 
-    private boolean envelopeCalculated = false;
+	private boolean envelopeCalculated = false;
 
-    /**
-     * @param features
-     *            list of features part of this tuple, never <code>null</code>
-     */
-    public FeatureTuple( List<Feature> features ) {
-        this.features = features;
-        this.id = createId( features );
-    }
+	/**
+	 * @param features list of features part of this tuple, never <code>null</code>
+	 */
+	public FeatureTuple(List<Feature> features) {
+		this.features = features;
+		this.id = createId(features);
+	}
 
-    /**
-     * @return all features part of this tuple, never <code>null</code>
-     */
-    public List<Feature> getTupleFeatures() {
-        return features;
-    }
+	/**
+	 * @return all features part of this tuple, never <code>null</code>
+	 */
+	public List<Feature> getTupleFeatures() {
+		return features;
+	}
 
-    @Override
-    public String getId() {
-        return id;
-    }
+	@Override
+	public String getId() {
+		return id;
+	}
 
-    @Override
-    public List<Property> getProperties() {
-        throw new UnsupportedOperationException( "Not implemented yet." );
-    }
+	@Override
+	public List<Property> getProperties() {
+		throw new UnsupportedOperationException("Not implemented yet.");
+	}
 
-    @Override
-    public List<Property> getProperties( QName propName ) {
-        throw new UnsupportedOperationException( "Not implemented yet." );
-    }
+	@Override
+	public List<Property> getProperties(QName propName) {
+		throw new UnsupportedOperationException("Not implemented yet.");
+	}
 
-    @Override
-    public void setId( String id ) {
-        this.id = id;
-    }
+	@Override
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    @Override
-    public QName getName() {
-        throw new UnsupportedOperationException( "Not implemented yet." );
-    }
+	@Override
+	public QName getName() {
+		throw new UnsupportedOperationException("Not implemented yet.");
+	}
 
-    @Override
-    public FeatureType getType() {
-        throw new UnsupportedOperationException( "Not implemented yet." );
-    }
+	@Override
+	public FeatureType getType() {
+		throw new UnsupportedOperationException("Not implemented yet.");
+	}
 
-    @Override
-    public List<Property> getGeometryProperties() {
-        throw new UnsupportedOperationException( "Not implemented yet." );
-    }
+	@Override
+	public List<Property> getGeometryProperties() {
+		throw new UnsupportedOperationException("Not implemented yet.");
+	}
 
-    @Override
-    public Envelope getEnvelope() {
-        if ( !envelopeCalculated ) {
-            envelope = calcEnvelope();
-        }
-        return envelope;
-    }
+	@Override
+	public Envelope getEnvelope() {
+		if (!envelopeCalculated) {
+			envelope = calcEnvelope();
+		}
+		return envelope;
+	}
 
-    @Override
-    public void setEnvelope( Envelope env ) {
-        this.envelope = env;
-        envelopeCalculated = true;
-    }
+	@Override
+	public void setEnvelope(Envelope env) {
+		this.envelope = env;
+		envelopeCalculated = true;
+	}
 
-    @Override
-    public Envelope calcEnvelope() {
-        Envelope fcBBox = null;
-        for ( Feature feature : this.features ) {
-            Envelope memberBBox = feature.getEnvelope();
-            if ( memberBBox != null ) {
-                if ( fcBBox != null ) {
-                    fcBBox = fcBBox.merge( memberBBox );
-                } else {
-                    fcBBox = memberBBox;
-                }
-            }
-        }
-        return fcBBox;
-    }
+	@Override
+	public Envelope calcEnvelope() {
+		Envelope fcBBox = null;
+		for (Feature feature : this.features) {
+			Envelope memberBBox = feature.getEnvelope();
+			if (memberBBox != null) {
+				if (fcBBox != null) {
+					fcBBox = fcBBox.merge(memberBBox);
+				}
+				else {
+					fcBBox = memberBBox;
+				}
+			}
+		}
+		return fcBBox;
+	}
 
-    @Override
-    public void setPropertyValue( QName propName, int occurence, TypedObjectNode value ) {
-        throw new UnsupportedOperationException( "Not implemented yet." );
-    }
+	@Override
+	public void setPropertyValue(QName propName, int occurence, TypedObjectNode value) {
+		throw new UnsupportedOperationException("Not implemented yet.");
+	}
 
-    @Override
-    public void setProperties( List<Property> props )
-                            throws IllegalArgumentException {
-        throw new UnsupportedOperationException( "Not implemented yet." );
-    }
+	@Override
+	public void setProperties(List<Property> props) throws IllegalArgumentException {
+		throw new UnsupportedOperationException("Not implemented yet.");
+	}
 
-    @Override
-    public ExtraProps getExtraProperties() {
-        throw new UnsupportedOperationException( "Not implemented yet." );
-    }
+	@Override
+	public ExtraProps getExtraProperties() {
+		throw new UnsupportedOperationException("Not implemented yet.");
+	}
 
-    @Override
-    public void setExtraProperties( ExtraProps extraProps ) {
-        throw new UnsupportedOperationException( "Not implemented yet." );
-    }
+	@Override
+	public void setExtraProperties(ExtraProps extraProps) {
+		throw new UnsupportedOperationException("Not implemented yet.");
+	}
 
-    private String createId( List<Feature> features ) {
-        String id = "tupel_";
-        for ( Feature feature : features )
-            id += feature.getId();
-        return id;
-    }
+	private String createId(List<Feature> features) {
+		String id = "tupel_";
+		for (Feature feature : features)
+			id += feature.getId();
+		return id;
+	}
 
 }

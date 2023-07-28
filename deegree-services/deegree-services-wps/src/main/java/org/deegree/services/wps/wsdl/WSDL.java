@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -44,32 +43,29 @@ import org.deegree.workspace.standard.DefaultWorkspace;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class WSDL {
 
-    private final File wsdlFile;
+	private final File wsdlFile;
 
-    public WSDL( String wsPath ) {
-        DefaultWorkspace ws = (DefaultWorkspace) OGCFrontController.getServiceWorkspace().getNewWorkspace();
-        wsdlFile = new File( ws.getLocation(), wsPath );
-    }
+	public WSDL(String wsPath) {
+		DefaultWorkspace ws = (DefaultWorkspace) OGCFrontController.getServiceWorkspace().getNewWorkspace();
+		wsdlFile = new File(ws.getLocation(), wsPath);
+	}
 
-    public File getFile() {
-        return wsdlFile;
-    }
+	public File getFile() {
+		return wsdlFile;
+	}
 
-    public boolean exists() {
-        return wsdlFile.exists();
-    }
+	public boolean exists() {
+		return wsdlFile.exists();
+	}
 
-    public String getRestURL() {
-        return OGCFrontController.getContext().getResourcesUrl()
-               + "../rest"
-               + UriBuilder.fromResource( WSDLResource.class ).path( WSDLResource.class, "get" ).build( "ALL" ).toString();
-    }
+	public String getRestURL() {
+		return OGCFrontController.getContext().getResourcesUrl() + "../rest"
+				+ UriBuilder.fromResource(WSDLResource.class).path(WSDLResource.class, "get").build("ALL").toString();
+	}
+
 }

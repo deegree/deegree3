@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -59,72 +58,72 @@ import org.slf4j.Logger;
 
 /**
  * Responsible for writing out envelopes and crs.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 public class WmsCapabilities111SpatialMetadataWriter {
 
-    private static final Logger LOG = getLogger( WmsCapabilities111SpatialMetadataWriter.class );
+	private static final Logger LOG = getLogger(WmsCapabilities111SpatialMetadataWriter.class);
 
-    public static void writeSrsAndEnvelope( XMLStreamWriter writer, List<ICRS> srs, Envelope layerEnv )
-                            throws XMLStreamException {
-        for ( ICRS crs : srs ) {
-            writeElement( writer, "SRS", crs.getAlias() );
-        }
+	public static void writeSrsAndEnvelope(XMLStreamWriter writer, List<ICRS> srs, Envelope layerEnv)
+			throws XMLStreamException {
+		for (ICRS crs : srs) {
+			writeElement(writer, "SRS", crs.getAlias());
+		}
 
-        ICRS latlon;
-        final CoordinateFormatter formatter = new DecimalCoordinateFormatter( 8 );
-        try {
-            latlon = CRSManager.lookup( "CRS:84" );
-            if ( layerEnv != null && layerEnv.getCoordinateDimension() >= 2 ) {
-                Envelope bbox = new GeometryTransformer( latlon ).transform( layerEnv );
-                writer.writeStartElement( "LatLonBoundingBox" );
-                writer.writeAttribute( "minx", formatter.format( bbox.getMin().get0() ) );
-                writer.writeAttribute( "miny", formatter.format( bbox.getMin().get1() ) );
-                writer.writeAttribute( "maxx", formatter.format( bbox.getMax().get0() ) );
-                writer.writeAttribute( "maxy", formatter.format( bbox.getMax().get1() ) );
-                writer.writeEndElement();
+		ICRS latlon;
+		final CoordinateFormatter formatter = new DecimalCoordinateFormatter(8);
+		try {
+			latlon = CRSManager.lookup("CRS:84");
+			if (layerEnv != null && layerEnv.getCoordinateDimension() >= 2) {
+				Envelope bbox = new GeometryTransformer(latlon).transform(layerEnv);
+				writer.writeStartElement("LatLonBoundingBox");
+				writer.writeAttribute("minx", formatter.format(bbox.getMin().get0()));
+				writer.writeAttribute("miny", formatter.format(bbox.getMin().get1()));
+				writer.writeAttribute("maxx", formatter.format(bbox.getMax().get0()));
+				writer.writeAttribute("maxy", formatter.format(bbox.getMax().get1()));
+				writer.writeEndElement();
 
-                for ( ICRS crs : srs ) {
-                    if ( crs.getAlias().startsWith( "AUTO" ) ) {
-                        continue;
-                    }
-                    // try {
-                    // crs
-                    // } catch ( UnknownCRSException e ) {
-                    // LOG.warn( "Cannot find: {}", e.getLocalizedMessage() );
-                    // LOG.trace( "Stack trace:", e );
-                    // continue;
-                    // }
-                    Envelope envelope;
-                    try {
-                        if ( layerEnv.getCoordinateSystem() == null ) {
-                            envelope = new GeometryTransformer( crs ).transform( layerEnv, latlon );
-                        } else {
-                            envelope = new GeometryTransformer( crs ).transform( layerEnv );
-                        }
-                    } catch ( Throwable e ) {
-                        LOG.warn( "Cannot transform: {}", e.getLocalizedMessage() );
-                        LOG.trace( "Stack trace:", e );
-                        continue;
-                    }
+				for (ICRS crs : srs) {
+					if (crs.getAlias().startsWith("AUTO")) {
+						continue;
+					}
+					// try {
+					// crs
+					// } catch ( UnknownCRSException e ) {
+					// LOG.warn( "Cannot find: {}", e.getLocalizedMessage() );
+					// LOG.trace( "Stack trace:", e );
+					// continue;
+					// }
+					Envelope envelope;
+					try {
+						if (layerEnv.getCoordinateSystem() == null) {
+							envelope = new GeometryTransformer(crs).transform(layerEnv, latlon);
+						}
+						else {
+							envelope = new GeometryTransformer(crs).transform(layerEnv);
+						}
+					}
+					catch (Throwable e) {
+						LOG.warn("Cannot transform: {}", e.getLocalizedMessage());
+						LOG.trace("Stack trace:", e);
+						continue;
+					}
 
-                    writer.writeStartElement( "BoundingBox" );
-                    writer.writeAttribute( "SRS", crs.getAlias() );
-                    writer.writeAttribute( "minx", formatter.format( envelope.getMin().get0() ) );
-                    writer.writeAttribute( "miny", formatter.format( envelope.getMin().get1() ) );
-                    writer.writeAttribute( "maxx", formatter.format( envelope.getMax().get0() ) );
-                    writer.writeAttribute( "maxy", formatter.format( envelope.getMax().get1() ) );
-                    writer.writeEndElement();
-                }
-            }
-        } catch ( Throwable e ) {
-            LOG.warn( "Cannot transform: {}", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-        }
-    }
+					writer.writeStartElement("BoundingBox");
+					writer.writeAttribute("SRS", crs.getAlias());
+					writer.writeAttribute("minx", formatter.format(envelope.getMin().get0()));
+					writer.writeAttribute("miny", formatter.format(envelope.getMin().get1()));
+					writer.writeAttribute("maxx", formatter.format(envelope.getMax().get0()));
+					writer.writeAttribute("maxy", formatter.format(envelope.getMax().get1()));
+					writer.writeEndElement();
+				}
+			}
+		}
+		catch (Throwable e) {
+			LOG.warn("Cannot transform: {}", e.getLocalizedMessage());
+			LOG.trace("Stack trace:", e);
+		}
+	}
 
 }

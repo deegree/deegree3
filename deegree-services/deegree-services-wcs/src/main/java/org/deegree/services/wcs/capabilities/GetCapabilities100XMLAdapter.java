@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -46,48 +45,44 @@ import org.deegree.services.wcs.WCSRequest100XMLAdapter;
 
 /**
  * This is an xml adapter for GetCapabilities requests after the WCS 1.0.0 spec. *
- * 
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class GetCapabilities100XMLAdapter extends WCSRequest100XMLAdapter {
 
-    /**
-     * @param rootElement
-     */
-    public GetCapabilities100XMLAdapter( OMElement rootElement ) {
-        this.setRootElement( rootElement );
-    }
+	/**
+	 * @param rootElement
+	 */
+	public GetCapabilities100XMLAdapter(OMElement rootElement) {
+		this.setRootElement(rootElement);
+	}
 
-    /**
-     * @return the parsed request
-     * @throws InvalidParameterValueException
-     *             if version attribute contains a syntactical error
-     */
-    public GetCapabilities parse()
-                            throws InvalidParameterValueException {
+	/**
+	 * @return the parsed request
+	 * @throws InvalidParameterValueException if version attribute contains a syntactical
+	 * error
+	 */
+	public GetCapabilities parse() throws InvalidParameterValueException {
 
-        List<String> sections = parseSections();
+		List<String> sections = parseSections();
 
-        String updateSequence = getNodeAsString( rootElement, new XPath( "/" + WCS_PREFIX
-                                                                         + ":GetCapabilities/@updateSequence",
-                                                                         wcsNSContext ), null );
+		String updateSequence = getNodeAsString(rootElement,
+				new XPath("/" + WCS_PREFIX + ":GetCapabilities/@updateSequence", wcsNSContext), null);
 
-        String version = getNodeAsString( rootElement, new XPath( "/" + WCS_PREFIX + ":GetCapabilities/@version",
-                                                                  wcsNSContext ), null );
-        return new GetCapabilities( version, sections, null, updateSequence, null );
-    }
+		String version = getNodeAsString(rootElement,
+				new XPath("/" + WCS_PREFIX + ":GetCapabilities/@version", wcsNSContext), null);
+		return new GetCapabilities(version, sections, null, updateSequence, null);
+	}
 
-    /**
-     * @return
-     */
-    private List<String> parseSections() {
-        String section = getNodeAsString( rootElement, new XPath( "/" + WCS_PREFIX + "GetCapabilities/" + WCS_PREFIX
-                                                                  + ":section", nsContext ), "/" );
-        List<String> result = new ArrayList<String>( 1 );
-        result.add( section );
-        return result;
-    }
+	/**
+	 * @return
+	 */
+	private List<String> parseSections() {
+		String section = getNodeAsString(rootElement,
+				new XPath("/" + WCS_PREFIX + "GetCapabilities/" + WCS_PREFIX + ":section", nsContext), "/");
+		List<String> result = new ArrayList<String>(1);
+		result.add(section);
+		return result;
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aschmitz@deegree.wald.intevation.de/deegree/deegree3/trunk/deegree-core/deegree-core-rendering-2d/src/main/java/org/deegree/rendering/r2d/se/unevaluated/Style.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -88,396 +87,404 @@ import org.slf4j.Logger;
 
 /**
  * <code>Style</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: aschmitz $
- * 
- * @version $Revision: 31255 $, $Date: 2011-07-12 12:08:02 +0200 (Tue, 12 Jul 2011) $
  */
 public class Style implements Copyable<Style> {
 
-    private static final Logger LOG = getLogger( Style.class );
+	private static final Logger LOG = getLogger(Style.class);
 
-    private LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>> rules = new LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>>();
+	private LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>> rules = new LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>>();
 
-    private HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>> labels = new HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>>();
+	private HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>> labels = new HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>>();
 
-    private HashMap<Symbolizer<TextStyling>, String> labelXMLTexts = new HashMap<Symbolizer<TextStyling>, String>();
+	private HashMap<Symbolizer<TextStyling>, String> labelXMLTexts = new HashMap<Symbolizer<TextStyling>, String>();
 
-    private String name;
+	private String name;
 
-    private String title;
+	private String title;
 
-    private boolean useDefault;
+	private boolean useDefault;
 
-    private PointStyling defaultPointStyle;
+	private PointStyling defaultPointStyle;
 
-    private LineStyling defaultLineStyle;
+	private LineStyling defaultLineStyle;
 
-    private PolygonStyling defaultPolygonStyle;
+	private PolygonStyling defaultPolygonStyle;
 
-    private QName featureType;
+	private QName featureType;
 
-    private File legendFile;
+	private File legendFile;
 
-    private URL legendUrl;
+	private URL legendUrl;
 
-    private boolean prefersGetLegendGraphicUrl;
+	private boolean prefersGetLegendGraphicUrl;
 
-    /**
-     * @param rules
-     * @param labels
-     * @param xmlTexts
-     * @param name
-     * @param featureTypeName
-     */
-    public Style( Collection<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>> rules,
-                  Map<Symbolizer<TextStyling>, Continuation<StringBuffer>> labels,
-                  Map<Symbolizer<TextStyling>, String> xmlTexts, String name, QName featureTypeName ) {
-        this.rules.addAll( rules );
-        this.labels.putAll( labels );
-        this.name = name;
-        if ( xmlTexts != null ) {
-            this.labelXMLTexts.putAll( xmlTexts );
-        }
-        featureType = featureTypeName;
-    }
+	/**
+	 * @param rules
+	 * @param labels
+	 * @param xmlTexts
+	 * @param name
+	 * @param featureTypeName
+	 */
+	public Style(Collection<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>> rules,
+			Map<Symbolizer<TextStyling>, Continuation<StringBuffer>> labels,
+			Map<Symbolizer<TextStyling>, String> xmlTexts, String name, QName featureTypeName) {
+		this.rules.addAll(rules);
+		this.labels.putAll(labels);
+		this.name = name;
+		if (xmlTexts != null) {
+			this.labelXMLTexts.putAll(xmlTexts);
+		}
+		featureType = featureTypeName;
+	}
 
-    /**
-     * @param symbolizer
-     * @param label
-     * @param name
-     * @param xmlText
-     */
-    public Style( Symbolizer<?> symbolizer, Continuation<StringBuffer> label, String name, String xmlText ) {
-        InsertContinuation<LinkedList<Symbolizer<?>>, Symbolizer<?>> contn;
-        contn = new InsertContinuation<LinkedList<Symbolizer<?>>, Symbolizer<?>>( symbolizer );
-        rules.add( new Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>( contn,
-                                                                                  new DoublePair( NEGATIVE_INFINITY,
-                                                                                                  POSITIVE_INFINITY ) ) );
-        if ( label != null ) {
-            labels.put( (Symbolizer) symbolizer, label );
-        }
-        if ( xmlText != null ) {
-            labelXMLTexts.put( (Symbolizer) symbolizer, xmlText );
-        }
-        this.name = name;
-    }
+	/**
+	 * @param symbolizer
+	 * @param label
+	 * @param name
+	 * @param xmlText
+	 */
+	public Style(Symbolizer<?> symbolizer, Continuation<StringBuffer> label, String name, String xmlText) {
+		InsertContinuation<LinkedList<Symbolizer<?>>, Symbolizer<?>> contn;
+		contn = new InsertContinuation<LinkedList<Symbolizer<?>>, Symbolizer<?>>(symbolizer);
+		rules.add(new Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>(contn,
+				new DoublePair(NEGATIVE_INFINITY, POSITIVE_INFINITY)));
+		if (label != null) {
+			labels.put((Symbolizer) symbolizer, label);
+		}
+		if (xmlText != null) {
+			labelXMLTexts.put((Symbolizer) symbolizer, xmlText);
+		}
+		this.name = name;
+	}
 
-    /**
-     * Uses first geometry and default style.
-     */
-    public Style() {
-        useDefault = true;
-        defaultPointStyle = new PointStyling();
-        defaultLineStyle = new LineStyling();
-        defaultPolygonStyle = new PolygonStyling();
+	/**
+	 * Uses first geometry and default style.
+	 */
+	public Style() {
+		useDefault = true;
+		defaultPointStyle = new PointStyling();
+		defaultLineStyle = new LineStyling();
+		defaultPolygonStyle = new PolygonStyling();
 
-        defaultPolygonStyle.fill = new Fill();
-        defaultPolygonStyle.stroke = new Stroke();
-        defaultPolygonStyle.stroke.color = black;
-    }
+		defaultPolygonStyle.fill = new Fill();
+		defaultPolygonStyle.stroke = new Stroke();
+		defaultPolygonStyle.stroke.color = black;
+	}
 
-    /**
-     * @return true, if this is the default style (built with default constructor)
-     */
-    public boolean isDefault() {
-        return useDefault;
-    }
+	/**
+	 * @return true, if this is the default style (built with default constructor)
+	 */
+	public boolean isDefault() {
+		return useDefault;
+	}
 
-    /**
-     * Uses first geometry and default style in specified color.
-     */
-    public Style( Color c ) {
-        useDefault = true;
-        defaultPointStyle = new PointStyling();
-        defaultLineStyle = new LineStyling();
-        defaultPolygonStyle = new PolygonStyling();
+	/**
+	 * Uses first geometry and default style in specified color.
+	 */
+	public Style(Color c) {
+		useDefault = true;
+		defaultPointStyle = new PointStyling();
+		defaultLineStyle = new LineStyling();
+		defaultPolygonStyle = new PolygonStyling();
 
-        defaultLineStyle.stroke.color = c;
+		defaultLineStyle.stroke.color = c;
 
-        defaultPolygonStyle.fill = new Fill();
-        defaultPolygonStyle.fill.color = c;
-        defaultPolygonStyle.stroke = new Stroke();
-        defaultPolygonStyle.stroke.color = black;
-    }
+		defaultPolygonStyle.fill = new Fill();
+		defaultPolygonStyle.fill.color = c;
+		defaultPolygonStyle.stroke = new Stroke();
+		defaultPolygonStyle.stroke.color = black;
+	}
 
-    /**
-     * @param scale
-     * @return a filtered list of symbolizers
-     */
-    public Style filter( double scale ) {
-        if ( useDefault ) {
-            return this;
-        }
+	/**
+	 * @param scale
+	 * @return a filtered list of symbolizers
+	 */
+	public Style filter(double scale) {
+		if (useDefault) {
+			return this;
+		}
 
-        LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>> rules = new LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>>();
-        for ( Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair> p : this.rules ) {
-            if ( p.second.first <= scale && p.second.second >= scale ) {
-                rules.add( p );
-            } else {
-                LOG.debug( "Not using rule because of scale constraints, in style with name '{}'.", name );
-            }
-        }
-        return new Style( rules, labels, null, name, featureType );
-    }
+		LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>> rules = new LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>>();
+		for (Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair> p : this.rules) {
+			if (p.second.first <= scale && p.second.second >= scale) {
+				rules.add(p);
+			}
+			else {
+				LOG.debug("Not using rule because of scale constraints, in style with name '{}'.", name);
+			}
+		}
+		return new Style(rules, labels, null, name, featureType);
+	}
 
-    /**
-     * @param f
-     * @return a pair suitable for rendering
-     */
-    public LinkedList<Triple<Styling, LinkedList<Geometry>, String>> evaluate( Feature f,
-                                                                               XPathEvaluator<Feature> evaluator ) {
-        if ( useDefault ) {
-            LinkedList<Triple<Styling, LinkedList<Geometry>, String>> list = new LinkedList<Triple<Styling, LinkedList<Geometry>, String>>();
+	/**
+	 * @param f
+	 * @return a pair suitable for rendering
+	 */
+	public LinkedList<Triple<Styling, LinkedList<Geometry>, String>> evaluate(Feature f,
+			XPathEvaluator<Feature> evaluator) {
+		if (useDefault) {
+			LinkedList<Triple<Styling, LinkedList<Geometry>, String>> list = new LinkedList<Triple<Styling, LinkedList<Geometry>, String>>();
 
-            List<Property> geoms = f.getGeometryProperties();
-            if ( geoms != null ) {
-                for ( Property p : geoms ) {
-                    LinkedList<Geometry> geometries = new LinkedList<Geometry>();
-                    Geometry geom = (Geometry) p.getValue();
-                    geometries.add( geom );
-                    if ( geom instanceof Point || geom instanceof MultiPoint ) {
-                        list.add( new Triple<Styling, LinkedList<Geometry>, String>( defaultPointStyle, geometries,
-                                                                                     null ) );
-                    } else if ( geom instanceof Curve || geom instanceof MultiCurve<?>
-                                || geom instanceof MultiLineString ) {
-                        list.add( new Triple<Styling, LinkedList<Geometry>, String>( defaultLineStyle, geometries, null ) );
-                    } else if ( geom instanceof Surface || geom instanceof MultiSurface<?>
-                                || geom instanceof MultiPolygon || geom instanceof Envelope ) {
-                        list.add( new Triple<Styling, LinkedList<Geometry>, String>( defaultPolygonStyle, geometries,
-                                                                                     null ) );
-                    } else {
-                        LOG.error( "Geometries of type '{}' are not supported/known. Please report!", geom.getClass() );
-                    }
-                }
-            }
+			List<Property> geoms = f.getGeometryProperties();
+			if (geoms != null) {
+				for (Property p : geoms) {
+					LinkedList<Geometry> geometries = new LinkedList<Geometry>();
+					Geometry geom = (Geometry) p.getValue();
+					geometries.add(geom);
+					if (geom instanceof Point || geom instanceof MultiPoint) {
+						list.add(
+								new Triple<Styling, LinkedList<Geometry>, String>(defaultPointStyle, geometries, null));
+					}
+					else if (geom instanceof Curve || geom instanceof MultiCurve<?>
+							|| geom instanceof MultiLineString) {
+						list.add(new Triple<Styling, LinkedList<Geometry>, String>(defaultLineStyle, geometries, null));
+					}
+					else if (geom instanceof Surface || geom instanceof MultiSurface<?> || geom instanceof MultiPolygon
+							|| geom instanceof Envelope) {
+						list.add(new Triple<Styling, LinkedList<Geometry>, String>(defaultPolygonStyle, geometries,
+								null));
+					}
+					else {
+						LOG.error("Geometries of type '{}' are not supported/known. Please report!", geom.getClass());
+					}
+				}
+			}
 
-            return list;
-        }
+			return list;
+		}
 
-        LinkedList<Object> res = new LinkedList<Object>();
-        if ( featureType != null && !f.getType().getName().equals( featureType ) ) {
-            LOG.debug( "Not using style because feature type constraint does not match." );
-            return (LinkedList) res;
-        }
+		LinkedList<Object> res = new LinkedList<Object>();
+		if (featureType != null && !f.getType().getName().equals(featureType)) {
+			LOG.debug("Not using style because feature type constraint does not match.");
+			return (LinkedList) res;
+		}
 
-        StringBuffer sb = new StringBuffer();
-        LinkedList<Symbolizer<?>> list = new LinkedList<Symbolizer<?>>();
-        for ( Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair> pair : rules ) {
-            pair.first.evaluate( list, f, evaluator );
-        }
+		StringBuffer sb = new StringBuffer();
+		LinkedList<Symbolizer<?>> list = new LinkedList<Symbolizer<?>>();
+		for (Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair> pair : rules) {
+			pair.first.evaluate(list, f, evaluator);
+		}
 
-        String text = null;
-        for ( Symbolizer<?> s : list ) {
-            Pair<?, ?> p = s.evaluate( f, evaluator );
+		String text = null;
+		for (Symbolizer<?> s : list) {
+			Pair<?, ?> p = s.evaluate(f, evaluator);
 
-            if ( labels.containsKey( s ) ) {
-                sb.setLength( 0 );
-                labels.get( s ).evaluate( sb, f, evaluator );
-                text = sb.toString();
-            }
-            res.add( new Triple<Object, Object, String>( p.first, p.second, text ) );
-        }
+			if (labels.containsKey(s)) {
+				sb.setLength(0);
+				labels.get(s).evaluate(sb, f, evaluator);
+				text = sb.toString();
+			}
+			res.add(new Triple<Object, Object, String>(p.first, p.second, text));
+		}
 
-        return (LinkedList) res;
-    }
+		return (LinkedList) res;
+	}
 
-    /**
-     * @return the live list of rules
-     */
-    public LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>> getRules() {
-        return rules;
-    }
+	/**
+	 * @return the live list of rules
+	 */
+	public LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>> getRules() {
+		return rules;
+	}
 
-    /**
-     * @return the name
-     */
-    public String getName() {
-        return name;
-    }
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
+	}
 
-    /**
-     * @param name
-     */
-    public void setName( String name ) {
-        this.name = name;
-    }
+	/**
+	 * @param name
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    /**
-     * @return the title of the style, may be <code>null</code>
-     */
-    public String getTitle() {
-        return title;
-    }
+	/**
+	 * @return the title of the style, may be <code>null</code>
+	 */
+	public String getTitle() {
+		return title;
+	}
 
-    /**
-     * @param title of the style, may be <code>null</code>
-     */
-    public void setTitle( String title ) {
-        this.title = title;
-    }
+	/**
+	 * @param title of the style, may be <code>null</code>
+	 */
+	public void setTitle(String title) {
+		this.title = title;
+	}
 
+	/**
+	 * @return the name of the feature type (or null if not constrained)
+	 */
+	public QName getFeatureType() {
+		return featureType;
+	}
 
-    /**
-     * @return the name of the feature type (or null if not constrained)
-     */
-    public QName getFeatureType() {
-        return featureType;
-    }
+	/**
+	 * @return the base stylings for all symbolizers sorted by rules
+	 */
+	public ArrayList<LinkedList<Styling>> getBases() {
+		return unzip(getBasesWithScales()).first;
+	}
 
-    /**
-     * @return the base stylings for all symbolizers sorted by rules
-     */
-    public ArrayList<LinkedList<Styling>> getBases() {
-        return unzip( getBasesWithScales() ).first;
-    }
+	/**
+	 * @return the base stylings for all symbolizers sorted by rules and the corresponding
+	 * scale denominators
+	 */
+	public LinkedList<Triple<LinkedList<Styling>, DoublePair, LinkedList<String>>> getBasesWithScales() {
+		LinkedList<Triple<LinkedList<Styling>, DoublePair, LinkedList<String>>> list;
+		list = new LinkedList<Triple<LinkedList<Styling>, DoublePair, LinkedList<String>>>();
+		for (Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair> rule : rules) {
+			LinkedList<Symbolizer<?>> base = new LinkedList<Symbolizer<?>>();
+			rule.first.evaluate(base, null, null);
+			LinkedList<Styling> stylings = new LinkedList<Styling>();
+			LinkedList<String> xmlTexts = new LinkedList<String>();
+			for (Symbolizer<?> s : base) {
+				stylings.add((Styling) s.getBase());
+				String text = labelXMLTexts.get(s);
+				if (text != null) {
+					xmlTexts.add(text);
+				}
+			}
+			if (!stylings.isEmpty()) {
+				list.add(new Triple<LinkedList<Styling>, DoublePair, LinkedList<String>>(stylings, rule.second,
+						xmlTexts));
+			}
+		}
+		return list;
+	}
 
-    /**
-     * @return the base stylings for all symbolizers sorted by rules and the corresponding scale denominators
-     */
-    public LinkedList<Triple<LinkedList<Styling>, DoublePair, LinkedList<String>>> getBasesWithScales() {
-        LinkedList<Triple<LinkedList<Styling>, DoublePair, LinkedList<String>>> list;
-        list = new LinkedList<Triple<LinkedList<Styling>, DoublePair, LinkedList<String>>>();
-        for ( Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair> rule : rules ) {
-            LinkedList<Symbolizer<?>> base = new LinkedList<Symbolizer<?>>();
-            rule.first.evaluate( base, null, null );
-            LinkedList<Styling> stylings = new LinkedList<Styling>();
-            LinkedList<String> xmlTexts = new LinkedList<String>();
-            for ( Symbolizer<?> s : base ) {
-                stylings.add( (Styling) s.getBase() );
-                String text = labelXMLTexts.get( s );
-                if ( text != null ) {
-                    xmlTexts.add( text );
-                }
-            }
-            if ( !stylings.isEmpty() ) {
-                list.add( new Triple<LinkedList<Styling>, DoublePair, LinkedList<String>>( stylings, rule.second,
-                                                                                           xmlTexts ) );
-            }
-        }
-        return list;
-    }
+	/**
+	 * @return true, if no filters and no expressions are used
+	 */
+	@SuppressWarnings("unchecked")
+	public boolean isSimple() {
+		for (Pair rule : rules) {
+			if (rule.first instanceof FilterContinuation && ((FilterContinuation) rule.first).filter != null) {
+				return false;
+			}
 
-    /**
-     * @return true, if no filters and no expressions are used
-     */
-    @SuppressWarnings("unchecked")
-    public boolean isSimple() {
-        for ( Pair rule : rules ) {
-            if ( rule.first instanceof FilterContinuation && ( (FilterContinuation) rule.first ).filter != null ) {
-                return false;
-            }
+			LinkedList<Symbolizer<?>> base = new LinkedList<Symbolizer<?>>();
+			((Continuation) rule.first).evaluate(base, null, null);
+			for (Symbolizer s : base) {
+				if (!s.isEvaluated()) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
 
-            LinkedList<Symbolizer<?>> base = new LinkedList<Symbolizer<?>>();
-            ( (Continuation) rule.first ).evaluate( base, null, null );
-            for ( Symbolizer s : base ) {
-                if ( !s.isEvaluated() ) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
+	/**
+	 * @return Polygon.class, if the IsSurface function is used, Point.class for IsPoint
+	 * and LineString.class for IsCurve
+	 */
+	public LinkedList<Class<?>> getRuleTypes() {
+		LinkedList<Class<?>> list = new LinkedList<Class<?>>();
 
-    /**
-     * @return Polygon.class, if the IsSurface function is used, Point.class for IsPoint and LineString.class for
-     *         IsCurve
-     */
-    public LinkedList<Class<?>> getRuleTypes() {
-        LinkedList<Class<?>> list = new LinkedList<Class<?>>();
+		for (Pair<?, ?> rule : rules) {
+			if (rule.first instanceof FilterContinuation) {
+				FilterContinuation cont = (FilterContinuation) rule.first;
+				if (cont.filter instanceof IsSurface) {
+					list.add(Polygon.class);
+				}
+				else if (cont.filter instanceof IsCurve) {
+					list.add(LineString.class);
+				}
+				else if (cont.filter instanceof IsPoint) {
+					list.add(Point.class);
+				}
+				else {
+					list.add(Polygon.class);
+				}
+			}
+			else {
+				list.add(Polygon.class);
+			}
+		}
 
-        for ( Pair<?, ?> rule : rules ) {
-            if ( rule.first instanceof FilterContinuation ) {
-                FilterContinuation cont = (FilterContinuation) rule.first;
-                if ( cont.filter instanceof IsSurface ) {
-                    list.add( Polygon.class );
-                } else if ( cont.filter instanceof IsCurve ) {
-                    list.add( LineString.class );
-                } else if ( cont.filter instanceof IsPoint ) {
-                    list.add( Point.class );
-                } else {
-                    list.add( Polygon.class );
-                }
-            } else {
-                list.add( Polygon.class );
-            }
-        }
+		return list;
+	}
 
-        return list;
-    }
+	/**
+	 * @return "", if no title was set
+	 */
+	public LinkedList<String> getRuleTitles() {
+		LinkedList<String> list = new LinkedList<String>();
 
-    /**
-     * @return "", if no title was set
-     */
-    public LinkedList<String> getRuleTitles() {
-        LinkedList<String> list = new LinkedList<String>();
+		for (Pair<?, ?> rule : rules) {
+			if (rule.first instanceof FilterContinuation) {
+				FilterContinuation cont = (FilterContinuation) rule.first;
+				list.add(cont.common.title);
+			}
+			else {
+				list.add("");
+			}
+		}
 
-        for ( Pair<?, ?> rule : rules ) {
-            if ( rule.first instanceof FilterContinuation ) {
-                FilterContinuation cont = (FilterContinuation) rule.first;
-                list.add( cont.common.title );
-            } else {
-                list.add( "" );
-            }
-        }
+		return list;
+	}
 
-        return list;
-    }
+	/**
+	 * @param file
+	 */
+	public void setLegendFile(File file) {
+		legendFile = file;
+	}
 
-    /**
-     * @param file
-     */
-    public void setLegendFile( File file ) {
-        legendFile = file;
-    }
+	public void setLegendURL(URL url) {
+		legendUrl = url;
+	}
 
-    public void setLegendURL( URL url ) {
-        legendUrl = url;
-    }
+	/**
+	 * @return the legend file or null, if not set
+	 */
+	public File getLegendFile() {
+		return legendFile;
+	}
 
-    /**
-     * @return the legend file or null, if not set
-     */
-    public File getLegendFile() {
-        return legendFile;
-    }
+	public URL getLegendURL() {
+		return legendUrl;
+	}
 
-    public URL getLegendURL() {
-        return legendUrl;
-    }
+	public void setPrefersGetLegendGraphicUrl(boolean prefers) {
+		this.prefersGetLegendGraphicUrl = prefers;
+	}
 
-    public void setPrefersGetLegendGraphicUrl( boolean prefers ) {
-        this.prefersGetLegendGraphicUrl = prefers;
-    }
+	public boolean prefersGetLegendGraphicUrl() {
+		return prefersGetLegendGraphicUrl;
+	}
 
-    public boolean prefersGetLegendGraphicUrl() {
-        return prefersGetLegendGraphicUrl;
-    }
+	static class InsertContinuation<T extends Collection<U>, U> extends Continuation<T> {
 
-    static class InsertContinuation<T extends Collection<U>, U> extends Continuation<T> {
-        U value;
+		U value;
 
-        InsertContinuation( U value ) {
-            this.value = value;
-        }
+		InsertContinuation(U value) {
+			this.value = value;
+		}
 
-        @Override
-        public void updateStep( T base, Feature f, XPathEvaluator<Feature> evaluator ) {
-            base.add( value );
-        }
-    }
+		@Override
+		public void updateStep(T base, Feature f, XPathEvaluator<Feature> evaluator) {
+			base.add(value);
+		}
 
-    @Override
-    public Style copy() {
-        Style style = new Style( rules, labels, labelXMLTexts, name, featureType );
-        style.useDefault = useDefault;
-        style.defaultPointStyle = defaultPointStyle;
-        style.defaultLineStyle = defaultLineStyle;
-        style.defaultPolygonStyle = defaultPolygonStyle;
-        style.legendFile = legendFile;
-        style.legendUrl = legendUrl;
-        style.prefersGetLegendGraphicUrl = prefersGetLegendGraphicUrl;
-        return style;
-    }
+	}
+
+	@Override
+	public Style copy() {
+		Style style = new Style(rules, labels, labelXMLTexts, name, featureType);
+		style.useDefault = useDefault;
+		style.defaultPointStyle = defaultPointStyle;
+		style.defaultLineStyle = defaultLineStyle;
+		style.defaultPolygonStyle = defaultPolygonStyle;
+		style.legendFile = legendFile;
+		style.legendUrl = legendUrl;
+		style.prefersGetLegendGraphicUrl = prefersGetLegendGraphicUrl;
+		return style;
+	}
+
 }

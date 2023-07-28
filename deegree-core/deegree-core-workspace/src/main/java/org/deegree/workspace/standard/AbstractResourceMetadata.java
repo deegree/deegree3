@@ -51,73 +51,73 @@ import org.deegree.workspace.ResourceProvider;
 import org.deegree.workspace.Workspace;
 
 /**
- * Abstract resource metadata implementation that can be used as a base for all metadata implementations. Just make sure
- * to add your dependencies to the <code>dependencies</code> field upon #prepare.
- * 
+ * Abstract resource metadata implementation that can be used as a base for all metadata
+ * implementations. Just make sure to add your dependencies to the
+ * <code>dependencies</code> field upon #prepare.
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public abstract class AbstractResourceMetadata<T extends Resource> implements ResourceMetadata<T> {
 
-    protected Workspace workspace;
+	protected Workspace workspace;
 
-    protected ResourceLocation<T> location;
+	protected ResourceLocation<T> location;
 
-    protected AbstractResourceProvider<T> provider;
+	protected AbstractResourceProvider<T> provider;
 
-    protected Set<ResourceIdentifier<? extends Resource>> dependencies = new HashSet<ResourceIdentifier<? extends Resource>>();
+	protected Set<ResourceIdentifier<? extends Resource>> dependencies = new HashSet<ResourceIdentifier<? extends Resource>>();
 
-    protected Set<ResourceIdentifier<? extends Resource>> softDependencies = new HashSet<ResourceIdentifier<? extends Resource>>();
+	protected Set<ResourceIdentifier<? extends Resource>> softDependencies = new HashSet<ResourceIdentifier<? extends Resource>>();
 
-    public AbstractResourceMetadata( Workspace workspace, ResourceLocation<T> location,
-                                     AbstractResourceProvider<T> provider ) {
-        this.workspace = workspace;
-        this.location = location;
-        this.provider = provider;
-    }
+	public AbstractResourceMetadata(Workspace workspace, ResourceLocation<T> location,
+			AbstractResourceProvider<T> provider) {
+		this.workspace = workspace;
+		this.location = location;
+		this.provider = provider;
+	}
 
-    @Override
-    public ResourceLocation<T> getLocation() {
-        return location;
-    }
+	@Override
+	public ResourceLocation<T> getLocation() {
+		return location;
+	}
 
-    @Override
-    public ResourceIdentifier<T> getIdentifier() {
-        return location.getIdentifier();
-    }
+	@Override
+	public ResourceIdentifier<T> getIdentifier() {
+		return location.getIdentifier();
+	}
 
-    @Override
-    public Set<ResourceIdentifier<? extends Resource>> getDependencies() {
-        return new HashSet<ResourceIdentifier<? extends Resource>>( dependencies );
-    }
+	@Override
+	public Set<ResourceIdentifier<? extends Resource>> getDependencies() {
+		return new HashSet<ResourceIdentifier<? extends Resource>>(dependencies);
+	}
 
-    @Override
-    public Set<ResourceIdentifier<? extends Resource>> getSoftDependencies() {
-        return new HashSet<ResourceIdentifier<? extends Resource>>( softDependencies );
-    }
+	@Override
+	public Set<ResourceIdentifier<? extends Resource>> getSoftDependencies() {
+		return new HashSet<ResourceIdentifier<? extends Resource>>(softDependencies);
+	}
 
-    @Override
-    public int hashCode() {
-        return location.getIdentifier().hashCode();
-    }
+	@Override
+	public int hashCode() {
+		return location.getIdentifier().hashCode();
+	}
 
-    @Override
-    public boolean equals( Object obj ) {
-        if ( !( obj instanceof ResourceMetadata ) ) {
-            return false;
-        }
-        return location.getIdentifier().equals( ( (ResourceMetadata) obj ).getLocation().getIdentifier() );
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof ResourceMetadata)) {
+			return false;
+		}
+		return location.getIdentifier().equals(((ResourceMetadata) obj).getLocation().getIdentifier());
+	}
 
-    @Override
-    public String toString() {
-        return location.getIdentifier().toString();
-    }
+	@Override
+	public String toString() {
+		return location.getIdentifier().toString();
+	}
 
-    @Override
-    public ResourceProvider<T> getProvider() {
-        return provider;
-    }
+	@Override
+	public ResourceProvider<T> getProvider() {
+		return provider;
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -54,31 +53,30 @@ import org.junit.runners.Parameterized.Parameters;
 
 /**
  * Wraps the execution of the CITE WCS 1.0.0 TestSuite as a JUnit-test.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 22950 $, $Date: 2010-03-09 19:05:17 +0100 (Di, 09. Mär 2010) $
  */
 @RunWith(Parameterized.class)
 public class WCSCite100IntegrationTest extends AbstractCiteIntegrationTest {
 
-    private String testLabel = "WCS100";
+	private String testLabel = "WCS100";
 
-    @Parameterized.Parameters
-    public static  Collection getResultSnippets() throws Exception {
-        return getResultSnippets("/citewcs100/ctl/wcs.xml", "VAR_WCS_CAPABILITIES_URL", "wcs?request=GetCapabilities&service=WCS" );
-    }
+	@Parameterized.Parameters
+	public static Collection getResultSnippets() throws Exception {
+		return getResultSnippets("/citewcs100/ctl/wcs.xml", "VAR_WCS_CAPABILITIES_URL",
+				"wcs?request=GetCapabilities&service=WCS");
+	}
 
-    public WCSCite100IntegrationTest( String testLabel, String resultSnippet ) {
-        this.testLabel = testLabel;
-        this.resultSnippet = resultSnippet;
-    }
+	public WCSCite100IntegrationTest(String testLabel, String resultSnippet) {
+		this.testLabel = testLabel;
+		this.resultSnippet = resultSnippet;
+	}
 
-    @Test
-    public void singleTest() {
-        if ( resultSnippet.contains( "Failed" ) ) {
-            throw new RuntimeException( "Test '" + testLabel + "' failed." );
-        }
-    }
+	@Test
+	public void singleTest() {
+		if (resultSnippet.contains("Failed")) {
+			throw new RuntimeException("Test '" + testLabel + "' failed.");
+		}
+	}
+
 }

@@ -41,107 +41,94 @@ import org.junit.rules.ExpectedException;
 
 /**
  * Tests for {@link GetMapLimitChecker}.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * 
  * @since 3.4
  */
 public class GetMapLimitCheckerTest {
 
-    private final GetMapLimitChecker checker = new GetMapLimitChecker();
+	private final GetMapLimitChecker checker = new GetMapLimitChecker();
 
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
-    @Test
-    public void checkWidthWithNegativeValue()
-                            throws OWSException {
-        thrown.expect( OWSException.class );
-        thrown.expectMessage( "Width must be positive." );
-        checker.checkWidth( -1, null );
-    }
+	@Test
+	public void checkWidthWithNegativeValue() throws OWSException {
+		thrown.expect(OWSException.class);
+		thrown.expectMessage("Width must be positive.");
+		checker.checkWidth(-1, null);
+	}
 
-    @Test
-    public void checkWidthWithZero()
-                            throws OWSException {
-        thrown.expect( OWSException.class );
-        thrown.expectMessage( "Width must be positive." );
-        checker.checkWidth( 0, null );
-    }
+	@Test
+	public void checkWidthWithZero() throws OWSException {
+		thrown.expect(OWSException.class);
+		thrown.expectMessage("Width must be positive.");
+		checker.checkWidth(0, null);
+	}
 
-    @Test
-    public void checkWidthTooLarge()
-                            throws OWSException {
-        thrown.expect( OWSException.class );
-        thrown.expectMessage( "Width out of range. Maximum width: 1024" );
-        checker.checkWidth( 1025, 1024 );
-    }
+	@Test
+	public void checkWidthTooLarge() throws OWSException {
+		thrown.expect(OWSException.class);
+		thrown.expectMessage("Width out of range. Maximum width: 1024");
+		checker.checkWidth(1025, 1024);
+	}
 
-    @Test
-    public void checkWidthNoLimit()
-                            throws OWSException {
-        checker.checkWidth( 1025, null );
-    }
+	@Test
+	public void checkWidthNoLimit() throws OWSException {
+		checker.checkWidth(1025, null);
+	}
 
-    @Test
-    public void checkWidthInRange()
-                            throws OWSException {
-        checker.checkWidth( 1024, 1024 );
-    }
+	@Test
+	public void checkWidthInRange() throws OWSException {
+		checker.checkWidth(1024, 1024);
+	}
 
-    @Test
-    public void checkHeightWithNegativeValue()
-                            throws OWSException {
-        thrown.expect( OWSException.class );
-        thrown.expectMessage( "Height must be positive." );
-        checker.checkHeight( -1, null );
-    }
+	@Test
+	public void checkHeightWithNegativeValue() throws OWSException {
+		thrown.expect(OWSException.class);
+		thrown.expectMessage("Height must be positive.");
+		checker.checkHeight(-1, null);
+	}
 
-    @Test
-    public void checkHeightWithZero()
-                            throws OWSException {
-        thrown.expect( OWSException.class );
-        thrown.expectMessage( "Height must be positive." );
-        checker.checkHeight( 0, null );
-    }
+	@Test
+	public void checkHeightWithZero() throws OWSException {
+		thrown.expect(OWSException.class);
+		thrown.expectMessage("Height must be positive.");
+		checker.checkHeight(0, null);
+	}
 
-    @Test
-    public void checkHeightTooLarge()
-                            throws OWSException {
-        thrown.expect( OWSException.class );
-        thrown.expectMessage( "Height out of range. Maximum height: 1024" );
-        checker.checkHeight( 1025, 1024 );
-    }
+	@Test
+	public void checkHeightTooLarge() throws OWSException {
+		thrown.expect(OWSException.class);
+		thrown.expectMessage("Height out of range. Maximum height: 1024");
+		checker.checkHeight(1025, 1024);
+	}
 
-    @Test
-    public void checkHeightNoLimit()
-                            throws OWSException {
-        checker.checkHeight( 1025, null );
-    }
+	@Test
+	public void checkHeightNoLimit() throws OWSException {
+		checker.checkHeight(1025, null);
+	}
 
-    @Test
-    public void checkHeightInRange()
-                            throws OWSException {
-        checker.checkHeight( 1024, 1024 );
-    }
+	@Test
+	public void checkHeightInRange() throws OWSException {
+		checker.checkHeight(1024, 1024);
+	}
 
-    @Test
-    public void checkLayerCountInRange()
-                            throws OWSException {
-        checker.checkLayerCount( 10, 10 );
-    }
+	@Test
+	public void checkLayerCountInRange() throws OWSException {
+		checker.checkLayerCount(10, 10);
+	}
 
-    @Test
-    public void checkLayerCountTooLarge()
-                            throws OWSException {
-        thrown.expect( OWSException.class );
-        thrown.expectMessage( "Too many layers requested. Maximum number of layers: 10" );
-        checker.checkLayerCount( 100, 10 );
-    }
+	@Test
+	public void checkLayerCountTooLarge() throws OWSException {
+		thrown.expect(OWSException.class);
+		thrown.expectMessage("Too many layers requested. Maximum number of layers: 10");
+		checker.checkLayerCount(100, 10);
+	}
 
-    @Test
-    public void checkLayerCountNoLimit()
-                            throws OWSException {
-        checker.checkLayerCount( 100, null );
-    }
+	@Test
+	public void checkLayerCountNoLimit() throws OWSException {
+		checker.checkLayerCount(100, null);
+	}
+
 }

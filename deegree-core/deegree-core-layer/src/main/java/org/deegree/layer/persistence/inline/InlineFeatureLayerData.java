@@ -23,62 +23,65 @@ import org.slf4j.LoggerFactory;
 
 public class InlineFeatureLayerData implements LayerData {
 
-    private static final Logger LOG = LoggerFactory.getLogger( InlineFeatureLayerData.class );
+	private static final Logger LOG = LoggerFactory.getLogger(InlineFeatureLayerData.class);
 
-    private final FeatureCollection col;
+	private final FeatureCollection col;
 
-    private XPathEvaluator<?> evaluator;
+	private XPathEvaluator<?> evaluator;
 
-    private int maxFeatures;
+	private int maxFeatures;
 
-    private final Style style;
+	private final Style style;
 
-    InlineFeatureLayerData( FeatureCollection col, DynamicAppSchema schema, int maxFeatures, Style style ) {
-        this.col = col;
-        this.maxFeatures = maxFeatures;
-        this.style = style;
+	InlineFeatureLayerData(FeatureCollection col, DynamicAppSchema schema, int maxFeatures, Style style) {
+		this.col = col;
+		this.maxFeatures = maxFeatures;
+		this.style = style;
 
-        Map<String, QName> bindings = new HashMap<String, QName>();
-        // Set<QName> validNames = AppSchemas.collectProperyNames( featureStore.getSchema(), ftName );
-        if ( schema.getFeatureTypes().length > 0 ) {
-            Set<QName> validNames = AppSchemas.collectProperyNames( schema, schema.getFeatureTypes()[0].getName() );
-            for ( QName name : validNames ) {
-                bindings.put( name.getLocalPart(), name );
-            }
-        }
-        evaluator = new TypedObjectNodeXPathEvaluator( bindings );
-    }
+		Map<String, QName> bindings = new HashMap<String, QName>();
+		// Set<QName> validNames = AppSchemas.collectProperyNames(
+		// featureStore.getSchema(), ftName );
+		if (schema.getFeatureTypes().length > 0) {
+			Set<QName> validNames = AppSchemas.collectProperyNames(schema, schema.getFeatureTypes()[0].getName());
+			for (QName name : validNames) {
+				bindings.put(name.getLocalPart(), name);
+			}
+		}
+		evaluator = new TypedObjectNodeXPathEvaluator(bindings);
+	}
 
-    @Override
-    public void render( RenderContext context )
-                            throws InterruptedException {
-        FeatureInputStream features = null;
-        try {
-            features = new MemoryFeatureInputStream( col );
-            features = new ThreadedFeatureInputStream( features, 100 );
+	@Override
+	public void render(RenderContext context) throws InterruptedException {
+		FeatureInputStream features = null;
+		try {
+			features = new MemoryFeatureInputStream(col);
+			features = new ThreadedFeatureInputStream(features, 100);
 
-            FeatureStreamRenderer renderer = new FeatureStreamRenderer( context, maxFeatures, evaluator );
+			FeatureStreamRenderer renderer = new FeatureStreamRenderer(context, maxFeatures, evaluator);
 
-            renderer.renderFeatureStream( features, style );
-        } catch ( InterruptedException e ) {
-            throw e;
-            // } catch ( FilterEvaluationException e ) {
-            // LOG.warn( "A filter could not be evaluated. The error was '{}'.", e.getLocalizedMessage() );
-            // LOG.trace( "Stack trace:", e );
-        } catch ( Throwable e ) {
-            LOG.warn( "Data could not be fetched from the feature store. The error was '{}'.",
-                      e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-        } finally {
-            if ( features != null ) {
-                features.close();
-            }
-        }
-    }
+			renderer.renderFeatureStream(features, style);
+		}
+		catch (InterruptedException e) {
+			throw e;
+			// } catch ( FilterEvaluationException e ) {
+			// LOG.warn( "A filter could not be evaluated. The error was '{}'.",
+			// e.getLocalizedMessage() );
+			// LOG.trace( "Stack trace:", e );
+		}
+		catch (Throwable e) {
+			LOG.warn("Data could not be fetched from the feature store. The error was '{}'.", e.getLocalizedMessage());
+			LOG.trace("Stack trace:", e);
+		}
+		finally {
+			if (features != null) {
+				features.close();
+			}
+		}
+	}
 
-    @Override
-    public FeatureCollection info() {
-        return col;
-    }
+	@Override
+	public FeatureCollection info() {
+		return col;
+	}
 
 }

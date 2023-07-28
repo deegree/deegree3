@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2013 by:
@@ -48,9 +47,7 @@ import org.deegree.workspace.standard.AbstractResourceProvider;
  * {@link org.springframework.context.ApplicationContext}.
  * 
  * @author <a href="mailto:reijer.copier@idgis.nl">Reijer Copier</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
  */
 public abstract class ApplicationContextHolderProvider extends AbstractResourceProvider<ApplicationContextHolder> {
 

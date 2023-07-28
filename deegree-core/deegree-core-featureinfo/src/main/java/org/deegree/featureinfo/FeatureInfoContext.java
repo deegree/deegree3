@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2014 by:
@@ -23,7 +22,7 @@
  Boomkamp 16
  7461 AX Rijssen
  The Netherlands
- http://idgis.nl/ 
+ http://idgis.nl/
 
  lat/lon GmbH
  Aennchenstr. 19, 53177 Bonn
@@ -49,12 +48,10 @@ import javax.xml.stream.XMLStreamWriter;
 
 public interface FeatureInfoContext {
 
-    OutputStream getOutputStream()
-                            throws IOException;
+	OutputStream getOutputStream() throws IOException;
 
-    XMLStreamWriter getXmlWriter()
-                            throws IOException, XMLStreamException;
+	XMLStreamWriter getXmlWriter() throws IOException, XMLStreamException;
 
-    void sendRedirect( String location )
-                            throws IOException;
+	void sendRedirect(String location) throws IOException;
+
 }

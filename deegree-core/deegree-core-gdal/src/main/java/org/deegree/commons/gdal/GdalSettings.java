@@ -54,123 +54,128 @@ import org.slf4j.Logger;
 
 /**
  * {@link Initializable} for GDAL JNI access.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * 
  * @since 3.4
  */
 public class GdalSettings implements Initializable, Destroyable {
 
-    private static final Logger LOG = getLogger( GdalSettings.class );
+	private static final Logger LOG = getLogger(GdalSettings.class);
 
-    private static final URL CONFIG_SCHEMA = GdalSettings.class.getResource( "/META-INF/schemas/commons/gdal/gdal.xsd" );
+	private static final URL CONFIG_SCHEMA = GdalSettings.class.getResource("/META-INF/schemas/commons/gdal/gdal.xsd");
 
-    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.commons.gdal.jaxb";
+	private static final String CONFIG_JAXB_PACKAGE = "org.deegree.commons.gdal.jaxb";
 
-    private static final String configFileName = "gdal.xml";
+	private static final String configFileName = "gdal.xml";
 
-    private static boolean registerCalledSuccessfully;
+	private static boolean registerCalledSuccessfully;
 
-    private final Map<Integer, SpatialReference> epsgCodeToSpatialReference = synchronizedMap( new HashMap<Integer, SpatialReference>() );
+	private final Map<Integer, SpatialReference> epsgCodeToSpatialReference = synchronizedMap(
+			new HashMap<Integer, SpatialReference>());
 
-    private GdalDatasetPool pool;
+	private GdalDatasetPool pool;
 
-    @Override
-    public void destroy( Workspace workspace ) {
-        pool.shutdown();
-    }
+	@Override
+	public void destroy(Workspace workspace) {
+		pool.shutdown();
+	}
 
-    @Override
-    public void init( final Workspace workspace ) {
-        LOG.info( "--------------------------------------------------------------------------------" );
-        LOG.info( "GDAL JNI adapter." );
-        LOG.info( "--------------------------------------------------------------------------------" );        
-        GDALSettings settings = getGdalConfigOptions( workspace );
-        if ( settings == null ) {
-            LOG.info( "No " + configFileName + " in workspace. Not initializing GDAL JNI adapter." );
-            return;
-        } else {
-            registerGdal( settings );
-        }
-        LOG.info( "GDAL JNI adapter initialized successfully." );
-    }
+	@Override
+	public void init(final Workspace workspace) {
+		LOG.info("--------------------------------------------------------------------------------");
+		LOG.info("GDAL JNI adapter.");
+		LOG.info("--------------------------------------------------------------------------------");
+		GDALSettings settings = getGdalConfigOptions(workspace);
+		if (settings == null) {
+			LOG.info("No " + configFileName + " in workspace. Not initializing GDAL JNI adapter.");
+			return;
+		}
+		else {
+			registerGdal(settings);
+		}
+		LOG.info("GDAL JNI adapter initialized successfully.");
+	}
 
-    private void registerGdal( GDALSettings settings ) {
-        if ( registerOnceQuietly() ) {
-            for ( GDALOption gdalConfigOption : settings.getGDALOption() ) {
-                LOG.info( "GDAL: " + gdalConfigOption.getName() + "=" + gdalConfigOption.getValue().trim() );
-                gdal.SetConfigOption( gdalConfigOption.getName(), gdalConfigOption.getValue().trim() );
-            }
-            int activeDatasets = settings.getOpenDatasets().intValue();
-            LOG.info( "Max number of open GDAL datasets: " + activeDatasets );
-            pool = new GdalDatasetPool( activeDatasets );
-        }
-    }
+	private void registerGdal(GDALSettings settings) {
+		if (registerOnceQuietly()) {
+			for (GDALOption gdalConfigOption : settings.getGDALOption()) {
+				LOG.info("GDAL: " + gdalConfigOption.getName() + "=" + gdalConfigOption.getValue().trim());
+				gdal.SetConfigOption(gdalConfigOption.getName(), gdalConfigOption.getValue().trim());
+			}
+			int activeDatasets = settings.getOpenDatasets().intValue();
+			LOG.info("Max number of open GDAL datasets: " + activeDatasets);
+			pool = new GdalDatasetPool(activeDatasets);
+		}
+	}
 
-    private boolean registerOnceQuietly() {
-        if ( registerCalledSuccessfully ) {
-            return true;
-        }
-        try {
-            gdal.AllRegister();
-            registerCalledSuccessfully = true;
-            return true;
-        } catch ( Exception e ) {
-            LOG.error( "Registration of GDAL JNI adapter failed: " + e.getMessage(), e );
-        }
-        return false;
-    }
+	private boolean registerOnceQuietly() {
+		if (registerCalledSuccessfully) {
+			return true;
+		}
+		try {
+			gdal.AllRegister();
+			registerCalledSuccessfully = true;
+			return true;
+		}
+		catch (Exception e) {
+			LOG.error("Registration of GDAL JNI adapter failed: " + e.getMessage(), e);
+		}
+		return false;
+	}
 
-    public GdalDatasetPool getDatasetPool() {
-        return pool;
-    }
+	public GdalDatasetPool getDatasetPool() {
+		return pool;
+	}
 
-    private GDALSettings getGdalConfigOptions( final Workspace ws ) {
-        File configFile = new File( ( (DefaultWorkspace) ws ).getLocation(), configFileName );
-        if ( configFile.exists() ) {
-            LOG.info( "Using '" + configFileName + "' from workspace for GDAL settings." );
-            try {
-                return readGdalConfigOptions( configFile, ws );
-            } catch ( Exception e ) {
-                LOG.error( "Error reading GDALSettings file: " + e.getMessage() );
-            }
-        }
-        return null;
-    }
+	private GDALSettings getGdalConfigOptions(final Workspace ws) {
+		File configFile = new File(((DefaultWorkspace) ws).getLocation(), configFileName);
+		if (configFile.exists()) {
+			LOG.info("Using '" + configFileName + "' from workspace for GDAL settings.");
+			try {
+				return readGdalConfigOptions(configFile, ws);
+			}
+			catch (Exception e) {
+				LOG.error("Error reading GDALSettings file: " + e.getMessage());
+			}
+		}
+		return null;
+	}
 
-    private GDALSettings readGdalConfigOptions( File configFile, Workspace ws )
-                            throws FileNotFoundException, JAXBException {
-        InputStream is = null;
-        try {
-            is = new FileInputStream( configFile );
-            return (GDALSettings) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, is, ws );
-        } finally {
-            IOUtils.closeQuietly( is );
-        }
-    }
+	private GDALSettings readGdalConfigOptions(File configFile, Workspace ws)
+			throws FileNotFoundException, JAXBException {
+		InputStream is = null;
+		try {
+			is = new FileInputStream(configFile);
+			return (GDALSettings) JAXBUtils.unmarshall(CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, is, ws);
+		}
+		finally {
+			IOUtils.closeQuietly(is);
+		}
+	}
 
-    public SpatialReference getCrsAsWkt( int epsgCode ) {
-        SpatialReference sr = epsgCodeToSpatialReference.get( epsgCode );
-        if ( sr == null ) {
-            synchronized ( this ) {
-                sr = new SpatialReference();
-                int importFromEPSG = sr.ImportFromEPSG( epsgCode );
-                if ( importFromEPSG != 0 ) {
-                    throw new RuntimeException( "Cannot import EPSG:" + epsgCode + " from GDAL." );
-                }
-                epsgCodeToSpatialReference.put( epsgCode, sr );
-            }
-        }
-        return sr;
-    }
+	public SpatialReference getCrsAsWkt(int epsgCode) {
+		SpatialReference sr = epsgCodeToSpatialReference.get(epsgCode);
+		if (sr == null) {
+			synchronized (this) {
+				sr = new SpatialReference();
+				int importFromEPSG = sr.ImportFromEPSG(epsgCode);
+				if (importFromEPSG != 0) {
+					throw new RuntimeException("Cannot import EPSG:" + epsgCode + " from GDAL.");
+				}
+				epsgCodeToSpatialReference.put(epsgCode, sr);
+			}
+		}
+		return sr;
+	}
 
-    public SpatialReference getCrs84() {
-        SpatialReference sr = new SpatialReference();
-        int importFromEPSG = sr.ImportFromWkt(
-                        "GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AXIS[\"Longitude\",EAST],AXIS[\"Latitude\",NORTH]]" );
-        if ( importFromEPSG != 0 ) {
-            throw new RuntimeException( "Cannot import CRS:84 from GDAL." );
-        }
-        return sr;
-    }
+	public SpatialReference getCrs84() {
+		SpatialReference sr = new SpatialReference();
+		int importFromEPSG = sr.ImportFromWkt(
+				"GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AXIS[\"Longitude\",EAST],AXIS[\"Latitude\",NORTH]]");
+		if (importFromEPSG != 0) {
+			throw new RuntimeException("Cannot import CRS:84 from GDAL.");
+		}
+		return sr;
+	}
+
 }

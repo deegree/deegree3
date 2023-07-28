@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -43,83 +42,80 @@ import org.deegree.cs.components.Unit;
 
 /**
  * {@link CoordinateFormatter} based on {@link DecimalFormat}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class DecimalCoordinateFormatter implements CoordinateFormatter {
 
-    /** Number of decimal places used by default (6). **/
-    public static final int DEFAULT_PLACES = 6;
+	/** Number of decimal places used by default (6). **/
+	public static final int DEFAULT_PLACES = 6;
 
-    /** Number of decimal places used for metric coordinates (3). **/
-    private static final int DEFAULT_PLACES_METRE = 3;
+	/** Number of decimal places used for metric coordinates (3). **/
+	private static final int DEFAULT_PLACES_METRE = 3;
 
-    private final DecimalFormat decimalFormat;
+	private final DecimalFormat decimalFormat;
 
-    /**
-     * Creates a new {@link DecimalCoordinateFormatter} instance that uses {@link #DEFAULT_PLACES}.
-     */
-    public DecimalCoordinateFormatter() {
-        this( DEFAULT_PLACES );
-    }
+	/**
+	 * Creates a new {@link DecimalCoordinateFormatter} instance that uses
+	 * {@link #DEFAULT_PLACES}.
+	 */
+	public DecimalCoordinateFormatter() {
+		this(DEFAULT_PLACES);
+	}
 
-    /**
-     * Creates a new {@link DecimalCoordinateFormatter} instance suitable for the specified {@link Unit}.
-     * 
-     * @param uom
-     *            unit-of-measure, may be <code>null</code>
-     */
-    public DecimalCoordinateFormatter( IUnit uom ) {
-        int decimalPlaces = DEFAULT_PLACES;
-        if ( uom == Unit.METRE ) {
-            decimalPlaces = DEFAULT_PLACES_METRE;
-        }
-        StringBuffer pattern = new StringBuffer( "0" );
-        if ( decimalPlaces > 0 ) {
-            pattern.append( "." );
-            for ( int i = 0; i < decimalPlaces; i++ ) {
-                pattern.append( "0" );
-            }
-        }
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-        symbols.setDecimalSeparator( '.' );
-        decimalFormat = new DecimalFormat( pattern.toString(), symbols );
-    }
+	/**
+	 * Creates a new {@link DecimalCoordinateFormatter} instance suitable for the
+	 * specified {@link Unit}.
+	 * @param uom unit-of-measure, may be <code>null</code>
+	 */
+	public DecimalCoordinateFormatter(IUnit uom) {
+		int decimalPlaces = DEFAULT_PLACES;
+		if (uom == Unit.METRE) {
+			decimalPlaces = DEFAULT_PLACES_METRE;
+		}
+		StringBuffer pattern = new StringBuffer("0");
+		if (decimalPlaces > 0) {
+			pattern.append(".");
+			for (int i = 0; i < decimalPlaces; i++) {
+				pattern.append("0");
+			}
+		}
+		DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+		symbols.setDecimalSeparator('.');
+		decimalFormat = new DecimalFormat(pattern.toString(), symbols);
+	}
 
-    /**
-     * Creates a new {@link DecimalCoordinateFormatter} instance that uses the specified number of decimal places.
-     * 
-     * @param decimalPlaces
-     *            number of decimal places
-     */
-    public DecimalCoordinateFormatter( int decimalPlaces ) {
-        StringBuffer pattern = new StringBuffer( "0" );
-        if ( decimalPlaces > 0 ) {
-            pattern.append( "." );
-            for ( int i = 0; i < decimalPlaces; i++ ) {
-                pattern.append( "0" );
-            }
-        }
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-        symbols.setDecimalSeparator( '.' );
-        decimalFormat = new DecimalFormat( pattern.toString(), symbols );
-    }
+	/**
+	 * Creates a new {@link DecimalCoordinateFormatter} instance that uses the specified
+	 * number of decimal places.
+	 * @param decimalPlaces number of decimal places
+	 */
+	public DecimalCoordinateFormatter(int decimalPlaces) {
+		StringBuffer pattern = new StringBuffer("0");
+		if (decimalPlaces > 0) {
+			pattern.append(".");
+			for (int i = 0; i < decimalPlaces; i++) {
+				pattern.append("0");
+			}
+		}
+		DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+		symbols.setDecimalSeparator('.');
+		decimalFormat = new DecimalFormat(pattern.toString(), symbols);
+	}
 
-    /**
-     * Creates a new {@link DecimalCoordinateFormatter} instance from the given {@link DecimalFormat}.
-     * 
-     * @param decimalFormat
-     *            decimalFormat to use for formatting, must not be <code>null</code>
-     */
-    public DecimalCoordinateFormatter( DecimalFormat decimalFormat ) {
-        this.decimalFormat = decimalFormat;
-    }
+	/**
+	 * Creates a new {@link DecimalCoordinateFormatter} instance from the given
+	 * {@link DecimalFormat}.
+	 * @param decimalFormat decimalFormat to use for formatting, must not be
+	 * <code>null</code>
+	 */
+	public DecimalCoordinateFormatter(DecimalFormat decimalFormat) {
+		this.decimalFormat = decimalFormat;
+	}
 
-    @Override
-    public String format( double number ) {
-        return decimalFormat.format( number );
-    }
+	@Override
+	public String format(double number) {
+		return decimalFormat.format(number);
+	}
+
 }

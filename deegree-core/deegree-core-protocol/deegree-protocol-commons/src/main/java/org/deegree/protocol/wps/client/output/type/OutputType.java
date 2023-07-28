@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -40,85 +39,75 @@ import org.deegree.commons.tom.ows.LanguageString;
 
 /**
  * Abstract base class for definitions of process output parameters.
- * 
+ *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public abstract class OutputType {
 
-    private final CodeType id;
+	private final CodeType id;
 
-    private final LanguageString inputTitle;
+	private final LanguageString inputTitle;
 
-    private final LanguageString inputAbstract;
+	private final LanguageString inputAbstract;
 
-    /**
-     * Convenvience enum type for discriminating the different subclasses of {@link OutputType}.
-     * 
-     * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
-     * @author last edited by: $Author$
-     * 
-     * @version $Revision$, $Date$
-     */
-    public enum Type {
-        /** Instance is a {@link LiteralOutputType}. */
-        LITERAL,
-        /** Instance is a {@link BBoxOutputType}. */
-        BBOX,
-        /** Instance is a {@link ComplexOutputType}. */
-        COMPLEX
-    }
-    
-    /**
-     * Creates a new {@link OutputType} instance.
-     * 
-     * @param id
-     *            parameter identifier, must not be <code>null</code>
-     * @param inputTitle
-     *            parameter title, must not be <code>null</code>
-     * @param inputAbstract
-     *            abstract for the parameter, can be <code>null</code>
-     */
-    protected OutputType( CodeType id, LanguageString inputTitle, LanguageString inputAbstract ) {
-        this.id = id;
-        this.inputTitle = inputTitle;
-        this.inputAbstract = inputAbstract;
-    }
+	/**
+	 * Convenvience enum type for discriminating the different subclasses of
+	 * {@link OutputType}.
+	 *
+	 * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+	 */
+	public enum Type {
 
-    /**
-     * Returns the concrete output type of this instance.
-     * 
-     * @return the concrete output type, never <code>null</code> 
-     */
-    public abstract Type getType ();
-    
-    /**
-     * Returns the parameter identifier.
-     * 
-     * @return the parameter identifier, never <code>null</code>
-     */
-    public CodeType getId() {
-        return id;
-    }
+		/** Instance is a {@link LiteralOutputType}. */
+		LITERAL,
+		/** Instance is a {@link BBoxOutputType}. */
+		BBOX,
+		/** Instance is a {@link ComplexOutputType}. */
+		COMPLEX
 
-    /**
-     * Returns the parameter title.
-     * 
-     * @return the parameter title, never <code>null</code>
-     */
-    public LanguageString getTitle() {
-        return inputTitle;
-    }
+	}
 
-    /**
-     * Returns the abstract for the parameter.
-     * 
-     * @return the abstract for the parameter, can be <code>null</code>
-     */
-    public LanguageString getAbstract() {
-        return inputAbstract;
-    }
+	/**
+	 * Creates a new {@link OutputType} instance.
+	 * @param id parameter identifier, must not be <code>null</code>
+	 * @param inputTitle parameter title, must not be <code>null</code>
+	 * @param inputAbstract abstract for the parameter, can be <code>null</code>
+	 */
+	protected OutputType(CodeType id, LanguageString inputTitle, LanguageString inputAbstract) {
+		this.id = id;
+		this.inputTitle = inputTitle;
+		this.inputAbstract = inputAbstract;
+	}
+
+	/**
+	 * Returns the concrete output type of this instance.
+	 * @return the concrete output type, never <code>null</code>
+	 */
+	public abstract Type getType();
+
+	/**
+	 * Returns the parameter identifier.
+	 * @return the parameter identifier, never <code>null</code>
+	 */
+	public CodeType getId() {
+		return id;
+	}
+
+	/**
+	 * Returns the parameter title.
+	 * @return the parameter title, never <code>null</code>
+	 */
+	public LanguageString getTitle() {
+		return inputTitle;
+	}
+
+	/**
+	 * Returns the abstract for the parameter.
+	 * @return the abstract for the parameter, can be <code>null</code>
+	 */
+	public LanguageString getAbstract() {
+		return inputAbstract;
+	}
+
 }

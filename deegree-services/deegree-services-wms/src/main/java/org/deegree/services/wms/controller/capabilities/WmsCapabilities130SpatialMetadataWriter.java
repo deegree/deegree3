@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -64,107 +63,110 @@ import org.slf4j.Logger;
 
 /**
  * Responsible for writing out envelopes and crs.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 public class WmsCapabilities130SpatialMetadataWriter {
 
-    private static final Logger LOG = getLogger( WmsCapabilities130SpatialMetadataWriter.class );
+	private static final Logger LOG = getLogger(WmsCapabilities130SpatialMetadataWriter.class);
 
-    public static void writeSrsAndEnvelope( XMLStreamWriter writer, List<ICRS> crsList, Envelope layerEnv )
-                            throws XMLStreamException {
-        writeSrs( crsList, writer );
-        final CoordinateFormatter formatter = new DecimalCoordinateFormatter( 8 );
-        ICRS latlon;
-        try {
-            latlon = lookup( "CRS:84" );
-            if ( layerEnv != null && layerEnv.getCoordinateDimension() >= 2 ) {
-                Envelope bbox = new GeometryTransformer( latlon ).transform( layerEnv );
-                writer.writeStartElement( WMSNS, "EX_GeographicBoundingBox" );
-                Point min = bbox.getMin();
-                Point max = bbox.getMax();
-                if ( min.equals( max ) ) {
-                    // TODO uncomment this once it's implemented
-                    min = new DefaultPoint( min.getId(), min.getCoordinateSystem(), min.getPrecision(),
-                                            new double[] { min.get0() - 0.0001, min.get1() - 0.0001 } );
-                    // bbox = (Envelope) bbox.getBuffer( 0.0001 ); // should be ok to just use the same value for all
-                    // crs
-                }
-                writeElement( writer, WMSNS, "westBoundLongitude", formatter.format( min.get0() ) );
-                writeElement( writer, WMSNS, "eastBoundLongitude", formatter.format( max.get0() ) );
-                writeElement( writer, WMSNS, "southBoundLatitude", formatter.format( min.get1() ) );
-                writeElement( writer, WMSNS, "northBoundLatitude", formatter.format( max.get1() ) );
-                writer.writeEndElement();
+	public static void writeSrsAndEnvelope(XMLStreamWriter writer, List<ICRS> crsList, Envelope layerEnv)
+			throws XMLStreamException {
+		writeSrs(crsList, writer);
+		final CoordinateFormatter formatter = new DecimalCoordinateFormatter(8);
+		ICRS latlon;
+		try {
+			latlon = lookup("CRS:84");
+			if (layerEnv != null && layerEnv.getCoordinateDimension() >= 2) {
+				Envelope bbox = new GeometryTransformer(latlon).transform(layerEnv);
+				writer.writeStartElement(WMSNS, "EX_GeographicBoundingBox");
+				Point min = bbox.getMin();
+				Point max = bbox.getMax();
+				if (min.equals(max)) {
+					// TODO uncomment this once it's implemented
+					min = new DefaultPoint(min.getId(), min.getCoordinateSystem(), min.getPrecision(),
+							new double[] { min.get0() - 0.0001, min.get1() - 0.0001 });
+					// bbox = (Envelope) bbox.getBuffer( 0.0001 ); // should be ok to just
+					// use the same value for all
+					// crs
+				}
+				writeElement(writer, WMSNS, "westBoundLongitude", formatter.format(min.get0()));
+				writeElement(writer, WMSNS, "eastBoundLongitude", formatter.format(max.get0()));
+				writeElement(writer, WMSNS, "southBoundLatitude", formatter.format(min.get1()));
+				writeElement(writer, WMSNS, "northBoundLatitude", formatter.format(max.get1()));
+				writer.writeEndElement();
 
-                for ( ICRS crs : crsList ) {
-                    if ( crs.getAlias().startsWith( "AUTO" ) ) {
-                        continue;
-                    }
-                    final Envelope envelope = getTransformedEnvelopeWithAuthoritativeAxisOrdering( layerEnv, crs,
-                                                                                                   latlon );
-                    if ( envelope == null ) {
-                        continue;
-                    }
-                    writer.writeStartElement( WMSNS, "BoundingBox" );
-                    writer.writeAttribute( "CRS", crs.getAlias() );
-                    min = envelope.getMin();
-                    max = envelope.getMax();
-                    if ( min.equals( max ) ) {
-                        // TODO uncomment this once it's implemented
-                        min = new DefaultPoint( min.getId(), min.getCoordinateSystem(), min.getPrecision(),
-                                                new double[] { min.get0() - 0.0001, min.get1() - 0.0001 } );
-                        // bbox = (Envelope) bbox.getBuffer( 0.0001 ); // should be ok to just use the same value for
-                        // all
-                        // crs
-                    }
-                    writer.writeAttribute( "minx", formatter.format( min.get0() ) );
-                    writer.writeAttribute( "miny", formatter.format( min.get1() ) );
-                    writer.writeAttribute( "maxx", formatter.format( max.get0() ) );
-                    writer.writeAttribute( "maxy", formatter.format( max.get1() ) );
-                    writer.writeEndElement();
-                }
-            }
-        } catch ( Throwable e ) {
-            LOG.warn( "Cannot transform: {}", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-        }
-    }
+				for (ICRS crs : crsList) {
+					if (crs.getAlias().startsWith("AUTO")) {
+						continue;
+					}
+					final Envelope envelope = getTransformedEnvelopeWithAuthoritativeAxisOrdering(layerEnv, crs,
+							latlon);
+					if (envelope == null) {
+						continue;
+					}
+					writer.writeStartElement(WMSNS, "BoundingBox");
+					writer.writeAttribute("CRS", crs.getAlias());
+					min = envelope.getMin();
+					max = envelope.getMax();
+					if (min.equals(max)) {
+						// TODO uncomment this once it's implemented
+						min = new DefaultPoint(min.getId(), min.getCoordinateSystem(), min.getPrecision(),
+								new double[] { min.get0() - 0.0001, min.get1() - 0.0001 });
+						// bbox = (Envelope) bbox.getBuffer( 0.0001 ); // should be ok to
+						// just use the same value for
+						// all
+						// crs
+					}
+					writer.writeAttribute("minx", formatter.format(min.get0()));
+					writer.writeAttribute("miny", formatter.format(min.get1()));
+					writer.writeAttribute("maxx", formatter.format(max.get0()));
+					writer.writeAttribute("maxy", formatter.format(max.get1()));
+					writer.writeEndElement();
+				}
+			}
+		}
+		catch (Throwable e) {
+			LOG.warn("Cannot transform: {}", e.getLocalizedMessage());
+			LOG.trace("Stack trace:", e);
+		}
+	}
 
-    private static Envelope getTransformedEnvelopeWithAuthoritativeAxisOrdering( final Envelope nativeBbox,
-                                                                                 final ICRS targetCrs, final ICRS latlon ) {
-        ICRS targetCrsWithOfficialAxisOrder = targetCrs;
-        try {
-            targetCrsWithOfficialAxisOrder = getAxisAwareCrs( targetCrs );
-        } catch ( UnknownCRSException e ) {
-            LOG.warn( "Cannot determine axis-aware CRS: {}", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-        }
-        try {
-            GeometryTransformer transformer = new GeometryTransformer( targetCrsWithOfficialAxisOrder );
-            if ( nativeBbox.getCoordinateSystem() == null ) {
-                return transformer.transform( nativeBbox, latlon );
-            } else {
-                return transformer.transform( nativeBbox );
-            }
-        } catch ( Throwable e ) {
-            LOG.warn( "Cannot transform: {}", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-        }
-        return null;
-    }
+	private static Envelope getTransformedEnvelopeWithAuthoritativeAxisOrdering(final Envelope nativeBbox,
+			final ICRS targetCrs, final ICRS latlon) {
+		ICRS targetCrsWithOfficialAxisOrder = targetCrs;
+		try {
+			targetCrsWithOfficialAxisOrder = getAxisAwareCrs(targetCrs);
+		}
+		catch (UnknownCRSException e) {
+			LOG.warn("Cannot determine axis-aware CRS: {}", e.getLocalizedMessage());
+			LOG.trace("Stack trace:", e);
+		}
+		try {
+			GeometryTransformer transformer = new GeometryTransformer(targetCrsWithOfficialAxisOrder);
+			if (nativeBbox.getCoordinateSystem() == null) {
+				return transformer.transform(nativeBbox, latlon);
+			}
+			else {
+				return transformer.transform(nativeBbox);
+			}
+		}
+		catch (Throwable e) {
+			LOG.warn("Cannot transform: {}", e.getLocalizedMessage());
+			LOG.trace("Stack trace:", e);
+		}
+		return null;
+	}
 
-    static void writeSrs( List<ICRS> crsList, XMLStreamWriter writer )
-                            throws XMLStreamException {
-        for ( ICRS crs : crsList ) {
-            if ( crs.getAlias().startsWith( "AUTO" ) ) {
-                writeElement( writer, WMSNS, "CRS", crs.getAlias().replace( "AUTO", "AUTO2" ) );
-            } else {
-                writeElement( writer, WMSNS, "CRS", crs.getAlias() );
-            }
-        }
-    }
+	static void writeSrs(List<ICRS> crsList, XMLStreamWriter writer) throws XMLStreamException {
+		for (ICRS crs : crsList) {
+			if (crs.getAlias().startsWith("AUTO")) {
+				writeElement(writer, WMSNS, "CRS", crs.getAlias().replace("AUTO", "AUTO2"));
+			}
+			else {
+				writeElement(writer, WMSNS, "CRS", crs.getAlias());
+			}
+		}
+	}
 
 }

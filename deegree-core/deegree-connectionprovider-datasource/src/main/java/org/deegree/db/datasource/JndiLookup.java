@@ -49,47 +49,44 @@ import javax.sql.DataSource;
 import org.slf4j.Logger;
 
 /**
- * Helper class for using {@link DataSourceConnectionProvider} with JNDI: Provides a static factory method for
- * retrieving <code>javax.sql.DataSource</code> objects via JNDI.
- * 
+ * Helper class for using {@link DataSourceConnectionProvider} with JNDI: Provides a
+ * static factory method for retrieving <code>javax.sql.DataSource</code> objects via
+ * JNDI.
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * 
  * @since 3.4
  */
 public class JndiLookup {
 
-    private static final Logger LOG = getLogger( JndiLookup.class );
+	private static final Logger LOG = getLogger(JndiLookup.class);
 
-    /**
-     * Retrieves the specified JNDI <code>javax.sql.DataSource</code>.
-     * 
-     * @param jndiName
-     *            name of the JNDI resource, must not be <code>null</code>
-     * @return DataSource object, never <code>null</code>
-     * @throws NamingException
-     *             if the lookup of the specified resource failed
-     * @throws ClassCastException
-     *             if the designated resource is not a <code>javax.sql.DataSource</code>
-     */
-    public static final DataSource lookup( final String jndiName )
-                            throws NamingException, ClassCastException {
-        LOG.debug( "Looking up JNDI DataSource '" + jndiName + "'" );
-        Object object = null;
-        try {
-            final InitialContext initialContext = new InitialContext();
-            object = initialContext.lookup( jndiName );
-        } catch ( NamingException e ) {
-            String msg = "Error retrieving JNDI DataSource '" + jndiName + "': " + e.getLocalizedMessage();
-            LOG.error( msg, e );
-            throw e;
-        }
-        if ( !( object instanceof DataSource ) ) {
-            final String msg = "Error retrieving JNDI DataSource '" + jndiName
-                               + "': JNDI object is not a javax.sql.DataSource.";
-            LOG.error( msg );
-            throw new ClassCastException( msg );
-        }
-        return (DataSource) object;
-    }
+	/**
+	 * Retrieves the specified JNDI <code>javax.sql.DataSource</code>.
+	 * @param jndiName name of the JNDI resource, must not be <code>null</code>
+	 * @return DataSource object, never <code>null</code>
+	 * @throws NamingException if the lookup of the specified resource failed
+	 * @throws ClassCastException if the designated resource is not a
+	 * <code>javax.sql.DataSource</code>
+	 */
+	public static final DataSource lookup(final String jndiName) throws NamingException, ClassCastException {
+		LOG.debug("Looking up JNDI DataSource '" + jndiName + "'");
+		Object object = null;
+		try {
+			final InitialContext initialContext = new InitialContext();
+			object = initialContext.lookup(jndiName);
+		}
+		catch (NamingException e) {
+			String msg = "Error retrieving JNDI DataSource '" + jndiName + "': " + e.getLocalizedMessage();
+			LOG.error(msg, e);
+			throw e;
+		}
+		if (!(object instanceof DataSource)) {
+			final String msg = "Error retrieving JNDI DataSource '" + jndiName
+					+ "': JNDI object is not a javax.sql.DataSource.";
+			LOG.error(msg);
+			throw new ClassCastException(msg);
+		}
+		return (DataSource) object;
+	}
 
 }

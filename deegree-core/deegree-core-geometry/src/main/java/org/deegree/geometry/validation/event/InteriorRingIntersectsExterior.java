@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -41,81 +40,72 @@ import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
 
 /**
- * {@link GeometryValidationEvent} that indicates that a planar surface patch (={@link PolygonPatch}) has a hole
- * (interior ring) that intersects it's shell (exterior ring).
- * 
+ * {@link GeometryValidationEvent} that indicates that a planar surface patch
+ * (={@link PolygonPatch}) has a hole (interior ring) that intersects it's shell (exterior
+ * ring).
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * 
- * @version $Revision: $, $Date: $
  */
 public class InteriorRingIntersectsExterior extends AbstractGeometryValidationEvent {
 
-    private final PolygonPatch patch;
+	private final PolygonPatch patch;
 
-    private final int ringIdx;
+	private final int ringIdx;
 
-    private final Point location;
+	private final Point location;
 
-    private final boolean singlePoint;
+	private final boolean singlePoint;
 
-    /**
-     * Creates a new {@link InteriorRingIntersectsExterior} instance.
-     * 
-     * @param patch
-     *            offending patch, never <code>null</code>
-     * @param ringIdx
-     *            index of the offending inner ring (starting at 0)
-     * @param location
-     *            location of the intersection, may be <code>null</code>
-     * @param affectedGeometryParticles
-     *            list of affected geometry components (that the patch is part of)
-     * @param singlePoint
-     *            <code>true</code> if the intersection is just a single point, <code>false</code> otherwise
-     */
-    public InteriorRingIntersectsExterior( PolygonPatch patch, int ringIdx, Point location,
-                                           List<Object> geometryParticleHierarchy, boolean singlePoint ) {
-        super( geometryParticleHierarchy );
-        this.patch = patch;
-        this.ringIdx = ringIdx;
-        this.location = location;
-        this.singlePoint = singlePoint;
-    }
+	/**
+	 * Creates a new {@link InteriorRingIntersectsExterior} instance.
+	 * @param patch offending patch, never <code>null</code>
+	 * @param ringIdx index of the offending inner ring (starting at 0)
+	 * @param location location of the intersection, may be <code>null</code>
+	 * @param affectedGeometryParticles list of affected geometry components (that the
+	 * patch is part of)
+	 * @param singlePoint <code>true</code> if the intersection is just a single point,
+	 * <code>false</code> otherwise
+	 */
+	public InteriorRingIntersectsExterior(PolygonPatch patch, int ringIdx, Point location,
+			List<Object> geometryParticleHierarchy, boolean singlePoint) {
+		super(geometryParticleHierarchy);
+		this.patch = patch;
+		this.ringIdx = ringIdx;
+		this.location = location;
+		this.singlePoint = singlePoint;
+	}
 
-    /**
-     * Returns the affected {@link PolygonPatch} geometry.
-     * 
-     * @return affected patch, never <code>null</code>
-     */
-    public PolygonPatch getPatch() {
-        return patch;
-    }
+	/**
+	 * Returns the affected {@link PolygonPatch} geometry.
+	 * @return affected patch, never <code>null</code>
+	 */
+	public PolygonPatch getPatch() {
+		return patch;
+	}
 
-    /**
-     * Returns the index of the affected interior ring.
-     * 
-     * @return index of the affected interior ring (starting at 0)
-     */
-    public int getRingIdx() {
-        return ringIdx;
-    }
+	/**
+	 * Returns the index of the affected interior ring.
+	 * @return index of the affected interior ring (starting at 0)
+	 */
+	public int getRingIdx() {
+		return ringIdx;
+	}
 
-    /**
-     * Returns the location of the intersection.
-     * 
-     * @return location of the intersection, may be <code>null</code>
-     */
-    public Point getLocation() {
-        return location;
-    }
+	/**
+	 * Returns the location of the intersection.
+	 * @return location of the intersection, may be <code>null</code>
+	 */
+	public Point getLocation() {
+		return location;
+	}
 
-    /**
-     * Returns whether the intersection is just a single point.
-     * 
-     * @return <code>true</code> if the intersection is just a single point, <code>false</code> otherwise
-     */
-    public boolean isSinglePoint() {
-        return singlePoint;
-    }
+	/**
+	 * Returns whether the intersection is just a single point.
+	 * @return <code>true</code> if the intersection is just a single point,
+	 * <code>false</code> otherwise
+	 */
+	public boolean isSinglePoint() {
+		return singlePoint;
+	}
 
 }

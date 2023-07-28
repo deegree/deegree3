@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -45,31 +44,29 @@ import org.deegree.workspace.Workspace;
 
 /**
  * {@link RemoteOWSProvider} for {@link RemoteWMTS}.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class RemoteWMTSProvider extends RemoteOWSProvider {
 
-    private static final URL CONFIG_SCHEMA = RemoteWMTSProvider.class.getResource( "/META-INF/schemas/remoteows/wmts/remotewmts.xsd" );
+	private static final URL CONFIG_SCHEMA = RemoteWMTSProvider.class
+		.getResource("/META-INF/schemas/remoteows/wmts/remotewmts.xsd");
 
-    private static final String CONFIG_NAMESPACE = "http://www.deegree.org/remoteows/wmts";
+	private static final String CONFIG_NAMESPACE = "http://www.deegree.org/remoteows/wmts";
 
-    @Override
-    public String getNamespace() {
-        return CONFIG_NAMESPACE;
-    }
+	@Override
+	public String getNamespace() {
+		return CONFIG_NAMESPACE;
+	}
 
-    @Override
-    public ResourceMetadata<RemoteOWS> createFromLocation( Workspace workspace, ResourceLocation<RemoteOWS> location ) {
-        return new RemoteWmtsMetadata( workspace, location, this );
-    }
+	@Override
+	public ResourceMetadata<RemoteOWS> createFromLocation(Workspace workspace, ResourceLocation<RemoteOWS> location) {
+		return new RemoteWmtsMetadata(workspace, location, this);
+	}
 
-    @Override
-    public URL getSchema() {
-        return CONFIG_SCHEMA;
-    }
+	@Override
+	public URL getSchema() {
+		return CONFIG_SCHEMA;
+	}
 
 }

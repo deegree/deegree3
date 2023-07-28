@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aschmitz@wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -36,348 +35,338 @@
 package org.deegree.rendering.r2d.context;
 
 /**
- *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  */
 public class MapOptions {
 
-    private Quality quality;
+	private Quality quality;
 
-    private Interpolation interpol;
+	private Interpolation interpol;
 
-    private Antialias antialias;
+	private Antialias antialias;
 
-    private int maxFeatures;
+	private int maxFeatures;
 
-    private int featureInfoRadius;
+	private int featureInfoRadius;
 
-    private boolean opaque;
+	private boolean opaque;
 
-    private Integer featureInfoDecimalPlaces;
+	private Integer featureInfoDecimalPlaces;
 
-    private MapOptions( Quality quality, Interpolation interpol, Antialias antialias, int maxFeatures,
-                        int featureInfoRadius, boolean opaque, Integer featureInfoDecimalPlaces ) {
-        this.quality = quality;
-        this.interpol = interpol;
-        this.antialias = antialias;
-        this.maxFeatures = maxFeatures;
-        this.featureInfoRadius = featureInfoRadius;
-        this.opaque = opaque;
-        this.featureInfoDecimalPlaces = featureInfoDecimalPlaces;
-    }
+	private MapOptions(Quality quality, Interpolation interpol, Antialias antialias, int maxFeatures,
+			int featureInfoRadius, boolean opaque, Integer featureInfoDecimalPlaces) {
+		this.quality = quality;
+		this.interpol = interpol;
+		this.antialias = antialias;
+		this.maxFeatures = maxFeatures;
+		this.featureInfoRadius = featureInfoRadius;
+		this.opaque = opaque;
+		this.featureInfoDecimalPlaces = featureInfoDecimalPlaces;
+	}
 
-    /**
-     * @return the quality
-     */
-    public Quality getQuality() {
-        return quality;
-    }
+	/**
+	 * @return the quality
+	 */
+	public Quality getQuality() {
+		return quality;
+	}
 
-    /**
-     * @param quality
-     *            the quality to set
-     */
-    public void setQuality( Quality quality ) {
-        this.quality = quality;
-    }
+	/**
+	 * @param quality the quality to set
+	 */
+	public void setQuality(Quality quality) {
+		this.quality = quality;
+	}
 
-    /**
-     * @return the interpol
-     */
-    public Interpolation getInterpolation() {
-        return interpol;
-    }
+	/**
+	 * @return the interpol
+	 */
+	public Interpolation getInterpolation() {
+		return interpol;
+	}
 
-    /**
-     * @param interpol
-     *            the interpol to set
-     */
-    public void setInterpolation( Interpolation interpol ) {
-        this.interpol = interpol;
-    }
+	/**
+	 * @param interpol the interpol to set
+	 */
+	public void setInterpolation(Interpolation interpol) {
+		this.interpol = interpol;
+	}
 
-    /**
-     * @return the antialias
-     */
-    public Antialias getAntialias() {
-        return antialias;
-    }
+	/**
+	 * @return the antialias
+	 */
+	public Antialias getAntialias() {
+		return antialias;
+	}
 
-    /**
-     * @param antialias
-     *            the antialias to set
-     */
-    public void setAntialias( Antialias antialias ) {
-        this.antialias = antialias;
-    }
+	/**
+	 * @param antialias the antialias to set
+	 */
+	public void setAntialias(Antialias antialias) {
+		this.antialias = antialias;
+	}
 
-    /**
-     * @return the maxFeatures
-     */
-    public int getMaxFeatures() {
-        return maxFeatures;
-    }
+	/**
+	 * @return the maxFeatures
+	 */
+	public int getMaxFeatures() {
+		return maxFeatures;
+	}
 
-    /**
-     * @param maxFeatures
-     *            the maxFeatures to set
-     */
-    public void setMaxFeatures( int maxFeatures ) {
-        this.maxFeatures = maxFeatures;
-    }
+	/**
+	 * @param maxFeatures the maxFeatures to set
+	 */
+	public void setMaxFeatures(int maxFeatures) {
+		this.maxFeatures = maxFeatures;
+	}
 
-    /**
-     * @return the featureInfoRadius, a value < 1 means default, 0 means disabled and > 0 for the radius
-     */
-    public int getFeatureInfoRadius() {
-        return featureInfoRadius;
-    }
+	/**
+	 * @return the featureInfoRadius, a value < 1 means default, 0 means disabled and > 0
+	 * for the radius
+	 */
+	public int getFeatureInfoRadius() {
+		return featureInfoRadius;
+	}
 
-    /**
-     * @param featureInfoRadius
-     *            the featureInfoRadius to set, a value < 1 means default, 0 means disabled and > 0 for the radius
-     */
-    public void setFeatureInfoRadius( int featureInfoRadius ) {
-        this.featureInfoRadius = featureInfoRadius;
-    }
+	/**
+	 * @param featureInfoRadius the featureInfoRadius to set, a value < 1 means default, 0
+	 * means disabled and > 0 for the radius
+	 */
+	public void setFeatureInfoRadius(int featureInfoRadius) {
+		this.featureInfoRadius = featureInfoRadius;
+	}
 
-    /**
-     * @return if layer is opaque
-     */
-    public boolean isOpaque() {
-        return opaque;
-    }
+	/**
+	 * @return if layer is opaque
+	 */
+	public boolean isOpaque() {
+		return opaque;
+	}
 
-    /**
-     * @param opaque
-     *            set if layer is opaque
-     */
-    public void setOpaque( boolean opaque ) {
-        this.opaque = opaque;
-    }
+	/**
+	 * @param opaque set if layer is opaque
+	 */
+	public void setOpaque(boolean opaque) {
+		this.opaque = opaque;
+	}
 
-    /**
-     * @return featureInfoDecimalPlaces, a non <code>null</code> positive value defines the requested number of
-     *         digits after the decimal point to be used for numeric values, if this feature is available
-     */
-    public Integer getFeatureInfoDecimalPlaces() {
-        return featureInfoDecimalPlaces;
-    }
+	/**
+	 * @return featureInfoDecimalPlaces, a non <code>null</code> positive value defines
+	 * the requested number of digits after the decimal point to be used for numeric
+	 * values, if this feature is available
+	 */
+	public Integer getFeatureInfoDecimalPlaces() {
+		return featureInfoDecimalPlaces;
+	}
 
-    /**
-     * @param featureInfoDecimalPlaces
-     *            the featureInfoDecimalPlaces to set, a non <code>null</code> positive value defines the requested
-     *            number of digits after the decimal point to be used for numeric values, if this feature is available
-     */
-    public void setFeatureInfoDecimalPlaces( Integer featureInfoDecimalPlaces ) {
-        this.featureInfoDecimalPlaces = featureInfoDecimalPlaces;
-    }
+	/**
+	 * @param featureInfoDecimalPlaces the featureInfoDecimalPlaces to set, a non
+	 * <code>null</code> positive value defines the requested number of digits after the
+	 * decimal point to be used for numeric values, if this feature is available
+	 */
+	public void setFeatureInfoDecimalPlaces(Integer featureInfoDecimalPlaces) {
+		this.featureInfoDecimalPlaces = featureInfoDecimalPlaces;
+	}
 
-    /**
-     * <code>Quality</code>
-     *
-     * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-     * @author last edited by: $Author: aschmitz $
-     *
-     * @version $Revision: 32136 $, $Date: 2011-10-12 15:21:52 +0200 (Wed, 12 Oct 2011) $
-     */
-    public static enum Quality {
-        /***/
-        LOW,
-        /***/
-        NORMAL,
-        /***/
-        HIGH
-    }
+	/**
+	 * <code>Quality</code>
+	 *
+	 * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+	 */
+	public static enum Quality {
 
-    /**
-     * <code>Interpolation</code>
-     *
-     * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-     * @author last edited by: $Author: aschmitz $
-     *
-     * @version $Revision: 32136 $, $Date: 2011-10-12 15:21:52 +0200 (Wed, 12 Oct 2011) $
-     */
-    public static enum Interpolation {
-        /***/
-        NEARESTNEIGHBOR,
-        /***/
-        NEARESTNEIGHBOUR,
-        /***/
-        BILINEAR,
-        /***/
-        BICUBIC
-    }
+		/***/
+		LOW,
+		/***/
+		NORMAL,
+		/***/
+		HIGH
 
-    /**
-     * <code>Antialias</code>
-     *
-     * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-     * @author last edited by: $Author: aschmitz $
-     *
-     * @version $Revision: 32136 $, $Date: 2011-10-12 15:21:52 +0200 (Wed, 12 Oct 2011) $
-     */
-    public static enum Antialias {
-        /***/
-        IMAGE,
-        /***/
-        TEXT,
-        /***/
-        BOTH,
-        /***/
-        NONE
-    }
+	}
 
-    public interface MapOptionsSetter<T> {
-        void setOption( String layer, T value );
-    }
+	/**
+	 * <code>Interpolation</code>
+	 *
+	 * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+	 */
+	public static enum Interpolation {
 
-    public static MapOptionsSetter<Quality> getQualitySetter( final MapOptionsMaps options ) {
-        return new MapOptionsSetter<Quality>() {
-            @Override
-            public void setOption( String layer, Quality value ) {
-                options.setQuality( layer, value );
-            }
-        };
-    }
+		/***/
+		NEARESTNEIGHBOR,
+		/***/
+		NEARESTNEIGHBOUR,
+		/***/
+		BILINEAR,
+		/***/
+		BICUBIC
 
-    public static MapOptionsSetter<Antialias> getAntialiasSetter( final MapOptionsMaps options ) {
-        return new MapOptionsSetter<Antialias>() {
-            @Override
-            public void setOption( String layer, Antialias value ) {
-                options.setAntialias( layer, value );
-            }
-        };
-    }
+	}
 
-    public static MapOptionsSetter<Interpolation> getInterpolationSetter( final MapOptionsMaps options ) {
-        return new MapOptionsSetter<Interpolation>() {
-            @Override
-            public void setOption( String layer, Interpolation value ) {
-                options.setInterpolation( layer, value );
-            }
-        };
-    }
+	/**
+	 * <code>Antialias</code>
+	 *
+	 * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+	 */
+	public static enum Antialias {
 
-    public interface MapOptionsGetter<T> {
-        T getOption( String layer );
-    }
+		/***/
+		IMAGE,
+		/***/
+		TEXT,
+		/***/
+		BOTH,
+		/***/
+		NONE
 
-    public static MapOptionsGetter<Quality> getQualityGetter( final MapOptionsMaps options ) {
-        return new MapOptionsGetter<Quality>() {
-            @Override
-            public Quality getOption( String layer ) {
-                return options.getQuality( layer );
-            }
-        };
-    }
+	}
 
-    public static MapOptionsGetter<Antialias> getAntialiasGetter( final MapOptionsMaps options ) {
-        return new MapOptionsGetter<Antialias>() {
-            @Override
-            public Antialias getOption( String layer ) {
-                return options.getAntialias( layer );
-            }
-        };
-    }
+	public interface MapOptionsSetter<T> {
 
-    public static MapOptionsGetter<Interpolation> getInterpolationGetter( final MapOptionsMaps options ) {
-        return new MapOptionsGetter<Interpolation>() {
-            @Override
-            public Interpolation getOption( String layer ) {
-                return options.getInterpolation( layer );
-            }
-        };
-    }
+		void setOption(String layer, T value);
 
-    public static class Builder {
+	}
 
-        private Quality quality;
+	public static MapOptionsSetter<Quality> getQualitySetter(final MapOptionsMaps options) {
+		return new MapOptionsSetter<Quality>() {
+			@Override
+			public void setOption(String layer, Quality value) {
+				options.setQuality(layer, value);
+			}
+		};
+	}
 
-        private Interpolation interpolation;
+	public static MapOptionsSetter<Antialias> getAntialiasSetter(final MapOptionsMaps options) {
+		return new MapOptionsSetter<Antialias>() {
+			@Override
+			public void setOption(String layer, Antialias value) {
+				options.setAntialias(layer, value);
+			}
+		};
+	}
 
-        private Antialias antialias;
+	public static MapOptionsSetter<Interpolation> getInterpolationSetter(final MapOptionsMaps options) {
+		return new MapOptionsSetter<Interpolation>() {
+			@Override
+			public void setOption(String layer, Interpolation value) {
+				options.setInterpolation(layer, value);
+			}
+		};
+	}
 
-        private int maxFeatures = -1;
+	public interface MapOptionsGetter<T> {
 
-        private int featureInfoRadius = -1;
+		T getOption(String layer);
 
-        private boolean opaque;
+	}
 
-        private Integer featureInfoDecimalPlaces;
+	public static MapOptionsGetter<Quality> getQualityGetter(final MapOptionsMaps options) {
+		return new MapOptionsGetter<Quality>() {
+			@Override
+			public Quality getOption(String layer) {
+				return options.getQuality(layer);
+			}
+		};
+	}
 
-        /**
-         * @param quality
-         *            the quality to set
-         */
-        public Builder quality( Quality quality ) {
-            this.quality = quality;
-            return this;
-        }
+	public static MapOptionsGetter<Antialias> getAntialiasGetter(final MapOptionsMaps options) {
+		return new MapOptionsGetter<Antialias>() {
+			@Override
+			public Antialias getOption(String layer) {
+				return options.getAntialias(layer);
+			}
+		};
+	}
 
-        /**
-         * @param interpolation
-         *            the interpolation to set
-         */
-        public Builder interpolation( Interpolation interpolation ) {
-            this.interpolation = interpolation;
-            return this;
-        }
+	public static MapOptionsGetter<Interpolation> getInterpolationGetter(final MapOptionsMaps options) {
+		return new MapOptionsGetter<Interpolation>() {
+			@Override
+			public Interpolation getOption(String layer) {
+				return options.getInterpolation(layer);
+			}
+		};
+	}
 
-        /**
-         * @param antialias
-         *            the antialias to set
-         */
-        public Builder antialias( Antialias antialias ) {
-            this.antialias = antialias;
-            return this;
-        }
+	public static class Builder {
 
-        /**
-         * @param maxFeatures
-         *            the maxFeatures to set
-         */
-        public Builder maxFeatures( int maxFeatures ) {
-            this.maxFeatures = maxFeatures;
-            return this;
-        }
+		private Quality quality;
 
-        /**
-         * @param featureInfoRadius
-         *            the featureInfoRadius to set, a value < 1 means default, 0 means disabled and > 0 for the radius
-         */
-        public Builder featureInfoRadius( int featureInfoRadius ) {
-            this.featureInfoRadius = featureInfoRadius;
-            return this;
-        }
+		private Interpolation interpolation;
 
-        /**
-         * @param opaque
-         *            set if layer is opaque
-         */
-        public Builder opaque( boolean opaque ) {
-            this.opaque = opaque;
-            return this;
-        }
+		private Antialias antialias;
 
-        /**
-         * @param featureInfoDecimalPlaces
-         *            the featureInfoDecimalPlaces to set, a non <code>null</code> positive value defines the requested
-         *            number of digits after the decimal point to be used for numeric values, if this feature is
-         *            available
-         */
-        public Builder featureInfoDecimalPlaces( Integer featureInfoDecimalPlaces ) {
-            this.featureInfoDecimalPlaces = featureInfoDecimalPlaces;
-            return this;
-        }
+		private int maxFeatures = -1;
 
+		private int featureInfoRadius = -1;
 
-        public MapOptions build() {
-            return new MapOptions( quality, interpolation, antialias, maxFeatures, featureInfoRadius, opaque,
-                                   featureInfoDecimalPlaces );
-        }
+		private boolean opaque;
 
-    }
+		private Integer featureInfoDecimalPlaces;
+
+		/**
+		 * @param quality the quality to set
+		 */
+		public Builder quality(Quality quality) {
+			this.quality = quality;
+			return this;
+		}
+
+		/**
+		 * @param interpolation the interpolation to set
+		 */
+		public Builder interpolation(Interpolation interpolation) {
+			this.interpolation = interpolation;
+			return this;
+		}
+
+		/**
+		 * @param antialias the antialias to set
+		 */
+		public Builder antialias(Antialias antialias) {
+			this.antialias = antialias;
+			return this;
+		}
+
+		/**
+		 * @param maxFeatures the maxFeatures to set
+		 */
+		public Builder maxFeatures(int maxFeatures) {
+			this.maxFeatures = maxFeatures;
+			return this;
+		}
+
+		/**
+		 * @param featureInfoRadius the featureInfoRadius to set, a value < 1 means
+		 * default, 0 means disabled and > 0 for the radius
+		 */
+		public Builder featureInfoRadius(int featureInfoRadius) {
+			this.featureInfoRadius = featureInfoRadius;
+			return this;
+		}
+
+		/**
+		 * @param opaque set if layer is opaque
+		 */
+		public Builder opaque(boolean opaque) {
+			this.opaque = opaque;
+			return this;
+		}
+
+		/**
+		 * @param featureInfoDecimalPlaces the featureInfoDecimalPlaces to set, a non
+		 * <code>null</code> positive value defines the requested number of digits after
+		 * the decimal point to be used for numeric values, if this feature is available
+		 */
+		public Builder featureInfoDecimalPlaces(Integer featureInfoDecimalPlaces) {
+			this.featureInfoDecimalPlaces = featureInfoDecimalPlaces;
+			return this;
+		}
+
+		public MapOptions build() {
+			return new MapOptions(quality, interpolation, antialias, maxFeatures, featureInfoRadius, opaque,
+					featureInfoDecimalPlaces);
+		}
+
+	}
 
 }

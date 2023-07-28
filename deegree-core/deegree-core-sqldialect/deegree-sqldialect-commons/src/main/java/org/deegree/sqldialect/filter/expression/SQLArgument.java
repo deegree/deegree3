@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-base/src/main/java/org/deegree/filter/sql/expression/SQLArgument.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -55,137 +54,132 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link SQLExpression} that represents a constant argument value, e.g. a string, a number or a geometry.
- * 
+ * {@link SQLExpression} that represents a constant argument value, e.g. a string, a
+ * number or a geometry.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31370 $, $Date: 2011-07-28 19:37:13 +0200 (Do, 28. Jul 2011) $
  */
 public class SQLArgument implements SQLExpression {
 
-    private static Logger LOG = LoggerFactory.getLogger( SQLArgument.class );
+	private static Logger LOG = LoggerFactory.getLogger(SQLArgument.class);
 
-    private TypedObjectNode value;
+	private TypedObjectNode value;
 
-    private ParticleConverter<? extends TypedObjectNode> converter;
+	private ParticleConverter<? extends TypedObjectNode> converter;
 
-    private PrimitiveType pt;
+	private PrimitiveType pt;
 
-    private boolean isSpatial;
+	private boolean isSpatial;
 
-    /**
-     * Creates a new primitive valued {@link SQLArgument}.
-     * 
-     * @param value
-     *            value, can be <code>null</code>
-     * @param converter
-     *            converter, can be <code>null</code>
-     */
-    public SQLArgument( PrimitiveValue value, PrimitiveParticleConverter converter ) {
-        this.value = value;
-        if ( converter != null ) {
-            this.pt = value.getType();
-        }
-        this.converter = converter;
-        this.isSpatial = false;
-    }
+	/**
+	 * Creates a new primitive valued {@link SQLArgument}.
+	 * @param value value, can be <code>null</code>
+	 * @param converter converter, can be <code>null</code>
+	 */
+	public SQLArgument(PrimitiveValue value, PrimitiveParticleConverter converter) {
+		this.value = value;
+		if (converter != null) {
+			this.pt = value.getType();
+		}
+		this.converter = converter;
+		this.isSpatial = false;
+	}
 
-    /**
-     * Creates a new spatial valued {@link SQLArgument}.
-     * 
-     * @param value
-     *            value, can be <code>null</code>
-     * @param converter
-     *            converter, can be <code>null</code>
-     */
-    public SQLArgument( Geometry value, GeometryParticleConverter converter ) {
-        this.value = value;
-        this.converter = converter;
-        this.isSpatial = true;
-    }
+	/**
+	 * Creates a new spatial valued {@link SQLArgument}.
+	 * @param value value, can be <code>null</code>
+	 * @param converter converter, can be <code>null</code>
+	 */
+	public SQLArgument(Geometry value, GeometryParticleConverter converter) {
+		this.value = value;
+		this.converter = converter;
+		this.isSpatial = true;
+	}
 
-    public void setArgument( PreparedStatement stmt, int paramIndex )
-                            throws SQLException {
+	public void setArgument(PreparedStatement stmt, int paramIndex) throws SQLException {
 
-        if ( converter == null ) {
-            LOG.warn( "No inferred particle converter. Treating as STRING value." );
-            new DefaultPrimitiveConverter( new PrimitiveType( STRING ), null, false ).setParticle( stmt,
-                                                                                                   (PrimitiveValue) value,
-                                                                                                   paramIndex );
-        } else {
-            ( (ParticleConverter<TypedObjectNode>) this.converter ).setParticle( stmt, value, paramIndex );
-        }
-    }
+		if (converter == null) {
+			LOG.warn("No inferred particle converter. Treating as STRING value.");
+			new DefaultPrimitiveConverter(new PrimitiveType(STRING), null, false).setParticle(stmt,
+					(PrimitiveValue) value, paramIndex);
+		}
+		else {
+			((ParticleConverter<TypedObjectNode>) this.converter).setParticle(stmt, value, paramIndex);
+		}
+	}
 
-    @Override
-    public boolean isSpatial() {
-        return isSpatial;
-    }
+	@Override
+	public boolean isSpatial() {
+		return isSpatial;
+	}
 
-    @Override
-    public boolean isMultiValued() {
-        return false;
-    }
+	@Override
+	public boolean isMultiValued() {
+		return false;
+	}
 
-    @Override
-    public String toString() {
-        return "'" + value + "'";
-    }
+	@Override
+	public String toString() {
+		return "'" + value + "'";
+	}
 
-    @Override
-    public List<SQLArgument> getArguments() {
-        return Collections.singletonList( this );
-    }
+	@Override
+	public List<SQLArgument> getArguments() {
+		return Collections.singletonList(this);
+	}
 
-    @Override
-    public StringBuilder getSQL() {
-        String sql = null;
-        if ( converter == null ) {
-            LOG.warn( "No inferred particle converter. Treating as STRING value." );
-            sql = new DefaultPrimitiveConverter( new PrimitiveType( STRING ), null, false ).getSetSnippet( (PrimitiveValue) value );
-        } else {
-            sql = ( (ParticleConverter<TypedObjectNode>) this.converter ).getSetSnippet( value );
-        }
-        return new StringBuilder( sql );
-    }
+	@Override
+	public StringBuilder getSQL() {
+		String sql = null;
+		if (converter == null) {
+			LOG.warn("No inferred particle converter. Treating as STRING value.");
+			sql = new DefaultPrimitiveConverter(new PrimitiveType(STRING), null, false)
+				.getSetSnippet((PrimitiveValue) value);
+		}
+		else {
+			sql = ((ParticleConverter<TypedObjectNode>) this.converter).getSetSnippet(value);
+		}
+		return new StringBuilder(sql);
+	}
 
-    @Override
-    public ICRS getCRS() {
-        return isSpatial ? ( (GeometryParticleConverter) converter ).getCrs() : null;
-    }
+	@Override
+	public ICRS getCRS() {
+		return isSpatial ? ((GeometryParticleConverter) converter).getCrs() : null;
+	}
 
-    @Override
-    public String getSRID() {
-        return isSpatial ? ( (GeometryParticleConverter) converter ).getSrid() : null;
-    }
+	@Override
+	public String getSRID() {
+		return isSpatial ? ((GeometryParticleConverter) converter).getSrid() : null;
+	}
 
-    @Override
-    public PrimitiveType getPrimitiveType() {
-        return pt;
-    }
+	@Override
+	public PrimitiveType getPrimitiveType() {
+		return pt;
+	}
 
-    @Override
-    public void cast( SQLExpression expr ) {
-        ParticleConverter<?> converter = expr.getConverter();
-        if ( converter instanceof PrimitiveParticleConverter ) {
-            PrimitiveParticleConverter ppc = (PrimitiveParticleConverter) converter;
-            this.pt = ppc.getType();
-            this.converter = converter;
-            if ( value != null ) {
-                value = new PrimitiveValue( value.toString(), pt );
-            }
-        } else {
-            LOG.warn( "Type casts for non-primitive values shouldn't occur." );
-        }
-    }
+	@Override
+	public void cast(SQLExpression expr) {
+		ParticleConverter<?> converter = expr.getConverter();
+		if (converter instanceof PrimitiveParticleConverter) {
+			PrimitiveParticleConverter ppc = (PrimitiveParticleConverter) converter;
+			this.pt = ppc.getType();
+			this.converter = converter;
+			if (value != null) {
+				value = new PrimitiveValue(value.toString(), pt);
+			}
+		}
+		else {
+			LOG.warn("Type casts for non-primitive values shouldn't occur.");
+		}
+	}
 
-    @Override
-    public ParticleConverter<? extends TypedObjectNode> getConverter() {
-        return converter;
-    }
-    
-    public TypedObjectNode getValue () {
-        return value;
-    }
+	@Override
+	public ParticleConverter<? extends TypedObjectNode> getConverter() {
+		return converter;
+	}
+
+	public TypedObjectNode getValue() {
+		return value;
+	}
+
 }

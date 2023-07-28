@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -49,65 +48,58 @@ import org.deegree.protocol.ows.http.OwsHttpResponse;
 /**
  * Encapsulates the response to a WFS <code>GetFeature</code> request.
  * <p>
- * NOTE: The receiver <b>must</b> call {@link #close()} eventually, otherwise system resources (connections) may not be
- * freed.
+ * NOTE: The receiver <b>must</b> call {@link #close()} eventually, otherwise system
+ * resources (connections) may not be freed.
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class GetFeatureResponse<T> {
 
-    private final OwsHttpResponse response;
+	private final OwsHttpResponse response;
 
-    private final AppSchema appSchema;
+	private final AppSchema appSchema;
 
-    private final GMLVersion gmlVersion;
+	private final GMLVersion gmlVersion;
 
-    /**
-     * 
-     * @param response
-     * @param appSchema
-     * @param gmlVersion
-     */
-    GetFeatureResponse( OwsHttpResponse response, AppSchema appSchema, GMLVersion gmlVersion ) {
-        this.response = response;
-        this.appSchema = appSchema;
-        this.gmlVersion = gmlVersion;
-    }
+	/**
+	 * @param response
+	 * @param appSchema
+	 * @param gmlVersion
+	 */
+	GetFeatureResponse(OwsHttpResponse response, AppSchema appSchema, GMLVersion gmlVersion) {
+		this.response = response;
+		this.appSchema = appSchema;
+		this.gmlVersion = gmlVersion;
+	}
 
-    /**
-     * Provides access to the raw response.
-     * 
-     * @return the raw response, never <code>null</code>
-     */
-    public OwsHttpResponse getAsRawResponse() {
-        return response;
-    }
+	/**
+	 * Provides access to the raw response.
+	 * @return the raw response, never <code>null</code>
+	 */
+	public OwsHttpResponse getAsRawResponse() {
+		return response;
+	}
 
-    /**
-     * Provides access to the feature objects and WFS provided information in the response.
-     * 
-     * @return WFS feature collection, never <code>null</code>
-     * 
-     * @throws OWSExceptionReport
-     * @throws UnknownCRSException
-     * @throws XMLStreamException
-     * @throws XMLParsingException
-     */
-    public WFSFeatureCollection<T> getAsWFSFeatureCollection()
-                            throws XMLParsingException, XMLStreamException, UnknownCRSException, OWSExceptionReport {
-        return new WFSFeatureCollection<T>( response.getAsXMLStream(), gmlVersion, appSchema );
-    }
+	/**
+	 * Provides access to the feature objects and WFS provided information in the
+	 * response.
+	 * @return WFS feature collection, never <code>null</code>
+	 * @throws OWSExceptionReport
+	 * @throws UnknownCRSException
+	 * @throws XMLStreamException
+	 * @throws XMLParsingException
+	 */
+	public WFSFeatureCollection<T> getAsWFSFeatureCollection()
+			throws XMLParsingException, XMLStreamException, UnknownCRSException, OWSExceptionReport {
+		return new WFSFeatureCollection<T>(response.getAsXMLStream(), gmlVersion, appSchema);
+	}
 
-    /**
-     * 
-     * @throws IOException
-     */
-    public void close()
-                            throws IOException {
-        response.close();
-    }
+	/**
+	 * @throws IOException
+	 */
+	public void close() throws IOException {
+		response.close();
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -49,76 +48,76 @@ import org.deegree.feature.types.property.SimplePropertyType;
 
 /**
  * TODO add documentation here
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class SimpleProperty implements Property {
 
-    private SimplePropertyType pt;
+	private SimplePropertyType pt;
 
-    private PrimitiveValue value;
+	private PrimitiveValue value;
 
-    public SimpleProperty( SimplePropertyType pt, PrimitiveValue value ) {
-        this.pt = pt;
-        this.value = value;
-    }
+	public SimpleProperty(SimplePropertyType pt, PrimitiveValue value) {
+		this.pt = pt;
+		this.value = value;
+	}
 
-    public SimpleProperty( SimplePropertyType pt, String value ) {
-        this.pt = pt;
-        this.value = new PrimitiveValue( value, pt.getPrimitiveType() );
-    }
+	public SimpleProperty(SimplePropertyType pt, String value) {
+		this.pt = pt;
+		this.value = new PrimitiveValue(value, pt.getPrimitiveType());
+	}
 
-    @Override
-    public QName getName() {
-        return pt.getName();
-    }
+	@Override
+	public QName getName() {
+		return pt.getName();
+	}
 
-    @Override
-    public XSElementDeclaration getXSType() {
-        return null;
-    }
+	@Override
+	public XSElementDeclaration getXSType() {
+		return null;
+	}
 
-    @Override
-    public PrimitiveValue getValue() {
-        return value;
-    }
+	@Override
+	public PrimitiveValue getValue() {
+		return value;
+	}
 
-    @Override
-    public void setValue( TypedObjectNode value ) {
-        this.value = (PrimitiveValue) value;
-    }
+	@Override
+	public void setValue(TypedObjectNode value) {
+		this.value = (PrimitiveValue) value;
+	}
 
-    @Override
-    public SimplePropertyType getType() {
-        return pt;
-    }
+	@Override
+	public SimplePropertyType getType() {
+		return pt;
+	}
 
-    @Override
-    public String toString() {
-        return value == null ? "null" : value.toString();
-    }
+	@Override
+	public String toString() {
+		return value == null ? "null" : value.toString();
+	}
 
-    @Override
-    public Map<QName, PrimitiveValue> getAttributes() {
-        return Collections.emptyMap();
-    }
+	@Override
+	public Map<QName, PrimitiveValue> getAttributes() {
+		return Collections.emptyMap();
+	}
 
-    @Override
-    public List<TypedObjectNode> getChildren() {
-        return Collections.emptyList();
-    }
+	@Override
+	public List<TypedObjectNode> getChildren() {
+		return Collections.emptyList();
+	}
 
-    @Override
-    public void setChildren( List<TypedObjectNode> children ) {
-        if ( children.isEmpty() ) {
-            value = null;
-        } else if ( children.size() == 1 ) {
-            value = (PrimitiveValue) children.get( 0 );
-        } else {
-            throw new IllegalArgumentException();
-        }
-    }
+	@Override
+	public void setChildren(List<TypedObjectNode> children) {
+		if (children.isEmpty()) {
+			value = null;
+		}
+		else if (children.size() == 1) {
+			value = (PrimitiveValue) children.get(0);
+		}
+		else {
+			throw new IllegalArgumentException();
+		}
+	}
+
 }

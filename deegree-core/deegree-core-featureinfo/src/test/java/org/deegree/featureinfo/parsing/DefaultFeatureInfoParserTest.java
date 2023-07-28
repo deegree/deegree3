@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -51,38 +50,32 @@ import org.junit.Test;
 
 /**
  * Test feature info parsing workarounds.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 public class DefaultFeatureInfoParserTest {
 
-    private final DefaultFeatureInfoParser featureInfoParser = new DefaultFeatureInfoParser();
+	private final DefaultFeatureInfoParser featureInfoParser = new DefaultFeatureInfoParser();
 
-    @Test
-    public void testEsriCollection()
-                            throws XMLStreamException {
-        InputStream in = DefaultFeatureInfoParserTest.class.getResourceAsStream( "esri1.xml" );
-        FeatureCollection fc = featureInfoParser.parseAsFeatureCollection( in, "test" );
-        Assert.assertEquals( 1, fc.size() );
-    }
+	@Test
+	public void testEsriCollection() throws XMLStreamException {
+		InputStream in = DefaultFeatureInfoParserTest.class.getResourceAsStream("esri1.xml");
+		FeatureCollection fc = featureInfoParser.parseAsFeatureCollection(in, "test");
+		Assert.assertEquals(1, fc.size());
+	}
 
-    @Test
-    public void testEmptyEsriCollection()
-                            throws XMLStreamException {
-        InputStream in = DefaultFeatureInfoParserTest.class.getResourceAsStream( "esri2.xml" );
-        FeatureCollection fc = featureInfoParser.parseAsFeatureCollection( in, "test" );
-        Assert.assertEquals( 0, fc.size() );
-    }
+	@Test
+	public void testEmptyEsriCollection() throws XMLStreamException {
+		InputStream in = DefaultFeatureInfoParserTest.class.getResourceAsStream("esri2.xml");
+		FeatureCollection fc = featureInfoParser.parseAsFeatureCollection(in, "test");
+		Assert.assertEquals(0, fc.size());
+	}
 
-    @Test
-    public void testNamespacedEsriCollection()
-                            throws XMLStreamException {
-        InputStream in = DefaultFeatureInfoParserTest.class.getResourceAsStream( "esriwithnamespace.xml" );
-        FeatureCollection fc = featureInfoParser.parseAsFeatureCollection( in, "test" );
-        Assert.assertEquals( 8, fc.size() );
-    }
+	@Test
+	public void testNamespacedEsriCollection() throws XMLStreamException {
+		InputStream in = DefaultFeatureInfoParserTest.class.getResourceAsStream("esriwithnamespace.xml");
+		FeatureCollection fc = featureInfoParser.parseAsFeatureCollection(in, "test");
+		Assert.assertEquals(8, fc.size());
+	}
 
 }

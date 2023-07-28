@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -48,46 +47,42 @@ import org.slf4j.Logger;
 
 /**
  * <code>ScanEncoding</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 @Tool(value = "scans the argument files and tries to guess their encoding, treats dbf files specially")
 public class ScanEncoding {
 
-    private static final Logger LOG = getLogger( ScanEncoding.class );
+	private static final Logger LOG = getLogger(ScanEncoding.class);
 
-    private static void printSummary( String s )
-                            throws IOException {
-        boolean dbf = s.toLowerCase().endsWith( ".dbf" );
+	private static void printSummary(String s) throws IOException {
+		boolean dbf = s.toLowerCase().endsWith(".dbf");
 
-        BufferedInputStream in = new BufferedInputStream( new FileInputStream( s ) );
+		BufferedInputStream in = new BufferedInputStream(new FileInputStream(s));
 
-        if ( dbf ) {
-            if ( in.skip( 32 ) != 32 ) {
-                LOG.warn( "Could not skip 32 bytes, is the dbf broken?" );
-            }
-            int b;
-            while ( ( b = in.read() ) != -1 ) {
-                if ( b == 13 ) {
-                    break;
-                }
-            }
-        }
+		if (dbf) {
+			if (in.skip(32) != 32) {
+				LOG.warn("Could not skip 32 bytes, is the dbf broken?");
+			}
+			int b;
+			while ((b = in.read()) != -1) {
+				if (b == 13) {
+					break;
+				}
+			}
+		}
 
-        LOG.info( "Encoding for '" + s + "': " + guess( in ) );
-    }
+		LOG.info("Encoding for '" + s + "': " + guess(in));
+	}
 
-    /**
-     * @param args
-     * @throws IOException
-     */
-    public static void main( String[] args )
-                            throws IOException {
-        for ( String s : args ) {
-            printSummary( s );
-        }
-    }
+	/**
+	 * @param args
+	 * @throws IOException
+	 */
+	public static void main(String[] args) throws IOException {
+		for (String s : args) {
+			printSummary(s);
+		}
+	}
+
 }

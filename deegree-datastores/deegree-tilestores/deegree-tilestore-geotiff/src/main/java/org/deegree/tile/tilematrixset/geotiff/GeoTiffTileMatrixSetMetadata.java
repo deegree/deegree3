@@ -39,29 +39,28 @@ import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
  * This class is the resource metadata for geotiff based tile matrices.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class GeoTiffTileMatrixSetMetadata extends AbstractResourceMetadata<TileMatrixSet> {
 
-    public GeoTiffTileMatrixSetMetadata( Workspace workspace, ResourceLocation<TileMatrixSet> location,
-                                         AbstractResourceProvider<TileMatrixSet> provider ) {
-        super( workspace, location, provider );
-    }
+	public GeoTiffTileMatrixSetMetadata(Workspace workspace, ResourceLocation<TileMatrixSet> location,
+			AbstractResourceProvider<TileMatrixSet> provider) {
+		super(workspace, location, provider);
+	}
 
-    @Override
-    public ResourceBuilder<TileMatrixSet> prepare() {
-        try {
-            GeoTIFFTileMatrixSetConfig cfg = (GeoTIFFTileMatrixSetConfig) JAXBUtils.unmarshall( "org.deegree.tile.tilematrixset.geotiff.jaxb",
-                                                                                                provider.getSchema(),
-                                                                                                location.getAsStream(),
-                                                                                                workspace );
-            return new GeoTiffTileMatrixSetBuilder( cfg, this );
-        } catch ( Exception e ) {
-            throw new ResourceInitException( e.getLocalizedMessage(), e );
-        }
-    }
+	@Override
+	public ResourceBuilder<TileMatrixSet> prepare() {
+		try {
+			GeoTIFFTileMatrixSetConfig cfg = (GeoTIFFTileMatrixSetConfig) JAXBUtils.unmarshall(
+					"org.deegree.tile.tilematrixset.geotiff.jaxb", provider.getSchema(), location.getAsStream(),
+					workspace);
+			return new GeoTiffTileMatrixSetBuilder(cfg, this);
+		}
+		catch (Exception e) {
+			throw new ResourceInitException(e.getLocalizedMessage(), e);
+		}
+	}
 
 }

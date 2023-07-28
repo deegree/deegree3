@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -58,40 +57,36 @@ import org.mockito.Mockito;
 
 /**
  * Basic tests for {@link GetRecordsResponse}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class GetRecordsResponseTest {
 
-    @Test
-    public void testGeoNetworksResponse()
-                            throws XMLStreamException, FactoryConfigurationError, OWSExceptionReport {
+	@Test
+	public void testGeoNetworksResponse() throws XMLStreamException, FactoryConfigurationError, OWSExceptionReport {
 
-        OwsHttpResponseImpl mock = Mockito.mock( OwsHttpResponseImpl.class );
-        XMLStreamReader xmlStream = getExampleResponseReader( "geonetworks_response.invalid" );
-        Mockito.when( mock.getAsXMLStream() ).thenReturn( xmlStream );
+		OwsHttpResponseImpl mock = Mockito.mock(OwsHttpResponseImpl.class);
+		XMLStreamReader xmlStream = getExampleResponseReader("geonetworks_response.invalid");
+		Mockito.when(mock.getAsXMLStream()).thenReturn(xmlStream);
 
-        GetRecordsResponse response = new GetRecordsResponse( mock );
-        Iterator<MetadataRecord> iter = response.getRecords();
-        int i = 0;
-        while ( iter.hasNext() ) {
-            assertTrue( xmlStream.isStartElement() );
-            assertEquals( ISO_RECORD_NS, xmlStream.getNamespaceURI() );
-            assertEquals( "MD_Metadata", xmlStream.getLocalName() );
-            ISORecord isoRecord = null;
-            isoRecord = (ISORecord) iter.next();
-            assertNotNull( isoRecord.getIdentifier() );
-            i++;
-        }
-        assertEquals( 10, i );
-    }
+		GetRecordsResponse response = new GetRecordsResponse(mock);
+		Iterator<MetadataRecord> iter = response.getRecords();
+		int i = 0;
+		while (iter.hasNext()) {
+			assertTrue(xmlStream.isStartElement());
+			assertEquals(ISO_RECORD_NS, xmlStream.getNamespaceURI());
+			assertEquals("MD_Metadata", xmlStream.getLocalName());
+			ISORecord isoRecord = null;
+			isoRecord = (ISORecord) iter.next();
+			assertNotNull(isoRecord.getIdentifier());
+			i++;
+		}
+		assertEquals(10, i);
+	}
 
-    private XMLStreamReader getExampleResponseReader( String name )
-                            throws XMLStreamException, FactoryConfigurationError {
-        InputStream is = GetRecordsResponseTest.class.getResourceAsStream( name );
-        return XMLInputFactory.newInstance().createXMLStreamReader( is );
-    }
+	private XMLStreamReader getExampleResponseReader(String name) throws XMLStreamException, FactoryConfigurationError {
+		InputStream is = GetRecordsResponseTest.class.getResourceAsStream(name);
+		return XMLInputFactory.newInstance().createXMLStreamReader(is);
+	}
+
 }

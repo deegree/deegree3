@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -49,33 +48,31 @@ import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
 
 /**
- * The <code>GeoTIFFTileStoreProvider</code> provides a <code>TileMatrixSet</code> out of a GeoTIFF file (tiled
- * BIGTIFF).
- * 
+ * The <code>GeoTIFFTileStoreProvider</code> provides a <code>TileMatrixSet</code> out of
+ * a GeoTIFF file (tiled BIGTIFF).
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 public class GdalTileStoreProvider extends TileStoreProvider {
 
-    private static final String SCHEMA_NAMESPACE = "http://www.deegree.org/datasource/tile/gdal";
+	private static final String SCHEMA_NAMESPACE = "http://www.deegree.org/datasource/tile/gdal";
 
-    private static final URL SCHEMA_URL = GdalTileStoreProvider.class.getResource( "/META-INF/schemas/datasource/tile/gdal/gdal.xsd" );
+	private static final URL SCHEMA_URL = GdalTileStoreProvider.class
+		.getResource("/META-INF/schemas/datasource/tile/gdal/gdal.xsd");
 
-    @Override
-    public String getNamespace() {
-        return SCHEMA_NAMESPACE;
-    }
+	@Override
+	public String getNamespace() {
+		return SCHEMA_NAMESPACE;
+	}
 
-    @Override
-    public ResourceMetadata<TileStore> createFromLocation( Workspace workspace, ResourceLocation<TileStore> location ) {
-        return new GdalTileStoreMetadata( workspace, location, this );
-    }
+	@Override
+	public ResourceMetadata<TileStore> createFromLocation(Workspace workspace, ResourceLocation<TileStore> location) {
+		return new GdalTileStoreMetadata(workspace, location, this);
+	}
 
-    @Override
-    public URL getSchema() {
-        return SCHEMA_URL;
-    }
+	@Override
+	public URL getSchema() {
+		return SCHEMA_URL;
+	}
 
 }

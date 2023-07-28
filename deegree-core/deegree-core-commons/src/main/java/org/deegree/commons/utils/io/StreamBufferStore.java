@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -50,181 +49,166 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Scalable alternative to {@link ByteArrayOutputStream} that automatically switches to file-based storage if the amount
- * of written bytes exceeds a given limit.
- * 
+ * Scalable alternative to {@link ByteArrayOutputStream} that automatically switches to
+ * file-based storage if the amount of written bytes exceeds a given limit.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class StreamBufferStore extends OutputStream {
 
-    private static final Logger LOG = LoggerFactory.getLogger( StreamBufferStore.class );
+	private static final Logger LOG = LoggerFactory.getLogger(StreamBufferStore.class);
 
-    /** Default limit (1 MB) */
-    public static final int DEFAULT_LIMIT = 1024 * 1024;
+	/** Default limit (1 MB) */
+	public static final int DEFAULT_LIMIT = 1024 * 1024;
 
-    private final int limit;
+	private final int limit;
 
-    private int bytesWritten = 0;
+	private int bytesWritten = 0;
 
-    private OutputStream os;
+	private OutputStream os;
 
-    private File tmpFile;
+	private File tmpFile;
 
-    private File targetFile;
+	private File targetFile;
 
-    /**
-     * Creates a new {@link StreamBufferStore} instance that switches to file storage when
-     * {@link StreamBufferStore#DEFAULT_LIMIT} bytes have been written.
-     */
-    public StreamBufferStore() {
-        this( DEFAULT_LIMIT );
-    }
+	/**
+	 * Creates a new {@link StreamBufferStore} instance that switches to file storage when
+	 * {@link StreamBufferStore#DEFAULT_LIMIT} bytes have been written.
+	 */
+	public StreamBufferStore() {
+		this(DEFAULT_LIMIT);
+	}
 
-    /**
-     * Creates a new {@link StreamBufferStore} instance that switches to file storage when the specified number of bytes
-     * have been written.
-     * 
-     * @param limit
-     *            number of bytes when switching to file will occur
-     */
-    public StreamBufferStore( int limit ) {
-        this.limit = limit;
-        os = new ByteArrayOutputStream( limit );
-    }
+	/**
+	 * Creates a new {@link StreamBufferStore} instance that switches to file storage when
+	 * the specified number of bytes have been written.
+	 * @param limit number of bytes when switching to file will occur
+	 */
+	public StreamBufferStore(int limit) {
+		this.limit = limit;
+		os = new ByteArrayOutputStream(limit);
+	}
 
-    /**
-     * Creates a new {@link StreamBufferStore} instance that switches to file storage when the specified number of bytes
-     * have been written.
-     * 
-     * @param limit
-     *            number of bytes when switching to file will occur
-     * @param targetFile
-     *            file to use if written bytes exceed limit, must not be <code>null</code>
-     */
-    public StreamBufferStore( int limit, File targetFile ) {
-        this.limit = limit;
-        os = new ByteArrayOutputStream( limit );
-        this.targetFile = targetFile;
-    }
+	/**
+	 * Creates a new {@link StreamBufferStore} instance that switches to file storage when
+	 * the specified number of bytes have been written.
+	 * @param limit number of bytes when switching to file will occur
+	 * @param targetFile file to use if written bytes exceed limit, must not be
+	 * <code>null</code>
+	 */
+	public StreamBufferStore(int limit, File targetFile) {
+		this.limit = limit;
+		os = new ByteArrayOutputStream(limit);
+		this.targetFile = targetFile;
+	}
 
-    /**
-     * Returns the current size of the buffer.
-     * 
-     * @return the number of valid bytes in this buffer
-     */
-    public int size() {
-        return bytesWritten;
-    }
+	/**
+	 * Returns the current size of the buffer.
+	 * @return the number of valid bytes in this buffer
+	 */
+	public int size() {
+		return bytesWritten;
+	}
 
-    /**
-     * Returns an {@link InputStream} for accessing the previously written bytes.
-     * 
-     * @return an {@link InputStream}, never <code>null</code>
-     * @throws IOException
-     */
-    public InputStream getInputStream()
-                            throws IOException {
-        os.flush();
-        if ( tmpFile == null ) {
-            return new ByteArrayInputStream( ( (ByteArrayOutputStream) os ).toByteArray() );
-        }
-        return new FileInputStream( tmpFile );
-    }
+	/**
+	 * Returns an {@link InputStream} for accessing the previously written bytes.
+	 * @return an {@link InputStream}, never <code>null</code>
+	 * @throws IOException
+	 */
+	public InputStream getInputStream() throws IOException {
+		os.flush();
+		if (tmpFile == null) {
+			return new ByteArrayInputStream(((ByteArrayOutputStream) os).toByteArray());
+		}
+		return new FileInputStream(tmpFile);
+	}
 
-    @Override
-    public void close()
-                            throws IOException {
-        os.close();
-    }
+	@Override
+	public void close() throws IOException {
+		os.close();
+	}
 
-    @Override
-    public void flush()
-                            throws IOException {
-        os.flush();
-    }
+	@Override
+	public void flush() throws IOException {
+		os.flush();
+	}
 
-    @Override
-    public void write( byte[] b )
-                            throws IOException {
-        if ( tmpFile == null && bytesWritten + b.length > limit ) {
-            switchToFile();
-        }
-        os.write( b );
-        bytesWritten += b.length;
-    }
+	@Override
+	public void write(byte[] b) throws IOException {
+		if (tmpFile == null && bytesWritten + b.length > limit) {
+			switchToFile();
+		}
+		os.write(b);
+		bytesWritten += b.length;
+	}
 
-    @Override
-    public void write( byte[] b, int off, int len )
-                            throws IOException {
-        if ( tmpFile == null && bytesWritten + len > limit ) {
-            switchToFile();
-        }
-        os.write( b, off, len );
-        bytesWritten += len;
-    }
+	@Override
+	public void write(byte[] b, int off, int len) throws IOException {
+		if (tmpFile == null && bytesWritten + len > limit) {
+			switchToFile();
+		}
+		os.write(b, off, len);
+		bytesWritten += len;
+	}
 
-    @Override
-    public void write( int b )
-                            throws IOException {
-        if ( tmpFile == null && bytesWritten == limit ) {
-            switchToFile();
-        }
-        os.write( b );
-        bytesWritten++;
-    }
+	@Override
+	public void write(int b) throws IOException {
+		if (tmpFile == null && bytesWritten == limit) {
+			switchToFile();
+		}
+		os.write(b);
+		bytesWritten++;
+	}
 
-    /**
-     * Writes the complete contents of this buffer to the specified output stream argument, as if by calling the output
-     * stream's write method using <code>out.write(buf, 0, count)</code>.
-     * 
-     * @param outputStream
-     *            stream to write to, must not be <code>null</code>
-     * @throws IOException
-     *             if an I/O error occurs
-     */
-    public void writeTo( OutputStream outputStream )
-                            throws IOException {
-        BufferedInputStream is = new BufferedInputStream( getInputStream() );
-        byte[] buffer = new byte[10240];
-        int read = -1;
-        while ( ( read = is.read( buffer ) ) != -1 ) {
-            outputStream.write( buffer, 0, read );
-        }
-        is.close();
-    }
+	/**
+	 * Writes the complete contents of this buffer to the specified output stream
+	 * argument, as if by calling the output stream's write method using
+	 * <code>out.write(buf, 0, count)</code>.
+	 * @param outputStream stream to write to, must not be <code>null</code>
+	 * @throws IOException if an I/O error occurs
+	 */
+	public void writeTo(OutputStream outputStream) throws IOException {
+		BufferedInputStream is = new BufferedInputStream(getInputStream());
+		byte[] buffer = new byte[10240];
+		int read = -1;
+		while ((read = is.read(buffer)) != -1) {
+			outputStream.write(buffer, 0, read);
+		}
+		is.close();
+	}
 
-    /**
-     * Clears any data that exists in the buffer.
-     */
-    public void reset() {
-        try {
-            os.close();
-        } catch ( IOException e ) {
-            LOG.error( "Error closing sink. Continuing anyway." );
-        }
-        if ( tmpFile != null ) {
-            tmpFile.delete();
-            os = new ByteArrayOutputStream( limit );
-            tmpFile = null;
-        } else {
-            os = new ByteArrayOutputStream( limit );
-        }
-    }
+	/**
+	 * Clears any data that exists in the buffer.
+	 */
+	public void reset() {
+		try {
+			os.close();
+		}
+		catch (IOException e) {
+			LOG.error("Error closing sink. Continuing anyway.");
+		}
+		if (tmpFile != null) {
+			tmpFile.delete();
+			os = new ByteArrayOutputStream(limit);
+			tmpFile = null;
+		}
+		else {
+			os = new ByteArrayOutputStream(limit);
+		}
+	}
 
-    private void switchToFile()
-                            throws IOException {
-        LOG.debug( "Memory limit of " + limit + " bytes reached. Switching to file-based storage." );
-        if ( targetFile == null ) {
-            tmpFile = File.createTempFile( "store", ".tmp" );
-        } else {
-            tmpFile = targetFile;
-        }
-        LOG.debug( "Using file: " + tmpFile );
-        OutputStream fileOs = new BufferedOutputStream( new FileOutputStream( tmpFile ) );
-        ( (ByteArrayOutputStream) os ).writeTo( fileOs );
-        os = fileOs;
-    }
+	private void switchToFile() throws IOException {
+		LOG.debug("Memory limit of " + limit + " bytes reached. Switching to file-based storage.");
+		if (targetFile == null) {
+			tmpFile = File.createTempFile("store", ".tmp");
+		}
+		else {
+			tmpFile = targetFile;
+		}
+		LOG.debug("Using file: " + tmpFile);
+		OutputStream fileOs = new BufferedOutputStream(new FileOutputStream(tmpFile));
+		((ByteArrayOutputStream) os).writeTo(fileOs);
+		os = fileOs;
+	}
+
 }

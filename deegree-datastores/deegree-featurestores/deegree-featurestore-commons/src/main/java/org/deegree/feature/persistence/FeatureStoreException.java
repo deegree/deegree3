@@ -1,4 +1,3 @@
-//$Header: /deegreerepository/deegree/src/org/deegree/io/datastore/Datastore.java,v 1.28 2007/01/16 13:58:34 mschneider Exp $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -38,49 +37,44 @@ package org.deegree.feature.persistence;
 
 /**
  * Indicates an exception that occured in the feature persistence layer.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class FeatureStoreException extends Exception {
 
-    private static final long serialVersionUID = -8171919093492328054L;
+	private static final long serialVersionUID = -8171919093492328054L;
 
-    /**
-     * Creates a new {@link FeatureStoreException} without detail message.
-     */
-    public FeatureStoreException() {
-        super();
-    }
+	/**
+	 * Creates a new {@link FeatureStoreException} without detail message.
+	 */
+	public FeatureStoreException() {
+		super();
+	}
 
-    /**
-     * Creates a new {@link FeatureStoreException} with detail message.
-     * 
-     * @param message
-     *            detail message
-     */
-    public FeatureStoreException( String message ) {
-        super( message );
-    }
+	/**
+	 * Creates a new {@link FeatureStoreException} with detail message.
+	 * @param message detail message
+	 */
+	public FeatureStoreException(String message) {
+		super(message);
+	}
 
-    /**
-     * Creates a new {@link FeatureStoreException} which wraps the causing exception.
-     * 
-     * @param cause
-     */
-    public FeatureStoreException( Throwable cause ) {
-        super( cause );
-    }
+	/**
+	 * Creates a new {@link FeatureStoreException} which wraps the causing exception.
+	 * @param cause
+	 */
+	public FeatureStoreException(Throwable cause) {
+		super(cause);
+	}
 
-    /**
-     * Creates a new {@link FeatureStoreException} which wraps the causing exception and provides a detail message.
-     * 
-     * @param message
-     * @param cause
-     */
-    public FeatureStoreException( String message, Throwable cause ) {
-        super( message, cause );
-    }
+	/**
+	 * Creates a new {@link FeatureStoreException} which wraps the causing exception and
+	 * provides a detail message.
+	 * @param message
+	 * @param cause
+	 */
+	public FeatureStoreException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
 }

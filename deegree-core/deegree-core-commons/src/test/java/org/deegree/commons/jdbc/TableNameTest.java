@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -42,31 +41,26 @@ import org.junit.Test;
 
 /**
  * Test cases for creation of {@link TableName}s
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author <a href="mailto:wanhoff@lat-lon.de">Jeronimo Wanhoff</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class TableNameTest {
 
-    @Test
-    public void testCreateFromQualifiedNameWithSchema()
-                            throws Exception {
-        String table = "schema.tableName";
-        TableName tableName = TableName.createFromQualifiedName( table );
-        assertEquals( "schema", tableName.getSchema() );
-        assertEquals( "tableName", tableName.getTable() );
-    }
+	@Test
+	public void testCreateFromQualifiedNameWithSchema() throws Exception {
+		String table = "schema.tableName";
+		TableName tableName = TableName.createFromQualifiedName(table);
+		assertEquals("schema", tableName.getSchema());
+		assertEquals("tableName", tableName.getTable());
+	}
 
-    @Test
-    public void testCreateFromQualifiedNameWithoutSchema()
-                            throws Exception {
-        String table = "tableName";
-        TableName tableName = TableName.createFromQualifiedName( table );
-        assertNull( tableName.getSchema() );
-        assertEquals( "tableName", tableName.getTable() );
-    }
+	@Test
+	public void testCreateFromQualifiedNameWithoutSchema() throws Exception {
+		String table = "tableName";
+		TableName tableName = TableName.createFromQualifiedName(table);
+		assertNull(tableName.getSchema());
+		assertEquals("tableName", tableName.getTable());
+	}
 
 }

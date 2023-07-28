@@ -47,27 +47,27 @@ import org.apache.commons.io.IOUtils;
 
 /**
  * List the currently available fonts in the server
- * 
+ *
  * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  */
 public class ListFonts {
 
-    public static void listFonts( HttpServletResponse resp )
-                            throws IOException {
-        resp.setContentType( "text/plain" );
+	public static void listFonts(HttpServletResponse resp) throws IOException {
+		resp.setContentType("text/plain");
 
-        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        SortedSet<String> fonts = new TreeSet<>();
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		SortedSet<String> fonts = new TreeSet<>();
 
-        // list names and families
-        for ( Font font : ge.getAllFonts() ) {
-            fonts.add( font.getName() );
-            fonts.add( font.getFamily() );
-        }
+		// list names and families
+		for (Font font : ge.getAllFonts()) {
+			fonts.add(font.getName());
+			fonts.add(font.getFamily());
+		}
 
-        ServletOutputStream os = resp.getOutputStream();
-        for ( String name : fonts ) {
-            IOUtils.write( name + "\n", os );
-        }
-    }
+		ServletOutputStream os = resp.getOutputStream();
+		for (String name : fonts) {
+			IOUtils.write(name + "\n", os);
+		}
+	}
+
 }

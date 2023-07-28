@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -53,63 +52,59 @@ import org.deegree.tile.TileIOException;
 
 /**
  * A {@link Tile} that is backed by a {@link FileSystemTileStore}.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 class FileSystemTile implements Tile {
 
-    private final Envelope bbox;
+	private final Envelope bbox;
 
-    private final File file;
+	private final File file;
 
-    /**
-     * Creates a new {@link FileSystemTile} instance.
-     * 
-     * @param bbox
-     *            envelope of the tile, must not be <code>null</code>
-     * @param file
-     *            image file, must not be <code>null</code> and point to an existing image file
-     */
-    FileSystemTile( Envelope bbox, File file ) {
-        this.bbox = bbox;
-        this.file = file;
-    }
+	/**
+	 * Creates a new {@link FileSystemTile} instance.
+	 * @param bbox envelope of the tile, must not be <code>null</code>
+	 * @param file image file, must not be <code>null</code> and point to an existing
+	 * image file
+	 */
+	FileSystemTile(Envelope bbox, File file) {
+		this.bbox = bbox;
+		this.file = file;
+	}
 
-    @Override
-    public BufferedImage getAsImage()
-                            throws TileIOException {
-        InputStream in = null;
-        try {
-            in = getAsStream();
-            return ImageIO.read( in );
-        } catch ( IOException e ) {
-            throw new TileIOException( "Error decoding tile from file '" + file + "'" + e.getMessage(), e );
-        } finally {
-            closeQuietly( in );
-        }
-    }
+	@Override
+	public BufferedImage getAsImage() throws TileIOException {
+		InputStream in = null;
+		try {
+			in = getAsStream();
+			return ImageIO.read(in);
+		}
+		catch (IOException e) {
+			throw new TileIOException("Error decoding tile from file '" + file + "'" + e.getMessage(), e);
+		}
+		finally {
+			closeQuietly(in);
+		}
+	}
 
-    @Override
-    public InputStream getAsStream()
-                            throws TileIOException {
-        try {
-            return new FileInputStream( file );
-        } catch ( FileNotFoundException e ) {
-            throw new TileIOException( "Tile file '" + file + "' does not exist." );
-        }
-    }
+	@Override
+	public InputStream getAsStream() throws TileIOException {
+		try {
+			return new FileInputStream(file);
+		}
+		catch (FileNotFoundException e) {
+			throw new TileIOException("Tile file '" + file + "' does not exist.");
+		}
+	}
 
-    @Override
-    public Envelope getEnvelope() {
-        return bbox;
-    }
+	@Override
+	public Envelope getEnvelope() {
+		return bbox;
+	}
 
-    @Override
-    public FeatureCollection getFeatures( int i, int j, int limit )
-                            throws UnsupportedOperationException {
-        throw new UnsupportedOperationException( "Feature retrieval is not supported by the FileSystemTileStore." );
-    }
+	@Override
+	public FeatureCollection getFeatures(int i, int j, int limit) throws UnsupportedOperationException {
+		throw new UnsupportedOperationException("Feature retrieval is not supported by the FileSystemTileStore.");
+	}
+
 }

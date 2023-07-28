@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -43,42 +42,39 @@ import org.deegree.commons.xml.XPath;
 
 /**
  * Encapsulates the method for parsing a {@Link SoapHeader} XML request via Http-POST.
- * 
+ *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class SoapHeaderXMLAdapter extends XMLAdapter {
 
-    protected final static String SOAP_10 = "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd";
+	protected final static String SOAP_10 = "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd";
 
-    protected final static String SOAP_10_PREFIX = "wsse";
+	protected final static String SOAP_10_PREFIX = "wsse";
 
-    static {
-        nsContext.addNamespace( SOAP_10_PREFIX, SOAP_10 );
-    }
+	static {
+		nsContext.addNamespace(SOAP_10_PREFIX, SOAP_10);
+	}
 
-    public SoapHeader parseHeader() {
+	public SoapHeader parseHeader() {
 
-        OMElement security = getElement( rootElement, new XPath( "*", nsContext ) );
+		OMElement security = getElement(rootElement, new XPath("*", nsContext));
 
-        OMElement usernameToken = getElement( security, new XPath( "*", nsContext ) );
+		OMElement usernameToken = getElement(security, new XPath("*", nsContext));
 
-        List<OMElement> usernameTokenList = getElements( usernameToken, new XPath( "*", nsContext ) );
-        String usernameString = "";
-        String passwordString = "";
-        for ( OMElement elem : usernameTokenList ) {
-            String localName = elem.getLocalName();
-            if ( "Username".equals( localName ) ) {
-                usernameString = getNodeAsString( elem, new XPath( "text()", nsContext ), "" );
-            }
-            if ( "Password".equals( localName ) ) {
-                passwordString = getNodeAsString( elem, new XPath( "text()", nsContext ), "" );
-            }
-        }
+		List<OMElement> usernameTokenList = getElements(usernameToken, new XPath("*", nsContext));
+		String usernameString = "";
+		String passwordString = "";
+		for (OMElement elem : usernameTokenList) {
+			String localName = elem.getLocalName();
+			if ("Username".equals(localName)) {
+				usernameString = getNodeAsString(elem, new XPath("text()", nsContext), "");
+			}
+			if ("Password".equals(localName)) {
+				passwordString = getNodeAsString(elem, new XPath("text()", nsContext), "");
+			}
+		}
 
-        return new SoapHeader( usernameString, passwordString );
-    }
+		return new SoapHeader(usernameString, passwordString);
+	}
 
 }

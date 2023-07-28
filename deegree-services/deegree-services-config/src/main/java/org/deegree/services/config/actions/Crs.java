@@ -53,74 +53,71 @@ import org.deegree.cs.persistence.CRSStore;
 
 /**
  * Lists CRS or detects if a CRS is available.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class Crs {
 
-    private static final Pattern CODE = Pattern.compile( "EPSG:[0-9]+" );
+	private static final Pattern CODE = Pattern.compile("EPSG:[0-9]+");
 
-    public static void listCrs( HttpServletResponse resp )
-                            throws IOException {
-        resp.setContentType( "text/plain" );
+	public static void listCrs(HttpServletResponse resp) throws IOException {
+		resp.setContentType("text/plain");
 
-        List<ICRS> crss = new ArrayList<ICRS>();
-        Collection<CRSStore> all = CRSManager.getAll();
-        for ( CRSStore crsStore : all ) {
-            crss.addAll( crsStore.getAvailableCRSs() );
-        }
+		List<ICRS> crss = new ArrayList<ICRS>();
+		Collection<CRSStore> all = CRSManager.getAll();
+		for (CRSStore crsStore : all) {
+			crss.addAll(crsStore.getAvailableCRSs());
+		}
 
-        List<String> codes = new ArrayList<String>( crss.size() );
+		List<String> codes = new ArrayList<String>(crss.size());
 
-        ServletOutputStream out = resp.getOutputStream();
-        for ( ICRS crs : crss ) {
-            for ( CRSCodeType code : crs.getCodes() ) {
-                String s = code.toString().toUpperCase();
-                if ( CODE.matcher( s ).matches() ) {
-                    if ( !codes.contains( s ) ) {
-                        codes.add( s );
-                    }
-                }
-            }
-        }
+		ServletOutputStream out = resp.getOutputStream();
+		for (ICRS crs : crss) {
+			for (CRSCodeType code : crs.getCodes()) {
+				String s = code.toString().toUpperCase();
+				if (CODE.matcher(s).matches()) {
+					if (!codes.contains(s)) {
+						codes.add(s);
+					}
+				}
+			}
+		}
 
-        Collections.sort( codes );
+		Collections.sort(codes);
 
-        for ( String code : codes ) {
-            IOUtils.write( code + "\n", out );
-        }
-    }
+		for (String code : codes) {
+			IOUtils.write(code + "\n", out);
+		}
+	}
 
-    public static void checkCrs( String path, HttpServletResponse resp )
-                            throws IOException {
-        Pair<DeegreeWorkspace, String> p = getWorkspaceAndPath( path );
-        try {
-            CRSManager.lookup( p.second );
-            IOUtils.write( "true", resp.getOutputStream() );
-        } catch ( UnknownCRSException e ) {
-            IOUtils.write( "false", resp.getOutputStream() );
-        }
-    }
+	public static void checkCrs(String path, HttpServletResponse resp) throws IOException {
+		Pair<DeegreeWorkspace, String> p = getWorkspaceAndPath(path);
+		try {
+			CRSManager.lookup(p.second);
+			IOUtils.write("true", resp.getOutputStream());
+		}
+		catch (UnknownCRSException e) {
+			IOUtils.write("false", resp.getOutputStream());
+		}
+	}
 
-    public static void getCodes( HttpServletRequest req, HttpServletResponse resp )
-                            throws IOException {
-        ServletOutputStream out = resp.getOutputStream();
+	public static void getCodes(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		ServletOutputStream out = resp.getOutputStream();
 
-        String s = req.getParameter( "wkt" );
-        s = URLDecoder.decode( s, "UTF-8" );
-        ICRS crs = WKTParser.parse( s );
-        Collection<CRSStore> all = CRSManager.getAll();
-        for ( CRSStore crsStore : all ) {
-            for ( ICRS c : crsStore.getAvailableCRSs() ) {
-                if ( c.equals( crs ) ) {
-                    for ( CRSCodeType ct : c.getCodes() ) {
-                        IOUtils.write( ct.toString(), out );
-                    }
-                }
-            }
-        }
-    }
+		String s = req.getParameter("wkt");
+		s = URLDecoder.decode(s, "UTF-8");
+		ICRS crs = WKTParser.parse(s);
+		Collection<CRSStore> all = CRSManager.getAll();
+		for (CRSStore crsStore : all) {
+			for (ICRS c : crsStore.getAvailableCRSs()) {
+				if (c.equals(crs)) {
+					for (CRSCodeType ct : c.getCodes()) {
+						IOUtils.write(ct.toString(), out);
+					}
+				}
+			}
+		}
+	}
 
 }

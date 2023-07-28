@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aschmitz@deegree.wald.intevation.de/deegree/deegree3/trunk/deegree-core/deegree-core-rendering-2d/src/main/java/org/deegree/rendering/r2d/styling/components/UOM.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -37,18 +36,18 @@ package org.deegree.style.styling.components;
 
 /**
  * <code>UOM</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: aschmitz $
- * 
- * @version $Revision: 20495 $, $Date: 2009-10-30 15:57:57 +0100 (Fri, 30 Oct 2009) $
  */
 public enum UOM {
 
-    /***/
-    Metre, /***/
-    Foot, /***/
-    Pixel, /***/
-    mm
+	/***/
+	Metre,
+	/***/
+	Foot,
+	/***/
+	Pixel,
+	/***/
+	mm
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -51,25 +50,23 @@ import org.junit.Test;
 
 /**
  * <code>TestTile</code>
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 public class TileTest extends TestCase {
 
-    @Test
-    public void testGetEnvelope() {
-        Tile t = mock( Tile.class );
-        t.getEnvelope();
-        verify( t ).getEnvelope();
-    }
+	@Test
+	public void testGetEnvelope() {
+		Tile t = mock(Tile.class);
+		t.getEnvelope();
+		verify(t).getEnvelope();
+	}
 
-    @Test
-    public void testGetAsImage() throws TileIOException {
-        Tile t = mock( Tile.class );
-        t.getAsImage();
-        verify( t ).getAsImage();
-    }
+	@Test
+	public void testGetAsImage() throws TileIOException {
+		Tile t = mock(Tile.class);
+		t.getAsImage();
+		verify(t).getAsImage();
+	}
+
 }

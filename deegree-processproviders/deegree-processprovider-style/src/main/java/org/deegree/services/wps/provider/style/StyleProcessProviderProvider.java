@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -45,29 +44,28 @@ import org.deegree.workspace.Workspace;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class StyleProcessProviderProvider extends ProcessProviderProvider {
 
-    private static final String CONFIG_NAMESPACE = "http://www.deegree.org/processes/style";
+	private static final String CONFIG_NAMESPACE = "http://www.deegree.org/processes/style";
 
-    @Override
-    public String getNamespace() {
-        return CONFIG_NAMESPACE;
-    }
+	@Override
+	public String getNamespace() {
+		return CONFIG_NAMESPACE;
+	}
 
-    @Override
-    public ResourceMetadata<ProcessProvider> createFromLocation( Workspace workspace,
-                                                                 ResourceLocation<ProcessProvider> location ) {
-        return new StyleProcessProviderMetadata( workspace, location, this );
-    }
+	@Override
+	public ResourceMetadata<ProcessProvider> createFromLocation(Workspace workspace,
+			ResourceLocation<ProcessProvider> location) {
+		return new StyleProcessProviderMetadata(workspace, location, this);
+	}
 
-    @Override
-    public URL getSchema() {
-        return StyleProcessProviderProvider.class.getResource( "META-INF/schemas/processes/style/0.1.0/styleProvider.xsd" );
-    }
+	@Override
+	public URL getSchema() {
+		return StyleProcessProviderProvider.class
+			.getResource("META-INF/schemas/processes/style/0.1.0/styleProvider.xsd");
+	}
+
 }

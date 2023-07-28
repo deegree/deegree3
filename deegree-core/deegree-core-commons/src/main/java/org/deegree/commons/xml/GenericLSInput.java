@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -42,107 +41,105 @@ import org.w3c.dom.ls.LSInput;
 
 /**
  * Generic implementation of <code>LSInput</code>.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class GenericLSInput implements LSInput {
 
-    private String baseUri;
+	private String baseUri;
 
-    private InputStream byteStream;
+	private InputStream byteStream;
 
-    private boolean certifiedText;
+	private boolean certifiedText;
 
-    private Reader characterStream;
+	private Reader characterStream;
 
-    private String encoding;
+	private String encoding;
 
-    private String publicId;
+	private String publicId;
 
-    private String stringData;
+	private String stringData;
 
-    private String systemId;
+	private String systemId;
 
-    @Override
-    public String getBaseURI() {
-        return baseUri;
-    }
+	@Override
+	public String getBaseURI() {
+		return baseUri;
+	}
 
-    @Override
-    public InputStream getByteStream() {
-        return byteStream;
-    }
+	@Override
+	public InputStream getByteStream() {
+		return byteStream;
+	}
 
-    @Override
-    public boolean getCertifiedText() {
-        return certifiedText;
-    }
+	@Override
+	public boolean getCertifiedText() {
+		return certifiedText;
+	}
 
-    @Override
-    public Reader getCharacterStream() {
-        return characterStream;
-    }
+	@Override
+	public Reader getCharacterStream() {
+		return characterStream;
+	}
 
-    @Override
-    public String getEncoding() {
-        return encoding;
-    }
+	@Override
+	public String getEncoding() {
+		return encoding;
+	}
 
-    @Override
-    public String getPublicId() {
-        return publicId;
-    }
+	@Override
+	public String getPublicId() {
+		return publicId;
+	}
 
-    @Override
-    public String getStringData() {
-        return stringData;
-    }
+	@Override
+	public String getStringData() {
+		return stringData;
+	}
 
-    @Override
-    public String getSystemId() {
-        return systemId;
-    }
+	@Override
+	public String getSystemId() {
+		return systemId;
+	}
 
-    @Override
-    public void setBaseURI( String baseUri ) {
-        this.baseUri = baseUri;
-    }
+	@Override
+	public void setBaseURI(String baseUri) {
+		this.baseUri = baseUri;
+	}
 
-    @Override
-    public void setByteStream( InputStream byteStream ) {
-        this.byteStream = byteStream;
-    }
+	@Override
+	public void setByteStream(InputStream byteStream) {
+		this.byteStream = byteStream;
+	}
 
-    @Override
-    public void setCertifiedText( boolean certifiedText ) {
-        this.certifiedText = certifiedText;
-    }
+	@Override
+	public void setCertifiedText(boolean certifiedText) {
+		this.certifiedText = certifiedText;
+	}
 
-    @Override
-    public void setCharacterStream( Reader characterStream ) {
-        this.characterStream = characterStream;
-    }
+	@Override
+	public void setCharacterStream(Reader characterStream) {
+		this.characterStream = characterStream;
+	}
 
-    @Override
-    public void setEncoding( String encoding ) {
-        this.encoding = encoding;
-    }
+	@Override
+	public void setEncoding(String encoding) {
+		this.encoding = encoding;
+	}
 
-    @Override
-    public void setPublicId( String publicId ) {
-        this.publicId = publicId;
-    }
+	@Override
+	public void setPublicId(String publicId) {
+		this.publicId = publicId;
+	}
 
-    @Override
-    public void setStringData( String stringData ) {
-        this.stringData = stringData;
-    }
+	@Override
+	public void setStringData(String stringData) {
+		this.stringData = stringData;
+	}
 
-    @Override
-    public void setSystemId( String systemId ) {
-        this.systemId = systemId;
-    }
+	@Override
+	public void setSystemId(String systemId) {
+		this.systemId = systemId;
+	}
+
 }

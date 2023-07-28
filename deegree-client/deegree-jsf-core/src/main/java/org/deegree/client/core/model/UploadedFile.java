@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -43,79 +42,75 @@ import org.apache.commons.fileupload.FileItem;
 
 /**
  * <code>UploadedFile</code> wraps the uploaded file item
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 @Deprecated
 public class UploadedFile implements Serializable {
 
-    private static final long serialVersionUID = -8302793775220721969L;
+	private static final long serialVersionUID = -8302793775220721969L;
 
-    private FileItem fileItem;
+	private FileItem fileItem;
 
-    private URL url;
+	private URL url;
 
-    private String absolutePath;
-    
-    public UploadedFile() {
-    }
+	private String absolutePath;
 
-    /**
-     * Deletes the file
-     * 
-     * @return
-     */
-    public boolean delete() {
-        File file = new File( absolutePath );
-        return file.delete();
-    }
+	public UploadedFile() {
+	}
 
-    /**
-     * @return the absolute path of the uploaded file
-     */
-    public String getAbsolutePath() {
-        return absolutePath;
-    }
+	/**
+	 * Deletes the file
+	 * @return
+	 */
+	public boolean delete() {
+		File file = new File(absolutePath);
+		return file.delete();
+	}
 
-    /**
-     * @return the name of the uploaded file
-     */
-    public String getFileName() {
-        return fileItem.getName();
-    }
+	/**
+	 * @return the absolute path of the uploaded file
+	 */
+	public String getAbsolutePath() {
+		return absolutePath;
+	}
 
-    /**
-     * @return the uploaded file item
-     */
-    public FileItem getFileItem() {
-        return fileItem;
-    }
-    
-    /**
-     * @return the web accessible url of the uploaded file
-     */
-    public URL getUrl() {
-        return url;
-    }
+	/**
+	 * @return the name of the uploaded file
+	 */
+	public String getFileName() {
+		return fileItem.getName();
+	}
 
-    @Override
-    public String toString() {
-        return "" + fileItem;
-    }
+	/**
+	 * @return the uploaded file item
+	 */
+	public FileItem getFileItem() {
+		return fileItem;
+	}
 
-    public void setFileItem( FileItem fileItem ) {
-        this.fileItem = fileItem;
-    }
+	/**
+	 * @return the web accessible url of the uploaded file
+	 */
+	public URL getUrl() {
+		return url;
+	}
 
-    public void setUrl( URL url ) {
-        this.url = url;
-    }
+	@Override
+	public String toString() {
+		return "" + fileItem;
+	}
 
-    public void setAbsolutePath( String absolutePath ) {
-        this.absolutePath = absolutePath;
-    }
+	public void setFileItem(FileItem fileItem) {
+		this.fileItem = fileItem;
+	}
+
+	public void setUrl(URL url) {
+		this.url = url;
+	}
+
+	public void setAbsolutePath(String absolutePath) {
+		this.absolutePath = absolutePath;
+	}
 
 }

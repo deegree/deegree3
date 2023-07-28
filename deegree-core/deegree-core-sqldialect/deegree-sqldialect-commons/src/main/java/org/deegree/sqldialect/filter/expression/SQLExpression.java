@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-base/src/main/java/org/deegree/filter/sql/expression/SQLExpression.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -44,83 +43,72 @@ import org.deegree.cs.coordinatesystems.ICRS;
 
 /**
  * Marks (a node of) an SQL expression with type information.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 30977 $, $Date: 2011-05-31 11:30:55 +0200 (Di, 31. Mai 2011) $
  */
 public interface SQLExpression {
 
-    /**
-     * Returns the primitive type of this expression.
-     * 
-     * @return the primitive type, can be <code>null</code> (no type information / spatial)
-     */
-    public PrimitiveType getPrimitiveType();
+	/**
+	 * Returns the primitive type of this expression.
+	 * @return the primitive type, can be <code>null</code> (no type information /
+	 * spatial)
+	 */
+	public PrimitiveType getPrimitiveType();
 
-    /**
-     * Returns whether the expression denotes a spatial value.
-     * 
-     * @return true, if the expression is spatial, false otherwise
-     */
-    public boolean isSpatial();
+	/**
+	 * Returns whether the expression denotes a spatial value.
+	 * @return true, if the expression is spatial, false otherwise
+	 */
+	public boolean isSpatial();
 
-    /**
-     * Returns whether the expression has multiple values (currently this can only be a string column that stores
-     * multiple values in concatenated form).
-     * 
-     * @return true, if the expresion is multi-valued, false otherwise
-     */
-    public boolean isMultiValued();
+	/**
+	 * Returns whether the expression has multiple values (currently this can only be a
+	 * string column that stores multiple values in concatenated form).
+	 * @return true, if the expresion is multi-valued, false otherwise
+	 */
+	public boolean isMultiValued();
 
-    /**
-     * Returns the CRS of the expression (only for spatial ones).
-     * 
-     * @return the CRS, can be <code>null</code> (unknown or not a spatial expression)
-     */
-    public ICRS getCRS();
+	/**
+	 * Returns the CRS of the expression (only for spatial ones).
+	 * @return the CRS, can be <code>null</code> (unknown or not a spatial expression)
+	 */
+	public ICRS getCRS();
 
-    /**
-     * Returns the databases' SRID of the expression (only for spatial ones).
-     * 
-     * @return the SRID, can be <code>null</code> (unknown or not a spatial expression)
-     */
-    public String getSRID();
+	/**
+	 * Returns the databases' SRID of the expression (only for spatial ones).
+	 * @return the SRID, can be <code>null</code> (unknown or not a spatial expression)
+	 */
+	public String getSRID();
 
-    /**
-     * Returns the corresponding SQL snippet, with question marks for every {@link SQLArgument} argument (as required
-     * for JDBC {@link PreparedStatement}s).
-     * 
-     * @see #getArguments()
-     * 
-     * @return the corresponding SQL snippet, never <code>null</code>
-     */
-    public StringBuilder getSQL();
+	/**
+	 * Returns the corresponding SQL snippet, with question marks for every
+	 * {@link SQLArgument} argument (as required for JDBC {@link PreparedStatement}s).
+	 *
+	 * @see #getArguments()
+	 * @return the corresponding SQL snippet, never <code>null</code>
+	 */
+	public StringBuilder getSQL();
 
-    /**
-     * Returns the {@link SQLArgument} instances that occur in the expression, in same order as in the SQL snippet.
-     * 
-     * @see #getSQL()
-     * 
-     * @return the SQL literals, never <code>null</code>
-     */
-    public List<SQLArgument> getArguments();
+	/**
+	 * Returns the {@link SQLArgument} instances that occur in the expression, in same
+	 * order as in the SQL snippet.
+	 *
+	 * @see #getSQL()
+	 * @return the SQL literals, never <code>null</code>
+	 */
+	public List<SQLArgument> getArguments();
 
-    /**
-     * Propagates type information to this expression (=performs a type cast).
-     * 
-     * @param expr
-     *            type information to be applied, must not be <code>null</code>
-     * @throws IllegalArgumentException
-     *             if the cast cannot be performed
-     */
-    public void cast( SQLExpression expr );
+	/**
+	 * Propagates type information to this expression (=performs a type cast).
+	 * @param expr type information to be applied, must not be <code>null</code>
+	 * @throws IllegalArgumentException if the cast cannot be performed
+	 */
+	public void cast(SQLExpression expr);
 
-    /**
-     * Returns the attached particle converter for this expression.
-     * 
-     * @return particle converter, can be <code>null</code>
-     */
-    public ParticleConverter<?> getConverter();
+	/**
+	 * Returns the attached particle converter for this expression.
+	 * @return particle converter, can be <code>null</code>
+	 */
+	public ParticleConverter<?> getConverter();
+
 }

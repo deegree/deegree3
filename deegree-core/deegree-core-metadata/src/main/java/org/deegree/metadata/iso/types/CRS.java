@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -37,49 +36,47 @@ package org.deegree.metadata.iso.types;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.org">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class CRS {
 
-    private final String crsId;
+	private final String crsId;
 
-    private final String authority;
+	private final String authority;
 
-    private final String version;
+	private final String version;
 
-    /**
-     * @param crsId
-     * @param authority
-     * @param version
-     */
-    public CRS( String crsId, String authority, String version ) {
-        this.crsId = crsId;
-        this.authority = authority;
-        this.version = version;
-    }
+	/**
+	 * @param crsId
+	 * @param authority
+	 * @param version
+	 */
+	public CRS(String crsId, String authority, String version) {
+		this.crsId = crsId;
+		this.authority = authority;
+		this.version = version;
+	}
 
-    /**
-     * @return the crsId
-     */
-    public String getCrsId() {
-        return crsId;
-    }
+	/**
+	 * @return the crsId
+	 */
+	public String getCrsId() {
+		return crsId;
+	}
 
-    /**
-     * @return the authority
-     */
-    public String getAuthority() {
-        return authority;
-    }
+	/**
+	 * @return the authority
+	 */
+	public String getAuthority() {
+		return authority;
+	}
 
-    /**
-     * @return the version
-     */
-    public String getVersion() {
-        return version;
-    }
+	/**
+	 * @return the version
+	 */
+	public String getVersion() {
+		return version;
+	}
+
 }

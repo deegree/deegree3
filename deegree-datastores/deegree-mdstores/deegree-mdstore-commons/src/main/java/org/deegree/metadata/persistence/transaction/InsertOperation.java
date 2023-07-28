@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-metadata/src/main/java/org/deegree/metadata/persistence/transaction/InsertOperation.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -44,44 +43,41 @@ import org.deegree.protocol.csw.CSWConstants.TransactionType;
 
 /**
  * Represents a CSW <code>Insert</code> action (part of a Transaction request).
- * 
+ *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 30344 $, $Date: 2011-04-04 17:24:27 +0200 (Mo, 04. Apr 2011) $
  */
 public class InsertOperation extends TransactionOperation {
 
-    private List<? extends MetadataRecord> records;
+	private List<? extends MetadataRecord> records;
 
-    private QName typeName;
+	private QName typeName;
 
-    /**
-     * 
-     * @param records
-     * @param typeName
-     * @param handle
-     */
-    public InsertOperation( List<? extends MetadataRecord> records, QName typeName, String handle ) {
-        super( handle );
-        this.records = records;
-        this.typeName = typeName;
+	/**
+	 * @param records
+	 * @param typeName
+	 * @param handle
+	 */
+	public InsertOperation(List<? extends MetadataRecord> records, QName typeName, String handle) {
+		super(handle);
+		this.records = records;
+		this.typeName = typeName;
 
-    }
+	}
 
-    @Override
-    public TransactionType getType() {
-        return TransactionType.INSERT;
-    }
+	@Override
+	public TransactionType getType() {
+		return TransactionType.INSERT;
+	}
 
-    public List<? extends MetadataRecord> getRecords() {
-        return records;
-    }
+	public List<? extends MetadataRecord> getRecords() {
+		return records;
+	}
 
-    /**
-     * @return the typeName
-     */
-    public QName getTypeName() {
-        return typeName;
-    }
+	/**
+	 * @return the typeName
+	 */
+	public QName getTypeName() {
+		return typeName;
+	}
+
 }

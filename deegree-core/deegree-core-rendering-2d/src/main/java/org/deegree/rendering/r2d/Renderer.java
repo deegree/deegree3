@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -46,42 +45,39 @@ import org.deegree.style.styling.Styling;
 
 /**
  * <code>Renderer</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface Renderer {
 
-    /**
-     * @param styling
-     * @param geom
-     */
-    void render( PointStyling styling, Geometry geom );
+	/**
+	 * @param styling
+	 * @param geom
+	 */
+	void render(PointStyling styling, Geometry geom);
 
-    /**
-     * @param styling
-     * @param geom
-     */
-    void render( LineStyling styling, Geometry geom );
+	/**
+	 * @param styling
+	 * @param geom
+	 */
+	void render(LineStyling styling, Geometry geom);
 
-    /**
-     * @param styling
-     * @param geom
-     */
-    void render( PolygonStyling styling, Geometry geom );
+	/**
+	 * @param styling
+	 * @param geom
+	 */
+	void render(PolygonStyling styling, Geometry geom);
 
-    /**
-     * @param styling
-     * @param geoms
-     */
-    void render( Styling styling, Collection<Geometry> geoms );
+	/**
+	 * @param styling
+	 * @param geoms
+	 */
+	void render(Styling styling, Collection<Geometry> geoms);
 
-    /**
-     * @param styling
-     * @param geom
-     */
-    void render( Styling styling, Geometry geom );
+	/**
+	 * @param styling
+	 * @param geom
+	 */
+	void render(Styling styling, Geometry geom);
 
 }

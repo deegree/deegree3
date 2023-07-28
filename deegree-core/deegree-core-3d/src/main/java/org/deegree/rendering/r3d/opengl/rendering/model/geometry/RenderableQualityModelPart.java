@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -41,35 +40,33 @@ import org.deegree.rendering.r3d.opengl.rendering.JOGLRenderable;
 import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
 
 /**
- * The <code>RenderableQualityModelPart</code> a part of a {@link RenderableQualityModel}, normally a geometry.
- * 
+ * The <code>RenderableQualityModelPart</code> a part of a {@link RenderableQualityModel},
+ * normally a geometry.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
- * 
+ *
  */
 public interface RenderableQualityModelPart extends QualityModelPart, JOGLRenderable {
 
-    /**
-     * @return the number of ordinates in the implementation.
-     */
-    public int getOrdinateCount();
+	/**
+	 * @return the number of ordinates in the implementation.
+	 */
+	public int getOrdinateCount();
 
-    /**
-     * @return the number of texture ordinates in this quality model part
-     */
-    public int getTextureOrdinateCount();
+	/**
+	 * @return the number of texture ordinates in this quality model part
+	 */
+	public int getTextureOrdinateCount();
 
-    /**
-     * This method is a more specific render method than the {@link JOGLRenderable#render(RenderContext)}, it defines a
-     * contract that the geometryBuffer holds the geometry for the implementation and the implementation holds indizes
-     * which are valid for the given buffer.
-     * 
-     * @param glRenderContext
-     *            holding all relevant data for the current gl context.
-     * @param geometryBuffer
-     *            holding the vertices, normals and texture coordinates for an instance of an implementation.
-     */
-    public void renderPrepared( RenderContext glRenderContext, DirectGeometryBuffer geometryBuffer );
+	/**
+	 * This method is a more specific render method than the
+	 * {@link JOGLRenderable#render(RenderContext)}, it defines a contract that the
+	 * geometryBuffer holds the geometry for the implementation and the implementation
+	 * holds indizes which are valid for the given buffer.
+	 * @param glRenderContext holding all relevant data for the current gl context.
+	 * @param geometryBuffer holding the vertices, normals and texture coordinates for an
+	 * instance of an implementation.
+	 */
+	public void renderPrepared(RenderContext glRenderContext, DirectGeometryBuffer geometryBuffer);
 
 }

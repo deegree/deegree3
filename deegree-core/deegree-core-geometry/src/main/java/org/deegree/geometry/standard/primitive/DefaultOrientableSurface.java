@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -53,202 +52,197 @@ import org.deegree.geometry.standard.AbstractDefaultGeometry;
 
 /**
  * Default implementation of {@link OrientableSurface}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class DefaultOrientableSurface extends AbstractDefaultGeometry implements OrientableSurface {
 
-    private String id;
+	private String id;
 
-    private ICRS crs;
+	private ICRS crs;
 
-    private final Surface baseSurface;
+	private final Surface baseSurface;
 
-    private final boolean isReversed;
+	private final boolean isReversed;
 
-    /**
-     * Creates a new <code>DefaultOrientableSurface</code> instance from the given parameters.
-     * 
-     * @param id
-     *            identifier, may be null
-     * @param crs
-     *            coordinate reference system, may be null
-     * @param baseSurface
-     *            base surface
-     * @param isReversed
-     *            set to true, if the orientation of the base Surface shall be reversed
-     */
-    public DefaultOrientableSurface( String id, ICRS crs, Surface baseSurface, boolean isReversed ) {
-        super( id, crs, null );
-        this.baseSurface = baseSurface;
-        this.isReversed = isReversed;
-    }
+	/**
+	 * Creates a new <code>DefaultOrientableSurface</code> instance from the given
+	 * parameters.
+	 * @param id identifier, may be null
+	 * @param crs coordinate reference system, may be null
+	 * @param baseSurface base surface
+	 * @param isReversed set to true, if the orientation of the base Surface shall be
+	 * reversed
+	 */
+	public DefaultOrientableSurface(String id, ICRS crs, Surface baseSurface, boolean isReversed) {
+		super(id, crs, null);
+		this.baseSurface = baseSurface;
+		this.isReversed = isReversed;
+	}
 
-    @Override
-    public String getId() {
-        return id;
-    }
+	@Override
+	public String getId() {
+		return id;
+	}
 
-    @Override
-    public ICRS getCoordinateSystem() {
-        return crs;
-    }
+	@Override
+	public ICRS getCoordinateSystem() {
+		return crs;
+	}
 
-    @Override
-    public SurfaceType getSurfaceType() {
-        return SurfaceType.OrientableSurface;
-    }
+	@Override
+	public SurfaceType getSurfaceType() {
+		return SurfaceType.OrientableSurface;
+	}
 
-    @Override
-    public Surface getBaseSurface() {
-        return baseSurface;
-    }
+	@Override
+	public Surface getBaseSurface() {
+		return baseSurface;
+	}
 
-    @Override
-    public boolean isReversed() {
-        return isReversed;
-    }
+	@Override
+	public boolean isReversed() {
+		return isReversed;
+	}
 
-    // -----------------------------------------------------------------------
-    // Surface methods that are just delegated to the wrapped base surface
-    // -----------------------------------------------------------------------
+	// -----------------------------------------------------------------------
+	// Surface methods that are just delegated to the wrapped base surface
+	// -----------------------------------------------------------------------
 
-    @Override
-    public boolean contains( Geometry geometry ) {
-        return baseSurface.contains( geometry );
-    }
+	@Override
+	public boolean contains(Geometry geometry) {
+		return baseSurface.contains(geometry);
+	}
 
-    @Override
-    public boolean crosses( Geometry geometry ) {
-        return baseSurface.crosses( geometry );
-    }
+	@Override
+	public boolean crosses(Geometry geometry) {
+		return baseSurface.crosses(geometry);
+	}
 
-    @Override
-    public Geometry getDifference( Geometry geometry ) {
-        return baseSurface.getDifference( geometry );
-    }
+	@Override
+	public Geometry getDifference(Geometry geometry) {
+		return baseSurface.getDifference(geometry);
+	}
 
-    @Override
-    public Measure getDistance( Geometry geometry, Unit requestedUnit ) {
-        return baseSurface.getDistance( geometry, requestedUnit );
-    }
+	@Override
+	public Measure getDistance(Geometry geometry, Unit requestedUnit) {
+		return baseSurface.getDistance(geometry, requestedUnit);
+	}
 
-    @Override
-    public boolean equals( Geometry geometry ) {
-        return baseSurface.equals( geometry );
-    }
+	@Override
+	public boolean equals(Geometry geometry) {
+		return baseSurface.equals(geometry);
+	}
 
-    public Measure getArea( Unit requestedBaseUnit ) {
-        return baseSurface.getArea( requestedBaseUnit );
-    }
+	public Measure getArea(Unit requestedBaseUnit) {
+		return baseSurface.getArea(requestedBaseUnit);
+	}
 
-    @Override
-    public Geometry getBuffer( Measure distance ) {
-        return baseSurface.getBuffer( distance );
-    }
+	@Override
+	public Geometry getBuffer(Measure distance) {
+		return baseSurface.getBuffer(distance);
+	}
 
-    @Override
-    public Point getCentroid() {
-        return baseSurface.getCentroid();
-    }
+	@Override
+	public Point getCentroid() {
+		return baseSurface.getCentroid();
+	}
 
-    @Override
-    public Geometry getConvexHull() {
-        return baseSurface.getConvexHull();
-    }
+	@Override
+	public Geometry getConvexHull() {
+		return baseSurface.getConvexHull();
+	}
 
-    @Override
-    public int getCoordinateDimension() {
-        return baseSurface.getCoordinateDimension();
-    }
+	@Override
+	public int getCoordinateDimension() {
+		return baseSurface.getCoordinateDimension();
+	}
 
-    @Override
-    public Envelope getEnvelope() {
-        return baseSurface.getEnvelope();
-    }
+	@Override
+	public Envelope getEnvelope() {
+		return baseSurface.getEnvelope();
+	}
 
-    public GeometryType getGeometryType() {
-        return baseSurface.getGeometryType();
-    }
+	public GeometryType getGeometryType() {
+		return baseSurface.getGeometryType();
+	}
 
-    public List<? extends SurfacePatch> getPatches() {
-        return baseSurface.getPatches();
-    }
+	public List<? extends SurfacePatch> getPatches() {
+		return baseSurface.getPatches();
+	}
 
-    public Measure getPerimeter( Unit requestedUnit ) {
-        return baseSurface.getPerimeter( requestedUnit );
-    }
+	public Measure getPerimeter(Unit requestedUnit) {
+		return baseSurface.getPerimeter(requestedUnit);
+	}
 
-    @Override
-    public PrecisionModel getPrecision() {
-        return baseSurface.getPrecision();
-    }
+	@Override
+	public PrecisionModel getPrecision() {
+		return baseSurface.getPrecision();
+	}
 
-    public PrimitiveType getPrimitiveType() {
-        return baseSurface.getPrimitiveType();
-    }
+	public PrimitiveType getPrimitiveType() {
+		return baseSurface.getPrimitiveType();
+	}
 
-    @Override
-    public Geometry getIntersection( Geometry geometry ) {
-        return baseSurface.getIntersection( geometry );
-    }
+	@Override
+	public Geometry getIntersection(Geometry geometry) {
+		return baseSurface.getIntersection(geometry);
+	}
 
-    @Override
-    public boolean intersects( Geometry geometry ) {
-        return baseSurface.intersects( geometry );
-    }
+	@Override
+	public boolean intersects(Geometry geometry) {
+		return baseSurface.intersects(geometry);
+	}
 
-    @Override
-    public boolean isDisjoint( Geometry geometry ) {
-        return baseSurface.isDisjoint( geometry );
-    }
+	@Override
+	public boolean isDisjoint(Geometry geometry) {
+		return baseSurface.isDisjoint(geometry);
+	}
 
-    @Override
-    public boolean overlaps( Geometry geometry ) {
-        return baseSurface.overlaps( geometry );
-    }
+	@Override
+	public boolean overlaps(Geometry geometry) {
+		return baseSurface.overlaps(geometry);
+	}
 
-    @Override
-    public boolean touches( Geometry geometry ) {
-        return baseSurface.touches( geometry );
-    }
+	@Override
+	public boolean touches(Geometry geometry) {
+		return baseSurface.touches(geometry);
+	}
 
-    @Override
-    public boolean isBeyond( Geometry geometry, Measure distance ) {
-        return baseSurface.isBeyond( geometry, distance );
-    }
+	@Override
+	public boolean isBeyond(Geometry geometry, Measure distance) {
+		return baseSurface.isBeyond(geometry, distance);
+	}
 
-    @Override
-    public boolean isWithin( Geometry geometry ) {
-        return baseSurface.isWithin( geometry );
-    }
+	@Override
+	public boolean isWithin(Geometry geometry) {
+		return baseSurface.isWithin(geometry);
+	}
 
-    @Override
-    public boolean isWithinDistance( Geometry geometry, Measure distance ) {
-        return baseSurface.isWithinDistance( geometry, distance );
-    }
+	@Override
+	public boolean isWithinDistance(Geometry geometry, Measure distance) {
+		return baseSurface.isWithinDistance(geometry, distance);
+	}
 
-    @Override
-    public Geometry getUnion( Geometry geometry ) {
-        return baseSurface.getUnion( geometry );
-    }
+	@Override
+	public Geometry getUnion(Geometry geometry) {
+		return baseSurface.getUnion(geometry);
+	}
 
-    @Override
-    public Points getExteriorRingCoordinates() {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Points getExteriorRingCoordinates() {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public List<Points> getInteriorRingsCoordinates() {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public List<Points> getInteriorRingsCoordinates() {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public org.locationtech.jts.geom.Geometry getJTSGeometry() {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	@Override
+	public org.locationtech.jts.geom.Geometry getJTSGeometry() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

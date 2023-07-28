@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -48,42 +47,37 @@ import java.io.OutputStream;
 
 /**
  * <code>ConfigManager</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class ConfigManager {
 
-    private static File HOMEDIR;
+	private static File HOMEDIR;
 
-    static {
-        HOMEDIR = new File( getProperty( "user.home" ), ".deegree" );
-        if ( !HOMEDIR.exists() ) {
-            HOMEDIR.mkdirs();
-        }
-    }
+	static {
+		HOMEDIR = new File(getProperty("user.home"), ".deegree");
+		if (!HOMEDIR.exists()) {
+			HOMEDIR.mkdirs();
+		}
+	}
 
-    /**
-     * @param path
-     * @return an input stream reading from the file
-     * @throws FileNotFoundException
-     */
-    public static InputStream getInputResource( String path )
-                            throws FileNotFoundException {
-        return new BufferedInputStream( new FileInputStream( new File( HOMEDIR, path ) ) );
-    }
+	/**
+	 * @param path
+	 * @return an input stream reading from the file
+	 * @throws FileNotFoundException
+	 */
+	public static InputStream getInputResource(String path) throws FileNotFoundException {
+		return new BufferedInputStream(new FileInputStream(new File(HOMEDIR, path)));
+	}
 
-    /**
-     * @param path
-     * @param append
-     * @return an output stream writing to the file
-     * @throws FileNotFoundException
-     */
-    public static OutputStream getOutputResource( String path, boolean append )
-                            throws FileNotFoundException {
-        return new BufferedOutputStream( new FileOutputStream( new File( HOMEDIR, path ), append ) );
-    }
+	/**
+	 * @param path
+	 * @param append
+	 * @return an output stream writing to the file
+	 * @throws FileNotFoundException
+	 */
+	public static OutputStream getOutputResource(String path, boolean append) throws FileNotFoundException {
+		return new BufferedOutputStream(new FileOutputStream(new File(HOMEDIR, path), append));
+	}
 
 }

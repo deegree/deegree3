@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -45,36 +44,32 @@ import org.deegree.commons.tom.ows.CodeType;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 @FacesConverter(forClass = CodeType.class)
 public class CodeTypeConverter implements Converter {
 
-    @Override
-    public Object getAsObject( FacesContext ctx, UIComponent component, String value )
-                            throws ConverterException {
-        if ( value != null && value.length() > 0 ) {
-            int begIndex = value.indexOf( "{" );
-            int endIndex = value.lastIndexOf( "}" );
-            if ( begIndex > -1 && endIndex > 0 ) {
-                String code = value.substring( endIndex + 1 );
-                String codeSpace = value.substring( begIndex + 1, endIndex );
-                return new CodeType( code, codeSpace );
-            }
-            return new CodeType( value );
-        }
-        return null;
+	@Override
+	public Object getAsObject(FacesContext ctx, UIComponent component, String value) throws ConverterException {
+		if (value != null && value.length() > 0) {
+			int begIndex = value.indexOf("{");
+			int endIndex = value.lastIndexOf("}");
+			if (begIndex > -1 && endIndex > 0) {
+				String code = value.substring(endIndex + 1);
+				String codeSpace = value.substring(begIndex + 1, endIndex);
+				return new CodeType(code, codeSpace);
+			}
+			return new CodeType(value);
+		}
+		return null;
 
-    }
+	}
 
-    @Override
-    public String getAsString( FacesContext context, UIComponent component, Object value ) {
-        CodeType ct = (CodeType) value;
-        return ct.getCodeSpace() != null ? "{" + ct.getCodeSpace() + "}" : "" + ct.getCode();
-    }
+	@Override
+	public String getAsString(FacesContext context, UIComponent component, Object value) {
+		CodeType ct = (CodeType) value;
+		return ct.getCodeSpace() != null ? "{" + ct.getCodeSpace() + "}" : "" + ct.getCode();
+	}
 
 }

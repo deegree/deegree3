@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -68,69 +67,65 @@ import org.slf4j.Logger;
 
 /**
  * Builds a tile data set map from jaxb config.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 class GeoTiffTileDataSetMapBuilder {
 
-    private static final Logger LOG = getLogger( GeoTiffTileDataSetMapBuilder.class );
+	private static final Logger LOG = getLogger(GeoTiffTileDataSetMapBuilder.class);
 
-    private GeoTIFFTileStoreJAXB cfg;
+	private GeoTIFFTileStoreJAXB cfg;
 
-    private GeoTiffTileDataSetBuilder builder;
+	private GeoTiffTileDataSetBuilder builder;
 
-    private ResourceLocation<TileStore> location;
+	private ResourceLocation<TileStore> location;
 
-    GeoTiffTileDataSetMapBuilder( Workspace workspace, ResourceLocation<TileStore> location, GeoTIFFTileStoreJAXB cfg ) {
-        this.location = location;
-        this.cfg = cfg;
-        builder = new GeoTiffTileDataSetBuilder( workspace );
-    }
+	GeoTiffTileDataSetMapBuilder(Workspace workspace, ResourceLocation<TileStore> location, GeoTIFFTileStoreJAXB cfg) {
+		this.location = location;
+		this.cfg = cfg;
+		builder = new GeoTiffTileDataSetBuilder(workspace);
+	}
 
-    Map<String, TileDataSet> buildTileDataSetMap()
-                            throws IOException {
-        Iterator<ImageReader> readers = getImageReadersBySuffix( "tiff" );
-        ImageReader reader = null;
-        while ( readers.hasNext() && !( reader instanceof TIFFImageReader ) ) {
-            reader = readers.next();
-        }
+	Map<String, TileDataSet> buildTileDataSetMap() throws IOException {
+		Iterator<ImageReader> readers = getImageReadersBySuffix("tiff");
+		ImageReader reader = null;
+		while (readers.hasNext() && !(reader instanceof TIFFImageReader)) {
+			reader = readers.next();
+		}
 
-        if ( reader == null ) {
-            throw new ResourceInitException( "No TIFF reader was found for imageio." );
-        }
+		if (reader == null) {
+			throw new ResourceInitException("No TIFF reader was found for imageio.");
+		}
 
-        Map<String, TileDataSet> map = new HashMap<String, TileDataSet>();
-        for ( GeoTIFFTileStoreJAXB.TileDataSet tds : cfg.getTileDataSet() ) {
-            String id = tds.getIdentifier();
-            if ( id == null ) {
-                id = new File( tds.getFile() ).getName();
-            }
+		Map<String, TileDataSet> map = new HashMap<String, TileDataSet>();
+		for (GeoTIFFTileStoreJAXB.TileDataSet tds : cfg.getTileDataSet()) {
+			String id = tds.getIdentifier();
+			if (id == null) {
+				id = new File(tds.getFile()).getName();
+			}
 
-            File file = location.resolveToFile( tds.getFile() );
+			File file = location.resolveToFile(tds.getFile());
 
-            if ( !file.exists() ) {
-                LOG.warn( "The file {} does not exist, skipping.", file );
-                continue;
-            }
+			if (!file.exists()) {
+				LOG.warn("The file {} does not exist, skipping.", file);
+				continue;
+			}
 
-            ImageInputStream iis = createImageInputStream( file );
-            reader.setInput( iis, false, true );
-            IIOMetadata md = reader.getImageMetadata( 0 );
-            Envelope envelope = getEnvelope( md, reader.getWidth( 0 ), reader.getHeight( 0 ), null );
+			ImageInputStream iis = createImageInputStream(file);
+			reader.setInput(iis, false, true);
+			IIOMetadata md = reader.getImageMetadata(0);
+			Envelope envelope = getEnvelope(md, reader.getWidth(0), reader.getHeight(0), null);
 
-            if ( envelope == null ) {
-                throw new ResourceInitException( "No envelope information could be read from GeoTIFF. "
-                                                 + "Please add one to the GeoTIFF." );
-            }
+			if (envelope == null) {
+				throw new ResourceInitException(
+						"No envelope information could be read from GeoTIFF. " + "Please add one to the GeoTIFF.");
+			}
 
-            LOG.debug( "Envelope from GeoTIFF was {}.", envelope );
+			LOG.debug("Envelope from GeoTIFF was {}.", envelope);
 
-            map.put( id, builder.buildTileDataSet( tds, location, envelope ) );
-        }
-        return map;
-    }
+			map.put(id, builder.buildTileDataSet(tds, location, envelope));
+		}
+		return map;
+	}
 
 }

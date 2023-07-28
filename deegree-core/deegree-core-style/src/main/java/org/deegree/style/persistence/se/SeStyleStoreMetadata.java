@@ -36,21 +36,20 @@ import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
  * Resource metadata for SE style stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class SeStyleStoreMetadata extends AbstractResourceMetadata<StyleStore> {
 
-    public SeStyleStoreMetadata( Workspace workspace, ResourceLocation<StyleStore> location,
-                                 AbstractResourceProvider<StyleStore> provider ) {
-        super( workspace, location, provider );
-    }
+	public SeStyleStoreMetadata(Workspace workspace, ResourceLocation<StyleStore> location,
+			AbstractResourceProvider<StyleStore> provider) {
+		super(workspace, location, provider);
+	}
 
-    @Override
-    public ResourceBuilder<StyleStore> prepare() {
-        return new SeStyleStoreBuilder( this );
-    }
+	@Override
+	public ResourceBuilder<StyleStore> prepare() {
+		return new SeStyleStoreBuilder(this);
+	}
 
 }

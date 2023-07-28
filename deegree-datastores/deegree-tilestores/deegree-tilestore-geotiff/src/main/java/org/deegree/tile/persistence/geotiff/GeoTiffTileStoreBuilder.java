@@ -40,36 +40,37 @@ import org.deegree.workspace.Workspace;
 
 /**
  * This class is responsible for building geotiff tile stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class GeoTiffTileStoreBuilder implements ResourceBuilder<TileStore> {
 
-    private GeoTIFFTileStoreJAXB cfg;
+	private GeoTIFFTileStoreJAXB cfg;
 
-    private Workspace workspace;
+	private Workspace workspace;
 
-    private ResourceMetadata<TileStore> metadata;
+	private ResourceMetadata<TileStore> metadata;
 
-    public GeoTiffTileStoreBuilder( GeoTIFFTileStoreJAXB cfg, Workspace workspace, ResourceMetadata<TileStore> metadata ) {
-        this.cfg = cfg;
-        this.workspace = workspace;
-        this.metadata = metadata;
-    }
+	public GeoTiffTileStoreBuilder(GeoTIFFTileStoreJAXB cfg, Workspace workspace,
+			ResourceMetadata<TileStore> metadata) {
+		this.cfg = cfg;
+		this.workspace = workspace;
+		this.metadata = metadata;
+	}
 
-    @Override
-    public TileStore build() {
-        try {
-            GeoTiffTileDataSetMapBuilder builder = new GeoTiffTileDataSetMapBuilder( workspace, metadata.getLocation(),
-                                                                                     cfg );
+	@Override
+	public TileStore build() {
+		try {
+			GeoTiffTileDataSetMapBuilder builder = new GeoTiffTileDataSetMapBuilder(workspace, metadata.getLocation(),
+					cfg);
 
-            Map<String, TileDataSet> map = builder.buildTileDataSetMap();
-            return new GenericTileStore( map, metadata );
-        } catch ( Exception e ) {
-            throw new ResourceInitException( "Unable to build GeoTiff tile store: " + e.getLocalizedMessage(), e );
-        }
-    }
+			Map<String, TileDataSet> map = builder.buildTileDataSetMap();
+			return new GenericTileStore(map, metadata);
+		}
+		catch (Exception e) {
+			throw new ResourceInitException("Unable to build GeoTiff tile store: " + e.getLocalizedMessage(), e);
+		}
+	}
 
 }

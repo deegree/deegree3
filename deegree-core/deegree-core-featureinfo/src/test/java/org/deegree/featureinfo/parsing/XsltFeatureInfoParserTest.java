@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2015 by:
@@ -51,20 +50,19 @@ import org.junit.Test;
  */
 public class XsltFeatureInfoParserTest {
 
-    private static XsltFeatureInfoParser featureInfoParser;
+	private static XsltFeatureInfoParser featureInfoParser;
 
-    @BeforeClass
-    public static void initParser() {
-        URL xsltFile = XsltFeatureInfoParserTest.class.getResource( "esriwithnamespaceTo2gml2.xsl" );
-        featureInfoParser = new XsltFeatureInfoParser( xsltFile, GMLVersion.GML_2 );
-    }
+	@BeforeClass
+	public static void initParser() {
+		URL xsltFile = XsltFeatureInfoParserTest.class.getResource("esriwithnamespaceTo2gml2.xsl");
+		featureInfoParser = new XsltFeatureInfoParser(xsltFile, GMLVersion.GML_2);
+	}
 
-    @Test
-    public void testEsriCollection()
-                            throws XMLStreamException {
-        InputStream in = XsltFeatureInfoParser.class.getResourceAsStream( "esriwithnamespace.xml" );
-        FeatureCollection fc = featureInfoParser.parseAsFeatureCollection( in, "test" );
-        Assert.assertEquals( 8, fc.size() );
-    }
+	@Test
+	public void testEsriCollection() throws XMLStreamException {
+		InputStream in = XsltFeatureInfoParser.class.getResourceAsStream("esriwithnamespace.xml");
+		FeatureCollection fc = featureInfoParser.parseAsFeatureCollection(in, "test");
+		Assert.assertEquals(8, fc.size());
+	}
 
 }

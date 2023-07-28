@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -39,9 +38,7 @@ package org.deegree.protocol.wps.client;
  * TODO add class documentation here
  * 
  * @author <a href="mailto:kiehle@lat-lon.de">Christian Kiehle</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
  */
 public class WPSClientExample {
 

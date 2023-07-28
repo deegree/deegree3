@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -43,115 +42,107 @@ import org.deegree.commons.ows.metadata.ServiceProvider;
 import org.deegree.commons.tom.ows.Version;
 
 /**
- * Specification and version agnostic representation of the capabilities reported by an OGC Web Service.
+ * Specification and version agnostic representation of the capabilities reported by an
+ * OGC Web Service.
  * <p>
- * Data model has been designed to capture the expressiveness of all OWS specifications and versions and was verified
- * against the following specifications:
+ * Data model has been designed to capture the expressiveness of all OWS specifications
+ * and versions and was verified against the following specifications:
  * <ul>
  * <li>OWS Common 2.0</li>
  * </ul>
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class OWSCapabilities {
 
-    private final Version version;
+	private final Version version;
 
-    private final String updateSequence;
+	private final String updateSequence;
 
-    private final ServiceIdentification serviceIdentification;
+	private final ServiceIdentification serviceIdentification;
 
-    private final ServiceProvider serviceProvider;
+	private final ServiceProvider serviceProvider;
 
-    private final OperationsMetadata operationsMetadata;
+	private final OperationsMetadata operationsMetadata;
 
-    private final List<String> languages;
+	private final List<String> languages;
 
-    /**
-     * Creates a new {@link OWSCapabilities} instance.
-     * 
-     * @param version
-     *            service specification version, may be <code>null</code>
-     * @param updateSequence
-     *            service metadata document version, may be <code>null</code>
-     * @param serviceIdentification
-     *            general server-specific metadata, may be <code>null</code>
-     * @param serviceProvider
-     *            metadata about the organization that provides the server, may be <code>null</code>
-     * @param operationsMetadata
-     *            metadata about the operations and related abilities implemented by the server, may be
-     *            <code>null</code>
-     * @param languages
-     *            list of languages that the server is able to fully support, may be <code>null</code>
-     */
-    public OWSCapabilities( Version version, String updateSequence, ServiceIdentification serviceIdentification,
-                            ServiceProvider serviceProvider, OperationsMetadata operationsMetadata,
-                            List<String> languages ) {
-        this.version = version;
-        this.updateSequence = updateSequence;
-        this.serviceIdentification = serviceIdentification;
-        this.serviceProvider = serviceProvider;
-        this.operationsMetadata = operationsMetadata;
-        this.languages = languages;
-    }
+	/**
+	 * Creates a new {@link OWSCapabilities} instance.
+	 * @param version service specification version, may be <code>null</code>
+	 * @param updateSequence service metadata document version, may be <code>null</code>
+	 * @param serviceIdentification general server-specific metadata, may be
+	 * <code>null</code>
+	 * @param serviceProvider metadata about the organization that provides the server,
+	 * may be <code>null</code>
+	 * @param operationsMetadata metadata about the operations and related abilities
+	 * implemented by the server, may be <code>null</code>
+	 * @param languages list of languages that the server is able to fully support, may be
+	 * <code>null</code>
+	 */
+	public OWSCapabilities(Version version, String updateSequence, ServiceIdentification serviceIdentification,
+			ServiceProvider serviceProvider, OperationsMetadata operationsMetadata, List<String> languages) {
+		this.version = version;
+		this.updateSequence = updateSequence;
+		this.serviceIdentification = serviceIdentification;
+		this.serviceProvider = serviceProvider;
+		this.operationsMetadata = operationsMetadata;
+		this.languages = languages;
+	}
 
-    /**
-     * Returns the service specification version.
-     * 
-     * @return specification version, may be <code>null</code>
-     */
-    public Version getVersion() {
-        return version;
-    }
+	/**
+	 * Returns the service specification version.
+	 * @return specification version, may be <code>null</code>
+	 */
+	public Version getVersion() {
+		return version;
+	}
 
-    /**
-     * Returns the service metadata document version.
-     * 
-     * @return service metadata document version, may be <code>null</code>
-     */
-    public String getUpdateSequence() {
-        return updateSequence;
-    }
+	/**
+	 * Returns the service metadata document version.
+	 * @return service metadata document version, may be <code>null</code>
+	 */
+	public String getUpdateSequence() {
+		return updateSequence;
+	}
 
-    /**
-     * Returns the general server-specific metadata.
-     * 
-     * @return general server-specific metadata, may be <code>null</code>
-     */
-    public ServiceIdentification getServiceIdentification() {
-        return serviceIdentification;
-    }
+	/**
+	 * Returns the general server-specific metadata.
+	 * @return general server-specific metadata, may be <code>null</code>
+	 */
+	public ServiceIdentification getServiceIdentification() {
+		return serviceIdentification;
+	}
 
-    /**
-     * Returns the metadata about the organization that provides the server.
-     * 
-     * @return metadata about the organization that provides the server, may be <code>null</code>
-     */
-    public ServiceProvider getServiceProvider() {
-        return serviceProvider;
-    }
+	/**
+	 * Returns the metadata about the organization that provides the server.
+	 * @return metadata about the organization that provides the server, may be
+	 * <code>null</code>
+	 */
+	public ServiceProvider getServiceProvider() {
+		return serviceProvider;
+	}
 
-    /**
-     * Returns the metadata about the operations and related abilities implemented by the server.
-     * 
-     * @return metadata about the operations and related abilities implemented by the server, may be <code>null</code>
-     */
-    public OperationsMetadata getOperationsMetadata() {
-        return operationsMetadata;
-    }
+	/**
+	 * Returns the metadata about the operations and related abilities implemented by the
+	 * server.
+	 * @return metadata about the operations and related abilities implemented by the
+	 * server, may be <code>null</code>
+	 */
+	public OperationsMetadata getOperationsMetadata() {
+		return operationsMetadata;
+	}
 
-    /**
-     * Returns the list of languages that the server is able to fully support.
-     * 
-     * @return list of languages that the server is able to fully support, may be <code>null</code>
-     */
-    public List<String> getLanguages() {
-        return languages;
-    }
+	/**
+	 * Returns the list of languages that the server is able to fully support.
+	 * @return list of languages that the server is able to fully support, may be
+	 * <code>null</code>
+	 */
+	public List<String> getLanguages() {
+		return languages;
+	}
+
 }

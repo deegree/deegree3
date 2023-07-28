@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -42,50 +41,42 @@ import org.deegree.geometry.primitive.Point;
 
 /**
  * {@link GeometryValidationEvent} that indicates that a {@link Curve} intersects itself.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * 
- * @version $Revision: $, $Date: $
  */
 public class CurveSelfIntersection extends AbstractGeometryValidationEvent {
 
-    private final Curve curve;
+	private final Curve curve;
 
-    private final Point location;
+	private final Point location;
 
-    /**
-     * Creates a new {@link CurveSelfIntersection} instance.
-     * 
-     * @param curve
-     *            affected {@link Curve} geometry, must not be <code>null</code>
-     * @param location
-     *            the location of the self-intersection, may be <code>null</code>
-     * @param geometryParticleHierarchy
-     *            list of affected geometry particles (that the curve is a part of), must not be <code>null</code>
-     */
-    public CurveSelfIntersection( Curve curve, Point location, List<Object> geometryParticleHierarchy ) {
-        super( geometryParticleHierarchy );
-        this.curve = curve;
-        this.location = location;
-    }
+	/**
+	 * Creates a new {@link CurveSelfIntersection} instance.
+	 * @param curve affected {@link Curve} geometry, must not be <code>null</code>
+	 * @param location the location of the self-intersection, may be <code>null</code>
+	 * @param geometryParticleHierarchy list of affected geometry particles (that the
+	 * curve is a part of), must not be <code>null</code>
+	 */
+	public CurveSelfIntersection(Curve curve, Point location, List<Object> geometryParticleHierarchy) {
+		super(geometryParticleHierarchy);
+		this.curve = curve;
+		this.location = location;
+	}
 
-    /**
-     * Returns the affected {@link Curve} geometry.
-     * 
-     * @return the affected curve, never <code>null</code>
-     */
-    public Curve getCurve() {
-        return curve;
-    }
+	/**
+	 * Returns the affected {@link Curve} geometry.
+	 * @return the affected curve, never <code>null</code>
+	 */
+	public Curve getCurve() {
+		return curve;
+	}
 
-    /**
-     * Returns the location of the self-intersection.
-     * 
-     * @return location of self-intersection, never <code>null</code>
-     */
-    public Point getLocation() {
-        return location;
-    }
+	/**
+	 * Returns the location of the self-intersection.
+	 * @return location of self-intersection, never <code>null</code>
+	 */
+	public Point getLocation() {
+		return location;
+	}
 
 }

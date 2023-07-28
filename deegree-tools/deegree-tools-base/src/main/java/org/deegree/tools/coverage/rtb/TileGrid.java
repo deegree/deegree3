@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -48,182 +47,169 @@ import org.deegree.geometry.GeometryFactory;
  * This class represents a grid of tiles.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- *
- * @version $Revision$, $Date$
  *
  */
 public class TileGrid {
 
-    private static GeometryFactory geomFactory = new GeometryFactory();
+	private static GeometryFactory geomFactory = new GeometryFactory();
 
-    private double x0, y0, width, height;
+	private double x0, y0, width, height;
 
-    private double precision;
+	private double precision;
 
-    private int xTiles, yTiles;
+	private int xTiles, yTiles;
 
-    private ICRS crs;
+	private ICRS crs;
 
-    private TileGrid( double x0, double y0, double width, double height, int xTiles, int yTiles, ICRS crs,
-                      double precision ) {
-        this.x0 = x0;
-        this.y0 = y0;
-        this.width = width;
-        this.height = height;
-        this.xTiles = xTiles;
-        this.yTiles = yTiles;
-        this.crs = crs;
-        this.precision = precision;
-    }
+	private TileGrid(double x0, double y0, double width, double height, int xTiles, int yTiles, ICRS crs,
+			double precision) {
+		this.x0 = x0;
+		this.y0 = y0;
+		this.width = width;
+		this.height = height;
+		this.xTiles = xTiles;
+		this.yTiles = yTiles;
+		this.crs = crs;
+		this.precision = precision;
+	}
 
-    private TileGrid() {
-        //
-    }
+	private TileGrid() {
+		//
+	}
 
-    /**
-     * Create a tile grid based on the output envelope, tile size and target pixel resolution.
-     *
-     * @param dstEnv
-     *            the envelope of the target raster (in target SRS)
-     * @param tileSize
-     *            the size of each tile (in pixel)
-     * @param resolution
-     *            the pixel resolution (units/pixel)
-     * @return a new TileGrid
-     */
-    static TileGrid createTileGrid( Envelope dstEnv, int tileSize, float resolution ) {
-        // TODO
-//        double precision = dstEnv.getPrecision();
-        double precision = 0.0;
+	/**
+	 * Create a tile grid based on the output envelope, tile size and target pixel
+	 * resolution.
+	 * @param dstEnv the envelope of the target raster (in target SRS)
+	 * @param tileSize the size of each tile (in pixel)
+	 * @param resolution the pixel resolution (units/pixel)
+	 * @return a new TileGrid
+	 */
+	static TileGrid createTileGrid(Envelope dstEnv, int tileSize, float resolution) {
+		// TODO
+		// double precision = dstEnv.getPrecision();
+		double precision = 0.0;
 
-        float tileDimension = tileSize * resolution;
+		float tileDimension = tileSize * resolution;
 
-        int xTiles = (int) Math.ceil( dstEnv.getSpan0() / tileDimension );
-        int yTiles = (int) Math.ceil( dstEnv.getSpan1() / tileDimension );
+		int xTiles = (int) Math.ceil(dstEnv.getSpan0() / tileDimension);
+		int yTiles = (int) Math.ceil(dstEnv.getSpan1() / tileDimension);
 
-        double x0 = dstEnv.getMin().get0();
-        double y0 = dstEnv.getMin().get1();
+		double x0 = dstEnv.getMin().get0();
+		double y0 = dstEnv.getMin().get1();
 
-        ICRS crs = dstEnv.getCoordinateSystem();
+		ICRS crs = dstEnv.getCoordinateSystem();
 
-        return new TileGrid( x0, y0, tileDimension, tileDimension, xTiles, yTiles, crs, precision );
-    }
+		return new TileGrid(x0, y0, tileDimension, tileDimension, xTiles, yTiles, crs, precision);
+	}
 
-    /**
-     * Create a list with all tiles in this grid.
-     *
-     * @return a list of all tiles, stored in row-order
-     */
-    public List<Tile> createTileEnvelopes() {
-        List<Tile> result = new ArrayList<Tile>( xTiles * yTiles );
+	/**
+	 * Create a list with all tiles in this grid.
+	 * @return a list of all tiles, stored in row-order
+	 */
+	public List<Tile> createTileEnvelopes() {
+		List<Tile> result = new ArrayList<Tile>(xTiles * yTiles);
 
-        System.out.println( "reticulating splines..." );
-        for ( int i = 0; i < yTiles; i++ ) {
-            for ( int j = 0; j < xTiles; j++ ) {
-                double x = x0 + j * width;
-                double y = y0 + i * height;
-                double x2 = x + width;
-                double y2 = y + height;
+		System.out.println("reticulating splines...");
+		for (int i = 0; i < yTiles; i++) {
+			for (int j = 0; j < xTiles; j++) {
+				double x = x0 + j * width;
+				double y = y0 + i * height;
+				double x2 = x + width;
+				double y2 = y + height;
 
-                // TODO 
-                Envelope subset = geomFactory.createEnvelope( new double[] { x, y }, new double[] { x2, y2 }, crs );
-                result.add( new Tile( j, i, subset ) );
-            }
-        }
-        return result;
-    }
+				// TODO
+				Envelope subset = geomFactory.createEnvelope(new double[] { x, y }, new double[] { x2, y2 }, crs);
+				result.add(new Tile(j, i, subset));
+			}
+		}
+		return result;
+	}
 
-    /**
-     * Calculate the optimal tile size, so that the last tile in a raster tree consist of exactly one tile (no borders).
-     *
-     * @param srcWidth
-     *            the width of the source raster (in pixel)
-     * @param srcHeight
-     *            the height of the source raster (in pixel)
-     * @param dstEnv
-     *            the envelope of the target raster (in target SRS)
-     * @param maxTileSize
-     *            the maximum size of each tile (in pixel)
-     * @return the optimal tile size
-     */
-    public static int calculateOptimalTileSize( int srcWidth, int srcHeight, Envelope dstEnv, int maxTileSize ) {
-        // calculate the new size, consider the aspect ratio to get square pixels
-        double deltaX = dstEnv.getSpan0();
-        double deltaY = dstEnv.getSpan1();
-        double diagSize = Math.sqrt( deltaX * deltaX + deltaY * deltaY );
-        // pixelSize for calculation of the new image size
-        double pixelSize = diagSize / Math.sqrt( Math.pow( srcWidth, 2 ) + Math.pow( srcHeight, 2 ) );
-        int dstHeight;
-        int dstWidth;
+	/**
+	 * Calculate the optimal tile size, so that the last tile in a raster tree consist of
+	 * exactly one tile (no borders).
+	 * @param srcWidth the width of the source raster (in pixel)
+	 * @param srcHeight the height of the source raster (in pixel)
+	 * @param dstEnv the envelope of the target raster (in target SRS)
+	 * @param maxTileSize the maximum size of each tile (in pixel)
+	 * @return the optimal tile size
+	 */
+	public static int calculateOptimalTileSize(int srcWidth, int srcHeight, Envelope dstEnv, int maxTileSize) {
+		// calculate the new size, consider the aspect ratio to get square pixels
+		double deltaX = dstEnv.getSpan0();
+		double deltaY = dstEnv.getSpan1();
+		double diagSize = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+		// pixelSize for calculation of the new image size
+		double pixelSize = diagSize / Math.sqrt(Math.pow(srcWidth, 2) + Math.pow(srcHeight, 2));
+		int dstHeight;
+		int dstWidth;
 
-        int levels = 0;
-        do {
-            levels += 1;
-            dstHeight = (int) ( deltaY / ( pixelSize * pow( 2, levels ) ) + 0.5 );
-            dstWidth = (int) ( deltaX / ( pixelSize * pow( 2, levels ) ) + 0.5 );
-        } while ( Math.max( dstHeight, dstWidth ) > maxTileSize );
+		int levels = 0;
+		do {
+			levels += 1;
+			dstHeight = (int) (deltaY / (pixelSize * pow(2, levels)) + 0.5);
+			dstWidth = (int) (deltaX / (pixelSize * pow(2, levels)) + 0.5);
+		}
+		while (Math.max(dstHeight, dstWidth) > maxTileSize);
 
-        return Math.max( dstHeight, dstWidth );
-    }
+		return Math.max(dstHeight, dstWidth);
+	}
 
-    /**
-     * Calculate the resolution for the first raster level.
-     *
-     * @param srcWidth
-     *            the width of the source raster (in pixel)
-     * @param srcHeight
-     *            the height of the source raster (in pixel)
-     * @param dstEnv
-     *            the envelope of the target raster (in target SRS)
-     * @param tileSize
-     *            the size of each tile (in pixel)
-     * @return the resolution in unit/pixel
-     */
-    public static double calculateBaseResolution( int srcWidth, int srcHeight, Envelope dstEnv, int tileSize ) {
-        int xTiles = (int) Math.ceil( srcWidth / (double) tileSize );
-        int yTiles = (int) Math.ceil( srcHeight / (double) tileSize );
-        double xRes = dstEnv.getSpan0() / srcWidth;
-        double yRes = dstEnv.getSpan1() / srcHeight;
+	/**
+	 * Calculate the resolution for the first raster level.
+	 * @param srcWidth the width of the source raster (in pixel)
+	 * @param srcHeight the height of the source raster (in pixel)
+	 * @param dstEnv the envelope of the target raster (in target SRS)
+	 * @param tileSize the size of each tile (in pixel)
+	 * @return the resolution in unit/pixel
+	 */
+	public static double calculateBaseResolution(int srcWidth, int srcHeight, Envelope dstEnv, int tileSize) {
+		int xTiles = (int) Math.ceil(srcWidth / (double) tileSize);
+		int yTiles = (int) Math.ceil(srcHeight / (double) tileSize);
+		double xRes = dstEnv.getSpan0() / srcWidth;
+		double yRes = dstEnv.getSpan1() / srcHeight;
 
-        double deltaX = xTiles * tileSize * xRes;
-        double deltaY = yTiles * tileSize * yRes;
+		double deltaX = xTiles * tileSize * xRes;
+		double deltaY = yTiles * tileSize * yRes;
 
-        double diagSize = Math.sqrt( deltaX * deltaX + deltaY * deltaY );
-        double pixelSize = diagSize / Math.sqrt( Math.pow( xTiles * tileSize, 2 ) + Math.pow( yTiles * tileSize, 2 ) );
+		double diagSize = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+		double pixelSize = diagSize / Math.sqrt(Math.pow(xTiles * tileSize, 2) + Math.pow(yTiles * tileSize, 2));
 
-        return pixelSize;
-    }
+		return pixelSize;
+	}
 
-    /**
-     * Simple container class for a tile coordinate and envelope.
-     */
-    public static class Tile {
-        /**
-         * the x tile coordinate
-         */
-        public final int x;
+	/**
+	 * Simple container class for a tile coordinate and envelope.
+	 */
+	public static class Tile {
 
-        /**
-         * the y tile coordinate
-         */
-        public final int y;
+		/**
+		 * the x tile coordinate
+		 */
+		public final int x;
 
-        /**
-         * the envelope of the tile
-         */
-        public final Envelope envelope;
+		/**
+		 * the y tile coordinate
+		 */
+		public final int y;
 
-        /**
-         * @param x
-         * @param y
-         * @param env
-         */
-        public Tile( int x, int y, Envelope env ) {
-            this.x = x;
-            this.y = y;
-            this.envelope = env;
-        }
-    }
+		/**
+		 * the envelope of the tile
+		 */
+		public final Envelope envelope;
+
+		/**
+		 * @param x
+		 * @param y
+		 * @param env
+		 */
+		public Tile(int x, int y, Envelope env) {
+			this.x = x;
+			this.y = y;
+			this.envelope = env;
+		}
+
+	}
 
 }

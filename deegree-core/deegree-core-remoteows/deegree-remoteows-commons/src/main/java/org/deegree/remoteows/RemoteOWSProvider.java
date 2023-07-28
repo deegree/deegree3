@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -38,14 +37,10 @@ package org.deegree.remoteows;
 import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public abstract class RemoteOWSProvider extends AbstractResourceProvider<RemoteOWS> {
 
-    // specifies type parameter
+	// specifies type parameter
 
 }

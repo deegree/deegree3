@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -42,95 +41,93 @@ import java.util.List;
 import javax.swing.filechooser.FileFilter;
 
 /**
- * The <code>CustomFileFilter</code> class adds functionality to the filefilter mechanism of the JFileChooser.
- * 
+ * The <code>CustomFileFilter</code> class adds functionality to the filefilter mechanism
+ * of the JFileChooser.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class ViewerFileFilter extends FileFilter {
 
-    private List<String> acceptedExtensions;
+	private List<String> acceptedExtensions;
 
-    private String desc;
+	private String desc;
 
-    /**
-     * @param acceptedExtensions
-     *            list of extensions this filter accepts.
-     * @param description
-     *            to show
-     */
-    public ViewerFileFilter( List<String> acceptedExtensions, String description ) {
-        this.acceptedExtensions = new ArrayList<String>( acceptedExtensions.size() );
-        StringBuilder sb = new StringBuilder();
-        if ( acceptedExtensions.size() > 0 ) {
+	/**
+	 * @param acceptedExtensions list of extensions this filter accepts.
+	 * @param description to show
+	 */
+	public ViewerFileFilter(List<String> acceptedExtensions, String description) {
+		this.acceptedExtensions = new ArrayList<String>(acceptedExtensions.size());
+		StringBuilder sb = new StringBuilder();
+		if (acceptedExtensions.size() > 0) {
 
-            sb.append( "(" );
-            int i = 0;
-            for ( String ext : acceptedExtensions ) {
-                if ( ext.startsWith( "." ) ) {
-                    ext = ext.substring( 1 );
-                } else if ( ext.startsWith( "*." ) ) {
-                    ext = ext.substring( 2 );
-                } else if ( ext.startsWith( "*" ) ) {
-                    ext = ext.substring( 1 );
-                }
+			sb.append("(");
+			int i = 0;
+			for (String ext : acceptedExtensions) {
+				if (ext.startsWith(".")) {
+					ext = ext.substring(1);
+				}
+				else if (ext.startsWith("*.")) {
+					ext = ext.substring(2);
+				}
+				else if (ext.startsWith("*")) {
+					ext = ext.substring(1);
+				}
 
-                this.acceptedExtensions.add( ext.trim().toUpperCase() );
-                sb.append( "*." );
-                sb.append( ext );
-                if ( ++i < acceptedExtensions.size() ) {
-                    sb.append( ", " );
-                }
-            }
-            sb.append( ")" );
-        }
-        sb.append( description );
-        desc = sb.toString();
-    }
+				this.acceptedExtensions.add(ext.trim().toUpperCase());
+				sb.append("*.");
+				sb.append(ext);
+				if (++i < acceptedExtensions.size()) {
+					sb.append(", ");
+				}
+			}
+			sb.append(")");
+		}
+		sb.append(description);
+		desc = sb.toString();
+	}
 
-    /**
-     * @param extension
-     * @return true if the extension is accepted
-     */
-    public boolean accepts( String extension ) {
-        return extension != null && acceptedExtensions.contains( extension.toUpperCase() );
-    }
+	/**
+	 * @param extension
+	 * @return true if the extension is accepted
+	 */
+	public boolean accepts(String extension) {
+		return extension != null && acceptedExtensions.contains(extension.toUpperCase());
+	}
 
-    @Override
-    public boolean accept( File pathname ) {
-        if ( pathname.isDirectory() ) {
-            return true;
-        }
+	@Override
+	public boolean accept(File pathname) {
+		if (pathname.isDirectory()) {
+			return true;
+		}
 
-        String extension = getExtension( pathname );
-        if ( extension != null ) {
-            if ( acceptedExtensions.contains( extension.trim().toUpperCase() ) ) {
-                return true;
-            }
-        }
-        return false;
-    }
+		String extension = getExtension(pathname);
+		if (extension != null) {
+			if (acceptedExtensions.contains(extension.trim().toUpperCase())) {
+				return true;
+			}
+		}
+		return false;
+	}
 
-    /**
-     * @param f
-     * @return the file extension (e.g. gml/shp/xml etc.)
-     */
-    String getExtension( File f ) {
-        String ext = null;
-        String s = f.getName();
-        int i = s.lastIndexOf( '.' );
+	/**
+	 * @param f
+	 * @return the file extension (e.g. gml/shp/xml etc.)
+	 */
+	String getExtension(File f) {
+		String ext = null;
+		String s = f.getName();
+		int i = s.lastIndexOf('.');
 
-        if ( i > 0 && i < s.length() - 1 ) {
-            ext = s.substring( i + 1 ).toLowerCase();
-        }
-        return ext;
-    }
+		if (i > 0 && i < s.length() - 1) {
+			ext = s.substring(i + 1).toLowerCase();
+		}
+		return ext;
+	}
 
-    @Override
-    public String getDescription() {
-        return desc;
-    }
+	@Override
+	public String getDescription() {
+		return desc;
+	}
 
 }

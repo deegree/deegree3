@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -52,117 +51,113 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 
 /**
- * This class downloads a given URL and stores the result in a temporary file for repeated access.
- * 
+ * This class downloads a given URL and stores the result in a temporary file for repeated
+ * access.
+ *
  * <p>
- * You can get multiple reader ({@link HTTPTempFile#getReader()}) without downloading the URL again. It also gives you
- * access to the status and response headers.
- * 
+ * You can get multiple reader ({@link HTTPTempFile#getReader()}) without downloading the
+ * URL again. It also gives you access to the status and response headers.
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class HTTPTempFile {
-    private final HttpMethod method;
 
-    private File tmpFile;
+	private final HttpMethod method;
 
-    private int status;
+	private File tmpFile;
 
-    /**
-     * Create a new HTTPTempFile
-     * 
-     * @param url
-     * @throws IOException
-     */
-    public HTTPTempFile( String url ) throws IOException {
-        this.method = new GetMethod( url );
-        doRequest();
-    }
+	private int status;
 
-    /**
-     * Create a new HTTPTempFile for POST request
-     * 
-     * @param url
-     * @param post
-     *            the content for the POST request
-     * @throws IOException
-     */
-    public HTTPTempFile( String url, File post ) throws IOException {
-        PostMethod method = new PostMethod( url );
-        method.setRequestEntity( new FileRequestEntity( post, "text/xml" ) );
-        this.method = method;
-        doRequest();
-    }
+	/**
+	 * Create a new HTTPTempFile
+	 * @param url
+	 * @throws IOException
+	 */
+	public HTTPTempFile(String url) throws IOException {
+		this.method = new GetMethod(url);
+		doRequest();
+	}
 
-    private void doRequest()
-                            throws IOException {
-        tmpFile = File.createTempFile( "http_tmp_file_", ".bin" );
-        tmpFile.deleteOnExit();
-        try {
-            HttpClient client = new HttpClient();
-            status = client.executeMethod( method );
-            writeStreamToFile( method.getResponseBodyAsStream(), tmpFile );
-        } catch ( HttpException e ) {
-            throw new IOException( e.getMessage(), e );
-        }
-    }
+	/**
+	 * Create a new HTTPTempFile for POST request
+	 * @param url
+	 * @param post the content for the POST request
+	 * @throws IOException
+	 */
+	public HTTPTempFile(String url, File post) throws IOException {
+		PostMethod method = new PostMethod(url);
+		method.setRequestEntity(new FileRequestEntity(post, "text/xml"));
+		this.method = method;
+		doRequest();
+	}
 
-    private void writeStreamToFile( InputStream stream, File file )
-                            throws IOException {
-        FileOutputStream fos = new FileOutputStream( file );
-        byte[] buf = new byte[1024];
-        int count;
-        while ( ( count = stream.read( buf ) ) > 0 ) {
-            fos.write( buf, 0, count );
-        }
-        fos.close();
-    }
+	private void doRequest() throws IOException {
+		tmpFile = File.createTempFile("http_tmp_file_", ".bin");
+		tmpFile.deleteOnExit();
+		try {
+			HttpClient client = new HttpClient();
+			status = client.executeMethod(method);
+			writeStreamToFile(method.getResponseBodyAsStream(), tmpFile);
+		}
+		catch (HttpException e) {
+			throw new IOException(e.getMessage(), e);
+		}
+	}
 
-    /**
-     * @return a new reader for the HTTP response
-     */
-    public FileReader getReader() {
-        try {
-            return new FileReader( tmpFile );
-        } catch ( FileNotFoundException e ) {
-            e.printStackTrace();
-            return null;
-        }
-    }
+	private void writeStreamToFile(InputStream stream, File file) throws IOException {
+		FileOutputStream fos = new FileOutputStream(file);
+		byte[] buf = new byte[1024];
+		int count;
+		while ((count = stream.read(buf)) > 0) {
+			fos.write(buf, 0, count);
+		}
+		fos.close();
+	}
 
-    /**
-     * @return a new InputStream for the HTTP response
-     */
-    public InputStream getStream() {
-        try {
-            return new FileInputStream( tmpFile );
-        } catch ( FileNotFoundException e ) {
-            e.printStackTrace();
-            return null;
-        }
-    }
+	/**
+	 * @return a new reader for the HTTP response
+	 */
+	public FileReader getReader() {
+		try {
+			return new FileReader(tmpFile);
+		}
+		catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
-    /**
-     * @return the HTTP response code
-     */
-    public int getStatus() {
-        return status;
-    }
+	/**
+	 * @return a new InputStream for the HTTP response
+	 */
+	public InputStream getStream() {
+		try {
+			return new FileInputStream(tmpFile);
+		}
+		catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
-    /**
-     * @param key
-     *            the response header name
-     * @return the value of the header, or <code>null</code>
-     */
-    public String getHeader( String key ) {
-        Header header = method.getResponseHeader( key );
-        if ( header == null ) {
-            return null;
-        }
-        return header.getValue();
-    }
+	/**
+	 * @return the HTTP response code
+	 */
+	public int getStatus() {
+		return status;
+	}
+
+	/**
+	 * @param key the response header name
+	 * @return the value of the header, or <code>null</code>
+	 */
+	public String getHeader(String key) {
+		Header header = method.getResponseHeader(key);
+		if (header == null) {
+			return null;
+		}
+		return header.getValue();
+	}
 
 }

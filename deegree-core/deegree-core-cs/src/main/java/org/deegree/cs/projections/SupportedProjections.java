@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -45,82 +44,80 @@ import org.deegree.cs.projections.conic.LambertConformalConic;
 import org.deegree.cs.projections.cylindric.TransverseMercator;
 
 /**
- * The <code>SupportedProjections</code> enumeration defines currently supported projections
- * 
+ * The <code>SupportedProjections</code> enumeration defines currently supported
+ * projections
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 public enum SupportedProjections {
-    /**
-     * The {@link TransverseMercator} projection
-     */
-    TRANSVERSE_MERCATOR,
-    /**
-     * The {@link LambertConformalConic} projection
-     */
-    LAMBERT_CONFORMAL,
-    /**
-     * The {@link LambertAzimuthalEqualArea} projection
-     */
-    LAMBERT_AZIMUTHAL_EQUAL_AREA,
-    /**
-     * Snyders {@link StereographicAzimuthal} implementation of the stereographic azimuthal projection
-     */
-    STEREOGRAPHIC_AZIMUTHAL,
-    /**
-     * EPSG {@link StereographicAlternative} implementation of the Stereographic azimuthal projection
-     */
-    STEREOGRAPHIC_AZIMUTHAL_ALTERNATIVE,
-    /**
-     * A not supported projection
-     */
-    NOT_SUPPORTED;
 
-    /**
-     * 
-     * @param codes
-     *            to check for.
-     * @return a mapped projection or {@link SupportedProjections#NOT_SUPPORTED}, never <code>null</code>
-     */
-    public static SupportedProjections fromCodes( CRSCodeType[] codes ) {
-        if ( codes == null || codes.length == 0 ) {
-            return SupportedProjections.NOT_SUPPORTED;
-        }
-        for ( CRSCodeType code : codes ) {
-            if ( code != null ) {
-                String compare = code.getOriginal();
-                if ( "TransverseMercator".equalsIgnoreCase( compare )
-                     || "Transverse Merctator".equalsIgnoreCase( compare )
-                     || matchEPSGString( compare, "method", "9807" ) ) {
-                    return SupportedProjections.TRANSVERSE_MERCATOR;
-                } else if ( "lambertAzimuthalEqualArea".equalsIgnoreCase( compare )
-                            || "Lambert Azimuthal Equal Area".equalsIgnoreCase( compare )
-                            || "Lambert Azimuthal Equal Area (Spherical)".equalsIgnoreCase( compare )
-                            || matchEPSGString( compare, "method", "9820" )
-                            || matchEPSGString( compare, "method", "9821" ) ) {
-                    return SupportedProjections.LAMBERT_AZIMUTHAL_EQUAL_AREA;
-                } else if ( "stereographicAlternative".equalsIgnoreCase( compare )
-                            || "Oblique Stereographic".equalsIgnoreCase( compare )
-                            || compare.contains( "Polar Stereographic" ) || matchEPSGString( compare, "method", "9809" )
-                            || matchEPSGString( compare, "method", "9810" )
-                            || matchEPSGString( compare, "method", "9829" )
-                            || matchEPSGString( compare, "method", "9830" ) ) {
-                    return SupportedProjections.STEREOGRAPHIC_AZIMUTHAL_ALTERNATIVE;
-                } else if ( "stereographicAzimuthal".equalsIgnoreCase( compare ) ) {
-                    return SupportedProjections.STEREOGRAPHIC_AZIMUTHAL;
-                } else if ( "lambertConformalConic".equalsIgnoreCase( compare )
-                            || compare.contains( "Lambert Conic Conformal" )
-                            || matchEPSGString( compare, "method", "9801" )
-                            || matchEPSGString( compare, "method", "9802" )
-                            || matchEPSGString( compare, "method", "9803" ) ) {
-                    return SupportedProjections.LAMBERT_CONFORMAL;
-                }
-            }
-        }
-        return SupportedProjections.NOT_SUPPORTED;
-    }
+	/**
+	 * The {@link TransverseMercator} projection
+	 */
+	TRANSVERSE_MERCATOR,
+	/**
+	 * The {@link LambertConformalConic} projection
+	 */
+	LAMBERT_CONFORMAL,
+	/**
+	 * The {@link LambertAzimuthalEqualArea} projection
+	 */
+	LAMBERT_AZIMUTHAL_EQUAL_AREA,
+	/**
+	 * Snyders {@link StereographicAzimuthal} implementation of the stereographic
+	 * azimuthal projection
+	 */
+	STEREOGRAPHIC_AZIMUTHAL,
+	/**
+	 * EPSG {@link StereographicAlternative} implementation of the Stereographic azimuthal
+	 * projection
+	 */
+	STEREOGRAPHIC_AZIMUTHAL_ALTERNATIVE,
+	/**
+	 * A not supported projection
+	 */
+	NOT_SUPPORTED;
+
+	/**
+	 * @param codes to check for.
+	 * @return a mapped projection or {@link SupportedProjections#NOT_SUPPORTED}, never
+	 * <code>null</code>
+	 */
+	public static SupportedProjections fromCodes(CRSCodeType[] codes) {
+		if (codes == null || codes.length == 0) {
+			return SupportedProjections.NOT_SUPPORTED;
+		}
+		for (CRSCodeType code : codes) {
+			if (code != null) {
+				String compare = code.getOriginal();
+				if ("TransverseMercator".equalsIgnoreCase(compare) || "Transverse Merctator".equalsIgnoreCase(compare)
+						|| matchEPSGString(compare, "method", "9807")) {
+					return SupportedProjections.TRANSVERSE_MERCATOR;
+				}
+				else if ("lambertAzimuthalEqualArea".equalsIgnoreCase(compare)
+						|| "Lambert Azimuthal Equal Area".equalsIgnoreCase(compare)
+						|| "Lambert Azimuthal Equal Area (Spherical)".equalsIgnoreCase(compare)
+						|| matchEPSGString(compare, "method", "9820") || matchEPSGString(compare, "method", "9821")) {
+					return SupportedProjections.LAMBERT_AZIMUTHAL_EQUAL_AREA;
+				}
+				else if ("stereographicAlternative".equalsIgnoreCase(compare)
+						|| "Oblique Stereographic".equalsIgnoreCase(compare) || compare.contains("Polar Stereographic")
+						|| matchEPSGString(compare, "method", "9809") || matchEPSGString(compare, "method", "9810")
+						|| matchEPSGString(compare, "method", "9829") || matchEPSGString(compare, "method", "9830")) {
+					return SupportedProjections.STEREOGRAPHIC_AZIMUTHAL_ALTERNATIVE;
+				}
+				else if ("stereographicAzimuthal".equalsIgnoreCase(compare)) {
+					return SupportedProjections.STEREOGRAPHIC_AZIMUTHAL;
+				}
+				else if ("lambertConformalConic".equalsIgnoreCase(compare)
+						|| compare.contains("Lambert Conic Conformal") || matchEPSGString(compare, "method", "9801")
+						|| matchEPSGString(compare, "method", "9802") || matchEPSGString(compare, "method", "9803")) {
+					return SupportedProjections.LAMBERT_CONFORMAL;
+				}
+			}
+		}
+		return SupportedProjections.NOT_SUPPORTED;
+	}
+
 }

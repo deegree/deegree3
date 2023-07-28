@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -46,103 +45,93 @@ import org.deegree.services.wpvs.io.DataObjectInfo;
 
 /**
  * The <code>PrototypeSerializer</code> class TODO add class documentation here.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class PrototypeSerializer extends ObjectSerializer<RenderablePrototype> {
 
-    private WROSerializer wroSerializer;
+	private WROSerializer wroSerializer;
 
-    /**
-     * Create a new prototype serializer
-     */
-    public PrototypeSerializer() {
-        wroSerializer = new WROSerializer();
-    }
+	/**
+	 * Create a new prototype serializer
+	 */
+	public PrototypeSerializer() {
+		wroSerializer = new WROSerializer();
+	}
 
-    /**
-     * @return the geometryBuffer
-     */
-    public final DirectGeometryBuffer getGeometryBuffer() {
-        return wroSerializer.getGeometryBuffer();
-    }
+	/**
+	 * @return the geometryBuffer
+	 */
+	public final DirectGeometryBuffer getGeometryBuffer() {
+		return wroSerializer.getGeometryBuffer();
+	}
 
-    /**
-     * @param geometryBuffer
-     *            the geometryBuffer to set
-     */
-    public final void setGeometryBuffer( DirectGeometryBuffer geometryBuffer ) {
-        wroSerializer.setGeometryBuffer( geometryBuffer );
-    }
+	/**
+	 * @param geometryBuffer the geometryBuffer to set
+	 */
+	public final void setGeometryBuffer(DirectGeometryBuffer geometryBuffer) {
+		wroSerializer.setGeometryBuffer(geometryBuffer);
+	}
 
-    @Override
-    public RenderablePrototype read( ByteBuffer buffer ) {
-        WorldRenderableObject wro = wroSerializer.read( buffer );
-        return createRenderablePrototype( wro );
-    }
+	@Override
+	public RenderablePrototype read(ByteBuffer buffer) {
+		WorldRenderableObject wro = wroSerializer.read(buffer);
+		return createRenderablePrototype(wro);
+	}
 
-    /**
-     * @param wro
-     * @return
-     */
-    private RenderablePrototype createRenderablePrototype( WorldRenderableObject wro ) {
-        RenderableQualityModel[] models = wro.getQualityLevels();
-        if ( models == null || models.length != 1 ) {
-            return null;
-        }
-        return new RenderablePrototype( wro.getId(), wro.getTime(), wro.getBbox(), models[0] );
-    }
+	/**
+	 * @param wro
+	 * @return
+	 */
+	private RenderablePrototype createRenderablePrototype(WorldRenderableObject wro) {
+		RenderableQualityModel[] models = wro.getQualityLevels();
+		if (models == null || models.length != 1) {
+			return null;
+		}
+		return new RenderablePrototype(wro.getId(), wro.getTime(), wro.getBbox(), models[0]);
+	}
 
-    @Override
-    public int serializedObjectSize( DataObjectInfo<RenderablePrototype> object ) {
-        DataObjectInfo<WorldRenderableObject> doi = createDataObject( object );
-        int result = wroSerializer.serializedObjectSize( doi );
-        object.setSerializedData( doi.getSerializedData() );
-        return result;
-    }
+	@Override
+	public int serializedObjectSize(DataObjectInfo<RenderablePrototype> object) {
+		DataObjectInfo<WorldRenderableObject> doi = createDataObject(object);
+		int result = wroSerializer.serializedObjectSize(doi);
+		object.setSerializedData(doi.getSerializedData());
+		return result;
+	}
 
-    /**
-     * Helper method needed for the WRO serializer.
-     * 
-     * @param object
-     *            to generate the result from.
-     * @return the object info needed for the wro serializer
-     */
-    private DataObjectInfo<WorldRenderableObject> createDataObject( DataObjectInfo<RenderablePrototype> object ) {
-        DataObjectInfo<WorldRenderableObject> result = new DataObjectInfo<WorldRenderableObject>(
-                                                                                                  object.getUuid(),
-                                                                                                  object.getType(),
-                                                                                                  object.getName(),
-                                                                                                  object.getExternalRef(),
-                                                                                                  object.getEnvelope(),
-                                                                                                  object.getData(),
-                                                                                                  object.getTime() );
-        result.setSerializedData( object.getSerializedData() );
-        return result;
-    }
+	/**
+	 * Helper method needed for the WRO serializer.
+	 * @param object to generate the result from.
+	 * @return the object info needed for the wro serializer
+	 */
+	private DataObjectInfo<WorldRenderableObject> createDataObject(DataObjectInfo<RenderablePrototype> object) {
+		DataObjectInfo<WorldRenderableObject> result = new DataObjectInfo<WorldRenderableObject>(object.getUuid(),
+				object.getType(), object.getName(), object.getExternalRef(), object.getEnvelope(), object.getData(),
+				object.getTime());
+		result.setSerializedData(object.getSerializedData());
+		return result;
+	}
 
-    @Override
-    public void write( ByteBuffer buffer, DataObjectInfo<RenderablePrototype> object ) {
-        DataObjectInfo<WorldRenderableObject> doi = createDataObject( object );
-        wroSerializer.write( buffer, doi );
-        object.setSerializedData( doi.getSerializedData() );
-    }
+	@Override
+	public void write(ByteBuffer buffer, DataObjectInfo<RenderablePrototype> object) {
+		DataObjectInfo<WorldRenderableObject> doi = createDataObject(object);
+		wroSerializer.write(buffer, doi);
+		object.setSerializedData(doi.getSerializedData());
+	}
 
-    @Override
-    public byte[] serializeObject( DataObjectInfo<RenderablePrototype> object ) {
-        DataObjectInfo<WorldRenderableObject> doi = createDataObject( object );
-        wroSerializer.serializeObject( doi );
-        object.setSerializedData( doi.getSerializedData() );
-        return object.getSerializedData();
-    }
+	@Override
+	public byte[] serializeObject(DataObjectInfo<RenderablePrototype> object) {
+		DataObjectInfo<WorldRenderableObject> doi = createDataObject(object);
+		wroSerializer.serializeObject(doi);
+		object.setSerializedData(doi.getSerializedData());
+		return object.getSerializedData();
+	}
 
-    @Override
-    public RenderablePrototype deserializeDataObject( byte[] buffer ) {
-        WorldRenderableObject wro = wroSerializer.deserializeDataObject( buffer );
-        return createRenderablePrototype( wro );
-    }
+	@Override
+	public RenderablePrototype deserializeDataObject(byte[] buffer) {
+		WorldRenderableObject wro = wroSerializer.deserializeDataObject(buffer);
+		return createRenderablePrototype(wro);
+	}
 
 }

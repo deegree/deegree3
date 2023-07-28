@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -40,16 +39,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence.cache;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
-
 import org.deegree.geometry.Envelope;
 import org.deegree.tile.DefaultTileDataSet;
 import org.deegree.tile.Tile;
@@ -60,119 +49,132 @@ import org.deegree.tile.persistence.TileStore;
 import org.deegree.tile.persistence.TileStoreTransaction;
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceMetadata;
+import org.ehcache.Cache;
+import org.ehcache.CacheManager;
+import org.ehcache.config.Configuration;
+import org.ehcache.config.builders.CacheManagerBuilder;
+import org.ehcache.xml.XmlConfiguration;
+
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.StreamSupport;
 
 /**
  * {@link TileStore} that acts as a caching proxy to another {@link TileStore}.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 public class CachingTileStore implements TileStore {
 
-    private final TileStore tileStore;
+	private final TileStore tileStore;
 
-    private final CacheManager cacheManager;
+	private final CacheManager cacheManager;
 
-    private final Cache cache;
+	private final Cache<String, byte[]> cache;
 
-    private Map<String, TileDataSet> tileMatrixSets;
+	private Map<String, TileDataSet> tileMatrixSets;
 
-    private ResourceMetadata<TileStore> metadata;
+	private final ResourceMetadata<TileStore> metadata;
 
-    public CachingTileStore( TileStore tileStore, CacheManager cacheManager, String cacheName,
-                             ResourceMetadata<TileStore> metadata ) {
-        this.tileStore = tileStore;
-        this.cacheManager = cacheManager;
-        this.metadata = metadata;
-        this.cache = cacheManager.getCache( cacheName );
-    }
+	public CachingTileStore(TileStore tileStore, String cacheName, URL cacheConfiguration,
+			ResourceMetadata<TileStore> metadata) {
+		this.tileStore = tileStore;
+		this.metadata = metadata;
+		Configuration xmlConfig = new XmlConfiguration(cacheConfiguration);
+		this.cacheManager = CacheManagerBuilder.newCacheManager(xmlConfig);
+		this.cacheManager.init();
+		this.cache = this.cacheManager.getCache(cacheName, String.class, byte[].class);
+	}
 
-    @Override
-    public void init() {
-        Collection<String> ids = tileStore.getTileDataSetIds();
-        tileMatrixSets = new HashMap<String, TileDataSet>();
-        for ( String id : ids ) {
-            TileDataSet cachedDataset = tileStore.getTileDataSet( id );
-            List<TileDataLevel> list = new ArrayList<TileDataLevel>();
-            for ( TileDataLevel tm : cachedDataset.getTileDataLevels() ) {
-                list.add( new CachingTileMatrix( tm, cache ) );
-            }
-            TileDataSet cachingDataset = new DefaultTileDataSet( list, cachedDataset.getTileMatrixSet(),
-                                                                 cachedDataset.getNativeImageFormat() );
-            this.tileMatrixSets.put( id, cachingDataset );
-        }
-    }
+	@Override
+	public void init() {
+		Collection<String> ids = tileStore.getTileDataSetIds();
+		tileMatrixSets = new HashMap<>();
+		for (String id : ids) {
+			TileDataSet cachedDataset = tileStore.getTileDataSet(id);
+			List<TileDataLevel> list = new ArrayList<>();
+			for (TileDataLevel tm : cachedDataset.getTileDataLevels()) {
+				list.add(new CachingTileMatrix(tm, cache));
+			}
+			TileDataSet cachingDataset = new DefaultTileDataSet(list, cachedDataset.getTileMatrixSet(),
+					cachedDataset.getNativeImageFormat());
+			this.tileMatrixSets.put(id, cachingDataset);
+		}
+	}
 
-    @Override
-    public Collection<String> getTileDataSetIds() {
-        return tileMatrixSets.keySet();
-    }
+	@Override
+	public Collection<String> getTileDataSetIds() {
+		return tileMatrixSets.keySet();
+	}
 
-    @Override
-    public void destroy() {
-        cacheManager.shutdown();
-    }
+	@Override
+	public void destroy() {
+		cacheManager.close();
+	}
 
-    @Override
-    public TileDataSet getTileDataSet( String id ) {
-        return tileMatrixSets.get( id );
-    }
+	@Override
+	public TileDataSet getTileDataSet(String id) {
+		return tileMatrixSets.get(id);
+	}
 
-    @Override
-    public Iterator<Tile> getTiles( String id, Envelope envelope, double resolution ) {
-        return tileMatrixSets.get( id ).getTiles( envelope, resolution );
-    }
+	@Override
+	public Iterator<Tile> getTiles(String id, Envelope envelope, double resolution) {
+		return tileMatrixSets.get(id).getTiles(envelope, resolution);
+	}
 
-    @Override
-    public Tile getTile( String tileMatrixSet, String tileMatrix, int x, int y ) {
-        TileDataLevel tm = tileMatrixSets.get( tileMatrixSet ).getTileDataLevel( tileMatrix );
-        if ( tm == null ) {
-            return null;
-        }
-        return tm.getTile( x, y );
-    }
+	@Override
+	public Tile getTile(String tileMatrixSet, String tileMatrix, int x, int y) {
+		TileDataLevel tm = tileMatrixSets.get(tileMatrixSet).getTileDataLevel(tileMatrix);
+		if (tm == null) {
+			return null;
+		}
+		return tm.getTile(x, y);
+	}
 
-    /**
-     * Removes matching objects from cache.
-     * 
-     * @param tileMatrixSet
-     *            the id of the tile matrix set
-     * @param envelope
-     *            may be null, in which case all objects will be removed from the cache
-     */
-    public long invalidateCache( String tileMatrixSet, Envelope envelope ) {
-        if ( envelope == null ) {
-            int size = cache.getSize();
-            cache.removeAll();
-            return size;
-        }
-        long cnt = 0;
-        for ( TileDataLevel tm : tileMatrixSets.get( tileMatrixSet ).getTileDataLevels() ) {
-            long[] ts = Tiles.getTileIndexRange( tm, envelope );
-            if ( ts != null ) {
-                String id = tm.getMetadata().getIdentifier();
-                for ( long x = ts[0]; x <= ts[2]; ++x ) {
-                    for ( long y = ts[1]; y <= ts[3]; ++y ) {
-                        if ( cache.remove( id + "_" + x + "_" + y ) ) {
-                            ++cnt;
-                        }
-                    }
-                }
-            }
-        }
-        return cnt;
-    }
+	/**
+	 * Removes matching objects from cache.
+	 * @param tileMatrixSet the id of the tile matrix set
+	 * @param envelope may be null, in which case all objects will be removed from the
+	 * cache
+	 */
+	public long invalidateCache(String tileMatrixSet, Envelope envelope) {
+		if (envelope == null) {
+			long count = StreamSupport.stream(cache.spliterator(), false).count();
+			cache.clear();
+			return count;
+		}
+		long cnt = 0;
+		for (TileDataLevel tm : tileMatrixSets.get(tileMatrixSet).getTileDataLevels()) {
+			long[] ts = Tiles.getTileIndexRange(tm, envelope);
+			if (ts != null) {
+				String id = tm.getMetadata().getIdentifier();
+				for (long x = ts[0]; x <= ts[2]; ++x) {
+					for (long y = ts[1]; y <= ts[3]; ++y) {
+						String key = id + "_" + x + "_" + y;
+						if (cache.containsKey(key)) {
+							cache.remove(key);
+							++cnt;
+						}
+					}
+				}
+			}
+		}
+		return cnt;
+	}
 
-    @Override
-    public TileStoreTransaction acquireTransaction( String id ) {
-        throw new UnsupportedOperationException( "CachingTileStore does not support transactions." );
-    }
+	@Override
+	public TileStoreTransaction acquireTransaction(String id) {
+		throw new UnsupportedOperationException("CachingTileStore does not support transactions.");
+	}
 
-    @Override
-    public ResourceMetadata<? extends Resource> getMetadata() {
-        return metadata;
-    }
+	@Override
+	public ResourceMetadata<? extends Resource> getMetadata() {
+		return metadata;
+	}
 
 }

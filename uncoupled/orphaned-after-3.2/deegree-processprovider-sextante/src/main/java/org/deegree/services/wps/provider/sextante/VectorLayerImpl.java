@@ -1,4 +1,3 @@
-//$HeadURL: http://svn.wald.intevation.org/svn/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -61,9 +60,7 @@ import es.unex.sextante.dataObjects.IVectorLayer;
  * Manages features to execute a SEXTANTE {@link GeoAlgorithm}.
  * 
  * @author <a href="mailto:pabel@lat-lon.de">Jens Pabel</a>
- * @author last edited by: $Author: pabel $
  * 
- * @version $Revision: $, $Date: $
  */
 
 public class VectorLayerImpl extends AbstractVectorLayer {

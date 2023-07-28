@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -51,30 +50,28 @@ import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
  * Metadata for file/dir based coverages.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 public class DefaultCoverageMetadata extends AbstractResourceMetadata<Coverage> {
 
-    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.coverage.raster.io.jaxb";
+	private static final String CONFIG_JAXB_PACKAGE = "org.deegree.coverage.raster.io.jaxb";
 
-    public DefaultCoverageMetadata( Workspace workspace, ResourceLocation<Coverage> location,
-                                    AbstractResourceProvider<Coverage> provider ) {
-        super( workspace, location, provider );
-    }
+	public DefaultCoverageMetadata(Workspace workspace, ResourceLocation<Coverage> location,
+			AbstractResourceProvider<Coverage> provider) {
+		super(workspace, location, provider);
+	}
 
-    @Override
-    public DefaultCoverageBuilder prepare() {
-        try {
-            Object config = JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, provider.getSchema(), location.getAsStream(),
-                                                  workspace );
-            return new DefaultCoverageBuilder( config, this );
-        } catch ( Exception e ) {
-            throw new ResourceInitException( "IO-Error while creating coverage store.", e );
-        }
-    }
+	@Override
+	public DefaultCoverageBuilder prepare() {
+		try {
+			Object config = JAXBUtils.unmarshall(CONFIG_JAXB_PACKAGE, provider.getSchema(), location.getAsStream(),
+					workspace);
+			return new DefaultCoverageBuilder(config, this);
+		}
+		catch (Exception e) {
+			throw new ResourceInitException("IO-Error while creating coverage store.", e);
+		}
+	}
 
 }

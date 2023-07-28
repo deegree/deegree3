@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -46,118 +45,115 @@ import org.deegree.geometry.primitive.segments.CurveSegment;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
 
 /**
- * <code>Curve</code> instances are 1D-geometries that consist of a number of curve segments.
- * 
+ * <code>Curve</code> instances are 1D-geometries that consist of a number of curve
+ * segments.
+ *
  * @see CompositeCurve
  * @see LineString
  * @see OrientableCurve
  * @see Ring
- * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
- * @author last edited by: $Author$
- * 
- * @version. $Revision$, $Date$
+ *
  */
 public interface Curve extends GeometricPrimitive {
 
-    /**
-     * Convenience enum type for discriminating the different curve variants.
-     */
-    public enum CurveType {
-        /** Generic curve that consists of an arbitrary number of segments. */
-        Curve,
-        /** Curve that consists of a single segment with linear interpolation. */
-        LineString,
-        /** Curve that wraps a base curve with additional orientation flag. */
-        OrientableCurve,
-        /** Curve composited from multiple base curves. */
-        CompositeCurve,
-        /** A Ring consists of a sequence of curves connected in a cycle */
-        Ring
-    }
+	/**
+	 * Convenience enum type for discriminating the different curve variants.
+	 */
+	public enum CurveType {
 
-    /**
-     * Must always return {@link GeometricPrimitive.PrimitiveType#Curve}.
-     * 
-     * @return {@link GeometricPrimitive.PrimitiveType#Curve}
-     */
-    @Override
-    public PrimitiveType getPrimitiveType();
+		/** Generic curve that consists of an arbitrary number of segments. */
+		Curve,
+		/**
+		 * A LinearRing consists of four or more coordinate tuples with linear
+		 * interpolation.
+		 */
+		LinearRing,
+		/** Curve that consists of a single segment with linear interpolation. */
+		LineString,
+		/** Curve that wraps a base curve with additional orientation flag. */
+		OrientableCurve,
+		/** Curve composited from multiple base curves. */
+		CompositeCurve,
+		/** A Ring consists of a sequence of curves connected in a cycle */
+		Ring
 
-    /**
-     * Returns the type of curve.
-     * 
-     * @return the type of curve
-     */
-    public CurveType getCurveType();
+	}
 
-    /**
-     * Returns whether the curve forms a closed loop.
-     * 
-     * @return true, if the curve forms a closed loop, false otherwise
-     */
-    public boolean isClosed();
+	/**
+	 * Must always return {@link GeometricPrimitive.PrimitiveType#Curve}.
+	 * @return {@link GeometricPrimitive.PrimitiveType#Curve}
+	 */
+	@Override
+	public PrimitiveType getPrimitiveType();
 
-    /**
-     * 
-     * @param requestedUnit
-     * @return length of the curve
-     */
-    public Measure getLength( Unit requestedUnit );
+	/**
+	 * Returns the type of curve.
+	 * @return the type of curve
+	 */
+	public CurveType getCurveType();
 
-    /**
-     * The boundary of a curve is the set of points at either end of the curve. If the curve is a cycle, the two ends
-     * are identical, and the curve (if topologically closed) is considered to not have a boundary.
-     * 
-     * @return boundary of a curve. If a curve does not have a boundary because it is closed an empty {@link List} shall
-     *         be retruned
-     */
-    public Pair<Point, Point> getBoundary();
+	/**
+	 * Returns whether the curve forms a closed loop.
+	 * @return true, if the curve forms a closed loop, false otherwise
+	 */
+	public boolean isClosed();
 
-    /**
-     * Returns the start point of the curve.
-     * 
-     * @return the start point of the curve
-     */
-    public Point getStartPoint();
+	/**
+	 * @param requestedUnit
+	 * @return length of the curve
+	 */
+	public Measure getLength(Unit requestedUnit);
 
-    /**
-     * Returns the end point of the curve.
-     * 
-     * @return the end point of the curve
-     */
-    public Point getEndPoint();
+	/**
+	 * The boundary of a curve is the set of points at either end of the curve. If the
+	 * curve is a cycle, the two ends are identical, and the curve (if topologically
+	 * closed) is considered to not have a boundary.
+	 * @return boundary of a curve. If a curve does not have a boundary because it is
+	 * closed an empty {@link List} shall be retruned
+	 */
+	public Pair<Point, Point> getBoundary();
 
-    /**
-     * Returns the segments that constitute this curve.
-     * 
-     * @return the segments that constitute this curve
-     */
-    public List<CurveSegment> getCurveSegments();
+	/**
+	 * Returns the start point of the curve.
+	 * @return the start point of the curve
+	 */
+	public Point getStartPoint();
 
-    /**
-     * Convenience method for accessing the control points of linear interpolated curves.
-     * <p>
-     * NOTE: This method is only safe to use when the curve is a {@link LineString} or {@link LinearRing} or it only
-     * consists of {@link LineStringSegment}s. In any other case it will fail.
-     * </p>
-     * 
-     * @return the control points
-     * @throws IllegalArgumentException
-     *             if the curve is not linear interpolated
-     */
-    public Points getControlPoints();
+	/**
+	 * Returns the end point of the curve.
+	 * @return the end point of the curve
+	 */
+	public Point getEndPoint();
 
-    /**
-     * Returns a linear interpolated representation of the curve.
-     * <p>
-     * NOTE: This method is only safe to use when the curve is a {@link LineString} or {@link LinearRing} or it only
-     * consists of {@link LineStringSegment}s. In any other case it will fail.
-     * </p>
-     * 
-     * @return curve as a linestring
-     * @throws IllegalArgumentException
-     *             if the curve is not linear interpolated
-     */
-    public LineString getAsLineString();
+	/**
+	 * Returns the segments that constitute this curve.
+	 * @return the segments that constitute this curve
+	 */
+	public List<CurveSegment> getCurveSegments();
+
+	/**
+	 * Convenience method for accessing the control points of linear interpolated curves.
+	 * <p>
+	 * NOTE: This method is only safe to use when the curve is a {@link LineString} or
+	 * {@link LinearRing} or it only consists of {@link LineStringSegment}s. In any other
+	 * case it will fail.
+	 * </p>
+	 * @return the control points
+	 * @throws IllegalArgumentException if the curve is not linear interpolated
+	 */
+	public Points getControlPoints();
+
+	/**
+	 * Returns a linear interpolated representation of the curve.
+	 * <p>
+	 * NOTE: This method is only safe to use when the curve is a {@link LineString} or
+	 * {@link LinearRing} or it only consists of {@link LineStringSegment}s. In any other
+	 * case it will fail.
+	 * </p>
+	 * @return curve as a linestring
+	 * @throws IllegalArgumentException if the curve is not linear interpolated
+	 */
+	public LineString getAsLineString();
+
 }

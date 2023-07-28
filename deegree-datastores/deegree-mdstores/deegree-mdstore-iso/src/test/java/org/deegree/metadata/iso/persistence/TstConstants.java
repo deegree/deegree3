@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-metadata/src/test/java/org/deegree/metadata/iso/persistence/TstConstants.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -39,85 +38,82 @@ import java.net.URL;
 
 /**
  * Constants
- * 
+ *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: lbuesching $
- * 
- * @version $Revision: 30725 $, $Date: 2011-05-09 15:04:20 +0200 (Mo, 09. Mai 2011) $
  */
 public class TstConstants {
 
-    private TstConstants() {
+	private TstConstants() {
 
-    }
+	}
 
-    private final static String CONFIG_DIR = "configdocs/";
+	private final static String CONFIG_DIR = "configdocs/";
 
-    private final static String DATA_DIR = "metadatarecords/";
+	private final static String DATA_DIR = "metadatarecords/";
 
-    private final static String FILTER_DIR = "filter/";
-    
-    public static final URL configURL = TstConstants.class.getResource( CONFIG_DIR + "iso19115_SetUpTables.xml" );
+	private final static String FILTER_DIR = "filter/";
 
-    public static final URL configURL_REJECT_FI_FALSE = TstConstants.class.getResource( CONFIG_DIR
-                                                                                        + "iso19115_Reject_FI_FALSE.xml" );
+	public static final URL configURL = TstConstants.class.getResource(CONFIG_DIR + "iso19115_SetUpTables.xml");
 
-    public static final URL configURL_REJECT_FI_TRUE = TstConstants.class.getResource( CONFIG_DIR
-                                                                                       + "iso19115_Reject_FI_TRUE.xml" );
+	public static final URL configURL_REJECT_FI_FALSE = TstConstants.class
+		.getResource(CONFIG_DIR + "iso19115_Reject_FI_FALSE.xml");
 
-    public static final URL configURL_RS_GEN_FALSE = TstConstants.class.getResource( CONFIG_DIR
-                                                                                     + "iso19115_RS_Available_Generate_FALSE.xml" );
+	public static final URL configURL_REJECT_FI_TRUE = TstConstants.class
+		.getResource(CONFIG_DIR + "iso19115_Reject_FI_TRUE.xml");
 
-    public static final URL configURL_RS_GEN_TRUE = TstConstants.class.getResource( CONFIG_DIR
-                                                                                    + "iso19115_RS_Available_Generate_TRUE.xml" );
+	public static final URL configURL_RS_GEN_FALSE = TstConstants.class
+		.getResource(CONFIG_DIR + "iso19115_RS_Available_Generate_FALSE.xml");
 
-    public static final URL configURL_ANYTEXT_ALL = TstConstants.class.getResource( CONFIG_DIR + "anyText_All.xml" );
+	public static final URL configURL_RS_GEN_TRUE = TstConstants.class
+		.getResource(CONFIG_DIR + "iso19115_RS_Available_Generate_TRUE.xml");
 
-    public static final URL configURL_ANYTEXT_CORE = TstConstants.class.getResource( CONFIG_DIR + "anyText_Core.xml" );
+	public static final URL configURL_ANYTEXT_ALL = TstConstants.class.getResource(CONFIG_DIR + "anyText_All.xml");
 
-    public static final URL configURL_ANYTEXT_CUSTOM = TstConstants.class.getResource( CONFIG_DIR
-                                                                                       + "anyText_Custom.xml" );
+	public static final URL configURL_ANYTEXT_CORE = TstConstants.class.getResource(CONFIG_DIR + "anyText_Core.xml");
 
-    public static final URL configURL_COUPLING_ACCEPT = TstConstants.class.getResource( CONFIG_DIR
-                                                                                        + "iso19115_coupling_accept.xml" );
+	public static final URL configURL_ANYTEXT_CUSTOM = TstConstants.class
+		.getResource(CONFIG_DIR + "anyText_Custom.xml");
 
-    public static final URL configURL_COUPLING_Ex_AWARE = TstConstants.class.getResource( CONFIG_DIR
-                                                                                          + "iso19115_coupling_reject.xml" );
+	public static final URL configURL_COUPLING_ACCEPT = TstConstants.class
+		.getResource(CONFIG_DIR + "iso19115_coupling_accept.xml");
 
-    public static final URL tst_1 = TstConstants.class.getResource( DATA_DIR + "1.xml" );
+	public static final URL configURL_COUPLING_Ex_AWARE = TstConstants.class
+		.getResource(CONFIG_DIR + "iso19115_coupling_reject.xml");
 
-    public static final URL tst_2 = TstConstants.class.getResource( DATA_DIR + "2.xml" );
+	public static final URL tst_1 = TstConstants.class.getResource(DATA_DIR + "1.xml");
 
-    public static final URL tst_3 = TstConstants.class.getResource( DATA_DIR + "3.xml" );
+	public static final URL tst_2 = TstConstants.class.getResource(DATA_DIR + "2.xml");
 
-    public static final URL tst_4 = TstConstants.class.getResource( DATA_DIR + "4.xml" );
+	public static final URL tst_3 = TstConstants.class.getResource(DATA_DIR + "3.xml");
 
-    public static final URL tst_5 = TstConstants.class.getResource( DATA_DIR + "5.xml" );
+	public static final URL tst_4 = TstConstants.class.getResource(DATA_DIR + "4.xml");
 
-    public static final URL tst_6 = TstConstants.class.getResource( DATA_DIR + "6.xml" );
+	public static final URL tst_5 = TstConstants.class.getResource(DATA_DIR + "5.xml");
 
-    public static final URL tst_7 = TstConstants.class.getResource( DATA_DIR + "7.xml" );
+	public static final URL tst_6 = TstConstants.class.getResource(DATA_DIR + "6.xml");
 
-    public static final URL tst_8 = TstConstants.class.getResource( DATA_DIR + "8.xml" );
+	public static final URL tst_7 = TstConstants.class.getResource(DATA_DIR + "7.xml");
 
-    public static final URL tst_9 = TstConstants.class.getResource( DATA_DIR + "9.xml" );
+	public static final URL tst_8 = TstConstants.class.getResource(DATA_DIR + "8.xml");
 
-    public static final URL tst_10 = TstConstants.class.getResource( DATA_DIR + "10.xml" );
+	public static final URL tst_9 = TstConstants.class.getResource(DATA_DIR + "9.xml");
 
-    public static final URL tst_11 = TstConstants.class.getResource( DATA_DIR + "11.xml" );
+	public static final URL tst_10 = TstConstants.class.getResource(DATA_DIR + "10.xml");
 
-    public static final URL tst_12 = TstConstants.class.getResource( DATA_DIR + "12_data.xml" );
+	public static final URL tst_11 = TstConstants.class.getResource(DATA_DIR + "11.xml");
 
-    public static final URL tst_12_2 = TstConstants.class.getResource( DATA_DIR + "12_2_data.xml" );
+	public static final URL tst_12 = TstConstants.class.getResource(DATA_DIR + "12_data.xml");
 
-    public static final URL tst_13 = TstConstants.class.getResource( DATA_DIR + "13_service.xml" );
+	public static final URL tst_12_2 = TstConstants.class.getResource(DATA_DIR + "12_2_data.xml");
 
-    public static final URL fullRecord = TstConstants.class.getResource( DATA_DIR + "filterTstFull.xml" );
+	public static final URL tst_13 = TstConstants.class.getResource(DATA_DIR + "13_service.xml");
 
-    public static final URL summaryRecord = TstConstants.class.getResource( DATA_DIR + "filterTstSummary.xml" );
+	public static final URL fullRecord = TstConstants.class.getResource(DATA_DIR + "filterTstFull.xml");
 
-    public static final URL briefRecord = TstConstants.class.getResource( DATA_DIR + "filterTstBrief.xml" );
+	public static final URL summaryRecord = TstConstants.class.getResource(DATA_DIR + "filterTstSummary.xml");
 
-    public static final URL propEqualToID = TstConstants.class.getResource( FILTER_DIR + "propEqualToID.xml" );
+	public static final URL briefRecord = TstConstants.class.getResource(DATA_DIR + "filterTstBrief.xml");
+
+	public static final URL propEqualToID = TstConstants.class.getResource(FILTER_DIR + "propEqualToID.xml");
 
 }

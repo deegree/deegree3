@@ -43,23 +43,20 @@ import javax.faces.validator.ValidatorException;
 
 /**
  * The XMLValidator checks if a text is a XML document
- * 
+ *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 29926 $, $Date: 2011-03-08 11:47:59 +0100 (Di, 08. Mär 2011) $
  */
 @FacesValidator(value = "org.deegree.XMLValidator")
 public class XMLValidator implements Validator {
 
-    @Override
-    public void validate( FacesContext arg0, UIComponent arg1, Object arg2 )
-                            throws ValidatorException {
-        String s = (String) arg2;
-        if ( !( s != null && s.startsWith( "<?xml" ) && s.endsWith( ">" ) ) ) {
-            FacesMessage fm = new FacesMessage( "Invalid XML" );
-            fm.setSeverity( FacesMessage.SEVERITY_ERROR );
-            throw new ValidatorException( fm );
-        }
-    }
+	@Override
+	public void validate(FacesContext arg0, UIComponent arg1, Object arg2) throws ValidatorException {
+		String s = (String) arg2;
+		if (!(s != null && s.startsWith("<?xml") && s.endsWith(">"))) {
+			FacesMessage fm = new FacesMessage("Invalid XML");
+			fm.setSeverity(FacesMessage.SEVERITY_ERROR);
+			throw new ValidatorException(fm);
+		}
+	}
+
 }

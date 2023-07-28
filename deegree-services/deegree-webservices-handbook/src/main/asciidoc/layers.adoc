@@ -661,7 +661,7 @@ parameters fixed to the configured values.
 ==== Layer configuration
 
 The manual configuration allows you to pick out a layer, rename it, and
-optionally override the _common description and spatial metadata. What
+optionally override the common description, spatial metadata and legend graphic of the styles. What
 you don't override, will be copied from the source. Let's look at an
 example:
 
@@ -674,6 +674,7 @@ example:
     <Name>basic_polygons</Name>
     <!-- optionally override description (title, abstract, keywords) -->
     <!-- optionally override envelope, crs -->
+    <!-- optionally override legend graphic of the styles -->
     <!-- optionally set layer options -->
     <!-- optionally configure XSLT script to transform GetFeatureInfo response to a arbitrary GML version
     <XSLTFile targetGmlVersion="GML_32">remoteGfiResponse2gml32.xsl</XSLTFile>
@@ -688,3 +689,31 @@ available, don't specify a _Layer_ element. Of course, you can specify
 as many _Layer_ elements as you like.
 
 With the element _XSLTFile_ a xslt-Script can be configured transforming the response of a GetFeatureInfo request of the remote WMS to gml per layer. The values GML_2, GML_30, GML_31 and GML_32 are allowed as values of the attribute _targetGmlVersion_.
+
+Example containing configuration of custom _LegendGraphic_:
+
+[source,xml]
+----
+<RemoteWMSLayers xmlns="http://www.deegree.org/layers/remotewms">
+  <RemoteWMSId>d3</RemoteWMSId>
+  <Layer>
+    <OriginalName>remote_layer_name</OriginalName>
+    <Name>new_layer_name</Name>
+    <Style>
+      <OriginalName>original_style_name</OriginalName> <!-- original name of the style -->
+      <LegendGraphic>new_legendGraphic.png</LegendGraphic> <!-- reference to the legend graphic as local file -->
+    <Style>
+    <Style>
+      <OriginalName>original_style_name2</OriginalName> <!-- original name of the style -->
+      <LegendGraphic outputGetLegendGraphicUrl="true">https://example.com/new_legendGraphic.png</LegendGraphic> <!-- reference to the legend graphic as remote URL -->
+    <Style>
+  </Layer>
+  <!-- more detailed options will follow here -->
+</RemoteWMSLayers>
+----
+
+In this case, Layer _remote_layer_name_ is renamed to _new_layer_name_ and all other layers of the remote service are ignored.
+For two styles _original_style_name_ and _original_style_name2_ the _LegendGraphic_ is overwritten.
+There is a reference to a local file in the first case. In the second case, the new graphic is referenced remotely. The second case is not recommended for production instances of deegree due to possible availability dropouts and security reasons.
+The attribute _outputGetLegendGraphicUrl_ (default value is _true_) defines if the _OnlineResource_ of _LegendURL_ contains a _GetLegendGraphic_ request (_outputGetLegendGraphicUrl="true"_) or references the remote resource directly (_outputGetLegendGraphicUrl="false"_).
+If at least one style is configured for a layer, all other styles of the remote layer are not copied from the source anymore. If no _default_ style is configured, the _default_ style of the remote service is used as this style is mandatory.

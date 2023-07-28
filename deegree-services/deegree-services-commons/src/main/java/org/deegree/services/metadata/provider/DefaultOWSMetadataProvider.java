@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -58,121 +57,120 @@ import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceMetadata;
 
 /**
- * {@link OWSMetadataProvider} implementation that is a simple bean providing the metadata.
- * 
+ * {@link OWSMetadataProvider} implementation that is a simple bean providing the
+ * metadata.
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 public class DefaultOWSMetadataProvider implements OWSMetadataProvider {
 
-    private final ServiceIdentification serviceIdentification;
+	private final ServiceIdentification serviceIdentification;
 
-    private final ServiceProvider serviceProvider;
+	private final ServiceProvider serviceProvider;
 
-    private final List<DatasetMetadata> datasetMetadata;
+	private final List<DatasetMetadata> datasetMetadata;
 
-    private final Map<QName, List<DatasetMetadata>> datasetNameToMetadata = new HashMap<QName, List<DatasetMetadata>>();
+	private final Map<QName, List<DatasetMetadata>> datasetNameToMetadata = new HashMap<QName, List<DatasetMetadata>>();
 
-    private final Map<String, List<OMElement>> extendedCapabilities;
+	private final Map<String, List<OMElement>> extendedCapabilities;
 
-    private final Map<String, String> authorities;
+	private final Map<String, String> authorities;
 
-    private ResourceMetadata<OWSMetadataProvider> metadata;
+	private ResourceMetadata<OWSMetadataProvider> metadata;
 
-    public DefaultOWSMetadataProvider( ServiceIdentification si, ServiceProvider sp,
-                                       Map<String, List<OMElement>> extendedCapabilities,
-                                       List<DatasetMetadata> datasetMetadata, Map<String, String> authorities,
-                                       ResourceMetadata<OWSMetadataProvider> metadata ) {
-        this.serviceIdentification = si;
-        this.serviceProvider = sp;
-        this.extendedCapabilities = extendedCapabilities;
-        this.metadata = metadata;
-        if ( datasetMetadata != null ) {
-            this.datasetMetadata = datasetMetadata;
-        } else {
-            this.datasetMetadata = Collections.emptyList();
-        }
-        for ( DatasetMetadata dsMd : this.datasetMetadata ) {
-            QName dsMdName = dsMd.getQName();
-            if ( !this.datasetNameToMetadata.containsKey( dsMdName ) )
-                this.datasetNameToMetadata.put( dsMdName, new ArrayList<DatasetMetadata>() );
-            this.datasetNameToMetadata.get( dsMdName ).add( dsMd );
-        }
-        this.authorities = authorities;
-    }
+	public DefaultOWSMetadataProvider(ServiceIdentification si, ServiceProvider sp,
+			Map<String, List<OMElement>> extendedCapabilities, List<DatasetMetadata> datasetMetadata,
+			Map<String, String> authorities, ResourceMetadata<OWSMetadataProvider> metadata) {
+		this.serviceIdentification = si;
+		this.serviceProvider = sp;
+		this.extendedCapabilities = extendedCapabilities;
+		this.metadata = metadata;
+		if (datasetMetadata != null) {
+			this.datasetMetadata = datasetMetadata;
+		}
+		else {
+			this.datasetMetadata = Collections.emptyList();
+		}
+		for (DatasetMetadata dsMd : this.datasetMetadata) {
+			QName dsMdName = dsMd.getQName();
+			if (!this.datasetNameToMetadata.containsKey(dsMdName))
+				this.datasetNameToMetadata.put(dsMdName, new ArrayList<DatasetMetadata>());
+			this.datasetNameToMetadata.get(dsMdName).add(dsMd);
+		}
+		this.authorities = authorities;
+	}
 
-    @Override
-    public void init() {
-        // nothing to init
-    }
+	@Override
+	public void init() {
+		// nothing to init
+	}
 
-    @Override
-    public void destroy() {
-        // nothing to release
-    }
+	@Override
+	public void destroy() {
+		// nothing to release
+	}
 
-    @Override
-    public ServiceIdentification getServiceIdentification() {
-        return serviceIdentification;
-    }
+	@Override
+	public ServiceIdentification getServiceIdentification() {
+		return serviceIdentification;
+	}
 
-    @Override
-    public ServiceProvider getServiceProvider() {
-        return serviceProvider;
-    }
+	@Override
+	public ServiceProvider getServiceProvider() {
+		return serviceProvider;
+	}
 
-    @Override
-    public Map<String, List<OMElement>> getExtendedCapabilities() {
-        return extendedCapabilities;
-    }
+	@Override
+	public Map<String, List<OMElement>> getExtendedCapabilities() {
+		return extendedCapabilities;
+	}
 
-    @Override
-    public List<DatasetMetadata> getDatasetMetadata() {
-        return datasetMetadata;
-    }
+	@Override
+	public List<DatasetMetadata> getDatasetMetadata() {
+		return datasetMetadata;
+	}
 
-    @Override
-    public DatasetMetadata getDatasetMetadata( QName name ) {
-        List<DatasetMetadata> md = datasetNameToMetadata.get( name );
-        if ( md == null || md.isEmpty() ) {
-            for ( Entry<QName, List<DatasetMetadata>> e : datasetNameToMetadata.entrySet() ) {
-                if ( e.getKey().getLocalPart().equalsIgnoreCase( name.getLocalPart() ) ) {
-                    List<DatasetMetadata> dsMd = e.getValue();
-                    if ( !dsMd.isEmpty() )
-                        return dsMd.get( 0 );
-                }
-            }
-            return null;
-        }
-        return md.get( 0 );
-    }
+	@Override
+	public DatasetMetadata getDatasetMetadata(QName name) {
+		List<DatasetMetadata> md = datasetNameToMetadata.get(name);
+		if (md == null || md.isEmpty()) {
+			for (Entry<QName, List<DatasetMetadata>> e : datasetNameToMetadata.entrySet()) {
+				if (e.getKey().getLocalPart().equalsIgnoreCase(name.getLocalPart())) {
+					List<DatasetMetadata> dsMd = e.getValue();
+					if (!dsMd.isEmpty())
+						return dsMd.get(0);
+				}
+			}
+			return null;
+		}
+		return md.get(0);
+	}
 
-    @Override
-    public List<DatasetMetadata> getAllDatasetMetadata( QName name ) {
-        List<DatasetMetadata> datasetMetadata = new ArrayList<DatasetMetadata>();
-        List<DatasetMetadata> mds = datasetNameToMetadata.get( name );
-        if ( mds == null || mds.isEmpty() ) {
-            for ( Entry<QName, List<DatasetMetadata>> e : datasetNameToMetadata.entrySet() ) {
-                if ( e.getKey().getLocalPart().equalsIgnoreCase( name.getLocalPart() ) ) {
-                    datasetMetadata.addAll( e.getValue() );
-                }
-            }
-        } else {
-            datasetMetadata.addAll( mds );
-        }
-        return datasetMetadata;
-    }
+	@Override
+	public List<DatasetMetadata> getAllDatasetMetadata(QName name) {
+		List<DatasetMetadata> datasetMetadata = new ArrayList<DatasetMetadata>();
+		List<DatasetMetadata> mds = datasetNameToMetadata.get(name);
+		if (mds == null || mds.isEmpty()) {
+			for (Entry<QName, List<DatasetMetadata>> e : datasetNameToMetadata.entrySet()) {
+				if (e.getKey().getLocalPart().equalsIgnoreCase(name.getLocalPart())) {
+					datasetMetadata.addAll(e.getValue());
+				}
+			}
+		}
+		else {
+			datasetMetadata.addAll(mds);
+		}
+		return datasetMetadata;
+	}
 
-    @Override
-    public Map<String, String> getExternalMetadataAuthorities() {
-        return authorities;
-    }
+	@Override
+	public Map<String, String> getExternalMetadataAuthorities() {
+		return authorities;
+	}
 
-    @Override
-    public ResourceMetadata<? extends Resource> getMetadata() {
-        return metadata;
-    }
+	@Override
+	public ResourceMetadata<? extends Resource> getMetadata() {
+		return metadata;
+	}
 
 }

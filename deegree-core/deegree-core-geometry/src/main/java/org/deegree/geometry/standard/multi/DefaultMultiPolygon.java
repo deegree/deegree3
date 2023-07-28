@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -46,56 +45,50 @@ import org.deegree.geometry.primitive.Surface;
 
 /**
  * Default implementation of {@link MultiPolygon}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class DefaultMultiPolygon extends DefaultMultiGeometry<Polygon> implements MultiPolygon {
 
-    /**
-     * Creates a new {@link DefaultMultiPolygon} from the given parameters.
-     * 
-     * @param id
-     *            identifier, may be null
-     * @param crs
-     *            coordinate reference system, may be null
-     * @param pm
-     *            precision model, may be null
-     * @param members
-     */
-    public DefaultMultiPolygon( String id, ICRS crs, PrecisionModel pm, List<Polygon> members ) {
-        super( id, crs, pm, members );
-    }
+	/**
+	 * Creates a new {@link DefaultMultiPolygon} from the given parameters.
+	 * @param id identifier, may be null
+	 * @param crs coordinate reference system, may be null
+	 * @param pm precision model, may be null
+	 * @param members
+	 */
+	public DefaultMultiPolygon(String id, ICRS crs, PrecisionModel pm, List<Polygon> members) {
+		super(id, crs, pm, members);
+	}
 
-    @Override
-    public double getArea() {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public double getArea() {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public MultiGeometryType getMultiGeometryType() {
-        return MultiGeometryType.MULTI_POLYGON;
-    }
-    
-    @Override
-    public boolean isSFSCompliant() {
-        for ( Geometry member : this ) {
-            if ( !( member.isSFSCompliant() ) ) {
-                return false;
-            }
-        }
-        return true;
-    }
+	@Override
+	public MultiGeometryType getMultiGeometryType() {
+		return MultiGeometryType.MULTI_POLYGON;
+	}
 
-    @Override
-    protected org.locationtech.jts.geom.MultiPolygon buildJTSGeometry() {
-        org.locationtech.jts.geom.Polygon[] jtsMembers = new org.locationtech.jts.geom.Polygon[size()];
-        int i = 0;
-        for ( Surface geometry : members ) {
-            jtsMembers[i++] = (org.locationtech.jts.geom.Polygon) getAsDefaultGeometry( geometry ).getJTSGeometry();
-        }
-        return jtsFactory.createMultiPolygon( jtsMembers );
-    }
+	@Override
+	public boolean isSFSCompliant() {
+		for (Geometry member : this) {
+			if (!(member.isSFSCompliant())) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	@Override
+	protected org.locationtech.jts.geom.MultiPolygon buildJTSGeometry() {
+		org.locationtech.jts.geom.Polygon[] jtsMembers = new org.locationtech.jts.geom.Polygon[size()];
+		int i = 0;
+		for (Surface geometry : members) {
+			jtsMembers[i++] = (org.locationtech.jts.geom.Polygon) getAsDefaultGeometry(geometry).getJTSGeometry();
+		}
+		return jtsFactory.createMultiPolygon(jtsMembers);
+	}
+
 }

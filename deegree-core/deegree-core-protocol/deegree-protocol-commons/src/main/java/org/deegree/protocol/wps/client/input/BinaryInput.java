@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -44,89 +43,76 @@ import org.deegree.protocol.wps.client.param.ComplexFormat;
 
 /**
  * {@link ExecutionInput} that encapsulates a binary value.
- * 
+ *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class BinaryInput extends ExecutionInput {
 
-    private ComplexFormat complexAttributes;
+	private ComplexFormat complexAttributes;
 
-    private URI uri;
+	private URI uri;
 
-    private InputStream inputStream;
+	private InputStream inputStream;
 
-    private boolean isWebAccessible;
+	private boolean isWebAccessible;
 
-    /**
-     * Creates a new {@link BinaryInput} instance.
-     * 
-     * @param id
-     *            parameter identifier, must not be <code>null</code>
-     * @param uri
-     *            URI for accessing the binary resource, must not be <code>null</code>
-     * @param isWebAccessible
-     *            if true, the data will be submitted to the process as reference, otherwise it will be encoded in the
-     *            request
-     * @param mimeType
-     *            mime type of the binary resource, may be <code>null</code> (unspecified)
-     * @param encoding
-     *            encoding to be used for the binary data, may be <code>null</code> (unspecified)
-     */
-    public BinaryInput( CodeType id, URI uri, boolean isWebAccessible, String mimeType, String encoding ) {
-        super( id );
-        this.uri = uri;
-        this.isWebAccessible = isWebAccessible;
-        this.complexAttributes = new ComplexFormat( mimeType, encoding, null );
-    }
+	/**
+	 * Creates a new {@link BinaryInput} instance.
+	 * @param id parameter identifier, must not be <code>null</code>
+	 * @param uri URI for accessing the binary resource, must not be <code>null</code>
+	 * @param isWebAccessible if true, the data will be submitted to the process as
+	 * reference, otherwise it will be encoded in the request
+	 * @param mimeType mime type of the binary resource, may be <code>null</code>
+	 * (unspecified)
+	 * @param encoding encoding to be used for the binary data, may be <code>null</code>
+	 * (unspecified)
+	 */
+	public BinaryInput(CodeType id, URI uri, boolean isWebAccessible, String mimeType, String encoding) {
+		super(id);
+		this.uri = uri;
+		this.isWebAccessible = isWebAccessible;
+		this.complexAttributes = new ComplexFormat(mimeType, encoding, null);
+	}
 
-    /**
-     * Creates a new {@link BinaryInput} instance.
-     * 
-     * @param id
-     *            parameter identifier, must not be <code>null</code>
-     * @param inputStream
-     *            binary stream, must not be <code>null</code>
-     * @param mimeType
-     *            mime type of the binary resource, may be <code>null</code> (unspecified)
-     * @param encoding
-     *            encoding to be used for the binary data, may be <code>null</code> (unspecified)
-     */
-    public BinaryInput( CodeType id, InputStream inputStream, String mimeType, String encoding ) {
-        super( id );
-        this.inputStream = inputStream;
-        this.complexAttributes = new ComplexFormat( mimeType, encoding, null );
-    }
+	/**
+	 * Creates a new {@link BinaryInput} instance.
+	 * @param id parameter identifier, must not be <code>null</code>
+	 * @param inputStream binary stream, must not be <code>null</code>
+	 * @param mimeType mime type of the binary resource, may be <code>null</code>
+	 * (unspecified)
+	 * @param encoding encoding to be used for the binary data, may be <code>null</code>
+	 * (unspecified)
+	 */
+	public BinaryInput(CodeType id, InputStream inputStream, String mimeType, String encoding) {
+		super(id);
+		this.inputStream = inputStream;
+		this.complexAttributes = new ComplexFormat(mimeType, encoding, null);
+	}
 
-    /**
-     * Returns the format of the input.
-     * 
-     * @return the format of the input, never <code>null</code>
-     */
-    public ComplexFormat getFormat() {
-        return complexAttributes;
-    }
+	/**
+	 * Returns the format of the input.
+	 * @return the format of the input, never <code>null</code>
+	 */
+	public ComplexFormat getFormat() {
+		return complexAttributes;
+	}
 
-    /**
-     * Returns the value as a binary stream.
-     * 
-     * @return the value as a binary stream, never <code>null</code>
-     * @throws IOException
-     *             if accessing the data fails
-     */
-    public InputStream getAsBinaryStream()
-                            throws IOException {
-        if ( inputStream != null ) {
-            return inputStream;
-        }
-        return uri.toURL().openStream();
-    }
+	/**
+	 * Returns the value as a binary stream.
+	 * @return the value as a binary stream, never <code>null</code>
+	 * @throws IOException if accessing the data fails
+	 */
+	public InputStream getAsBinaryStream() throws IOException {
+		if (inputStream != null) {
+			return inputStream;
+		}
+		return uri.toURL().openStream();
+	}
 
-    @Override
-    public URI getWebAccessibleURI() {
-        return isWebAccessible ? uri : null;
-    }
+	@Override
+	public URI getWebAccessibleURI() {
+		return isWebAccessible ? uri : null;
+	}
+
 }

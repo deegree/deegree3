@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -45,52 +44,50 @@ import org.junit.BeforeClass;
  * This class is the base class for all integration tests for the SOS OGC services.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- *
- * @version $Revision$, $Date$
  *
  */
 public class SOSValidator extends OGCValidator {
 
-    /**
-     * the URL for the test service
-     */
-    protected static final String serviceURL;
+	/**
+	 * the URL for the test service
+	 */
+	protected static final String serviceURL;
 
-    /**
-     * the location of the schema
-     */
-    protected static final String schemaLocation;
+	/**
+	 * the location of the schema
+	 */
+	protected static final String schemaLocation;
 
-    static {
-        serviceURL = getProperty( "sos.service.url" );
-        schemaLocation = getProperty( "sos.schema.url" );
-    }
+	static {
+		serviceURL = getProperty("sos.service.url");
+		schemaLocation = getProperty("sos.schema.url");
+	}
 
-    /**
-     * HTTPResonseValidator for OGC service expeptions (status 400; content-type: application/vnd.ogc.se_xml)
-     */
-    protected static final HTTPResponseValidator SERVICE_EXCEPTION = new HTTPResponseValidator() {
-        {
-            responseCode = 400;
-            contentType = "application/vnd.ogc.se_xml;charset=UTF-8";
-        }
-    };
+	/**
+	 * HTTPResonseValidator for OGC service expeptions (status 400; content-type:
+	 * application/vnd.ogc.se_xml)
+	 */
+	protected static final HTTPResponseValidator SERVICE_EXCEPTION = new HTTPResponseValidator() {
+		{
+			responseCode = 400;
+			contentType = "application/vnd.ogc.se_xml;charset=UTF-8";
+		}
+	};
 
-    /**
-     * @throws Exception
-     */
-    @BeforeClass
-    public static void init()
-                            throws Exception {
-        NamespaceContext ctxt = CommonNamespaces.getNamespaceContext();
-        ctxt.addNamespace( "om", "http://www.opengis.net/om/1.0" );
-        ctxt.addNamespace( "sos", "http://www.opengis.net/sos/1.0" );
-        ctxt.addNamespace( "ows", "http://www.opengis.net/ows/1.1" );
-        ctxt.addNamespace( "swe", "http://www.opengis.net/swe/1.0.1" );
-        ctxt.addNamespace( "xlink", XLN_NS );
-        ctxt.addNamespace( "sml", "http://www.opengis.net/sensorML/1.0.1" );
-        setNSContext( ctxt );
-        setSchemaDoc( schemaLocation );
-    }
+	/**
+	 * @throws Exception
+	 */
+	@BeforeClass
+	public static void init() throws Exception {
+		NamespaceContext ctxt = CommonNamespaces.getNamespaceContext();
+		ctxt.addNamespace("om", "http://www.opengis.net/om/1.0");
+		ctxt.addNamespace("sos", "http://www.opengis.net/sos/1.0");
+		ctxt.addNamespace("ows", "http://www.opengis.net/ows/1.1");
+		ctxt.addNamespace("swe", "http://www.opengis.net/swe/1.0.1");
+		ctxt.addNamespace("xlink", XLN_NS);
+		ctxt.addNamespace("sml", "http://www.opengis.net/sensorML/1.0.1");
+		setNSContext(ctxt);
+		setSchemaDoc(schemaLocation);
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -48,96 +47,95 @@ import org.deegree.commons.tom.gml.property.PropertyType;
  * Common to all {@link AbstractPropertyType}s are the following:
  * <ul>
  * <li>A (qualified) name</li>
- * <li>Minimum number of times that a property must be present in a corresponding feature instance (minOccurs)</li>
- * <li>Maximum number of times that a property must be present in a corresponding feature instance (maxOccurs)</li>
+ * <li>Minimum number of times that a property must be present in a corresponding feature
+ * instance (minOccurs)</li>
+ * <li>Maximum number of times that a property must be present in a corresponding feature
+ * instance (maxOccurs)</li>
  * <li>XML schema element delaration (optional)</li>
  * </ul>
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * 
- * @version $Revision:$, $Date:$
  */
 public abstract class AbstractPropertyType implements PropertyType {
 
-    /** The name of the property. */
-    protected final QName name;
+	/** The name of the property. */
+	protected final QName name;
 
-    /** The minimum number of times that this property must be present. */
-    protected final int minOccurs;
+	/** The minimum number of times that this property must be present. */
+	protected final int minOccurs;
 
-    /** The maximum number of times that this property must be present, or -1 (=unbounded). */
-    protected final int maxOccurs;
+	/**
+	 * The maximum number of times that this property must be present, or -1 (=unbounded).
+	 */
+	protected final int maxOccurs;
 
-    /**
-     * The possible substitutions (including this {@link PropertyType}), never <code>null</code> and always at least one
-     * entry.
-     */
-    protected final PropertyType[] substitutions;
+	/**
+	 * The possible substitutions (including this {@link PropertyType}), never
+	 * <code>null</code> and always at least one entry.
+	 */
+	protected final PropertyType[] substitutions;
 
-    private final XSElementDeclaration elDecl;
+	private final XSElementDeclaration elDecl;
 
-    /**
-     * Creates a new <code>AbstractPropertyType</code> instance.
-     * 
-     * @param name
-     *            name of the property
-     * @param minOccurs
-     *            minimum number of times that this property must be present
-     * @param maxOccurs
-     *            maximum number of times that this property must be present, or -1 (=unbounded)
-     * @param elDecls
-     *            corresponding XML schema element declaration, can be <code>null</code>
-     * @param substitutions
-     *            the possible concrete substitutions, can be <code>null</code>
-     */
-    protected AbstractPropertyType( QName name, int minOccurs, int maxOccurs, XSElementDeclaration elDecl,
-                                    List<PropertyType> substitutions ) {
-        this.name = name;
-        this.minOccurs = minOccurs;
-        this.maxOccurs = maxOccurs;
-        this.elDecl = elDecl;
-        if ( substitutions != null ) {
-            substitutions.add( this );
-            this.substitutions = substitutions.toArray( new PropertyType[substitutions.size()] );
-        } else {
-            this.substitutions = new PropertyType[] { this };
-        }
-    }
+	/**
+	 * Creates a new <code>AbstractPropertyType</code> instance.
+	 * @param name name of the property
+	 * @param minOccurs minimum number of times that this property must be present
+	 * @param maxOccurs maximum number of times that this property must be present, or -1
+	 * (=unbounded)
+	 * @param elDecls corresponding XML schema element declaration, can be
+	 * <code>null</code>
+	 * @param substitutions the possible concrete substitutions, can be <code>null</code>
+	 */
+	protected AbstractPropertyType(QName name, int minOccurs, int maxOccurs, XSElementDeclaration elDecl,
+			List<PropertyType> substitutions) {
+		this.name = name;
+		this.minOccurs = minOccurs;
+		this.maxOccurs = maxOccurs;
+		this.elDecl = elDecl;
+		if (substitutions != null) {
+			substitutions.add(this);
+			this.substitutions = substitutions.toArray(new PropertyType[substitutions.size()]);
+		}
+		else {
+			this.substitutions = new PropertyType[] { this };
+		}
+	}
 
-    @Override
-    public QName getName() {
-        return name;
-    }
+	@Override
+	public QName getName() {
+		return name;
+	}
 
-    @Override
-    public int getMinOccurs() {
-        return minOccurs;
-    }
+	@Override
+	public int getMinOccurs() {
+		return minOccurs;
+	}
 
-    @Override
-    public int getMaxOccurs() {
-        return maxOccurs;
-    }
+	@Override
+	public int getMaxOccurs() {
+		return maxOccurs;
+	}
 
-    @Override
-    public boolean isAbstract() {
-        return elDecl == null ? false : elDecl.getAbstract();
-    }
+	@Override
+	public boolean isAbstract() {
+		return elDecl == null ? false : elDecl.getAbstract();
+	}
 
-    @Override
-    public PropertyType[] getSubstitutions() {
-        return substitutions;
-    }
+	@Override
+	public PropertyType[] getSubstitutions() {
+		return substitutions;
+	}
 
-    @Override
-    public boolean isNillable() {
-        return elDecl == null ? false : elDecl.getNillable();
-    }
+	@Override
+	public boolean isNillable() {
+		return elDecl == null ? false : elDecl.getNillable();
+	}
 
-    @Override
-    public XSElementDeclaration getElementDecl() {
-        return elDecl;
-    }
+	@Override
+	public XSElementDeclaration getElementDecl() {
+		return elDecl;
+	}
+
 }

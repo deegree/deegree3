@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -45,148 +44,143 @@ import org.deegree.rendering.r3d.ViewParams;
 
 /**
  * The <code>GetView</code> class TODO add class documentation here.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class GetView {
 
-    private final String id;
+	private final String id;
 
-    private final String version;
+	private final String version;
 
-    private final ICRS coordinateSystem;
+	private final ICRS coordinateSystem;
 
-    private final Envelope requestedBBox;
+	private final Envelope requestedBBox;
 
-    private final ViewParams viewParameters;
+	private final ViewParams viewParameters;
 
-    private final GetViewResponseParameters responseParameters;
+	private final GetViewResponseParameters responseParameters;
 
-    private final GetViewSceneParameters sceneParameters;
+	private final GetViewSceneParameters sceneParameters;
 
-    /**
-     * @param id
-     * @param version
-     * @param coordinateSystem
-     * @param requestedBBox
-     * @param viewParameters
-     * @param responseParameters
-     * @param sceneParameters
-     */
-    public GetView( String id, String version, ICRS coordinateSystem, Envelope requestedBBox,
-                    ViewParams viewParameters, GetViewResponseParameters responseParameters,
-                    GetViewSceneParameters sceneParameters ) {
-        this.id = id;
-        this.version = version;
-        this.coordinateSystem = coordinateSystem;
-        this.requestedBBox = requestedBBox;
-        this.viewParameters = viewParameters;
-        this.responseParameters = responseParameters;
-        this.sceneParameters = sceneParameters;
+	/**
+	 * @param id
+	 * @param version
+	 * @param coordinateSystem
+	 * @param requestedBBox
+	 * @param viewParameters
+	 * @param responseParameters
+	 * @param sceneParameters
+	 */
+	public GetView(String id, String version, ICRS coordinateSystem, Envelope requestedBBox, ViewParams viewParameters,
+			GetViewResponseParameters responseParameters, GetViewSceneParameters sceneParameters) {
+		this.id = id;
+		this.version = version;
+		this.coordinateSystem = coordinateSystem;
+		this.requestedBBox = requestedBBox;
+		this.viewParameters = viewParameters;
+		this.responseParameters = responseParameters;
+		this.sceneParameters = sceneParameters;
 
-    }
+	}
 
-    /**
-     * @return the datasets
-     */
-    public final List<String> getDatasets() {
-        return sceneParameters.getDatasets();
-    }
+	/**
+	 * @return the datasets
+	 */
+	public final List<String> getDatasets() {
+		return sceneParameters.getDatasets();
+	}
 
-    /**
-     * @return the quality
-     */
-    public final double getQuality() {
-        return responseParameters.getQuality();
-    }
+	/**
+	 * @return the quality
+	 */
+	public final double getQuality() {
+		return responseParameters.getQuality();
+	}
 
-    /**
-     * @return the transparent
-     */
-    public final boolean isTransparent() {
-        return responseParameters.isTransparency();
-    }
+	/**
+	 * @return the transparent
+	 */
+	public final boolean isTransparent() {
+		return responseParameters.isTransparency();
+	}
 
-    /**
-     * @return the outputFormat
-     */
-    public final String getOutputFormat() {
-        return responseParameters.getFormat();
-    }
+	/**
+	 * @return the outputFormat
+	 */
+	public final String getOutputFormat() {
+		return responseParameters.getFormat();
+	}
 
-    /**
-     * @return the backgroundColor
-     */
-    public final Color getBackgroundColor() {
-        return sceneParameters.getBgColor();
-    }
+	/**
+	 * @return the backgroundColor
+	 */
+	public final Color getBackgroundColor() {
+		return sceneParameters.getBgColor();
+	}
 
-    /**
-     * @return the exceptionFormat
-     */
-    public final String getExceptionFormat() {
-        return responseParameters.getExceptionFormat();
-    }
+	/**
+	 * @return the exceptionFormat
+	 */
+	public final String getExceptionFormat() {
+		return responseParameters.getExceptionFormat();
+	}
 
-    /**
-     * @return the elevationModel
-     */
-    public final String getElevationModel() {
-        return sceneParameters.getElevationModel();
-    }
+	/**
+	 * @return the elevationModel
+	 */
+	public final String getElevationModel() {
+		return sceneParameters.getElevationModel();
+	}
 
-    /**
-     * @return the boundingBox
-     */
-    public final Envelope getBoundingBox() {
-        return requestedBBox;
-    }
+	/**
+	 * @return the boundingBox
+	 */
+	public final Envelope getBoundingBox() {
+		return requestedBBox;
+	}
 
-    /**
-     * @return the id
-     */
-    public final String getId() {
-        return id;
-    }
+	/**
+	 * @return the id
+	 */
+	public final String getId() {
+		return id;
+	}
 
-    /**
-     * @return the version
-     */
-    public final String getVersion() {
-        return version;
-    }
+	/**
+	 * @return the version
+	 */
+	public final String getVersion() {
+		return version;
+	}
 
-    /**
-     * @return the coordinateSystem
-     */
-    public final ICRS getCoordinateSystem() {
-        return coordinateSystem;
-    }
+	/**
+	 * @return the coordinateSystem
+	 */
+	public final ICRS getCoordinateSystem() {
+		return coordinateSystem;
+	}
 
-    /**
-     * @return the responseParameters
-     */
-    public final GetViewResponseParameters getResponseParameters() {
-        return responseParameters;
-    }
+	/**
+	 * @return the responseParameters
+	 */
+	public final GetViewResponseParameters getResponseParameters() {
+		return responseParameters;
+	}
 
-    /**
-     * @return the sceneParameters
-     */
-    public final GetViewSceneParameters getSceneParameters() {
-        return sceneParameters;
-    }
+	/**
+	 * @return the sceneParameters
+	 */
+	public final GetViewSceneParameters getSceneParameters() {
+		return sceneParameters;
+	}
 
-    /**
-     * @return the calculated viewparameters of this {@link GetView} request.
-     */
-    public final ViewParams getViewParameters() {
-        return viewParameters;
-    }
+	/**
+	 * @return the calculated viewparameters of this {@link GetView} request.
+	 */
+	public final ViewParams getViewParameters() {
+		return viewParameters;
+	}
 
 }

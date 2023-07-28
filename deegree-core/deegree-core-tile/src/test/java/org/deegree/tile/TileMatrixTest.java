@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -58,38 +57,34 @@ import org.junit.Test;
 
 /**
  * <code>TileMatrixTest</code>
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 
 public class TileMatrixTest extends TestCase {
 
-    @Test
-    public void testGetMetadata() {
-        TileDataLevel tm = mock( TileDataLevel.class );
-        tm.getMetadata();
-        verify( tm ).getMetadata();
-    }
+	@Test
+	public void testGetMetadata() {
+		TileDataLevel tm = mock(TileDataLevel.class);
+		tm.getMetadata();
+		verify(tm).getMetadata();
+	}
 
-    @Test
-    public void testGetTile()
-                            throws UnknownCRSException {
-        GeometryFactory fac = new GeometryFactory();
-        ICRS crs = CRSManager.lookup( "EPSG:4326" );
-        Envelope env = fac.createEnvelope( -10, -10, 10, 10, crs );
-        SpatialMetadata smd = new SpatialMetadata( env, Collections.singletonList( crs ) );
-        TileMatrix md = new TileMatrix( "someid", smd, 256, 256, 1, 1, 1 );
-        TileDataLevel tm = mock( TileDataLevel.class );
-        Tile t = mock( Tile.class );
-        tm.getMetadata();
-        tm.getTile( 0, 0 );
-        when( tm.getMetadata() ).thenReturn( md );
-        when( tm.getTile( 0, 0 ) ).thenReturn( t );
-        assertEquals( 256, tm.getMetadata().getTilePixelsX() );
-        verify( tm ).getTile( 0, 0 );
-    }
+	@Test
+	public void testGetTile() throws UnknownCRSException {
+		GeometryFactory fac = new GeometryFactory();
+		ICRS crs = CRSManager.lookup("EPSG:4326");
+		Envelope env = fac.createEnvelope(-10, -10, 10, 10, crs);
+		SpatialMetadata smd = new SpatialMetadata(env, Collections.singletonList(crs));
+		TileMatrix md = new TileMatrix("someid", smd, 256, 256, 1, 1, 1);
+		TileDataLevel tm = mock(TileDataLevel.class);
+		Tile t = mock(Tile.class);
+		tm.getMetadata();
+		tm.getTile(0, 0);
+		when(tm.getMetadata()).thenReturn(md);
+		when(tm.getTile(0, 0)).thenReturn(t);
+		assertEquals(256, tm.getMetadata().getTilePixelsX());
+		verify(tm).getTile(0, 0);
+	}
 
 }

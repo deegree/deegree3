@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -50,78 +49,60 @@ import org.deegree.cs.transformations.helmert.Helmert;
 import org.junit.Test;
 
 /**
- * <code>StereographicAlternativeTest</code> test the accuracy of the stereographic alternative projection by checking
- * against a reference point created with proj4.
- * 
+ * <code>StereographicAlternativeTest</code> test the accuracy of the stereographic
+ * alternative projection by checking against a reference point created with proj4.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class StereographicAlternativeTest extends ProjectionBase {
 
-    private static final Ellipsoid ellipsoid_7004 = new Ellipsoid(
-                                                                   6377397.155,
-                                                                   Unit.METRE,
-                                                                   299.1528128,
-                                                                   new CRSCodeType[] { new CRSCodeType( "7004", "ESPG" ) } );
+	private static final Ellipsoid ellipsoid_7004 = new Ellipsoid(6377397.155, Unit.METRE, 299.1528128,
+			new CRSCodeType[] { new CRSCodeType("7004", "ESPG") });
 
-    private static final Helmert wgs_56 = new Helmert( 565.04, 49.91, 465.84, -0.40941295127179994, 0.3608190255680464,
-                                                       -1.8684910003505757, 4.0772, GeographicCRS.WGS84,
-                                                       GeographicCRS.WGS84,
-                                                       new CRSCodeType[] { new CRSCodeType( "TOWGS_56" ) } );
+	private static final Helmert wgs_56 = new Helmert(565.04, 49.91, 465.84, -0.40941295127179994, 0.3608190255680464,
+			-1.8684910003505757, 4.0772, GeographicCRS.WGS84, GeographicCRS.WGS84,
+			new CRSCodeType[] { new CRSCodeType("TOWGS_56") });
 
-    private static final GeodeticDatum datum_171 = new GeodeticDatum(
-                                                                      ellipsoid_7004,
-                                                                      wgs_56,
-                                                                      new CRSCodeType[] { new CRSCodeType( "DATUM_171" ) } );
+	private static final GeodeticDatum datum_171 = new GeodeticDatum(ellipsoid_7004, wgs_56,
+			new CRSCodeType[] { new CRSCodeType("DATUM_171") });
 
-    private static final GeographicCRS geographic_204 = new GeographicCRS(
-                                                                           datum_171,
-                                                                           new Axis[] {
-                                                                                       new Axis( "longitude",
-                                                                                                 Axis.AO_EAST ),
-                                                                                       new Axis( "latitude",
-                                                                                                 Axis.AO_NORTH ) },
-                                                                           new CRSCodeType[] { new CRSCodeType(
-                                                                                                                "GEO_CRS_204" ) } );
+	private static final GeographicCRS geographic_204 = new GeographicCRS(datum_171,
+			new Axis[] { new Axis("longitude", Axis.AO_EAST), new Axis("latitude", Axis.AO_NORTH) },
+			new CRSCodeType[] { new CRSCodeType("GEO_CRS_204") });
 
-    private static final StereographicAlternative projection_28992 = new StereographicAlternative(
+	private static final StereographicAlternative projection_28992 = new StereographicAlternative(
 
-    463000.0, 155000.0, new Point2d( Math.toRadians( 5.38763888888889 ), Math.toRadians( 52.15616055555555 ) ),
-                                                                                                   Unit.METRE,
-                                                                                                   0.9999079 );
+			463000.0, 155000.0, new Point2d(Math.toRadians(5.38763888888889), Math.toRadians(52.15616055555555)),
+			Unit.METRE, 0.9999079);
 
-    /**
-     * reference point created with proj4 command : <code>
-     * proj -f "%.8f" +proj=sterea +ellps=bessel +lon_0=5.38763888888889 +lat_0=52.15616055555555 +k=0.9999079
-     * +x_0=155000 +y_0=463000.0
-     * 6.610765 53.235916
-     * 236655.91462443 583827.76880699
-     * </code>
-     * 
-     * @throws IllegalArgumentException
-     * @throws ProjectionException
-     */
-    @Test
-    public void testAccuracy()
-                            throws IllegalArgumentException, ProjectionException {
+	/**
+	 * reference point created with proj4 command : <code>
+	 * proj -f "%.8f" +proj=sterea +ellps=bessel +lon_0=5.38763888888889 +lat_0=52.15616055555555 +k=0.9999079
+	 * +x_0=155000 +y_0=463000.0
+	 * 6.610765 53.235916
+	 * 236655.91462443 583827.76880699
+	 * </code>
+	 * @throws IllegalArgumentException
+	 * @throws ProjectionException
+	 */
+	@Test
+	public void testAccuracy() throws IllegalArgumentException, ProjectionException {
 
-        Point2d sourcePoint = new Point2d( Math.toRadians( 6.610765 ), Math.toRadians( 53.235916 ) );
-        Point2d targetPoint = new Point2d( 236655.91462443, 583827.76880699 );
+		Point2d sourcePoint = new Point2d(Math.toRadians(6.610765), Math.toRadians(53.235916));
+		Point2d targetPoint = new Point2d(236655.91462443, 583827.76880699);
 
-        doForwardAndInverse( projection_28992, geographic_204, sourcePoint, targetPoint );
-    }
+		doForwardAndInverse(projection_28992, geographic_204, sourcePoint, targetPoint);
+	}
 
-    /**
-     * tests the consistency of the {@link StereographicAlternative} projection.
-     */
-    @Test
-    public void testConsistency() {
-        consistencyTest( projection_28992, 463000, 155000, new Point2d( Math.toRadians( 5.38763888888889 ),
-                                                                        Math.toRadians( 52.15616055555555 ) ),
-                         Unit.METRE, 0.9999079, true, false, "stereographicAlternative" );
-    }
+	/**
+	 * tests the consistency of the {@link StereographicAlternative} projection.
+	 */
+	@Test
+	public void testConsistency() {
+		consistencyTest(projection_28992, 463000, 155000,
+				new Point2d(Math.toRadians(5.38763888888889), Math.toRadians(52.15616055555555)), Unit.METRE, 0.9999079,
+				true, false, "stereographicAlternative");
+	}
+
 }

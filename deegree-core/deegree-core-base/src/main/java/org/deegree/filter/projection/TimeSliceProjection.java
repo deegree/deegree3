@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -39,21 +38,19 @@ import org.deegree.filter.Filter;
 
 /**
  * {@link ProjectionClause} for projecting time-varying objects.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- * 
- * @version $Revision: $, $Date: $
  */
 public class TimeSliceProjection implements ProjectionClause {
 
-    private final Filter timeSliceFilter;
+	private final Filter timeSliceFilter;
 
-    public TimeSliceProjection( Filter timeSliceFilter ) {
-        this.timeSliceFilter = timeSliceFilter;
-    }
+	public TimeSliceProjection(Filter timeSliceFilter) {
+		this.timeSliceFilter = timeSliceFilter;
+	}
 
-    public Filter getTimeSliceFilter() {
-        return timeSliceFilter;
-    }
+	public Filter getTimeSliceFilter() {
+		return timeSliceFilter;
+	}
+
 }

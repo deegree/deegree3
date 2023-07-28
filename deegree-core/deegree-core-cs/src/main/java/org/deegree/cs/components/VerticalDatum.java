@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -41,54 +40,50 @@ import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.CRSResource;
 
 /**
- * A <code>VerticalDatum</code> is a datum which only has one axis. It is used for vertical measurements.
- * 
+ * A <code>VerticalDatum</code> is a datum which only has one axis. It is used for
+ * vertical measurements.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class VerticalDatum extends Datum implements IVerticalDatum {
 
-    /**
-     * @param id
-     *            of this datum.
-     */
-    public VerticalDatum( CRSResource id ) {
-        super( id );
-    }
+	/**
+	 * @param id of this datum.
+	 */
+	public VerticalDatum(CRSResource id) {
+		super(id);
+	}
 
-    /**
-     * @param codes
-     * @param names
-     * @param versions
-     * @param descriptions
-     * @param areasOfUse
-     */
-    public VerticalDatum( CRSCodeType[] codes, String[] names, String[] versions, String[] descriptions,
-                          String[] areasOfUse ) {
-        this( new CRSIdentifiable( codes, names, versions, descriptions, areasOfUse ) );
-    }
+	/**
+	 * @param codes
+	 * @param names
+	 * @param versions
+	 * @param descriptions
+	 * @param areasOfUse
+	 */
+	public VerticalDatum(CRSCodeType[] codes, String[] names, String[] versions, String[] descriptions,
+			String[] areasOfUse) {
+		this(new CRSIdentifiable(codes, names, versions, descriptions, areasOfUse));
+	}
 
-    /**
-     * @param code
-     * @param name
-     * @param version
-     * @param description
-     * @param areaOfUse
-     */
-    public VerticalDatum( CRSCodeType code, String name, String version, String description, String areaOfUse ) {
-        this( new CRSCodeType[] { code }, new String[] { name }, new String[] { version },
-              new String[] { description }, new String[] { areaOfUse } );
-    }
+	/**
+	 * @param code
+	 * @param name
+	 * @param version
+	 * @param description
+	 * @param areaOfUse
+	 */
+	public VerticalDatum(CRSCodeType code, String name, String version, String description, String areaOfUse) {
+		this(new CRSCodeType[] { code }, new String[] { name }, new String[] { version }, new String[] { description },
+				new String[] { areaOfUse });
+	}
 
-    /**
-     * @param code
-     */
-    public VerticalDatum( CRSCodeType code ) {
-        this( new CRSCodeType[] { code }, null, null, null, null );
-    }
+	/**
+	 * @param code
+	 */
+	public VerticalDatum(CRSCodeType code) {
+		this(new CRSCodeType[] { code }, null, null, null, null);
+	}
 
 }

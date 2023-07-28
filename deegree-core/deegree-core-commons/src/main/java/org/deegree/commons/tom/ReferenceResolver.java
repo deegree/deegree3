@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -36,29 +35,24 @@
 package org.deegree.commons.tom;
 
 /**
- * Implementations provide the functionality to retrieve {@link Object} instances via URIs (which may be document local
- * or remote).
+ * Implementations provide the functionality to retrieve {@link Object} instances via URIs
+ * (which may be document local or remote).
  * <p>
  * A local reference is always constructed as <code># + id</code>.
  * </p>
- * 
+ *
  * @see Reference
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface ReferenceResolver {
 
-    /**
-     * Returns the {@link Object} that is referenced by the given URI.
-     * 
-     * @param uri
-     *            URI that identifies the object, must not be <code>null</code>
-     * @param baseURL
-     *            optional baseURL for resolving URIs that are relative URLs, may be <code>null</code>
-     * @return the referenced object or <code>null</code> if no such object exists
-     */
-    public Object getObject( String uri, String baseURL );
+	/**
+	 * Returns the {@link Object} that is referenced by the given URI.
+	 * @param uri URI that identifies the object, must not be <code>null</code>
+	 * @param baseURL optional baseURL for resolving URIs that are relative URLs, may be
+	 * <code>null</code>
+	 * @return the referenced object or <code>null</code> if no such object exists
+	 */
+	public Object getObject(String uri, String baseURL);
+
 }

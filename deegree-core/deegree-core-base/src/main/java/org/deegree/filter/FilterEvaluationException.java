@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/src/org/deegree/model/filterencoding/FilterEvaluationException.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -39,21 +38,18 @@ package org.deegree.filter;
  * Indicates that the evaluation of a {@link Filter} expression failed.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- *
- * @version $Revision:$, $Date:$
  */
 public class FilterEvaluationException extends Exception {
 
-    private static final long serialVersionUID = 2009587694159886757L;
+	private static final long serialVersionUID = 2009587694159886757L;
 
-    /**
-     * Constructs a new <code>FilterEvaluationException</code> with the given detail message.
-     *
-     * @param msg
-     *            the detail message
-     */
-    public FilterEvaluationException( String msg ) {
-        super( msg );
-    }
+	/**
+	 * Constructs a new <code>FilterEvaluationException</code> with the given detail
+	 * message.
+	 * @param msg the detail message
+	 */
+	public FilterEvaluationException(String msg) {
+		super(msg);
+	}
+
 }

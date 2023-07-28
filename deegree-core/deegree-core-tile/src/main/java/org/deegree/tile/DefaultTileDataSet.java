@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -56,130 +55,126 @@ import org.slf4j.Logger;
 /**
  * Default implementation of {@link TileDataSet}.
  * <p>
- * Selects tile matrices based on tile matrix metadata. Can be used in conjunction with any implementation of
- * {@link TileMatrixSet}.
+ * Selects tile matrices based on tile matrix metadata. Can be used in conjunction with
+ * any implementation of {@link TileMatrixSet}.
  * </p>
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 public class DefaultTileDataSet implements TileDataSet {
 
-    private static final Logger LOG = getLogger( DefaultTileDataSet.class );
+	private static final Logger LOG = getLogger(DefaultTileDataSet.class);
 
-    private final Map<String, TileDataLevel> levels;
+	private final Map<String, TileDataLevel> levels;
 
-    private final TileMatrixSet metadata;
+	private final TileMatrixSet metadata;
 
-    private final String format;
+	private final String format;
 
-    /**
-     * Creates a new {@link DefaultTileDataSet} instance.
-     * 
-     * @param levels
-     *            data levels, must not be <code>null</code> (ordering of resolutions is irrelevant)
-     * @param tileMatrixSet
-     *            corresponding matrix set metadata, must not be <code>null</code>
-     * @param format
-     *            native image format, must not be <code>null</code>
-     */
-    public DefaultTileDataSet( List<TileDataLevel> levels, TileMatrixSet tileMatrixSet, String format ) {
-        List<TileDataLevel> sortedLevels = sortLevelsByResolutionFinestFirst( levels );
-        this.levels = new LinkedHashMap<String, TileDataLevel>();
-        for ( TileDataLevel m : sortedLevels ) {
-            this.levels.put( m.getMetadata().getIdentifier(), m );
-        }
-        this.metadata = tileMatrixSet;
-        this.format = format;
-    }
+	/**
+	 * Creates a new {@link DefaultTileDataSet} instance.
+	 * @param levels data levels, must not be <code>null</code> (ordering of resolutions
+	 * is irrelevant)
+	 * @param tileMatrixSet corresponding matrix set metadata, must not be
+	 * <code>null</code>
+	 * @param format native image format, must not be <code>null</code>
+	 */
+	public DefaultTileDataSet(List<TileDataLevel> levels, TileMatrixSet tileMatrixSet, String format) {
+		List<TileDataLevel> sortedLevels = sortLevelsByResolutionFinestFirst(levels);
+		this.levels = new LinkedHashMap<String, TileDataLevel>();
+		for (TileDataLevel m : sortedLevels) {
+			this.levels.put(m.getMetadata().getIdentifier(), m);
+		}
+		this.metadata = tileMatrixSet;
+		this.format = format;
+	}
 
-    private List<TileDataLevel> sortLevelsByResolutionFinestFirst( List<TileDataLevel> levels ) {
-        List<TileDataLevel> sortedLevels = new ArrayList<TileDataLevel>( levels );
-        Collections.sort( sortedLevels, new Comparator<TileDataLevel>() {
-            @Override
-            public int compare( TileDataLevel level1, TileDataLevel level2 ) {
-                Double res1 = level1.getMetadata().getResolution();
-                Double res2 = level2.getMetadata().getResolution();
-                return res1.compareTo( res2 );
-            }
-        } );
-        return sortedLevels;
-    }
+	private List<TileDataLevel> sortLevelsByResolutionFinestFirst(List<TileDataLevel> levels) {
+		List<TileDataLevel> sortedLevels = new ArrayList<TileDataLevel>(levels);
+		Collections.sort(sortedLevels, new Comparator<TileDataLevel>() {
+			@Override
+			public int compare(TileDataLevel level1, TileDataLevel level2) {
+				Double res1 = level1.getMetadata().getResolution();
+				Double res2 = level2.getMetadata().getResolution();
+				return res1.compareTo(res2);
+			}
+		});
+		return sortedLevels;
+	}
 
-    @Override
-    public Iterator<Tile> getTiles( Envelope envelope, double resolution ) {
-        // select correct matrix
-        Iterator<TileDataLevel> iter = levels.values().iterator();
-        TileDataLevel matrix = iter.next();
-        TileDataLevel next = matrix;
-        while ( next.getMetadata().getResolution() <= resolution && iter.hasNext() ) {
-            matrix = next;
-            next = iter.next();
-        }
-        if ( next.getMetadata().getResolution() <= resolution ) {
-            matrix = next;
-        }
+	@Override
+	public Iterator<Tile> getTiles(Envelope envelope, double resolution) {
+		// select correct matrix
+		Iterator<TileDataLevel> iter = levels.values().iterator();
+		TileDataLevel matrix = iter.next();
+		TileDataLevel next = matrix;
+		while (next.getMetadata().getResolution() <= resolution && iter.hasNext()) {
+			matrix = next;
+			next = iter.next();
+		}
+		if (next.getMetadata().getResolution() <= resolution) {
+			matrix = next;
+		}
 
-        final long[] idxs = Tiles.getTileIndexRange( matrix, envelope );
+		final long[] idxs = Tiles.getTileIndexRange(matrix, envelope);
 
-        if ( idxs == null ) {
-            return Collections.<Tile> emptyList().iterator();
-        }
+		if (idxs == null) {
+			return Collections.<Tile>emptyList().iterator();
+		}
 
-        final TileDataLevel fmatrix = matrix;
+		final TileDataLevel fmatrix = matrix;
 
-        LOG.info( "Selected tile matrix {}, resolution {}, from {}x{} to {}x{}.",
-                  new Object[] { matrix.getMetadata().getIdentifier(), matrix.getMetadata().getResolution(), idxs[0],
-                                idxs[1], idxs[2], idxs[3] } );
+		LOG.info("Selected tile matrix {}, resolution {}, from {}x{} to {}x{}.",
+				new Object[] { matrix.getMetadata().getIdentifier(), matrix.getMetadata().getResolution(), idxs[0],
+						idxs[1], idxs[2], idxs[3] });
 
-        // fetch tiles lazily
-        return new Iterator<Tile>() {
-            long x = idxs[0], y = idxs[1];
+		// fetch tiles lazily
+		return new Iterator<Tile>() {
+			long x = idxs[0], y = idxs[1];
 
-            @Override
-            public boolean hasNext() {
-                return x <= idxs[2];
-            }
+			@Override
+			public boolean hasNext() {
+				return x <= idxs[2];
+			}
 
-            @Override
-            public Tile next() {
-                Tile t = fmatrix.getTile( x, y );
-                if ( y == idxs[3] ) {
-                    y = idxs[1];
-                    ++x;
-                } else {
-                    ++y;
-                }
-                return t;
-            }
+			@Override
+			public Tile next() {
+				Tile t = fmatrix.getTile(x, y);
+				if (y == idxs[3]) {
+					y = idxs[1];
+					++x;
+				}
+				else {
+					++y;
+				}
+				return t;
+			}
 
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException();
-            }
-        };
-    }
+			@Override
+			public void remove() {
+				throw new UnsupportedOperationException();
+			}
+		};
+	}
 
-    @Override
-    public List<TileDataLevel> getTileDataLevels() {
-        return new ArrayList<TileDataLevel>( levels.values() );
-    }
+	@Override
+	public List<TileDataLevel> getTileDataLevels() {
+		return new ArrayList<TileDataLevel>(levels.values());
+	}
 
-    @Override
-    public TileMatrixSet getTileMatrixSet() {
-        return metadata;
-    }
+	@Override
+	public TileMatrixSet getTileMatrixSet() {
+		return metadata;
+	}
 
-    @Override
-    public TileDataLevel getTileDataLevel( String identifier ) {
-        return levels.get( identifier );
-    }
+	@Override
+	public TileDataLevel getTileDataLevel(String identifier) {
+		return levels.get(identifier);
+	}
 
-    @Override
-    public String getNativeImageFormat() {
-        return format;
-    }
+	@Override
+	public String getNativeImageFormat() {
+		return format;
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -56,37 +55,34 @@ import org.junit.Test;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.org">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class RecordSerializeTest {
 
-    protected static final NamespaceBindings ns = CommonNamespaces.getNamespaceContext();
+	protected static final NamespaceBindings ns = CommonNamespaces.getNamespaceContext();
 
-    static {
-        ns.addNamespace( "rim", "urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" );
-    }
+	static {
+		ns.addNamespace("rim", "urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0");
+	}
 
-    @Test
-    public void testBrief()
-                            throws Exception {
-        InputStream is = EbrimEOTransactionTest.class.getResourceAsStream( "io/ebrimRecord2.xml" );
-        RegistryPackage rec = new RegistryPackage( new XMLAdapter( is ).getRootElement() );
-        XMLOutputFactory of = XMLOutputFactory.newInstance();
-        StringWriter sw = new StringWriter();
-        XMLStreamWriter writer = of.createXMLStreamWriter( sw );
-        rec.serialize( writer, ReturnableElement.brief );
-        writer.close();
-System.out.println(sw.toString());
-        XMLInputFactory inf = XMLInputFactory.newInstance();
-        StringReader input = new StringReader( sw.toString() );
-        XMLStreamReader reader = inf.createXMLStreamReader( input );
+	@Test
+	public void testBrief() throws Exception {
+		InputStream is = EbrimEOTransactionTest.class.getResourceAsStream("io/ebrimRecord2.xml");
+		RegistryPackage rec = new RegistryPackage(new XMLAdapter(is).getRootElement());
+		XMLOutputFactory of = XMLOutputFactory.newInstance();
+		StringWriter sw = new StringWriter();
+		XMLStreamWriter writer = of.createXMLStreamWriter(sw);
+		rec.serialize(writer, ReturnableElement.brief);
+		writer.close();
+		System.out.println(sw.toString());
+		XMLInputFactory inf = XMLInputFactory.newInstance();
+		StringReader input = new StringReader(sw.toString());
+		XMLStreamReader reader = inf.createXMLStreamReader(input);
 
-        XMLAdapter adapter = new XMLAdapter( reader );
-        String[] slots = adapter.getNodesAsStrings( adapter.getRootElement(), new XPath( "//rim:Slot", ns ) );
-        Assert.assertEquals( 0, slots.length );
-    }
+		XMLAdapter adapter = new XMLAdapter(reader);
+		String[] slots = adapter.getNodesAsStrings(adapter.getRootElement(), new XPath("//rim:Slot", ns));
+		Assert.assertEquals(0, slots.length);
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -47,121 +46,122 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 
- * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class MetaDataReader {
 
-    private static final String TIFF_MD_FORMAT = "com_sun_media_imageio_plugins_tiff_image_1.0";
+	private static final String TIFF_MD_FORMAT = "com_sun_media_imageio_plugins_tiff_image_1.0";
 
-    private IIOMetadata metaData;
+	private IIOMetadata metaData;
 
-    private RasterGeoReference rasterReference = null;
+	private RasterGeoReference rasterReference = null;
 
-    private ICRS crs = null;
+	private ICRS crs = null;
 
-    private static Logger LOG = LoggerFactory.getLogger( MetaDataReader.class );
+	private static Logger LOG = LoggerFactory.getLogger(MetaDataReader.class);
 
-    private final int factor;
+	private final int factor;
 
-    /**
-     * @param metaData
-     *            a ImageIO meta data object
-     * @param definedRasterOrigLoc
-     */
-    public MetaDataReader( IIOMetadata metaData, OriginLocation definedRasterOrigLoc, int factor ) {
-        this.metaData = metaData;
-        this.factor = factor;
-        if ( metaData != null ) {
-            init( definedRasterOrigLoc );
-        }
-    }
+	/**
+	 * @param metaData a ImageIO meta data object
+	 * @param definedRasterOrigLoc
+	 */
+	public MetaDataReader(IIOMetadata metaData, OriginLocation definedRasterOrigLoc, int factor) {
+		this.metaData = metaData;
+		this.factor = factor;
+		if (metaData != null) {
+			init(definedRasterOrigLoc);
+		}
+	}
 
-    /**
-     * @return the raster envelope or <code>null</code>, if the metadata contains no georeference
-     */
-    public RasterGeoReference getRasterReference() {
-        return rasterReference;
-    }
+	/**
+	 * @return the raster envelope or <code>null</code>, if the metadata contains no
+	 * georeference
+	 */
+	public RasterGeoReference getRasterReference() {
+		return rasterReference;
+	}
 
-    /**
-     * @return the coordinate system or <code>null</code>, if the metadata contains no crs
-     */
-    public ICRS getCRS() {
-        return crs;
-    }
+	/**
+	 * @return the coordinate system or <code>null</code>, if the metadata contains no crs
+	 */
+	public ICRS getCRS() {
+		return crs;
+	}
 
-    private void init( OriginLocation definedRasterOrigLoc ) {
-        if ( metaData.getNativeMetadataFormatName().equals( TIFF_MD_FORMAT )
-             || metaData.getNativeMetadataFormatName().equals( "it_geosolutions_imageioimpl_plugins_tiff_image_1.0" ) ) {
-            initGeoTIFF( definedRasterOrigLoc );
-        }
+	private void init(OriginLocation definedRasterOrigLoc) {
+		if (metaData.getNativeMetadataFormatName().equals(TIFF_MD_FORMAT) || metaData.getNativeMetadataFormatName()
+			.equals("it_geosolutions_imageioimpl_plugins_tiff_image_1.0")) {
+			initGeoTIFF(definedRasterOrigLoc);
+		}
 
-    }
+	}
 
-    // read GeoTIFF metadata
-    private void initGeoTIFF( OriginLocation definedRasterOrigLoc ) {
-        GeoTiffIIOMetadataAdapter geoTIFFMetaData = new GeoTiffIIOMetadataAdapter( metaData );
+	// read GeoTIFF metadata
+	private void initGeoTIFF(OriginLocation definedRasterOrigLoc) {
+		GeoTiffIIOMetadataAdapter geoTIFFMetaData = new GeoTiffIIOMetadataAdapter(metaData);
 
-        try {
-            int modelType = Integer.valueOf( geoTIFFMetaData.getGeoKey( GeoTiffIIOMetadataAdapter.GTModelTypeGeoKey ) );
-            String epsgCode = null;
-            if ( modelType == GeoTiffIIOMetadataAdapter.ModelTypeProjected ) {
-                epsgCode = geoTIFFMetaData.getGeoKey( GeoTiffIIOMetadataAdapter.ProjectedCSTypeGeoKey );
-            } else if ( modelType == GeoTiffIIOMetadataAdapter.ModelTypeGeographic ) {
-                epsgCode = geoTIFFMetaData.getGeoKey( GeoTiffIIOMetadataAdapter.GeographicTypeGeoKey );
-            }
-            if ( epsgCode != null && epsgCode.length() != 0 ) {
-                try {
-                    crs = CRSManager.lookup( "EPSG:" + epsgCode );
-                } catch ( UnknownCRSException e ) {
-                    LOG.error( "No coordinate system found for EPSG:" + epsgCode );
-                }
-            }
-        } catch ( UnsupportedOperationException ex ) {
-            LOG.debug( "couldn't read crs information in GeoTIFF" );
-        }
+		try {
+			int modelType = Integer.valueOf(geoTIFFMetaData.getGeoKey(GeoTiffIIOMetadataAdapter.GTModelTypeGeoKey));
+			String epsgCode = null;
+			if (modelType == GeoTiffIIOMetadataAdapter.ModelTypeProjected) {
+				epsgCode = geoTIFFMetaData.getGeoKey(GeoTiffIIOMetadataAdapter.ProjectedCSTypeGeoKey);
+			}
+			else if (modelType == GeoTiffIIOMetadataAdapter.ModelTypeGeographic) {
+				epsgCode = geoTIFFMetaData.getGeoKey(GeoTiffIIOMetadataAdapter.GeographicTypeGeoKey);
+			}
+			if (epsgCode != null && epsgCode.length() != 0) {
+				try {
+					crs = CRSManager.lookup("EPSG:" + epsgCode);
+				}
+				catch (UnknownCRSException e) {
+					LOG.error("No coordinate system found for EPSG:" + epsgCode);
+				}
+			}
+		}
+		catch (UnsupportedOperationException ex) {
+			LOG.debug("couldn't read crs information in GeoTIFF");
+		}
 
-        try {
-            double[] tiePoints = geoTIFFMetaData.getModelTiePoints();
-            double[] scale = geoTIFFMetaData.getModelPixelScales();
-            if ( tiePoints != null && scale != null ) {
+		try {
+			double[] tiePoints = geoTIFFMetaData.getModelTiePoints();
+			double[] scale = geoTIFFMetaData.getModelPixelScales();
+			if (tiePoints != null && scale != null) {
 
-                if ( definedRasterOrigLoc != null ) {
-                    rasterReference = new RasterGeoReference( definedRasterOrigLoc, scale[0] * factor, -scale[1]
-                                                                                                       * factor,
-                                                              tiePoints[3], tiePoints[4], crs );
-                } else {
-                    if ( Math.abs( scale[0] - 0.5 ) < 0.001 ) { // when first pixel tie point is 0.5 -> center type
-                        // rb: this might not always be right, see examples at
-                        // http://www.remotesensing.org/geotiff/spec/geotiff3.html#3.2.1.
-                        // search for PixelIsArea/PixelIsPoint to determine center/outer
-                        rasterReference = new RasterGeoReference( RasterGeoReference.OriginLocation.CENTER, scale[0]
-                                                                                                            * factor,
-                                                                  -scale[1] * factor, tiePoints[3], tiePoints[4], crs );
-                    } else {
-                        rasterReference = new RasterGeoReference( RasterGeoReference.OriginLocation.OUTER, scale[0]
-                                                                                                           * factor,
-                                                                  -scale[1] * factor, tiePoints[3], tiePoints[4], crs );
-                    }
-                }
-            }
-        } catch ( UnsupportedOperationException ex ) {
-            LOG.debug( "couldn't read georeference information in GeoTIFF" );
-        }
+				if (definedRasterOrigLoc != null) {
+					rasterReference = new RasterGeoReference(definedRasterOrigLoc, scale[0] * factor,
+							-scale[1] * factor, tiePoints[3], tiePoints[4], crs);
+				}
+				else {
+					if (Math.abs(scale[0] - 0.5) < 0.001) { // when first pixel tie point
+															// is 0.5 -> center type
+						// rb: this might not always be right, see examples at
+						// http://www.remotesensing.org/geotiff/spec/geotiff3.html#3.2.1.
+						// search for PixelIsArea/PixelIsPoint to determine center/outer
+						rasterReference = new RasterGeoReference(RasterGeoReference.OriginLocation.CENTER,
+								scale[0] * factor, -scale[1] * factor, tiePoints[3], tiePoints[4], crs);
+					}
+					else {
+						rasterReference = new RasterGeoReference(RasterGeoReference.OriginLocation.OUTER,
+								scale[0] * factor, -scale[1] * factor, tiePoints[3], tiePoints[4], crs);
+					}
+				}
+			}
+		}
+		catch (UnsupportedOperationException ex) {
+			LOG.debug("couldn't read georeference information in GeoTIFF");
+		}
 
-        if ( LOG.isDebugEnabled() ) {
-            for ( String format : metaData.getMetadataFormatNames() ) {
-                // IIOMetadataNode elem = (IIOMetadataNode) metaData.getAsTree( format );
-                LOG.debug( "metadata format: " + format );
-                LOG.debug( "TBD output the xml file here." );
-                // LogUtils.writeTempFile( LOG, "geotiff", ".xml", new XMLFragment( elem ).toString() );
-            }
-        }
-    }
+		if (LOG.isDebugEnabled()) {
+			for (String format : metaData.getMetadataFormatNames()) {
+				// IIOMetadataNode elem = (IIOMetadataNode) metaData.getAsTree( format );
+				LOG.debug("metadata format: " + format);
+				LOG.debug("TBD output the xml file here.");
+				// LogUtils.writeTempFile( LOG, "geotiff", ".xml", new XMLFragment( elem
+				// ).toString() );
+			}
+		}
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2009 by:
@@ -53,117 +52,113 @@ import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.RasterReader;
 
 /**
- * 
+ *
  * A simple wrapper class needed to mark the offset for a given tile in the total grid.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class TileOffsetReader implements RasterReader {
 
-    private final GridReader originalReader;
+	private final GridReader originalReader;
 
-    private final RasterRect tileRectInGrid;
+	private final RasterRect tileRectInGrid;
 
-    /**
-     * @param original
-     *            mapped gridreader
-     * @param tileRectInGrid
-     *            the rectangle inside the grid.
-     * 
-     */
-    public TileOffsetReader( GridReader original, RasterRect tileRectInGrid ) {
-        this.originalReader = original;
-        this.tileRectInGrid = tileRectInGrid;
-    }
+	/**
+	 * @param original mapped gridreader
+	 * @param tileRectInGrid the rectangle inside the grid.
+	 *
+	 */
+	public TileOffsetReader(GridReader original, RasterRect tileRectInGrid) {
+		this.originalReader = original;
+		this.tileRectInGrid = tileRectInGrid;
+	}
 
-    @Override
-    public boolean canLoad( File filename ) {
-        return originalReader.canLoad( filename );
-    }
+	@Override
+	public boolean canLoad(File filename) {
+		return originalReader.canLoad(filename);
+	}
 
-    @Override
-    public File file() {
-        return originalReader.file();
-    }
+	@Override
+	public File file() {
+		return originalReader.file();
+	}
 
-    @Override
-    public RasterGeoReference getGeoReference() {
-        return originalReader.getGeoReference();
-    }
+	@Override
+	public RasterGeoReference getGeoReference() {
+		return originalReader.getGeoReference();
+	}
 
-    @Override
-    public int getHeight() {
-        return originalReader.getHeight();
-    }
+	@Override
+	public int getHeight() {
+		return originalReader.getHeight();
+	}
 
-    @Override
-    public Set<String> getSupportedFormats() {
-        return originalReader.getSupportedFormats();
-    }
+	@Override
+	public Set<String> getSupportedFormats() {
+		return originalReader.getSupportedFormats();
+	}
 
-    @Override
-    public int getWidth() {
-        return originalReader.getWidth();
-    }
+	@Override
+	public int getWidth() {
+		return originalReader.getWidth();
+	}
 
-    @Override
-    public AbstractRaster load( File filename, RasterIOOptions options )
-                            throws IOException {
-        return originalReader.load( filename, options );
-    }
+	@Override
+	public AbstractRaster load(File filename, RasterIOOptions options) throws IOException {
+		return originalReader.load(filename, options);
+	}
 
-    @Override
-    public AbstractRaster load( InputStream stream, RasterIOOptions options )
-                            throws IOException {
-        return originalReader.load( stream, options );
-    }
+	@Override
+	public AbstractRaster load(InputStream stream, RasterIOOptions options) throws IOException {
+		return originalReader.load(stream, options);
+	}
 
-    @Override
-    public BufferResult read( RasterRect rect, ByteBuffer buffer )
-                            throws IOException {
-        RasterRect tmpRect = new RasterRect( rect.x + tileRectInGrid.x, rect.y + tileRectInGrid.y, rect.width,
-                                             rect.height );
-        BufferResult bufferResult = originalReader.read( tmpRect, buffer );
-        bufferResult.getResult().clear();
-        // PixelInterleavedRasterData rd = new PixelInterleavedRasterData( bufferResult.getRect(),
-        // bufferResult.getRect().width,
-        // bufferResult.getRect().height,
-        // new RasterDataInfo( BandType.RGB,
-        // DataType.BYTE,
-        // InterleaveType.PIXEL ) );
-        // rd.setByteBuffer( bufferResult.getResult() );
-        // BufferedImage image = RasterFactory.rasterDataToImage( rd );
-        // ImageIO.write( image, "png", new File( "/tmp/" + tmpRect.toString() + ".png" ) );
-        // bufferResult.getRect().x -= tileRectInGrid.x;
-        // bufferResult.getRect().y -= tileRectInGrid.y;
-        return bufferResult;
-    }
+	@Override
+	public BufferResult read(RasterRect rect, ByteBuffer buffer) throws IOException {
+		RasterRect tmpRect = new RasterRect(rect.x + tileRectInGrid.x, rect.y + tileRectInGrid.y, rect.width,
+				rect.height);
+		BufferResult bufferResult = originalReader.read(tmpRect, buffer);
+		bufferResult.getResult().clear();
+		// PixelInterleavedRasterData rd = new PixelInterleavedRasterData(
+		// bufferResult.getRect(),
+		// bufferResult.getRect().width,
+		// bufferResult.getRect().height,
+		// new RasterDataInfo( BandType.RGB,
+		// DataType.BYTE,
+		// InterleaveType.PIXEL ) );
+		// rd.setByteBuffer( bufferResult.getResult() );
+		// BufferedImage image = RasterFactory.rasterDataToImage( rd );
+		// ImageIO.write( image, "png", new File( "/tmp/" + tmpRect.toString() + ".png" )
+		// );
+		// bufferResult.getRect().x -= tileRectInGrid.x;
+		// bufferResult.getRect().y -= tileRectInGrid.y;
+		return bufferResult;
+	}
 
-    @Override
-    public boolean shouldCreateCacheFile() {
-        return originalReader.shouldCreateCacheFile();
-    }
+	@Override
+	public boolean shouldCreateCacheFile() {
+		return originalReader.shouldCreateCacheFile();
+	}
 
-    @Override
-    public RasterDataInfo getRasterDataInfo() {
-        return originalReader.getRasterDataInfo();
-    }
+	@Override
+	public RasterDataInfo getRasterDataInfo() {
+		return originalReader.getRasterDataInfo();
+	}
 
-    @Override
-    public boolean canReadTiles() {
-        return originalReader.canReadTiles();
-    }
+	@Override
+	public boolean canReadTiles() {
+		return originalReader.canReadTiles();
+	}
 
-    @Override
-    public String getDataLocationId() {
-        return originalReader.getDataLocationId();
-    }
+	@Override
+	public String getDataLocationId() {
+		return originalReader.getDataLocationId();
+	}
 
-    @Override
-    public void dispose() {
-        originalReader.dispose();
-    }
+	@Override
+	public void dispose() {
+		originalReader.dispose();
+	}
+
 }

@@ -61,81 +61,79 @@ import static org.slf4j.LoggerFactory.getLogger;
  */
 public class FeatureStoreConfigWriter implements ItemWriter<AppSchema> {
 
-    private static final Logger LOG = getLogger( FeatureStoreConfigWriter.class );
+	private static final Logger LOG = getLogger(FeatureStoreConfigWriter.class);
 
-    private final LoadParameter loadParameter;
+	private final LoadParameter loadParameter;
 
-    public FeatureStoreConfigWriter( LoadParameter loadParameter ) {
-        this.loadParameter = loadParameter;
-    }
+	public FeatureStoreConfigWriter(LoadParameter loadParameter) {
+		this.loadParameter = loadParameter;
+	}
 
-    @Override
-    public void write( List<? extends AppSchema> appSchemas )
-                    throws Exception {
-        if ( appSchemas.isEmpty() )
-            return;
+	@Override
+	public void write(List<? extends AppSchema> appSchemas) throws Exception {
+		if (appSchemas.isEmpty())
+			return;
 
-        AppSchema appSchema = appSchemas.get( 0 );
+		AppSchema appSchema = appSchemas.get(0);
 
-        CRSRef storageCrs = CRSManager.getCRSRef( "EPSG:" + loadParameter.getSrid() );
-        GeometryStorageParams geometryParams = new GeometryStorageParams( storageCrs, loadParameter.getSrid(), DIM_2 );
-        SQLDialect sqlDialect = instantiateDialect( loadParameter.getDialect() );
-        AppSchemaMapper mapper = new AppSchemaMapper( appSchema, !loadParameter.isRelationalMapping(),
-                                                      loadParameter.isRelationalMapping(), geometryParams,
-                                                      sqlDialect.getMaxColumnNameLength(), true,
-                                                      loadParameter.isUseIntegerFids(), loadParameter.getDepth(),
-                                                      loadParameter.getReferenceData(),
-                                                      loadParameter.isUseRefDataProps() );
-        MappedAppSchema mappedSchema = mapper.getMappedSchema();
-        SQLFeatureStoreConfigWriter configWriter = new SQLFeatureStoreConfigWriter(
-                        mappedSchema,
-                        loadParameter.getPropertiesWithPrimitiveHref() );
-        String uriPathToSchema = new URI( loadParameter.getSchemaUrl() ).getPath();
-        String schemaFileName = uriPathToSchema.substring( uriPathToSchema.lastIndexOf( '/' ) + 1 );
-        String fileName = schemaFileName.replaceFirst( "[.][^.]+$", "" );
+		CRSRef storageCrs = CRSManager.getCRSRef("EPSG:" + loadParameter.getSrid());
+		GeometryStorageParams geometryParams = new GeometryStorageParams(storageCrs, loadParameter.getSrid(), DIM_2);
+		SQLDialect sqlDialect = instantiateDialect(loadParameter.getDialect());
+		AppSchemaMapper mapper = new AppSchemaMapper(appSchema, !loadParameter.isRelationalMapping(),
+				loadParameter.isRelationalMapping(), geometryParams, sqlDialect.getMaxColumnNameLength(), true,
+				loadParameter.isUseIntegerFids(), loadParameter.getDepth(), loadParameter.getReferenceData(),
+				loadParameter.isUseRefDataProps());
+		MappedAppSchema mappedSchema = mapper.getMappedSchema();
+		SQLFeatureStoreConfigWriter configWriter = new SQLFeatureStoreConfigWriter(mappedSchema,
+				loadParameter.getPropertiesWithPrimitiveHref());
+		String uriPathToSchema = new URI(loadParameter.getSchemaUrl()).getPath();
+		String schemaFileName = uriPathToSchema.substring(uriPathToSchema.lastIndexOf('/') + 1);
+		String fileName = schemaFileName.replaceFirst("[.][^.]+$", "");
 
-        String format = loadParameter.getFormat();
-        if ( format.equals( "all" ) ) {
-            writeSqlDdlFile( mappedSchema, fileName, sqlDialect );
-            writeXmlConfigFile( configWriter, fileName );
-        } else if ( format.equals( "deegree" ) ) {
-            writeXmlConfigFile( configWriter, fileName );
-        } else if ( format.equals( "ddl" ) ) {
-            writeSqlDdlFile( mappedSchema, fileName, sqlDialect );
-        }
-    }
+		String format = loadParameter.getFormat();
+		if (format.equals("all")) {
+			writeSqlDdlFile(mappedSchema, fileName, sqlDialect);
+			writeXmlConfigFile(configWriter, fileName);
+		}
+		else if (format.equals("deegree")) {
+			writeXmlConfigFile(configWriter, fileName);
+		}
+		else if (format.equals("ddl")) {
+			writeSqlDdlFile(mappedSchema, fileName, sqlDialect);
+		}
+	}
 
-    private void writeSqlDdlFile( MappedAppSchema mappedSchema, String fileName, SQLDialect sqlDialect )
-                    throws IOException {
-        String[] createStmts = DDLCreator.newInstance( mappedSchema, sqlDialect ).getDDL();
-        String sqlOutputFilename = fileName + ".sql";
-        Path pathToSqlOutputFile = Paths.get( sqlOutputFilename );
-        LOG.info( "Writing SQL DDL into file: " + pathToSqlOutputFile.toUri() );
-        try ( BufferedWriter writer = Files.newBufferedWriter( pathToSqlOutputFile ) ) {
-            for ( String sqlStatement : createStmts ) {
-                writer.write( sqlStatement + ";" + System.getProperty( "line.separator" ) );
-            }
-        }
-    }
+	private void writeSqlDdlFile(MappedAppSchema mappedSchema, String fileName, SQLDialect sqlDialect)
+			throws IOException {
+		String[] createStmts = DDLCreator.newInstance(mappedSchema, sqlDialect).getDDL();
+		String sqlOutputFilename = fileName + ".sql";
+		Path pathToSqlOutputFile = Paths.get(sqlOutputFilename);
+		LOG.info("Writing SQL DDL into file: " + pathToSqlOutputFile.toUri());
+		try (BufferedWriter writer = Files.newBufferedWriter(pathToSqlOutputFile)) {
+			for (String sqlStatement : createStmts) {
+				writer.write(sqlStatement + ";" + System.getProperty("line.separator"));
+			}
+		}
+	}
 
-    private void writeXmlConfigFile( SQLFeatureStoreConfigWriter configWriter, String fileName )
-                    throws XMLStreamException, IOException {
-        List<String> configUrls = Collections.singletonList( loadParameter.getSchemaUrl() );
-        String xmlOutputFilename = fileName + ".xml";
-        Path pathToXmlOutputFile = Paths.get( xmlOutputFilename );
-        LOG.info( "Writing deegree SQLFeatureStore configuration into file: " + pathToXmlOutputFile.toUri() );
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( bos );
-        xmlWriter = new IndentingXMLStreamWriter( xmlWriter );
-        configWriter.writeConfig( xmlWriter, fileName + "DS", configUrls );
-        xmlWriter.close();
-        Files.write( pathToXmlOutputFile, bos.toString().getBytes( StandardCharsets.UTF_8 ) );
-    }
+	private void writeXmlConfigFile(SQLFeatureStoreConfigWriter configWriter, String fileName)
+			throws XMLStreamException, IOException {
+		List<String> configUrls = Collections.singletonList(loadParameter.getSchemaUrl());
+		String xmlOutputFilename = fileName + ".xml";
+		Path pathToXmlOutputFile = Paths.get(xmlOutputFilename);
+		LOG.info("Writing deegree SQLFeatureStore configuration into file: " + pathToXmlOutputFile.toUri());
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter(bos);
+		xmlWriter = new IndentingXMLStreamWriter(xmlWriter);
+		configWriter.writeConfig(xmlWriter, fileName + "DS", configUrls);
+		xmlWriter.close();
+		Files.write(pathToXmlOutputFile, bos.toString().getBytes(StandardCharsets.UTF_8));
+	}
 
-    private SQLDialect instantiateDialect( String dialect ) {
-        if ( dialect != null && "oracle".equalsIgnoreCase( dialect ) )
-            return new OracleDialect( "", 11, 2 );
-        return new PostGISDialect( "2.0.0" );
-    }
+	private SQLDialect instantiateDialect(String dialect) {
+		if (dialect != null && "oracle".equalsIgnoreCase(dialect))
+			return new OracleDialect("", 11, 2);
+		return new PostGISDialect("2.0.0");
+	}
 
 }

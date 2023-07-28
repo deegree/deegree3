@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -57,175 +56,176 @@ import org.slf4j.LoggerFactory;
  * Abstract base class for common {@link Feature} implementations.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- *
- * @version $Revision:$, $Date:$
  */
 public abstract class AbstractFeature implements Feature {
 
-    private static final Logger LOG = LoggerFactory.getLogger( AbstractFeature.class );
+	private static final Logger LOG = LoggerFactory.getLogger(AbstractFeature.class);
 
-    /** Feature id */
-    protected String fid;
+	/** Feature id */
+	protected String fid;
 
-    /** Feature type */
-    protected final FeatureType ft;
+	/** Feature type */
+	protected final FeatureType ft;
 
-    private Envelope envelope;
+	private Envelope envelope;
 
-    private boolean envelopeCalculated = false;
+	private boolean envelopeCalculated = false;
 
-    private ExtraProps extraProps;
+	private ExtraProps extraProps;
 
-    /**
-     * Creates a new {@link AbstractFeature} instance.
-     *
-     * @param fid
-     *            feature id or <code>null</code> if the feature is anonymous (discouraged for most use cases)
-     * @param ft
-     *            feature type, must not be <code>null</code>
-     * @param extraProps
-     *            extra properties, may be <code>null</code>
-     */
-    protected AbstractFeature( String fid, FeatureType ft, ExtraProps extraProps ) {
-        this.fid = fid;
-        this.ft = ft;
-        this.extraProps = extraProps;
-    }
+	/**
+	 * Creates a new {@link AbstractFeature} instance.
+	 * @param fid feature id or <code>null</code> if the feature is anonymous (discouraged
+	 * for most use cases)
+	 * @param ft feature type, must not be <code>null</code>
+	 * @param extraProps extra properties, may be <code>null</code>
+	 */
+	protected AbstractFeature(String fid, FeatureType ft, ExtraProps extraProps) {
+		this.fid = fid;
+		this.ft = ft;
+		this.extraProps = extraProps;
+	}
 
-    @Override
-    public String getId() {
-        return fid;
-    }
+	@Override
+	public String getId() {
+		return fid;
+	}
 
-    @Override
-    public void setId( String fid ) {
-        this.fid = fid;
-    }
+	@Override
+	public void setId(String fid) {
+		this.fid = fid;
+	}
 
-    @Override
-    public QName getName() {
-        return ft.getName();
-    }
+	@Override
+	public QName getName() {
+		return ft.getName();
+	}
 
-    @Override
-    public FeatureType getType() {
-        return ft;
-    }
+	@Override
+	public FeatureType getType() {
+		return ft;
+	}
 
-    @Override
-    public Envelope getEnvelope() {
-        if ( !envelopeCalculated ) {
-            envelope = calcEnvelope();
-        }
-        return envelope;
-    }
+	@Override
+	public Envelope getEnvelope() {
+		if (!envelopeCalculated) {
+			envelope = calcEnvelope();
+		}
+		return envelope;
+	}
 
-    @Override
-    public void setEnvelope( Envelope env ) {
-        this.envelope = env;
-        envelopeCalculated = true;
-    }
+	@Override
+	public void setEnvelope(Envelope env) {
+		this.envelope = env;
+		envelopeCalculated = true;
+	}
 
-    /**
-     * Helper method for calculating the envelope of a feature.
-     *
-     * @return envelope of all geometry properties of the feature
-     */
-    @Override
-    public Envelope calcEnvelope() {
-        Envelope featureBBox = null;
-        for ( Property prop : this.getProperties() ) {
-            featureBBox = mergeEnvelope( prop, featureBBox );
-        }
-        if ( getExtraProperties() != null ) {
-            for ( Property prop : getExtraProperties().getProperties() ) {
-                featureBBox = mergeEnvelope( prop, featureBBox );
-            }
-        }
-        if ( featureBBox == null ) {
-            Set<Feature> visited = new HashSet<Feature>();
-            try {
-                for ( Property prop : this.getProperties() ) {
-                    if ( prop.getValue() instanceof Feature ) {
-                        Feature f = (Feature) prop.getValue();
-                        if ( visited.contains( f ) ) {
-                            continue;
-                        }
-                        visited.add( f );
+	/**
+	 * Helper method for calculating the envelope of a feature.
+	 * @return envelope of all geometry properties of the feature
+	 */
+	@Override
+	public Envelope calcEnvelope() {
+		Envelope featureBBox = null;
+		for (Property prop : this.getProperties()) {
+			featureBBox = mergeEnvelope(prop, featureBBox);
+		}
+		if (getExtraProperties() != null) {
+			for (Property prop : getExtraProperties().getProperties()) {
+				featureBBox = mergeEnvelope(prop, featureBBox);
+			}
+		}
+		if (featureBBox == null) {
+			Set<Feature> visited = new HashSet<Feature>();
+			try {
+				for (Property prop : this.getProperties()) {
+					if (prop.getValue() instanceof Feature) {
+						Feature f = (Feature) prop.getValue();
+						if (visited.contains(f)) {
+							continue;
+						}
+						visited.add(f);
 
-                        try {
-                            for ( Property p2 : f.getProperties() ) {
-                                featureBBox = mergeEnvelope( p2, featureBBox );
-                            }
-                        } catch ( ReferenceResolvingException e ) {
-                            LOG.debug( "Could not resolve properties when calculating envelope: {}",
-                                       e.getLocalizedMessage() );
-                        }
-                    }
-                }
-            } catch ( ReferenceResolvingException e ) {
-                LOG.debug( "Could not resolve properties when calculating envelope: {}", e.getLocalizedMessage() );
-            }
-        }
-        return featureBBox;
-    }
+						try {
+							for (Property p2 : f.getProperties()) {
+								featureBBox = mergeEnvelope(p2, featureBBox);
+							}
+						}
+						catch (ReferenceResolvingException e) {
+							LOG.debug("Could not resolve properties when calculating envelope: {}",
+									e.getLocalizedMessage());
+						}
+					}
+				}
+			}
+			catch (ReferenceResolvingException e) {
+				LOG.debug("Could not resolve properties when calculating envelope: {}", e.getLocalizedMessage());
+			}
+		}
+		return featureBBox;
+	}
 
-    private Envelope mergeEnvelope( final TypedObjectNode node, Envelope env ) {
-        if ( node instanceof Property ) {
-            Property prop = (Property) node;
-            if ( prop.getValue() != null ) {
-                env = mergeEnvelope( prop.getValue(), env );
-            }
-        } else if ( node instanceof Geometry ) {
-            Geometry g = (Geometry) node;
-            Envelope gEnv = g.getEnvelope();
-            // TODO this is to skip one-dimensional bounding boxes...
-            if ( gEnv.getCoordinateDimension() > 1 ) {
-                if ( env != null ) {
-                    env = env.merge( gEnv );
-                } else {
-                    env = gEnv;
-                }
-            } else {
-                LOG.warn( "Encountered one-dimensional bbox. Ignoring for feature envelope." );
-            }
-        } else if ( node instanceof TimeSlice ) {
-            final TimeSlice timeSlice = (TimeSlice) node;
-            for ( final Property prop : timeSlice.getProperties() ) {
-                final Envelope propEnvelope = mergeEnvelope( prop, env );
-                env = mergeEnvelope( env, propEnvelope );
-            }
-        } else if ( node instanceof ElementNode ) {
-            // e.g. INSPIRE Address geometry
-            ElementNode xml = (ElementNode) node;
-            List<TypedObjectNode> children = xml.getChildren();
-            if ( children != null ) {
-                for ( TypedObjectNode child : children ) {
-                    env = mergeEnvelope( child, env );
-                }
-            }
-        }
-        return env;
-    }
+	private Envelope mergeEnvelope(final TypedObjectNode node, Envelope env) {
+		if (node instanceof Property) {
+			Property prop = (Property) node;
+			if (prop.getValue() != null) {
+				env = mergeEnvelope(prop.getValue(), env);
+			}
+		}
+		else if (node instanceof Geometry) {
+			Geometry g = (Geometry) node;
+			Envelope gEnv = g.getEnvelope();
+			// TODO this is to skip one-dimensional bounding boxes...
+			if (gEnv.getCoordinateDimension() > 1) {
+				if (env != null) {
+					env = env.merge(gEnv);
+				}
+				else {
+					env = gEnv;
+				}
+			}
+			else {
+				LOG.warn("Encountered one-dimensional bbox. Ignoring for feature envelope.");
+			}
+		}
+		else if (node instanceof TimeSlice) {
+			final TimeSlice timeSlice = (TimeSlice) node;
+			for (final Property prop : timeSlice.getProperties()) {
+				final Envelope propEnvelope = mergeEnvelope(prop, env);
+				env = mergeEnvelope(env, propEnvelope);
+			}
+		}
+		else if (node instanceof ElementNode) {
+			// e.g. INSPIRE Address geometry
+			ElementNode xml = (ElementNode) node;
+			List<TypedObjectNode> children = xml.getChildren();
+			if (children != null) {
+				for (TypedObjectNode child : children) {
+					env = mergeEnvelope(child, env);
+				}
+			}
+		}
+		return env;
+	}
 
-    private Envelope mergeEnvelope( final Envelope existing, final Envelope additional ) {
-        if ( existing == null ) {
-            return additional;
-        }
-        if ( additional == null || additional.getCoordinateDimension() < 2 ) {
-            return existing;
-        }
-        return existing.merge( additional );
-    }
+	private Envelope mergeEnvelope(final Envelope existing, final Envelope additional) {
+		if (existing == null) {
+			return additional;
+		}
+		if (additional == null || additional.getCoordinateDimension() < 2) {
+			return existing;
+		}
+		return existing.merge(additional);
+	}
 
-    @Override
-    public ExtraProps getExtraProperties() {
-        return extraProps;
-    }
+	@Override
+	public ExtraProps getExtraProperties() {
+		return extraProps;
+	}
 
-    @Override
-    public void setExtraProperties( ExtraProps extraProps ) {
-        this.extraProps = extraProps;
-    }
+	@Override
+	public void setExtraProperties(ExtraProps extraProps) {
+		this.extraProps = extraProps;
+	}
+
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -52,197 +51,197 @@ import org.deegree.coverage.raster.io.grid.GridMetaInfoFile;
 import org.slf4j.Logger;
 
 /**
- * Information about raster cache files extends the {@link GridMetaInfoFile} which extends the WorldFile file layout.
- * The Cache information supplies information about the tiles on file and the width and height of the cached raster
- * file.
- * 
+ * Information about raster cache files extends the {@link GridMetaInfoFile} which extends
+ * the WorldFile file layout. The Cache information supplies information about the tiles
+ * on file and the width and height of the cached raster file.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class CacheInfoFile extends GridMetaInfoFile {
-    private static final Logger LOG = getLogger( CacheInfoFile.class );
 
-    private final long modificationTime;
+	private static final Logger LOG = getLogger(CacheInfoFile.class);
 
-    private final int rHeight;
+	private final long modificationTime;
 
-    private final int rWidth;
+	private final int rHeight;
 
-    private final boolean[][] tilesOnFile;
+	private final int rWidth;
 
-    /**
-     * @param geoRef
-     * @param rows
-     * @param columns
-     * @param tileRasterWidth
-     * @param tileRasterHeight
-     * @param rdi
-     * @param width
-     * @param height
-     * @param tilesOnFile
-     * @param modificationTime
-     */
-    public CacheInfoFile( RasterGeoReference geoRef, int rows, int columns, int tileRasterWidth, int tileRasterHeight,
-                          RasterDataInfo rdi, int width, int height, boolean[][] tilesOnFile, long modificationTime ) {
-        super( geoRef, rows, columns, tileRasterWidth, tileRasterHeight, rdi );
-        this.rWidth = width;
-        this.rHeight = height;
-        this.tilesOnFile = tilesOnFile;
-        this.modificationTime = modificationTime;
-    }
+	private final boolean[][] tilesOnFile;
 
-    /**
-     * @param gMif
-     * @param width
-     * @param height
-     */
-    private CacheInfoFile( GridMetaInfoFile gMif, int width, int height, boolean[][] tilesOnFile, long modificationTime ) {
-        super( gMif.getGeoReference(), gMif.rows(), gMif.columns(), gMif.getTileRasterWidth(),
-               gMif.getTileRasterHeight(), gMif.getDataInfo() );
-        this.rWidth = width;
-        this.rHeight = height;
-        this.tilesOnFile = tilesOnFile;
-        this.modificationTime = modificationTime;
-        this.envelope = gMif.getGeoReference().getEnvelope( OriginLocation.OUTER, rWidth, rHeight,
-                                                            envelope.getCoordinateSystem() );
-    }
+	/**
+	 * @param geoRef
+	 * @param rows
+	 * @param columns
+	 * @param tileRasterWidth
+	 * @param tileRasterHeight
+	 * @param rdi
+	 * @param width
+	 * @param height
+	 * @param tilesOnFile
+	 * @param modificationTime
+	 */
+	public CacheInfoFile(RasterGeoReference geoRef, int rows, int columns, int tileRasterWidth, int tileRasterHeight,
+			RasterDataInfo rdi, int width, int height, boolean[][] tilesOnFile, long modificationTime) {
+		super(geoRef, rows, columns, tileRasterWidth, tileRasterHeight, rdi);
+		this.rWidth = width;
+		this.rHeight = height;
+		this.tilesOnFile = tilesOnFile;
+		this.modificationTime = modificationTime;
+	}
 
-    /**
-     * @param metaInfo
-     *            the file used as raster cache file, to write meta information for.
-     * @param info
-     *            the meta information on the raster cache file.
-     * @throws IOException
-     *             if the file could not be written.
-     * 
-     */
-    public static void write( File metaInfo, CacheInfoFile info )
-                            throws IOException {
+	/**
+	 * @param gMif
+	 * @param width
+	 * @param height
+	 */
+	private CacheInfoFile(GridMetaInfoFile gMif, int width, int height, boolean[][] tilesOnFile,
+			long modificationTime) {
+		super(gMif.getGeoReference(), gMif.rows(), gMif.columns(), gMif.getTileRasterWidth(),
+				gMif.getTileRasterHeight(), gMif.getDataInfo());
+		this.rWidth = width;
+		this.rHeight = height;
+		this.tilesOnFile = tilesOnFile;
+		this.modificationTime = modificationTime;
+		this.envelope = gMif.getGeoReference()
+			.getEnvelope(OriginLocation.OUTER, rWidth, rHeight, envelope.getCoordinateSystem());
+	}
 
-        if ( metaInfo != null ) {
-            if ( !metaInfo.exists() ) {
-                boolean nFileCreated = metaInfo.createNewFile();
-                if ( !nFileCreated ) {
-                    throw new IOException( "Could not write cache info, because the file: " + metaInfo
-                                           + " could not be created." );
-                }
-            }
-            PrintWriter writer = new PrintWriter( new FileWriter( metaInfo ) );
-            GridMetaInfoFile.write( writer, info, null );
+	/**
+	 * @param metaInfo the file used as raster cache file, to write meta information for.
+	 * @param info the meta information on the raster cache file.
+	 * @throws IOException if the file could not be written.
+	 *
+	 */
+	public static void write(File metaInfo, CacheInfoFile info) throws IOException {
 
-            // original data size.
-            writer.println( info.rWidth );
-            writer.println( info.rHeight );
+		if (metaInfo != null) {
+			if (!metaInfo.exists()) {
+				boolean nFileCreated = metaInfo.createNewFile();
+				if (!nFileCreated) {
+					throw new IOException(
+							"Could not write cache info, because the file: " + metaInfo + " could not be created.");
+				}
+			}
+			PrintWriter writer = new PrintWriter(new FileWriter(metaInfo));
+			GridMetaInfoFile.write(writer, info, null);
 
-            for ( int row = 0; row < info.tilesOnFile.length; ++row ) {
-                StringBuilder sb = new StringBuilder();
-                for ( int col = 0; col < info.tilesOnFile[row].length; ++col ) {
-                    sb.append( ( info.tilesOnFile[row][col] ) ? 1 : 0 );
-                }
-                writer.println( sb.toString() );
-            }
-            writer.flush();
-            writer.close();
-        }
-    }
+			// original data size.
+			writer.println(info.rWidth);
+			writer.println(info.rHeight);
 
-    /**
-     * @param cacheFile
-     *            to get the meta information for.
-     * @return the meta information for the given raster cache file. <code>null</code> if no such file exists.
-     */
-    public static CacheInfoFile read( File cacheFile ) {
-        CacheInfoFile result = null;
-        if ( cacheFile != null && cacheFile.exists() ) {
-            String parent = cacheFile.getParent();
-            File metaInfo = GridMetaInfoFile.fileNameFromOptions( parent, FileUtils.getFilename( cacheFile ), null );
-            if ( !metaInfo.exists() ) {
-                LOG.warn(
-                          "Instantiation from file: {}, was unsuccessful, because no info file was present. Creating new cache file.",
-                          cacheFile.getAbsolutePath() );
+			for (int row = 0; row < info.tilesOnFile.length; ++row) {
+				StringBuilder sb = new StringBuilder();
+				for (int col = 0; col < info.tilesOnFile[row].length; ++col) {
+					sb.append((info.tilesOnFile[row][col]) ? 1 : 0);
+				}
+				writer.println(sb.toString());
+			}
+			writer.flush();
+			writer.close();
+		}
+	}
 
-            }
-            BufferedReader reader = null;
-            try {
-                reader = new BufferedReader( new FileReader( metaInfo ) );
-                GridMetaInfoFile gmif = GridMetaInfoFile.read( reader, null );
-                if ( gmif == null ) {
-                    throw new NullPointerException( "no info file could be read" );
-                }
-                String r = reader.readLine();
-                int width = 0;
-                try {
-                    width = Integer.decode( r );
-                } catch ( NumberFormatException n ) {
-                    throw new NullPointerException( "no width could be read" );
-                }
-                r = reader.readLine();
-                int height = 0;
-                try {
-                    height = Integer.decode( r );
-                } catch ( NumberFormatException n ) {
-                    throw new NullPointerException( "no height could be read " );
-                }
+	/**
+	 * @param cacheFile to get the meta information for.
+	 * @return the meta information for the given raster cache file. <code>null</code> if
+	 * no such file exists.
+	 */
+	public static CacheInfoFile read(File cacheFile) {
+		CacheInfoFile result = null;
+		if (cacheFile != null && cacheFile.exists()) {
+			String parent = cacheFile.getParent();
+			File metaInfo = GridMetaInfoFile.fileNameFromOptions(parent, FileUtils.getFilename(cacheFile), null);
+			if (!metaInfo.exists()) {
+				LOG.warn(
+						"Instantiation from file: {}, was unsuccessful, because no info file was present. Creating new cache file.",
+						cacheFile.getAbsolutePath());
 
-                // String[] tileInfos = new String[rows];
-                boolean[][] tilesOnFile = new boolean[gmif.rows()][gmif.columns()];
-                int rows = gmif.rows();
-                for ( int row = 0; row < rows; ++row ) {
-                    String s = reader.readLine();
-                    if ( s == null || s.length() != gmif.columns() ) {
-                        throw new NullPointerException( "the number of rows|columns read was not correct" );
-                    }
-                    for ( int col = 0; col < s.length(); ++col ) {
-                        tilesOnFile[row][col] = ( s.charAt( col ) == '1' );
-                    }
+			}
+			BufferedReader reader = null;
+			try {
+				reader = new BufferedReader(new FileReader(metaInfo));
+				GridMetaInfoFile gmif = GridMetaInfoFile.read(reader, null);
+				if (gmif == null) {
+					throw new NullPointerException("no info file could be read");
+				}
+				String r = reader.readLine();
+				int width = 0;
+				try {
+					width = Integer.decode(r);
+				}
+				catch (NumberFormatException n) {
+					throw new NullPointerException("no width could be read");
+				}
+				r = reader.readLine();
+				int height = 0;
+				try {
+					height = Integer.decode(r);
+				}
+				catch (NumberFormatException n) {
+					throw new NullPointerException("no height could be read ");
+				}
 
-                }
-                result = new CacheInfoFile( gmif, width, height, tilesOnFile, cacheFile.lastModified() );
-            } catch ( Exception e ) {
-                LOG.warn( "Instantiation from file: {}, was unsuccessful, because {}. Creating new cache file.",
-                          cacheFile.getAbsolutePath(), e.getLocalizedMessage() );
-            } finally {
-                if ( reader != null ) {
-                    try {
-                        reader.close();
-                    } catch ( IOException e ) {
-                        // what ever.
-                    }
-                }
-            }
+				// String[] tileInfos = new String[rows];
+				boolean[][] tilesOnFile = new boolean[gmif.rows()][gmif.columns()];
+				int rows = gmif.rows();
+				for (int row = 0; row < rows; ++row) {
+					String s = reader.readLine();
+					if (s == null || s.length() != gmif.columns()) {
+						throw new NullPointerException("the number of rows|columns read was not correct");
+					}
+					for (int col = 0; col < s.length(); ++col) {
+						tilesOnFile[row][col] = (s.charAt(col) == '1');
+					}
 
-        }
-        return result;
-    }
+				}
+				result = new CacheInfoFile(gmif, width, height, tilesOnFile, cacheFile.lastModified());
+			}
+			catch (Exception e) {
+				LOG.warn("Instantiation from file: {}, was unsuccessful, because {}. Creating new cache file.",
+						cacheFile.getAbsolutePath(), e.getLocalizedMessage());
+			}
+			finally {
+				if (reader != null) {
+					try {
+						reader.close();
+					}
+					catch (IOException e) {
+						// what ever.
+					}
+				}
+			}
 
-    /**
-     * @return the modificationTime
-     */
-    public final long getModificationTime() {
-        return modificationTime;
-    }
+		}
+		return result;
+	}
 
-    /**
-     * @return the rHeight
-     */
-    public final int getRasterHeight() {
-        return rHeight;
-    }
+	/**
+	 * @return the modificationTime
+	 */
+	public final long getModificationTime() {
+		return modificationTime;
+	}
 
-    /**
-     * @return the rWidth
-     */
-    public final int getRasterWidth() {
-        return rWidth;
-    }
+	/**
+	 * @return the rHeight
+	 */
+	public final int getRasterHeight() {
+		return rHeight;
+	}
 
-    /**
-     * @return the tilesOnFile
-     */
-    public final boolean[][] getTilesOnFile() {
-        return tilesOnFile;
-    }
+	/**
+	 * @return the rWidth
+	 */
+	public final int getRasterWidth() {
+		return rWidth;
+	}
+
+	/**
+	 * @return the tilesOnFile
+	 */
+	public final boolean[][] getTilesOnFile() {
+		return tilesOnFile;
+	}
 
 }

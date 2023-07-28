@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -51,94 +50,96 @@ import java.util.Map;
 import org.slf4j.Logger;
 
 /**
- * 
+ *
  * [D]eegree[URL]
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class DURL {
 
-    private static final Logger LOG = getLogger( DURL.class );
+	private static final Logger LOG = getLogger(DURL.class);
 
-    private static final Map<String, Class<? extends URLStreamHandler>> handlers = synchronizedMap( new HashMap<String, Class<? extends URLStreamHandler>>() );
+	private static final Map<String, Class<? extends URLStreamHandler>> handlers = synchronizedMap(
+			new HashMap<String, Class<? extends URLStreamHandler>>());
 
-    private URLStreamHandler handler;
+	private URLStreamHandler handler;
 
-    private URL url;
+	private URL url;
 
-    static {
-        handlers.put( "data", DataHandler.class );
-    }
+	static {
+		handlers.put("data", DataHandler.class);
+	}
 
-    /**
-     * @param url
-     */
-    public DURL( String url ) {
-        String protocol = url.split( ":" )[0];
-        Class<? extends URLStreamHandler> handler = handlers.get( protocol );
-        if ( handler != null ) {
-            try {
-                this.handler = handler.newInstance();
-                this.url = new URL( null, url, this.handler );
-            } catch ( InstantiationException e ) {
-                LOG.debug( "URL handler '{}' could not be instantiated: '{}'", handler.getSimpleName(),
-                           e.getLocalizedMessage() );
-                LOG.trace( "Stack trace:", e );
-            } catch ( IllegalAccessException e ) {
-                LOG.debug( "URL handler constructor of '{}' could not be used: '{}'", handler.getSimpleName(),
-                           e.getLocalizedMessage() );
-                LOG.trace( "Stack trace:", e );
-            } catch ( MalformedURLException e ) {
-                LOG.debug( "URL '{}' could not be instantiated: '{}'", url, e.getLocalizedMessage() );
-                LOG.trace( "Stack trace:", e );
-            }
-        } else {
-            try {
-                this.url = new URL( url );
-            } catch ( MalformedURLException e ) {
-                LOG.debug( "URL '{}' could not be instantiated: '{}'", url, e.getLocalizedMessage() );
-                LOG.trace( "Stack trace:", e );
-            }
-        }
-    }
+	/**
+	 * @param url
+	 */
+	public DURL(String url) {
+		String protocol = url.split(":")[0];
+		Class<? extends URLStreamHandler> handler = handlers.get(protocol);
+		if (handler != null) {
+			try {
+				this.handler = handler.newInstance();
+				this.url = new URL(null, url, this.handler);
+			}
+			catch (InstantiationException e) {
+				LOG.debug("URL handler '{}' could not be instantiated: '{}'", handler.getSimpleName(),
+						e.getLocalizedMessage());
+				LOG.trace("Stack trace:", e);
+			}
+			catch (IllegalAccessException e) {
+				LOG.debug("URL handler constructor of '{}' could not be used: '{}'", handler.getSimpleName(),
+						e.getLocalizedMessage());
+				LOG.trace("Stack trace:", e);
+			}
+			catch (MalformedURLException e) {
+				LOG.debug("URL '{}' could not be instantiated: '{}'", url, e.getLocalizedMessage());
+				LOG.trace("Stack trace:", e);
+			}
+		}
+		else {
+			try {
+				this.url = new URL(url);
+			}
+			catch (MalformedURLException e) {
+				LOG.debug("URL '{}' could not be instantiated: '{}'", url, e.getLocalizedMessage());
+				LOG.trace("Stack trace:", e);
+			}
+		}
+	}
 
-    /**
-     * @param protocol
-     * @param handler
-     */
-    public static void registerHandler( String protocol, Class<? extends URLStreamHandler> handler ) {
-        handlers.put( protocol, handler );
-    }
+	/**
+	 * @param protocol
+	 * @param handler
+	 */
+	public static void registerHandler(String protocol, Class<? extends URLStreamHandler> handler) {
+		handlers.put(protocol, handler);
+	}
 
-    /**
-     * @return true, if the underlying URL object could be instantiated
-     */
-    public boolean valid() {
-        return url != null;
-    }
+	/**
+	 * @return true, if the underlying URL object could be instantiated
+	 */
+	public boolean valid() {
+		return url != null;
+	}
 
-    /**
-     * @return the underlying URL
-     */
-    public URL getURL() {
-        return url;
-    }
+	/**
+	 * @return the underlying URL
+	 */
+	public URL getURL() {
+		return url;
+	}
 
-    /**
-     * @return an input stream from the URL
-     * @throws IOException
-     */
-    public InputStream openStream()
-                            throws IOException {
-        // custom handlers should handle proxies themselves
-        if ( handler != null ) {
-            return url.openStream();
-        }
+	/**
+	 * @return an input stream from the URL
+	 * @throws IOException
+	 */
+	public InputStream openStream() throws IOException {
+		// custom handlers should handle proxies themselves
+		if (handler != null) {
+			return url.openStream();
+		}
 
-        return get( STREAM, url.toExternalForm(), null );
-    }
+		return get(STREAM, url.toExternalForm(), null);
+	}
 
 }

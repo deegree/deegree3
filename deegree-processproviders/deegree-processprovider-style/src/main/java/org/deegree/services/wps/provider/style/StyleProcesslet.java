@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -67,62 +66,60 @@ import com.sun.media.jai.codec.PNGEncodeParam;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class StyleProcesslet implements Processlet {
 
-    private static final Logger LOG = LoggerFactory.getLogger( StyleProcesslet.class );
+	private static final Logger LOG = LoggerFactory.getLogger(StyleProcesslet.class);
 
-    @Override
-    public void process( ProcessletInputs in, ProcessletOutputs out, ProcessletExecutionInfo info )
-                            throws ProcessletException {
-        ComplexInput input = (ComplexInput) in.getParameter( IN_PARAM_ID );
-        try {
-            XMLStreamReader sld = input.getValueAsXMLStream();
+	@Override
+	public void process(ProcessletInputs in, ProcessletOutputs out, ProcessletExecutionInfo info)
+			throws ProcessletException {
+		ComplexInput input = (ComplexInput) in.getParameter(IN_PARAM_ID);
+		try {
+			XMLStreamReader sld = input.getValueAsXMLStream();
 
-            SymbologyParser symbologyParser = SymbologyParser.INSTANCE;
-            Style parsedStyle = symbologyParser.parse( sld );
-            if ( parsedStyle == null ) {
-                String msg = "Could not parse value of parameter " + IN_PARAM_ID + " as sld.";
-                LOG.debug( msg );
-                throw new ProcessletException( msg );
-            }
+			SymbologyParser symbologyParser = SymbologyParser.INSTANCE;
+			Style parsedStyle = symbologyParser.parse(sld);
+			if (parsedStyle == null) {
+				String msg = "Could not parse value of parameter " + IN_PARAM_ID + " as sld.";
+				LOG.debug(msg);
+				throw new ProcessletException(msg);
+			}
 
-            Legends legends = new Legends();
-            Pair<Integer, Integer> legendSize = legends.getLegendSize( parsedStyle );
-            BufferedImage img = new BufferedImage( legendSize.first, legendSize.second, BufferedImage.TYPE_INT_ARGB );
-            Graphics2D g = img.createGraphics();
-            g.setRenderingHint( KEY_ANTIALIASING, VALUE_ANTIALIAS_ON );
-            g.setRenderingHint( KEY_TEXT_ANTIALIASING, VALUE_TEXT_ANTIALIAS_ON );
-            legends.paintLegend( parsedStyle, legendSize.first, legendSize.second, g );
-            g.dispose();
+			Legends legends = new Legends();
+			Pair<Integer, Integer> legendSize = legends.getLegendSize(parsedStyle);
+			BufferedImage img = new BufferedImage(legendSize.first, legendSize.second, BufferedImage.TYPE_INT_ARGB);
+			Graphics2D g = img.createGraphics();
+			g.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON);
+			g.setRenderingHint(KEY_TEXT_ANTIALIASING, VALUE_TEXT_ANTIALIAS_ON);
+			legends.paintLegend(parsedStyle, legendSize.first, legendSize.second, g);
+			g.dispose();
 
-            ComplexOutput output = (ComplexOutput) out.getParameter( OUT_PARAM_ID );
-            OutputStream os = output.getBinaryOutputStream();
-            PNGEncodeParam encodeParam = PNGEncodeParam.getDefaultEncodeParam( img );
-            if ( encodeParam instanceof PNGEncodeParam.Palette ) {
-                PNGEncodeParam.Palette p = (PNGEncodeParam.Palette) encodeParam;
-                byte[] b = new byte[] { -127 };
-                p.setPaletteTransparency( b );
-            }
-            com.sun.media.jai.codec.ImageEncoder encoder = ImageCodec.createImageEncoder( "PNG", os, encodeParam );
-            encoder.encode( img.getData(), img.getColorModel() );
-        } catch ( Exception e ) {
-            LOG.error( "Could not create legend.", e );
-            throw new ProcessletException( e.getMessage() );
-        }
-    }
+			ComplexOutput output = (ComplexOutput) out.getParameter(OUT_PARAM_ID);
+			OutputStream os = output.getBinaryOutputStream();
+			PNGEncodeParam encodeParam = PNGEncodeParam.getDefaultEncodeParam(img);
+			if (encodeParam instanceof PNGEncodeParam.Palette) {
+				PNGEncodeParam.Palette p = (PNGEncodeParam.Palette) encodeParam;
+				byte[] b = new byte[] { -127 };
+				p.setPaletteTransparency(b);
+			}
+			com.sun.media.jai.codec.ImageEncoder encoder = ImageCodec.createImageEncoder("PNG", os, encodeParam);
+			encoder.encode(img.getData(), img.getColorModel());
+		}
+		catch (Exception e) {
+			LOG.error("Could not create legend.", e);
+			throw new ProcessletException(e.getMessage());
+		}
+	}
 
-    @Override
-    public void init() {
-    }
+	@Override
+	public void init() {
+	}
 
-    @Override
-    public void destroy() {
-    }
+	@Override
+	public void destroy() {
+	}
 
 }

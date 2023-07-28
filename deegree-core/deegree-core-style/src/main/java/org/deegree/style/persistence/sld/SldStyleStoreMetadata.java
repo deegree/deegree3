@@ -36,21 +36,20 @@ import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
  * Resource metadata for SLD style stores.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class SldStyleStoreMetadata extends AbstractResourceMetadata<StyleStore> {
 
-    public SldStyleStoreMetadata( Workspace workspace, ResourceLocation<StyleStore> location,
-                                  AbstractResourceProvider<StyleStore> provider ) {
-        super( workspace, location, provider );
-    }
+	public SldStyleStoreMetadata(Workspace workspace, ResourceLocation<StyleStore> location,
+			AbstractResourceProvider<StyleStore> provider) {
+		super(workspace, location, provider);
+	}
 
-    @Override
-    public ResourceBuilder<StyleStore> prepare() {
-        return new SldStyleStoreBuilder( this );
-    }
+	@Override
+	public ResourceBuilder<StyleStore> prepare() {
+		return new SldStyleStoreBuilder(this);
+	}
 
 }

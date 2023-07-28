@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -58,93 +57,90 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Stream-based reader for GML dictionaries and definitions.
- * 
+ *
  * @see GMLStreamReader
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class GMLDictionaryReader {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GMLDictionaryReader.class );
+	private static final Logger LOG = LoggerFactory.getLogger(GMLDictionaryReader.class);
 
-    private final GMLVersion version;
+	private final GMLVersion version;
 
-    private final XMLStreamReader xmlStream;
+	private final XMLStreamReader xmlStream;
 
-    private final GmlDocumentIdContext idContext;
+	private final GmlDocumentIdContext idContext;
 
-    private final GMLStdPropsReader propsReader;
+	private final GMLStdPropsReader propsReader;
 
-    private final String gmlNs;
+	private final String gmlNs;
 
-    public GMLDictionaryReader( GMLVersion version, XMLStreamReader xmlStream, GmlDocumentIdContext idContext ) {
-        this.version = version;
-        this.xmlStream = xmlStream;
-        this.idContext = idContext;
-        propsReader = new GMLStdPropsReader( version );
-        gmlNs = version.getNamespace();
-    }
+	public GMLDictionaryReader(GMLVersion version, XMLStreamReader xmlStream, GmlDocumentIdContext idContext) {
+		this.version = version;
+		this.xmlStream = xmlStream;
+		this.idContext = idContext;
+		propsReader = new GMLStdPropsReader(version);
+		gmlNs = version.getNamespace();
+	}
 
-    public Definition read()
-                            throws XMLStreamException {
-        Definition definition = null;
-        QName elName = xmlStream.getName();
-        if ( new QName( gmlNs, "Dictionary" ).equals( elName )
-             || new QName( gmlNs, "DefinitionCollection" ).equals( elName ) ) {
-            definition = readDictionary();
-        } else if ( new QName( gmlNs, "Definition" ).equals( elName ) ) {
-            definition = readDefinition();
-        } else {
-            String msg = "Invalid gml:Definition element: " + xmlStream.getName()
-                         + "' is not a GML definition (or dictionary or definition collection) element.";
-            throw new XMLParsingException( xmlStream, msg );
-        }
-        return definition;
-    }
+	public Definition read() throws XMLStreamException {
+		Definition definition = null;
+		QName elName = xmlStream.getName();
+		if (new QName(gmlNs, "Dictionary").equals(elName) || new QName(gmlNs, "DefinitionCollection").equals(elName)) {
+			definition = readDictionary();
+		}
+		else if (new QName(gmlNs, "Definition").equals(elName)) {
+			definition = readDefinition();
+		}
+		else {
+			String msg = "Invalid gml:Definition element: " + xmlStream.getName()
+					+ "' is not a GML definition (or dictionary or definition collection) element.";
+			throw new XMLParsingException(xmlStream, msg);
+		}
+		return definition;
+	}
 
-    private Definition readDefinition()
-                            throws XMLStreamException {
-        String id = xmlStream.getAttributeValue( gmlNs, "id" );
-        GMLStdProps standardProps = propsReader.read( xmlStream );
-        xmlStream.require( XMLStreamConstants.END_ELEMENT, gmlNs, "Definition" );
-        Definition def = new GenericDefinition( id, standardProps );
-        idContext.addObject( def );
-        return def;
-    }
+	private Definition readDefinition() throws XMLStreamException {
+		String id = xmlStream.getAttributeValue(gmlNs, "id");
+		GMLStdProps standardProps = propsReader.read(xmlStream);
+		xmlStream.require(XMLStreamConstants.END_ELEMENT, gmlNs, "Definition");
+		Definition def = new GenericDefinition(id, standardProps);
+		idContext.addObject(def);
+		return def;
+	}
 
-    public Dictionary readDictionary()
-                            throws XMLStreamException {
+	public Dictionary readDictionary() throws XMLStreamException {
 
-        boolean isDefinitionCollection = xmlStream.getName().equals( new QName( gmlNs, "DefinitionCollection" ) );
+		boolean isDefinitionCollection = xmlStream.getName().equals(new QName(gmlNs, "DefinitionCollection"));
 
-        String id = xmlStream.getAttributeValue( gmlNs, "id" );
-        GMLStdProps standardProps = propsReader.read( xmlStream );
+		String id = xmlStream.getAttributeValue(gmlNs, "id");
+		GMLStdProps standardProps = propsReader.read(xmlStream);
 
-        List<Definition> members = new LinkedList<Definition>();
+		List<Definition> members = new LinkedList<Definition>();
 
-        while ( xmlStream.getEventType() == START_ELEMENT ) {
-            QName elName = xmlStream.getName();
-            if ( new QName( gmlNs, "dictionaryEntry" ).equals( elName )
-                 || new QName( gmlNs, "definitionMember" ).equals( elName ) ) {
-                xmlStream.nextTag();
-                members.add( read() );
-                xmlStream.nextTag();
-            } else if ( new QName( gmlNs, "indirectEntry" ).equals( elName ) ) {
-                String msg = "Handling of 'indirectEntry' is not implemented yet.";
-                throw new XMLStreamException( msg );
-            } else {
-                String msg = "Unexpected element '" + elName + "'.";
-                throw new XMLStreamException( msg );
-            }
-            xmlStream.nextTag();
-        }
+		while (xmlStream.getEventType() == START_ELEMENT) {
+			QName elName = xmlStream.getName();
+			if (new QName(gmlNs, "dictionaryEntry").equals(elName)
+					|| new QName(gmlNs, "definitionMember").equals(elName)) {
+				xmlStream.nextTag();
+				members.add(read());
+				xmlStream.nextTag();
+			}
+			else if (new QName(gmlNs, "indirectEntry").equals(elName)) {
+				String msg = "Handling of 'indirectEntry' is not implemented yet.";
+				throw new XMLStreamException(msg);
+			}
+			else {
+				String msg = "Unexpected element '" + elName + "'.";
+				throw new XMLStreamException(msg);
+			}
+			xmlStream.nextTag();
+		}
 
-        XMLStreamUtils.require( xmlStream, END_ELEMENT );
-        Dictionary def = new GenericDictionary( id, standardProps, members, isDefinitionCollection );
-        idContext.addObject( def );
-        return def;
-    }
+		XMLStreamUtils.require(xmlStream, END_ELEMENT);
+		Dictionary def = new GenericDictionary(id, standardProps, members, isDefinitionCollection);
+		idContext.addObject(def);
+		return def;
+	}
+
 }

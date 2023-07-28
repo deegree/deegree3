@@ -27,9 +27,7 @@ import org.slf4j.LoggerFactory;
  * The DataPrep converts the data from the StorageGetObservation into a ChartInput.
  * 
  * @author <a href="mailto:neumeister@lat-lon.de">Ulrich Neumeister</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
  */
 public class DataPrep {
 

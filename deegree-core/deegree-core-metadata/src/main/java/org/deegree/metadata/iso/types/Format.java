@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -36,45 +35,41 @@
 package org.deegree.metadata.iso.types;
 
 /**
- * Format representation for records. This class encapsulates the data for representation only. <br>
- * Format determines the software, hardware or other equipment needed to display or operates on a resource.
- * 
+ * Format representation for records. This class encapsulates the data for representation
+ * only. <br>
+ * Format determines the software, hardware or other equipment needed to display or
+ * operates on a resource.
+ *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class Format {
 
-    private String name;
+	private String name;
 
-    private String version;
+	private String version;
 
-    /**
-     * Creates a new {@link Format} instance.
-     * 
-     * @param name
-     *            physical or digital manifestation of a resource, e.g. shapefile
-     * @param version
-     *            of the format, e.g. Amendment 1 or 1.0
-     */
-    public Format( String name, String version ) {
-        this.name = name;
-        this.version = version;
-    }
+	/**
+	 * Creates a new {@link Format} instance.
+	 * @param name physical or digital manifestation of a resource, e.g. shapefile
+	 * @param version of the format, e.g. Amendment 1 or 1.0
+	 */
+	public Format(String name, String version) {
+		this.name = name;
+		this.version = version;
+	}
 
-    /**
-     * @return the name
-     */
-    public String getName() {
-        return name;
-    }
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
+	}
 
-    /**
-     * @return the version
-     */
-    public String getVersion() {
-        return version;
-    }
+	/**
+	 * @return the version
+	 */
+	public String getVersion() {
+		return version;
+	}
 
 }

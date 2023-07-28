@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -44,48 +43,46 @@ import java.util.List;
 
 /**
  * Composite {@link Mapping} of complex particles.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class CompoundMapping extends Mapping {
 
-    private final List<Mapping> particles;
+	private final List<Mapping> particles;
 
-    private final XSElementDeclaration elDecl;
+	private final XSElementDeclaration elDecl;
 
-    public CompoundMapping( ValueReference path, boolean voidable, List<Mapping> particles, List<TableJoin> tableChange,
-                            XSElementDeclaration elDecl, CustomConverterJAXB converter ) {
-        super( path, voidable, tableChange, converter );
-        this.particles = particles;
-        this.elDecl = elDecl;
-    }
+	public CompoundMapping(ValueReference path, boolean voidable, List<Mapping> particles, List<TableJoin> tableChange,
+			XSElementDeclaration elDecl, CustomConverterJAXB converter) {
+		super(path, voidable, tableChange, converter);
+		this.particles = particles;
+		this.elDecl = elDecl;
+	}
 
-    public CompoundMapping( ValueReference path, boolean voidable, List<Mapping> particles, List<TableJoin> tableChange,
-                            XSElementDeclaration elDecl ) {
-        super( path, voidable, tableChange, null );
-        this.particles = particles;
-        this.elDecl = elDecl;
-    }
+	public CompoundMapping(ValueReference path, boolean voidable, List<Mapping> particles, List<TableJoin> tableChange,
+			XSElementDeclaration elDecl) {
+		super(path, voidable, tableChange, null);
+		this.particles = particles;
+		this.elDecl = elDecl;
+	}
 
-    public List<Mapping> getParticles() {
-        return particles;
-    }
+	public List<Mapping> getParticles() {
+		return particles;
+	}
 
-    public XSElementDeclaration getElementDecl() {
-        return elDecl;
-    }
+	public XSElementDeclaration getElementDecl() {
+		return elDecl;
+	}
 
-    @Override
-    public String toString() {
-        String s = super.toString();
-        s += "{";
-        for ( Mapping particle : particles ) {
-            s += particle + ",";
-        }
-        s += "}";
-        return s;
-    }
+	@Override
+	public String toString() {
+		String s = super.toString();
+		s += "{";
+		for (Mapping particle : particles) {
+			s += particle + ",";
+		}
+		s += "}";
+		return s;
+	}
+
 }

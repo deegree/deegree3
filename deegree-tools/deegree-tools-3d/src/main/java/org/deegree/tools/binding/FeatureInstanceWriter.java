@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -68,218 +67,208 @@ import org.deegree.gml.GMLVersion;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class FeatureInstanceWriter {
 
-    final static String PROP = Property.class.getSimpleName();
+	final static String PROP = Property.class.getSimpleName();
 
-    private final static String GML = GMLVersion.class.getSimpleName();
+	private final static String GML = GMLVersion.class.getSimpleName();
 
-    private final static String ENV = Envelope.class.getSimpleName();
+	private final static String ENV = Envelope.class.getSimpleName();
 
-    private final static String TON = TypedObjectNode.class.getSimpleName();
+	private final static String TON = TypedObjectNode.class.getSimpleName();
 
-    private final static String ID = "fid";
+	private final static String ID = "fid";
 
-    private final static String PROP_MAP = "properties";
+	private final static String PROP_MAP = "properties";
 
-    protected static void addImports( Set<String> imports ) {
-        // feature implementation
-        imports.add( AbstractFeature.class.getCanonicalName() );
-        imports.add( Property.class.getCanonicalName() );
-        imports.add( QName.class.getCanonicalName() );
-        imports.add( TypedObjectNode.class.getCanonicalName() );
-        imports.add( Map.class.getCanonicalName() );
-        imports.add( HashMap.class.getCanonicalName() );
-    }
+	protected static void addImports(Set<String> imports) {
+		// feature implementation
+		imports.add(AbstractFeature.class.getCanonicalName());
+		imports.add(Property.class.getCanonicalName());
+		imports.add(QName.class.getCanonicalName());
+		imports.add(TypedObjectNode.class.getCanonicalName());
+		imports.add(Map.class.getCanonicalName());
+		imports.add(HashMap.class.getCanonicalName());
+	}
 
-    protected static void writeFields( Writer out )
-                            throws IOException {
-        // id
-        Field f = new Field( ID, "String" );
-        writeField( out, f );
+	protected static void writeFields(Writer out) throws IOException {
+		// id
+		Field f = new Field(ID, "String");
+		writeField(out, f);
 
-        f = new Field( PROP_MAP, map( QNAME, list( TON ) ), hashMap( QNAME, list( TON ), true ), false, true );
-        writeField( out, f );
-    }
+		f = new Field(PROP_MAP, map(QNAME, list(TON)), hashMap(QNAME, list(TON), true), false, true);
+		writeField(out, f);
+	}
 
-    /**
-     * @param out
-     * @param featClasses
-     * @throws IOException
-     */
-    protected static void writeFeatureMethods( Writer out, HashMap<QName, FeatureClass> featClasses )
-                            throws IOException {
-        List<StringPair> params = new ArrayList<StringPair>();
+	/**
+	 * @param out
+	 * @param featClasses
+	 * @throws IOException
+	 */
+	protected static void writeFeatureMethods(Writer out, HashMap<QName, FeatureClass> featClasses) throws IOException {
+		List<StringPair> params = new ArrayList<StringPair>();
 
-        out.write( SP + "//---------------------------------------\n" );
-        out.write( SP + "// Methods not implemented by " + AbstractFeature.class.getCanonicalName() + ".\n" );
-        out.write( SP + "//---------------------------------------\n" );
+		out.write(SP + "//---------------------------------------\n");
+		out.write(SP + "// Methods not implemented by " + AbstractFeature.class.getCanonicalName() + ".\n");
+		out.write(SP + "//---------------------------------------\n");
 
-        handleIds( out );
+		handleIds(out);
 
-        // public QName getName();
-        // implemented by all feature classes
+		// public QName getName();
+		// implemented by all feature classes
 
-        // public FeatureType getType();
-        openMethod( out, "public", FTYPE, "getType", params, null, true );
-        out.write( SP2 + "return this;\n" );
-        closeMethod( out );
+		// public FeatureType getType();
+		openMethod(out, "public", FTYPE, "getType", params, null, true);
+		out.write(SP2 + "return this;\n");
+		closeMethod(out);
 
-        // public Property[] getProperties();
-        openMethod( out, "public", PROP + "[]", "getProperties", params, null, true );
-        out.write( SP2 + "return null;\n" );
-        closeMethod( out );
+		// public Property[] getProperties();
+		openMethod(out, "public", PROP + "[]", "getProperties", params, null, true);
+		out.write(SP2 + "return null;\n");
+		closeMethod(out);
 
-        // implemented by abstract feature.
-        // public Property[] getProperties( GMLVersion version );
-        // public Property[] getProperties( QName propName, GMLVersion version );
-        // public Property getProperty( QName propName, GMLVersion version );
-        // public Envelope getEnvelope();
+		// implemented by abstract feature.
+		// public Property[] getProperties( GMLVersion version );
+		// public Property[] getProperties( QName propName, GMLVersion version );
+		// public Property getProperty( QName propName, GMLVersion version );
+		// public Envelope getEnvelope();
 
-        // public Property[] getProperties( QName propName );
-        params.add( new StringPair( QNAME, "propName" ) );
-        openMethod( out, "public", PROP + "[]", "getProperties", params, null, true );
-        out.write( SP2 + "return null;\n" );
-        closeMethod( out );
+		// public Property[] getProperties( QName propName );
+		params.add(new StringPair(QNAME, "propName"));
+		openMethod(out, "public", PROP + "[]", "getProperties", params, null, true);
+		out.write(SP2 + "return null;\n");
+		closeMethod(out);
 
-        // public Property getProperty( QName propName );
-        openMethod( out, "public", PROP, "getProperty", params, null, true );
-        out.write( SP2 + "return null;\n" );
-        closeMethod( out );
-        params.clear();
+		// public Property getProperty( QName propName );
+		openMethod(out, "public", PROP, "getProperty", params, null, true);
+		out.write(SP2 + "return null;\n");
+		closeMethod(out);
+		params.clear();
 
-        // public Property[] getGeometryProperties();
-        openMethod( out, "public", PROP + "[]", "getGeometryProperties", params, null, true );
-        out.write( SP2 + "return null;\n" );
-        closeMethod( out );
+		// public Property[] getGeometryProperties();
+		openMethod(out, "public", PROP + "[]", "getGeometryProperties", params, null, true);
+		out.write(SP2 + "return null;\n");
+		closeMethod(out);
 
-        // done by abstract feature.
+		// done by abstract feature.
 
-        handleSetPropertyValues( out );
-    }
+		handleSetPropertyValues(out);
+	}
 
-    /**
-     * @param out
-     * @throws IOException
-     */
-    private static void handleSetPropertyValues( Writer out )
-                            throws IOException {
-        setPropVal( out );
-        // done in abstract feature.
-        // public void setPropertyValue( QName propName, int occurrence, TypedObjectNode value, GMLVersion version );
+	/**
+	 * @param out
+	 * @throws IOException
+	 */
+	private static void handleSetPropertyValues(Writer out) throws IOException {
+		setPropVal(out);
+		// done in abstract feature.
+		// public void setPropertyValue( QName propName, int occurrence, TypedObjectNode
+		// value, GMLVersion version );
 
-        // public void setProperties( List<Property> props ) throws IllegalArgumentException;
-        setProps( out );
+		// public void setProperties( List<Property> props ) throws
+		// IllegalArgumentException;
+		setProps(out);
 
-        setPropsVers( out );
-        // ;
+		setPropsVers(out);
+		// ;
 
-    }
+	}
 
-    /**
-     * Creates the method
-     * <code>public void setProperties( List<Property> props, GMLVersion version ) throws IllegalArgumentException</code>
-     * 
-     * @param out
-     * @throws IOException
-     */
-    private static void setPropsVers( Writer out )
-                            throws IOException {
-        List<StringPair> params = new ArrayList<StringPair>();
-        params.add( new StringPair( "List<" + PROP + ">", "props" ) );
-        params.add( new StringPair( GML, "version" ) );
+	/**
+	 * Creates the method
+	 * <code>public void setProperties( List<Property> props, GMLVersion version ) throws IllegalArgumentException</code>
+	 * @param out
+	 * @throws IOException
+	 */
+	private static void setPropsVers(Writer out) throws IOException {
+		List<StringPair> params = new ArrayList<StringPair>();
+		params.add(new StringPair("List<" + PROP + ">", "props"));
+		params.add(new StringPair(GML, "version"));
 
-        List<String> throwables = new ArrayList<String>( 1 );
-        throwables.add( IllegalArgumentException.class.getSimpleName() );
-        openMethod( out, "public", "void", "setProperties", params, throwables, true );
-        out.write( SP2 + oif( true, " props != null", "!props.isEmpty()" ) );
-        out.write( SP3 + "for ( " + PROP + " prop : props ) {\n" );
-        out.write( SP4 + "setPropertyValue( prop.getName(), -1, prop.getValue(), version);\n" );
-        out.write( SP3 + "}\n" );
-        out.write( SP2 + "}\n" );
-        closeMethod( out );
+		List<String> throwables = new ArrayList<String>(1);
+		throwables.add(IllegalArgumentException.class.getSimpleName());
+		openMethod(out, "public", "void", "setProperties", params, throwables, true);
+		out.write(SP2 + oif(true, " props != null", "!props.isEmpty()"));
+		out.write(SP3 + "for ( " + PROP + " prop : props ) {\n");
+		out.write(SP4 + "setPropertyValue( prop.getName(), -1, prop.getValue(), version);\n");
+		out.write(SP3 + "}\n");
+		out.write(SP2 + "}\n");
+		closeMethod(out);
 
-    }
+	}
 
-    /**
-     * Creates the method
-     * <code>public void setPropertyValue( QName propName, int occurrence, TypedObjectNode value );</code>
-     * 
-     * @param out
-     * @throws IOException
-     */
-    private static void setPropVal( Writer out )
-                            throws IOException {
-        List<StringPair> params = new ArrayList<StringPair>();
-        params.add( new StringPair( QNAME, "propName" ) );
-        params.add( new StringPair( "int", "occurrence" ) );
-        params.add( new StringPair( TON, "value" ) );
-        openMethod( out, "public", "void", "setPropertyValue", params, null, true );
-        out.write( SP2 + oif( true, "value != null", "propName != null" ) );
-        String vals = list( TON ) + " values";
-        out.write( SP3 + vals + " = " + PROP_MAP + ".get( propName );\n" );
-        out.write( SP3 + oif( true, "values == null" ) );
-        out.write( SP4 + "values = " + ModelClass.arlist( TON, true, -1 ) + ";\n" );
-        out.write( SP4 + "properties.put( propName, values );\n" );
-        out.write( SP3 + "}\n" );
-        out.write( SP3 + oif( true, "occurrence != -1" ) );
-        out.write( SP4 + "values.set( occurrence, value );\n" );
-        out.write( SP3 + "} else {\n" );
-        out.write( SP4 + "values.add( value );\n" );
-        out.write( SP3 + "}\n" );
-        out.write( SP2 + "}\n" );
-        closeMethod( out );
-    }
+	/**
+	 * Creates the method
+	 * <code>public void setPropertyValue( QName propName, int occurrence, TypedObjectNode value );</code>
+	 * @param out
+	 * @throws IOException
+	 */
+	private static void setPropVal(Writer out) throws IOException {
+		List<StringPair> params = new ArrayList<StringPair>();
+		params.add(new StringPair(QNAME, "propName"));
+		params.add(new StringPair("int", "occurrence"));
+		params.add(new StringPair(TON, "value"));
+		openMethod(out, "public", "void", "setPropertyValue", params, null, true);
+		out.write(SP2 + oif(true, "value != null", "propName != null"));
+		String vals = list(TON) + " values";
+		out.write(SP3 + vals + " = " + PROP_MAP + ".get( propName );\n");
+		out.write(SP3 + oif(true, "values == null"));
+		out.write(SP4 + "values = " + ModelClass.arlist(TON, true, -1) + ";\n");
+		out.write(SP4 + "properties.put( propName, values );\n");
+		out.write(SP3 + "}\n");
+		out.write(SP3 + oif(true, "occurrence != -1"));
+		out.write(SP4 + "values.set( occurrence, value );\n");
+		out.write(SP3 + "} else {\n");
+		out.write(SP4 + "values.add( value );\n");
+		out.write(SP3 + "}\n");
+		out.write(SP2 + "}\n");
+		closeMethod(out);
+	}
 
-    /**
-     * Creates the method <code>public void setProperties( List<Property> props ) throws IllegalArgumentException</code>
-     * 
-     * @param out
-     * @throws IOException
-     */
-    private static void setProps( Writer out )
-                            throws IOException {
+	/**
+	 * Creates the method
+	 * <code>public void setProperties( List<Property> props ) throws IllegalArgumentException</code>
+	 * @param out
+	 * @throws IOException
+	 */
+	private static void setProps(Writer out) throws IOException {
 
-        List<StringPair> params = new ArrayList<StringPair>();
-        params.add( new StringPair( "List<" + PROP + ">", "props" ) );
-        List<String> throwables = new ArrayList<String>( 1 );
-        throwables.add( IllegalArgumentException.class.getSimpleName() );
-        openMethod( out, "public", "void", "setProperties", params, throwables, true );
-        out.write( SP2 + oif( true, " props != null", "!props.isEmpty()" ) );
-        out.write( SP3 + "for ( " + PROP + " prop : props ) {\n" );
-        out.write( SP4 + "setPropertyValue( prop.getName(), -1, prop.getValue() );\n" );
-        out.write( SP3 + "}\n" );
-        out.write( SP2 + "}\n" );
-        closeMethod( out );
-    }
+		List<StringPair> params = new ArrayList<StringPair>();
+		params.add(new StringPair("List<" + PROP + ">", "props"));
+		List<String> throwables = new ArrayList<String>(1);
+		throwables.add(IllegalArgumentException.class.getSimpleName());
+		openMethod(out, "public", "void", "setProperties", params, throwables, true);
+		out.write(SP2 + oif(true, " props != null", "!props.isEmpty()"));
+		out.write(SP3 + "for ( " + PROP + " prop : props ) {\n");
+		out.write(SP4 + "setPropertyValue( prop.getName(), -1, prop.getValue() );\n");
+		out.write(SP3 + "}\n");
+		out.write(SP2 + "}\n");
+		closeMethod(out);
+	}
 
-    /**
-     * @param out
-     * @throws IOException
-     */
-    private static void handleIds( Writer out )
-                            throws IOException {
-        // public String getId();
-        openMethod( out, "public", "String", "getId", null, null, true );
-        out.write( SP2 + "return " + ID + ";\n" );
-        closeMethod( out );
+	/**
+	 * @param out
+	 * @throws IOException
+	 */
+	private static void handleIds(Writer out) throws IOException {
+		// public String getId();
+		openMethod(out, "public", "String", "getId", null, null, true);
+		out.write(SP2 + "return " + ID + ";\n");
+		closeMethod(out);
 
-        // public void setId( String id );
-        List<StringPair> params = new ArrayList<StringPair>();
-        params.add( new StringPair( "String", "id" ) );
-        openMethod( out, "public", "void", "setId", params, null, true );
-        out.write( SP2 + ID + " = id;\n" );
-        closeMethod( out );
-    }
+		// public void setId( String id );
+		List<StringPair> params = new ArrayList<StringPair>();
+		params.add(new StringPair("String", "id"));
+		openMethod(out, "public", "void", "setId", params, null, true);
+		out.write(SP2 + ID + " = id;\n");
+		closeMethod(out);
+	}
 
-    private static void writeGetId( Writer out ) {
+	private static void writeGetId(Writer out) {
 
-    }
+	}
 
 }

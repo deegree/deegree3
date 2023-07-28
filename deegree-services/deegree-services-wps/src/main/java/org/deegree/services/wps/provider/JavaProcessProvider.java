@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -55,80 +54,81 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link ProcessProvider} for hand-crafted Java processes with hand-crafted process descriptions.
- * 
+ * {@link ProcessProvider} for hand-crafted Java processes with hand-crafted process
+ * descriptions.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class JavaProcessProvider implements ProcessProvider {
 
-    private static final Logger LOG = LoggerFactory.getLogger( JavaProcessProvider.class );
+	private static final Logger LOG = LoggerFactory.getLogger(JavaProcessProvider.class);
 
-    private final Collection<ProcessDefinition> processDefs;
+	private final Collection<ProcessDefinition> processDefs;
 
-    private final Map<CodeType, WPSProcess> idToProcess = new HashMap<CodeType, WPSProcess>();
+	private final Map<CodeType, WPSProcess> idToProcess = new HashMap<CodeType, WPSProcess>();
 
-    private Workspace workspace;
+	private Workspace workspace;
 
-    private ResourceMetadata<ProcessProvider> metadata;
+	private ResourceMetadata<ProcessProvider> metadata;
 
-    /**
-     * @param processDef
-     */
-    JavaProcessProvider( ProcessDefinition processDef, Workspace workspace, ResourceMetadata<ProcessProvider> metadata ) {
-        this.workspace = workspace;
-        this.metadata = metadata;
-        processDefs = Collections.singletonList( processDef );
-    }
+	/**
+	 * @param processDef
+	 */
+	JavaProcessProvider(ProcessDefinition processDef, Workspace workspace, ResourceMetadata<ProcessProvider> metadata) {
+		this.workspace = workspace;
+		this.metadata = metadata;
+		processDefs = Collections.singletonList(processDef);
+	}
 
-    @Override
-    public void init() {
-        for ( ProcessDefinition processDefinition : processDefs ) {
-            CodeType processId = new CodeType( processDefinition.getIdentifier().getValue(),
-                                               processDefinition.getIdentifier().getCodeSpace() );
-            String className = processDefinition.getJavaClass();
-            try {
-                LOG.info( "Initializing process with id '" + processId + "'" );
-                LOG.info( "- process class: " + className );
-                Processlet processlet = (Processlet) Class.forName( className, true, workspace.getModuleClassLoader() ).newInstance();
-                processlet.init();
+	@Override
+	public void init() {
+		for (ProcessDefinition processDefinition : processDefs) {
+			CodeType processId = new CodeType(processDefinition.getIdentifier().getValue(),
+					processDefinition.getIdentifier().getCodeSpace());
+			String className = processDefinition.getJavaClass();
+			try {
+				LOG.info("Initializing process with id '" + processId + "'");
+				LOG.info("- process class: " + className);
+				Processlet processlet = (Processlet) Class.forName(className, true, workspace.getModuleClassLoader())
+					.newInstance();
+				processlet.init();
 
-                ExceptionCustomizer customizer = null;
-                if ( processlet instanceof ExceptionAwareProcesslet ) {
-                    customizer = ( (ExceptionAwareProcesslet) processlet ).getExceptionCustomizer();
-                }
-                WPSProcess process = new GenericWPSProcess( processDefinition, processlet, customizer );
-                idToProcess.put( processId, process );
-            } catch ( Exception e ) {
-                String msg = "Could not create process instance. Class name ('" + className
-                             + "') was not found on the classpath. "
-                             + "Hint: spelling in configuration file might be incorrect.";
-                throw new ResourceInitException( msg, e );
-            }
-        }
-    }
+				ExceptionCustomizer customizer = null;
+				if (processlet instanceof ExceptionAwareProcesslet) {
+					customizer = ((ExceptionAwareProcesslet) processlet).getExceptionCustomizer();
+				}
+				WPSProcess process = new GenericWPSProcess(processDefinition, processlet, customizer);
+				idToProcess.put(processId, process);
+			}
+			catch (Exception e) {
+				String msg = "Could not create process instance. Class name ('" + className
+						+ "') was not found on the classpath. "
+						+ "Hint: spelling in configuration file might be incorrect.";
+				throw new ResourceInitException(msg, e);
+			}
+		}
+	}
 
-    @Override
-    public void destroy() {
-        for ( WPSProcess process : idToProcess.values() ) {
-            process.getProcesslet().destroy();
-        }
-    }
+	@Override
+	public void destroy() {
+		for (WPSProcess process : idToProcess.values()) {
+			process.getProcesslet().destroy();
+		}
+	}
 
-    @Override
-    public WPSProcess getProcess( CodeType id ) {
-        return idToProcess.get( id );
-    }
+	@Override
+	public WPSProcess getProcess(CodeType id) {
+		return idToProcess.get(id);
+	}
 
-    @Override
-    public Map<CodeType, WPSProcess> getProcesses() {
-        return idToProcess;
-    }
+	@Override
+	public Map<CodeType, WPSProcess> getProcesses() {
+		return idToProcess;
+	}
 
-    @Override
-    public ResourceMetadata<? extends Resource> getMetadata() {
-        return metadata;
-    }
+	@Override
+	public ResourceMetadata<? extends Resource> getMetadata() {
+		return metadata;
+	}
+
 }

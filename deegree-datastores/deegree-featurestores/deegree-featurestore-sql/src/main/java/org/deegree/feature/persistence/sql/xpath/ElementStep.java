@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -39,40 +38,38 @@ import javax.xml.namespace.QName;
 
 /**
  * XPath <code>NameStep</code> (element axis) with optional child position predicate.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 class ElementStep extends MappableNameStep {
 
-    private final int pos;
+	private final int pos;
 
-    ElementStep( QName nodeName, int pos ) {
-        super( nodeName );
-        this.pos = pos;
-    }
+	ElementStep(QName nodeName, int pos) {
+		super(nodeName);
+		this.pos = pos;
+	}
 
-    boolean hasPos() {
-        return pos > 0;
-    }
+	boolean hasPos() {
+		return pos > 0;
+	}
 
-    int getPos() {
-        return pos;
-    }
+	int getPos() {
+		return pos;
+	}
 
-    @Override
-    public boolean equals( Object o ) {
-        if ( !( o instanceof ElementStep ) ) {
-            return false;
-        }
-        // TODO what about pos?
-        return ( (ElementStep) o ).getNodeName().equals( getNodeName() );
-    }
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof ElementStep)) {
+			return false;
+		}
+		// TODO what about pos?
+		return ((ElementStep) o).getNodeName().equals(getNodeName());
+	}
 
-    @Override
-    public String toString () {
-        return getNodeName().toString();
-    }
+	@Override
+	public String toString() {
+		return getNodeName().toString();
+	}
+
 }

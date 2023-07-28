@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -43,99 +42,97 @@ import org.deegree.coverage.raster.io.RasterReader;
 import org.deegree.coverage.raster.io.RasterWriter;
 
 /**
- * 
- * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class IIORasterIOProvider implements RasterIOProvider {
-    private static final Set<String> SUPPORTED_TYPES_READ;
 
-    private static final Set<String> SUPPORTED_TYPES_WRITE;
+	private static final Set<String> SUPPORTED_TYPES_READ;
 
-    // private static Logger LOG = LoggerFactory.getLogger( IIORasterIOProvider.class );
+	private static final Set<String> SUPPORTED_TYPES_WRITE;
 
-    static {
-        // SUPPORTED_TYPES_READ = new HashSet<String>();
-        // SUPPORTED_TYPES_WRITE = new HashSet<String>();
-        // for ( String commonType : new String[] { IIORasterReader.class.getCanonicalName(), "iio", "imageio" } ) {
-        // SUPPORTED_TYPES_READ.add( commonType );
-        // SUPPORTED_TYPES_WRITE.add( commonType );
-        // }
+	// private static Logger LOG = LoggerFactory.getLogger( IIORasterIOProvider.class );
 
-        // SUPPORTED_TYPES_READ.add( "iio-reader" );
-        // SUPPORTED_TYPES_WRITE.add( "iio-writer" );
+	static {
+		// SUPPORTED_TYPES_READ = new HashSet<String>();
+		// SUPPORTED_TYPES_WRITE = new HashSet<String>();
+		// for ( String commonType : new String[] {
+		// IIORasterReader.class.getCanonicalName(), "iio", "imageio" } ) {
+		// SUPPORTED_TYPES_READ.add( commonType );
+		// SUPPORTED_TYPES_WRITE.add( commonType );
+		// }
 
-        SUPPORTED_TYPES_READ = new HashSet<String>();
-        SUPPORTED_TYPES_READ.addAll( new IIORasterReader().getSupportedFormats() );
-        SUPPORTED_TYPES_READ.add( "geotiff" );
-        SUPPORTED_TYPES_WRITE = new HashSet<String>();
-        SUPPORTED_TYPES_WRITE.addAll( new IIORasterWriter().getSupportedFormats() );
-        SUPPORTED_TYPES_WRITE.add( "geotiff" );
+		// SUPPORTED_TYPES_READ.add( "iio-reader" );
+		// SUPPORTED_TYPES_WRITE.add( "iio-writer" );
 
-        // String[] readerFormatNames = ImageIO.getReaderFormatNames();
-        // if ( readerFormatNames != null ) {
-        // for ( String format : readerFormatNames ) {
-        // SUPPORTED_TYPES_READ.add( format );
-        // }
-        // }
-        //
-        // String[] writerFormatNames = ImageIO.getWriterFormatNames();
-        // if ( writerFormatNames != null ) {
-        // for ( String format : writerFormatNames ) {
-        // SUPPORTED_TYPES_WRITE.add( format );
-        // }
-        // }
+		SUPPORTED_TYPES_READ = new HashSet<String>();
+		SUPPORTED_TYPES_READ.addAll(new IIORasterReader().getSupportedFormats());
+		SUPPORTED_TYPES_READ.add("geotiff");
+		SUPPORTED_TYPES_WRITE = new HashSet<String>();
+		SUPPORTED_TYPES_WRITE.addAll(new IIORasterWriter().getSupportedFormats());
+		SUPPORTED_TYPES_WRITE.add("geotiff");
 
-        // String[] types = new String[] { "jpg", "jpeg", "png", "tif", "tiff", "jp2", "gif" };
-        // for ( String type : types ) {
-        // Iterator<ImageReader> iter = ImageIO.getImageReadersBySuffix( type );
-        // if ( iter != null && iter.hasNext() ) {
-        // SUPPORTED_TYPES_READ.add( type.toLowerCase() );
-        // LOG.debug( "register ImageReader for " + type );
-        // } else {
-        // LOG.error( "no ImageReader for " + type + " found" );
-        // }
-        // }
+		// String[] readerFormatNames = ImageIO.getReaderFormatNames();
+		// if ( readerFormatNames != null ) {
+		// for ( String format : readerFormatNames ) {
+		// SUPPORTED_TYPES_READ.add( format );
+		// }
+		// }
+		//
+		// String[] writerFormatNames = ImageIO.getWriterFormatNames();
+		// if ( writerFormatNames != null ) {
+		// for ( String format : writerFormatNames ) {
+		// SUPPORTED_TYPES_WRITE.add( format );
+		// }
+		// }
 
-        // for ( String type : types ) {
-        // Iterator<ImageWriter> iter = ImageIO.getImageWritersBySuffix( type );
-        // if ( iter != null && iter.hasNext() ) {
-        // SUPPORTED_TYPES_WRITE.add( type.toLowerCase() );
-        // LOG.debug( "register ImageWriter for " + type );
-        // } else {
-        // LOG.error( "no ImageWriter for " + type + " found" );
-        // }
-        // }
-    }
+		// String[] types = new String[] { "jpg", "jpeg", "png", "tif", "tiff", "jp2",
+		// "gif" };
+		// for ( String type : types ) {
+		// Iterator<ImageReader> iter = ImageIO.getImageReadersBySuffix( type );
+		// if ( iter != null && iter.hasNext() ) {
+		// SUPPORTED_TYPES_READ.add( type.toLowerCase() );
+		// LOG.debug( "register ImageReader for " + type );
+		// } else {
+		// LOG.error( "no ImageReader for " + type + " found" );
+		// }
+		// }
 
-    @Override
-    public RasterReader getRasterReader( String type ) {
-        if ( SUPPORTED_TYPES_READ.contains( type.toLowerCase() ) ) {
-            return new IIORasterReader();
-        }
-        return null;
-    }
+		// for ( String type : types ) {
+		// Iterator<ImageWriter> iter = ImageIO.getImageWritersBySuffix( type );
+		// if ( iter != null && iter.hasNext() ) {
+		// SUPPORTED_TYPES_WRITE.add( type.toLowerCase() );
+		// LOG.debug( "register ImageWriter for " + type );
+		// } else {
+		// LOG.error( "no ImageWriter for " + type + " found" );
+		// }
+		// }
+	}
 
-    @Override
-    public RasterWriter getRasterWriter( String type ) {
-        if ( SUPPORTED_TYPES_WRITE.contains( type.toLowerCase() ) ) {
-            return new IIORasterWriter();
-        }
-        return null;
-    }
+	@Override
+	public RasterReader getRasterReader(String type) {
+		if (SUPPORTED_TYPES_READ.contains(type.toLowerCase())) {
+			return new IIORasterReader();
+		}
+		return null;
+	}
 
-    @Override
-    public Set<String> getRasterReaderFormats() {
-        return SUPPORTED_TYPES_READ;
-    }
+	@Override
+	public RasterWriter getRasterWriter(String type) {
+		if (SUPPORTED_TYPES_WRITE.contains(type.toLowerCase())) {
+			return new IIORasterWriter();
+		}
+		return null;
+	}
 
-    @Override
-    public Set<String> getRasterWriterFormats() {
-        return SUPPORTED_TYPES_WRITE;
-    }
+	@Override
+	public Set<String> getRasterReaderFormats() {
+		return SUPPORTED_TYPES_READ;
+	}
+
+	@Override
+	public Set<String> getRasterWriterFormats() {
+		return SUPPORTED_TYPES_WRITE;
+	}
 
 }

@@ -46,43 +46,43 @@ import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
  * Resource metadata class for WPS services.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
  * @since 3.4
  */
 public class WpsMetadata extends AbstractResourceMetadata<OWS> {
 
-    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.services.jaxb.wps";
+	private static final String CONFIG_JAXB_PACKAGE = "org.deegree.services.jaxb.wps";
 
-    public WpsMetadata( Workspace workspace, ResourceLocation<OWS> location, AbstractResourceProvider<OWS> provider ) {
-        super( workspace, location, provider );
-    }
+	public WpsMetadata(Workspace workspace, ResourceLocation<OWS> location, AbstractResourceProvider<OWS> provider) {
+		super(workspace, location, provider);
+	}
 
-    @Override
-    public ResourceBuilder<OWS> prepare() {
-        try {
-            DeegreeWPS cfg = (DeegreeWPS) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, provider.getSchema(),
-                                                                location.getAsStream(), workspace );
+	@Override
+	public ResourceBuilder<OWS> prepare() {
+		try {
+			DeegreeWPS cfg = (DeegreeWPS) JAXBUtils.unmarshall(CONFIG_JAXB_PACKAGE, provider.getSchema(),
+					location.getAsStream(), workspace);
 
-            ProcessManager mgr = workspace.getResourceManager( ProcessManager.class );
-            Collection<ResourceMetadata<ProcessProvider>> mds = mgr.getResourceMetadata();
-            for ( ResourceMetadata<ProcessProvider> md : mds ) {
-                softDependencies.add( md.getIdentifier() );
-            }
-            
-            OWSMetadataProviderManager mmgr = workspace.getResourceManager( OWSMetadataProviderManager.class );
-            for ( ResourceMetadata<OWSMetadataProvider> md : mmgr.getResourceMetadata() ) {
-                ResourceIdentifier<OWSMetadataProvider> mdId = md.getIdentifier();
-                if ( mdId.getId().equals( getIdentifier().getId() + "_metadata" ) ) {
-                    softDependencies.add( mdId );
-                }
-            }
+			ProcessManager mgr = workspace.getResourceManager(ProcessManager.class);
+			Collection<ResourceMetadata<ProcessProvider>> mds = mgr.getResourceMetadata();
+			for (ResourceMetadata<ProcessProvider> md : mds) {
+				softDependencies.add(md.getIdentifier());
+			}
 
-            return new WpsBuilder( this, workspace, cfg );
-        } catch ( Exception e ) {
-            throw new ResourceInitException( e.getLocalizedMessage(), e );
-        }
-    }
+			OWSMetadataProviderManager mmgr = workspace.getResourceManager(OWSMetadataProviderManager.class);
+			for (ResourceMetadata<OWSMetadataProvider> md : mmgr.getResourceMetadata()) {
+				ResourceIdentifier<OWSMetadataProvider> mdId = md.getIdentifier();
+				if (mdId.getId().equals(getIdentifier().getId() + "_metadata")) {
+					softDependencies.add(mdId);
+				}
+			}
+
+			return new WpsBuilder(this, workspace, cfg);
+		}
+		catch (Exception e) {
+			throw new ResourceInitException(e.getLocalizedMessage(), e);
+		}
+	}
 
 }

@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -68,87 +67,84 @@ import org.deegree.rendering.r2d.context.MapOptions.Quality;
 
 /**
  * Utility methods to apply map options to a graphics 2d object.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 public class Java2DHelper {
 
-    public static void applyHints( final String layerName, final Graphics2D g, final MapOptionsMaps options,
-                                   final MapOptions defaults ) {
-        applyQuality( layerName, g, options, defaults );
-        applyInterpolation( layerName, g, options, defaults );
-        applyAntialiasing( layerName, g, options, defaults );
-    }
+	public static void applyHints(final String layerName, final Graphics2D g, final MapOptionsMaps options,
+			final MapOptions defaults) {
+		applyQuality(layerName, g, options, defaults);
+		applyInterpolation(layerName, g, options, defaults);
+		applyAntialiasing(layerName, g, options, defaults);
+	}
 
-    private static void applyQuality( final String layerName, final Graphics2D g, final MapOptionsMaps options,
-                                      final MapOptions defaults ) {
-        Quality q = options.getQuality( layerName );
-        if ( q == null ) {
-            q = defaults.getQuality();
-        }
-        switch ( q ) {
-        case HIGH:
-            g.setRenderingHint( KEY_RENDERING, VALUE_RENDER_QUALITY );
-            g.setRenderingHint( KEY_STROKE_CONTROL, VALUE_STROKE_PURE );
-            break;
-        case LOW:
-            g.setRenderingHint( KEY_RENDERING, VALUE_RENDER_SPEED );
-            g.setRenderingHint( KEY_STROKE_CONTROL, VALUE_STROKE_NORMALIZE );
-            break;
-        case NORMAL:
-            g.setRenderingHint( KEY_RENDERING, VALUE_RENDER_DEFAULT );
-            g.setRenderingHint( KEY_STROKE_CONTROL, VALUE_STROKE_DEFAULT );
-            break;
-        }
-    }
+	private static void applyQuality(final String layerName, final Graphics2D g, final MapOptionsMaps options,
+			final MapOptions defaults) {
+		Quality q = options.getQuality(layerName);
+		if (q == null) {
+			q = defaults.getQuality();
+		}
+		switch (q) {
+			case HIGH:
+				g.setRenderingHint(KEY_RENDERING, VALUE_RENDER_QUALITY);
+				g.setRenderingHint(KEY_STROKE_CONTROL, VALUE_STROKE_PURE);
+				break;
+			case LOW:
+				g.setRenderingHint(KEY_RENDERING, VALUE_RENDER_SPEED);
+				g.setRenderingHint(KEY_STROKE_CONTROL, VALUE_STROKE_NORMALIZE);
+				break;
+			case NORMAL:
+				g.setRenderingHint(KEY_RENDERING, VALUE_RENDER_DEFAULT);
+				g.setRenderingHint(KEY_STROKE_CONTROL, VALUE_STROKE_DEFAULT);
+				break;
+		}
+	}
 
-    private static void applyInterpolation( final String layerName, final Graphics2D g, final MapOptionsMaps options,
-                                            final MapOptions defaults ) {
-        Interpolation i = options.getInterpolation( layerName );
-        if ( i == null ) {
-            i = defaults.getInterpolation();
-        }
-        switch ( i ) {
-        case BICUBIC:
-            g.setRenderingHint( KEY_INTERPOLATION, VALUE_INTERPOLATION_BICUBIC );
-            break;
-        case BILINEAR:
-            g.setRenderingHint( KEY_INTERPOLATION, VALUE_INTERPOLATION_BILINEAR );
-            break;
-        case NEARESTNEIGHBOR:
-        case NEARESTNEIGHBOUR:
-            g.setRenderingHint( KEY_INTERPOLATION, VALUE_INTERPOLATION_NEAREST_NEIGHBOR );
-            break;
-        }
-    }
+	private static void applyInterpolation(final String layerName, final Graphics2D g, final MapOptionsMaps options,
+			final MapOptions defaults) {
+		Interpolation i = options.getInterpolation(layerName);
+		if (i == null) {
+			i = defaults.getInterpolation();
+		}
+		switch (i) {
+			case BICUBIC:
+				g.setRenderingHint(KEY_INTERPOLATION, VALUE_INTERPOLATION_BICUBIC);
+				break;
+			case BILINEAR:
+				g.setRenderingHint(KEY_INTERPOLATION, VALUE_INTERPOLATION_BILINEAR);
+				break;
+			case NEARESTNEIGHBOR:
+			case NEARESTNEIGHBOUR:
+				g.setRenderingHint(KEY_INTERPOLATION, VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+				break;
+		}
+	}
 
-    private static void applyAntialiasing( final String layerName, final Graphics2D g, final MapOptionsMaps options,
-                                           final MapOptions defaults ) {
-        Antialias a = options.getAntialias( layerName );
-        if ( a == null ) {
-            a = defaults.getAntialias();
-        }
-        switch ( a ) {
-        case IMAGE:
-            g.setRenderingHint( KEY_ANTIALIASING, VALUE_ANTIALIAS_ON );
-            g.setRenderingHint( KEY_TEXT_ANTIALIASING, VALUE_TEXT_ANTIALIAS_OFF );
-            break;
-        case TEXT:
-            g.setRenderingHint( KEY_ANTIALIASING, VALUE_ANTIALIAS_OFF );
-            g.setRenderingHint( KEY_TEXT_ANTIALIASING, VALUE_TEXT_ANTIALIAS_ON );
-            break;
-        case BOTH:
-            g.setRenderingHint( KEY_ANTIALIASING, VALUE_ANTIALIAS_ON );
-            g.setRenderingHint( KEY_TEXT_ANTIALIASING, VALUE_TEXT_ANTIALIAS_ON );
-            break;
-        case NONE:
-            g.setRenderingHint( KEY_ANTIALIASING, VALUE_ANTIALIAS_OFF );
-            g.setRenderingHint( KEY_TEXT_ANTIALIASING, VALUE_TEXT_ANTIALIAS_OFF );
-            break;
-        }
-    }
+	private static void applyAntialiasing(final String layerName, final Graphics2D g, final MapOptionsMaps options,
+			final MapOptions defaults) {
+		Antialias a = options.getAntialias(layerName);
+		if (a == null) {
+			a = defaults.getAntialias();
+		}
+		switch (a) {
+			case IMAGE:
+				g.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON);
+				g.setRenderingHint(KEY_TEXT_ANTIALIASING, VALUE_TEXT_ANTIALIAS_OFF);
+				break;
+			case TEXT:
+				g.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_OFF);
+				g.setRenderingHint(KEY_TEXT_ANTIALIASING, VALUE_TEXT_ANTIALIAS_ON);
+				break;
+			case BOTH:
+				g.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON);
+				g.setRenderingHint(KEY_TEXT_ANTIALIASING, VALUE_TEXT_ANTIALIAS_ON);
+				break;
+			case NONE:
+				g.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_OFF);
+				g.setRenderingHint(KEY_TEXT_ANTIALIASING, VALUE_TEXT_ANTIALIAS_OFF);
+				break;
+		}
+	}
 
 }

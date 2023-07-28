@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -37,28 +36,26 @@ package org.deegree.geometry.linearization;
 
 /**
  * TODO add documentation here
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class MaxErrorCriterion implements LinearizationCriterion {
 
-    private double maxError;
+	private double maxError;
 
-    private int maxNumPoints;
+	private int maxNumPoints;
 
-    public MaxErrorCriterion( double maxError, int maxNumPoints ) {
-        this.maxError = maxError;
-        this.maxNumPoints = maxNumPoints;
-    }
+	public MaxErrorCriterion(double maxError, int maxNumPoints) {
+		this.maxError = maxError;
+		this.maxNumPoints = maxNumPoints;
+	}
 
-    public double getMaxError() {
-        return maxError;
-    }
+	public double getMaxError() {
+		return maxError;
+	}
 
-    public int getMaxNumPoints() {
-        return maxNumPoints;
-    }
+	public int getMaxNumPoints() {
+		return maxNumPoints;
+	}
+
 }

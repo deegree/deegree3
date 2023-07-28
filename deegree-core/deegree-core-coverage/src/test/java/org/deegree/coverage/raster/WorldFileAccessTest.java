@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -51,75 +50,73 @@ import org.junit.Test;
 
 /**
  * Reading of worldfiles.
- * 
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$ }
  */
 public class WorldFileAccessTest {
 
-    private double delta = 0.0001;
+	private double delta = 0.0001;
 
-    private static File wld;
+	private static File wld;
 
-    /**
-     * @throws java.lang.Exception
-     */
-    @BeforeClass
-    public static void setUp()
-                            throws Exception {
-        wld = File.createTempFile( "deegree3-junit-test", ".wld" );
-        wld.deleteOnExit();
-        String wldString = "8.0\n0.0\n0.0\n-8.0\n420000.0\n4519999.0";
-        FileWriter writer = new FileWriter( wld );
-        writer.write( wldString );
-        writer.close();
-    }
+	/**
+	 * @throws java.lang.Exception
+	 */
+	@BeforeClass
+	public static void setUp() throws Exception {
+		wld = File.createTempFile("deegree3-junit-test", ".wld");
+		wld.deleteOnExit();
+		String wldString = "8.0\n0.0\n0.0\n-8.0\n420000.0\n4519999.0";
+		FileWriter writer = new FileWriter(wld);
+		writer.write(wldString);
+		writer.close();
+	}
 
-    /**
-     * Test method for {@link WorldFileAccess#readWorldFile(File, RasterIOOptions)} .
-     */
-    @Test
-    public void testReadWorldFile() {
-        try {
-            RasterIOOptions options = new RasterIOOptions();
-            options.add( RasterIOOptions.GEO_ORIGIN_LOCATION, OriginLocation.CENTER.name() );
-            RasterGeoReference rRefCenter = WorldFileAccess.readWorldFile( wld, options );
+	/**
+	 * Test method for {@link WorldFileAccess#readWorldFile(File, RasterIOOptions)} .
+	 */
+	@Test
+	public void testReadWorldFile() {
+		try {
+			RasterIOOptions options = new RasterIOOptions();
+			options.add(RasterIOOptions.GEO_ORIGIN_LOCATION, OriginLocation.CENTER.name());
+			RasterGeoReference rRefCenter = WorldFileAccess.readWorldFile(wld, options);
 
-            // center
-            double[] origin = rRefCenter.getOrigin();
-            assertEquals( 420000.000, origin[0], delta );
-            assertEquals( 4519999.000, origin[1], delta );
+			// center
+			double[] origin = rRefCenter.getOrigin();
+			assertEquals(420000.000, origin[0], delta);
+			assertEquals(4519999.000, origin[1], delta);
 
-            assertEquals( 8.0, rRefCenter.getResolutionX(), delta );
-            assertEquals( -8.0, rRefCenter.getResolutionY(), delta );
+			assertEquals(8.0, rRefCenter.getResolutionX(), delta);
+			assertEquals(-8.0, rRefCenter.getResolutionY(), delta);
 
-            Envelope env = rRefCenter.getEnvelope( 500, 500, null );
-            assertEquals( 420000.0, env.getMin().get0(), delta );
-            assertEquals( 4515999.0, env.getMin().get1(), delta );
-            assertEquals( 424000.000, env.getMax().get0(), delta );
-            assertEquals( 4519999.000, env.getMax().get1(), delta );
+			Envelope env = rRefCenter.getEnvelope(500, 500, null);
+			assertEquals(420000.0, env.getMin().get0(), delta);
+			assertEquals(4515999.0, env.getMin().get1(), delta);
+			assertEquals(424000.000, env.getMax().get0(), delta);
+			assertEquals(4519999.000, env.getMax().get1(), delta);
 
-            int[] size = rRefCenter.getSize( env );
-            assertEquals( 501, size[0] );
-            assertEquals( 501, size[1] );
+			int[] size = rRefCenter.getSize(env);
+			assertEquals(501, size[0]);
+			assertEquals(501, size[1]);
 
-            // outer
-            options.add( RasterIOOptions.GEO_ORIGIN_LOCATION, OriginLocation.OUTER.name() );
-            RasterGeoReference rRefOuter = WorldFileAccess.readWorldFile( wld, options );
-            origin = rRefOuter.getOrigin();
-            assertEquals( 420000.000, origin[0], delta );
-            assertEquals( 4519999.000, origin[1], delta );
+			// outer
+			options.add(RasterIOOptions.GEO_ORIGIN_LOCATION, OriginLocation.OUTER.name());
+			RasterGeoReference rRefOuter = WorldFileAccess.readWorldFile(wld, options);
+			origin = rRefOuter.getOrigin();
+			assertEquals(420000.000, origin[0], delta);
+			assertEquals(4519999.000, origin[1], delta);
 
-            // test the outer size
-            size = rRefOuter.getSize( env );
-            assertEquals( 500, size[0] );
-            assertEquals( 500, size[1] );
+			// test the outer size
+			size = rRefOuter.getSize(env);
+			assertEquals(500, size[0]);
+			assertEquals(500, size[1]);
 
-        } catch ( Exception e ) {
-            fail( "unexpected exception thrown: " + e.getMessage() );
-        }
+		}
+		catch (Exception e) {
+			fail("unexpected exception thrown: " + e.getMessage());
+		}
 
-    }
+	}
+
 }

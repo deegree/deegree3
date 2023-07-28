@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -52,40 +51,37 @@ import org.deegree.workspace.Workspace;
 
 /**
  * Builds a {@link FeatureInfoManager} from jaxb config.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 class FeatureInfoManagerBuilder {
 
-    static FeatureInfoManager buildFeatureInfoManager( FeatureInfoFormatsType conf, ResourceLocation<?> location,
-                                                       Workspace workspace )
-                            throws ResourceInitException {
-        FeatureInfoManager featureInfoManager = new FeatureInfoManager( true );
+	static FeatureInfoManager buildFeatureInfoManager(FeatureInfoFormatsType conf, ResourceLocation<?> location,
+			Workspace workspace) throws ResourceInitException {
+		FeatureInfoManager featureInfoManager = new FeatureInfoManager(true);
 
-        try {
-            if ( conf != null ) {
-                for ( GetFeatureInfoFormat t : conf.getGetFeatureInfoFormat() ) {
-                    if ( t.getFile() != null ) {
-                        featureInfoManager.addOrReplaceFormat( t.getFormat(),
-                                                               location.resolveToFile( t.getFile() ).toString() );
-                    } else {
-                        XSLTFile xsltFile = t.getXSLTFile();
-                        GMLVersion version = GMLVersion.valueOf( xsltFile.getGmlVersion().toString() );
-                        featureInfoManager.addOrReplaceXsltFormat( t.getFormat(),
-                                                                   location.resolveToUrl( xsltFile.getValue() ),
-                                                                   version, workspace );
-                    }
-                }
-            }
-        } catch ( Exception e ) {
-            throw new ResourceInitException( "GetFeatureInfo format handler could not be initialized: "
-                                             + e.getLocalizedMessage(), e );
-        }
-        
-        return featureInfoManager;
-    }
+		try {
+			if (conf != null) {
+				for (GetFeatureInfoFormat t : conf.getGetFeatureInfoFormat()) {
+					if (t.getFile() != null) {
+						featureInfoManager.addOrReplaceFormat(t.getFormat(),
+								location.resolveToFile(t.getFile()).toString());
+					}
+					else {
+						XSLTFile xsltFile = t.getXSLTFile();
+						GMLVersion version = GMLVersion.valueOf(xsltFile.getGmlVersion().toString());
+						featureInfoManager.addOrReplaceXsltFormat(t.getFormat(),
+								location.resolveToUrl(xsltFile.getValue()), version, workspace);
+					}
+				}
+			}
+		}
+		catch (Exception e) {
+			throw new ResourceInitException(
+					"GetFeatureInfo format handler could not be initialized: " + e.getLocalizedMessage(), e);
+		}
+
+		return featureInfoManager;
+	}
 
 }

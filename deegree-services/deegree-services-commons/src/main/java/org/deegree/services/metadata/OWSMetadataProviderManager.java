@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
@@ -54,37 +53,34 @@ import org.deegree.workspace.standard.DefaultResourceManagerMetadata;
 
 /**
  * {@link ResourceManager} for {@link OWSMetadataProvider}s.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 public class OWSMetadataProviderManager extends DefaultResourceManager<OWSMetadataProvider> {
 
-    public OWSMetadataProviderManager() {
-        super( new DefaultResourceManagerMetadata<OWSMetadataProvider>( OWSMetadataProviderProvider.class,
-                                                                        "service metadata", "services" ) );
-    }
+	public OWSMetadataProviderManager() {
+		super(new DefaultResourceManagerMetadata<OWSMetadataProvider>(OWSMetadataProviderProvider.class,
+				"service metadata", "services"));
+	}
 
-    @Override
-    protected void read( List<ResourceLocation<OWSMetadataProvider>> list ) {
-        list = new ArrayList<ResourceLocation<OWSMetadataProvider>>( list );
-        ListIterator<ResourceLocation<OWSMetadataProvider>> iter = list.listIterator();
-        while ( iter.hasNext() ) {
-            ResourceLocation<OWSMetadataProvider> loc = iter.next();
-            if ( !loc.getIdentifier().getId().endsWith( "_metadata" ) ) {
-                iter.remove();
-            }
-        }
-        super.read( list );
-    }
+	@Override
+	protected void read(List<ResourceLocation<OWSMetadataProvider>> list) {
+		list = new ArrayList<ResourceLocation<OWSMetadataProvider>>(list);
+		ListIterator<ResourceLocation<OWSMetadataProvider>> iter = list.listIterator();
+		while (iter.hasNext()) {
+			ResourceLocation<OWSMetadataProvider> loc = iter.next();
+			if (!loc.getIdentifier().getId().endsWith("_metadata")) {
+				iter.remove();
+			}
+		}
+		super.read(list);
+	}
 
-    @Override
-    public ResourceMetadata<OWSMetadataProvider> add( ResourceLocation<OWSMetadataProvider> location ) {
-        // else new locations will be filtered out
-        super.read( Collections.singletonList( location ) );
-        return metadataMap.get( location.getIdentifier() );
-    }
+	@Override
+	public ResourceMetadata<OWSMetadataProvider> add(ResourceLocation<OWSMetadataProvider> location) {
+		// else new locations will be filtered out
+		super.read(Collections.singletonList(location));
+		return metadataMap.get(location.getIdentifier());
+	}
 
 }

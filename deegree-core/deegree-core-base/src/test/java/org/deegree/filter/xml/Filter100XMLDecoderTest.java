@@ -79,392 +79,371 @@ import org.junit.Test;
 
 /**
  * The <code></code> class TODO add class documentation here.
- * 
+ *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * 
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ *
  */
 public class Filter100XMLDecoderTest extends TestCase {
 
-    @Override
-    @Before
-    public void setUp()
-                            throws Exception {
-        new DefaultWorkspace( new File( "nix" ) ).initAll();
-    }
+	@Override
+	@Before
+	public void setUp() throws Exception {
+		new DefaultWorkspace(new File("nix")).initAll();
+	}
 
-    /**
-     * @throws XMLStreamException
-     * @throws FactoryConfigurationError
-     * @throws IOException
-     */
-    @Test
-    public void testFilter1()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
-        Filter result = parse( "v100/testfilter1.xml" );
-        OperatorFilter opFilter = (OperatorFilter) result;
+	/**
+	 * @throws XMLStreamException
+	 * @throws FactoryConfigurationError
+	 * @throws IOException
+	 */
+	@Test
+	public void testFilter1() throws XMLStreamException, FactoryConfigurationError, IOException {
+		Filter result = parse("v100/testfilter1.xml");
+		OperatorFilter opFilter = (OperatorFilter) result;
 
-        PropertyIsEqualTo prop = (PropertyIsEqualTo) opFilter.getOperator();
-        assertEquals( "SomeProperty", ( (ValueReference) prop.getParameter1() ).getAsText() );
-        assertEquals( "100", ( (Literal<?>) prop.getParameter2() ).getValue().toString() );
-    }
+		PropertyIsEqualTo prop = (PropertyIsEqualTo) opFilter.getOperator();
+		assertEquals("SomeProperty", ((ValueReference) prop.getParameter1()).getAsText());
+		assertEquals("100", ((Literal<?>) prop.getParameter2()).getValue().toString());
+	}
 
-    /**
-     * @throws XMLStreamException
-     * @throws FactoryConfigurationError
-     * @throws IOException
-     */
-    @Test
-    public void testFilter2()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
-        Filter result = parse( "v100/testfilter2.xml" );
-        OperatorFilter opFilter = (OperatorFilter) result;
+	/**
+	 * @throws XMLStreamException
+	 * @throws FactoryConfigurationError
+	 * @throws IOException
+	 */
+	@Test
+	public void testFilter2() throws XMLStreamException, FactoryConfigurationError, IOException {
+		Filter result = parse("v100/testfilter2.xml");
+		OperatorFilter opFilter = (OperatorFilter) result;
 
-        PropertyIsLessThan prop = (PropertyIsLessThan) opFilter.getOperator();
-        assertEquals( "DEPTH", ( (ValueReference) prop.getParameter1() ).getAsText() );
-        assertEquals( "30", ( (Literal<?>) prop.getParameter2() ).getValue().toString() );
-    }
+		PropertyIsLessThan prop = (PropertyIsLessThan) opFilter.getOperator();
+		assertEquals("DEPTH", ((ValueReference) prop.getParameter1()).getAsText());
+		assertEquals("30", ((Literal<?>) prop.getParameter2()).getValue().toString());
+	}
 
-    /**
-     * @throws XMLStreamException
-     * @throws FactoryConfigurationError
-     * @throws IOException
-     */
-    @Test
-    public void testFilter3()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
-        Filter result = parse( "v100/testfilter3.xml" );
-        OperatorFilter opFilter = (OperatorFilter) result;
+	/**
+	 * @throws XMLStreamException
+	 * @throws FactoryConfigurationError
+	 * @throws IOException
+	 */
+	@Test
+	public void testFilter3() throws XMLStreamException, FactoryConfigurationError, IOException {
+		Filter result = parse("v100/testfilter3.xml");
+		OperatorFilter opFilter = (OperatorFilter) result;
 
-        Not op = (Not) opFilter.getOperator();
-        Disjoint op1 = (Disjoint) op.getParameter();
-        Object[] params = op1.getParams();
-        assertEquals( "Geometry", ( (ValueReference) params[0] ).getAsText() );
-    }
+		Not op = (Not) opFilter.getOperator();
+		Disjoint op1 = (Disjoint) op.getParameter();
+		Object[] params = op1.getParams();
+		assertEquals("Geometry", ((ValueReference) params[0]).getAsText());
+	}
 
-    /**
-     * @throws XMLStreamException
-     * @throws FactoryConfigurationError
-     * @throws IOException
-     */
-    @Test
-    public void testFilter4()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
-        Filter result = parse( "v100/testfilter4.xml" );
-        OperatorFilter opFilter = (OperatorFilter) result;
+	/**
+	 * @throws XMLStreamException
+	 * @throws FactoryConfigurationError
+	 * @throws IOException
+	 */
+	@Test
+	public void testFilter4() throws XMLStreamException, FactoryConfigurationError, IOException {
+		Filter result = parse("v100/testfilter4.xml");
+		OperatorFilter opFilter = (OperatorFilter) result;
 
-        BBOX op = (BBOX) opFilter.getOperator();
-        Envelope env = op.getBoundingBox();
-        Point min = env.getMin();
-        Point max = env.getMax();
+		BBOX op = (BBOX) opFilter.getOperator();
+		Envelope env = op.getBoundingBox();
+		Point min = env.getMin();
+		Point max = env.getMax();
 
-        assertEquals( 13.0983, min.get0() );
-        assertEquals( 31.5899, min.get1() );
-        assertEquals( 35.5472, max.get0() );
-        assertEquals( 42.8143, max.get1() );
-    }
+		assertEquals(13.0983, min.get0());
+		assertEquals(31.5899, min.get1());
+		assertEquals(35.5472, max.get0());
+		assertEquals(42.8143, max.get1());
+	}
 
-    /**
-     * @throws XMLStreamException
-     * @throws FactoryConfigurationError
-     * @throws IOException
-     */
-    @SuppressWarnings({ "unchecked", "boxing" })
-    @Test
-    public void testFilter5()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
-        Filter result = parse( "v100/testfilter5.xml" );
-        OperatorFilter opFilter = (OperatorFilter) result;
+	/**
+	 * @throws XMLStreamException
+	 * @throws FactoryConfigurationError
+	 * @throws IOException
+	 */
+	@SuppressWarnings({ "unchecked", "boxing" })
+	@Test
+	public void testFilter5() throws XMLStreamException, FactoryConfigurationError, IOException {
+		Filter result = parse("v100/testfilter5.xml");
+		OperatorFilter opFilter = (OperatorFilter) result;
 
-        And op = (And) opFilter.getOperator();
-        PropertyIsLessThan prop = (PropertyIsLessThan) op.getParameter( 0 );
-        ValueReference propName = (ValueReference) prop.getParameter1();
-        assertEquals( "DEPTH", propName.getAsText() );
-        Literal<PrimitiveValue> literal = (Literal<PrimitiveValue>) prop.getParameter2();
-        assertEquals( "30", literal.getValue().toString() );
+		And op = (And) opFilter.getOperator();
+		PropertyIsLessThan prop = (PropertyIsLessThan) op.getParameter(0);
+		ValueReference propName = (ValueReference) prop.getParameter1();
+		assertEquals("DEPTH", propName.getAsText());
+		Literal<PrimitiveValue> literal = (Literal<PrimitiveValue>) prop.getParameter2();
+		assertEquals("30", literal.getValue().toString());
 
-        Not not = (Not) op.getParameter( 1 );
-        Disjoint disjoint = (Disjoint) not.getParameter();
-        Object[] params = disjoint.getParams();
-        ValueReference dPropName = (ValueReference) params[0];
-        assertEquals( "Geometry", dPropName.getAsText() );
-        Envelope box = (Envelope) params[1];
+		Not not = (Not) op.getParameter(1);
+		Disjoint disjoint = (Disjoint) not.getParameter();
+		Object[] params = disjoint.getParams();
+		ValueReference dPropName = (ValueReference) params[0];
+		assertEquals("Geometry", dPropName.getAsText());
+		Envelope box = (Envelope) params[1];
 
-        Point min = box.getMin();
-        Point max = box.getMax();
-        assertEquals( 13.0983, min.get0() );
-        assertEquals( 31.5899, min.get1() );
-        assertEquals( 35.5472, max.get0() );
-        assertEquals( 42.8143, max.get1() );
-    }
+		Point min = box.getMin();
+		Point max = box.getMax();
+		assertEquals(13.0983, min.get0());
+		assertEquals(31.5899, min.get1());
+		assertEquals(35.5472, max.get0());
+		assertEquals(42.8143, max.get1());
+	}
 
-    /**
-     * @throws XMLStreamException
-     * @throws FactoryConfigurationError
-     * @throws IOException
-     */
-    @Test
-    public void testFilter6()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
-        Filter result = parse( "v100/testfilter6.xml" );
-        IdFilter idFilter = (IdFilter) result;
+	/**
+	 * @throws XMLStreamException
+	 * @throws FactoryConfigurationError
+	 * @throws IOException
+	 */
+	@Test
+	public void testFilter6() throws XMLStreamException, FactoryConfigurationError, IOException {
+		Filter result = parse("v100/testfilter6.xml");
+		IdFilter idFilter = (IdFilter) result;
 
-        Set<String> matchingIds = idFilter.getMatchingIds();
-        assertTrue( matchingIds.contains( "TREESA_1M.1234" ) );
-    }
+		Set<String> matchingIds = idFilter.getMatchingIds();
+		assertTrue(matchingIds.contains("TREESA_1M.1234"));
+	}
 
-    /**
-     * @throws XMLStreamException
-     * @throws FactoryConfigurationError
-     * @throws IOException
-     */
-    @Test
-    public void testFilter7()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
-        Filter result = parse( "v100/testfilter7.xml" );
-        IdFilter idFilter = (IdFilter) result;
+	/**
+	 * @throws XMLStreamException
+	 * @throws FactoryConfigurationError
+	 * @throws IOException
+	 */
+	@Test
+	public void testFilter7() throws XMLStreamException, FactoryConfigurationError, IOException {
+		Filter result = parse("v100/testfilter7.xml");
+		IdFilter idFilter = (IdFilter) result;
 
-        Set<String> matchingIds = idFilter.getMatchingIds();
-        assertTrue( matchingIds.contains( "TREESA_1M.1234" ) );
-        assertTrue( matchingIds.contains( "TREESA_1M.5678" ) );
-        assertTrue( matchingIds.contains( "TREESA_1M.9012" ) );
-        assertTrue( matchingIds.contains( "INWATERA_1M.3456" ) );
-        assertTrue( matchingIds.contains( "INWATERA_1M.7890" ) );
-        assertTrue( matchingIds.contains( "BUILTUPA_1M.4321" ) );
-    }
+		Set<String> matchingIds = idFilter.getMatchingIds();
+		assertTrue(matchingIds.contains("TREESA_1M.1234"));
+		assertTrue(matchingIds.contains("TREESA_1M.5678"));
+		assertTrue(matchingIds.contains("TREESA_1M.9012"));
+		assertTrue(matchingIds.contains("INWATERA_1M.3456"));
+		assertTrue(matchingIds.contains("INWATERA_1M.7890"));
+		assertTrue(matchingIds.contains("BUILTUPA_1M.4321"));
+	}
 
-    /**
-     * @throws XMLStreamException
-     * @throws FactoryConfigurationError
-     * @throws IOException
-     */
-    @SuppressWarnings("unchecked")
-    @Test
-    public void testFilter8()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
-        Filter result = parse( "v100/testfilter8.xml" );
-        OperatorFilter opFilter = (OperatorFilter) result;
+	/**
+	 * @throws XMLStreamException
+	 * @throws FactoryConfigurationError
+	 * @throws IOException
+	 */
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testFilter8() throws XMLStreamException, FactoryConfigurationError, IOException {
+		Filter result = parse("v100/testfilter8.xml");
+		OperatorFilter opFilter = (OperatorFilter) result;
 
-        PropertyIsEqualTo prop = (PropertyIsEqualTo) opFilter.getOperator();
-        Function func = (Function) prop.getParameter1();
-        assertEquals( "SIN", func.getName() );
-        List<Expression> params = func.getParameters();
-        ValueReference propName = (ValueReference) params.get( 0 );
-        assertEquals( "DISPERSION_ANGLE", propName.getAsText() );
+		PropertyIsEqualTo prop = (PropertyIsEqualTo) opFilter.getOperator();
+		Function func = (Function) prop.getParameter1();
+		assertEquals("SIN", func.getName());
+		List<Expression> params = func.getParameters();
+		ValueReference propName = (ValueReference) params.get(0);
+		assertEquals("DISPERSION_ANGLE", propName.getAsText());
 
-        Literal<PrimitiveValue> lit = (Literal<PrimitiveValue>) prop.getParameter2();
-        assertEquals( "1", lit.getValue().toString() );
-    }
+		Literal<PrimitiveValue> lit = (Literal<PrimitiveValue>) prop.getParameter2();
+		assertEquals("1", lit.getValue().toString());
+	}
 
-    /**
-     * @throws XMLStreamException
-     * @throws FactoryConfigurationError
-     * @throws IOException
-     */
-    @SuppressWarnings("unchecked")
-    @Test
-    public void testFilter9()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
-        Filter result = parse( "v100/testfilter9.xml" );
-        OperatorFilter opFilter = (OperatorFilter) result;
+	/**
+	 * @throws XMLStreamException
+	 * @throws FactoryConfigurationError
+	 * @throws IOException
+	 */
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testFilter9() throws XMLStreamException, FactoryConfigurationError, IOException {
+		Filter result = parse("v100/testfilter9.xml");
+		OperatorFilter opFilter = (OperatorFilter) result;
 
-        PropertyIsEqualTo prop = (PropertyIsEqualTo) opFilter.getOperator();
-        ValueReference propName = (ValueReference) prop.getParameter1();
-        assertEquals( "PROPA", propName.getAsText() );
+		PropertyIsEqualTo prop = (PropertyIsEqualTo) opFilter.getOperator();
+		ValueReference propName = (ValueReference) prop.getParameter1();
+		assertEquals("PROPA", propName.getAsText());
 
-        Add add = (Add) prop.getParameter2();
-        ValueReference propB = (ValueReference) add.getParameter1();
-        assertEquals( "PROPB", propB.getAsText() );
+		Add add = (Add) prop.getParameter2();
+		ValueReference propB = (ValueReference) add.getParameter1();
+		assertEquals("PROPB", propB.getAsText());
 
-        Literal<PrimitiveValue> lit = (Literal<PrimitiveValue>) add.getParameter2();
-        assertEquals( "100", lit.getValue().toString() );
-    }
+		Literal<PrimitiveValue> lit = (Literal<PrimitiveValue>) add.getParameter2();
+		assertEquals("100", lit.getValue().toString());
+	}
 
-    /**
-     * @throws XMLStreamException
-     * @throws FactoryConfigurationError
-     * @throws IOException
-     */
-    @SuppressWarnings("unchecked")
-    @Test
-    public void testFilter10()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
-        Filter result = parse( "v100/testfilter10.xml" );
-        OperatorFilter opFilter = (OperatorFilter) result;
+	/**
+	 * @throws XMLStreamException
+	 * @throws FactoryConfigurationError
+	 * @throws IOException
+	 */
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testFilter10() throws XMLStreamException, FactoryConfigurationError, IOException {
+		Filter result = parse("v100/testfilter10.xml");
+		OperatorFilter opFilter = (OperatorFilter) result;
 
-        PropertyIsBetween prop = (PropertyIsBetween) opFilter.getOperator();
-        Literal<PrimitiveValue> lb = (Literal<PrimitiveValue>) prop.getLowerBoundary();
-        assertEquals( "100", lb.getValue().toString() );
+		PropertyIsBetween prop = (PropertyIsBetween) opFilter.getOperator();
+		Literal<PrimitiveValue> lb = (Literal<PrimitiveValue>) prop.getLowerBoundary();
+		assertEquals("100", lb.getValue().toString());
 
-        Literal<PrimitiveValue> ub = (Literal<PrimitiveValue>) prop.getUpperBoundary();
-        assertEquals( "200", ub.getValue().toString() );
+		Literal<PrimitiveValue> ub = (Literal<PrimitiveValue>) prop.getUpperBoundary();
+		assertEquals("200", ub.getValue().toString());
 
-        ValueReference propName = (ValueReference) prop.getExpression();
-        assertEquals( "DEPTH", propName.getAsText() );
-    }
+		ValueReference propName = (ValueReference) prop.getExpression();
+		assertEquals("DEPTH", propName.getAsText());
+	}
 
-    /**
-     * @throws XMLStreamException
-     * @throws FactoryConfigurationError
-     * @throws IOException
-     */
-    @SuppressWarnings("unchecked")
-    @Test
-    public void testFilter11()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
-        Filter result = parse( "v100/testfilter11.xml" );
-        OperatorFilter opFilter = (OperatorFilter) result;
+	/**
+	 * @throws XMLStreamException
+	 * @throws FactoryConfigurationError
+	 * @throws IOException
+	 */
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testFilter11() throws XMLStreamException, FactoryConfigurationError, IOException {
+		Filter result = parse("v100/testfilter11.xml");
+		OperatorFilter opFilter = (OperatorFilter) result;
 
-        PropertyIsBetween prop = (PropertyIsBetween) opFilter.getOperator();
-        Literal<PrimitiveValue> lb = (Literal<PrimitiveValue>) prop.getLowerBoundary();
-        assertEquals( "2001-01-15T20:07:48.11", lb.getValue().toString() );
+		PropertyIsBetween prop = (PropertyIsBetween) opFilter.getOperator();
+		Literal<PrimitiveValue> lb = (Literal<PrimitiveValue>) prop.getLowerBoundary();
+		assertEquals("2001-01-15T20:07:48.11", lb.getValue().toString());
 
-        Literal<PrimitiveValue> ub = (Literal<PrimitiveValue>) prop.getUpperBoundary();
-        assertEquals( "2001-03-06T12:00:00.00", ub.getValue().toString() );
+		Literal<PrimitiveValue> ub = (Literal<PrimitiveValue>) prop.getUpperBoundary();
+		assertEquals("2001-03-06T12:00:00.00", ub.getValue().toString());
 
-        ValueReference propName = (ValueReference) prop.getExpression();
-        assertEquals( "SAMPLE_DATE", propName.getAsText() );
-    }
+		ValueReference propName = (ValueReference) prop.getExpression();
+		assertEquals("SAMPLE_DATE", propName.getAsText());
+	}
 
-    /**
-     * @throws XMLStreamException
-     * @throws FactoryConfigurationError
-     * @throws IOException
-     */
-    @Test
-    public void testFilter12()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
-        Filter result = parse( "v100/testfilter12.xml" );
-        OperatorFilter opFilter = (OperatorFilter) result;
+	/**
+	 * @throws XMLStreamException
+	 * @throws FactoryConfigurationError
+	 * @throws IOException
+	 */
+	@Test
+	public void testFilter12() throws XMLStreamException, FactoryConfigurationError, IOException {
+		Filter result = parse("v100/testfilter12.xml");
+		OperatorFilter opFilter = (OperatorFilter) result;
 
-        PropertyIsLike propIsLike = (PropertyIsLike) opFilter.getOperator();
-        assertEquals( "!", propIsLike.getEscapeChar() );
-        assertEquals( "#", propIsLike.getSingleChar() );
-        assertEquals( "*", propIsLike.getWildCard() );
-    }
+		PropertyIsLike propIsLike = (PropertyIsLike) opFilter.getOperator();
+		assertEquals("!", propIsLike.getEscapeChar());
+		assertEquals("#", propIsLike.getSingleChar());
+		assertEquals("*", propIsLike.getWildCard());
+	}
 
-    /**
-     * @throws XMLStreamException
-     * @throws FactoryConfigurationError
-     * @throws IOException
-     */
-    @SuppressWarnings("boxing")
-    @Test
-    public void testFilter13()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
-        Filter result = parse( "v100/testfilter13.xml" );
-        OperatorFilter opFilter = (OperatorFilter) result;
+	/**
+	 * @throws XMLStreamException
+	 * @throws FactoryConfigurationError
+	 * @throws IOException
+	 */
+	@SuppressWarnings("boxing")
+	@Test
+	public void testFilter13() throws XMLStreamException, FactoryConfigurationError, IOException {
+		Filter result = parse("v100/testfilter13.xml");
+		OperatorFilter opFilter = (OperatorFilter) result;
 
-        Overlaps overlaps = (Overlaps) opFilter.getOperator();
-        Object[] params = overlaps.getParams();
-        ValueReference propName = (ValueReference) params[0];
-        assertEquals( "Geometry", propName.getAsText() );
+		Overlaps overlaps = (Overlaps) opFilter.getOperator();
+		Object[] params = overlaps.getParams();
+		ValueReference propName = (ValueReference) params[0];
+		assertEquals("Geometry", propName.getAsText());
 
-        Polygon polygon = (Polygon) params[1];
-        LinearRing linearRing = (LinearRing) polygon.getExteriorRing();
-        Points points = linearRing.getControlPoints();
-        assertEquals( 0.0, points.get( 0 ).get0() );
-        assertEquals( 0.0, points.get( 0 ).get1() );
-        assertEquals( 1.0, points.get( 1 ).get0() );
-        assertEquals( 1.0, points.get( 1 ).get1() );
-        assertEquals( 1.0, points.get( 2 ).get0() );
-        assertEquals( 2.0, points.get( 2 ).get1() );
-        assertEquals( 2.0, points.get( 3 ).get0() );
-        assertEquals( 2.0, points.get( 3 ).get1() );
-    }
+		Polygon polygon = (Polygon) params[1];
+		LinearRing linearRing = (LinearRing) polygon.getExteriorRing();
+		Points points = linearRing.getControlPoints();
+		assertEquals(0.0, points.get(0).get0());
+		assertEquals(0.0, points.get(0).get1());
+		assertEquals(1.0, points.get(1).get0());
+		assertEquals(1.0, points.get(1).get1());
+		assertEquals(1.0, points.get(2).get0());
+		assertEquals(2.0, points.get(2).get1());
+		assertEquals(2.0, points.get(3).get0());
+		assertEquals(2.0, points.get(3).get1());
+	}
 
-    /**
-     * @throws XMLStreamException
-     * @throws FactoryConfigurationError
-     * @throws IOException
-     */
-    @SuppressWarnings("unchecked")
-    @Test
-    public void testFilter14()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
-        Filter result = parse( "v100/testfilter14.xml" );
-        OperatorFilter opFilter = (OperatorFilter) result;
+	/**
+	 * @throws XMLStreamException
+	 * @throws FactoryConfigurationError
+	 * @throws IOException
+	 */
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testFilter14() throws XMLStreamException, FactoryConfigurationError, IOException {
+		Filter result = parse("v100/testfilter14.xml");
+		OperatorFilter opFilter = (OperatorFilter) result;
 
-        And and = (And) opFilter.getOperator();
-        Or or = (Or) and.getParameter( 0 );
-        PropertyIsEqualTo prop0 = (PropertyIsEqualTo) or.getParameter( 0 );
-        assertEquals( "FIELD1", ( (ValueReference) prop0.getParameter1() ).getAsText() );
-        assertEquals( "10", ( (Literal<PrimitiveValue>) prop0.getParameter2() ).getValue().toString() );
+		And and = (And) opFilter.getOperator();
+		Or or = (Or) and.getParameter(0);
+		PropertyIsEqualTo prop0 = (PropertyIsEqualTo) or.getParameter(0);
+		assertEquals("FIELD1", ((ValueReference) prop0.getParameter1()).getAsText());
+		assertEquals("10", ((Literal<PrimitiveValue>) prop0.getParameter2()).getValue().toString());
 
-        PropertyIsEqualTo prop1 = (PropertyIsEqualTo) or.getParameter( 1 );
-        assertEquals( "FIELD1", ( (ValueReference) prop1.getParameter1() ).getAsText() );
-        assertEquals( "20", ( (Literal<PrimitiveValue>) prop1.getParameter2() ).getValue().toString() );
+		PropertyIsEqualTo prop1 = (PropertyIsEqualTo) or.getParameter(1);
+		assertEquals("FIELD1", ((ValueReference) prop1.getParameter1()).getAsText());
+		assertEquals("20", ((Literal<PrimitiveValue>) prop1.getParameter2()).getValue().toString());
 
-        PropertyIsEqualTo prop01 = (PropertyIsEqualTo) and.getParameter( 1 );
-        assertEquals( "STATUS", ( (ValueReference) prop01.getParameter1() ).getAsText() );
-        assertEquals( "VALID", ( (Literal<PrimitiveValue>) prop01.getParameter2() ).getValue().toString() );
-    }
+		PropertyIsEqualTo prop01 = (PropertyIsEqualTo) and.getParameter(1);
+		assertEquals("STATUS", ((ValueReference) prop01.getParameter1()).getAsText());
+		assertEquals("VALID", ((Literal<PrimitiveValue>) prop01.getParameter2()).getValue().toString());
+	}
 
-    /**
-     * @throws XMLStreamException
-     * @throws FactoryConfigurationError
-     * @throws IOException
-     */
-    @SuppressWarnings("boxing")
-    @Test
-    public void testFilter15()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
-        Filter result = parse( "v100/testfilter15.xml" );
-        OperatorFilter opFilter = (OperatorFilter) result;
+	/**
+	 * @throws XMLStreamException
+	 * @throws FactoryConfigurationError
+	 * @throws IOException
+	 */
+	@SuppressWarnings("boxing")
+	@Test
+	public void testFilter15() throws XMLStreamException, FactoryConfigurationError, IOException {
+		Filter result = parse("v100/testfilter15.xml");
+		OperatorFilter opFilter = (OperatorFilter) result;
 
-        And and = (And) opFilter.getOperator();
-        Within within = (Within) and.getParameter( 0 );
-        ValueReference propName = within.getPropName();
-        assertEquals( "WKB_GEOM", propName.getAsText() );
-        Polygon polygon = (Polygon) within.getGeometry();
-        Points points = polygon.getExteriorRingCoordinates();
-        // -98.5485,24.2633 100.0,100.0 100.0,100.0 100.0,100.0
-        assertEquals( -98.5485, points.get( 0 ).get0() );
-        assertEquals( 24.2633, points.get( 0 ).get1() );
-        assertEquals( 100.0, points.get( 1 ).get0() );
-        assertEquals( 100.0, points.get( 1 ).get1() );
-        assertEquals( 100.0, points.get( 2 ).get0() );
-        assertEquals( 100.0, points.get( 2 ).get1() );
-        assertEquals( 100.0, points.get( 3 ).get0() );
-        assertEquals( 100.0, points.get( 3 ).get1() );
-    }
+		And and = (And) opFilter.getOperator();
+		Within within = (Within) and.getParameter(0);
+		ValueReference propName = within.getPropName();
+		assertEquals("WKB_GEOM", propName.getAsText());
+		Polygon polygon = (Polygon) within.getGeometry();
+		Points points = polygon.getExteriorRingCoordinates();
+		// -98.5485,24.2633 100.0,100.0 100.0,100.0 100.0,100.0
+		assertEquals(-98.5485, points.get(0).get0());
+		assertEquals(24.2633, points.get(0).get1());
+		assertEquals(100.0, points.get(1).get0());
+		assertEquals(100.0, points.get(1).get1());
+		assertEquals(100.0, points.get(2).get0());
+		assertEquals(100.0, points.get(2).get1());
+		assertEquals(100.0, points.get(3).get0());
+		assertEquals(100.0, points.get(3).get1());
+	}
 
-    /**
-     * @throws XMLStreamException
-     * @throws FactoryConfigurationError
-     * @throws IOException
-     */
-    @SuppressWarnings("unchecked")
-    @Test
-    public void testFilter16()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
-        Filter result = parse( "v100/testfilter16.xml" );
-        OperatorFilter opFilter = (OperatorFilter) result;
+	/**
+	 * @throws XMLStreamException
+	 * @throws FactoryConfigurationError
+	 * @throws IOException
+	 */
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testFilter16() throws XMLStreamException, FactoryConfigurationError, IOException {
+		Filter result = parse("v100/testfilter16.xml");
+		OperatorFilter opFilter = (OperatorFilter) result;
 
-        And and = (And) opFilter.getOperator();
-        PropertyIsGreaterThan pg = (PropertyIsGreaterThan) and.getParameter( 0 );
-        ValueReference pn1 = (ValueReference) pg.getParameter1();
-        assertEquals( "Person/Age", pn1.getAsText() );
-        Literal<PrimitiveValue> lit1 = (Literal<PrimitiveValue>) pg.getParameter2();
-        assertEquals( "50", lit1.getValue().toString() );
+		And and = (And) opFilter.getOperator();
+		PropertyIsGreaterThan pg = (PropertyIsGreaterThan) and.getParameter(0);
+		ValueReference pn1 = (ValueReference) pg.getParameter1();
+		assertEquals("Person/Age", pn1.getAsText());
+		Literal<PrimitiveValue> lit1 = (Literal<PrimitiveValue>) pg.getParameter2();
+		assertEquals("50", lit1.getValue().toString());
 
-        PropertyIsEqualTo pe = (PropertyIsEqualTo) and.getParameter( 1 );
-        ValueReference pn2 = (ValueReference) pe.getParameter1();
-        assertEquals( "Person/Address/City", pn2.getAsText() );
-        Literal<PrimitiveValue> lit2 = (Literal<PrimitiveValue>) pe.getParameter2();
-        assertEquals( "Toronto", lit2.getValue().toString() );
-    }
+		PropertyIsEqualTo pe = (PropertyIsEqualTo) and.getParameter(1);
+		ValueReference pn2 = (ValueReference) pe.getParameter1();
+		assertEquals("Person/Address/City", pn2.getAsText());
+		Literal<PrimitiveValue> lit2 = (Literal<PrimitiveValue>) pe.getParameter2();
+		assertEquals("Toronto", lit2.getValue().toString());
+	}
 
-    private Filter parse( String resourceName )
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
-        URL url = Filter100XMLDecoderTest.class.getResource( resourceName );
-        XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( url.toString(),
-                                                                                         url.openStream() );
-        xmlStream.nextTag();
+	private Filter parse(String resourceName) throws XMLStreamException, FactoryConfigurationError, IOException {
+		URL url = Filter100XMLDecoderTest.class.getResource(resourceName);
+		XMLStreamReader xmlStream = XMLInputFactory.newInstance()
+			.createXMLStreamReader(url.toString(), url.openStream());
+		xmlStream.nextTag();
 
-        return Filter100XMLDecoder.parse( xmlStream );
-    }
+		return Filter100XMLDecoder.parse(xmlStream);
+	}
+
 }

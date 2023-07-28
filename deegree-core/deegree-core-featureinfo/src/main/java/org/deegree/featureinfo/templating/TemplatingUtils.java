@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -62,48 +61,49 @@ import org.slf4j.Logger;
 
 /**
  * Utility method to run a template against a feature collection.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 public class TemplatingUtils {
 
-    private static final Logger LOG = getLogger( TemplatingUtils.class );
+	private static final Logger LOG = getLogger(TemplatingUtils.class);
 
-    public static void runTemplate( OutputStream response, String fiFile, FeatureCollection col, boolean geometries )
-                            throws IOException {
-        PrintWriter out = new PrintWriter( new OutputStreamWriter( response, "UTF-8" ) );
+	public static void runTemplate(OutputStream response, String fiFile, FeatureCollection col, boolean geometries)
+			throws IOException {
+		PrintWriter out = new PrintWriter(new OutputStreamWriter(response, "UTF-8"));
 
-        try {
-            InputStream in;
-            if ( fiFile == null ) {
-                in = FeatureInfoManager.class.getResourceAsStream( "html.gfi" );
-            } else {
-                in = new FileInputStream( fiFile );
-            }
+		try {
+			InputStream in;
+			if (fiFile == null) {
+				in = FeatureInfoManager.class.getResourceAsStream("html.gfi");
+			}
+			else {
+				in = new FileInputStream(fiFile);
+			}
 
-            CharStream input = new ANTLRInputStream( in );
-            Templating2Lexer lexer = new Templating2Lexer( input );
-            CommonTokenStream cts = new CommonTokenStream( lexer );
-            cts.fill();
-            Templating2Parser parser = new Templating2Parser( cts );
-            HashMap<String, Object> defs = (HashMap) parser.definitions();
+			CharStream input = new ANTLRInputStream(in);
+			Templating2Lexer lexer = new Templating2Lexer(input);
+			CommonTokenStream cts = new CommonTokenStream(lexer);
+			cts.fill();
+			Templating2Parser parser = new Templating2Parser(cts);
+			HashMap<String, Object> defs = (HashMap) parser.definitions();
 
-            StringBuilder sb = new StringBuilder();
-            new PropertyTemplateCall( "start", singletonList( "*" ), false ).eval( sb, defs, col, geometries );
-            out.println( sb.toString() );
-        } catch ( Throwable e ) {
-            if ( fiFile == null ) {
-                LOG.error( "Could not load internal template for GFI response." );
-            } else {
-                LOG.error( "Could not load template '{}' for GFI response.", fiFile );
-            }
-            LOG.trace( "Stack trace:", e );
-        } finally {
-            out.close();
-        }
-    }
+			StringBuilder sb = new StringBuilder();
+			new PropertyTemplateCall("start", singletonList("*"), false).eval(sb, defs, col, geometries);
+			out.println(sb.toString());
+		}
+		catch (Throwable e) {
+			if (fiFile == null) {
+				LOG.error("Could not load internal template for GFI response.");
+			}
+			else {
+				LOG.error("Could not load template '{}' for GFI response.", fiFile);
+			}
+			LOG.trace("Stack trace:", e);
+		}
+		finally {
+			out.close();
+		}
+	}
 
 }

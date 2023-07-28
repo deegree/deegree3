@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/trunk/deegree-core/deegree-core-metadata/src/test/java/org/deegree/metadata/iso/persistence/inspectors/InspectorCouplingTest.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -51,87 +50,87 @@ import org.slf4j.LoggerFactory;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 30779 $, $Date: 2011-05-11 16:04:22 +0200 (Mi, 11. Mai 2011) $
  */
 public class InspectorCouplingTest extends AbstractISOTest {
 
-    private static Logger LOG = LoggerFactory.getLogger( InspectorCouplingTest.class );
+	private static Logger LOG = LoggerFactory.getLogger(InspectorCouplingTest.class);
 
-    @Test
-    public void testCouplingConsistencyErrorFALSE()
-                            throws MetadataStoreException, MetadataInspectorException, ResourceInitException {
-        LOG.info( "START Test: test if the the coupling of data and service metadata is correct and no exception will be thrown. " );
+	@Test
+	public void testCouplingConsistencyErrorFALSE()
+			throws MetadataStoreException, MetadataInspectorException, ResourceInitException {
+		LOG.info(
+				"START Test: test if the the coupling of data and service metadata is correct and no exception will be thrown. ");
 
-        initStore( TstConstants.configURL_COUPLING_ACCEPT );
-        Assume.assumeNotNull( store );
+		initStore(TstConstants.configURL_COUPLING_ACCEPT);
+		Assume.assumeNotNull(store);
 
-        List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_12, TstConstants.tst_12_2,
-                                                    TstConstants.tst_13 );
+		List<String> ids = TstUtils.insertMetadata(store, TstConstants.tst_12, TstConstants.tst_12_2,
+				TstConstants.tst_13);
 
-        resultSet = store.getRecordById( ids, null );
-        int size = 0;
-        while ( resultSet.next() ) {
-            size++;
-        }
+		resultSet = store.getRecordById(ids, null);
+		int size = 0;
+		while (resultSet.next()) {
+			size++;
+		}
 
-        Assert.assertEquals( 3, size );
+		Assert.assertEquals(3, size);
 
-    }
+	}
 
-    @Test
-    public void testCouplingConsistencyErrorFALSE_NO_CONSISTENCY()
-                            throws MetadataStoreException, MetadataInspectorException, ResourceInitException {
-        LOG.info( "START Test: test if the the coupled service metadata will be inserted without any coupling but no exception will be thrown. " );
+	@Test
+	public void testCouplingConsistencyErrorFALSE_NO_CONSISTENCY()
+			throws MetadataStoreException, MetadataInspectorException, ResourceInitException {
+		LOG.info(
+				"START Test: test if the the coupled service metadata will be inserted without any coupling but no exception will be thrown. ");
 
-        initStore( TstConstants.configURL_COUPLING_ACCEPT );
-        Assume.assumeNotNull( store );
+		initStore(TstConstants.configURL_COUPLING_ACCEPT);
+		Assume.assumeNotNull(store);
 
-        List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_11, TstConstants.tst_13 );
+		List<String> ids = TstUtils.insertMetadata(store, TstConstants.tst_11, TstConstants.tst_13);
 
-        resultSet = store.getRecordById( ids, null );
-        int size = 0;
-        while ( resultSet.next() ) {
-            size++;
-        }
+		resultSet = store.getRecordById(ids, null);
+		int size = 0;
+		while (resultSet.next()) {
+			size++;
+		}
 
-        Assert.assertEquals( 2, size );
+		Assert.assertEquals(2, size);
 
-    }
+	}
 
-    @Test
-    public void testCouplingConsistencyErrorTRUE_NO_Exception()
-                            throws MetadataStoreException, MetadataInspectorException, ResourceInitException {
-        LOG.info( "START Test: test if the the coupling of data and service metadata is correct and no exception will be thrown. " );
+	@Test
+	public void testCouplingConsistencyErrorTRUE_NO_Exception()
+			throws MetadataStoreException, MetadataInspectorException, ResourceInitException {
+		LOG.info(
+				"START Test: test if the the coupling of data and service metadata is correct and no exception will be thrown. ");
 
-        initStore( TstConstants.configURL_COUPLING_Ex_AWARE );
-        Assume.assumeNotNull( store );
+		initStore(TstConstants.configURL_COUPLING_Ex_AWARE);
+		Assume.assumeNotNull(store);
 
-        List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_12, TstConstants.tst_12_2,
-                                                    TstConstants.tst_13 );
+		List<String> ids = TstUtils.insertMetadata(store, TstConstants.tst_12, TstConstants.tst_12_2,
+				TstConstants.tst_13);
 
-        resultSet = store.getRecordById( ids, null );
-        int size = 0;
-        while ( resultSet.next() ) {
-            size++;
-        }
+		resultSet = store.getRecordById(ids, null);
+		int size = 0;
+		while (resultSet.next()) {
+			size++;
+		}
 
-        Assert.assertEquals( 3, size );
+		Assert.assertEquals(3, size);
 
-    }
+	}
 
-    // strictness when testing for coupling was set more relaxed
-    // @Test(expected = MetadataInspectorException.class)
-    public void testCouplingConsistencyErrorTRUE_WITH_Exception()
-                            throws MetadataStoreException, MetadataInspectorException, ResourceInitException {
-        LOG.info( "START Test: test if an exception will be thrown if there is an insert of the service metadata. " );
-        initStore( TstConstants.configURL_COUPLING_Ex_AWARE );
-        Assume.assumeNotNull( store );
-        TstUtils.insertMetadata( store, TstConstants.tst_11, TstConstants.tst_13 );
+	// strictness when testing for coupling was set more relaxed
+	// @Test(expected = MetadataInspectorException.class)
+	public void testCouplingConsistencyErrorTRUE_WITH_Exception()
+			throws MetadataStoreException, MetadataInspectorException, ResourceInitException {
+		LOG.info("START Test: test if an exception will be thrown if there is an insert of the service metadata. ");
+		initStore(TstConstants.configURL_COUPLING_Ex_AWARE);
+		Assume.assumeNotNull(store);
+		TstUtils.insertMetadata(store, TstConstants.tst_11, TstConstants.tst_13);
 
-    }
+	}
 
 }

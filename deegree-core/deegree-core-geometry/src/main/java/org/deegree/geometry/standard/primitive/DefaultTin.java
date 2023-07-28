@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -51,137 +50,124 @@ import org.deegree.geometry.standard.AbstractDefaultGeometry;
 
 /**
  * Default implementation of {@link Tin}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class DefaultTin extends AbstractDefaultGeometry implements Tin {
 
-    private List<Triangle> patches;
+	private List<Triangle> patches;
 
-    private List<List<LineStringSegment>> stopLines;
+	private List<List<LineStringSegment>> stopLines;
 
-    private List<List<LineStringSegment>> breakLines;
+	private List<List<LineStringSegment>> breakLines;
 
-    private Length maxLength;
+	private Length maxLength;
 
-    private Points controlPoints;
+	private Points controlPoints;
 
-    /**
-     * Creates a new {@link DefaultTin} instance from the given parameters.
-     * 
-     * @param id
-     *            identifier, may be null
-     * @param crs
-     *            coordinate reference system, may be null
-     * @param pm
-     *            precision model, may be null
-     * @param patches
-     *            the triangle that constitute the result of the triangulation
-     */
-    public DefaultTin( String id, ICRS crs, PrecisionModel pm, List<Triangle> patches ) {
-        super( id, crs, pm );
-        this.patches = patches;
-    }
+	/**
+	 * Creates a new {@link DefaultTin} instance from the given parameters.
+	 * @param id identifier, may be null
+	 * @param crs coordinate reference system, may be null
+	 * @param pm precision model, may be null
+	 * @param patches the triangle that constitute the result of the triangulation
+	 */
+	public DefaultTin(String id, ICRS crs, PrecisionModel pm, List<Triangle> patches) {
+		super(id, crs, pm);
+		this.patches = patches;
+	}
 
-    /**
-     * Creates a new {@link DefaultTin} instance from the given parameters.
-     * 
-     * @param id
-     *            identifier, may be null
-     * @param crs
-     *            coordinate reference system, may be null
-     * @param pm
-     *            precision model, may be null
-     * @param stopLines
-     * @param breakLines
-     * @param maxLength
-     * @param controlPoints
-     * @param patches
-     *            the triangle that constitute the result of the triangulation
-     */
-    public DefaultTin( String id, ICRS crs, PrecisionModel pm, List<List<LineStringSegment>> stopLines,
-                       List<List<LineStringSegment>> breakLines, Length maxLength, Points controlPoints,
-                       List<Triangle> patches ) {
-        super( id, crs, pm );
-        this.stopLines = stopLines;
-        this.breakLines = breakLines;
-        this.maxLength = maxLength;
-        this.controlPoints = controlPoints;
-        this.patches = patches;
-    }
+	/**
+	 * Creates a new {@link DefaultTin} instance from the given parameters.
+	 * @param id identifier, may be null
+	 * @param crs coordinate reference system, may be null
+	 * @param pm precision model, may be null
+	 * @param stopLines
+	 * @param breakLines
+	 * @param maxLength
+	 * @param controlPoints
+	 * @param patches the triangle that constitute the result of the triangulation
+	 */
+	public DefaultTin(String id, ICRS crs, PrecisionModel pm, List<List<LineStringSegment>> stopLines,
+			List<List<LineStringSegment>> breakLines, Length maxLength, Points controlPoints, List<Triangle> patches) {
+		super(id, crs, pm);
+		this.stopLines = stopLines;
+		this.breakLines = breakLines;
+		this.maxLength = maxLength;
+		this.controlPoints = controlPoints;
+		this.patches = patches;
+	}
 
-    @Override
-    public int getCoordinateDimension() {
-        return patches.get( 0 ).getCoordinateDimension();
-    }
+	@Override
+	public int getCoordinateDimension() {
+		return patches.get(0).getCoordinateDimension();
+	}
 
-    @Override
-    public Measure getArea( Unit requestedBaseUnit ) {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Measure getArea(Unit requestedBaseUnit) {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public Point getCentroid() {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Point getCentroid() {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public List<Triangle> getPatches() {
-        if ( patches == null )
-            throw new UnsupportedOperationException();
-        return patches;
-    }
+	@Override
+	public List<Triangle> getPatches() {
+		if (patches == null)
+			throw new UnsupportedOperationException();
+		return patches;
+	}
 
-    @Override
-    public Measure getPerimeter( Unit requestedUnit ) {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Measure getPerimeter(Unit requestedUnit) {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public PrimitiveType getPrimitiveType() {
-        return PrimitiveType.Surface;
-    }
+	@Override
+	public PrimitiveType getPrimitiveType() {
+		return PrimitiveType.Surface;
+	}
 
-    @Override
-    public SurfaceType getSurfaceType() {
-        return SurfaceType.Tin;
-    }
+	@Override
+	public SurfaceType getSurfaceType() {
+		return SurfaceType.Tin;
+	}
 
-    @Override
-    public GeometryType getGeometryType() {
-        return GeometryType.PRIMITIVE_GEOMETRY;
-    }
+	@Override
+	public GeometryType getGeometryType() {
+		return GeometryType.PRIMITIVE_GEOMETRY;
+	}
 
-    @Override
-    public List<List<LineStringSegment>> getStopLines() {
-        return stopLines;
-    }
+	@Override
+	public List<List<LineStringSegment>> getStopLines() {
+		return stopLines;
+	}
 
-    @Override
-    public List<List<LineStringSegment>> getBreakLines() {
-        return breakLines;
-    }
+	@Override
+	public List<List<LineStringSegment>> getBreakLines() {
+		return breakLines;
+	}
 
-    @Override
-    public Measure getMaxLength( Unit requestedUnit ) {
-        return maxLength;
-    }
+	@Override
+	public Measure getMaxLength(Unit requestedUnit) {
+		return maxLength;
+	}
 
-    @Override
-    public Points getControlPoints() {
-        return controlPoints;
-    }
+	@Override
+	public Points getControlPoints() {
+		return controlPoints;
+	}
 
-    @Override
-    public Points getExteriorRingCoordinates() {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Points getExteriorRingCoordinates() {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public List<Points> getInteriorRingsCoordinates() {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public List<Points> getInteriorRingsCoordinates() {
+		throw new UnsupportedOperationException();
+	}
+
 }

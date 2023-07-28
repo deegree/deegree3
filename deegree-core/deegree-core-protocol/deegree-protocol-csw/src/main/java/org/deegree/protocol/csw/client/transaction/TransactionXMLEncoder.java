@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://lbuesching@svn.wald.intevation.de/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -48,29 +47,25 @@ import org.deegree.protocol.csw.CSWConstants;
 
 /**
  * TODO add class documentation here
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
- * 
- * @version $Revision: $, $Date: $
  */
 public class TransactionXMLEncoder {
 
-    public static void exportInsert( List<OMElement> records, XMLStreamWriter writer )
-                            throws XMLStreamException {
-        writer.writeStartDocument();
-        writer.writeStartElement( CSWConstants.CSW_202_PREFIX, "Transaction", CSW_202_NS );
-        writer.writeAttribute( "version", "2.0.2" );
-        writer.writeAttribute( "service", "CSW" );
-        writer.writeNamespace( CSWConstants.CSW_202_PREFIX, CSW_202_NS );
-        writer.writeNamespace( CommonNamespaces.XSI_PREFIX, CommonNamespaces.XSINS );
-        writer.writeAttribute( CommonNamespaces.XSINS, "schemaLocation", CSW_202_NS + " "
-                                                                         + CSWConstants.CSW_202_PUBLICATION_SCHEMA );
-        writer.writeStartElement( CSWConstants.CSW_202_PREFIX, "Insert", CSW_202_NS );
+	public static void exportInsert(List<OMElement> records, XMLStreamWriter writer) throws XMLStreamException {
+		writer.writeStartDocument();
+		writer.writeStartElement(CSWConstants.CSW_202_PREFIX, "Transaction", CSW_202_NS);
+		writer.writeAttribute("version", "2.0.2");
+		writer.writeAttribute("service", "CSW");
+		writer.writeNamespace(CSWConstants.CSW_202_PREFIX, CSW_202_NS);
+		writer.writeNamespace(CommonNamespaces.XSI_PREFIX, CommonNamespaces.XSINS);
+		writer.writeAttribute(CommonNamespaces.XSINS, "schemaLocation",
+				CSW_202_NS + " " + CSWConstants.CSW_202_PUBLICATION_SCHEMA);
+		writer.writeStartElement(CSWConstants.CSW_202_PREFIX, "Insert", CSW_202_NS);
 
-        for ( OMElement record : records ) {
-            record.serialize( writer );
-        }
-    }
+		for (OMElement record : records) {
+			record.serialize(writer);
+		}
+	}
 
 }

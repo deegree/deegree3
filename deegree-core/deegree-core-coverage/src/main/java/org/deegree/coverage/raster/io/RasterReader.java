@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -49,105 +48,97 @@ import org.deegree.coverage.raster.geom.RasterRect;
 
 /**
  * This interface is for abstraction of the raster loading handling.
- * 
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$
- * 
+ *
  */
 public interface RasterReader {
-    /**
-     * Read the given raster file into an abstract raster.
-     * 
-     * @param filename
-     * @param options
-     * @return the loaded raster
-     * @throws IOException
-     *             may be thrown when there is a problem with reading the raster.
-     */
-    public AbstractRaster load( File filename, RasterIOOptions options )
-                            throws IOException;
 
-    /**
-     * Read the given input stream into an abstract raster.
-     * 
-     * @param stream
-     * @param options
-     * @return the loaded raster
-     * @throws IOException
-     *             may be thrown when there is a problem with reading the raster.
-     */
-    public AbstractRaster load( InputStream stream, RasterIOOptions options )
-                            throws IOException;
+	/**
+	 * Read the given raster file into an abstract raster.
+	 * @param filename
+	 * @param options
+	 * @return the loaded raster
+	 * @throws IOException may be thrown when there is a problem with reading the raster.
+	 */
+	public AbstractRaster load(File filename, RasterIOOptions options) throws IOException;
 
-    /**
-     * Check if the raster reader is able to read the given raster file.
-     * 
-     * @param filename
-     * @return true if the class can read the raster
-     */
-    public boolean canLoad( File filename );
+	/**
+	 * Read the given input stream into an abstract raster.
+	 * @param stream
+	 * @param options
+	 * @return the loaded raster
+	 * @throws IOException may be thrown when there is a problem with reading the raster.
+	 */
+	public AbstractRaster load(InputStream stream, RasterIOOptions options) throws IOException;
 
-    /**
-     * @return a {@link Set} of (image) formats mime/types the implementation is able to read.
-     */
-    public Set<String> getSupportedFormats();
+	/**
+	 * Check if the raster reader is able to read the given raster file.
+	 * @param filename
+	 * @return true if the class can read the raster
+	 */
+	public boolean canLoad(File filename);
 
-    /**
-     * @return true if a cache file should be created for the read raster.
-     */
-    public boolean shouldCreateCacheFile();
+	/**
+	 * @return a {@link Set} of (image) formats mime/types the implementation is able to
+	 * read.
+	 */
+	public Set<String> getSupportedFormats();
 
-    /**
-     * @return the file from which the raster was read.
-     */
-    public File file();
+	/**
+	 * @return true if a cache file should be created for the read raster.
+	 */
+	public boolean shouldCreateCacheFile();
 
-    /**
-     * @return the width (in pixels) of the read raster 
-     */
-    public int getWidth();
+	/**
+	 * @return the file from which the raster was read.
+	 */
+	public File file();
 
-    /**
-     * @return the height (in pixels) of the read raster
-     */
-    public int getHeight();
+	/**
+	 * @return the width (in pixels) of the read raster
+	 */
+	public int getWidth();
 
-    /**
-     * @return the geo reference of the read raster
-     */
-    public RasterGeoReference getGeoReference();
+	/**
+	 * @return the height (in pixels) of the read raster
+	 */
+	public int getHeight();
 
-    /**
-     * @param rect to read.
-     * @param result to store the result in
-     * @return the read buffer and its domain
-     * @throws IOException
-     */
-    public BufferResult read( RasterRect rect, ByteBuffer result )
-                            throws IOException;
+	/**
+	 * @return the geo reference of the read raster
+	 */
+	public RasterGeoReference getGeoReference();
 
-    /**
-     * @return the raster data info
-     */
-    public RasterDataInfo getRasterDataInfo();
+	/**
+	 * @param rect to read.
+	 * @param result to store the result in
+	 * @return the read buffer and its domain
+	 * @throws IOException
+	 */
+	public BufferResult read(RasterRect rect, ByteBuffer result) throws IOException;
 
-    /**
-     * should return true if the given reader can easily read tiles,without consuming much more memory than needed.
-     * 
-     * @return true if the reader can easily read tiles.
-     */
-    public boolean canReadTiles();
+	/**
+	 * @return the raster data info
+	 */
+	public RasterDataInfo getRasterDataInfo();
 
-    /**
-     * @return a String which identifies this reader for used the data source, for example the file name, or an url.
-     */
-    public String getDataLocationId();
+	/**
+	 * should return true if the given reader can easily read tiles,without consuming much
+	 * more memory than needed.
+	 * @return true if the reader can easily read tiles.
+	 */
+	public boolean canReadTiles();
 
-    /**
-     * Signals the reader that it should try to dispose all in memory data.
-     */
-    public void dispose();
+	/**
+	 * @return a String which identifies this reader for used the data source, for example
+	 * the file name, or an url.
+	 */
+	public String getDataLocationId();
+
+	/**
+	 * Signals the reader that it should try to dispose all in memory data.
+	 */
+	public void dispose();
 
 }

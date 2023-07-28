@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -39,39 +38,31 @@ import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.feature.persistence.FeatureStore;
 
 /**
- * Cache for persistent {@link GMLObject} instances that are stored in a {@link FeatureStore}.
- * 
+ * Cache for persistent {@link GMLObject} instances that are stored in a
+ * {@link FeatureStore}.
+ *
  * @see FeatureStore
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public interface FeatureStoreCache {
 
 	/**
 	 * Returns the object with the specified id (if it exists in the cache).
-	 * 
-	 * @param id
-	 *            id of the object, must not be <code>null</code>
-	 * @return the object with the specified id, or <code>null</code> if it is not present in the cache
+	 * @param id id of the object, must not be <code>null</code>
+	 * @return the object with the specified id, or <code>null</code> if it is not present
+	 * in the cache
 	 */
 	public GMLObject get(String id);
 
 	/**
 	 * Adds the given object to the cache.
-	 * 
-	 * @param obj
-	 *            object, must not be <code>null</code>
+	 * @param obj object, must not be <code>null</code>
 	 */
 	public void add(GMLObject obj);
 
 	/**
 	 * Removes the object with the specified id from the cache (if it exists).
-	 * 
-	 * @param id
-	 *            id of the object, must not be <code>null</code>
+	 * @param id id of the object, must not be <code>null</code>
 	 */
 	public void remove(String id);
 
@@ -79,4 +70,5 @@ public interface FeatureStoreCache {
 	 * Clears the cache, removing all objects.
 	 */
 	public void clear();
+
 }
