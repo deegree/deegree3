@@ -34,9 +34,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.xml;
 
-import javax.xml.stream.XMLStreamReader;
-
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.i18n.Messages;
+
+import javax.xml.stream.XMLStreamReader;
 
 /**
  * Thrown when a syntactic or semantic error has been encountered during the parsing
@@ -89,8 +90,9 @@ public class XMLParsingException extends XMLProcessingException {
 
 	@Override
 	public String getMessage() {
-		return "Error in XML document ("
-				+ ((errorPosition != null) ? errorPosition.getAsMessage() : "Unknown error position") + "): " + msg;
+		return Messages.get("ERROR_IN_XML_DOCUMENT") + " ("
+				+ ((errorPosition != null) ? errorPosition.getAsMessage() : Messages.get("UNKNOWN_ERROR_POSITION"))
+				+ "): " + msg;
 	}
 
 }
