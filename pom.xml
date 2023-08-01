@@ -1134,7 +1134,7 @@
       <dependency>
         <groupId>org.gdal</groupId>
         <artifactId>gdal</artifactId>
-        <version>3.6.0</version>
+        <version>3.0.0</version>
       </dependency>
       <dependency>
         <groupId>org.reflections</groupId>
