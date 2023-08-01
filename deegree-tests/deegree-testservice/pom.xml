@@ -8,7 +8,7 @@
     <deegree.module.status>rework</deegree.module.status>
   </properties>
   <parent>
-    <groupId>org.deegree</groupId>
+    <groupId>de.latlon</groupId>
     <artifactId>deegree-client</artifactId>
     <version>3.5.1-SNAPSHOT</version>
     <relativePath>../../deegree-client</relativePath>
@@ -17,142 +17,142 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>org.deegree</groupId>
+      <groupId>de.latlon</groupId>
       <artifactId>deegree-services-wmts</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.deegree</groupId>
+      <groupId>de.latlon</groupId>
       <artifactId>deegree-services-wms</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.deegree</groupId>
+      <groupId>de.latlon</groupId>
       <artifactId>deegree-services-wps</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.deegree</groupId>
+      <groupId>de.latlon</groupId>
       <artifactId>deegree-services-wfs</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.deegree</groupId>
+      <groupId>de.latlon</groupId>
       <artifactId>deegree-services-csw</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.deegree</groupId>
+      <groupId>de.latlon</groupId>
       <artifactId>deegree-services-config</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.deegree</groupId>
+      <groupId>de.latlon</groupId>
       <artifactId>deegree-featurestore-memory</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.deegree</groupId>
+      <groupId>de.latlon</groupId>
       <artifactId>deegree-featurestore-shape</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.deegree</groupId>
+      <groupId>de.latlon</groupId>
       <artifactId>deegree-featurestore-simplesql</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.deegree</groupId>
+      <groupId>de.latlon</groupId>
       <artifactId>deegree-featurestore-sql</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.deegree</groupId>
+      <groupId>de.latlon</groupId>
       <artifactId>deegree-sqldialect-postgis</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.deegree</groupId>
+      <groupId>de.latlon</groupId>
       <artifactId>deegree-mdstore-iso</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.deegree</groupId>
+      <groupId>de.latlon</groupId>
       <artifactId>deegree-mdstore-iso-memory</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.deegree</groupId>
+      <groupId>de.latlon</groupId>
       <artifactId>deegree-themes-remotewms</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.deegree</groupId>
+      <groupId>de.latlon</groupId>
       <artifactId>deegree-layers-remotewms</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.deegree</groupId>
+      <groupId>de.latlon</groupId>
       <artifactId>deegree-layers-tile</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.deegree</groupId>
+      <groupId>de.latlon</groupId>
       <artifactId>deegree-layers-coverage</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.deegree</groupId>
+      <groupId>de.latlon</groupId>
       <artifactId>deegree-layers-feature</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.deegree</groupId>
+      <groupId>de.latlon</groupId>
       <artifactId>deegree-layers-gdal</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.deegree</groupId>
+      <groupId>de.latlon</groupId>
       <artifactId>deegree-tilestore-cache</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.deegree</groupId>
+      <groupId>de.latlon</groupId>
       <artifactId>deegree-tilestore-gdal</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.deegree</groupId>
+      <groupId>de.latlon</groupId>
       <artifactId>deegree-tilestore-geotiff</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.deegree</groupId>
+      <groupId>de.latlon</groupId>
       <artifactId>deegree-tilestore-filesystem</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.deegree</groupId>
+      <groupId>de.latlon</groupId>
       <artifactId>deegree-tilestore-merge</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.deegree</groupId>
+      <groupId>de.latlon</groupId>
       <artifactId>deegree-tilestore-remotewms</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.deegree</groupId>
+      <groupId>de.latlon</groupId>
       <artifactId>deegree-tilestore-remotewmts</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.deegree</groupId>
+      <groupId>de.latlon</groupId>
       <artifactId>deegree-connectionprovider-datasource</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.deegree</groupId>
+      <groupId>de.latlon</groupId>
       <artifactId>deegree-jsf-core</artifactId>
       <version>${project.version}</version>
     </dependency>

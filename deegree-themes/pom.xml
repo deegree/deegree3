@@ -6,7 +6,7 @@
   <description>Abstraction layer for map layer themes and implementations</description>
 
   <parent>
-    <groupId>org.deegree</groupId>
+    <groupId>de.latlon</groupId>
     <artifactId>deegree</artifactId>
     <version>3.5.1-SNAPSHOT</version>
   </parent>
