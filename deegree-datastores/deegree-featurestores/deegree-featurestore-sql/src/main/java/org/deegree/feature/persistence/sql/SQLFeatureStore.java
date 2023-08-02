@@ -1680,7 +1680,7 @@ public class SQLFeatureStore implements FeatureStore {
 
 	private AbstractWhereBuilder getWhereBuilderBlob(OperatorFilter filter, Connection conn)
 			throws FilterEvaluationException, UnmappableException {
-		final String undefinedSrid = dialect.getUndefinedSrid();
+		final String srid = detectConfiguredSrid();
 		PropertyNameMapper mapper = new PropertyNameMapper() {
 			@Override
 			public PropertyNameMapping getMapping(ValueReference propName, TableAliasManager aliasManager)
@@ -1705,8 +1705,8 @@ public class SQLFeatureStore implements FeatureStore {
 							"Property {} is mapped to column {}. This may cause unexpected results. "
 									+ "Currently only filtering of 'internalId', 'nummer' and 'name' is supprted!",
 							propName, column);
-					GeometryStorageParams geometryParams = new GeometryStorageParams(blobMapping.getCRS(),
-							undefinedSrid, CoordinateDimension.DIM_2);
+					GeometryStorageParams geometryParams = new GeometryStorageParams(blobMapping.getCRS(), srid,
+							CoordinateDimension.DIM_2);
 					GeometryMapping bboxMapping = new GeometryMapping(null, false, new DBField(column),
 							GeometryType.GEOMETRY, geometryParams, null);
 					converter = getGeometryConverter(bboxMapping);
@@ -1756,6 +1756,13 @@ public class SQLFeatureStore implements FeatureStore {
 			}
 		};
 		return dialect.getWhereBuilder(mapper, filter, null, null, allowInMemoryFiltering);
+	}
+
+	private String detectConfiguredSrid() {
+		if (this.config.getStorageCRS() != null && this.config.getStorageCRS().getSrid() != null) {
+			return this.config.getStorageCRS().getSrid();
+		}
+		return dialect.getUndefinedSrid();
 	}
 
 	public SQLDialect getDialect() {
