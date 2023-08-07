@@ -34,7 +34,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.i18n;
 
-import static org.apache.commons.io.IOUtils.closeQuietly;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,11 +43,10 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.Properties;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.commons.io.IOUtils.closeQuietly;
 
 /**
  * Responsible for the access to messages that are visible to the user.
@@ -67,7 +67,7 @@ public class Messages {
 	 * This definition allows Eclipse to display the content of referenced message keys.
 	 */
 	@SuppressWarnings("unused")
-	private static final String BUNDLE_NAME = "org.deegree.gml.i18n.messages_en";
+	private static final String BUNDLE_NAME = "org.deegree.gml.i18n.messages";
 
 	private static Properties defaultProps = new Properties();
 

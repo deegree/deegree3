@@ -34,11 +34,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.xml;
 
+import org.apache.axiom.om.OMElement;
+import org.deegree.commons.i18n.Messages;
+import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
+
 import javax.xml.stream.Location;
 import javax.xml.stream.XMLStreamReader;
-
-import org.apache.axiom.om.OMElement;
-import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 
 /**
  * Encapsulates information to locate the cause {@link XMLParsingException}.
@@ -90,13 +91,14 @@ class XMLErrorPosition {
 	 * @return
 	 */
 	String getAsMessage() {
-		String s = systemId != null && !"".equals(systemId) ? ("file '" + systemId + "', ") : "";
-		s += "line: " + lineNumber;
+		String s = systemId != null && !"".equals(systemId)
+				? (Messages.get("ERROR_POSITION_FILE") + " '" + systemId + "', ") : "";
+		s += Messages.get("ERROR_POSITION_LINE") + ": " + lineNumber;
 		if (columnNumber != -1) {
-			s += ", column: " + columnNumber;
+			s += ", " + Messages.get("ERROR_POSITION_COLUMN") + ": " + columnNumber;
 		}
 		if (characterOffset != -1) {
-			s += ", character offset: " + characterOffset;
+			s += ", " + Messages.get("ERROR_POSITION_OFFSET") + ": " + characterOffset;
 		}
 		return s;
 	}

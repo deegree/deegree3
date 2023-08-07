@@ -95,7 +95,8 @@ import org.mockito.Mockito;
  */
 public class WmsCapabilities111ThemeWriterTest {
 
-	private final WmsCapabilities111ThemeWriter themeWriter = new WmsCapabilities111ThemeWriter(null, null, null);
+	private final WmsCapabilities111ThemeWriter themeWriter = new WmsCapabilities111ThemeWriter(null, null, null,
+			new DefaultMetadataMerger());
 
 	@Test
 	public void writeThemeMinimal() throws Exception {
@@ -155,7 +156,8 @@ public class WmsCapabilities111ThemeWriterTest {
 		mds.add(createDatasetMetadata("http://url3"));
 		when(provider.getAllDatasetMetadata(Mockito.any(QName.class))).thenReturn(mds);
 
-		WmsCapabilities111ThemeWriter themeWriter = new WmsCapabilities111ThemeWriter(provider, null, mdurlTemplate);
+		WmsCapabilities111ThemeWriter themeWriter = new WmsCapabilities111ThemeWriter(provider, null, mdurlTemplate,
+				new DefaultMetadataMerger());
 		Theme theme = new StandardTheme(layerMetadata, Collections.<Theme>emptyList(), Collections.<Layer>emptyList(),
 				null);
 		themeWriter.writeTheme(writer, theme);

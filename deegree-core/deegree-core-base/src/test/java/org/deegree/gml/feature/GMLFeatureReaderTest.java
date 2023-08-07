@@ -38,6 +38,8 @@ import static org.deegree.gml.GMLInputFactory.createGMLStreamReader;
 import static org.deegree.gml.GMLVersion.GML_2;
 import static org.deegree.gml.GMLVersion.GML_31;
 import static org.deegree.gml.GMLVersion.GML_32;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -54,6 +56,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import junit.framework.Assert;
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.commons.tom.ElementNode;
 import org.deegree.commons.tom.ReferenceResolvingException;
@@ -72,9 +75,11 @@ import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.schema.GMLAppSchemaReader;
 import org.deegree.time.primitive.TimePeriod;
-import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Tests that check the correct reading of {@link Feature} / {@link FeatureCollection}
@@ -570,6 +575,17 @@ public class GMLFeatureReaderTest {
 
 		final Feature f = getFeature(fc, "EADD");
 		assertNotNull(f.getEnvelope());
+	}
+
+	@Test
+	public void testParsingWithBrokenGeometry() throws FactoryConfigurationError, Exception {
+		URL docURL = GMLFeatureReaderTest.class.getResource("../cite/feature/dataset-broken-geometry.xml");
+		GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader(GMLVersion.GML_2, docURL);
+		FeatureCollection fc = (FeatureCollection) gmlReader.readFeature(true);
+		List<String> skippedBrokenGeometryErrors = gmlReader.getSkippedBrokenGeometryErrors();
+
+		assertThat(106, is(fc.size()));
+		assertThat(skippedBrokenGeometryErrors.size(), is(1));
 	}
 
 	private Feature getFeature(final FeatureCollection fc, final String gmlId) {

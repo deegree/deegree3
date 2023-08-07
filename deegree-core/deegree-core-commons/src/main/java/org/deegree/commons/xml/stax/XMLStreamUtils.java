@@ -530,6 +530,20 @@ public class XMLStreamUtils {
 		return reader.isStartElement() && elementName.equals(reader.getName());
 	}
 
+	/**
+	 * Forwards the given {@link XMLStreamReader} to the end of the enclosing
+	 * element/document.
+	 * @param reader reader to forward, must not be <code>null</code>
+	 * @param elementName end element name to forward to, must not be <code>null</code>
+	 * @throws XMLStreamException
+	 */
+	public static boolean skipToEndElement(XMLStreamReader reader, QName elementName) throws XMLStreamException {
+		while (!(reader.isEndElement() && elementName.equals(reader.getName()))) {
+			nextElement(reader);
+		}
+		return reader.isEndElement() && elementName.equals(reader.getName());
+	}
+
 	public static void skipToRequiredElementOnSameLevel(XMLStreamReader reader, QName elementName)
 			throws XMLStreamException {
 		if (!skipToElementOnSameLevel(reader, elementName)) {
