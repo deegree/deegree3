@@ -10,7 +10,7 @@
   </properties>
 
   <parent>
-    <groupId>org.deegree</groupId>
+    <groupId>de.latlon</groupId>
     <artifactId>deegree-workspaces</artifactId>
     <version>3.5.1-SNAPSHOT</version>
   </parent>

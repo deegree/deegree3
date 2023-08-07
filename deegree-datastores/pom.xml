@@ -7,7 +7,7 @@
   <description>Abstraction layers for geospatial data persistence and backend implementations</description>
 
   <parent>
-    <groupId>org.deegree</groupId>
+    <groupId>de.latlon</groupId>
     <artifactId>deegree</artifactId>
     <version>3.5.1-SNAPSHOT</version>
   </parent>

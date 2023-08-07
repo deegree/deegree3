@@ -6,7 +6,7 @@
   <description>Common interfaces for supporting SQL dialects and specific dialect implementations</description>
 
   <parent>
-    <groupId>org.deegree</groupId>
+    <groupId>de.latlon</groupId>
     <artifactId>deegree-core</artifactId>
     <version>3.5.1-SNAPSHOT</version>
   </parent>
