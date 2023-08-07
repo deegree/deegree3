@@ -8,7 +8,7 @@
   <parent>
     <groupId>de.latlon</groupId>
     <artifactId>deegree-tools</artifactId>
-    <version>3.5.1-SNAPSHOT</version>
+    <version>3.5.0.2</version>
   </parent>
 
   <inceptionYear>2016</inceptionYear>
