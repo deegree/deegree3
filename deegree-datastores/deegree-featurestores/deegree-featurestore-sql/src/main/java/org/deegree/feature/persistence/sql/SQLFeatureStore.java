@@ -1666,12 +1666,12 @@ public class SQLFeatureStore implements FeatureStore {
 
 	private AbstractWhereBuilder getWhereBuilderBlob(OperatorFilter filter, Connection conn)
 			throws FilterEvaluationException, UnmappableException {
-		final String undefinedSrid = dialect.getUndefinedSrid();
+		final String srid = detectConfiguredSrid();
 		PropertyNameMapper mapper = new PropertyNameMapper() {
 			@Override
 			public PropertyNameMapping getMapping(ValueReference propName, TableAliasManager aliasManager)
 					throws FilterEvaluationException, UnmappableException {
-				GeometryStorageParams geometryParams = new GeometryStorageParams(blobMapping.getCRS(), undefinedSrid,
+				GeometryStorageParams geometryParams = new GeometryStorageParams(blobMapping.getCRS(), srid,
 						CoordinateDimension.DIM_2);
 				GeometryMapping bboxMapping = new GeometryMapping(null, false, new DBField(blobMapping.getBBoxColumn()),
 						GeometryType.GEOMETRY, geometryParams, null);
@@ -1686,6 +1686,13 @@ public class SQLFeatureStore implements FeatureStore {
 			}
 		};
 		return dialect.getWhereBuilder(mapper, filter, null, null, allowInMemoryFiltering);
+	}
+
+	private String detectConfiguredSrid() {
+		if (this.config.getStorageCRS() != null && this.config.getStorageCRS().getSrid() != null) {
+			return this.config.getStorageCRS().getSrid();
+		}
+		return dialect.getUndefinedSrid();
 	}
 
 	public SQLDialect getDialect() {
