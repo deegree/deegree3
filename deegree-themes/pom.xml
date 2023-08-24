@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree</artifactId>
-    <version>3.5.2</version>
+    <version>3.5.3-SNAPSHOT</version>
   </parent>
 
   <modules>
