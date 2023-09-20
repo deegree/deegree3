@@ -202,7 +202,8 @@ public class GmlLoaderConfiguration {
 		}
 
 		if (dryRun) {
-			return builder.build();
+			NullWriter nonWritingFeatureStoreWriter = new NullWriter();
+			return builder.writer(nonWritingFeatureStoreWriter).build();
 		}
 		else {
 			return builder.writer(featureStoreWriter).listener(transactionHandler).build();
