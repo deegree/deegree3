@@ -2,7 +2,8 @@
   xsi:schemaLocation="http://www.deegree.org/jdbc https://schemas.deegree.org/core/3.5/jdbc/jdbc.xsd">
 
   <!-- [1] JDBC URL (without username / password) -->
-  <Url>jdbc:h2:/tmp/test</Url>
+  <!--<Url>jdbc:h2:/tmp/test</Url>-->
+  <Url>jdbc:h2:mem:</Url>
 
   <!-- [1] DB username -->
   <User>sa</User>
