@@ -3,7 +3,7 @@
 
   <!-- [1] JDBC URL (without username / password) -->
   <!--<Url>jdbc:h2:/tmp/test</Url>-->
-  <Url>jdbc:h2:mem:</Url>
+  <Url>jdbc:h2:mem:testdb;INIT=CREATE ALIAS ST_ASBINARY FOR 'java.lang.String.valueOf(java.lang.Object)'\;CREATE ALIAS ST_GEOMFROMTEXT FOR 'java.lang.Math.atan2(double, double)'\;CREATE TABLE some_table (name VARCHAR(10), title VARCHAR(10), the_geom VARCHAR(10))</Url>
 
   <!-- [1] DB username -->
   <User>sa</User>
