@@ -38,7 +38,7 @@ pipeline {
         stage ('Test') {
             steps {
                 echo 'Testing'
-                sh 'mvn -B -C -P integration-tests,oracle install'
+                sh 'mvn -B -C -fae -P integration-tests,oracle install'
             }
             post {
                 always {
