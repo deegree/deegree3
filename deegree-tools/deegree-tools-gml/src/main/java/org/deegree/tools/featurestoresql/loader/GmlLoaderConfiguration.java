@@ -22,7 +22,31 @@
  */
 package org.deegree.tools.featurestoresql.loader;
 
-import static org.slf4j.LoggerFactory.getLogger;
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.feature.Feature;
+import org.deegree.feature.persistence.FeatureStoreProvider;
+import org.deegree.feature.persistence.sql.SQLFeatureStore;
+import org.deegree.workspace.Workspace;
+import org.slf4j.Logger;
+import org.springframework.batch.core.Job;
+import org.springframework.batch.core.Step;
+import org.springframework.batch.core.StepExecutionListener;
+import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
+import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.JobScope;
+import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.StepScope;
+import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.core.step.builder.SimpleStepBuilder;
+import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.item.file.MultiResourceItemReader;
+import org.springframework.batch.item.support.AbstractItemStreamItemReader;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.PathResource;
+import org.springframework.core.io.Resource;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -33,29 +57,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.feature.Feature;
-import org.deegree.feature.persistence.FeatureStoreProvider;
-import org.deegree.feature.persistence.sql.SQLFeatureStore;
-import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.Step;
-import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
-import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
-import org.springframework.batch.core.configuration.annotation.JobScope;
-import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
-import org.springframework.batch.core.configuration.annotation.StepScope;
-import org.springframework.batch.core.launch.support.RunIdIncrementer;
-import org.springframework.batch.core.step.builder.SimpleStepBuilder;
-import org.springframework.batch.item.file.MultiResourceItemReader;
-import org.springframework.batch.item.support.AbstractItemStreamItemReader;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.PathResource;
-import org.springframework.core.io.Resource;
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Configuration of the GMLLoader.
@@ -93,12 +95,6 @@ public class GmlLoaderConfiguration {
 			@Value("#{jobParameters['reportFile'] ?: 'GmlLoader.log'}") String fileName) {
 		Path outputFile = Paths.get(fileName);
 		return new ReportWriter(summary, outputFile);
-	}
-
-	@StepScope
-	@Bean
-	public TransactionHandler transactionHandler(SQLFeatureStore sqlFeatureStore, Summary summary) {
-		return new TransactionHandler(sqlFeatureStore, summary);
 	}
 
 	@StepScope
@@ -161,12 +157,6 @@ public class GmlLoaderConfiguration {
 
 	@StepScope
 	@Bean
-	public FeatureStoreWriter featureStoreWriter(SQLFeatureStore sqlFeatureStore, Summary summary) {
-		return new FeatureStoreWriter(sqlFeatureStore, summary);
-	}
-
-	@StepScope
-	@Bean
 	public SQLFeatureStore sqlFeatureStore(@Value("#{jobParameters[workspaceName]}") String workspaceName,
 			@Value("#{jobParameters[sqlFeatureStoreId]}") String sqlFeatureStoreId) throws Exception {
 		DeegreeWorkspace workspace = DeegreeWorkspace.getInstance(workspaceName);
@@ -182,15 +172,31 @@ public class GmlLoaderConfiguration {
 		return featureStore;
 	}
 
+	@StepScope
+	@Bean
+	public ItemWriter<Feature> featureStoreWriter(SQLFeatureStore sqlFeatureStore, Summary summary,
+			@Value("#{jobParameters['dryRun'] ?: false}") boolean dryRun) {
+		if (dryRun)
+			return new NullWriter();
+		return new FeatureStoreWriter(sqlFeatureStore, summary);
+	}
+
+	@StepScope
+	@Bean
+	public StepExecutionListener referenceCheckListener(SQLFeatureStore sqlFeatureStore, Summary summary,
+			@Value("#{jobParameters['dryRun'] ?: false}") boolean dryRun) {
+		if (dryRun)
+			return new DryRunReferenceCheck(summary);
+		return new TransactionHandler(sqlFeatureStore, summary);
+	}
+
 	@JobScope
 	@Bean
-	public Step step(TransactionHandler transactionHandler, AbstractItemStreamItemReader<Feature> gmlReader,
-			FeatureReferencesParser featureReferencesParser, FeatureStoreWriter featureStoreWriter,
+	public Step step(StepExecutionListener referenceCheckListener, AbstractItemStreamItemReader<Feature> gmlReader,
+			FeatureReferencesParser featureReferencesParser, ItemWriter<Feature> featureStoreWriter,
 			@Value("#{jobParameters['chunkSize']}") Integer chunkSize,
-			@Value("#{jobParameters['dryRun'] ?: false}") boolean dryRun,
 			@Value("#{jobParameters['skipReferenceCheck'] ?: false}") boolean skipReferenceCheck) {
 		int chunk = chunkSize != null && chunkSize.intValue() > 10 ? chunkSize.intValue() : 10;
-
 		SimpleStepBuilder<Feature, Feature> builder = stepBuilderFactory.get("gmlLoaderStep")
 			.<Feature, Feature>chunk(chunk);
 		builder.reader(gmlReader);
@@ -200,14 +206,7 @@ public class GmlLoaderConfiguration {
 		else {
 			builder.processor(featureReferencesParser);
 		}
-
-		if (dryRun) {
-			NullWriter nonWritingFeatureStoreWriter = new NullWriter();
-			return builder.writer(nonWritingFeatureStoreWriter).build();
-		}
-		else {
-			return builder.writer(featureStoreWriter).listener(transactionHandler).build();
-		}
+		return builder.writer(featureStoreWriter).listener(referenceCheckListener).build();
 	}
 
 	@Bean
