@@ -48,6 +48,7 @@ import static org.deegree.cs.utilities.Matrix.swapAxis;
 import static org.deegree.cs.utilities.Matrix.toStdValues;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -111,6 +112,8 @@ public class TransformationFactory {
 
 	private static Logger LOG = LoggerFactory.getLogger(TransformationFactory.class);
 
+	private final ICRS wgs84;
+
 	private CRSStore provider;
 
 	private DSTransform preferredDSTransform;
@@ -163,6 +166,8 @@ public class TransformationFactory {
 	public TransformationFactory(CRSStore provider) {
 		this.provider = provider;
 		this.preferredDSTransform = provider.getPreferedTransformationType();
+
+		this.wgs84 = provider.getCRSByCode(new CRSCodeType("4326", "epsg"));
 	}
 
 	/**
@@ -279,36 +284,16 @@ public class TransformationFactory {
 					}
 				}
 				else {
-					CRSType type = sourceCRS.getType();
-					switch (type) {
-						case COMPOUND:
-							/**
-							 * Compound --> Projected, Geographic, Geocentric or Compound
-							 */
-							result = createFromCompound((ICompoundCRS) sourceCRS, targetCRS);
-							break;
-						case GEOCENTRIC:
-							/**
-							 * Geocentric --> Projected, Geographic, Geocentric or
-							 * Compound
-							 */
-							result = createFromGeocentric((IGeocentricCRS) sourceCRS, targetCRS);
-							break;
-						case GEOGRAPHIC:
-							/**
-							 * Geographic --> Geographic, Projected, Geocentric or
-							 * Compound
-							 */
-							result = createFromGeographic((IGeographicCRS) sourceCRS, targetCRS);
-							break;
-						case PROJECTED:
-							/**
-							 * Projected --> Projected, Geographic, Geocentric or Compound
-							 */
-							result = createFromProjected((IProjectedCRS) sourceCRS, targetCRS);
-							break;
-						case VERTICAL:
-							break;
+					// special cases
+					if (hasCode("epsg:3857", sourceCRS) && !hasCode("epsg:4326", targetCRS)) {
+						// work around for wrong transformation from epsg:3857 by having
+						// epsg:4326 as intermediate step
+						result = concatenate(createTransformationFromCoordinateSystems(sourceCRS, wgs84),
+								createTransformationFromCoordinateSystems(wgs84, targetCRS));
+					}
+					// original behavior
+					else {
+						result = createTransformationFromCoordinateSystems(sourceCRS, targetCRS);
 					}
 				}
 			}
@@ -347,6 +332,48 @@ public class TransformationFactory {
 
 		}
 		return result;
+	}
+
+	/**
+	 * Determine if the given code identifies the given CRS.
+	 * @param code the code to test
+	 * @param crs the CRS to match against the code
+	 * @return if the code identifies the given CRS
+	 */
+	private boolean hasCode(String code, ICRS crs) {
+		return Arrays.stream(crs.getOrignalCodeStrings())
+			.filter(oc -> oc != null)
+			.anyMatch(oc -> oc.equalsIgnoreCase(code));
+	}
+
+	private Transformation createTransformationFromCoordinateSystems(ICRS sourceCRS, ICRS targetCRS)
+			throws TransformationException {
+		CRSType type = sourceCRS.getType();
+		switch (type) {
+			case COMPOUND:
+				/**
+				 * Compound --> Projected, Geographic, Geocentric or Compound
+				 */
+				return createFromCompound((ICompoundCRS) sourceCRS, targetCRS);
+			case GEOCENTRIC:
+				/**
+				 * Geocentric --> Projected, Geographic, Geocentric or Compound
+				 */
+				return createFromGeocentric((IGeocentricCRS) sourceCRS, targetCRS);
+			case GEOGRAPHIC:
+				/**
+				 * Geographic --> Geographic, Projected, Geocentric or Compound
+				 */
+				return createFromGeographic((IGeographicCRS) sourceCRS, targetCRS);
+			case PROJECTED:
+				/**
+				 * Projected --> Projected, Geographic, Geocentric or Compound
+				 */
+				return createFromProjected((IProjectedCRS) sourceCRS, targetCRS);
+			case VERTICAL:
+			default:
+				return null;
+		}
 	}
 
 	/**
