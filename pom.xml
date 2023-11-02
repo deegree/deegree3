@@ -787,11 +787,6 @@
         <version>1.2</version>
       </dependency>
       <dependency>
-        <groupId>org.jboss.netty</groupId>
-        <artifactId>netty</artifactId>
-        <version>3.2.10.Final</version>
-      </dependency>
-      <dependency>
         <groupId>net.sf.saxon</groupId>
         <artifactId>Saxon-HE</artifactId>
         <version>9.9.1-8</version>
