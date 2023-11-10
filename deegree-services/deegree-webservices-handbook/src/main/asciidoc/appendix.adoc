@@ -60,3 +60,36 @@ f
 |deegree.config.apikey.warn-when-disabled |java.lang.Boolean |true |Log warning if security on REST api is disabled by specifying `*` in _config.apikey_.
 
 |===
+
+=== Interception points
+
+deegree offers developers with specialized knowledge of its inner workings the ability to extend or change deegree with custom modules. 
+This chapter is only intended as an entry point to make it easier to reach these Java service provider interfaces.
+
+[width="100%",cols="40%,40%,10%",options="header",]
+|===
+|Service provider interface |Examplary implementation |Cardinality
+
+|org.deegree.sqldialect.SQLDialectProvider |org.deegree.sqldialect.postgis.PostGISDialectProvider |0..*
+
+|org.deegree.style.styling.mark.WellKnownNameLoader |org.deegree.style.styling.wkn.ShapeLoader |0..*
+
+|org.deegree.filter.function.FunctionProvider |org.deegree.filter.function.other.Lower |1..*
+
+|org.deegree.sqldialect.filter.function.SQLFunctionProvider |org.deegree.sqldialect.filter.function.SQLLower |1..*
+
+|org.deegree.filter.expression.custom.CustomExpression |org.deegree.filter.expression.custom.se.Substring |1..*
+
+|org.deegree.services.controller.exception.serializer.SerializerProvider | |0..*
+
+|org.deegree.services.csw.getrecordbyid.GetRecordByIdHandler |org.deegree.services.csw.getrecordbyid.DefaultGetRecordByIdHandler |0..1
+
+|org.deegree.tools.featurestoresql.loader.FeatureStreamFactory | |0..*
+
+|org.deegree.coverage.raster.data.container.MemoryRasterDataContainer |org.deegree.coverage.raster.data.container.MemoryRasterDataContainer |1..*
+
+|org.deegree.services.wms.controller.plugins.OutputFormatProvider |org.deegree.services.wms.controller.plugins.DefaultOutputFormatProvider |0..1
+
+|org.deegree.services.wms.controller.plugins.GetFeatureInfoProvider |org.deegree.services.wms.controller.plugins.DefaultGetFeatureInfoProvider |0..1
+
+|===
