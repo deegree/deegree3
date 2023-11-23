@@ -83,17 +83,17 @@ public class CsvFormat implements Format {
 	@Override
 	public void doDescribeFeatureType(DescribeFeatureType request, HttpResponseBuffer response, boolean isSoap)
 			throws Exception {
-		throw new UnsupportedOperationException("DescribeFeatureType for GeoJSON is not supported");
+		throw new UnsupportedOperationException("DescribeFeatureType for CSV is not supported");
 	}
 
 	@Override
 	public void doGetGmlObject(GetGmlObject request, HttpResponseBuffer response) throws Exception {
-		throw new UnsupportedOperationException("GetGmlObject for GeoJSON is not supported");
+		throw new UnsupportedOperationException("GetGmlObject for CSV is not supported");
 	}
 
 	@Override
 	public void doGetPropertyValue(GetPropertyValue getPropertyValue, HttpResponseBuffer response) throws Exception {
-		throw new UnsupportedOperationException("GetPropertyValue for GeoJSON is not supported");
+		throw new UnsupportedOperationException("GetPropertyValue for CSV is not supported");
 	}
 
 }
