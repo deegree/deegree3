@@ -9,7 +9,7 @@
   <parent>
     <groupId>de.latlon</groupId>
     <artifactId>deegree-datastores</artifactId>
-    <version>3.5.4-SNAPSHOT</version>
+    <version>3.5.3.1</version>
   </parent>
 
   <modules>
