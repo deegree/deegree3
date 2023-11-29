@@ -1,0 +1,65 @@
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN"
+  MAVEN_CLI_OPTS: "-Popencode --batch-mode -DinstallAtEnd=true -DdeployAtEnd=true -s $CI_PROJECT_DIR/.opencode-settings.xml"
+
+
+update-repo-from-github-latlon-deegree3:
+  stage: build
+  image: maven:3.8.6-jdk-11
+  before_script:
+    - mkdir -p ~/.ssh/
+    - cp $DEPLOY_PRIVATE_KEY ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa
+    - cp $KNOWN_HOSTS ~/.ssh/known_hosts
+    - git config --global user.email "noreply@gitlab.opencode.de"
+    - git config --global user.name "deegree OpenCoDE CI"
+  script:
+    - echo "Fetching changes for github repo"
+    - git branch -r
+    - git checkout xplanbox-deegree3.5
+    - git log
+    - git remote add upstream https://github.com/lat-lon/deegree3.git
+    - git fetch upstream xplanbox-deegree3.5
+    - git reset --hard upstream/xplanbox-deegree3.5
+    - git log
+    - echo "Pushing..."
+    - git remote set-url origin git@gitlab.opencode.de:diplanung/diplancockpit/xplan-backend/xplan-deegree.git
+    - git push --force --set-upstream origin xplanbox-deegree3.5
+    - echo "Handling tags..."
+    - git fetch upstream tag xplanbox-deegree* --no-tags
+    - git push origin --tags
+
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'schedule'
+
+maven-deploy-on-tag:
+  stage: deploy
+  image: maven:3.8.6-jdk-11
+  script:
+    - echo "Running maven deploy for tag $CI_COMMIT_TAG"
+    - mvn $MAVEN_CLI_OPTS deploy -DskipTests
+  rules:
+    - if: $CI_COMMIT_TAG
+
+gitlab-release-on-tag:
+  stage: deploy
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  rules:
+    - if: $CI_COMMIT_TAG
+  script:
+    - echo "Running the release job for $CI_COMMIT_TAG"
+  release:
+    tag_name: $CI_COMMIT_TAG
+    name: 'Release $CI_COMMIT_TAG'
+    description: 'Release created using the release-cli.'
+
+# deployment from main branch: vrsion is always a snapshot as synchronization is done from time to time (therefore once version is back to -SNAPSHOT)
+maven-deploy-main-branch:
+  stage: build
+  image: maven:3.8.6-jdk-11
+  script:
+    - 'echo "Running maven: $MAVEN_GOAL"'
+    - mvn $MAVEN_CLI_OPTS deploy -DskipTests
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'schedule'
+      when: never
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
