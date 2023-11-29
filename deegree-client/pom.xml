@@ -7,7 +7,7 @@
   <description>Web clients</description>
 
   <parent>
-    <groupId>org.deegree</groupId>
+    <groupId>de.latlon</groupId>
     <artifactId>deegree</artifactId>
     <version>3.5.4-SNAPSHOT</version>
   </parent>

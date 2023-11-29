@@ -10,7 +10,7 @@
   </properties>
 
   <parent>
-    <groupId>org.deegree</groupId>
+    <groupId>de.latlon</groupId>
     <artifactId>deegree-featurestores</artifactId>
     <version>3.5.4-SNAPSHOT</version>
   </parent>
@@ -37,19 +37,19 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.deegree</groupId>
+      <groupId>de.latlon</groupId>
       <artifactId>deegree-featurestore-commons</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <artifactId>deegree-sqldialect-oracle</artifactId>
-      <groupId>org.deegree</groupId>
+      <groupId>de.latlon</groupId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <artifactId>deegree-sqldialect-mssql</artifactId>
-      <groupId>org.deegree</groupId>
+      <groupId>de.latlon</groupId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>

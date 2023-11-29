@@ -10,7 +10,7 @@
   </properties>
 
   <parent>
-    <groupId>org.deegree</groupId>
+    <groupId>de.latlon</groupId>
     <artifactId>deegree-core</artifactId>
     <version>3.5.4-SNAPSHOT</version>
   </parent>
@@ -22,12 +22,12 @@
         <artifactId>maven-jaxb2-plugin</artifactId>
         <dependencies>
           <dependency>
-            <groupId>org.deegree</groupId>
+            <groupId>de.latlon</groupId>
             <artifactId>deegree-core-commons</artifactId>
             <version>${project.version}</version>
           </dependency>
           <dependency>
-            <groupId>org.deegree</groupId>
+            <groupId>de.latlon</groupId>
             <artifactId>deegree-core-geometry</artifactId>
             <version>${project.version}</version>
           </dependency>
@@ -38,12 +38,12 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.deegree</groupId>
+      <groupId>de.latlon</groupId>
       <artifactId>deegree-core-commons</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.deegree</groupId>
+      <groupId>de.latlon</groupId>
       <artifactId>deegree-core-layer</artifactId>
       <version>${project.version}</version>
     </dependency>

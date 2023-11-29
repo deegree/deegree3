@@ -6,7 +6,7 @@
   <description>Clients for remote OGC Web Services</description>
 
   <parent>
-    <groupId>org.deegree</groupId>
+    <groupId>de.latlon</groupId>
     <artifactId>deegree-core</artifactId>
     <version>3.5.4-SNAPSHOT</version>
   </parent>

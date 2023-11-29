@@ -6,7 +6,7 @@
   <description>Abstraction layer for map tile persistence and backend implementations</description>
 
   <parent>
-    <groupId>org.deegree</groupId>
+    <groupId>de.latlon</groupId>
     <artifactId>deegree-datastores</artifactId>
     <version>3.5.4-SNAPSHOT</version>
   </parent>

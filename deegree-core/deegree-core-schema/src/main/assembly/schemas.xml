@@ -11,7 +11,7 @@
 		<moduleSet>
 			<useAllReactorProjects>true</useAllReactorProjects>
 			<includes>
-				<include>org.deegree:*</include>
+				<include>de.latlon:*</include>
 			</includes>
 			<sources>
 				<includeModuleDirectory>false</includeModuleDirectory>

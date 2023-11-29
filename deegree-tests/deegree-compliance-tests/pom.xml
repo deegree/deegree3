@@ -11,7 +11,7 @@
   </properties>
 
   <parent>
-    <groupId>org.deegree</groupId>
+    <groupId>de.latlon</groupId>
     <artifactId>deegree-tests</artifactId>
     <version>3.5.4-SNAPSHOT</version>
   </parent>
@@ -31,7 +31,7 @@
             <configuration>
               <artifactItems>
                 <artifactItem>
-                  <groupId>org.deegree</groupId>
+                  <groupId>de.latlon</groupId>
                   <artifactId>deegree-workspace-compliance-tests</artifactId>
                   <version>${project.version}</version>
                   <type>zip</type>
@@ -147,7 +147,7 @@
       <artifactId>junit</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.deegree</groupId>
+      <groupId>de.latlon</groupId>
       <artifactId>deegree-services-wms</artifactId>
       <version>${project.version}</version>
       <exclusions>
@@ -158,17 +158,17 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.deegree</groupId>
+      <groupId>de.latlon</groupId>
       <artifactId>deegree-services-wcs</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.deegree</groupId>
+      <groupId>de.latlon</groupId>
       <artifactId>deegree-layers-feature</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.deegree</groupId>
+      <groupId>de.latlon</groupId>
       <artifactId>deegree-layers-coverage</artifactId>
       <version>${project.version}</version>
       <exclusions>
