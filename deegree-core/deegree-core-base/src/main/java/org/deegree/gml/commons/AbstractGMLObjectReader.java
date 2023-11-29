@@ -148,6 +148,10 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
 
 	protected final GmlDocumentIdContext idContext;
 
+	private final boolean skipBrokenGeometries;
+
+	private final List<String> skippedBrokenGeometryErrors = new ArrayList<String>();
+
 	protected static final QName XSI_NIL = new QName(XSINS, "nil", "xsi");
 
 	protected static final QName XSI_TYPE = new QName(XSINS, "type", "xsi");
@@ -162,6 +166,15 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
 	 * @param gmlStreamReader GML stream reader, must not be <code>null</code>
 	 */
 	protected AbstractGMLObjectReader(GMLStreamReader gmlStreamReader) {
+		this(gmlStreamReader, false);
+	}
+
+	/**
+	 * Creates a new {@link AbstractGMLObjectReader} instance.
+	 * @param gmlStreamReader GML stream reader, must not be <code>null</code>
+	 * @param skipBrokenGeometries
+	 */
+	protected AbstractGMLObjectReader(GMLStreamReader gmlStreamReader, boolean skipBrokenGeometries) {
 		this.gmlStreamReader = gmlStreamReader;
 		this.specialResolver = gmlStreamReader.getResolver();
 		this.internalResolver = gmlStreamReader.getInternalResolver();
@@ -170,6 +183,7 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
 		this.schema = gmlStreamReader.getAppSchema();
 		this.gmlNs = gmlStreamReader.getVersion().getNamespace();
 		this.version = gmlStreamReader.getVersion();
+		this.skipBrokenGeometries = skipBrokenGeometries;
 	}
 
 	/**
@@ -265,6 +279,10 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
 		return null;
 	}
 
+	public List<String> getSkippedBrokenGeometryErrors() {
+		return skippedBrokenGeometryErrors;
+	}
+
 	private Property parseSimpleProperty(XMLStreamReaderWrapper xmlStream, SimplePropertyType propDecl)
 			throws NoSuchElementException, XMLStreamException, XMLParsingException {
 
@@ -290,7 +308,21 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
 			case FEATURE:
 				return parseFeatureProperty(xmlStream, (FeaturePropertyType) propDecl, crs);
 			case GEOMETRY:
-				return parseGeometryProperty(xmlStream, (GeometryPropertyType) propDecl, crs);
+				QName elementName = xmlStream.getName();
+				try {
+					return parseGeometryProperty(xmlStream, (GeometryPropertyType) propDecl, crs);
+				}
+				catch (XMLParsingException e) {
+					if (skipBrokenGeometries) {
+						LOG.warn("Broken geometry was detected: " + e.getMessage());
+						skippedBrokenGeometryErrors.add(e.getMessage());
+						XMLStreamUtils.skipToEndElement(xmlStream, elementName);
+						return new GenericProperty(propDecl, elementName, null, true);
+					}
+					else {
+						throw e;
+					}
+				}
 			case TIME_OBJECT:
 				return parseTimeObjectProperty(xmlStream, propDecl, crs);
 			case TIME_SLICE:

@@ -127,4 +127,20 @@ public class BlobMapping {
 		return "id";
 	}
 
+	public String getXPlanInternalIdColumn() {
+		return "internal_id";
+	}
+
+	public String getXPlanIdColumn() {
+		return "plan_id";
+	}
+
+	public String getXPlanNameColumn() {
+		return "plan_name";
+	}
+
+	public String getXPlanRechtsstandColumn() {
+		return "rechtsstand";
+	}
+
 }
