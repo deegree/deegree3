@@ -48,7 +48,7 @@ options:
  -cycledepth=INT, positive integer value to specify the depth of cycles, default=0
  -listOfPropertiesWithPrimitiveHref=<path/to/file>, not set by default
  -referenceData=<path/to/file> (GML Feature collection containing reference features. The generated config is simplified to map this feature collection.)
- - useRefDataProps={true|false}, default: false (true if mapping should be created only for properties defined in referenceData)
+ -useRefDataProps={true|false}, default: false (true if mapping should be created only for properties defined in referenceData)
 
 The option listOfPropertiesWithPrimitiveHref references a file listing properties which are written with primitive instead of feature mappings (see deegree-webservices documentation and README of this tool for further information):
 ---------- begin file ----------
@@ -205,7 +205,7 @@ the check can only be performed after the loading operation has finished.
 **Generate SQL DDL for INSPIRE Cadastral Parcels 4.0 with UUIDGenerator**
 
 ----
-java -jar deegree-tools-gml.jar SqlFeatureStoreConfigCreator --srid=25832 --format=ddl --idtype=uuid schemaUrl=http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd
+java -jar deegree-tools-gml.jar SqlFeatureStoreConfigCreator -srid=25832 -format=ddl -idtype=uuid -schemaUrl=http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd
 ----
 
 The generated file is './CadastralParcels.sql'.
@@ -213,7 +213,7 @@ The generated file is './CadastralParcels.sql'.
 **Generate deegree SQLFeatureStore for INSPIRE Cadastral Parcels 4.0 with UUIDGenerator**
 
 ----
-java -jar deegree-tools-gml.jar SqlFeatureStoreConfigCreator --srid=25832 --format=deegree --idtype=uuid schemaUrl=http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd
+java -jar deegree-tools-gml.jar SqlFeatureStoreConfigCreator -srid=25832 -format=deegree -idtype=uuid -schemaUrl=http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd
 ----
 
 The generated file is './CadastralParcels.xml'.
@@ -221,7 +221,7 @@ The generated file is './CadastralParcels.xml'.
 **Generate SQL DDL for INSPIRE Cadastral Parcels 4.0 with AutoIDGenerator**
 
 ----
-java -jar deegree-tools-gml.jar SqlFeatureStoreConfigCreator --srid=25832 --format=ddl --idtype=int schemaUrl=http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd
+java -jar deegree-tools-gml.jar SqlFeatureStoreConfigCreator -srid=25832 -format=ddl -idtype=int -schemaUrl=http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd
 ----
 
 The generated file is './CadastralParcels.sql'.
@@ -229,7 +229,7 @@ The generated file is './CadastralParcels.sql'.
 **Generate deegree SQLFeatureStore for INSPIRE Cadastral Parcels 4.0 with AutoIDGenerator**
 
 ----
-java -jar deegree-tools-gml.jar SqlFeatureStoreConfigCreator --srid=25832 --format=deegree --idtype=int schemaUrl=http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd
+java -jar deegree-tools-gml.jar SqlFeatureStoreConfigCreator -srid=25832 -format=deegree -idtype=int -schemaUrl=http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd
 ----
 
 The generated file is './CadastralParcels.xml'.
@@ -237,7 +237,7 @@ The generated file is './CadastralParcels.xml'.
 **Generate deegree SQLFeatureStore and SQL DDL for INSPIRE Cadastral Parcels 4.0 with AutoIDGenerator**
 
 ----
-java -jar deegree-tools-gml.jar SqlFeatureStoreConfigCreator --srid=25832 --format=all --idtype=int schemaUrl=http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd
+java -jar deegree-tools-gml.jar SqlFeatureStoreConfigCreator -srid=25832 -format=all -idtype=int -schemaUrl=http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd
 ----
 
 The generated files are './CadastralParcels.sql' and './CadastralParcels.xml'.
@@ -245,7 +245,7 @@ The generated files are './CadastralParcels.sql' and './CadastralParcels.xml'.
 **Generate deegree SQLFeatureStore and SQL DDL for INSPIRE Cadastral Parcels 4.0 with Blob-Mapping**
 
 ----
-java -jar deegree-tools-gml.jar SqlFeatureStoreConfigCreator --format=all --mapping=blob schemaUrl=http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd
+java -jar deegree-tools-gml.jar SqlFeatureStoreConfigCreator -format=all -mapping=blob -schemaUrl=http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd
 ----
 
 The generated files are './CadastralParcels.sql' and './CadastralParcels.xml' with Blob-Mapping for PostGIS.
@@ -253,7 +253,7 @@ The generated files are './CadastralParcels.sql' and './CadastralParcels.xml' wi
 **Generate deegree SQLFeatureStore and SQL DDL for INSPIRE Cadastral Parcels 4.0 for Oracle DBMS with Oracle Locator**
 
 ----
-java -jar deegree-tools-gml.jar SqlFeatureStoreConfigCreator --format=all --dialect=oracle schemaUrl=http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd
+java -jar deegree-tools-gml.jar SqlFeatureStoreConfigCreator -format=all -dialect=oracle -schemaUrl=http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd
 ----
 
 The generated files are './CadastralParcels.sql' and './CadastralParcels.xml' with relational mapping for Oracle Locator.
@@ -261,7 +261,7 @@ The generated files are './CadastralParcels.sql' and './CadastralParcels.xml' wi
 **Generate deegree SQLFeatureStore for INSPIRE Cadastral Parcels 4.0 with list of properties with primitive href**
 
 ----
-java -jar deegree-tools-gml.jar SqlFeatureStoreConfigCreator --format=deegree --listOfPropertiesWithPrimitiveHref=<path/to/file> schemaUrl=http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd
+java -jar deegree-tools-gml.jar SqlFeatureStoreConfigCreator -format=deegree -listOfPropertiesWithPrimitiveHref=<path/to/file> -schemaUrl=http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd
 ----
 
 The generated file is './CadastralParcels.xml'. All properties listed in the referenced file are written with primitive instead of feature mappings.
@@ -272,5 +272,5 @@ Set the `http.proxyHost`, `http.proxyPort` and `http.nonProxyHosts` config prope
 
 Example for http proxy:
 ----
-java -jar -Dhttp.proxyHost=your-proxy.net -Dhttp.proxyPort=80 deegree-tools-gml.jar SqlFeatureStoreConfigCreator --format=ddl --idtype=uuid schemaUrl=http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd
+java -jar -Dhttp.proxyHost=your-proxy.net -Dhttp.proxyPort=80 deegree-tools-gml.jar SqlFeatureStoreConfigCreator -format=ddl -idtype=uuid -schemaUrl=http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd
 ----
