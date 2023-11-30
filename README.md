@@ -26,6 +26,6 @@ More information about free software can be found at the free software foundatio
 
 First off all, thank you for taking the time to contribute to deegree! :+1: :tada:
 
-By participating you are expected to uphold the [Contribution guidelines](CONTRIB.md).
+By participating you are expected to uphold the [Contribution guidelines](CONTRIBUTING.md).
 
 You can add yourself when contributing to the project to the [list of contributors](CONTRIBUTORS.md).
