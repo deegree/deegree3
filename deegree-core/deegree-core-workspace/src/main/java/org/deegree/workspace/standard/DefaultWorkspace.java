@@ -518,7 +518,7 @@ public class DefaultWorkspace implements Workspace {
 
 	@Override
 	public <T extends Resource> void destroy(ResourceIdentifier<T> id) {
-		List<ResourceIdentifier<T>> resourcesToRemove = collectResourcesToDestroy(id);
+		List<ResourceIdentifier<?>> resourcesToRemove = collectResourcesToDestroy(id);
 
 		for (ResourceIdentifier resourceId : resourcesToRemove) {
 			T res = (T) resources.get(resourceId);
@@ -534,14 +534,14 @@ public class DefaultWorkspace implements Workspace {
 		}
 	}
 
-	private <T extends Resource> List<ResourceIdentifier<T>> collectResourcesToDestroy(ResourceIdentifier<T> id) {
-		List<ResourceIdentifier<T>> resourcesToRemove = new ArrayList<>();
-		ResourceNode<T> node = graph.getNode(id);
+	private List<ResourceIdentifier<?>> collectResourcesToDestroy(ResourceIdentifier<?> id) {
+		List<ResourceIdentifier<?>> resourcesToRemove = new ArrayList<>();
+		ResourceNode<?> node = graph.getNode(id);
 		if (node == null) {
 			return resourcesToRemove;
 		}
 		for (ResourceNode<? extends Resource> n : node.getDependents()) {
-			collectResourcesToDestroy(n.getMetadata().getIdentifier());
+			resourcesToRemove.addAll(collectResourcesToDestroy(n.getMetadata().getIdentifier()));
 		}
 		resourcesToRemove.add(id);
 		return resourcesToRemove;
