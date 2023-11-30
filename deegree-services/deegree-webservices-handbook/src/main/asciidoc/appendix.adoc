@@ -63,7 +63,7 @@ f
 
 === Interception points
 
-deegree offers developers with specialized knowledge of its inner workings the ability to extend or change deegree with custom modules. 
+deegree offers developers the ability to extend or change deegree with custom modules. 
 This chapter is only intended as an entry point to make it easier to reach these Java service provider interfaces.
 
 [width="100%",cols="40%,40%,10%",options="header",]
