@@ -6,9 +6,9 @@ The following versions of deegree are
 currently being supported with security updates.
 
 | Version | Supported          |
-| ------- | ------------------ |
+|---------|--------------------|
 | 3.5.x   | :white_check_mark: |
-| 3.4.x   | :white_check_mark: |
+| 3.4.x   | :x:                |
 | <= 3.3  | :x:                |
 
 Please check also our [support matrix](https://github.com/deegree/deegree3/wiki/End-of-Life-and-Support-Matrix) for more detailed information.

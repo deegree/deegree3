@@ -119,6 +119,7 @@ import org.deegree.geometry.refs.GeometryReference;
 import org.deegree.geometry.standard.curvesegments.AffinePlacement;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.commons.AbstractGMLObjectWriter;
+import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1533,7 +1534,7 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
 			throws XMLStreamException, UnknownCRSException, TransformationException {
 
 		GMLObjectType gmlType = geometry.getType();
-		if (gmlType == null) {
+		if (gmlType == null || GMLSchemaInfoSet.isGMLNamespace(gmlType.getName().getNamespaceURI())) {
 			writeStartElementWithNS(gmlNs, localName);
 		}
 		else {

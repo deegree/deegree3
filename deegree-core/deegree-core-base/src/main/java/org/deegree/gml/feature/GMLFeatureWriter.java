@@ -371,7 +371,9 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
 				writeNilledElement(propName, attributes);
 			}
 			else {
-				writeStartElementWithNS(propName.getNamespaceURI(), propName.getLocalPart());
+				String namespaceURI = GMLSchemaInfoSet.isGMLNamespace(propName.getNamespaceURI()) ? gmlNs
+						: propName.getNamespaceURI();
+				writeStartElementWithNS(namespaceURI, propName.getLocalPart());
 				if (value != null) {
 					gmlStreamWriter.getGeometryWriter().exportEnvelope((Envelope) value);
 				}
