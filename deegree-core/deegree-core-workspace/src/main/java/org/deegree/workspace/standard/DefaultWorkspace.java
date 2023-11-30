@@ -367,10 +367,10 @@ public class DefaultWorkspace implements Workspace {
 		List<ResourceMetadata<? extends Resource>> mdList = new ArrayList<ResourceMetadata<? extends Resource>>();
 		ResourceMetadata<? extends Resource> md = resourceMetadata.get(id);
 		mdList.add(md);
-		graph.insertNode(md);
-		List<ResourceMetadata<? extends Resource>> dependencies = new ArrayList<ResourceMetadata<?>>();
-		WorkspaceUtils.collectDependencies(dependencies, graph.getNode(id));
-		mdList.addAll(dependencies);
+		for (ResourceIdentifier<?> dependencyId : md.getDependencies()) {
+			ResourceMetadata<? extends Resource> dependencyMd = resourceMetadata.get(dependencyId);
+			mdList.add(dependencyMd);
+		}
 
 		ResourceGraph g = new ResourceGraph(mdList);
 		mdList = g.toSortedList();
@@ -380,6 +380,7 @@ public class DefaultWorkspace implements Workspace {
 				LOG.info("Resource {} already available.", metadata.getIdentifier());
 				continue;
 			}
+			graph.insertNode(metadata);
 			ResourceBuilder<? extends Resource> builder = prepared.getBuilder(metadata.getIdentifier());
 			LOG.info("Building resource {}.", metadata.getIdentifier());
 			try {
