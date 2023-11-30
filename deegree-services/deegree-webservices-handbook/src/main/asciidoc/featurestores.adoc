@@ -1653,6 +1653,8 @@ NOTE: In BLOB mode, only spatial and feature id queries can be mapped to SQL
 WHERE-constraints. All other kinds of filter conditions are performed in
 memory. See <<anchor-filtering>> for more information.
 
+IMPORTANT: It is not recommended to mix GML versions in BLOB mode: The GML versions supported by WFS should be limited to the GML version of the features in the FeatureStore. Currently it cannot be ensured, that geometries transformed to another GML version are valid against the schema.
+
 ==== Transactions and feature id generation
 
 The mapping defined by a _<FeatureTypeMapping>_ element generally
