@@ -1251,6 +1251,12 @@
 
   <profiles>
     <profile>
+      <id>handbook</id>
+      <modules>
+        <module>deegree-documentation</module>
+      </modules>
+    </profile>
+    <profile>
       <id>integration-tests</id>
       <modules>
         <module>deegree-tests</module>

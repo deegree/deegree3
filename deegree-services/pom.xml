@@ -25,15 +25,6 @@
     </resources>
   </build>
 
-  <profiles>
-    <profile>
-      <id>handbook</id>
-      <modules>
-        <module>deegree-webservices-handbook</module>
-      </modules>
-    </profile>
-  </profiles>
-
   <modules>
     <module>deegree-services-commons</module>
     <module>deegree-services-config</module>
