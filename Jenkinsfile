@@ -75,7 +75,7 @@ pipeline {
             post {
                 success {
                     archiveArtifacts artifacts: '**/target/deegree-webservices-*.war', fingerprint: true
-                    archiveArtifacts artifacts: '**/target/deegree-webservices-handbook*.zip', fingerprint: true
+                    archiveArtifacts artifacts: '**/target/deegree-documentation*.zip', fingerprint: true
                 }
             }
         }
