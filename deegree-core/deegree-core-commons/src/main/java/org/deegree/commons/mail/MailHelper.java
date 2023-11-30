@@ -121,7 +121,7 @@ public final class MailHelper {
 	 * @param session
 	 * @throws SendMailException an exception if the message is undeliverable
 	 *
-     * @see jakarta.mail.Transport
+	 * @see jakarta.mail.Transport
 	 * @see <a href=
 	 * "http://java.sun.com/j2ee/tutorial/1_3-fcs/doc/Resources4.html#63060">J2EE Mail
 	 * Session connection </a>
