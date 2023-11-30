@@ -82,6 +82,7 @@ public class PostGISDDLCreator extends DDLCreator {
 
 	@Override
 	protected List<String> getBLOBCreates() {
+		String srid = detectSrid();
 		List<String> ddl = new ArrayList<String>();
 
 		// create feature_type table
@@ -90,7 +91,7 @@ public class PostGISDDLCreator extends DDLCreator {
 		ddl.add("CREATE TABLE " + ftTable + " (id smallint PRIMARY KEY, qname text NOT NULL)");
 		ddl.add("COMMENT ON TABLE " + ftTable + " IS 'Ids and bboxes of concrete feature types'");
 		ddl.add("SELECT ADDGEOMETRYCOLUMN('" + ftTableSchema.toLowerCase() + "', '" + ftTable.getTable().toLowerCase()
-				+ "','bbox','" + undefinedSrid + "','GEOMETRY',2)");
+				+ "','bbox','" + srid + "','GEOMETRY',2)");
 
 		// populate feature_type table
 		for (short ftId = 0; ftId < schema.getFts(); ftId++) {
@@ -105,13 +106,20 @@ public class PostGISDDLCreator extends DDLCreator {
 				+ "gml_id text UNIQUE NOT NULL, ft_type smallint REFERENCES " + ftTable + " , binary_object bytea)");
 		ddl.add("COMMENT ON TABLE " + blobTable + " IS 'All objects (features and geometries)'");
 		ddl.add("SELECT ADDGEOMETRYCOLUMN('" + blobTableSchema.toLowerCase() + "', '"
-				+ blobTable.getTable().toLowerCase() + "','gml_bounded_by','" + undefinedSrid + "','GEOMETRY',2)");
+				+ blobTable.getTable().toLowerCase() + "','gml_bounded_by','" + srid + "','GEOMETRY',2)");
 		ddl.add("ALTER TABLE " + blobTable + " ADD CONSTRAINT gml_objects_geochk CHECK (ST_IsValid(gml_bounded_by))");
 		ddl.add("CREATE INDEX gml_objects_sidx ON " + blobTable + "  USING GIST (gml_bounded_by)");
 		// ddl.add( "CREATE TABLE gml_names (gml_object_id integer REFERENCES
 		// gml_objects,"
 		// + "name text NOT NULL,codespace text,prop_idx smallint NOT NULL)" );
 		return ddl;
+	}
+
+	private String detectSrid() {
+		String srid = schema.getGeometryParams().getSrid();
+		if (srid != null)
+			return srid;
+		return undefinedSrid;
 	}
 
 	private List<StringBuffer> getGeometryCreate(GeometryMapping mapping, DBField dbField, TableName table) {
