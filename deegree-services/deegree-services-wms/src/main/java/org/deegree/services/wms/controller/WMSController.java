@@ -50,6 +50,18 @@ import static org.deegree.services.i18n.Messages.get;
 import static org.deegree.services.metadata.MetadataUtils.convertFromJAXB;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import jakarta.activation.DataHandler;
+import jakarta.activation.DataSource;
+import jakarta.xml.soap.AttachmentPart;
+import jakarta.xml.soap.MessageFactory;
+import jakarta.xml.soap.Name;
+import jakarta.xml.soap.SOAPBody;
+import jakarta.xml.soap.SOAPBodyElement;
+import jakarta.xml.soap.SOAPConstants;
+import jakarta.xml.soap.SOAPEnvelope;
+import jakarta.xml.soap.SOAPException;
+import jakarta.xml.soap.SOAPMessage;
+import jakarta.xml.soap.SOAPPart;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -66,20 +78,8 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.TreeMap;
 import java.util.UUID;
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.soap.AttachmentPart;
-import javax.xml.soap.MessageFactory;
-import javax.xml.soap.Name;
-import javax.xml.soap.SOAPBody;
-import javax.xml.soap.SOAPBodyElement;
-import javax.xml.soap.SOAPConstants;
-import javax.xml.soap.SOAPEnvelope;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPMessage;
-import javax.xml.soap.SOAPPart;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -763,7 +763,7 @@ public class WMSController extends AbstractOWS {
 		}
 		catch (SOAPException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.debug(e.getMessage(), e);
 		}
 	}
 
@@ -1185,8 +1185,8 @@ public class WMSController extends AbstractOWS {
 
 	private AttachmentPart createAttachment(GetMap getMap, ByteArrayOutputStream stream, SOAPMessage message,
 			String contentId) {
-		DataSource ds = new ByteArrayDataSource(stream.toByteArray());
-		DataHandler dataHandler = new DataHandler(ds);
+		DataSource ds = new ByteArrayDataSource( stream.toByteArray());
+		DataHandler dataHandler = new DataHandler( ds);
 		AttachmentPart attachmentPart = message.createAttachmentPart(dataHandler);
 		attachmentPart.setContentId(contentId);
 		attachmentPart.setContentType(getMap.getFormat());

@@ -102,20 +102,22 @@
                 <schemaDirectory>src/main/resources/META-INF/schemas/</schemaDirectory>
                 <episode>true</episode>
                 <!--
+                <catalogResolver>org.jvnet.jaxb.maven.resolver.tools.ClasspathCatalogResolver</catalogResolver>
+                -->
                 <catalogResolver>org.deegree.uncoupled.jaxb.CatalogResolver</catalogResolver>
+                <!--
+                <strict>false</strict>
                 -->
               </configuration>
             </execution>
           </executions>
-          <!--
           <dependencies>
             <dependency>
               <groupId>org.deegree</groupId>
               <artifactId>deegree-jaxb-resolver</artifactId>
-              <version>1.1</version>
+              <version>1.2</version>
             </dependency>
           </dependencies>
-          -->
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -485,6 +487,7 @@
         <artifactId>jakarta.annotation-api</artifactId>
         <version>2.1.1</version>
       </dependency>
+
       <!-- test dependencies -->
       <dependency>
         <groupId>junit</groupId>
@@ -1210,7 +1213,12 @@
       <dependency>
         <groupId>jakarta.activation</groupId>
         <artifactId>jakarta.activation-api</artifactId>
-        <version>2.0.1</version>
+        <version>2.1.2</version>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.xml.soap</groupId>
+        <artifactId>jakarta.xml.soap-api</artifactId>
+        <version>3.0.1</version>
       </dependency>
       <dependency>
         <groupId>jfree</groupId>
@@ -1261,7 +1269,7 @@
     <spring-batch.version>4.3.10</spring-batch.version>
     <spring-framework.version>5.3.31</spring-framework.version>
     <batik.version>1.17</batik.version>
-    <axoim.version>1.2.22</axoim.version>
+    <axoim.version>1.4.0</axoim.version>
     <jsonpath.version>2.7.0</jsonpath.version>
   </properties>
 
