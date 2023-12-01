@@ -50,8 +50,7 @@ public class LengthPropertyType extends MeasurePropertyType {
 
 	@Override
 	public String toString() {
-		String s = "- length property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs;
-		return s;
+		return "- length property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs;
 	}
 
 }

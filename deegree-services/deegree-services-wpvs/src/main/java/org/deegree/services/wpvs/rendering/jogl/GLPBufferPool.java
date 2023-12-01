@@ -156,8 +156,7 @@ public class GLPBufferPool {
 		// GLCanvas d = new GLCanvas();
 		if (glFactory.canCreateGLPbuffer()) {
 			GLCapabilities caps = new GLCapabilities();
-			GLPbuffer buf = glFactory.createGLPbuffer(caps, null, width, height, null);
-			return buf;
+			return glFactory.createGLPbuffer(caps, null, width, height, null);
 			// buffer.addGLEventListener(new
 			// PBufferGLEventListener(pBufferTexID,128,128,glu));
 		}

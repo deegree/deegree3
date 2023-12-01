@@ -139,9 +139,7 @@ public class DatumParser extends DefinitionParser {
 		}
 		nextElement(reader);// end document
 
-		GeodeticDatum result = getStore().addIdToCache(new GeodeticDatum(ellipsoid, pMeridian, id), false);
-
-		return result;
+		return getStore().addIdToCache(new GeodeticDatum(ellipsoid, pMeridian, id), false);
 	}
 
 	@Override

@@ -116,8 +116,7 @@ public class WMSClientIT {
 		ICRS crs = CRSManager.lookup("EPSG:900913");
 		String format = "image/png";
 		boolean transparent = false;
-		GetMap getMap = new GetMap(layers, width, height, envelope, crs, format, transparent);
-		return getMap;
+		return new GetMap(layers, width, height, envelope, crs, format, transparent);
 	}
 
 }

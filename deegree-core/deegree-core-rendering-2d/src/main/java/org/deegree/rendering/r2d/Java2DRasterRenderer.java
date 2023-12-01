@@ -230,8 +230,7 @@ public class Java2DRasterRenderer implements RasterRenderer {
 		for (int band = 0; band < data.getBands(); band++)
 			newData = setEnhancedChannelData(newData, rasutil, band, band, contrastEnhancement);
 
-		AbstractRaster newRaster = new SimpleRaster(newData, raster.getEnvelope(), raster.getRasterReference(), null);
-		return newRaster;
+		return new SimpleRaster(newData, raster.getEnvelope(), raster.getRasterReference(), null);
 	}
 
 	/**
@@ -279,8 +278,7 @@ public class Java2DRasterRenderer implements RasterRenderer {
 					channels.channelContrastEnhancements.get("gray"));
 
 		}
-		AbstractRaster newRaster = new SimpleRaster(newData, raster.getEnvelope(), raster.getRasterReference(), null);
-		return newRaster;
+		return new SimpleRaster(newData, raster.getEnvelope(), raster.getRasterReference(), null);
 	}
 
 	/**

@@ -130,8 +130,7 @@ public class WROSerializer extends ObjectSerializer<WorldRenderableObject> {
 		// for ( int i = 0; i < ob.length; ++i ) {
 		// ob[i] = buffer.get();
 		// }
-		WorldRenderableObject result = deserializeDataObject(ob);
-		return result;
+		return deserializeDataObject(ob);
 	}
 
 	@Override

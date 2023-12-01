@@ -465,9 +465,7 @@ public class CurveLinearizer {
 			iPoints.add(new DefaultPoint(null, crs, pm, new double[] { interpolated[2 * i], interpolated[2 * i + 1] }));
 		}
 
-		LineStringSegment lineSegment = geomFac.createLineStringSegment(new PointsList(iPoints));
-
-		return lineSegment;
+		return geomFac.createLineStringSegment(new PointsList(iPoints));
 	}
 
 	private double[] constructVectorB(int n, double[] ycoor, double[] h, double startTan, double endTan) {
@@ -716,8 +714,7 @@ public class CurveLinearizer {
 		double radius = Math.sqrt(dx * dx + dy * dy);
 
 		double angleStep = 2 * Math.acos(1 - error / radius);
-		int numPoints = (int) Math.ceil(2 * Math.PI / angleStep) + 2;
-		return numPoints;
+		return (int) Math.ceil(2 * Math.PI / angleStep) + 2;
 	}
 
 	private int calcNumPoints(Point p0, Point p1, Point p2, boolean isCircle, double error) {

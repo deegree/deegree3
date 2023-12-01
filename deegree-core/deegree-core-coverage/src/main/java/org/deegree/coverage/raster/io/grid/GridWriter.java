@@ -546,8 +546,7 @@ public class GridWriter implements RasterWriter {
 	 * @return the tile's id
 	 */
 	protected int getTileId(int column, int row) {
-		int idx = row * columns + column;
-		return idx;
+		return row * columns + column;
 	}
 
 	/**

@@ -182,8 +182,7 @@ public class WpsPrinterBean implements Serializable {
 		String wpsUrl = Configuration.getWpsUrl();
 		try {
 			URL capUrl = new URL(wpsUrl + "?service=WPS&version=1.0.0&request=GetCapabilities");
-			WPSClient wpsClient = new WPSClient(capUrl);
-			return wpsClient;
+			return new WPSClient(capUrl);
 		}
 		catch (Exception e) {
 			FacesMessage fm = MessageUtils.getFacesMessage(FacesMessage.SEVERITY_ERROR,

@@ -56,8 +56,7 @@ public class MeasurePropertyType extends AbstractPropertyType {
 
 	@Override
 	public String toString() {
-		String s = "- measure property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs;
-		return s;
+		return "- measure property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs;
 	}
 
 }

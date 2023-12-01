@@ -128,8 +128,7 @@ public class QueryAnalyzerTest {
 	}
 
 	private WebFeatureService mockController() {
-		WebFeatureService mock = mock(WebFeatureService.class);
-		return mock;
+		return mock(WebFeatureService.class);
 	}
 
 	private WfsFeatureStoreManager mockManager() {

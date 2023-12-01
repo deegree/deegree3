@@ -237,8 +237,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
 	}
 
 	private ServiceManager getServiceManager() throws MetadataStoreException {
-		ServiceManager serviceManager = ServiceManagerProvider.getInstance().getServiceManager();
-		return serviceManager;
+		return ServiceManagerProvider.getInstance().getServiceManager();
 	}
 
 }

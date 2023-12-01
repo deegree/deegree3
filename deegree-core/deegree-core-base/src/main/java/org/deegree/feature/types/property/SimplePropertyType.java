@@ -87,9 +87,8 @@ public class SimplePropertyType extends AbstractPropertyType {
 
 	@Override
 	public String toString() {
-		String s = "- simple property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs
+		return "- simple property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs
 				+ ", type: " + pt;
-		return s;
 	}
 
 }

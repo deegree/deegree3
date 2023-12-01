@@ -168,8 +168,7 @@ public abstract class GridReader implements RasterReader {
 		TileOffsetReader tReader = new TileOffsetReader(this, tileRect);
 		ByteBufferRasterData tileData = RasterDataFactory.createRasterData(infoFile.getTileRasterWidth(),
 				infoFile.getTileRasterHeight(), getRasterDataInfo(), tReader, false);
-		SimpleRaster tile = new SimpleRaster(tileData, tileEnvelope, tileRasterReference, null);
-		return tile;
+		return new SimpleRaster(tileData, tileEnvelope, tileRasterReference, null);
 	}
 
 	/**

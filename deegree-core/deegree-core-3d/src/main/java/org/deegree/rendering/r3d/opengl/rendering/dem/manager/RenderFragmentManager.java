@@ -187,9 +187,8 @@ public class RenderFragmentManager {
 
 	@Override
 	public String toString() {
-		String s = "Loaded fragments: memory: " + inMemory + " (max=" + maxInMemory + ") , GPU: " + inGPU + " (max="
+		return "Loaded fragments: memory: " + inMemory + " (max=" + maxInMemory + ") , GPU: " + inGPU + " (max="
 				+ maxInGPU + ")";
-		return s;
 	}
 
 	/**

@@ -597,8 +597,7 @@ public class Interpolate extends AbstractCustomExpression {
 		}
 
 		double f = (value - dataArray[pos - 1]) / (dataArray[pos] - dataArray[pos - 1]);
-		double val = interpolate(pos - 1, pos, f);
-		return val;
+		return interpolate(pos - 1, pos, f);
 	}
 
 	@Override

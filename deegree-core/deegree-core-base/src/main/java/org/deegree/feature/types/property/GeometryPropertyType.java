@@ -418,9 +418,8 @@ public class GeometryPropertyType extends ObjectPropertyType {
 
 	@Override
 	public String toString() {
-		String s = "- geometry property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs
+		return "- geometry property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs
 				+ ", geometry type: " + geomType;
-		return s;
 	}
 
 }

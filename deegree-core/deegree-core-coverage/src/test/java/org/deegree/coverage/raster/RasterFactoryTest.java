@@ -269,9 +269,7 @@ public class RasterFactoryTest {
 		iis = ImageIO.createImageInputStream(f);
 		pbj.setParameter("Input", iis);
 
-		RenderedOp result = JAI.create("ImageRead", pbj, hints);
-
-		return result;
+		return JAI.create("ImageRead", pbj, hints);
 	}
 
 	// private void enableTilingForReader( ImageReader imageReader, ImageInputStream iis )

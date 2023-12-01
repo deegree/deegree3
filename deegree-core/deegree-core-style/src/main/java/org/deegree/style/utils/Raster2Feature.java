@@ -76,8 +76,7 @@ public class Raster2Feature {
 		Point[] points = { p1, p2, p3, p4, p5 };
 		// (asList(points));
 		LinearRing ring = fac.createLinearRing(null, crs, new PointsList(asList(points)));
-		Polygon poly = fac.createPolygon(null, crs, ring, null);
-		return poly;
+		return fac.createPolygon(null, crs, ring, null);
 	}
 
 }

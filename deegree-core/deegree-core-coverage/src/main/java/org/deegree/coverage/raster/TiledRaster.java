@@ -254,8 +254,7 @@ public class TiledRaster extends AbstractRaster {
 				throw new NullPointerException(
 						"The given tile container does not contain any tiles and no raster data information is available. ");
 			}
-			SimpleRaster result = RasterFactory.createEmptyRaster(dataInfo, env, getRasterReference());
-			return result;
+			return RasterFactory.createEmptyRaster(dataInfo, env, getRasterReference());
 		}
 		SimpleRaster originalSimpleRaster = tiles.get(0).getAsSimpleRaster();
 		SimpleRaster result = originalSimpleRaster.createCompatibleSimpleRaster(getRasterReference(), env);

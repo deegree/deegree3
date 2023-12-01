@@ -458,8 +458,7 @@ public class RasterFactory {
 						raster.getView());
 				// new DataBufferFloat( 12 );
 				WritableRaster wr = Raster.createWritableRaster(fm, db, null);
-				BufferedImage floatImage = new BufferedImage(new FloatColorModel(noData), wr, false, null);
-				return floatImage;
+				return new BufferedImage(new FloatColorModel(noData), wr, false, null);
 			// break;
 			case SHORT:
 			case USHORT:

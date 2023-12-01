@@ -129,9 +129,8 @@ public class EbrimEOMDStoreBuilder implements ResourceBuilder<MetadataStore<? ex
 		}
 		long queryTimeout = storeConfig.getQueryTimeout() == null ? 0 : storeConfig.getQueryTimeout().intValue();
 
-		EbrimEOMDStore store = new EbrimEOMDStore(storeConfig.getJDBCConnId(), queriesDir, rp, lastModified,
-				queryTimeout, metadata, workspace);
-		return store;
+		return new EbrimEOMDStore(storeConfig.getJDBCConnId(), queriesDir, rp, lastModified, queryTimeout, metadata,
+				workspace);
 	}
 
 }

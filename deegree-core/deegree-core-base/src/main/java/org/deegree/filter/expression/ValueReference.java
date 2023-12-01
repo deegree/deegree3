@@ -208,8 +208,7 @@ public class ValueReference implements Expression {
 
 	@Override
 	public String toString(String indent) {
-		String s = indent + "-PropertyName ('" + text + "')\n";
-		return s;
+		return indent + "-PropertyName ('" + text + "')\n";
 	}
 
 	@Override
