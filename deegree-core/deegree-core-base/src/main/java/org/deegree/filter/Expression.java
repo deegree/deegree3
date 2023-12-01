@@ -101,7 +101,7 @@ public interface Expression {
 		 * Value is given as a custom expression. The {@link Expression} is an instance of
 		 * {@link CustomExpressionProvider}.
 		 */
-		CUSTOM;
+		CUSTOM
 
 	}
 

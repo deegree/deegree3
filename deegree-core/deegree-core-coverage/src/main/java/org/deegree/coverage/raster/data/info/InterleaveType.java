@@ -53,6 +53,6 @@ public enum InterleaveType {
 	/**
 	 * band-interleaving
 	 */
-	BAND;
+	BAND
 
 }

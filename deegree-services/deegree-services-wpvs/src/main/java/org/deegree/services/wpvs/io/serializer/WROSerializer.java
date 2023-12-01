@@ -98,7 +98,7 @@ public class WROSerializer extends ObjectSerializer<WorldRenderableObject> {
 		/**
 		 *
 		 */
-		VertexCoordinates;
+		VertexCoordinates
 
 	}
 

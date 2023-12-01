@@ -68,8 +68,6 @@ public class WebFeatureServiceTest {
 
 	private final WebFeatureService webFeatureService = new WebFeatureService(null, null, null);
 
-	;
-
 	@Test
 	public void testParseEncodingsWithRequestTypeSpecific() {
 		DeegreeWFS supportedRequests = prepareSupportedRequestsWithRequestTypeSpecific();
