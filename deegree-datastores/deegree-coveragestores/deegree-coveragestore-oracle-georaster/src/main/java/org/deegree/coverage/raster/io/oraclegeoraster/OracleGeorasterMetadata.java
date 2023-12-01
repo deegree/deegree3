@@ -53,7 +53,7 @@ import org.slf4j.Logger;
 public class OracleGeorasterMetadata extends AbstractResourceMetadata<Coverage> {
 
 	private static final Logger LOG = getLogger(OracleGeorasterMetadata.class);
-	
+
 	public OracleGeorasterMetadata(Workspace workspace, ResourceLocation<Coverage> location,
 			AbstractResourceProvider<Coverage> provider) {
 		super(workspace, location, provider);
