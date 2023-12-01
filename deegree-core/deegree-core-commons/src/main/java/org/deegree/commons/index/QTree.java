@@ -377,7 +377,7 @@ public class QTree<T> extends SpatialIndex<T> implements Serializable {
 	 * @return the number of duplicate envelopes in the leaf objects which should be
 	 * subtracted from the size();
 	 */
-	private final int duplicateEnvelopes(List<Entry<T>> objectList) {
+	private int duplicateEnvelopes(List<Entry<T>> objectList) {
 		List<List<T>> equalEnvelope = new ArrayList<List<T>>(objectList.size());
 		for (int i = 0; i < objectList.size(); ++i) {
 			Entry<T> firstE = objectList.get(i);
@@ -424,13 +424,13 @@ public class QTree<T> extends SpatialIndex<T> implements Serializable {
 	 * @return the number of all objects in this node, e.g. the leafObjects and the
 	 * objects covering the entire envelope.
 	 */
-	private final int totalSize() {
+	private int totalSize() {
 		return size() + ((objectsCoveringEnv == null) ? 0
 				: (objectsCoveringEnv.size() - duplicateEnvelopes(objectsCoveringEnv)));
 
 	}
 
-	private final int size() {
+	private int size() {
 		return (leafObjects == null) ? 0 : objectsInLeaf;// ( leafObjects.size() -
 															// duplicateEnvelopes(
 															// leafObjects )
@@ -466,7 +466,7 @@ public class QTree<T> extends SpatialIndex<T> implements Serializable {
 
 	}
 
-	private final boolean hasDuplicateLocation(final float[] objectEnvelope) {
+	private boolean hasDuplicateLocation(final float[] objectEnvelope) {
 		for (Entry<T> obj : leafObjects) {
 			float[] second = obj.entryEnv;
 			double minD = calcDist(objectEnvelope, second, 0, maxOffset);
@@ -495,7 +495,7 @@ public class QTree<T> extends SpatialIndex<T> implements Serializable {
 	 * @param first
 	 * @param second
 	 */
-	private final static double calcDist(float[] first, float[] second, int index, int dim) {
+	private static double calcDist(float[] first, float[] second, int index, int dim) {
 		double d = 0;
 		for (int i = 0; i < dim; ++i) {
 			d += (first[index + i] - second[index + i]) * (first[index + i] - second[index + i]);
@@ -506,14 +506,14 @@ public class QTree<T> extends SpatialIndex<T> implements Serializable {
 	/**
 	 * @return true if the object covers this entire quad node
 	 */
-	private final boolean objectCoversEnvelope(float[] entryEnv) {
+	private boolean objectCoversEnvelope(float[] entryEnv) {
 		return (entryEnv[0] <= this.envelope[0] && entryEnv[1] <= this.envelope[1])
 				&& (entryEnv[maxOffset] >= this.envelope[maxOffset]
 						&& entryEnv[maxOffset + 1] >= this.envelope[maxOffset + 1]);
 	}
 
 	@SuppressWarnings("unchecked")
-	private final void split() {
+	private void split() {
 		children = new QTree[4];
 		for (Entry<T> e : leafObjects) {
 			List<QTree<T>> treeNodes = getObjectNodes(e.entryEnv);
@@ -609,7 +609,7 @@ public class QTree<T> extends SpatialIndex<T> implements Serializable {
 	 * @param envelope
 	 * @return the indices of the sons touching the envelope
 	 */
-	private final int[] getIndizes(float[] envelope) {
+	private int[] getIndizes(float[] envelope) {
 		int min = getIndex(envelope, 0);
 		int max = getIndex(envelope, maxOffset);
 		return analyzeIndizes(envelope, min, max);
@@ -621,7 +621,7 @@ public class QTree<T> extends SpatialIndex<T> implements Serializable {
 	 * @param max index of the intersecting node the max point
 	 * @return the indices of the sons with which the given envelope intersects.
 	 */
-	private final static int[] analyzeIndizes(float[] envelope, int min, int max) {
+	private static int[] analyzeIndizes(float[] envelope, int min, int max) {
 		if (min == max) {
 			return new int[] { min };
 		}
@@ -637,11 +637,11 @@ public class QTree<T> extends SpatialIndex<T> implements Serializable {
 		return new int[] { min, max };
 	}
 
-	private final int getIndex(float[] position, int start) {
+	private int getIndex(float[] position, int start) {
 		return (((position[start] < getHalfWidth()) ? 0 : 1) + ((position[start + 1] < getHalfHeight()) ? 0 : 2));
 	}
 
-	private final void getObjects(float[] envelope, Set<Entry<T>> result) {
+	private void getObjects(float[] envelope, Set<Entry<T>> result) {
 		if (intersects(this.envelope, envelope, maxOffset)) {
 			if (hasCoveringObjects()) {
 				result.addAll(objectsCoveringEnv);
@@ -672,7 +672,7 @@ public class QTree<T> extends SpatialIndex<T> implements Serializable {
 		return objectsCoveringEnv != null;
 	}
 
-	private final List<T> getEntrySetAsResult(Set<Entry<T>> set) {
+	private List<T> getEntrySetAsResult(Set<Entry<T>> set) {
 		List<T> result = new ArrayList<T>(set.size());
 		for (Entry<T> e : set) {
 			result.add(e.entryValue);

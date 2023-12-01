@@ -902,7 +902,7 @@ public class RasterGeoReference {
 	 * @param value to clean
 	 * @return the cleaned value.
 	 */
-	private final double removeImprecisions(double value) {
+	private double removeImprecisions(double value) {
 		// quick and dirty, a 0 will always be a 0 (yes it sometimes happens).
 		if (value == 0) {
 			return value;
@@ -945,7 +945,7 @@ public class RasterGeoReference {
 	 * @param val to be ceiled
 	 * @return the {@link Math#ceil(double)} of the cleaned value.
 	 */
-	private final double ceil(double val) {
+	private double ceil(double val) {
 		val = removeImprecisions(val);
 		return Math.ceil(val);
 	}
@@ -956,7 +956,7 @@ public class RasterGeoReference {
 	 * @param val to be rounded
 	 * @return the {@link Math#round(double)} of the cleaned value.
 	 */
-	private final double round(double val) {
+	private double round(double val) {
 		val = removeImprecisions(val);
 		return Math.round(val);
 	}
@@ -967,7 +967,7 @@ public class RasterGeoReference {
 	 * @param val to be floored
 	 * @return the {@link Math#floor(double)} of the cleaned value.
 	 */
-	private final double floor(double val) {
+	private double floor(double val) {
 		val = removeImprecisions(val);
 		return Math.floor(val);
 	}

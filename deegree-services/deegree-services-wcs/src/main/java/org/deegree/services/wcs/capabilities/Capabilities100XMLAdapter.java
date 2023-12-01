@@ -451,7 +451,7 @@ public class Capabilities100XMLAdapter extends XMLAdapter {
 
 	}
 
-	private final static boolean isEmpty(String value) {
+	private static boolean isEmpty(String value) {
 		return value == null || "".equals(value);
 	}
 

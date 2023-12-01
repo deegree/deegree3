@@ -649,7 +649,7 @@ public class SHPReader {
 		return g;
 	}
 
-	private static final void maybeAddPair(int num, Geometry g, boolean withGeometry, boolean exact,
+	private static void maybeAddPair(int num, Geometry g, boolean withGeometry, boolean exact,
 			List<Pair<Integer, Geometry>> list, Envelope bbox) {
 		if (exact) {
 			if (bbox.intersects(g)) {
@@ -661,14 +661,14 @@ public class SHPReader {
 		}
 	}
 
-	private final static int getBEInt(ByteBuffer buffer) {
+	private static int getBEInt(ByteBuffer buffer) {
 		buffer.order(BIG_ENDIAN);
 		int result = buffer.getInt();
 		buffer.order(LITTLE_ENDIAN);
 		return result;
 	}
 
-	private final static void skipBytes(ByteBuffer buffer, int bytes) {
+	private static void skipBytes(ByteBuffer buffer, int bytes) {
 		buffer.position(buffer.position() + bytes);
 	}
 
