@@ -33,6 +33,7 @@ import java.net.URL;
 
 import org.apache.commons.io.IOUtils;
 import org.deegree.console.Config;
+import org.deegree.services.controller.OGCFrontController;
 
 /**
  * Config implementation for the main.xml.
@@ -47,23 +48,19 @@ public class MainConfig extends Config implements Serializable {
 	private static final URL MAIN_SCHEMA_URL = ServicesBean.class
 		.getResource("/META-INF/schemas/services/controller/controller.xsd");
 
-	private String file;
-
 	public MainConfig() {
 		super(null, null, "/console/webservices/index", false);
 	}
 
-	public MainConfig(String file) {
-		super(null, null, "/console/webservices/index", false);
-		this.file = file;
-	}
-
 	@Override
 	public String edit() throws IOException {
+		String workspaceName = OGCFrontController.getServiceWorkspace().getName();
+		String fileName = workspaceName + "/services/main.xml";
+
 		StringBuilder sb = new StringBuilder("/console/generic/xmleditor?faces-redirect=true");
 		sb.append("&id=").append(id);
 		sb.append("&schemaUrl=").append(MAIN_SCHEMA_URL.toString());
-		sb.append("&fileName=").append(file);
+		sb.append("&fileName=").append(fileName);
 		sb.append("&emptyTemplate=").append(getTemplate());
 		sb.append("&nextView=").append(getResourceOutcome());
 		return sb.toString();

@@ -58,6 +58,7 @@ import javax.faces.context.FacesContext;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.xerces.xni.parser.XMLParseException;
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.xml.schema.SchemaValidationEvent;
 import org.deegree.commons.xml.schema.SchemaValidator;
 import org.deegree.services.controller.OGCFrontController;
@@ -159,6 +160,25 @@ public class XmlEditorBean implements Serializable {
 		this.nextView = nextView;
 	}
 
+	private File getFile() {
+		File workspaceRoot = new File(DeegreeWorkspace.getWorkspaceRoot());
+
+		String separator = "";
+		StringBuilder sb = new StringBuilder();
+		for (String filePart : fileName.split("[/\\\\]+")) {
+			if ("..".equals(filePart)) {
+				continue;
+			}
+
+			sb.append(separator);
+			sb.append(filePart);
+
+			separator = File.separator;
+		}
+
+		return new File(workspaceRoot, sb.toString());
+	}
+
 	public String getContent() throws IOException, ClassNotFoundException {
 		LOG.trace("Editing file: " + getFileName() + " with ID + " + getId());
 		LOG.trace("Using schema: " + getSchemaUrl());
@@ -168,7 +188,7 @@ public class XmlEditorBean implements Serializable {
 		if (content == null) {
 			LOG.trace("No content set for " + this.toString());
 			if (resourceProviderClass == null) {
-				File file = new File(fileName);
+				File file = getFile();
 				if (fileName != null && file.exists()) {
 					LOG.trace("Loading content from file: " + file.getAbsolutePath());
 					content = FileUtils.readFileToString(file);
@@ -257,7 +277,7 @@ public class XmlEditorBean implements Serializable {
 	private void activate() {
 		try {
 			if (resourceProviderClass == null) {
-				FileUtils.write(new File(fileName), content);
+				FileUtils.write(getFile(), content);
 				return;
 			}
 
