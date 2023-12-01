@@ -435,7 +435,7 @@
 
   <dependencyManagement>
     <dependencies>
-      <!-- JAXB 4.0 -->
+      <!-- Jakarta EE 10 / JAXB -->
       <dependency>
         <groupId>jakarta.xml.bind</groupId>
         <artifactId>jakarta.xml.bind-api</artifactId>
@@ -447,47 +447,11 @@
         <version>4.0.4</version>
         <scope>runtime</scope>
       </dependency>
-      <!--
-      <dependency>
-        <groupId>com.sun.xml.bind</groupId>
-        <artifactId>jaxb-impl</artifactId>
-        <version>4.0.4</version>
-        <scope>runtime</scope>
-        <exclusions>
-          <exclusion>
-            <groupId>com.sun.activation</groupId>
-            <artifactId>jakarta.activation</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      -->
-      <!-- JAX-WS 3.0 (Jakarta EE 10) -->
-      <!--
-      <dependency>
-        <groupId>jakarta.xml.ws</groupId>
-        <artifactId>jakarta.xml.ws-api</artifactId>
-        <version>4.0.0</version>
-      </dependency>
-      <dependency>
-        <groupId>com.sun.xml.ws</groupId>
-        <artifactId>jaxws-rt</artifactId>
-        <version>4.0.0</version>
-        <scope>runtime</scope>
-        <exclusions>
-          <exclusion>
-            <groupId>com.sun.activation</groupId>
-            <artifactId>jakarta.activation</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      -->
-      <!-- Jakarta EE 10 -->
       <dependency>
         <groupId>jakarta.annotation</groupId>
         <artifactId>jakarta.annotation-api</artifactId>
         <version>2.1.1</version>
       </dependency>
-
       <!-- test dependencies -->
       <dependency>
         <groupId>junit</groupId>
