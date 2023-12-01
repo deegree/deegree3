@@ -34,7 +34,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.controller;
 
-import static java.io.File.createTempFile;
 import static java.util.Collections.emptyList;
 import static org.deegree.commons.ows.exception.OWSException.NOT_FOUND;
 import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
@@ -81,9 +80,10 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMXMLBuilderFactory;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
-import org.apache.axiom.soap.impl.builder.StAXSOAPModelBuilder;
+import org.apache.axiom.soap.SOAPModelBuilder;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
@@ -922,8 +922,7 @@ public class OGCFrontController extends HttpServlet {
             factory = OMAbstractFactory.getSOAP12Factory();
         }
 
-        StAXSOAPModelBuilder soap = new StAXSOAPModelBuilder( root.getXMLStreamReaderWithoutCaching(), factory,
-                                                              factory.getSoapVersionURI() );
+        SOAPModelBuilder soap  = OMXMLBuilderFactory.createStAXSOAPModelBuilder( root.getXMLStreamReaderWithoutCaching() );
 
         SOAPEnvelope env = soap.getSOAPEnvelope();
 

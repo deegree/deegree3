@@ -52,6 +52,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import jakarta.activation.DataHandler;
 import jakarta.activation.DataSource;
+import jakarta.mail.util.ByteArrayDataSource;
 import jakarta.xml.soap.AttachmentPart;
 import jakarta.xml.soap.MessageFactory;
 import jakarta.xml.soap.Name;
@@ -85,7 +86,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.dom.DOMSource;
-import org.apache.axiom.attachments.ByteArrayDataSource;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.SOAP11Version;
 import org.apache.axiom.soap.SOAPVersion;
@@ -1185,8 +1185,9 @@ public class WMSController extends AbstractOWS {
 
 	private AttachmentPart createAttachment(GetMap getMap, ByteArrayOutputStream stream, SOAPMessage message,
 			String contentId) {
-		DataSource ds = new ByteArrayDataSource( stream.toByteArray());
-		DataHandler dataHandler = new DataHandler( ds);
+		// NOTE Axiom was preferred from ByteArrayDataSource but was still using javax
+		DataSource ds = new ByteArrayDataSource(stream.toByteArray(), null);
+		DataHandler dataHandler = new DataHandler(ds);
 		AttachmentPart attachmentPart = message.createAttachmentPart(dataHandler);
 		attachmentPart.setContentId(contentId);
 		attachmentPart.setContentType(getMap.getFormat());

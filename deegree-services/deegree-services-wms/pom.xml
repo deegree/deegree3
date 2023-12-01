@@ -109,9 +109,10 @@
       <groupId>org.xmlunit</groupId>
       <artifactId>xmlunit-matchers</artifactId>
     </dependency>
+    <!-- only for jakarta.mail.util.ByteArrayDataSource -->
     <dependency>
-      <groupId>jakarta.xml.soap</groupId>
-      <artifactId>jakarta.xml.soap-api</artifactId>
+      <groupId>jakarta.mail</groupId>
+      <artifactId>jakarta.mail-api</artifactId>
     </dependency>
   </dependencies>
 </project>
