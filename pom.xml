@@ -638,11 +638,6 @@
         <artifactId>jsf-impl</artifactId>
         <version>2.2.20</version>
       </dependency>
-      <dependency>
-        <groupId>com.sun.jersey</groupId>
-        <artifactId>jersey-server</artifactId>
-        <version>1.19.4</version>
-      </dependency>
       <!-- logging -->
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
