@@ -733,6 +733,12 @@
           </exclusion>
         </exclusions>
       </dependency>
+      <!-- javax.activation for axiom only (until migrated to jakarta) -->
+      <dependency>
+        <groupId>com.sun.activation</groupId>
+        <artifactId>jakarta.activation</artifactId>
+        <version>2.1.2</version>
+      </dependency>
       <dependency>
         <groupId>com.sun.xml.fastinfoset</groupId>
         <artifactId>FastInfoset</artifactId>
