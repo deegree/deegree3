@@ -131,7 +131,7 @@ public class FeatureStoreConfigWriter implements ItemWriter<AppSchema> {
 	}
 
 	private SQLDialect instantiateDialect(String dialect) {
-		if (dialect != null && "oracle".equalsIgnoreCase(dialect))
+		if ("oracle".equalsIgnoreCase(dialect))
 			return new OracleDialect("", 11, 2);
 		return new PostGISDialect("2.0.0");
 	}
