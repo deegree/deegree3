@@ -134,7 +134,7 @@ public class StageManager extends ModelManager<WorldRenderableObject> {
 		 */
 		STAGE_NR("The number.");
 
-		private String description;
+		private final String description;
 
 		private Column(String description) {
 			this.description = description;

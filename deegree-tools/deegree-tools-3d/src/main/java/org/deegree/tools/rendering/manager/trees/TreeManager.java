@@ -119,7 +119,7 @@ public class TreeManager extends ModelManager<BillBoard> {
 		 */
 		ID("The id of the tree (a string).");
 
-		private String description;
+		private final String description;
 
 		private Column(String description) {
 			this.description = description;

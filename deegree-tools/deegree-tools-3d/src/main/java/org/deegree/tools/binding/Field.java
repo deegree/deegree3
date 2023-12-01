@@ -49,7 +49,7 @@ public class Field {
 
 		private_("private"), protected_("protected"), public_("public");
 
-		private String val;
+		private final String val;
 
 		private Modifier(String name) {
 			this.val = name;

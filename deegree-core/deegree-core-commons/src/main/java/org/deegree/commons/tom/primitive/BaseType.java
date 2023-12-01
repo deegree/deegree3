@@ -81,9 +81,9 @@ public enum BaseType {
 
 	private static final Logger LOG = LoggerFactory.getLogger(BaseType.class);
 
-	private String xsTypeName;
+	private final String xsTypeName;
 
-	private Class<?> valueClass;
+	private final Class<?> valueClass;
 
 	private BaseType(String xsTypeName, Class<?> valueClass) {
 		this.xsTypeName = xsTypeName;

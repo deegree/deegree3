@@ -163,9 +163,9 @@ public class SlotMapper {
 		//
 		BROWSEINFO("urn:x-ogc:specification:csw-ebrim:ObjectType:EO:EOBrowseInformation", browseInfoSlots);
 
-		private String type;
+		private final String type;
 
-		private List<SlotMapping> slots;
+		private final List<SlotMapping> slots;
 
 		EOTYPE(String type, List<SlotMapping> slots) {
 			this.type = type;
