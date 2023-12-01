@@ -191,8 +191,7 @@ public class ASCReader implements RasterReader {
 						st.lineno() + ") Could not determine the location of the origing of the grid/asc file.");
 			}
 		}
-		OriginLocation result = "xllcorner".equalsIgnoreCase(key) ? OriginLocation.OUTER : OriginLocation.CENTER;
-		return result;
+		return "xllcorner".equalsIgnoreCase(key) ? OriginLocation.OUTER : OriginLocation.CENTER;
 	}
 
 	private void nextLine(StreamTokenizer tok) throws IOException {
@@ -288,8 +287,7 @@ public class ASCReader implements RasterReader {
 		if (nextToken != StreamTokenizer.TT_NUMBER) {
 			throw new IOException(tok.lineno() + ") Could not determine '" + key + "' from the asc/grd file.");
 		}
-		int result = (int) tok.nval;
-		return result;
+		return (int) tok.nval;
 	}
 
 	@Override

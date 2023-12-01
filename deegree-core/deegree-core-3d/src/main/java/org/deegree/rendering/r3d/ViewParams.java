@@ -128,8 +128,7 @@ public class ViewParams {
 
 	@Override
 	public String toString() {
-		String s = "{frustum=" + vf + ",pixelsX=" + projectionWidth + ",pixelsY=" + projectionHeight + "}";
-		return s;
+		return "{frustum=" + vf + ",pixelsX=" + projectionWidth + ",pixelsY=" + projectionHeight + "}";
 	}
 
 }

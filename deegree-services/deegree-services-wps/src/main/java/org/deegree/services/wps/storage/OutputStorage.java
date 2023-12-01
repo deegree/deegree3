@@ -65,9 +65,7 @@ public class OutputStorage extends StorageLocation {
 	}
 
 	public String getWebURL() {
-		String url = OGCFrontController.getHttpGetURL() + "service=WPS&version=1.0.0&request=GetOutput&identifier="
-				+ id;
-		return url;
+		return OGCFrontController.getHttpGetURL() + "service=WPS&version=1.0.0&request=GetOutput&identifier=" + id;
 	}
 
 	private void storeMimeType() throws IOException {

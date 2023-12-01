@@ -297,7 +297,7 @@ public class MatrixTransform extends Transformation {
 		if (object == this) {
 			return true; // Slight optimization
 		}
-		if (object != null && super.equals(object)) {
+		if (super.equals(object)) {
 			if (matrix3D != null) {
 				return matrix3D.equals(((MatrixTransform) object).matrix3D);
 			}

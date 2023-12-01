@@ -1241,9 +1241,8 @@ public class GML3GeometryReaderTest {
 
 	private GMLStreamReader getParser(String fileName)
 			throws XMLStreamException, FactoryConfigurationError, IOException {
-		GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader(GMLVersion.GML_31,
+		return GMLInputFactory.createGMLStreamReader(GMLVersion.GML_31,
 				GML3SurfacePatchReaderTest.class.getResource(BASE_DIR + fileName));
-		return gmlStream;
 	}
 
 }

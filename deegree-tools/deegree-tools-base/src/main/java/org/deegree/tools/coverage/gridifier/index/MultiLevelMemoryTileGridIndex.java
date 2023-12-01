@@ -122,8 +122,7 @@ public class MultiLevelMemoryTileGridIndex implements MultiLevelRasterTileIndex 
 
 		RasterLevel level = getLevelForScale(metersPerPixel);
 		MemoryRasterTileGridIndex index = levelToGrid.get(level);
-		Set<TileFile> tiles = index.getTiles(bbox);
-		return tiles;
+		return index.getTiles(bbox);
 	}
 
 	private RasterLevel getLevelForScale(double maxMetersPerPixel) {

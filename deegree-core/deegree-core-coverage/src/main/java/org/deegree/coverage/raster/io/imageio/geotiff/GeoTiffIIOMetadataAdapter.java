@@ -891,8 +891,7 @@ public class GeoTiffIIOMetadataAdapter {
 		}
 
 		// now get the value from the correct TIFFShort location
-		int result = getTiffShort(geoKeyDir, GEO_KEY_DIRECTORY_VERSION_INDEX);
-		return result;
+		return getTiffShort(geoKeyDir, GEO_KEY_DIRECTORY_VERSION_INDEX);
 	}
 
 	/**
@@ -906,8 +905,7 @@ public class GeoTiffIIOMetadataAdapter {
 		}
 
 		// Get the value from the correct TIFFShort
-		int result = getTiffShort(geoKeyDir, GEO_KEY_REVISION_INDEX);
-		return result;
+		return getTiffShort(geoKeyDir, GEO_KEY_REVISION_INDEX);
 	}
 
 	/**
@@ -921,8 +919,7 @@ public class GeoTiffIIOMetadataAdapter {
 		}
 
 		// Get the value from the correct TIFFShort
-		int result = getTiffShort(geoKeyDir, GEO_KEY_MINOR_REVISION_INDEX);
-		return result;
+		return getTiffShort(geoKeyDir, GEO_KEY_MINOR_REVISION_INDEX);
 	}
 
 	/**
@@ -936,8 +933,7 @@ public class GeoTiffIIOMetadataAdapter {
 		}
 
 		// Get the value from the correct TIFFShort
-		int result = getTiffShort(geoKeyDir, GEO_KEY_NUM_KEYS_INDEX);
-		return result;
+		return getTiffShort(geoKeyDir, GEO_KEY_NUM_KEYS_INDEX);
 	}
 
 	/**
@@ -1025,8 +1021,7 @@ public class GeoTiffIIOMetadataAdapter {
 	 */
 	public double[] getModelPixelScales() {
 		IIOMetadataNode modelTiePointNode = getTiffField(GeoTIFFTagSet.TAG_MODEL_PIXEL_SCALE);
-		double[] result = getTiffDoubles(modelTiePointNode);
-		return result;
+		return getTiffDoubles(modelTiePointNode);
 	}
 
 	/**
@@ -1159,8 +1154,7 @@ public class GeoTiffIIOMetadataAdapter {
 		IIOMetadataNode shortsElement = (IIOMetadataNode) tiffField.getFirstChild();
 		NodeList shorts = shortsElement.getElementsByTagName(TIFF_SHORT_TAG);
 		Node node = shorts.item(index);
-		int result = getIntValueAttribute(node);
-		return result;
+		return getIntValueAttribute(node);
 	}
 
 	/**
@@ -1191,8 +1185,7 @@ public class GeoTiffIIOMetadataAdapter {
 		IIOMetadataNode doublesElement = (IIOMetadataNode) tiffField.getFirstChild();
 		NodeList doubles = doublesElement.getElementsByTagName(TIFF_DOUBLE_TAG);
 		Node node = doubles.item(index);
-		double result = Double.parseDouble(getValueAttribute(node));
-		return result;
+		return Double.parseDouble(getValueAttribute(node));
 	}
 
 	/**
@@ -1222,8 +1215,7 @@ public class GeoTiffIIOMetadataAdapter {
 		IIOMetadataNode numsElement = (IIOMetadataNode) tiffField.getFirstChild();
 		NodeList nums = numsElement.getElementsByTagName(TIFF_RATIONAL_TAG);
 		Node node = nums.item(index);
-		double result = getRationalValueAttribute(node);
-		return result;
+		return getRationalValueAttribute(node);
 	}
 
 	/**
@@ -1240,8 +1232,7 @@ public class GeoTiffIIOMetadataAdapter {
 		Node node = asciis.item(0);
 		// GeoTIFF specification places a vertical bar '|' in place of \0
 		// null delimiters so drop off the vertical bar for Java Strings
-		String result = getValueAttribute(node).substring(start, start + length - 1);
-		return result;
+		return getValueAttribute(node).substring(start, start + length - 1);
 	}
 
 } // end of class GeoTiffIIOMetadataAdapter

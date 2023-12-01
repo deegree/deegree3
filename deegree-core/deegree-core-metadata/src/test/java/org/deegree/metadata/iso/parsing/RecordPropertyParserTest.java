@@ -65,8 +65,7 @@ public class RecordPropertyParserTest {
 
 	private OMElement createOmElement(String inputFile) throws IOException, XMLStreamException {
 		MetadataRecord record = MetadataRecordFactory.create(createXmlStream(inputFile));
-		OMElement omElement = record.getAsOMElement();
-		return omElement;
+		return record.getAsOMElement();
 	}
 
 	private XMLStreamReader createXmlStream(String inputFile) throws IOException, XMLStreamException {

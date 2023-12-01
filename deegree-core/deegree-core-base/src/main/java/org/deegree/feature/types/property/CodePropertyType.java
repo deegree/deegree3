@@ -56,8 +56,7 @@ public class CodePropertyType extends AbstractPropertyType {
 
 	@Override
 	public String toString() {
-		String s = "- code property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs;
-		return s;
+		return "- code property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs;
 	}
 
 }

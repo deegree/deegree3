@@ -1603,8 +1603,7 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
 			if (transformer == null) {
 				throw new UnknownCRSException(outputCRS.getAlias());
 			}
-			double[] out = transformer.transform(inputCRS, inputCoordinate, transformedOrdinates);
-			return out;
+			return transformer.transform(inputCRS, inputCoordinate, transformedOrdinates);
 		}
 		return inputCoordinate;
 	}

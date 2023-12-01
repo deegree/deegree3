@@ -182,8 +182,7 @@ public class WpsPrinterBean implements Serializable {
 		String wpsUrl = Configuration.getWpsUrl();
 		try {
 			URL capUrl = new URL(wpsUrl + "?service=WPS&version=1.0.0&request=GetCapabilities");
-			WPSClient wpsClient = new WPSClient(capUrl);
-			return wpsClient;
+			return new WPSClient(capUrl);
 		}
 		catch (Exception e) {
 			FacesMessage fm = MessageUtils.getFacesMessage(FacesMessage.SEVERITY_ERROR,
@@ -337,44 +336,44 @@ public class WpsPrinterBean implements Serializable {
 		String inputId = id + "_input";
 		label.setFor(inputId);
 		UIInput input;
-		if (dataType != null && "boolean".equals(dataType)) {
+		if ("boolean".equals(dataType)) {
 			input = new HtmlSelectBooleanCheckbox();
 		}
 		else {
 			input = new HtmlInputText();
-			if (dataType != null && "double".equals(dataType)) {
+			if ("double".equals(dataType)) {
 				input.setConverter(new DoubleConverter());
 				input.addValidator(new DoubleRangeValidator(Double.MAX_VALUE, Double.MIN_VALUE));
 			}
-			else if (dataType != null && "decimal".equals(dataType)) {
+			else if ("decimal".equals(dataType)) {
 				input.setConverter(new DoubleConverter());
 				input.addValidator(new DoubleRangeValidator(Double.MAX_VALUE, Double.MIN_VALUE));
 			}
-			else if (dataType != null && "float".equals(dataType)) {
+			else if ("float".equals(dataType)) {
 				input.setConverter(new FloatConverter());
 				input.addValidator(new DoubleRangeValidator(Float.MAX_VALUE, Float.MIN_VALUE));
 			}
-			else if (dataType != null && "long".equals(dataType)) {
+			else if ("long".equals(dataType)) {
 				input.setConverter(new LongConverter());
 				input.addValidator(new LongRangeValidator(Long.MAX_VALUE, Long.MIN_VALUE));
 			}
-			else if (dataType != null && "integer".equals(dataType)) {
+			else if ("integer".equals(dataType)) {
 				input.setConverter(new IntegerConverter());
 				input.addValidator(new LongRangeValidator(Integer.MAX_VALUE, Integer.MIN_VALUE));
 			}
-			else if (dataType != null && "date".equals(dataType)) {
+			else if ("date".equals(dataType)) {
 				DateTimeConverter dtc = new DateTimeConverter();
 				String pattern = Configuration.getDatePattern();
 				dtc.setPattern(pattern);
 				input.setConverter(dtc);
 			}
-			else if (dataType != null && "dateTime".equals(dataType)) {
+			else if ("dateTime".equals(dataType)) {
 				DateTimeConverter dtc = new DateTimeConverter();
 				String pattern = Configuration.getDateTimePattern();
 				dtc.setPattern(pattern);
 				input.setConverter(dtc);
 			}
-			else if (dataType != null && "time".equals(dataType)) {
+			else if ("time".equals(dataType)) {
 				DateTimeConverter dtc = new DateTimeConverter();
 				String pattern = Configuration.gettimePattern();
 				dtc.setPattern(pattern);

@@ -341,8 +341,7 @@ public class DataManager {
 				workspace.getLocationHandler().addExtraResource(loc);
 			}
 		}
-		ModelBackend<?> result = ModelBackend.getInstance(hostURL, workspace);
-		return result;
+		return ModelBackend.getInstance(hostURL, workspace);
 	}
 
 	/**

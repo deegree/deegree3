@@ -1002,8 +1002,7 @@ public abstract class AbstractWhereBuilder {
 			final String msg = "SQL IsLike request with a function evaluating to a non-primitive value is not supported!";
 			throw new UnsupportedOperationException(msg);
 		}
-		String valueAsString = ((PrimitiveValue) value).getAsText();
-		return valueAsString;
+		return ((PrimitiveValue) value).getAsText();
 	}
 
 }

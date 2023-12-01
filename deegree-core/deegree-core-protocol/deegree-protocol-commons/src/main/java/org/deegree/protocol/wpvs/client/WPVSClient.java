@@ -158,8 +158,7 @@ public class WPVSClient {
 		xpathStr += "/ows:DCP/ows:HTTP/" + (get ? "ows:Get" : "ows:Post") + "/@xlink:href";
 
 		OMElement root = capabilities.getRootElement();
-		String res = capabilities.getNodeAsString(root, new XPath(xpathStr, nsContext), null);
-		return res;
+		return capabilities.getNodeAsString(root, new XPath(xpathStr, nsContext), null);
 	}
 
 	/**

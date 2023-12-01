@@ -882,9 +882,8 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
 				new XPath("xs:appinfo[@source='urn:x-gml:targetElement']/text()", nsContext), null);
 		if (refElement != null) {
 			LOG.debug("Identified a feature property (urn:x-gml:targetElement).");
-			FeaturePropertyType pt = new FeaturePropertyType(ptName, minOccurs, maxOccurs, elementDecl, ptSubstitutions,
-					refElement, ValueRepresentation.BOTH);
-			return pt;
+			return new FeaturePropertyType(ptName, minOccurs, maxOccurs, elementDecl, ptSubstitutions, refElement,
+					ValueRepresentation.BOTH);
 		}
 		return null;
 	}
@@ -902,9 +901,8 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
 				new XPath("xs:appinfo/adv:referenziertesElement/text()", nsContext), null);
 		if (refElement != null) {
 			LOG.trace("Identified a feature property (adv style).");
-			FeaturePropertyType pt = new FeaturePropertyType(ptName, minOccurs, maxOccurs, elementDecl, ptSubstitutions,
-					refElement, ValueRepresentation.BOTH);
-			return pt;
+			return new FeaturePropertyType(ptName, minOccurs, maxOccurs, elementDecl, ptSubstitutions, refElement,
+					ValueRepresentation.BOTH);
 		}
 		return null;
 	}

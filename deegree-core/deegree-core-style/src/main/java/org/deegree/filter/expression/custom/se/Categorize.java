@@ -255,8 +255,7 @@ public class Categorize extends AbstractCustomExpression {
 		}
 
 		String col = vs.next().toString();
-		Color c = decodeWithAlpha(col);
-		return c;
+		return decodeWithAlpha(col);
 	}
 
 	@Override

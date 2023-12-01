@@ -295,9 +295,7 @@ public class StageManager extends ModelManager<WorldRenderableObject> {
 		Envelope env = getEnvelope(location, width, height, depth);
 		qualityLevels[qualityLevel] = new RenderableQualityModel(reference);
 
-		WorldRenderableObject result = new WorldRenderableObject(values[mappedColumns.get(Column.ID)], null, env,
-				qualityLevels);
-		return result;
+		return new WorldRenderableObject(values[mappedColumns.get(Column.ID)], null, env, qualityLevels);
 	}
 
 	private float parseFloatingPoint(String f, Column c) {

@@ -176,7 +176,7 @@ public abstract class Dataset<CO> {
 
 	private List<Constraint<CO>> getDatasetsForName(String name) {
 		for (Pair<String, List<Constraint<CO>>> kv : datasourceConstraints) {
-			if (kv != null && kv.first != null && name.equals(kv.first)) {
+			if (kv != null && name.equals(kv.first)) {
 				return kv.second;
 			}
 		}

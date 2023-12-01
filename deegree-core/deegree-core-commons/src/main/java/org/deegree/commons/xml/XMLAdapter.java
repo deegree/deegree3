@@ -1001,35 +1001,30 @@ public class XMLAdapter {
 
 	public boolean getRequiredNodeAsBoolean(OMElement context, XPath xpath) throws XMLParsingException {
 		String s = getRequiredNodeAsString(context, xpath);
-		boolean value = parseBoolean(s);
-		return value;
+		return parseBoolean(s);
 	}
 
 	public double getRequiredNodeAsDouble(OMElement context, XPath xpath) throws XMLParsingException {
 		String s = getRequiredNodeAsString(context, xpath);
-		double value = parseDouble(s);
-		return value;
+		return parseDouble(s);
 	}
 
 	public float getRequiredNodeAsFloat(OMElement context, XPath xpath) throws XMLParsingException {
 
 		String s = getRequiredNodeAsString(context, xpath);
-		float value = parseFloat(s);
-		return value;
+		return parseFloat(s);
 	}
 
 	public int getRequiredNodeAsInteger(OMElement context, XPath xpath) throws XMLParsingException {
 
 		String s = getRequiredNodeAsString(context, xpath);
-		int value = parseInt(s);
-		return value;
+		return parseInt(s);
 	}
 
 	public URL getRequiredNodeAsURL(OMElement context, XPath xpath) throws XMLParsingException {
 
 		String s = getRequiredNodeAsString(context, xpath);
-		URL value = parseURL(s);
-		return value;
+		return parseURL(s);
 	}
 
 	public String getRequiredNodeAsString(OMElement context, XPath xpath) throws XMLParsingException {

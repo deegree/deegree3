@@ -983,8 +983,7 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
 	 */
 	private ResultSet getResultSet(Connection connection, String tableName, String columns) throws SQLException {
 		Statement st = connection.createStatement();
-		ResultSet rs = st.executeQuery("SELECT " + columns + " FROM " + tableName);
-		return rs;
+		return st.executeQuery("SELECT " + columns + " FROM " + tableName);
 
 	}
 

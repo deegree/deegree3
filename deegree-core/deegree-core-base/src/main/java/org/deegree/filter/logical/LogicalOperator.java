@@ -45,7 +45,7 @@ public abstract class LogicalOperator implements Operator {
 
 	public enum SubType {
 
-		AND, OR, NOT;
+		AND, OR, NOT
 
 	}
 

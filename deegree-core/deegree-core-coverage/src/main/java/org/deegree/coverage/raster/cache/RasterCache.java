@@ -597,8 +597,7 @@ public class RasterCache {
 			if (o2 == null) {
 				return 1;
 			}
-			int result = o1.lastReadAccess() <= o2.lastReadAccess() ? -1 : 1;
-			return result;
+			return o1.lastReadAccess() <= o2.lastReadAccess() ? -1 : 1;
 		}
 
 	}

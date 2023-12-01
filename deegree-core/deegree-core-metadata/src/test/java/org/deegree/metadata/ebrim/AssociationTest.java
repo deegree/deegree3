@@ -81,8 +81,7 @@ public class AssociationTest {
 
 	private static XMLStreamReader readAssociationFromXml() throws XMLStreamException, FactoryConfigurationError {
 		InputStream associationAsStream = AssociationTest.class.getResourceAsStream("association.xml");
-		XMLStreamReader associationAsXml = XMLInputFactory.newInstance().createXMLStreamReader(associationAsStream);
-		return associationAsXml;
+		return XMLInputFactory.newInstance().createXMLStreamReader(associationAsStream);
 	}
 
 }

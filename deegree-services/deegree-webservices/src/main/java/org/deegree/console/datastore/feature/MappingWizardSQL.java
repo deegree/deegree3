@@ -132,8 +132,7 @@ public class MappingWizardSQL {
 
 	private DeegreeWorkspace getWorkspace() {
 		ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-		DeegreeWorkspace ws = ((WorkspaceBean) ctx.getApplicationMap().get("workspace")).getActiveWorkspace();
-		return ws;
+		return ((WorkspaceBean) ctx.getApplicationMap().get("workspace")).getActiveWorkspace();
 	}
 
 	public SortedSet<String> getAvailableJdbcConns() {
@@ -179,8 +178,7 @@ public class MappingWizardSQL {
 
 	public File getAppSchemaDirectory() throws IOException {
 		Workspace ws = OGCFrontController.getServiceWorkspace().getNewWorkspace();
-		File appSchemaDirectory = new File(((DefaultWorkspace) ws).getLocation(), "appschemas");
-		return appSchemaDirectory;
+		return new File(((DefaultWorkspace) ws).getLocation(), "appschemas");
 	}
 
 	public TreeSet<String> getAvailableAppSchemaFiles() throws IOException {

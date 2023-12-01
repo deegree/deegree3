@@ -77,7 +77,7 @@ public class SEStyleStore implements StyleStore {
 
 	@Override
 	public Style getStyle(String styleName) {
-		if (styleName != null && style.getName().equals(styleName)) {
+		if (style.getName().equals(styleName)) {
 			return style;
 		}
 		if (styleName == null) {
@@ -88,7 +88,7 @@ public class SEStyleStore implements StyleStore {
 
 	@Override
 	public Style getStyle(String layerName, String styleName) {
-		if (styleName != null && style.getName().equals(styleName)) {
+		if (style.getName().equals(styleName)) {
 			return style;
 		}
 		if (styleName == null) {

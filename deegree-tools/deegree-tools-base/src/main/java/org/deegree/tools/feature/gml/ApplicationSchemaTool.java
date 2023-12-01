@@ -112,7 +112,7 @@ public class ApplicationSchemaTool {
 		/** Create mapped application schema (PostGIS) */
 		map_to_postgis,
 		/** Create mapped application schema (Oracle) */
-		map_to_oracle;
+		map_to_oracle
 
 	}
 
@@ -131,7 +131,7 @@ public class ApplicationSchemaTool {
 		/** deegree application schema mapped to Oracle Spatial */
 		deegree_oracle,
 		/** deegree application schema mapped to an ESRI Shapefile */
-		deegree_shape;
+		deegree_shape
 
 	}
 
