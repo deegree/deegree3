@@ -149,7 +149,7 @@ public class GridFileReader extends GridReader {
 		}
 	}
 
-	private final FileChannel getFileChannel() throws FileNotFoundException {
+	private FileChannel getFileChannel() throws FileNotFoundException {
 		synchronized (LOCK) {
 			if (this.fileAccess == null) {
 				this.fileAccess = new FileInputStream(gridFile);
@@ -158,7 +158,7 @@ public class GridFileReader extends GridReader {
 		}
 	}
 
-	private final void closeReadStream() throws IOException {
+	private void closeReadStream() throws IOException {
 		synchronized (LOCK) {
 			if (this.fileAccess != null && !this.leaveOpen) {
 				this.fileAccess.close();

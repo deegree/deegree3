@@ -90,7 +90,7 @@ public class XMLStreamReaderWrapper implements XMLStreamReader {
 		return s;
 	}
 
-	private final String getEventTypeString(int eventType) {
+	private String getEventTypeString(int eventType) {
 		switch (eventType) {
 			case START_ELEMENT:
 				return "START_ELEMENT";

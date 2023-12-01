@@ -276,7 +276,7 @@ public class ASCReader implements RasterReader {
 		return result;
 	}
 
-	private final int readInt(StreamTokenizer tok, String key) throws IOException {
+	private int readInt(StreamTokenizer tok, String key) throws IOException {
 
 		String keyVal = retrieveKey(tok, key, true);
 		if (keyVal == null || !key.equalsIgnoreCase(keyVal)) {

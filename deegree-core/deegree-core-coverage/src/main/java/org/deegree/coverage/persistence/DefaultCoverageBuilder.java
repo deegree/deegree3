@@ -137,7 +137,7 @@ public class DefaultCoverageBuilder implements ResourceBuilder<Coverage> {
 	 * @return a list of directories which can be used for the building of
 	 * {@link TiledRaster}s.
 	 */
-	private final static List<File> findResolutionDirs(File toplevelDir) {
+	private static List<File> findResolutionDirs(File toplevelDir) {
 		List<File> result = new LinkedList<File>();
 		for (File f : toplevelDir.listFiles()) {
 			if (f.isDirectory()) {
@@ -441,7 +441,7 @@ public class DefaultCoverageBuilder implements ResourceBuilder<Coverage> {
 	 * @param options
 	 * @return the total envelope of the given coverages
 	 */
-	private final static QTreeInfo buildTiledRaster(List<File> coverageFiles, List<AbstractRaster> result,
+	private static QTreeInfo buildTiledRaster(List<File> coverageFiles, List<AbstractRaster> result,
 			RasterIOOptions options) {
 		Envelope resultEnvelope = null;
 		RasterGeoReference rasterReference = null;

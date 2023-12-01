@@ -98,7 +98,7 @@ public abstract class SpatialIndex<T> {
 	 * @param y
 	 * @return
 	 */
-	private static final boolean contains(final float[] box, final int maxOffset, final float x, final float y) {
+	private static boolean contains(final float[] box, final int maxOffset, final float x, final float y) {
 		return box[0] <= x && x <= box[maxOffset] && box[1] <= y && y <= box[maxOffset + 1];
 	}
 
@@ -109,7 +109,7 @@ public abstract class SpatialIndex<T> {
 	 * @param maxOffset the offset within the bbox where the max point starts.
 	 * @return
 	 */
-	private static final boolean noEdgeOverlap(final float[] box1, final float[] box2, final int maxOffset) {
+	private static boolean noEdgeOverlap(final float[] box1, final float[] box2, final int maxOffset) {
 		return box1[0] <= box2[0] && box2[1] <= box1[1] && box2[maxOffset] <= box1[maxOffset]
 				&& box1[maxOffset + 1] <= box2[maxOffset + 1];
 	}

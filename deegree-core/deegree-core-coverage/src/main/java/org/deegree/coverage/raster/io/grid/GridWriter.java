@@ -373,7 +373,7 @@ public class GridWriter implements RasterWriter {
 		return metaInfo;
 	}
 
-	private final FileChannel getReadChannel() throws IOException {
+	private FileChannel getReadChannel() throws IOException {
 		synchronized (LOCK) {
 			if (this.readStream == null) {
 				if (!gridFile.exists()) {
@@ -389,7 +389,7 @@ public class GridWriter implements RasterWriter {
 		}
 	}
 
-	private final FileChannel getWriteChannel() throws IOException {
+	private FileChannel getWriteChannel() throws IOException {
 		synchronized (LOCK) {
 			if (this.writeStream == null) {
 				if (!gridFile.exists()) {
@@ -429,7 +429,7 @@ public class GridWriter implements RasterWriter {
 		}
 	}
 
-	private final void closeWriteStream() throws IOException {
+	private void closeWriteStream() throws IOException {
 		synchronized (LOCK) {
 			if (this.writeStream != null && !this.leaveStreamOpen) {
 				this.writeStream.close();
@@ -438,7 +438,7 @@ public class GridWriter implements RasterWriter {
 		}
 	}
 
-	private final void closeReadStream() throws IOException {
+	private void closeReadStream() throws IOException {
 		synchronized (LOCK) {
 			if (this.readStream != null /* && !this.leaveStreamOpen */) {
 				this.readStream.close();

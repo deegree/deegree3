@@ -914,7 +914,7 @@ public class RTree<T> extends SpatialIndex<T> {
 	/**
 	 * @param i
 	 */
-	private final double wfFunction(final int i) {
+	private double wfFunction(final int i) {
 		double result;
 		double miu = (1 - 2 * smallm / (bigM + 1)) * ASYM;
 		double xi = 2 * i / (bigM + 1) - 1;

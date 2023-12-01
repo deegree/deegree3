@@ -81,10 +81,10 @@ public class Interval<T extends Comparable<T>, R extends Comparable<R>> {
 		closed_open("(", "]");
 
 		/** simple boundary representation of the beginning of an interval */
-		public String begin;
+		public final String begin;
 
 		/** simple boundary representation of the end of an interval */
-		public String end;
+		public final String end;
 
 		private Closure(String begin, String end) {
 			this.begin = begin;

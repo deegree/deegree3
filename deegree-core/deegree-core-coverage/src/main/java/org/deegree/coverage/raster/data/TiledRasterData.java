@@ -150,7 +150,7 @@ public class TiledRasterData implements RasterData {
 	 * @return The rasterdata which is references by the given x, y value or
 	 * <code>null</code> if not available.
 	 */
-	private final MappedTile getTile(int x, int y) {
+	private MappedTile getTile(int x, int y) {
 		if (y < 0 || y > this.sampleDomain.height || x < 0 || x > this.sampleDomain.width) {
 			return null;
 		}
@@ -171,7 +171,7 @@ public class TiledRasterData implements RasterData {
 	 * @return {min column, min row, max column, max row} or <code>null</code> if the
 	 * given rect does not intersect the data.
 	 */
-	private final int[] getIntersectingTiles(RasterRect rect) {
+	private int[] getIntersectingTiles(RasterRect rect) {
 		RasterRect fRect = RasterRect.intersection(sampleDomain, rect);
 		if (fRect != null) {
 			final int minCol = getColNumber(fRect.x);
