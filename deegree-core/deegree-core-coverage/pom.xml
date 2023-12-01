@@ -33,6 +33,7 @@
     <dependency>
       <groupId>org.ehcache</groupId>
       <artifactId>ehcache</artifactId>
+      <classifier>jakarta</classifier>
     </dependency>
     <dependency>
       <groupId>com.sun.media</groupId>
@@ -56,4 +57,3 @@
     </dependency>
   </dependencies>
 </project>
-
