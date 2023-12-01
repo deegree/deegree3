@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.deegree</groupId>
 	<artifactId>deegree-jaxb-resolver</artifactId>
-	<version>1.2-SNAPSHOT</version>
+	<version>1.2</version>
 	<name>deegree-jaxb-resolver</name>
 	<packaging>jar</packaging>
 	<description>JAXB resolver to search for deegree schema files on classpath</description>
@@ -31,7 +31,7 @@
 		<connection>scm:git:git@github.com:deegree/deegree3.git</connection>
 		<developerConnection>scm:git:git@github.com:deegree/deegree3.git</developerConnection>
 		<url>https://github.com/deegree/deegree3</url>
-		<tag>HEAD</tag>
+		<tag>jaxb-resolver-1.2</tag>
 	</scm>
 
 	<build>
