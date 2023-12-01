@@ -45,7 +45,8 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
-import org.apache.axiom.om.impl.serialize.StreamingOMSerializer;
+import org.apache.axiom.om.OMSerializable;
+import org.apache.axiom.om.OMXMLBuilderFactory;
 import org.apache.axiom.soap.SOAPBody;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
@@ -260,8 +261,9 @@ public class SOAPExceptionSerializer implements ExceptionSerializer {
 		if (header == null) {
 			return;
 		}
-		StreamingOMSerializer ser = new StreamingOMSerializer();
-		ser.serialize(header.getXMLStreamReader(), writer);
+		OMSerializable serializable = OMXMLBuilderFactory.createStAXOMBuilder(header.getXMLStreamReader())
+			.getDocument();
+		serializable.serializeAndConsume(writer);
 	}
 
 	private void writeAttributes(XMLStreamWriter writer, OMElement elem) throws XMLStreamException {

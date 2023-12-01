@@ -41,14 +41,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
-import javax.mail.Message;
-import javax.mail.Multipart;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
+import jakarta.mail.Message;
+import jakarta.mail.Multipart;
+import jakarta.mail.Session;
+import jakarta.mail.Transport;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMultipart;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,8 +57,8 @@ import org.slf4j.LoggerFactory;
  * A helper class to create and send mail.
  *
  * @author <a href="mailto:tfr@users.sourceforge.net">Torsten Friebe </A>
- * @see javax.mail.Message
- * @see javax.mail.internet.MimeMessage
+ * @see jakarta.mail.Message
+ * @see jakarta.mail.internet.MimeMessage
  */
 
 public final class MailHelper {
@@ -121,7 +121,7 @@ public final class MailHelper {
 	 * @param session
 	 * @throws SendMailException an exception if the message is undeliverable
 	 *
-	 * @see javax.mail.Transport
+	 * @see jakarta.mail.Transport
 	 * @see <a href=
 	 * "http://java.sun.com/j2ee/tutorial/1_3-fcs/doc/Resources4.html#63060">J2EE Mail
 	 * Session connection </a>

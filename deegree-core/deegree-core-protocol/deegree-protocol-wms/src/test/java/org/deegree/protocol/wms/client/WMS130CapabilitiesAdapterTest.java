@@ -45,7 +45,8 @@ import java.util.LinkedList;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.axiom.om.OMElement;
-import org.apache.axiom.om.impl.builder.StAXOMBuilder;
+import org.apache.axiom.om.OMXMLBuilderFactory;
+import org.apache.axiom.om.OMXMLParserWrapper;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
@@ -105,7 +106,7 @@ public class WMS130CapabilitiesAdapterTest extends WMSCapabilitiesAdapterTest {
 
 	private WMSCapabilitiesAdapter createCapabilities(String capabilitiesFile) throws XMLStreamException {
 		InputStream is = WMS130CapabilitiesAdapterTest.class.getResourceAsStream(capabilitiesFile);
-		StAXOMBuilder builder = new StAXOMBuilder(is);
+		OMXMLParserWrapper builder = OMXMLBuilderFactory.createOMBuilder(is);
 		OMElement capabilities = builder.getDocumentElement();
 		WMSCapabilitiesAdapter adapter = new WMS130CapabilitiesAdapter(capabilities);
 		adapter.parseWMSSpecificCapabilities(adapter.parseOperationsMetadata());

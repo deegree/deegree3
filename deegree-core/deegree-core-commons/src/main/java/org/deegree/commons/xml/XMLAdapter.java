@@ -40,6 +40,7 @@ import static javax.xml.stream.XMLStreamConstants.CDATA;
 import static javax.xml.stream.XMLStreamConstants.CHARACTERS;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.apache.axiom.om.OMXMLBuilderFactory.createStAXOMBuilder;
 import static org.deegree.commons.utils.net.HttpUtils.STREAM;
 import static org.deegree.commons.utils.net.HttpUtils.get;
 
@@ -58,16 +59,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
-
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
-import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
-
 import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMContainer;
 import org.apache.axiom.om.OMDocument;
@@ -75,7 +73,8 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMException;
 import org.apache.axiom.om.OMNamespace;
 import org.apache.axiom.om.OMText;
-import org.apache.axiom.om.impl.builder.StAXOMBuilder;
+import org.apache.axiom.om.OMXMLBuilderFactory;
+import org.apache.axiom.om.OMXMLParserWrapper;
 import org.apache.axiom.om.xpath.AXIOMXPath;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.stax.XMLStreamReaderDoc;
@@ -393,10 +392,10 @@ public class XMLAdapter {
 			// document contains a DOCTYPE definition
 
 			try {
-				StAXOMBuilder builder = new StAXOMBuilder(istream);
+				OMXMLParserWrapper builder = OMXMLBuilderFactory.createOMBuilder(istream);
 				rootElement = builder.getDocumentElement();
 			}
-			catch (XMLStreamException e) {
+			catch (Exception e) {
 				throw new XMLProcessingException(e.getMessage(), e);
 			}
 
@@ -415,10 +414,10 @@ public class XMLAdapter {
 	 */
 	public void load(XMLStreamReader xmlStream) throws XMLProcessingException {
 		if (xmlStream.getEventType() != XMLStreamConstants.START_DOCUMENT) {
-			setRootElement(new StAXOMBuilder(new XMLStreamReaderDoc(xmlStream)).getDocumentElement());
+			setRootElement(createStAXOMBuilder(new XMLStreamReaderDoc(xmlStream)).getDocumentElement());
 		}
 		else {
-			setRootElement(new StAXOMBuilder(xmlStream).getDocumentElement());
+			setRootElement(createStAXOMBuilder(xmlStream).getDocumentElement());
 		}
 		if (xmlStream.getLocation() != null && xmlStream.getLocation().getSystemId() != null) {
 			setSystemId(xmlStream.getLocation().getSystemId());
@@ -489,16 +488,9 @@ public class XMLAdapter {
 			setSystemId(systemId);
 
 			XMLStreamReader parser = XMLInputFactory.newInstance().createXMLStreamReader(reader);
-			StAXOMBuilder builder = new StAXOMBuilder(parser);
-			rootElement = builder.getDocumentElement();
+			rootElement = createStAXOMBuilder(parser).getDocumentElement();
 		}
 		catch (XMLStreamException e) {
-			throw new XMLProcessingException(e.getMessage(), e);
-		}
-		catch (OMException e) {
-			throw new XMLProcessingException(e.getMessage(), e);
-		}
-		catch (FactoryConfigurationError e) {
 			throw new XMLProcessingException(e.getMessage(), e);
 		}
 	}

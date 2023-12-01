@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.deegree.org/datasource/remoteows/wfs"
-  xmlns:wfs="http://www.deegree.org/datasource/remoteows/wfs" elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
-  jaxb:version="2.1">
+  xmlns:wfs="http://www.deegree.org/datasource/remoteows/wfs" elementFormDefault="qualified" xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb"
+  jaxb:version="3.0">
 
   <annotation>
     <appinfo>

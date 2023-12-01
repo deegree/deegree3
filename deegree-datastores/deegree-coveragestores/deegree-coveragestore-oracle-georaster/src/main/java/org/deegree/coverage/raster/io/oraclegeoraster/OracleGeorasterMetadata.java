@@ -29,9 +29,9 @@
 package org.deegree.coverage.raster.io.oraclegeoraster;
 
 import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
+import static org.slf4j.LoggerFactory.getLogger;
 
-import javax.xml.bind.JAXBException;
-
+import jakarta.xml.bind.JAXBException;
 import org.deegree.coverage.Coverage;
 import org.deegree.coverage.persistence.oraclegeoraster.jaxb.OracleGeorasterConfig;
 import org.deegree.coverage.raster.io.oraclegeoraster.utils.OracleGeorasterBuilder;
@@ -42,6 +42,7 @@ import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.AbstractResourceMetadata;
 import org.deegree.workspace.standard.AbstractResourceProvider;
 import org.deegree.workspace.standard.DefaultResourceIdentifier;
+import org.slf4j.Logger;
 
 /**
  * Metadata for Oracle GeoRaster coverages
@@ -50,6 +51,8 @@ import org.deegree.workspace.standard.DefaultResourceIdentifier;
  * @since 3.4
  */
 public class OracleGeorasterMetadata extends AbstractResourceMetadata<Coverage> {
+
+	private static final Logger LOG = getLogger(OracleGeorasterMetadata.class);
 
 	public OracleGeorasterMetadata(Workspace workspace, ResourceLocation<Coverage> location,
 			AbstractResourceProvider<Coverage> provider) {
@@ -69,8 +72,7 @@ public class OracleGeorasterMetadata extends AbstractResourceMetadata<Coverage> 
 			return new OracleGeorasterBuilder(config, this, workspace);
 		}
 		catch (JAXBException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.debug(e.getMessage(), e);
 		}
 		return null;
 	}

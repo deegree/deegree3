@@ -18,8 +18,8 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.jvnet.jaxb2.maven2</groupId>
-        <artifactId>maven-jaxb2-plugin</artifactId>
+        <groupId>org.jvnet.jaxb</groupId>
+        <artifactId>jaxb-maven-plugin</artifactId>
       </plugin>
     </plugins>
   </build>
@@ -33,6 +33,7 @@
     <dependency>
       <groupId>org.ehcache</groupId>
       <artifactId>ehcache</artifactId>
+      <classifier>jakarta</classifier>
     </dependency>
     <dependency>
       <groupId>com.sun.media</groupId>
@@ -56,4 +57,3 @@
     </dependency>
   </dependencies>
 </project>
-

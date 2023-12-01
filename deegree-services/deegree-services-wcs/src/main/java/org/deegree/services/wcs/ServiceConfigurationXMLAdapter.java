@@ -36,7 +36,7 @@ package org.deegree.services.wcs;
 
 import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLProcessingException;

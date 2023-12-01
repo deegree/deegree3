@@ -29,7 +29,7 @@ package org.deegree.remoteows.wmts;
 
 import java.io.InputStream;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.remoteows.RemoteOWS;

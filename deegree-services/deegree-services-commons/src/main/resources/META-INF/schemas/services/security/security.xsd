@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:sec="http://www.deegree.org/services/security" xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  targetNamespace="http://www.deegree.org/services/security" elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
-  jaxb:version="2.1">
+  targetNamespace="http://www.deegree.org/services/security" elementFormDefault="qualified" xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb"
+  jaxb:version="3.0">
 
   <xs:annotation>
     <xs:appinfo>
