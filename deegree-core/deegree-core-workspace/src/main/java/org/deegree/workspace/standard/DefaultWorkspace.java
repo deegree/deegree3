@@ -371,6 +371,12 @@ public class DefaultWorkspace implements Workspace {
 			ResourceMetadata<? extends Resource> dependencyMd = resourceMetadata.get(dependencyId);
 			mdList.add(dependencyMd);
 		}
+		for (ResourceIdentifier<?> dependencyId : md.getSoftDependencies()) {
+			ResourceMetadata<? extends Resource> dependencyMd = resourceMetadata.get(dependencyId);
+			if (dependencyMd != null) {
+				mdList.add(dependencyMd);
+			}
+		}
 
 		ResourceGraph g = new ResourceGraph(mdList);
 		mdList = g.toSortedList();
