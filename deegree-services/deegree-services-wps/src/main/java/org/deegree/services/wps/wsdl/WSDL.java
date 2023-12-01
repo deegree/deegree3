@@ -36,8 +36,6 @@ package org.deegree.services.wps.wsdl;
 
 import java.io.File;
 
-import javax.ws.rs.core.UriBuilder;
-
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.workspace.standard.DefaultWorkspace;
 
@@ -64,8 +62,8 @@ public class WSDL {
 	}
 
 	public String getRestURL() {
-		return OGCFrontController.getContext().getResourcesUrl() + "../rest"
-				+ UriBuilder.fromResource(WSDLResource.class).path(WSDLResource.class, "get").build("ALL").toString();
+		return OGCFrontController.getContext().getResourcesUrl() + File.separatorChar + "services" + File.separatorChar
+				+ "wps.wsdl" + File.separatorChar + "ALL";
 	}
 
 }
