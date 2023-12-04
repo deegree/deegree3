@@ -226,8 +226,7 @@ public abstract class GriddedTileContainer implements TileContainer {
 	 * @return the tile's id
 	 */
 	protected int getTileId(int columnId, int rowId) {
-		int idx = rowId * columns + columnId;
-		return idx;
+		return rowId * columns + columnId;
 	}
 
 	/**

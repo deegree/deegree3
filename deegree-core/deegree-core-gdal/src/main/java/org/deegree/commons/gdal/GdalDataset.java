@@ -243,8 +243,7 @@ public class GdalDataset implements KeyedResource {
 			numBands = 3;
 		}
 		if (region.getSpan0() <= 0 || region.getSpan1() <= 0) {
-			byte[][] bands = new byte[numBands][pixelsX * pixelsY];
-			return bands;
+			return new byte[numBands][pixelsX * pixelsY];
 		}
 		boolean clipped = false;
 		Envelope readWindow = clip(region);

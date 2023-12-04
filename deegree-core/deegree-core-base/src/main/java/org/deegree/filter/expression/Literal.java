@@ -98,8 +98,7 @@ public class Literal<V extends TypedObjectNode> implements Expression {
 
 	@Override
 	public String toString(String indent) {
-		String s = indent + "-Literal ('" + value + "')\n";
-		return s;
+		return indent + "-Literal ('" + value + "')\n";
 	}
 
 	@Override

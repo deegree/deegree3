@@ -56,8 +56,7 @@ public class StringOrRefPropertyType extends AbstractPropertyType {
 
 	@Override
 	public String toString() {
-		String s = "- stringOrRef property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs;
-		return s;
+		return "- stringOrRef property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs;
 	}
 
 }

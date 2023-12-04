@@ -59,7 +59,7 @@ public enum GMLVersion {
 
 	private final String ns;
 
-	private String mimeType;
+	private final String mimeType;
 
 	private final String mimeTypeOld;
 

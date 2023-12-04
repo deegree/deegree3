@@ -156,7 +156,7 @@ public class BBoxPropertiesCache implements BBoxCache {
 		}
 	}
 
-	private final Envelope decodePropValue(String s) {
+	private Envelope decodePropValue(String s) {
 		if (s == null || s.isEmpty()) {
 			return null;
 		}
@@ -186,7 +186,7 @@ public class BBoxPropertiesCache implements BBoxCache {
 		return new GeometryFactory().createEnvelope(min, max, crs);
 	}
 
-	private final String encodePropValue(Envelope env) {
+	private String encodePropValue(Envelope env) {
 		if (env == null || env.getCoordinateSystem() == null) {
 			return "";
 		}

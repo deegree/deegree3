@@ -827,8 +827,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 			LOG.trace("Stack trace:", e);
 			throw new SQLException(msg, e);
 		}
-		byte[] bytes = bos.toByteArray();
-		return bytes;
+		return bos.toByteArray();
 	}
 
 	private List<String> performUpdateRelational(QName ftName, List<ParsedPropertyReplacement> replacementProps,

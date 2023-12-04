@@ -57,8 +57,7 @@ public class ArrayPropertyType extends AbstractPropertyType {
 
 	@Override
 	public String toString() {
-		String s = "- array property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs;
-		return s;
+		return "- array property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs;
 	}
 
 }

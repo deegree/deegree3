@@ -98,9 +98,8 @@ public class RasterChannelSelection implements Copyable<RasterChannelSelection> 
 
 	@Override
 	public RasterChannelSelection copy() {
-		RasterChannelSelection copy = new RasterChannelSelection(redChannel, greenChannel, blueChannel, grayChannel,
+		return new RasterChannelSelection(redChannel, greenChannel, blueChannel, grayChannel,
 				channelContrastEnhancements);
-		return copy;
 	}
 
 	/**

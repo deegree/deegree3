@@ -68,7 +68,7 @@ public class ResolutionInfo implements Serializable {
 		 * Retrieve the native resolution which is 'nearest' to the given one, if
 		 * perfectly in between two resolutions the upper one will be used.
 		 */
-		ROUND;
+		ROUND
 
 	}
 

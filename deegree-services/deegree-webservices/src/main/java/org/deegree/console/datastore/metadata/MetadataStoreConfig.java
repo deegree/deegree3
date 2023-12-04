@@ -64,9 +64,7 @@ public class MetadataStoreConfig extends Config {
 
 	private Workspace getWorkspace() {
 		ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-		Workspace ws = ((WorkspaceBean) ctx.getApplicationMap().get("workspace")).getActiveWorkspace()
-			.getNewWorkspace();
-		return ws;
+		return ((WorkspaceBean) ctx.getApplicationMap().get("workspace")).getActiveWorkspace().getNewWorkspace();
 	}
 
 	public void updateId(ActionEvent evt) {

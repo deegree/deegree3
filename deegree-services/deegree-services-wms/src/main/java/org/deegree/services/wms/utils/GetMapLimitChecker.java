@@ -65,7 +65,7 @@ public class GetMapLimitChecker {
 		checkLayerCount(layerCount, toIntegerNullSafe(config.getLayerLimit()));
 	}
 
-	private final Integer toIntegerNullSafe(final BigInteger value) {
+	private Integer toIntegerNullSafe(final BigInteger value) {
 		if (value == null) {
 			return null;
 		}

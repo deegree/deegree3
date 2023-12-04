@@ -239,7 +239,7 @@ public class ISOPropertyNameMapper implements PropertyNameMapper {
 		/**
 		 * the foreign key from sub idx to idx_main
 		 */
-		fk_main;
+		fk_main
 
 	}
 

@@ -168,8 +168,7 @@ public class MemoryRasterTileGridIndex {
 	}
 
 	private int getCellIdx(int columnIdx, int rowIdx) {
-		int idx = rowIdx * columns + columnIdx;
-		return idx;
+		return rowIdx * columns + columnIdx;
 	}
 
 	public int getColumnIdx(float x) {

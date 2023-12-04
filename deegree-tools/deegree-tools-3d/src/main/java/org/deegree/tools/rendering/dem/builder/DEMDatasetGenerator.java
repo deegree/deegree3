@@ -587,8 +587,7 @@ public class DEMDatasetGenerator {
 			// ms: TODO implement a real error calculation
 			Point2f midPoint = calcMidPoint(p1, p2);
 			float dist = p0.distance(midPoint);
-			float heixelDist = dist / getRowsPerFragment();
-			return heixelDist;
+			return dist / getRowsPerFragment();
 		}
 
 		private void storeMacroTriangle(MacroTriangle tile) throws SQLException {

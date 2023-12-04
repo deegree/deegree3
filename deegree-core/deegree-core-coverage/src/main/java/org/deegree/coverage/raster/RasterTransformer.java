@@ -252,9 +252,7 @@ public class RasterTransformer extends Transformer {
 		}
 
 		// create a best fit polynomial for out grid
-		WarpPolynomial warp = WarpPolynomial.createWarp(srcCoords, 0, dstCoords, 0, srcCoords.length, 1f, 1f, 1f, 1f,
-				polynomialOrder);
-		return warp;
+		return WarpPolynomial.createWarp(srcCoords, 0, dstCoords, 0, srcCoords.length, 1f, 1f, 1f, 1f, polynomialOrder);
 	}
 
 	private List<Point3d> transformDstToSrc(ICRS srcCRS, List<Point3d> points) throws TransformationException {

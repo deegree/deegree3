@@ -358,8 +358,7 @@ public class ShapeHelper {
 				return root.getOutline();
 			}
 			else {
-				Shape sizeOneShape = t.createTransformedShape(root.getOutline());
-				return sizeOneShape;
+				return t.createTransformedShape(root.getOutline());
 			}
 		}
 		catch (IOException e) {

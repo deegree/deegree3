@@ -53,8 +53,7 @@ public class ResponseDocumentStorage extends StorageLocation {
 
 	@Override
 	public String getWebURL() {
-		String url = getUrl + "service=WPS&version=1.0.0&request=GetResponseDocument&identifier=" + id;
-		return url;
+		return getUrl + "service=WPS&version=1.0.0&request=GetResponseDocument&identifier=" + id;
 	}
 
 }

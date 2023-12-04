@@ -103,8 +103,7 @@ public class ShapeLoader implements WellKnownNameLoader {
 		String wkn = wellKnownName.substring(PREFIX.length()).toLowerCase();
 
 		lazyLoad();
-		Shape s = SHAPES.get(wkn);
-		return s;
+		return SHAPES.get(wkn);
 	}
 
 	@Override

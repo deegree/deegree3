@@ -125,7 +125,7 @@ public abstract class CRS extends CRSIdentifiable implements ICRS {
 		/** Defines this CRS as a Vertical one. */
 		VERTICAL("Vertical CRS");
 
-		private String name;
+		private final String name;
 
 		private CRSType(String name) {
 			this.name = name;

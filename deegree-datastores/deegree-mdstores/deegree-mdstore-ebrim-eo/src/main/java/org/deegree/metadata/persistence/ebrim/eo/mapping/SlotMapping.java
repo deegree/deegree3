@@ -45,7 +45,7 @@ public class SlotMapping {
 
 	public enum SlotType {
 
-		_double, _int, _date, _multiple, _string, _geom;
+		_double, _int, _date, _multiple, _string, _geom
 
 	}
 

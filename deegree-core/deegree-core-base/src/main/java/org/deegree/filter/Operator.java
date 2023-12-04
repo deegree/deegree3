@@ -72,7 +72,7 @@ public interface Operator {
 		 * Temporal operator. The {@link Operator} is an instance of
 		 * {@link TemporalOperator}.
 		 */
-		TEMPORAL;
+		TEMPORAL
 
 	}
 

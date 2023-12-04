@@ -133,7 +133,7 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
 		 */
 		externalRef("externalref");
 
-		private String columnName;
+		private final String columnName;
 
 		private RelevantColumns(String columnName) {
 			this.columnName = columnName;
@@ -174,7 +174,7 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
 		 */
 		MODEL_INFO("model_info");
 
-		private String tableName;
+		private final String tableName;
 
 		Tables(String tableName) {
 			this.tableName = tableName;
@@ -983,8 +983,7 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
 	 */
 	private ResultSet getResultSet(Connection connection, String tableName, String columns) throws SQLException {
 		Statement st = connection.createStatement();
-		ResultSet rs = st.executeQuery("SELECT " + columns + " FROM " + tableName);
-		return rs;
+		return st.executeQuery("SELECT " + columns + " FROM " + tableName);
 
 	}
 

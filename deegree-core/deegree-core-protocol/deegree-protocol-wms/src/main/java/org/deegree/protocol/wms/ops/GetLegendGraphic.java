@@ -60,7 +60,7 @@ public class GetLegendGraphic {
 
 	private int width = -1, height = -1;
 
-	private static final String nan(String name, String value) {
+	private static String nan(String name, String value) {
 		return "The '" + name + "' parameter value '" + value + "' is not a number.";
 	}
 

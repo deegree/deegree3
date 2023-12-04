@@ -78,8 +78,7 @@ public class SaltedPassword {
 		MessageDigest md = MessageDigest.getInstance(HASH_ALGORITHM_ID);
 		md.update(plainPassword);
 		md.update(salt);
-		byte[] mdbytes = md.digest();
-		return mdbytes;
+		return md.digest();
 	}
 
 	public byte[] getSaltedAndHashedPassword() {

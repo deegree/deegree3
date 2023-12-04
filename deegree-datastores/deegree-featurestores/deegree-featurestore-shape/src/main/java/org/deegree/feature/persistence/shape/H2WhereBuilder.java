@@ -100,14 +100,12 @@ public class H2WhereBuilder extends AbstractWhereBuilder {
 			PrimitiveType pt = new PrimitiveType(BOOLEAN);
 			PrimitiveValue value = new PrimitiveValue(literal.getValue().toString(), pt);
 			PrimitiveParticleConverter converter = new DefaultPrimitiveConverter(pt, null, false);
-			SQLArgument argument = new SQLArgument(value, converter);
-			return argument;
+			return new SQLArgument(value, converter);
 		}
 		PrimitiveType pt = new PrimitiveType(BaseType.STRING);
 		PrimitiveValue value = new PrimitiveValue(literal.getValue().toString(), pt);
 		PrimitiveParticleConverter converter = new DefaultPrimitiveConverter(pt, null, false);
-		SQLArgument argument = new SQLArgument(value, converter);
-		return argument;
+		return new SQLArgument(value, converter);
 	}
 
 }

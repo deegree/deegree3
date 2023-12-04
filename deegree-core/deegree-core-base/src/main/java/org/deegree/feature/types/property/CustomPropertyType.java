@@ -63,9 +63,8 @@ public class CustomPropertyType extends AbstractPropertyType {
 
 	@Override
 	public String toString() {
-		String s = "- custom property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs
+		return "- custom property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs
 				+ ", content xsd type: " + xsdType;
-		return s;
 	}
 
 }

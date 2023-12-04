@@ -36,6 +36,7 @@ package org.deegree.wpsclient.gui;
 
 import static org.deegree.client.core.utils.MessageUtils.getFacesMessage;
 
+import jakarta.annotation.PostConstruct;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -45,7 +46,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;

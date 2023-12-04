@@ -89,8 +89,7 @@ public class GdalDatasetPool {
 	}
 
 	public GdalDataset borrow(File file) throws NoSuchElementException, IllegalStateException, Exception {
-		GdalDataset dataset = pool.borrow(file.getCanonicalFile().toString());
-		return dataset;
+		return pool.borrow(file.getCanonicalFile().toString());
 	}
 
 	public void returnDataset(GdalDataset dataset) {

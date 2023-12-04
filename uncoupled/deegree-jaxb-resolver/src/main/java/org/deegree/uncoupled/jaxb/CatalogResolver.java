@@ -66,7 +66,7 @@ import java.util.regex.Pattern;
  * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  */
 @SuppressWarnings("restriction")
-public class CatalogResolver extends com.sun.org.apache.xml.internal.resolver.tools.CatalogResolver {
+public class CatalogResolver extends org.apache.xml.resolver.tools.CatalogResolver {
 
 	private Map<String, String> cacheRelatives = new HashMap<String, String>();
 	
@@ -83,7 +83,7 @@ public class CatalogResolver extends com.sun.org.apache.xml.internal.resolver.to
 	private boolean debug = false;
 
 	public CatalogResolver() {
-		String dbg = System.getProperty("deeegree.jaxb.debug");
+		String dbg = System.getProperty("deegree.jaxb.debug");
 		if (dbg != null && !dbg.isEmpty()) {
 			debug = true;
 		}

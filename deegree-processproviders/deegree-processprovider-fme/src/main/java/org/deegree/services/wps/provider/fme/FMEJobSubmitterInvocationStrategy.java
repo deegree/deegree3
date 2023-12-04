@@ -34,7 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.provider.fme;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.deegree.process.jaxb.java.ComplexFormatType;

@@ -220,7 +220,7 @@ public class IndentingXMLStreamWriter implements XMLStreamWriter {
 		s.writeEndElement();
 	}
 
-	private final void unindent() throws XMLStreamException {
+	private void unindent() throws XMLStreamException {
 		level -= 1;
 		if (!lastWasStart) {
 			writeIndent(level);
@@ -231,13 +231,13 @@ public class IndentingXMLStreamWriter implements XMLStreamWriter {
 		lastWasStart = false;
 	}
 
-	private final void indent() throws XMLStreamException {
+	private void indent() throws XMLStreamException {
 		lastWasStart = true;
 		writeIndent(level);
 		level += 1;
 	}
 
-	private final void writeIndent(int level) throws XMLStreamException {
+	private void writeIndent(int level) throws XMLStreamException {
 		if (level > 0) {
 			StringBuilder b = new StringBuilder(level + 1);
 			b.append('\n');

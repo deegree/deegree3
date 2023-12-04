@@ -155,7 +155,7 @@ public class Tesselator {
 	 * @param tess
 	 * @param geom
 	 */
-	private final GeometryCallBack createAndRegisterCallBack(GLUtessellator tess, SimpleAccessGeometry geom) {
+	private GeometryCallBack createAndRegisterCallBack(GLUtessellator tess, SimpleAccessGeometry geom) {
 		final GeometryCallBack callBack;
 		if (geom instanceof TexturedGeometry) {
 			callBack = new TexturedGeometryCallBack((TexturedGeometry) geom);
@@ -173,7 +173,7 @@ public class Tesselator {
 	 * @param tess
 	 */
 	@SuppressWarnings("null")
-	private final RenderableGeometry tesselatePolygon(GLUtessellator tess, GeometryCallBack callBack) {
+	private RenderableGeometry tesselatePolygon(GLUtessellator tess, GeometryCallBack callBack) {
 
 		int numberOfVertices = callBack.getGeometry().getVertexCount();
 		int[] innerRings = callBack.getGeometry().getInnerRings();
@@ -223,7 +223,7 @@ public class Tesselator {
 	 * @param end
 	 * @param callBack
 	 */
-	private final void tesselateRing(GLUtessellator tess, int begin, int end, GeometryCallBack callBack) {
+	private void tesselateRing(GLUtessellator tess, int begin, int end, GeometryCallBack callBack) {
 		if (begin == 0) {
 			glu.gluTessBeginContour(tess);
 		}

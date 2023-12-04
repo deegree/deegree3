@@ -9,8 +9,7 @@ class HeixelBuffer {
 
 	Float getHeight(float x, float y) {
 		String s = Math.round(x) + "," + Math.round(y);
-		Float height = xyToHeight.get(s);
-		return height;
+		return xyToHeight.get(s);
 	}
 
 	public void putHeight(float x, float y, float height) {

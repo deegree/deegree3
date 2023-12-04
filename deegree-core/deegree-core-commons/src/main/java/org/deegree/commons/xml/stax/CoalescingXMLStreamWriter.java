@@ -187,7 +187,7 @@ public class CoalescingXMLStreamWriter implements XMLStreamWriter {
 		writer.writeStartDocument(encoding, version);
 	}
 
-	private final void writeCachedStartElement(boolean empty) throws XMLStreamException {
+	private void writeCachedStartElement(boolean empty) throws XMLStreamException {
 		final String ns = elementName.getNamespaceURI();
 		if (ns == null) {
 			writer.writeStartElement(elementName.getLocalPart());

@@ -85,10 +85,16 @@ public class ResourcesServlet extends HttpServlet {
 		if (!resourcePath.startsWith("/")) {
 			throw new ServletException("Requested resource path does not start with '/'.");
 		}
-		if (!resourcePath.toLowerCase().endsWith(".xsd")) {
-			throw new ServletException("Requested resource path does not end with '.xsd'.");
+		// .wsdl/ALL is special handling for WSDL of WPS
+		if (!resourcePath.toLowerCase().endsWith(".xsd") && !resourcePath.toLowerCase().endsWith(".wsdl")
+				&& !resourcePath.endsWith(".wsdl/ALL")) {
+			throw new ServletException("Requested resource path does not end with '.xsd', '.wsdl' or '.wsdl/ALL'.");
 		}
 		resourcePath = resourcePath.substring(1);
+
+		// Special handling for WSDL of WPS
+		if (resourcePath.endsWith(".wsdl/ALL"))
+			resourcePath = resourcePath.substring(0, resourcePath.length() - 4);
 
 		LOG.debug("Requested resource: " + resourcePath);
 		File wsDir = OGCFrontController.getServiceWorkspace().getLocation();

@@ -57,6 +57,6 @@ public enum GMLObjectCategory {
 	/** Style */
 	STYLE,
 	/** Value */
-	VALUE;
+	VALUE
 
 }

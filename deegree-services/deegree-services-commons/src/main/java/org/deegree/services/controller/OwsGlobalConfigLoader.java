@@ -34,7 +34,7 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 
 import org.deegree.commons.utils.net.DURL;
 import org.deegree.commons.xml.jaxb.JAXBUtils;

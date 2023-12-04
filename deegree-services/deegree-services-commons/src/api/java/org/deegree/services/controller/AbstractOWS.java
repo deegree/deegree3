@@ -469,7 +469,7 @@ public abstract class AbstractOWS implements OWS {
         Map<String, String> extraHeaders = new HashMap<String, String>();
         SOAPVersion version = factory.getSOAPVersion();
         String action = "";
-        if ( SOAPaction != null && "".equals( SOAPaction ) ) {
+        if ("".equals(SOAPaction)) {
             action = SOAPaction;
         }
 

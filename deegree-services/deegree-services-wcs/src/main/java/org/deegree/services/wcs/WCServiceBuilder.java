@@ -225,7 +225,7 @@ public class WCServiceBuilder {
 		return result;
 	}
 
-	private final static SingleValue<?> mapTT(TypedType tt) {
+	private static SingleValue<?> mapTT(TypedType tt) {
 		if (tt == null) {
 			return null;
 		}

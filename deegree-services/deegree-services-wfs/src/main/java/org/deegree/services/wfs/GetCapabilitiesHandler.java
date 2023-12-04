@@ -1092,7 +1092,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 						writer.writeStartElement(WFS_200_NS, "Element");
 						writer.writeAttribute("name", extendedDescription.getName());
 						String type = extendedDescription.getType().getLocalPart();
-						;
+
 						if (extendedDescription.getType().getNamespaceURI() != null) {
 							String typePrefix = extendedDescription.getType().getPrefix();
 							if (prefix != null && !prefix.isEmpty()) {

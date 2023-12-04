@@ -20,7 +20,7 @@ public class FeatureReferenceCheckerTest {
 	@Test
 	public void testCheckReferences() {
 		List<String> featureIds = asList("123", "456", "789");
-		;
+
 		List<String> references = asList("123");
 		FeatureReferenceCheckResult result = featureReferenceChecker.checkReferences(featureIds, references);
 

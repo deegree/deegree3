@@ -270,8 +270,7 @@ public class BuildingManager extends ModelManager<WorldRenderableObject> {
 		params.put(VRMLImporter.MAX_TEX_DIM, commandLine.getOptionValue(DataManager.OPT_VRML_MAX_TEX_DIM));
 
 		VRMLImporter exp = new VRMLImporter(params);
-		List<WorldRenderableObject> lwro = exp.importFromFile(fileName, numberOfqualityLevels, qualityLevel);
-		return lwro;
+		return exp.importFromFile(fileName, numberOfqualityLevels, qualityLevel);
 	}
 
 }

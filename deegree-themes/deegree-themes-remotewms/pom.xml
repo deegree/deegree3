@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>deegree-themes-remotewms</artifactId>
   <packaging>jar</packaging>
-  <version>3.5.4-SNAPSHOT</version>
+  <version>3.5.6-SNAPSHOT</version>
   <name>deegree-themes-remotewms</name>
   <description>Map layer theme implementation for remote Web Map Services</description>
 
@@ -13,14 +13,14 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-themes</artifactId>
-    <version>3.5.4-SNAPSHOT</version>
+    <version>3.5.6-SNAPSHOT</version>
   </parent>
 
   <build>
     <plugins>
       <plugin>
-        <groupId>org.jvnet.jaxb2.maven2</groupId>
-        <artifactId>maven-jaxb2-plugin</artifactId>
+        <groupId>org.jvnet.jaxb</groupId>
+        <artifactId>jaxb-maven-plugin</artifactId>
         <dependencies>
           <dependency>
             <groupId>org.deegree</groupId>

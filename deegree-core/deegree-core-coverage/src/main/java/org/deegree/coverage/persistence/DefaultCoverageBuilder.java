@@ -137,7 +137,7 @@ public class DefaultCoverageBuilder implements ResourceBuilder<Coverage> {
 	 * @return a list of directories which can be used for the building of
 	 * {@link TiledRaster}s.
 	 */
-	private final static List<File> findResolutionDirs(File toplevelDir) {
+	private static List<File> findResolutionDirs(File toplevelDir) {
 		List<File> result = new LinkedList<File>();
 		for (File f : toplevelDir.listFiles()) {
 			if (f.isDirectory()) {
@@ -382,7 +382,7 @@ public class DefaultCoverageBuilder implements ResourceBuilder<Coverage> {
 				String format = nm.substring(nm.lastIndexOf('.') + 1);
 				opts.add(RasterIOOptions.OPT_FORMAT, format);
 				boolean readSingleBlobTile = false;
-				if (format != null && ("grid".equalsIgnoreCase(format) || "bin".equalsIgnoreCase(format))) {
+				if ("grid".equalsIgnoreCase(format) || "bin".equalsIgnoreCase(format)) {
 					// the grid file structure can be defined over multiple 'bin' files,
 					// which is used in e.g the WPVS.
 					try {
@@ -395,7 +395,7 @@ public class DefaultCoverageBuilder implements ResourceBuilder<Coverage> {
 					}
 				}
 				if (!readSingleBlobTile) {
-					if (format != null && ("grid".equalsIgnoreCase(format) || "bin".equalsIgnoreCase(format))) {
+					if ("grid".equalsIgnoreCase(format) || "bin".equalsIgnoreCase(format)) {
 						LOG.info(
 								"Could not instantiate a gridded raster from a single grid file, trying to create a raster from files in directory.");
 					}
@@ -441,7 +441,7 @@ public class DefaultCoverageBuilder implements ResourceBuilder<Coverage> {
 	 * @param options
 	 * @return the total envelope of the given coverages
 	 */
-	private final static QTreeInfo buildTiledRaster(List<File> coverageFiles, List<AbstractRaster> result,
+	private static QTreeInfo buildTiledRaster(List<File> coverageFiles, List<AbstractRaster> result,
 			RasterIOOptions options) {
 		Envelope resultEnvelope = null;
 		RasterGeoReference rasterReference = null;

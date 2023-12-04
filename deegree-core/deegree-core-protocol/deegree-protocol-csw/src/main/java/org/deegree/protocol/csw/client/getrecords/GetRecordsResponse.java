@@ -116,8 +116,7 @@ public class GetRecordsResponse {
 					throw new NoSuchElementException();
 				}
 				try {
-					MetadataRecord record = MetadataRecordFactory.create(xmlStream);
-					return record;
+					return MetadataRecordFactory.create(xmlStream);
 				}
 				finally {
 					try {

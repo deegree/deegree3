@@ -371,9 +371,7 @@ public class XYZReader implements RasterReader {
 		data = RasterDataFactory.createRasterData(width, height, data.getDataInfo(), geoReference, byteBuffer, true,
 				FileUtils.getFilename(this.file), nOpts);
 
-		SimpleRaster simpleRaster = new SimpleRaster(data, this.envelope, geoReference, null);
-
-		return simpleRaster;
+		return new SimpleRaster(data, this.envelope, geoReference, null);
 	}
 
 	@Override

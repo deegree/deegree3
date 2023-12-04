@@ -108,9 +108,8 @@ public class FeaturePropertyType extends ObjectPropertyType {
 
 	@Override
 	public String toString() {
-		String s = "- feature property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs
+		return "- feature property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs
 				+ ", value feature type: " + valueFtName;
-		return s;
 	}
 
 }

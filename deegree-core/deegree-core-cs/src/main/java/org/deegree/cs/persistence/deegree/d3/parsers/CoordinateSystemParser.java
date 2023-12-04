@@ -256,8 +256,7 @@ public class CoordinateSystemParser extends DefinitionParser {
 	 * found. Never <code>null</code>.
 	 */
 	protected List<Transformation> parseAlternativeTransformations(XMLStreamReader reader) {
-		List<Transformation> result = new LinkedList<Transformation>();
-		return result;
+		return new LinkedList<Transformation>();
 	}
 
 	/**
@@ -424,8 +423,7 @@ public class CoordinateSystemParser extends DefinitionParser {
 			throw new CRSConfigurationException(
 					Messages.getMessage("CRS_CONFIG_REFERENCE_ID_IS_EMPTY", "usedDatum", parentID));
 		}
-		IGeodeticDatum usedDatum = new GeodeticDatumRef(store.getResolver(RESOURCETYPE.DATUM), '#' + datumID, null);
-		return usedDatum;
+		return new GeodeticDatumRef(store.getResolver(RESOURCETYPE.DATUM), '#' + datumID, null);
 	}
 
 	@Override

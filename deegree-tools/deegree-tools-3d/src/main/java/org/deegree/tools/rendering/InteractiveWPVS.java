@@ -61,7 +61,7 @@ import javax.media.opengl.glu.GLU;
 import javax.swing.JFrame;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
@@ -1368,9 +1368,7 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
 
 	private static GetView createFromRequest(String request) throws OWSException {
 		Map<String, String> parsedRequest = parseRequest(request);
-		GetView getView = GetViewKVPAdapter.create(parsedRequest, "UTF-8", new double[] { -2568000.0, -5606000.0 },
-				zNear, zFar);
-		return getView;
+		return GetViewKVPAdapter.create(parsedRequest, "UTF-8", new double[] { -2568000.0, -5606000.0 }, zNear, zFar);
 	}
 
 	/**

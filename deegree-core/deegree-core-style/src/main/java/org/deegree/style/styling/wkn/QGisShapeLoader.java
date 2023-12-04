@@ -245,9 +245,8 @@ public class QGisShapeLoader implements WellKnownNameLoader {
 		String wkn = wellKnownName.substring(PREFIX.length()).toLowerCase();
 		// debug//SHAPES = null;
 		lazyLoad();
-		Shape s = SHAPES.get(wkn);
 
-		return s;
+		return SHAPES.get(wkn);
 	}
 
 	@Override

@@ -785,8 +785,7 @@ public class SDOGeometryConverterTest {
 		}
 		final Points points = geometryFactory.createPoints(pointList);
 		final Curve curve = geometryFactory.createLineString("curve", null, points);
-		final Ring ring = geometryFactory.createRing("ring", null, Arrays.asList(curve));
-		return ring;
+		return geometryFactory.createRing("ring", null, Arrays.asList(curve));
 	}
 
 }

@@ -45,11 +45,8 @@ public class ProxyConfig extends Config {
 
 	private static final URL PROXY_EXAMPLE_URL = ProxyConfig.class.getResource("/META-INF/schemas/proxy/example.xml");
 
-	private String file;
-
-	public ProxyConfig(String file) {
+	public ProxyConfig() {
 		super(null, null, "/console/proxy/index", false);
-		this.file = file;
 	}
 
 	@Override
@@ -57,7 +54,7 @@ public class ProxyConfig extends Config {
 		StringBuilder sb = new StringBuilder("/console/generic/xmleditor?faces-redirect=true");
 		sb.append("&id=").append(id);
 		sb.append("&schemaUrl=").append(PROXY_SCHEMA_URL.toString());
-		sb.append("&fileName=").append(file);
+		sb.append("&fileName=proxy.xml");
 		sb.append("&nextView=").append(getResourceOutcome());
 		sb.append("&emptyTemplate=").append(getTemplate());
 		return sb.toString();

@@ -37,9 +37,9 @@ package org.deegree.metadata.iso.persistence.sql;
 import java.net.URL;
 import java.util.TimeZone;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
 
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.metadata.MetadataRecordFactory;

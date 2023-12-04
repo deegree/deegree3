@@ -93,10 +93,9 @@ public class RasterCommandUtils {
 		}
 
 		GeometryFactory geomFactory = new GeometryFactory();
-		Envelope result = geomFactory.createEnvelope(new double[] { coords[0], coords[1] },
-				new double[] { coords[2], coords[3] }, null);
 
-		return result;
+		return geomFactory.createEnvelope(new double[] { coords[0], coords[1] }, new double[] { coords[2], coords[3] },
+				null);
 	}
 
 	/**

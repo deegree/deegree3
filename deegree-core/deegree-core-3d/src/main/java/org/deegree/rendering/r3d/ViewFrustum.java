@@ -591,7 +591,7 @@ public class ViewFrustum {
 	 * @param axis
 	 * @param angle rotation angle in radians
 	 */
-	private final void rotate(Vector3d p, Vector3d axis, double angle) {
+	private void rotate(Vector3d p, Vector3d axis, double angle) {
 
 		double sin = Math.sin(angle);
 		double cos = Math.cos(angle);

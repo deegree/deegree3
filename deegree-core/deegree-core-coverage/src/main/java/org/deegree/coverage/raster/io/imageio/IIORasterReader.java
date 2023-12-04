@@ -116,8 +116,7 @@ public class IIORasterReader implements RasterReader {
 	public AbstractRaster load(File file, RasterIOOptions options) throws IOException {
 		String imageIndex = options.get(RasterIOOptions.IMAGE_INDEX);
 		reader = new IIORasterDataReader(file, options, imageIndex == null ? 0 : Integer.parseInt(imageIndex));
-		AbstractRaster r = loadFromReader(reader, options);
-		return r;
+		return loadFromReader(reader, options);
 	}
 
 	@Override

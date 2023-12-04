@@ -726,8 +726,7 @@ class GML3CurveSegmentReader extends GML3GeometryBaseReader {
 					}
 				}
 				else {
-					int refDirectionDim = refDirection.getCoordinateDimension();
-					refDirectionOutDimension = refDirectionDim;
+					refDirectionOutDimension = refDirection.getCoordinateDimension();
 				}
 				refDirections.add(refDirection);
 				xmlStream.nextTag();

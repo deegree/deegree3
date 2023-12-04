@@ -4,8 +4,8 @@ Contributing to open source can be a rewarding way to learn, and build experienc
 Before you contribute to the OSGeo project deegree please read our guidelines we'd like you to follow:
 
 * [OSGeo Code of Conduct](https://www.osgeo.org/code_of_conduct/)
-* [How to help](#what-do-i-need-to-know-to-help?)
-* [How to contribute](#how-do-i-make-a-contribution?)
+* [How to help](#what-do-i-need-to-know-to-help)
+* [How to contribute](#how-do-i-make-a-contribution)
 * [Getting in contact](#getting-in-contact)
 * [Structures and Procedures](#structures-and-procedures-of-the-deegree-project)
 * [Legal](#legal) 

@@ -63,8 +63,7 @@ public class OraclePrimitiveConverter extends DefaultPrimitiveConverter {
 			}
 		}
 		else {
-			PrimitiveValue particle = super.toDateParticle(sqlValue);
-			return particle;
+			return super.toDateParticle(sqlValue);
 		}
 		return new PrimitiveValue(value, pt);
 	}

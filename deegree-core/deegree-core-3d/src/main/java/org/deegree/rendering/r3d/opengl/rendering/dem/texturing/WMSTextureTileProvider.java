@@ -126,8 +126,7 @@ public class WMSTextureTileProvider implements TextureTileProvider {
 			RasterData rasterData = RasterFactory.rasterDataFromImage(img);
 			RasterGeoReference rasterEnv = RasterGeoReference.create(OriginLocation.OUTER, bbox, img.getWidth(),
 					img.getHeight());
-			SimpleRaster raster = new SimpleRaster(rasterData, bbox, rasterEnv, null);
-			response.first = raster;
+			response.first = new SimpleRaster(rasterData, bbox, rasterEnv, null);
 		}
 		else {
 			response.second = imageResponse.second;

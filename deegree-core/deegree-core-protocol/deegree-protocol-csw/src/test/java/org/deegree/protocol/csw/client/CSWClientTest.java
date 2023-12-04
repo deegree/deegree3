@@ -114,8 +114,7 @@ public class CSWClientTest {
 		QName qname = new QName(namespaceURI, propertyName, propertyPrefix);
 		Expression param1 = new ValueReference(qname);
 		Expression param2 = new Literal<PrimitiveValue>(value);
-		Operator rootOperator = new PropertyIsLike(param1, param2, "*", ".", "!", false, MatchAction.ANY);
-		return rootOperator;
+		return new PropertyIsLike(param1, param2, "*", ".", "!", false, MatchAction.ANY);
 	}
 
 	@Test

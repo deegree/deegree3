@@ -91,7 +91,7 @@ public abstract class ModelBackend<G> implements RenderableStore {
 		 */
 		TREE("tree");
 
-		private String modelType;
+		private final String modelType;
 
 		private Type(String modelType) {
 			this.modelType = modelType;

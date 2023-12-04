@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- This file is part of deegree, for copyright/license information, please visit http://www.deegree.org/license. -->
 <schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:d="http://www.deegree.org/metadata/description"
-  xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" targetNamespace="http://www.deegree.org/metadata/description"
-  elementFormDefault="qualified" jaxb:version="2.1">
+  xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb" targetNamespace="http://www.deegree.org/metadata/description"
+  elementFormDefault="qualified" jaxb:version="3.0">
 
   <annotation>
     <appinfo>

@@ -27,7 +27,6 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.console.webservices;
 
-import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,10 +38,7 @@ import javax.faces.bean.ViewScoped;
 import org.deegree.console.AbstractResourceManagerBean;
 import org.deegree.console.Config;
 import org.deegree.services.OwsManager;
-import org.deegree.services.controller.OGCFrontController;
 import org.deegree.workspace.ResourceMetadata;
-import org.deegree.workspace.Workspace;
-import org.deegree.workspace.standard.DefaultWorkspace;
 
 /**
  * TODO add class documentation here
@@ -55,16 +51,11 @@ public class ServicesBean extends AbstractResourceManagerBean<OwsManager> implem
 
 	private static final long serialVersionUID = -8669333203479413121L;
 
-	private Config mainConfig;
+	private final Config mainConfig;
 
 	public ServicesBean() {
 		super(OwsManager.class);
-		Workspace workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
-		if (workspace instanceof DefaultWorkspace) {
-			File file = new File(((DefaultWorkspace) workspace).getLocation(), "services");
-			file = new File(file, "main.xml");
-			mainConfig = new MainConfig(file.getAbsolutePath());
-		}
+		mainConfig = new MainConfig();
 	}
 
 	public Config getMainConfig() {

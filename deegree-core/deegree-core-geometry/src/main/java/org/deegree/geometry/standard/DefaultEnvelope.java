@@ -233,12 +233,12 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
 				|| noEdgeOverlap(this, e);
 	}
 
-	private static final boolean pointInside(final double x, final double y, final Envelope bbox) {
+	private static boolean pointInside(final double x, final double y, final Envelope bbox) {
 		return x >= bbox.getMin().get0() && x <= bbox.getMax().get0() && y >= bbox.getMin().get1()
 				&& y <= bbox.getMax().get1();
 	}
 
-	private static final boolean noEdgeOverlap(final Envelope box1, final Envelope box2) {
+	private static boolean noEdgeOverlap(final Envelope box1, final Envelope box2) {
 		return box1.getMin().get0() <= box2.getMin().get0() && box2.getMax().get0() <= box1.getMax().get0()
 				&& box2.getMin().get1() <= box1.getMin().get1() && box1.getMax().get1() <= box2.getMax().get1();
 	}

@@ -466,7 +466,7 @@ public class DBFReader {
 		return featureType;
 	}
 
-	private final void skipBytes(ByteBuffer buffer, int bytes) {
+	private void skipBytes(ByteBuffer buffer, int bytes) {
 		buffer.position(buffer.position() + bytes);
 	}
 

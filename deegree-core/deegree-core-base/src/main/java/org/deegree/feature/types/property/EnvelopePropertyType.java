@@ -56,8 +56,7 @@ public class EnvelopePropertyType extends AbstractPropertyType {
 
 	@Override
 	public String toString() {
-		String s = "- envelope property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs;
-		return s;
+		return "- envelope property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs;
 	}
 
 }

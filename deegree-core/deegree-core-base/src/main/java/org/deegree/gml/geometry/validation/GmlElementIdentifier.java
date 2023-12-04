@@ -71,8 +71,7 @@ public class GmlElementIdentifier {
 
 	@Override
 	public String toString() {
-		String s = elementName + ", line: " + lineNumber + ", column: " + columnNumber;
-		return s;
+		return elementName + ", line: " + lineNumber + ", column: " + columnNumber;
 	}
 
 }

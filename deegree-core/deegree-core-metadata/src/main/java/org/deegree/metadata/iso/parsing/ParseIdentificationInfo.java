@@ -194,7 +194,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
 			 *
 			 * Status
 			 *
-			 *---------------------------------------------------------------*/;
+			 *---------------------------------------------------------------*/
 			List<OMElement> status = getElements(sv_service_OR_md_dataIdentification,
 					new XPath("./gmd:status", nsContextParseII));
 
@@ -245,7 +245,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
 			 *
 			 * AggregationInfo
 			 *
-			 *---------------------------------------------------------------*/;
+			 *---------------------------------------------------------------*/
 			List<OMElement> aggregationInfo = getElements(sv_service_OR_md_dataIdentification,
 					new XPath("./gmd:aggregationInfo", nsContextParseII));
 
@@ -316,7 +316,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
 				 * MD_DataIdentification
 				 * EnvironmentDescription
 				 *
-				 *---------------------------------------------------------------*/;
+				 *---------------------------------------------------------------*/
 
 				environmentDescription = getElement(md_dataIdentification,
 						new XPath("./gmd:environmentDescription", nsContextParseII));

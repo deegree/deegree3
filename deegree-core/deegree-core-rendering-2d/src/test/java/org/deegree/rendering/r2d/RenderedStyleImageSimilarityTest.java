@@ -187,8 +187,7 @@ public class RenderedStyleImageSimilarityTest extends AbstractSimilarityTest {
 				file.toURI().toURL().openStream());
 		xmlReader.next();
 		LOG.debug("Reading style document {}", file);
-		Style style = SymbologyParser.INSTANCE.parse(xmlReader);
-		return style;
+		return SymbologyParser.INSTANCE.parse(xmlReader);
 	}
 
 	private FeatureCollection readFeatureCollection(File file) throws Exception {
@@ -197,8 +196,7 @@ public class RenderedStyleImageSimilarityTest extends AbstractSimilarityTest {
 		GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader(version, docURL);
 		gmlStream.setApplicationSchema(new DynamicAppSchema());
 		LOG.debug("Populating feature store with features from file '{}'...", docURL);
-		FeatureCollection fc = gmlStream.readFeatureCollection();
-		return fc;
+		return gmlStream.readFeatureCollection();
 	}
 
 	public void generateDemoDataForHatching() {
