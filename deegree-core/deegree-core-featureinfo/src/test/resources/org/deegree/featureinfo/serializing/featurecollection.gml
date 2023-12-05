@@ -168,7 +168,7 @@
               </gn:spelling>
             </gn:GeographicalName>
           </au:name>
-          <au:geometry xsi:nil="true"/>
+          <!--<au:geometry xsi:nil="true"/>-->
         </au:ResidenceOfAuthority>
       </au:residenceOfAuthority>
       <au:beginLifespanVersion xsi:nil="true" nilReason="other:unpopulated"/>
