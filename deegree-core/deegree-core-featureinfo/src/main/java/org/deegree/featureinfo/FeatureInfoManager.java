@@ -52,6 +52,7 @@ import javax.xml.stream.XMLStreamException;
 
 import org.deegree.featureinfo.serializing.FeatureInfoGmlWriter;
 import org.deegree.featureinfo.serializing.FeatureInfoSerializer;
+import org.deegree.featureinfo.serializing.GeoJsonFeatureInfoSerializer;
 import org.deegree.featureinfo.serializing.PlainTextFeatureInfoSerializer;
 import org.deegree.featureinfo.serializing.TemplateFeatureInfoSerializer;
 import org.deegree.featureinfo.serializing.XsltFeatureInfoSerializer;
@@ -110,6 +111,12 @@ public class FeatureInfoManager {
 
 		XsltFeatureInfoSerializer xslt = new XsltFeatureInfoSerializer(version, xsltUrl, workspace);
 		featureInfoSerializers.put(format, xslt);
+	}
+
+	public void addOrReplaceGeoJsonFormat(String format) {
+		LOG.debug("Adding GeoJson feature info format");
+		GeoJsonFeatureInfoSerializer geoJsonSerializer = new GeoJsonFeatureInfoSerializer();
+		featureInfoSerializers.put(format, geoJsonSerializer);
 	}
 
 	public Set<String> getSupportedFormats() {

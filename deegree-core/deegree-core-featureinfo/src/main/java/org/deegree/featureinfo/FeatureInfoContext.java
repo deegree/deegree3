@@ -42,6 +42,7 @@ package org.deegree.featureinfo;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Writer;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -51,6 +52,8 @@ public interface FeatureInfoContext {
 	OutputStream getOutputStream() throws IOException;
 
 	XMLStreamWriter getXmlWriter() throws IOException, XMLStreamException;
+
+	Writer getWriter() throws IOException;
 
 	void sendRedirect(String location) throws IOException;
 

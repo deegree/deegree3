@@ -109,6 +109,7 @@
                   </simpleContent>
                 </complexType>
               </element>
+              <element name="GeoJson" type="boolean" />
               <element name="Serializer">
                 <complexType>
                   <sequence>
