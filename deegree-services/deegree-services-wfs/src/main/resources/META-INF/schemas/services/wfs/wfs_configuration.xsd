@@ -84,6 +84,7 @@
         <element name="Strict" minOccurs="0" type="boolean" default="false"/>
       </sequence>
       <attribute name="configVersion" type="string" use="optional"/>
+
     </complexType>
   </element>
 
@@ -175,7 +176,17 @@
       </complexContent>
     </complexType>
   </element>
-
+  <element name="DefaultFormats" substitutionGroup="wfs:AbstractFormat" >
+    <complexType>
+      <complexContent>
+        <extension base="wfs:AbstractFormatType">
+          <sequence>
+            <element name="ExcludeMimeType" type="string" maxOccurs="unbounded" />
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
 
   <!-- AbstractCoordinateFormatter and substitutions -->
   <element name="AbstractCoordinateFormatter" abstract="true" />
