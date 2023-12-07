@@ -186,8 +186,9 @@ public class CoordinateSystemParser extends DefinitionParser {
 		}
 
 		if (result == null && LOG.isDebugEnabled()) {
-			LOG.debug("The element with name " + crsType + " could not be mapped to a valid deegreec-crs, currently "
-					+ knownCRS + " are supported.");
+			LOG.debug(
+					"The element with name {} could not be mapped to a valid deegreec-crs, currently {} are supported.",
+					crsType, knownCRS);
 		}
 		return result;
 	}
@@ -453,7 +454,7 @@ public class CoordinateSystemParser extends DefinitionParser {
 		}
 		catch (Exception e) {
 			LOG.debug("Could not get available crs's stack: ", e);
-			LOG.error("Could not get available crs's because: " + e.getLocalizedMessage());
+			LOG.error("Could not get available crs's because: {}", e.getLocalizedMessage());
 		}
 		finally {
 			if (confStream != null) {
@@ -461,7 +462,7 @@ public class CoordinateSystemParser extends DefinitionParser {
 					confStream.close();
 				}
 				catch (IOException e) {
-					LOG.error("Could not close the stream, letting it open because: " + e.getLocalizedMessage());
+					LOG.error("Could not close the stream, letting it open because: {}", e.getLocalizedMessage());
 				}
 			}
 		}

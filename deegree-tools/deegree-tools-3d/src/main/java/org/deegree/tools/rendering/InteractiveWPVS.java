@@ -322,7 +322,7 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
 	@Override
 	public void display(GLAutoDrawable drawable) {
 		LOG.trace("display( GLAutoDrawable ) called");
-		LOG.debug("view params: " + params);
+		LOG.debug("view params: {}", params);
 
 		long begin = System.currentTimeMillis();
 		GL gl = drawable.getGL();
@@ -532,9 +532,9 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
 		float intens = pos.calcSunlightIntensity(ambientAndDiffuse, 0.5f);
 
 		// LOG.info( "Sun pos for time: " + cal.getTime().toGMTString() );
-		LOG.debug("Using sun's direction: " + Vectors3f.asString(light_position));
-		LOG.debug("Using sun's color: " + Vectors3f.asString(ambientAndDiffuse));
-		LOG.debug("Using sun's intensity: " + intens);
+		LOG.debug("Using sun's direction: {}", Vectors3f.asString(light_position));
+		LOG.debug("Using sun's color: {}", Vectors3f.asString(ambientAndDiffuse));
+		LOG.debug("Using sun's intensity: {}", intens);
 		// light_position[0] += 15000;
 		// light_position[1] += 15000;
 		// light_position[2] += 550;
@@ -612,8 +612,7 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
 	@Override
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
 		float aspect = (float) width / (float) height;
-		LOG.info("reshape( GLAutoDrawable, " + x + ", " + y + ", " + width + ", " + height + " ) called, aspect: "
-				+ aspect);
+		LOG.info("reshape( GLAutoDrawable, {}, {}, {}, {} ) called, aspect: {}", x, y, width, height, aspect);
 
 		params.setProjectionPlaneDimensions(width, height);
 

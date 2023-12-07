@@ -66,10 +66,11 @@ public class CustomExpressionManager {
 			elNameToExpression = new HashMap<QName, CustomExpression>();
 			try {
 				for (CustomExpression expr : customExpressionLoader) {
-					LOG.debug("Expression: " + expr + ", element name: " + expr.getElementName());
+					LOG.debug("Expression: {}, element name: {}", expr, expr.getElementName());
 					if (elNameToExpression.containsKey(expr.getElementName())) {
-						LOG.error("Multiple CustomExpression instances for element name: '" + expr.getElementName()
-								+ "' on classpath -- omitting '" + expr.getClass().getName() + "'.");
+						LOG.error(
+								"Multiple CustomExpression instances for element name: '{}' on classpath -- omitting '{}'.",
+								expr.getElementName(), expr.getClass().getName());
 						continue;
 					}
 					elNameToExpression.put(expr.getElementName(), expr);

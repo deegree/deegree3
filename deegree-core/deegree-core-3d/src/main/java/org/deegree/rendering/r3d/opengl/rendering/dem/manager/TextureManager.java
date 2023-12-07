@@ -120,7 +120,7 @@ public class TextureManager {
 	 */
 	public Map<RenderMeshFragment, FragmentTexture> getTextures(RenderContext glRenderContext,
 			float maxProjectedTexelSize, Set<RenderMeshFragment> fragments) {
-		LOG.debug("Texturizing " + fragments.size() + " fragments");
+		LOG.debug("Texturizing {} fragments", fragments.size());
 		Map<RenderMeshFragment, FragmentTexture> result = new HashMap<RenderMeshFragment, FragmentTexture>();
 
 		// create texture requests for each fragment
@@ -131,7 +131,7 @@ public class TextureManager {
 		// System.out.println( "requests: " + requests.size() );
 		// System.out.println( "tileRequests: " + tileRequests.size() );
 
-		LOG.debug(tileRequests.size() + " tile requests");
+		LOG.debug("{} tile requests", tileRequests.size());
 
 		// fetch texture tiles and assign textures to fragments
 		for (TextureRequest request : requests) {
@@ -173,7 +173,7 @@ public class TextureManager {
 				}
 			}
 			else {
-				LOG.warn("Found no matching tile request for request: " + request);
+				LOG.warn("Found no matching tile request for request: {}", request);
 			}
 		}
 		return result;
@@ -277,7 +277,7 @@ public class TextureManager {
 				minimizedRequests.add(request);
 			}
 		}
-		LOG.debug("Tile requests: " + requests.size() + ", minimized: " + minimizedRequests.size());
+		LOG.debug("Tile requests: {}, minimized: {}", requests.size(), minimizedRequests.size());
 		return minimizedRequests;
 	}
 

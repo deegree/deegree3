@@ -147,7 +147,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
 			ISOMetadataResultSet isoRs = qh.execute(query, conn);
 			while (isoRs.next()) {
 				ISORecord rec = isoRs.getRecord();
-				LOG.debug("record to update" + rec);
+				LOG.debug("record to update{}", rec);
 				boolean updated = false;
 
 				if (update.getRecord() != null) {
@@ -166,28 +166,28 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
 						Object value = metadataProperty.getReplacementValue();
 
 						if (value == null) {
-							LOG.debug("    Remove: " + name);
+							LOG.debug("    Remove: {}", name);
 							rec.removeNode(name);
 							updated = true;
 						}
 						else if (value instanceof String) {
-							LOG.debug("    Update: " + name + " with: " + value);
+							LOG.debug("    Update: {} with: {}", name, value);
 							try {
 								rec.update(name, (String) value);
 								updated = true;
 							}
 							catch (Exception e) {
-								LOG.info("Update or record " + rec + " failed: " + e.getMessage());
+								LOG.info("Update or record {} failed: {}", rec, e.getMessage());
 							}
 						}
 						else if (value instanceof OMElement) {
-							LOG.debug("    Update: " + name + " with xml: " + value);
+							LOG.debug("    Update: {} with xml: {}", name, value);
 							rec.update(name, (OMElement) value);
 							updated = true;
 						}
 						else {
-							LOG.warn("Could not update propertyName: " + name
-									+ ": must be a string, an OMELement or null!");
+							LOG.warn("Could not update propertyName: {}: must be a string, an OMELement or null!",
+									name);
 						}
 					}
 					// inspect element if it is still valid

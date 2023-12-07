@@ -201,7 +201,7 @@ public class BuildingManager extends ModelManager<WorldRenderableObject> {
 	 * @throws IOException
 	 */
 	private List<WorldRenderableObject> readGML(String fileName, CommandLine commandLine) throws IOException {
-		LOG.debug("Reading buildings from file: " + fileName);
+		LOG.debug("Reading buildings from file: {}", fileName);
 		String schemaLocation = commandLine.getOptionValue(DataManager.OPT_CITY_GML_SCHEMA);
 
 		String color = commandLine.getOptionValue(DataManager.OPT_CITY_GML_COLOR);
@@ -215,7 +215,7 @@ public class BuildingManager extends ModelManager<WorldRenderableObject> {
 				style.setSpecularColor(diffuseColor);
 			}
 			catch (NumberFormatException e) {
-				LOG.warn("Could not decode color into an integer: " + color + " using white instead.");
+				LOG.warn("Could not decode color into an integer: {} using white instead.", color);
 			}
 		}
 

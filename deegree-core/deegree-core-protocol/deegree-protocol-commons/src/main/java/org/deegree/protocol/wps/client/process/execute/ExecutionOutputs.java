@@ -63,7 +63,7 @@ public class ExecutionOutputs {
 	 */
 	public ExecutionOutputs(ExecutionOutput[] outputs) {
 		for (ExecutionOutput output : outputs) {
-			LOG.debug("Output: " + output.getId() + ": " + output);
+			LOG.debug("Output: {}: {}", output.getId(), output);
 			paramIdToOutput.put(output.getId(), output);
 		}
 	}

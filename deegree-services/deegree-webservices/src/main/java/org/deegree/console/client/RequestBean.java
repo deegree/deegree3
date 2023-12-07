@@ -384,7 +384,7 @@ public class RequestBean implements Serializable {
 		}
 
 		String targetUrl = getTargetUrl();
-		LOG.debug("Try to send the following request to " + targetUrl + " : \n" + request);
+		LOG.debug("Try to send the following request to {} : \n{}", targetUrl, request);
 		if (targetUrl != null && targetUrl.length() > 0 && request != null && request.length() > 0) {
 			InputStream is = new ByteArrayInputStream(request.getBytes("UTF-8"));
 			try {
@@ -397,7 +397,7 @@ public class RequestBean implements Serializable {
 				Header[] headers = response.getHeaders("Content-Type");
 				if (headers.length > 0) {
 					mimeType = headers[0].getValue();
-					LOG.debug("Response mime type: " + mimeType);
+					LOG.debug("Response mime type: {}", mimeType);
 					if (!mimeType.toLowerCase().contains("xml")) {
 						this.response = null;
 						FacesMessage fm = MessageUtils.getFacesMessage(FacesMessage.SEVERITY_INFO,
@@ -472,7 +472,7 @@ public class RequestBean implements Serializable {
 			requestsBaseDir = new File(realPath);
 		}
 
-		LOG.debug("Using requests directory " + requestsBaseDir);
+		LOG.debug("Using requests directory {}", requestsBaseDir);
 		String[] serviceTypes = requestsBaseDir.list();
 		if (serviceTypes != null && serviceTypes.length > 0) {
 			Arrays.sort(serviceTypes);
@@ -580,7 +580,7 @@ public class RequestBean implements Serializable {
 
 	private void loadExample() {
 		if (selectedRequest != null) {
-			LOG.debug("load request " + selectedRequest);
+			LOG.debug("load request {}", selectedRequest);
 			File file = new File(requestsBaseDir, selectedRequest);
 			if (file.exists()) {
 				XMLAdapter adapter = new XMLAdapter(file);
@@ -595,7 +595,7 @@ public class RequestBean implements Serializable {
 	public void sendKVPRequest() {
 		String targetUrl = getTargetUrl();
 
-		LOG.debug("Try to send the following request to " + targetUrl + " : \n" + kvpRequestSel);
+		LOG.debug("Try to send the following request to {} : \n{}", targetUrl, kvpRequestSel);
 		if (targetUrl != null && targetUrl.length() > 0 && kvpRequestSel != null && kvpRequestSel.length() > 0) {
 			Map<String, String> header = new HashMap<String, String>();
 			try {

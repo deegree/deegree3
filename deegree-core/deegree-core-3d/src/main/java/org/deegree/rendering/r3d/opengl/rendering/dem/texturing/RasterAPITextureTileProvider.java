@@ -128,8 +128,8 @@ public class RasterAPITextureTileProvider implements TextureTileProvider {
 		long begin2 = System.currentTimeMillis();
 		SimpleRaster simpleRaster = subset.getAsSimpleRaster();
 		if (LOG.isDebugEnabled()) {
-			LOG.debug("#getTextureTile(): as simple raster: " + (System.currentTimeMillis() - begin2) + ", env: "
-					+ simpleRaster.getEnvelope());
+			LOG.debug("#getTextureTile(): as simple raster: {}, env: {}", (System.currentTimeMillis() - begin2),
+					simpleRaster.getEnvelope());
 		}
 		PixelInterleavedRasterData rasterData = (PixelInterleavedRasterData) simpleRaster.getRasterData();
 		if (rasterData.isOutside()) {

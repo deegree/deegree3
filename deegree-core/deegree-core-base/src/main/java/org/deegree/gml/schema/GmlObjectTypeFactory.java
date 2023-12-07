@@ -64,7 +64,7 @@ class GmlObjectTypeFactory {
 	GMLObjectType build(final XSElementDeclaration elDecl) {
 		final QName elName = createQName(elDecl.getNamespace(), elDecl.getName());
 		final GMLObjectCategory category = gmlSchema.getObjectCategory(elName);
-		LOG.debug("Building object type declaration: '" + elName + "'");
+		LOG.debug("Building object type declaration: '{}'", elName);
 		if (elDecl.getTypeDefinition().getType() == SIMPLE_TYPE) {
 			final String msg = "Schema type of element '" + elName
 					+ "' is simple, but object elements must have a complex type.";
@@ -165,7 +165,7 @@ class GmlObjectTypeFactory {
 	private PropertyType buildPropertyType(XSElementDeclaration elementDecl, int minOccurs, int maxOccurs) {
 		PropertyType pt = null;
 		final QName ptName = createQName(elementDecl.getNamespace(), elementDecl.getName());
-		LOG.trace("*** Found property declaration: '" + elementDecl.getName() + "'.");
+		LOG.trace("*** Found property declaration: '{}'.", elementDecl.getName());
 		// parse substitutable property declarations (e.g. genericProperty in CityGML)
 		List<PropertyType> ptSubstitutions = new ArrayList<PropertyType>();
 		XSObjectList list = gmlSchema.getXSModel().getSubstitutionGroup(elementDecl);
@@ -202,7 +202,7 @@ class GmlObjectTypeFactory {
 			int minOccurs, int maxOccurs, List<PropertyType> ptSubstitutions) {
 		PropertyType pt = null;
 		QName ptName = createQName(elementDecl.getNamespace(), elementDecl.getName());
-		LOG.trace("- Property definition '" + ptName + "' uses a complex type for content definition.");
+		LOG.trace("- Property definition '{}' uses a complex type for content definition.", ptName);
 		// check for well known GML property declarations first
 		if (typeDef.getName() != null) {
 			QName typeName = createQName(typeDef.getNamespace(), typeDef.getName());
@@ -282,7 +282,7 @@ class GmlObjectTypeFactory {
 
 	private BaseType getPrimitiveType(final XSSimpleType typeDef) {
 		final BaseType pt = BaseType.valueOf(typeDef);
-		LOG.trace("Mapped '" + typeDef.getName() + "' (base type: '" + typeDef.getBaseType() + "') -> '" + pt + "'");
+		LOG.trace("Mapped '{}' (base type: '{}') -> '{}'", typeDef.getName(), typeDef.getBaseType(), pt);
 		return pt;
 	}
 

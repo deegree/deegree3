@@ -240,8 +240,8 @@ public class CSWController extends AbstractOWS {
 		if (jaxbConfig.getExtendedCapabilities() != null) {
 			extendedCapabilities = metadata.getLocation().resolveToUrl(jaxbConfig.getExtendedCapabilities());
 			if (extendedCapabilities == null) {
-				LOG.warn("Could not resolve path to extended capabilities : " + extendedCapabilities
-						+ ". Ignore extended capabilities.");
+				LOG.warn("Could not resolve path to extended capabilities : {}. Ignore extended capabilities.",
+						extendedCapabilities);
 			}
 		}
 		int maxMatches = jaxbConfig.getMaxMatches() == null ? 0 : jaxbConfig.getMaxMatches().intValue();

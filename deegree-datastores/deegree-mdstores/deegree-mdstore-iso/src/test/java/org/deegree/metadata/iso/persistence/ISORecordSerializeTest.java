@@ -111,8 +111,8 @@ public class ISORecordSerializeTest extends AbstractISOTest {
 		streamExpected.append("gts=http://www.isotc211.org/2005/gts").append(' ');
 		streamExpected.append("xsi=http://www.w3.org/2001/XMLSchema-instance").append(' ');
 
-		LOG.info("streamThis: " + streamExpected.toString());
-		LOG.info("streamThat: " + streamActual.toString());
+		LOG.info("streamThis: {}", streamExpected.toString());
+		LOG.info("streamThat: {}", streamActual.toString());
 		System.out.println(streamActual);
 		Assert.assertEquals(streamExpected.toString(), streamActual.toString());
 
@@ -200,7 +200,7 @@ public class ISORecordSerializeTest extends AbstractISOTest {
 
 		StringBuilder streamThat = new StringBuilder();
 		if (fout instanceof FileOutputStream) {
-			LOG.warn("The output is written into a file: " + file);
+			LOG.warn("The output is written into a file: {}", file);
 			return null;
 		}
 		else if (fout instanceof ByteArrayOutputStream) {

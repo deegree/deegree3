@@ -110,7 +110,7 @@ public class CachedRasterDataContainer implements RasterDataContainer, RasterDat
 	public synchronized RasterData getRasterData() {
 		// synchronized to prevent multiple reader.read()-calls when
 		if (LOG.isDebugEnabled()) {
-			LOG.debug("accessing: " + this);
+			LOG.debug("accessing: {}", this);
 		}
 		if (!cache.containsKey(identifier)) {
 			RasterData raster = reader.read();
@@ -121,13 +121,13 @@ public class CachedRasterDataContainer implements RasterDataContainer, RasterDat
 					.getTierStatistics()
 					.get("OffHeap")
 					.getOccupiedByteSize();
-				LOG.debug("cache miss: " + this + " #mem: " + occupiedByteSize);
+				LOG.debug("cache miss: {} #mem: {}", this, occupiedByteSize);
 			}
 			return raster;
 		}
 		else {
 			if (LOG.isDebugEnabled()) {
-				LOG.debug("cache hit: " + this);
+				LOG.debug("cache hit: {}", this);
 			}
 			return cache.get(identifier);
 		}

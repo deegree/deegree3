@@ -152,7 +152,7 @@ public class BlobCodec {
 			gmlWriter.write(object);
 			gmlWriter.close();
 			os.close();
-			LOG.debug("Wrote encoded feature to '" + file.getAbsolutePath() + "'");
+			LOG.debug("Wrote encoded feature to '{}'", file.getAbsolutePath());
 		}
 		LOG.debug("Encoding feature (compression: {}) took {} [ms]", compression, System.currentTimeMillis() - begin);
 	}

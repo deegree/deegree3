@@ -77,7 +77,7 @@ public class NamespaceNormalizationInspector implements RecordInspector<ISORecor
 			for (NamespaceBinding binding : config.getNamespaceBinding()) {
 				String prefix = binding.getPrefix();
 				String namespaceUri = binding.getNamespaceURI();
-				LOG.debug("'" + prefix + "' -> '" + namespaceUri + "'");
+				LOG.debug("'{}' -> '{}'", prefix, namespaceUri);
 				nsBindings.addNamespace(prefix, namespaceUri);
 			}
 		}
@@ -105,7 +105,7 @@ public class NamespaceNormalizationInspector implements RecordInspector<ISORecor
 			result = new ISORecord(xmlStream);
 		}
 		catch (Throwable t) {
-			LOG.error("Namespace normalization failed. Proceeding with unnormalized record. Error: " + t.getMessage());
+			LOG.error("Namespace normalization failed. Proceeding with unnormalized record. Error: {}", t.getMessage());
 		}
 
 		return result;

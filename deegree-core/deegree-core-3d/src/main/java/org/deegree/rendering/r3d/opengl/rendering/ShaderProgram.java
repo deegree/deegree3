@@ -64,7 +64,7 @@ public class ShaderProgram {
 	 * @throws RuntimeException if the shader could not be compiled or linked.
 	 */
 	public int createVertexShader(GL glContext, String vertexShaderSource) throws RuntimeException {
-		LOG.debug("Adding vertex shader source: " + vertexShaderSource);
+		LOG.debug("Adding vertex shader source: {}", vertexShaderSource);
 		return compileShader(glContext, GL.GL_VERTEX_SHADER, vertexShaderSource);
 	}
 
@@ -76,7 +76,7 @@ public class ShaderProgram {
 	 * @throws RuntimeException if the shader could not be compiled or linked.
 	 */
 	public int createFragmentShader(GL glContext, String fragmentShaderSource) throws RuntimeException {
-		LOG.debug("Adding fragment shader source: " + fragmentShaderSource);
+		LOG.debug("Adding fragment shader source: {}", fragmentShaderSource);
 		return compileShader(glContext, GL.GL_FRAGMENT_SHADER, fragmentShaderSource);
 	}
 
@@ -98,8 +98,9 @@ public class ShaderProgram {
 			shaderId = compileShaderProgram(gl, GL_SHADER_ID, shaderSource);
 		}
 		catch (RuntimeException r) {
-			LOG.error("Could not compile " + ((GL.GL_VERTEX_SHADER == GL_SHADER_ID) ? "vertex" : "fragment")
-					+ " shader from source: \n" + shaderSource + " \nbecause: " + r.getLocalizedMessage(), r);
+			LOG.error("Could not compile {} shader from source: \n{} \nbecause: {}",
+					((GL.GL_VERTEX_SHADER == GL_SHADER_ID) ? "vertex" : "fragment"), shaderSource,
+					r.getLocalizedMessage(), r);
 			throw (r);
 		}
 
@@ -212,8 +213,8 @@ public class ShaderProgram {
 			result = true;
 		}
 		else {
-			LOG.warn("Either the program id: " + oglProgramId + " or the given shader id: " + shaderId
-					+ " are not valid, cannot attach the shader.");
+			LOG.warn("Either the program id: {} or the given shader id: {} are not valid, cannot attach the shader.",
+					oglProgramId, shaderId);
 		}
 		return result;
 	}
@@ -231,7 +232,7 @@ public class ShaderProgram {
 			result = true;
 		}
 		catch (RuntimeException r) {
-			LOG.error("Could not link shader because: " + r.getLocalizedMessage(), r);
+			LOG.error("Could not link shader because: {}", r.getLocalizedMessage(), r);
 			throw (r);
 		}
 		// if ( LOG.isDebugEnabled() ) {
@@ -239,7 +240,7 @@ public class ShaderProgram {
 			validateShaderProgram(gl);
 		}
 		catch (RuntimeException r) {
-			LOG.warn("Shader program source: was not valid because: " + r.getLocalizedMessage());
+			LOG.warn("Shader program source: was not valid because: {}", r.getLocalizedMessage());
 			result = false;
 		}
 		return result;
@@ -258,8 +259,8 @@ public class ShaderProgram {
 			result = true;
 		}
 		else {
-			LOG.warn("Either the program id: " + oglProgramId + " or the given shader id: " + shaderId
-					+ " are not valid, cannot detach the shader.");
+			LOG.warn("Either the program id: {} or the given shader id: {} are not valid, cannot detach the shader.",
+					oglProgramId, shaderId);
 		}
 		return result;
 	}

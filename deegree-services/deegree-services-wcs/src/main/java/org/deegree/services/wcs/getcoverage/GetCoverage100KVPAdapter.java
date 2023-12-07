@@ -279,7 +279,7 @@ public class GetCoverage100KVPAdapter {
 			result = Interval.createFromStrings(type.toString(), min, max, Closure.closed, null, false, spacing);
 		}
 		else {
-			LOG.warn("Given intervall: " + interval + " has not enough values, maybe a default value is ment?");
+			LOG.warn("Given intervall: {} has not enough values, maybe a default value is ment?", interval);
 		}
 		return result;
 	}

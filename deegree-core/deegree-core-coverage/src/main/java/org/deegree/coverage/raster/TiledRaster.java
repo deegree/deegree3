@@ -258,7 +258,7 @@ public class TiledRaster extends AbstractRaster {
 		}
 		SimpleRaster originalSimpleRaster = tiles.get(0).getAsSimpleRaster();
 		SimpleRaster result = originalSimpleRaster.createCompatibleSimpleRaster(getRasterReference(), env);
-		LOG.debug("Tiled to simple -> result(w,h): " + result.getColumns() + ", " + result.getRows());
+		LOG.debug("Tiled to simple -> result(w,h): {}, {}", result.getColumns(), result.getRows());
 
 		for (AbstractRaster r : tiles) {
 			Geometry intersec = r.getEnvelope().getIntersection(env);

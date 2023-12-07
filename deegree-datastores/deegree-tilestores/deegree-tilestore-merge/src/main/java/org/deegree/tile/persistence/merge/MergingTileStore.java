@@ -102,7 +102,7 @@ class MergingTileStore implements TileStore {
 
 	private void addDatasets(Map<String, Map<String, MergingTileDataLevel>> datasetIdToLevelIdToLevel) {
 		for (String datasetId : datasetIdToLevelIdToLevel.keySet()) {
-			LOG.info("- Dataset: " + datasetId);
+			LOG.info("- Dataset: {}", datasetId);
 			Map<String, MergingTileDataLevel> levelIdToLevel = datasetIdToLevelIdToLevel.get(datasetId);
 			addDataset(datasetId, levelIdToLevel);
 		}
@@ -113,7 +113,7 @@ class MergingTileStore implements TileStore {
 		List<TileDataLevel> levels = new ArrayList<TileDataLevel>(levelIdToLevel.values());
 		for (TileDataLevel level : levels) {
 			List<TileDataLevel> mergeLevels = ((MergingTileDataLevel) level).getMergeLevels();
-			LOG.info(" - Level: " + level.getMetadata().getIdentifier() + ", merge size: " + mergeLevels.size());
+			LOG.info(" - Level: {}, merge size: {}", level.getMetadata().getIdentifier(), mergeLevels.size());
 		}
 		TileDataSet dataset = new DefaultTileDataSet(levels, tileMatrixSet, FORMAT);
 		datasetIdToDataset.put(datasetId, dataset);

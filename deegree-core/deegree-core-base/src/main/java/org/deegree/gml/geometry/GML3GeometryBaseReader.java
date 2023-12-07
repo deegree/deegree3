@@ -126,8 +126,9 @@ class GML3GeometryBaseReader extends AbstractGMLObjectReader {
 		}
 		if (coordDim == -1) {
 			if (LOG.isDebugEnabled()) {
-				LOG.debug("Parsing posList, but not coordinate dimension information from CRS available. Defaulting to "
-						+ defaultCoordDim);
+				LOG.debug(
+						"Parsing posList, but not coordinate dimension information from CRS available. Defaulting to {}",
+						defaultCoordDim);
 			}
 			coordDim = defaultCoordDim;
 		}

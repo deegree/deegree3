@@ -213,7 +213,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
 
 		long begin = System.currentTimeMillis();
 		if (fs.getStorageCrs() != null) {
-			LOG.debug("Transforming incoming feature collection to '" + fs.getStorageCrs() + "'");
+			LOG.debug("Transforming incoming feature collection to '{}'", fs.getStorageCrs());
 			try {
 				fc = transformGeometries(fc);
 			}

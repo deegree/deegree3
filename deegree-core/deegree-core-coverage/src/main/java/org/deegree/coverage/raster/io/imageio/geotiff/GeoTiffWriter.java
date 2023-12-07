@@ -250,10 +250,10 @@ public class GeoTiffWriter {
 			CRSType type = srs.getType();
 			switch (type) {
 				case COMPOUND:
-					LOG.warn("Can't save coordinate system. coordinate type " + srs.getType() + " not supported");
+					LOG.warn("Can't save coordinate system. coordinate type {} not supported", srs.getType());
 					break;
 				case GEOCENTRIC:
-					LOG.warn("Can't save coordinate system. coordinate type " + srs.getType() + " not supported");
+					LOG.warn("Can't save coordinate system. coordinate type {} not supported", srs.getType());
 					geoKeyDirectoryTag.put(GTModelTypeGeoKey, new char[] { 0, 1, ModelTypeGeocentric });
 					geoKeyDirectoryTag.put(GeographicTypeGeoKey, keyEntry);
 					if (epsgCode == 32767) {

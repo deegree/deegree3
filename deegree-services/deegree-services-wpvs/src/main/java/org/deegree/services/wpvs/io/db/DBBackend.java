@@ -283,7 +283,7 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
 			serializer.setGeometryBuffer(null);
 		}
 		catch (SQLException e) {
-			LOG.error("Could not get Prototypes because: " + e.getLocalizedMessage());
+			LOG.error("Could not get Prototypes because: {}", e.getLocalizedMessage());
 		}
 		return result;
 	}
@@ -297,7 +297,7 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
 			serializer.setGeometryBuffer(null);
 		}
 		catch (SQLException e) {
-			LOG.error("Could not get Buildings because: " + e.getLocalizedMessage());
+			LOG.error("Could not get Buildings because: {}", e.getLocalizedMessage());
 		}
 	}
 
@@ -308,7 +308,7 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
 			connection = getConnection();
 		}
 		catch (SQLException e) {
-			LOG.error("Could not get trees because: " + e.getLocalizedMessage());
+			LOG.error("Could not get trees because: {}", e.getLocalizedMessage());
 			return;
 		}
 		ResultSet rs = getResultSet(connection, Tables.TREES.getTableName());
@@ -327,7 +327,7 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
 				}
 			}
 			catch (SQLException e) {
-				LOG.error("Error while getting the renderable objects from the result set: " + e.getLocalizedMessage(),
+				LOG.error("Error while getting the renderable objects from the result set: {}", e.getLocalizedMessage(),
 						e);
 			}
 		}
@@ -383,7 +383,7 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
 			connection.close();
 		}
 		catch (SQLException e) {
-			LOG.warn("Could not close connection, let the manager deal with it: " + e.getLocalizedMessage());
+			LOG.warn("Could not close connection, let the manager deal with it: {}", e.getLocalizedMessage());
 		}
 		return result;
 	}
@@ -432,7 +432,7 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
 			return deleteObjectsFromDB(objectType, sqlWhere);
 		}
 		catch (SQLException e) {
-			LOG.error("Could not delete id: " + uuid + " because: " + e.getLocalizedMessage(), e);
+			LOG.error("Could not delete id: {} because: {}", uuid, e.getLocalizedMessage(), e);
 			throw new IOException(e);
 		}
 	}
@@ -540,8 +540,8 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
 		int r = ps.getUpdateCount();
 		if (r == 0) {
 			LOG.warn(
-					"Could not determine the number of deleted objects, does your sqlStatement delete objects from the database: "
-							+ deleteSQL);
+					"Could not determine the number of deleted objects, does your sqlStatement delete objects from the database: {}",
+					deleteSQL);
 		}
 		result.deleteCount = r;
 		ps.close();
@@ -595,8 +595,8 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
 						}
 					}
 					catch (SQLException e) {
-						LOG.warn("Failed to insert object with uuid: " + dm.getUuid() + " because: "
-								+ e.getLocalizedMessage());
+						LOG.warn("Failed to insert object with uuid: {} because: {}", dm.getUuid(),
+								e.getLocalizedMessage());
 					}
 				}
 			}
@@ -604,13 +604,13 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
 				updateBackendInfo(connection, info, objectType);
 			}
 			catch (SQLException e) {
-				LOG.warn("Could not update modelbackend info: " + e.getLocalizedMessage());
+				LOG.warn("Could not update modelbackend info: {}", e.getLocalizedMessage());
 			}
 			try {
 				connection.close();
 			}
 			catch (SQLException e) {
-				LOG.warn("Could not close connection, let the manager deal with it: " + e.getLocalizedMessage());
+				LOG.warn("Could not close connection, let the manager deal with it: {}", e.getLocalizedMessage());
 			}
 		}
 		return result;
@@ -665,7 +665,7 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
 			updateBillBoard((DataObjectInfo<BillBoard>) dm, connection, updateSQL);
 		}
 		else {
-			LOG.error("The object: " + newObject + " is of unknown type, could not update. ");
+			LOG.error("The object: {} is of unknown type, could not update. ", newObject);
 		}
 	}
 
@@ -694,7 +694,7 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
 				dm.getUuid());
 
 		if (oldWRO == null) {
-			LOG.error("The id: " + dm.getUuid() + " is present in the database but no data was found, this is wrong.");
+			LOG.error("The id: {} is present in the database but no data was found, this is wrong.", dm.getUuid());
 		}
 		else {
 			updateInfoFile(oldWRO, info, true);
@@ -802,10 +802,10 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
 			int count = rs.getInt(1);
 			result = (count > 0);
 			if (count == 1) {
-				LOG.info("id: " + uuid + " is already present in the db, creating update statement. ");
+				LOG.info("id: {} is already present in the db, creating update statement. ", uuid);
 			}
 			if (count > 1) {
-				LOG.warn("id: " + uuid + " has multiple presents in the db, it is inconsistent. ");
+				LOG.warn("id: {} has multiple presents in the db, it is inconsistent. ", uuid);
 			}
 		}
 		rs.close();
@@ -861,7 +861,7 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
 			rs = getResultSet(connection, tableName, getRelevantColumnNames());
 		}
 		catch (SQLException e) {
-			LOG.error("Error while getting the renderable objects: " + e.getLocalizedMessage(), e);
+			LOG.error("Error while getting the renderable objects: {}", e.getLocalizedMessage(), e);
 		}
 		return rs;
 	}
@@ -920,7 +920,7 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
 		}
 		rs1.close();
 
-		LOG.info("Getting " + total + " world renderable objects (buildings/prototyes).");
+		LOG.info("Getting {} world renderable objects (buildings/prototyes).", total);
 		ps = connection.prepareStatement("Select " + getRelevantColumnNames() + " FROM " + tableName);
 		// ps = connection.prepareStatement( "Select " + getRelevantColumnNames() + " FROM
 		// " + tableName
@@ -947,16 +947,16 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
 					}
 					else {
 						LOG.error(
-								"Could not deserialize WorldRenderableObject from database because no data was found for uuid: "
-										+ rs.getString(RelevantColumns.uuid.getColumnName()));
+								"Could not deserialize WorldRenderableObject from database because no data was found for uuid: {}",
+								rs.getString(RelevantColumns.uuid.getColumnName()));
 					}
 					if (percentage != 0 && ((++loaded) % percentage == 0)) {
-						LOG.info("Loaded " + loaded + " of " + total + " objects from the database.");
+						LOG.info("Loaded {} of {} objects from the database.", loaded, total);
 					}
 				}
 			}
 			catch (SQLException e) {
-				LOG.error("Error while getting the renderable objects from the result set: " + e.getLocalizedMessage(),
+				LOG.error("Error while getting the renderable objects from the result set: {}", e.getLocalizedMessage(),
 						e);
 			}
 			rs.close();
@@ -996,8 +996,8 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
 			connection.close();
 		}
 		catch (SQLException e) {
-			LOG.debug("Error getting backendinfo: " + e.getLocalizedMessage(), e);
-			LOG.error("Unable to retrieve modelbackendinfo, this is wrong. Error was: " + e.getLocalizedMessage());
+			LOG.debug("Error getting backendinfo: {}", e.getLocalizedMessage(), e);
+			LOG.error("Unable to retrieve modelbackendinfo, this is wrong. Error was: {}", e.getLocalizedMessage());
 		}
 		return result;
 	}
@@ -1039,7 +1039,7 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
 			}
 			else {
 				// create the type in the db;
-				LOG.info("No row for objectType: " + objectType.getModelTypeName() + " creating one.");
+				LOG.info("No row for objectType: {} creating one.", objectType.getModelTypeName());
 				try {
 					JDBCUtils.close(ps);
 					ps = connection

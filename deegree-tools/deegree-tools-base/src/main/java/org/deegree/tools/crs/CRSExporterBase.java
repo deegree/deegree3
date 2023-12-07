@@ -107,7 +107,7 @@ public class CRSExporterBase {
 			LOG.error(e.getLocalizedMessage(), e);
 		}
 		catch (XMLStreamException e) {
-			LOG.error("Error while exporting the coordinates: " + e.getLocalizedMessage(), e);
+			LOG.error("Error while exporting the coordinates: {}", e.getLocalizedMessage(), e);
 		}
 
 	}
@@ -121,7 +121,7 @@ public class CRSExporterBase {
 	public void export(List<ICRS> crsToExport, XMLStreamWriter xmlWriter) throws XMLStreamException {
 		if (crsToExport != null) {
 			if (crsToExport.size() != 0) {
-				LOG.debug("Trying to export: " + crsToExport.size() + " coordinate systems.");
+				LOG.debug("Trying to export: {} coordinate systems.", crsToExport.size());
 
 				// LinkedList<String> exportedIDs = new LinkedList<String>();
 				Set<IEllipsoid> ellipsoids = new HashSet<IEllipsoid>();

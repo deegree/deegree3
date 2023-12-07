@@ -131,8 +131,9 @@ public class DEMDataset extends Dataset<TerrainRenderingManager> {
 			for (DEMDatasetConfig eds : demDatsets) {
 				if (eds != null) {
 					if (isUnAmbiguous(eds.getTitle())) {
-						LOG.info("The elevation model dataset with name: " + eds.getName() + " and title: "
-								+ eds.getTitle() + " had multiple definitions in your service configuration.");
+						LOG.info(
+								"The elevation model dataset with name: {} and title: {} had multiple definitions in your service configuration.",
+								eds.getName(), eds.getTitle());
 					}
 					else {
 						clarifyInheritance(eds, parentMaxPixelError);
@@ -140,8 +141,8 @@ public class DEMDataset extends Dataset<TerrainRenderingManager> {
 							sceneEnvelope = handleDEMDataset(eds, sceneEnvelope, toLocalCRS);
 						}
 						catch (IOException e) {
-							LOG.error("Failed to initialize configured demTexture dataset: " + eds.getName() + ": "
-									+ eds.getTitle() + " because: " + e.getLocalizedMessage(), e);
+							LOG.error("Failed to initialize configured demTexture dataset: {}: {} because: {}",
+									eds.getName(), eds.getTitle(), e.getLocalizedMessage(), e);
 						}
 					}
 				}
@@ -196,13 +197,14 @@ public class DEMDataset extends Dataset<TerrainRenderingManager> {
 				addConstraint(demDataset.getTitle(), result, datasetEnv);
 			}
 			else {
-				LOG.warn("Enable to instantiate elevation model: " + demDataset.getName() + ": " + demDataset.getTitle()
-						+ " because no files (pointing to a Multiresolution Mesh file) could be resolved.");
+				LOG.warn(
+						"Enable to instantiate elevation model: {}: {} because no files (pointing to a Multiresolution Mesh file) could be resolved.",
+						demDataset.getName(), demDataset.getTitle());
 			}
 		}
 		else {
-			LOG.warn("Unable to instantiate elevation model"
-					+ " because no files (pointing to a Multiresolution Mesh file) were configured in the elevationmodel datasource element.");
+			LOG.warn(
+					"Unable to instantiate elevation model because no files (pointing to a Multiresolution Mesh file) were configured in the elevationmodel datasource element.");
 		}
 		return sceneEnvelope;
 	}

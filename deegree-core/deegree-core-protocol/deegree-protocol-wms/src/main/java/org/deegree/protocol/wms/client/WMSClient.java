@@ -607,7 +607,7 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
 				LOG.debug("Received response.");
 			}
 			catch (Throwable e) {
-				LOG.info("Error performing GetMap request: " + e.getMessage());
+				LOG.info("Error performing GetMap request: {}", e.getMessage());
 				LOG.trace("Stack trace:", e);
 				res.second = e.getMessage();
 			}
@@ -671,7 +671,7 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
 				throws Exception {
 			url += toQueryString(map);
 			URL theUrl = new URL(url);
-			LOG.debug("Connecting to URL " + theUrl);
+			LOG.debug("Connecting to URL {}", theUrl);
 			URLConnection conn = ProxySettings.openURLConnection(theUrl, ProxySettings.getHttpProxyUser(true),
 					ProxySettings.getHttpProxyPassword(true), httpBasicUser, httpBasicPass);
 			conn.setConnectTimeout(connectionTimeout * 1000);
@@ -679,9 +679,9 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
 			conn.connect();
 			LOG.debug("Connected.");
 			if (LOG.isTraceEnabled()) {
-				LOG.trace("Requesting from " + theUrl);
-				LOG.trace("Content type is " + conn.getContentType());
-				LOG.trace("Content encoding is " + conn.getContentEncoding());
+				LOG.trace("Requesting from {}", theUrl);
+				LOG.trace("Content type is {}", conn.getContentType());
+				LOG.trace("Content encoding is {}", conn.getContentEncoding());
 			}
 			if (conn.getContentType() != null && conn.getContentType().startsWith(format)) {
 				res.first = IMAGE.work(conn.getInputStream());
@@ -844,7 +844,7 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
 		String query = url + toQueryString(map);
 
 		URL theUrl = new URL(query);
-		LOG.debug("Connecting to URL " + theUrl);
+		LOG.debug("Connecting to URL {}", theUrl);
 		URLConnection conn = ProxySettings.openURLConnection(theUrl, getHttpProxyUser(true), getHttpProxyPassword(true),
 				httpBasicUser, httpBasicPass);
 		conn.setConnectTimeout(connectionTimeout * 1000);

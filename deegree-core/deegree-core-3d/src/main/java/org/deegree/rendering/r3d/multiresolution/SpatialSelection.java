@@ -159,7 +159,7 @@ public class SpatialSelection {
 		}
 
 		long elapsed = System.currentTimeMillis() - begin;
-		LOG.debug("Spatial selection (top-down): " + elapsed + " ms");
+		LOG.debug("Spatial selection (top-down): {} ms", elapsed);
 	}
 
 	/**

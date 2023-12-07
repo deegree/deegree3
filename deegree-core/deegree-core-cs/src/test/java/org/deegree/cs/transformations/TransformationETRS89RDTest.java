@@ -155,7 +155,7 @@ public class TransformationETRS89RDTest extends TransformationAccuracy {
 		ICRS sourceCRS = CRSManager.lookup("epsg:4258");
 		ICRS targetCRS = CRSManager.lookup("epsg:28992");
 		for (String station : refPoints.keySet()) {
-			LOG.info("\n refence point from station " + station);
+			LOG.info("\n refence point from station {}", station);
 			Pair<Point3d, Point3d> points = refPoints.get(station);
 			doForwardAndInverse(sourceCRS, targetCRS, points.first, points.second, EPSILON_M, EPSILON_M);
 		}

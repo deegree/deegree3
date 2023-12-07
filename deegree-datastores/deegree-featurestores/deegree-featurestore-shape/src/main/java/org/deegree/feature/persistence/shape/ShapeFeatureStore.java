@@ -336,7 +336,7 @@ public class ShapeFeatureStore implements FeatureStore {
 				bbox = transformer.transform(bbox);
 			}
 			catch (Exception e) {
-				LOG.error("Transformation of bbox failed: " + e.getMessage(), e);
+				LOG.error("Transformation of bbox failed: {}", e.getMessage(), e);
 			}
 		}
 		return bbox;

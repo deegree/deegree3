@@ -198,7 +198,7 @@ public class GmlFormat implements Format {
 					formatter = (CoordinateFormatter) Class.forName(customFormatterConf.getJavaClass()).newInstance();
 				}
 				else {
-					LOG.warn("Unexpected JAXB type '" + formatterConf.getClass() + "'.");
+					LOG.warn("Unexpected JAXB type '{}'.", formatterConf.getClass());
 				}
 			}
 		}

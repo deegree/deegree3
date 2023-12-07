@@ -320,13 +320,13 @@ public class RasterCache {
 							try {
 								boolean deleted = f.delete();
 								if (!deleted) {
-									LOG.warn("Could not delete raster cache dir: " + f.getAbsolutePath()
-											+ " please delete manually.");
+									LOG.warn("Could not delete raster cache dir: {} please delete manually.",
+											f.getAbsolutePath());
 								}
 							}
 							catch (Exception e) {
-								LOG.warn("Could not delete raster cache dir: " + f.getAbsolutePath()
-										+ " please delete manually.");
+								LOG.warn("Could not delete raster cache dir: {} please delete manually.",
+										f.getAbsolutePath());
 							}
 						}
 					}

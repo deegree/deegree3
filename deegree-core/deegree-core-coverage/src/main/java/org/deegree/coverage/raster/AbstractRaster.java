@@ -309,32 +309,32 @@ public abstract class AbstractRaster extends AbstractCoverage {
 		}
 		catch (IllegalArgumentException e1) {
 			if (LOG.isDebugEnabled()) {
-				LOG.debug("(Stack) Exception occurred: " + e1.getLocalizedMessage(), e1);
+				LOG.debug("(Stack) Exception occurred: {}", e1.getLocalizedMessage(), e1);
 			}
 			else {
-				LOG.error("Exception occurred: " + e1.getLocalizedMessage());
+				LOG.error("Exception occurred: {}", e1.getLocalizedMessage());
 			}
 		}
 		catch (UnknownCRSException e1) {
 			if (LOG.isDebugEnabled()) {
-				LOG.debug("(Stack) Exception occurred: " + e1.getLocalizedMessage(), e1);
+				LOG.debug("(Stack) Exception occurred: {}", e1.getLocalizedMessage(), e1);
 			}
 			else {
-				LOG.error("Exception occurred: " + e1.getLocalizedMessage());
+				LOG.error("Exception occurred: {}", e1.getLocalizedMessage());
 			}
 		}
 		catch (TransformationException e) {
 			if (LOG.isDebugEnabled()) {
-				LOG.debug("(Stack) Exception occurred: " + e.getLocalizedMessage(), e);
+				LOG.debug("(Stack) Exception occurred: {}", e.getLocalizedMessage(), e);
 			}
 			else {
-				LOG.error("Exception occurred: " + e.getLocalizedMessage());
+				LOG.error("Exception occurred: {}", e.getLocalizedMessage());
 			}
 		}
 
 		if (rect == null) {
-			LOG.warn("Unable to determine new raster size of requested Envelope: " + spatialExtent + " at resolution: "
-					+ resolution);
+			LOG.warn("Unable to determine new raster size of requested Envelope: {} at resolution: {}", spatialExtent,
+					resolution);
 			return null;
 		}
 
@@ -346,10 +346,10 @@ public abstract class AbstractRaster extends AbstractCoverage {
 		}
 		catch (TransformationException e) {
 			if (LOG.isDebugEnabled()) {
-				LOG.debug("(Stack) Exception occurred: " + e.getLocalizedMessage(), e);
+				LOG.debug("(Stack) Exception occurred: {}", e.getLocalizedMessage(), e);
 			}
 			else {
-				LOG.error("Exception occurred: " + e.getLocalizedMessage());
+				LOG.error("Exception occurred: {}", e.getLocalizedMessage());
 			}
 		}
 		return result;

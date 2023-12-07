@@ -223,7 +223,7 @@ public class ConcatenatedTransform extends Transformation {
 			m2.mul(m1);
 
 			// m1.mul( m2 );
-			LOG.debug("Concatenate: both transforms are matrices, resulting multiply:\n" + m2);
+			LOG.debug("Concatenate: both transforms are matrices, resulting multiply:\n{}", m2);
 			MatrixTransform result = new MatrixTransform(first.getSourceCRS(), second.getTargetCRS(), m2);
 			// if ( result.isIdentity() ) {
 			// return null;

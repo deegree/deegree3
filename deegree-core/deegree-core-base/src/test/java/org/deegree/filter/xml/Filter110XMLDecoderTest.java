@@ -159,9 +159,9 @@ public class Filter110XMLDecoderTest {
 			.createXMLStreamReader(url.toString(), url.openStream());
 		xmlStream.nextTag();
 		Location loc = xmlStream.getLocation();
-		LOG.debug("" + loc.getLineNumber());
-		LOG.debug("" + loc.getSystemId());
-		LOG.debug("" + loc.getColumnNumber());
+		LOG.debug("{}", loc.getLineNumber());
+		LOG.debug("{}", loc.getSystemId());
+		LOG.debug("{}", loc.getColumnNumber());
 		return Filter110XMLDecoder.parse(xmlStream);
 	}
 

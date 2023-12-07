@@ -173,8 +173,8 @@ public class WCServiceBuilder {
 						}
 					}
 					catch (TransformationException e) {
-						LOG.debug("Could not create an envelope for the output crs: " + crs + " because: "
-								+ e.getLocalizedMessage());
+						LOG.debug("Could not create an envelope for the output crs: {} because: {}", crs,
+								e.getLocalizedMessage());
 					}
 				}
 			}

@@ -188,7 +188,7 @@ public class WorldFileAccess {
 		}
 
 		if (log.isDebugEnabled()) {
-			log.debug("read worldfile for " + filename);
+			log.debug("read worldfile for {}", filename);
 		}
 
 		BufferedReader br = new BufferedReader(new FileReader(worldFile));

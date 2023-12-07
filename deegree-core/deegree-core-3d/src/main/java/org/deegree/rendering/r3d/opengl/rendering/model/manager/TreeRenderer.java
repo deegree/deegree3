@@ -120,8 +120,8 @@ public class TreeRenderer extends RenderableManager<BillBoard> {
 			List<BillBoard> allBillBoards = new ArrayList<BillBoard>(boards);
 			Collections.sort(allBillBoards, new DistComparator(eye));
 			if (LOG.isDebugEnabled()) {
-				LOG.debug("Number of trees from viewparams: " + allBillBoards.size());
-				LOG.debug("Total number of trees : " + size());
+				LOG.debug("Number of trees from viewparams: {}", allBillBoards.size());
+				LOG.debug("Total number of trees : {}", size());
 			}
 			context.glPushAttrib(GL.GL_CURRENT_BIT | GL.GL_LIGHTING_BIT | GL.GL_ENABLE_BIT);
 			context.glMaterialfv(GL.GL_FRONT, GL.GL_DIFFUSE, new float[] { 1, 1, 1, 1 }, 0);
@@ -183,8 +183,7 @@ public class TreeRenderer extends RenderableManager<BillBoard> {
 			context.glBindBuffer(GL.GL_ARRAY_BUFFER, 0);
 
 			context.glPopAttrib();
-			LOG.debug("Rendering of " + allBillBoards.size() + " trees took: " + (System.currentTimeMillis() - begin)
-					+ " ms");
+			LOG.debug("Rendering of {} trees took: {} ms", allBillBoards.size(), (System.currentTimeMillis() - begin));
 		}
 		else {
 			LOG.debug("Not rendering any trees.");

@@ -93,8 +93,9 @@ public class FeaturePropertyType extends ObjectPropertyType {
 
 	public void resolve(FeatureType valueFt) {
 		if (valueFt == null) {
-			LOG.warn("Setting reference to feature type '" + valueFtName
-					+ "' to null -- repairing definition by clearing value feature type name as well.");
+			LOG.warn(
+					"Setting reference to feature type '{}' to null -- repairing definition by clearing value feature type name as well.",
+					valueFtName);
 			valueFtName = null;
 		}
 		// TODO (reenable?)

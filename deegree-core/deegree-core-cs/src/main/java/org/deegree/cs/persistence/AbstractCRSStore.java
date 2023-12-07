@@ -112,7 +112,7 @@ public abstract class AbstractCRSStore implements CRSStore {
 			if (result == null) {
 				result = getCRSFromCache(cachedIdentifiables, id, result);
 				if (result == null) {
-					LOG.debug("No crs with id: " + id + " found in cache.");
+					LOG.debug("No crs with id: {} found in cache.", id);
 					result = getCoordinateSystem(id.getOriginal());
 				}
 				if (forceXY && result != null) {
@@ -121,8 +121,9 @@ public abstract class AbstractCRSStore implements CRSStore {
 			}
 		}
 		if (result == null) {
-			LOG.debug("The id: " + id
-					+ " could not be mapped to a valid deegree-crs, currently projectedCRS, geographicCRS, compoundCRS and geocentricCRS are supported.");
+			LOG.debug(
+					"The id: {} could not be mapped to a valid deegree-crs, currently projectedCRS, geographicCRS, compoundCRS and geocentricCRS are supported.",
+					id);
 		}
 		else {
 			/**
@@ -183,16 +184,17 @@ public abstract class AbstractCRSStore implements CRSStore {
 	}
 
 	private ICRS getCRSFromCache(Map<CRSCodeType, CRSResource> cache, CRSCodeType id, ICRS result) {
-		LOG.debug("Trying to load crs with id: " + id + " from cache.");
+		LOG.debug("Trying to load crs with id: {} from cache.", id);
 		if (LOG.isDebugEnabled()) {
 			LOG.debug(cachedIdentifiables.keySet().toString());
 		}
 		if (cache.containsKey(id)) {
 			CRSResource r = cache.get(id);
-			LOG.debug("Found CRSIdentifiable: " + r.getCodeAndName() + " from given id: " + id);
+			LOG.debug("Found CRSIdentifiable: {} from given id: {}", r.getCodeAndName(), id);
 			if (!(r instanceof ICRS)) {
-				LOG.error("Found CRSIdentifiable: " + r.getCodeAndName()
-						+ " but it is not a coordinate system, your db is inconsistent return null.");
+				LOG.error(
+						"Found CRSIdentifiable: {} but it is not a coordinate system, your db is inconsistent return null.",
+						r.getCodeAndName());
 				r = null;
 			}
 			result = (CRS) r;
@@ -233,7 +235,7 @@ public abstract class AbstractCRSStore implements CRSStore {
 			}
 		}
 		catch (Exception e) {
-			LOG.warn("The clearing of the cache could not be forefullfilled because: " + e.getLocalizedMessage());
+			LOG.warn("The clearing of the cache could not be forefullfilled because: {}", e.getLocalizedMessage());
 		}
 	}
 
@@ -270,8 +272,8 @@ public abstract class AbstractCRSStore implements CRSStore {
 		for (int i = 0; i < ids.length && result == null; i++) {
 			result = getCachedIdentifiable(expectedType, ids[i]);
 			if (LOG.isDebugEnabled()) {
-				LOG.debug("Searched for id: " + ids[i] + " resulted in: "
-						+ ((result == null) ? "null" : result.getCode()));
+				LOG.debug("Searched for id: {} resulted in: {}", ids[i],
+						((result == null) ? "null" : result.getCode()));
 			}
 		}
 		return result;
@@ -295,8 +297,8 @@ public abstract class AbstractCRSStore implements CRSStore {
 		for (int i = 0; i < ids.length && result == null; i++) {
 			result = getCachedIdentifiable(expectedType, ids[i]);
 			if (LOG.isDebugEnabled()) {
-				LOG.debug("Searched for id: " + ids[i] + " resulted in: "
-						+ ((result == null) ? "null" : result.getCode()));
+				LOG.debug("Searched for id: {} resulted in: {}", ids[i],
+						((result == null) ? "null" : result.getCode()));
 			}
 		}
 		return result;
@@ -321,11 +323,11 @@ public abstract class AbstractCRSStore implements CRSStore {
 			result = (V) cachedIdentifiables.get(CRSCodeType.valueOf(id));
 		}
 		catch (ClassCastException cce) {
-			LOG.error("Given id is not of type: " + expectedType.getCanonicalName() + " found following error: "
-					+ cce.getLocalizedMessage());
+			LOG.error("Given id is not of type: {} found following error: {}", expectedType.getCanonicalName(),
+					cce.getLocalizedMessage());
 		}
 		if (LOG.isDebugEnabled()) {
-			LOG.debug("Searched for id: " + id + " resulted in: " + ((result == null) ? "null" : result.getCode()));
+			LOG.debug("Searched for id: {} resulted in: {}", id, ((result == null) ? "null" : result.getCode()));
 		}
 		return result;
 	}
@@ -348,11 +350,11 @@ public abstract class AbstractCRSStore implements CRSStore {
 			result = (V) cachedIdentifiables.get(id);
 		}
 		catch (ClassCastException cce) {
-			LOG.error("Given id is not of type: " + expectedType.getCanonicalName() + " found following error: "
-					+ cce.getLocalizedMessage());
+			LOG.error("Given id is not of type: {} found following error: {}", expectedType.getCanonicalName(),
+					cce.getLocalizedMessage());
 		}
 		if (LOG.isDebugEnabled()) {
-			LOG.debug("Searched for id: " + id + " resulted in: " + ((result == null) ? "null" : result.getCode()));
+			LOG.debug("Searched for id: {} resulted in: {}", id, ((result == null) ? "null" : result.getCode()));
 		}
 		return result;
 	}
@@ -372,7 +374,7 @@ public abstract class AbstractCRSStore implements CRSStore {
 		}
 		V result = (V) cachedIdentifiables.get(CRSCodeType.valueOf(id));
 		if (LOG.isDebugEnabled()) {
-			LOG.debug("Searched for id: " + id + " resulted in: " + ((result == null) ? "null" : result.getCode()));
+			LOG.debug("Searched for id: {} resulted in: {}", id, ((result == null) ? "null" : result.getCode()));
 		}
 		return result;
 	}
@@ -391,7 +393,7 @@ public abstract class AbstractCRSStore implements CRSStore {
 		}
 		V result = (V) cachedIdentifiables.get(id);
 		if (LOG.isDebugEnabled()) {
-			LOG.debug("Searched for id: " + id + " resulted in: " + ((result == null) ? "null" : result.getCode()));
+			LOG.debug("Searched for id: {} resulted in: {}", id, ((result == null) ? "null" : result.getCode()));
 		}
 		return result;
 	}
@@ -417,17 +419,17 @@ public abstract class AbstractCRSStore implements CRSStore {
 			if (idString != null) {
 				if (cache.containsKey(idString) && cache.get(idString) != null) {
 					if (update) {
-						LOG.debug("Updating cache with new identifiable: " + idString);
+						LOG.debug("Updating cache with new identifiable: {}", idString);
 						cache.put(idString, identifiable);
 					}
 				}
 				else {
-					LOG.debug("Adding new identifiable to cache: " + idString);
+					LOG.debug("Adding new identifiable to cache: {}", idString);
 					cache.put(idString, identifiable);
 				}
 			}
 			else {
-				LOG.debug("Not adding the null string id to the cache of identifiable: " + identifiable.getCode());
+				LOG.debug("Not adding the null string id to the cache of identifiable: {}", identifiable.getCode());
 			}
 		}
 		return identifiable;

@@ -93,7 +93,7 @@ public class GeometryCallBack extends GLUtessellatorCallbackAdapter {
 					sb.append("line loop");
 					break;
 				default:
-					LOG.warn("Don't know open gl type: " + openGLType);
+					LOG.warn("Don't know open gl type: {}", openGLType);
 					break;
 			}
 			LOG.trace(sb.toString());
@@ -120,7 +120,7 @@ public class GeometryCallBack extends GLUtessellatorCallbackAdapter {
 			Object originalVertex) {
 		LOG.trace("Tesselation combining data.");
 
-		LOG.trace("Coordinates of vertex: " + coords[0] + "," + coords[1] + "," + coords[2]);
+		LOG.trace("Coordinates of vertex: {},{},{}", coords[0], coords[1], coords[2]);
 		Vertex[] cd = new Vertex[coordinateData.length];
 		for (int i = 0; i < coordinateData.length; ++i) {
 			cd[i] = (Vertex) coordinateData[i];
@@ -218,7 +218,7 @@ public class GeometryCallBack extends GLUtessellatorCallbackAdapter {
 				calcNormalsForTriangleFan(normals);
 				break;
 			default:
-				LOG.warn("Don't know open gl type: " + glu.gluGetString(openGLType));
+				LOG.warn("Don't know open gl type: {}", glu.gluGetString(openGLType));
 				break;
 		}
 		return normals;
@@ -303,8 +303,8 @@ public class GeometryCallBack extends GLUtessellatorCallbackAdapter {
 	private void averageNormal(float[] normals, float[] normal, int vertexIndex) {
 		int offset = vertexIndex * 3;
 		if (offset > normals.length) {
-			LOG.warn("Given vertex: " + vertexIndex + " (offset: " + offset
-					+ ") would be outside the normal array with length: " + normals.length);
+			LOG.warn("Given vertex: {} (offset: {}) would be outside the normal array with length: {}", vertexIndex,
+					offset, normals.length);
 			return;
 		}
 		normals[offset] += normal[0];
@@ -323,8 +323,8 @@ public class GeometryCallBack extends GLUtessellatorCallbackAdapter {
 	private void setNormalForVertex(float[] normals, float[] normal, int vertexIndex) {
 		int offset = vertexIndex * 3;
 		if (offset > normals.length) {
-			LOG.warn("Given vertex: " + vertexIndex + " (offset: " + offset
-					+ ") would be outside the normal array with length: " + normals.length);
+			LOG.warn("Given vertex: {} (offset: {}) would be outside the normal array with length: {}", vertexIndex,
+					offset, normals.length);
 			return;
 		}
 		normals[offset] = normal[0];
@@ -349,8 +349,8 @@ public class GeometryCallBack extends GLUtessellatorCallbackAdapter {
 			// the last triangle is not complete, lets set the normals to the last
 			// triangle
 			int lastIndices = tesselatedVertices.size() - vertex;
-			LOG.warn("The last triangle was not complete, ( missing " + lastIndices
-					+ ((lastIndices > 1) ? "vertices" : "vertex") + "; using normal of last triangle");
+			LOG.warn("The last triangle was not complete, ( missing {}{}; using normal of last triangle", lastIndices,
+					((lastIndices > 1) ? "vertices" : "vertex"));
 			for (; vertex < tesselatedVertices.size(); ++vertex) {
 				setNormalForVertex(normals, calculatedNormal, vertex);
 			}
@@ -360,7 +360,7 @@ public class GeometryCallBack extends GLUtessellatorCallbackAdapter {
 	private void calcNormal(Vertex a, Vertex b, Vertex c, float[] normal) {
 		Vectors3f.normalizedNormal(a.getCoords(), b.getCoords(), c.getCoords(), normal);
 		if (LOG.isTraceEnabled()) {
-			LOG.trace("resulting normal: " + Vectors3f.asString(normal));
+			LOG.trace("resulting normal: {}", Vectors3f.asString(normal));
 		}
 	}
 

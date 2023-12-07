@@ -167,11 +167,11 @@ public class FMEProcessProviderBuilder implements ResourceBuilder<ProcessProvide
 			FMEProcess process = createProcess(base, tokenurl, repositories, map, token, repo, ws, workspace);
 			CodeType id = repositories.size() == 1 ? new CodeType(process.getDescription().getIdentifier().getValue())
 					: new CodeType(process.getDescription().getIdentifier().getValue(), repo);
-			LOG.debug("Created FMEProcess: " + id);
+			LOG.debug("Created FMEProcess: {}", id);
 			processes.put(id, process);
 		}
 		catch (Exception e) {
-			LOG.error("Unable to create FMEProcess from element '" + workspace + "': " + e.getMessage(), e);
+			LOG.error("Unable to create FMEProcess from element '{}': {}", workspace, e.getMessage(), e);
 		}
 	}
 

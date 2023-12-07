@@ -81,11 +81,11 @@ public class BBoxPropertiesCache implements BBoxCache {
 	public BBoxPropertiesCache(File propsFile) throws IOException {
 		this.propsFile = propsFile;
 		if (!propsFile.exists()) {
-			LOG.info("File '" + propsFile.getCanonicalPath() + "' does not exist. Will be created as needed.");
+			LOG.info("File '{}' does not exist. Will be created as needed.", propsFile.getCanonicalPath());
 			return;
 		}
 		if (!propsFile.isFile()) {
-			LOG.error("File '" + propsFile.getCanonicalPath() + "' does not denote a standard file.");
+			LOG.error("File '{}' does not denote a standard file.", propsFile.getCanonicalPath());
 			return;
 		}
 
@@ -149,7 +149,7 @@ public class BBoxPropertiesCache implements BBoxCache {
 			props.store(out, null);
 		}
 		catch (Throwable t) {
-			LOG.warn("Unable to store cached envelopes in file '" + propsFile + "': " + t.getMessage());
+			LOG.warn("Unable to store cached envelopes in file '{}': {}", propsFile, t.getMessage());
 		}
 		finally {
 			IOUtils.closeQuietly(out);

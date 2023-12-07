@@ -126,7 +126,7 @@ public class GMLFileResource extends XMLFileResource implements GMLResource {
 		}
 
 		if (result == null) {
-			LOG.info("No helmert transformation found for the given crs: " + sourceCRS.getCodeAndName());
+			LOG.info("No helmert transformation found for the given crs: {}", sourceCRS.getCodeAndName());
 		}
 		return result;
 	}
@@ -176,8 +176,8 @@ public class GMLFileResource extends XMLFileResource implements GMLResource {
 		}
 
 		if (transformations.isEmpty()) {
-			LOG.debug("Apparently no transformations were found for the given CoordinateSystem: "
-					+ sourceCRS.getCode().getOriginal());
+			LOG.debug("Apparently no transformations were found for the given CoordinateSystem: {}",
+					sourceCRS.getCode().getOriginal());
 			return null;
 		}
 		Transformation result = null;
@@ -191,8 +191,8 @@ public class GMLFileResource extends XMLFileResource implements GMLResource {
 					}
 				}
 				catch (XMLParsingException e) {
-					LOG.debug("Transformation with id: " + transElem.getLocalName() + " could not be used because:  "
-							+ e.getMessage());
+					LOG.debug("Transformation with id: {} could not be used because:  {}", transElem.getLocalName(),
+							e.getMessage());
 				}
 			}
 		}
@@ -226,17 +226,17 @@ public class GMLFileResource extends XMLFileResource implements GMLResource {
 		else {
 			String transformTargetID = getTargetTransformID(transformationElement);
 			if (!targetIDs.contains(transformTargetID)) {
-				LOG.debug("Found a transformation with gml:id: "
-						+ transformationElement.getAttributeValue(new QName(CommonNamespaces.GML3_2_NS, "id"))
-						+ ", but the target does not match the source crs, trying to build transformation chain.");
+				LOG.debug(
+						"Found a transformation with gml:id: {}, but the target does not match the source crs, trying to build transformation chain.",
+						transformationElement.getAttributeValue(new QName(CommonNamespaces.GML3_2_NS, "id")));
 				Transformation second = getTransformation(result.getTargetCRS(), targetCRS);
 				if (second != null) {
 					result = new ConcatenatedTransform(result, second);
 				}
 				else {
-					LOG.debug("The transformation with gml:id: "
-							+ transformationElement.getAttributeValue(new QName(CommonNamespaces.GML3_2_NS, "id"))
-							+ " is not the start of transformation chain, discarding it. ");
+					LOG.debug(
+							"The transformation with gml:id: {} is not the start of transformation chain, discarding it. ",
+							transformationElement.getAttributeValue(new QName(CommonNamespaces.GML3_2_NS, "id")));
 					result = null;
 				}
 			}

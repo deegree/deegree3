@@ -278,8 +278,8 @@ public class TransformationFactory {
 				if (sourceCRS.hasDirectTransformation(targetCRS)) {
 					Transformation direct = sourceCRS.getDirectTransformation(targetCRS);
 					if (direct != null) {
-						LOG.debug("Using direct (polynomial) transformation instead of a helmert transformation: "
-								+ direct.getImplementationName());
+						LOG.debug("Using direct (polynomial) transformation instead of a helmert transformation: {}",
+								direct.getImplementationName());
 						result = direct;
 					}
 				}
@@ -327,7 +327,7 @@ public class TransformationFactory {
 			LOG.debug(output.toString());
 
 			if (result instanceof MatrixTransform) {
-				LOG.debug("Resulting matrix transform:\n" + ((MatrixTransform) result).getMatrix());
+				LOG.debug("Resulting matrix transform:\n{}", ((MatrixTransform) result).getMatrix());
 			}
 
 		}
@@ -405,7 +405,7 @@ public class TransformationFactory {
 						h.getTargetCRS(), h.getScaleX(), h.getScaleY(), h);
 			}
 			else {
-				LOG.warn("The transformation with implementation name: " + implName + " could not be copied.");
+				LOG.warn("The transformation with implementation name: {} could not be copied.", implName);
 			}
 		}
 		return result;
@@ -645,9 +645,9 @@ public class TransformationFactory {
 		sourceCRS = ((CompoundCRS) resolve(sourceCRS));
 		targetCRS = ((CompoundCRS) resolve(targetCRS));
 
-		LOG.debug("Creating compound( " + sourceCRS.getUnderlyingCRS().getCode() + ") ->compound transformation( "
-				+ targetCRS.getUnderlyingCRS().getCode() + "): from (source): " + sourceCRS.getCode() + " to(target): "
-				+ targetCRS.getCode());
+		LOG.debug("Creating compound( {}) ->compound transformation( {}): from (source): {} to(target): {}",
+				sourceCRS.getUnderlyingCRS().getCode(), targetCRS.getUnderlyingCRS().getCode(), sourceCRS.getCode(),
+				targetCRS.getCode());
 		final CRSType sourceType = sourceCRS.getUnderlyingCRS().getType();
 		final CRSType targetType = targetCRS.getUnderlyingCRS().getType();
 		Transformation result = null;
@@ -828,8 +828,9 @@ public class TransformationFactory {
 		// prepare the found transformation if it is a helmert transfomation
 		if (result != null && !isIdentity(result) && "Helmert".equalsIgnoreCase(result.getImplementationName())
 				&& this.preferredDSTransform.isPreferred(result)) {
-			LOG.debug("Creating geographic -> geographic transformation: from (source): " + sourceCRS.getCode()
-					+ " to(target): " + targetCRS.getCode() + " based on a given Helmert transformation");
+			LOG.debug(
+					"Creating geographic -> geographic transformation: from (source): {} to(target): {} based on a given Helmert transformation",
+					sourceCRS.getCode(), targetCRS.getCode());
 
 			final IGeodeticDatum sourceDatum = sourceCRS.getGeodeticDatum();
 			final IGeodeticDatum targetDatum = targetCRS.getGeodeticDatum();
@@ -856,8 +857,8 @@ public class TransformationFactory {
 		}
 		else if (result == null || "Helmert".equalsIgnoreCase(result.getImplementationName())
 				|| !this.preferredDSTransform.isPreferred(result)) {
-			LOG.debug("Creating geographic ->geographic transformation: from (source): " + sourceCRS.getCode()
-					+ " to(target): " + targetCRS.getCode());
+			LOG.debug("Creating geographic ->geographic transformation: from (source): {} to(target): {}",
+					sourceCRS.getCode(), targetCRS.getCode());
 			// if a conversion needs to take place
 			if (isEllipsoidTransformNeeded(sourceCRS, targetCRS)) {
 				Transformation sourceT = getToWGSTransformation(sourceCRS);
@@ -948,8 +949,8 @@ public class TransformationFactory {
 
 		Transformation result = getTransformation(sourceCRS, targetCRS);
 		if (isIdentity(result)) {
-			LOG.debug("Creating geographic->projected transformation: from (source): " + sourceCRS.getCode()
-					+ " to(target): " + targetCRS.getCode());
+			LOG.debug("Creating geographic->projected transformation: from (source): {} to(target): {}",
+					sourceCRS.getCode(), targetCRS.getCode());
 			final IGeographicCRS stepGeoCS = targetCRS.getGeographicCRS();
 
 			final Transformation geo2geo = createTransformation(sourceCRS, stepGeoCS);
@@ -976,8 +977,8 @@ public class TransformationFactory {
 	 */
 	private Transformation createTransformation(final IGeographicCRS sourceCRS, final IGeocentricCRS targetCRS)
 			throws TransformationException {
-		LOG.debug("Creating geographic -> geocentric transformation: from (source): " + sourceCRS.getCode()
-				+ " to (target): " + targetCRS.getCode());
+		LOG.debug("Creating geographic -> geocentric transformation: from (source): {} to (target): {}",
+				sourceCRS.getCode(), targetCRS.getCode());
 		Transformation result = getTransformation(sourceCRS, targetCRS);
 		if (isIdentity(result)) {
 			IGeocentricCRS sourceGeocentric = new GeocentricCRS(sourceCRS.getGeodeticDatum(),
@@ -1105,8 +1106,8 @@ public class TransformationFactory {
 			throws TransformationException {
 		Transformation result = getTransformation(sourceCRS, targetCRS);
 		if (isIdentity(result)) {
-			LOG.debug("Creating projected -> projected transformation: from (source): " + sourceCRS.getCode()
-					+ " to(target): " + targetCRS.getCode());
+			LOG.debug("Creating projected -> projected transformation: from (source): {} to(target): {}",
+					sourceCRS.getCode(), targetCRS.getCode());
 			if (sourceCRS.getProjection().equals(targetCRS.getProjection())) {
 				/*
 				 * Swap axis order, and rotate the longitude coordinate if prime meridians
@@ -1140,8 +1141,8 @@ public class TransformationFactory {
 			throws TransformationException {
 		Transformation result = getTransformation(sourceCRS, targetCRS);
 		if (isIdentity(result)) {
-			LOG.debug("Creating projected -> geocentric transformation: from (source): " + sourceCRS.getCode()
-					+ " to(target): " + targetCRS.getCode());
+			LOG.debug("Creating projected -> geocentric transformation: from (source): {} to(target): {}",
+					sourceCRS.getCode(), targetCRS.getCode());
 			final IGeographicCRS sourceGCS = sourceCRS.getGeographicCRS();
 
 			final Transformation inverseProjection = createTransformation(sourceCRS, sourceGCS);
@@ -1168,8 +1169,8 @@ public class TransformationFactory {
 			throws TransformationException {
 		Transformation result = getTransformation(sourceCRS, targetCRS);
 		if (isIdentity(result)) {
-			LOG.debug("Creating projected->geographic transformation: from (source): " + sourceCRS.getCode()
-					+ " to(target): " + targetCRS.getCode());
+			LOG.debug("Creating projected->geographic transformation: from (source): {} to(target): {}",
+					sourceCRS.getCode(), targetCRS.getCode());
 			result = createTransformation(targetCRS, sourceCRS);
 			if (result != null) {
 				result.inverse();
@@ -1195,8 +1196,8 @@ public class TransformationFactory {
 			throws TransformationException {
 		Transformation result = getTransformation(sourceCRS, targetCRS);
 		if (isIdentity(result)) {
-			LOG.debug("Creating geocentric->geocetric transformation: from (source): " + sourceCRS.getCode()
-					+ " to(target): " + targetCRS.getCode());
+			LOG.debug("Creating geocentric->geocetric transformation: from (source): {} to(target): {}",
+					sourceCRS.getCode(), targetCRS.getCode());
 
 			if (isEllipsoidTransformNeeded(sourceCRS, targetCRS)) {
 				final IGeodeticDatum sourceDatum = sourceCRS.getGeodeticDatum();
@@ -1204,8 +1205,8 @@ public class TransformationFactory {
 				// convert from the source to target ellipsoid through the
 				// geocentric coordinate system.
 				if (!isIdentity(sourceDatum.getWGS84Conversion()) || !isIdentity(targetDatum.getWGS84Conversion())) {
-					LOG.debug("Creating helmert transformation: source(" + sourceCRS.getCode() + ")->target("
-							+ targetCRS.getCode() + ").");
+					LOG.debug("Creating helmert transformation: source({})->target({}).", sourceCRS.getCode(),
+							targetCRS.getCode());
 					result = transformUsingPivot(sourceCRS, targetCRS, sourceDatum.getWGS84Conversion(),
 							targetDatum.getWGS84Conversion());
 				}
@@ -1268,22 +1269,22 @@ public class TransformationFactory {
 			resultMatrix.setIdentity();
 		}
 		else {
-			LOG.debug("step1 matrix: \n " + forwardAxisAlign);
-			LOG.debug("step2 matrix: \n " + forwardToWGS);
-			LOG.debug("step3 matrix: \n " + inverseToWGS);
-			LOG.debug("step4 matrix: \n " + resultMatrix);
+			LOG.debug("step1 matrix: \n {}", forwardAxisAlign);
+			LOG.debug("step2 matrix: \n {}", forwardToWGS);
+			LOG.debug("step3 matrix: \n {}", inverseToWGS);
+			LOG.debug("step4 matrix: \n {}", resultMatrix);
 			if (inverseToWGS != null) {
 				inverseToWGS.invert(); // Invert in place.
-				LOG.debug("inverseToWGS inverted matrix: \n " + inverseToWGS);
+				LOG.debug("inverseToWGS inverted matrix: \n {}", inverseToWGS);
 			}
 			if (resultMatrix != null) {
 				if (inverseToWGS != null) {
 					resultMatrix.mul(inverseToWGS); // step4 = step4*step3
-					LOG.debug("resultMatrix (after mul with inverseToWGS): \n " + resultMatrix);
+					LOG.debug("resultMatrix (after mul with inverseToWGS): \n {}", resultMatrix);
 				}
 				if (forwardToWGS != null) {
 					resultMatrix.mul(forwardToWGS); // step4 = step4*step3*step2
-					LOG.debug("resultMatrix (after mul with forwardToWGS2): \n " + resultMatrix);
+					LOG.debug("resultMatrix (after mul with forwardToWGS2): \n {}", resultMatrix);
 				}
 				if (forwardAxisAlign != null) {
 					resultMatrix.mul(forwardAxisAlign); // step4 =
@@ -1294,7 +1295,7 @@ public class TransformationFactory {
 				resultMatrix = inverseToWGS;
 				if (forwardToWGS != null) {
 					resultMatrix.mul(forwardToWGS); // step4 = step3*step2*step1
-					LOG.debug("resultMatrix (after mul with forwardToWGS2): \n " + resultMatrix);
+					LOG.debug("resultMatrix (after mul with forwardToWGS2): \n {}", resultMatrix);
 				}
 				if (forwardAxisAlign != null) {
 					resultMatrix.mul(forwardAxisAlign); // step4 =
@@ -1312,8 +1313,8 @@ public class TransformationFactory {
 			}
 		}
 
-		LOG.debug("The resulting helmert transformation matrix: from( " + sourceCRS.getCode() + ") to("
-				+ targetCRS.getCode() + ")\n " + resultMatrix);
+		LOG.debug("The resulting helmert transformation matrix: from( {}) to({})\n {}", sourceCRS.getCode(),
+				targetCRS.getCode(), resultMatrix);
 		return new MatrixTransform(sourceCRS, targetCRS, resultMatrix, "Helmert-Transformation");
 
 	}

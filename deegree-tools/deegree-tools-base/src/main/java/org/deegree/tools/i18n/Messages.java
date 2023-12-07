@@ -85,8 +85,8 @@ public class Messages {
 			String fileName = "messages_en.properties";
 			InputStream is = Messages.class.getResourceAsStream(fileName);
 			if (is == null) {
-				LOG.error("Error while initializing " + Messages.class.getName() + " : " + " default message file: '"
-						+ fileName + " not found.");
+				LOG.error("Error while initializing {} :  default message file: '{} not found.",
+						Messages.class.getName(), fileName);
 			}
 			is = Messages.class.getResourceAsStream(fileName);
 			defaultProps.load(is);
@@ -107,7 +107,7 @@ public class Messages {
 			}
 		}
 		catch (IOException e) {
-			LOG.error("Error while initializing " + Messages.class.getName() + " : " + e.getMessage(), e);
+			LOG.error("Error while initializing {} : {}", Messages.class.getName(), e.getMessage(), e);
 		}
 	}
 
@@ -168,7 +168,7 @@ public class Messages {
 					overrideMessages(fileName, p);
 				}
 				catch (IOException e) {
-					LOG.error("Error loading language file for language '" + l + "': ", e);
+					LOG.error("Error loading language file for language '{}': ", l, e);
 				}
 			}
 

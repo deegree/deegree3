@@ -97,7 +97,7 @@ public class Java2DTileRenderer implements TileRenderer {
 			graphics.drawImage(tile.getAsImage(), minx, miny, maxx - minx, maxy - miny, null);
 		}
 		catch (TileIOException e) {
-			LOG.debug("Error retrieving tile image: " + e.getMessage());
+			LOG.debug("Error retrieving tile image: {}", e.getMessage());
 			graphics.setColor(RED);
 			graphics.fillRect(minx, miny, maxx - minx, maxy - miny);
 		}

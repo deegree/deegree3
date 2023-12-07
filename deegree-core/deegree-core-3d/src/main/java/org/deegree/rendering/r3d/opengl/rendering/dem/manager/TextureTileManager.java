@@ -121,9 +121,9 @@ public class TextureTileManager {
 	private TextureTile getMatchingTileWithLogging(TextureTileRequest request) {
 		TextureTile tile = null;
 		// System.out.println( "Cached tiles: " + cachedTiles.size() );
-		LOG.debug("testing: " + request.toString());
+		LOG.debug("testing: {}", request.toString());
 		for (TextureTile candidate : cachedTiles) {
-			LOG.debug("against: " + candidate);
+			LOG.debug("against: {}", candidate);
 			if (request.isFullfilled(candidate)) {
 				LOG.debug("-- a match ");
 				tile = candidate;
@@ -165,7 +165,7 @@ public class TextureTileManager {
 			}
 			provider = providers[i];
 		}
-		LOG.debug("Using povider with native resolution: " + provider.getNativeResolution());
+		LOG.debug("Using povider with native resolution: {}", provider.getNativeResolution());
 		return provider;
 	}
 
@@ -297,10 +297,10 @@ public class TextureTileManager {
 		}
 
 		if (LOG.isTraceEnabled()) {
-			LOG.trace("frag (world) bbox: " + fragmentBBoxWorldCoordinates[0][0] + ","
-					+ fragmentBBoxWorldCoordinates[0][1] + " | " + fragmentBBoxWorldCoordinates[1][0] + ","
-					+ fragmentBBoxWorldCoordinates[1][1]);
-			LOG.trace("requ bbox: " + minX + "," + minY + " | " + maxX + "," + maxY);
+			LOG.trace("frag (world) bbox: {},{} | {},{}", fragmentBBoxWorldCoordinates[0][0],
+					fragmentBBoxWorldCoordinates[0][1], fragmentBBoxWorldCoordinates[1][0],
+					fragmentBBoxWorldCoordinates[1][1]);
+			LOG.trace("requ bbox: {},{} | {},{}", minX, minY, maxX, maxY);
 		}
 
 		return new TextureRequest(fragment, minX, minY, maxX, maxY, (float) unitsPerPixel);

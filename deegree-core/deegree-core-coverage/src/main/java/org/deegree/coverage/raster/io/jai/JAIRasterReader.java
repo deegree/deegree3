@@ -80,7 +80,7 @@ public class JAIRasterReader implements RasterReader {
 
 	@Override
 	public AbstractRaster load(File file, RasterIOOptions options) {
-		LOG.debug("reading " + file + " with JAI");
+		LOG.debug("reading {} with JAI", file);
 		reader = new JAIRasterDataReader(file, options);
 
 		return loadFromReader(reader, options);

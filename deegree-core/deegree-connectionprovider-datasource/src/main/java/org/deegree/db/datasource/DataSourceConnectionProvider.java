@@ -123,8 +123,9 @@ class DataSourceConnectionProvider implements ConnectionProvider {
 			}
 		}
 		else {
-			LOG.warn("Unable to close connection pool {}. Check the DataSource configuration if the attribute "
-					+ "'destroyMethod' is configured.", resourceMetadata.getIdentifier());
+			LOG.warn(
+					"Unable to close connection pool {}. Check the DataSource configuration if the attribute 'destroyMethod' is configured.",
+					resourceMetadata.getIdentifier());
 		}
 	}
 

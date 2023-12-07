@@ -142,7 +142,7 @@ public class MappedAppSchema extends GenericAppSchema {
 		this.blobMapping = blobMapping;
 		this.keyDependencies = new TableDependencies(ftMappings, deleteCascadingByDB);
 		if (LOG.isDebugEnabled()) {
-			LOG.debug("Key dependencies: " + keyDependencies);
+			LOG.debug("Key dependencies: {}", keyDependencies);
 		}
 		this.relationalModel = relationalModel;
 	}

@@ -120,8 +120,9 @@ public class GML2GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
 				// geoTransformer = new GeometryTransformer( crs );
 			}
 			catch (Exception e) {
-				LOG.debug("Could not create transformer for CRS '" + outputCRS + "': " + e.getMessage()
-						+ ". Encoding will fail if a transformation is actually necessary.");
+				LOG.debug(
+						"Could not create transformer for CRS '{}': {}. Encoding will fail if a transformation is actually necessary.",
+						outputCRS, e.getMessage());
 			}
 		}
 		formatter = gmlStream.getCoordinateFormatter();

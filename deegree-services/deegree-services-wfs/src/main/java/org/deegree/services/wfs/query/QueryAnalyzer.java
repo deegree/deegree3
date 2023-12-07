@@ -580,8 +580,8 @@ public class QueryAnalyzer {
 			throw new OWSException(msg, INVALID_PARAMETER_VALUE, "PropertyName");
 		}
 		if (!match.equals(propName.getAsQName())) {
-			LOG.debug("Repairing unqualified PropertyName: " + QNameUtils.toString(propName.getAsQName()) + " -> "
-					+ QNameUtils.toString(match));
+			LOG.debug("Repairing unqualified PropertyName: {} -> {}", QNameUtils.toString(propName.getAsQName()),
+					QNameUtils.toString(match));
 			// vague match
 			String text = match.getLocalPart();
 			if (!match.getPrefix().equals(DEFAULT_NS_PREFIX)) {

@@ -227,9 +227,9 @@ public class CoordinateTransform {
 					if (!coords.startsWith("#")) {
 						String[] coordinates = coords.split(coordSep);
 						if (coordinates.length != sourceDim) {
-							LOG.error(lineCount
-									+ ") Each line must contain the number of coordinates fitting the dimension of the source crs ("
-									+ sourceDim + ") seperated by a '" + coordSep + "'.");
+							LOG.error(
+									"{}) Each line must contain the number of coordinates fitting the dimension of the source crs ({}) seperated by a '{}'.",
+									lineCount, sourceDim, coordSep);
 						}
 						else {
 							double[] from = new double[3];

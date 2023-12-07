@@ -102,7 +102,7 @@ public class ExecuteResponse100Reader {
 		List<ExecutionOutput> outputs = null;
 
 		String statusLocationXMLEncoded = reader.getAttributeValue(null, "statusLocation");
-		LOG.debug("Status location: " + statusLocationXMLEncoded);
+		LOG.debug("Status location: {}", statusLocationXMLEncoded);
 		URL statusLocation = null;
 		if (statusLocationXMLEncoded != null) {
 			statusLocation = new URL(statusLocationXMLEncoded);
@@ -295,7 +295,7 @@ public class ExecuteResponse100Reader {
 					XMLStreamUtils.nextElement(reader);
 				}
 				else {
-					LOG.debug("Response document contains empty complex data output '" + id + "'");
+					LOG.debug("Response document contains empty complex data output '{}'", id);
 				}
 				xmlWriter.writeEndDocument();
 				xmlWriter.close();
@@ -308,8 +308,9 @@ public class ExecuteResponse100Reader {
 					tmpSink.write(bytes);
 				}
 				else {
-					LOG.warn("The encoding of binary data (found at response location " + reader.getLocation()
-							+ ") is not base64. Currently only for this format the decoding can be performed. Skipping the data.");
+					LOG.warn(
+							"The encoding of binary data (found at response location {}) is not base64. Currently only for this format the decoding can be performed. Skipping the data.",
+							reader.getLocation());
 				}
 			}
 			tmpSink.close();

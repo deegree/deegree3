@@ -106,7 +106,7 @@ public class Mercator extends CylindricalProjection implements IMercator {
 	public synchronized Point2d doInverseProjection(IGeographicCRS geographicCRS, double x, double y)
 			throws ProjectionException {
 		Point2d result = new Point2d(0, 0);
-		LOG.debug("InverseProjection, incoming points x: " + x + " y: " + y);
+		LOG.debug("InverseProjection, incoming points x: {} y: {}", x, y);
 		x -= getFalseEasting();
 		y -= getFalseNorthing();
 

@@ -188,11 +188,10 @@ public class TrackBall extends MouseAdapter {
 	@SuppressWarnings("null")
 	public void multModelMatrix(GL context, float[] worldTranslation) {
 		if (LOG.isDebugEnabled()) {
-			LOG.debug(
-					"worldTranslation: " + worldTranslation[0] + "," + worldTranslation[1] + "," + worldTranslation[2]);
-			LOG.debug("tbRot: " + tbRot[0] + "," + tbRot[1] + "," + tbRot[2] + "," + tbRot[3]);
-			LOG.debug("rotationVector: " + rotationVector[0] + "," + rotationVector[1] + "," + rotationVector[2] + ","
-					+ rotationVector[3]);
+			LOG.debug("worldTranslation: {},{},{}", worldTranslation[0], worldTranslation[1], worldTranslation[2]);
+			LOG.debug("tbRot: {},{},{},{}", tbRot[0], tbRot[1], tbRot[2], tbRot[3]);
+			LOG.debug("rotationVector: {},{},{},{}", rotationVector[0], rotationVector[1], rotationVector[2],
+					rotationVector[3]);
 		}
 		boolean translate = (worldTranslation != null) && (worldTranslation.length == 3);
 		if (translate) {
@@ -262,11 +261,11 @@ public class TrackBall extends MouseAdapter {
 			startPoint[2] = ((float) Math.sqrt((radius * radius) - xxyy));
 		}
 		if (LOG.isDebugEnabled()) {
-			LOG.debug("width: " + windowWidth);
-			LOG.debug("height: " + windowHeight);
-			LOG.debug("center: " + center);
-			LOG.debug("radius: " + radius);
-			LOG.debug("startpoint: " + startPoint[0] + "," + startPoint[1] + "," + startPoint[2]);
+			LOG.debug("width: {}", windowWidth);
+			LOG.debug("height: {}", windowHeight);
+			LOG.debug("center: {}", center);
+			LOG.debug("radius: {}", radius);
+			LOG.debug("startpoint: {},{},{}", startPoint[0], startPoint[1], startPoint[2]);
 		}
 	}
 

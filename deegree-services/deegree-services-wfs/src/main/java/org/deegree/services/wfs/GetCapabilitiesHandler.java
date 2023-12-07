@@ -253,7 +253,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 			if (ftName.getNamespaceURI() != "") {
 				prefix = ftName.getPrefix();
 				if (ftName.getPrefix() == null || ftName.getPrefix().equals("")) {
-					LOG.warn("Feature type '" + ftName + "' has no prefix!? This should not happen.");
+					LOG.warn("Feature type '{}' has no prefix!? This should not happen.", ftName);
 					prefix = "app";
 				}
 				writer.writeNamespace(prefix, ftName.getNamespaceURI());
@@ -304,7 +304,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 				env = fs.getEnvelope(ftName);
 			}
 			catch (FeatureStoreException e) {
-				LOG.error("Error retrieving envelope from FeatureStore: " + e.getMessage(), e);
+				LOG.error("Error retrieving envelope from FeatureStore: {}", e.getMessage(), e);
 			}
 			if (env != null) {
 				try {
@@ -323,7 +323,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 					writer.writeEndElement();
 				}
 				catch (Exception e) {
-					LOG.error("Cannot generate WGS84 envelope for feature type '" + ftName + "'.", e);
+					LOG.error("Cannot generate WGS84 envelope for feature type '{}'.", ftName, e);
 				}
 			}
 
@@ -634,7 +634,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 				writer.writeStartElement(WFS_NS, "Name");
 				String prefix = ftName.getPrefix();
 				if (prefix == null || prefix.equals("")) {
-					LOG.warn("Feature type '" + ftName + "' has no prefix!? This should not happen.");
+					LOG.warn("Feature type '{}' has no prefix!? This should not happen.", ftName);
 					prefix = "app";
 				}
 				if (!"".equals(ftName.getNamespaceURI())) {
@@ -686,7 +686,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 					env = fs.getEnvelope(ftName);
 				}
 				catch (FeatureStoreException e) {
-					LOG.error("Error retrieving envelope from FeatureStore: " + e.getMessage(), e);
+					LOG.error("Error retrieving envelope from FeatureStore: {}", e.getMessage(), e);
 				}
 
 				if (env != null) {
@@ -716,8 +716,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 					maxY = max.get1();
 				}
 				catch (ArrayIndexOutOfBoundsException e) {
-					LOG.error("Cannot generate WGS84 envelope for feature type '" + ftName + "'. Using full extent.",
-							e);
+					LOG.error("Cannot generate WGS84 envelope for feature type '{}'. Using full extent.", ftName, e);
 					minX = -180.0;
 					minY = -90.0;
 					maxX = 180.0;
@@ -981,7 +980,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 				writer.writeStartElement(WFS_200_NS, "Name");
 				String prefix = ftName.getPrefix();
 				if (prefix == null || prefix.equals("")) {
-					LOG.warn("Feature type '" + ftName + "' has no prefix!? This should not happen.");
+					LOG.warn("Feature type '{}' has no prefix!? This should not happen.", ftName);
 					prefix = "app";
 				}
 				if (!"".equals(ftName.getNamespaceURI())) {
@@ -1030,7 +1029,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 					env = fs.getEnvelope(ftName);
 				}
 				catch (FeatureStoreException e) {
-					LOG.error("Error retrieving envelope from FeatureStore: " + e.getMessage(), e);
+					LOG.error("Error retrieving envelope from FeatureStore: {}", e.getMessage(), e);
 				}
 
 				if (env != null) {
@@ -1060,8 +1059,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 					maxY = max.get1();
 				}
 				catch (ArrayIndexOutOfBoundsException e) {
-					LOG.error("Cannot generate WGS84 envelope for feature type '" + ftName + "'. Using full extent.",
-							e);
+					LOG.error("Cannot generate WGS84 envelope for feature type '{}'. Using full extent.", ftName, e);
 					minX = -180.0;
 					minY = -90.0;
 					maxX = 180.0;

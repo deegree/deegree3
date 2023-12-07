@@ -133,12 +133,12 @@ public class NTv2Transformation extends Transformation {
 		}
 		catch (FileNotFoundException e) {
 			LOG.debug("Could not find the gridshift file stack trace.", e);
-			LOG.error("Could not find the gridshift file because: " + e.getLocalizedMessage());
+			LOG.error("Could not find the gridshift file because: {}", e.getLocalizedMessage());
 			throw new IllegalArgumentException("Could not load the gridshift file: " + gridURL, e);
 		}
 		catch (IOException e) {
 			LOG.debug("Could not read the gridshift file stack trace.", e);
-			LOG.error("Could not read the gridshift file because: " + e.getLocalizedMessage());
+			LOG.error("Could not read the gridshift file because: {}", e.getLocalizedMessage());
 			throw new IllegalArgumentException("Could not load the gridshift file: " + gridURL, e);
 		}
 
@@ -150,14 +150,16 @@ public class NTv2Transformation extends Transformation {
 
 		if (Math.abs(sourceEl.getSemiMajorAxis() - gsf.getFromSemiMajorAxis()) > 0.001
 				|| Math.abs(sourceEl.getSemiMinorAxis() - gsf.getFromSemiMinorAxis()) > 0.001) {
-			LOG.warn("The given source CRS' ellipsoid (" + sourceEl.getCode().getOriginal()
-					+ ") does not match the 'from' ellipsoid (" + fromEllips + ") defined in the gridfile: " + gridURL);
+			LOG.warn(
+					"The given source CRS' ellipsoid ({}) does not match the 'from' ellipsoid ({}) defined in the gridfile: {}",
+					sourceEl.getCode().getOriginal(), fromEllips, gridURL);
 		}
 
 		if (Math.abs(targetEl.getSemiMajorAxis() - gsf.getToSemiMajorAxis()) > 0.001
 				|| Math.abs(targetEl.getSemiMinorAxis() - gsf.getToSemiMinorAxis()) > 0.001) {
-			LOG.warn("The given target CRS' ellipsoid (" + targetEl.getCode().getOriginal()
-					+ ") does not match the 'to' ellipsoid (" + toEllips + ") defined in the gridfile: " + gridURL);
+			LOG.warn(
+					"The given target CRS' ellipsoid ({}) does not match the 'to' ellipsoid ({}) defined in the gridfile: {}",
+					targetEl.getCode().getOriginal(), toEllips, gridURL);
 		}
 
 		isIdentity = (Math.abs(gsf.getFromSemiMajorAxis() - gsf.getToSemiMajorAxis()) < 0.001)
@@ -181,14 +183,16 @@ public class NTv2Transformation extends Transformation {
 
 		if (Math.abs(sourceEl.getSemiMajorAxis() - gsf.getFromSemiMajorAxis()) > 0.001
 				|| Math.abs(sourceEl.getSemiMinorAxis() - gsf.getFromSemiMinorAxis()) > 0.001) {
-			LOG.warn("The given source CRS' ellipsoid (" + sourceEl.getCode().getOriginal()
-					+ ") does not match the 'from' ellipsoid (" + fromEllips + ") defined in the gridfile: " + gridURL);
+			LOG.warn(
+					"The given source CRS' ellipsoid ({}) does not match the 'from' ellipsoid ({}) defined in the gridfile: {}",
+					sourceEl.getCode().getOriginal(), fromEllips, gridURL);
 		}
 
 		if (Math.abs(targetEl.getSemiMajorAxis() - gsf.getToSemiMajorAxis()) > 0.001
 				|| Math.abs(targetEl.getSemiMinorAxis() - gsf.getToSemiMinorAxis()) > 0.001) {
-			LOG.warn("The given target CRS' ellipsoid (" + targetEl.getCode().getOriginal()
-					+ ") does not match the 'to' ellipsoid (" + toEllips + ") defined in the gridfile: " + gridURL);
+			LOG.warn(
+					"The given target CRS' ellipsoid ({}) does not match the 'to' ellipsoid ({}) defined in the gridfile: {}",
+					targetEl.getCode().getOriginal(), toEllips, gridURL);
 		}
 
 		isIdentity = (Math.abs(gsf.getFromSemiMajorAxis() - gsf.getToSemiMajorAxis()) < 0.001)
@@ -207,19 +211,20 @@ public class NTv2Transformation extends Transformation {
 		else {
 			IAxis first = axis[0];
 			IAxis second = axis[1];
-			LOG.debug("First crs Axis: " + first);
-			LOG.debug("Second crs Axis: " + second);
+			LOG.debug("First crs Axis: {}", first);
+			LOG.debug("Second crs Axis: {}", second);
 			if (first != null && second != null) {
 				if (Axis.AO_WEST == Math.abs(second.getOrientation())) {
 					result = true;
 					if (Axis.AO_NORTH != Math.abs(first.getOrientation())) {
-						LOG.warn("The given projection uses a second axis which is not mappable (  " + second
-								+ ") please check your configuration, assuming y, x axis-order.");
+						LOG.warn(
+								"The given projection uses a second axis which is not mappable (  {}) please check your configuration, assuming y, x axis-order.",
+								second);
 					}
 				}
 			}
 		}
-		LOG.debug("Incoming ordinates will" + ((result) ? " " : " not ") + "be swapped.");
+		LOG.debug("Incoming ordinates will{}be swapped.", ((result) ? " " : " not "));
 		return result;
 	}
 
@@ -241,8 +246,8 @@ public class NTv2Transformation extends Transformation {
 				}
 			}
 			catch (IOException e) {
-				LOG.debug("Exception occurred: " + e.getLocalizedMessage(), e);
-				LOG.error("Exception occurred: " + e.getLocalizedMessage());
+				LOG.debug("Exception occurred: {}", e.getLocalizedMessage(), e);
+				LOG.error("Exception occurred: {}", e.getLocalizedMessage());
 			}
 			if (!shift) {
 				StringBuilder sb = new StringBuilder("Could not do ");

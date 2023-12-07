@@ -101,7 +101,7 @@ public class SOAPAuthentication implements CredentialsProvider {
 		soapXMLHeader.setRootElement(requestHeader);
 		SoapHeader soapHeader = soapXMLHeader.parseHeader();
 
-		LOG.info(soapHeader.getUsername() + " " + soapHeader.getPassword());
+		LOG.info("{} {}", soapHeader.getUsername(), soapHeader.getPassword());
 		return new Credentials(soapHeader.getUsername(), soapHeader.getPassword());
 
 	}

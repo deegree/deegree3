@@ -142,7 +142,7 @@ public class Features {
 							}
 						}
 						catch (Exception e) {
-							LOG.debug("Cannot compare values: " + e.getMessage());
+							LOG.debug("Cannot compare values: {}", e.getMessage());
 						}
 					}
 					return order;

@@ -123,7 +123,7 @@ public class GetRecordByIdXMLAdapter extends AbstractCSWRequestXMLAdapter {
 		List<String> ids = null;
 		try {
 			List<OMElement> idList = getRequiredNodes(rootElement, new XPath("csw:Id", nsContext));
-			LOG.debug("idList: " + idList);
+			LOG.debug("idList: {}", idList);
 			ids = new ArrayList<String>();
 			for (OMElement elem : idList) {
 				String idString = getNodeAsString(elem, new XPath("text()", nsContext), "");

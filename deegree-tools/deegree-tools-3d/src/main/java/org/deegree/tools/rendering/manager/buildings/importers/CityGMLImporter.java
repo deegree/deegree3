@@ -163,7 +163,7 @@ public class CityGMLImporter implements ModelImporter {
 
 		GMLAppSchemaReader adapter = null;
 		try {
-			LOG.info("Using schemalocation: " + schemaLoc);
+			LOG.info("Using schemalocation: {}", schemaLoc);
 			adapter = new GMLAppSchemaReader(GMLVersion.GML_31, null, schemaLoc);
 		}
 		catch (Exception e) {
@@ -259,7 +259,7 @@ public class CityGMLImporter implements ModelImporter {
 				LOG.error("Could not map the geometry which was not instantiated");
 			}
 			else {
-				LOG.error("Could not map the geometry: " + geom.getClass().getName());
+				LOG.error("Could not map the geometry: {}", geom.getClass().getName());
 			}
 		}
 	}
@@ -508,7 +508,7 @@ public class CityGMLImporter implements ModelImporter {
 			rqm = tesselator.createRenderableQM(id, qm);
 		}
 		catch (Exception e) {
-			LOG.error("Could not tesselate building with id: " + id + " because: " + e.getLocalizedMessage(), e);
+			LOG.error("Could not tesselate building with id: {} because: {}", id, e.getLocalizedMessage(), e);
 		}
 		if (rqm != null) {
 			rwo.setQualityLevel(qualityLevel, rqm);
@@ -533,7 +533,7 @@ public class CityGMLImporter implements ModelImporter {
 			}
 		}
 		catch (FilterEvaluationException e) {
-			LOG.error("Retrieving of information system property failed: " + e.getMessage());
+			LOG.error("Retrieving of information system property failed: {}", e.getMessage());
 		}
 		return result;
 	}
@@ -542,8 +542,8 @@ public class CityGMLImporter implements ModelImporter {
 		String result = building.getId();
 		if (result == null || "".equals(result.trim())) {
 			result = "Building_" + UUID.randomUUID().toString();
-			LOG.warn("Created id: " + result + " for building with envelope: " + building.getEnvelope() + " and name: "
-					+ building.getName() + " because it did not supply a gml:id.");
+			LOG.warn("Created id: {} for building with envelope: {} and name: {} because it did not supply a gml:id.",
+					result, building.getEnvelope(), building.getName());
 		}
 		return result;
 	}
@@ -569,13 +569,13 @@ public class CityGMLImporter implements ModelImporter {
 						bMap.put(wro.getId(), wro);
 					}
 					else {
-						LOG.warn("Duplicate building with id: " + wro.getId() + " using first building with envelope: "
-								+ wro.getBbox().toString());
+						LOG.warn("Duplicate building with id: {} using first building with envelope: {}", wro.getId(),
+								wro.getBbox().toString());
 					}
 				}
 			}
 			else {
-				LOG.warn("Unhandled feature type '" + f.getName() + "' -- skipping.");
+				LOG.warn("Unhandled feature type '{}' -- skipping.", f.getName());
 			}
 		}
 		List<WorldRenderableObject> result = new ArrayList<WorldRenderableObject>(bMap.size());

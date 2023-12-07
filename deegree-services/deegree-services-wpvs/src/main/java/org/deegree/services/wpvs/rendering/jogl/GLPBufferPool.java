@@ -88,9 +88,8 @@ public class GLPBufferPool {
 
 			double scale = ((double) maxTextureSize) / ((maxWidth > maxHeight) ? maxWidth : maxHeight);
 			LOG.warn(
-					"Configured maximum request Width/Height are larger than your graphicsboard allows, rescaling configured width: "
-							+ maxWidth + " to " + Math.floor(maxWidth * scale) + " | height: " + maxHeight + " to "
-							+ Math.floor(maxHeight * scale));
+					"Configured maximum request Width/Height are larger than your graphicsboard allows, rescaling configured width: {} to {} | height: {} to {}",
+					maxWidth, Math.floor(maxWidth * scale), maxHeight, Math.floor(maxHeight * scale));
 			maxWidth = (int) Math.floor(maxWidth * scale);
 			maxHeight = (int) Math.floor(maxHeight * scale);
 		}
@@ -121,8 +120,8 @@ public class GLPBufferPool {
 			buffer.destroy();
 		}
 		catch (Throwable t) {
-			LOG.error("Could not destroy test pbuffer, this might indicate a problem, the original message was: "
-					+ t.getLocalizedMessage(), t);
+			LOG.error("Could not destroy test pbuffer, this might indicate a problem, the original message was: {}",
+					t.getLocalizedMessage(), t);
 		}
 
 		int result = test.glTextureSize;

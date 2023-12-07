@@ -83,7 +83,7 @@ public class ExecuteBean implements Serializable {
 	}
 
 	public Object print() {
-		LOG.debug("try to print template " + template);
+		LOG.debug("try to print template {}", template);
 		if (template == null) {
 			// TODO: msg
 
@@ -124,7 +124,7 @@ public class ExecuteBean implements Serializable {
 			ComplexOutput o = (ComplexOutput) exe.execute()
 				.get(outputTypes[0].getId().getCode(), outputTypes[0].getId().getCodeSpace());
 			String link = o.getWebAccessibleURI().toASCIIString();
-			LOG.debug("Result can be found here: " + link);
+			LOG.debug("Result can be found here: {}", link);
 			result = link;
 		}
 		catch (Exception e) {

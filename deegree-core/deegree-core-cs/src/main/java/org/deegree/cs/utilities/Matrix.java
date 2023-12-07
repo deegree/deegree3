@@ -264,9 +264,9 @@ public class Matrix extends GMatrix {
 	 */
 	public static Matrix swapAxis(final ICRS sourceCRS, final ICRS targetCRS) throws TransformationException {
 		if (LOG.isDebugEnabled()) {
-			LOG.debug("Creating swap matrix from: " + sourceCRS.getCode() + " to: " + targetCRS.getCode());
-			LOG.debug("Source Axis:\n" + Arrays.toString(sourceCRS.getAxis()));
-			LOG.debug("Target Axis:\n" + Arrays.toString(targetCRS.getAxis()));
+			LOG.debug("Creating swap matrix from: {} to: {}", sourceCRS.getCode(), targetCRS.getCode());
+			LOG.debug("Source Axis:\n{}", Arrays.toString(sourceCRS.getAxis()));
+			LOG.debug("Target Axis:\n{}", Arrays.toString(targetCRS.getAxis()));
 		}
 		final Matrix matrix;
 		try {
@@ -290,7 +290,7 @@ public class Matrix extends GMatrix {
 	public static Matrix swapAndRotateGeoAxis(final IGeographicCRS sourceCRS, final IGeographicCRS targetCRS)
 			throws TransformationException {
 		if (LOG.isDebugEnabled()) {
-			LOG.debug("Creating geo swap/rotate matrix from: " + sourceCRS.getCode() + " to: " + targetCRS.getCode());
+			LOG.debug("Creating geo swap/rotate matrix from: {} to: {}", sourceCRS.getCode(), targetCRS.getCode());
 		}
 		Matrix matrix = swapAxis(sourceCRS, targetCRS);
 		if (!sourceCRS.getGeodeticDatum().getPrimeMeridian().equals(targetCRS.getGeodeticDatum().getPrimeMeridian())) {
@@ -304,7 +304,7 @@ public class Matrix extends GMatrix {
 				// different.
 				final int orientation = targetAxis[i].getOrientation();
 				if (Axis.AO_WEST == Math.abs(orientation)) {
-					LOG.debug("Adding prime-meridian translation to axis:" + targetAxis[i]);
+					LOG.debug("Adding prime-meridian translation to axis:{}", targetAxis[i]);
 					final double sourceLongitude = sourceCRS.getGeodeticDatum()
 						.getPrimeMeridian()
 						.getLongitudeAsRadian();

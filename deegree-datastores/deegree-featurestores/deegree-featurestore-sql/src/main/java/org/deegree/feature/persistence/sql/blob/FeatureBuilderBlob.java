@@ -107,7 +107,7 @@ public class FeatureBuilderBlob implements FeatureBuilder {
 				feature = (Feature) fs.getCache().get(gmlId);
 			}
 			if (feature == null) {
-				LOG.debug("Recreating object '" + gmlId + "' from db (BLOB/hybrid mode).");
+				LOG.debug("Recreating object '{}' from db (BLOB/hybrid mode).", gmlId);
 				feature = (Feature) codec.decode(rs.getBinaryStream(2), fs.getNamespaceContext(), fs.getSchema(), crs,
 						fs.getResolver());
 				if (fs.getCache() != null) {

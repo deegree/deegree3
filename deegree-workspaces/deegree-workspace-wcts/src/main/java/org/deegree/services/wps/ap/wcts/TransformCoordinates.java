@@ -117,17 +117,17 @@ public class TransformCoordinates implements ExceptionAwareProcesslet {
 						configuredVersion = GMLVersion.valueOf(gmlVersion.toUpperCase());
 					}
 					catch (Exception e) {
-						LOG.debug("Your gml version: " + gmlVersion + " could not be mapped, it should be one of: "
-								+ Arrays.toString(GMLVersion.values()));
+						LOG.debug("Your gml version: {} could not be mapped, it should be one of: {}", gmlVersion,
+								Arrays.toString(GMLVersion.values()));
 					}
 				}
 			}
 			catch (IOException e) {
 				if (LOG.isDebugEnabled()) {
-					LOG.debug("Could not load configuration: " + e.getMessage(), e);
+					LOG.debug("Could not load configuration: {}", e.getMessage(), e);
 				}
 				else {
-					LOG.error("Could not load configuration: " + e.getMessage());
+					LOG.error("Could not load configuration: {}", e.getMessage());
 				}
 			}
 		}
@@ -159,26 +159,26 @@ public class TransformCoordinates implements ExceptionAwareProcesslet {
 		}
 		catch (IOException e) {
 			if (LOG.isDebugEnabled()) {
-				LOG.debug("Exception while getting stream from input data: " + e.getMessage(), e);
+				LOG.debug("Exception while getting stream from input data: {}", e.getMessage(), e);
 			}
 			else {
-				LOG.error("Exception while getting stream from input data: " + e.getMessage());
+				LOG.error("Exception while getting stream from input data: {}", e.getMessage());
 			}
 		}
 		catch (XMLStreamException e) {
 			if (LOG.isDebugEnabled()) {
-				LOG.debug("Exception while getting stream from input data: " + e.getMessage(), e);
+				LOG.debug("Exception while getting stream from input data: {}", e.getMessage(), e);
 			}
 			else {
-				LOG.error("Exception while getting stream from input data: " + e.getMessage());
+				LOG.error("Exception while getting stream from input data: {}", e.getMessage());
 			}
 		}
 		catch (NullPointerException e) {
 			if (LOG.isDebugEnabled()) {
-				LOG.debug("Exception (no next element) while getting stream from input data: " + e.getMessage(), e);
+				LOG.debug("Exception (no next element) while getting stream from input data: {}", e.getMessage(), e);
 			}
 			else {
-				LOG.error("Exception (no next element) while getting stream from input data: " + e.getMessage());
+				LOG.error("Exception (no next element) while getting stream from input data: {}", e.getMessage());
 			}
 		}
 
@@ -205,7 +205,7 @@ public class TransformCoordinates implements ExceptionAwareProcesslet {
 									+ ") and the output schema (" + outSchema + ") must be equal.",
 							OWSException.INVALID_PARAMETER_VALUE));
 		}
-		LOG.debug("Setting XML output (requested=" + xmlOutput.isRequested() + ")");
+		LOG.debug("Setting XML output (requested={})", xmlOutput.isRequested());
 		XMLStreamWriter writer = null;
 		try {
 			writer = xmlOutput.getXMLStreamWriter();
@@ -225,7 +225,7 @@ public class TransformCoordinates implements ExceptionAwareProcesslet {
 		}
 		catch (XMLStreamException e) {
 			if (LOG.isDebugEnabled()) {
-				LOG.debug("Exception message: " + e.getMessage(), e);
+				LOG.debug("Exception message: {}", e.getMessage(), e);
 			}
 			throw new ProcessletException(e.getLocalizedMessage());
 		}
@@ -244,41 +244,41 @@ public class TransformCoordinates implements ExceptionAwareProcesslet {
 		}
 		catch (XMLParsingException e) {
 			if (LOG.isDebugEnabled()) {
-				LOG.debug("Exception message: " + e.getMessage(), e);
+				LOG.debug("Exception message: {}", e.getMessage(), e);
 			}
 			throw new ProcessletException(e.getLocalizedMessage());
 		}
 		catch (IllegalArgumentException e) {
 			if (LOG.isDebugEnabled()) {
-				LOG.debug("Exception message: " + e.getMessage(), e);
+				LOG.debug("Exception message: {}", e.getMessage(), e);
 			}
 			throw new ProcessletException(
 					new OWSException(e.getLocalizedMessage(), OWSException.INVALID_PARAMETER_VALUE));
 		}
 		catch (XMLStreamException e) {
 			if (LOG.isDebugEnabled()) {
-				LOG.debug("Exception message: " + e.getMessage(), e);
+				LOG.debug("Exception message: {}", e.getMessage(), e);
 			}
 			throw new ProcessletException(
 					new OWSException(e.getLocalizedMessage(), OWSException.INVALID_PARAMETER_VALUE));
 		}
 		catch (UnknownCRSException e) {
 			if (LOG.isDebugEnabled()) {
-				LOG.debug("Exception message: " + e.getMessage(), e);
+				LOG.debug("Exception message: {}", e.getMessage(), e);
 			}
 			throw new ProcessletException(
 					new OWSException(e.getLocalizedMessage(), OWSException.INVALID_PARAMETER_VALUE));
 		}
 		catch (TransformationException e) {
 			if (LOG.isDebugEnabled()) {
-				LOG.debug("Exception message: " + e.getMessage(), e);
+				LOG.debug("Exception message: {}", e.getMessage(), e);
 			}
 			throw new ProcessletException(
 					new OWSException(e.getLocalizedMessage(), WCTSConstants.ExceptionCodes.NotTransformable.name()));
 		}
 		catch (OutsideCRSDomainException e) {
 			if (LOG.isDebugEnabled()) {
-				LOG.debug("Exception message: " + e.getMessage(), e);
+				LOG.debug("Exception message: {}", e.getMessage(), e);
 			}
 			throw new ProcessletException(
 					new OWSException(e.getLocalizedMessage(), WCTSConstants.ExceptionCodes.InvalidArea.name()));

@@ -2581,7 +2581,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
 		Point point = null;
 		String href = xmlStream.getAttributeValue(CommonNamespaces.XLNNS, "href");
 		if (href != null && href.length() > 0) {
-			LOG.debug("Found geometry reference (xlink): '" + href + "'");
+			LOG.debug("Found geometry reference (xlink): '{}'", href);
 			point = new PointReference(getResolver(), href, xmlStream.getSystemId());
 			idContext.addReference((GeometryReference<?>) point);
 			if (xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT) {
@@ -2632,7 +2632,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
 		LineString lineString = null;
 		String href = xmlStream.getAttributeValue(CommonNamespaces.XLNNS, "href");
 		if (href != null && href.length() > 0) {
-			LOG.debug("Found geometry reference (xlink): '" + href + "'");
+			LOG.debug("Found geometry reference (xlink): '{}'", href);
 			lineString = new LineStringReference(getResolver(), href, xmlStream.getSystemId());
 			idContext.addReference((GeometryReference<?>) lineString);
 			if (xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT) {
@@ -2682,7 +2682,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
 		Curve curve = null;
 		String href = xmlStream.getAttributeValue(CommonNamespaces.XLNNS, "href");
 		if (href != null && href.length() > 0) {
-			LOG.debug("Found geometry reference (xlink): '" + href + "'");
+			LOG.debug("Found geometry reference (xlink): '{}'", href);
 			curve = new CurveReference<Curve>(getResolver(), href, xmlStream.getSystemId());
 			idContext.addReference((GeometryReference<?>) curve);
 			if (xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT) {
@@ -2727,7 +2727,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
 		Polygon polygon = null;
 		String href = xmlStream.getAttributeValue(CommonNamespaces.XLNNS, "href");
 		if (href != null && href.length() > 0) {
-			LOG.debug("Found geometry reference (xlink): '" + href + "'");
+			LOG.debug("Found geometry reference (xlink): '{}'", href);
 			polygon = new PolygonReference(getResolver(), href, xmlStream.getSystemId());
 			idContext.addReference((GeometryReference<?>) polygon);
 			if (xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT) {
@@ -2777,7 +2777,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
 		Surface surface = null;
 		String href = xmlStream.getAttributeValue(CommonNamespaces.XLNNS, "href");
 		if (href != null && href.length() > 0) {
-			LOG.debug("Found geometry reference (xlink): '" + href + "'");
+			LOG.debug("Found geometry reference (xlink): '{}'", href);
 			surface = new SurfaceReference<Surface>(getResolver(), href, xmlStream.getSystemId());
 			idContext.addReference((GeometryReference<?>) surface);
 			if (xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT) {
@@ -2822,7 +2822,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
 		Solid solid = null;
 		String href = xmlStream.getAttributeValue(CommonNamespaces.XLNNS, "href");
 		if (href != null && href.length() > 0) {
-			LOG.debug("Found geometry reference (xlink): '" + href + "'");
+			LOG.debug("Found geometry reference (xlink): '{}'", href);
 			solid = new SolidReference<Solid>(idContext, href, xmlStream.getSystemId());
 			idContext.addReference((GeometryReference<?>) solid);
 			if (xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT) {
@@ -2873,7 +2873,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
 		GeometricPrimitive primitive = null;
 		String href = xmlStream.getAttributeValue(CommonNamespaces.XLNNS, "href");
 		if (href != null && href.length() > 0) {
-			LOG.debug("Found geometry reference (xlink): '" + href + "'");
+			LOG.debug("Found geometry reference (xlink): '{}'", href);
 			primitive = new GeometricPrimitiveReference<GeometricPrimitive>(idContext, href, xmlStream.getSystemId());
 			idContext.addReference((GeometryReference<?>) primitive);
 			if (xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT) {
@@ -2918,7 +2918,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
 		Geometry geometry = null;
 		String href = xmlStream.getAttributeValue(CommonNamespaces.XLNNS, "href");
 		if (href != null && href.length() > 0) {
-			LOG.debug("Found geometry reference (xlink): '" + href + "'");
+			LOG.debug("Found geometry reference (xlink): '{}'", href);
 			geometry = new GeometryReference<Geometry>(idContext, href, xmlStream.getSystemId());
 			idContext.addReference((GeometryReference<?>) geometry);
 			if (xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT) {
@@ -2992,7 +2992,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
 			QName name = xmlStream.getName();
 			type = schema.getGeometryType(name);
 			if (type == null) {
-				LOG.debug("GML geometry element '" + name + "' is not defined in application schema!?");
+				LOG.debug("GML geometry element '{}' is not defined in application schema!?", name);
 			}
 		}
 		return type;

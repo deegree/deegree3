@@ -127,7 +127,7 @@ public class GetRecordsHandler {
 	public void doGetRecords(GetRecords getRec, HttpResponseBuffer response, MetadataStore<?> store)
 			throws XMLStreamException, IOException, OWSException {
 
-		LOG.debug("doGetRecords: " + getRec);
+		LOG.debug("doGetRecords: {}", getRec);
 
 		Version version = getRec.getVersion();
 		String outputFormat = getRec.getOutputFormat();

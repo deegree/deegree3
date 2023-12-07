@@ -198,14 +198,14 @@ public class StreamBufferStore extends OutputStream {
 	}
 
 	private void switchToFile() throws IOException {
-		LOG.debug("Memory limit of " + limit + " bytes reached. Switching to file-based storage.");
+		LOG.debug("Memory limit of {} bytes reached. Switching to file-based storage.", limit);
 		if (targetFile == null) {
 			tmpFile = File.createTempFile("store", ".tmp");
 		}
 		else {
 			tmpFile = targetFile;
 		}
-		LOG.debug("Using file: " + tmpFile);
+		LOG.debug("Using file: {}", tmpFile);
 		OutputStream fileOs = new BufferedOutputStream(new FileOutputStream(tmpFile));
 		((ByteArrayOutputStream) os).writeTo(fileOs);
 		os = fileOs;

@@ -150,8 +150,9 @@ public class RasterBuilder {
 					result.add(f);
 				}
 				else {
-					LOG.info("Directory: " + f.getAbsolutePath()
-							+ " can not be added to a Multiresolution raster, because it does not denote a resolution.");
+					LOG.info(
+							"Directory: {} can not be added to a Multiresolution raster, because it does not denote a resolution.",
+							f.getAbsolutePath());
 				}
 			}
 		}
@@ -231,8 +232,9 @@ public class RasterBuilder {
 				result = Double.parseDouble(dirRes);
 			}
 			catch (NumberFormatException e) {
-				LOG.debug("No resolution found in raster datasource defintion, nor in the directory name: " + dirRes
-						+ " returning 0");
+				LOG.debug(
+						"No resolution found in raster datasource defintion, nor in the directory name: {} returning 0",
+						dirRes);
 				result = Double.NaN;
 			}
 		}

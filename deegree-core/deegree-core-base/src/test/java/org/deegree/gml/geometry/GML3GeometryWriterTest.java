@@ -213,7 +213,7 @@ public class GML3GeometryWriterTest {
 		for (String patchSource : patchSources) {
 			URL docURL = GML3GeometryWriterTest.class.getResource(PATCH_DIR + patchSource);
 			if (docURL == null)
-				LOG.debug("patch dir: " + GML3GeometryWriterTest.class.getResource(PATCH_DIR + patchSource));
+				LOG.debug("patch dir: {}", GML3GeometryWriterTest.class.getResource(PATCH_DIR + patchSource));
 			GMLStreamReader parser = getGML31StreamReader(docURL);
 			XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(parser.getXMLReader(), docURL.toString());
 			SurfacePatch surfPatch = ((GML3GeometryReader) parser.getGeometryReader()).getSurfacePatchReader()

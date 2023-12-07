@@ -460,8 +460,7 @@ public class QTree<T> extends SpatialIndex<T> implements Serializable {
 			}
 		}
 		if (leafObjects != null && leafObjects.size() < objectsInLeaf) {
-			LOG.error("leaf counter (" + objectsInLeaf + ") is larger then actual objects in leaf: "
-					+ leafObjects.size());
+			LOG.error("leaf counter ({}) is larger then actual objects in leaf: {}", objectsInLeaf, leafObjects.size());
 		}
 
 	}

@@ -116,7 +116,7 @@ public class MetaDataReader {
 					crs = CRSManager.lookup("EPSG:" + epsgCode);
 				}
 				catch (UnknownCRSException e) {
-					LOG.error("No coordinate system found for EPSG:" + epsgCode);
+					LOG.error("No coordinate system found for EPSG:{}", epsgCode);
 				}
 			}
 		}
@@ -156,7 +156,7 @@ public class MetaDataReader {
 		if (LOG.isDebugEnabled()) {
 			for (String format : metaData.getMetadataFormatNames()) {
 				// IIOMetadataNode elem = (IIOMetadataNode) metaData.getAsTree( format );
-				LOG.debug("metadata format: " + format);
+				LOG.debug("metadata format: {}", format);
 				LOG.debug("TBD output the xml file here.");
 				// LogUtils.writeTempFile( LOG, "geotiff", ".xml", new XMLFragment( elem
 				// ).toString() );

@@ -340,8 +340,8 @@ public abstract class AbstractWhereBuilder {
 		SQLOperation sqlOper = null;
 
 		if (op.getMatchAction() != null && op.getMatchAction() != MatchAction.ANY) {
-			LOG.warn("Mapping of operators with matchAction=" + op.getMatchAction()
-					+ " to SQL is not implemented (and probably not possible).");
+			LOG.warn("Mapping of operators with matchAction={} to SQL is not implemented (and probably not possible).",
+					op.getMatchAction());
 		}
 
 		switch (op.getSubType()) {
@@ -509,7 +509,7 @@ public abstract class AbstractWhereBuilder {
 		}
 		else if (pt1 != null && pt2 != null) {
 			if (pt1.getBaseType() != pt2.getBaseType()) {
-				LOG.warn("Comparison on different types (" + pt1 + "/" + pt2 + "). Relying on db type conversion.");
+				LOG.warn("Comparison on different types ({}/{}). Relying on db type conversion.", pt1, pt2);
 			}
 		}
 	}

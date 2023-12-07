@@ -139,8 +139,9 @@ public class WFSFeatureCollection<T> {
 					numberMatched = new BigInteger(numberMatchedAttr);
 				}
 				catch (NumberFormatException e) {
-					LOG.warn("Unable to parse value of 'numberMatched' attribute (='" + numberMatchedAttr
-							+ "'). Neither 'unknown' nor an integer value.");
+					LOG.warn(
+							"Unable to parse value of 'numberMatched' attribute (='{}'). Neither 'unknown' nor an integer value.",
+							numberMatchedAttr);
 				}
 			}
 
@@ -155,8 +156,9 @@ public class WFSFeatureCollection<T> {
 					numberReturned = new BigInteger(numberReturnedAttr);
 				}
 				catch (NumberFormatException e) {
-					LOG.warn("Unable to parse value of 'numberReturned' attribute (='" + numberReturnedAttr
-							+ "'). Neither 'unknown' nor an integer value.");
+					LOG.warn(
+							"Unable to parse value of 'numberReturned' attribute (='{}'). Neither 'unknown' nor an integer value.",
+							numberReturnedAttr);
 				}
 			}
 
@@ -200,8 +202,8 @@ public class WFSFeatureCollection<T> {
 					numberMatched = new BigInteger(numberOfFeaturesAttr);
 				}
 				catch (NumberFormatException e) {
-					LOG.warn("Unable to parse value of 'numberOfFeatures' attribute (='" + numberOfFeaturesAttr
-							+ "'). Not an integer value.");
+					LOG.warn("Unable to parse value of 'numberOfFeatures' attribute (='{}'). Not an integer value.",
+							numberOfFeaturesAttr);
 				}
 			}
 

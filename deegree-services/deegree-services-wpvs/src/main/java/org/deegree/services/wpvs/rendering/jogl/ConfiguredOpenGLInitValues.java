@@ -119,7 +119,7 @@ public class ConfiguredOpenGLInitValues implements GLEventListener {
 	 * @param gl
 	 */
 	public void createCompositingTextureShaderPrograms(GL gl) {
-		LOG.debug("building " + numberOfTextureUnits + " shader programs");
+		LOG.debug("building {} shader programs", numberOfTextureUnits);
 		synchronized (LOCK) {
 			if (this.compositeTextureShaderPrograms == null) {
 				this.compositeTextureShaderPrograms = new ShaderProgram[this.numberOfTextureUnits];
@@ -131,8 +131,9 @@ public class ConfiguredOpenGLInitValues implements GLEventListener {
 						compositeTextureShaderPrograms[i].linkProgram(gl);
 					}
 					else {
-						LOG.warn("Could not attach compositing texture shader program: " + i
-								+ " error messages should have been supplied before this message.");
+						LOG.warn(
+								"Could not attach compositing texture shader program: {} error messages should have been supplied before this message.",
+								i);
 					}
 				}
 			}

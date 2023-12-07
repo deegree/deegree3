@@ -77,14 +77,16 @@ public class StorageManager {
 	 * in memory
 	 */
 	public StorageManager(File baseDir, int inputDiskSwitchLimit) {
-		LOG.info("Using directory '" + baseDir + "' for publishing complex outputs and response documents.");
+		LOG.info("Using directory '{}' for publishing complex outputs and response documents.", baseDir);
 		if (!baseDir.exists()) {
-			LOG.error("Configured WPS storage directory name '" + baseDir
-					+ "' does not exist. Please create this directory or adapt the WPS configuration.");
+			LOG.error(
+					"Configured WPS storage directory name '{}' does not exist. Please create this directory or adapt the WPS configuration.",
+					baseDir);
 		}
 		if (!baseDir.isDirectory()) {
-			LOG.error("Configured WPS resource directory name '" + baseDir
-					+ "' is not a directory. Please create this directory or adapt the WPS configuration.");
+			LOG.error(
+					"Configured WPS resource directory name '{}' is not a directory. Please create this directory or adapt the WPS configuration.",
+					baseDir);
 		}
 		this.baseDir = baseDir;
 		this.inputDiskSwitchLimit = inputDiskSwitchLimit;
@@ -96,7 +98,7 @@ public class StorageManager {
 		String resourceName = OUTPUT_PREFIX + outputId;
 		File resourceFile = new File(baseDir, resourceName);
 		if (resourceFile.exists()) {
-			LOG.debug("File '" + resourceFile + "' already exists. Deleting it.");
+			LOG.debug("File '{}' already exists. Deleting it.", resourceFile);
 			resourceFile.delete();
 		}
 		return new OutputStorage(resourceFile, outputId, mimeType);
@@ -108,7 +110,7 @@ public class StorageManager {
 		String resourceName = RESPONSE_PREFIX + responseId;
 		File resourceFile = new File(baseDir, resourceName);
 		if (resourceFile.exists()) {
-			LOG.debug("File '" + resourceFile + "' already exists. Deleting it.");
+			LOG.debug("File '{}' already exists. Deleting it.", resourceFile);
 			resourceFile.delete();
 		}
 		return new ResponseDocumentStorage(resourceFile, responseId, getUrl);
@@ -123,7 +125,7 @@ public class StorageManager {
 			}
 		}
 		catch (IOException e) {
-			LOG.debug("Cannot access stored output (file='" + resourceFile + "')");
+			LOG.debug("Cannot access stored output (file='{}')", resourceFile);
 		}
 		return output;
 	}
@@ -134,7 +136,7 @@ public class StorageManager {
 		String resourceName = INPUT_PREFIX + outputId;
 		File resourceFile = new File(baseDir, resourceName);
 		if (resourceFile.exists()) {
-			LOG.debug("File '" + resourceFile + "' already exists. Deleting it.");
+			LOG.debug("File '{}' already exists. Deleting it.", resourceFile);
 			resourceFile.delete();
 		}
 		return new StreamBufferStore(inputDiskSwitchLimit, resourceFile);

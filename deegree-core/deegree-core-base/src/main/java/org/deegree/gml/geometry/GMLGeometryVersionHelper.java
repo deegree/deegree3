@@ -75,7 +75,7 @@ public class GMLGeometryVersionHelper {
 			gmlVersion = GML_32;
 		}
 		else {
-			LOG.warn("Unable to determine GML version for element: " + elName + ". Falling back to GML 2.");
+			LOG.warn("Unable to determine GML version for element: {}. Falling back to GML 2.", elName);
 			gmlVersion = GML_2;
 		}
 		return GMLInputFactory.createGMLStreamReader(gmlVersion, xmlStream).getGeometryReader();

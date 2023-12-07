@@ -267,7 +267,7 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
 			ta = new ISOMetadataStoreTransaction(conn, dialect, inspectorChain, getQueryables(), config.getAnyText());
 		}
 		catch (SQLException e) {
-			LOG.error("error " + e.getMessage(), e);
+			LOG.error("error {}", e.getMessage(), e);
 			throw new MetadataStoreException(e.getMessage(), e);
 		}
 		return ta;

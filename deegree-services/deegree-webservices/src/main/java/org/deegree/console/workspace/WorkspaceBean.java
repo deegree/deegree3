@@ -287,7 +287,7 @@ public class WorkspaceBean implements Serializable {
 			FacesContext.getCurrentInstance().addMessage(null, fm);
 			return null;
 		}
-		LOG.info("Uploaded workspace file: '" + upload.getFileName() + "'");
+		LOG.info("Uploaded workspace file: '{}'", upload.getFileName());
 		workspaceImportName = upload.getFileName();
 		if (workspaceImportName.endsWith(".deegree-workspace")) {
 			workspaceImportName = workspaceImportName.substring(0,
@@ -312,14 +312,14 @@ public class WorkspaceBean implements Serializable {
 			}
 			else {
 				Zip.unzip(in, target);
-				LOG.debug("Workspace unzipped into: '" + target.getAbsolutePath() + "'");
+				LOG.debug("Workspace unzipped into: '{}'", target.getAbsolutePath());
 			}
 		}
 		catch (Throwable t) {
 			FacesMessage fm = new FacesMessage(SEVERITY_ERROR, "Workspace could not be imported: " + t.getMessage(),
 					t.getLocalizedMessage());
 			FacesContext.getCurrentInstance().addMessage(null, fm);
-			LOG.error("Workspace could not be imported: " + t.getMessage(), t);
+			LOG.error("Workspace could not be imported: {}", t.getMessage(), t);
 			return null;
 		}
 		finally {
@@ -352,7 +352,7 @@ public class WorkspaceBean implements Serializable {
 				if (!s.trim().isEmpty()) {
 					String[] tokens = s.split(" ", 2);
 					if (tokens.length != 2) {
-						LOG.warn("Invalid workspace metadata line: '" + s + "'");
+						LOG.warn("Invalid workspace metadata line: '{}'", s);
 					}
 					res.add(tokens[1]);
 					workspaceLocations.put(tokens[1], tokens[0]);
@@ -396,8 +396,8 @@ public class WorkspaceBean implements Serializable {
 			}
 		}
 		if (version == null) {
-			LOG.warn("No valid version information from Maven deegree modules available. Defaulting to "
-					+ DEFAULT_VERSION);
+			LOG.warn("No valid version information from Maven deegree modules available. Defaulting to {}",
+					DEFAULT_VERSION);
 			version = DEFAULT_VERSION;
 		}
 		return version;

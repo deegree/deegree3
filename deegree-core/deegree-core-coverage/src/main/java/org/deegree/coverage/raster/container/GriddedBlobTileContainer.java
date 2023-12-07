@@ -160,7 +160,7 @@ public class GriddedBlobTileContainer extends GriddedTileContainer {
 			throw new IOException("Given blobfile:" + blobFile + " does not exist.");
 		}
 		long totalSize = blobFile.length();
-		LOG.debug("Real blob size: " + totalSize);
+		LOG.debug("Real blob size: {}", totalSize);
 
 		// blobReaders = new GridFileReader[1];
 		blobReader = new GridFileReader(metaInfoFile, blobFile);
@@ -202,7 +202,7 @@ public class GriddedBlobTileContainer extends GriddedTileContainer {
 			result = blobReader.getTile(columnId, rowId);
 		}
 		catch (IOException e) {
-			LOG.error("Error reading tile data from blob: " + e.getMessage(), e);
+			LOG.error("Error reading tile data from blob: {}", e.getMessage(), e);
 		}
 		return result;
 	}

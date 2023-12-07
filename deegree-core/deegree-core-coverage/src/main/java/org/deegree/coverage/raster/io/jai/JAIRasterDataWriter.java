@@ -78,7 +78,7 @@ public class JAIRasterDataWriter {
 		try {
 			// jai_imageio registers ImageWrite with support for more formats (eg. JPEG
 			// 2000)
-			LOG.debug("trying to write: " + filename + " with format: " + format);
+			LOG.debug("trying to write: {} with format: {}", filename, format);
 			JAI.create("ImageWrite", result, filename, format, null);
 		}
 		catch (IllegalArgumentException ex) {
@@ -100,7 +100,7 @@ public class JAIRasterDataWriter {
 		try {
 			// jai_imageio registers ImageWrite with support for more formats (eg. JPEG
 			// 2000)
-			LOG.debug("trying to write to stream with format: " + format);
+			LOG.debug("trying to write to stream with format: {}", format);
 			JAI.create("ImageWrite", result, stream, format, null);
 		}
 		catch (IllegalArgumentException ex) {

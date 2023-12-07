@@ -127,8 +127,9 @@ public class DEMTextureDataset extends Dataset<TextureManager> {
 			for (DEMTextureDatasetConfig dts : textureDatasets) {
 				if (dts != null) {
 					if (isUnAmbiguous(dts.getTitle())) {
-						LOG.info("The feature dataset with name: " + dts.getName() + " and title: " + dts.getTitle()
-								+ " had multiple definitions in your service configuration.");
+						LOG.info(
+								"The feature dataset with name: {} and title: {} had multiple definitions in your service configuration.",
+								dts.getName(), dts.getTitle());
 					}
 					else {
 						clarifyInheritance(dts, parentMaxPixelError);
@@ -136,8 +137,8 @@ public class DEMTextureDataset extends Dataset<TextureManager> {
 							sceneEnvelope = handleTextureDataset(dts, sceneEnvelope, toLocalCRS, location);
 						}
 						catch (IOException e) {
-							LOG.error("Failed to initialize configured demTexture dataset: " + dts.getName() + ": "
-									+ dts.getTitle() + " because: " + e.getLocalizedMessage(), e);
+							LOG.error("Failed to initialize configured demTexture dataset: {}: {} because: {}",
+									dts.getName(), dts.getTitle(), e.getLocalizedMessage(), e);
 						}
 					}
 				}
@@ -173,7 +174,7 @@ public class DEMTextureDataset extends Dataset<TextureManager> {
 					sceneEnvelope, toLocalCRS, location);
 		}
 		else {
-			LOG.warn("No texture dataset found for texture dataset: " + textureDataset.getTitle());
+			LOG.warn("No texture dataset found for texture dataset: {}", textureDataset.getTitle());
 			return sceneEnvelope;
 		}
 
@@ -258,8 +259,8 @@ public class DEMTextureDataset extends Dataset<TextureManager> {
 			addConstraint(textureDataset.getTitle(), result, constEnv);
 		}
 		else {
-			LOG.warn("Ignoring texture dataset: " + textureDataset.getName() + ": " + textureDataset.getTitle()
-					+ " because no texture providers could be initialized.");
+			LOG.warn("Ignoring texture dataset: {}: {} because no texture providers could be initialized.",
+					textureDataset.getName(), textureDataset.getTitle());
 		}
 		return sceneEnvelope;
 	}
@@ -271,8 +272,8 @@ public class DEMTextureDataset extends Dataset<TextureManager> {
 	private Envelope fillFromCoverage(String coverageStoreId, List<TextureTileProvider> tileProviders) {
 		Coverage coverage = workspace.getResource(CoverageProvider.class, coverageStoreId);
 		if (coverage == null) {
-			LOG.warn("The coverage builder with id: " + coverageStoreId
-					+ " could not create a coverage, ignoring dataset.");
+			LOG.warn("The coverage builder with id: {} could not create a coverage, ignoring dataset.",
+					coverageStoreId);
 			return null;
 		}
 		// JAXBElement<? extends AbstractGeospatialDataSourceType>
@@ -345,7 +346,7 @@ public class DEMTextureDataset extends Dataset<TextureManager> {
 					unitsPerPixel, cacheDir, Math.round(cacheSize * 1024 * 1024 * 1024));
 		}
 		catch (FeatureStoreException e) {
-			LOG.error("Error retrieving envelope from FeatureStore: " + e.getMessage(), e);
+			LOG.error("Error retrieving envelope from FeatureStore: {}", e.getMessage(), e);
 			throw new IOException("Error retrieving envelope from FeatureStore: " + e.getMessage(), e);
 		}
 		tileProviders.add(tProv);

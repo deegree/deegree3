@@ -55,11 +55,11 @@ public class DebugPhaseListener implements PhaseListener {
 	private static final Logger LOG = getLogger(DebugPhaseListener.class);
 
 	public void afterPhase(PhaseEvent event) {
-		LOG.debug("After phase: " + event.getPhaseId());
+		LOG.debug("After phase: {}", event.getPhaseId());
 	}
 
 	public void beforePhase(PhaseEvent event) {
-		LOG.debug("Before phase: " + event.getPhaseId());
+		LOG.debug("Before phase: {}", event.getPhaseId());
 	}
 
 	public PhaseId getPhaseId() {

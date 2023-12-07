@@ -107,15 +107,16 @@ public class GMLCRSStoreProvider implements CRSStoreProvider {
 						t = Class.forName(resourceClassName);
 					}
 					catch (Exception e) {
-						LOG.debug("Could not find class from classname '" + resourceClassName
-								+ "'. Search in the additional modules in the workspace.");
+						LOG.debug(
+								"Could not find class from classname '{}'. Search in the additional modules in the workspace.",
+								resourceClassName);
 						t = Class.forName(resourceClassName, false, workspace.getModuleClassLoader());
 					}
-					LOG.debug("Trying to load configured CRS provider from classname: " + resourceClassName);
+					LOG.debug("Trying to load configured CRS provider from classname: {}", resourceClassName);
 					Constructor<?> constructor = t.getConstructor(GMLCRSStore.class, Map.class);
 					if (constructor == null) {
-						LOG.error("No constructor ( " + this.getClass() + ", Properties.class) found in class:"
-								+ resourceClassName);
+						LOG.error("No constructor ( {}, Properties.class) found in class:{}", this.getClass(),
+								resourceClassName);
 					}
 					else {
 						resource = (GMLResource) constructor.newInstance(crsStore, params);
@@ -125,7 +126,7 @@ public class GMLCRSStoreProvider implements CRSStoreProvider {
 					LOG.error(Messages.getMessage("CRS_CONFIG_INSTANTIATION_ERROR", resourceClassName, t.getMessage()),
 							t);
 				}
-				LOG.info("The configured class: " + resourceClassName + " was instantiated.");
+				LOG.info("The configured class: {} was instantiated.", resourceClassName);
 			}
 			if (resource == null) {
 				LOG.info("Trying to instantiate the default GMLFileResource");

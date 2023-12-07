@@ -110,7 +110,7 @@ public class WPVSClient {
 				String name = capabilities.getNodeAsString(node, xpName, null);
 				if (name != null) {
 					res.add(name);
-					LOG.info("dataset found in GetCapabilities: " + name);
+					LOG.info("dataset found in GetCapabilities: {}", name);
 				}
 			}
 			else

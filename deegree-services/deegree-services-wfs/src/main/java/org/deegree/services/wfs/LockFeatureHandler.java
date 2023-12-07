@@ -107,7 +107,7 @@ class LockFeatureHandler {
 	void doLockFeature(LockFeature request, HttpResponseBuffer response)
 			throws OWSException, XMLStreamException, IOException {
 
-		LOG.debug("doLockFeature: " + request);
+		LOG.debug("doLockFeature: {}", request);
 
 		LockManager manager = getLockManager();
 		Lock lock = acquireOrRenewLock(request, manager);

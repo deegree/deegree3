@@ -343,7 +343,7 @@ public class GML2GeometryReader extends AbstractGMLObjectReader implements GMLGe
 		Polygon polygon = null;
 		String href = xmlStream.getAttributeValue(CommonNamespaces.XLNNS, "href");
 		if (href != null && href.length() > 0) {
-			LOG.debug("Found geometry reference (xlink): '" + href + "'");
+			LOG.debug("Found geometry reference (xlink): '{}'", href);
 			polygon = new PolygonReference(idContext, href, xmlStream.getSystemId());
 			idContext.addReference((GeometryReference<?>) polygon);
 			if (xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT) {
@@ -417,7 +417,7 @@ public class GML2GeometryReader extends AbstractGMLObjectReader implements GMLGe
 		LineString lineString = null;
 		String href = xmlStream.getAttributeValue(CommonNamespaces.XLNNS, "href");
 		if (href != null && href.length() > 0) {
-			LOG.debug("Found geometry reference (xlink): '" + href + "'");
+			LOG.debug("Found geometry reference (xlink): '{}'", href);
 			lineString = new LineStringReference(idContext, href, xmlStream.getSystemId());
 			idContext.addReference((GeometryReference<?>) lineString);
 			if (xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT) {
@@ -489,7 +489,7 @@ public class GML2GeometryReader extends AbstractGMLObjectReader implements GMLGe
 		Point point = null;
 		String href = xmlStream.getAttributeValue(CommonNamespaces.XLNNS, "href");
 		if (href != null && href.length() > 0) {
-			LOG.debug("Found geometry reference (xlink): '" + href + "'");
+			LOG.debug("Found geometry reference (xlink): '{}'", href);
 			point = new PointReference(idContext, href, xmlStream.getSystemId());
 			idContext.addReference((GeometryReference<?>) point);
 			if (xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT) {
@@ -562,7 +562,7 @@ public class GML2GeometryReader extends AbstractGMLObjectReader implements GMLGe
 		Geometry geometry = null;
 		String href = xmlStream.getAttributeValue(CommonNamespaces.XLNNS, "href");
 		if (href != null && href.length() > 0) {
-			LOG.debug("Found geometry reference (xlink): '" + href + "'");
+			LOG.debug("Found geometry reference (xlink): '{}'", href);
 			geometry = new GeometryReference<Geometry>(idContext, href, xmlStream.getSystemId());
 			idContext.addReference((GeometryReference<?>) geometry);
 			if (xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT) {

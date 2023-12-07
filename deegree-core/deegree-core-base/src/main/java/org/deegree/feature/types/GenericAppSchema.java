@@ -355,7 +355,7 @@ public class GenericAppSchema implements AppSchema {
 			LOG.debug("Testing substitutability against null feature type.");
 			return true;
 		}
-		LOG.debug("ft: " + ft.getName() + ", substitution: " + substitution.getName());
+		LOG.debug("ft: {}, substitution: {}", ft.getName(), substitution.getName());
 		if (ft == substitution) {
 			return true;
 		}

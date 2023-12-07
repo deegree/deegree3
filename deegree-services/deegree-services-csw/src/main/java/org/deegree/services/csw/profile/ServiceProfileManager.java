@@ -49,7 +49,7 @@ public class ServiceProfileManager {
 	private static final Logger LOG = getLogger(ServiceProfileManager.class);
 
 	public static ServiceProfile createProfile(MetadataStore<?> store) {
-		LOG.info("Create profile for store with type " + store.getType());
+		LOG.info("Create profile for store with type {}", store.getType());
 		if ("iso".equals(store.getType())) {
 			return new CommonCSWProfile();
 		}

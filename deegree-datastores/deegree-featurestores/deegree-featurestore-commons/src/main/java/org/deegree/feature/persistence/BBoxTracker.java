@@ -76,7 +76,7 @@ public class BBoxTracker {
 				bbox = f.getEnvelope();
 			}
 			catch (Exception e) {
-				LOG.warn("Unable to determine bbox of feature with id " + f.getId() + ": " + e.getMessage());
+				LOG.warn("Unable to determine bbox of feature with id {}: {}", f.getId(), e.getMessage());
 			}
 			if (bbox != null) {
 				try {
@@ -94,8 +94,8 @@ public class BBoxTracker {
 					increaseBBoxes.put(f.getName(), bbox);
 				}
 				catch (Throwable t) {
-					LOG.error("Tracking bbox increase failed. Falling back to full recalculation. Error: "
-							+ t.getMessage());
+					LOG.error("Tracking bbox increase failed. Falling back to full recalculation. Error: {}",
+							t.getMessage());
 					recalcFts.add(f.getName());
 				}
 			}
@@ -107,7 +107,7 @@ public class BBoxTracker {
 	 * @param ft feature type to be updated, must not be <code>null</code>
 	 */
 	public void update(QName ft) {
-		LOG.debug("Update on feature type '" + ft + "'. Full bbox recalculation required on commit.");
+		LOG.debug("Update on feature type '{}'. Full bbox recalculation required on commit.", ft);
 		recalcFts.add(ft);
 	}
 
@@ -116,7 +116,7 @@ public class BBoxTracker {
 	 * @param ft feature type to be deleted, must not be <code>null</code>
 	 */
 	public void delete(QName ft) {
-		LOG.debug("Delete on feature type '" + ft + "'. Full bbox recalculation required on commit.");
+		LOG.debug("Delete on feature type '{}'. Full bbox recalculation required on commit.", ft);
 		recalcFts.add(ft);
 	}
 

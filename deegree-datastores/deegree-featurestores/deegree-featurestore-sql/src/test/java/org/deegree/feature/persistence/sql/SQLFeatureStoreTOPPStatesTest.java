@@ -311,7 +311,7 @@ public class SQLFeatureStoreTOPPStatesTest {
 			}
 		}
 		catch (Throwable t) {
-			LOG.error("Access to test databases not configured properly: " + t.getMessage());
+			LOG.error("Access to test databases not configured properly: {}", t.getMessage());
 		}
 		return settings;
 	}

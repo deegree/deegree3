@@ -180,28 +180,28 @@ public class XmlEditorBean implements Serializable {
 	}
 
 	public String getContent() throws IOException, ClassNotFoundException {
-		LOG.trace("Editing file: " + getFileName() + " with ID + " + getId());
-		LOG.trace("Using schema: " + getSchemaUrl());
-		LOG.trace("Editor content: " + content);
-		LOG.trace("Related ResourceProviderClass: " + resourceProviderClass);
-		LOG.trace("Next view: " + getNextView());
+		LOG.trace("Editing file: {} with ID + {}", getFileName(), getId());
+		LOG.trace("Using schema: {}", getSchemaUrl());
+		LOG.trace("Editor content: {}", content);
+		LOG.trace("Related ResourceProviderClass: {}", resourceProviderClass);
+		LOG.trace("Next view: {}", getNextView());
 		if (content == null) {
-			LOG.trace("No content set for " + this.toString());
+			LOG.trace("No content set for {}", this.toString());
 			if (resourceProviderClass == null) {
 				File file = getFile();
 				if (fileName != null && file.exists()) {
-					LOG.trace("Loading content from file: " + file.getAbsolutePath());
+					LOG.trace("Loading content from file: {}", file.getAbsolutePath());
 					content = FileUtils.readFileToString(file);
-					LOG.trace("Setting content to: " + content);
+					LOG.trace("Setting content to: {}", content);
 					return content;
 				}
 				else if (emptyTemplate != null) {
 					// load template content if the requested file did not exists
-					LOG.trace("Loading template from " + emptyTemplate);
+					LOG.trace("Loading template from {}", emptyTemplate);
 					StringWriter sw = new StringWriter();
 					IOUtils.copy((new URL(emptyTemplate)).openStream(), sw);
 					content = sw.toString();
-					LOG.trace("Setting content to:" + content);
+					LOG.trace("Setting content to:{}", content);
 					return content;
 				}
 			}
@@ -211,18 +211,18 @@ public class XmlEditorBean implements Serializable {
 				ResourceMetadata<?> md = workspace.getResourceMetadata((Class) cls, id);
 				if (md != null) {
 					content = IOUtils.toString(md.getLocation().getAsStream());
-					LOG.trace("Loading content from resource: " + md.getLocation().getAsFile().getAbsolutePath());
+					LOG.trace("Loading content from resource: {}", md.getLocation().getAsFile().getAbsolutePath());
 				}
 				else if (emptyTemplate != null) {
-					LOG.trace("Loading template for resource provider " + this.getResourceProviderClass() + " from "
-							+ emptyTemplate);
+					LOG.trace("Loading template for resource provider {} from {}", this.getResourceProviderClass(),
+							emptyTemplate);
 					StringWriter sw = new StringWriter();
 					IOUtils.copy((new URL(emptyTemplate)).openStream(), sw);
 					content = sw.toString();
 				}
 			}
 		}
-		LOG.trace("Setting content to: " + content);
+		LOG.trace("Setting content to: {}", content);
 		return content;
 	}
 

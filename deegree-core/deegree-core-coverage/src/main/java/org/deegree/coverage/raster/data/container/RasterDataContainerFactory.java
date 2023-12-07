@@ -121,8 +121,7 @@ public class RasterDataContainerFactory {
 				return container;
 			}
 		}
-		LOG.error("RasterDataContainer for type " + l
-				+ " not found, returning memory raster data container (the default)");
+		LOG.error("RasterDataContainer for type {} not found, returning memory raster data container (the default)", l);
 		return new MemoryRasterDataContainer();
 	}
 

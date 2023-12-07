@@ -130,7 +130,7 @@ public class GmlDescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
 		URL baseUrl = DescribeFeatureType.class.getResource("/META-INF/SCHEMAS_OPENGIS_NET");
 		if (baseUrl != null) {
 			this.ogcSchemaJarBaseURL = baseUrl.toString();
-			LOG.debug("GmlDescribeFeatureTypeHandler OGC Schema Jar Base URL: '" + this.ogcSchemaJarBaseURL + "'");
+			LOG.debug("GmlDescribeFeatureTypeHandler OGC Schema Jar Base URL: '{}'", this.ogcSchemaJarBaseURL);
 
 		}
 	}
@@ -153,13 +153,13 @@ public class GmlDescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
 	 */
 	public void doDescribeFeatureType(DescribeFeatureType request, HttpResponseBuffer response)
 			throws OWSException, XMLStreamException, IOException {
-		LOG.debug("doDescribeFeatureType: " + request);
+		LOG.debug("doDescribeFeatureType: {}", request);
 
 		String mimeType = options.getMimeType();
 		GMLVersion version = options.getGmlVersion();
 
-		LOG.debug("contentType:" + response.getContentType());
-		LOG.debug("characterEncoding:" + response.getCharacterEncoding());
+		LOG.debug("contentType:{}", response.getContentType());
+		LOG.debug("characterEncoding:{}", response.getCharacterEncoding());
 
 		XMLStreamWriter writer = WebFeatureService.getXMLResponseWriter(response, mimeType, null);
 
@@ -187,13 +187,13 @@ public class GmlDescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
 	 */
 	public void doDescribeFeatureTypeInSoap(DescribeFeatureType request, HttpResponseBuffer response)
 			throws OWSException, XMLStreamException, IOException {
-		LOG.debug("doDescribeFeatureTypeInSoap: " + request);
+		LOG.debug("doDescribeFeatureTypeInSoap: {}", request);
 
 		String mimeType = options.getMimeType();
 		GMLVersion version = options.getGmlVersion();
 
-		LOG.debug("contentType:" + response.getContentType());
-		LOG.debug("characterEncoding:" + response.getCharacterEncoding());
+		LOG.debug("contentType:{}", response.getContentType());
+		LOG.debug("characterEncoding:{}", response.getCharacterEncoding());
 
 		XMLStreamWriter writer = WebFeatureService.getXMLResponseWriter(response, mimeType, null);
 
@@ -337,12 +337,13 @@ public class GmlDescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
 		String ogcSchemaPath = uri.substring(ogcSchemaJarBaseURL.length());
 		if (!ogcSchemaPath.startsWith("/")) {
 			ogcSchemaLocation.append("/");
-			LOG.debug("OGC Schema path from internal Jar did not include starting '/'. Path: '" + ogcSchemaPath
-					+ "'. Prefixed with '/' to complete URL....");
+			LOG.debug(
+					"OGC Schema path from internal Jar did not include starting '/'. Path: '{}'. Prefixed with '/' to complete URL....",
+					ogcSchemaPath);
 		}
 		ogcSchemaLocation.append(ogcSchemaPath);
 
-		LOG.debug("Translated OGC Schema Jar URL to schemaLocation: '" + ogcSchemaLocation + "'");
+		LOG.debug("Translated OGC Schema Jar URL to schemaLocation: '{}'", ogcSchemaLocation);
 
 		return ogcSchemaLocation.toString();
 		// Old behaviour

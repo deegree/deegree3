@@ -155,7 +155,7 @@ public class FIInspector implements RecordInspector<ISORecord> {
 			String resourceIdentifier = a.getNodeAsString(resourceElement, new XPath(
 					"./gmd:MD_Identifier/gmd:code/gco:CharacterString | ./gmd:RS_Identifier/gmd:code/gco:CharacterString",
 					nsContext), null);
-			LOG.debug("resourceIdentifier: '" + resourceIdentifier + "' ");
+			LOG.debug("resourceIdentifier: '{}' ", resourceIdentifier);
 			resourceIdentifierList.add(resourceIdentifier);
 
 		}

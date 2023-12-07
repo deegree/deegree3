@@ -220,7 +220,7 @@ public class LODAnalyzer extends GLCanvas implements GLEventListener {
 
 	@Override
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
-		LOG.trace("reshape( GLAutoDrawable, " + x + ", " + y + ", " + width + ", " + height + " ) called");
+		LOG.trace("reshape( GLAutoDrawable, {}, {}, {}, {} ) called", x, y, width, height);
 
 		GL gl = drawable.getGL();
 		gl.glViewport(x, y, width, height);

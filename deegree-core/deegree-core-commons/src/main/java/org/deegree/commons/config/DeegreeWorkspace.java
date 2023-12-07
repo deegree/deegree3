@@ -361,14 +361,14 @@ public class DeegreeWorkspace {
 	 */
 	public static String getWorkspaceRoot() {
 		String workspaceRoot = System.getProperty(VAR_WORKSPACE_ROOT);
-		LOG.trace(VAR_WORKSPACE_ROOT + " retrieved from system property: " + workspaceRoot);
+		LOG.trace("{} retrieved from system property: {}", VAR_WORKSPACE_ROOT, workspaceRoot);
 		if (workspaceRoot == null || workspaceRoot.isEmpty()) {
 			workspaceRoot = System.getenv(VAR_WORKSPACE_ROOT);
-			LOG.trace(VAR_WORKSPACE_ROOT + " retrieved from environment variable:" + workspaceRoot);
+			LOG.trace("{} retrieved from environment variable:{}", VAR_WORKSPACE_ROOT, workspaceRoot);
 		}
 		if (workspaceRoot == null || workspaceRoot.isEmpty()) {
 			workspaceRoot = System.getProperty("user.home") + separator + ".deegree";
-			LOG.trace("Using default workspace root directory: " + workspaceRoot);
+			LOG.trace("Using default workspace root directory: {}", workspaceRoot);
 		}
 		return workspaceRoot;
 	}

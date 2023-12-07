@@ -107,7 +107,7 @@ class TransactionCommitter {
 		}
 		if (!fileToWrite.exists()) {
 			boolean created = fileToWrite.createNewFile();
-			LOG.debug("File {} was " + (created ? "successful" : "not") + " created.", fileToWrite);
+			LOG.debug("File {} was {} created.", (created ? "successful" : "not"), fileToWrite);
 		}
 		OutputStream stream = null;
 		XMLStreamWriter writer = null;
@@ -137,7 +137,7 @@ class TransactionCommitter {
 
 	private void deleteFile(TransactionStatus status, File file) throws MetadataStoreException {
 		boolean deleted = file.delete();
-		LOG.debug("File {} was " + (deleted ? "successful" : "not") + " deleted", file);
+		LOG.debug("File {} was {} deleted", (deleted ? "successful" : "not"), file);
 		if (!deleted)
 			throw new MetadataStoreException("Commit failed: could not " + status + " record at " + file);
 	}

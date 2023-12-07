@@ -470,7 +470,7 @@ public class ExecuteResponseXMLWriter extends XMLAdapter {
 		writer.writeStartElement(WPS_NS, "ProcessOutputs");
 
 		for (RequestedOutput requestedOutput : requestedOutputs) {
-			LOG.debug("- exporting " + requestedOutput.getIdentifier());
+			LOG.debug("- exporting {}", requestedOutput.getIdentifier());
 			ProcessletOutput output = outputs.getParameter(requestedOutput.getIdentifier());
 			exportOutput(writer, (ProcessletOutputImpl) output, requestedOutput);
 		}

@@ -87,7 +87,7 @@ public class LockDbProviderProvider extends ConnectionProviderProvider {
 		List<ResourceMetadata<ConnectionProvider>> list = new ArrayList<ResourceMetadata<ConnectionProvider>>();
 
 		String lockDb = new File(TempFileManager.getBaseDir(), "lockdb").getAbsolutePath();
-		LOG.info("Using '" + lockDb + "' for h2 lock database.");
+		LOG.info("Using '{}' for h2 lock database.", lockDb);
 		String url = "jdbc:h2:" + lockDb;
 
 		ResourceLocation<ConnectionProvider> location = getSyntheticProvider("LOCK_DB", url, "SA", "");

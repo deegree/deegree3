@@ -85,7 +85,7 @@ public class TransactionHandler {
 	public void doTransaction(Transaction trans, HttpResponseBuffer response, MetadataStore<?> store)
 			throws XMLStreamException, OWSException, IOException {
 
-		LOG.debug("doTransaction: " + trans);
+		LOG.debug("doTransaction: {}", trans);
 
 		Version version = trans.getVersion();
 
@@ -257,7 +257,7 @@ public class TransactionHandler {
 		// String prefix = insert.getElements().get( 0 ).getNamespace().getPrefix();
 
 		List<String> ids = ta.performInsert(insert);
-		LOG.debug("inserted metadata: " + ids);
+		LOG.debug("inserted metadata: {}", ids);
 		LOG.info("Insert done!");
 		return ids;
 	}

@@ -68,11 +68,11 @@ public class SQLFunctionManager implements Initializable, Destroyable {
 			nameToFunction = new HashMap<String, SQLFunctionProvider>();
 			try {
 				for (SQLFunctionProvider function : functionLoader) {
-					LOG.debug("SQLFunction: " + function + ", name: " + function.getName());
+					LOG.debug("SQLFunction: {}, name: {}", function, function.getName());
 					String name = function.getName().toLowerCase();
 					if (nameToFunction.containsKey(name)) {
-						LOG.error("Multiple SQLFunction instances for name: '" + name + "' on classpath -- omitting '"
-								+ function.getClass().getName() + "'.");
+						LOG.error("Multiple SQLFunction instances for name: '{}' on classpath -- omitting '{}'.", name,
+								function.getClass().getName());
 						continue;
 					}
 					nameToFunction.put(name, function);
@@ -105,7 +105,7 @@ public class SQLFunctionManager implements Initializable, Destroyable {
 				fp.destroy();
 			}
 			catch (Throwable t) {
-				LOG.error("Destroying of SQLFunctionProvider " + fp.getName() + " failed: " + t.getMessage());
+				LOG.error("Destroying of SQLFunctionProvider {} failed: {}", fp.getName(), t.getMessage());
 			}
 		}
 		functionLoader = null;
@@ -123,7 +123,7 @@ public class SQLFunctionManager implements Initializable, Destroyable {
 				fp.init(ws);
 			}
 			catch (Exception t) {
-				LOG.error("Initialization of SQLFunctionProvider " + fp.getName() + " failed: " + t.getMessage());
+				LOG.error("Initialization of SQLFunctionProvider {} failed: {}", fp.getName(), t.getMessage());
 			}
 		}
 	}

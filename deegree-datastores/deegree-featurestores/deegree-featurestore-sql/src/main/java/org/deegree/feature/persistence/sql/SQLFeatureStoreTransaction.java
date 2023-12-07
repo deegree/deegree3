@@ -223,7 +223,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 				fs.getBBoxCache().persist();
 			}
 			catch (Throwable t) {
-				LOG.error("Unable to persist bbox cache: " + t.getMessage());
+				LOG.error("Unable to persist bbox cache: {}", t.getMessage());
 			}
 		}
 	}
@@ -308,7 +308,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 		finally {
 			JDBCUtils.close(stmt);
 		}
-		LOG.debug("Deleted " + deleted + " features.");
+		LOG.debug("Deleted {} features.", deleted);
 		return deleted;
 	}
 
@@ -317,11 +317,11 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 
 		int deleted = 0;
 		for (ResourceId id : filter.getSelectedIds()) {
-			LOG.debug("Analyzing id: " + id.getRid());
+			LOG.debug("Analyzing id: {}", id.getRid());
 			IdAnalysis analysis = null;
 			try {
 				analysis = schema.analyzeId(id.getRid());
-				LOG.debug("Analysis: " + analysis);
+				LOG.debug("Analysis: {}", analysis);
 				if (!schema.getKeyDependencies().getDeleteCascadingByDB()) {
 					LOG.debug("Deleting joined rows manually.");
 					deleteJoinedRows(analysis);
@@ -361,7 +361,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 				Object sqlValue = SQLValueMangler.internalToSQL(value);
 				stmt.setObject(i++, sqlValue);
 			}
-			LOG.debug("Executing: " + stmt);
+			LOG.debug("Executing: {}", stmt);
 			deleted += stmt.executeUpdate();
 		}
 		catch (Throwable e) {
@@ -469,7 +469,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 				for (Entry<SQLIdentifier, Object> joinKey : keyColToValue.entrySet()) {
 					stmt.setObject(i++, joinKey.getValue());
 				}
-				LOG.debug("Executing SELECT (following join): " + stmt);
+				LOG.debug("Executing SELECT (following join): {}", stmt);
 				ResultSet rs = stmt.executeQuery();
 				while (rs.next()) {
 					Map<SQLIdentifier, Object> joinKeyToValue = new HashMap<SQLIdentifier, Object>();
@@ -533,7 +533,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 			for (Entry<SQLIdentifier, Object> joinKey : joinKeyColToValue.entrySet()) {
 				stmt.setObject(i++, joinKey.getValue());
 			}
-			LOG.debug("Executing DELETE (joined rows): " + stmt);
+			LOG.debug("Executing DELETE (joined rows): {}", stmt);
 			stmt.executeUpdate();
 		}
 		catch (SQLException e) {
@@ -558,7 +558,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 			findFeaturesAndGeometries(member, geometries, features, fids, gids);
 		}
 
-		LOG.debug(features.size() + " features / " + geometries.size() + " geometries");
+		LOG.debug("{} features / {} geometries", features.size(), geometries.size());
 
 		for (FeatureInspector inspector : inspectors) {
 			for (Feature f : features) {
@@ -689,7 +689,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 		}
 
 		long elapsed = System.currentTimeMillis() - begin;
-		LOG.debug("Insertion of " + features.size() + " features: " + elapsed + " [ms]");
+		LOG.debug("Insertion of {} features: {} [ms]", features.size(), elapsed);
 		return new ArrayList<String>(fids);
 	}
 
@@ -706,7 +706,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 	 * @throws FeatureStoreException
 	 */
 	private int insertFeatureBlob(PreparedStatement stmt, Feature feature) throws SQLException, FeatureStoreException {
-		LOG.debug("Inserting feature with id '" + feature.getId() + "' (BLOB)");
+		LOG.debug("Inserting feature with id '{}' (BLOB)", feature.getId());
 		if (fs.getSchema().getFeatureType(feature.getName()) == null) {
 			throw new FeatureStoreException("Cannot insert feature '" + feature.getName()
 					+ "': feature type is not served by this feature store.");
@@ -716,7 +716,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 		stmt.setShort(2, fs.getFtId(feature.getName()));
 		byte[] bytes = encodeFeatureBlob(feature, crs);
 		stmt.setBytes(3, bytes);
-		LOG.debug("Feature blob size: " + bytes.length);
+		LOG.debug("Feature blob size: {}", bytes.length);
 		Geometry bboxGeom = getFeatureEnvelopeAsGeometry(feature);
 		blobGeomConverter.setParticle(stmt, bboxGeom, 4);
 		stmt.execute();
@@ -738,8 +738,8 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 	@Override
 	public List<String> performUpdate(QName ftName, List<ParsedPropertyReplacement> replacementProps, Filter filter,
 			Lock lock) throws FeatureStoreException {
-		LOG.debug("Updating feature type '" + ftName + "', filter: " + filter + ", replacement properties: "
-				+ replacementProps.size());
+		LOG.debug("Updating feature type '{}', filter: {}, replacement properties: {}", ftName, filter,
+				replacementProps.size());
 		List<String> updatedFids = null;
 		if (blobMapping != null) {
 			updatedFids = performUpdateBlob(ftName, replacementProps, filter, lock);
@@ -790,11 +790,11 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 	}
 
 	private void updateFeatureBlob(final PreparedStatement stmt, final Feature feature) throws SQLException {
-		LOG.debug("Updating feature with id '" + feature.getId() + "' (BLOB)");
+		LOG.debug("Updating feature with id '{}' (BLOB)", feature.getId());
 		final ICRS crs = blobMapping.getCRS();
 		final byte[] bytes = encodeFeatureBlob(feature, crs);
 		stmt.setBytes(1, bytes);
-		LOG.debug("Feature blob size: " + bytes.length);
+		LOG.debug("Feature blob size: {}", bytes.length);
 		final Geometry bboxGeom = getFeatureEnvelopeAsGeometry(feature);
 		blobGeomConverter.setParticle(stmt, bboxGeom, 2);
 		stmt.setString(3, feature.getId());
@@ -810,7 +810,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 			}
 		}
 		catch (Exception e) {
-			LOG.warn("Unable to determine bbox of feature with id '" + feature.getId() + "': " + e.getMessage());
+			LOG.warn("Unable to determine bbox of feature with id '{}': {}", feature.getId(), e.getMessage());
 		}
 		return bboxGeom;
 	}
@@ -878,7 +878,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 					filter.getSelectedIds());
 
 			if (sql != null) {
-				LOG.debug("Update: " + sql);
+				LOG.debug("Update: {}", sql);
 				stmt = conn.prepareStatement(sql.toString());
 				setRelationalUpdateValues(replacementProps, ftMapping, stmt, filter, fidMapping);
 				int[] updates = stmt.executeBatch();
@@ -1004,12 +1004,12 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 					sql.append(converter.getSetSnippet(null));
 				}
 				else {
-					LOG.warn("Updating of " + mapping.getClass() + " is currently not implemented. Omitting.");
+					LOG.warn("Updating of {} is currently not implemented. Omitting.", mapping.getClass());
 					continue;
 				}
 			}
 			else {
-				LOG.warn("No mapping for update property '" + propName + "'. Omitting.");
+				LOG.warn("No mapping for update property '{}'. Omitting.", propName);
 			}
 		}
 

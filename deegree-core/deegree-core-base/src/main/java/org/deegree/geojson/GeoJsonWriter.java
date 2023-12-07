@@ -228,7 +228,7 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter, G
 	private void exportFeaturePropertyType(Property property)
 			throws IOException, UnknownCRSException, TransformationException {
 		QName propertyName = property.getName();
-		LOG.debug("Exporting feature property '" + propertyName + "'");
+		LOG.debug("Exporting feature property '{}'", propertyName);
 		if (property instanceof Feature) {
 			if (property == null) {
 				nullValue();

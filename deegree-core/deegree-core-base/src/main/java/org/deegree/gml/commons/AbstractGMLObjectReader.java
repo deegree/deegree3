@@ -209,8 +209,8 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
 			throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
 		if (LOG.isDebugEnabled()) {
-			LOG.debug("- parsing property (begin): " + xmlStream.getCurrentEventInfo());
-			LOG.debug("- property declaration: " + propDecl);
+			LOG.debug("- parsing property (begin): {}", xmlStream.getCurrentEventInfo());
+			LOG.debug("- property declaration: {}", propDecl);
 		}
 
 		Property property = null;
@@ -244,7 +244,7 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
 		}
 
 		if (LOG.isDebugEnabled()) {
-			LOG.debug(" - parsing property (end): " + xmlStream.getCurrentEventInfo());
+			LOG.debug(" - parsing property (end): {}", xmlStream.getCurrentEventInfo());
 		}
 		return property;
 	}
@@ -636,7 +636,7 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
 			ICRS crs) throws NoSuchElementException, XMLStreamException, XMLParsingException, UnknownCRSException {
 
 		QName elName = xmlStream.getName();
-		LOG.debug("Parsing complex XML element " + elName);
+		LOG.debug("Parsing complex XML element {}", elName);
 		if (gmlStreamReader.getGeometryReader().isGeometryElement(xmlStream)) {
 			return gmlStreamReader.getGeometryReader().parse(xmlStream);
 		}
@@ -730,7 +730,7 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
 			throws NoSuchElementException, XMLStreamException, XMLParsingException, UnknownCRSException {
 
 		QName elName = xmlStream.getName();
-		LOG.debug("Parsing complex XML element " + elName + " (without schema information)");
+		LOG.debug("Parsing complex XML element {} (without schema information)", elName);
 		if (gmlStreamReader.getGeometryReader().isGeometryElement(xmlStream)) {
 			return gmlStreamReader.getGeometryReader().parse(xmlStream);
 		}

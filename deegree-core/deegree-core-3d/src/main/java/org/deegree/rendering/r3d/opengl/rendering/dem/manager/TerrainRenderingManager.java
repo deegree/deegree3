@@ -196,7 +196,7 @@ public class TerrainRenderingManager {
 			}
 		}
 		catch (Throwable t) {
-			LOG.error("Rendering did not succeed because: " + t.getLocalizedMessage(), t);
+			LOG.error("Rendering did not succeed because: {}", t.getLocalizedMessage(), t);
 		}
 	}
 
@@ -249,11 +249,10 @@ public class TerrainRenderingManager {
 		}
 		catch (IOException e) {
 			LOG.error("Could not load all required DEM LOD fragments for the given render context stack.", e);
-			LOG.error("Could not load all required DEM LOD fragments for the given render context because: "
-					+ e.getLocalizedMessage());
+			LOG.error("Could not load all required DEM LOD fragments for the given render context because: {}",
+					e.getLocalizedMessage());
 		}
-		LOG.debug("Loading of " + activeLOD.size() + " fragments: " + (System.currentTimeMillis() - begin)
-				+ " milliseconds.");
+		LOG.debug("Loading of {} fragments: {} milliseconds.", activeLOD.size(), (System.currentTimeMillis() - begin));
 	}
 
 	/**
@@ -269,7 +268,7 @@ public class TerrainRenderingManager {
 
 		long begin = System.currentTimeMillis();
 		if (LOG.isDebugEnabled()) {
-			LOG.debug("Texturizing " + fragments.size() + " fragments, managers: " + textureManagers.length);
+			LOG.debug("Texturizing {} fragments, managers: {}", fragments.size(), textureManagers.length);
 			LOG.debug(" Requested texture managers: {}", Arrays.toString(textureManagers));
 		}
 
@@ -288,7 +287,7 @@ public class TerrainRenderingManager {
 		}
 		catch (InterruptedException e) {
 			LOG.debug("Could not fetch the textures, stack.", e);
-			LOG.error("Could not fetch the textures because: " + e.getMessage());
+			LOG.error("Could not fetch the textures because: {}", e.getMessage());
 		}
 		Map<RenderMeshFragment, List<FragmentTexture>> meshFragmentToTexture = new HashMap<RenderMeshFragment, List<FragmentTexture>>();
 		if (results != null) {
@@ -321,7 +320,7 @@ public class TerrainRenderingManager {
 					// e.getMessage() );
 				}
 			}
-			LOG.debug("Fetching of textures: " + (System.currentTimeMillis() - begin) + " milliseconds.");
+			LOG.debug("Fetching of textures: {} milliseconds.", (System.currentTimeMillis() - begin));
 		}
 		else {
 			LOG.warn("No textures retrieved from the datasources.");
@@ -342,10 +341,10 @@ public class TerrainRenderingManager {
 		}
 		catch (IOException e) {
 			LOG.debug("Could not load the fragments on the gpu, stack.", e);
-			LOG.error("Could not load the fragments on the gpu because: " + e.getMessage());
+			LOG.error("Could not load the fragments on the gpu because: {}", e.getMessage());
 		}
-		LOG.debug("GPU upload of " + activeLOD.size() + " fragments: " + (System.currentTimeMillis() - begin)
-				+ " milliseconds.");
+		LOG.debug("GPU upload of {} fragments: {} milliseconds.", activeLOD.size(),
+				(System.currentTimeMillis() - begin));
 
 	}
 

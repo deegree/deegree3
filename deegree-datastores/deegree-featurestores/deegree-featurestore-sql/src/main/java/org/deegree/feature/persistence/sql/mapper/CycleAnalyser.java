@@ -54,7 +54,7 @@ public class CycleAnalyser {
 		boolean isCycle = isCycle(typeDef);
 		if (isCycle) {
 			if (stop(getQName(typeDef))) {
-				LOG.info("Allowed cycle depth of " + allowedCycleDepth + " reached. Mapping will stop at this cycle.");
+				LOG.info("Allowed cycle depth of {} reached. Mapping will stop at this cycle.", allowedCycleDepth);
 				return true;
 			}
 		}
@@ -159,7 +159,7 @@ public class CycleAnalyser {
 			sb.append(step);
 			sb.append(" (cycle depth: ").append(nameToCycleDepth.get(step)).append(")");
 		}
-		LOG.info("Current path:" + sb.toString());
+		LOG.info("Current path:{}", sb.toString());
 	}
 
 	private QName getQName(XSTypeDefinition xsType) {
@@ -177,7 +177,7 @@ public class CycleAnalyser {
 			for (XSComplexTypeDefinition ct : parentCTs) {
 				if (ct.getName() != null) {
 					if (typeDef.getName().equals(ct.getName()) && typeDef.getNamespace().equals(ct.getNamespace())) {
-						LOG.info("Found cycle at " + getQName(typeDef));
+						LOG.info("Found cycle at {}", getQName(typeDef));
 						return true;
 					}
 				}

@@ -342,7 +342,7 @@ public class XYZReader implements RasterReader {
 					nOpts.setRasterGeoReference(geoRef);
 				}
 				catch (IOException e) {
-					LOG.debug("Could not read xyz world file: " + e.getLocalizedMessage(), e);
+					LOG.debug("Could not read xyz world file: {}", e.getLocalizedMessage(), e);
 				}
 			}
 			result = createSimpleRaster(reader, nOpts);

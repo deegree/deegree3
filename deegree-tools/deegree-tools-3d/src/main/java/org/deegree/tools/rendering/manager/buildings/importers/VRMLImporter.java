@@ -176,7 +176,7 @@ public class VRMLImporter implements ModelImporter {
 	public VRMLImporter(Map<String, String> params) throws IOException {
 		String texDir = params.get(TEX_DIR);
 		if (texDir == null || "".equals(texDir.trim())) {
-			LOG.info("Setting tex dir to " + System.getProperty("user.home") + "/j3dTextures/");
+			LOG.info("Setting tex dir to {}/j3dTextures/", System.getProperty("user.home"));
 			texDir = System.getProperty("user.home") + "/j3dTextures/";
 			File t = new File(texDir);
 			t.mkdir();
@@ -239,8 +239,8 @@ public class VRMLImporter implements ModelImporter {
 				}
 				catch (NumberFormatException e) {
 					LOG.error(
-							"The rotation axis values were not correctly defined, please use a comma separated list: x,y,z,a: "
-									+ e.getLocalizedMessage());
+							"The rotation axis values were not correctly defined, please use a comma separated list: x,y,z,a: {}",
+							e.getLocalizedMessage());
 				}
 
 			}
@@ -387,7 +387,7 @@ public class VRMLImporter implements ModelImporter {
 					importGroup(result, (Group) n, transformation, lower, upper);
 					if (tmpTrans != null) {
 						transformation.mulInverse(tmpTrans);
-						LOG.debug("After undoing the inverse of transformGroup transform:\n" + transformation);
+						LOG.debug("After undoing the inverse of transformGroup transform:\n{}", transformation);
 					}
 				}
 				else if (n instanceof Leaf) {
@@ -401,14 +401,14 @@ public class VRMLImporter implements ModelImporter {
 		Transform3D tmpTrans = new Transform3D();
 		tg.getTransform(tmpTrans);
 		if (tmpTrans.getBestType() != Transform3D.IDENTITY && tmpTrans.getBestType() != Transform3D.ZERO) {
-			LOG.debug("A transform group with transform:\n" + tmpTrans);
+			LOG.debug("A transform group with transform:\n{}", tmpTrans);
 			// Matrix3d mat = new Matrix3d();
 			// tmpTrans.getRotationScale( mat );
 			// transformation.set( mat );
 
 			transformation.mul(tmpTrans);
 
-			LOG.debug("Resulting transform:\n" + transformation);
+			LOG.debug("Resulting transform:\n{}", transformation);
 		}
 		return tmpTrans;
 	}
@@ -434,7 +434,7 @@ public class VRMLImporter implements ModelImporter {
 				importBackground(result, (Background) l);
 			}
 			else {
-				LOG.info("Don't know howto import object of instance: " + l.getClass().getName());
+				LOG.info("Don't know howto import object of instance: {}", l.getClass().getName());
 			}
 		}
 	}
@@ -489,7 +489,7 @@ public class VRMLImporter implements ModelImporter {
 					// TRIANGLE_FANS are not supported.
 					if (!(glType == GL.GL_TRIANGLE_STRIP || glType == GL.GL_QUADS || glType == GL.GL_LINE_STRIP)) {
 						if (!(ga instanceof TriangleArray)) {
-							LOG.info("Not a triangle Array geometry -> convert to triangles, original type is: " + ga);
+							LOG.info("Not a triangle Array geometry -> convert to triangles, original type is: {}", ga);
 							try {
 								GeometryInfo inf = new GeometryInfo(ga);
 								inf.recomputeIndices();
@@ -503,10 +503,10 @@ public class VRMLImporter implements ModelImporter {
 
 								ga = inf.getGeometryArray();
 								glType = getGLType(ga);
-								LOG.info("The converted type is: " + ga);
+								LOG.info("The converted type is: {}", ga);
 							}
 							catch (IllegalArgumentException e) {
-								LOG.info("Could not create a triangle array of the: " + ga);
+								LOG.info("Could not create a triangle array of the: {}", ga);
 								doImport = false;
 							}
 						}
@@ -519,7 +519,7 @@ public class VRMLImporter implements ModelImporter {
 							LOG.error("No coordinates found in the geometryArray, this may not be.");
 						}
 						else {
-							LOG.debug("Number of vertices in shape3d: " + vertexCount);
+							LOG.debug("Number of vertices in shape3d: {}", vertexCount);
 
 							float[] coords = exportCoords(ga, transformation, lower, upper);
 
@@ -528,7 +528,7 @@ public class VRMLImporter implements ModelImporter {
 							 */
 							float[] normals = exportNormals(ga, transformation);
 							if (normals == null) {
-								LOG.debug("VRML file: " + id + " has no normals");
+								LOG.debug("VRML file: {} has no normals", id);
 							}
 
 							/**
@@ -722,7 +722,7 @@ public class VRMLImporter implements ModelImporter {
 								}
 								else {
 									texName = cache.second;
-									LOG.debug("Using old texture reference: " + texName);
+									LOG.debug("Using old texture reference: {}", texName);
 								}
 							}
 						}
@@ -770,10 +770,10 @@ public class VRMLImporter implements ModelImporter {
 		try {
 			File f = new File(textureimportDir, texName);
 			ImageIO.write(scaledImage, "png", f);
-			LOG.debug("Wrote texture to: " + f.getAbsolutePath());
+			LOG.debug("Wrote texture to: {}", f.getAbsolutePath());
 		}
 		catch (IOException e) {
-			LOG.error("Failed to write texture: " + texName, e);
+			LOG.error("Failed to write texture: {}", texName, e);
 		}
 		cachedTextures.put(image, texName);
 		return texName;

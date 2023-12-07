@@ -1359,7 +1359,7 @@ public class WKTWriter {
 			write(geom, writer);
 		}
 		catch (IOException e) {
-			LOG.error("Error while exporting geometry becauese: " + e.getLocalizedMessage(), e);
+			LOG.error("Error while exporting geometry becauese: {}", e.getLocalizedMessage(), e);
 		}
 		return writer.toString();
 	}

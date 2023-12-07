@@ -113,16 +113,16 @@ public class ValueReference implements Expression {
 
 		try {
 			xpath = new BaseXPath(text, null).getRootExpr();
-			LOG.debug("XPath: " + xpath);
+			LOG.debug("XPath: {}", xpath);
 		}
 		catch (JaxenException e) {
-			LOG.debug("'" + text + "' does not denote a valid XPath 1.0 expression.");
+			LOG.debug("'{}' does not denote a valid XPath 1.0 expression.", text);
 			return;
 		}
 
 		for (String prefix : XPathUtils.extractPrefixes(xpath)) {
 			String ns = nsContext == null ? null : nsContext.translateNamespacePrefixToUri(prefix);
-			LOG.debug(prefix + " -> " + ns);
+			LOG.debug("{} -> {}", prefix, ns);
 			bindings.addNamespace(prefix, ns);
 		}
 
@@ -142,7 +142,7 @@ public class ValueReference implements Expression {
 							String ns = this.bindings.translateNamespacePrefixToUri(prefix);
 							qName = new QName(ns, step.getLocalName(), prefix);
 						}
-						LOG.debug("QName: " + qName);
+						LOG.debug("QName: {}", qName);
 					}
 				}
 			}

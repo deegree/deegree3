@@ -118,16 +118,16 @@ public class HttpBasicAuthentication implements CredentialsProvider {
 	 */
 	private Credentials doBasicAuthentication(HttpServletRequest req, HttpServletResponse response) {
 		// look for HTTP Basic Authentification info
-		LOG.debug("header: " + req.getHeader("authorization"));
+		LOG.debug("header: {}", req.getHeader("authorization"));
 		String authorizationHeader = req.getHeader("authorization");
 		if (authorizationHeader != null) {
 			if (authorizationHeader.startsWith("Basic ") || authorizationHeader.startsWith("BASIC ")) {
-				LOG.debug("Found basic authorization header: '" + authorizationHeader + "'.");
+				LOG.debug("Found basic authorization header: '{}'.", authorizationHeader);
 				// 6: length of "Basic "
 				String encodedCreds = authorizationHeader.substring(6).trim();
-				LOG.debug("encodedCreds: " + encodedCreds);
+				LOG.debug("encodedCreds: {}", encodedCreds);
 				String creds = new String(Base64.decodeBase64(encodedCreds));
-				LOG.debug("creds: " + creds);
+				LOG.debug("creds: {}", creds);
 				int delimPos = creds.indexOf(':');
 				if (delimPos != -1) {
 
@@ -135,8 +135,8 @@ public class HttpBasicAuthentication implements CredentialsProvider {
 
 					String password = creds.substring(delimPos + 1);
 
-					LOG.debug("user: " + user);
-					LOG.debug("password: " + password);
+					LOG.debug("user: {}", user);
+					LOG.debug("password: {}", password);
 					return new Credentials(user, password);
 
 				}

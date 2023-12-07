@@ -301,9 +301,9 @@ public class GdalDataset implements KeyedResource {
 				byte[] bandBytes = bands[i];
 				if (band.ReadRaster(regionMinX, regionMinY, regionPixelsX, regionPixelsY, targetWidth, targetHeight,
 						GDT_Byte, bandBytes, 0, 0) != CE_None) {
-					LOG.error("GDAL ReadRaster failed: " + regionMinX + "," + regionMinY + "," + regionPixelsX + ","
-							+ regionPixelsY + "," + targetWidth + "," + targetHeight + "," + bandBytes.length + ","
-							+ datasetPixelsX + "," + datasetPixelsY);
+					LOG.error("GDAL ReadRaster failed: {},{},{},{},{},{},{},{},{}", regionMinX, regionMinY,
+							regionPixelsX, regionPixelsY, targetWidth, targetHeight, bandBytes.length, datasetPixelsX,
+							datasetPixelsY);
 					return bands;
 				}
 			}

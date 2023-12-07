@@ -96,8 +96,8 @@ public class UpdateBboxCache {
 			}
 			catch (FeatureStoreException e) {
 				updateLog.addFailed(featureStoreId, featureTypeName);
-				LOG.debug("Update of FeatureType " + featureTypeName + ", from FeatureStore with ID " + featureStoreId
-						+ " failed", e);
+				LOG.debug("Update of FeatureType {}, from FeatureStore with ID {} failed", featureTypeName,
+						featureStoreId, e);
 			}
 		}
 	}

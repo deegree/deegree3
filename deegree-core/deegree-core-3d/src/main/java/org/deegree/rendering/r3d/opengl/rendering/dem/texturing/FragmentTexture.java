@@ -119,7 +119,7 @@ public class FragmentTexture {
 		double tileXMax = texture.getDataMaxX() - minX;
 		double tileYMax = texture.getDataMaxY() - minY;
 		if (LOG.isDebugEnabled()) {
-			LOG.debug(tileXMin + ", " + tileYMin + ", " + tileXMax + ", " + tileYMax);
+			LOG.debug("{}, {}, {}, {}", tileXMin, tileYMin, tileXMax, tileYMax);
 		}
 
 		double tileWidth = texture.getDataMaxX() - texture.getDataMinX();

@@ -207,8 +207,7 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
 					maxY = max.get1();
 				}
 				catch (ArrayIndexOutOfBoundsException e) {
-					LOG.error(
-							"Cannot generate WGS84 envelope for tile layer '" + md.getName() + "'. Using full extent.",
+					LOG.error("Cannot generate WGS84 envelope for tile layer '{}'. Using full extent.", md.getName(),
 							e);
 					minX = -180.0;
 					minY = -90.0;

@@ -80,7 +80,7 @@ public class LazyRasterDataContainer implements RasterDataContainer, RasterDataC
 	public synchronized RasterData getRasterData() {
 		if (!rasterLoaded) {
 			if (log.isDebugEnabled()) {
-				log.debug("reading: " + this.toString());
+				log.debug("reading: {}", this.toString());
 			}
 			raster = reader.read();
 			rasterLoaded = true;

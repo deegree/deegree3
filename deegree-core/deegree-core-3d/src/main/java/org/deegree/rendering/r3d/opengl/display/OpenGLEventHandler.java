@@ -171,11 +171,11 @@ public class OpenGLEventHandler implements GLEventListener {
 		trackBall.multModelMatrix(gl, centroid);
 		float[] newEye = JOGLUtils.getEyeFromModelView(gl);
 		if (LOG.isDebugEnabled()) {
-			LOG.debug("farClippingPlane:" + farClippingPlane);
-			LOG.debug("centroid:" + centroid[0] + "," + centroid[1] + "," + centroid[2]);
-			LOG.debug("lookAt:" + lookAt[0] + "," + lookAt[1] + "," + lookAt[2]);
-			LOG.debug("eye:" + eye[0] + "," + eye[1] + "," + eye[2]);
-			LOG.debug("Eye in model space: " + Vectors3f.asString(newEye));
+			LOG.debug("farClippingPlane:{}", farClippingPlane);
+			LOG.debug("centroid:{},{},{}", centroid[0], centroid[1], centroid[2]);
+			LOG.debug("lookAt:{},{},{}", lookAt[0], lookAt[1], lookAt[2]);
+			LOG.debug("eye:{},{},{}", eye[0], eye[1], eye[2]);
+			LOG.debug("Eye in model space: {}", Vectors3f.asString(newEye));
 		}
 
 		Point3d newEyeP = new Point3d(newEye[0], newEye[1], newEye[2]);

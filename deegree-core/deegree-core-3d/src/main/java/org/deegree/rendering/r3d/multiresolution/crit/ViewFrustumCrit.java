@@ -155,15 +155,14 @@ public class ViewFrustumCrit implements LODCriterion {
 			resolution = 0.00001;
 		}
 		double textureSize = getMaxSideLen(fragment) / resolution;
-		LOG.debug("Side len: " + getMaxSideLen(fragment) + ", resolution: " + resolution + ", texture size: "
-				+ textureSize);
+		LOG.debug("Side len: {}, resolution: {}, texture size: {}", getMaxSideLen(fragment), resolution, textureSize);
 		if (textureSize > maxTextureSize) {
-			LOG.debug("Side len: " + getMaxSideLen(fragment) + ", resolution: " + resolution + ", texture size: "
-					+ textureSize);
+			LOG.debug("Side len: {}, resolution: {}, texture size: {}", getMaxSideLen(fragment), resolution,
+					textureSize);
 		}
 		else {
-			LOG.debug("No refinement needed, Side len: " + getMaxSideLen(fragment) + ", resolution: " + resolution
-					+ ", texture size: " + textureSize);
+			LOG.debug("No refinement needed, Side len: {}, resolution: {}, texture size: {}", getMaxSideLen(fragment),
+					resolution, textureSize);
 		}
 
 		return textureSize <= maxTextureSize;

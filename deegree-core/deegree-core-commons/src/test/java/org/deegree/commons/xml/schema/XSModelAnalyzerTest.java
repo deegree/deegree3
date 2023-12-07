@@ -98,8 +98,8 @@ public class XSModelAnalyzerTest {
 		analyzer.getXSModel();
 		XSElementDeclaration a = analyzer.getElementDecl("Philosopher", "http://www.deegree.org/app");
 		XSElementDeclaration b = analyzer.getElementDecl("FeatureCollection", "http://www.opengis.net/wfs");
-		LOG.debug("" + a.getSubstitutionGroupAffiliation());
-		LOG.debug("" + b.getSubstitutionGroupAffiliation().getSubstitutionGroupAffiliation());
+		LOG.debug("{}", a.getSubstitutionGroupAffiliation());
+		LOG.debug("{}", b.getSubstitutionGroupAffiliation().getSubstitutionGroupAffiliation());
 
 		QName abstractFeatureElementName = new QName("http://www.opengis.net/gml", "_Feature");
 		analyzer.getSubstitutions(abstractFeatureElementName, null, true, true);
@@ -117,7 +117,7 @@ public class XSModelAnalyzerTest {
 		for (XSElementDeclaration decl : geometryElements) {
 
 			XSComplexTypeDefinition typeDef = (XSComplexTypeDefinition) decl.getTypeDefinition();
-			LOG.debug("element: " + decl.getName() + ", type: " + typeDef.getName());
+			LOG.debug("element: {}, type: {}", decl.getName(), typeDef.getName());
 
 			switch (typeDef.getContentType()) {
 				case XSComplexTypeDefinition.CONTENTTYPE_ELEMENT:
@@ -150,7 +150,7 @@ public class XSModelAnalyzerTest {
 							int minOccurs2 = particle2.getMinOccurs();
 							int maxOccurs2 = particle2.getMaxOccursUnbounded() ? -1 : particle2.getMaxOccurs();
 							QName elementName = new QName(elementDecl2.getNamespace(), elementDecl2.getName());
-							LOG.debug("- property: " + elementName + ", min: " + minOccurs2 + ", max: " + maxOccurs2);
+							LOG.debug("- property: {}, min: {}, max: {}", elementName, minOccurs2, maxOccurs2);
 							break;
 						}
 						case XSConstants.WILDCARD: {
@@ -176,7 +176,7 @@ public class XSModelAnalyzerTest {
 							int minOccurs2 = particle2.getMinOccurs();
 							int maxOccurs2 = particle2.getMaxOccursUnbounded() ? -1 : particle2.getMaxOccurs();
 							QName elementName = new QName(elementDecl2.getNamespace(), elementDecl2.getName());
-							LOG.debug("- property: " + elementName + ", min: " + minOccurs2 + ", max: " + maxOccurs2);
+							LOG.debug("- property: {}, min: {}, max: {}", elementName, minOccurs2, maxOccurs2);
 							break;
 						}
 						case XSConstants.WILDCARD: {

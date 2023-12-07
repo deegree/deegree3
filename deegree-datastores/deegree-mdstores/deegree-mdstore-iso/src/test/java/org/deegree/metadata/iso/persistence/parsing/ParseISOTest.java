@@ -130,7 +130,7 @@ public class ParseISOTest extends AbstractISOTest {
 				s_b.append(e.getMin().get0()).append(' ').append(e.getMin().get1()).append(' ');
 				s_b.append(e.getMax().get0()).append(' ').append(e.getMax().get1()).append(' ');
 				s_b.append(e.getCoordinateSystem().getAlias());
-				LOG.debug("boundingBox: " + s_b.toString());
+				LOG.debug("boundingBox: {}", s_b.toString());
 			}
 
 			Assert.assertEquals("identifier: ", "d0e5c36eec7f473b91b8b249da87d522", s_ident.toString());

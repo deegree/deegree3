@@ -858,8 +858,8 @@ public class GML3GeometryReaderTest {
 		gmlReader.getIdContext().resolveLocalRefs();
 
 		for (Point p : geom.getControlPoints()) {
-			LOG.debug(p.getId() + ", " + p.getClass());
-			LOG.debug("get0: " + p.get0());
+			LOG.debug("{}, {}", p.getId(), p.getClass());
+			LOG.debug("get0: {}", p.get0());
 		}
 	}
 
@@ -878,8 +878,8 @@ public class GML3GeometryReaderTest {
 		gmlReader.getIdContext().resolveLocalRefs();
 		LineString ls = (LineString) geom.get(2);
 		for (Point p : ls.getControlPoints()) {
-			LOG.debug(p.getId() + ", " + p.getClass());
-			LOG.debug("get0: " + p.get0());
+			LOG.debug("{}, {}", p.getId(), p.getClass());
+			LOG.debug("get0: {}", p.get0());
 		}
 	}
 

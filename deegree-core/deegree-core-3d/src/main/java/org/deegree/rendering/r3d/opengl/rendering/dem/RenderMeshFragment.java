@@ -316,8 +316,8 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
 
 						}
 						else {
-							LOG.warn("No texture id or no texture coordinates for texture(" + i
-									+ "), ignoring this texture.");
+							LOG.warn("No texture id or no texture coordinates for texture({}), ignoring this texture.",
+									i);
 						}
 					}
 
@@ -447,10 +447,10 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
 				}
 				catch (IOException e) {
 					if (LOG.isDebugEnabled()) {
-						LOG.debug("(Stack) Exception occurred: " + e.getLocalizedMessage(), e);
+						LOG.debug("(Stack) Exception occurred: {}", e.getLocalizedMessage(), e);
 					}
 					else {
-						LOG.error("Exception occurred: " + e.getLocalizedMessage());
+						LOG.error("Exception occurred: {}", e.getLocalizedMessage());
 					}
 				}
 				if (!isLoaded()) {

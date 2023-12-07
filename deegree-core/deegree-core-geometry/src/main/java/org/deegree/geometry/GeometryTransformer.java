@@ -446,17 +446,17 @@ public class GeometryTransformer extends Transformer {
 				}
 				catch (IllegalArgumentException e) {
 					if (LOG.isDebugEnabled()) {
-						LOG.debug("No valid domain checking available: " + e.getMessage(), e);
+						LOG.debug("No valid domain checking available: {}", e.getMessage(), e);
 					}
 				}
 				catch (TransformationException e) {
 					if (LOG.isDebugEnabled()) {
-						LOG.debug("No valid domain checking available: " + e.getMessage(), e);
+						LOG.debug("No valid domain checking available: {}", e.getMessage(), e);
 					}
 				}
 				catch (UnknownCRSException e) {
 					if (LOG.isDebugEnabled()) {
-						LOG.debug("No valid domain checking available: " + e.getMessage(), e);
+						LOG.debug("No valid domain checking available: {}", e.getMessage(), e);
 					}
 				}
 			}
@@ -464,15 +464,15 @@ public class GeometryTransformer extends Transformer {
 				result = validDomain.contains(inSource);
 			}
 			catch (UnsupportedOperationException e) {
-				LOG.info("Could not determine valid domain because it is not supported: " + e.getMessage(), e);
+				LOG.info("Could not determine valid domain because it is not supported: {}", e.getMessage(), e);
 				result = true;
 			}
 			catch (IllegalArgumentException e) {
-				LOG.info("Could not determine valid domain because it is not supported: " + e.getMessage(), e);
+				LOG.info("Could not determine valid domain because it is not supported: {}", e.getMessage(), e);
 				result = true;
 			}
 			catch (Throwable t) {
-				LOG.info("No valid domain checking available: " + t.getMessage(), t);
+				LOG.info("No valid domain checking available: {}", t.getMessage(), t);
 				result = false;
 			}
 		}

@@ -165,7 +165,7 @@ public class FormBean {
 		Process process = cb.getSelectedProcess();
 
 		if (process != null) {
-			LOG.debug("create form for process: " + process.getId());
+			LOG.debug("create form for process: {}", process.getId());
 			if (executeForm == null) {
 				executeForm = new HtmlForm();
 			}

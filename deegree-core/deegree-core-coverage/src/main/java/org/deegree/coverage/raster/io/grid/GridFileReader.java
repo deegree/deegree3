@@ -122,7 +122,7 @@ public class GridFileReader extends GridReader {
 		// // set the tiles per blob depend on the gridFile size (if not full etc.)
 		// setTilesPerBlob( (int) ( gridFile.length() / getBytesPerTile() ) );
 		// }
-		LOG.debug("Tiles in grid blob (" + gridFile + "): " + getTilesPerBlob());
+		LOG.debug("Tiles in grid blob ({}): {}", gridFile, getTilesPerBlob());
 	}
 
 	/**
@@ -264,7 +264,7 @@ public class GridFileReader extends GridReader {
 			// rewinding is not an option, buffer.rewind();
 		}
 		catch (IOException e) {
-			LOG.error("Error reading tile data from blob: " + e.getMessage(), e);
+			LOG.error("Error reading tile data from blob: {}", e.getMessage(), e);
 		}
 
 		long elapsed = System.currentTimeMillis() - begin;
@@ -356,10 +356,10 @@ public class GridFileReader extends GridReader {
 		}
 		catch (IOException e) {
 			if (LOG.isDebugEnabled()) {
-				LOG.debug("(Stack) Exception occurred: " + e.getLocalizedMessage(), e);
+				LOG.debug("(Stack) Exception occurred: {}", e.getLocalizedMessage(), e);
 			}
 			else {
-				LOG.error("Exception occurred: " + e.getLocalizedMessage());
+				LOG.error("Exception occurred: {}", e.getLocalizedMessage());
 			}
 		}
 

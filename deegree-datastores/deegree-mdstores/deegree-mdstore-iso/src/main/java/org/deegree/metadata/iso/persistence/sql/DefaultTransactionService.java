@@ -208,7 +208,7 @@ public class DefaultTransactionService extends AbstractSqlHelper implements Tran
 
 			while (rs.next()) {
 				requestedId = rs.getInt(1);
-				LOG.debug("resultSet: " + rs.getInt(1));
+				LOG.debug("resultSet: {}", rs.getInt(1));
 			}
 
 			if (requestedId > -1) {
@@ -235,7 +235,7 @@ public class DefaultTransactionService extends AbstractSqlHelper implements Tran
 			throw new MetadataStoreException(msg);
 		}
 		catch (FactoryConfigurationError e) {
-			LOG.debug("error: " + e.getMessage(), e);
+			LOG.debug("error: {}", e.getMessage(), e);
 			throw new MetadataStoreException(e.getMessage());
 		}
 		finally {

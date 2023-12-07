@@ -134,7 +134,7 @@ public class RawProcessExecution extends AbstractProcessExecution {
 			ExecuteRequest100Writer executer = new ExecuteRequest100Writer(logWriter);
 			executer.write100(process.getId(), inputs, responseFormat);
 			logWriter.close();
-			LOG.debug("WPS request can be found at " + logFile);
+			LOG.debug("WPS request can be found at {}", logFile);
 
 			InputStream is = new FileInputStream(logFile);
 			byte[] buffer = new byte[1024];
@@ -166,7 +166,7 @@ public class RawProcessExecution extends AbstractProcessExecution {
 			logStream.close();
 
 			responseStream = new FileInputStream(logFile);
-			LOG.debug("WPS response can be found at " + logFile);
+			LOG.debug("WPS response can be found at {}", logFile);
 		}
 
 		String outputContent = conn.getContentType();

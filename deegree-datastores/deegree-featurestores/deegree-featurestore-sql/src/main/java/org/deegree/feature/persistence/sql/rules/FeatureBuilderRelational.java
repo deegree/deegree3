@@ -217,7 +217,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 				addSelectColumns(mapping, qualifiedSqlExprToRsIdx, alias, true);
 			}
 		}
-		LOG.debug("Initial select columns: " + qualifiedSqlExprToRsIdx);
+		LOG.debug("Initial select columns: {}", qualifiedSqlExprToRsIdx);
 		return new ArrayList<String>(qualifiedSqlExprToRsIdx.keySet());
 	}
 
@@ -243,7 +243,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 					addColumn(colToRsIdx, particleConverter.getSelectSnippet(tableAlias));
 				}
 				else {
-					LOG.info("Omitting mapping '" + mapping + "' from SELECT list. Not mapped to column.'");
+					LOG.info("Omitting mapping '{}' from SELECT list. Not mapped to column.'", mapping);
 				}
 			}
 			else {
@@ -259,7 +259,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 					addColumn(colToRsIdx, particleConverter.getSelectSnippet(tableAlias));
 				}
 				else {
-					LOG.info("Omitting mapping '" + mapping + "' from SELECT list. Not mapped to column.'");
+					LOG.info("Omitting mapping '{}' from SELECT list. Not mapped to column.'", mapping);
 				}
 			}
 			else if (mapping instanceof GeometryMapping) {
@@ -267,7 +267,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 					addColumn(colToRsIdx, particleConverter.getSelectSnippet(tableAlias));
 				}
 				else {
-					LOG.info("Omitting mapping '" + mapping + "' from SELECT list. Not mapped to column.'");
+					LOG.info("Omitting mapping '{}' from SELECT list. Not mapped to column.'", mapping);
 				}
 			}
 			else if (mapping instanceof FeatureMapping) {
@@ -275,7 +275,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 					addColumn(colToRsIdx, particleConverter.getSelectSnippet(tableAlias));
 				}
 				else {
-					LOG.info("Omitting mapping '" + mapping + "' from SELECT list. Not mapped to column.'");
+					LOG.info("Omitting mapping '{}' from SELECT list. Not mapped to column.'", mapping);
 				}
 			}
 			else if (mapping instanceof CompoundMapping) {
@@ -288,7 +288,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 				// nothing to do
 			}
 			else {
-				LOG.warn("Mappings of type '" + mapping.getClass() + "' are not handled yet.");
+				LOG.warn("Mappings of type '{}' are not handled yet.", mapping.getClass());
 			}
 		}
 	}
@@ -313,7 +313,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 					feature = (Feature) fs.getCache().get(gmlId);
 				}
 				if (feature == null) {
-					LOG.debug("Recreating feature '" + gmlId + "' from db (relational mode).");
+					LOG.debug("Recreating feature '{}' from db (relational mode).", gmlId);
 					List<Property> props = new ArrayList<Property>();
 					for (Mapping mapping : ftMapping.getMappings()) {
 						ValueReference propName = mapping.getPath();
@@ -324,9 +324,9 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 							addProperties(ft, props, pt, mapping, rs, tableAlias, idPrefix);
 						}
 						else {
-							LOG.warn("Omitting mapping '" + mapping
-									+ "'. Only single child element steps (optionally with number predicate)"
-									+ " are currently supported.");
+							LOG.warn(
+									"Omitting mapping '{}'. Only single child element steps (optionally with number predicate) are currently supported.",
+									mapping);
 						}
 					}
 					features.add(ft.newFeature(gmlId, props, null));
@@ -372,8 +372,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 						Collections.<TypedObjectNode>emptyList()));
 			}
 			else {
-				LOG.warn("Unable to map NULL value for mapping '" + propMapping.getPath().getAsText()
-						+ "' to output. This will result in schema violations.");
+				LOG.warn("Unable to map NULL value for mapping '{}' to output. This will result in schema violations.",
+						propMapping.getPath().getAsText());
 			}
 		}
 		for (final TypedObjectNode particle : particles) {
@@ -550,13 +550,13 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 				if (xpath instanceof LocationPath) {
 					LocationPath lp = (LocationPath) xpath;
 					if (lp.getSteps().size() != 1) {
-						LOG.warn("Unhandled location path: '" + particleMapping.getPath()
-								+ "'. Only single step paths are handled.");
+						LOG.warn("Unhandled location path: '{}'. Only single step paths are handled.",
+								particleMapping.getPath());
 						continue;
 					}
 					if (lp.isAbsolute()) {
-						LOG.warn("Unhandled location path: '" + particleMapping.getPath()
-								+ "'. Only relative paths are handled.");
+						LOG.warn("Unhandled location path: '{}'. Only relative paths are handled.",
+								particleMapping.getPath());
 						continue;
 					}
 					Step step = (Step) lp.getSteps().get(0);
@@ -572,8 +572,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 							}
 						}
 						else {
-							LOG.warn("Unhandled location path: '" + particleMapping.getPath()
-									+ "'. Only unpredicated steps are handled.");
+							LOG.warn("Unhandled location path: '{}'. Only unpredicated steps are handled.",
+									particleMapping.getPath());
 							continue;
 						}
 					}
@@ -612,8 +612,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 							}
 						}
 						else {
-							LOG.warn("Unhandled axis type '" + step.getAxis() + "' for path: '"
-									+ particleMapping.getPath() + "'");
+							LOG.warn("Unhandled axis type '{}' for path: '{}'", step.getAxis(),
+									particleMapping.getPath());
 						}
 					}
 					else {
@@ -624,8 +624,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 					}
 				}
 				else {
-					LOG.warn("Unhandled mapping type '" + particleMapping.getClass() + "' for path: '"
-							+ particleMapping.getPath() + "'");
+					LOG.warn("Unhandled mapping type '{}' for path: '{}'", particleMapping.getClass(),
+							particleMapping.getPath());
 				}
 			}
 
@@ -661,8 +661,9 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 								}
 								PrimitiveValue attrValue = attrs.get(attrName);
 								if (attrValue == null) {
-									LOG.debug("Required attribute " + attrName
-											+ "not present. Cannot void using xsi:nil. Escalating void value.");
+									LOG.debug(
+											"Required attribute {}not present. Cannot void using xsi:nil. Escalating void value.",
+											attrName);
 									return null;
 								}
 								nilAttrs.put(attrName, attrValue);
@@ -687,7 +688,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
 		}
 		else {
-			LOG.warn("Handling of '" + mapping.getClass() + "' mappings is not implemented yet.");
+			LOG.warn("Handling of '{}' mappings is not implemented yet.", mapping.getClass());
 		}
 
 		if (particle == null) {
@@ -716,7 +717,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 				props.add(new GenericProperty(pt, xmlEl.getName(), null, xmlEl.getAttributes(), xmlEl.getChildren()));
 			}
 			else {
-				LOG.warn("Unhandled particle: " + child);
+				LOG.warn("Unhandled particle: {}", child);
 			}
 		}
 		if (geom == null) {
@@ -860,7 +861,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 							String ns = ref.getNsContext().translateNamespacePrefixToUri(prefix);
 							qName = new QName(ns, step.getLocalName(), prefix);
 						}
-						LOG.debug("QName: " + qName);
+						LOG.debug("QName: {}", qName);
 					}
 				}
 			}

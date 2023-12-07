@@ -96,7 +96,7 @@ public class ResourcesServlet extends HttpServlet {
 		if (resourcePath.endsWith(".wsdl/ALL"))
 			resourcePath = resourcePath.substring(0, resourcePath.length() - 4);
 
-		LOG.debug("Requested resource: " + resourcePath);
+		LOG.debug("Requested resource: {}", resourcePath);
 		File wsDir = OGCFrontController.getServiceWorkspace().getLocation();
 		File resource = new File(wsDir, resourcePath);
 		if (!resource.exists()) {

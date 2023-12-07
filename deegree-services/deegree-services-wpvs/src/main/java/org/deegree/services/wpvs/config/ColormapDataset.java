@@ -85,8 +85,9 @@ public class ColormapDataset extends Dataset<Colormap> {
 			for (ColormapDatasetConfig dts : colormapDatsets) {
 				if (dts != null) {
 					if (isUnAmbiguous(dts.getTitle())) {
-						LOG.info("The colormap dataset with name: " + dts.getName() + " and title: " + dts.getTitle()
-								+ " had multiple definitions in your service configuration.");
+						LOG.info(
+								"The colormap dataset with name: {} and title: {} had multiple definitions in your service configuration.",
+								dts.getName(), dts.getTitle());
 					}
 					else {
 						sceneEnvelope = handleColormapDataset(dts, sceneEnvelope, toLocalCRS);
@@ -112,7 +113,7 @@ public class ColormapDataset extends Dataset<Colormap> {
 		double zMin = dts.getMinZValue() == null ? sceneEnvelope.getMin().get2() : dts.getMinZValue();
 		Colormap result = new Colormap((float) zMin, (float) zMax, minColor, maxColor, heightColor);
 		if (LOG.isDebugEnabled()) {
-			LOG.debug("Configured colormap: " + dts.getTitle() + " | " + result.toString());
+			LOG.debug("Configured colormap: {} | {}", dts.getTitle(), result.toString());
 		}
 		double[] min = Arrays.copyOf(sceneEnvelope.getMin().getAsArray(), 3);
 		double[] max = Arrays.copyOf(sceneEnvelope.getMax().getAsArray(), 3);
@@ -142,8 +143,7 @@ public class ColormapDataset extends Dataset<Colormap> {
 				}
 			}
 			catch (NumberFormatException e) {
-				LOG.warn("Invalid color: " + configColor + " using default color: " + Arrays.toString(defaultColor)
-						+ ".", e);
+				LOG.warn("Invalid color: {} using default color: {}.", configColor, Arrays.toString(defaultColor), e);
 			}
 		}
 		return Arrays.copyOf(defaultColor, 4);

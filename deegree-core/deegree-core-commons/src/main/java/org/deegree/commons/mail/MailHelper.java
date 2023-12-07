@@ -145,8 +145,8 @@ public final class MailHelper {
 		}
 		try {
 			int k = eMess.getMessageBody().length() > 60 ? 60 : eMess.getMessageBody().length() - 1;
-			LOG.debug("Sending message, From: " + eMess.getSender() + "\nTo: " + eMess.getReceiver() + "\nSubject: "
-					+ eMess.getSubject() + "\nContents: " + eMess.getMessageBody().substring(0, k) + "...");
+			LOG.debug("Sending message, From: {}\nTo: {}\nSubject: {}\nContents: {}...", eMess.getSender(),
+					eMess.getReceiver(), eMess.getSubject(), eMess.getMessageBody().substring(0, k));
 			// construct the message
 			MimeMessage msg = new MimeMessage(session);
 			msg.setFrom(new InternetAddress(eMess.getSender()));
@@ -180,7 +180,7 @@ public final class MailHelper {
 			msg.setContent(mp);
 			// send the mail off
 			Transport.send(msg);
-			LOG.debug("Mail sent successfully! Header=" + eMess.getHeader());
+			LOG.debug("Mail sent successfully! Header={}", eMess.getHeader());
 		}
 		catch (Exception e) {
 			LOG.error(e.getMessage(), e);
@@ -204,8 +204,8 @@ public final class MailHelper {
 		}
 		try {
 			int k = eMess.getMessageBody().length() > 60 ? 60 : eMess.getMessageBody().length() - 1;
-			LOG.debug("Sending message, From: " + eMess.getSender() + "\nTo: " + eMess.getReceiver() + "\nSubject: "
-					+ eMess.getSubject() + "\nContents: " + eMess.getMessageBody().substring(0, k) + "...");
+			LOG.debug("Sending message, From: {}\nTo: {}\nSubject: {}\nContents: {}...", eMess.getSender(),
+					eMess.getReceiver(), eMess.getSubject(), eMess.getMessageBody().substring(0, k));
 			// construct the message
 			MimeMessage msg = new MimeMessage(session);
 			msg.setFrom(new InternetAddress(eMess.getSender()));
@@ -239,7 +239,7 @@ public final class MailHelper {
 			msg.setContent(mp);
 			// send the mail off
 			Transport.send(msg);
-			LOG.debug("Mail sent successfully! Header=" + eMess.getHeader());
+			LOG.debug("Mail sent successfully! Header={}", eMess.getHeader());
 		}
 		catch (Exception e) {
 			LOG.error(e.getMessage(), e);

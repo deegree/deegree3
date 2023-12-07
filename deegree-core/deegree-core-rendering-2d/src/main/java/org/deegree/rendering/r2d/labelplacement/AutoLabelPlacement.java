@@ -88,7 +88,7 @@ public class AutoLabelPlacement {
 				labelPositionsList.add(new PointLabelPositionOptions(l, uomCalculator));
 		}
 
-		LOG.debug("Added " + labelPositionsList.size() + " Labels of " + labelList.size() + " to auto placement");
+		LOG.debug("Added {} Labels of {} to auto placement", labelPositionsList.size(), labelList.size());
 
 		if (labelPositionsList.size() > 1) {
 			buildCollisionMatrix();
@@ -124,7 +124,7 @@ public class AutoLabelPlacement {
 
 		int n = labelPositionsList.size();
 
-		LOG.debug("Starting Annealing with value: " + currentQuality + ", trying to reach: " + (n + 0.8 * 40));
+		LOG.debug("Starting Annealing with value: {}, trying to reach: {}", currentQuality, (n + 0.8 * 40));
 		long now = System.currentTimeMillis();
 
 		while (counter <= 2500 && currentQuality > (n + 0.8 * 40)) {
@@ -173,9 +173,9 @@ public class AutoLabelPlacement {
 
 		long duration = System.currentTimeMillis() - now;
 
-		LOG.debug("Final value: " + currentQuality + ", needed " + counter + " iterations");
-		LOG.debug("Annealing took: " + duration + " ms, ( " + (int) ((double) duration / (double) counter * 1000)
-				+ " µs per iteration  )");
+		LOG.debug("Final value: {}, needed {} iterations", currentQuality, counter);
+		LOG.debug("Annealing took: {} ms, ( {} µs per iteration  )", duration,
+				(int) ((double) duration / (double) counter * 1000));
 	}
 
 	/**
@@ -196,7 +196,7 @@ public class AutoLabelPlacement {
 
 		}
 
-		LOG.debug("Building of collision matrix took: " + (System.currentTimeMillis() - now) + " millis.");
+		LOG.debug("Building of collision matrix took: {} millis.", (System.currentTimeMillis() - now));
 	}
 
 	/**

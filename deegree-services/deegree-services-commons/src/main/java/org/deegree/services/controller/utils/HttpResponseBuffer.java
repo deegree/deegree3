@@ -288,13 +288,13 @@ public class HttpResponseBuffer extends HttpServletResponseWrapper {
 
 				long elapsed = System.currentTimeMillis() - begin;
 				if (messages.size() == 0) {
-					LOG.info("Output is valid. Validation took " + elapsed + " ms.");
+					LOG.info("Output is valid. Validation took {} ms.", elapsed);
 				}
 				else {
-					LOG.error("Output is ***invalid***: " + messages.size() + " error(s)/warning(s). Validation took "
-							+ elapsed + " ms.");
+					LOG.error("Output is ***invalid***: {} error(s)/warning(s). Validation took {} ms.",
+							messages.size(), elapsed);
 					for (String msg : messages) {
-						LOG.error("***" + msg);
+						LOG.error("***{}", msg);
 					}
 				}
 			}

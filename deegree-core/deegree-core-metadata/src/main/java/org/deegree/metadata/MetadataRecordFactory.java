@@ -173,7 +173,7 @@ public class MetadataRecordFactory {
 				case RegistryPackage:
 					return new RegistryPackage(rootEl);
 				default:
-					LOG.warn("Treating registry object '" + type + "' as generic registry object.");
+					LOG.warn("Treating registry object '{}' as generic registry object.", type);
 					return new RegistryObject(rootEl);
 			}
 		}

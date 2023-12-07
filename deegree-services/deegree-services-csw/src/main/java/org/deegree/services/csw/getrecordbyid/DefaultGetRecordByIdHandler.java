@@ -80,7 +80,7 @@ public class DefaultGetRecordByIdHandler implements GetRecordByIdHandler {
 			ServiceProfile profile)
 			throws XMLStreamException, IOException, InvalidParameterValueException, OWSException {
 		this.profile = profile;
-		LOG.debug("doGetRecordById: " + getRecBI);
+		LOG.debug("doGetRecordById: {}", getRecBI);
 		Version version = getRecBI.getVersion();
 
 		String outputFormat = getRecBI.getOutputFormat();

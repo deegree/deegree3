@@ -75,7 +75,7 @@ public class LimitedKeyedResourcePool<T extends KeyedResource> implements Closea
 
 	public T borrow(final String key) throws InterruptedException, IOException {
 
-		LOG.debug("Borrowing resource, key: " + key + ". Total resource count: " + keyTracker);
+		LOG.debug("Borrowing resource, key: {}. Total resource count: {}", key, keyTracker);
 		needResource.lock();
 		T resource = checkForIdleResource(key);
 		if (resource != null) {
@@ -93,7 +93,7 @@ public class LimitedKeyedResourcePool<T extends KeyedResource> implements Closea
 				resource = trashResourceAndAddNew(key, resource);
 			}
 		}
-		LOG.debug("Borrowed resource, key: " + key + ". Total resource count: " + keyTracker);
+		LOG.debug("Borrowed resource, key: {}. Total resource count: {}", key, keyTracker);
 		return resource;
 	}
 
@@ -103,7 +103,7 @@ public class LimitedKeyedResourcePool<T extends KeyedResource> implements Closea
 	}
 
 	private void recycleResource(final T resource) {
-		LOG.debug("Got recycled resource, key: " + resource.getKey());
+		LOG.debug("Got recycled resource, key: {}", resource.getKey());
 		keyTracker.renew(resource.getKey());
 		needResource.unlock();
 	}
@@ -112,18 +112,18 @@ public class LimitedKeyedResourcePool<T extends KeyedResource> implements Closea
 		LOG.debug("Got empty resource slot");
 		keyTracker.add(key);
 		needResource.unlock();
-		LOG.debug("Creating resource, key: " + key);
+		LOG.debug("Creating resource, key: {}", key);
 		return factory.create(key);
 	}
 
 	private T trashResourceAndAddNew(final String key, final T resource) throws IOException {
-		LOG.debug("Got resource to trash, key: " + resource.getKey());
+		LOG.debug("Got resource to trash, key: {}", resource.getKey());
 		keyTracker.remove(resource.getKey());
 		keyTracker.add(key);
 		needResource.unlock();
-		LOG.debug("Destroying resource, key: " + resource.getKey());
+		LOG.debug("Destroying resource, key: {}", resource.getKey());
 		resource.close();
-		LOG.debug("Creating resource, key: " + key);
+		LOG.debug("Creating resource, key: {}", key);
 		return factory.create(key);
 	}
 
@@ -133,7 +133,7 @@ public class LimitedKeyedResourcePool<T extends KeyedResource> implements Closea
 	}
 
 	public void returnObject(final T resource) {
-		LOG.debug("Returning resource, key: " + resource.getKey() + ". Total resource count: " + keyTracker);
+		LOG.debug("Returning resource, key: {}. Total resource count: {}", resource.getKey(), keyTracker);
 		final String key = resource.getKey();
 		final BlockingQueue<T> queue = getQueue(key);
 		queue.add(resource);

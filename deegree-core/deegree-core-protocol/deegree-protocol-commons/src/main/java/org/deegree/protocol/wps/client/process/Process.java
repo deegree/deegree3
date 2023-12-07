@@ -210,9 +210,9 @@ public class Process implements Serializable {
 			URL url = client.getDescribeProcessURL(false);
 
 			if (processInfo.getId().getCodeSpace() != null) {
-				LOG.warn("Performing DescribeProcess using GET, but process identifier ('" + processInfo.getId()
-						+ "') has a code space (which cannot be expressed using the GET binding). "
-						+ "Omitting the code space and hoping for the best...");
+				LOG.warn(
+						"Performing DescribeProcess using GET, but process identifier ('{}') has a code space (which cannot be expressed using the GET binding). Omitting the code space and hoping for the best...",
+						processInfo.getId());
 			}
 
 			String finalURLStr = url.toExternalForm() + "?service=WPS&version="

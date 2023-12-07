@@ -111,8 +111,8 @@ public class BuildingRenderer extends RenderableManager<WorldRenderableObject> {
 			// LOG.debug( "Sorting of " + allBillBoards.size() + " buildings took: "
 			// + ( System.currentTimeMillis() - begin ) + " ms" );
 			if (LOG.isDebugEnabled()) {
-				LOG.debug("Number of buildings from viewparams: " + buildings.size());
-				LOG.debug("Total number of buildings : " + size());
+				LOG.debug("Number of buildings from viewparams: {}", buildings.size());
+				LOG.debug("Total number of buildings : {}", size());
 			}
 			context.glPushAttrib(GL.GL_CURRENT_BIT | GL.GL_LIGHTING_BIT);
 			Iterator<WorldRenderableObject> it = buildings.iterator();
@@ -124,8 +124,8 @@ public class BuildingRenderer extends RenderableManager<WorldRenderableObject> {
 			}
 			context.glPopAttrib();
 			if (LOG.isDebugEnabled()) {
-				LOG.debug("Rendering of " + buildings.size() + " buildings took: "
-						+ (System.currentTimeMillis() - begin) + " ms");
+				LOG.debug("Rendering of {} buildings took: {} ms", buildings.size(),
+						(System.currentTimeMillis() - begin));
 			}
 		}
 		else {

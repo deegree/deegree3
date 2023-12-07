@@ -84,15 +84,15 @@ public class ProjFileResource implements CRSResource<Map<String, String>> {
 				if (line.startsWith("#")) {
 					// remove the '#' from the String.
 					if (kvp.get("comment") != null) {
-						LOG.debug("(Line: " + lineNumber + ") Multiple comments found, removing previous: "
-								+ kvp.get("comment"));
+						LOG.debug("(Line: {}) Multiple comments found, removing previous: {}", lineNumber,
+								kvp.get("comment"));
 					}
 					kvp.put("comment", line.substring(1).trim());
 				}
 				else {
 					String code = parseConfigString(line, Integer.toString(lineNumber), kvp);
 					if (code != null && !"".equals(code.trim())) {
-						LOG.debug("Found code: " + CRSCodeType.valueOf(code) + " with following params: " + kvp);
+						LOG.debug("Found code: {} with following params: {}", CRSCodeType.valueOf(code), kvp);
 						idToParams.put(CRSCodeType.valueOf(code), kvp);
 					}
 					kvp = new HashMap<String, String>(15);
@@ -104,11 +104,11 @@ public class ProjFileResource implements CRSResource<Map<String, String>> {
 
 		}
 		catch (FileNotFoundException e) {
-			LOG.error("Could not create ProjFileResource: " + e.getMessage(), e);
+			LOG.error("Could not create ProjFileResource: {}", e.getMessage(), e);
 			throw new CRSConfigurationException(e);
 		}
 		catch (IOException e) {
-			LOG.error("Could not open file: " + file, e);
+			LOG.error("Could not open file: {}", file, e);
 			throw new CRSConfigurationException(e);
 			// e.printStackTrace();
 		}
@@ -144,7 +144,7 @@ public class ProjFileResource implements CRSResource<Map<String, String>> {
 	public Map<String, String> getURIAsType(String uri) throws IOException {
 		String tmpID = getIDCode(uri);
 		if (LOG.isDebugEnabled()) {
-			LOG.debug("Given id: " + uri + " converted into: " + tmpID);
+			LOG.debug("Given id: {} converted into: {}", uri, tmpID);
 		}
 		Map<String, String> result = idToParams.get(new CRSCodeType(tmpID));
 		if (result != null) {
@@ -288,7 +288,7 @@ public class ProjFileResource implements CRSResource<Map<String, String>> {
 									lineNumber, "A Value", "=", getTokenizerSymbolToString(t.ttype)));
 						}
 						String value = t.sval;
-						LOG.debug("Putting key: " + key + " with value: " + value);
+						LOG.debug("Putting key: {} with value: {}", key, value);
 						kvp.put(key, value);
 						// take the next token.
 						t.nextToken();

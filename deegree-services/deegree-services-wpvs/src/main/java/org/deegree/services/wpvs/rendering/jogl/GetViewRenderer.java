@@ -190,7 +190,7 @@ public class GetViewRenderer implements GLEventListener {
 
 		renderCopyright(context);
 		gl.glFinish();
-		LOG.trace("Rendering scene took: " + (System.currentTimeMillis() - begin) + " ms.");
+		LOG.trace("Rendering scene took: {} ms.", (System.currentTimeMillis() - begin));
 		writeResult(gl);
 	}
 
@@ -254,8 +254,7 @@ public class GetViewRenderer implements GLEventListener {
 	 */
 	private void reshape(GL gl) {
 		float aspect = (float) width / (float) height;
-		LOG.trace("reshape( GLAutoDrawable, " + 0 + ", " + 0 + ", " + width + ", " + height + " ) called, aspect: "
-				+ aspect);
+		LOG.trace("reshape( GLAutoDrawable, 0, 0, {}, {} ) called, aspect: {}", width, height, aspect);
 
 		gl.glMatrixMode(GL.GL_PROJECTION);
 		gl.glLoadIdentity();

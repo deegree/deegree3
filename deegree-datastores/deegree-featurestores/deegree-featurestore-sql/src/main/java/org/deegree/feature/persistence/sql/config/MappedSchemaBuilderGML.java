@@ -184,7 +184,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
 			String prefix = userHint.getPrefix();
 			String oldPrefix = nsBindings.getPrefix(nsUri);
 			if (oldPrefix != null && !oldPrefix.equals(prefix)) {
-				LOG.warn("Multiple prefices for namespace '" + nsUri + "': " + prefix + " / " + oldPrefix);
+				LOG.warn("Multiple prefices for namespace '{}': {} / {}", nsUri, prefix, oldPrefix);
 			}
 			else {
 				nsBindings.addNamespace(prefix, nsUri);
@@ -194,7 +194,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
 		// Namespace bindings from config file
 		InputStream is = null;
 		try {
-			LOG.debug("Scanning config file '" + componentLocation + "' for namespace bindings");
+			LOG.debug("Scanning config file '{}' for namespace bindings", componentLocation);
 			is = new URL(componentLocation).openStream();
 			XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader(is);
 			while (xmlStream.next() != END_DOCUMENT) {
@@ -205,8 +205,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
 							String nsUri = xmlStream.getNamespaceURI(i);
 							String oldPrefix = nsBindings.getPrefix(nsUri);
 							if (oldPrefix != null && !oldPrefix.equals(prefix)) {
-								LOG.debug("Multiple prefices for namespace '" + nsUri + "': " + prefix + " / "
-										+ oldPrefix);
+								LOG.debug("Multiple prefices for namespace '{}': {} / {}", nsUri, prefix, oldPrefix);
 							}
 							else {
 								nsBindings.addNamespace(prefix, nsUri);
@@ -217,7 +216,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
 			}
 		}
 		catch (Exception e) {
-			LOG.error("Error determining namespaces from config file '" + componentLocation + "': " + e.getMessage());
+			LOG.error("Error determining namespaces from config file '{}': {}", componentLocation, e.getMessage());
 		}
 		finally {
 			if (is != null) {
@@ -236,7 +235,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
 			String nsUri = schemaNSBindings.get(prefix);
 			String oldPrefix = nsBindings.getPrefix(nsUri);
 			if (oldPrefix != null && !oldPrefix.equals(prefix)) {
-				LOG.warn("Multiple prefices for namespace '" + nsUri + "': " + prefix + " / " + oldPrefix);
+				LOG.warn("Multiple prefices for namespace '{}': {} / {}", nsUri, prefix, oldPrefix);
 			}
 			else {
 				nsBindings.addNamespace(prefix, nsUri);
@@ -250,7 +249,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
 			String nsUri = schemaNSBindings.get(prefix);
 			String oldPrefix = nsBindings.getPrefix(nsUri);
 			if (oldPrefix != null && !oldPrefix.equals(prefix)) {
-				LOG.warn("Multiple prefices for namespace '" + nsUri + "': " + prefix + " / " + oldPrefix);
+				LOG.warn("Multiple prefices for namespace '{}': {} / {}", nsUri, prefix, oldPrefix);
 			}
 			else {
 				nsBindings.addNamespace(prefix, nsUri);
@@ -310,7 +309,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
 			String msg = "Error building GML application schema: " + t.getMessage();
 			throw new FeatureStoreException(msg);
 		}
-		LOG.debug("GML version: " + appSchema.getGMLSchema().getVersion());
+		LOG.debug("GML version: {}", appSchema.getGMLSchema().getVersion());
 		return appSchema;
 	}
 
@@ -401,14 +400,13 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
 
 		if (config.getType() != null) {
 			PrimitiveType forcedType = new PrimitiveType(getPrimitiveType(config.getType()));
-			LOG.debug(
-					"Overriding schema-derived primitive type '" + pt.getFirst() + "'. Forcing '" + forcedType + "'.");
+			LOG.debug("Overriding schema-derived primitive type '{}'. Forcing '{}'.", pt.getFirst(), forcedType);
 			pt.first = forcedType;
 		}
 
 		MappingExpression me = parseMappingExpression(config.getMapping());
 		List<TableJoin> joinedTable = buildJoinTable(currentTable, config.getJoin());
-		LOG.debug("Targeted primitive type: " + pt);
+		LOG.debug("Targeted primitive type: {}", pt);
 		boolean escalateVoid = determineParticleVoidability(pt.second, config.getNullEscalation());
 		return new PrimitiveMapping(path, escalateVoid, me, pt.first, joinedTable, config.getCustomConverter());
 	}

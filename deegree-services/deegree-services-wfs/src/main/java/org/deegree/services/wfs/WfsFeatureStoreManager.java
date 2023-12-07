@@ -118,10 +118,10 @@ public class WfsFeatureStoreManager {
 
 		LOG.debug("The following prefix-to-namespace and namespace-to-prefix bindings are used for resolution...");
 		for (String prefix : prefixToNs.keySet()) {
-			LOG.debug(prefix + " --> " + prefixToNs.get(prefix));
+			LOG.debug("{} --> {}", prefix, prefixToNs.get(prefix));
 		}
 		for (String ns : targetNsToPrefix.keySet()) {
-			LOG.debug(ns + " <-- " + targetNsToPrefix.get(ns));
+			LOG.debug("{} <-- {}", ns, targetNsToPrefix.get(ns));
 		}
 	}
 
@@ -170,8 +170,8 @@ public class WfsFeatureStoreManager {
 		if (ft == null) {
 			QName match = QNameUtils.findBestMatch(ftName, ftNameToFt.keySet());
 			if (match != null && (!match.equals(ftName))) {
-				LOG.debug("Repairing unqualified FeatureType name: " + QNameUtils.toString(ftName) + " -> "
-						+ QNameUtils.toString(match));
+				LOG.debug("Repairing unqualified FeatureType name: {} -> {}", QNameUtils.toString(ftName),
+						QNameUtils.toString(match));
 				ft = ftNameToFt.get(match);
 			}
 		}

@@ -117,7 +117,7 @@ public class SqlRenderableStoreBuilder implements ResourceBuilder<RenderableStor
 			resolve = url.toURI();
 		}
 		catch (URISyntaxException e) {
-			LOG.warn("Error while resolving url for file: " + fileName + ".");
+			LOG.warn("Error while resolving url for file: {}.", fileName);
 		}
 		return resolve;
 	}

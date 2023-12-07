@@ -185,34 +185,38 @@ public class OwsGlobalConfigLoader implements Initializable {
 			}
 			catch (InstantiationException e) {
 				LOG.info(
-						"The request logger class '{}' could not be instantiated"
-								+ " (needs a default constructor without arguments if no configuration is given).",
+						"The request logger class '{}' could not be instantiated (needs a default constructor without arguments if no configuration is given).",
 						cls);
 				LOG.trace("Stack trace:", e);
 			}
 			catch (IllegalAccessException e) {
-				LOG.info("The request logger class '{}' could not be instantiated"
-						+ " (default constructor needs to be accessible if no configuration is given).", cls);
+				LOG.info(
+						"The request logger class '{}' could not be instantiated (default constructor needs to be accessible if no configuration is given).",
+						cls);
 				LOG.trace("Stack trace:", e);
 			}
 			catch (IllegalArgumentException e) {
-				LOG.info("The request logger class '{}' could not be instantiated"
-						+ " (constructor needs to take an object argument if configuration is given).", cls);
+				LOG.info(
+						"The request logger class '{}' could not be instantiated (constructor needs to take an object argument if configuration is given).",
+						cls);
 				LOG.trace("Stack trace:", e);
 			}
 			catch (java.lang.SecurityException e) {
-				LOG.info("The request logger class '{}' could not be instantiated"
-						+ " (JVM does have insufficient rights to instantiate the class).", cls);
+				LOG.info(
+						"The request logger class '{}' could not be instantiated (JVM does have insufficient rights to instantiate the class).",
+						cls);
 				LOG.trace("Stack trace:", e);
 			}
 			catch (InvocationTargetException e) {
-				LOG.info("The request logger class '{}' could not be instantiated"
-						+ " (constructor call threw an exception).", cls);
+				LOG.info(
+						"The request logger class '{}' could not be instantiated (constructor call threw an exception).",
+						cls);
 				LOG.trace("Stack trace:", e);
 			}
 			catch (NoSuchMethodException e) {
-				LOG.info("The request logger class '{}' could not be instantiated"
-						+ " (constructor needs to take an object argument if configuration is given).", cls);
+				LOG.info(
+						"The request logger class '{}' could not be instantiated (constructor needs to take an object argument if configuration is given).",
+						cls);
 				LOG.trace("Stack trace:", e);
 			}
 		}

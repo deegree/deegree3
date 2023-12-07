@@ -546,13 +546,13 @@ public abstract class CRS extends CRSIdentifiable implements ICRS {
 					validDomain[3] = axis1Max;
 				}
 				catch (IllegalArgumentException e) {
-					LOG.debug("Exception occurred: " + e.getLocalizedMessage(), e);
-					LOG.debug("Exception occurred: " + e.getLocalizedMessage());
+					LOG.debug("Exception occurred: {}", e.getLocalizedMessage(), e);
+					LOG.debug("Exception occurred: {}", e.getLocalizedMessage());
 
 				}
 				catch (org.deegree.cs.exceptions.TransformationException e) {
-					LOG.debug("Exception occurred: " + e.getLocalizedMessage(), e);
-					LOG.debug("Exception occurred: " + e.getLocalizedMessage());
+					LOG.debug("Exception occurred: {}", e.getLocalizedMessage(), e);
+					LOG.debug("Exception occurred: {}", e.getLocalizedMessage());
 				}
 			}
 		}

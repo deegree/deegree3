@@ -154,7 +154,7 @@ public class CommonCSWProfile implements ServiceProfile {
 				return new URL(CSWConstants.CSW_202_RECORD);
 			}
 			catch (MalformedURLException e) {
-				LOG.info("Could not resolve URL " + CSWConstants.CSW_202_RECORD);
+				LOG.info("Could not resolve URL {}", CSWConstants.CSW_202_RECORD);
 			}
 		}
 		return null;

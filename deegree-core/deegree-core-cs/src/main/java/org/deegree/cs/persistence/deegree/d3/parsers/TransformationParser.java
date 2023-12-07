@@ -128,7 +128,7 @@ public class TransformationParser extends DefinitionParser {
 		if (infoID == null || "".equals(infoID.trim())) {
 			return null;
 		}
-		LOG.debug("Searching for the wgs84 with id: " + infoID);
+		LOG.debug("Searching for the wgs84 with id: {}", infoID);
 		Helmert result = getStore().getCachedIdentifiable(Helmert.class, infoID);
 		if (result == null) {
 			try {
@@ -156,7 +156,7 @@ public class TransformationParser extends DefinitionParser {
 		if (transformId == null || "".equals(transformId.trim())) {
 			return null;
 		}
-		LOG.debug("Searching for the transformation with id: " + transformId);
+		LOG.debug("Searching for the transformation with id: {}", transformId);
 		Transformation result = getStore().getCachedIdentifiable(Transformation.class, transformId);
 		if (result == null) {
 			try {
@@ -195,11 +195,11 @@ public class TransformationParser extends DefinitionParser {
 		ICRS src = getStore().getCRSByCode(new CRSCodeType(sourceCRS));
 		ICRS tar = getStore().getCRSByCode(new CRSCodeType(targetCRS));
 		if (src == null) {
-			LOG.debug(reader.getLocation() + ") could not determine referenced source coordinate system.");
+			LOG.debug("{}) could not determine referenced source coordinate system.", reader.getLocation());
 		}
 
 		if (tar == null) {
-			LOG.debug(reader.getLocation() + ") could not determine referenced target coordinate system.");
+			LOG.debug("{}) could not determine referenced target coordinate system.", reader.getLocation());
 		}
 
 		Transformation result = null;
@@ -244,7 +244,7 @@ public class TransformationParser extends DefinitionParser {
 	private Transformation instantiateConfiguredClass(XMLStreamReader reader, String className, CRSResource id,
 			ICRS sourceCRS, ICRS targetCRS) {
 		Transformation result = null;
-		LOG.debug("Trying to load user defined transformation class: " + className);
+		LOG.debug("Trying to load user defined transformation class: {}", className);
 		try {
 			Class<?> t = Class.forName(className);
 			t.asSubclass(Transformation.class);
@@ -286,7 +286,7 @@ public class TransformationParser extends DefinitionParser {
 			LOG.error(e.getMessage(), e);
 		}
 		if (result == null) {
-			LOG.debug("Loading of user defined transformation class: " + className + " was not successful");
+			LOG.debug("Loading of user defined transformation class: {} was not successful", className);
 		}
 		return result;
 
@@ -342,13 +342,13 @@ public class TransformationParser extends DefinitionParser {
 			scaleX = (float) getElementTextAsDouble(reader, new QName(CRS_NS, "ScaleX"), 1, true);
 		}
 		catch (XMLParsingException e) {
-			LOG.error("Could not parse scaleX from crs:leastsquare, because: " + e.getMessage(), e);
+			LOG.error("Could not parse scaleX from crs:leastsquare, because: {}", e.getMessage(), e);
 		}
 		try {
 			scaleY = (float) getElementTextAsDouble(reader, new QName(CRS_NS, "ScaleY"), 1, true);
 		}
 		catch (XMLParsingException e) {
-			LOG.error("Could not parse scaleY from crs:leastsquare, because: " + e.getMessage(), e);
+			LOG.error("Could not parse scaleY from crs:leastsquare, because: {}", e.getMessage(), e);
 		}
 		return new LeastSquareApproximation(aValues, bValues, sourceCRS, targetCRS, scaleX, scaleY);
 	}

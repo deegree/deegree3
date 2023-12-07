@@ -111,8 +111,9 @@ public class RenderableDataset extends Dataset<RenderableManager<?>> {
 			for (RenderableDatasetConfig bds : datasets) {
 				if (bds != null) {
 					if (isUnAmbiguous(bds.getTitle())) {
-						LOG.info("The feature dataset with name: " + bds.getName() + " and title: " + bds.getTitle()
-								+ " had multiple definitions in your service configuration.");
+						LOG.info(
+								"The feature dataset with name: {} and title: {} had multiple definitions in your service configuration.",
+								bds.getName(), bds.getTitle());
 					}
 					else {
 						clarifyInheritance(bds, parentMaxPixelError);

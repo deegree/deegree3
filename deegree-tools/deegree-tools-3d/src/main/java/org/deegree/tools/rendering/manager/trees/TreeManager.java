@@ -164,7 +164,7 @@ public class TreeManager extends ModelManager<BillBoard> {
 			maxLength = Math.max(maxLength, i);
 		}
 		BackendResult result = readAndImportBillboards(reader, mappedColumns, maxLength);
-		LOG.info("Number of referenced textures: " + usedTextures.size());
+		LOG.info("Number of referenced textures: {}", usedTextures.size());
 		StringBuilder sb = new StringBuilder("Following textures were referenced:\n");
 		for (String s : usedTextures) {
 			sb.append((invalidTextures.contains(s) ? "Not Found: " : "")).append(s).append("\n");
@@ -193,7 +193,7 @@ public class TreeManager extends ModelManager<BillBoard> {
 					b = createBillBoard(mappedColumns, values);
 				}
 				catch (IllegalArgumentException e) {
-					LOG.error("Line( " + reader.getLineNumber() + "):  " + e.getLocalizedMessage());
+					LOG.error("Line( {}):  {}", reader.getLineNumber(), e.getLocalizedMessage());
 				}
 				if (b != null) {
 					inserts.add(createDataObjectInfo(uuid, values[mappedColumns.get(Column.TYPE)],
@@ -201,8 +201,7 @@ public class TreeManager extends ModelManager<BillBoard> {
 				}
 			}
 			else {
-				LOG.warn("Line( " + reader.getLineNumber() + "): not enough elements parsed: "
-						+ Arrays.toString(values));
+				LOG.warn("Line( {}): not enough elements parsed: {}", reader.getLineNumber(), Arrays.toString(values));
 			}
 			values = reader.parseLine();
 		}
@@ -254,8 +253,8 @@ public class TreeManager extends ModelManager<BillBoard> {
 		if (!usedTextures.contains(texture)) {
 			if (!checkTextureReference(texture)) {
 				invalidTextures.add(texture);
-				LOG.warn("Texture: " + texture + " does not denote an image in the textureDir: "
-						+ textureDir.getAbsolutePath() + " is this correct?.");
+				LOG.warn("Texture: {} does not denote an image in the textureDir: {} is this correct?.", texture,
+						textureDir.getAbsolutePath());
 			}
 			usedTextures.add(texture);
 		}
@@ -299,14 +298,14 @@ public class TreeManager extends ModelManager<BillBoard> {
 				result.put(c, i);
 			}
 			catch (Exception e) {
-				LOG.warn("Could not map: " + s + " to a known column name, column names must be one of: "
-						+ Arrays.toString(Column.values()));
+				LOG.warn("Could not map: {} to a known column name, column names must be one of: {}", s,
+						Arrays.toString(Column.values()));
 			}
 		}
 		boolean columnsCheckout = true;
 		for (Column c : Column.values()) {
 			if (!result.containsKey(c)) {
-				LOG.warn("Missing column: " + c.name().toLowerCase() + ", " + c.getDescription());
+				LOG.warn("Missing column: {}, {}", c.name().toLowerCase(), c.getDescription());
 				columnsCheckout = false;
 			}
 

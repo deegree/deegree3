@@ -197,7 +197,7 @@ public class DescribeRecordHandler {
 			dcHelper.exportSchemaComponent(writer, typeName, isr);
 		}
 		catch (Exception e) {
-			LOG.info("Could not get connection to " + url.toExternalForm() + ". Try to export schema as reference.");
+			LOG.info("Could not get connection to {}. Try to export schema as reference.", url.toExternalForm());
 			List<URL> schemaReferenceSnippet = profile.getSchemaReferences(typeName);
 			for (URL ref : schemaReferenceSnippet) {
 				writeSchemaReference(writer, typeName, ref);
@@ -207,7 +207,7 @@ public class DescribeRecordHandler {
 
 	private void writeSchemaReference(XMLStreamWriter writer, QName typeName, URL url) throws MetadataStoreException {
 		if (url == null) {
-			LOG.info("Could not find schema reference snippet for type name " + typeName);
+			LOG.info("Could not find schema reference snippet for type name {}", typeName);
 			return;
 		}
 		try {

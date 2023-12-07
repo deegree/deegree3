@@ -130,8 +130,8 @@ public class SurfaceLinearizer {
 			}
 			default: {
 				// TODO
-				LOG.warn("The surface type " + surface.getSurfaceType()
-						+ " currently cannot be linearized. It's being returned as it is.");
+				LOG.warn("The surface type {} currently cannot be linearized. It's being returned as it is.",
+						surface.getSurfaceType());
 				linearizedSurface = surface;
 			}
 		}
