@@ -61,7 +61,17 @@ public class CsvFormat implements Format {
 	 * <code>null</code>
 	 */
 	public CsvFormat(WebFeatureService webFeatureService) {
-		this.csvGetFeatureHandler = new CsvGetFeatureHandler(webFeatureService);
+		this.csvGetFeatureHandler = new CsvGetFeatureHandler(webFeatureService, null);
+	}
+
+	/**
+	 * Instantiate {@link CsvFormat}
+	 * @param webFeatureService the {@link WebFeatureService} using this format, never
+	 * <code>null</code>
+	 * @param csvFormatConfig the formats the {@link CsvFeatureWriter} should use
+	 */
+	public CsvFormat(WebFeatureService webFeatureService, CsvFormatConfig csvFormatConfig) {
+		this.csvGetFeatureHandler = new CsvGetFeatureHandler(webFeatureService, csvFormatConfig);
 	}
 
 	@Override

@@ -67,7 +67,7 @@ public class CsvFeatureWriterTest {
 		Feature cadastralZoning = parseFeature("PhilosopherForCsv.gml");
 		FeatureType featureType = cadastralZoning.getType();
 		StringWriter featureAsCsv = new StringWriter();
-		CsvFeatureWriter csvFeatureWriter = new CsvFeatureWriter(featureAsCsv, null, featureType);
+		CsvFeatureWriter csvFeatureWriter = new CsvFeatureWriter(featureAsCsv, null, featureType, null);
 
 		csvFeatureWriter.write(cadastralZoning);
 
@@ -100,7 +100,7 @@ public class CsvFeatureWriterTest {
 		Feature cadastralZoning = parseFeature("PhilosopherForCsv.gml");
 		FeatureType featureType = cadastralZoning.getType();
 		StringWriter featureAsCsv = new StringWriter();
-		CsvFeatureWriter csvFeatureWriter = new CsvFeatureWriter(featureAsCsv, crs, featureType);
+		CsvFeatureWriter csvFeatureWriter = new CsvFeatureWriter(featureAsCsv, crs, featureType, null);
 
 		csvFeatureWriter.write(cadastralZoning);
 

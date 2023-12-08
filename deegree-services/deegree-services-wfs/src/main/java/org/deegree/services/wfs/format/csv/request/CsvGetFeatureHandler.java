@@ -38,9 +38,7 @@ import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
-
 import javax.xml.namespace.QName;
-
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
@@ -53,6 +51,7 @@ import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.wfs.WebFeatureService;
 import org.deegree.services.wfs.format.csv.CsvFeatureWriter;
+import org.deegree.services.wfs.format.csv.CsvFormatConfig;
 import org.deegree.services.wfs.query.QueryAnalyzer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,14 +65,17 @@ public class CsvGetFeatureHandler {
 
 	private final WebFeatureService webFeatureService;
 
-	public CsvGetFeatureHandler(WebFeatureService webFeatureService) {
+	private final CsvFormatConfig config;
+
+	public CsvGetFeatureHandler(WebFeatureService webFeatureService, CsvFormatConfig config) {
 		this.webFeatureService = webFeatureService;
+		this.config = config;
 	}
 
 	public void doGetFeatureResults(GetFeature request, HttpResponseBuffer response) throws Exception {
 		QueryAnalyzer analyzer = new QueryAnalyzer(request.getQueries(), webFeatureService,
 				webFeatureService.getStoreManager(), webFeatureService.getCheckAreaOfUse());
-		response.setCharacterEncoding(Charset.defaultCharset().name());
+		response.setCharacterEncoding(config.getEncoding().orElse(Charset.defaultCharset()).name());
 		response.setContentType(determineMimeType(request));
 		ICRS requestedCRS = analyzer.getRequestedCRS();
 		int startIndex = getStartIndex(request);
@@ -93,7 +95,8 @@ public class CsvGetFeatureHandler {
 		AppSchema schema = featureStore.getSchema();
 		QName featureTypeName = queries.get(0).getTypeNames()[0].getFeatureTypeName();
 		FeatureType featureType = schema.getFeatureType(featureTypeName);
-		CsvFeatureWriter csvStreamWriter = new CsvFeatureWriter(response.getWriter(), requestedCRS, featureType);
+		CsvFeatureWriter csvStreamWriter = new CsvFeatureWriter(response.getWriter(), requestedCRS, featureType,
+				config);
 		try {
 			for (Feature member : rs) {
 				// TODO: handle lock

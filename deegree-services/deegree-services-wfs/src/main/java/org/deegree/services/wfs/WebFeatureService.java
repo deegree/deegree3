@@ -35,6 +35,7 @@
 package org.deegree.services.wfs;
 
 import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang.StringUtils.trim;
 import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
 import static org.deegree.commons.ows.exception.OWSException.LOCK_HAS_EXPIRED;
@@ -72,6 +73,7 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -84,6 +86,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
@@ -186,7 +190,6 @@ import org.deegree.services.jaxb.wfs.DeegreeWFS.EnableTransactions;
 import org.deegree.services.jaxb.wfs.DeegreeWFS.ExtendedCapabilities;
 import org.deegree.services.jaxb.wfs.DeegreeWFS.SupportedRequests;
 import org.deegree.services.jaxb.wfs.DeegreeWFS.SupportedVersions;
-import org.deegree.services.jaxb.wfs.DefaultFormats;
 import org.deegree.services.jaxb.wfs.DisabledResources;
 import org.deegree.services.jaxb.wfs.FeatureTypeMetadata;
 import org.deegree.services.jaxb.wfs.GMLFormat;
@@ -202,6 +205,7 @@ import org.deegree.services.ows.OWS110ExceptionReportSerializer;
 import org.deegree.services.ows.PreOWSExceptionReportSerializer;
 import org.deegree.services.wfs.format.Format;
 import org.deegree.services.wfs.format.csv.CsvFormat;
+import org.deegree.services.wfs.format.csv.CsvFormatConfig;
 import org.deegree.services.wfs.format.geojson.GeoJsonFormat;
 import org.deegree.services.wfs.query.StoredQueryHandler;
 import org.deegree.workspace.ResourceIdentifier;
@@ -400,7 +404,7 @@ public class WebFeatureService extends AbstractOWS {
 		storedQueryHandler = new StoredQueryHandler(this, list, managedStoredQueryDirectory);
 
 		initQueryCRS(jaxbConfig.getQueryCRS());
-		initFormats(jaxbConfig.getAbstractFormat());
+		initFormats(jaxbConfig.getAbstractFormat(), jaxbConfig.getDefaultFormats());
 		mdProvider = initMetadataProvider(serviceMetadata, jaxbConfig);
 
 		supportedEncodings = parseEncodings(jaxbConfig);
@@ -607,7 +611,6 @@ public class WebFeatureService extends AbstractOWS {
 	}
 
 	private void initDefaultFormats(List<String> excludes) {
-
 		Map<String, Format> formats = new HashMap<>();
 
 		org.deegree.services.wfs.format.gml.GmlFormat gml21 = new org.deegree.services.wfs.format.gml.GmlFormat(this,
@@ -636,42 +639,40 @@ public class WebFeatureService extends AbstractOWS {
 		formats.put("text/csv", new CsvFormat(this));
 		formats.put("application/geo+json", new GeoJsonFormat(this));
 
-		for (Map.Entry<String, Format> fmt : formats.entrySet()) {
-			if (excludes.contains(fmt.getKey())) {
-				LOG.debug("The format '{}' was configured to be excluded.", fmt.getKey());
+		List<Pattern> excludePatterns = excludes.stream().map(this::getPatternFromSimpleGlob).collect(toList());
+		formats.forEach((mimeType, format) -> {
+			if (excludePatterns.stream().anyMatch(p -> p.matcher(mimeType).matches())) {
+				LOG.debug("The format '{}' was configured to be excluded.", mimeType);
 			}
 			else {
-				mimeTypeToFormat.put(fmt.getKey(), fmt.getValue());
+				mimeTypeToFormat.put(mimeType, format);
 			}
-
-		}
+		});
 	}
 
-	private void initFormats(List<JAXBElement<? extends AbstractFormatType>> formatList) {
+	private void initFormats(List<JAXBElement<? extends AbstractFormatType>> formatList,
+			DeegreeWFS.DefaultFormats defaultFormats) {
 		if (formatList == null || formatList.isEmpty()) {
 			LOG.debug("Using default format configuration.");
-			initDefaultFormats(emptyList());
+			initDefaultFormats(defaultFormats != null ? defaultFormats.getExcludeMimeType() : emptyList());
 		}
 		else {
 			LOG.debug("Using customized format configuration.");
+			if (defaultFormats != null) {
+				LOG.debug("Including default formats except {}", defaultFormats.getExcludeMimeType());
+				initDefaultFormats(defaultFormats.getExcludeMimeType());
+			}
 			for (JAXBElement<? extends AbstractFormatType> formatEl : formatList) {
 				AbstractFormatType formatDef = formatEl.getValue();
 				List<String> mimeTypes = formatDef.getMimeType();
 				Format format = null;
-				if (formatDef instanceof DefaultFormats) {
-					DefaultFormats defConfig = (DefaultFormats) formatDef;
-					if (defConfig.getMimeType() != null && !defConfig.getMimeType().isEmpty()) {
-						LOG.warn("Configuration of MimeType '{}' for DefaultFormats was ignored!",
-								String.join("', '", defConfig.getMimeType()));
-					}
-					initDefaultFormats(defConfig.getExcludeMimeType());
-					continue;
-				}
-				else if (formatDef instanceof GMLFormat) {
+				if (formatDef instanceof GMLFormat) {
 					format = new org.deegree.services.wfs.format.gml.GmlFormat(this, (GMLFormat) formatDef);
 				}
 				else if (formatDef instanceof org.deegree.services.jaxb.wfs.CsvFormat) {
-					format = new CsvFormat(this);
+					CsvFormatConfig csvConfig = buildCsvFormatConfig(
+							(org.deegree.services.jaxb.wfs.CsvFormat) formatDef);
+					format = new CsvFormat(this, csvConfig);
 				}
 				else if (formatDef instanceof GeoJSONFormat) {
 					boolean allowOtherCrsThanWGS84 = ((GeoJSONFormat) formatDef).isAllowOtherCrsThanWGS84();
@@ -705,6 +706,33 @@ public class WebFeatureService extends AbstractOWS {
 					.put(((org.deegree.services.wfs.format.gml.GmlFormat) f).getGmlFormatOptions().getGmlVersion(), f);
 			}
 		}
+	}
+
+	private static CsvFormatConfig buildCsvFormatConfig(org.deegree.services.jaxb.wfs.CsvFormat csvConfig)
+			throws ResourceInitException {
+		CsvFormatConfig.Builder builder = new CsvFormatConfig.Builder();
+
+		if (csvConfig.getEncoding() != null) {
+			try {
+				builder.setEncoding(Charset.forName(csvConfig.getEncoding()));
+			}
+			catch (Exception t) {
+				throw new ResourceInitException("Error setting charset/encoding for csv format: " + t.getMessage(), t);
+			}
+		}
+
+		builder.setExportGeometry(csvConfig.isEnableGeometryExport());
+		builder.setDelimiter(csvConfig.getDelimiter());
+		builder.setQuoteCharacter(csvConfig.getQuoteCharacter());
+		builder.setEscape(csvConfig.getEscape());
+		builder.setRecordSeparator(csvConfig.getRecordSeparator());
+		builder.setColumnHeaders(CsvFormatConfig.ColumnHeaders.valueOf(csvConfig.getColumnHeaders().name()));
+
+		if (csvConfig.getExtraColumns() != null) {
+			builder.setColumnIdentifier(csvConfig.getExtraColumns().getIdentifier());
+			builder.setColumnCRS(csvConfig.getExtraColumns().getCoordinateReferenceSystem());
+		}
+		return builder.build();
 	}
 
 	private OWSMetadataProvider initMetadataProvider(DeegreeServicesMetadataType serviceMetadata, DeegreeWFS jaxbConfig)
@@ -1632,6 +1660,18 @@ public class WebFeatureService extends AbstractOWS {
 				&& HITS.equals(getFeatureWithLock.getPresentationParams().getResultType()))
 			throw new InvalidParameterValueException(
 					"ResultType 'hits' is not allowed in GetFeatureWithLock requests!");
+	}
+
+	private Pattern getPatternFromSimpleGlob(String glob) {
+		try {
+			return Pattern.compile("^" + Pattern.quote(glob) //
+				.replace("*", "\\E.*\\Q") //
+				.replace("?", "\\E.\\Q") //
+					+ "$");
+		}
+		catch (PatternSyntaxException pse) {
+			throw new ResourceInitException("Unable to parse glob pattern '" + glob + "': " + pse.getMessage(), pse);
+		}
 	}
 
 }

@@ -60,6 +60,13 @@
         <element name="ResolveTimeOutInSeconds" type="positiveInteger" minOccurs="0" />
         <element name="QueryCheckAreaOfUse" type="boolean" minOccurs="0" default="false" />
         <element name="StoredQuery" type="string" minOccurs="0" maxOccurs="unbounded" />
+        <element name="DefaultFormats" minOccurs="0" maxOccurs="1" >
+          <complexType>
+            <sequence>
+              <element name="ExcludeMimeType" type="string" minOccurs="0" maxOccurs="unbounded" />
+            </sequence>
+          </complexType>
+        </element>
         <element ref="wfs:AbstractFormat" minOccurs="0" maxOccurs="unbounded" />
         <element name="MetadataURLTemplate" minOccurs="0" type="string" />
         <element ref="wfs:FeatureTypeMetadata" minOccurs="0" maxOccurs="unbounded" />
@@ -163,7 +170,25 @@
   <element name="CsvFormat" substitutionGroup="wfs:AbstractFormat" >
     <complexType>
       <complexContent>
-        <extension base="wfs:AbstractFormatType" />
+        <extension base="wfs:AbstractFormatType">
+          <sequence>
+            <element name="EnableGeometryExport" type="boolean" minOccurs="0" default="true" />
+            <element name="ExtraColumns" minOccurs="0">
+              <complexType>
+                <sequence>
+                  <element name="Identifier" type="string" minOccurs="0" />
+                  <element name="CoordinateReferenceSystem" type="string" minOccurs="0" default="CRS" />
+                </sequence>
+              </complexType>
+            </element>
+          </sequence>
+          <attribute name="encoding" type="string" />
+          <attribute name="columnHeaders" type="wfs:ColumnHeaders" default="auto" />
+          <attribute name="quoteCharacter" type="wfs:SingleCharacter" />
+          <attribute name="escape" type="wfs:SingleCharacter" />
+          <attribute name="delimiter" type="wfs:SingleCharacter" />
+          <attribute name="recordSeparator" type="string" />
+        </extension>
       </complexContent>
     </complexType>
   </element>
@@ -172,17 +197,6 @@
       <complexContent>
         <extension base="wfs:AbstractFormatType" >
           <attribute name="allowOtherCrsThanWGS84" type="boolean" default="false"/>
-        </extension>
-      </complexContent>
-    </complexType>
-  </element>
-  <element name="DefaultFormats" substitutionGroup="wfs:AbstractFormat" >
-    <complexType>
-      <complexContent>
-        <extension base="wfs:AbstractFormatType">
-          <sequence>
-            <element name="ExcludeMimeType" type="string" maxOccurs="unbounded" />
-          </sequence>
         </extension>
       </complexContent>
     </complexType>
@@ -257,7 +271,22 @@
       <enumeration value="GML_32" />
     </restriction>
   </simpleType>
-  
+
+  <simpleType name="ColumnHeaders">
+    <restriction base="string">
+      <enumeration value="auto" />
+      <enumeration value="short" />
+      <enumeration value="prefixed" />
+      <enumeration value="long" />
+    </restriction>
+  </simpleType>
+
+  <simpleType name="SingleCharacter">
+    <restriction base="string">
+      <length value="1" />
+    </restriction>
+  </simpleType>
+
   <simpleType name="Encodings">
     <list>
       <simpleType>
