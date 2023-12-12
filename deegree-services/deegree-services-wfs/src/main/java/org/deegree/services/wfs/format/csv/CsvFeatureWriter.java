@@ -82,7 +82,9 @@ public class CsvFeatureWriter {
 
 	private static final Logger LOG = LoggerFactory.getLogger(CsvFeatureWriter.class);
 
-	public static final String CRS = "CRS";
+	public static final String DEFAULT_COLUMN_NAME_CRS = "CRS";
+
+	public static final String DEFAULT_PROPERTY_INSTANCE_SEPARATOR = " | ";
 
 	private final CSVPrinter csvPrinter;
 
@@ -98,21 +100,30 @@ public class CsvFeatureWriter {
 
 	private final String columnFID;
 
+	private final boolean exportGeometries;
+
+	private final String propertyInstanceSeparator;
+
 	public CsvFeatureWriter(Writer writer, ICRS requestedCRS, FeatureType featureType, CsvFormatConfig config)
 			throws IOException {
-		this.propertyNames = findPropertyNamesToOutput(featureType);
 		if (config == null) {
 			this.columnFID = null;
-			this.columnCRS = CRS;
+			this.columnCRS = DEFAULT_COLUMN_NAME_CRS;
+			this.propertyInstanceSeparator = DEFAULT_PROPERTY_INSTANCE_SEPARATOR;
 			this.columnHeaders = CsvFormatConfig.ColumnHeaders.AUTO;
+			this.exportGeometries = true;
 
+			this.propertyNames = findPropertyNamesToOutput(featureType);
 			this.csvPrinter = new CSVPrinter(writer, DEFAULT.withHeader(createHeaders()));
 		}
 		else {
 			this.columnFID = config.getColumnIdentifier().orElse(null);
-			this.columnCRS = config.getColumnCRS().orElse(CRS);
+			this.columnCRS = config.getColumnCRS().orElse(null);
 			this.columnHeaders = config.getColumnHeaders().orElse(CsvFormatConfig.ColumnHeaders.AUTO);
+			this.exportGeometries = config.getExportGeometry().orElse(Boolean.TRUE);
+			this.propertyInstanceSeparator = config.getInstanceSeparator().orElse("");
 
+			this.propertyNames = findPropertyNamesToOutput(featureType);
 			this.csvPrinter = new CSVPrinter(writer,
 					DEFAULT.withHeader(createHeaders())
 						.withEscape(config.getEscape().orElse(DEFAULT.getEscapeCharacter()))
@@ -174,9 +185,14 @@ public class CsvFeatureWriter {
 	private List<QName> findPropertyNamesToOutput(FeatureType featureType) {
 		return featureType.getPropertyDeclarations()
 			.stream()
-			.filter(p -> isSupportedProperty(p))
-			.map(p -> p.getName())
+			.filter(this::isSupportedProperty)
+			.filter(this::checkForGeometryRestriction)
+			.map(PropertyType::getName)
 			.collect(Collectors.toList());
+	}
+
+	private boolean checkForGeometryRestriction(PropertyType p) {
+		return this.exportGeometries || !(p instanceof GeometryPropertyType);
 	}
 
 	private boolean isSupportedProperty(PropertyType p) {
@@ -202,8 +218,8 @@ public class CsvFeatureWriter {
 				return qn.getLocalPart();
 			}
 		};
-		long countLocalPart = propertyNames.stream().map(QName::getLocalPart).count();
-		long countPrefixed = propertyNames.stream().map(prefixed).count();
+		long countLocalPart = propertyNames.stream().map(QName::getLocalPart).distinct().count();
+		long countPrefixed = propertyNames.stream().map(prefixed).distinct().count();
 
 		if (this.columnHeaders == CsvFormatConfig.ColumnHeaders.LONG) {
 			return QName::toString;
@@ -256,7 +272,7 @@ public class CsvFeatureWriter {
 			String propertyAsString = propertyAsString(propertyName, property);
 			if (propertyAsString != null) {
 				if (propertyIndex > 0)
-					sb.append(" | ");
+					sb.append(propertyInstanceSeparator);
 				sb.append(propertyAsString.replace("\n", ""));
 			}
 			propertyIndex++;

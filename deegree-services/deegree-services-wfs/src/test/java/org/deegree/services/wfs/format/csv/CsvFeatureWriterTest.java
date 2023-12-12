@@ -34,14 +34,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wfs.format.csv;
 
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -131,6 +133,71 @@ public class CsvFeatureWriterTest {
 		URL testResource = CsvFeatureWriterTest.class.getResource(resourceName);
 		GMLStreamReader reader = GMLInputFactory.createGMLStreamReader(GMLVersion.GML_32, testResource);
 		return reader.readFeature();
+	}
+
+	@Test
+	public void testWrite_CRS() throws Exception {
+		Feature cadastralZoning = parseFeature("PhilosopherForCsv.gml");
+		FeatureType featureType = cadastralZoning.getType();
+		StringWriter featureAsCsv = new StringWriter();
+
+		CsvFeatureWriter csvFeatureWriter = new CsvFeatureWriter(featureAsCsv, null, featureType, null);
+
+		csvFeatureWriter.write(cadastralZoning);
+
+		CSVParser parser = new CSVParser(new StringReader(featureAsCsv.toString()), CSVFormat.DEFAULT);
+
+		List<CSVRecord> records = parser.getRecords();
+		assertThat(records.size(), is(2));
+
+		CSVRecord header = records.get(0);
+		assertThat(header.size(), is(11));
+		CSVRecord record = records.get(1);
+		assertThat(record.size(), is(11));
+
+		List<String> headerColumns = new ArrayList<>();
+		header.forEach(headerColumns::add);
+		assertThat(headerColumns, hasItem("CRS"));
+	}
+
+	@Test
+	public void testWrite_ComplexConfig() throws Exception {
+		Feature cadastralZoning = parseFeature("PhilosopherForCsv.gml");
+		FeatureType featureType = cadastralZoning.getType();
+		StringWriter featureAsCsv = new StringWriter();
+
+		CsvFormatConfig config = new CsvFormatConfig.Builder() //
+			.setColumnIdentifier("FID")
+			.setInstanceSeparator(" * ")
+			.setExportGeometry(false)
+			.build();
+		CsvFeatureWriter csvFeatureWriter = new CsvFeatureWriter(featureAsCsv, null, featureType, config);
+
+		csvFeatureWriter.write(cadastralZoning);
+
+		CSVParser parser = new CSVParser(new StringReader(featureAsCsv.toString()), CSVFormat.DEFAULT);
+
+		List<CSVRecord> records = parser.getRecords();
+		assertThat(records.size(), is(2));
+
+		CSVRecord header = records.get(0);
+		assertThat(header.size(), is(9));
+
+		CSVRecord record = records.get(1);
+		assertThat(record.size(), is(9));
+
+		// check for FID column
+		assertThat(header.get(0), is("FID"));
+		assertThat(record.get(0), is("PHILOSOPHER_1"));
+
+		// check no CRS column present
+		List<String> headerColumns = new ArrayList<>();
+		header.forEach(headerColumns::add);
+		assertThat(headerColumns, not(hasItem("CRS")));
+
+		// check custom instance separator
+		assertThat(headerColumns, hasItem("app:subject"));
+		assertThat(record.get(headerColumns.indexOf("app:subject")), is("capital * economy * labour"));
 	}
 
 }

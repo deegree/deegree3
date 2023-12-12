@@ -187,6 +187,7 @@
           <attribute name="quoteCharacter" type="wfs:SingleCharacter" />
           <attribute name="escape" type="wfs:SingleCharacter" />
           <attribute name="delimiter" type="wfs:SingleCharacter" />
+          <attribute name="instanceSeparator" type="string" default=" | "/>
           <attribute name="recordSeparator" type="string" />
         </extension>
       </complexContent>

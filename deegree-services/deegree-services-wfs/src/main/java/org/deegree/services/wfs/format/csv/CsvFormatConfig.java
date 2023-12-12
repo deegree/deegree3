@@ -62,6 +62,8 @@ public class CsvFormatConfig {
 
 	private final Character delimiter;
 
+	private final String instanceSeparator;
+
 	private final String recordSeparator;
 
 	private final String columnIdentifier;
@@ -71,13 +73,14 @@ public class CsvFormatConfig {
 	private final ColumnHeaders columnHeaders;
 
 	CsvFormatConfig(Boolean exportGeometry, Charset encoding, Character quoteCharacter, Character escape,
-			Character delimiter, String recordSeparator, ColumnHeaders columnHeaders, String columnGMLIdentifier,
-			String columnCRS) {
+			Character delimiter, String instanceSeparator, String recordSeparator, ColumnHeaders columnHeaders,
+			String columnGMLIdentifier, String columnCRS) {
 		this.exportGeometry = exportGeometry;
 		this.encoding = encoding;
 		this.quoteCharacter = quoteCharacter;
 		this.escape = escape;
 		this.delimiter = delimiter;
+		this.instanceSeparator = instanceSeparator;
 		this.recordSeparator = recordSeparator;
 		this.columnIdentifier = columnGMLIdentifier;
 		this.columnCRS = columnCRS;
@@ -102,6 +105,10 @@ public class CsvFormatConfig {
 
 	public Optional<Character> getDelimiter() {
 		return Optional.ofNullable(delimiter);
+	}
+
+	public Optional<String> getInstanceSeparator() {
+		return Optional.ofNullable(instanceSeparator);
 	}
 
 	public Optional<String> getRecordSeparator() {
@@ -132,6 +139,8 @@ public class CsvFormatConfig {
 		private Character escape;
 
 		private Character delimiter;
+
+		private String instanceSeparator;
 
 		private String recordSeparator;
 
@@ -186,9 +195,14 @@ public class CsvFormatConfig {
 			return this;
 		}
 
+		public Builder setInstanceSeparator(String instanceSeparator) {
+			this.instanceSeparator = instanceSeparator;
+			return this;
+		}
+
 		public CsvFormatConfig build() {
-			return new CsvFormatConfig(exportGeometry, encoding, quoteCharacter, escape, delimiter, recordSeparator,
-					columnHeaders, columnIdentifier, columnCRS);
+			return new CsvFormatConfig(exportGeometry, encoding, quoteCharacter, escape, delimiter, instanceSeparator,
+					recordSeparator, columnHeaders, columnIdentifier, columnCRS);
 		}
 
 		private Character firstChar(String text) {
