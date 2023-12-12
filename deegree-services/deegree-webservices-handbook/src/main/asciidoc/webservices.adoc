@@ -383,19 +383,29 @@ as output formats and announce those formats in the GetCapabilities responses
 (except for WFS 1.0.0, as this version of the standard has no means of
 announcing other formats than GML 2).
 
-NOTE: If custom format configurations are present in the configuration the
-default formats will be omitted.
+NOTE: If custom format configurations are present and _DefaultFormats_ is not,
+the default formats will be omitted.
 
 To ease configuration, it is also possible to add custom format configurations
 in addition to the default or a subset of the default ones.
 
-*Example of using the defaults, except the CSV*
+The _DefaultFormats_ option has the following sub-options:
+
+[width="100%",cols="24%,11%,7%,58%",options="header",]
+|===
+|Option |Cardinality |Value |Description
+
+|ExcludeMimeType |0..n |String |Mime types or pattern to exclude.
+configuration
+|===
+
+*Example of using the defaults, except the CSV and GeoJSON*
 
 [source,xml]
 ----
 ...
 <DefaultFormats>
-  <ExcludeMimeType>text/csv</ExcludeMimeType>
+  <ExcludeMimeType>application/geo+json</ExcludeMimeType>
   <ExcludeMimeType>*csv*</ExcludeMimeType>
 </DefaultFormats>
 ...
@@ -729,9 +739,9 @@ The _CsvFormat_ option has the following sub-options:
 |@delimiter |0..1 |String |Single sign to be used as escape character. Default to double quote (`"`)
 |@instanceSeparator |0..1 |String |Text used when the property with multiple instances is joined. Defaults to the pipe sign with spaces around (` | `).
 |@recordSeparator |0..1 |String |Text to be used between records. Defaults to carriage return with line feed (`\r\n`).
-|EnableGeometryExport |0..1 |Boolean |Defines if geometry columns should be included or not. Enabled by default.
-|ExtraColumns |0..1 |Complex |Defines if additional columns should be added to the output.
+|@geometries |0..1 |Boolean |Defines if geometry columns should be included or not. Enabled by default.
 |MimeType |1..n |String |Mime types associated with this format configuration
+|ExtraColumns |0..1 |Complex |Defines if additional columns should be added to the output.
 |=======================================================================
 
 The _ExtraColumns_ option has the following sub-options:
@@ -739,7 +749,7 @@ The _ExtraColumns_ option has the following sub-options:
 [width="100%",cols="24%,11%,7%,58%",options="header",]
 |=======================================================================
 |Identifier |0..1 |String |Name of the column to output the GML identifier. An empty value will omit this column, which is the default.
-|CoordinateReferenceSystem |0..1 |String |Name of the column to output the coordinate reference system name. Defaults to `CRS`.
+|CoordinateReferenceSystem |0..1 |String |Name of the column to output the coordinate reference system name. Defaults to `CRS` if _ExtraColumns_ is not set.
 |=======================================================================
 
 *Example for CSV output format*

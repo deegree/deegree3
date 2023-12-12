@@ -69,6 +69,7 @@ import static org.deegree.services.wfs.ReferenceResolvingMode.CHECK_ALL;
 import static org.deegree.services.wfs.ReferenceResolvingMode.CHECK_INTERNALLY;
 import static org.deegree.services.wfs.ReferenceResolvingMode.SKIP_ALL;
 
+import jakarta.xml.bind.JAXBElement;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -91,7 +92,6 @@ import java.util.regex.PatternSyntaxException;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -204,6 +204,7 @@ import org.deegree.services.ows.OWS100ExceptionReportSerializer;
 import org.deegree.services.ows.OWS110ExceptionReportSerializer;
 import org.deegree.services.ows.PreOWSExceptionReportSerializer;
 import org.deegree.services.wfs.format.Format;
+import org.deegree.services.wfs.format.csv.CsvFeatureWriter;
 import org.deegree.services.wfs.format.csv.CsvFormat;
 import org.deegree.services.wfs.format.csv.CsvFormatConfig;
 import org.deegree.services.wfs.format.geojson.GeoJsonFormat;
@@ -721,7 +722,7 @@ public class WebFeatureService extends AbstractOWS {
 			}
 		}
 
-		builder.setExportGeometry(csvConfig.isEnableGeometryExport());
+		builder.setExportGeometry(csvConfig.isGeometries());
 		builder.setDelimiter(csvConfig.getDelimiter());
 		builder.setQuoteCharacter(csvConfig.getQuoteCharacter());
 		builder.setEscape(csvConfig.getEscape());
@@ -731,6 +732,9 @@ public class WebFeatureService extends AbstractOWS {
 		if (csvConfig.getExtraColumns() != null) {
 			builder.setColumnIdentifier(csvConfig.getExtraColumns().getIdentifier());
 			builder.setColumnCRS(csvConfig.getExtraColumns().getCoordinateReferenceSystem());
+		}
+		else {
+			builder.setColumnCRS(CsvFeatureWriter.DEFAULT_COLUMN_NAME_CRS);
 		}
 		return builder.build();
 	}

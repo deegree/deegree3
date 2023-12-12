@@ -38,6 +38,7 @@ import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import javax.xml.namespace.QName;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -75,7 +76,10 @@ public class CsvGetFeatureHandler {
 	public void doGetFeatureResults(GetFeature request, HttpResponseBuffer response) throws Exception {
 		QueryAnalyzer analyzer = new QueryAnalyzer(request.getQueries(), webFeatureService,
 				webFeatureService.getStoreManager(), webFeatureService.getCheckAreaOfUse());
-		response.setCharacterEncoding(config.getEncoding().orElse(Charset.defaultCharset()).name());
+		response.setCharacterEncoding(Optional.ofNullable(config)
+			.flatMap(CsvFormatConfig::getEncoding)
+			.orElse(Charset.defaultCharset())
+			.name());
 		response.setContentType(determineMimeType(request));
 		ICRS requestedCRS = analyzer.getRequestedCRS();
 		int startIndex = getStartIndex(request);

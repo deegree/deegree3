@@ -172,12 +172,11 @@
       <complexContent>
         <extension base="wfs:AbstractFormatType">
           <sequence>
-            <element name="EnableGeometryExport" type="boolean" minOccurs="0" default="true" />
             <element name="ExtraColumns" minOccurs="0">
               <complexType>
                 <sequence>
                   <element name="Identifier" type="string" minOccurs="0" />
-                  <element name="CoordinateReferenceSystem" type="string" minOccurs="0" default="CRS" />
+                  <element name="CoordinateReferenceSystem" type="string" minOccurs="0" />
                 </sequence>
               </complexType>
             </element>
@@ -189,6 +188,7 @@
           <attribute name="delimiter" type="wfs:SingleCharacter" />
           <attribute name="instanceSeparator" type="string" default=" | "/>
           <attribute name="recordSeparator" type="string" />
+          <attribute name="geometries" type="boolean" default="true" />
         </extension>
       </complexContent>
     </complexType>
