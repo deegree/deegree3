@@ -114,9 +114,9 @@ public class OwsHttpResponseImpl implements OwsHttpResponse {
 	public XMLStreamReader getAsXMLStream() throws OWSExceptionReport, XMLStreamException {
 		XMLStreamReader xmlStream = xmlFac.createXMLStreamReader(url, is);
 		assertNoExceptionReport(xmlStream);
-		LOG.debug("Response root element: " + xmlStream.getName());
+		LOG.debug("Response root element: {}", xmlStream.getName());
 		String version = xmlStream.getAttributeValue(null, "version");
-		LOG.trace("Response version attribute: " + version);
+		LOG.trace("Response version attribute: {}", version);
 		return xmlStream;
 	}
 

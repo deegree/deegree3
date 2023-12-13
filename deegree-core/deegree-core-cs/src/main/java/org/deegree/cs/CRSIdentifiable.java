@@ -425,7 +425,7 @@ public class CRSIdentifiable implements CRSResource {
 						}
 					}
 					catch (Exception e) {
-						LOG.debug("Error parsing areaOfUse bbox (ignoring it): '" + e.getMessage() + "'");
+						LOG.debug("Error parsing areaOfUse bbox (ignoring it): '{}'", e.getMessage());
 					}
 				}
 			}

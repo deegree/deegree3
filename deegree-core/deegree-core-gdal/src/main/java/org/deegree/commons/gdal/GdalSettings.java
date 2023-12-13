@@ -87,7 +87,7 @@ public class GdalSettings implements Initializable, Destroyable {
 		LOG.info("--------------------------------------------------------------------------------");
 		GDALSettings settings = getGdalConfigOptions(workspace);
 		if (settings == null) {
-			LOG.info("No " + configFileName + " in workspace. Not initializing GDAL JNI adapter.");
+			LOG.info("No {} in workspace. Not initializing GDAL JNI adapter.", configFileName);
 			return;
 		}
 		else {
@@ -99,11 +99,11 @@ public class GdalSettings implements Initializable, Destroyable {
 	private void registerGdal(GDALSettings settings) {
 		if (registerOnceQuietly()) {
 			for (GDALOption gdalConfigOption : settings.getGDALOption()) {
-				LOG.info("GDAL: " + gdalConfigOption.getName() + "=" + gdalConfigOption.getValue().trim());
+				LOG.info("GDAL: {}={}", gdalConfigOption.getName(), gdalConfigOption.getValue().trim());
 				gdal.SetConfigOption(gdalConfigOption.getName(), gdalConfigOption.getValue().trim());
 			}
 			int activeDatasets = settings.getOpenDatasets().intValue();
-			LOG.info("Max number of open GDAL datasets: " + activeDatasets);
+			LOG.info("Max number of open GDAL datasets: {}", activeDatasets);
 			pool = new GdalDatasetPool(activeDatasets);
 		}
 	}
@@ -118,7 +118,7 @@ public class GdalSettings implements Initializable, Destroyable {
 			return true;
 		}
 		catch (Exception e) {
-			LOG.error("Registration of GDAL JNI adapter failed: " + e.getMessage(), e);
+			LOG.error("Registration of GDAL JNI adapter failed: {}", e.getMessage(), e);
 		}
 		return false;
 	}
@@ -130,12 +130,12 @@ public class GdalSettings implements Initializable, Destroyable {
 	private GDALSettings getGdalConfigOptions(final Workspace ws) {
 		File configFile = new File(((DefaultWorkspace) ws).getLocation(), configFileName);
 		if (configFile.exists()) {
-			LOG.info("Using '" + configFileName + "' from workspace for GDAL settings.");
+			LOG.info("Using '{}' from workspace for GDAL settings.", configFileName);
 			try {
 				return readGdalConfigOptions(configFile, ws);
 			}
 			catch (Exception e) {
-				LOG.error("Error reading GDALSettings file: " + e.getMessage());
+				LOG.error("Error reading GDALSettings file: {}", e.getMessage());
 			}
 		}
 		return null;

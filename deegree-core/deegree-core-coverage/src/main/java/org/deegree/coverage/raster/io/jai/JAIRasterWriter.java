@@ -58,7 +58,7 @@ public class JAIRasterWriter implements RasterWriter {
 
 	@Override
 	public void write(AbstractRaster raster, File file, RasterIOOptions options) throws IOException {
-		LOG.debug("writing " + file + " with JAI");
+		LOG.debug("writing {} with JAI", file);
 		String ext = FileUtils.getFileExtension(file);
 		String format = JAIRasterIOProvider.getJAIFormat(ext);
 		if (format != null) {

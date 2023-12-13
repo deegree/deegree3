@@ -120,7 +120,7 @@ public class FileRenderableStoreBuilder implements ResourceBuilder<RenderableSto
 			resolve = url.toURI();
 		}
 		catch (URISyntaxException e) {
-			LOG.warn("Error while resolving url for file: " + fileName + ".");
+			LOG.warn("Error while resolving url for file: {}.", fileName);
 		}
 		return resolve;
 	}

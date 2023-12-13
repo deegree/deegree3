@@ -275,10 +275,10 @@ public class Filter100XMLDecoder {
 			Operator rootOperator = parseOperator(xmlStream);
 			filter = new OperatorFilter(rootOperator);
 			nextElement(xmlStream);
-			LOG.debug("Local name: " + xmlStream.getLocalName());
+			LOG.debug("Local name: {}", xmlStream.getLocalName());
 		}
 
-		LOG.debug("Local name: " + xmlStream.getLocalName());
+		LOG.debug("Local name: {}", xmlStream.getLocalName());
 		xmlStream.require(XMLStreamConstants.END_ELEMENT, OGC_NS, "Filter");
 		return filter;
 	}
@@ -911,7 +911,7 @@ public class Filter100XMLDecoder {
 		for (Enum<?> e : enumClass.getEnumConstants()) {
 			QName qname = map.get(e);
 			if (qname == null) {
-				LOG.warn("No value for " + e);
+				LOG.warn("No value for {}", e);
 			}
 			else {
 				names.add(qname.toString());

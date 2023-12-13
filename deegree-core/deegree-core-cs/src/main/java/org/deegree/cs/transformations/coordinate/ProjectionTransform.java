@@ -94,19 +94,20 @@ public class ProjectionTransform extends Transformation {
 		else {
 			IAxis first = axis[0];
 			IAxis second = axis[1];
-			LOG.debug("First projected crs Axis: " + first);
-			LOG.debug("Second projected crs Axis: " + second);
+			LOG.debug("First projected crs Axis: {}", first);
+			LOG.debug("Second projected crs Axis: {}", second);
 			if (first != null && second != null) {
 				if (Axis.AO_WEST == Math.abs(second.getOrientation())) {
 					result = true;
 					if (Axis.AO_NORTH != Math.abs(first.getOrientation())) {
-						LOG.warn("The given projection uses a second axis which is not mappable (  " + second
-								+ ") please check your configuration, assuming y, x axis-order.");
+						LOG.warn(
+								"The given projection uses a second axis which is not mappable (  {}) please check your configuration, assuming y, x axis-order.",
+								second);
 					}
 				}
 			}
 		}
-		LOG.debug("Incoming ordinates will" + ((result) ? " " : " not ") + "be swapped.");
+		LOG.debug("Incoming ordinates will{}be swapped.", ((result) ? " " : " not "));
 		return result;
 	}
 

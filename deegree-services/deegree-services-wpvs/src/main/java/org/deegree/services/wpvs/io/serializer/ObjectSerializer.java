@@ -277,7 +277,7 @@ public abstract class ObjectSerializer<T extends PositionableModel> {
 			baos.close();
 		}
 		catch (IOException e) {
-			LOG.error("Error while serializing object because: " + e.getLocalizedMessage(), e);
+			LOG.error("Error while serializing object because: {}", e.getLocalizedMessage(), e);
 		}
 		return baos.toByteArray();
 	}
@@ -296,16 +296,16 @@ public abstract class ObjectSerializer<T extends PositionableModel> {
 				result = (T) objectIn.readObject();
 			}
 			catch (ClassCastException e) {
-				LOG.error("Error while deserializing object because: " + e.getLocalizedMessage(), e);
+				LOG.error("Error while deserializing object because: {}", e.getLocalizedMessage(), e);
 			}
 			catch (IOException e) {
-				LOG.error("Error while deserializing object because: " + e.getLocalizedMessage(), e);
+				LOG.error("Error while deserializing object because: {}", e.getLocalizedMessage(), e);
 			}
 			catch (ClassNotFoundException e) {
-				LOG.error("Error while deserializing object because: " + e.getLocalizedMessage(), e);
+				LOG.error("Error while deserializing object because: {}", e.getLocalizedMessage(), e);
 			}
 			catch (Throwable e) {
-				LOG.error("Error while deserializing object because: " + e.getLocalizedMessage(), e);
+				LOG.error("Error while deserializing object because: {}", e.getLocalizedMessage(), e);
 			}
 		}
 		return result;

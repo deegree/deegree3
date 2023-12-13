@@ -127,10 +127,10 @@ public abstract class DefinitionParser {
 							this.configStream.close();
 						}
 						catch (IOException e) {
-							LOG.debug("Unable to close the stream to the configuration: " + this.configURL
-									+ " stack trace.", e);
-							LOG.debug("Unable to close the stream to the configuration: " + this.configURL
-									+ " because: " + e.getLocalizedMessage());
+							LOG.debug("Unable to close the stream to the configuration: {} stack trace.",
+									this.configURL, e);
+							LOG.debug("Unable to close the stream to the configuration: {} because: {}", this.configURL,
+									e.getLocalizedMessage());
 						}
 						this.configReader.close();
 						this.readEntireFile = true;
@@ -199,22 +199,23 @@ public abstract class DefinitionParser {
 				// move from start document.
 				XMLStreamUtils.nextElement(configReader);
 				if (!expectedRootName().equals(configReader.getName())) {
-					LOG.error("The root element of the crs configuration at location: " + configURL
-							+ " is not the expected: " + expectedRootName() + " is your configuration correct?");
+					LOG.error(
+							"The root element of the crs configuration at location: {} is not the expected: {} is your configuration correct?",
+							configURL, expectedRootName());
 				}
 			}
 		}
 		catch (XMLStreamException e) {
-			LOG.debug("Could not read config file from url: " + configURL + ", stack trace.", e);
-			LOG.error("Could not read config file from url: " + configURL + " because: " + e.getLocalizedMessage());
+			LOG.debug("Could not read config file from url: {}, stack trace.", configURL, e);
+			LOG.error("Could not read config file from url: {} because: {}", configURL, e.getLocalizedMessage());
 		}
 		catch (FactoryConfigurationError e) {
-			LOG.debug("Could not read config file from url: " + configURL + ", stack trace.", e);
-			LOG.error("Could not read config file from url: " + configURL + " because: " + e.getLocalizedMessage());
+			LOG.debug("Could not read config file from url: {}, stack trace.", configURL, e);
+			LOG.error("Could not read config file from url: {} because: {}", configURL, e.getLocalizedMessage());
 		}
 		catch (IOException e) {
-			LOG.debug("Could not read config file from url: " + configURL + ", stack trace.", e);
-			LOG.error("Could not read config file from url: " + configURL + " because: " + e.getLocalizedMessage());
+			LOG.debug("Could not read config file from url: {}, stack trace.", configURL, e);
+			LOG.error("Could not read config file from url: {} because: {}", configURL, e.getLocalizedMessage());
 		}
 
 	}

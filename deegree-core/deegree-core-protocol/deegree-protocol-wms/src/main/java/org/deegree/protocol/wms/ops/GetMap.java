@@ -802,7 +802,7 @@ public class GetMap extends RequestBase {
 			crsRef = CRSUtils.getAxisAwareCrs(crsRef);
 		}
 		catch (Exception e) {
-			LOG.warn("Unable to determine axis-aware variant of '" + crs + "'. Continuing.");
+			LOG.warn("Unable to determine axis-aware variant of '{}'. Continuing.", crs);
 		}
 		return new GeometryFactory().createEnvelope(bbox[0], bbox[1], bbox[2], bbox[3], crsRef);
 	}

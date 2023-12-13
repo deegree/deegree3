@@ -216,7 +216,7 @@ public class FeatureTypeInstanceWriter {
 			propTypeInstance.append(subVar);
 		}
 		else {
-			LOG.warn("Ignore import for property type: " + prop.getName());
+			LOG.warn("Ignore import for property type: {}", prop.getName());
 		}
 		propTypeInstance.append(")");
 		return propTypeInstance.toString();

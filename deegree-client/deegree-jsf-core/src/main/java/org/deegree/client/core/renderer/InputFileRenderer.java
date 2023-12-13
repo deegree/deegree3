@@ -136,7 +136,7 @@ public class InputFileRenderer extends Renderer {
 			targetFile = File.createTempFile("upload", "", tempDir);
 		}
 
-		LOG.info("Uploading file '" + fileName + "' to: '" + targetFile + "'");
+		LOG.info("Uploading file '{}' to: '{}'", fileName, targetFile);
 		return targetFile;
 	}
 

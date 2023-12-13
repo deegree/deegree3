@@ -677,9 +677,9 @@ public abstract class ByteBufferRasterData implements RasterData {
 				result = getByteBuffer().getShort(pos);
 			}
 			catch (Exception e) {
-				LOG.debug(Thread.currentThread().getName() + "->(x,y)|band->pos: " + x + "," + y + "|" + band + "->"
-						+ pos + "\n-view: " + getView() + "\n-rdi: " + getView().dataInfo + "\n-buffer:"
-						+ getByteBuffer());
+				LOG.debug("{}->(x,y)|band->pos: {},{}|{}->{}\n-view: {}\n-rdi: {}\n-buffer:{}",
+						Thread.currentThread().getName(), x, y, band, pos, getView(), getView().dataInfo,
+						getByteBuffer());
 			}
 			return result;
 		}

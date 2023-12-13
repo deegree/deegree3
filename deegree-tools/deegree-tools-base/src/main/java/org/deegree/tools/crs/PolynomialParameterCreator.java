@@ -83,8 +83,9 @@ public class PolynomialParameterCreator {
 		List<Point3d> from = readFromFile(sourceFile, source.getDimension(), seperator);
 		List<Point3d> to = readFromFile(targetFile, target.getDimension(), seperator);
 		if (from.size() != to.size()) {
-			log.error("The number of coordinates in the from file( " + from.size() + ") differ from the targetFile ("
-					+ to.size() + ") , this maynot be!");
+			log.error(
+					"The number of coordinates in the from file( {}) differ from the targetFile ({}) , this maynot be!",
+					from.size(), to.size());
 			System.exit(1);
 		}
 		if (transformationClass == null || "".equals(transformationClass.trim())) {
@@ -118,12 +119,12 @@ public class PolynomialParameterCreator {
 				}
 				sb.append("</").append(t).append("\n");
 			}
-			log.info("Resulted params:\n" + sb.toString());
+			log.info("Resulted params:\n{}", sb.toString());
 		}
 	}
 
 	private List<Point3d> readFromFile(File f, int dim, String seperator) throws IOException {
-		log.info("Trying to read reference points from file: " + f);
+		log.info("Trying to read reference points from file: {}", f);
 		List<Point3d> result = new ArrayList<Point3d>();
 		BufferedReader br = new BufferedReader(new FileReader(f));
 		String coords = br.readLine();
@@ -132,9 +133,9 @@ public class PolynomialParameterCreator {
 			if (!coords.startsWith("#")) {
 				String[] coordinates = coords.split(seperator);
 				if (coordinates.length != dim) {
-					log.warn(lineCount
-							+ ") Each line must contain the number of coordinates fitting the dimension of crs (" + dim
-							+ ") seperated by a '" + seperator + "'.");
+					log.warn(
+							"{}) Each line must contain the number of coordinates fitting the dimension of crs ({}) seperated by a '{}'.",
+							lineCount, dim, seperator);
 				}
 				else {
 					Point3d coord = new Point3d();
@@ -230,7 +231,7 @@ public class PolynomialParameterCreator {
 			coordSep = " ";
 		}
 
-		log.info("Trying to convert coordinates from: " + sourceCRS + " to: " + targetCRS);
+		log.info("Trying to convert coordinates from: {} to: {}", sourceCRS, targetCRS);
 
 		try {
 			ICRS source = CRSManager.lookup(sourceCRS);

@@ -183,7 +183,7 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
 						XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader(is);
 						AdhocQuery query = new AdhocQuery(xmlStream);
 						idToQuery.put(query.getId(), query);
-						LOG.info("Found adhocQuery " + file + " with id " + query.getId());
+						LOG.info("Found adhocQuery {} with id {}", file, query.getId());
 					}
 					catch (Throwable t) {
 						LOG.error(t.getMessage(), t);
@@ -244,7 +244,7 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
 				if (result.next()) {
 					regPackId = result.getString(1);
 				}
-				LOG.debug("Profile in database: " + regPackId + " from " + lastInserted);
+				LOG.debug("Profile in database: {} from {}", regPackId, lastInserted);
 				String insertedId = updateProfile(regPackId, lastInserted, profile, lastModified);
 				if (insertedId != null) {
 					sql = "DELETE FROM management where key = 'REGISTRYPACKAGE_ID' or key = 'LAST_INSERTED'";
@@ -299,8 +299,8 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
 			if (profile != null && lastModified != null
 					&& ((lastInserted != null && lastInserted.before(lastModified)) || lastInserted == null)) {
 				if (regPackId != null) {
-					LOG.info("profile has changed: Delete old profile with id " + regPackId + ", last inserted: "
-							+ lastInserted);
+					LOG.info("profile has changed: Delete old profile with id {}, last inserted: {}", regPackId,
+							lastInserted);
 					ValueReference propertyName = new ValueReference("rim:RegistryPackage/@id", nsContext);
 					Literal<PrimitiveValue> lit = new Literal<PrimitiveValue>(
 							new PrimitiveValue(regPackId, new PrimitiveType(BaseType.STRING)), null);
@@ -311,7 +311,7 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
 					.performInsert(new InsertOperation(Collections.singletonList(profile), null, null));
 				trans.commit();
 				if (!performInsert.isEmpty()) {
-					LOG.info("Inserted profile with id " + performInsert.get(0));
+					LOG.info("Inserted profile with id {}", performInsert.get(0));
 					return performInsert.get(0);
 				}
 			}
@@ -436,7 +436,7 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
 				}
 			}
 
-			LOG.debug("Execute: " + stmt.toString());
+			LOG.debug("Execute: {}", stmt.toString());
 			rs = executeQuery(stmt, prov, queryTimeout);
 			return new EbrimEOMDResultSet(rs, conn, stmt);
 		}
@@ -514,7 +514,7 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
 				}
 			}
 
-			LOG.debug("Execute: " + stmt.toString());
+			LOG.debug("Execute: {}", stmt.toString());
 			rs = executeQuery(stmt, prov, queryTimeout);
 			rs.next();
 			return rs.getInt(1);
@@ -584,7 +584,7 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
 				i++;
 			}
 
-			LOG.debug("Execute: " + stmt.toString());
+			LOG.debug("Execute: {}", stmt.toString());
 			rs = executeQuery(stmt, prov, queryTimeout);
 			return new EbrimEOMDResultSet(rs, conn, stmt);
 		}

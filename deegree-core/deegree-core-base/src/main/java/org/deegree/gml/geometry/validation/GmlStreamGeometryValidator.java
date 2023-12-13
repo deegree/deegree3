@@ -110,8 +110,8 @@ public class GmlStreamGeometryValidator {
 	private void validateGeometryElement() throws UnknownCRSException {
 
 		Location location = xmlStream.getLocation();
-		LOG.debug("Validating GML geometry element ('" + xmlStream.getLocalName() + "') at line: "
-				+ location.getLineNumber() + ", column: " + location.getColumnNumber() + ".");
+		LOG.debug("Validating GML geometry element ('{}') at line: {}, column: {}.", xmlStream.getLocalName(),
+				location.getLineNumber(), location.getColumnNumber());
 
 		GmlElementIdentifier identifier = new GmlElementIdentifier(xmlStream);
 		ValidationEventRedirector eventRedirector = new ValidationEventRedirector(gmlErrorHandler, identifier);

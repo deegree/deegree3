@@ -118,7 +118,7 @@ public class InsertRow extends TransactionRow {
 	public Map<SQLIdentifier, Object> performInsert(Connection conn) throws SQLException {
 
 		if (LOG.isDebugEnabled()) {
-			LOG.debug("Inserting: " + this);
+			LOG.debug("Inserting: {}", this);
 		}
 
 		String sql = getSql();
@@ -134,8 +134,7 @@ public class InsertRow extends TransactionRow {
 			int columnId = 1;
 			for (Entry<SQLIdentifier, Object> entry : columnToObject.entrySet()) {
 				if (entry.getValue() != null) {
-					LOG.debug("- Argument " + entry.getKey() + " = " + entry.getValue() + " ("
-							+ entry.getValue().getClass() + ")");
+					LOG.debug("- Argument {} = {} ({})", entry.getKey(), entry.getValue(), entry.getValue().getClass());
 					if (entry.getValue() instanceof ParticleConversion<?>) {
 						ParticleConversion<?> conversion = (ParticleConversion<?>) entry.getValue();
 						conversion.setParticle(stmt, columnId++);
@@ -145,7 +144,7 @@ public class InsertRow extends TransactionRow {
 					}
 				}
 				else {
-					LOG.debug("- Argument " + entry.getKey() + " = NULL");
+					LOG.debug("- Argument {} = NULL", entry.getKey());
 					stmt.setObject(columnId++, null);
 				}
 			}
@@ -158,7 +157,7 @@ public class InsertRow extends TransactionRow {
 					if (rs.next()) {
 						Object key = rs.getObject(1);
 						columnToAutoKey.put(autogenColumn, key);
-						LOG.debug("Retrieved auto generated key: " + autogenColumn + "=" + key);
+						LOG.debug("Retrieved auto generated key: {}={}", autogenColumn, key);
 					}
 				}
 				finally {

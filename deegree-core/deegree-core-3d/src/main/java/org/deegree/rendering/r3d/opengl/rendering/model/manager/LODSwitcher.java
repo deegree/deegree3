@@ -92,8 +92,9 @@ public class LODSwitcher {
 					}
 					if (i > 0) {
 						if (Math.abs(min - this.levels[i - 1][1]) > 1E-3) {
-							LOG.warn("Min (" + min + ") does not match previous max interval value ("
-									+ this.levels[i - 1][1] + ") adjusting to this value.");
+							LOG.warn(
+									"Min ({}) does not match previous max interval value ({}) adjusting to this value.",
+									min, this.levels[i - 1][1]);
 							min = this.levels[i - 1][1] + 0.0001;
 							if (min > max) {
 								LOG.warn("Min is larger as max, inversing min and max.");

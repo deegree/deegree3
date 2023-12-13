@@ -213,7 +213,7 @@ public class XMLSchemaInfoSet {
 				for (String componentLocation : getComponentLocations(ns)) {
 					InputStream is = null;
 					try {
-						LOG.debug("Scanning schema component '" + componentLocation + "'");
+						LOG.debug("Scanning schema component '{}'", componentLocation);
 						is = new URL(componentLocation).openStream();
 						XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader(is);
 						while (xmlStream.next() != END_DOCUMENT) {
@@ -224,8 +224,8 @@ public class XMLSchemaInfoSet {
 										String nsUri = xmlStream.getNamespaceURI(i);
 										String oldPrefix = nsToPrefix.get(nsUri);
 										if (oldPrefix != null && !oldPrefix.equals(prefix)) {
-											LOG.debug("Multiple prefices for namespace '" + nsUri + "': " + prefix
-													+ " / " + oldPrefix);
+											LOG.debug("Multiple prefices for namespace '{}': {} / {}", nsUri, prefix,
+													oldPrefix);
 										}
 										else {
 											nsToPrefix.put(nsUri, prefix);
@@ -236,8 +236,8 @@ public class XMLSchemaInfoSet {
 						}
 					}
 					catch (Exception e) {
-						LOG.error("Error determining namespaces from schema component '" + componentLocation + "': "
-								+ e.getMessage());
+						LOG.error("Error determining namespaces from schema component '{}': {}", componentLocation,
+								e.getMessage());
 					}
 					finally {
 						if (is != null) {

@@ -213,7 +213,7 @@ public class DirectByteBufferPool {
 			buffer = new PooledByteBuffer(capacity, this, id++);
 			totalCapacity += capacity;
 			allBuffers.add(buffer);
-			LOG.debug("New buffer: " + buffer);
+			LOG.debug("New buffer: {}", buffer);
 		}
 		return buffer;
 	}

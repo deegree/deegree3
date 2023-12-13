@@ -234,7 +234,7 @@ public class RenderableGeometry implements RenderableQualityModelPart {
 			normal[2] = normalBuffer.get();
 			float length = Vectors3f.length(normal);
 			if (length > 1) {
-				LOG.warn("Normal is larger 1: " + length + ", this may not be. ");
+				LOG.warn("Normal is larger 1: {}, this may not be. ", length);
 			}
 		}
 		normalBuffer.rewind();

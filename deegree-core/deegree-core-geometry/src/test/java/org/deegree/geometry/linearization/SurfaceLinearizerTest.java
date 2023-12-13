@@ -92,13 +92,13 @@ public class SurfaceLinearizerTest {
 		LOG.debug("exterior ring:");
 		for (Curve curve : res.getExteriorRing().getMembers()) {
 			for (Point p : curve.getControlPoints()) {
-				LOG.debug(p.get0() + ", " + p.get1());
+				LOG.debug("{}, {}", p.get0(), p.get1());
 			}
 		}
 		for (Points pts : res.getInteriorRingsCoordinates()) {
 			LOG.debug("interior ring:");
 			for (int i = 0; i < pts.size(); i++)
-				LOG.debug(pts.get(i).get0() + ", " + pts.get(i).get1());
+				LOG.debug("{}, {}", pts.get(i).get0(), pts.get(i).get1());
 		}
 	}
 

@@ -141,7 +141,7 @@ public class OwsHttpClientImpl implements OwsHttpClient {
 			query = new URI(sb.toString());
 			HttpGet httpGet = new HttpGet(query);
 			DefaultHttpClient httpClient = getInitializedHttpClient(endPoint);
-			LOG.debug("Performing GET request: " + query);
+			LOG.debug("Performing GET request: {}", query);
 			HttpResponse httpResponse = httpClient.execute(httpGet);
 			response = new OwsHttpResponseImpl(httpResponse, httpClient.getConnectionManager(), sb.toString());
 		}
@@ -161,8 +161,8 @@ public class OwsHttpClientImpl implements OwsHttpClient {
 		try {
 			HttpPost httpPost = new HttpPost(endPoint.toURI());
 			DefaultHttpClient httpClient = getInitializedHttpClient(endPoint);
-			LOG.debug("Performing POST request on " + endPoint);
-			LOG.debug("post size: " + body.size());
+			LOG.debug("Performing POST request on {}", endPoint);
+			LOG.debug("post size: {}", body.size());
 			InputStreamEntity entity = new InputStreamEntity(body.getInputStream(), (long) body.size());
 			entity.setContentType(contentType);
 			httpPost.setEntity(entity);

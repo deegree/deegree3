@@ -164,7 +164,7 @@ public class InsertRowManager {
 				buildInsertRows(feature, particleMapping, featureRow, allRows);
 			}
 
-			LOG.debug("Built rows for feature '" + feature.getId() + "': " + allRows.size());
+			LOG.debug("Built rows for feature '{}': {}", feature.getId(), allRows.size());
 
 			for (InsertRow insertRow : allRows) {
 				if (!insertRow.hasParents()) {
@@ -172,9 +172,9 @@ public class InsertRowManager {
 				}
 			}
 
-			LOG.debug("Before heap run: uninserted rows: " + delayedRows.size() + ", root rows: " + rootRows.size());
+			LOG.debug("Before heap run: uninserted rows: {}, root rows: {}", delayedRows.size(), rootRows.size());
 			processHeap();
-			LOG.debug("After heap run: uninserted rows: " + delayedRows.size() + ", root rows: " + rootRows.size());
+			LOG.debug("After heap run: uninserted rows: {}, root rows: {}", delayedRows.size(), rootRows.size());
 
 		}
 		catch (Throwable t) {
@@ -217,7 +217,7 @@ public class InsertRowManager {
 
 			buildInsertRows(feature, mapping, featureRow, allRows);
 
-			LOG.debug("Built rows for feature '" + feature.getId() + "': " + allRows.size());
+			LOG.debug("Built rows for feature '{}': {}", feature.getId(), allRows.size());
 
 			for (InsertRow insertRow : allRows) {
 				if (!insertRow.hasParents()) {
@@ -225,9 +225,9 @@ public class InsertRowManager {
 				}
 			}
 
-			LOG.debug("Before heap run: uninserted rows: " + delayedRows.size() + ", root rows: " + rootRows.size());
+			LOG.debug("Before heap run: uninserted rows: {}, root rows: {}", delayedRows.size(), rootRows.size());
 			processHeap();
-			LOG.debug("After heap run: uninserted rows: " + delayedRows.size() + ", root rows: " + rootRows.size());
+			LOG.debug("After heap run: uninserted rows: {}, root rows: {}", delayedRows.size(), rootRows.size());
 
 		}
 		catch (Throwable t) {
@@ -406,7 +406,7 @@ public class InsertRowManager {
 				// nothing to do
 			}
 			else {
-				LOG.warn("Unhandled mapping type '" + mapping.getClass() + "'.");
+				LOG.warn("Unhandled mapping type '{}'.", mapping.getClass());
 			}
 
 			// add index column value if the join uses a numbered order column
@@ -522,7 +522,7 @@ public class InsertRowManager {
 			List<InsertRow> rootRemoves = new ArrayList<InsertRow>();
 			List<InsertRow> rootAdds = new ArrayList<InsertRow>();
 			for (InsertRow row : rootRows) {
-				LOG.debug("Inserting row " + row);
+				LOG.debug("Inserting row {}", row);
 				row.performInsert(conn, rowToChildRows.get(row) != null);
 				delayedRows.remove(row);
 				rootRemoves.add(row);
@@ -531,7 +531,7 @@ public class InsertRowManager {
 				List<InsertRow> childRows = rowToChildRows.get(row);
 				if (childRows != null) {
 					for (InsertRow childRow : childRows) {
-						LOG.debug("Child row: " + childRow);
+						LOG.debug("Child row: {}", childRow);
 						childRow.removeParent(row);
 						if (!childRow.hasParents()) {
 							rootAdds.add(childRow);

@@ -151,7 +151,7 @@ public class SelectiveRefinement {
 		}
 
 		long elapsed = System.currentTimeMillis() - begin;
-		LOG.debug("Selective refinement (top-down): " + elapsed + " ms");
+		LOG.debug("Selective refinement (top-down): {} ms", elapsed);
 	}
 
 	/**

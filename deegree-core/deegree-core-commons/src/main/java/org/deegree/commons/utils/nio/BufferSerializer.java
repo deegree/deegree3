@@ -105,7 +105,7 @@ public class BufferSerializer {
 				writeBuffer((CharBuffer) buffer, out);
 			}
 			else {
-				LOG.warn("Not able to serialize Buffers of given type: " + buffer.getClass().getCanonicalName());
+				LOG.warn("Not able to serialize Buffers of given type: {}", buffer.getClass().getCanonicalName());
 			}
 		}
 		catch (IOException ie) {

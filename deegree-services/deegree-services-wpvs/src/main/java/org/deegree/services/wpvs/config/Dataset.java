@@ -129,8 +129,9 @@ public abstract class Dataset<CO> {
 		}
 		Constraint<CO> newC = new Constraint<CO>(datasourceObject, bbt);
 		if (newC.getValidEnvelope().getMin().getCoordinateDimension() != 3) {
-			LOG.warn("Given envelope of datasource: " + name
-					+ " is not 3 dimensional, please configure this datasource to be 3d.");
+			LOG.warn(
+					"Given envelope of datasource: {} is not 3 dimensional, please configure this datasource to be 3d.",
+					name);
 		}
 		if (dsConstraints == null) {
 			dsConstraints = new LinkedList<Constraint<CO>>();

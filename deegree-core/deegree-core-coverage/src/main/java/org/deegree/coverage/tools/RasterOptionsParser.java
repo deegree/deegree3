@@ -148,8 +148,8 @@ public class RasterOptionsParser {
 			}
 			else {
 				LOG.warn(
-						"Using default cache dir: " + RasterCache.DEFAULT_CACHE_DIR + " because given cache directory: "
-								+ cacheDir + " does not exist or is a file (and not a directory.)");
+						"Using default cache dir: {} because given cache directory: {} does not exist or is a file (and not a directory.)",
+						RasterCache.DEFAULT_CACHE_DIR, cacheDir);
 			}
 		}
 		return options;

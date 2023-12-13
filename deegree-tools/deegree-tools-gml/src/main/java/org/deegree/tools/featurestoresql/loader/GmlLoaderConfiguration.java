@@ -161,11 +161,11 @@ public class GmlLoaderConfiguration {
 			@Value("#{jobParameters[sqlFeatureStoreId]}") String sqlFeatureStoreId) throws Exception {
 		DeegreeWorkspace workspace = DeegreeWorkspace.getInstance(workspaceName);
 		workspace.initAll();
-		LOG.info("deegree workspace directory: [" + workspace.getLocation() + "] initialized");
+		LOG.info("deegree workspace directory: [{}] initialized", workspace.getLocation());
 		Workspace newWorkspace = workspace.getNewWorkspace();
 		SQLFeatureStore featureStore = (SQLFeatureStore) newWorkspace.getResource(FeatureStoreProvider.class,
 				sqlFeatureStoreId);
-		LOG.info("SQLFeatureStore: [" + sqlFeatureStoreId + "] requested.");
+		LOG.info("SQLFeatureStore: [{}] requested.", sqlFeatureStoreId);
 		if (featureStore == null)
 			throw new IllegalArgumentException("SQLFeatureStore with ID " + sqlFeatureStoreId + " in workspace "
 					+ workspaceName + " does not exist or could not be initialised successful.");

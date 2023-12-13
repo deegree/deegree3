@@ -162,7 +162,7 @@ public class EOPropertyNameMapper implements PropertyNameMapper {
 				throw new MetadataStoreException(msg);
 			}
 			String tableAlias = "X" + (aliasNo++);
-			LOG.debug("Query type: " + queriedType + ", table: " + table + ", table alias: " + tableAlias);
+			LOG.debug("Query type: {}, table: {}, table alias: {}", queriedType, table, tableAlias);
 			aliasToTableAlias.put(queriedType.getAlias(), tableAlias);
 			aliasToTable.put(queriedType.getAlias(), table);
 		}

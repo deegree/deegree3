@@ -219,10 +219,10 @@ public class SQLFeatureStore implements FeatureStore {
 		this.allowInMemoryFiltering = config.getDisablePostFiltering() == null;
 		fetchSize = config.getJDBCConnId().getFetchSize() != null ? config.getJDBCConnId().getFetchSize().intValue()
 				: DEFAULT_FETCH_SIZE;
-		LOG.debug("Fetch size: " + fetchSize);
+		LOG.debug("Fetch size: {}", fetchSize);
 		readAutoCommit = config.getJDBCConnId().isReadAutoCommit() != null ? config.getJDBCConnId().isReadAutoCommit()
 				: !dialect.requiresTransactionForCursorMode();
-		LOG.debug("Read auto commit: " + readAutoCommit);
+		LOG.debug("Read auto commit: {}", readAutoCommit);
 
 		if (config.getFeatureCache() != null) {
 			cache = new SimpleFeatureStoreCache(DEFAULT_CACHE_SIZE);
@@ -512,7 +512,7 @@ public class SQLFeatureStore implements FeatureStore {
 		ResultSet rs = null;
 		try {
 			stmt = conn.createStatement();
-			LOG.debug("Executing envelope SELECT: " + sql);
+			LOG.debug("Executing envelope SELECT: {}", sql);
 			rs = stmt.executeQuery(sql.toString());
 			rs.next();
 			ICRS crs = propMapping.second.getCRS();
@@ -615,7 +615,7 @@ public class SQLFeatureStore implements FeatureStore {
 			stmt.setString(1, id);
 			rs = stmt.executeQuery();
 			if (rs.next()) {
-				LOG.debug("Recreating object '" + id + "' from bytea.");
+				LOG.debug("Recreating object '{}' from bytea.", id);
 				BlobCodec codec = blobMapping.getCodec();
 				geomOrFeature = codec.decode(rs.getBinaryStream(1), getNamespaceContext(), getSchema(),
 						blobMapping.getCRS(), resolver);
@@ -683,7 +683,7 @@ public class SQLFeatureStore implements FeatureStore {
 			transaction.get().getConnection().close();
 		}
 		catch (final SQLException e) {
-			LOG.error("Error closing connection/removing it from the pool: " + e.getMessage());
+			LOG.error("Error closing connection/removing it from the pool: {}", e.getMessage());
 		}
 		finally {
 			transaction.remove();
@@ -833,7 +833,7 @@ public class SQLFeatureStore implements FeatureStore {
 						}
 					}
 
-					LOG.debug("WHERE clause: " + wb.getWhere());
+					LOG.debug("WHERE clause: {}", wb.getWhere());
 					if (wb.getWhere() != null) {
 						sql.append(" WHERE ");
 						sql.append(wb.getWhere().getSQL());
@@ -893,7 +893,7 @@ public class SQLFeatureStore implements FeatureStore {
 			if (query.getPrefilterBBox() != null) {
 				OperatorFilter bboxFilter = new OperatorFilter(query.getPrefilterBBox());
 				wb = getWhereBuilderBlob(bboxFilter, conn);
-				LOG.debug("WHERE clause: " + wb.getWhere());
+				LOG.debug("WHERE clause: {}", wb.getWhere());
 			}
 			String alias = wb != null ? wb.getAliasManager().getRootTableAlias() : "X1";
 
@@ -977,8 +977,8 @@ public class SQLFeatureStore implements FeatureStore {
 		if (literal != null) {
 			ICRS literalCRS = literal.getCoordinateSystem();
 			if (literalCRS != null && !(crs.equals(literalCRS))) {
-				LOG.debug("Need transformed literal geometry for evaluation: " + literalCRS.getAlias() + " -> "
-						+ crs.getAlias());
+				LOG.debug("Need transformed literal geometry for evaluation: {} -> {}", literalCRS.getAlias(),
+						crs.getAlias());
 				try {
 					GeometryTransformer transformer = new GeometryTransformer(crs);
 					transformedLiteral = transformer.transform(literal);
@@ -1152,8 +1152,8 @@ public class SQLFeatureStore implements FeatureStore {
 			}
 		}
 		catch (IllegalArgumentException e) {
-			LOG.warn("No features are returned, as an error occurred during mapping of feature name to id: "
-					+ e.getMessage());
+			LOG.warn("No features are returned, as an error occurred during mapping of feature name to id: {}",
+					e.getMessage());
 			LOG.trace(e.getMessage(), e);
 			return new EmptyFeatureInputStream();
 		}
@@ -1285,7 +1285,7 @@ public class SQLFeatureStore implements FeatureStore {
 			if (query.getPrefilterBBox() != null) {
 				OperatorFilter bboxFilter = new OperatorFilter(query.getPrefilterBBox());
 				wb = getWhereBuilderBlob(bboxFilter, conn);
-				LOG.debug("WHERE clause: " + wb.getWhere());
+				LOG.debug("WHERE clause: {}", wb.getWhere());
 			}
 			String alias = wb != null ? wb.getAliasManager().getRootTableAlias() : "X1";
 
@@ -1442,8 +1442,8 @@ public class SQLFeatureStore implements FeatureStore {
 			wb = getWhereBuilder(featureTypeAndMappings.values(), filter, query.getSortProperties(),
 					query.isHandleStrict());
 			TableAliasManager aliasManager = wb.getAliasManager();
-			LOG.debug("WHERE clause: " + wb.getWhere());
-			LOG.debug("ORDER BY clause: " + wb.getOrderBy());
+			LOG.debug("WHERE clause: {}", wb.getWhere());
+			LOG.debug("ORDER BY clause: {}", wb.getOrderBy());
 
 			FeatureBuilder builder = new FeatureBuilderRelational(this, featureTypeAndMappings, conn, aliasManager,
 					nullEscalation);
@@ -1807,7 +1807,7 @@ public class SQLFeatureStore implements FeatureStore {
 		if (config.getInspectors() != null) {
 			for (CustomInspector inspectorConfig : config.getInspectors().getCustomInspector()) {
 				String className = inspectorConfig.getClazz();
-				LOG.info("Adding custom feature inspector '" + className + "' to inspector chain.");
+				LOG.info("Adding custom feature inspector '{}' to inspector chain.", className);
 				try {
 					@SuppressWarnings("unchecked")
 					Class<FeatureInspector> inspectorClass = (Class<FeatureInspector>) workspace.getModuleClassLoader()

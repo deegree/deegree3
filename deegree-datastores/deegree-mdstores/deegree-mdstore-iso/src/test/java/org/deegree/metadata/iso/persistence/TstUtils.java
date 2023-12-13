@@ -73,7 +73,7 @@ public class TstUtils {
 			records = new ArrayList<ISORecord>();
 			ta = store.acquireTransaction();
 			OMElement record = new XMLAdapter(file).getRootElement();
-			LOG.info("inserting filename: " + file.getFile());
+			LOG.info("inserting filename: {}", file.getFile());
 			records.add(new ISORecord(record));
 			try {
 				if (countInsert > 0) {
@@ -105,7 +105,7 @@ public class TstUtils {
 			countInserted += ids.size();
 		}
 
-		LOG.info(countInserted + " from " + countInsert + " Metadata inserted.");
+		LOG.info("{} from {} Metadata inserted.", countInserted, countInsert);
 		return ids;
 	}
 

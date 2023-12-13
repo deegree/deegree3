@@ -116,7 +116,7 @@ public class GeometryFixer {
 					fixedSegments.set(fixedSegments.size() - 1, fixedSegment);
 				}
 				else {
-					LOG.warn("Cannot fix " + lastSegment.getSegmentType() + " segments.");
+					LOG.warn("Cannot fix {} segments.", lastSegment.getSegmentType());
 				}
 				fixedCurve = new DefaultCurve(curve.getId(), curve.getCoordinateSystem(), curve.getPrecision(),
 						fixedSegments);
@@ -252,8 +252,9 @@ public class GeometryFixer {
 						points = ((LineStringSegment) curveSegment).getControlPoints();
 						break;
 					default:
-						LOG.warn("Calculating orientation of " + segmentType.name()
-								+ " segments is not implemented yet. Ring orientation remains unchanged.");
+						LOG.warn(
+								"Calculating orientation of {} segments is not implemented yet. Ring orientation remains unchanged.",
+								segmentType.name());
 						return ring;
 				}
 
@@ -310,7 +311,7 @@ public class GeometryFixer {
 				break;
 			}
 			case ARC_BY_BULGE: {
-				LOG.warn("Inverting of " + segment.getSegmentType().name() + " segments is not implemented yet.");
+				LOG.warn("Inverting of {} segments is not implemented yet.", segment.getSegmentType().name());
 				fixedSegment = segment;
 				break;
 			}
@@ -326,47 +327,47 @@ public class GeometryFixer {
 				break;
 			}
 			case ARC_STRING_BY_BULGE: {
-				LOG.warn("Inverting of " + segment.getSegmentType().name() + " segments is not implemented yet.");
+				LOG.warn("Inverting of {} segments is not implemented yet.", segment.getSegmentType().name());
 				fixedSegment = segment;
 				break;
 			}
 			case BEZIER: {
-				LOG.warn("Inverting of " + segment.getSegmentType().name() + " segments is not implemented yet.");
+				LOG.warn("Inverting of {} segments is not implemented yet.", segment.getSegmentType().name());
 				fixedSegment = segment;
 				break;
 			}
 			case BSPLINE: {
-				LOG.warn("Inverting of " + segment.getSegmentType().name() + " segments is not implemented yet.");
+				LOG.warn("Inverting of {} segments is not implemented yet.", segment.getSegmentType().name());
 				fixedSegment = segment;
 				break;
 			}
 			case CIRCLE: {
-				LOG.warn("Inverting of " + segment.getSegmentType().name() + " segments is not implemented yet.");
+				LOG.warn("Inverting of {} segments is not implemented yet.", segment.getSegmentType().name());
 				fixedSegment = segment;
 				break;
 			}
 			case CIRCLE_BY_CENTER_POINT: {
-				LOG.warn("Inverting of " + segment.getSegmentType().name() + " segments is not implemented yet.");
+				LOG.warn("Inverting of {} segments is not implemented yet.", segment.getSegmentType().name());
 				fixedSegment = segment;
 				break;
 			}
 			case CLOTHOID: {
-				LOG.warn("Inverting of " + segment.getSegmentType().name() + " segments is not implemented yet.");
+				LOG.warn("Inverting of {} segments is not implemented yet.", segment.getSegmentType().name());
 				fixedSegment = segment;
 				break;
 			}
 			case CUBIC_SPLINE: {
-				LOG.warn("Inverting of " + segment.getSegmentType().name() + " segments is not implemented yet.");
+				LOG.warn("Inverting of {} segments is not implemented yet.", segment.getSegmentType().name());
 				fixedSegment = segment;
 				break;
 			}
 			case GEODESIC: {
-				LOG.warn("Inverting of " + segment.getSegmentType().name() + " segments is not implemented yet.");
+				LOG.warn("Inverting of {} segments is not implemented yet.", segment.getSegmentType().name());
 				fixedSegment = segment;
 				break;
 			}
 			case GEODESIC_STRING: {
-				LOG.warn("Inverting of " + segment.getSegmentType().name() + " segments is not implemented yet.");
+				LOG.warn("Inverting of {} segments is not implemented yet.", segment.getSegmentType().name());
 				fixedSegment = segment;
 				break;
 			}
@@ -376,7 +377,7 @@ public class GeometryFixer {
 				break;
 			}
 			case OFFSET_CURVE: {
-				LOG.warn("Inverting of " + segment.getSegmentType().name() + " segments is not implemented yet.");
+				LOG.warn("Inverting of {} segments is not implemented yet.", segment.getSegmentType().name());
 				fixedSegment = segment;
 				break;
 			}

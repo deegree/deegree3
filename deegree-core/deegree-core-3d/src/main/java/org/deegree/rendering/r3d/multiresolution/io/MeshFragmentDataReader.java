@@ -110,11 +110,11 @@ public class MeshFragmentDataReader {
 		ByteBuffer rawTileBuffer = pooledByteBuffer.getBuffer();
 		// rawTileBuffer.order( ByteOrder.nativeOrder() );
 
-		LOG.debug("Reading mesh fragment with id " + fragmentId + " (offset: " + offset + ", length: " + length + ").");
+		LOG.debug("Reading mesh fragment with id {} (offset: {}, length: {}).", fragmentId, offset, length);
 		long begin = System.currentTimeMillis();
 		channel.read(rawTileBuffer, offset);
 		long elapsed = System.currentTimeMillis() - begin;
-		LOG.debug("Reading took " + elapsed + " milliseconds.");
+		LOG.debug("Reading took {} milliseconds.", elapsed);
 
 		rawTileBuffer.rewind();
 		int numVertices = rawTileBuffer.getInt();

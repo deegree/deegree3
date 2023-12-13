@@ -66,10 +66,10 @@ public class DirectGeometryBuffer {
 	 * @param textureCapacity
 	 */
 	public DirectGeometryBuffer(int coordinateCapacity, int textureCapacity) {
-		LOG.info("Allocating directbuffer for " + 2 * coordinateCapacity + " oordinates (normals and vertices): "
-				+ (2 * coordinateCapacity * AllocatedHeapMemory.FLOAT_SIZE) / 1048576 + " MB");
-		LOG.info("Allocating directbuffer for " + textureCapacity + " texture oordinates: "
-				+ (textureCapacity * AllocatedHeapMemory.FLOAT_SIZE) / 1048576 + " MB");
+		LOG.info("Allocating directbuffer for {} oordinates (normals and vertices): {} MB", 2 * coordinateCapacity,
+				(2 * coordinateCapacity * AllocatedHeapMemory.FLOAT_SIZE) / 1048576);
+		LOG.info("Allocating directbuffer for {} texture oordinates: {} MB", textureCapacity,
+				(textureCapacity * AllocatedHeapMemory.FLOAT_SIZE) / 1048576);
 		// LOG.info( "VM has total mb of direct memory: " + VM.maxDirectMemory() / 1048576
 		// );
 

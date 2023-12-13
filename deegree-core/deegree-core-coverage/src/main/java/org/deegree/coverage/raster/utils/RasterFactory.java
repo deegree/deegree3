@@ -123,7 +123,7 @@ public class RasterFactory {
 			ResourceMetadata<Coverage> metadata) throws IOException {
 		RasterReader reader = getRasterReader(filename, options);
 		if (reader == null) {
-			log.error("couldn't find raster reader for " + filename);
+			log.error("couldn't find raster reader for {}", filename);
 			throw new IOException("couldn't find raster reader");
 		}
 		AbstractRaster cov = reader.load(filename, options);
@@ -179,7 +179,7 @@ public class RasterFactory {
 		}
 		RasterWriter writer = getRasterWriter(raster, opts);
 		if (writer == null) {
-			log.error("couldn't find raster writer for " + filename);
+			log.error("couldn't find raster writer for {}", filename);
 			throw new IOException("couldn't find raster writer");
 		}
 
@@ -599,9 +599,9 @@ public class RasterFactory {
 			int targetSize = rdi.bands * width * height * rdi.dataSize;
 			if (byteBuffer == null || byteBuffer.capacity() < targetSize) {
 				if (byteBuffer != null) {
-					log.warn("The given bytebuffer's capacity (" + byteBuffer.capacity()
-							+ ") was not too small for the given buffered image (" + targetSize
-							+ "), creating new buffer.");
+					log.warn(
+							"The given bytebuffer's capacity ({}) was not too small for the given buffered image ({}), creating new buffer.",
+							byteBuffer.capacity(), targetSize);
 				}
 				byteBuffer = ByteBufferPool.allocate(rdi.bands * width * height * rdi.dataSize, false);
 			}

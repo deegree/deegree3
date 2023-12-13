@@ -62,7 +62,7 @@ public class TexturedGeometryCallBack extends GeometryCallBack {
 	public void combineData(double[] coords, Object[] coordinateData, float[] weights, Object[] outData,
 			Object originalVertex) {
 		LOG.trace("Tesselation combining textured vertex data.");
-		LOG.trace("Coordinates of vertex: " + coords[0] + "," + coords[1] + "," + coords[2]);
+		LOG.trace("Coordinates of vertex: {},{},{}", coords[0], coords[1], coords[2]);
 		TexturedVertex[] cd = new TexturedVertex[coordinateData.length];
 		for (int i = 0; i < coordinateData.length; ++i) {
 			cd[i] = (TexturedVertex) coordinateData[i];

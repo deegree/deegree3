@@ -59,8 +59,9 @@ public class Value {
 				sb.append(((Property) o).getValue());
 			}
 			catch (UnsupportedOperationException e) {
-				LOG.error("The error '{}' occurred while converting a property to a string, "
-						+ "probably the WKT writer cannot convert a geometry.", e.getLocalizedMessage());
+				LOG.error(
+						"The error '{}' occurred while converting a property to a string, probably the WKT writer cannot convert a geometry.",
+						e.getLocalizedMessage());
 				LOG.debug("Stack trace:", e);
 			}
 		}

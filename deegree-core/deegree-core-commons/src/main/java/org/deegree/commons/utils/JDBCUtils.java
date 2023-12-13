@@ -121,7 +121,7 @@ public final class JDBCUtils {
 			}
 			catch (SQLException e) {
 				if (log != null) {
-					log.error("Unable to close ResultSet: " + e.getMessage());
+					log.error("Unable to close ResultSet: {}", e.getMessage());
 				}
 			}
 		}
@@ -131,7 +131,7 @@ public final class JDBCUtils {
 			}
 			catch (SQLException e) {
 				if (log != null) {
-					log.error("Unable to close Statement: " + e.getMessage());
+					log.error("Unable to close Statement: {}", e.getMessage());
 				}
 			}
 		}
@@ -141,7 +141,7 @@ public final class JDBCUtils {
 			}
 			catch (SQLException e) {
 				if (log != null) {
-					log.error("Unable to close Connection: " + e.getMessage());
+					log.error("Unable to close Connection: {}", e.getMessage());
 				}
 			}
 		}
@@ -170,11 +170,11 @@ public final class JDBCUtils {
 		String version = determinePostGISVersion(conn, log);
 		if (version.startsWith("0.") || version.startsWith("1.0") || version.startsWith("1.1")
 				|| version.startsWith("1.2")) {
-			log.debug("PostGIS version is " + version + " -- using legacy (pre-SQL-MM) predicates.");
+			log.debug("PostGIS version is {} -- using legacy (pre-SQL-MM) predicates.", version);
 			useLegacyPredicates = true;
 		}
 		else {
-			log.debug("PostGIS version is " + version + " -- using modern (SQL-MM) predicates.");
+			log.debug("PostGIS version is {} -- using modern (SQL-MM) predicates.", version);
 		}
 		return useLegacyPredicates;
 	}

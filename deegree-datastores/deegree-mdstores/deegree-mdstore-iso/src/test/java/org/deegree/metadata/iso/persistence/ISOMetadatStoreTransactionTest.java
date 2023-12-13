@@ -111,7 +111,7 @@ public class ISOMetadatStoreTransactionTest extends AbstractISOTest {
 		File[] fileArray = folder.listFiles();
 
 		if (fileArray == null) {
-			LOG.error("test folder does not exist: " + test_folder);
+			LOG.error("test folder does not exist: {}", test_folder);
 			return;
 		}
 
@@ -151,7 +151,7 @@ public class ISOMetadatStoreTransactionTest extends AbstractISOTest {
 
 		List<String> ids = TstUtils.insertMetadata(store, TstConstants.tst_9, TstConstants.tst_10, TstConstants.tst_1);
 
-		LOG.info("Inserted records with ids: " + ids + ". Now: delete them...");
+		LOG.info("Inserted records with ids: {}. Now: delete them...", ids);
 		String fileString = TstConstants.propEqualToID.getFile();
 		if (fileString == null) {
 			LOG.warn("Skipping test (file with filterExpression not found).");
@@ -503,7 +503,7 @@ public class ISOMetadatStoreTransactionTest extends AbstractISOTest {
 		Assume.assumeNotNull(store);
 
 		List<String> ids = TstUtils.insertMetadata(store, TstConstants.tst_9);
-		LOG.info("Inserted records with ids: " + ids + ". Now: update " + ids);
+		LOG.info("Inserted records with ids: {}. Now: update {}", ids, ids);
 
 		assertNotNull(ids);
 		assertTrue(ids.size() > 0);

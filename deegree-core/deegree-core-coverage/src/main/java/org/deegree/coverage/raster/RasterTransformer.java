@@ -202,7 +202,7 @@ public class RasterTransformer extends Transformer {
 			// the envelope from which we have data
 			Geometry dataEnvGeom = workEnv.getIntersection(dataEnvelope);
 			if (dataEnvGeom == null) {
-				LOG.debug("no intersection for " + sourceRaster + " and " + dstEnvelope);
+				LOG.debug("no intersection for {} and {}", sourceRaster, dstEnvelope);
 				// todo create subclass of TransformationException
 				throw new TransformationException("no source data found");
 

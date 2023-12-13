@@ -218,7 +218,7 @@ public class WROSerializer extends ObjectSerializer<WorldRenderableObject> {
 				baos.close();
 			}
 			catch (IOException e) {
-				LOG.error("Error while serializing object because: " + e.getLocalizedMessage(), e);
+				LOG.error("Error while serializing object because: {}", e.getLocalizedMessage(), e);
 			}
 			result = baos.toByteArray();
 			doi.setSerializedData(result);
@@ -241,13 +241,13 @@ public class WROSerializer extends ObjectSerializer<WorldRenderableObject> {
 				result = readWRO(in);
 			}
 			catch (ClassCastException e) {
-				LOG.error("Error while deserializing object because: " + e.getLocalizedMessage(), e);
+				LOG.error("Error while deserializing object because: {}", e.getLocalizedMessage(), e);
 			}
 			catch (IOException e) {
-				LOG.error("Error while deserializing object because: " + e.getLocalizedMessage(), e);
+				LOG.error("Error while deserializing object because: {}", e.getLocalizedMessage(), e);
 			}
 			catch (Throwable e) {
-				LOG.error("Error while deserializing object because: " + e.getLocalizedMessage(), e);
+				LOG.error("Error while deserializing object because: {}", e.getLocalizedMessage(), e);
 			}
 		}
 		return result;
@@ -547,13 +547,13 @@ public class WROSerializer extends ObjectSerializer<WorldRenderableObject> {
 	private FloatBuffer getBuffer(FloatBuffer buffer, int position, int limit, VertexType type) {
 		if (buffer == null) {
 			if (geometryBuffer == null) {
-				LOG.warn("The given buffer is null and the geometry buffer was not set; the geometry has no " + type);
+				LOG.warn("The given buffer is null and the geometry buffer was not set; the geometry has no {}", type);
 			}
 			else {
 				if (position == -1) {
 					LOG.warn(
-							"The given geometry does not have a direct buffer position and no buffer; the geometry has no "
-									+ type);
+							"The given geometry does not have a direct buffer position and no buffer; the geometry has no {}",
+							type);
 				}
 				else {
 					buffer = geometryBuffer.getCoords(position, limit);
@@ -565,7 +565,7 @@ public class WROSerializer extends ObjectSerializer<WorldRenderableObject> {
 
 	private void writeFloatBuffer(FloatBuffer buffer, DataOutputStream out, VertexType type) throws IOException {
 		if (buffer == null) {
-			LOG.warn("The given geometry does not have a buffer to write; the geometry has no: " + type);
+			LOG.warn("The given geometry does not have a buffer to write; the geometry has no: {}", type);
 		}
 		BufferSerializer.writeBufferToStream(buffer, out);
 

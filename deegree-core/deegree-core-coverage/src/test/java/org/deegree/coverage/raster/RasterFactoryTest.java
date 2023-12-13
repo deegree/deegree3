@@ -137,9 +137,9 @@ public class RasterFactoryTest {
 		RenderedOp tiff = getJAIImage("test_tiled_image_lzw.tif");
 		RenderedOp tiffNone = getJAIImage("test_tiled_image.tif");
 
-		LOG.debug("jpg:  " + jpg.getWidth() + ", " + jpg.getHeight());
-		LOG.debug("tiff:  " + tiff.getWidth() + ", " + tiff.getHeight());
-		LOG.debug("tiffNone:  " + tiffNone.getWidth() + ", " + tiffNone.getHeight());
+		LOG.debug("jpg:  {}, {}", jpg.getWidth(), jpg.getHeight());
+		LOG.debug("tiff:  {}, {}", tiff.getWidth(), tiff.getHeight());
+		LOG.debug("tiffNone:  {}, {}", tiffNone.getWidth(), tiffNone.getHeight());
 
 		// synchronized ( tiff ) {
 		// tiff.wait( 10000 );
@@ -148,12 +148,12 @@ public class RasterFactoryTest {
 
 		long ret = currentTimeMillis();
 		saveSubset(jpg, "jpg", 0, 0, 250, 260);
-		LOG.debug("jpg subset 1: " + (currentTimeMillis() - ret) + "millis");
+		LOG.debug("jpg subset 1: {}millis", (currentTimeMillis() - ret));
 		// jpg.dispose();
 		//
 		ret = currentTimeMillis();
 		saveSubset(jpg, "jpg", 2098, 2000, 1050, 1008);
-		LOG.debug("jpg subset 2: " + (currentTimeMillis() - ret) + "millis");
+		LOG.debug("jpg subset 2: {}millis", (currentTimeMillis() - ret));
 		jpg.dispose();
 
 		gc();
@@ -170,11 +170,11 @@ public class RasterFactoryTest {
 
 		ret = currentTimeMillis();
 		saveSubset(tiff, "jai_tif_1", 0, 0, 250, 260);
-		LOG.debug("compressed tiff subset 1: " + (currentTimeMillis() - ret) + "millis");
+		LOG.debug("compressed tiff subset 1: {}millis", (currentTimeMillis() - ret));
 
 		ret = currentTimeMillis();
 		saveSubset(tiff, "jai_tif_2", 4998, 4900, 10500, 13080);
-		LOG.debug("compressed tiff subset 2: " + (currentTimeMillis() - ret) + "millis");
+		LOG.debug("compressed tiff subset 2: {}millis", (currentTimeMillis() - ret));
 
 		gc();
 		gc();
@@ -189,17 +189,17 @@ public class RasterFactoryTest {
 		}
 		ret = currentTimeMillis();
 		saveSubset(tiffNone, "jai_tif_none_1", 0, 0, 250, 260);
-		LOG.debug("tiff subset 1: " + (currentTimeMillis() - ret) + "millis");
+		LOG.debug("tiff subset 1: {}millis", (currentTimeMillis() - ret));
 		ret = currentTimeMillis();
 		saveSubset(tiffNone, "jai_tif_none_2", 4998, 4900, 10500, 13080);
-		LOG.debug("tiff subset 2: " + (currentTimeMillis() - ret) + "millis");
+		LOG.debug("tiff subset 2: {}millis", (currentTimeMillis() - ret));
 
-		LOG.debug("jai total: " + (currentTimeMillis() - t) + "millis");
+		LOG.debug("jai total: {}millis", (currentTimeMillis() - t));
 		t = System.currentTimeMillis();
 	}
 
 	private void saveSubset(RenderedOp image, String name, int x, int y, int w, int h) {
-		LOG.debug("getting subset: " + name);
+		LOG.debug("getting subset: {}", name);
 		WritableRaster jpgRaster = image.getColorModel()
 			.createCompatibleWritableRaster(w, h)
 			.createWritableTranslatedChild(x, y);
@@ -207,7 +207,7 @@ public class RasterFactoryTest {
 		// BufferedImage img = new BufferedImage( image.getColorModel(),
 		// jpgRaster.getWritableParent(), false, null );
 		// ImageIO.write( img, "png", File.createTempFile( name, ".png" ) );
-		LOG.debug("wrote subset: " + name);
+		LOG.debug("wrote subset: {}", name);
 	}
 
 	private RenderedOp getJAIImage(String file) throws IOException, URISyntaxException {

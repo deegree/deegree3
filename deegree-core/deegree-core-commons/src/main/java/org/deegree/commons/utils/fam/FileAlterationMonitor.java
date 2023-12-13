@@ -183,7 +183,7 @@ public class FileAlterationMonitor {
 
 		@SuppressWarnings("synthetic-access")
 		private void fileChanged(File file) {
-			LOG.debug("Detected file change: '" + file + "'.");
+			LOG.debug("Detected file change: '{}'.", file);
 			for (FileAlterationListener listener : listeners) {
 				listener.fileChanged(file);
 			}
@@ -191,7 +191,7 @@ public class FileAlterationMonitor {
 
 		@SuppressWarnings("synthetic-access")
 		private void newFile(File file) {
-			LOG.debug("Detected new file: '" + file + "'.");
+			LOG.debug("Detected new file: '{}'.", file);
 			for (FileAlterationListener listener : listeners) {
 				listener.newFile(file);
 			}
@@ -199,7 +199,7 @@ public class FileAlterationMonitor {
 
 		@SuppressWarnings("synthetic-access")
 		private void fileDeleted(File file) {
-			LOG.debug("Detected file deletion: '" + file + "'.");
+			LOG.debug("Detected file deletion: '{}'.", file);
 			for (FileAlterationListener listener : listeners) {
 				listener.fileDeleted(file);
 			}
@@ -221,7 +221,7 @@ public class FileAlterationMonitor {
 		@SuppressWarnings("synthetic-access")
 		private void scanDir(File dir, boolean recurse, FileFilter filter, Map<File, Long> foundFiles,
 				Set<File> scannedDirs) throws IOException {
-			LOG.debug("Scanning directory: '" + dir + "'");
+			LOG.debug("Scanning directory: '{}'", dir);
 			File[] files = dir.listFiles(filter);
 			for (File file : files) {
 				if (filter == null || filter.accept(file)) {

@@ -134,7 +134,7 @@ public class RenderFragmentManager {
 			// memoryCache.put( fragment.getId(), fragment );
 		}
 		long elapsed = System.currentTimeMillis() - begin;
-		LOG.debug("Preparing of " + fragments.size() + " fragments (" + loaded + " new): " + elapsed + " ms");
+		LOG.debug("Preparing of {} fragments ({} new): {} ms", fragments.size(), loaded, elapsed);
 	}
 
 	/**
@@ -160,7 +160,7 @@ public class RenderFragmentManager {
 			}
 		}
 		long elapsed = System.currentTimeMillis() - begin;
-		LOG.debug("Preparing (GPU) of " + fragments.size() + " fragments (" + loaded + " new): " + elapsed + " ms");
+		LOG.debug("Preparing (GPU) of {} fragments ({} new): {} ms", fragments.size(), loaded, elapsed);
 	}
 
 	/**
@@ -182,7 +182,7 @@ public class RenderFragmentManager {
 			}
 		}
 		long elapsed = System.currentTimeMillis() - begin;
-		LOG.debug("Releasing (GPU) of " + fragments.size() + " fragments: " + elapsed + " ms");
+		LOG.debug("Releasing (GPU) of {} fragments: {} ms", fragments.size(), elapsed);
 	}
 
 	@Override

@@ -185,19 +185,19 @@ public abstract class AbstractOWSClient<T extends OWSCapabilitiesAdapter> {
 			identification = capaDoc.parseServiceIdentification();
 		}
 		catch (Throwable t) {
-			LOG.warn("Error parsing service identification section: " + t.getMessage());
+			LOG.warn("Error parsing service identification section: {}", t.getMessage());
 		}
 		try {
 			provider = capaDoc.parseServiceProvider();
 		}
 		catch (Throwable t) {
-			LOG.warn("Error parsing service provider section: " + t.getMessage());
+			LOG.warn("Error parsing service provider section: {}", t.getMessage());
 		}
 		try {
 			metadata = capaDoc.parseOperationsMetadata();
 		}
 		catch (Throwable t) {
-			LOG.warn("Error parsing metadata section: " + t.getMessage());
+			LOG.warn("Error parsing metadata section: {}", t.getMessage());
 		}
 	}
 

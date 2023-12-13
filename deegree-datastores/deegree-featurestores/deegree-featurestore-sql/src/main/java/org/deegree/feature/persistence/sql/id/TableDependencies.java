@@ -142,7 +142,7 @@ public class TableDependencies {
 		Set<SQLIdentifier> generatedColumns = tableToGenerators.get(currentTable);
 		if (generatedColumns != null && generatedColumns.containsAll(fromColumns)) {
 			KeyPropagation prop = new KeyPropagation(join.getFromTable(), fromColumns, joinTable, toColumns);
-			LOG.debug("Found key propagation (to join table): " + prop);
+			LOG.debug("Found key propagation (to join table): {}", prop);
 			addChild(currentTable, prop);
 			addParent(joinTable, prop);
 			found = true;
@@ -158,7 +158,7 @@ public class TableDependencies {
 			}
 			if (generatedColumnsJoinTable.containsAll(toColumns)) {
 				KeyPropagation prop = new KeyPropagation(joinTable, toColumns, join.getFromTable(), fromColumns);
-				LOG.debug("Found key propagation (from join table): " + prop);
+				LOG.debug("Found key propagation (from join table): {}", prop);
 				addChild(joinTable, prop);
 				addParent(currentTable, prop);
 				found = true;
@@ -176,7 +176,7 @@ public class TableDependencies {
 		List<SQLIdentifier> toColumns = join.getToColumns();
 		TableName joinTable = join.getToTable();
 		KeyPropagation prop = new KeyPropagation(join.getFromTable(), fromColumns, joinTable, toColumns);
-		LOG.debug("Found key propagation (to join table): " + prop);
+		LOG.debug("Found key propagation (to join table): {}", prop);
 		addChild(currentTable, prop);
 		addParent(joinTable, prop);
 		for (SQLIdentifier fromColumn : fromColumns) {

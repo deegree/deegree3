@@ -70,7 +70,7 @@ public class OutputStorage extends StorageLocation {
 
 	private void storeMimeType() throws IOException {
 		File mimeInfoFile = new File(file.getPath() + ".mimeinfo");
-		LOG.debug("Storing output mime type ('" + mimeType + "') in file '" + mimeInfoFile + "'");
+		LOG.debug("Storing output mime type ('{}') in file '{}'", mimeType, mimeInfoFile);
 		BufferedWriter writer = new BufferedWriter(new FileWriter(mimeInfoFile));
 		if (mimeType == null) {
 			LOG.warn("No mimetype specified!? defaulting to text/xml...");
@@ -83,7 +83,7 @@ public class OutputStorage extends StorageLocation {
 	private String retrieveMimeType() {
 		String mimeType = null;
 		File mimeInfoFile = new File(file.getPath() + ".mimeinfo");
-		LOG.debug("Retrieving output mime type from file '" + mimeInfoFile + "'");
+		LOG.debug("Retrieving output mime type from file '{}'", mimeInfoFile);
 		BufferedReader reader;
 		try {
 			reader = new BufferedReader(new FileReader(mimeInfoFile));
@@ -93,7 +93,7 @@ public class OutputStorage extends StorageLocation {
 		catch (IOException e) {
 			e.printStackTrace();
 		}
-		LOG.debug("mimeType: " + mimeType);
+		LOG.debug("mimeType: {}", mimeType);
 		return mimeType;
 	}
 

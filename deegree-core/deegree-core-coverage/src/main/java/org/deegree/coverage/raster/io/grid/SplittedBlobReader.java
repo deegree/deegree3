@@ -101,7 +101,7 @@ public class SplittedBlobReader extends GridFileReader {
 			blobNo++;
 			totalSize += blobFile.length();
 		}
-		LOG.debug("Concatenated grid size (of all blob files): " + totalSize);
+		LOG.debug("Concatenated grid size (of all blob files): {}", totalSize);
 
 		blobChannels = new FileChannel[blobFiles.size()];
 		for (int i = 0; i < blobChannels.length; ++i) {
@@ -110,7 +110,7 @@ public class SplittedBlobReader extends GridFileReader {
 			}
 			catch (FileNotFoundException e) {
 				// this should not happen
-				LOG.debug("Could not find file: " + blobFiles.get(i) + ": because: " + e.getLocalizedMessage(), e);
+				LOG.debug("Could not find file: {}: because: {}", blobFiles.get(i), e.getLocalizedMessage(), e);
 			}
 		}
 		setTilesPerBlob((int) (blobFiles.get(0).length() / getBytesPerTile()));
@@ -141,7 +141,7 @@ public class SplittedBlobReader extends GridFileReader {
 
 		}
 		catch (IOException e) {
-			LOG.error("Error reading tile data from blob: " + e.getMessage(), e);
+			LOG.error("Error reading tile data from blob: {}", e.getMessage(), e);
 		}
 
 		if (LOG.isDebugEnabled()) {

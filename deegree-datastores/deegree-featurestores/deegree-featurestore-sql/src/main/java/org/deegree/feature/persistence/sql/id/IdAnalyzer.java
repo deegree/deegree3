@@ -76,7 +76,7 @@ public class IdAnalyzer {
 				if (ftMapping != null) {
 					FIDMapping fidMapping = ftMapping.getFidMapping();
 					if (fidMapping != null) {
-						LOG.debug(fidMapping.getPrefix() + " -> " + ft.getName());
+						LOG.debug("{} -> {}", fidMapping.getPrefix(), ft.getName());
 						prefixToFt.put(fidMapping.getPrefix(), ft);
 					}
 				}

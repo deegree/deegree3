@@ -146,7 +146,7 @@ public class DefaultWorkspace implements Workspace {
 				if (states.getState(dep) != Initialized) {
 					states.setState(md.getIdentifier(), Error);
 					String msg = "Dependent resource " + dep + " failed to initialize.";
-					LOG.error("Unable to build resource {}: " + msg, md.getIdentifier());
+					LOG.error("Unable to build resource {}: {}", msg, md.getIdentifier());
 					errors.registerError(md.getIdentifier(), msg);
 					continue outer;
 				}
@@ -250,11 +250,11 @@ public class DefaultWorkspace implements Workspace {
 								urls.add(url);
 								ModuleInfo moduleInfo = ModuleInfo.extractModuleInfo(url);
 								if (moduleInfo != null) {
-									LOG.info(" - " + moduleInfo);
+									LOG.info(" - {}", moduleInfo);
 									wsModules.add(moduleInfo);
 								}
 								else {
-									LOG.info(" - " + fs[i] + " (non-deegree)");
+									LOG.info(" - {} (non-deegree)", fs[i]);
 								}
 							}
 						}

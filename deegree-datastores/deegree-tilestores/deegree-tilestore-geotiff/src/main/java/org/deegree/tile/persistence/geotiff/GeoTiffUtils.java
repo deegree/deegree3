@@ -84,7 +84,7 @@ public class GeoTiffUtils {
 						crs = ref;
 					}
 					catch (ReferenceResolvingException e) {
-						LOG.error("No coordinate system found for EPSG:" + epsgCode);
+						LOG.error("No coordinate system found for EPSG:{}", epsgCode);
 					}
 				}
 			}

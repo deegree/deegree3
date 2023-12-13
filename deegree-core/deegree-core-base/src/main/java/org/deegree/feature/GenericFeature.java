@@ -87,7 +87,7 @@ public class GenericFeature extends AbstractFeature {
 	@Override
 	public void setPropertyValue(QName propName, int occurrence, TypedObjectNode value) {
 
-		LOG.debug("Setting property value for " + occurrence + ". " + propName + " property");
+		LOG.debug("Setting property value for {}. {} property", occurrence, propName);
 
 		// check if change would violate minOccurs/maxOccurs constraint
 		int current = getProperties(propName).size();

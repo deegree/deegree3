@@ -270,9 +270,9 @@ public class GMLFeatureReaderTest {
 
 		// work with the fc
 		for (Feature feature : fc) {
-			LOG.debug("member fid: " + feature.getId());
+			LOG.debug("member fid: {}", feature.getId());
 		}
-		LOG.debug("member features: " + fc.size());
+		LOG.debug("member features: {}", fc.size());
 	}
 
 	// @Test

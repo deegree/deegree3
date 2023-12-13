@@ -70,11 +70,11 @@ public class JAXBUtils {
 			o = u.unmarshal(input);
 		}
 		catch (JAXBException e) {
-			LOG.error("Error in configuration file: " + e.getLocalizedMessage());
+			LOG.error("Error in configuration file: {}", e.getLocalizedMessage());
 			// whyever they use the linked exception here...
 			// http://www.jaxb.com/how/to/hide/important/information/from/the/user/of/the/api/unknown_xml_format.xml
 			if (e.getLinkedException() != null) {
-				LOG.error("Error: " + e.getLinkedException().getLocalizedMessage());
+				LOG.error("Error: {}", e.getLinkedException().getLocalizedMessage());
 			}
 			LOG.error("Hint: Try validating the file with an XML-schema aware editor.");
 			throw e;
@@ -166,8 +166,7 @@ public class JAXBUtils {
 				result = sf.newSchema(list.toArray(new Source[list.size()]));
 			}
 			catch (Exception e) {
-				LOG.error(
-						"No schema could be loaded from file: " + schemaFile + " because: " + e.getLocalizedMessage());
+				LOG.error("No schema could be loaded from file: {} because: {}", schemaFile, e.getLocalizedMessage());
 				LOG.trace("Stack trace:", e);
 			}
 		}

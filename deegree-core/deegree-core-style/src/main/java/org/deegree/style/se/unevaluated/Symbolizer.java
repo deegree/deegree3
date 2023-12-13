@@ -152,8 +152,9 @@ public class Symbolizer<T extends Styling<T>> {
 		if (n instanceof GenericXMLElement) {
 			GenericXMLElement elem = (GenericXMLElement) n;
 			if (elem.getChildren().isEmpty()) {
-				LOG.warn("The geometry expression in file '{}', line {}, column {} evaluated"
-						+ " to a custom property with no children.", new Object[] { file, line, col });
+				LOG.warn(
+						"The geometry expression in file '{}', line {}, column {} evaluated to a custom property with no children.",
+						new Object[] { file, line, col });
 				return null;
 			}
 			TypedObjectNode maybeGeom = elem.getChildren().get(0);
@@ -195,15 +196,14 @@ public class Symbolizer<T extends Styling<T>> {
 						}
 						else {
 							LOG.warn(
-									"The geometry expression in file '{}', line {}, column {} "
-											+ "evaluated to something where no geometry"
-											+ " could be found. Actual type was '{}'.",
+									"The geometry expression in file '{}', line {}, column {} evaluated to something where no geometry could be found. Actual type was '{}'.",
 									new Object[] { file, line, col, node.getClass() });
 						}
 					}
 					if (geoms.isEmpty()) {
-						LOG.warn("The geometry expression in file '{}', line {}, column {} "
-								+ "evaluated to no geometry could be found.", new Object[] { file, line, col });
+						LOG.warn(
+								"The geometry expression in file '{}', line {}, column {} evaluated to no geometry could be found.",
+								new Object[] { file, line, col });
 					}
 				}
 			}

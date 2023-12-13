@@ -79,7 +79,7 @@ public class PrototypePool {
 		RenderablePrototype model = prototypes.get(prototype.getPrototypeID());
 
 		if (model == null) {
-			LOG.warn("No model found for prototype: " + prototype.getPrototypeID());
+			LOG.warn("No model found for prototype: {}", prototype.getPrototypeID());
 			return;
 		}
 

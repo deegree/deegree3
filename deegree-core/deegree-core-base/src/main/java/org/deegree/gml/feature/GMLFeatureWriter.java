@@ -266,7 +266,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
 		PropertyType pt = property.getType();
 		pathTracker.startStep(propName);
 		if (pt.getMinOccurs() == 0) {
-			LOG.debug("Optional property '" + propName + "', checking if it is requested.");
+			LOG.debug("Optional property '{}', checking if it is requested.", propName);
 			if (!isPropertyRequested()) {
 				pathTracker.stopStep(propName);
 				LOG.debug("Skipping it.");
@@ -504,7 +504,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
 				}
 			}
 			catch (FilterEvaluationException e) {
-				LOG.warn("Unable to evaluate time slice projection filter: " + e.getMessage());
+				LOG.warn("Unable to evaluate time slice projection filter: {}", e.getMessage());
 			}
 		}
 		return false;
@@ -646,7 +646,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
 			throws XMLStreamException, UnknownCRSException, TransformationException {
 
 		QName propName = pt.getName();
-		LOG.debug("Exporting feature property '" + propName + "'");
+		LOG.debug("Exporting feature property '{}'", propName);
 		if (subFeature == null) {
 			exportEmptyProperty(propName, attributes);
 		}
@@ -680,7 +680,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
 			throws XMLStreamException, UnknownCRSException, TransformationException {
 		final ObjectPropertyType pt = (ObjectPropertyType) prop.getType();
 		final QName propName = pt.getName();
-		LOG.debug("Exporting object property '" + propName + "'");
+		LOG.debug("Exporting object property '{}'", propName);
 		if (object == null) {
 			exportEmptyProperty(propName, prop.getAttributes());
 		}
@@ -771,7 +771,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
 			throws XMLStreamException, UnknownCRSException, TransformationException {
 		QName elName = xmlContent.getName();
 		pathTracker.startStep(elName);
-		LOG.debug("Exporting " + elName);
+		LOG.debug("Exporting {}", elName);
 		XSElementDeclaration elDecl = xmlContent.getXSType();
 		int minOccurs = 1;
 		if (elDecl != null && schemaInfoset != null) {
@@ -841,14 +841,14 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
 							}
 							else {
 								LOG.debug(
-										"Only simple qualified element names and XPath expression are allowed for PropertyName projections. Ignoring '"
-												+ propName.getPropertyName() + "'");
+										"Only simple qualified element names and XPath expression are allowed for PropertyName projections. Ignoring '{}'",
+										propName.getPropertyName());
 							}
 						}
 						else {
 							LOG.debug(
-									"Only simple qualified element names and XPath expression are allowed for PropertyName projections. Ignoring '"
-											+ propName.getPropertyName() + "'");
+									"Only simple qualified element names and XPath expression are allowed for PropertyName projections. Ignoring '{}'",
+									propName.getPropertyName());
 						}
 					}
 					else if (projectionOfFeatureType instanceof TimeSliceProjection) {

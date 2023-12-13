@@ -101,7 +101,7 @@ public class GdalDatasetPool {
 			pool.close();
 		}
 		catch (Exception e) {
-			LOG.error("Error closing KeyedObjectPool: " + e.getMessage());
+			LOG.error("Error closing KeyedObjectPool: {}", e.getMessage());
 		}
 	}
 

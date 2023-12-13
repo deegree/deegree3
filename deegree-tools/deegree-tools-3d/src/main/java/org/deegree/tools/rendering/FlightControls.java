@@ -132,7 +132,7 @@ public class FlightControls implements KeyListener, MouseMotionListener, MouseWh
 			}
 			case KeyEvent.VK_P: {
 				LOG.info(this.vf.toString());
-				LOG.info("View parameters:\n" + this.vf.toInitString());
+				LOG.info("View parameters:\n{}", this.vf.toInitString());
 				break;
 			}
 			// arrow keys
@@ -153,7 +153,7 @@ public class FlightControls implements KeyListener, MouseMotionListener, MouseWh
 				break;
 			}
 			case KeyEvent.VK_ESCAPE:
-				LOG.info("Last view:\n" + this.vf.toInitString());
+				LOG.info("Last view:\n{}", this.vf.toInitString());
 				System.exit(1);
 				break;
 		}

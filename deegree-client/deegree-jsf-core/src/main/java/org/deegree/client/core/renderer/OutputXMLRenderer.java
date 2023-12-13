@@ -119,7 +119,7 @@ public class OutputXMLRenderer extends Renderer {
 			thread.start();
 		}
 		catch (Exception e) {
-			LOG.warn("Could not write file for download: " + e.getMessage());
+			LOG.warn("Could not write file for download: {}", e.getMessage());
 			return;
 		}
 
@@ -333,19 +333,19 @@ public class OutputXMLRenderer extends Renderer {
 					DeleteThread.sleep(secondesUntilDelete);
 				}
 				catch (InterruptedException e) {
-					LOG.debug("Could not sleep delete thread: " + e.getMessage());
+					LOG.debug("Could not sleep delete thread: {}", e.getMessage());
 				}
 			if (fileToDelete != null) {
 				try {
 					if (fileToDelete.delete()) {
-						LOG.debug("Successfully deleted file " + fileToDelete.getName());
+						LOG.debug("Successfully deleted file {}", fileToDelete.getName());
 					}
 					else {
-						LOG.debug("Could not delete file " + fileToDelete.getName());
+						LOG.debug("Could not delete file {}", fileToDelete.getName());
 					}
 				}
 				catch (Exception e) {
-					LOG.error("Could not delete file " + fileToDelete.getName() + ": " + e.getMessage());
+					LOG.error("Could not delete file {}: {}", fileToDelete.getName(), e.getMessage());
 				}
 			}
 		}

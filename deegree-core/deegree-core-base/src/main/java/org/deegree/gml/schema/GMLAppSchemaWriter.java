@@ -451,8 +451,8 @@ public class GMLAppSchemaWriter {
 			}
 		}
 
-		LOG.debug("Exporting feature type declaration: " + ft.getName());
-		LOG.debug("Parent: " + ft.getSchema().getParent(ft));
+		LOG.debug("Exporting feature type declaration: {}", ft.getName());
+		LOG.debug("Parent: {}", ft.getSchema().getParent(ft));
 		writer.writeStartElement("element");
 		writer.writeAttribute("name", ft.getName().getLocalPart());
 
@@ -539,10 +539,10 @@ public class GMLAppSchemaWriter {
 		if (schema != null) {
 			for (PropertyType pt : schema.getNewPropertyDecls(ft)) {
 				if (pt == null) {
-					LOG.warn("Property type null inside " + ft.getName());
+					LOG.warn("Property type null inside {}", ft.getName());
 					continue;
 				}
-				LOG.debug("Exporting property type " + pt);
+				LOG.debug("Exporting property type {}", pt);
 				export(writer, pt);
 			}
 		}
@@ -596,7 +596,7 @@ public class GMLAppSchemaWriter {
 
 	private void export(XMLStreamWriter writer, PropertyType pt) throws XMLStreamException {
 
-		LOG.debug("Exporting property type " + pt.getName());
+		LOG.debug("Exporting property type {}", pt.getName());
 
 		// TODO is there more to this decision?
 		boolean byRef = !pt.getName().getNamespaceURI().equals(targetNs);
@@ -855,7 +855,7 @@ public class GMLAppSchemaWriter {
 		XSComplexTypeDefinition xsTypeDef = pt.getXSDValueType();
 
 		if (xsTypeDef == null) {
-			LOG.warn("Type definition null inside " + pt.getName() + " property type.");
+			LOG.warn("Type definition null inside {} property type.", pt.getName());
 		}
 		else {
 			export(writer, xsTypeDef);
@@ -868,7 +868,7 @@ public class GMLAppSchemaWriter {
 		XSTypeDefinition xsTypeDef = xsElDecl != null ? xsElDecl.getTypeDefinition() : null;
 
 		if (xsTypeDef == null) {
-			LOG.warn("Type definition null inside " + pt.getName() + " property type.");
+			LOG.warn("Type definition null inside {} property type.", pt.getName());
 		}
 		else {
 			export(writer, xsTypeDef);
@@ -881,7 +881,7 @@ public class GMLAppSchemaWriter {
 			writer.writeAttribute("type", getPrefixedName(qName));
 		}
 		else {
-			LOG.debug("Exporting anonymous type " + xsTypeDef);
+			LOG.debug("Exporting anonymous type {}", xsTypeDef);
 			exportType(writer, xsTypeDef);
 		}
 	}
@@ -943,7 +943,7 @@ public class GMLAppSchemaWriter {
 
 	private void exportComplexType(XMLStreamWriter writer, XSComplexTypeDefinition complex) throws XMLStreamException {
 
-		LOG.debug("Exporting complex type, name: " + complex.getName());
+		LOG.debug("Exporting complex type, name: {}", complex.getName());
 
 		writer.writeStartElement("complexType");
 		if (!complex.getAnonymous()) {
@@ -990,8 +990,8 @@ public class GMLAppSchemaWriter {
 				derivationBegin = true;
 				break;
 			case DERIVATION_LIST:
-				LOG.warn("Exporting derivation by list is not implemented. Occured for complex element "
-						+ complex.getName());
+				LOG.warn("Exporting derivation by list is not implemented. Occured for complex element {}",
+						complex.getName());
 				break;
 			case DERIVATION_NONE:
 				// nothing to do, handled above
@@ -1008,12 +1008,12 @@ public class GMLAppSchemaWriter {
 				}
 				break;
 			case DERIVATION_SUBSTITUTION:
-				LOG.warn("Exporting derivation by substitution is not implemented. Occured for complex element "
-						+ complex.getName());
+				LOG.warn("Exporting derivation by substitution is not implemented. Occured for complex element {}",
+						complex.getName());
 				break;
 			case DERIVATION_UNION:
-				LOG.warn("Exporting derivation by union is not implemented. Occured for complex element "
-						+ complex.getName());
+				LOG.warn("Exporting derivation by union is not implemented. Occured for complex element {}",
+						complex.getName());
 				break;
 		}
 
@@ -1114,7 +1114,7 @@ public class GMLAppSchemaWriter {
 	private void exportElement(XMLStreamWriter writer, XSElementDeclaration element, int minOccurs, int maxOccurs,
 			boolean maxUnbounded) throws XMLStreamException {
 
-		LOG.debug("Exporting generic element " + element.getNamespace() + "/" + element.getName());
+		LOG.debug("Exporting generic element {}/{}", element.getNamespace(), element.getName());
 
 		writer.writeStartElement("element");
 		writer.writeAttribute("name", element.getName());
@@ -1229,7 +1229,7 @@ public class GMLAppSchemaWriter {
 
 		String prefix = nsToPrefix.get(name.getNamespaceURI());
 		if (prefix == null) {
-			LOG.warn("No prefix for namespace '" + name.getNamespaceURI() + "' defined.");
+			LOG.warn("No prefix for namespace '{}' defined.", name.getNamespaceURI());
 			return "app:" + name.getLocalPart();
 		}
 		if (prefix.equals(DEFAULT_NS_PREFIX)) {

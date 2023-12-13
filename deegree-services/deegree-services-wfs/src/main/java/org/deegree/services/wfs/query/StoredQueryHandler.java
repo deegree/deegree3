@@ -404,8 +404,8 @@ public class StoredQueryHandler {
 
 	private void loadManagedStoredQueries(File managedStoredQueryDirectory) {
 		if (!supportsManagedStoredQuery) {
-			LOG.warn("Managed stored query directory does not exist. "
-					+ "CreateStoredQuery/DropStoredQuery requests cannot be processed.");
+			LOG.warn(
+					"Managed stored query directory does not exist. CreateStoredQuery/DropStoredQuery requests cannot be processed.");
 			return;
 		}
 		for (File managedStoredQuery : managedStoredQueryDirectory.listFiles()) {
@@ -555,7 +555,7 @@ public class StoredQueryHandler {
 			addStoredQuery(xmlAdapter.parse(), u, isManaged);
 		}
 		catch (Exception e) {
-			LOG.warn("Could not parse stored query " + u.toString() + ". Reason: " + e.getMessage());
+			LOG.warn("Could not parse stored query {}. Reason: {}", u.toString(), e.getMessage());
 			LOG.trace("Stack trace:", e);
 		}
 	}

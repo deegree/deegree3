@@ -105,8 +105,7 @@ public class DimensionConfigBuilder {
 			}
 			catch (Exception e) {
 				LOG.warn(
-						"The dimension '{}' has not been added for layer '{}' because the error"
-								+ " '{}' occurred while parsing the extent/default values.",
+						"The dimension '{}' has not been added for layer '{}' because the error '{}' occurred while parsing the extent/default values.",
 						new Object[] { type.getName(), layerName, e.getLocalizedMessage() });
 				continue;
 			}

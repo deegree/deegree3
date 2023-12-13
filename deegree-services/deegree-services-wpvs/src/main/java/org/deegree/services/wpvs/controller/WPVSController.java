@@ -210,7 +210,7 @@ public class WPVSController extends AbstractOWS {
 			return;
 		}
 		try {
-			LOG.debug("Incoming request was mapped as a: " + mappedRequest);
+			LOG.debug("Incoming request was mapped as a: {}", mappedRequest);
 			switch (mappedRequest) {
 				case GetCapabilities:
 					sendCapabilities(normalizedKVPParams, request, response);
@@ -253,7 +253,7 @@ public class WPVSController extends AbstractOWS {
 			// render the image
 			BufferedImage gvResponseImage = service.getImage(gvReq);
 			String ioFormat = mimeToFormat(format);
-			LOG.debug("Requested format: " + format + " was mapped to response ioformat: " + ioFormat);
+			LOG.debug("Requested format: {} was mapped to response ioformat: {}", format, ioFormat);
 			if (gvResponseImage != null) {
 				try {
 					ImageIO.write(gvResponseImage, ioFormat, response.getOutputStream());

@@ -69,7 +69,7 @@ public class JndiLookup {
 	 * <code>javax.sql.DataSource</code>
 	 */
 	public static final DataSource lookup(final String jndiName) throws NamingException, ClassCastException {
-		LOG.debug("Looking up JNDI DataSource '" + jndiName + "'");
+		LOG.debug("Looking up JNDI DataSource '{}'", jndiName);
 		Object object = null;
 		try {
 			final InitialContext initialContext = new InitialContext();

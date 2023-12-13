@@ -104,7 +104,7 @@ public class ComplexOutputImpl extends ProcessletOutputImpl implements ComplexOu
 			String requestedMimeType, String requestedSchema, String requestedEncoding)
 			throws FileNotFoundException, XMLStreamException {
 		super(outputType, isRequested);
-		LOG.debug("Creating sink for complex output at location '" + location + "'");
+		LOG.debug("Creating sink for complex output at location '{}'", location);
 		this.location = location;
 		os = location.getOutputStream();
 		this.requestedMimeType = requestedMimeType;
@@ -181,7 +181,7 @@ public class ComplexOutputImpl extends ProcessletOutputImpl implements ComplexOu
 	public void close() throws XMLStreamException, IOException {
 
 		if (streamWriter != null) {
-			LOG.debug("Closing sink for xml output at location '" + location + "'");
+			LOG.debug("Closing sink for xml output at location '{}'", location);
 			streamWriter.writeEndDocument();
 			streamWriter.flush();
 			streamWriter.close();
@@ -191,7 +191,7 @@ public class ComplexOutputImpl extends ProcessletOutputImpl implements ComplexOu
 		}
 		else {
 			if (location != null) {
-				LOG.debug("Closing sink for raw output at location '" + location + "'");
+				LOG.debug("Closing sink for raw output at location '{}'", location);
 				os.flush();
 				os.close();
 				is = new BufferedInputStream(location.getInputStream());

@@ -176,7 +176,7 @@ public class CacheRasterReader extends GridFileReader {
 		super.instantiate(readValues, cacheFile);
 		if (shouldUseCachefile) {
 			try {
-				LOG.debug("Writing to file: " + cacheFile.getAbsolutePath());
+				LOG.debug("Writing to file: {}", cacheFile.getAbsolutePath());
 				this.gridWriter = new GridWriter(getTileColumns(), getTileRows(), getEnvelope(), getGeoReference(),
 						cacheFile, getRasterDataInfo());
 			}
@@ -225,7 +225,7 @@ public class CacheRasterReader extends GridFileReader {
 									sampleSize);
 						}
 						catch (IOException e) {
-							LOG.error("Could not create tile from buffer because: " + e.getLocalizedMessage(), e);
+							LOG.error("Could not create tile from buffer because: {}", e.getLocalizedMessage(), e);
 						}
 						this.inMemorySize += entry.setBuffer(entryBuffer);
 					}
@@ -372,7 +372,7 @@ public class CacheRasterReader extends GridFileReader {
 					if (metaInfo.exists()) {
 						boolean mR = metaInfo.delete();
 						if (!mR) {
-							LOG.warn("Could not delete meta info file for raster cache file: " + f.getAbsolutePath());
+							LOG.warn("Could not delete meta info file for raster cache file: {}", f.getAbsolutePath());
 						}
 					}
 				}
@@ -644,12 +644,12 @@ public class CacheRasterReader extends GridFileReader {
 									}
 									catch (IOException e) {
 										if (LOG.isDebugEnabled()) {
-											LOG.debug("(Stack) Exception occurred while writing tile to cache file: "
-													+ e.getLocalizedMessage(), e);
+											LOG.debug("(Stack) Exception occurred while writing tile to cache file: {}",
+													e.getLocalizedMessage(), e);
 										}
 										else {
-											LOG.error("Exception occurred while writing tile to cache file: "
-													+ e.getLocalizedMessage());
+											LOG.error("Exception occurred while writing tile to cache file: {}",
+													e.getLocalizedMessage());
 										}
 									}
 								}

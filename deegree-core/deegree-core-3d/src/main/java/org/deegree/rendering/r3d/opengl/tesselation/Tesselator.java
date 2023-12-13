@@ -98,15 +98,15 @@ public class Tesselator {
 				try {
 					RenderableGeometry result = tesselatePolygon(tess, callBack);
 					if (result != null) {
-						LOG.trace("Resulting renderable has " + result.getVertexCount() + " number of vertices.");
+						LOG.trace("Resulting renderable has {} number of vertices.", result.getVertexCount());
 						results.add(result);
 					}
 				}
 				catch (Exception e) {
-					LOG.warn("Error while tesselating following geometry (from a quality model"
-							+ (objectID == null || "".equals(objectID) ? ")" : " with id: " + objectID + ")") + ":\n"
-							+ geom.toString() + "\n(are the vertices colinear?). Original error message was:"
-							+ e.getLocalizedMessage());
+					LOG.warn(
+							"Error while tesselating following geometry (from a quality model{}:\n{}\n(are the vertices colinear?). Original error message was:{}",
+							(objectID == null || "".equals(objectID) ? ")" : " with id: " + objectID + ")"),
+							geom.toString(), e.getLocalizedMessage());
 				}
 			}
 		}
@@ -143,7 +143,7 @@ public class Tesselator {
 		GeometryCallBack callBack = createAndRegisterCallBack(tess, originalGeometry);
 		RenderableGeometry result = tesselatePolygon(tess, callBack);
 		if (result != null && LOG.isTraceEnabled()) {
-			LOG.trace("Resulting renderable has " + result.getVertexCount() + " number of vertices.");
+			LOG.trace("Resulting renderable has {} number of vertices.", result.getVertexCount());
 		}
 		glu.gluDeleteTess(tess);
 		return result;
@@ -185,7 +185,7 @@ public class Tesselator {
 		// end of the ring in the 3d float array, if no rings, just use the whole geometry
 		int ringEnd = numberOfVertices;
 		boolean hasRings = (innerRings != null && innerRings.length > 0);
-		LOG.trace("SimpleAccessGeometry has " + numberOfVertices + " number of vertices.");
+		LOG.trace("SimpleAccessGeometry has {} number of vertices.", numberOfVertices);
 		glu.gluTessBeginPolygon(tess, null);
 		{
 			do {
@@ -200,8 +200,8 @@ public class Tesselator {
 						ringEnd = numberOfVertices;
 					}
 				}
-				LOG.trace("polygon begin vertex: " + ringBegin);
-				LOG.trace("polygon end vertex: " + ringEnd);
+				LOG.trace("polygon begin vertex: {}", ringBegin);
+				LOG.trace("polygon end vertex: {}", ringEnd);
 
 				tesselateRing(tess, ringBegin, ringEnd, callBack);
 				// the beginning of the new ring or coords.length if no more rings.

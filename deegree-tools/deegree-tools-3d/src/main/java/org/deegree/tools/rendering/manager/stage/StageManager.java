@@ -182,7 +182,7 @@ public class StageManager extends ModelManager<WorldRenderableObject> {
 			maxLength = Math.max(maxLength, i);
 		}
 		BackendResult result = readAndImportStages(reader, mappedColumns, maxLength);
-		LOG.info("Number of referenced textures: " + usedTextures.size());
+		LOG.info("Number of referenced textures: {}", usedTextures.size());
 		// if ( LOG.isTraceEnabled() ) {
 		StringBuilder sb = new StringBuilder("Following textures were referenced:\n");
 		for (String s : usedTextures) {
@@ -223,7 +223,7 @@ public class StageManager extends ModelManager<WorldRenderableObject> {
 					wro = createWRO(mappedColumns, values);
 				}
 				catch (IllegalArgumentException e) {
-					LOG.error("Line( " + reader.getLineNumber() + "):  " + e.getLocalizedMessage());
+					LOG.error("Line( {}):  {}", reader.getLineNumber(), e.getLocalizedMessage());
 				}
 				if (wro != null) {
 					inserts.add(createDataObjectInfo(uuid, values[mappedColumns.get(Column.TYPE)],
@@ -231,8 +231,7 @@ public class StageManager extends ModelManager<WorldRenderableObject> {
 				}
 			}
 			else {
-				LOG.warn("Line( " + reader.getLineNumber() + "): not enough elements parsed: "
-						+ Arrays.toString(values));
+				LOG.warn("Line( {}): not enough elements parsed: {}", reader.getLineNumber(), Arrays.toString(values));
 				if (fw != null) {
 					fw.write("Line( " + reader.getLineNumber() + "): not enough elements parsed: "
 							+ Arrays.toString(values) + "\n");
@@ -328,14 +327,14 @@ public class StageManager extends ModelManager<WorldRenderableObject> {
 				result.put(c, i);
 			}
 			catch (Exception e) {
-				LOG.warn("Could not map: " + s + " to a known column name, column names must be one of: "
-						+ Arrays.toString(Column.values()));
+				LOG.warn("Could not map: {} to a known column name, column names must be one of: {}", s,
+						Arrays.toString(Column.values()));
 			}
 		}
 		boolean columnsCheckout = true;
 		for (Column c : Column.values()) {
 			if (!result.containsKey(c)) {
-				LOG.warn("Missing column: " + c.name().toLowerCase() + ", " + c.getDescription());
+				LOG.warn("Missing column: {}, {}", c.name().toLowerCase(), c.getDescription());
 				columnsCheckout = false;
 			}
 

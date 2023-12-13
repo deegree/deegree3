@@ -124,27 +124,27 @@ public class DBFReader {
 
 		int version = getUnsigned(buffer);
 		if (version < 3 || version > 5) {
-			LOG.warn("DBase file is of unsupported version " + version + ". Trying to continue anyway...");
+			LOG.warn("DBase file is of unsupported version {}. Trying to continue anyway...", version);
 		}
 		if (LOG.isTraceEnabled()) {
-			LOG.trace("Version number: " + version);
+			LOG.trace("Version number: {}", version);
 			int year = 1900 + getUnsigned(buffer);
 			int month = getUnsigned(buffer);
 			int day = getUnsigned(buffer);
-			LOG.trace("Last modified: " + year + "/" + month + "/" + day);
+			LOG.trace("Last modified: {}/{}/{}", year, month, day);
 		}
 		else {
 			skipBytes(buffer, 3);
 		}
 
 		noOfRecords = buffer.getInt();
-		LOG.trace("Number of records: " + noOfRecords);
+		LOG.trace("Number of records: {}", noOfRecords);
 
 		headerLength = buffer.getShort();
-		LOG.trace("Length of header: " + headerLength);
+		LOG.trace("Length of header: {}", headerLength);
 
 		recordLength = buffer.getShort();
-		LOG.trace("Record length: " + recordLength);
+		LOG.trace("Record length: {}", recordLength);
 		buffer.position(14);
 		int dirty = getUnsigned(buffer);
 		if (dirty == 1) {
@@ -157,7 +157,7 @@ public class DBFReader {
 
 		if (LOG.isTraceEnabled()) {
 			buffer.position(29);
-			LOG.trace("Language driver code is " + getUnsigned(buffer));
+			LOG.trace("Language driver code is {}", getUnsigned(buffer));
 			skipBytes(buffer, 2);
 		}
 		else {
@@ -203,7 +203,7 @@ public class DBFReader {
 
 			int fieldLength = getUnsigned(buffer);
 			int fieldPrecision = getUnsigned(buffer);
-			LOG.trace("Field length is " + fieldLength + ", type is " + type);
+			LOG.trace("Field length is {}, type is {}", fieldLength, type);
 
 			// using the prefix here is vital for repairing of unqualified property names
 			// in WFS...
@@ -219,7 +219,7 @@ public class DBFReader {
 				case 'C':
 					if (fieldPrecision > 0) {
 						fieldLength += fieldPrecision << 8;
-						LOG.trace("Field length is changed to " + fieldLength + " for text field.");
+						LOG.trace("Field length is changed to {} for text field.", fieldLength);
 					}
 					pt = new SimplePropertyType(ptName, 0, 1, BaseType.STRING, null, null);
 					break;
@@ -250,12 +250,13 @@ public class DBFReader {
 							"Double fields are not supported. Please send the file to the devs, so they can implement it.");
 					break;
 				default:
-					LOG.warn("Exotic field encountered: '" + type
-							+ "'. Please send the file to the devs, so they can have a look.");
+					LOG.warn(
+							"Exotic field encountered: '{}'. Please send the file to the devs, so they can have a look.",
+							type);
 			}
 
-			LOG.trace("Found field with name '" + name + "' and type "
-					+ (pt != null ? pt.getPrimitiveType() : " no supported type."));
+			LOG.trace("Found field with name '{}' and type {}", name,
+					(pt != null ? pt.getPrimitiveType() : " no supported type."));
 
 			fields.put(name, new Field(type, pt, fieldLength));
 			fieldOrder.add(name);
@@ -329,7 +330,7 @@ public class DBFReader {
 			pos = headerLength + (num + 1) * recordLength;
 		}
 		if (getUnsigned(buffer) == 42) {
-			LOG.warn("The record with number " + num + " is marked as deleted.");
+			LOG.warn("The record with number {} is marked as deleted.", num);
 		}
 
 		for (String name : fieldOrder) {
@@ -409,7 +410,7 @@ public class DBFReader {
 				case 'T':
 				case 'O':
 				default:
-					LOG.trace("Skipping unsupported field " + field.propertyType.getName());
+					LOG.trace("Skipping unsupported field {}", field.propertyType.getName());
 			}
 
 			map.put(field.propertyType, property);

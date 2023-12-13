@@ -116,11 +116,11 @@ public class CsvFeatureWriter {
 			csvPrinter.printRecord(record);
 		}
 		catch (IOException e) {
-			LOG.debug("Export of feature with ID " + feature.getId() + " failed", e);
+			LOG.debug("Export of feature with ID {} failed", feature.getId(), e);
 			throw e;
 		}
 		catch (TransformationException | UnknownCRSException e) {
-			LOG.debug("Export of feature with ID " + feature.getId() + " failed", e);
+			LOG.debug("Export of feature with ID {} failed", feature.getId(), e);
 			throw new IOException("Could not write Feature as CSV Entry.", e);
 		}
 	}
@@ -159,7 +159,7 @@ public class CsvFeatureWriter {
 				|| p instanceof FeaturePropertyType || p instanceof GeometryPropertyType
 				|| p instanceof SimplePropertyType || p instanceof StringOrRef;
 		if (!isSupportedProperty)
-			LOG.warn("Property with name " + p.getName() + " cannot be exported as CSV");
+			LOG.warn("Property with name {} cannot be exported as CSV", p.getName());
 		return isSupportedProperty;
 	}
 

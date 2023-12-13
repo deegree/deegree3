@@ -246,21 +246,21 @@ public class SchemaValidator {
 			@SuppressWarnings("synthetic-access")
 			@Override
 			public void error(String domain, String key, XMLParseException e) throws XNIException {
-				LOG.debug("Encountered error: " + toString(e));
+				LOG.debug("Encountered error: {}", toString(e));
 				errors.add("Error: " + toString(e));
 			}
 
 			@SuppressWarnings("synthetic-access")
 			@Override
 			public void fatalError(String domain, String key, XMLParseException e) throws XNIException {
-				LOG.debug("Encountered fatal error: " + toString(e));
+				LOG.debug("Encountered fatal error: {}", toString(e));
 				errors.add("Fatal error: " + toString(e));
 			}
 
 			@SuppressWarnings("synthetic-access")
 			@Override
 			public void warning(String domain, String key, XMLParseException e) throws XNIException {
-				LOG.debug("Encountered warning: " + toString(e));
+				LOG.debug("Encountered warning: {}", toString(e));
 				errors.add("Warning: " + toString(e));
 			}
 

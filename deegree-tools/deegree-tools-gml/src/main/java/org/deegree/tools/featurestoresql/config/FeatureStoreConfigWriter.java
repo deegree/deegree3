@@ -108,7 +108,7 @@ public class FeatureStoreConfigWriter implements ItemWriter<AppSchema> {
 		String[] createStmts = DDLCreator.newInstance(mappedSchema, sqlDialect).getDDL();
 		String sqlOutputFilename = fileName + ".sql";
 		Path pathToSqlOutputFile = Paths.get(sqlOutputFilename);
-		LOG.info("Writing SQL DDL into file: " + pathToSqlOutputFile.toUri());
+		LOG.info("Writing SQL DDL into file: {}", pathToSqlOutputFile.toUri());
 		try (BufferedWriter writer = Files.newBufferedWriter(pathToSqlOutputFile)) {
 			for (String sqlStatement : createStmts) {
 				writer.write(sqlStatement + ";" + System.getProperty("line.separator"));
@@ -121,7 +121,7 @@ public class FeatureStoreConfigWriter implements ItemWriter<AppSchema> {
 		List<String> configUrls = Collections.singletonList(loadParameter.getSchemaUrl());
 		String xmlOutputFilename = fileName + ".xml";
 		Path pathToXmlOutputFile = Paths.get(xmlOutputFilename);
-		LOG.info("Writing deegree SQLFeatureStore configuration into file: " + pathToXmlOutputFile.toUri());
+		LOG.info("Writing deegree SQLFeatureStore configuration into file: {}", pathToXmlOutputFile.toUri());
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter(bos);
 		xmlWriter = new IndentingXMLStreamWriter(xmlWriter);

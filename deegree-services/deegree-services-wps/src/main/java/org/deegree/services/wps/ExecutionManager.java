@@ -179,8 +179,8 @@ public class ExecutionManager {
 		ProcessDefinition processDef = request.getProcessDefinition();
 		ProcessletInputs inputs = request.getDataInputs();
 		RequestedOutput output = ((RawDataOutput) request.getResponseForm()).getRequestedOutput();
-		LOG.debug("RawDataOutput, parameter: " + output.getOutputType().getIdentifier().getValue() + ", mimeType: "
-				+ output.getMimeType());
+		LOG.debug("RawDataOutput, parameter: {}, mimeType: {}", output.getOutputType().getIdentifier().getValue(),
+				output.getMimeType());
 
 		String mimeType = output.getMimeType();
 		String encoding = output.getEncoding();
@@ -251,7 +251,7 @@ public class ExecutionManager {
 				.getProcessOutput();
 			for (JAXBElement<? extends ProcessletOutputDefinition> element : outputParameters) {
 				ProcessletOutputDefinition outputType = element.getValue();
-				LOG.debug("- " + outputType.getIdentifier().getValue());
+				LOG.debug("- {}", outputType.getIdentifier().getValue());
 				String mimeType = null;
 				String encoding = null;
 				String schema = null;
@@ -337,8 +337,7 @@ public class ExecutionManager {
 
 		ProcessExecution status = responseDocumentIdToState.get(location);
 
-		LOG.debug(
-				"Checking if a process corresponding to output '" + location.getId() + "' is known (=still running).");
+		LOG.debug("Checking if a process corresponding to output '{}' is known (=still running).", location.getId());
 		if (status == null) {
 			LOG.debug("No. Trying to return the stored response document.");
 			if (location.getFile().exists()) {
@@ -502,7 +501,7 @@ public class ExecutionManager {
 			try {
 				executeProcess(process, request.getDataInputs(), outputs, state);
 
-				LOG.debug("Storing final response document at " + responseStorage);
+				LOG.debug("Storing final response document at {}", responseStorage);
 
 				// write final ExecuteResponse document
 				try {

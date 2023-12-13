@@ -98,12 +98,12 @@ public class HtmlInputConfigurationXML extends HtmlInputTextarea {
 	@Override
 	protected void validateValue(FacesContext context, Object newValue) {
 		super.validateValue(context, newValue);
-		LOG.debug("validate value " + newValue);
+		LOG.debug("validate value {}", newValue);
 		try {
 			String v = (String) newValue;
 			InputStream xml = new ByteArrayInputStream(v.getBytes("UTF-8"));
 			String s = getSchemaURLS();
-			LOG.debug("Schemas: " + s);
+			LOG.debug("Schemas: {}", s);
 			String[] schemas = null;
 			if (s != null && s.length() > 0) {
 				schemas = s.split(",");

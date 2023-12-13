@@ -159,7 +159,7 @@ public class StreamFeatureCollection implements FeatureInputStream {
 		if (event == START_ELEMENT) {
 			QName propName = xmlStream.getName();
 			if (LOG.isDebugEnabled()) {
-				LOG.debug("- property '" + propName + "'");
+				LOG.debug("- property '{}'", propName);
 			}
 			if (featureReader.findConcretePropertyType(propName, activeDecl) != null) {
 				// current property element is equal to active declaration
@@ -214,7 +214,7 @@ public class StreamFeatureCollection implements FeatureInputStream {
 						Envelope bbox = (Envelope) property.getValue();
 						if (bbox.getCoordinateSystem() != null) {
 							activeCRS = bbox.getCoordinateSystem();
-							LOG.debug("- crs (from boundedBy): '" + activeCRS + "'");
+							LOG.debug("- crs (from boundedBy): '{}'", activeCRS);
 						}
 					}
 

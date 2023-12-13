@@ -68,11 +68,11 @@ public class FunctionManager implements Initializable, Destroyable {
 			nameToFunction = new HashMap<String, FunctionProvider>();
 			try {
 				for (FunctionProvider function : functionLoader) {
-					LOG.debug("Function: " + function + ", name: " + function.getName());
+					LOG.debug("Function: {}, name: {}", function, function.getName());
 					String name = function.getName().toLowerCase();
 					if (nameToFunction.containsKey(name)) {
-						LOG.error("Multiple CustomFunction instances for name: '" + name
-								+ "' on classpath -- omitting '" + function.getClass().getName() + "'.");
+						LOG.error("Multiple CustomFunction instances for name: '{}' on classpath -- omitting '{}'.",
+								name, function.getClass().getName());
 						continue;
 					}
 					nameToFunction.put(name, function);
@@ -105,7 +105,7 @@ public class FunctionManager implements Initializable, Destroyable {
 				fp.init(ws);
 			}
 			catch (Throwable t) {
-				LOG.error("Initialization of FunctionProvider " + fp.getName() + " failed: " + t.getMessage());
+				LOG.error("Initialization of FunctionProvider {} failed: {}", fp.getName(), t.getMessage());
 			}
 		}
 	}
@@ -117,7 +117,7 @@ public class FunctionManager implements Initializable, Destroyable {
 				fp.destroy();
 			}
 			catch (Throwable t) {
-				LOG.error("Destroying of FunctionProvider " + fp.getName() + " failed: " + t.getMessage());
+				LOG.error("Destroying of FunctionProvider {} failed: {}", fp.getName(), t.getMessage());
 			}
 		}
 		functionLoader = null;

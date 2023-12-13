@@ -282,7 +282,7 @@ public class AppSchemaMapper {
 
 	private FeatureTypeMapping generateFtMapping(FeatureType ft) {
 		CycleAnalyser cycleAnalyser = new CycleAnalyser(allowedCycleDepth, ft.getName());
-		LOG.info("Mapping feature type '" + ft.getName() + "'");
+		LOG.info("Mapping feature type '{}'", ft.getName());
 		MappingContext mc = mcManager.newContext(ft.getName(), detectPrimaryKeyColumnName());
 
 		// TODO
@@ -322,7 +322,7 @@ public class AppSchemaMapper {
 	}
 
 	private List<Mapping> generatePropMapping(PropertyType pt, MappingContext mc, CycleAnalyser cycleAnalyser) {
-		LOG.debug("Mapping property '" + pt.getName() + "'");
+		LOG.debug("Mapping property '{}'", pt.getName());
 		List<Mapping> mappings = new ArrayList<>();
 		XSElementDeclaration elDecl = pt.getElementDecl();
 		int before = mcManager.getContextCount();
@@ -365,9 +365,9 @@ public class AppSchemaMapper {
 						}
 
 						int complexity = mcManager.getContextCount() - before;
-						LOG.info("Mapping complexity index of property type '" + eName + "': " + complexity);
+						LOG.info("Mapping complexity index of property type '{}': {}", eName, complexity);
 						if (complexity > maxComplexityIndex) {
-							LOG.warn("Mapping property type '" + eName + "' exceeds complexity limit: " + complexity);
+							LOG.warn("Mapping property type '{}' exceeds complexity limit: {}", eName, complexity);
 							mappings.clear();
 						}
 						else {
@@ -375,8 +375,8 @@ public class AppSchemaMapper {
 						}
 					}
 					catch (Throwable t) {
-						LOG.warn("Unable to create relational mapping for property type '" + pt.getName() + "': "
-								+ t.getMessage());
+						LOG.warn("Unable to create relational mapping for property type '{}': {}", pt.getName(),
+								t.getMessage());
 					}
 				}
 				return mappings;
@@ -398,20 +398,20 @@ public class AppSchemaMapper {
 				generatedMapping = generatePropMapping((CodePropertyType) pt, mc);
 			}
 			else {
-				LOG.warn("Unhandled property type '" + pt.getName() + "': " + pt.getClass().getName());
+				LOG.warn("Unhandled property type '{}': {}", pt.getName(), pt.getClass().getName());
 			}
 			if (generatedMapping != null) {
 				mappings.add(generatedMapping);
 			}
 		}
 		catch (Throwable t) {
-			LOG.warn("Unable to create relational mapping for property type '" + pt.getName() + "': " + t.getMessage());
+			LOG.warn("Unable to create relational mapping for property type '{}': {}", pt.getName(), t.getMessage());
 		}
 
 		int complexity = mcManager.getContextCount() - before;
-		LOG.debug("Mapping complexity index of property type '" + pt.getName() + "': " + complexity);
+		LOG.debug("Mapping complexity index of property type '{}': {}", pt.getName(), complexity);
 		if (complexity > maxComplexityIndex) {
-			LOG.warn("Mapping property type '" + pt.getName() + "' exceeds complexity limit: " + complexity);
+			LOG.warn("Mapping property type '{}' exceeds complexity limit: {}", pt.getName(), complexity);
 			mappings.clear();
 		}
 
@@ -420,7 +420,7 @@ public class AppSchemaMapper {
 
 	private PrimitiveMapping generatePropMapping(SimplePropertyType pt, MappingContext mc,
 			CycleAnalyser cycleAnalyser) {
-		LOG.debug("Mapping simple property '" + pt.getName() + "'");
+		LOG.debug("Mapping simple property '{}'", pt.getName());
 		ValueReference path = getPropName(pt.getName());
 		MappingContext propMc = null;
 		List<TableJoin> jc = null;
@@ -441,7 +441,7 @@ public class AppSchemaMapper {
 	}
 
 	private GeometryMapping generatePropMapping(GeometryPropertyType pt, MappingContext mc) {
-		LOG.debug("Mapping geometry property '" + pt.getName() + "'");
+		LOG.debug("Mapping geometry property '{}'", pt.getName());
 		ValueReference path = getPropName(pt.getName());
 		MappingContext propMc = null;
 		List<TableJoin> jc = null;
@@ -459,7 +459,7 @@ public class AppSchemaMapper {
 	}
 
 	private Mapping generatePropMapping(FeaturePropertyType pt, MappingContext mc) {
-		LOG.debug("Mapping feature property '" + pt.getName() + "'");
+		LOG.debug("Mapping feature property '{}'", pt.getName());
 		ValueReference path = getPropName(pt.getName());
 		List<TableJoin> jc = null;
 		MappingContext fkMC = null;
@@ -492,7 +492,7 @@ public class AppSchemaMapper {
 			}
 		}
 		else {
-			LOG.warn("Ambiguous feature property type '" + pt.getName() + "'. Not creating a Join mapping.");
+			LOG.warn("Ambiguous feature property type '{}'. Not creating a Join mapping.", pt.getName());
 		}
 
 		return new FeatureMapping(path, pt.getMinOccurs() == 0, new DBField(hrefMC.getColumn()), pt.getFTName(), jc);
@@ -500,11 +500,11 @@ public class AppSchemaMapper {
 
 	private CompoundMapping generatePropMapping(CustomPropertyType pt, MappingContext mc, CycleAnalyser cycleAnalyser) {
 
-		LOG.debug("Mapping custom property '" + pt.getName() + "'");
+		LOG.debug("Mapping custom property '{}'", pt.getName());
 
 		XSComplexTypeDefinition xsTypeDef = pt.getXSDValueType();
 		if (xsTypeDef == null) {
-			LOG.warn("No XSD type definition available for custom property '" + pt.getName() + "'. Skipping it.");
+			LOG.warn("No XSD type definition available for custom property '{}'. Skipping it.", pt.getName());
 			return null;
 		}
 
@@ -530,13 +530,13 @@ public class AppSchemaMapper {
 			return new CompoundMapping(path, pt.getMinOccurs() == 0, particles, jc, pt.getElementDecl());
 		}
 		catch (Throwable t) {
-			LOG.warn("Full relational mapping of property '" + pt.getName() + "' failed: " + t.getMessage());
+			LOG.warn("Full relational mapping of property '{}' failed: {}", pt.getName(), t.getMessage());
 		}
 		return new CompoundMapping(path, pt.getMinOccurs() == 0, Collections.emptyList(), jc, pt.getElementDecl());
 	}
 
 	private CompoundMapping generatePropMapping(CodePropertyType pt, MappingContext mc) {
-		LOG.debug("Mapping code property '" + pt.getName() + "'");
+		LOG.debug("Mapping code property '{}'", pt.getName());
 		ValueReference path = getPropName(pt.getName());
 		MappingContext propMc = null;
 		MappingContext codeSpaceMc = null;
@@ -727,8 +727,7 @@ public class AppSchemaMapper {
 						particles.addAll(generateMapping(particle, opt.getMaxOccurs(), mc, cycleAnalyser));
 					}
 				default:
-					LOG.warn("Unhandled object property type '" + opt.getClass() + "' with category "
-							+ opt.getCategory());
+					LOG.warn("Unhandled object property type '{}' with category {}", opt.getClass(), opt.getCategory());
 			}
 		}
 
@@ -960,7 +959,7 @@ public class AppSchemaMapper {
 			sb.append(" -> ");
 		}
 		sb.append("wildcard");
-		LOG.debug("Skipping wildcard at path: " + sb);
+		LOG.debug("Skipping wildcard at path: {}", sb);
 		return new ArrayList<>();
 	}
 

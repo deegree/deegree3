@@ -185,8 +185,8 @@ public class GMLCRSStore extends AbstractCRSStore {
 				result = parseVerticalCRS(rootElement);
 			}
 			else {
-				LOG.warn("The given coordinate system:" + localName
-						+ " is currently not supported by the deegree gml provider.");
+				LOG.warn("The given coordinate system:{} is currently not supported by the deegree gml provider.",
+						localName);
 			}
 		}
 		catch (XMLParsingException e) {
@@ -236,7 +236,7 @@ public class GMLCRSStore extends AbstractCRSStore {
 			return null;
 		}
 		if (LOG.isDebugEnabled()) {
-			LOG.debug("Parsing id of transformation method resulted in: " + Arrays.toString(id.getCodes()));
+			LOG.debug("Parsing id of transformation method resulted in: {}", Arrays.toString(id.getCodes()));
 		}
 		Transformation result = getCachedIdentifiable(Transformation.class, id);
 		ICRS source = sourceCRS;
@@ -372,8 +372,9 @@ public class GMLCRSStore extends AbstractCRSStore {
 									ppm = value;
 									break;
 								default:
-									LOG.warn("The (helmert) transformation parameter: " + paramID.getCodeAndName()
-											+ " could not be mapped to a valid parameter and will not be used.");
+									LOG.warn(
+											"The (helmert) transformation parameter: {} could not be mapped to a valid parameter and will not be used.",
+											paramID.getCodeAndName());
 									break;
 							}
 						}
@@ -407,7 +408,7 @@ public class GMLCRSStore extends AbstractCRSStore {
 					url = new URL(second);
 				}
 				catch (Throwable t) {
-					LOG.debug("Could not load NTv2 file from location: " + second);
+					LOG.debug("Could not load NTv2 file from location: {}", second);
 				}
 				if (url != null) {
 					result = new NTv2Transformation(source, target, id, url);
@@ -436,8 +437,8 @@ public class GMLCRSStore extends AbstractCRSStore {
 			identifier = adapter.getRequiredNodeAsString(rootElement, new XPath(PRE + "identifier", nsContext));
 		}
 		catch (XMLParsingException e) {
-			LOG.error("Could not find the required identifier node for the given gml:identifiable with localname: "
-					+ rootElement.getLocalName());
+			LOG.error("Could not find the required identifier node for the given gml:identifiable with localname: {}",
+					rootElement.getLocalName());
 			return null;
 		}
 		String[] identifiers = { identifier };
@@ -549,7 +550,7 @@ public class GMLCRSStore extends AbstractCRSStore {
 			return null;
 		}
 		if (LOG.isDebugEnabled()) {
-			LOG.debug("Parsing id of compound crs resulted in: " + Arrays.toString(id.getCodes()));
+			LOG.debug("Parsing id of compound crs resulted in: {}", Arrays.toString(id.getCodes()));
 		}
 
 		List<OMElement> compRefSysProp = adapter.getRequiredElements(rootElement,
@@ -641,7 +642,7 @@ public class GMLCRSStore extends AbstractCRSStore {
 			return null;
 		}
 		if (LOG.isDebugEnabled()) {
-			LOG.debug("Parsing id of projected crs resulted in: " + Arrays.toString(id.getCodes()));
+			LOG.debug("Parsing id of projected crs resulted in: {}", Arrays.toString(id.getCodes()));
 		}
 
 		OMElement baseGEOCRSElementProperty = adapter.getRequiredElement(rootElement,
@@ -713,7 +714,7 @@ public class GMLCRSStore extends AbstractCRSStore {
 			return null;
 		}
 		if (LOG.isDebugEnabled()) {
-			LOG.debug("Parsing id of geodetic crs resulted in: " + Arrays.toString(id.getCodes()));
+			LOG.debug("Parsing id of geodetic crs resulted in: {}", Arrays.toString(id.getCodes()));
 		}
 
 		OMElement datumElementProp = adapter.getRequiredElement(rootElement,
@@ -781,7 +782,7 @@ public class GMLCRSStore extends AbstractCRSStore {
 			return null;
 		}
 		if (LOG.isDebugEnabled()) {
-			LOG.debug("Parsing id of datum resulted in: " + Arrays.toString(id.getCodes()));
+			LOG.debug("Parsing id of datum resulted in: {}", Arrays.toString(id.getCodes()));
 		}
 		IGeodeticDatum result = getCachedIdentifiable(GeodeticDatum.class, id);
 		if (result == null) {
@@ -850,10 +851,10 @@ public class GMLCRSStore extends AbstractCRSStore {
 				throw new XMLParsingException(adapter, rootElement, "An ellipsoidal cs can only have 2 or 3 axis.");
 			}
 			if (axis[0].getUnits() == null) {
-				LOG.debug("Could not check axis [0]: " + axis[0] + " because it has no units.");
+				LOG.debug("Could not check axis [0]: {} because it has no units.", axis[0]);
 			}
 			else if (axis[1].getUnits() == null) {
-				LOG.debug("Could not check axis [1]: " + axis[1] + " because it has no units.");
+				LOG.debug("Could not check axis [1]: {} because it has no units.", axis[1]);
 			}
 			else {
 				if (!(axis[0].getUnits().canConvert(Unit.RADIAN) && axis[1].getUnits().canConvert(Unit.RADIAN))) {
@@ -863,7 +864,7 @@ public class GMLCRSStore extends AbstractCRSStore {
 				}
 				if (axis.length == 3) {
 					if (axis[2].getUnits() == null) {
-						LOG.debug("Could not check axis [2]: " + axis[2] + " because it has no units.");
+						LOG.debug("Could not check axis [2]: {} because it has no units.", axis[2]);
 					}
 					else {
 						if (!axis[2].getUnits().canConvert(Unit.METRE)) {
@@ -931,7 +932,7 @@ public class GMLCRSStore extends AbstractCRSStore {
 			return null;
 		}
 		if (LOG.isDebugEnabled()) {
-			LOG.debug("Parsing id of ellipsoid resulted in: " + Arrays.toString(id.getCodes()));
+			LOG.debug("Parsing id of ellipsoid resulted in: {}", Arrays.toString(id.getCodes()));
 		}
 		IEllipsoid result = getCachedIdentifiable(Ellipsoid.class, id);
 		if (result == null) {
@@ -1008,7 +1009,7 @@ public class GMLCRSStore extends AbstractCRSStore {
 			return null;
 		}
 		if (LOG.isDebugEnabled()) {
-			LOG.debug("Parsing id of prime meridian resulted in: " + Arrays.toString(id.getCodes()));
+			LOG.debug("Parsing id of prime meridian resulted in: {}", Arrays.toString(id.getCodes()));
 		}
 		IPrimeMeridian result = getCachedIdentifiable(PrimeMeridian.class, id.getCodes());
 		// if ( cache == null ) {
@@ -1060,7 +1061,7 @@ public class GMLCRSStore extends AbstractCRSStore {
 			return null;
 		}
 		if (LOG.isDebugEnabled()) {
-			LOG.debug("Parsing id of vertical crs resulted in: " + Arrays.toString(id.getCodes()));
+			LOG.debug("Parsing id of vertical crs resulted in: {}", Arrays.toString(id.getCodes()));
 		}
 		OMElement verticalCSProp = adapter.getRequiredElement(rootElement, new XPath(PRE + "verticalCS", nsContext));
 		OMElement verticalCSType = getRequiredXlinkedElement(verticalCSProp, PRE + "VerticalCS");
@@ -1095,7 +1096,7 @@ public class GMLCRSStore extends AbstractCRSStore {
 		if (result == null) {
 			result = new VerticalDatum(id);
 			if (LOG.isDebugEnabled()) {
-				LOG.debug("Parsing id of vertical datum resulted in: " + Arrays.toString(id.getCodes()));
+				LOG.debug("Parsing id of vertical datum resulted in: {}", Arrays.toString(id.getCodes()));
 			}
 		}
 		return addIdToCache(result, false);
@@ -1123,7 +1124,7 @@ public class GMLCRSStore extends AbstractCRSStore {
 			return null;
 		}
 		if (LOG.isDebugEnabled()) {
-			LOG.debug("Parsing id of projection method resulted in: " + Arrays.toString(id.getCodes()));
+			LOG.debug("Parsing id of projection method resulted in: {}", Arrays.toString(id.getCodes()));
 		}
 
 		IProjection result = getCachedIdentifiable(Projection.class, id.getCodes());
@@ -1180,8 +1181,9 @@ public class GMLCRSStore extends AbstractCRSStore {
 										trueScaleLatitude = value;
 									case NOT_SUPPORTED:
 									default:
-										LOG.warn("The projection parameter: " + paramID.getCodeAndName()
-												+ " could not be mapped to any projection and will not be used.");
+										LOG.warn(
+												"The projection parameter: {} could not be mapped to any projection and will not be used.",
+												paramID.getCodeAndName());
 										break;
 								}
 							}
@@ -1215,15 +1217,16 @@ public class GMLCRSStore extends AbstractCRSStore {
 					break;
 				case NOT_SUPPORTED:
 				default:
-					LOG.error("The conversion method (Projection): " + conversionMethodID.getCode()
-							+ " is currently not supported by the deegree crs package.");
+					LOG.error(
+							"The conversion method (Projection): {} is currently not supported by the deegree crs package.",
+							conversionMethodID.getCode());
 			}
 
 			String remarks = adapter.getNodeAsString(rootElement, new XPath(PRE + "remarks", nsContext), null);
-			LOG.debug("The remarks fo the conversion are not evaluated: " + remarks);
+			LOG.debug("The remarks fo the conversion are not evaluated: {}", remarks);
 			String accuracy = adapter.getNodeAsString(rootElement,
 					new XPath(PRE + "coordinateOperationAccuracy", nsContext), null);
-			LOG.debug("The coordinateOperationAccuracy for the conversion are not evaluated: " + accuracy);
+			LOG.debug("The coordinateOperationAccuracy for the conversion are not evaluated: {}", accuracy);
 		}
 		return addIdToCache(result, false);
 	}
@@ -1247,7 +1250,7 @@ public class GMLCRSStore extends AbstractCRSStore {
 		List<OMElement> parameterValues = adapter.getElements(rootElement,
 				new XPath(PRE + "parameterValue", nsContext));
 		if (parameterValues == null || parameterValues.size() < 0) {
-			LOG.debug("The root element: " + rootElement.getLocalName() + " does not define any parameters.");
+			LOG.debug("The root element: {} does not define any parameters.", rootElement.getLocalName());
 		}
 		else {
 			for (OMElement paramValueProp : parameterValues) {
@@ -1340,7 +1343,7 @@ public class GMLCRSStore extends AbstractCRSStore {
 		if (result == null) {
 			result = createUnitFromString(uomAttribute);
 			if (result == null) {
-				LOG.debug("Trying to resolve the uri: " + uomAttribute + " from a gml:value/@uom node");
+				LOG.debug("Trying to resolve the uri: {} from a gml:value/@uom node", uomAttribute);
 				OMElement unitElement = null;
 				try {
 					unitElement = getResolver().getURIAsType(uomAttribute);
@@ -1350,8 +1353,8 @@ public class GMLCRSStore extends AbstractCRSStore {
 				}
 				if (unitElement == null) {
 					LOG.error(
-							"Although an uri was determined, the XLinkresolver was not able to retrieve a valid XML-OM representation of the uom-uri. Error while resolving the following uom uri: "
-									+ uomAttribute + ".");
+							"Although an uri was determined, the XLinkresolver was not able to retrieve a valid XML-OM representation of the uom-uri. Error while resolving the following uom uri: {}.",
+							uomAttribute);
 				}
 				else {
 					CRSResource unitID = parseIdentifiedObject(unitElement);
@@ -1410,17 +1413,17 @@ public class GMLCRSStore extends AbstractCRSStore {
 		String xlink = retrieveXLink(rootElement);
 		OMElement result = null;
 		if (null != xlink && !"".equals(xlink)) {
-			LOG.debug("Found an xlink: " + xlink);
+			LOG.debug("Found an xlink: {}", xlink);
 			// The conversion is given by a link, so resolve it.
 			result = getResolver().getURIAsType(xlink);
 			if (result == null) {
 				LOG.error(
-						"Although an xlink was given, the XLInkresolver was not able to retrieve a valid XML-OM representation of the uri it denotes. Error while resolving the following uri from rootElement: "
-								+ rootElement.getLocalName() + ": " + xlink + ". No further evaluation can be done.");
+						"Although an xlink was given, the XLInkresolver was not able to retrieve a valid XML-OM representation of the uri it denotes. Error while resolving the following uri from rootElement: {}: {}. No further evaluation can be done.",
+						rootElement.getLocalName(), xlink);
 			}
 		}
 		else {
-			LOG.debug("No xlink found in: " + rootElement.getLocalName());
+			LOG.debug("No xlink found in: {}", rootElement.getLocalName());
 		}
 		return result;
 	}
@@ -1453,7 +1456,7 @@ public class GMLCRSStore extends AbstractCRSStore {
 				idRes = getResolver().getURIAsType(id.getOriginal());
 			}
 			catch (IOException e) {
-				LOG.debug("Exception occurred: " + e.getLocalizedMessage(), e);
+				LOG.debug("Exception occurred: {}", e.getLocalizedMessage(), e);
 			}
 			if (idRes != null) {
 				String localName = idRes.getLocalName();
@@ -1471,12 +1474,12 @@ public class GMLCRSStore extends AbstractCRSStore {
 						}
 					}
 					catch (XMLParsingException e) {
-						LOG.debug("Could not get an identifiable for id: " + id.getOriginal() + " because: "
-								+ e.getLocalizedMessage(), e);
+						LOG.debug("Could not get an identifiable for id: {} because: {}", id.getOriginal(),
+								e.getLocalizedMessage(), e);
 					}
 					catch (IOException e) {
-						LOG.debug("Could not get an identifiable for id: " + id.getOriginal() + " because: "
-								+ e.getLocalizedMessage(), e);
+						LOG.debug("Could not get an identifiable for id: {} because: {}", id.getOriginal(),
+								e.getLocalizedMessage(), e);
 					}
 
 				}
@@ -1511,7 +1514,7 @@ public class GMLCRSStore extends AbstractCRSStore {
 			idRes = getResolver().getURIAsType(id);
 		}
 		catch (IOException e) {
-			LOG.debug("Exception occurred: " + e.getLocalizedMessage(), e);
+			LOG.debug("Exception occurred: {}", e.getLocalizedMessage(), e);
 		}
 		if (idRes != null) {
 			String localName = idRes.getLocalName();
@@ -1520,8 +1523,7 @@ public class GMLCRSStore extends AbstractCRSStore {
 					return parseCoordinateSystem(idRes);
 				}
 				catch (XMLParsingException e) {
-					LOG.debug("Could not get an identifiable for id: " + id + " because: " + e.getLocalizedMessage(),
-							e);
+					LOG.debug("Could not get an identifiable for id: {} because: {}", id, e.getLocalizedMessage(), e);
 				}
 			}
 		}
@@ -1534,7 +1536,7 @@ public class GMLCRSStore extends AbstractCRSStore {
 			return parseGMLTransformation(getResolver().getURIAsType(uri), null, null);
 		}
 		catch (Exception e) {
-			LOG.debug("Could not parse transformation with uri: " + uri, e);
+			LOG.debug("Could not parse transformation with uri: {}", uri, e);
 		}
 		return null;
 	}

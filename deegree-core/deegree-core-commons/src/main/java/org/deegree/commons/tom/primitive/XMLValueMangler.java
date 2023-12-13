@@ -118,7 +118,7 @@ public class XMLValueMangler {
 				break;
 			}
 			default: {
-				LOG.warn("Unhandled primitive type " + pt + " -- treating as string value.");
+				LOG.warn("Unhandled primitive type {} -- treating as string value.", pt);
 			}
 		}
 		return value;
@@ -134,7 +134,7 @@ public class XMLValueMangler {
 							xml = "" + formatDate((Temporal) o);
 						}
 						else {
-							LOG.warn("Unhandled Date class " + o.getClass() + " -- converting via #toString()");
+							LOG.warn("Unhandled Date class {} -- converting via #toString()", o.getClass());
 							xml = "" + o;
 						}
 						break;
@@ -143,7 +143,7 @@ public class XMLValueMangler {
 							xml = "" + formatDateTime((Temporal) o);
 						}
 						else {
-							LOG.warn("Unhandled Date class " + o.getClass() + " -- converting via #toString()");
+							LOG.warn("Unhandled Date class {} -- converting via #toString()", o.getClass());
 							xml = "" + o;
 						}
 						break;
@@ -152,7 +152,7 @@ public class XMLValueMangler {
 							xml = "" + formatTime((Temporal) o);
 						}
 						else {
-							LOG.warn("Unhandled Date class " + o.getClass() + " -- converting via #toString()");
+							LOG.warn("Unhandled Date class {} -- converting via #toString()", o.getClass());
 							xml = "" + o;
 						}
 						break;
@@ -178,7 +178,7 @@ public class XMLValueMangler {
 						xml = "" + o;
 						break;
 					default: {
-						LOG.warn("Unhandled primitive type " + pt + " -- treating as string value.");
+						LOG.warn("Unhandled primitive type {} -- treating as string value.", pt);
 						xml = "" + o;
 					}
 				}

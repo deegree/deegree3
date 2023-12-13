@@ -91,15 +91,15 @@ public class ProcessExecuter {
 		FacesContext fc = FacesContext.getCurrentInstance();
 		try {
 			if (LOG.isDebugEnabled()) {
-				LOG.debug("execute selected process " + processToExecute.getId());
-				LOG.debug("input parameters (LITERAL): " + literalInputs);
-				LOG.debug("input parameters (XML): " + xmlInputs);
-				LOG.debug("input parameters (XML-REFS): " + xmlRefInputs);
-				LOG.debug("input parameters (BINARY): " + binaryInputs);
-				LOG.debug("input parameters (BBOX): " + bboxInputs);
-				LOG.debug("input formats: " + complexInputFormats);
-				LOG.debug("outputs: " + outputs);
-				LOG.debug("output formats: " + complexOutputFormats);
+				LOG.debug("execute selected process {}", processToExecute.getId());
+				LOG.debug("input parameters (LITERAL): {}", literalInputs);
+				LOG.debug("input parameters (XML): {}", xmlInputs);
+				LOG.debug("input parameters (XML-REFS): {}", xmlRefInputs);
+				LOG.debug("input parameters (BINARY): {}", binaryInputs);
+				LOG.debug("input parameters (BBOX): {}", bboxInputs);
+				LOG.debug("input formats: {}", complexInputFormats);
+				LOG.debug("outputs: {}", outputs);
+				LOG.debug("output formats: {}", complexOutputFormats);
 			}
 			ProcessExecution execution = processToExecute.prepareExecution();
 			InputType[] inputDescription = processToExecute.getInputTypes();
@@ -172,7 +172,7 @@ public class ProcessExecuter {
 					encoding = complexOutputFormats.get(out).getEncoding();
 					mimeType = complexOutputFormats.get(out).getMimeType();
 				}
-				LOG.debug("Append output " + out + " with format " + schema + ", " + encoding + ", " + mimeType);
+				LOG.debug("Append output {} with format {}, {}, {}", out, schema, encoding, mimeType);
 				execution.addOutput(out, null, null, true, mimeType, encoding, schema);
 			}
 			ExecutionOutputs response = execution.execute();
@@ -222,7 +222,7 @@ public class ProcessExecuter {
 			if (fileToDelete != null && fileToDelete.exists()) {
 				boolean delete = fileToDelete.delete();
 				if (!delete) {
-					LOG.debug("File " + fileToDelete + " could not be deletet!");
+					LOG.debug("File {} could not be deletet!", fileToDelete);
 				}
 			}
 		}

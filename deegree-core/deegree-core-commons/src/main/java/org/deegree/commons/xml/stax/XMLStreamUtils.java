@@ -158,7 +158,7 @@ public class XMLStreamUtils {
 			return new URL(url);
 		}
 
-		LOG.debug("Resolving URL '" + url + "' against SystemID '" + systemId + "'.");
+		LOG.debug("Resolving URL '{}' against SystemID '{}'.", url, systemId);
 
 		// check if url is an absolute path
 		File file = new File(url);
@@ -169,7 +169,7 @@ public class XMLStreamUtils {
 		try {
 			URL sysIdUrl = new URL(systemId);
 			URL resolvedURL = new URL(sysIdUrl, url);
-			LOG.debug("-> resolvedURL: '" + resolvedURL + "'");
+			LOG.debug("-> resolvedURL: '{}'", resolvedURL);
 			return resolvedURL;
 		}
 		catch (MalformedURLException e) {
@@ -179,7 +179,7 @@ public class XMLStreamUtils {
 		file = new File(systemId);
 
 		URL resolvedURL = new URL(file.toURI().toURL(), url);
-		LOG.debug("-> resolvedURL: '" + resolvedURL + "'");
+		LOG.debug("-> resolvedURL: '{}'", resolvedURL);
 		return resolvedURL;
 	}
 
@@ -650,8 +650,8 @@ public class XMLStreamUtils {
 					}
 				}
 				catch (NumberFormatException nfe) {
-					LOG.debug(reader.getLocation() + ") Value " + s + " in element: " + elementName
-							+ " was not a parsable double, returning double value: " + defaultValue);
+					LOG.debug("{}) Value {} in element: {} was not a parsable double, returning double value: {}",
+							reader.getLocation(), s, elementName, defaultValue);
 				}
 			}
 		}
@@ -685,8 +685,8 @@ public class XMLStreamUtils {
 					}
 				}
 				catch (NumberFormatException nfe) {
-					LOG.debug(reader.getLocation() + ") Value " + s + " in element: " + elementName
-							+ " was not a parsable integer, returning integer value: " + defaultValue);
+					LOG.debug("{}) Value {} in element: {} was not a parsable integer, returning integer value: {}",
+							reader.getLocation(), s, elementName, defaultValue);
 				}
 			}
 		}
@@ -780,7 +780,7 @@ public class XMLStreamUtils {
 			try {
 				if (LOG.isDebugEnabled()) {
 					if (reader.isStartElement() || reader.isEndElement()) {
-						LOG.debug("Skipping element: " + reader.getName());
+						LOG.debug("Skipping element: {}", reader.getName());
 					}
 				}
 				nextElement(reader);

@@ -87,8 +87,8 @@ public class JavaProcessProvider implements ProcessProvider {
 					processDefinition.getIdentifier().getCodeSpace());
 			String className = processDefinition.getJavaClass();
 			try {
-				LOG.info("Initializing process with id '" + processId + "'");
-				LOG.info("- process class: " + className);
+				LOG.info("Initializing process with id '{}'", processId);
+				LOG.info("- process class: {}", className);
 				Processlet processlet = (Processlet) Class.forName(className, true, workspace.getModuleClassLoader())
 					.newInstance();
 				processlet.init();

@@ -785,7 +785,7 @@ public class WMSController extends AbstractOWS {
 			img = ColorQuantizer.quantizeImage(img, 256, false, false);
 			format = "png";
 		}
-		LOG.debug("Sending in format " + format);
+		LOG.debug("Sending in format {}", format);
 		if (!write(img, format, response.getOutputStream())) {
 			throw new OWSException(get("WMS.CANNOT_ENCODE_IMAGE", format), OWSException.NO_APPLICABLE_CODE);
 		}

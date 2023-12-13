@@ -249,8 +249,8 @@ public abstract class SpatialOperator implements Operator {
 		ICRS paramCRS = param.getCoordinateSystem();
 		ICRS literalCRS = literal.getCoordinateSystem();
 		if (literalCRS != null && !(paramCRS.equals(literalCRS))) {
-			LOG.debug("Need transformed literal geometry for evaluation: " + literalCRS.getAlias() + " -> "
-					+ paramCRS.getAlias());
+			LOG.debug("Need transformed literal geometry for evaluation: {} -> {}", literalCRS.getAlias(),
+					paramCRS.getAlias());
 			transformedLiteral = srsNameToTransformedGeometry.get(paramCRS.getAlias());
 			if (transformedLiteral == null) {
 				try {

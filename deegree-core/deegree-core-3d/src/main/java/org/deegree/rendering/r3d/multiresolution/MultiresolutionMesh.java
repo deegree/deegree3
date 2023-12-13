@@ -150,13 +150,13 @@ public class MultiresolutionMesh {
 		blobBuffer.limit(arcsSegmentStart);
 		ByteBuffer nodesBuffer = blobBuffer.slice();
 
-		LOG.info("MultiresolutionMesh: flags=" + flags + ", #rowsPerMt: " + rowsPerMt + ", #fragments: " + numFragments
-				+ ", #nodes: " + numNodes + ", #arcs: " + numArcs);
-		LOG.debug("- nodesBuffer: [" + nodesSegmentStart + '-' + (arcsSegmentStart - 1) + "]");
-		LOG.debug("- arcsBuffer: [" + arcsSegmentStart + '-' + (fragmentsSegmentStart - 1) + "]");
-		LOG.debug("- patchesBuffer: [" + fragmentsSegmentStart + '-' + (blobBuffer.capacity() - 1) + "]");
+		LOG.info("MultiresolutionMesh: flags={}, #rowsPerMt: {}, #fragments: {}, #nodes: {}, #arcs: {}", flags,
+				rowsPerMt, numFragments, numNodes, numArcs);
+		LOG.debug("- nodesBuffer: [{}-{}]", nodesSegmentStart, (arcsSegmentStart - 1));
+		LOG.debug("- arcsBuffer: [{}-{}]", arcsSegmentStart, (fragmentsSegmentStart - 1));
+		LOG.debug("- patchesBuffer: [{}-{}]", fragmentsSegmentStart, (blobBuffer.capacity() - 1));
 		elapsed = System.currentTimeMillis() - begin;
-		LOG.debug("mrindex_init=" + elapsed);
+		LOG.debug("mrindex_init={}", elapsed);
 
 		nodes = createNodes(nodesBuffer);
 		arcs = createArcs(arcsBuffer);

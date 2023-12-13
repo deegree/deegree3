@@ -204,14 +204,14 @@ public class RasterTreeGridifier {
 		domainWidth = (int) (maxX - minX);
 		domainHeight = (int) (maxY - minY);
 		LOG.info("\nInitializing RasterTreeGridifier\n");
-		LOG.info("- domain width: " + domainWidth);
-		LOG.info("- domain height: " + domainHeight);
+		LOG.info("- domain width: {}", domainWidth);
+		LOG.info("- domain height: {}", domainHeight);
 
 		this.tileIndex = tileIndex;
 
 		this.levels = tileIndex.getRasterLevels();
 		for (RasterLevel level : levels) {
-			LOG.info("Raster level: " + level);
+			LOG.info("Raster level: {}", level);
 		}
 		this.originLocation = originLocation;
 
@@ -238,15 +238,15 @@ public class RasterTreeGridifier {
 			}
 		}
 
-		LOG.info("\nGridifying level: " + level.getLevel() + "\n");
-		LOG.info("- meters per pixel: " + metersPerPixel);
-		LOG.info("- cell width (world units): " + cellWidth);
-		LOG.info("- cell height (world units): " + cellHeight);
-		LOG.info("- number of columns: " + columns);
-		LOG.info("- number of rows: " + rows);
-		LOG.info("- output directory: " + currentOutputDir);
-		LOG.info("- total amount of data: " + dataSize);
-		LOG.info("- number of blobs: " + numberOfBlobs);
+		LOG.info("\nGridifying level: {}\n", level.getLevel());
+		LOG.info("- meters per pixel: {}", metersPerPixel);
+		LOG.info("- cell width (world units): {}", cellWidth);
+		LOG.info("- cell height (world units): {}", cellHeight);
+		LOG.info("- number of columns: {}", columns);
+		LOG.info("- number of rows: {}", rows);
+		LOG.info("- output directory: {}", currentOutputDir);
+		LOG.info("- total amount of data: {}", dataSize);
+		LOG.info("- number of blobs: {}", numberOfBlobs);
 
 		Envelope env = geomFactory.createEnvelope(minX, minY, minX + columns * cellWidth, minY + rows * cellHeight,
 				null);
@@ -726,10 +726,10 @@ public class RasterTreeGridifier {
 					if (cellId % 100 == 0) {
 						long elapsed = System.currentTimeMillis() - begin;
 						double rate = cellId / (elapsed / 1000d);
-						LOG.info("Tile generation rate: " + rate + " tiles / second");
-						LOG.info("cached tiles: " + tileIdToRaster.size());
-						LOG.info("total mem: " + Runtime.getRuntime().totalMemory());
-						LOG.info("free mem: " + Runtime.getRuntime().freeMemory());
+						LOG.info("Tile generation rate: {} tiles / second", rate);
+						LOG.info("cached tiles: {}", tileIdToRaster.size());
+						LOG.info("total mem: {}", Runtime.getRuntime().totalMemory());
+						LOG.info("free mem: {}", Runtime.getRuntime().freeMemory());
 						// call garbage collector explicitly
 						System.gc();
 					}
@@ -754,7 +754,7 @@ public class RasterTreeGridifier {
 				File blob = new File(currentOutputDir, "blob_" + currentBlobNo + ".bin");
 				currentBlobChannel = new FileOutputStream(blob).getChannel();
 				bytesInCurrentBlob = 0;
-				LOG.info("beginning with new blob: '" + blob + "'");
+				LOG.info("beginning with new blob: '{}'", blob);
 			}
 
 			buffer.rewind();

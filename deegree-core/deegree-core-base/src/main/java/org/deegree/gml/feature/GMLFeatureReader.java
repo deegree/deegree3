@@ -183,17 +183,17 @@ public class GMLFeatureReader extends AbstractGMLObjectReader {
 		String fid = parseFeatureId(xmlStream);
 
 		if (LOG.isDebugEnabled()) {
-			LOG.debug("- parsing feature, gml:id=" + fid + " (begin): " + xmlStream.getCurrentEventInfo());
+			LOG.debug("- parsing feature, gml:id={} (begin): {}", fid, xmlStream.getCurrentEventInfo());
 		}
 
 		QName featureName = xmlStream.getName();
 		FeatureType ft = lookupFeatureType(xmlStream, featureName, false);
 		if (ft == null) {
-			LOG.debug("- adding feature type '" + featureName + "'");
+			LOG.debug("- adding feature type '{}'", featureName);
 			ft = appSchema.addFeatureType(featureName);
 		}
 		else {
-			LOG.debug("- found feature type '" + featureName + "'");
+			LOG.debug("- found feature type '{}'", featureName);
 		}
 
 		ICRS activeCRS = crs;
@@ -204,7 +204,7 @@ public class GMLFeatureReader extends AbstractGMLObjectReader {
 
 		while (xmlStream.getEventType() == START_ELEMENT) {
 			QName propName = xmlStream.getName();
-			LOG.debug("- property '" + propName + "'");
+			LOG.debug("- property '{}'", propName);
 
 			Property property = null;
 			PropertyType propDecl = ft.getPropertyDeclaration(propName);
@@ -223,7 +223,7 @@ public class GMLFeatureReader extends AbstractGMLObjectReader {
 					Envelope bbox = (Envelope) property.getValue();
 					if (bbox.getCoordinateSystem() != null) {
 						activeCRS = bbox.getCoordinateSystem();
-						LOG.debug("- crs (from boundedBy): '" + activeCRS + "'");
+						LOG.debug("- crs (from boundedBy): '{}'", activeCRS);
 					}
 				}
 
@@ -269,21 +269,21 @@ public class GMLFeatureReader extends AbstractGMLObjectReader {
 		PropertyType propDecl = null;
 		if (xmlStream.isEndElement()) {
 			if (propAttributes.containsKey(new QName(XLNNS, "href"))) {
-				LOG.debug("Detected complex (xlink-valued) property '" + propName + "'. Treating as feature property.");
+				LOG.debug("Detected complex (xlink-valued) property '{}'. Treating as feature property.", propName);
 				propDecl = ((DynamicFeatureType) ft).addFeaturePropertyDeclaration(lastPropDecl, propName, null);
 			}
 			else {
-				LOG.debug("Detected simple property '" + propName + "'.");
+				LOG.debug("Detected simple property '{}'.", propName);
 				propDecl = ((DynamicFeatureType) ft).addSimplePropertyDeclaration(lastPropDecl, propName);
 			}
 		}
 		else {
 			if (gmlStreamReader.getGeometryReader().isGeometryElement(xmlStream)) {
-				LOG.debug("Detected geometry property '" + propName + "'.");
+				LOG.debug("Detected geometry property '{}'.", propName);
 				propDecl = ((DynamicFeatureType) ft).addGeometryPropertyDeclaration(lastPropDecl, propName);
 			}
 			else {
-				LOG.debug("Detected complex non-geometry property '" + propName + "'. Treating as feature property.");
+				LOG.debug("Detected complex non-geometry property '{}'. Treating as feature property.", propName);
 				FeatureType valueFt = schema.getFeatureType(childElName);
 				if (valueFt == null) {
 					valueFt = appSchema.addFeatureType(childElName);
@@ -331,11 +331,11 @@ public class GMLFeatureReader extends AbstractGMLObjectReader {
 		FeatureType ft = lookupFeatureType(xmlStream, featureName, true);
 
 		if (LOG.isDebugEnabled()) {
-			LOG.debug("- parsing feature, gml:id=" + fid + " (begin): " + xmlStream.getCurrentEventInfo());
+			LOG.debug("- parsing feature, gml:id={} (begin): {}", fid, xmlStream.getCurrentEventInfo());
 		}
 		List<Property> propertyList = parseProperties(xmlStream, crs, ft);
 		if (LOG.isDebugEnabled()) {
-			LOG.debug(" - parsing feature (end): " + xmlStream.getCurrentEventInfo());
+			LOG.debug(" - parsing feature (end): {}", xmlStream.getCurrentEventInfo());
 		}
 
 		int extraPropertyIdx = -1;
@@ -381,11 +381,11 @@ public class GMLFeatureReader extends AbstractGMLObjectReader {
 		while (xmlStream.getEventType() == START_ELEMENT) {
 			QName propName = xmlStream.getName();
 			if (LOG.isDebugEnabled()) {
-				LOG.debug("- property '" + propName + "'");
+				LOG.debug("- property '{}'", propName);
 			}
 
 			if (propName.getNamespaceURI() != null && propName.getNamespaceURI().startsWith(EXTRA_PROP_NS)) {
-				LOG.debug("Parsing extra property: " + propName);
+				LOG.debug("Parsing extra property: {}", propName);
 				PropertyType pt = null;
 				if (EXTRA_PROP_NS_GEOMETRY.equals(propName.getNamespaceURI())) {
 					pt = new GeometryPropertyType(propName, 1, 1, null, null, GEOMETRY, DIM_2_OR_3, INLINE);
@@ -438,7 +438,7 @@ public class GMLFeatureReader extends AbstractGMLObjectReader {
 					Envelope bbox = (Envelope) property.getValue();
 					if (bbox != null && bbox.getCoordinateSystem() != null) {
 						activeCRS = bbox.getCoordinateSystem();
-						LOG.debug("- crs (from boundedBy): '" + activeCRS + "'");
+						LOG.debug("- crs (from boundedBy): '{}'", activeCRS);
 					}
 				}
 

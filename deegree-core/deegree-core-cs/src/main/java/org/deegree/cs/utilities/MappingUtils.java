@@ -149,13 +149,14 @@ public class MappingUtils {
 				return reorganizeConcatenate((ConcatenatedTransform) originalChain, tbu);
 			}
 			// rb: what kind of transformation could this probably be???
-			LOG.warn("Could not handle transformation replacement of type:" + originalChain.getImplementationName()
-					+ " ignoring requested transformation: " + tbu.getCodeAndName());
+			LOG.warn("Could not handle transformation replacement of type:{} ignoring requested transformation: {}",
+					originalChain.getImplementationName(), tbu.getCodeAndName());
 
 		}
 		else {
-			LOG.debug("Found no matching (requested) transformation: " + tbu.getCodeAndName()
-					+ " in resulting transform, transformation chain will not be altered.");
+			LOG.debug(
+					"Found no matching (requested) transformation: {} in resulting transform, transformation chain will not be altered.",
+					tbu.getCodeAndName());
 		}
 		// none of the above match.
 		return originalChain;
@@ -174,20 +175,23 @@ public class MappingUtils {
 		Deque<Transformation> chain = new LinkedList<Transformation>();
 		obtainChain(ct, tbu.getSourceCRS(), tbu.getTargetCRS(), chain);
 		if (chain.isEmpty()) {
-			LOG.debug("Found no matching (requested) transformation: " + tbu.getCodeAndName()
-					+ " in concatenated transform, transformation chain will not be altered.");
+			LOG.debug(
+					"Found no matching (requested) transformation: {} in concatenated transform, transformation chain will not be altered.",
+					tbu.getCodeAndName());
 			return ct;
 		}
 		Transformation first = chain.peekFirst();
 		if (first == null || !first.getSourceCRS().equals(tbu.getSourceCRS())) {
-			LOG.debug("Found no matching (requested) transformation: " + tbu.getCodeAndName()
-					+ " in concatenated transform, transformation chain will not be altered.");
+			LOG.debug(
+					"Found no matching (requested) transformation: {} in concatenated transform, transformation chain will not be altered.",
+					tbu.getCodeAndName());
 			return ct;
 		}
 		Transformation last = chain.peekLast();
 		if (last == null || !last.getTargetCRS().equals(tbu.getTargetCRS())) {
-			LOG.debug("Found no matching (requested) transformation: " + tbu.getCodeAndName()
-					+ " in concatenated transform, transformation chain will not be altered.");
+			LOG.debug(
+					"Found no matching (requested) transformation: {} in concatenated transform, transformation chain will not be altered.",
+					tbu.getCodeAndName());
 			return ct;
 		}
 		Queue<Transformation> resultChain = new LinkedList<Transformation>();

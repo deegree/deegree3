@@ -235,7 +235,7 @@ public class BufferAccess {
 						// lineStride = pixelStride * rect.width;
 					}
 					catch (IOException e) {
-						LOG.debug("No data available: " + e.getLocalizedMessage(), e);
+						LOG.debug("No data available: {}", e.getLocalizedMessage(), e);
 						// the data is no longer available, lets just fill it with no data
 						// values
 						noData = true;

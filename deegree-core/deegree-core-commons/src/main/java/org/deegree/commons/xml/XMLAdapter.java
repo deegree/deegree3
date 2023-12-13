@@ -532,7 +532,7 @@ public class XMLAdapter {
 	 */
 	public URL resolve(String url) throws MalformedURLException {
 
-		LOG.debug("Resolving URL '" + url + "' against SystemID '" + systemId + "'.");
+		LOG.debug("Resolving URL '{}' against SystemID '{}'.", url, systemId);
 
 		// check if url is an absolute path
 		File file = new File(url);
@@ -542,7 +542,7 @@ public class XMLAdapter {
 
 		// TODO this is not really nice, also think about handling url specs here
 		URL resolvedURL = new URL(new URL(systemId), url.replace(" ", "%20"));
-		LOG.debug("-> resolvedURL: '" + resolvedURL + "'");
+		LOG.debug("-> resolvedURL: '{}'", resolvedURL);
 		return resolvedURL;
 	}
 

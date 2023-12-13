@@ -207,7 +207,7 @@ class TransactionHandler {
 	 */
 	void doTransaction(HttpResponseBuffer response) throws OWSException, XMLStreamException, IOException {
 
-		LOG.debug("doTransaction: " + request);
+		LOG.debug("doTransaction: {}", request);
 
 		try {
 			Lock lock = null;
@@ -260,7 +260,7 @@ class TransactionHandler {
 			}
 
 			for (FeatureStoreTransaction ta : acquiredTransactions.values()) {
-				LOG.debug("Committing feature store transaction:" + ta);
+				LOG.debug("Committing feature store transaction:{}", ta);
 				ta.commit();
 			}
 		}
@@ -269,11 +269,11 @@ class TransactionHandler {
 			LOG.debug("Error occured during transaction, performing rollback.");
 			for (FeatureStoreTransaction ta : acquiredTransactions.values()) {
 				try {
-					LOG.debug("Rolling back feature store transaction:" + ta);
+					LOG.debug("Rolling back feature store transaction:{}", ta);
 					ta.rollback();
 				}
 				catch (FeatureStoreException e1) {
-					LOG.debug("Error occured during rollback: " + e.getMessage(), e);
+					LOG.debug("Error occured during rollback: {}", e.getMessage(), e);
 				}
 			}
 			if (request.getVersion().equals(VERSION_100)) {
@@ -288,11 +288,11 @@ class TransactionHandler {
 			LOG.debug("Error occured during transaction, performing rollback.");
 			for (FeatureStoreTransaction ta : acquiredTransactions.values()) {
 				try {
-					LOG.debug("Rolling back feature store transaction:" + ta);
+					LOG.debug("Rolling back feature store transaction:{}", ta);
 					ta.rollback();
 				}
 				catch (FeatureStoreException e1) {
-					LOG.debug("Error occured during rollback: " + e.getMessage(), e);
+					LOG.debug("Error occured during rollback: {}", e.getMessage(), e);
 				}
 			}
 			if (request.getVersion().equals(VERSION_100)) {
@@ -306,11 +306,11 @@ class TransactionHandler {
 			LOG.debug("Error occured during transaction, performing rollback.");
 			for (FeatureStoreTransaction ta : acquiredTransactions.values()) {
 				try {
-					LOG.debug("Rolling back feature store transaction:" + ta);
+					LOG.debug("Rolling back feature store transaction:{}", ta);
 					ta.rollback();
 				}
 				catch (FeatureStoreException e1) {
-					LOG.debug("Error occured during rollback: " + e.getMessage(), e);
+					LOG.debug("Error occured during rollback: {}", e.getMessage(), e);
 				}
 			}
 			throw e;
@@ -320,11 +320,11 @@ class TransactionHandler {
 			LOG.trace("Stack trace:", e);
 			for (FeatureStoreTransaction ta : acquiredTransactions.values()) {
 				try {
-					LOG.debug("Rolling back feature store transaction:" + ta);
+					LOG.debug("Rolling back feature store transaction:{}", ta);
 					ta.rollback();
 				}
 				catch (FeatureStoreException e1) {
-					LOG.debug("Error occured during rollback: " + e.getMessage(), e);
+					LOG.debug("Error occured during rollback: {}", e.getMessage(), e);
 				}
 			}
 			throw new OWSException("Error occured during transaction: " + e.getMessage(), NO_APPLICABLE_CODE);
@@ -346,7 +346,7 @@ class TransactionHandler {
 
 	private void doDelete(Delete delete, Lock lock) throws OWSException {
 
-		LOG.debug("doDelete: " + delete);
+		LOG.debug("doDelete: {}", delete);
 		QName ftName = delete.getTypeName();
 		FeatureStore fs = service.getStore(ftName);
 		if (fs == null) {
@@ -378,7 +378,7 @@ class TransactionHandler {
 
 	private void doInsert(Insert insert) throws OWSException {
 
-		LOG.debug("doInsert: " + insert);
+		LOG.debug("doInsert: {}", insert);
 
 		if (service.getStores().length == 0) {
 			throw new OWSException("Cannot perform insert. No feature store defined.", NO_APPLICABLE_CODE);
@@ -520,12 +520,12 @@ class TransactionHandler {
 					}
 				}
 				else {
-					LOG.debug("Ignoring element '" + elName + "'");
+					LOG.debug("Ignoring element '{}'", elName);
 					XMLStreamUtils.skipElement(xmlStream);
 				}
 			}
 			else {
-				LOG.debug("Ignoring element '" + elName + "'");
+				LOG.debug("Ignoring element '{}'", elName);
 				XMLStreamUtils.skipElement(xmlStream);
 			}
 		}
@@ -536,7 +536,7 @@ class TransactionHandler {
 	}
 
 	private void doNative(Native nativeOp) throws OWSException {
-		LOG.debug("doNative: " + nativeOp);
+		LOG.debug("doNative: {}", nativeOp);
 		if (nativeOp.isSafeToIgnore() == false) {
 			throw new OWSException("Native operations are not supported by this WFS.", INVALID_PARAMETER_VALUE,
 					"Native");
@@ -553,7 +553,7 @@ class TransactionHandler {
 	}
 
 	private void doUpdate(Update update, Lock lock) throws OWSException {
-		LOG.debug("doUpdate: " + update);
+		LOG.debug("doUpdate: {}", update);
 		QName ftName = update.getTypeName();
 		FeatureType ft = service.lookupFeatureType(ftName);
 		FeatureStore fs = service.getStore(ftName);
@@ -693,7 +693,7 @@ class TransactionHandler {
 
 	private void doReplace(Replace replace, Lock lock) throws OWSException {
 
-		LOG.debug("doReplace: " + replace);
+		LOG.debug("doReplace: {}", replace);
 		XMLStreamReader xmlStream = replace.getReplacementFeatureStream();
 		QName ftName = xmlStream.getName();
 		FeatureStore fs = service.getStore(ftName);
@@ -730,7 +730,7 @@ class TransactionHandler {
 		FeatureStoreTransaction ta = acquiredTransactions.get(fs);
 		if (ta == null) {
 			try {
-				LOG.debug("Acquiring transaction for feature store " + fs);
+				LOG.debug("Acquiring transaction for feature store {}", fs);
 				ta = fs.acquireTransaction();
 				acquiredTransactions.put(fs, ta);
 			}
@@ -758,7 +758,7 @@ class TransactionHandler {
 				writeHandle(xmlWriter, handle);
 				Collection<String> fids = inserted.getFids(handle);
 				for (String fid : fids) {
-					LOG.debug("Inserted fid: " + fid);
+					LOG.debug("Inserted fid: {}", fid);
 					xmlWriter.writeStartElement("ogc", "FeatureId", OGCNS);
 					xmlWriter.writeAttribute("fid", fid);
 					xmlWriter.writeEndElement();
@@ -768,7 +768,7 @@ class TransactionHandler {
 			if (!inserted.getFidsWithoutHandle().isEmpty()) {
 				xmlWriter.writeStartElement("wfs", "InsertResult", WFS_NS);
 				for (String fid : inserted.getFidsWithoutHandle()) {
-					LOG.debug("Inserted fid: " + fid);
+					LOG.debug("Inserted fid: {}", fid);
 					xmlWriter.writeStartElement("ogc", "FeatureId", OGCNS);
 					xmlWriter.writeAttribute("fid", fid);
 					xmlWriter.writeEndElement();
@@ -823,7 +823,7 @@ class TransactionHandler {
 			for (String handle : inserted.getHandles()) {
 				Collection<String> fids = inserted.getFids(handle);
 				for (String fid : fids) {
-					LOG.debug("Inserted fid: " + fid);
+					LOG.debug("Inserted fid: {}", fid);
 					xmlWriter.writeStartElement(WFS_NS, "Feature");
 					xmlWriter.writeAttribute("handle", handle);
 					xmlWriter.writeStartElement(OGCNS, "FeatureId");
@@ -833,7 +833,7 @@ class TransactionHandler {
 				}
 			}
 			for (String fid : inserted.getFidsWithoutHandle()) {
-				LOG.debug("Inserted fid: " + fid);
+				LOG.debug("Inserted fid: {}", fid);
 				xmlWriter.writeStartElement(WFS_NS, "Feature");
 				xmlWriter.writeStartElement(OGCNS, "FeatureId");
 				xmlWriter.writeAttribute("fid", fid);
@@ -984,8 +984,9 @@ class TransactionHandler {
 
 	private void evaluateValidDomain(Feature feature, ICRS crs, Geometry geometry, String handle) throws OWSException {
 		if (crs == null) {
-			LOG.warn("CRS of geometry of fetaure with id {} is not available. Check if geometry is inside the valid "
-					+ "domain not possible. The check is skipped and insert processed.", feature.getId());
+			LOG.warn(
+					"CRS of geometry of fetaure with id {} is not available. Check if geometry is inside the valid domain not possible. The check is skipped and insert processed.",
+					feature.getId());
 			return;
 		}
 		double[] validDomain = crs.getValidDomain();

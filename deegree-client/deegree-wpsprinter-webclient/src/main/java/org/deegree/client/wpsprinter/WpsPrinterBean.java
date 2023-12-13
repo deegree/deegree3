@@ -258,7 +258,7 @@ public class WpsPrinterBean implements Serializable {
 	}
 
 	public void renderMetaInfo(ComponentSystemEvent event) throws AbortProcessingException {
-		LOG.debug("append template GUI elements for template " + template);
+		LOG.debug("append template GUI elements for template {}", template);
 
 		if (metaInfoGrp == null) {
 			metaInfoGrp = new HtmlPanelGrid();

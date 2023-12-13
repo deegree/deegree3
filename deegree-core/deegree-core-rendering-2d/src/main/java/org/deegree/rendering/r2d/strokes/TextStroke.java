@@ -151,7 +151,7 @@ public class TextStroke implements Stroke {
 			return null;
 		}
 
-		LOG.trace("Rendering the word/gap list: " + wordsToRender);
+		LOG.trace("Rendering the word/gap list: {}", wordsToRender);
 
 		// prepare for second run - now actually doing something
 		// this just iterates over the path and creates the final shape to render.
@@ -477,7 +477,7 @@ public class TextStroke implements Stroke {
 			GeneralPath path = tryWordWise(shape, initialGap);
 			if (path != null) {
 				if (LOG.isDebugEnabled()) {
-					LOG.debug("Rendered text '" + text + "' word wise.");
+					LOG.debug("Rendered text '{}' word wise.", text);
 				}
 				return path;
 			}
@@ -536,7 +536,7 @@ public class TextStroke implements Stroke {
 		}
 
 		if (LOG.isDebugEnabled()) {
-			LOG.debug("Rendered text '" + text + "' character wise.");
+			LOG.debug("Rendered text '{}' character wise.", text);
 		}
 
 		return result;

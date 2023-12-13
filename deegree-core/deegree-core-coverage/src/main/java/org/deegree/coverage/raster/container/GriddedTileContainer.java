@@ -111,8 +111,8 @@ public abstract class GriddedTileContainer implements TileContainer {
 		this.tileHeight = envelopeHeight / rows;
 
 		this.rasterReference = infoFile.getGeoReference();
-		LOG.debug("envelope: " + envelope);
-		LOG.debug("raster reference: " + rasterReference);
+		LOG.debug("envelope: {}", envelope);
+		LOG.debug("raster reference: {}", rasterReference);
 		SampleResolution sr = new SampleResolution(
 				new double[] { rasterReference.getResolutionX(), rasterReference.getResolutionY() });
 		this.resolutionInfo = new ResolutionInfo(sr);
@@ -140,8 +140,8 @@ public abstract class GriddedTileContainer implements TileContainer {
 		this.tileHeight = envelopeHeight / rows;
 		this.rasterReference = RasterGeoReference.create(location, envelope, tileSamplesX * columns,
 				tileSamplesY * rows);
-		LOG.debug("envelope: " + envelope);
-		LOG.debug("raster reference: " + rasterReference);
+		LOG.debug("envelope: {}", envelope);
+		LOG.debug("raster reference: {}", rasterReference);
 	}
 
 	/**

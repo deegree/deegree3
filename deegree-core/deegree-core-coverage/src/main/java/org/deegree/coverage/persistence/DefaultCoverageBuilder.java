@@ -146,8 +146,9 @@ public class DefaultCoverageBuilder implements ResourceBuilder<Coverage> {
 					result.add(f);
 				}
 				else {
-					LOG.info("Directory: " + f.getAbsolutePath()
-							+ " can not be added to a Multiresolution raster, because it does not denote a resolution.");
+					LOG.info(
+							"Directory: {} can not be added to a Multiresolution raster, because it does not denote a resolution.",
+							f.getAbsolutePath());
 				}
 			}
 		}
@@ -261,7 +262,7 @@ public class DefaultCoverageBuilder implements ResourceBuilder<Coverage> {
 					file = file.trim();
 					final File loc = location.resolveToFile(file);
 					if (!loc.exists()) {
-						LOG.warn("Given raster file location does not exist: " + loc.getAbsolutePath());
+						LOG.warn("Given raster file location does not exist: {}", loc.getAbsolutePath());
 						return null;
 					}
 					rOptions.add(RasterIOOptions.OPT_FORMAT, file.substring(file.lastIndexOf('.') + 1));
@@ -333,8 +334,9 @@ public class DefaultCoverageBuilder implements ResourceBuilder<Coverage> {
 				result = Double.parseDouble(dirRes);
 			}
 			catch (NumberFormatException e) {
-				LOG.debug("No resolution found in raster datasource defintion, nor in the directory name: " + dirRes
-						+ " returning 0");
+				LOG.debug(
+						"No resolution found in raster datasource defintion, nor in the directory name: {} returning 0",
+						dirRes);
 				result = Double.NaN;
 			}
 		}

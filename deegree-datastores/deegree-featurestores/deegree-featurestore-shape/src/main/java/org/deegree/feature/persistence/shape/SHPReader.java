@@ -315,8 +315,8 @@ public class SHPReader {
 		bbox = fac.createEnvelope(envelope[0], envelope[2], envelope[1], envelope[3], crs);
 
 		if (LOG.isTraceEnabled()) {
-			LOG.trace("Envelope: " + envelope[0] + "," + envelope[1] + " " + envelope[2] + "," + envelope[3] + " "
-					+ envelope[4] + "," + envelope[5] + " " + envelope[6] + "," + envelope[7]);
+			LOG.trace("Envelope: {},{} {},{} {},{} {},{}", envelope[0], envelope[1], envelope[2], envelope[3],
+					envelope[4], envelope[5], envelope[6], envelope[7]);
 		}
 
 	}
@@ -847,7 +847,7 @@ public class SHPReader {
 		int numPoints = buffer.getInt();
 
 		if (LOG.isTraceEnabled()) {
-			LOG.trace("Reading multipatch with " + numParts + " parts and " + numPoints + " points.");
+			LOG.trace("Reading multipatch with {} parts and {} points.", numParts, numPoints);
 		}
 
 		int[] partTypes = new int[numParts];

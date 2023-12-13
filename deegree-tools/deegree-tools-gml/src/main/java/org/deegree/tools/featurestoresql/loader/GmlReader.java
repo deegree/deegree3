@@ -118,7 +118,7 @@ public class GmlReader extends AbstractItemStreamItemReader<Feature>
 			return null;
 		Feature feature = this.featureIterator.next();
 		if (feature != null)
-			LOG.info("Read feature with id " + feature.getId() + " (number " + ++noOfFeaturesRead + ") ");
+			LOG.info("Read feature with id {} (number {}) ", feature.getId(), ++noOfFeaturesRead);
 		return feature;
 	}
 
@@ -291,7 +291,7 @@ public class GmlReader extends AbstractItemStreamItemReader<Feature>
 					return feature;
 				}
 				else {
-					LOG.debug("Ignoring element '" + elName + "'");
+					LOG.debug("Ignoring element '{}'", elName);
 					XMLStreamUtils.skipElement(xmlStream);
 				}
 			}
@@ -306,7 +306,7 @@ public class GmlReader extends AbstractItemStreamItemReader<Feature>
 		if (disabledResources != null && !disabledResources.isEmpty()) {
 			MultipleReferencePatternMatcher matcher = new MultipleReferencePatternMatcher();
 			for (String disabledResource : disabledResources) {
-				LOG.debug("Added disabled resource pattern " + disabledResource);
+				LOG.debug("Added disabled resource pattern {}", disabledResource);
 				BaseUrlReferencePatternMatcher baseUrlMatcher = new BaseUrlReferencePatternMatcher(disabledResource);
 				matcher.addMatcherToApply(baseUrlMatcher);
 			}

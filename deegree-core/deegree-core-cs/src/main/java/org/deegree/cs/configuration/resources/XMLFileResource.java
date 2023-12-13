@@ -75,7 +75,7 @@ public abstract class XMLFileResource extends XMLAdapter implements XMLResource 
 		}
 		InputStream is = null;
 		try {
-			LOG.debug("Trying to load configuration from file: " + file);
+			LOG.debug("Trying to load configuration from file: {}", file);
 			is = file.openStream();
 
 			load(is);

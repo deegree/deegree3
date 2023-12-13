@@ -216,9 +216,8 @@ public class DEMRasterFilterer {
 			double rPT = Math.round((Math.round((currentTimeMillis() - currentTime) / 10d) / 100d));
 			if (row + 1 < rows) {
 				double remain = rPT * (rows - (row + 1));
-				LOG.info(
-						"Filtering row: {}, took approximately: {} seconds, estimated remaining time: {} seconds "
-								+ ((remain > 60) ? "( {} minutes)." : "."),
+				LOG.info("Filtering row: {}, took approximately: {} seconds, estimated remaining time: {} seconds {}",
+						((remain > 60) ? "( {} minutes)." : "."),
 						new Object[] { (row + 1), rPT, remain, Math.round(remain / 60d) });
 			}
 			System.gc();
@@ -233,7 +232,7 @@ public class DEMRasterFilterer {
 						lock.wait();
 					}
 					catch (InterruptedException e) {
-						LOG.error("Could not wait for all filter threads to end because: " + e.getLocalizedMessage(),
+						LOG.error("Could not wait for all filter threads to end because: {}", e.getLocalizedMessage(),
 								e);
 					}
 				}
@@ -590,7 +589,8 @@ public class DEMRasterFilterer {
 					outputStack.put(new Pair<String, SimpleRaster>(Thread.currentThread().getName(), filteredResult));
 				}
 				catch (InterruptedException e) {
-					LOG.error("Could not add the filtered result to the writer because: " + e.getLocalizedMessage(), e);
+					LOG.error("Could not add the filtered result to the writer because: {}", e.getLocalizedMessage(),
+							e);
 				}
 			}
 		}
@@ -608,13 +608,13 @@ public class DEMRasterFilterer {
 				}
 				catch (InterruptedException e) {
 					doRun = false;
-					LOG.error("Could not write the filtered result to the temporary file because: "
-							+ e.getLocalizedMessage(), e);
+					LOG.error("Could not write the filtered result to the temporary file because: {}",
+							e.getLocalizedMessage(), e);
 				}
 				catch (IOException e) {
 					doRun = false;
-					LOG.error("Could not write the filtered result to the temporary file because: "
-							+ e.getLocalizedMessage(), e);
+					LOG.error("Could not write the filtered result to the temporary file because: {}",
+							e.getLocalizedMessage(), e);
 				}
 			}
 			// empty the queue
@@ -628,8 +628,8 @@ public class DEMRasterFilterer {
 					}
 				}
 				catch (IOException e) {
-					LOG.error("Could not write the filtered result to the temporary file because: "
-							+ e.getLocalizedMessage(), e);
+					LOG.error("Could not write the filtered result to the temporary file because: {}",
+							e.getLocalizedMessage(), e);
 				}
 			}
 

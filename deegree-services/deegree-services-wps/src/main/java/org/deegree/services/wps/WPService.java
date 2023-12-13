@@ -197,7 +197,7 @@ public class WPService extends AbstractOWS {
 	public void doKVP(Map<String, String> kvpParamsUC, HttpServletRequest request, HttpResponseBuffer response,
 			List<FileItem> multiParts) throws ServletException, IOException {
 
-		LOG.trace("doKVP invoked, version: " + kvpParamsUC.get("VERSION"));
+		LOG.trace("doKVP invoked, version: {}", kvpParamsUC.get("VERSION"));
 
 		RequestUtils.getCurrentThreadRequestParameters().set(kvpParamsUC);
 		try {
@@ -433,7 +433,7 @@ public class WPService extends AbstractOWS {
 	private void doGetCapabilities(GetCapabilities request, HttpResponseBuffer response)
 			throws OWSException, XMLStreamException, IOException {
 
-		LOG.trace("doGetCapabilities invoked, request: " + request);
+		LOG.trace("doGetCapabilities invoked, request: {}", request);
 
 		// generic check if requested version is supported (currently this is only 1.0.0)
 		negotiateVersion(request);
@@ -448,12 +448,12 @@ public class WPService extends AbstractOWS {
 
 	private void doDescribeProcess(DescribeProcessRequest request, HttpResponseBuffer response) throws OWSException {
 
-		LOG.trace("doDescribeProcess invoked, request: " + request);
+		LOG.trace("doDescribeProcess invoked, request: {}", request);
 
 		// check that all requested processes exist (and resolve special value 'ALL')
 		List<WPSProcess> processes = new ArrayList<WPSProcess>();
 		for (CodeType identifier : request.getIdentifiers()) {
-			LOG.debug("Looking up process '" + identifier + "'");
+			LOG.debug("Looking up process '{}'", identifier);
 			if (ALL_PROCESSES_IDENTIFIER.equals(identifier)) {
 				processes.addAll(processManager.getProcesses().values());
 				break;
@@ -491,7 +491,7 @@ public class WPService extends AbstractOWS {
 		}
 		catch (XMLStreamException e) {
 			e.printStackTrace();
-			LOG.error("Internal error: " + e.getMessage());
+			LOG.error("Internal error: {}", e.getMessage());
 			throw new OWSException("Error occured while creating response for DescribeProcess operation",
 					NO_APPLICABLE_CODE);
 		}
@@ -501,7 +501,7 @@ public class WPService extends AbstractOWS {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
-			LOG.error("Internal error: " + e.getMessage());
+			LOG.error("Internal error: {}", e.getMessage());
 		}
 
 		LOG.trace("doDescribeProcess finished");
@@ -509,7 +509,7 @@ public class WPService extends AbstractOWS {
 
 	private void doExecute(ExecuteRequest request, HttpResponseBuffer response) throws OWSException {
 
-		LOG.trace("doExecute invoked, request: " + request.toString());
+		LOG.trace("doExecute invoked, request: {}", request.toString());
 		long start = System.currentTimeMillis();
 
 		CodeType processId = request.getProcessId();
@@ -536,14 +536,14 @@ public class WPService extends AbstractOWS {
 		}
 
 		long elapsed = System.currentTimeMillis() - start;
-		LOG.debug("doExecute took " + elapsed + " milliseconds");
+		LOG.debug("doExecute took {} milliseconds", elapsed);
 
 		LOG.trace("doExecute finished");
 	}
 
 	private void doGetOutput(String storedOutputId, HttpResponseBuffer response) {
 
-		LOG.trace("doGetOutput invoked, requested stored output: " + storedOutputId);
+		LOG.trace("doGetOutput invoked, requested stored output: {}", storedOutputId);
 		OutputStorage resource = storageManager.lookupOutputStorage(storedOutputId);
 
 		if (resource == null) {
@@ -563,7 +563,7 @@ public class WPService extends AbstractOWS {
 
 	private void doGetResponseDocument(String responseId, HttpResponseBuffer response) {
 
-		LOG.trace("doGetResponseDocument invoked, requested stored response document: " + responseId);
+		LOG.trace("doGetResponseDocument invoked, requested stored response document: {}", responseId);
 		ResponseDocumentStorage resource = storageManager.lookupResponseDocumentStorage(responseId, getHttpGetURL());
 		executeHandler.sendResponseDocument(response, resource);
 

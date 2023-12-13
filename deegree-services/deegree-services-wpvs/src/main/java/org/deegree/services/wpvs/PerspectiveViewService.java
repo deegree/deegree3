@@ -211,8 +211,7 @@ public class PerspectiveViewService {
 						}
 					}
 					catch (URISyntaxException e) {
-						LOG.error(
-								"Unable to load copyright image from: " + url + " because: " + e.getLocalizedMessage());
+						LOG.error("Unable to load copyright image from: {} because: {}", url, e.getLocalizedMessage());
 						LOG.trace("Stack trace:", e);
 					}
 
@@ -340,7 +339,7 @@ public class PerspectiveViewService {
 		}
 		catch (Throwable t) {
 			LOG.debug("Error while initializing opengl values stack track.", t);
-			LOG.error("Error while initializing opengl values (may not be important): " + t.getLocalizedMessage());
+			LOG.error("Error while initializing opengl values (may not be important): {}", t.getLocalizedMessage());
 		}
 
 	}
@@ -454,15 +453,15 @@ public class PerspectiveViewService {
 	public final BufferedImage getImage(GetView request) throws OWSException {
 
 		ViewParams viewParams = request.getViewParameters();
-		LOG.debug("Requested datasets: " + request.getDatasets());
+		LOG.debug("Requested datasets: {}", request.getDatasets());
 		updateMaxWidthAndHeight(viewParams);
 		TerrainRenderingManager demRenderer = defaultDEMRenderer;
 		List<TextureManager> textureManagers = getTextureManagers(request.getDatasets(), viewParams);
-		LOG.debug("Texturemanagers: " + textureManagers);
+		LOG.debug("Texturemanagers: {}", textureManagers);
 		List<RenderableManager<?>> buildingRenders = getBuildingRenderers(request.getDatasets(), viewParams);
-		LOG.debug("Buildings : " + buildingRenders);
+		LOG.debug("Buildings : {}", buildingRenders);
 		Colormap colormap = getColormap(request.getDatasets(), viewParams);
-		LOG.debug("Colormap: " + colormap);
+		LOG.debug("Colormap: {}", colormap);
 		PooledByteBuffer imageBuffer = this.resultImagePool.allocate(resultImageSize);
 		RenderContext context = new RenderContext(viewParams, request.getSceneParameters().getScale(),
 				this.maxTextureSize, configuredOpenGLInitValues.getCompositingTextureShaderPrograms());

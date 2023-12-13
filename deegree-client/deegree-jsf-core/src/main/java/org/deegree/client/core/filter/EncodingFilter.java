@@ -40,7 +40,7 @@ public class EncodingFilter implements Filter {
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
 		String enc = filterConfig.getInitParameter("encoding");
-		LOG.debug("Init paramater 'encoding' is set to: " + enc);
+		LOG.debug("Init paramater 'encoding' is set to: {}", enc);
 		if (enc != null && enc.length() > 0)
 			encoding = enc;
 	}

@@ -139,7 +139,7 @@ public class WMSTextureTileProvider implements TextureTileProvider {
 		int width = (int) ((maxX - minX) / res);
 		int height = (int) ((maxY - minY) / res);
 
-		LOG.debug("Fetching texture tile (" + width + "x" + height + ") via WMSClient.");
+		LOG.debug("Fetching texture tile ({}x{}) via WMSClient.", width, height);
 
 		Envelope bbox = fac.createEnvelope(minX, minY, maxX, maxY, requestedCRS);
 		SimpleRaster raster = null;
@@ -150,7 +150,7 @@ public class WMSTextureTileProvider implements TextureTileProvider {
 			LOG.debug("Success");
 		}
 		catch (IOException e) {
-			LOG.debug("Failed: " + e.getMessage(), e);
+			LOG.debug("Failed: {}", e.getMessage(), e);
 			// this must never happen, cause the above request uses errorsInImage=true
 			throw new RuntimeException(e.getMessage());
 		}

@@ -99,7 +99,7 @@ public class UpdateRow extends TransactionRow {
 
 	public void performUpdate(Connection conn) throws SQLException {
 		if (LOG.isDebugEnabled()) {
-			LOG.debug("Updating: " + this);
+			LOG.debug("Updating: {}", this);
 		}
 
 		String sql = getSql();
@@ -109,8 +109,7 @@ public class UpdateRow extends TransactionRow {
 		int columnId = 1;
 		for (Entry<SQLIdentifier, Object> entry : columnToObject.entrySet()) {
 			if (entry.getValue() != null) {
-				LOG.debug("- Argument " + entry.getKey() + " = " + entry.getValue() + " (" + entry.getValue().getClass()
-						+ ")");
+				LOG.debug("- Argument {} = {} ({})", entry.getKey(), entry.getValue(), entry.getValue().getClass());
 				if (entry.getValue() instanceof ParticleConversion<?>) {
 					ParticleConversion<?> conversion = (ParticleConversion<?>) entry.getValue();
 					conversion.setParticle(stmt, columnId++);
@@ -120,7 +119,7 @@ public class UpdateRow extends TransactionRow {
 				}
 			}
 			else {
-				LOG.debug("- Argument " + entry.getKey() + " = NULL");
+				LOG.debug("- Argument {} = NULL", entry.getKey());
 				stmt.setObject(columnId++, null);
 			}
 		}

@@ -529,7 +529,7 @@ public class WebFeatureService extends AbstractOWS {
 		for (String queryCRS : queryCRSLists) {
 			String[] querySrs = StringUtils.split(queryCRS, " ", REMOVE_EMPTY_FIELDS | REMOVE_DOUBLE_FIELDS);
 			for (String srs : querySrs) {
-				LOG.debug("Query CRS: " + srs);
+				LOG.debug("Query CRS: {}", srs);
 				ICRS crs = CRSManager.getCRSRef(srs);
 				this.queryCRS.add(crs);
 			}
@@ -595,7 +595,7 @@ public class WebFeatureService extends AbstractOWS {
 				else if (formatDef instanceof CustomFormat) {
 					CustomFormat cf = (CustomFormat) formatDef;
 					String className = cf.getJavaClass();
-					LOG.info("Using custom format class '" + className + "'.");
+					LOG.info("Using custom format class '{}'.", className);
 					try {
 						format = (org.deegree.services.wfs.format.CustomFormat) Class.forName(className).newInstance();
 						((org.deegree.services.wfs.format.CustomFormat) format).init(this, cf.getConfig());
@@ -1267,7 +1267,7 @@ public class WebFeatureService extends AbstractOWS {
 	private void doGetCapabilities(GetCapabilities request, HttpResponseBuffer response)
 			throws XMLStreamException, IOException, OWSException {
 
-		LOG.debug("doGetCapabilities: " + request);
+		LOG.debug("doGetCapabilities: {}", request);
 		Version negotiatedVersion = negotiateVersion(request);
 
 		// cope with the 'All' section specifier
@@ -1313,8 +1313,8 @@ public class WebFeatureService extends AbstractOWS {
 				}
 			}
 			else {
-				LOG.warn("Found metadata for feature type '" + ftName
-						+ "', but feature type is not available from any store.");
+				LOG.warn("Found metadata for feature type '{}', but feature type is not available from any store.",
+						ftName);
 			}
 		}
 		return sortedFts;

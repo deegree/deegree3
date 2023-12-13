@@ -211,7 +211,7 @@ public class FileBackend extends ModelBackend<Envelope> {
 					LOG.warn("Could not determine the envelope of the buildings, this is strange!");
 				}
 				else {
-					LOG.debug("The envelope of the buildings: " + datasetEnvelope);
+					LOG.debug("The envelope of the buildings: {}", datasetEnvelope);
 					// bm.setValidDomain( datasetEnvelope );
 					if (bm.getValidDomain() == null
 							|| (Math.abs(bm.getValidDomain().getSpan0() - RenderableDataset.DEFAULT_SPAN) < 1E-8)) {
@@ -229,7 +229,7 @@ public class FileBackend extends ModelBackend<Envelope> {
 				}
 			}
 			catch (IOException e) {
-				LOG.error("Could not read buildings from file backend because: " + e.getLocalizedMessage(), e);
+				LOG.error("Could not read buildings from file backend because: {}", e.getLocalizedMessage(), e);
 			}
 		}
 	}
@@ -246,7 +246,7 @@ public class FileBackend extends ModelBackend<Envelope> {
 				LOG.warn("Could not determine the envelope of the prototypes, this is strange!");
 			}
 			else {
-				LOG.debug("The envelope of the prototypes: " + datasetEnvelope);
+				LOG.debug("The envelope of the prototypes: {}", datasetEnvelope);
 			}
 			for (DataObjectInfo<RenderablePrototype> doi : readAllFromFile) {
 				RenderablePrototype rp = doi.getData();
@@ -259,7 +259,7 @@ public class FileBackend extends ModelBackend<Envelope> {
 			}
 		}
 		catch (IOException e) {
-			LOG.error("Could not read prototypes from file backend because: " + e.getLocalizedMessage(), e);
+			LOG.error("Could not read prototypes from file backend because: {}", e.getLocalizedMessage(), e);
 		}
 		return result;
 	}
@@ -275,7 +275,7 @@ public class FileBackend extends ModelBackend<Envelope> {
 					LOG.warn("Could not determine the envelope of the buildings, this is strange!");
 				}
 				else {
-					LOG.debug("The envelope of the trees: " + datasetEnvelope);
+					LOG.debug("The envelope of the trees: {}", datasetEnvelope);
 					if (tm.getValidDomain() == null
 							|| (Math.abs(tm.getValidDomain().getSpan0() - RenderableDataset.DEFAULT_SPAN) < 1E-8)) {
 						// no envelope was known (an old modelfile was read?)
@@ -288,7 +288,7 @@ public class FileBackend extends ModelBackend<Envelope> {
 				}
 			}
 			catch (IOException e) {
-				LOG.error("Could not read trees from file backend because: " + e.getLocalizedMessage(), e);
+				LOG.error("Could not read trees from file backend because: {}", e.getLocalizedMessage(), e);
 			}
 		}
 	}
@@ -372,7 +372,7 @@ public class FileBackend extends ModelBackend<Envelope> {
 	public static void initFiles(File entityFile) throws IOException {
 		File[] files = mapFileType(entityFile);
 		for (File file : files) {
-			LOG.info("Ensuring that file '" + file + "' exists...");
+			LOG.info("Ensuring that file '{}' exists...", file);
 			if (!file.exists()) {
 				LOG.info("Not yet. Creating it.");
 				file.createNewFile();

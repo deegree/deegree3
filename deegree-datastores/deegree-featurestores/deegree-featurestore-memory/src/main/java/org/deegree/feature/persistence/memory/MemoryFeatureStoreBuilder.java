@@ -149,13 +149,13 @@ public class MemoryFeatureStoreBuilder implements ResourceBuilder<FeatureStore> 
 					URL docURL = metadata.getLocation().resolveToFile(datasetFile.getValue().trim()).toURI().toURL();
 					GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader(version, docURL);
 					gmlStream.setApplicationSchema(schema);
-					LOG.info("Populating feature store with features from file '" + docURL + "'...");
+					LOG.info("Populating feature store with features from file '{}'...", docURL);
 					FeatureCollection fc = (FeatureCollection) gmlStream.readFeature();
 					gmlStream.getIdContext().resolveLocalRefs();
 
 					FeatureStoreTransaction ta = fs.acquireTransaction();
 					int fids = ta.performInsert(fc, USE_EXISTING).size();
-					LOG.info("Inserted " + fids + " features.");
+					LOG.info("Inserted {} features.", fids);
 					ta.commit();
 				}
 				catch (Exception e) {

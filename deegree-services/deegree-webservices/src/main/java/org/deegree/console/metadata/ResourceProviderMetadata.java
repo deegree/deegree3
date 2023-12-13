@@ -67,7 +67,7 @@ public class ResourceProviderMetadata {
 		name = rp.getClass().getSimpleName();
 		URL url = rp.getClass().getResource("/META-INF/console/resourceprovider/" + className);
 		if (url != null) {
-			LOG.debug("Loading resource provider metadata from '" + url + "'");
+			LOG.debug("Loading resource provider metadata from '{}'", url);
 			Properties props = new Properties();
 			InputStream is = null;
 			try {
@@ -89,7 +89,7 @@ public class ResourceProviderMetadata {
 					exampleLocation = exampleLocation.trim();
 					final URL exampleUrl = this.getClass().getResource(exampleLocation);
 					if (exampleUrl == null) {
-						LOG.error("Configuration example file '" + exampleLocation + "' is missing on classpath.");
+						LOG.error("Configuration example file '{}' is missing on classpath.", exampleLocation);
 						continue;
 					}
 					final String exampleName = getExampleDisplayName(props, examplePrefix, exampleLocation);

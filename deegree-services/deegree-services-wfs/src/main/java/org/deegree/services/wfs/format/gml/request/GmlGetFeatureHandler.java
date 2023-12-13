@@ -750,7 +750,7 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
 			if (request.getQueries().get(0) instanceof StoredQuery) {
 				StoredQuery getFeatureByIdQuery = (StoredQuery) request.getQueries().get(0);
 				if (getFeatureByIdQuery.getId().equals(GET_FEATURE_BY_ID)) {
-					LOG.debug("processing " + GET_FEATURE_BY_ID + " request");
+					LOG.debug("processing {} request", GET_FEATURE_BY_ID);
 					return true;
 				}
 			}

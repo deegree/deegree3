@@ -372,7 +372,7 @@ abstract class AbstractOWSCommonCapabilitiesAdapter extends XMLAdapter implement
 					values.add(new Value(childEl.getText()));
 				}
 				else {
-					LOG.warn("Unrecognized child element in 'ows:Range': '" + childEl.getQName() + "'.");
+					LOG.warn("Unrecognized child element in 'ows:Range': '{}'.", childEl.getQName());
 				}
 			}
 			possibleValues = new AllowedValues(values);
@@ -435,7 +435,7 @@ abstract class AbstractOWSCommonCapabilitiesAdapter extends XMLAdapter implement
 				closure = CLOSED_OPEN;
 			}
 			else {
-				LOG.warn("Unrecognized range closure: '" + rangeClosureStr + "'.");
+				LOG.warn("Unrecognized range closure: '{}'.", rangeClosureStr);
 			}
 		}
 

@@ -208,7 +208,7 @@ public class EbrimEOMDStoreTransaction implements MetadataStoreTransaction {
 					argument.setArgument(stm, i++);
 				}
 			}
-			LOG.debug("Execute: " + stm.toString());
+			LOG.debug("Execute: {}", stm.toString());
 			return stm.executeUpdate();
 		}
 		catch (Throwable t) {
@@ -239,7 +239,7 @@ public class EbrimEOMDStoreTransaction implements MetadataStoreTransaction {
 			ir.addPreparedArgument(new SQLIdentifier("description"), registryPackage.getDesc());
 			ir.addPreparedArgument(new SQLIdentifier("data"), getAsByteArray(registryPackage.getElement()));
 
-			LOG.debug("Execute statement " + ir.getSql());
+			LOG.debug("Execute statement {}", ir.getSql());
 
 			ir.performInsert(conn);
 

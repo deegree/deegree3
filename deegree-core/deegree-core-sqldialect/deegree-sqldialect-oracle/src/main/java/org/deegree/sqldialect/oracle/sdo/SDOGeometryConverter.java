@@ -452,9 +452,8 @@ public class SDOGeometryConverter {
 		}
 
 		if (!ringu.isEmpty()) {
-			LOG.warn("SDO_Geometry with rings of unknown type detected. "
-					+ "Please consider upgrading to the current format using "
-					+ "the SDO_MIGRATE.TO_CURRENT procedure.");
+			LOG.warn(
+					"SDO_Geometry with rings of unknown type detected. Please consider upgrading to the current format using the SDO_MIGRATE.TO_CURRENT procedure.");
 
 			// maps to store spatial relations between rings
 			Map<Ring, Set<Ring>> contained = new HashMap<Ring, Set<Ring>>();

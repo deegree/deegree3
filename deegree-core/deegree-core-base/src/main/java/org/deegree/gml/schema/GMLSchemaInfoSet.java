@@ -629,7 +629,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
 				}
 			}
 			else {
-				LOG.warn("Unhandled term type: " + term.getClass());
+				LOG.warn("Unhandled term type: {}", term.getClass());
 			}
 		}
 	}
@@ -702,8 +702,9 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
 			final GMLPropertySemantics semantics = derivePropertySemantics(elDecl);
 			if (semantics == null
 					|| (semantics.getValueCategory() != TIME_OBJECT && semantics.getValueCategory() != TIME_SLICE)) {
-				LOG.debug("Identified generic object property declaration ({" + elDecl.getNamespace() + "}"
-						+ elDecl.getName() + "), but handling is not implemented yet.");
+				LOG.debug(
+						"Identified generic object property declaration ({{}}{}), but handling is not implemented yet.",
+						elDecl.getNamespace(), elDecl.getName());
 			}
 			else {
 				pt = new ObjectPropertyType(ptName, minOccurs, maxOccurs, elDecl, ptSubstitutions,
@@ -737,7 +738,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
 	private FeaturePropertyType buildFeaturePropertyType(QName ptName, XSElementDeclaration elementDecl,
 			XSComplexTypeDefinition typeDef, int minOccurs, int maxOccurs, List<PropertyType> ptSubstitutions) {
 
-		LOG.trace("Checking if element declaration '" + ptName + "' defines a feature property type.");
+		LOG.trace("Checking if element declaration '{}' defines a feature property type.", ptName);
 		FeaturePropertyType pt = null;
 
 		XMLAdapter annotationXML = null;
@@ -791,8 +792,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
 								LOG.trace("Found sequence / choice.");
 								XSObjectList sequence = modelGroup.getParticles();
 								if (sequence.getLength() != 1) {
-									LOG.trace(
-											"Length = '" + sequence.getLength() + "' -> cannot be a feature property.");
+									LOG.trace("Length = '{}' -> cannot be a feature property.", sequence.getLength());
 									return null;
 								}
 								XSParticle particle2 = (XSParticle) sequence.item(0);
@@ -971,8 +971,8 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
 												: geomChoiceParticle.getMaxOccurs();
 										if (minOccurs3 != 1 || maxOccurs3 != 1) {
 											LOG.debug(
-													"Only single geometries are currently supported, ignoring in choice (property '"
-															+ ptName + "').");
+													"Only single geometries are currently supported, ignoring in choice (property '{}').",
+													ptName);
 											return null;
 										}
 										QName elementName = new QName(geomChoiceElement.getNamespace(),
@@ -983,7 +983,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
 											allowedTypes.add(geometryType);
 										}
 										else {
-											LOG.debug("Unknown geometry type '" + elementName + "'.");
+											LOG.debug("Unknown geometry type '{}'.", elementName);
 										}
 									}
 									else if (geomChoiceTerm.getType() == MODEL_GROUP) {
@@ -993,7 +993,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
 										LOG.warn("Unhandled particle: WILDCARD");
 									}
 									else {
-										LOG.warn("Unexpected XSTerm type: " + geomChoiceTerm.getType());
+										LOG.warn("Unexpected XSTerm type: {}", geomChoiceTerm.getType());
 									}
 								}
 								if (!allowedTypes.isEmpty()) {
@@ -1006,8 +1006,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
 								LOG.trace("Found sequence.");
 								XSObjectList sequence = modelGroup.getParticles();
 								if (sequence.getLength() != 1) {
-									LOG.trace("Length = '" + sequence.getLength()
-											+ "' -> cannot be a geometry property.");
+									LOG.trace("Length = '{}' -> cannot be a geometry property.", sequence.getLength());
 									return null;
 								}
 								XSParticle particle2 = (XSParticle) sequence.item(0);
@@ -1076,7 +1075,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
 															allowedTypes.add(geometryType);
 														}
 														else {
-															LOG.debug("Unknown geometry type '" + elementName + "'.");
+															LOG.debug("Unknown geometry type '{}'.", elementName);
 														}
 													}
 													else {
@@ -1134,10 +1133,10 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
 			result = GeometryType.fromGMLTypeName(localPart);
 		}
 		catch (Exception e) {
-			LOG.debug("Unmappable geometry type: " + gmlGeometryName.toString()
-					+ " (currently not supported by geometry model)");
+			LOG.debug("Unmappable geometry type: {} (currently not supported by geometry model)",
+					gmlGeometryName.toString());
 		}
-		LOG.trace("Mapping '" + gmlGeometryName + "' -> " + result);
+		LOG.trace("Mapping '{}' -> {}", gmlGeometryName, result);
 		return result;
 	}
 
@@ -1186,7 +1185,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
 			return null;
 		}
 		final QName ptName = new QName(elDecl.getNamespace(), elDecl.getName());
-		LOG.trace("Checking if element declaration '" + ptName + "' defines a complex-valued GML property type.");
+		LOG.trace("Checking if element declaration '{}' defines a complex-valued GML property type.", ptName);
 		final XSComplexTypeDefinition typeDef = (XSComplexTypeDefinition) elDecl.getTypeDefinition();
 		final boolean allowsXlink = allowsXLink(typeDef);
 		final XSElementDeclaration valueElementDeclFromAnnotations = determineAnnotationDefinedValueElement(elDecl);
@@ -1239,7 +1238,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
 					childDeclMap.put(name, decl);
 					for (XSElementDeclaration substitution : getSubstitutions(decl, null, true, true)) {
 						name = new QName(substitution.getNamespace(), substitution.getName());
-						LOG.debug("Adding: " + name);
+						LOG.debug("Adding: {}", name);
 						childDeclMap.put(name, substitution);
 					}
 				}
@@ -1365,8 +1364,8 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
 								LOG.trace("Found sequence / choice.");
 								XSObjectList sequence = modelGroup.getParticles();
 								if (sequence.getLength() != 1) {
-									LOG.trace("Length = '" + sequence.getLength()
-											+ "' -> cannot be a property declaration.");
+									LOG.trace("Length = '{}' -> cannot be a property declaration.",
+											sequence.getLength());
 									return null;
 								}
 								XSParticle particle2 = (XSParticle) sequence.item(0);

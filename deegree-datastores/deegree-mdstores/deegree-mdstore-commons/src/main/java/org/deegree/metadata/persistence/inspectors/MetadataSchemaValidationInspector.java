@@ -82,7 +82,7 @@ public class MetadataSchemaValidationInspector<T extends MetadataRecord> impleme
 			is = os.getInputStream();
 		}
 		catch (Throwable e) {
-			LOG.debug("error: " + e.getMessage(), e);
+			LOG.debug("error: {}", e.getMessage(), e);
 			throw new MetadataInspectorException(e.getMessage());
 		}
 

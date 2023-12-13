@@ -119,7 +119,7 @@ public class ExecuteRequestKVPAdapter {
 
 		// IDENTIFIER (mandatory)
 		String identifierString = kvpParams.get("IDENTIFIER");
-		LOG.debug("IDENTIFIER=" + identifierString);
+		LOG.debug("IDENTIFIER={}", identifierString);
 		if (identifierString == null) {
 			throw new OWSException("MissingParameterValue: Identifier", OWSException.MISSING_PARAMETER_VALUE,
 					"IDENTIFIER");
@@ -165,7 +165,7 @@ public class ExecuteRequestKVPAdapter {
 
 		LOG.debug("DATAINPUTS=");
 		for (String encodedParameter : encodedInputs) {
-			LOG.debug("- " + encodedParameter);
+			LOG.debug("- {}", encodedParameter);
 		}
 
 		// key: id of input parameter, value: number of occurences
@@ -181,7 +181,7 @@ public class ExecuteRequestKVPAdapter {
 				throw exceptionCustomizer
 					.invalidAttributedParameter(new Pair<String, String>("DataInputs", encodedParameter));
 			}
-			LOG.debug("AttributedParameter: " + parameter);
+			LOG.debug("AttributedParameter: {}", parameter);
 			ProcessletInput input = parseDataInput(parameter, processDef, exceptionCustomizer);
 			processInputs.add(input);
 
@@ -269,7 +269,7 @@ public class ExecuteRequestKVPAdapter {
 	private static ComplexFormatType validateAndAugmentFormat(ComplexFormatType format,
 			ComplexInputDefinition definition, ExceptionCustomizer exceptionCustomizer) throws OWSException {
 
-		LOG.debug("Looking up compatible format ('" + toString(format) + "') in parameter definition.");
+		LOG.debug("Looking up compatible format ('{}') in parameter definition.", toString(format));
 		List<ComplexFormatType> equalMimeType = null;
 		if (format.getMimeType() == null) {
 			// not specified -> assume mime type from default format
@@ -339,14 +339,14 @@ public class ExecuteRequestKVPAdapter {
 		}
 
 		ComplexFormatType matchingFormat = matchingFormats.get(0);
-		LOG.debug("Augmented format: '" + toString(matchingFormat) + "'");
+		LOG.debug("Augmented format: '{}'", toString(matchingFormat));
 		return matchingFormat;
 	}
 
 	private static ComplexFormatType validateAndAugmentFormat(ComplexFormatType format,
 			ComplexOutputDefinition definition, ExceptionCustomizer exceptionCustomizer) throws OWSException {
 
-		LOG.debug("Looking up compatible format ('" + toString(format) + "') in parameter definition.");
+		LOG.debug("Looking up compatible format ('{}') in parameter definition.", toString(format));
 		List<ComplexFormatType> equalMimeType = null;
 		if (format.getMimeType() == null) {
 			// not specified -> assume mime type from default format
@@ -416,7 +416,7 @@ public class ExecuteRequestKVPAdapter {
 		}
 
 		ComplexFormatType matchingFormat = matchingFormats.get(0);
-		LOG.debug("Augmented format: '" + toString(matchingFormat) + "'");
+		LOG.debug("Augmented format: '{}'", toString(matchingFormat));
 		return matchingFormat;
 	}
 
@@ -429,7 +429,7 @@ public class ExecuteRequestKVPAdapter {
 			AttributedParameter parameter, ExceptionCustomizer exceptionCustomizer) throws OWSException {
 
 		String[] parts = parameter.getValue().split(",");
-		LOG.warn("Assuming two-dimensional coordinates in BBOX string: '" + parameter.getValue() + "'");
+		LOG.warn("Assuming two-dimensional coordinates in BBOX string: '{}'", parameter.getValue());
 		if (parts.length < 4) {
 			throw exceptionCustomizer.inputInvalidBBoxCoordinates(inputId, parts);
 		}
@@ -485,8 +485,8 @@ public class ExecuteRequestKVPAdapter {
 		// values were defined in the process
 		// description!!!).
 		if (definition.getAllowedValues() != null && !definition.getAllowedValues().getValueOrRange().isEmpty()) {
-			LOG.warn(inputId + ", validating supplied value: " + parameter.getValue()
-					+ " against the allowed values is not yet implemented.");
+			LOG.warn("{}, validating supplied value: {} against the allowed values is not yet implemented.", inputId,
+					parameter.getValue());
 		}
 		// "uom" attribute (optional)
 		String uom = parameter.getUom();
@@ -636,11 +636,11 @@ public class ExecuteRequestKVPAdapter {
 	private static ProcessletInputDefinition lookupInputDefinition(CodeType identifier, ProcessDefinition processDef,
 			ExceptionCustomizer exceptionCustomizer) throws OWSException {
 
-		LOG.trace("Looking up input type: " + identifier);
+		LOG.trace("Looking up input type: {}", identifier);
 		ProcessletInputDefinition inputType = null;
 		InputParameters inputParams = processDef.getInputParameters();
 		for (JAXBElement<? extends ProcessletInputDefinition> el : inputParams.getProcessInput()) {
-			LOG.trace("Defined input type: " + el.getValue().getIdentifier().getValue());
+			LOG.trace("Defined input type: {}", el.getValue().getIdentifier().getValue());
 			org.deegree.process.jaxb.java.CodeType inputId = el.getValue().getIdentifier();
 			if (equals(identifier, inputId)) {
 				inputType = el.getValue();

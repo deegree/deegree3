@@ -194,7 +194,7 @@ public abstract class AbstractMappedSchemaBuilder {
 		else if ("GEOMETRYCOLLECTION".equals(pgType)) {
 			return MULTI_GEOMETRY;
 		}
-		LOG.warn("Unknown PostGIS geometry type '" + pgType + "'. Interpreting as generic geometry.");
+		LOG.warn("Unknown PostGIS geometry type '{}'. Interpreting as generic geometry.", pgType);
 		return GEOMETRY;
 	}
 
@@ -209,7 +209,7 @@ public abstract class AbstractMappedSchemaBuilder {
 				mapping = parser.mappingExpr().value;
 			}
 			catch (RecognitionException e) {
-				LOG.warn("Unable to parse mapping expression '" + s + "': treating as SQL expression");
+				LOG.warn("Unable to parse mapping expression '{}': treating as SQL expression", s);
 				return new Function(s);
 			}
 		}

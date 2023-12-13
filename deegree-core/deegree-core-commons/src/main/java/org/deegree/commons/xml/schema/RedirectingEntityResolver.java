@@ -65,8 +65,9 @@ public class RedirectingEntityResolver implements XMLEntityResolver {
 	static {
 		baseURL = RedirectingEntityResolver.class.getResource(ROOT);
 		if (baseURL == null) {
-			LOG.warn("'" + ROOT
-					+ "' could not be found on the classpath. Schema references to 'http://schemas.opengis.net' will not be redirected, but fetched from their original location.  ");
+			LOG.warn(
+					"'{}' could not be found on the classpath. Schema references to 'http://schemas.opengis.net' will not be redirected, but fetched from their original location.  ",
+					ROOT);
 		}
 	}
 
@@ -81,7 +82,7 @@ public class RedirectingEntityResolver implements XMLEntityResolver {
 			String localPart = systemId.substring(SCHEMAS_OPENGIS_NET_URL.length());
 			URL u = RedirectingEntityResolver.class.getResource(ROOT + localPart);
 			if (u != null) {
-				LOG.debug("Local hit: " + systemId);
+				LOG.debug("Local hit: {}", systemId);
 				return u.toString();
 			}
 		}
@@ -104,7 +105,7 @@ public class RedirectingEntityResolver implements XMLEntityResolver {
 
 		String systemId = identifier.getExpandedSystemId();
 		String redirectedSystemId = systemId != null ? redirect(systemId) : null;
-		LOG.debug("'" + systemId + "' -> '" + redirectedSystemId + "'");
+		LOG.debug("'{}' -> '{}'", systemId, redirectedSystemId);
 		return new XMLInputSource(null, redirectedSystemId, null);
 	}
 

@@ -114,13 +114,13 @@ public class InputReference {
 	 */
 	public InputStream openStream() throws IOException {
 
-		LOG.debug("Opening HTTP stream for InputReference: " + this);
+		LOG.debug("Opening HTTP stream for InputReference: {}", this);
 		InputStream is = null;
 		if (usePostMethod) {
 			LOG.debug("POST");
 			InputStream postBodyInputStream = null;
 			if (postBodyReference != null) {
-				LOG.debug("Using post body from: URL '" + postBodyReference + "'");
+				LOG.debug("Using post body from: URL '{}'", postBodyReference);
 				// retrieve the post body (may be a file URL, so don't use HttpUtils here)
 				postBodyInputStream = postBodyReference.openStream();
 			}
@@ -129,7 +129,7 @@ public class InputReference {
 				OMElement childPostBodyElement = postBodyElement.getFirstElement();
 				if (childPostBodyElement != null) {
 					String postBodyString = childPostBodyElement.toString();
-					LOG.debug("Using post body '" + postBodyString + "'");
+					LOG.debug("Using post body '{}'", postBodyString);
 					// TODO what about the encoding here?
 					is = new ByteArrayInputStream(postBodyString.getBytes());
 					postBodyInputStream = is;

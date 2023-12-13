@@ -174,8 +174,8 @@ public class OracleGeometryConverter implements GeometryParticleConverter {
 		if (literal != null) {
 			ICRS literalCRS = literal.getCoordinateSystem();
 			if (literalCRS != null && !(crs.equals(literalCRS))) {
-				LOG.debug("Need transformed literal geometry for evaluation: " + literalCRS.getAlias() + " -> "
-						+ crs.getAlias());
+				LOG.debug("Need transformed literal geometry for evaluation: {} -> {}", literalCRS.getAlias(),
+						crs.getAlias());
 				try {
 					GeometryTransformer transformer = new GeometryTransformer(crs);
 					transformedLiteral = transformer.transform(literal);

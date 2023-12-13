@@ -367,8 +367,8 @@ public class ExecuteRequestXMLAdapter extends OWSCommonXMLAdapter {
 		// values were defined in the process
 		// description!!!).
 		if (definition.getAllowedValues() != null && !definition.getAllowedValues().getValueOrRange().isEmpty()) {
-			LOG.warn(identifier + ", validating supplied value: " + value
-					+ " against the allowed values is not yet implemented.");
+			LOG.warn("{}, validating supplied value: {} against the allowed values is not yet implemented.", identifier,
+					value);
 		}
 
 		// "uom" attribute (optional)
@@ -611,7 +611,7 @@ public class ExecuteRequestXMLAdapter extends OWSCommonXMLAdapter {
 	private ComplexFormatType validateAndAugmentFormat(ComplexFormatType format, ComplexInputDefinition definition,
 			ExceptionCustomizer eCustomizer) throws OWSException {
 
-		LOG.debug("Looking up compatible format ('" + toString(format) + "') in parameter definition.");
+		LOG.debug("Looking up compatible format ('{}') in parameter definition.", toString(format));
 		List<ComplexFormatType> equalMimeType = null;
 		if (format.getMimeType() == null) {
 			// not specified -> assume mime type from default format
@@ -673,14 +673,14 @@ public class ExecuteRequestXMLAdapter extends OWSCommonXMLAdapter {
 		}
 
 		ComplexFormatType matchingFormat = matchingFormats.get(0);
-		LOG.debug("Augmented format: '" + toString(matchingFormat) + "'");
+		LOG.debug("Augmented format: '{}'", toString(matchingFormat));
 		return matchingFormat;
 	}
 
 	private ComplexFormatType validateAndAugmentFormat(ComplexFormatType format, ComplexOutputDefinition definition,
 			ExceptionCustomizer eCustomizer) throws OWSException {
 
-		LOG.debug("Looking up compatible format ('" + toString(format) + "') in parameter definition.");
+		LOG.debug("Looking up compatible format ('{}') in parameter definition.", toString(format));
 		List<ComplexFormatType> equalMimeType = null;
 		if (format.getMimeType() == null) {
 			// not specified -> assume mime type from default format
@@ -742,7 +742,7 @@ public class ExecuteRequestXMLAdapter extends OWSCommonXMLAdapter {
 		}
 
 		ComplexFormatType matchingFormat = matchingFormats.get(0);
-		LOG.debug("Augmented format: '" + toString(matchingFormat) + "'");
+		LOG.debug("Augmented format: '{}'", toString(matchingFormat));
 		return matchingFormat;
 	}
 
@@ -843,7 +843,7 @@ public class ExecuteRequestXMLAdapter extends OWSCommonXMLAdapter {
 
 		// "asReference" attribute (optional)
 		boolean asReference = getNodeAsBoolean(outputElement, new XPath("@asReference", nsContext), false);
-		LOG.debug("attribute 'asReference': " + asReference);
+		LOG.debug("attribute 'asReference': {}", asReference);
 
 		// "ows:Title" element (minOccurs="0", maxOccurs="1")
 		LanguageString title = null;
@@ -874,8 +874,8 @@ public class ExecuteRequestXMLAdapter extends OWSCommonXMLAdapter {
 		String mimeType = rawDataOutputElement.getAttributeValue(new QName("mimeType"));
 		if (mimeType == null) {
 			if (outputType instanceof ComplexOutputDefinition) {
-				LOG.debug("No mime type specified. Defaulting to '"
-						+ ((ComplexOutputDefinition) outputType).getDefaultFormat().getMimeType() + "'");
+				LOG.debug("No mime type specified. Defaulting to '{}'",
+						((ComplexOutputDefinition) outputType).getDefaultFormat().getMimeType());
 				mimeType = ((ComplexOutputDefinition) outputType).getDefaultFormat().getMimeType();
 			}
 		}
@@ -923,12 +923,12 @@ public class ExecuteRequestXMLAdapter extends OWSCommonXMLAdapter {
 	private ProcessletInputDefinition lookupInputDefinition(CodeType identifier, ProcessDefinition processDef,
 			ExceptionCustomizer eCustomizer) throws OWSException {
 
-		LOG.trace("Looking up input type: " + identifier);
+		LOG.trace("Looking up input type: {}", identifier);
 		ProcessletInputDefinition inputType = null;
 		InputParameters inputParams = processDef.getInputParameters();
 		if (inputParams != null) {
 			for (JAXBElement<? extends ProcessletInputDefinition> el : inputParams.getProcessInput()) {
-				LOG.trace("Defined input type: " + el.getValue().getIdentifier().getValue());
+				LOG.trace("Defined input type: {}", el.getValue().getIdentifier().getValue());
 				org.deegree.process.jaxb.java.CodeType inputId = el.getValue().getIdentifier();
 				if (equals(identifier, inputId)) {
 					inputType = el.getValue();

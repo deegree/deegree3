@@ -122,7 +122,7 @@ public class PrototypeManager extends BuildingManager {
 
 		RenderableQualityModel rqm = building.getQualityLevel(0);
 		if (rqm == null) {
-			LOG.info("Could not extract the quality level of the RenderablePrototype with id:" + building.getId());
+			LOG.info("Could not extract the quality level of the RenderablePrototype with id:{}", building.getId());
 			return null;
 		}
 		rqm = createScaledQualityModel(rqm);

@@ -84,7 +84,7 @@ public class WFSClientTest {
 
 		String wfsUtahDemo100Url = TestProperties.getProperty(WFS_UTAH_DEMO_100_URL);
 		if (wfsUtahDemo100Url == null) {
-			LOG.warn("Skipping test, property '" + WFS_UTAH_DEMO_100_URL + "' not found in ~/.deegree-test.properties");
+			LOG.warn("Skipping test, property '{}' not found in ~/.deegree-test.properties", WFS_UTAH_DEMO_100_URL);
 			return;
 		}
 
@@ -115,7 +115,7 @@ public class WFSClientTest {
 
 		String wfsUtahDemo110Url = TestProperties.getProperty(WFS_UTAH_DEMO_110_URL);
 		if (wfsUtahDemo110Url == null) {
-			LOG.warn("Skipping test, property '" + WFS_UTAH_DEMO_110_URL + "' not found in ~/.deegree-test.properties");
+			LOG.warn("Skipping test, property '{}' not found in ~/.deegree-test.properties", WFS_UTAH_DEMO_110_URL);
 			return;
 		}
 
@@ -164,7 +164,7 @@ public class WFSClientTest {
 
 		String wfsUtahDemo110Url = TestProperties.getProperty(WFS_UTAH_DEMO_100_URL);
 		if (wfsUtahDemo110Url == null) {
-			LOG.warn("Skipping test, property '" + WFS_UTAH_DEMO_100_URL + "' not found in ~/.deegree-test.properties");
+			LOG.warn("Skipping test, property '{}' not found in ~/.deegree-test.properties", WFS_UTAH_DEMO_100_URL);
 			return;
 		}
 
@@ -183,7 +183,7 @@ public class WFSClientTest {
 
 		String wfsUtahDemo110Url = TestProperties.getProperty(WFS_UTAH_DEMO_110_URL);
 		if (wfsUtahDemo110Url == null) {
-			LOG.warn("Skipping test, property '" + WFS_UTAH_DEMO_110_URL + "' not found in ~/.deegree-test.properties");
+			LOG.warn("Skipping test, property '{}' not found in ~/.deegree-test.properties", WFS_UTAH_DEMO_110_URL);
 			return;
 		}
 
@@ -201,7 +201,7 @@ public class WFSClientTest {
 
 		String wfsUtahDemo110Url = TestProperties.getProperty(WFS_UTAH_DEMO_110_URL);
 		if (wfsUtahDemo110Url == null) {
-			LOG.warn("Skipping test, property '" + WFS_UTAH_DEMO_110_URL + "' not found in ~/.deegree-test.properties");
+			LOG.warn("Skipping test, property '{}' not found in ~/.deegree-test.properties", WFS_UTAH_DEMO_110_URL);
 			return;
 		}
 
@@ -232,7 +232,7 @@ public class WFSClientTest {
 
 		String wfsUtahDemo110Url = TestProperties.getProperty(WFS_UTAH_DEMO_110_URL);
 		if (wfsUtahDemo110Url == null) {
-			LOG.warn("Skipping test, property '" + WFS_UTAH_DEMO_110_URL + "' not found in ~/.deegree-test.properties");
+			LOG.warn("Skipping test, property '{}' not found in ~/.deegree-test.properties", WFS_UTAH_DEMO_110_URL);
 			return;
 		}
 

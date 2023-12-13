@@ -236,7 +236,7 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
 
 	public void activateBuffering() throws XMLStreamException {
 		if (activeWriter == sink) {
-			LOG.debug("Switching to buffered XMLStreamWriter, openElements: " + openElements);
+			LOG.debug("Switching to buffered XMLStreamWriter, openElements: {}", openElements);
 			buffer = new StreamBufferStore(MEMORY_BUFFER_SIZE_IN_BYTES);
 			XMLOutputFactory of = XMLOutputFactory.newInstance();
 			activeWriter = of.createXMLStreamWriter(buffer, "UTF-8");
@@ -252,7 +252,7 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
 			String ns = namespaceIter.next();
 			String prefix = nsBindings.getPrefix(ns);
 			activeWriter.writeNamespace(prefix, ns);
-			LOG.debug(prefix + "->" + ns);
+			LOG.debug("{}->{}", prefix, ns);
 		}
 		if (nsBindings.getPrefix(XSINS) == null) {
 			activeWriter.writeNamespace(XSI_PREFIX, XSINS);

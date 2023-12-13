@@ -92,19 +92,19 @@ public abstract class InsertRow extends TransactionRow {
 				IDGenerator idGenerator = keyColumnToGenerator.get(autoKeyColumn);
 				if (idGenerator instanceof SequenceIDGenerator) {
 					int seqVal = getSequenceNextVal(((SequenceIDGenerator) idGenerator).getSequence());
-					LOG.debug("Got key value for column '" + autoKeyColumn.getName() + "' from sequence: " + seqVal);
+					LOG.debug("Got key value for column '{}' from sequence: {}", autoKeyColumn.getName(), seqVal);
 					addPreparedArgument(autoKeyColumn, seqVal);
 				}
 				else if (idGenerator instanceof UUIDGenerator) {
 					String uuid = UUID.randomUUID().toString();
-					LOG.debug("Got key value for column '" + autoKeyColumn.getName() + "' from UUID: " + uuid);
+					LOG.debug("Got key value for column '{}' from UUID: {}", autoKeyColumn.getName(), uuid);
 					addPreparedArgument(autoKeyColumn, uuid);
 				}
 				else if (idGenerator instanceof AutoIDGenerator) {
-					LOG.debug("Key for column '" + autoKeyColumn.getName() + "' will be generated on insert by DB.");
+					LOG.debug("Key for column '{}' will be generated on insert by DB.", autoKeyColumn.getName());
 				}
 				else {
-					LOG.warn("Unhandled ID generator: " + idGenerator.getClass().getName());
+					LOG.warn("Unhandled ID generator: {}", idGenerator.getClass().getName());
 				}
 			}
 		}
@@ -116,7 +116,7 @@ public abstract class InsertRow extends TransactionRow {
 		ResultSet rs = null;
 		try {
 			stmt = mgr.getConnection().createStatement();
-			LOG.debug("Determing feature ID from db sequence: " + sql);
+			LOG.debug("Determing feature ID from db sequence: {}", sql);
 			rs = stmt.executeQuery(sql);
 			if (rs.next()) {
 				return rs.getInt(1);
@@ -189,7 +189,7 @@ public abstract class InsertRow extends TransactionRow {
 			throws SQLException, FeatureStoreException {
 
 		if (LOG.isDebugEnabled()) {
-			LOG.debug("Inserting row: " + this);
+			LOG.debug("Inserting row: {}", this);
 		}
 
 		String sql = getSql();
@@ -215,8 +215,7 @@ public abstract class InsertRow extends TransactionRow {
 		int columnId = 1;
 		for (Entry<SQLIdentifier, Object> entry : columnToObject.entrySet()) {
 			if (entry.getValue() != null) {
-				LOG.debug("- Argument " + entry.getKey() + " = " + entry.getValue() + " (" + entry.getValue().getClass()
-						+ ")");
+				LOG.debug("- Argument {} = {} ({})", entry.getKey(), entry.getValue(), entry.getValue().getClass());
 				if (entry.getValue() instanceof ParticleConversion<?>) {
 					ParticleConversion<?> conversion = (ParticleConversion<?>) entry.getValue();
 					conversion.setParticle(stmt, columnId++);
@@ -226,7 +225,7 @@ public abstract class InsertRow extends TransactionRow {
 				}
 			}
 			else {
-				LOG.debug("- Argument " + entry.getKey() + " = NULL");
+				LOG.debug("- Argument {} = NULL", entry.getKey());
 				stmt.setObject(columnId++, null);
 			}
 		}
@@ -241,7 +240,7 @@ public abstract class InsertRow extends TransactionRow {
 					for (SQLIdentifier autoGenCol : autoGenColumns) {
 						Object keyValue = rs.getObject(i++);
 						columnToObject.put(autoGenCol, keyValue);
-						LOG.debug("Retrieved auto generated key: " + autoGenCol + "=" + keyValue);
+						LOG.debug("Retrieved auto generated key: {}={}", autoGenCol, keyValue);
 					}
 				}
 				else {

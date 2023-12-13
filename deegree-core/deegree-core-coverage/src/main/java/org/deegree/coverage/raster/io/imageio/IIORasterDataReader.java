@@ -172,7 +172,7 @@ public class IIORasterDataReader implements RasterDataReader {
 					return RasterFactory.rasterDataFromImage(result, options);
 				}
 				catch (IOException e) {
-					LOG.error("couldn't open image:" + e.getMessage(), e);
+					LOG.error("couldn't open image:{}", e.getMessage(), e);
 					this.imageReadFailed = true;
 				}
 			}
@@ -211,7 +211,7 @@ public class IIORasterDataReader implements RasterDataReader {
 					width = reader.getWidth(imageIndex);
 				}
 				catch (IOException e) {
-					LOG.debug("couldn't open image for width:" + e.getMessage(), e);
+					LOG.debug("couldn't open image for width:{}", e.getMessage(), e);
 					this.widthReadFailed = true;
 				}
 				resetStream();
@@ -231,7 +231,7 @@ public class IIORasterDataReader implements RasterDataReader {
 					height = reader.getHeight(imageIndex);
 				}
 				catch (IOException e) {
-					LOG.debug("couldn't open image for height:" + e.getMessage(), e);
+					LOG.debug("couldn't open image for height:{}", e.getMessage(), e);
 					this.heightReadFailed = true;
 				}
 				resetStream();
@@ -254,7 +254,7 @@ public class IIORasterDataReader implements RasterDataReader {
 					metaData = reader.getImageMetadata(0);
 				}
 				catch (IOException e) {
-					LOG.debug("couldn't open metadata:" + e.getMessage(), e);
+					LOG.debug("couldn't open metadata:{}", e.getMessage(), e);
 					this.metadataReadFailed = true;
 				}
 				resetStream();
@@ -296,7 +296,7 @@ public class IIORasterDataReader implements RasterDataReader {
 
 				}
 				catch (IOException e) {
-					LOG.debug("couldn't create a raster data info object:" + e.getMessage(), e);
+					LOG.debug("couldn't create a raster data info object:{}", e.getMessage(), e);
 					rdiReadFailed = true;
 				}
 			}
@@ -353,9 +353,9 @@ public class IIORasterDataReader implements RasterDataReader {
 					this.retrievalOfReadersFailed = true;
 				}
 				catch (IOException e) {
-					LOG.debug("Could not open an ImageStream for "
-							+ ((file != null) ? "file: " + file.getAbsolutePath() : "stream ") + ", because: "
-							+ e.getLocalizedMessage(), e);
+					LOG.debug("Could not open an ImageStream for {}, because: {}",
+							((file != null) ? "file: " + file.getAbsolutePath() : "stream "), e.getLocalizedMessage(),
+							e);
 					this.retrievalOfReadersFailed = true;
 				}
 			}
@@ -391,9 +391,8 @@ public class IIORasterDataReader implements RasterDataReader {
 		}
 		catch (IOException e) {
 			LOG.debug(
-					"Could not get easy access information from the imagereader, using configured value for using cache: "
-							+ result,
-					e);
+					"Could not get easy access information from the imagereader, using configured value for using cache: {}",
+					result, e);
 		}
 		return result;
 	}
@@ -435,7 +434,7 @@ public class IIORasterDataReader implements RasterDataReader {
 				}
 			}
 			catch (IOException e) {
-				LOG.debug("Could not read the given rect: " + rect + " because: " + e.getLocalizedMessage(), e);
+				LOG.debug("Could not read the given rect: {} because: {}", rect, e.getLocalizedMessage(), e);
 			}
 		}
 		return result;

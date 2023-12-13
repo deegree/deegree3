@@ -132,21 +132,21 @@ public class CRSUtils {
 	public static boolean isAxisAware(final ICRS crs) throws UnknownCRSException {
 		final String alias = crs.getAlias().toLowerCase();
 		if (isUrnEpsgIdentifier(alias) || isOgcCrsIdentifier(alias)) {
-			LOG.debug(alias + " is considered axis aware");
+			LOG.debug("{} is considered axis aware", alias);
 			return true;
 		}
 		for (final String crsString : crs.getOrignalCodeStrings()) {
 			final String lowerCrsString = crsString.toLowerCase();
 			if (isUrnEpsgIdentifier(lowerCrsString)) {
-				LOG.debug(crs.getAlias() + " is considered axis aware");
+				LOG.debug("{} is considered axis aware", crs.getAlias());
 				return true;
 			}
 			if (isOgcCrsIdentifier(lowerCrsString)) {
-				LOG.debug(crs.getAlias() + " is considered axis aware");
+				LOG.debug("{} is considered axis aware", crs.getAlias());
 				return true;
 			}
 		}
-		LOG.debug(crs.getAlias() + " is not considered axis aware");
+		LOG.debug("{} is not considered axis aware", crs.getAlias());
 		return false;
 	}
 

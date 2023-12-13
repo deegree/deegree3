@@ -69,7 +69,7 @@ public class DeegreeAALogoUtils {
 			}
 		}
 		catch (Exception e) {
-			LOG.error("Could not read deegree logo '" + DEEGREE_AA_LOGO_FILE + "'.");
+			LOG.error("Could not read deegree logo '{}'.", DEEGREE_AA_LOGO_FILE);
 		}
 	}
 

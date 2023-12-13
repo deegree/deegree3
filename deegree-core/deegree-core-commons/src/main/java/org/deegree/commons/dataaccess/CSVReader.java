@@ -110,7 +110,7 @@ public class CSVReader extends LineNumberReader {
 		}
 		List<String> result = new LinkedList<String>();
 		if (LOG.isTraceEnabled()) {
-			LOG.trace("Trying to parse (line: " + getLineNumber() + "): " + line);
+			LOG.trace("Trying to parse (line: {}): {}", getLineNumber(), line);
 		}
 		if (!"".equals(line)) {
 			String[] quoted = splitQuoted(line);
@@ -119,7 +119,7 @@ public class CSVReader extends LineNumberReader {
 				for (String d : delimited) {
 					if (!"".equals(d)) {
 						if (LOG.isTraceEnabled()) {
-							LOG.trace("Adding parsed value: " + d);
+							LOG.trace("Adding parsed value: {}", d);
 						}
 						result.add(d);
 					}

@@ -105,7 +105,7 @@ public class RasterRendererApplet extends JApplet {
 		try {
 			// LOG.debug( "Loading SE XML..." );
 			URI uri = RasterRendererApplet.class.getResource(fname).toURI();
-			LOG.debug("Loading resource: " + uri);
+			LOG.debug("Loading resource: {}", uri);
 			File f = new File(uri);
 			final XMLInputFactory fac = XMLInputFactory.newInstance();
 			XMLStreamReader in = fac.createXMLStreamReader(f.toString(), new FileInputStream(f));

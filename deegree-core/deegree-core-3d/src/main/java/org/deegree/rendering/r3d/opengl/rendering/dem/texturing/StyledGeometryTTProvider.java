@@ -266,7 +266,7 @@ public class StyledGeometryTTProvider implements TextureTileProvider {
 
 				}
 				catch (Exception e) {
-					LOG.debug("Found a cached file but could not read it because: " + e.getLocalizedMessage(), e);
+					LOG.debug("Found a cached file but could not read it because: {}", e.getLocalizedMessage(), e);
 				}
 			}
 		}
@@ -314,10 +314,10 @@ public class StyledGeometryTTProvider implements TextureTileProvider {
 				frs = this.featureStore.query(q);
 			}
 			catch (FeatureStoreException e) {
-				LOG.error("Could not create a geometry layer texture because: " + e.getLocalizedMessage(), e);
+				LOG.error("Could not create a geometry layer texture because: {}", e.getLocalizedMessage(), e);
 			}
 			catch (FilterEvaluationException e) {
-				LOG.error("Could not create a geometry layer texture because: " + e.getLocalizedMessage(), e);
+				LOG.error("Could not create a geometry layer texture because: {}", e.getLocalizedMessage(), e);
 			}
 			if (frs == null || !frs.iterator().hasNext()) {
 				// no objects found
@@ -362,8 +362,8 @@ public class StyledGeometryTTProvider implements TextureTileProvider {
 				}
 			}
 			catch (Exception e) {
-				LOG.debug("Could not create a styled geometry texture because: " + e.getLocalizedMessage(), e);
-				LOG.warn("Error while creating styled geometry texture: " + e);
+				LOG.debug("Could not create a styled geometry texture because: {}", e.getLocalizedMessage(), e);
+				LOG.warn("Error while creating styled geometry texture: {}", e);
 				return null;
 			}
 		}
@@ -402,9 +402,9 @@ public class StyledGeometryTTProvider implements TextureTileProvider {
 		}
 		catch (IOException e) {
 			// could not create a grid writer, don't add to cache
-			LOG.debug("Not adding styled geometry to cache because no grid writer could be created: "
-					+ e.getLocalizedMessage(), e);
-			LOG.warn("Not writing cachefile becaue: " + e.getLocalizedMessage());
+			LOG.debug("Not adding styled geometry to cache because no grid writer could be created: {}",
+					e.getLocalizedMessage(), e);
+			LOG.warn("Not writing cachefile becaue: {}", e.getLocalizedMessage());
 			newCacheFile.delete();
 			return;
 		}
@@ -448,7 +448,7 @@ public class StyledGeometryTTProvider implements TextureTileProvider {
 			// 268435456 == maximum size of texture with textureside 8192 and 4 bytes.
 			super((int) Math.ceil(freeSpace / 268435456d), 0.75f, false);
 			this.freeSpace = freeSpace;
-			LOG.info("Styled geometry dataset cache will use: " + freeSpace / (1024 * 1024d) + " Mb.");
+			LOG.info("Styled geometry dataset cache will use: {} Mb.", freeSpace / (1024 * 1024d));
 		}
 
 		public Pair<TextureTileRequest, File> get(TextureTileRequest req) {
@@ -498,9 +498,9 @@ public class StyledGeometryTTProvider implements TextureTileProvider {
 					this.freeSpace += fSize;
 				}
 				else {
-					LOG.warn("Could not delete file: " + eldest.getValue()
-							+ " from the styled geometry cache, please clear some files from the cache directory: "
-							+ eldest.getValue().getParent() + " manually.");
+					LOG.warn(
+							"Could not delete file: {} from the styled geometry cache, please clear some files from the cache directory: {} manually.",
+							eldest.getValue(), eldest.getValue().getParent());
 				}
 
 				return true;

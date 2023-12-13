@@ -113,7 +113,7 @@ class GrammarPoolManager {
 		for (String uri : sortedUris) {
 			id.append(":").append(uri);
 		}
-		LOG.debug("Looking up grammar pool for combined URI id: '" + id + "'.");
+		LOG.debug("Looking up grammar pool for combined URI id: '{}'.", id);
 
 		GrammarPool pool = idToPool.get(id.toString());
 		if (pool == null) {
@@ -133,7 +133,7 @@ class GrammarPoolManager {
 					s += ", ";
 				}
 			}
-			LOG.debug("Creating grammar pool for schemas: {" + s + "}.");
+			LOG.debug("Creating grammar pool for schemas: {{}}.", s);
 		}
 
 		XMLEntityResolver resolver = new RedirectingEntityResolver();

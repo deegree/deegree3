@@ -116,7 +116,7 @@ public class MultipleComponentListener implements AjaxBehaviorListener {
 					}
 				}
 			}
-			LOG.debug("Updatie from: " + id + "; type: " + type + "; occ: " + occurences);
+			LOG.debug("Updatie from: {}; type: {}; occ: {}", id, type, occurences);
 			if (occurences == null) {
 				occurences = new HashMap<String, Integer>();
 			}

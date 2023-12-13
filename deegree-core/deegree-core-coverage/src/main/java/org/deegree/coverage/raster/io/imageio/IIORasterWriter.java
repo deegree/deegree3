@@ -77,7 +77,7 @@ public class IIORasterWriter implements RasterWriter {
 
 	@Override
 	public void write(AbstractRaster raster, File file, RasterIOOptions options) throws IOException {
-		LOG.debug("writing " + file + " with ImageIO");
+		LOG.debug("writing {} with ImageIO", file);
 		String format = options != null ? options.get(RasterIOOptions.OPT_FORMAT) : null;
 		if (format == null) {
 			format = FileUtils.getFileExtension(file);

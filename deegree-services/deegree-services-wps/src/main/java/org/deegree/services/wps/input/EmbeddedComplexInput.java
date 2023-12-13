@@ -113,11 +113,11 @@ public class EmbeddedComplexInput extends ComplexInputImpl {
 		ByteArrayInputStream is = null;
 
 		if ("base64".equals(getEncoding())) {
-			LOG.debug("Performing base64 decoding of embedded ComplexInput: " + textValue);
+			LOG.debug("Performing base64 decoding of embedded ComplexInput: {}", textValue);
 			is = new ByteArrayInputStream(Base64.decodeBase64(textValue));
 		}
 		else {
-			LOG.warn("Unsupported encoding '" + getEncoding() + "'.");
+			LOG.warn("Unsupported encoding '{}'.", getEncoding());
 			is = new ByteArrayInputStream(textValue.getBytes());
 		}
 

@@ -82,20 +82,20 @@ public class GMLAppSchemaWriterTest {
 		List<XSElementDeclaration> featureElementDecls = analyzer
 			.getFeatureElementDeclarations("http://www.deegree.org/app", false);
 		for (XSElementDeclaration featureElementDecl : featureElementDecls) {
-			LOG.debug("- Feature type: " + featureElementDecl.getName());
+			LOG.debug("- Feature type: {}", featureElementDecl.getName());
 		}
 		List<XSElementDeclaration> featureCollectionElementDecls = analyzer
 			.getFeatureCollectionElementDeclarations(null, false);
 		for (XSElementDeclaration featureCollectionElementDecl : featureCollectionElementDecls) {
-			LOG.debug("- Feature collection type: " + featureCollectionElementDecl.getName());
+			LOG.debug("- Feature collection type: {}", featureCollectionElementDecl.getName());
 		}
 		List<XSElementDeclaration> geometryElementDecls = analyzer.getGeometryElementDeclarations(null, true);
 		for (XSElementDeclaration geometryElementDecl : geometryElementDecls) {
-			LOG.debug("- Geometry type: " + geometryElementDecl.getName());
+			LOG.debug("- Geometry type: {}", geometryElementDecl.getName());
 		}
 		List<XSTypeDefinition> featureTypeDefinitions = analyzer.getFeatureTypeDefinitions(null, true);
 		for (XSTypeDefinition xsTypeDefinition : featureTypeDefinitions) {
-			LOG.debug("- Feature type definition: " + xsTypeDefinition.getName());
+			LOG.debug("- Feature type definition: {}", xsTypeDefinition.getName());
 		}
 	}
 
@@ -120,7 +120,7 @@ public class GMLAppSchemaWriterTest {
 		for (String string : substitutionts) {
 			LOG.debug(string);
 		}
-		LOG.debug("" + substitutionts.size());
+		LOG.debug("{}", substitutionts.size());
 	}
 
 	@Test
@@ -133,7 +133,7 @@ public class GMLAppSchemaWriterTest {
 		for (String string : substitutionts) {
 			LOG.debug(string);
 		}
-		LOG.debug("" + substitutionts.size());
+		LOG.debug("{}", substitutionts.size());
 	}
 
 	@Test
@@ -146,7 +146,7 @@ public class GMLAppSchemaWriterTest {
 		for (String string : substitutionts) {
 			LOG.debug(string);
 		}
-		LOG.debug("" + substitutionts.size());
+		LOG.debug("{}", substitutionts.size());
 	}
 
 	@Test
@@ -159,7 +159,7 @@ public class GMLAppSchemaWriterTest {
 		for (String string : substitutionts) {
 			LOG.debug(string);
 		}
-		LOG.debug("" + substitutionts.size());
+		LOG.debug("{}", substitutionts.size());
 	}
 
 	@Test
@@ -283,7 +283,7 @@ public class GMLAppSchemaWriterTest {
 		for (XSElementDeclaration elementDecl : elementDecls) {
 			LOG.debug(elementDecl.getName());
 		}
-		LOG.debug("" + elementDecls.size());
+		LOG.debug("{}", elementDecls.size());
 	}
 
 	private Set<String> getConcreteSubstitutions(String localName, GMLSchemaInfoSet analyzer) {

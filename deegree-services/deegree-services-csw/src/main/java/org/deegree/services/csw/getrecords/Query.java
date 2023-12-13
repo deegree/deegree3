@@ -167,7 +167,7 @@ public class Query {
 			QName[] queryTypeNames = new QName[queryTypeNamesString.length];
 			int counterQName = 0;
 			for (String s : queryTypeNamesString) {
-				LOG.debug("Parsing typeName '" + s + "' of Query as QName. ");
+				LOG.debug("Parsing typeName '{}' of Query as QName. ", s);
 				QName qname = adapter.parseQName(s, adapter.getRootElement());
 				queryTypeNames[counterQName++] = qname;
 			}

@@ -273,7 +273,7 @@ public class DefaultLockManager implements LockManager {
 					}
 				}
 				catch (SQLException e1) {
-					LOG.warn("Error performing rollback on lock db: " + e.getMessage(), e);
+					LOG.warn("Error performing rollback on lock db: {}", e.getMessage(), e);
 				}
 				throw new FeatureStoreException(e.getMessage(), e);
 			}
@@ -288,7 +288,7 @@ public class DefaultLockManager implements LockManager {
 					}
 				}
 				catch (SQLException e) {
-					LOG.warn("Error resetting auto commit on lock db connection: " + e.getMessage(), e);
+					LOG.warn("Error resetting auto commit on lock db connection: {}", e.getMessage(), e);
 				}
 				close(rs, insertLockstmt, conn, LOG);
 				if (checkStmt != null) {
@@ -296,7 +296,7 @@ public class DefaultLockManager implements LockManager {
 						checkStmt.close();
 					}
 					catch (SQLException e) {
-						LOG.error("Unable to close Statement: " + e.getMessage());
+						LOG.error("Unable to close Statement: {}", e.getMessage());
 					}
 				}
 				if (lockedStmt != null) {
@@ -304,7 +304,7 @@ public class DefaultLockManager implements LockManager {
 						lockedStmt.close();
 					}
 					catch (SQLException e) {
-						LOG.error("Unable to close Statement: " + e.getMessage());
+						LOG.error("Unable to close Statement: {}", e.getMessage());
 					}
 				}
 				if (failedToLockStmt != null) {
@@ -312,7 +312,7 @@ public class DefaultLockManager implements LockManager {
 						failedToLockStmt.close();
 					}
 					catch (SQLException e) {
-						LOG.error("Unable to close Statement: " + e.getMessage());
+						LOG.error("Unable to close Statement: {}", e.getMessage());
 					}
 				}
 			}
@@ -333,7 +333,7 @@ public class DefaultLockManager implements LockManager {
 			final DefaultLockManager manager = this;
 			try {
 				conn = connection.getConnection();
-				LOG.debug("Using connection: " + conn);
+				LOG.debug("Using connection: {}", conn);
 				stmt = conn.createStatement();
 				rs = stmt.executeQuery("SELECT ID,ACQUIRED,EXPIRES FROM LOCKS");
 				lockIter = new ResultSetIterator<Lock>(rs, conn, stmt) {
@@ -492,7 +492,7 @@ public class DefaultLockManager implements LockManager {
 	void releaseExpiredLocks() {
 
 		Timestamp now = new Timestamp(new Date().getTime());
-		LOG.debug("Checking for and removing all locks expired until '" + now + "'");
+		LOG.debug("Checking for and removing all locks expired until '{}'", now);
 		synchronized (this) {
 			Connection conn = null;
 			PreparedStatement stmt = null;
@@ -503,20 +503,20 @@ public class DefaultLockManager implements LockManager {
 						"DELETE FROM LOCKED_FIDS WHERE LOCK_ID IN (SELECT ID FROM LOCKS WHERE EXPIRES <=?)");
 				stmt.setTimestamp(1, now);
 				int deleted = stmt.executeUpdate();
-				LOG.debug("Deleted " + deleted + " row(s) from table LOCKED_FIDS.");
+				LOG.debug("Deleted {} row(s) from table LOCKED_FIDS.", deleted);
 				stmt.close();
 
 				stmt = conn.prepareStatement(
 						"DELETE FROM LOCK_FAILED_FIDS WHERE LOCK_ID IN (SELECT ID FROM LOCKS WHERE EXPIRES <=?)");
 				stmt.setTimestamp(1, now);
 				deleted = stmt.executeUpdate();
-				LOG.debug("Deleted " + deleted + " row(s) from table LOCK_FAILED_FIDS.");
+				LOG.debug("Deleted {} row(s) from table LOCK_FAILED_FIDS.", deleted);
 				stmt.close();
 
 				stmt = conn.prepareStatement("DELETE FROM LOCKS WHERE EXPIRES <=?");
 				stmt.setTimestamp(1, now);
 				deleted = stmt.executeUpdate();
-				LOG.debug("Deleted " + deleted + " row(s) from table LOCKS.");
+				LOG.debug("Deleted {} row(s) from table LOCKS.", deleted);
 			}
 			catch (SQLException e) {
 				String msg = "Could not determine expired locks: " + e.getMessage();

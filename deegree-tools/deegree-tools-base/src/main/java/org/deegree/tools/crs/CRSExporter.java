@@ -164,7 +164,7 @@ public class CRSExporter extends CRSExporterBase {
 	public void export(List<ICRS> crsToExport, XMLStreamWriter xmlWriter) throws XMLStreamException {
 		if (crsToExport != null) {
 			if (crsToExport.size() != 0) {
-				LOG.debug("Trying to export: " + crsToExport.size() + " coordinate systems.");
+				LOG.debug("Trying to export: {} coordinate systems.", crsToExport.size());
 
 				// LinkedList<String> exportedIDs = new LinkedList<String>();
 				Set<IEllipsoid> ellipsoids = new TreeSet<IEllipsoid>(new IdComparer());
@@ -211,12 +211,11 @@ public class CRSExporter extends CRSExporterBase {
 									// rb: those values were set as 'pseudo ids' in pre
 									// 0.3 parser, add projected crs id
 									// try to get it from the epsg database :-)
-									LOG.debug("Updating projection id: " + id + " because it was black listed.");
+									LOG.debug("Updating projection id: {} because it was black listed.", id);
 									updateProjectionId(proj, projection);
 								}
 								else {
-									LOG.debug(
-											"Not updating projection id: " + id + " because it was not black listed.");
+									LOG.debug("Not updating projection id: {} because it was not black listed.", id);
 								}
 
 								projecteds.add(proj);
@@ -257,7 +256,7 @@ public class CRSExporter extends CRSExporterBase {
 										transformations.add(t);
 									}
 									else {
-										LOG.warn("Transformation: " + t + " has no target crs, this may not be.");
+										LOG.warn("Transformation: {} has no target crs, this may not be.", t);
 									}
 								}
 							}
@@ -368,9 +367,9 @@ public class CRSExporter extends CRSExporterBase {
 									d.setDefaultVersion(dVersion, true);
 									d.setDefaultDescription(datumRemark, true);
 									if (ellipsId != -1 && eId == ellipsId) {
-										LOG.debug("The ellipsoid (" + ellips.getCode() + ") of the datum ("
-												+ d.getCodeAndName()
-												+ ") is the same as the ellipsoid in the epsg database (" + eId + ").");
+										LOG.debug(
+												"The ellipsoid ({}) of the datum ({}) is the same as the ellipsoid in the epsg database ({}).",
+												ellips.getCode(), d.getCodeAndName(), eId);
 
 									}
 									else {
@@ -385,7 +384,7 @@ public class CRSExporter extends CRSExporterBase {
 											if (ef != 0 || eb != 0) {
 												IUnit u = Unit.createUnitFromString("epsg:" + uom);
 												if (u == null) {
-													LOG.warn("Could not determine unit of measure of epsg:" + uom);
+													LOG.warn("Could not determine unit of measure of epsg:{}", uom);
 												}
 												else {
 													ea = u.convert(ea, Unit.METRE);
@@ -394,8 +393,9 @@ public class CRSExporter extends CRSExporterBase {
 												boolean otherMatch = (ef == 0) ? (Math.abs(b - eb) < 1E-6)
 														: (Math.abs(f - ef) < 1E-6);
 												if ((Math.abs(a - ea) < 1E-6) && otherMatch) {
-													LOG.info("The ellipsoid of datum: " + d.getCodeAndName()
-															+ " did not have an epsg code, but the values match, updating ellipsoid epsg code as well.");
+													LOG.info(
+															"The ellipsoid of datum: {} did not have an epsg code, but the values match, updating ellipsoid epsg code as well.",
+															d.getCodeAndName());
 													ellips.setDefaultId(new EPSGCode(eId), true);
 													ellips.setDefaultName(ellpsName, true);
 													ellips.setDefaultVersion(eVersion, true);
@@ -406,29 +406,30 @@ public class CRSExporter extends CRSExporterBase {
 													d.setDefaultDescription(datumRemark, true);
 												}
 												else {
-													LOG.warn("The ellipsoid (" + ellips.getCode() + ") of the datum ("
-															+ d.getCodeAndName() + ") is not an epsg ellipsoid.");
+													LOG.warn(
+															"The ellipsoid ({}) of the datum ({}) is not an epsg ellipsoid.",
+															ellips.getCode(), d.getCodeAndName());
 												}
 											}
 										}
 									}
 								}
 								else {
-									LOG.warn("No epsg ellipsoid found for datum (" + d.getCodeAndName() + ".");
+									LOG.warn("No epsg ellipsoid found for datum ({}.", d.getCodeAndName());
 								}
 							}
 							else {
-								LOG.info("Not updating datum: " + d.getCodeAndName()
-										+ " because no code was found in epsg database.");
+								LOG.info("Not updating datum: {} because no code was found in epsg database.",
+										d.getCodeAndName());
 							}
 						}
 						else {
-							LOG.warn("No epsg id was found for datum: " + d.getCodeAndName());
+							LOG.warn("No epsg id was found for datum: {}", d.getCodeAndName());
 						}
 					}
 					catch (SQLException e) {
-						LOG.warn("Could not update epsg code for datum : " + d.getCodeAndName() + " because: "
-								+ e.getLocalizedMessage());
+						LOG.warn("Could not update epsg code for datum : {} because: {}", d.getCodeAndName(),
+								e.getLocalizedMessage());
 					}
 					finally {
 						if (connection != null) {
@@ -443,12 +444,12 @@ public class CRSExporter extends CRSExporterBase {
 					}
 				}
 				else {
-					LOG.warn("Could not determine epsg code for crs: " + bCRS.getCodeAndName() + " not updating datum: "
-							+ d.getCodeAndName());
+					LOG.warn("Could not determine epsg code for crs: {} not updating datum: {}", bCRS.getCodeAndName(),
+							d.getCodeAndName());
 				}
 			}
 			else {
-				LOG.debug("No need to determine epsg code for datum: " + d.getCodeAndName());
+				LOG.debug("No need to determine epsg code for datum: {}", d.getCodeAndName());
 			}
 		}
 	}
@@ -476,12 +477,12 @@ public class CRSExporter extends CRSExporterBase {
 								pm.addName(name);
 							}
 							else {
-								LOG.debug("Not updating name of prime meridian, because it already has the name: "
-										+ name);
+								LOG.debug("Not updating name of prime meridian, because it already has the name: {}",
+										name);
 							}
-							LOG.debug("Updating longitude (" + pm.getLongitude(Unit.DEGREE) + "°) of prime meridian ("
-									+ pm.getCodeAndName() + ") to (" + lon
-									+ "°), because it was not consistent with the epsg database.");
+							LOG.debug(
+									"Updating longitude ({}°) of prime meridian ({}) to ({}°), because it was not consistent with the epsg database.",
+									pm.getLongitude(Unit.DEGREE), pm.getCodeAndName(), lon);
 							pm.setLongitude(lon, Unit.DEGREE);
 							// result = new PrimeMeridian( Unit.DEGREE, lon,
 							// pm.getCodes(), pm.getNames(),
@@ -489,18 +490,18 @@ public class CRSExporter extends CRSExporterBase {
 							// pm.getDescriptions(), pm.getAreasOfUse() );
 						}
 						else {
-							LOG.debug("Not updating pm: " + pm.getCodeAndName()
-									+ " because the longitude is consistent with the epsg database.");
+							LOG.debug("Not updating pm: {} because the longitude is consistent with the epsg database.",
+									pm.getCodeAndName());
 						}
 					}
 					else {
-						LOG.warn("No prime meridian was found for id: " + pm.getCodeAndName());
+						LOG.warn("No prime meridian was found for id: {}", pm.getCodeAndName());
 					}
 
 				}
 				catch (SQLException e) {
-					LOG.warn("Could not update longitude for prime meridian: " + pm.getCodeAndName() + " because: "
-							+ e.getLocalizedMessage());
+					LOG.warn("Could not update longitude for prime meridian: {} because: {}", pm.getCodeAndName(),
+							e.getLocalizedMessage());
 				}
 				finally {
 					if (connection != null) {
@@ -515,8 +516,9 @@ public class CRSExporter extends CRSExporterBase {
 				}
 			}
 			else {
-				LOG.warn("Could not determine epsg code for prime meridian: " + pm.getCodeAndName()
-						+ " please check if longitude: " + pm.getLongitude(Unit.DEGREE) + "° is correct!");
+				LOG.warn(
+						"Could not determine epsg code for prime meridian: {} please check if longitude: {}° is correct!",
+						pm.getCodeAndName(), pm.getLongitude(Unit.DEGREE));
 			}
 		}
 	}
@@ -531,7 +533,7 @@ public class CRSExporter extends CRSExporterBase {
 					epsgCode = Integer.parseInt(pCode.getCode());
 				}
 				catch (NumberFormatException e) {
-					LOG.warn("Given epsg code is not an int, ignoring it: " + pCode.getCode());
+					LOG.warn("Given epsg code is not an int, ignoring it: {}", pCode.getCode());
 				}
 			}
 		}
@@ -565,13 +567,13 @@ public class CRSExporter extends CRSExporterBase {
 
 						}
 						else {
-							LOG.warn("No geographic bbox was found for crs: " + crs.getCodeAndName());
+							LOG.warn("No geographic bbox was found for crs: {}", crs.getCodeAndName());
 						}
 
 					}
 					catch (SQLException e) {
-						LOG.warn("Could not update area of use for crs: " + crs.getCodeAndName() + " because: "
-								+ e.getLocalizedMessage());
+						LOG.warn("Could not update area of use for crs: {} because: {}", crs.getCodeAndName(),
+								e.getLocalizedMessage());
 					}
 					finally {
 						if (connection != null) {
@@ -614,7 +616,7 @@ public class CRSExporter extends CRSExporterBase {
 						}
 					}
 					else {
-						LOG.warn("No conversion code was found for crs: " + proj.getCodeAndName());
+						LOG.warn("No conversion code was found for crs: {}", proj.getCodeAndName());
 					}
 
 					ps = connection.prepareStatement(
@@ -628,13 +630,13 @@ public class CRSExporter extends CRSExporterBase {
 						}
 					}
 					else {
-						LOG.warn("No conversion code was found for crs: " + proj.getCodeAndName());
+						LOG.warn("No conversion code was found for crs: {}", proj.getCodeAndName());
 					}
 
 				}
 				catch (SQLException e) {
-					LOG.warn("Could not get conversion / projection code for crs: " + proj.getCodeAndName()
-							+ " because: " + e.getLocalizedMessage());
+					LOG.warn("Could not get conversion / projection code for crs: {} because: {}",
+							proj.getCodeAndName(), e.getLocalizedMessage());
 				}
 				finally {
 					if (connection != null) {

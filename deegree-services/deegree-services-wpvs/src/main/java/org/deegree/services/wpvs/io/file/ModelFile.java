@@ -175,7 +175,7 @@ class ModelFile<P extends PositionableModel> {
 			}
 		}
 		else {
-			LOG.error("Updating is not supported for file backend, not adding object with id: " + object.getUuid());
+			LOG.error("Updating is not supported for file backend, not adding object with id: {}", object.getUuid());
 			result = false;
 		}
 		return result;
@@ -265,7 +265,7 @@ class ModelFile<P extends PositionableModel> {
 		boolean updateOldInfoFile = this.datasetEnvelope == null;
 		Envelope dsEnv = null;
 		for (Pair<Long, Long> pair : createBatches) {
-			LOG.info("Deserialized " + (++i) + " of " + createBatches.size() + " from file: " + data.getFileName());
+			LOG.info("Deserialized {} of {} from file: {}", (++i), createBatches.size(), data.getFileName());
 			Pair<Envelope, List<DataObjectInfo<P>>> fromFile = data.readAllFromFile(pair.first, pair.second, dsEnv,
 					baseCRS);
 			if (fromFile != null) {
@@ -273,8 +273,8 @@ class ModelFile<P extends PositionableModel> {
 				dsEnv = fromFile.first;
 			}
 			else {
-				LOG.warn("Could not retrieve data from positions: " + pair.first + " till: " + pair.second
-						+ " from file: " + data.getFileName());
+				LOG.warn("Could not retrieve data from positions: {} till: {} from file: {}", pair.first, pair.second,
+						data.getFileName());
 			}
 		}
 		if (updateOldInfoFile && dsEnv != null) {
@@ -308,8 +308,8 @@ class ModelFile<P extends PositionableModel> {
 				nextStep += step;
 			}
 			if (end > dataSize) {
-				LOG.warn("The data position: " + end + " is larger than the size of the datafile: " + dataSize
-						+ " this is strange.");
+				LOG.warn("The data position: {} is larger than the size of the datafile: {} this is strange.", end,
+						dataSize);
 			}
 		}
 		result.add(new Pair<Long, Long>(begin, dataSize));

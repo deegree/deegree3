@@ -180,8 +180,8 @@ public class EPSGDBSynchronizer {
 									&& tmProjection.getFalseEasting() == falseEasting
 									&& tmProjection.getFalseNorthing() == falseNorthing) {
 								LOG.info(
-										"The two Transverse Mercator projections attributes match. Updating the projection with Code: "
-												+ projectionCode);
+										"The two Transverse Mercator projections attributes match. Updating the projection with Code: {}",
+										projectionCode);
 
 								// do the UPDATE
 								// int pInternalID = dbProvider.getInternalID(
@@ -210,8 +210,8 @@ public class EPSGDBSynchronizer {
 									// scale attribute
 									laeaProjection.getFalseNorthing() == falseNorthing) {
 								LOG.info(
-										"The two Lambert Azimuthal projections attributes match. Updating the projection with Code: "
-												+ projectionCode);
+										"The two Lambert Azimuthal projections attributes match. Updating the projection with Code: {}",
+										projectionCode);
 
 								// do the UPDATE
 								// int pInternalID = dbProvider.getInternalID(
@@ -236,8 +236,8 @@ public class EPSGDBSynchronizer {
 									&& lccProjection.getFalseEasting() == falseEasting
 									&& lccProjection.getFalseNorthing() == falseNorthing) {
 								LOG.info(
-										"The two Lambert Conic Conformal projections attributes match. Updating the projection with the Code "
-												+ projectionCode);
+										"The two Lambert Conic Conformal projections attributes match. Updating the projection with the Code {}",
+										projectionCode);
 
 								// do the UPDATE
 								// int pInternalID = dbProvider.getInternalID(
@@ -264,8 +264,8 @@ public class EPSGDBSynchronizer {
 										&& salProjection.getFalseEasting() == falseEasting
 										&& salProjection.getFalseNorthing() == falseNorthing) {
 									LOG.info(
-											"The two StereographicAlternative projections attributes match. Updating the projection with the Code: "
-													+ projectionCode);
+											"The two StereographicAlternative projections attributes match. Updating the projection with the Code: {}",
+											projectionCode);
 
 									// do the UPDATE
 									// int pInternalID = dbProvider.getInternalID(
@@ -287,8 +287,8 @@ public class EPSGDBSynchronizer {
 										&& sazProjection.getFalseEasting() == falseEasting
 										&& sazProjection.getFalseNorthing() == falseNorthing) {
 									LOG.info(
-											"The two StereographicAzimuthal projections attributes match. Updating the projectio with the Code: "
-													+ projectionCode);
+											"The two StereographicAzimuthal projections attributes match. Updating the projectio with the Code: {}",
+											projectionCode);
 
 									// do the UPDATE
 									// int pInternalID = dbProvider.getInternalID(
@@ -392,7 +392,7 @@ public class EPSGDBSynchronizer {
 
 			if (sync.epsgPath == null || sync.epsgPath.trim().length() == 0) {
 				sync.epsgPath = JDBC_CONNECTION_PATH;
-				LOG.info("Using the default JDBC_CONNECTION_PATH: " + JDBC_CONNECTION_PATH);
+				LOG.info("Using the default JDBC_CONNECTION_PATH: {}", JDBC_CONNECTION_PATH);
 			}
 
 			sync.connectToEPSGdatabase();

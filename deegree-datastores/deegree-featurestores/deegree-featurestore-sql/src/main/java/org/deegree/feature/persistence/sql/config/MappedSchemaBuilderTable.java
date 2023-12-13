@@ -177,7 +177,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
 		}
 
 		TableName table = new TableName(ftDecl.getTable());
-		LOG.debug("Processing feature type mapping for table '" + table + "'.");
+		LOG.debug("Processing feature type mapping for table '{}'.", table);
 		if (getColumnMetadataFromDb(table).isEmpty()) {
 			throw new FeatureStoreException("No table with name '" + table + "' exists (or no columns defined).");
 		}
@@ -188,7 +188,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
 			ftName = new QName(table.getTable());
 		}
 		ftName = makeFullyQualified(ftName, "app", "http://www.deegree.org/app");
-		LOG.debug("Feature type name: '" + ftName + "'.");
+		LOG.debug("Feature type name: '{}'.", ftName);
 
 		FIDMapping fidMapping = buildFIDMapping(table, ftName, ftDecl.getFIDMapping());
 
@@ -205,7 +205,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
 	private void buildFeatureTypeAndMapping(TableName table, QName ftName, FIDMapping fidMapping,
 			List<SortCriterion> sortCriteria) throws SQLException {
 
-		LOG.debug("Deriving properties and mapping for feature type '" + ftName + "' from table '" + table + "'");
+		LOG.debug("Deriving properties and mapping for feature type '{}' from table '{}'", ftName, table);
 
 		List<PropertyType> pts = new ArrayList<PropertyType>();
 		List<Mapping> mappings = new ArrayList<Mapping>();
@@ -217,7 +217,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
 
 		for (ColumnMetadata md : getColumnMetadataFromDb(table).values()) {
 			if (fidColumnNames.contains(new SQLIdentifier(md.column.toLowerCase()))) {
-				LOG.debug("Omitting column '" + md.column + "' from properties. Used in FIDMapping.");
+				LOG.debug("Omitting column '{}' from properties. Used in FIDMapping.", md.column);
 				continue;
 			}
 
@@ -235,8 +235,8 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
 					mappings.add(mapping);
 				}
 				catch (IllegalArgumentException e) {
-					LOG.warn("Skipping column with type code '" + md.sqlType + "' from list of properties:"
-							+ e.getMessage());
+					LOG.warn("Skipping column with type code '{}' from list of properties:{}", md.sqlType,
+							e.getMessage());
 				}
 			}
 			else {
@@ -384,7 +384,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
 			m = new GeometryMapping(path, minOccurs == 0, mapping, type, new GeometryStorageParams(crs, srid, dim), jc);
 		}
 		else {
-			LOG.warn("Unhandled property declaration '" + propDecl.getClass() + "'. Skipping it.");
+			LOG.warn("Unhandled property declaration '{}'. Skipping it.", propDecl.getClass());
 		}
 		return new Pair<PropertyType, Mapping>(pt, m);
 	}
@@ -506,8 +506,9 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
 					catch (Throwable t) {
 						// thanks to Larry E. for this
 					}
-					LOG.debug("Found column '" + column + "', typeName: '" + sqlTypeName + "', typeCode: '" + sqlType
-							+ "', isNullable: '" + isNullable + "', isAutoincrement:' " + isAutoincrement + "'");
+					LOG.debug(
+							"Found column '{}', typeName: '{}', typeCode: '{}', isNullable: '{}', isAutoincrement:' {}'",
+							column, sqlTypeName, sqlType, isNullable, isAutoincrement);
 
 					// type name ("geometry") works for PostGIS, MSSQL and Oracle
 					if (sqlTypeName.toLowerCase().contains("geometry")) {
@@ -531,17 +532,16 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
 									dim = DIM_3;
 								}
 								geomType = getGeometryType(rs2.getString(3));
-								LOG.debug("Derived geometry type: " + geomType + ", srid: " + srid + ", dim: " + dim
-										+ "");
+								LOG.debug("Derived geometry type: {}, srid: {}, dim: {}", geomType, srid, dim);
 							}
 							else {
-								LOG.debug("No metadata for geometry column '" + column
-										+ "' available in DB. Using defaults.");
+								LOG.debug("No metadata for geometry column '{}' available in DB. Using defaults.",
+										column);
 							}
 						}
 						catch (Exception e) {
-							LOG.warn("Unable to determine geometry column details: " + e.getMessage()
-									+ ". Using defaults.", e);
+							LOG.warn("Unable to determine geometry column details: {}. Using defaults.", e.getMessage(),
+									e);
 						}
 						finally {
 							JDBCUtils.close(rs2, stmt, null, LOG);
@@ -573,17 +573,17 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
 									dim = DIM_3;
 								}
 								geomType = getGeometryType(rs2.getString(3).toUpperCase());
-								LOG.debug("Derived geometry type (geography): " + geomType + ", srid: " + srid
-										+ ", dim: " + dim + "");
+								LOG.debug("Derived geometry type (geography): {}, srid: {}, dim: {}", geomType, srid,
+										dim);
 							}
 							else {
-								LOG.warn("No metadata for geography column '" + column
-										+ "' available in DB. Using defaults.");
+								LOG.warn("No metadata for geography column '{}' available in DB. Using defaults.",
+										column);
 							}
 						}
 						catch (Exception e) {
-							LOG.warn("Unable to determine geography column details: " + e.getMessage()
-									+ ". Using defaults.", e);
+							LOG.warn("Unable to determine geography column details: {}. Using defaults.",
+									e.getMessage(), e);
 						}
 						finally {
 							JDBCUtils.close(rs2, stmt, null, LOG);
@@ -609,13 +609,14 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
 	}
 
 	private ICRS deriveCrs(String srid) {
-		LOG.debug("Deriving CRS from database SRID ('" + srid + "').");
+		LOG.debug("Deriving CRS from database SRID ('{}').", srid);
 		try {
 			return lookup("EPSG:" + srid, true);
 		}
 		catch (UnknownCRSException e) {
-			LOG.error("Deriving CRS from database SRID ('" + srid
-					+ "') failed. Use StorageCRS option to configure CRS explicitly.");
+			LOG.error(
+					"Deriving CRS from database SRID ('{}') failed. Use StorageCRS option to configure CRS explicitly.",
+					srid);
 		}
 		try {
 			LOG.warn("Defaulting to EPSG:4326.");

@@ -429,7 +429,7 @@ public class GeometryValidator {
 			}
 		}
 		catch (Exception e) {
-			LOG.debug("Validation interrupted: " + e.getMessage());
+			LOG.debug("Validation interrupted: {}", e.getMessage());
 		}
 
 		return isValid;

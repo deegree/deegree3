@@ -106,16 +106,16 @@ public class TexturePool {
 	public static synchronized void addTexture(String key, File textureFile) {
 		if (key != null && !"".equals(key) && textureFile.exists() && !textureFile.isDirectory()) {
 			if (idToFile.containsKey(key)) {
-				LOG.warn("Ignoring texture key: " + key
-						+ " because it is already present in the texture pool with file: " + idToFile.get(key));
+				LOG.warn("Ignoring texture key: {} because it is already present in the texture pool with file: {}",
+						key, idToFile.get(key));
 			}
 			else {
 				idToFile.put(key, textureFile.getAbsolutePath());
 			}
 		}
 		else {
-			LOG.warn("Ignoring texture key: " + key
-					+ " because it is null, empty or the file does not exist or is a directory.");
+			LOG.warn("Ignoring texture key: {} because it is null, empty or the file does not exist or is a directory.",
+					key);
 		}
 	}
 
@@ -137,7 +137,7 @@ public class TexturePool {
 
 		Texture tex = getTexture(glRenderContext, texture);
 		if (tex == null) {
-			LOG.warn("No texture for id: " + texture);
+			LOG.warn("No texture for id: {}", texture);
 			return;
 		}
 		tex.bind();
@@ -171,12 +171,12 @@ public class TexturePool {
 				result = TextureIO.newTexture(f, true);
 			}
 			catch (GLException e) {
-				LOG.error("Error while trying to load texture with fileName:" + fileName + " cause: "
-						+ e.getLocalizedMessage(), e);
+				LOG.error("Error while trying to load texture with fileName:{} cause: {}", fileName,
+						e.getLocalizedMessage(), e);
 			}
 			catch (IOException e) {
-				LOG.error("Error while trying to load texture with fileName:" + fileName + " cause: "
-						+ e.getLocalizedMessage(), e);
+				LOG.error("Error while trying to load texture with fileName:{} cause: {}", fileName,
+						e.getLocalizedMessage(), e);
 			}
 			if (result != null) {
 				idToTexture.put(textureID, result);

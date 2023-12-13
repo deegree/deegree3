@@ -177,10 +177,10 @@ public abstract class CenterOuterTest implements CompareValues {
 		}
 		catch (IOException e) {
 			if (LOG.isDebugEnabled()) {
-				LOG.debug("(Stack) Exception occurred: " + e.getLocalizedMessage(), e);
+				LOG.debug("(Stack) Exception occurred: {}", e.getLocalizedMessage(), e);
 			}
 			else {
-				LOG.error("Exception occurred: " + e.getLocalizedMessage());
+				LOG.error("Exception occurred: {}", e.getLocalizedMessage());
 			}
 		}
 		// System.out.println( sb.toString() );

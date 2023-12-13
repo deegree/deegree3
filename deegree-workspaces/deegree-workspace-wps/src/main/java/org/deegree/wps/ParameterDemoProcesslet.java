@@ -114,7 +114,7 @@ public class ParameterDemoProcesslet implements Processlet {
 		 */
 
 		LiteralInput li = (LiteralInput) in.getParameter("LiteralInput");
-		LOG.debug("- LiteratlInput: " + li);
+		LOG.debug("- LiteratlInput: {}", li);
 
 		/**
 		 *
@@ -124,7 +124,7 @@ public class ParameterDemoProcesslet implements Processlet {
 		 */
 
 		BoundingBoxInput bboxInput = (BoundingBoxInput) in.getParameter("BBOXInput");
-		LOG.debug("- BBOXInput: " + bboxInput);
+		LOG.debug("- BBOXInput: {}", bboxInput);
 
 		/**
 		 *
@@ -137,10 +137,10 @@ public class ParameterDemoProcesslet implements Processlet {
 		 */
 
 		ComplexInput xmlInput = (ComplexInput) in.getParameter("XMLInput");
-		LOG.debug("- XMLInput: " + xmlInput);
+		LOG.debug("- XMLInput: {}", xmlInput);
 
 		ComplexInput binaryInput = (ComplexInput) in.getParameter("BinaryInput");
-		LOG.debug("- BinaryInput: " + binaryInput);
+		LOG.debug("- BinaryInput: {}", binaryInput);
 
 		/**
 		 *
@@ -157,9 +157,9 @@ public class ParameterDemoProcesslet implements Processlet {
 		try {
 			float sleepMillis = sleepSeconds * 1000;
 			int sleepStep = (int) (sleepMillis / 99.0f);
-			LOG.debug("Sleep step (millis): " + sleepStep);
+			LOG.debug("Sleep step (millis): {}", sleepStep);
 			for (int percentCompleted = 0; percentCompleted <= 99; percentCompleted++) {
-				LOG.debug("Setting percent completed: " + percentCompleted);
+				LOG.debug("Setting percent completed: {}", percentCompleted);
 				info.setPercentCompleted(percentCompleted);
 				Thread.sleep(sleepStep);
 			}
@@ -194,13 +194,13 @@ public class ParameterDemoProcesslet implements Processlet {
 
 		// Literal outputs will just be retrieved from the ProcessletOutput object...
 		LiteralOutput literalOutput = (LiteralOutput) out.getParameter("LiteralOutput");
-		LOG.debug("Setting literal output (requested=" + literalOutput.isRequested() + ")");
+		LOG.debug("Setting literal output (requested={})", literalOutput.isRequested());
 		// ...and set to the required result
 		literalOutput.setValue("" + sleepSeconds);
 
 		// BoundingBoxOutput will just be retrieved from the ProcessletOutput object...
 		BoundingBoxOutput bboxOutput = (BoundingBoxOutput) out.getParameter("BBOXOutput");
-		LOG.debug("Setting bbox output (requested=" + bboxOutput.isRequested() + ")");
+		LOG.debug("Setting bbox output (requested={})", bboxOutput.isRequested());
 		// ...and set to the required result
 		bboxOutput.setValue(bboxInput.getValue());
 
@@ -209,7 +209,7 @@ public class ParameterDemoProcesslet implements Processlet {
 		// result.
 		// Initially we have to get a ComplexOutput object from the ProcessletOutput...
 		ComplexOutput xmlOutput = (ComplexOutput) out.getParameter("XMLOutput");
-		LOG.debug("Setting XML output (requested=" + xmlOutput.isRequested() + ")");
+		LOG.debug("Setting XML output (requested={})", xmlOutput.isRequested());
 
 		// .. and use the XMLStreamWriter to write the results to. This case handles XML
 		// based data.
@@ -226,7 +226,7 @@ public class ParameterDemoProcesslet implements Processlet {
 
 		// Another ComplexOutput is binary, e.g. an image...
 		ComplexOutput binaryOutput = (ComplexOutput) out.getParameter("BinaryOutput");
-		LOG.debug("Setting binary output (requested=" + binaryOutput.isRequested() + ")");
+		LOG.debug("Setting binary output (requested={})", binaryOutput.isRequested());
 
 		// which is streamed using a binary stream.
 		try {
@@ -261,7 +261,7 @@ public class ParameterDemoProcesslet implements Processlet {
 		int seconds = -1;
 		String uom = input.getUOM();
 
-		LOG.debug("dataType: " + input.getDataType() + ", uom: " + input.getUOM());
+		LOG.debug("dataType: {}, uom: {}", input.getDataType(), input.getUOM());
 
 		// NOTE: it is guaranteed (by the deegree WPS) that the UOM is always
 		// one of the UOMs specified in the process definition

@@ -125,7 +125,7 @@ public class FeatureLayer extends AbstractLayer {
 
 		QName ftName = featureType == null ? style.getFeatureType() : featureType;
 		if (ftName != null && featureStore.getSchema().getFeatureType(ftName) == null) {
-			LOG.warn("FeatureType '" + ftName + "' is not known to the FeatureStore.");
+			LOG.warn("FeatureType '{}' is not known to the FeatureStore.", ftName);
 			return null;
 		}
 

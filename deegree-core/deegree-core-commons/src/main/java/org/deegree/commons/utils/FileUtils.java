@@ -237,7 +237,7 @@ public class FileUtils {
 		if (charset == null) {
 			charset = DEFAULT_CHARSET;
 		}
-		LOG.debug("Using system charset: " + charset);
+		LOG.debug("Using system charset: {}", charset);
 		return charset;
 	}
 

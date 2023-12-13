@@ -84,8 +84,8 @@ public class PropertyNameParser {
 			LOG.error("Referenced listOfPropertiesWithPrimitiveHref cannot be found and is ignored! ");
 		}
 		catch (IOException i) {
-			LOG.error("Referenced listOfPropertiesWithPrimitiveHref cannot be parsed and is ignored! Exception: "
-					+ i.getMessage());
+			LOG.error("Referenced listOfPropertiesWithPrimitiveHref cannot be parsed and is ignored! Exception: {}",
+					i.getMessage());
 		}
 		return null;
 	}
@@ -100,8 +100,8 @@ public class PropertyNameParser {
 				}
 				catch (IllegalArgumentException e) {
 					LOG.error(
-							"One line of referenced listOfPropertiesWithPrimitiveHref cannot be parsed and is ignored: "
-									+ entry);
+							"One line of referenced listOfPropertiesWithPrimitiveHref cannot be parsed and is ignored: {}",
+							entry);
 				}
 			}
 		}

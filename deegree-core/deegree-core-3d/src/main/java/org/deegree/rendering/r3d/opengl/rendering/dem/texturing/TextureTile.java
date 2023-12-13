@@ -303,7 +303,7 @@ public class TextureTile {
 	public void disable(GL gl, int refID) {
 		synchronized (LOCK) {
 			if (!referencedRenderFragments.contains(refID)) {
-				LOG.warn("Trying to remove a reference, which was not registered, this is strange: " + textureID);
+				LOG.warn("Trying to remove a reference, which was not registered, this is strange: {}", textureID);
 				if (textureID == null) {
 					return;
 				}
@@ -331,9 +331,9 @@ public class TextureTile {
 		if (textureID == null) {
 			if (imageData != null) {
 				if (imageData.capacity() != dataSize) {
-					LOG.warn("The data of the texture tile was not set correctly, excpected are: " + dataSize
-							+ " bytes of " + (hasAlpha ? "RGBA" : "RGB") + " values, supplied were: "
-							+ imageData.capacity() + ". This texture will not be rendered.");
+					LOG.warn(
+							"The data of the texture tile was not set correctly, excpected are: {} bytes of {} values, supplied were: {}. This texture will not be rendered.",
+							dataSize, (hasAlpha ? "RGBA" : "RGB"), imageData.capacity());
 				}
 				else {
 					textureID = new int[1];

@@ -72,7 +72,7 @@ public class ScanEncoding {
 			}
 		}
 
-		LOG.info("Encoding for '" + s + "': " + guess(in));
+		LOG.info("Encoding for '{}': {}", s, guess(in));
 	}
 
 	/**

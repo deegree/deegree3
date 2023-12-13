@@ -202,7 +202,7 @@ public class ProcessExecution extends AbstractProcessExecution {
 			if (statusLocation == null) {
 				throw new RuntimeException("Cannot update status. No statusLocation provided.");
 			}
-			LOG.debug("Polling response document from status location: " + statusLocation);
+			LOG.debug("Polling response document from status location: {}", statusLocation);
 			XMLInputFactory inFactory = XMLInputFactory.newInstance();
 			InputStream is = statusLocation.openStream();
 			XMLStreamReader xmlReader = inFactory.createXMLStreamReader(is);
@@ -309,7 +309,7 @@ public class ProcessExecution extends AbstractProcessExecution {
 			ExecuteRequest100Writer executer = new ExecuteRequest100Writer(logWriter);
 			executer.write100(process.getId(), inputs, responseFormat);
 			logWriter.close();
-			LOG.debug("WPS request can be found at " + logFile);
+			LOG.debug("WPS request can be found at {}", logFile);
 
 			InputStream is = new FileInputStream(logFile);
 			byte[] buffer = new byte[1024];
@@ -361,7 +361,7 @@ public class ProcessExecution extends AbstractProcessExecution {
 			logStream.close();
 
 			responseStream = new FileInputStream(logFile);
-			LOG.debug("WPS response can be found at " + logFile);
+			LOG.debug("WPS response can be found at {}", logFile);
 		}
 
 		// String outputContent = conn.getContentType();

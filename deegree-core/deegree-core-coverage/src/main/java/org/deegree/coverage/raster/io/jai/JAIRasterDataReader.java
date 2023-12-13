@@ -166,8 +166,8 @@ public class JAIRasterDataReader implements RasterDataReader {
 				img = openImageStream(imageStreamFromFileOrStream());
 			}
 			catch (IOException e) {
-				LOG.error("could't open image from " + ((file != null) ? "file: " + file.getAbsolutePath() : "stream ")
-						+ ", because: " + e.getMessage());
+				LOG.error("could't open image from {}, because: {}",
+						((file != null) ? "file: " + file.getAbsolutePath() : "stream "), e.getMessage());
 				// e.printStackTrace();
 				errorOnLoading = true;
 			}

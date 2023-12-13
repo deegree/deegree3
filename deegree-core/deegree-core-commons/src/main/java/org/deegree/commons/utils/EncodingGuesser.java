@@ -140,8 +140,8 @@ public class EncodingGuesser {
 					}
 				}
 
-				LOG.debug("For encoding '" + charset.displayName() + "' we have " + sum + " matches, and " + otherSum
-						+ " mismatches.");
+				LOG.debug("For encoding '{}' we have {} matches, and {} mismatches.", charset.displayName(), sum,
+						otherSum);
 
 				if (otherSum == 0) {
 					return charset;
@@ -157,10 +157,10 @@ public class EncodingGuesser {
 			Entry<Double, Charset> first = ratios.firstEntry();
 			Double key = first.getKey();
 			Charset val = first.getValue();
-			LOG.debug("Guessing encoding '" + val.displayName() + "' with a mismatch ratio of " + key);
+			LOG.debug("Guessing encoding '{}' with a mismatch ratio of {}", val.displayName(), key);
 			LOG.debug("Map was:");
 			for (Integer i : map.keySet()) {
-				LOG.debug(i + " (" + new String(new byte[] { i.byteValue() }, "iso-8859-1") + "): " + map.get(i));
+				LOG.debug("{} ({}): {}", i, new String(new byte[] { i.byteValue() }, "iso-8859-1"), map.get(i));
 			}
 
 			return val;
@@ -168,7 +168,7 @@ public class EncodingGuesser {
 
 		LOG.debug("Unknown encoding:");
 		for (Integer i : map.keySet()) {
-			LOG.debug(i + " (" + new String(new byte[] { i.byteValue() }, "iso-8859-1") + "): " + map.get(i));
+			LOG.debug("{} ({}): {}", i, new String(new byte[] { i.byteValue() }, "iso-8859-1"), map.get(i));
 		}
 
 		return null;

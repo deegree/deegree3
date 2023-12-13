@@ -238,7 +238,7 @@ class GdalLayerData implements LayerData {
 					regions.add(dataset.extractRegionAsByteArray(bbox, width, height, true));
 				}
 				catch (Exception e) {
-					LOG.error("Error extracting region from dataset: " + e.getMessage(), e);
+					LOG.error("Error extracting region from dataset: {}", e.getMessage(), e);
 				}
 				finally {
 					if (dataset != null) {
@@ -246,7 +246,7 @@ class GdalLayerData implements LayerData {
 							pool.returnDataset(dataset);
 						}
 						catch (Exception e) {
-							LOG.error("Error returning dataset to pool: " + e.getMessage());
+							LOG.error("Error returning dataset to pool: {}", e.getMessage());
 						}
 					}
 				}

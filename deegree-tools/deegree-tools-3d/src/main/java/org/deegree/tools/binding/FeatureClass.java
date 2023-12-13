@@ -243,7 +243,7 @@ public class FeatureClass extends ModelClass {
 			return getFromProperty((StringOrRefPropertyType) pd);
 		}
 		else {
-			LOG.warn("Ignore import for property type: " + pd.getName());
+			LOG.warn("Ignore import for property type: {}", pd.getName());
 		}
 		return null;
 	}
@@ -314,7 +314,7 @@ public class FeatureClass extends ModelClass {
 							possibleSubstitutes.add(f);
 						}
 						else {
-							LOG.warn("Could not create a field type for the substitution property: " + p.getName());
+							LOG.warn("Could not create a field type for the substitution property: {}", p.getName());
 						}
 					}
 				}
@@ -350,7 +350,7 @@ public class FeatureClass extends ModelClass {
 				String fieldName = createFieldName(createBetterMethodName(fc.getClassName()));
 				return new Field(fieldName, fc.getClassQName(), pd.isAbstract(), pd.getName());
 			}
-			LOG.error("Could not find a feature class for the feature type: " + ft);
+			LOG.error("Could not find a feature class for the feature type: {}", ft);
 		}
 		else {
 			if (new QName("http://www.opengis.net/gml", "featureMember").equals(pd.getName())
@@ -362,7 +362,7 @@ public class FeatureClass extends ModelClass {
 				}
 			}
 			else {
-				LOG.error("Could not get feature type name for feature property type: " + pd);
+				LOG.error("Could not get feature type name for feature property type: {}", pd);
 			}
 		}
 		return null;

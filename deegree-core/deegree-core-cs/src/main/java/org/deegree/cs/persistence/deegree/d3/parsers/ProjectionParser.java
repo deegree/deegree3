@@ -134,7 +134,7 @@ public class ProjectionParser extends DefinitionParser {
 			// change schema to let projection be identifiable. fix method geodetic
 			tmercNorthern = XMLStreamUtils.getAttributeValueAsBoolean(reader, null, "northernHemisphere", true);
 		}
-		LOG.debug("At element: " + projectionName);
+		LOG.debug("At element: {}", projectionName);
 		String className = XMLStreamUtils.getAttributeValue(reader, "class");
 
 		CRSResource id = parseIdentifiable(reader);
@@ -210,7 +210,7 @@ public class ProjectionParser extends DefinitionParser {
 	private Projection instantiateConfiguredClass(XMLStreamReader reader, String className, CRSResource id,
 			double falseNorthing, double falseEasting, Point2d naturalOrigin, IUnit units, double scaleFactor) {
 		Projection result = null;
-		LOG.debug("Trying to load user defined projection class: " + className);
+		LOG.debug("Trying to load user defined projection class: {}", className);
 		try {
 			Class<?> t = Class.forName(className);
 			t.asSubclass(Projection.class);
@@ -254,7 +254,7 @@ public class ProjectionParser extends DefinitionParser {
 			LOG.error(e.getMessage(), e);
 		}
 		if (result == null) {
-			LOG.debug("Loading of user defined projection class: " + className + " was not successful");
+			LOG.debug("Loading of user defined projection class: {} was not successful", className);
 		}
 		return result;
 

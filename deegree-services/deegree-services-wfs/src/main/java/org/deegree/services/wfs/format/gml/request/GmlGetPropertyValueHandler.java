@@ -95,7 +95,7 @@ public class GmlGetPropertyValueHandler extends AbstractGmlRequestHandler {
 
 	public void doGetPropertyValueResult(GetPropertyValue request, HttpResponseBuffer response) throws Exception {
 
-		LOG.debug("doGetPropertyValue: " + request);
+		LOG.debug("doGetPropertyValue: {}", request);
 
 		QueryAnalyzer analyzer = new QueryAnalyzer(Collections.singletonList(request.getQuery()), format.getMaster(),
 				format.getMaster().getStoreManager(), options.isCheckAreaOfUse());
@@ -279,7 +279,7 @@ public class GmlGetPropertyValueHandler extends AbstractGmlRequestHandler {
 	public void doGetPropertyValueHits(GetPropertyValue request, HttpResponseBuffer response)
 			throws FeatureStoreException, FilterEvaluationException, IOException, OWSException, XMLStreamException {
 
-		LOG.debug("Performing doGetPropertyValue (HITS) request: " + request);
+		LOG.debug("Performing doGetPropertyValue (HITS) request: {}", request);
 
 		QueryAnalyzer analyzer = new QueryAnalyzer(Collections.singletonList(request.getQuery()), format.getMaster(),
 				format.getMaster().getStoreManager(), options.isCheckAreaOfUse());

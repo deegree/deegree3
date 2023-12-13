@@ -132,7 +132,7 @@ public class PROJ4CRSStore extends AbstractCRSStore {
 	public List<ICRS> getAvailableCRSs() throws CRSConfigurationException {
 		Set<CRSCodeType> keys = getResolver().getAvailableCodes();
 		if (LOG.isDebugEnabled()) {
-			LOG.debug("Found following keys: " + keys);
+			LOG.debug("Found following keys: {}", keys);
 		}
 		List<ICRS> allSystems = new LinkedList<ICRS>();
 		for (CRSCodeType key : keys) {
@@ -421,7 +421,7 @@ public class PROJ4CRSStore extends AbstractCRSStore {
 		// Get the ellipsoid
 		String tmpValue = params.remove("ellps");
 		if (tmpValue != null && !"".equals(tmpValue.trim())) {
-			LOG.debug("Creating predefined ellipsoid: " + tmpValue);
+			LOG.debug("Creating predefined ellipsoid: {}", tmpValue);
 			result = getPredefinedEllipsoid(tmpValue);
 		}
 		else {
@@ -458,8 +458,9 @@ public class PROJ4CRSStore extends AbstractCRSStore {
 									inverseFlattening = 1 / flattening;
 								}
 								else {
-									LOG.debug("The given flattening: " + flattening
-											+ " can not be inverted (divide by zero) using a sphere as ellipsoid");
+									LOG.debug(
+											"The given flattening: {} can not be inverted (divide by zero) using a sphere as ellipsoid",
+											flattening);
 								}
 							}
 							else {
@@ -1605,7 +1606,7 @@ public class PROJ4CRSStore extends AbstractCRSStore {
 
 		String crsType = crsDefinition.remove("proj");
 		if (crsType == null || "".equals(crsType.trim())) {
-			LOG.debug("The given params contain: " + crsDefinition);
+			LOG.debug("The given params contain: {}", crsDefinition);
 			throw new CRSConfigurationException(
 					Messages.getMessage("CRS_CONFIG_PROJ4_NO_PROJ_PARAM", crsDefinition.get(EPSG_PRE + "identifier")));
 		}

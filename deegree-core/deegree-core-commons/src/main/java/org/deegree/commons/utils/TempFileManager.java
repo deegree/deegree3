@@ -87,9 +87,9 @@ public class TempFileManager {
 			}
 		}
 		catch (UnsupportedEncodingException e) {
-			LOG.error("Internal error: Cannot encode '" + contextId + "' for creating unique tempdir.");
+			LOG.error("Internal error: Cannot encode '{}' for creating unique tempdir.", contextId);
 		}
-		LOG.info("Using '" + baseDir + "' for storing temporary files.");
+		LOG.info("Using '{}' for storing temporary files.", baseDir);
 	}
 
 	/**

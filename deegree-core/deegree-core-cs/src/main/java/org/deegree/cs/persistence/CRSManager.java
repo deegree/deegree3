@@ -119,7 +119,7 @@ public class CRSManager implements Initializable, Destroyable {
 				defaultInitialized = true;
 			}
 			catch (Throwable t) {
-				LOG.error("The default configuration could not be loaded: " + t.getMessage());
+				LOG.error("The default configuration could not be loaded: {}", t.getMessage());
 			}
 		}
 	}
@@ -166,18 +166,18 @@ public class CRSManager implements Initializable, Destroyable {
 					if ("default.xml".equals(crsConfigFile.getName())) {
 						prefer = false;
 						remove("default");
-						LOG.info("CRS store " + crsConfigFile + " overwrites internal configuration!");
+						LOG.info("CRS store {} overwrites internal configuration!", crsConfigFile);
 					}
 					handleConfigFile(crsConfigFile.toURI().toURL(), prefer);
 				}
 				catch (Throwable t) {
-					LOG.error("Unable to read config file '" + crsConfigFile + "'.", t);
+					LOG.error("Unable to read config file '{}'.", crsConfigFile, t);
 				}
 			}
 			LOG.info("");
 		}
 		else {
-			LOG.info("Could not set up CRS stores: CRS workspace directory " + crsDir + " is null or does not exist.");
+			LOG.info("Could not set up CRS stores: CRS workspace directory {} is null or does not exist.", crsDir);
 		}
 	}
 
@@ -186,13 +186,13 @@ public class CRSManager implements Initializable, Destroyable {
 		int fileNameStart = fileName.lastIndexOf('/') + 1;
 		// 4 is the length of ".xml"
 		String crsId = fileName.substring(fileNameStart, fileName.length() - 4);
-		LOG.info("Setting up crs store '" + crsId + "' from file '" + fileName + "'..." + "");
+		LOG.info("Setting up crs store '{}' from file '{}'...", crsId, fileName);
 		try {
 			CRSStore crss = create(crsConfigFile.toURI().toURL());
 			registerAndInit(crss, crsId, prefer);
 		}
 		catch (Exception e) {
-			LOG.error("Error creating crs store: " + e.getMessage());
+			LOG.error("Error creating crs store: {}", e.getMessage());
 			LOG.trace("Stack trace:", e);
 		}
 	}
@@ -224,7 +224,7 @@ public class CRSManager implements Initializable, Destroyable {
 			closeQuietly(xmlReader);
 			IOUtils.closeQuietly(urlStream);
 		}
-		LOG.debug("Config namespace: '" + namespace + "'");
+		LOG.debug("Config namespace: '{}'", namespace);
 		CRSStoreProvider provider = getProviders().get(namespace);
 		if (provider == null) {
 			String msg = Messages.get("CRSManager.MISSING_PROVIDER", namespace, configURL);
@@ -250,10 +250,11 @@ public class CRSManager implements Initializable, Destroyable {
 					loaded = ServiceLoader.load(CRSStoreProvider.class);
 				}
 				for (CRSStoreProvider provider : loaded) {
-					LOG.debug("CRS store provider: " + provider + ", namespace: " + provider.getConfigNamespace());
+					LOG.debug("CRS store provider: {}, namespace: {}", provider, provider.getConfigNamespace());
 					if (nsToProvider.containsKey(provider.getConfigNamespace())) {
-						LOG.error("Multiple crs store providers for config namespace: '" + provider.getConfigNamespace()
-								+ "' on classpath -- omitting provider '" + provider.getClass().getName() + "'.");
+						LOG.error(
+								"Multiple crs store providers for config namespace: '{}' on classpath -- omitting provider '{}'.",
+								provider.getConfigNamespace(), provider.getClass().getName());
 						continue;
 					}
 					nsToProvider.put(provider.getConfigNamespace(), provider);
@@ -272,7 +273,7 @@ public class CRSManager implements Initializable, Destroyable {
 			if (idToCRSStore.containsKey(id)) {
 				throw new CRSStoreException(Messages.getMessage("CRSManager.DUPLICATE_ID", id));
 			}
-			LOG.info("Registering global crs store with id '" + id + "', type: '" + crss.getClass().getName() + "'");
+			LOG.info("Registering global crs store with id '{}', type: '{}'", id, crss.getClass().getName());
 			idToTransF.put(id, new TransformationFactory(crss));
 			idToCRSStore.put(id, crss);
 			if (prefer) {
@@ -370,7 +371,7 @@ public class CRSManager implements Initializable, Destroyable {
 					crs = lookup(uri, forceXY);
 				}
 				catch (UnknownCRSException e) {
-					LOG.debug("Could not find CRS with uri " + uri + "; return null.");
+					LOG.debug("Could not find CRS with uri {}; return null.", uri);
 				}
 				return crs;
 			}
@@ -538,7 +539,7 @@ public class CRSManager implements Initializable, Destroyable {
 		}
 		long sT = currentTimeMillis();
 		long eT = currentTimeMillis() - sT;
-		LOG.debug("Getting provider: " + crsStore + " took: " + eT + " ms.");
+		LOG.debug("Getting provider: {} took: {} ms.", crsStore, eT);
 		ICRS realCRS = null;
 		try {
 			sT = currentTimeMillis();
@@ -549,7 +550,7 @@ public class CRSManager implements Initializable, Destroyable {
 				realCRS = crsStore.getCRSByCode(CRSCodeType.valueOf(name.toLowerCase()), forceXY);
 			}
 			eT = currentTimeMillis() - sT;
-			LOG.debug("Getting crs ( " + name + " )from provider: " + crsStore + " took: " + eT + " ms.");
+			LOG.debug("Getting crs ( {} )from provider: {} took: {} ms.", name, crsStore, eT);
 		}
 		catch (CRSConfigurationException e) {
 			String msg = Messages.get("CRSManager.BROKEN_CRS_CONFIG", name, e.getMessage());
@@ -559,7 +560,7 @@ public class CRSManager implements Initializable, Destroyable {
 		if (realCRS == null) {
 			throw new UnknownCRSException(name);
 		}
-		LOG.debug("Successfully created the crs with id: " + name);
+		LOG.debug("Successfully created the crs with id: {}", name);
 		return realCRS;
 	}
 
@@ -589,7 +590,7 @@ public class CRSManager implements Initializable, Destroyable {
 		if (realCRS == null) {
 			throw new UnknownCRSException(crsCodeType.getOriginal());
 		}
-		LOG.debug("Successfully created the crs with id: " + crsCodeType);
+		LOG.debug("Successfully created the crs with id: {}", crsCodeType);
 		return realCRS;
 	}
 
@@ -713,12 +714,12 @@ public class CRSManager implements Initializable, Destroyable {
 			t = crsStore.getDirectTransformation(id);
 		}
 		catch (Throwable e) {
-			LOG.debug("Could not retrieve a transformation for id: " + id);
+			LOG.debug("Could not retrieve a transformation for id: {}", id);
 		}
 		if (t != null) {
 			return (Transformation) t;
 		}
-		LOG.debug("The given id: " + id + " is not of type transformation return null.");
+		LOG.debug("The given id: {} is not of type transformation return null.", id);
 		return null;
 	}
 

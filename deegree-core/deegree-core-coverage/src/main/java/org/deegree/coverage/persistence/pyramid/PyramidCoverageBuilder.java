@@ -160,7 +160,7 @@ public class PyramidCoverageBuilder implements ResourceBuilder<Coverage> {
 					return CRSManager.lookup("EPSG:" + epsgCode);
 				}
 				catch (UnknownCRSException e) {
-					LOG.error("No coordinate system found for EPSG:" + epsgCode);
+					LOG.error("No coordinate system found for EPSG:{}", epsgCode);
 				}
 			}
 		}

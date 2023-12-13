@@ -189,7 +189,7 @@ public class SQLFeatureStoreConfigWriter {
 
 	private void writeFeatureTypeMapping(XMLStreamWriter writer, FeatureType ft) throws XMLStreamException {
 
-		LOG.debug("Feature type '" + ft.getName() + "'");
+		LOG.debug("Feature type '{}'", ft.getName());
 		FeatureTypeMapping ftMapping = schema.getFtMapping(ft.getName());
 
 		writer.writeStartElement(CONFIG_NS, "FeatureTypeMapping");
@@ -302,7 +302,7 @@ public class SQLFeatureStoreConfigWriter {
 			writer.writeEndElement();
 		}
 		else {
-			LOG.warn("Unhandled mapping particle " + particle.getClass().getName());
+			LOG.warn("Unhandled mapping particle {}", particle.getClass().getName());
 		}
 	}
 

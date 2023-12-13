@@ -256,7 +256,7 @@ public class DefaultQueryService extends AbstractSqlHelper implements QueryServi
 			logSqlAndArguments(preparedStatement, sql, arguments);
 			rs = preparedStatement.executeQuery();
 			rs.next();
-			LOG.debug("rs for rowCount: " + rs.getInt(1));
+			LOG.debug("rs for rowCount: {}", rs.getInt(1));
 			return rs.getInt(1);
 		}
 		catch (SQLException e) {
@@ -291,13 +291,13 @@ public class DefaultQueryService extends AbstractSqlHelper implements QueryServi
 			String sql = select.toString();
 			stmt = createPreparedStatement(conn, sql);
 			stmt.setFetchSize(DEFAULT_FETCH_SIZE);
-			LOG.debug("select RecordById statement: " + stmt);
+			LOG.debug("select RecordById statement: {}", stmt);
 			LOG.trace(sql);
 			int i = 1;
 			for (String identifier : idList) {
 				stmt.setString(i, identifier);
-				LOG.debug("identifier: " + identifier);
-				LOG.debug("" + stmt);
+				LOG.debug("identifier: {}", identifier);
+				LOG.debug("{}", stmt);
 				i++;
 			}
 			rs = stmt.executeQuery();

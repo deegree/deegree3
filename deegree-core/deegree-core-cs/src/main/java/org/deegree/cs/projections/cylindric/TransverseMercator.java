@@ -191,7 +191,7 @@ public class TransverseMercator extends CylindricalProjection implements ITransv
 	public synchronized Point2d doInverseProjection(IGeographicCRS geographicCRS, double x, double y)
 			throws ProjectionException {
 		Point2d result = new Point2d(0, 0);
-		LOG.debug("InverseProjection, incoming points x: " + x + " y: " + y);
+		LOG.debug("InverseProjection, incoming points x: {} y: {}", x, y);
 		x = (x - getFalseEasting()) / getScaleFactor(geographicCRS);
 		y = (y - getFalseNorthing()) / getScaleFactor(geographicCRS);
 		y *= hemisphere;
@@ -280,7 +280,7 @@ public class TransverseMercator extends CylindricalProjection implements ITransv
 	public synchronized Point2d doProjection(IGeographicCRS geographicCRS, double lambda, double phi)
 			throws ProjectionException {
 		// LOG.debug( "Projection, incoming points lambda: " + lambda + " phi: " + phi );
-		LOG.debug("Projection, incoming points lambda: " + Math.toDegrees(lambda) + " phi: " + Math.toDegrees(phi));
+		LOG.debug("Projection, incoming points lambda: {} phi: {}", Math.toDegrees(lambda), Math.toDegrees(phi));
 		Point2d result = new Point2d(0, 0);
 		lambda -= getProjectionLongitude();
 		// phi -= getProjectionLatitude();

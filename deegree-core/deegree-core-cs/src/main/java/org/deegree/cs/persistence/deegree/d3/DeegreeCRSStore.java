@@ -255,7 +255,7 @@ public class DeegreeCRSStore extends AbstractCRSStore {
 		// int count = 0;
 		// int percentage = (int) Math.round( total / 100.d );
 		// int number = 0;
-		LOG.info("Trying to create a total of " + total + " coordinate systems.");
+		LOG.info("Trying to create a total of {} coordinate systems.", total);
 		for (CRSCodeType[] crsID : allCRSIDs) {
 			if (crsID != null) {
 				String id = crsID[0].getOriginal();
