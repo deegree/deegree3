@@ -103,6 +103,7 @@ import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.refs.coordinatesystem.CRSRef;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.types.FeatureType;
@@ -523,7 +524,7 @@ public class WMSController extends AbstractOWS {
 	private void getFeatureInfo(Map<String, String> map, final HttpResponseBuffer response, Version version)
 			throws OWSException, IOException, MissingDimensionValue, InvalidDimensionValue {
 		org.deegree.protocol.wms.ops.GetFeatureInfo fi = new org.deegree.protocol.wms.ops.GetFeatureInfo(map, version);
-		doGetFeatureInfo(map, response, version, fi);
+		doGetFeatureInfo(response, version, fi);
 	}
 
 	private void getFeatureInfoSchema(Map<String, String> map, HttpResponseBuffer response) throws IOException {
@@ -682,8 +683,7 @@ public class WMSController extends AbstractOWS {
 				case GetFeatureInfo:
 					GetFeatureInfoParser getFeatureInfoParser = new GetFeatureInfoParser();
 					GetFeatureInfo getFeatureInfo = getFeatureInfoParser.parse(xmlStream);
-					Map<String, String> gfiMap = new HashMap<String, String>();
-					doGetFeatureInfo(gfiMap, response, VERSION_130, getFeatureInfo);
+					doGetFeatureInfo(response, VERSION_130, getFeatureInfo);
 					break;
 				default:
 					String msg = "XML request handling is currently not supported for operation " + requestName;
@@ -738,8 +738,7 @@ public class WMSController extends AbstractOWS {
 					case GetFeatureInfo:
 						GetFeatureInfoParser getFeatureInfoParser = new GetFeatureInfoParser();
 						GetFeatureInfo getFeatureInfo = getFeatureInfoParser.parse(xmlStream);
-						Map<String, String> gfiMap = new HashMap<String, String>();
-						doGetFeatureInfo(gfiMap, response, VERSION_130, getFeatureInfo);
+						doGetFeatureInfo(response, VERSION_130, getFeatureInfo);
 						break;
 					default:
 						String msg = "SOAP request handling is currently not supported for operation " + requestName;
@@ -923,7 +922,7 @@ public class WMSController extends AbstractOWS {
 		return headers;
 	}
 
-	private void doGetFeatureInfo(Map<String, String> map, final HttpResponseBuffer response, Version version,
+	private void doGetFeatureInfo(final HttpResponseBuffer response, Version version,
 			org.deegree.protocol.wms.ops.GetFeatureInfo fi) throws OWSException, IOException {
 		checkGetFeatureInfo(version, fi);
 		ICRS crs = fi.getCoordinateSystem();
@@ -931,6 +930,7 @@ public class WMSController extends AbstractOWS {
 		List<String> queryLayers = map(fi.getQueryLayers(), CollectionUtils.<LayerRef>getToStringMapper());
 
 		String format = fi.getInfoFormat();
+		ICRS infoCrs = fi.getInfoCrs();
 		LinkedList<String> headers = new LinkedList<String>();
 		FeatureCollection col = getFeatureInfoProvider.query(this, service, fi, queryLayers, headers);
 		addHeaders(response, headers);
@@ -955,7 +955,8 @@ public class WMSController extends AbstractOWS {
 		String loc = getHttpGetURL() + "request=GetFeatureInfoSchema&layers=" + join(",", queryLayers);
 
 		try {
-			FeatureInfoParams params = new FeatureInfoParams(nsBindings, col, format, geometries, loc, type, crs);
+			FeatureInfoParams params = new FeatureInfoParams(nsBindings, col, format, geometries, loc, type, crs,
+					infoCrs);
 			featureInfoManager.serializeFeatureInfo(params, new StandardFeatureInfoContext(response));
 			response.flushBuffer();
 		}
@@ -1012,7 +1013,8 @@ public class WMSController extends AbstractOWS {
 		}
 	}
 
-	private void addSupportedFeatureInfoFormats(DeegreeWMS conf) throws InstantiationException, IllegalAccessException {
+	private void addSupportedFeatureInfoFormats(DeegreeWMS conf)
+			throws InstantiationException, IllegalAccessException, UnknownCRSException {
 		if (conf.getFeatureInfoFormats() != null) {
 			for (GetFeatureInfoFormat t : conf.getFeatureInfoFormats().getGetFeatureInfoFormat()) {
 				if (t.getFile() != null) {
@@ -1026,7 +1028,8 @@ public class WMSController extends AbstractOWS {
 							metadata.getLocation().resolveToUrl(xsltFile.getValue()), version, workspace);
 				}
 				else if (t.getGeoJson() != null) {
-					featureInfoManager.addOrReplaceGeoJsonFormat(t.getFormat());
+					featureInfoManager.addOrReplaceGeoJsonFormat(t.getFormat(),
+							t.getGeoJson().isAllowOtherCrsThanWGS84(), t.getGeoJson().isAllowExportOfGeometries());
 				}
 				else if (t.getSerializer() != null) {
 					Serializer serializer = t.getSerializer();

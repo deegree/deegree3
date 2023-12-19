@@ -35,25 +35,6 @@
 
 package org.deegree.protocol.wms.ops;
 
-import static java.lang.Integer.parseInt;
-import static java.util.Arrays.asList;
-import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
-import static org.deegree.commons.ows.exception.OWSException.INVALID_POINT;
-import static org.deegree.commons.ows.exception.OWSException.MISSING_PARAMETER_VALUE;
-import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
-import static org.deegree.commons.utils.CollectionUtils.map;
-import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
-import static org.deegree.layer.LayerRef.FROM_NAMES;
-import static org.deegree.protocol.wms.WMSConstants.VERSION_111;
-import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.cs.CRSUtils;
@@ -66,6 +47,24 @@ import org.deegree.layer.LayerRef;
 import org.deegree.rendering.r2d.RenderHelper;
 import org.deegree.style.StyleRef;
 import org.slf4j.Logger;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+
+import static java.lang.Integer.parseInt;
+import static java.util.Arrays.asList;
+import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
+import static org.deegree.commons.ows.exception.OWSException.INVALID_POINT;
+import static org.deegree.commons.ows.exception.OWSException.MISSING_PARAMETER_VALUE;
+import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
+import static org.deegree.commons.utils.CollectionUtils.map;
+import static org.deegree.layer.LayerRef.FROM_NAMES;
+import static org.deegree.protocol.wms.WMSConstants.VERSION_111;
+import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * <code>GetFeatureInfo</code>
@@ -95,6 +94,8 @@ public class GetFeatureInfo extends RequestBase {
 	private Envelope clickBox;
 
 	private String infoFormat;
+
+	private ICRS infoCrs;
 
 	private int featureCount = 1;
 
@@ -330,6 +331,7 @@ public class GetFeatureInfo extends RequestBase {
 		}
 
 		returnGeometries = map.get("GEOMETRIES") != null && map.get("GEOMETRIES").equalsIgnoreCase("true");
+		infoCrs = map.get("INFO_CRS") != null ? CRSManager.getCRSRef(map.get("INFO_CRS")) : null;
 
 		return vals;
 	}
@@ -361,6 +363,13 @@ public class GetFeatureInfo extends RequestBase {
 	 */
 	public String getInfoFormat() {
 		return infoFormat;
+	}
+
+	/**
+	 * @return the CRS of the values to return
+	 */
+	public ICRS getInfoCrs() {
+		return infoCrs;
 	}
 
 	/**

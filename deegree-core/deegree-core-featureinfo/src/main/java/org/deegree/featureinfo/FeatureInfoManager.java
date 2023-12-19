@@ -40,16 +40,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.featureinfo;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.IOException;
-import java.net.URL;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
-
-import javax.xml.stream.XMLStreamException;
-
 import org.deegree.featureinfo.serializing.FeatureInfoGmlWriter;
 import org.deegree.featureinfo.serializing.FeatureInfoSerializer;
 import org.deegree.featureinfo.serializing.GeoJsonFeatureInfoSerializer;
@@ -59,6 +49,15 @@ import org.deegree.featureinfo.serializing.XsltFeatureInfoSerializer;
 import org.deegree.gml.GMLVersion;
 import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
+
+import javax.xml.stream.XMLStreamException;
+import java.io.IOException;
+import java.net.URL;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
+
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Responsible for managing feature info output formats and their serializers.
@@ -113,9 +112,11 @@ public class FeatureInfoManager {
 		featureInfoSerializers.put(format, xslt);
 	}
 
-	public void addOrReplaceGeoJsonFormat(String format) {
+	public void addOrReplaceGeoJsonFormat(String format, boolean allowOtherCrsThanWGS84,
+			boolean allowExportOfGeometries) {
 		LOG.debug("Adding GeoJson feature info format");
-		GeoJsonFeatureInfoSerializer geoJsonSerializer = new GeoJsonFeatureInfoSerializer();
+		GeoJsonFeatureInfoSerializer geoJsonSerializer = new GeoJsonFeatureInfoSerializer(allowOtherCrsThanWGS84,
+				allowExportOfGeometries);
 		featureInfoSerializers.put(format, geoJsonSerializer);
 	}
 
