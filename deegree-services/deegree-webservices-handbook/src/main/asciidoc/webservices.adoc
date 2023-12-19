@@ -1268,6 +1268,30 @@ _GML_32_.
 If you want to learn more about the templating format, read the
 following sections.
 
+==== GeoJSON feature info format
+
+Besides XML, Text or HTML, deegree supports GeoJSON as output format:
+
+[source,xml]
+----
+<FeatureInfoFormats>
+  <GetFeatureInfoFormat>
+    <GeoJSON allowOtherCrsThanWGS84="true" allowExportOfGeometries="true" />
+    <Format>application/geo+json</Format>
+  </GetFeatureInfoFormat>
+</FeatureInfoFormats>
+----
+
+Using option element _GeoJSON_, it possible to enable GeoJSON as GetFeature output format.
+The _GeoJSON_ option has the following sub-options:
+
+[width="100%",cols="15%,15%,10%,60%",options="header",]
+|===
+|Option |Cardinality |Value |Description
+| @allowExportOfGeometries| 0..1        | Boolean  | Per default geometries are not written. With this option the geometries are written if the vendor-specific parameter GEOMETRIES is set to true in the request. Default: false
+| @allowOtherCrsThanWGS84 | 0..1        | Boolean  | GeoJSON only allows geometries in WGS84. With this option the geometries are written in the requested CRS. The vendor-specific parameter _INFO_CRS_ can be used in the request to control the CRS of the geometries in the response. Default: false
+|===
+
 ==== FeatureInfo templating format
 
 The templating format can be used to create text based output formats
