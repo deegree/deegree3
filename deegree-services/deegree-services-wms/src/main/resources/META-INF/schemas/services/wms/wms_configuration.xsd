@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema xmlns:wms="http://www.deegree.org/services/wms" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2001/XMLSchema"
-  targetNamespace="http://www.deegree.org/services/wms" elementFormDefault="qualified" xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb"
-  jaxb:version="3.0">
+<schema xmlns:wms="http://www.deegree.org/services/wms" xmlns="http://www.w3.org/2001/XMLSchema"
+        targetNamespace="http://www.deegree.org/services/wms" elementFormDefault="qualified"
+        xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb"
+        jaxb:version="3.0">
 
   <annotation>
     <appinfo>
@@ -109,7 +110,12 @@
                   </simpleContent>
                 </complexType>
               </element>
-              <element name="GeoJson" type="string" fixed="" />
+              <element name="GeoJson" >
+                <complexType>
+                  <attribute name="allowOtherCrsThanWGS84" type="boolean" default="false" />
+                  <attribute name="allowExportOfGeometries" type="boolean" default="false" />
+                </complexType>
+              </element>
               <element name="Serializer">
                 <complexType>
                   <sequence>
@@ -146,7 +152,7 @@
     </sequence>
     <attribute name="enableDefaultFormats" type="boolean" default="true" />
   </complexType>
-  
+
   <complexType name="GetMapFormatsType">
     <sequence>
       <element name="GetMapFormat" minOccurs="0" maxOccurs="unbounded">

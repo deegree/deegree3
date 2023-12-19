@@ -68,8 +68,10 @@ public class FeatureInfoParams {
 
 	private ICRS crs;
 
+	private final ICRS infoCrs;
+
 	public FeatureInfoParams(Map<String, String> nsBindings, FeatureCollection col, String format,
-			boolean withGeometries, String schemaLocation, FeatureType type, ICRS crs) {
+			boolean withGeometries, String schemaLocation, FeatureType type, ICRS crs, ICRS infoCrs) {
 		this.nsBindings = nsBindings;
 		this.featureCollection = col;
 		this.format = format;
@@ -77,6 +79,7 @@ public class FeatureInfoParams {
 		this.schemaLocation = schemaLocation;
 		this.featureType = type;
 		this.crs = crs;
+		this.infoCrs = infoCrs;
 	}
 
 	/**
@@ -126,6 +129,13 @@ public class FeatureInfoParams {
 	 */
 	public ICRS getCrs() {
 		return crs;
+	}
+
+	/**
+	 * @return the CRS of the values to return
+	 */
+	public ICRS getInfoCrs() {
+		return infoCrs;
 	}
 
 }
