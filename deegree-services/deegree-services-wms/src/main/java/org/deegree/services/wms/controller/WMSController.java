@@ -1028,9 +1028,9 @@ public class WMSController extends AbstractOWS {
 					featureInfoManager.addOrReplaceXsltFormat(t.getFormat(),
 							metadata.getLocation().resolveToUrl(xsltFile.getValue()), version, workspace);
 				}
-				else if (t.getGeoJson() != null) {
+				else if (t.getGeoJSON() != null) {
 					featureInfoManager.addOrReplaceGeoJsonFormat(t.getFormat(),
-							t.getGeoJson().isAllowOtherCrsThanWGS84(), t.getGeoJson().isAllowExportOfGeometries());
+							t.getGeoJSON().isAllowOtherCrsThanWGS84(), t.getGeoJSON().isAllowExportOfGeometries());
 				}
 				else if (t.getSerializer() != null) {
 					Serializer serializer = t.getSerializer();
