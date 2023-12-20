@@ -42,7 +42,6 @@ import static org.deegree.services.wfs.query.StoredQueryHandler.GET_FEATURE_BY_T
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.math.BigInteger;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -260,10 +259,11 @@ public class QueryAnalyzer {
 		try {
 			String templ = IOUtils.toString(u.openStream());
 			for (Entry<String, OMElement> e : query.getParams().entrySet()) {
-				String val = e.getValue().getText();
-				Pattern p = Pattern.compile("[$][{]" + e.getKey() + "[}]", Pattern.CASE_INSENSITIVE);
-				templ = p.matcher(templ).replaceAll(val);
+				String key = e.getKey();
+				templ = replaceParam(key, e.getValue().getText(), templ);
 			}
+			String defaultSrsName = controller.getDefaultQueryCrs().getAlias();
+			templ = replaceParam("srsName", defaultSrsName, templ);
 
 			LOG.debug("Stored query template after replacement: {}", templ);
 
@@ -285,6 +285,11 @@ public class QueryAnalyzer {
 					+ e.getLocalizedMessage() + "'.";
 			throw new OWSException(msg, INVALID_PARAMETER_VALUE, "storedQueryId");
 		}
+	}
+
+	private static String replaceParam(String key, String val, String templ) {
+		Pattern p = Pattern.compile("[$][{]" + key + "[}]", Pattern.CASE_INSENSITIVE);
+		return p.matcher(templ).replaceAll(val);
 	}
 
 	private List<Pair<AdHocQuery, org.deegree.protocol.wfs.query.Query>> convertStoredQueries(
