@@ -39,7 +39,6 @@ import static org.deegree.commons.ows.exception.OWSException.NOT_FOUND;
 import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.commons.tom.ows.Version.parseVersion;
 import static org.reflections.util.ClasspathHelper.forClassLoader;
-import static org.reflections.util.ClasspathHelper.forWebInfLib;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.beans.Introspector;
@@ -1081,6 +1080,46 @@ public class OGCFrontController extends HttpServlet {
         }
         return ModuleInfo.extractModulesInfo( forClassLoader() );
     }
+    //
+    // ******************** BEGIN ********************
+    // Insourced methods from org.reflections:reflections
+    // TODO: needs to be removed or replaced
+    //
+    private static Collection<URL> forWebInfLib(ServletContext servletContext) {
+        Collection<URL> urls = new ArrayList();
+        Set<?> resourcePaths = servletContext.getResourcePaths("/WEB-INF/lib");
+        if (resourcePaths == null) {
+            return urls;
+        } else {
+            Iterator var3 = resourcePaths.iterator();
+
+            while(var3.hasNext()) {
+                Object urlString = var3.next();
+
+                try {
+                    urls.add(servletContext.getResource((String)urlString));
+                } catch (MalformedURLException var6) {
+                }
+            }
+
+            return distinctUrls(urls);
+        }
+    }
+
+    private static Collection<URL> distinctUrls(Collection<URL> urls) {
+        Map<String, URL> distinct = new LinkedHashMap(urls.size());
+        Iterator var2 = urls.iterator();
+
+        while(var2.hasNext()) {
+            URL url = (URL)var2.next();
+            distinct.put(url.toExternalForm(), url);
+        }
+
+        return distinct.values();
+    }
+    //
+    // ******************** END ********************
+    //
 
     private void initWorkspace()
                             throws IOException, URISyntaxException, ResourceInitException {
