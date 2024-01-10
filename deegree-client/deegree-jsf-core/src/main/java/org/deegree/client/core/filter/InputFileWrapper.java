@@ -47,10 +47,10 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.fileupload2.core.FileItem;
+import org.apache.commons.fileupload2.core.FileUploadException;
+import org.apache.commons.fileupload2.jakarta.servlet6.JakartaServletDiskFileUpload;
+import org.apache.commons.fileupload2.jakarta.servlet6.JakartaServletFileUpload;
 
 /**
  * TODO add class documentation here
@@ -65,9 +65,7 @@ public class InputFileWrapper extends HttpServletRequestWrapper {
 	public InputFileWrapper(HttpServletRequest request) throws ServletException {
 		super(request);
 		try {
-			ServletFileUpload upload = new ServletFileUpload();
-			DiskFileItemFactory factory = new DiskFileItemFactory();
-			upload.setFileItemFactory(factory);
+			JakartaServletFileUpload upload = new JakartaServletDiskFileUpload();
 			String encoding = request.getCharacterEncoding();
 			List<FileItem> fileItems = upload.parseRequest(request);
 			formParameters = new HashMap<String, String[]>();
@@ -77,7 +75,7 @@ public class InputFileWrapper extends HttpServletRequestWrapper {
 					String[] values;
 					String v;
 					if (encoding != null) {
-						v = item.getString(encoding);
+						v = item.getString(Charset.forName(encoding));
 					}
 					else {
 						v = item.getString();
@@ -101,14 +99,16 @@ public class InputFileWrapper extends HttpServletRequestWrapper {
 			}
 		}
 		catch (FileUploadException fe) {
-			ServletException servletEx = new ServletException();
-			servletEx.initCause(fe);
-			throw servletEx;
+			ServletException servletEx = new ServletException(fe);
+            throw servletEx;
 		}
 		catch (UnsupportedEncodingException e) {
-			ServletException servletEx = new ServletException();
-			servletEx.initCause(e);
-			throw servletEx;
+			ServletException servletEx = new ServletException(e);
+            throw servletEx;
+		}
+		catch (IOException e) {
+			ServletException servletEx = new ServletException(e);
+            throw servletEx;
 		}
 	}
 

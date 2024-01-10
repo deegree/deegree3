@@ -39,7 +39,7 @@ import org.apache.axiom.om.OMException;
 import org.apache.axiom.soap.SOAP11Version;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
-import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload2.core.FileItem;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.ows.metadata.DatasetMetadata;
 import org.deegree.commons.ows.metadata.MetadataUrl;

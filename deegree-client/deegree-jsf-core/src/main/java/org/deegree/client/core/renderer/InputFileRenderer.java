@@ -39,7 +39,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.apache.commons.fileupload.FileItem;
 import jakarta.faces.application.ResourceDependencies;
 import jakarta.faces.application.ResourceDependency;
 import jakarta.faces.component.UIComponent;
@@ -52,6 +51,7 @@ import jakarta.faces.render.Renderer;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 
+import org.apache.commons.fileupload2.core.FileItem;
 import org.deegree.client.core.component.HtmlInputFile;
 import org.deegree.client.core.model.UploadedFile;
 import org.deegree.commons.utils.TempFileManager;
@@ -110,7 +110,7 @@ public class InputFileRenderer extends Renderer {
 				URL url = getUrl(request, target, item.getName());
 				ServletContext sc = (ServletContext) external.getContext();
 				File file = getTargetFile(sc, target, item.getName());
-				item.write(file);
+				item.write(file.toPath());
 				uploadedFile.setFileItem(item);
 				uploadedFile.setUrl(url);
 				uploadedFile.setAbsolutePath(file.getAbsolutePath());

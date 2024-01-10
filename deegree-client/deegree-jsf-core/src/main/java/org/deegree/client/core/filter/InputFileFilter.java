@@ -44,7 +44,7 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.fileupload2.jakarta.servlet6.JakartaServletFileUpload;
 
 /**
  *
@@ -63,7 +63,7 @@ public class InputFileFilter implements Filter {
 			throws IOException, ServletException {
 		if ((request instanceof HttpServletRequest)) {
 			HttpServletRequest httpRequest = (HttpServletRequest) request;
-			if (ServletFileUpload.isMultipartContent(httpRequest)) {
+			if (JakartaServletFileUpload.isMultipartContent(httpRequest)) {
 				request = new InputFileWrapper(httpRequest);
 			}
 		}

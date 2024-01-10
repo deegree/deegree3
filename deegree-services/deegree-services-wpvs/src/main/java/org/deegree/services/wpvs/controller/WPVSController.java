@@ -59,7 +59,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload2.core.FileItem;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.ows.metadata.OperationsMetadata;
 import org.deegree.commons.ows.metadata.domain.Domain;
