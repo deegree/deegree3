@@ -41,7 +41,7 @@ import static org.deegree.services.config.actions.Utils.getWorkspaceAndPath;
 import java.io.File;
 import java.io.IOException;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.deegree.commons.config.DeegreeWorkspace;

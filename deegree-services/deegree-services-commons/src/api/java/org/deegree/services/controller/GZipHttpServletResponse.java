@@ -39,9 +39,9 @@ import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.Locale;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,7 +70,7 @@ public class GZipHttpServletResponse implements HttpServletResponse {
 
     /**
      * @param cookie
-     * @see javax.servlet.http.HttpServletResponse#addCookie(javax.servlet.http.Cookie)
+     * @see jakarta.servlet.http.HttpServletResponse#addCookie(jakarta.servlet.http.Cookie)
      */
     public void addCookie( Cookie cookie ) {
         response.addCookie( cookie );
@@ -79,7 +79,7 @@ public class GZipHttpServletResponse implements HttpServletResponse {
     /**
      * @param name
      * @return
-     * @see javax.servlet.http.HttpServletResponse#containsHeader(java.lang.String)
+     * @see jakarta.servlet.http.HttpServletResponse#containsHeader(java.lang.String)
      */
     public boolean containsHeader( String name ) {
         return response.containsHeader( name );
@@ -88,7 +88,7 @@ public class GZipHttpServletResponse implements HttpServletResponse {
     /**
      * @param url
      * @return
-     * @see javax.servlet.http.HttpServletResponse#encodeURL(java.lang.String)
+     * @see jakarta.servlet.http.HttpServletResponse#encodeURL(java.lang.String)
      */
     public String encodeURL( String url ) {
         return response.encodeURL( url );
@@ -96,7 +96,7 @@ public class GZipHttpServletResponse implements HttpServletResponse {
 
     /**
      * @return
-     * @see javax.servlet.ServletResponse#getCharacterEncoding()
+     * @see jakarta.servlet.ServletResponse#getCharacterEncoding()
      */
     public String getCharacterEncoding() {
         return response.getCharacterEncoding();
@@ -105,7 +105,7 @@ public class GZipHttpServletResponse implements HttpServletResponse {
     /**
      * @param url
      * @return
-     * @see javax.servlet.http.HttpServletResponse#encodeRedirectURL(java.lang.String)
+     * @see jakarta.servlet.http.HttpServletResponse#encodeRedirectURL(java.lang.String)
      */
     public String encodeRedirectURL( String url ) {
         return response.encodeRedirectURL( url );
@@ -113,7 +113,7 @@ public class GZipHttpServletResponse implements HttpServletResponse {
 
     /**
      * @return
-     * @see javax.servlet.ServletResponse#getContentType()
+     * @see jakarta.servlet.ServletResponse#getContentType()
      */
     public String getContentType() {
         return response.getContentType();
@@ -123,26 +123,26 @@ public class GZipHttpServletResponse implements HttpServletResponse {
      * @param url
      * @return
      * @deprecated
-     * @see javax.servlet.http.HttpServletResponse#encodeUrl(java.lang.String)
+     * @see jakarta.servlet.http.HttpServletResponse#encodeURL(java.lang.String)
      */
     public String encodeUrl( String url ) {
-        return response.encodeUrl( url );
+        return response.encodeURL( url );
     }
 
     /**
      * @param url
      * @return
      * @deprecated
-     * @see javax.servlet.http.HttpServletResponse#encodeRedirectUrl(java.lang.String)
+     * @see jakarta.servlet.http.HttpServletResponse#encodeRedirectURL(java.lang.String)
      */
     public String encodeRedirectUrl( String url ) {
-        return response.encodeRedirectUrl( url );
+        return response.encodeRedirectURL( url );
     }
 
     /**
      * @return
      * @throws IOException
-     * @see javax.servlet.ServletResponse#getOutputStream()
+     * @see jakarta.servlet.ServletResponse#getOutputStream()
      */
     public ServletOutputStream getOutputStream()
                             throws IOException {
@@ -156,7 +156,7 @@ public class GZipHttpServletResponse implements HttpServletResponse {
      * @param sc
      * @param msg
      * @throws IOException
-     * @see javax.servlet.http.HttpServletResponse#sendError(int, java.lang.String)
+     * @see jakarta.servlet.http.HttpServletResponse#sendError(int, java.lang.String)
      */
     public void sendError( int sc, String msg )
                             throws IOException {
@@ -166,7 +166,7 @@ public class GZipHttpServletResponse implements HttpServletResponse {
     /**
      * @return
      * @throws IOException
-     * @see javax.servlet.ServletResponse#getWriter()
+     * @see jakarta.servlet.ServletResponse#getWriter()
      */
     public PrintWriter getWriter()
                             throws IOException {
@@ -176,7 +176,7 @@ public class GZipHttpServletResponse implements HttpServletResponse {
     /**
      * @param sc
      * @throws IOException
-     * @see javax.servlet.http.HttpServletResponse#sendError(int)
+     * @see jakarta.servlet.http.HttpServletResponse#sendError(int)
      */
     public void sendError( int sc )
                             throws IOException {
@@ -186,7 +186,7 @@ public class GZipHttpServletResponse implements HttpServletResponse {
     /**
      * @param location
      * @throws IOException
-     * @see javax.servlet.http.HttpServletResponse#sendRedirect(java.lang.String)
+     * @see jakarta.servlet.http.HttpServletResponse#sendRedirect(java.lang.String)
      */
     public void sendRedirect( String location )
                             throws IOException {
@@ -195,7 +195,7 @@ public class GZipHttpServletResponse implements HttpServletResponse {
 
     /**
      * @param charset
-     * @see javax.servlet.ServletResponse#setCharacterEncoding(java.lang.String)
+     * @see jakarta.servlet.ServletResponse#setCharacterEncoding(java.lang.String)
      */
     public void setCharacterEncoding( String charset ) {
         response.setCharacterEncoding( charset );
@@ -204,7 +204,7 @@ public class GZipHttpServletResponse implements HttpServletResponse {
     /**
      * @param name
      * @param date
-     * @see javax.servlet.http.HttpServletResponse#setDateHeader(java.lang.String, long)
+     * @see jakarta.servlet.http.HttpServletResponse#setDateHeader(java.lang.String, long)
      */
     public void setDateHeader( String name, long date ) {
         response.setDateHeader( name, date );
@@ -213,7 +213,7 @@ public class GZipHttpServletResponse implements HttpServletResponse {
     /**
      * @param name
      * @param date
-     * @see javax.servlet.http.HttpServletResponse#addDateHeader(java.lang.String, long)
+     * @see jakarta.servlet.http.HttpServletResponse#addDateHeader(java.lang.String, long)
      */
     public void addDateHeader( String name, long date ) {
         response.addDateHeader( name, date );
@@ -222,7 +222,7 @@ public class GZipHttpServletResponse implements HttpServletResponse {
     /**
      * @param name
      * @param value
-     * @see javax.servlet.http.HttpServletResponse#setHeader(java.lang.String, java.lang.String)
+     * @see jakarta.servlet.http.HttpServletResponse#setHeader(java.lang.String, java.lang.String)
      */
     public void setHeader( String name, String value ) {
         response.setHeader( name, value );
@@ -230,7 +230,7 @@ public class GZipHttpServletResponse implements HttpServletResponse {
 
     /**
      * @param len
-     * @see javax.servlet.ServletResponse#setContentLength(int)
+     * @see jakarta.servlet.ServletResponse#setContentLength(int)
      */
     public void setContentLength( int len ) {
         LOG.warn( "setContentLength() is not supported for gzipped responses" );
@@ -243,7 +243,7 @@ public class GZipHttpServletResponse implements HttpServletResponse {
 
     /**
      * @param type
-     * @see javax.servlet.ServletResponse#setContentType(java.lang.String)
+     * @see jakarta.servlet.ServletResponse#setContentType(java.lang.String)
      */
     public void setContentType( String type ) {
         response.setContentType( type );
@@ -252,7 +252,7 @@ public class GZipHttpServletResponse implements HttpServletResponse {
     /**
      * @param name
      * @param value
-     * @see javax.servlet.http.HttpServletResponse#addHeader(java.lang.String, java.lang.String)
+     * @see jakarta.servlet.http.HttpServletResponse#addHeader(java.lang.String, java.lang.String)
      */
     public void addHeader( String name, String value ) {
         response.addHeader( name, value );
@@ -261,7 +261,7 @@ public class GZipHttpServletResponse implements HttpServletResponse {
     /**
      * @param name
      * @param value
-     * @see javax.servlet.http.HttpServletResponse#setIntHeader(java.lang.String, int)
+     * @see jakarta.servlet.http.HttpServletResponse#setIntHeader(java.lang.String, int)
      */
     public void setIntHeader( String name, int value ) {
         response.setIntHeader( name, value );
@@ -270,7 +270,7 @@ public class GZipHttpServletResponse implements HttpServletResponse {
     /**
      * @param name
      * @param value
-     * @see javax.servlet.http.HttpServletResponse#addIntHeader(java.lang.String, int)
+     * @see jakarta.servlet.http.HttpServletResponse#addIntHeader(java.lang.String, int)
      */
     public void addIntHeader( String name, int value ) {
         response.addIntHeader( name, value );
@@ -278,7 +278,7 @@ public class GZipHttpServletResponse implements HttpServletResponse {
 
     /**
      * @param size
-     * @see javax.servlet.ServletResponse#setBufferSize(int)
+     * @see jakarta.servlet.ServletResponse#setBufferSize(int)
      */
     public void setBufferSize( int size ) {
         response.setBufferSize( size );
@@ -286,20 +286,10 @@ public class GZipHttpServletResponse implements HttpServletResponse {
 
     /**
      * @param sc
-     * @see javax.servlet.http.HttpServletResponse#setStatus(int)
+     * @see jakarta.servlet.http.HttpServletResponse#setStatus(int)
      */
     public void setStatus( int sc ) {
         response.setStatus( sc );
-    }
-
-    /**
-     * @param sc
-     * @param sm
-     * @deprecated
-     * @see javax.servlet.http.HttpServletResponse#setStatus(int, java.lang.String)
-     */
-    public void setStatus( int sc, String sm ) {
-        response.setStatus( sc, sm );
     }
 
     @Override
@@ -324,7 +314,7 @@ public class GZipHttpServletResponse implements HttpServletResponse {
 
     /**
      * @return
-     * @see javax.servlet.ServletResponse#getBufferSize()
+     * @see jakarta.servlet.ServletResponse#getBufferSize()
      */
     public int getBufferSize() {
         return response.getBufferSize();
@@ -332,7 +322,7 @@ public class GZipHttpServletResponse implements HttpServletResponse {
 
     /**
      * @throws IOException
-     * @see javax.servlet.ServletResponse#flushBuffer()
+     * @see jakarta.servlet.ServletResponse#flushBuffer()
      */
     public void flushBuffer()
                             throws IOException {
@@ -346,7 +336,7 @@ public class GZipHttpServletResponse implements HttpServletResponse {
 
     /**
      * 
-     * @see javax.servlet.ServletResponse#resetBuffer()
+     * @see jakarta.servlet.ServletResponse#resetBuffer()
      */
     public void resetBuffer() {
         response.resetBuffer();
@@ -354,7 +344,7 @@ public class GZipHttpServletResponse implements HttpServletResponse {
 
     /**
      * @return
-     * @see javax.servlet.ServletResponse#isCommitted()
+     * @see jakarta.servlet.ServletResponse#isCommitted()
      */
     public boolean isCommitted() {
         return response.isCommitted();
@@ -362,7 +352,7 @@ public class GZipHttpServletResponse implements HttpServletResponse {
 
     /**
      * 
-     * @see javax.servlet.ServletResponse#reset()
+     * @see jakarta.servlet.ServletResponse#reset()
      */
     public void reset() {
         response.reset();
@@ -370,7 +360,7 @@ public class GZipHttpServletResponse implements HttpServletResponse {
 
     /**
      * @param loc
-     * @see javax.servlet.ServletResponse#setLocale(java.util.Locale)
+     * @see jakarta.servlet.ServletResponse#setLocale(java.util.Locale)
      */
     public void setLocale( Locale loc ) {
         response.setLocale( loc );
@@ -378,7 +368,7 @@ public class GZipHttpServletResponse implements HttpServletResponse {
 
     /**
      * @return
-     * @see javax.servlet.ServletResponse#getLocale()
+     * @see jakarta.servlet.ServletResponse#getLocale()
      */
     public Locale getLocale() {
         return response.getLocale();

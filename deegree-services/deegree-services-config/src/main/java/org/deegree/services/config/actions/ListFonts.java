@@ -40,8 +40,8 @@ import java.io.IOException;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 

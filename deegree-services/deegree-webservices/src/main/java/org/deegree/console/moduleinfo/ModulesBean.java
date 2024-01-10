@@ -35,11 +35,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.faces.context.ExternalContext;
+import jakarta.faces.context.FacesContext;
 
+import jakarta.inject.Named;
 import org.deegree.workspace.standard.ModuleInfo;
 import org.deegree.console.workspace.WorkspaceBean;
 
@@ -48,7 +48,7 @@ import org.deegree.console.workspace.WorkspaceBean;
  *
  * @since 3.3
  */
-@ManagedBean
+@Named
 @RequestScoped
 public class ModulesBean implements Serializable {
 

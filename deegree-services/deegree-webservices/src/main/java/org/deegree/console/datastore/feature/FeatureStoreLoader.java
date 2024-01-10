@@ -34,8 +34,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.datastore.feature;
 
-import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
-import static javax.faces.application.FacesMessage.SEVERITY_INFO;
+import static jakarta.faces.application.FacesMessage.SEVERITY_ERROR;
+import static jakarta.faces.application.FacesMessage.SEVERITY_INFO;
 import static org.deegree.gml.GMLVersion.GML_32;
 import static org.deegree.protocol.wfs.transaction.action.IDGenMode.GENERATE_NEW;
 import static org.deegree.protocol.wfs.transaction.action.IDGenMode.USE_EXISTING;
@@ -44,11 +44,11 @@ import java.io.Serializable;
 import java.net.URL;
 import java.util.List;
 
-import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
-import javax.faces.context.FacesContext;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.FacesContext;
 
+import jakarta.inject.Named;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
@@ -63,7 +63,7 @@ import org.deegree.protocol.wfs.transaction.action.IDGenMode;
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  */
-@ManagedBean
+@Named
 @RequestScoped
 public class FeatureStoreLoader implements Serializable {
 

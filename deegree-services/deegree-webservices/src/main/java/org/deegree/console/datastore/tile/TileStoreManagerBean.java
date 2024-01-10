@@ -36,13 +36,12 @@ package org.deegree.console.datastore.tile;
 
 import java.io.Serializable;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
-
+import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Named;
 import org.deegree.console.AbstractResourceManagerBean;
 import org.deegree.tile.persistence.TileStoreManager;
 
-@ManagedBean
+@Named
 @ViewScoped
 public class TileStoreManagerBean extends AbstractResourceManagerBean<TileStoreManager> implements Serializable {
 

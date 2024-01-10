@@ -35,16 +35,15 @@
 package org.deegree.wpsclient.gui.component;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.Map;
 
-import javax.faces.component.UIComponent;
-import javax.faces.component.UIInput;
-import javax.faces.context.FacesContext;
-import javax.faces.context.ResponseWriter;
-import javax.faces.convert.ConverterException;
-import javax.faces.model.SelectItem;
-import javax.faces.render.FacesRenderer;
+import jakarta.faces.component.UIComponent;
+import jakarta.faces.component.UIInput;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.context.ResponseWriter;
+import jakarta.faces.convert.ConverterException;
+import jakarta.faces.model.SelectItem;
+import jakarta.faces.render.FacesRenderer;
 
 import com.sun.faces.renderkit.SelectItemsIterator;
 import org.deegree.commons.utils.StringPair;

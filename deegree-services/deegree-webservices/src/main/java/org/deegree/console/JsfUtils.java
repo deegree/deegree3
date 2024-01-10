@@ -34,10 +34,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console;
 
-import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
+import static jakarta.faces.application.FacesMessage.SEVERITY_ERROR;
 
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.FacesContext;
 
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.workspace.Workspace;

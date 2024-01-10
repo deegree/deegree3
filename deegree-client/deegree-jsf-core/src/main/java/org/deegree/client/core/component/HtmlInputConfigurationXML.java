@@ -42,11 +42,11 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.faces.application.FacesMessage;
-import javax.faces.component.FacesComponent;
-import javax.faces.component.html.HtmlInputTextarea;
-import javax.faces.context.FacesContext;
-import javax.faces.convert.ConverterException;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.component.FacesComponent;
+import jakarta.faces.component.html.HtmlInputTextarea;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.convert.ConverterException;
 
 import org.deegree.client.core.utils.MessageUtils;
 import org.deegree.commons.xml.schema.SchemaValidationEvent;

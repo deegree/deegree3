@@ -36,9 +36,9 @@ package org.deegree.client.core.utils;
 
 import java.io.IOException;
 
-import javax.faces.application.Resource;
-import javax.faces.context.FacesContext;
-import javax.faces.context.ResponseWriter;
+import jakarta.faces.application.Resource;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.context.ResponseWriter;
 
 /**
  * TODO add class documentation here

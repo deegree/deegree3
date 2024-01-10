@@ -34,8 +34,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.core.component;
 
-import javax.faces.component.FacesComponent;
-import javax.faces.component.UIPanel;
+import jakarta.faces.component.FacesComponent;
+import jakarta.faces.component.UIPanel;
 
 /**
  * TODO add class documentation here

@@ -39,22 +39,21 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.util.Iterator;
 import java.util.Map;
 
-import javax.faces.component.UIComponent;
-import javax.faces.component.UIInput;
-import javax.faces.context.FacesContext;
-import javax.faces.context.ResponseWriter;
-import javax.faces.convert.ConverterException;
-import javax.faces.model.SelectItem;
-import javax.faces.render.FacesRenderer;
+import jakarta.faces.component.UIComponent;
+import jakarta.faces.component.UIInput;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.context.ResponseWriter;
+import jakarta.faces.convert.ConverterException;
+import jakarta.faces.model.SelectItem;
+import jakarta.faces.render.FacesRenderer;
 
-import com.sun.faces.renderkit.SelectItemsIterator;
 import org.deegree.client.core.component.HtmlInputBBox;
 import org.deegree.client.core.model.BBox;
 import org.slf4j.Logger;
 
+import com.sun.faces.renderkit.SelectItemsIterator;
 import com.sun.faces.renderkit.RenderKitUtils;
 import com.sun.faces.renderkit.html_basic.MenuRenderer;
 

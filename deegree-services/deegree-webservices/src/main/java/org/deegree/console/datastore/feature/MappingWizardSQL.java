@@ -34,7 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.datastore.feature;
 
-import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
+import static jakarta.faces.application.FacesMessage.SEVERITY_ERROR;
 import static org.apache.commons.io.FileUtils.readFileToByteArray;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
 
@@ -48,14 +48,14 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.ExternalContext;
+import jakarta.faces.context.FacesContext;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
 
+import jakarta.inject.Named;
 import org.apache.commons.io.IOUtils;
 import org.deegree.client.core.utils.SQLExecution;
 import org.deegree.commons.config.DeegreeWorkspace;
@@ -96,7 +96,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  */
-@ManagedBean
+@Named
 @SessionScoped
 public class MappingWizardSQL {
 

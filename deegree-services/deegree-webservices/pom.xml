@@ -278,12 +278,13 @@
     <dependency>
       <groupId>org.primefaces</groupId>
       <artifactId>primefaces</artifactId>
-      <version>13.0.3</version>
+      <version>13.0.4</version>
+      <classifier>jakarta</classifier>
     </dependency>
     <dependency>
       <groupId>org.primefaces.extensions</groupId>
       <artifactId>primefaces-extensions</artifactId>
-      <version>13.0.3</version>
+      <version>13.0.4</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -303,12 +304,12 @@
     </dependency>
     <!-- Dependencies provided by servlet container -->
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.servlet.jsp</groupId>
-      <artifactId>javax.servlet.jsp-api</artifactId>
+      <groupId>jakarta.servlet.jsp</groupId>
+      <artifactId>jakarta.servlet.jsp-api</artifactId>
     </dependency>
     <dependency>
       <groupId>jakarta.mail</groupId>

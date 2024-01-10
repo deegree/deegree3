@@ -27,9 +27,8 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.console.datastore.coverage;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
-
+import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Named;
 import org.deegree.console.AbstractCreateResourceBean;
 import org.deegree.coverage.persistence.CoverageManager;
 
@@ -39,7 +38,7 @@ import org.deegree.coverage.persistence.CoverageManager;
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @since 3.3
  */
-@ManagedBean
+@Named
 @ViewScoped
 public class CreateCoverageBean extends AbstractCreateResourceBean {
 

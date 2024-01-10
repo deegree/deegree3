@@ -36,13 +36,12 @@ package org.deegree.console.connection.remoteows;
 
 import java.io.Serializable;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
-
+import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Named;
 import org.deegree.console.AbstractResourceManagerBean;
 import org.deegree.remoteows.RemoteOWSManager;
 
-@ManagedBean
+@Named
 @ViewScoped
 public class RemoteOwsManagerBean extends AbstractResourceManagerBean<RemoteOWSManager> implements Serializable {
 

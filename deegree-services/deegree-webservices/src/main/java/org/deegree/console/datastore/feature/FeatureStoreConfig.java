@@ -34,7 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.datastore.feature;
 
-import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
+import static jakarta.faces.application.FacesMessage.SEVERITY_ERROR;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -45,9 +45,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.faces.application.FacesMessage;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.ExternalContext;
+import jakarta.faces.context.FacesContext;
 
 import org.deegree.client.core.utils.SQLExecution;
 import org.deegree.console.Config;

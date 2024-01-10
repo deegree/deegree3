@@ -46,7 +46,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.Map;
 
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;

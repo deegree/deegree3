@@ -34,9 +34,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.wpsclient.gui.component;
 
-import javax.faces.component.FacesComponent;
-import javax.faces.component.UISelectOne;
-import javax.faces.context.FacesContext;
+import jakarta.faces.component.FacesComponent;
+import jakarta.faces.component.UISelectOne;
+import jakarta.faces.context.FacesContext;
 
 import org.deegree.protocol.wps.client.param.ComplexFormat;
 
@@ -92,9 +92,8 @@ public class HtmlSelectFormat extends UISelectOne {
 	/*
 	 * (non-Javadoc)
 	 *
-	 * @see
-	 * javax.faces.component.UISelectOne#validateValue(javax.faces.context.FacesContext,
-	 * java.lang.Object)
+	 * @see jakarta.faces.component.UISelectOne#validateValue(jakarta.faces.context.
+	 * FacesContext, java.lang.Object)
 	 */
 	@Override
 	protected void validateValue(FacesContext context, Object value) {

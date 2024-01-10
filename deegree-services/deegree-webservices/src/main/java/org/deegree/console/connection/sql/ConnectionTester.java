@@ -34,16 +34,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.connection.sql;
 
-import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
-import static javax.faces.application.FacesMessage.SEVERITY_INFO;
+import static jakarta.faces.application.FacesMessage.SEVERITY_ERROR;
+import static jakarta.faces.application.FacesMessage.SEVERITY_INFO;
 import static org.deegree.client.core.utils.ActionParams.getParam1;
 
-import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.ExternalContext;
+import jakarta.faces.context.FacesContext;
 
+import jakarta.inject.Named;
 import org.deegree.console.workspace.WorkspaceBean;
 import org.deegree.db.ConnectionProvider;
 import org.deegree.db.ConnectionProviderProvider;
@@ -56,7 +56,7 @@ import org.deegree.workspace.Workspace;
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  */
-@ManagedBean
+@Named
 @SessionScoped
 public class ConnectionTester {
 

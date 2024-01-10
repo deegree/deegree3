@@ -39,15 +39,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
-
+import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Named;
 import org.deegree.console.AbstractResourceManagerBean;
 import org.deegree.console.Config;
 import org.deegree.db.ConnectionProviderManager;
 import org.deegree.workspace.ResourceMetadata;
 
-@ManagedBean
+@Named
 @ViewScoped
 public class SqlConnectionManagerBean extends AbstractResourceManagerBean<ConnectionProviderManager>
 		implements Serializable {

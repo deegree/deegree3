@@ -36,13 +36,13 @@ package org.deegree.console.layer.layer;
 
 import java.io.Serializable;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Named;
 
 import org.deegree.console.AbstractResourceManagerBean;
 import org.deegree.layer.persistence.LayerStoreManager;
 
-@ManagedBean
+@Named
 @ViewScoped
 public class LayerManagerBean extends AbstractResourceManagerBean<LayerStoreManager> implements Serializable {
 
