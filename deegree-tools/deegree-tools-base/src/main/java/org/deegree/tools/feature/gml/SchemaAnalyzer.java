@@ -65,6 +65,7 @@ import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.tools.CommandUtils;
+import org.deegree.commons.utils.ToolboxRegistration;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
 /**
@@ -73,7 +74,7 @@ import org.w3c.dom.bootstrap.DOMImplementationRegistry;
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  */
 @Tool("Prints an analysis of the global element declarations in an XML schema and their content models.")
-public class SchemaAnalyzer {
+public class SchemaAnalyzer implements ToolboxRegistration {
 
 	// command line parameters
 	private static final String OPT_INPUT_FILE = "inputfile";
@@ -81,6 +82,14 @@ public class SchemaAnalyzer {
 	private static final String OPT_NAMESPACE = "namespace";
 
 	protected final XSModel schema;
+
+	/**
+	 * DO NOT USE
+	 * @deprecated only use for registration purpose
+	 */
+	public SchemaAnalyzer() {
+		this.schema = null;
+	}
 
 	protected SchemaAnalyzer(XSModel schema) {
 		this.schema = schema;

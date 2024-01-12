@@ -38,8 +38,6 @@ import static java.util.Collections.emptyList;
 import static org.deegree.commons.ows.exception.OWSException.NOT_FOUND;
 import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.commons.tom.ows.Version.parseVersion;
-import static org.reflections.util.ClasspathHelper.forClassLoader;
-import static org.reflections.util.ClasspathHelper.forWebInfLib;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.beans.Introspector;
@@ -66,7 +64,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
 import javax.imageio.spi.IIORegistry;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -77,7 +74,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamReader;
-
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMXMLBuilderFactory;
@@ -103,6 +99,7 @@ import org.deegree.commons.xml.XMLProcessingException;
 import org.deegree.commons.xml.stax.XMLInputFactoryUtils;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.feature.stream.ThreadedFeatureInputStream;
+import org.deegree.moduleinfo.ModuleInfo;
 import org.deegree.services.OWS;
 import org.deegree.services.OWSProvider;
 import org.deegree.services.OwsManager;
@@ -116,7 +113,6 @@ import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType.RequestTimeoutMilliseconds;
 import org.deegree.services.ows.OWS110ExceptionReportSerializer;
 import org.deegree.services.resources.ResourcesServlet;
-import org.deegree.workspace.standard.ModuleInfo;
 import org.slf4j.Logger;
 
 /**
@@ -1022,12 +1018,7 @@ public class OGCFrontController extends HttpServlet {
             LOG.info( "deegree modules" );
             LOG.info( "--------------------------------------------------------------------------------" );
             LOG.info( "" );
-            try {
-                modulesInfo = extractModulesInfo( config.getServletContext() );
-            } catch ( Throwable t ) {
-                LOG.error( "Unable to extract deegree module information: " + t.getMessage() );
-                modulesInfo = emptyList();
-            }
+            modulesInfo = ModuleInfo.load();
             for ( ModuleInfo moduleInfo : modulesInfo ) {
                 LOG.info( "- " + moduleInfo.toString() );
                 if ( "deegree-services-commons".equals( moduleInfo.getArtifactId() ) ) {
@@ -1073,16 +1064,6 @@ public class OGCFrontController extends HttpServlet {
         } finally {
             CONTEXT.remove();
         }
-    }
-
-    private Collection<ModuleInfo> extractModulesInfo( ServletContext servletContext )
-                            throws IOException, URISyntaxException {
-
-        if ( servletContext.getServerInfo() != null && servletContext.getServerInfo().contains( "WebLogic" ) ) {
-            LOG.debug( "Running on weblogic. Not extracting module info from classpath, but from WEB-INF/lib." );
-            return ModuleInfo.extractModulesInfo( forWebInfLib( servletContext ) );
-        }
-        return ModuleInfo.extractModulesInfo( forClassLoader() );
     }
 
     private void initWorkspace()

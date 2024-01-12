@@ -39,7 +39,6 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
@@ -47,6 +46,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.tools.CommandUtils;
+import org.deegree.commons.utils.ToolboxRegistration;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -60,7 +60,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
 @Tool(value = "Validates single metadata records or metadata records from directory against the ISO Schema.")
-public class ISO19139Validator {
+public class ISO19139Validator implements ToolboxRegistration {
 
 	private static final String OPT_SRC = "source";
 
@@ -77,6 +77,14 @@ public class ISO19139Validator {
 	private static final String DEFAULT_FILENAME = "validationResult";
 
 	private final boolean verbose;
+
+	/**
+	 * DO NOT USE
+	 * @deprecated only use for registration purpose
+	 */
+	public ISO19139Validator() {
+		this.verbose = false;
+	}
 
 	/**
 	 * @param verbose

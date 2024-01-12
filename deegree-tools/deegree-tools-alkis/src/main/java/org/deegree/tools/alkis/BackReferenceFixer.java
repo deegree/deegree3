@@ -59,6 +59,7 @@ import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tools.CommandUtils;
+import org.deegree.commons.utils.ToolboxRegistration;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.feature.Feature;
 import org.deegree.feature.property.GenericProperty;
@@ -78,7 +79,7 @@ import org.slf4j.Logger;
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  */
 @Tool(value = "adds inversDientZurDarstellungVon properties for GeoInfoDok 6.0.1 files")
-public class BackReferenceFixer {
+public class BackReferenceFixer implements ToolboxRegistration {
 
 	private static final Logger LOG = getLogger(BackReferenceFixer.class);
 

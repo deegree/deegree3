@@ -44,7 +44,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Option;
@@ -53,6 +52,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.tools.CommandUtils;
+import org.deegree.commons.utils.ToolboxRegistration;
 import org.deegree.cs.CoordinateTransformer;
 import org.deegree.cs.components.IUnit;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -70,7 +70,7 @@ import org.slf4j.Logger;
  *
  */
 @Tool("Convert a point or a list of points from one SRS to another.")
-public class CoordinateTransform {
+public class CoordinateTransform implements ToolboxRegistration {
 
 	private static final String OPT_S_SRS = "s_srs";
 
@@ -89,6 +89,15 @@ public class CoordinateTransform {
 	private ICRS sourceCRS;
 
 	private ICRS targetCRS;
+
+	/**
+	 * DO NOT USE
+	 * @deprecated only use for registration purpose
+	 */
+	public CoordinateTransform() {
+		this.sourceCRS = null;
+		this.targetCRS = null;
+	}
 
 	/**
 	 * Construct a demo crs with following coordinate systems.

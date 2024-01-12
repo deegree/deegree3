@@ -46,11 +46,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
+import java.util.ServiceLoader;
 import java.util.Set;
-
+import java.util.stream.Collectors;
 import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.utils.DeegreeAALogoUtils;
-import org.reflections.Reflections;
+import org.deegree.commons.utils.ToolboxRegistration;
 
 /**
  * Allows for convenient starting and listing of available deegree command line tools.
@@ -183,8 +185,12 @@ public class ToolBox {
 	 */
 	public static void main(String[] args) throws SecurityException, NoSuchMethodException, IllegalArgumentException,
 			IllegalAccessException, InvocationTargetException {
-		Reflections reflections = new Reflections("org.deegree");
-		Set<Class<?>> tools = reflections.getTypesAnnotatedWith(Tool.class);
+
+		Set<Class<?>> tools = ServiceLoader.load(ToolboxRegistration.class) //
+			.stream()
+			.map(ServiceLoader.Provider::type)
+			.filter(Objects::nonNull)
+			.collect(Collectors.toSet());
 
 		ToolBox toolbox = new ToolBox(tools);
 

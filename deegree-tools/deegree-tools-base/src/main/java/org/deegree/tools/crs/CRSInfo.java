@@ -53,6 +53,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.tools.CommandUtils;
+import org.deegree.commons.utils.ToolboxRegistration;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -66,7 +67,7 @@ import org.deegree.cs.persistence.CRSStore;
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  */
 @Tool("Retrieve information about the availability|definition of a certain crs in deegree")
-public class CRSInfo {
+public class CRSInfo implements ToolboxRegistration {
 
 	/*
 	 * Command line options

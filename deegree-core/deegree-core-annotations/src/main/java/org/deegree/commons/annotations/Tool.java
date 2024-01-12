@@ -45,17 +45,15 @@ import java.lang.annotation.Target;
 
 /**
  * The <code>Tool</code> annotation can be used to define a class with a main method as a
- * tool. Such a tool should supply a short description (as well as a main method of
- * course).
+ * tool. Such a tool must provide a non-args constructor, has to implement
+ * {@link org.deegree.commons.utils.ToolboxRegistration} and should supply a short
+ * description (as well as a main method of course).
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @deprecated This annotation is deprecated as of version 3.4 of deegree.
- *
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Target(ElementType.TYPE)
-@Deprecated
 public @interface Tool {
 
 	/**

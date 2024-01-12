@@ -46,6 +46,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.tools.CommandUtils;
+import org.deegree.commons.utils.ToolboxRegistration;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.RasterTransformer;
 import org.deegree.coverage.raster.TiledRaster;
@@ -64,7 +65,7 @@ import org.deegree.cs.persistence.CRSManager;
  *
  */
 @Tool("Transforms a raster with the given crs into another crs")
-public class TransformRaster {
+public class TransformRaster implements ToolboxRegistration {
 
 	/**
 	 * @param args

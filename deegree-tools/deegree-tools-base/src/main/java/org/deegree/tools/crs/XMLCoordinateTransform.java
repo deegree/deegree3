@@ -60,6 +60,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.tools.CommandUtils;
+import org.deegree.commons.utils.ToolboxRegistration;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
@@ -76,7 +77,7 @@ import org.slf4j.Logger;
  * @author <a href="mailto:bezema@lat-lon.de">Markus Schneider</a>
  */
 @Tool("Converts the GML geometries inside an XML document from one SRS to another.")
-public class XMLCoordinateTransform {
+public class XMLCoordinateTransform implements ToolboxRegistration {
 
 	private static final Logger LOG = getLogger(XMLCoordinateTransform.class);
 

@@ -44,11 +44,9 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.sql.Blob;
 import java.sql.SQLException;
-
 import javax.vecmath.Point2f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Option;
@@ -57,6 +55,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.tools.CommandUtils;
+import org.deegree.commons.utils.ToolboxRegistration;
 import org.deegree.commons.utils.math.MathUtils;
 import org.deegree.coverage.AbstractCoverage;
 import org.deegree.coverage.raster.AbstractRaster;
@@ -91,7 +90,7 @@ import org.deegree.tools.rendering.dem.builder.dag.DAGBuilder;
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  */
 @Tool("Generates DEM multiresolution datasets from rasters, suitable for the WPVS.")
-public class DEMDatasetGenerator {
+public class DEMDatasetGenerator implements ToolboxRegistration {
 
 	// private static final Logger LOG = LoggerFactory.getLogger(
 	// DEMDatasetGenerator.class );
@@ -147,6 +146,27 @@ public class DEMDatasetGenerator {
 	private static final int TILE_SIZE = 1000;
 
 	private static final int BYTES_PER_NORMAL_COMPONENT = 1;
+
+	/**
+	 * DO NOT USE
+	 * @deprecated only use for registration purpose
+	 */
+	public DEMDatasetGenerator() {
+		this.dataBuffer = null;
+		this.inputX = 0;
+		this.inputY = 0;
+		this.levels = 0;
+		this.rowsPerFragment = 0;
+		this.sampleSizeX = 0;
+		this.sampleSizeY = 0;
+		this.outputX = 0;
+		this.outputY = 0;
+		this.maxZ = 0;
+		this.verticesPerFragment = 0;
+		this.trianglesPerFragment = 0;
+		this.bytesPerTile = 0;
+		this.fileSize = 0;
+	}
 
 	/**
 	 * Creates a new <code>PatchGenerator</code> instance.

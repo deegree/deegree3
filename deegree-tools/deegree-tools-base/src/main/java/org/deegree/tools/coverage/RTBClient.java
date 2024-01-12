@@ -56,6 +56,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.tools.CommandUtils;
+import org.deegree.commons.utils.ToolboxRegistration;
 import org.deegree.coverage.AbstractCoverage;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.interpolation.InterpolationType;
@@ -75,7 +76,7 @@ import org.deegree.tools.coverage.rtb.RasterTreeBuilder;
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  */
 @Tool("Builds a raster tree from a given set of rasters.")
-public class RTBClient {
+public class RTBClient implements ToolboxRegistration {
 
 	private static final String OPT_BBOX = "bbox";
 

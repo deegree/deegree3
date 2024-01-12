@@ -67,6 +67,7 @@ import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tools.CommandUtils;
+import org.deegree.commons.utils.ToolboxRegistration;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
@@ -90,7 +91,7 @@ import org.deegree.workspace.standard.DefaultWorkspace;
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  */
 @Tool("Swiss Army knife for GML/deegree application schemas.")
-public class ApplicationSchemaTool {
+public class ApplicationSchemaTool implements ToolboxRegistration {
 
 	// command line parameters
 	private static final String OPT_ACTION = "action";

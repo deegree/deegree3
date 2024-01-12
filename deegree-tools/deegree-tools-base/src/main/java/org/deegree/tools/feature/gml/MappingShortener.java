@@ -47,10 +47,11 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.tools.CommandUtils;
+import org.deegree.commons.utils.ToolboxRegistration;
 import org.deegree.tools.i18n.Messages;
 
 @Tool("Helps creating readable short versions of feature type / property names for mapping to db.")
-public class MappingShortener {
+public class MappingShortener implements ToolboxRegistration {
 
 	private static final String OPT_INPUT_FILE = "inputfile";
 

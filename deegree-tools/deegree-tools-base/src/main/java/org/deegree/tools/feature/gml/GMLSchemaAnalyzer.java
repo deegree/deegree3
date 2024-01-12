@@ -44,6 +44,7 @@ import org.apache.commons.cli.PosixParser;
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.tools.CommandUtils;
+import org.deegree.commons.utils.ToolboxRegistration;
 import org.deegree.gml.GMLVersion;
 import org.deegree.tools.i18n.Messages;
 
@@ -54,7 +55,7 @@ import org.deegree.tools.i18n.Messages;
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  */
 @Tool("Prints an analysis of the feature type hierarchy defined in a GML application schema as well as information on the geometry element hierarchy.")
-public class GMLSchemaAnalyzer {
+public class GMLSchemaAnalyzer implements ToolboxRegistration {
 
 	// command line parameters
 	private static final String OPT_INPUT_FILE = "inputfile";

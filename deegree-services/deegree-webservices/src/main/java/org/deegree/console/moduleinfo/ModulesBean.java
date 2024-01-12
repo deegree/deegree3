@@ -40,7 +40,7 @@ import javax.faces.bean.RequestScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
-import org.deegree.workspace.standard.ModuleInfo;
+import org.deegree.moduleinfo.ModuleInfo;
 import org.deegree.console.workspace.WorkspaceBean;
 
 /**

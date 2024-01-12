@@ -52,13 +52,14 @@ import java.util.TreeMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
+import org.deegree.commons.tools.CommandUtils;
+import org.deegree.commons.utils.ToolboxRegistration;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.data.RasterData;
@@ -69,15 +70,14 @@ import org.deegree.coverage.raster.data.info.InterleaveType;
 import org.deegree.coverage.raster.data.nio.ByteBufferRasterData;
 import org.deegree.coverage.raster.data.nio.PixelInterleavedRasterData;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
-import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
+import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.grid.GridMetaInfoFile;
 import org.deegree.coverage.tools.RasterOptionsParser;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.commons.tools.CommandUtils;
 import org.deegree.tools.coverage.gridifier.index.MultiLevelMemoryTileGridIndex;
 import org.deegree.tools.coverage.gridifier.index.MultiLevelRasterTileIndex;
 import org.deegree.tools.coverage.gridifier.index.MultiResolutionTileGrid;
@@ -90,7 +90,7 @@ import org.deegree.tools.coverage.gridifier.index.TileFile;
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  */
 @Tool("Converts a deegree 2 raster tree into a grid of regular, non-overlapping raster cells encoded as raw RGB blobs, suitable for the WPVS.")
-public class RasterTreeGridifier {
+public class RasterTreeGridifier implements ToolboxRegistration {
 
 	final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RasterTreeGridifier.class);
 
@@ -158,6 +158,27 @@ public class RasterTreeGridifier {
 	private int numWorkerThreads = 4;
 
 	OriginLocation originLocation;
+
+	/**
+	 * DO NOT USE
+	 * @deprecated only use for registration purpose
+	 */
+	public RasterTreeGridifier() {
+		this.rtbBaseDir = null;
+		this.minX = 0;
+		this.minY = 0;
+		this.maxX = 0;
+		this.maxY = 0;
+		this.outputDir = null;
+		this.tileHeight = 0;
+		this.tileWidth = 0;
+		this.maxBlobSize = 0;
+		this.domainWidth = 0;
+		this.domainHeight = 0;
+		this.tileIndex = null;
+		this.levels = null;
+		this.originLocation = null;
+	}
 
 	private RasterTreeGridifier(String rtbBaseDir, float minX, float minY, float maxX, float maxY, String jdbcUrl,
 			String rakTableName, String pyrTableName, String outputDir, int tileHeight, int tileWidth, long maxBlobSize,
