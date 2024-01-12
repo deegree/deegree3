@@ -25,6 +25,7 @@
     <module>deegree-core-geometry</module>
     <module>deegree-core-layer</module>
     <module>deegree-core-metadata</module>
+    <module>deegree-core-moduleinfo</module>
     <module>deegree-core-remoteows</module>
     <module>deegree-core-rendering-2d</module>
     <module>deegree-core-schema</module>

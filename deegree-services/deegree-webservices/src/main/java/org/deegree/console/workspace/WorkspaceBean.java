@@ -44,7 +44,6 @@ import static org.deegree.console.JsfUtils.indicateException;
 import static org.deegree.services.controller.OGCFrontController.getModulesInfo;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -63,7 +62,7 @@ import javax.faces.context.FacesContext;
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpResponse;
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.workspace.standard.ModuleInfo;
+import org.deegree.moduleinfo.ModuleInfo;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.io.Zip;
 import org.deegree.commons.utils.net.HttpUtils;

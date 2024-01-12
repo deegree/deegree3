@@ -42,24 +42,20 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.imageio.ImageIO;
-
-import org.deegree.workspace.standard.ModuleInfo;
+import org.deegree.moduleinfo.ModuleInfo;
 import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.DefaultWorkspace;
 import org.slf4j.Logger;
@@ -114,18 +110,11 @@ public class DeegreeWorkspace {
 
 	/**
 	 * Returns the {@link ModuleInfo} for all deegree modules in the workspace.
-	 * @return
+	 * @return list of modules or empty list
 	 * @throws IOException
 	 */
 	public Collection<ModuleInfo> getModulesInfo() throws IOException {
-		if (!(workspace.getModuleClassLoader() instanceof URLClassLoader)) {
-			return null;
-		}
-		Set<URL> urls = new HashSet<URL>();
-		for (URL url : ((URLClassLoader) workspace.getModuleClassLoader()).getURLs()) {
-			urls.add(url);
-		}
-		return ModuleInfo.extractModulesInfo(urls);
+		return workspace != null ? workspace.getModulesInfo() : Collections.emptyList();
 	}
 
 	/**
