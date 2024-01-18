@@ -40,6 +40,7 @@ import java.awt.image.DataBuffer;
 import java.awt.image.PixelInterleavedSampleModel;
 import java.awt.image.SampleModel;
 
+import java.util.regex.Pattern;
 import org.deegree.coverage.raster.data.RasterData;
 
 /**
@@ -121,6 +122,10 @@ public enum BandType {
 	 */
 	public final static BandType[] RGBA = new BandType[] { RED, GREEN, BLUE, ALPHA };
 
+	private static final Pattern DASH_PATTERN = Pattern.compile("-");
+
+	private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s");
+
 	private final String info;
 
 	BandType(String info) {
@@ -195,8 +200,8 @@ public enum BandType {
 	 */
 	public static BandType fromString(String band) {
 		String key = band.toUpperCase();
-		key = key.replaceAll("-", "_");
-		key = key.replaceAll("\\s", "_");
+		key = DASH_PATTERN.matcher(key).replaceAll("_");
+		key = WHITESPACE_PATTERN.matcher(key).replaceAll("_");
 		BandType bt = null;
 		try {
 			bt = BandType.valueOf(key);

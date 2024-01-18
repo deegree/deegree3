@@ -34,8 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.regex.Pattern;
 
 import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -74,7 +73,6 @@ import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceMetadata;
-import org.w3c.dom.Element;
 
 /**
  * This class is responsible for building web service metadata providers.
@@ -83,6 +81,8 @@ import org.w3c.dom.Element;
  * @since 3.4
  */
 public class DefaultOwsMetadataProviderBuilder implements ResourceBuilder<OWSMetadataProvider> {
+
+	private static final Pattern METADATA_SET_ID_PATTERN = Pattern.compile(Pattern.quote("${metadataSetId}"));
 
 	private final JAXBElement<DeegreeServicesMetadataType> md;
 
@@ -203,7 +203,7 @@ public class DefaultOwsMetadataProviderBuilder implements ResourceBuilder<OWSMet
 		if (template == null || template.getValue() == null || datasetId == null) {
 			return null;
 		}
-		return StringUtils.replaceAll(template.getValue(), "${metadataSetId}", datasetId);
+		return StringUtils.replaceAll(template.getValue(), METADATA_SET_ID_PATTERN, datasetId);
 	}
 
 	private String parseFormat(DeegreeServicesMetadataType.DatasetMetadata.MetadataUrlTemplate template) {

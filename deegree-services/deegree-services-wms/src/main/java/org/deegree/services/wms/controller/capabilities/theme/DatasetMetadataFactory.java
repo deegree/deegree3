@@ -46,9 +46,9 @@ import static org.deegree.theme.Themes.getAllLayers;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.regex.Pattern;
 import javax.xml.namespace.QName;
 
-import org.apache.axiom.om.OMElement;
 import org.deegree.commons.ows.metadata.DatasetMetadata;
 import org.deegree.commons.ows.metadata.Description;
 import org.deegree.commons.ows.metadata.ExtendedDescription;
@@ -70,6 +70,8 @@ import org.deegree.theme.Theme;
  * @since 3.3
  */
 class DatasetMetadataFactory {
+
+	private static final Pattern METADATA_SET_ID_PATTERN = Pattern.compile(Pattern.quote("${metadataSetId}"));
 
 	DatasetMetadata buildDatasetMetadata(final LayerMetadata layerMetadata, final Theme theme,
 			final String mdUrlTemplate) {
@@ -127,7 +129,7 @@ class DatasetMetadataFactory {
 		if (id == null || mdUrlTemplate == null) {
 			return null;
 		}
-		return replaceAll(mdUrlTemplate, "${metadataSetId}", id);
+		return replaceAll(mdUrlTemplate, METADATA_SET_ID_PATTERN, id);
 	}
 
 }
