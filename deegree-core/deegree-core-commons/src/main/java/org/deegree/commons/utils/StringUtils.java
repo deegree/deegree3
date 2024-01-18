@@ -106,9 +106,26 @@ public class StringUtils {
 	 * @param from is the string to be replaced
 	 * @param to is the string which will used to replace
 	 * @return the changed target string
+	 * @deprecated use {@link StringUtils#replaceAll(String, Pattern, String)} instead,
+	 * with a static precompiled Pattern for performance.
 	 */
+	@Deprecated
 	public static String replaceAll(String target, String from, String to) {
 		return target.replaceAll(Pattern.quote(from), Matcher.quoteReplacement(to));
+	}
+
+	/**
+	 * Replaces the all substrings of this string that matches the given from string with
+	 * the given replacement. Works like {@link String#replaceAll(String, String)} but
+	 * doesn't use regular expressions. All occurences of special chars will be escaped.
+	 * @param target is the original string
+	 * @param pattern the pattern to match what should be replaced. (Static compiled for
+	 * performance if possible)
+	 * @param to is the string which will used to replace
+	 * @return the changed target string
+	 */
+	public static String replaceAll(String target, Pattern pattern, String to) {
+		return pattern.matcher(target).replaceAll(Matcher.quoteReplacement(to));
 	}
 
 	/**

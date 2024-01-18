@@ -34,6 +34,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.interpolation;
 
+import java.util.regex.Pattern;
+
 /**
  * Enum for all implemented interpolation types.
  *
@@ -48,6 +50,10 @@ public enum InterpolationType {
 	/** No interpolation */
 	NONE;
 
+	private static final Pattern DASH_PATTERN = Pattern.compile("-");
+
+	private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s");
+
 	/**
 	 * Get interpolation for the given string. This method is case insensitive, words can
 	 * be separated with a whitespace, minus or underscore.
@@ -56,8 +62,8 @@ public enum InterpolationType {
 	 */
 	public static InterpolationType fromString(String interpolation) {
 		String key = interpolation.toUpperCase();
-		key = key.replaceAll("-", "_");
-		key = key.replaceAll("\\s", "_");
+		key = DASH_PATTERN.matcher(key).replaceAll("_");
+		key = WHITESPACE_PATTERN.matcher(key).replaceAll("_");
 		return InterpolationType.valueOf(key);
 	}
 

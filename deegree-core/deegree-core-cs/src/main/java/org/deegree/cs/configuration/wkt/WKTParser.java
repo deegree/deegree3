@@ -58,6 +58,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import java.util.regex.Pattern;
 import javax.vecmath.Point2d;
 
 import org.deegree.cs.CRSCodeType;
@@ -102,6 +103,8 @@ public class WKTParser {
 
 	private static final Logger LOG = getLogger(WKTParser.class);
 
+	private static final Pattern DASH_PATTERN = Pattern.compile("_");
+
 	private StreamTokenizer tokenizer;
 
 	private Reader buff;
@@ -114,7 +117,7 @@ public class WKTParser {
 	 */
 	protected boolean equalsParameterVariants(String candidate, String paramName) {
 		String candidateVariant = candidate.replace("_", "");
-		String paramVariant = paramName.replaceAll("_", "");
+		String paramVariant = DASH_PATTERN.matcher(paramName).replaceAll("");
 		if (candidateVariant.equalsIgnoreCase(paramVariant)) {
 			return true;
 		}
@@ -122,7 +125,7 @@ public class WKTParser {
 	}
 
 	protected String makeInvariantKey(String candidate) {
-		return candidate.replaceAll("_", "").toLowerCase();
+		return DASH_PATTERN.matcher(candidate).replaceAll("").toLowerCase();
 	}
 
 	/**
