@@ -1229,7 +1229,7 @@
     <spring-framework.version>5.3.32</spring-framework.version>
     <batik.version>1.17</batik.version>
     <axoim.version>1.2.22</axoim.version>
-    <jsonpath.version>2.7.0</jsonpath.version>
+    <jsonpath.version>2.9.0</jsonpath.version>
   </properties>
 
   <modules>
