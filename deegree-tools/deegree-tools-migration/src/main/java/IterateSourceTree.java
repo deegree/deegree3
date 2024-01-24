@@ -43,10 +43,10 @@ public class IterateSourceTree {
 				}
 				if (contains(dir, dirSrcMain)) {
 					long cnt = -1;
-					try (Stream<Path> entries = Files.walk( dir, 1  ) ) {
-						cnt = entries.filter( pf -> Files.isRegularFile( pf, LinkOption.NOFOLLOW_LINKS) ) //
-							   //.peek( pf -> LOG.info("- (file): {}", pf) ) //
-							   .count();
+					try (Stream<Path> entries = Files.walk(dir, 1)) {
+						cnt = entries.filter(pf -> Files.isRegularFile(pf, LinkOption.NOFOLLOW_LINKS)) //
+							// .peek( pf -> LOG.info("- (file): {}", pf) ) //
+							.count();
 					}
 
 					LOG.info("- {} = {}", dir, cnt);

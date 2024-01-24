@@ -26,10 +26,8 @@
  website: http://www.deegree.org/
 ----------------------------------------------------------------------------*/
 
-package org.deegree.filter;
+package org.deegree.commons.utils;
 
-import org.deegree.moduleinfo.ModuleInfoProvider;
-
-public class CoreFilterfunctionsModuleInfoProvider implements ModuleInfoProvider {
+public interface ToolboxRegistration {
 
 }

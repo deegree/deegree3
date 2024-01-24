@@ -28,12 +28,15 @@ public class CreatePackageInfoClasses {
 			String baseDir = parts[0].trim().substring(parts[0].indexOf("src\\main\\java") + 14);
 			String pkg = baseDir.replace("\\", ".");
 			String className = parts[1].trim();
-			String srcMainDir = parts[0].trim().substring(parts[0].indexOf("src\\main\\") + 9);
+			String srcMainDir = parts[0].trim().substring(0,parts[0].indexOf("src\\main\\") + 9);
 
 			String newFile = template.replace("$PACKAGE$", pkg).replace("$CLASS$", className);
 
 			Path np = Paths.get(parts[0], className + ".java");
 			Path mi = Paths.get(srcMainDir, "resources/META-INF/services/org.deegree.moduleinfo.ModuleInfoProvider");
+
+			LOG.info("A -> {}", np);
+			LOG.info("A -> {}", mi);
 
 			Files.createDirectories(np.getParent());
 			Files.writeString(np, newFile, CREATE, TRUNCATE_EXISTING);
@@ -41,7 +44,8 @@ public class CreatePackageInfoClasses {
 			Files.createDirectories(mi.getParent());
 			Files.writeString(mi, pkg + "." + className, CREATE, TRUNCATE_EXISTING);
 
-			LOG.info("-> Class {} Package: {} - {}", parts[1], pkg, parts[0]);
+			//LOG.info("-> Class {} Package: {} - {}", parts[1], pkg, parts[0]);
+			LOG.info("Done");
 		}
 	}
 

@@ -56,6 +56,7 @@ import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.tools.CommandUtils;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.ToolboxRegistration;
 import org.deegree.coverage.AbstractCoverage;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
@@ -85,7 +86,7 @@ import org.slf4j.Logger;
  *
  */
 @Tool("Applies a filter to a dem, which is loaded from a raster.")
-public class DEMRasterFilterer {
+public class DEMRasterFilterer implements ToolboxRegistration {
 
 	static final Logger LOG = getLogger(DEMRasterFilterer.class);
 
@@ -121,6 +122,16 @@ public class DEMRasterFilterer {
 	private final float stdCorr;
 
 	private byte[] noDatas;
+
+	/**
+	 * DO NOT USE
+	 * @deprecated only use for registration purpose
+	 */
+	public DEMRasterFilterer() {
+		this.outputDir = null;
+		this.outputType = null;
+		this.stdCorr = 0;
+	}
 
 	private DEMRasterFilterer(AbstractRaster raster, int kernelSize, float stdCorr, String cacheDir,
 			String outputDirectory, String outputType) throws IOException {

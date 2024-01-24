@@ -48,6 +48,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.tools.CommandUtils;
+import org.deegree.commons.utils.ToolboxRegistration;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.coordinatesystems.IProjectedCRS;
@@ -86,7 +87,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 @Tool("Connects to the EPSG database at //hurricane/epsg, and for all projections (other objects to be added!) that have no CRS codetype in the CRS database, the codes are fetched from the EPSG database.")
-public class EPSGDBSynchronizer {
+public class EPSGDBSynchronizer implements ToolboxRegistration {
 
 	private static Logger LOG = LoggerFactory.getLogger(EPSGDBSynchronizer.class);
 

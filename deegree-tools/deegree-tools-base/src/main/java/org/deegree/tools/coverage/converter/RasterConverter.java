@@ -58,6 +58,7 @@ import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.tools.CommandUtils;
 import org.deegree.commons.utils.FileUtils;
+import org.deegree.commons.utils.ToolboxRegistration;
 import org.deegree.coverage.AbstractCoverage;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.MultiResolutionRaster;
@@ -79,7 +80,7 @@ import org.deegree.cs.exceptions.UnknownCRSException;
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  */
 @Tool("Converts a raster from one type into another.")
-public class RasterConverter {
+public class RasterConverter implements ToolboxRegistration {
 
 	private static final String OPT_NUM_THREADS = "num_threads";
 

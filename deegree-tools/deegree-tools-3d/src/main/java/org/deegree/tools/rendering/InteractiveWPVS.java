@@ -35,6 +35,8 @@
 
 package org.deegree.tools.rendering;
 
+import com.sun.opengl.util.GLUT;
+import com.sun.opengl.util.texture.Texture;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.InputEvent;
@@ -51,7 +53,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.imageio.ImageIO;
 import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
@@ -62,7 +63,6 @@ import javax.swing.JFrame;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 import javax.xml.bind.JAXBException;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
@@ -73,6 +73,7 @@ import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tools.CommandUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.SunInfo;
+import org.deegree.commons.utils.ToolboxRegistration;
 import org.deegree.commons.utils.math.Vectors3f;
 import org.deegree.db.ConnectionProvider;
 import org.deegree.db.ConnectionProviderUtils;
@@ -110,9 +111,6 @@ import org.deegree.workspace.standard.DefaultWorkspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.opengl.util.GLUT;
-import com.sun.opengl.util.texture.Texture;
-
 /**
  * Reads in a configuration document for the {@link WPVSController} and lets the user
  * navigate interactively through the scene.
@@ -120,7 +118,7 @@ import com.sun.opengl.util.texture.Texture;
  * @author <a href="mailto:schneider@lat-lon.de">Markus ls /Schneider</a>
  */
 @Tool("Reads in a configuration document for the deegree WPVS and allows the user to interactively navigate through the scene.")
-public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyListener {
+public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyListener, ToolboxRegistration {
 
 	private static final Logger LOG = LoggerFactory.getLogger(InteractiveWPVS.class);
 
@@ -202,6 +200,15 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
 	private int currentColormap = -1;
 
 	private boolean updateLODStructure = true;
+
+	/**
+	 * DO NOT USE
+	 * @deprecated only use for registration purpose
+	 */
+	public InteractiveWPVS() {
+		this.params = null;
+		this.lodAnalyzer = null;
+	}
 
 	/**
 	 * Creates a new {@link InteractiveWPVS} instance.

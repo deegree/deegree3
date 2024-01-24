@@ -50,6 +50,7 @@ import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tools.CommandUtils;
+import org.deegree.commons.utils.ToolboxRegistration;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.FeatureCollection;
@@ -71,7 +72,7 @@ import org.deegree.workspace.standard.DefaultWorkspace;
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  */
 @Tool("Imports feature datasets into a feature store")
-public class FeatureStoreLoader {
+public class FeatureStoreLoader implements ToolboxRegistration {
 
 	// command line parameters
 	private static final String OPT_ACTION = "action";

@@ -52,6 +52,7 @@ import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.tools.CommandUtils;
 import org.deegree.commons.utils.ArrayUtils;
+import org.deegree.commons.utils.ToolboxRegistration;
 import org.deegree.db.ConnectionProvider;
 import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.services.wpvs.exception.DatasourceException;
@@ -81,7 +82,7 @@ import org.deegree.workspace.standard.DefaultWorkspace;
  *
  */
 @Tool("The DataManager inserts, updates and deletes 3d-objects in/from the WPVS backend")
-public class DataManager {
+public class DataManager implements ToolboxRegistration {
 
 	/**
 	 * The <code>Action</code> the datamanager may perform

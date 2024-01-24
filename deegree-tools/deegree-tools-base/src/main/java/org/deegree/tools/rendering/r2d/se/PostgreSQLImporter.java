@@ -48,6 +48,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.tools.CommandUtils;
+import org.deegree.commons.utils.ToolboxRegistration;
 import org.deegree.db.ConnectionProvider;
 import org.deegree.db.ConnectionProviderUtils;
 import org.deegree.style.se.parser.PostgreSQLWriter;
@@ -64,7 +65,7 @@ import org.deegree.workspace.standard.DefaultWorkspace;
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  */
 @Tool(value = "This tool can be used to import SLD/SE files into a WMS styles database.")
-public class PostgreSQLImporter {
+public class PostgreSQLImporter implements ToolboxRegistration {
 
 	private static Options initOptions() {
 		Options opts = new Options();
