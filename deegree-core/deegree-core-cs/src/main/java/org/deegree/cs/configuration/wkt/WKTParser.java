@@ -103,7 +103,7 @@ public class WKTParser {
 
 	private static final Logger LOG = getLogger(WKTParser.class);
 
-	private static final Pattern DASH_PATTERN = Pattern.compile("_");
+	private static final Pattern UNDERSCORE_PATTERN = Pattern.compile("_");
 
 	private StreamTokenizer tokenizer;
 
@@ -117,7 +117,7 @@ public class WKTParser {
 	 */
 	protected boolean equalsParameterVariants(String candidate, String paramName) {
 		String candidateVariant = candidate.replace("_", "");
-		String paramVariant = DASH_PATTERN.matcher(paramName).replaceAll("");
+		String paramVariant = UNDERSCORE_PATTERN.matcher(paramName).replaceAll("");
 		if (candidateVariant.equalsIgnoreCase(paramVariant)) {
 			return true;
 		}
@@ -125,7 +125,7 @@ public class WKTParser {
 	}
 
 	protected String makeInvariantKey(String candidate) {
-		return DASH_PATTERN.matcher(candidate).replaceAll("").toLowerCase();
+		return UNDERSCORE_PATTERN.matcher(candidate).replaceAll("").toLowerCase();
 	}
 
 	/**
