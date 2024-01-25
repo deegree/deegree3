@@ -100,15 +100,15 @@ public class InputFileWrapper extends HttpServletRequestWrapper {
 		}
 		catch (FileUploadException fe) {
 			ServletException servletEx = new ServletException(fe);
-            throw servletEx;
+			throw servletEx;
 		}
 		catch (UnsupportedEncodingException e) {
 			ServletException servletEx = new ServletException(e);
-            throw servletEx;
+			throw servletEx;
 		}
 		catch (IOException e) {
 			ServletException servletEx = new ServletException(e);
-            throw servletEx;
+			throw servletEx;
 		}
 	}
 

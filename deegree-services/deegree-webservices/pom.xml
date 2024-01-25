@@ -285,6 +285,7 @@
       <groupId>org.primefaces.extensions</groupId>
       <artifactId>primefaces-extensions</artifactId>
       <version>13.0.4</version>
+      <classifier>jakarta</classifier>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
