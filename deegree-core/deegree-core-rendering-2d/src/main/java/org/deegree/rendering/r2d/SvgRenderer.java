@@ -40,6 +40,7 @@
 
 package org.deegree.rendering.r2d;
 
+import static java.lang.Math.max;
 import static org.apache.batik.transcoder.SVGAbstractTranscoder.KEY_HEIGHT;
 import static org.apache.batik.transcoder.SVGAbstractTranscoder.KEY_WIDTH;
 import static org.deegree.commons.utils.math.MathUtils.round;
@@ -49,7 +50,6 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.deegree.commons.utils.TunableParameter;
@@ -86,10 +86,10 @@ class SvgRenderer {
 			SvgImageTranscoder t = new SvgImageTranscoder();
 
 			if (rect.width > 0.0d) {
-				t.addTranscodingHint(KEY_WIDTH, new Float(rect.width));
+				t.addTranscodingHint(KEY_WIDTH, max(1.0f, (float) rect.width));
 			}
 			if (rect.height > 0.0d) {
-				t.addTranscodingHint(KEY_HEIGHT, new Float(rect.height));
+				t.addTranscodingHint(KEY_HEIGHT, max(1.0f, (float) rect.height));
 			}
 
 			TranscoderInput input = new TranscoderInput(g.imageURL);
@@ -101,14 +101,15 @@ class SvgRenderer {
 				svgCache.put(cacheKey, img);
 			}
 			catch (TranscoderException e) {
-				LOG.warn("Could not rasterize svg '{}': {}", g.imageURL, e.getLocalizedMessage());
+				LOG.warn("Could not create image from svg '{}': {}", g.imageURL, e.getLocalizedMessage());
+				LOG.trace("Exception", e);
 			}
 		}
 		return img;
 	}
 
 	String createCacheKey(String url, double width, double height) {
-		return String.format("%s_%d_%d", url, round(width), round(height));
+		return String.format("%s_%d_%d", url, max(1, round(width)), max(1, round(height)));
 	}
 
 }

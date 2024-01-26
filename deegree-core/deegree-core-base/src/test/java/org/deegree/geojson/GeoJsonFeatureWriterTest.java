@@ -16,6 +16,7 @@ import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -42,6 +43,39 @@ public class GeoJsonFeatureWriterTest {
 		assertThat(featureCollection, hasNoJsonPath("$.features[0].srsName"));
 		assertThat(featureCollection, hasJsonPath("$.features[0].id", is("CP_CADASTRALZONING_Bundesland_02")));
 		assertThat(featureCollection, hasJsonPath("$.features[0].geometry"));
+		assertThat(featureCollection, hasJsonPath("$.features[0].properties.label", is("02")));
+		assertThat(featureCollection, hasJsonPath("$.features[0].properties.originalMapScaleDenominator", is(10)));
+		assertThat(featureCollection,
+				hasJsonPath("$.features[0].properties.beginLifespanVersion", is("2009-12-15T08:04:54Z")));
+		assertThat(featureCollection, hasJsonPath("$.features[0].properties.estimatedAccuracy.uom", is("m")));
+		assertThat(featureCollection, hasJsonPath("$.features[0].properties.inspireId.Identifier.localId",
+				is("urn:adv:oid:DEHHALKA10000005")));
+		assertThat(featureCollection, hasJsonPath(
+				"$.features[0].properties.name.GeographicalName.spelling.SpellingOfName.text", is("Hamburg")));
+		assertThat(featureCollection,
+				hasJsonPath("$.features[0].properties.levelName.LocalisedCharacterString.value", is("Bundesland")));
+
+	}
+
+	@Test
+	public void testWrite_skipGeometries() throws Exception {
+		StringWriter featureAsJson = new StringWriter();
+		GeoJsonWriter geoJsonFeatureWriter = new GeoJsonWriter(featureAsJson, null, true);
+		Feature cadastralZoning = parseFeature("CadastralZoning.gml");
+
+		geoJsonFeatureWriter.startFeatureCollection();
+		geoJsonFeatureWriter.write(cadastralZoning);
+		geoJsonFeatureWriter.endFeatureCollection();
+
+		String featureCollection = featureAsJson.toString();
+
+		assertThat(featureCollection, JsonPathMatchers.isJson());
+		assertThat(featureCollection, hasJsonPath("$.type", is("FeatureCollection")));
+		assertThat(featureCollection, hasJsonPath("$.features.length()", is(1)));
+		assertThat(featureCollection, hasJsonPath("$.features[0].type", is("Feature")));
+		assertThat(featureCollection, hasNoJsonPath("$.features[0].srsName"));
+		assertThat(featureCollection, hasJsonPath("$.features[0].id", is("CP_CADASTRALZONING_Bundesland_02")));
+		assertThat(featureCollection, not(hasJsonPath("$.features[0].geometry")));
 		assertThat(featureCollection, hasJsonPath("$.features[0].properties.label", is("02")));
 		assertThat(featureCollection, hasJsonPath("$.features[0].properties.originalMapScaleDenominator", is(10)));
 		assertThat(featureCollection,
