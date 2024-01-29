@@ -48,8 +48,10 @@ import static org.hamcrest.Matchers.notNullValue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import javax.servlet.http.HttpServletResponse;
+
+import jakarta.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLStreamException;
+
 import org.deegree.commons.utils.io.StreamBufferStore;
 import org.junit.Test;
 import org.mockito.Mockito;
