@@ -48,8 +48,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Provides access to deegree module metadata (e.g. Maven artifact identifier and build
- * information). The information is extracted from <code>META-INF/MANIFEST.MF</code> on
- * the classpath:
+ * information). The information is obtained through {@link Package} or extracted from
+ * <code>META-INF/MANIFEST.MF</code> on the classpath.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
@@ -59,8 +59,6 @@ import org.slf4j.LoggerFactory;
 public final class ModuleInfo implements Comparable<ModuleInfo> {
 
 	private static final String META_INF_MANIFEST = "/META-INF/MANIFEST.MF";
-
-	private static final String META_INF_POM = "/META-INF/maven/%s/%s/pom.properties";
 
 	private static final Logger LOG = LoggerFactory.getLogger(ModuleInfo.class);
 
@@ -125,17 +123,21 @@ public final class ModuleInfo implements Comparable<ModuleInfo> {
 		return sb.toString();
 	}
 
+	/**
+	 * Load module info from all modules implementing {@link ModuleInfoProvider}
+	 * @return list of module info
+	 */
 	public static List<ModuleInfo> load() {
 		return ServiceLoader.load(ModuleInfoProvider.class) //
 			.stream()
 			.filter(Objects::nonNull)
 			.map(provider -> {
 				try {
-					return extractModuleInfo(provider.get().getClass());
+					return extractModuleInfo(provider.type());
 				}
 				catch (IOException ioe) {
 					LOG.debug("Failed to extract module information for class '{}': {}", //
-							provider.getClass().getName(), ioe.getMessage());
+							provider.type().getName(), ioe.getMessage());
 					LOG.trace("Exception", ioe);
 					return null;
 				}
@@ -155,13 +157,33 @@ public final class ModuleInfo implements Comparable<ModuleInfo> {
 		return extractModuleInfo(new URLClassLoader(new URL[] { classpathURL }));
 	}
 
+	/**
+	 * Returns the {@link ModuleInfo} for the deegree module of the specified class.
+	 *
+	 * Note: metadata of jars build for deegree 3.5 an earlier are incompatible as they
+	 * relied on reflection which deegree 3.6 and newer omits whenever feasible.
+	 *
+	 * @since 3.6
+	 * @param clazz Class reference, must not be <code>null</code>
+	 * @return module info or <code>null</code> (if the module does not have metadata)
+	 */
 	public static ModuleInfo extractModuleInfo(Class<?> clazz) throws IOException {
 		Package pkg = clazz.getPackage();
+		if (pkg == null) {
+			return null;
+		}
 		String version = pkg.getImplementationVersion();
 		String vendor = pkg.getImplementationVendor();
+		return extractModuleInfo(version, vendor);
+	}
+
+	/**
+	 * Extract module information from manifest vendor and version
+	 */
+	public static ModuleInfo extractModuleInfo(String version, String vendor) {
+
 		if (version != null && vendor != null && vendor.contains(":")) {
-			// ${project.groupId}:${project.artifactId}:${buildNumber}:${buildTimestamp}
-			// ${user.name}
+			// Format: groupId:artifactId:buildNumber:buildTimestamp user.name
 			String[] fragments = vendor.split(":", 4);
 			if (fragments.length != 4 || fragments[0] == null || fragments[1] == null || fragments[2] == null
 					|| fragments[3] == null) {
@@ -189,17 +211,21 @@ public final class ModuleInfo implements Comparable<ModuleInfo> {
 	 * @throws IOException if accessing <code>META-INF/MANIFEST.MF</code> fails
 	 */
 	private static ModuleInfo extractModuleInfo(ClassLoader classLoader) throws IOException {
-
 		URL classpathURL = classLoader.getResource(META_INF_MANIFEST);
 		if (classpathURL != null) {
 			try (InputStream buildInfoStream = classLoader.getResourceAsStream(META_INF_MANIFEST)) {
 				Properties props = new Properties();
 				props.load(buildInfoStream);
+				String version = props.getProperty("Implementation-Version");
+				String vendor = props.getProperty("Implementation-Vendor");
+
+				if (version != null && vendor != null) {
+					return extractModuleInfo(version, vendor);
+				}
+
+				// use < 3.6 notation
 				String buildArtifactId = props.getProperty("deegree-build-artifactId",
 						props.getProperty("build.artifactId"));
-				// NOTE assuming 'org.deegree' for older build that won't have the
-				// attributes in pom.xml
-				String buildGroupId = props.getProperty("deegree-build-groupId", "org.deegree");
 				if (buildArtifactId == null) {
 					// skipping because this jar is not from deegree
 					return null;
@@ -207,29 +233,10 @@ public final class ModuleInfo implements Comparable<ModuleInfo> {
 				String buildBy = props.getProperty("deegree-build-by", props.getProperty("build.by"));
 				String buildDate = props.getProperty("deegree-build-date", props.getProperty("build.date"));
 				String buildRev = props.getProperty("deegree-build-rev", props.getProperty("build.svnrev"));
-				String version = retrieveVersion(props, classLoader, buildGroupId, buildArtifactId);
 				return new ModuleInfo(buildArtifactId, version, buildRev, buildDate, buildBy);
 			}
 		}
-		return null;
-	}
 
-	private static String retrieveVersion(Properties props, ClassLoader classLoader, String buildGroupId,
-			String buildArtifactId) throws IOException {
-		String version = props.getProperty("Implementation-Version");
-		if (version != null) {
-			return version;
-		}
-		final String path = String.format(META_INF_POM, buildGroupId, buildArtifactId);
-
-		URL classpathURL = classLoader.getResource(path);
-		if (classpathURL != null) {
-			try (InputStream pomStream = classLoader.getResourceAsStream(path)) {
-				props = new Properties();
-				props.load(pomStream);
-				return props.getProperty("version");
-			}
-		}
 		return null;
 	}
 
