@@ -36,13 +36,12 @@ package org.deegree.console.layer.theme;
 
 import java.io.Serializable;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
-
+import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Named;
 import org.deegree.console.AbstractResourceManagerBean;
 import org.deegree.theme.persistence.ThemeManager;
 
-@ManagedBean
+@Named
 @ViewScoped
 public class ThemeManagerBean extends AbstractResourceManagerBean<ThemeManager> implements Serializable {
 

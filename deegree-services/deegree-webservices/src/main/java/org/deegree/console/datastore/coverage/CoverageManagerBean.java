@@ -36,13 +36,12 @@ package org.deegree.console.datastore.coverage;
 
 import java.io.Serializable;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
-
+import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Named;
 import org.deegree.console.AbstractResourceManagerBean;
 import org.deegree.coverage.persistence.CoverageManager;
 
-@ManagedBean
+@Named
 @ViewScoped
 public class CoverageManagerBean extends AbstractResourceManagerBean<CoverageManager> implements Serializable {
 

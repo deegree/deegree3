@@ -27,7 +27,7 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.console;
 
-import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
+import static jakarta.faces.application.FacesMessage.SEVERITY_ERROR;
 import static org.deegree.console.JsfUtils.getWorkspace;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -37,11 +37,11 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
-import javax.faces.context.FacesContext;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.FacesContext;
 
+import jakarta.inject.Named;
 import org.apache.commons.io.IOUtils;
 import org.deegree.workspace.ResourceManager;
 import org.deegree.workspace.ResourceMetadata;
@@ -57,7 +57,7 @@ import org.slf4j.Logger;
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @since 3.4
  */
-@ManagedBean
+@Named
 @RequestScoped
 public class Config implements Comparable<Config>, Serializable {
 

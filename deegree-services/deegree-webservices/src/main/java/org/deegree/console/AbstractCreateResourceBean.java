@@ -35,10 +35,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
-import javax.faces.event.AjaxBehaviorEvent;
+import jakarta.faces.event.AjaxBehaviorEvent;
 
+import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Named;
 import org.deegree.console.metadata.ConfigExample;
 import org.deegree.console.metadata.ResourceManagerMetadata;
 import org.deegree.console.metadata.ResourceProviderMetadata;
@@ -53,7 +53,7 @@ import org.deegree.workspace.standard.DefaultWorkspace;
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @since 3.4
  */
-@ManagedBean
+@Named
 @ViewScoped
 public abstract class AbstractCreateResourceBean {
 

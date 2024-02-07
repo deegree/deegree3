@@ -34,8 +34,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.core.component;
 
-import javax.faces.component.FacesComponent;
-import javax.faces.component.UICommand;
+import jakarta.faces.component.FacesComponent;
+import jakarta.faces.component.UICommand;
 
 /**
  * <code>HtmlExternalLink</code> a link component ignoring the JSF navigation

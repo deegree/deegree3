@@ -27,9 +27,8 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.console.connection.sql;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
-
+import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Named;
 import org.deegree.console.AbstractCreateResourceBean;
 import org.deegree.db.ConnectionProviderManager;
 
@@ -39,7 +38,7 @@ import org.deegree.db.ConnectionProviderManager;
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @since 3.4
  */
-@ManagedBean
+@Named
 @ViewScoped
 public class CreateSqlConnectionBean extends AbstractCreateResourceBean {
 

@@ -37,9 +37,8 @@ package org.deegree.console.webservices.wps;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
-
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Named;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.wps.WPSProcess;
 import org.deegree.services.wps.WPService;
@@ -49,7 +48,7 @@ import org.deegree.services.wps.WPService;
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  */
-@ManagedBean
+@Named
 @RequestScoped
 public class WPSBean {
 

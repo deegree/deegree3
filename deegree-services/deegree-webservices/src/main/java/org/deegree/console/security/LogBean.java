@@ -27,19 +27,19 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.console.security;
 
-import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
-import static javax.faces.application.FacesMessage.SEVERITY_WARN;
+import static jakarta.faces.application.FacesMessage.SEVERITY_ERROR;
+import static jakarta.faces.application.FacesMessage.SEVERITY_WARN;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.security.NoSuchAlgorithmException;
 
-import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
-import javax.faces.context.FacesContext;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.FacesContext;
 
+import jakarta.inject.Named;
 import org.deegree.commons.config.DeegreeWorkspace;
 
 /**
@@ -50,7 +50,7 @@ import org.deegree.commons.config.DeegreeWorkspace;
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @since 3.3
  */
-@ManagedBean
+@Named
 @SessionScoped
 public class LogBean implements Serializable {
 

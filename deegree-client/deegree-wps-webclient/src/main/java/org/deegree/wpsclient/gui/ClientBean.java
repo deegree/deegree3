@@ -46,13 +46,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
-import javax.faces.context.FacesContext;
-import javax.faces.event.AbortProcessingException;
-import javax.faces.event.AjaxBehaviorEvent;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.event.AbortProcessingException;
+import jakarta.faces.event.AjaxBehaviorEvent;
 
+import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Named;
 import org.deegree.commons.ows.metadata.ServiceIdentification;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
@@ -67,7 +67,7 @@ import org.deegree.protocol.wps.client.process.Process;
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  */
-@ManagedBean
+@Named
 @ViewScoped
 public class ClientBean implements Serializable {
 

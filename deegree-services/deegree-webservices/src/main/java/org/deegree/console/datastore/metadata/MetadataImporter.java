@@ -35,19 +35,19 @@
 package org.deegree.console.datastore.metadata;
 
 import static java.util.Collections.singletonList;
-import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
-import static javax.faces.application.FacesMessage.SEVERITY_INFO;
+import static jakarta.faces.application.FacesMessage.SEVERITY_ERROR;
+import static jakarta.faces.application.FacesMessage.SEVERITY_INFO;
 
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
-import javax.faces.context.FacesContext;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.FacesContext;
 
+import jakarta.inject.Named;
 import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.MetadataRecordFactory;
 import org.deegree.metadata.persistence.MetadataInspectorException;
@@ -63,7 +63,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  */
-@ManagedBean
+@Named
 @RequestScoped
 public class MetadataImporter implements Serializable {
 

@@ -36,13 +36,12 @@ package org.deegree.console.process;
 
 import java.io.Serializable;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
-
+import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Named;
 import org.deegree.console.AbstractResourceManagerBean;
 import org.deegree.services.wps.ProcessManager;
 
-@ManagedBean
+@Named
 @ViewScoped
 public class ProcessManagerBean extends AbstractResourceManagerBean<ProcessManager> implements Serializable {
 

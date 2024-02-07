@@ -39,8 +39,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
+import jakarta.faces.context.ExternalContext;
+import jakarta.faces.context.FacesContext;
 
 import org.slf4j.Logger;
 

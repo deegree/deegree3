@@ -39,7 +39,6 @@ import static org.deegree.commons.ows.exception.OWSException.NOT_FOUND;
 import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.commons.tom.ows.Version.parseVersion;
 import static org.reflections.util.ClasspathHelper.forClassLoader;
-import static org.reflections.util.ClasspathHelper.forWebInfLib;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.beans.Introspector;
@@ -60,20 +59,23 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.imageio.spi.IIORegistry;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamReader;
@@ -84,11 +86,10 @@ import org.apache.axiom.om.OMXMLBuilderFactory;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
 import org.apache.axiom.soap.SOAPModelBuilder;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileItemFactory;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.fileupload2.core.FileItem;
+import org.apache.commons.fileupload2.core.FileUploadException;
+import org.apache.commons.fileupload2.jakarta.servlet6.JakartaServletDiskFileUpload;
+import org.apache.commons.fileupload2.jakarta.servlet6.JakartaServletFileUpload;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.LogFactory;
 import org.deegree.commons.concurrent.Executor;
@@ -626,12 +627,10 @@ public class OGCFrontController extends HttpServlet {
     private List<FileItem> checkAndRetrieveMultiparts( HttpServletRequest request )
                             throws FileUploadException {
         List<FileItem> result = null;
-        if ( ServletFileUpload.isMultipartContent( request ) ) {
-            // Create a factory for disk-based file items
-            FileItemFactory factory = new DiskFileItemFactory();
+        if ( JakartaServletFileUpload.isMultipartContent( request ) ) {
             LOG.debug( "The incoming request is a multipart request." );
             // Create a new file upload handler
-            ServletFileUpload upload = new ServletFileUpload( factory );
+            JakartaServletFileUpload upload = new JakartaServletDiskFileUpload();
 
             // Parse the request
             result = upload.parseRequest( request );
@@ -1084,6 +1083,46 @@ public class OGCFrontController extends HttpServlet {
         }
         return ModuleInfo.extractModulesInfo( forClassLoader() );
     }
+    //
+    // ******************** BEGIN ********************
+    // Insourced methods from org.reflections:reflections
+    // TODO: needs to be removed or replaced
+    //
+    private static Collection<URL> forWebInfLib(ServletContext servletContext) {
+        Collection<URL> urls = new ArrayList();
+        Set<?> resourcePaths = servletContext.getResourcePaths("/WEB-INF/lib");
+        if (resourcePaths == null) {
+            return urls;
+        } else {
+            Iterator var3 = resourcePaths.iterator();
+
+            while(var3.hasNext()) {
+                Object urlString = var3.next();
+
+                try {
+                    urls.add(servletContext.getResource((String)urlString));
+                } catch (MalformedURLException var6) {
+                }
+            }
+
+            return distinctUrls(urls);
+        }
+    }
+
+    private static Collection<URL> distinctUrls(Collection<URL> urls) {
+        Map<String, URL> distinct = new LinkedHashMap(urls.size());
+        Iterator var2 = urls.iterator();
+
+        while(var2.hasNext()) {
+            URL url = (URL)var2.next();
+            distinct.put(url.toExternalForm(), url);
+        }
+
+        return distinct.values();
+    }
+    //
+    // ******************** END ********************
+    //
 
     private void initWorkspace()
                             throws IOException, URISyntaxException, ResourceInitException {

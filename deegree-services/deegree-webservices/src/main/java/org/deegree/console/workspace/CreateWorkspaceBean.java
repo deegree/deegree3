@@ -29,9 +29,8 @@ package org.deegree.console.workspace;
 
 import java.io.File;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
-
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Named;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.console.JsfUtils;
 
@@ -41,7 +40,7 @@ import org.deegree.console.JsfUtils;
  * @author <a href="mailto:stenger@lat-lon.de">Dirk Stenger</a>
  * @since 3.4
  */
-@ManagedBean
+@Named
 @RequestScoped
 public class CreateWorkspaceBean {
 

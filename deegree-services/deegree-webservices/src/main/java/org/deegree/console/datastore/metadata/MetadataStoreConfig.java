@@ -37,11 +37,11 @@ package org.deegree.console.datastore.metadata;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
-import javax.faces.application.FacesMessage;
-import javax.faces.component.html.HtmlCommandButton;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.component.html.HtmlCommandButton;
+import jakarta.faces.context.ExternalContext;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.event.ActionEvent;
 
 import org.deegree.client.core.utils.MessageUtils;
 import org.deegree.client.core.utils.SQLExecution;

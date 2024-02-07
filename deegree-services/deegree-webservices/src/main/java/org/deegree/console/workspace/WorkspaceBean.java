@@ -34,8 +34,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.workspace;
 
-import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
-import static javax.faces.application.FacesMessage.SEVERITY_INFO;
+import static jakarta.faces.application.FacesMessage.SEVERITY_ERROR;
+import static jakarta.faces.application.FacesMessage.SEVERITY_INFO;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.readLines;
 import static org.deegree.client.core.utils.ActionParams.getParam1;
@@ -44,7 +44,6 @@ import static org.deegree.console.JsfUtils.indicateException;
 import static org.deegree.services.controller.OGCFrontController.getModulesInfo;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -55,11 +54,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.faces.application.FacesMessage;
-import javax.faces.bean.ApplicationScoped;
-import javax.faces.bean.ManagedBean;
-import javax.faces.context.FacesContext;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.FacesContext;
 
+import jakarta.inject.Named;
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpResponse;
 import org.deegree.commons.config.DeegreeWorkspace;
@@ -80,7 +79,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @since 3.4
  */
-@ManagedBean(name = "workspace")
+@Named("workspace")
 @ApplicationScoped
 public class WorkspaceBean implements Serializable {
 

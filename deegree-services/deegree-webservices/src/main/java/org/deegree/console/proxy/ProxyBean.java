@@ -29,15 +29,14 @@ package org.deegree.console.proxy;
 
 import java.io.IOException;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
-
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Named;
 import org.deegree.commons.proxy.ProxySettings;
 
 /**
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  */
-@ManagedBean
+@Named
 @RequestScoped
 public class ProxyBean {
 

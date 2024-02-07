@@ -43,11 +43,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
-import javax.faces.context.FacesContext;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.FacesContext;
 
+import jakarta.inject.Named;
 import org.deegree.client.core.model.BBox;
 import org.deegree.client.core.model.UploadedFile;
 import org.deegree.commons.utils.StringPair;
@@ -66,7 +66,7 @@ import org.slf4j.Logger;
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  */
-@ManagedBean
+@Named
 @RequestScoped
 public class ExecuteBean implements Serializable {
 
