@@ -38,7 +38,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.net.URL;
 
-import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload2.core.FileItem;
 
 /**
  * <code>UploadedFile</code> wraps the uploaded file item

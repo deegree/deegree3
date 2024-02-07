@@ -34,9 +34,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.core.utils;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
-import javax.faces.context.FacesContext;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.faces.context.FacesContext;
+import jakarta.inject.Named;
+
 import java.io.Serializable;
 
 /**
@@ -45,7 +46,7 @@ import java.io.Serializable;
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  */
-@ManagedBean(name = "actionParams")
+@Named("actionParams")
 @RequestScoped
 public class ActionParams implements Serializable {
 

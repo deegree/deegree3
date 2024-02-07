@@ -37,8 +37,8 @@ package org.deegree.services.controller;
 import java.io.IOException;
 import java.util.zip.GZIPOutputStream;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.WriteListener;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.WriteListener;
 
 /**
  * {@link ServletOutputStream} used by {@link GZipHttpServletResponse}.

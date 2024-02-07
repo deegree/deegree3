@@ -37,7 +37,7 @@ package org.deegree.services.controller;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.deegree.services.resources.ResourcesServlet;
 import org.slf4j.Logger;

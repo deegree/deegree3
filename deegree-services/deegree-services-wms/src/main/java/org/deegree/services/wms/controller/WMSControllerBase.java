@@ -42,7 +42,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.IOException;
 import java.util.Map;
 
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 import javax.xml.stream.XMLOutputFactory;
 
 import org.deegree.commons.ows.exception.OWSException;

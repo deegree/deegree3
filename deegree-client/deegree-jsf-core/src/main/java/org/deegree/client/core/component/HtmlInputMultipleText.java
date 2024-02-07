@@ -36,11 +36,11 @@ package org.deegree.client.core.component;
 
 import java.util.List;
 
-import javax.faces.FacesException;
-import javax.faces.application.ResourceDependencies;
-import javax.faces.application.ResourceDependency;
-import javax.faces.component.FacesComponent;
-import javax.faces.component.UIInput;
+import jakarta.faces.FacesException;
+import jakarta.faces.application.ResourceDependencies;
+import jakarta.faces.application.ResourceDependency;
+import jakarta.faces.component.FacesComponent;
+import jakarta.faces.component.UIInput;
 
 /**
  * Input component which allows multiple insert.

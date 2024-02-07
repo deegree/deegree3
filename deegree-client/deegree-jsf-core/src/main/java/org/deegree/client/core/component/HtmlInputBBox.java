@@ -34,11 +34,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.core.component;
 
-import javax.faces.FacesException;
-import javax.faces.application.FacesMessage;
-import javax.faces.component.FacesComponent;
-import javax.faces.component.UISelectOne;
-import javax.faces.context.FacesContext;
+import jakarta.faces.FacesException;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.component.FacesComponent;
+import jakarta.faces.component.UISelectOne;
+import jakarta.faces.context.FacesContext;
 
 import org.deegree.client.core.model.BBox;
 import org.deegree.client.core.utils.MessageUtils;

@@ -44,9 +44,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
-
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Named;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.protocol.wps.client.WPSClient;
 import org.deegree.protocol.wps.client.output.ComplexOutput;
@@ -60,7 +59,7 @@ import org.slf4j.Logger;
  *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
-@ManagedBean
+@Named
 @RequestScoped
 public class ExecuteBean implements Serializable {
 

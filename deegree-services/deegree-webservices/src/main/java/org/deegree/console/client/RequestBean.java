@@ -65,15 +65,15 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import jakarta.annotation.PostConstruct;
-import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
-import javax.faces.event.AjaxBehaviorEvent;
-import javax.faces.model.SelectItem;
-import javax.faces.model.SelectItemGroup;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.ExternalContext;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.event.AjaxBehaviorEvent;
+import jakarta.faces.model.SelectItem;
+import jakarta.faces.model.SelectItemGroup;
 
+import jakarta.inject.Named;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.http.Header;
@@ -98,7 +98,7 @@ import org.slf4j.Logger;
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  */
-@ManagedBean
+@Named
 @RequestScoped
 public class RequestBean implements Serializable {
 

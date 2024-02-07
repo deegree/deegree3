@@ -34,11 +34,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.core.component;
 
-import javax.faces.application.FacesMessage;
-import javax.faces.component.FacesComponent;
-import javax.faces.component.UIInput;
-import javax.faces.component.behavior.ClientBehaviorHolder;
-import javax.faces.context.FacesContext;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.component.FacesComponent;
+import jakarta.faces.component.UIInput;
+import jakarta.faces.component.behavior.ClientBehaviorHolder;
+import jakarta.faces.context.FacesContext;
 
 import org.deegree.client.core.model.UploadedFile;
 import org.deegree.client.core.utils.MessageUtils;

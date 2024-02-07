@@ -32,8 +32,8 @@ import static org.deegree.console.JsfUtils.getWorkspace;
 import java.io.IOException;
 import java.net.URL;
 
-import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.faces.context.FacesContext;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.deegree.console.Config;
 import org.deegree.services.OWS;

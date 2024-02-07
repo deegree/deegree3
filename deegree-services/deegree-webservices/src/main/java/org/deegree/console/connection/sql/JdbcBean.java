@@ -1,7 +1,7 @@
 package org.deegree.console.connection.sql;
 
-import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
-import static javax.faces.application.FacesMessage.SEVERITY_INFO;
+import static jakarta.faces.application.FacesMessage.SEVERITY_ERROR;
+import static jakarta.faces.application.FacesMessage.SEVERITY_INFO;
 import static org.deegree.db.ConnectionProviderUtils.getSyntheticProvider;
 
 import java.io.IOException;
@@ -11,19 +11,19 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Map;
 
-import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.ExternalContext;
+import jakarta.faces.context.FacesContext;
 
+import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Named;
 import org.deegree.console.Config;
 import org.deegree.console.workspace.WorkspaceBean;
 import org.deegree.db.ConnectionProvider;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.Workspace;
 
-@ManagedBean
+@Named
 @ViewScoped
 public class JdbcBean implements Serializable {
 

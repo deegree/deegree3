@@ -32,9 +32,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
-
+import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Named;
 import org.deegree.console.AbstractResourceManagerBean;
 import org.deegree.console.Config;
 import org.deegree.services.OwsManager;
@@ -45,7 +44,7 @@ import org.deegree.workspace.ResourceMetadata;
  *
  * @author <a href="mailto:name@company.com">Your Name</a>
  */
-@ManagedBean
+@Named
 @ViewScoped
 public class ServicesBean extends AbstractResourceManagerBean<OwsManager> implements Serializable {
 

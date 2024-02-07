@@ -27,10 +27,8 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.console.datastore.metadata;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
-import javax.faces.bean.ViewScoped;
-
+import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Named;
 import org.deegree.console.AbstractCreateResourceBean;
 import org.deegree.metadata.persistence.MetadataStoreManager;
 
@@ -40,7 +38,7 @@ import org.deegree.metadata.persistence.MetadataStoreManager;
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @since 3.3
  */
-@ManagedBean
+@Named
 @ViewScoped
 public class CreateMetadataStoreBean extends AbstractCreateResourceBean {
 

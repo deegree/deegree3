@@ -34,7 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.controller;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import junit.framework.Assert;
 

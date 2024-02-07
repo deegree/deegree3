@@ -27,10 +27,8 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.console.datastore.feature;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
-import javax.faces.bean.ViewScoped;
-
+import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Named;
 import org.deegree.console.AbstractCreateResourceBean;
 import org.deegree.feature.persistence.FeatureStoreManager;
 
@@ -40,7 +38,7 @@ import org.deegree.feature.persistence.FeatureStoreManager;
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @since 3.4
  */
-@ManagedBean
+@Named
 @ViewScoped
 public class CreateFeatureStoreBean extends AbstractCreateResourceBean {
 

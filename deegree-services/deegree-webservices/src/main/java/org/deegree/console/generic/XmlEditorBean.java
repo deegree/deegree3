@@ -34,10 +34,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.generic;
 
-import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
-import static javax.faces.application.FacesMessage.SEVERITY_INFO;
-import static javax.faces.application.FacesMessage.SEVERITY_WARN;
-import static javax.faces.context.FacesContext.getCurrentInstance;
+import static jakarta.faces.application.FacesMessage.SEVERITY_ERROR;
+import static jakarta.faces.application.FacesMessage.SEVERITY_INFO;
+import static jakarta.faces.application.FacesMessage.SEVERITY_WARN;
+import static jakarta.faces.context.FacesContext.getCurrentInstance;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.ByteArrayInputStream;
@@ -50,11 +50,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.List;
 
-import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
-import javax.faces.context.FacesContext;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.FacesContext;
 
+import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Named;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.xerces.xni.parser.XMLParseException;
@@ -75,7 +75,7 @@ import org.deegree.workspace.standard.DefaultResourceLocation;
 import org.deegree.workspace.standard.DefaultWorkspace;
 import org.slf4j.Logger;
 
-@ManagedBean
+@Named
 @ViewScoped
 public class XmlEditorBean implements Serializable {
 

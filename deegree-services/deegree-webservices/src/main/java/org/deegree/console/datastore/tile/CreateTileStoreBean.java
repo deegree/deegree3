@@ -27,9 +27,8 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.console.datastore.tile;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
-
+import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Named;
 import org.deegree.console.AbstractCreateResourceBean;
 import org.deegree.tile.persistence.TileStoreManager;
 
@@ -39,7 +38,7 @@ import org.deegree.tile.persistence.TileStoreManager;
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @since 3.3
  */
-@ManagedBean
+@Named
 @ViewScoped
 public class CreateTileStoreBean extends AbstractCreateResourceBean {
 
