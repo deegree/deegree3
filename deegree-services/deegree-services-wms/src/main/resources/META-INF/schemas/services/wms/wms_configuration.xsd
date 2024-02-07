@@ -109,6 +109,12 @@
                   </simpleContent>
                 </complexType>
               </element>
+              <element name="GeoJSON" >
+                <complexType>
+                  <attribute name="allowOtherCrsThanWGS84" type="boolean" default="false" />
+                  <attribute name="allowExportOfGeometries" type="boolean" default="false" />
+                </complexType>
+              </element>
               <element name="Serializer">
                 <complexType>
                   <sequence>
@@ -145,7 +151,7 @@
     </sequence>
     <attribute name="enableDefaultFormats" type="boolean" default="true" />
   </complexType>
-  
+
   <complexType name="GetMapFormatsType">
     <sequence>
       <element name="GetMapFormat" minOccurs="0" maxOccurs="unbounded">

@@ -29,7 +29,6 @@ import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -44,7 +43,7 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter, G
 
 	private static final Logger LOG = LoggerFactory.getLogger(GeoJsonWriter.class);
 
-	private final GeoJsonGeometryWriter geoJsonGeometryWriter;
+	private GeoJsonGeometryWriter geoJsonGeometryWriter;
 
 	private final ICRS crs;
 
@@ -58,10 +57,25 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter, G
 	 * @throws UnknownCRSException if "crs:84" is not known as CRS (should never happen)
 	 */
 	public GeoJsonWriter(Writer writer, ICRS crs) throws UnknownCRSException {
+		this(writer, crs, false);
+	}
+
+	/**
+	 * Instantiates a new {@link GeoJsonWriter}.
+	 * @param writer the writer to write the GeoJSON into, never <code>null</code>
+	 * @param crs the target crs of the geometries, may be <code>null</code>, then
+	 * "EPSG:4326" will be used
+	 * @param skipGeometries <code>true</code> if geometries should not be exported,
+	 * <code>false</code> otherwise
+	 * @throws UnknownCRSException if "crs:84" is not known as CRS (should never happen)
+	 */
+	public GeoJsonWriter(Writer writer, ICRS crs, boolean skipGeometries) throws UnknownCRSException {
 		super(writer);
 		setIndent("  ");
 		setHtmlSafe(true);
-		this.geoJsonGeometryWriter = new GeoJsonGeometryWriter(this, crs);
+		if (!skipGeometries) {
+			this.geoJsonGeometryWriter = new GeoJsonGeometryWriter(this, crs);
+		}
 		this.crs = crs;
 	}
 
@@ -119,6 +133,8 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter, G
 	}
 
 	private void writeGeometry(Feature feature) throws IOException, UnknownCRSException, TransformationException {
+		if (geoJsonGeometryWriter == null)
+			return;
 		List<Property> geometryProperties = feature.getGeometryProperties();
 		if (geometryProperties.isEmpty()) {
 			name("geometry").nullValue();
