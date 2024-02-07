@@ -22,12 +22,13 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-core-moduleinfo</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.reflections</groupId>
-      <artifactId>reflections</artifactId>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -39,4 +40,3 @@
     </dependency>
   </dependencies>
 </project>
-

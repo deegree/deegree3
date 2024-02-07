@@ -315,10 +315,14 @@
         <configuration>
           <archive>
             <manifest>
-              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+              <addDefaultEntries>true</addDefaultEntries>
             </manifest>
             <!-- extend default manifest with deegree build information -->
             <manifestEntries>
+              <Implementation-Title>${project.name}</Implementation-Title>
+              <Implementation-Version>${project.version}</Implementation-Version>
+              <Implementation-Vendor>${project.groupId}:${project.artifactId}:${buildNumber}:${buildTimestamp} ${user.name}</Implementation-Vendor>
+              <deegree-build-groupId>${project.groupId}</deegree-build-groupId>
               <deegree-build-artifactId>${project.artifactId}</deegree-build-artifactId>
               <deegree-build-by>${user.name}</deegree-build-by>
               <deegree-build-date>${buildTimestamp}</deegree-build-date>
@@ -1137,21 +1141,6 @@
         <version>3.6.0</version>
       </dependency>
       <!-- TODO not maintained anymore ! to be removed! -->
-      <dependency>
-        <groupId>org.reflections</groupId>
-        <artifactId>reflections</artifactId>
-        <version>0.10.2</version>
-        <exclusions>
-          <exclusion>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-core</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
       <dependency>
         <groupId>com.google.code.gson</groupId>
         <artifactId>gson</artifactId>

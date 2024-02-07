@@ -30,5 +30,14 @@
     </plugins>
   </build>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-core-moduleinfo</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
 </project>
 

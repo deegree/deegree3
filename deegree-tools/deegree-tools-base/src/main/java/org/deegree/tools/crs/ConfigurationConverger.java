@@ -55,6 +55,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.tools.CommandUtils;
+import org.deegree.commons.utils.ToolboxRegistration;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -71,7 +72,7 @@ import org.deegree.cs.transformations.TransformationFactory.DSTransform;
  *
  */
 @Tool("Export the CoordinateSystems from a given Input format to a given Output format and place the result into an output File.")
-public class ConfigurationConverger {
+public class ConfigurationConverger implements ToolboxRegistration {
 
 	private static final String OPT_IN_FILE = "input";
 

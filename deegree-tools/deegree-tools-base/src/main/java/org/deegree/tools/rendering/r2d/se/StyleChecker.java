@@ -54,6 +54,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.tools.CommandUtils;
+import org.deegree.commons.utils.ToolboxRegistration;
 import org.deegree.db.ConnectionProvider;
 import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.db.ConnectionProviderUtils;
@@ -70,7 +71,7 @@ import org.slf4j.Logger;
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  */
 @Tool(value = "This tool can be used to check and remove faulty styles in a WMS style database (PostgreSQL).")
-public class StyleChecker {
+public class StyleChecker implements ToolboxRegistration {
 
 	private static final Logger LOG = getLogger(StyleChecker.class);
 

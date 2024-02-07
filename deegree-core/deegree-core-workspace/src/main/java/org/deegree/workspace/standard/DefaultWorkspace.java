@@ -49,6 +49,7 @@ import static org.deegree.workspace.ResourceStates.ResourceState.Scanned;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -60,7 +61,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
-
+import org.deegree.moduleinfo.ModuleInfo;
 import org.deegree.workspace.Destroyable;
 import org.deegree.workspace.ErrorHandler;
 import org.deegree.workspace.Initializable;
@@ -278,6 +279,10 @@ public class DefaultWorkspace implements Workspace {
 	@Override
 	public ClassLoader getModuleClassLoader() {
 		return moduleClassLoader;
+	}
+
+	public List<ModuleInfo> getModulesInfo() throws IOException {
+		return wsModules != null ? wsModules : Collections.emptyList();
 	}
 
 	@Override

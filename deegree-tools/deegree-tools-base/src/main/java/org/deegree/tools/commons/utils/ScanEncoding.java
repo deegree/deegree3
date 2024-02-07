@@ -43,6 +43,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 import org.deegree.commons.annotations.Tool;
+import org.deegree.commons.utils.ToolboxRegistration;
 import org.slf4j.Logger;
 
 /**
@@ -51,7 +52,7 @@ import org.slf4j.Logger;
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  */
 @Tool(value = "scans the argument files and tries to guess their encoding, treats dbf files specially")
-public class ScanEncoding {
+public class ScanEncoding implements ToolboxRegistration {
 
 	private static final Logger LOG = getLogger(ScanEncoding.class);
 

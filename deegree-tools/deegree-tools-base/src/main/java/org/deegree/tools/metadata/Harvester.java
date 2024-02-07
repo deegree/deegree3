@@ -27,6 +27,7 @@ import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.tools.CommandUtils;
+import org.deegree.commons.utils.ToolboxRegistration;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
@@ -48,7 +49,7 @@ import org.deegree.protocol.ows.exception.OWSExceptionReport;
  */
 
 @Tool(value = "harvest metadata records and insert them in a CSW")
-public class Harvester {
+public class Harvester implements ToolboxRegistration {
 
 	private static final NamespaceBindings NAMESPACE_CONTEXT = CommonNamespaces.getNamespaceContext();
 
@@ -81,6 +82,16 @@ public class Harvester {
 	private final CREATEFI createFI;
 
 	private final METHODFI methodFI;
+
+	/**
+	 * DO NOT USE
+	 * @deprecated only use for registration purpose
+	 */
+	public Harvester() {
+		this.verbose = false;
+		this.methodFI = null;
+		this.createFI = null;
+	}
 
 	/**
 	 * @param verbose

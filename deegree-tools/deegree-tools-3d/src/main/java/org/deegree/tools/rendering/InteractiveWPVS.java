@@ -51,7 +51,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.imageio.ImageIO;
 import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
@@ -62,7 +61,6 @@ import javax.swing.JFrame;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 import jakarta.xml.bind.JAXBException;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
@@ -73,6 +71,7 @@ import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tools.CommandUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.SunInfo;
+import org.deegree.commons.utils.ToolboxRegistration;
 import org.deegree.commons.utils.math.Vectors3f;
 import org.deegree.db.ConnectionProvider;
 import org.deegree.db.ConnectionProviderUtils;
@@ -120,7 +119,7 @@ import com.sun.opengl.util.texture.Texture;
  * @author <a href="mailto:schneider@lat-lon.de">Markus ls /Schneider</a>
  */
 @Tool("Reads in a configuration document for the deegree WPVS and allows the user to interactively navigate through the scene.")
-public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyListener {
+public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyListener, ToolboxRegistration {
 
 	private static final Logger LOG = LoggerFactory.getLogger(InteractiveWPVS.class);
 
@@ -202,6 +201,15 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
 	private int currentColormap = -1;
 
 	private boolean updateLODStructure = true;
+
+	/**
+	 * DO NOT USE
+	 * @deprecated only use for registration purpose
+	 */
+	public InteractiveWPVS() {
+		this.params = null;
+		this.lodAnalyzer = null;
+	}
 
 	/**
 	 * Creates a new {@link InteractiveWPVS} instance.

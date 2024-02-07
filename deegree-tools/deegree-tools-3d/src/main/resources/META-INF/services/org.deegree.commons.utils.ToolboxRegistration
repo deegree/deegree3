@@ -1,0 +1,6 @@
+org.deegree.tools.rendering.InteractiveWPVS
+org.deegree.tools.rendering.dem.builder.DEMDatasetGenerator
+org.deegree.tools.rendering.dem.filtering.DEMRasterFilterer
+org.deegree.tools.rendering.manager.DataManager
+org.deegree.tools.rendering.manager.ModelGeneralizor
+org.deegree.tools.rendering.manager.PrototypeAssigner

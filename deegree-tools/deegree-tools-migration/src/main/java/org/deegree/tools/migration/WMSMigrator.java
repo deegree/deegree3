@@ -37,6 +37,7 @@ package org.deegree.tools.migration;
 import java.io.File;
 
 import org.deegree.commons.annotations.Tool;
+import org.deegree.commons.utils.ToolboxRegistration;
 import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.DefaultWorkspace;
 
@@ -44,7 +45,7 @@ import org.deegree.workspace.standard.DefaultWorkspace;
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  */
 @Tool(value = "Converts a 3.1 or earlier WMS configuration to 3.2 style configurations. Currently only works for feature layers.")
-public class WMSMigrator {
+public class WMSMigrator implements ToolboxRegistration {
 
 	public static void main(String[] args) {
 		if (args.length == 0) {

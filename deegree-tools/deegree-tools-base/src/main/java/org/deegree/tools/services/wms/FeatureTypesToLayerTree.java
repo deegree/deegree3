@@ -53,6 +53,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.tools.CommandUtils;
+import org.deegree.commons.utils.ToolboxRegistration;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.feature.persistence.FeatureStore;
@@ -71,7 +72,7 @@ import org.slf4j.Logger;
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  */
 @Tool(value = "generates a WMS layer tree/configuration file from a feature type hierarchy")
-public class FeatureTypesToLayerTree {
+public class FeatureTypesToLayerTree implements ToolboxRegistration {
 
 	private static final Logger LOG = getLogger(FeatureTypesToLayerTree.class);
 

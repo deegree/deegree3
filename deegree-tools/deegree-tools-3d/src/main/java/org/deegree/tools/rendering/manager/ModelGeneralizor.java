@@ -53,6 +53,7 @@ import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.tools.CommandUtils;
 import org.deegree.commons.utils.ArrayUtils;
+import org.deegree.commons.utils.ToolboxRegistration;
 import org.deegree.db.ConnectionProvider;
 import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
@@ -74,7 +75,7 @@ import org.deegree.workspace.standard.DefaultWorkspace;
  *
  */
 @Tool("Generates a generalization of a building by projecting the boundaries on a 2d plane and calculating a convex hull from them.")
-public class ModelGeneralizor {
+public class ModelGeneralizor implements ToolboxRegistration {
 
 	private static final String DB_HOST = "hosturl";
 

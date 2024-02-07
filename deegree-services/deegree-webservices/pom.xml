@@ -22,9 +22,13 @@
           <attachClasses>true</attachClasses>
           <archive>
             <manifest>
-              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+              <addDefaultEntries>true</addDefaultEntries>
             </manifest>
             <manifestEntries>
+              <Implementation-Title>${project.name}</Implementation-Title>
+              <Implementation-Version>${project.version}</Implementation-Version>
+              <Implementation-Vendor>${project.groupId}:${project.artifactId}:${buildNumber}:${buildTimestamp} ${user.name}</Implementation-Vendor>
+              <deegree-build-groupId>${project.groupId}</deegree-build-groupId>
               <deegree-build-artifactId>${project.artifactId}</deegree-build-artifactId>
               <deegree-build-by>${user.name}</deegree-build-by>
               <deegree-build-date>${buildTimestamp}</deegree-build-date>

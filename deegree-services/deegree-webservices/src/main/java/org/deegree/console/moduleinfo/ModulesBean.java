@@ -39,8 +39,8 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
 
+import org.deegree.moduleinfo.ModuleInfo;
 import jakarta.inject.Named;
-import org.deegree.workspace.standard.ModuleInfo;
 import org.deegree.console.workspace.WorkspaceBean;
 
 /**
