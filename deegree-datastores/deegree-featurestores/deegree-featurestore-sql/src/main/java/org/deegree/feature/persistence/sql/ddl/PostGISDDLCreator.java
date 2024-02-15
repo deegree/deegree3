@@ -126,22 +126,29 @@ public class PostGISDDLCreator extends DDLCreator {
 		List<StringBuffer> ddls = new ArrayList<StringBuffer>();
 		StringBuffer sql = new StringBuffer();
 		String schema = table.getSchema() == null ? "" : table.getSchema();
+		String tableName = table.getTable();
 		String column = dbField.getColumn();
 		String srid = mapping.getSrid();
 		// TODO
 		String geometryType = "GEOMETRY";
 		int dim = 2;
-		sql.append("SELECT ADDGEOMETRYCOLUMN('" + schema.toLowerCase() + "', '" + table.getTable().toLowerCase() + "','"
+		sql.append("SELECT ADDGEOMETRYCOLUMN('" + schema.toLowerCase() + "', '" + tableName.toLowerCase() + "','"
 				+ column + "','" + srid + "','" + geometryType + "', " + dim + ")");
 		ddls.add(sql);
 
 		StringBuffer indexSql = new StringBuffer("CREATE INDEX ");
-		String idxName = createIdxName(table.getTable(), column);
+		String idxName = createIdxName(tableName, column);
 		indexSql.append(idxName);
-		indexSql.append(" ON ").append(table.getTable().toLowerCase());
+		indexSql.append(" ON ").append(createQualifiedTableName(schema, tableName).toLowerCase());
 		indexSql.append(" USING GIST (").append(column).append(" ); ");
 		ddls.add(indexSql);
 		return ddls;
+	}
+
+	public String createQualifiedTableName(String schema, String table) {
+		if (schema == null)
+			return table;
+		return schema + "." + table;
 	}
 
 	@Override
