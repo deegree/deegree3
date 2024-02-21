@@ -21,6 +21,7 @@
  */
 package org.deegree.tools.featurestoresql.config;
 
+import java.util.regex.Pattern;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.cs.refs.coordinatesystem.CRSRef;
@@ -63,6 +64,8 @@ public class FeatureStoreConfigWriter implements ItemWriter<AppSchema> {
 
 	private static final Logger LOG = getLogger(FeatureStoreConfigWriter.class);
 
+	private static final Pattern FILEXTENSION_PATTERN = Pattern.compile("[.][^.]+$");
+
 	private final LoadParameter loadParameter;
 
 	public FeatureStoreConfigWriter(LoadParameter loadParameter) {
@@ -88,7 +91,7 @@ public class FeatureStoreConfigWriter implements ItemWriter<AppSchema> {
 				loadParameter.getPropertiesWithPrimitiveHref());
 		String uriPathToSchema = new URI(loadParameter.getSchemaUrl()).getPath();
 		String schemaFileName = uriPathToSchema.substring(uriPathToSchema.lastIndexOf('/') + 1);
-		String fileName = schemaFileName.replaceFirst("[.][^.]+$", "");
+		String fileName = FILEXTENSION_PATTERN.matcher(schemaFileName).replaceFirst("");
 
 		String format = loadParameter.getFormat();
 		if (format.equals("all")) {

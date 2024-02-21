@@ -34,6 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wfs;
 
+import java.util.regex.Pattern;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMException;
 import org.apache.axiom.soap.SOAP11Version;
@@ -232,6 +233,8 @@ public class WebFeatureService extends AbstractOWS {
 	private static final Logger LOG = LoggerFactory.getLogger(WebFeatureService.class);
 
 	private static final int DEFAULT_MAX_FEATURES = 15000;
+
+	private static final Pattern METADATA_SET_ID_PATTERN = Pattern.compile(Pattern.quote("${metadataSetId}"));
 
 	private WfsFeatureStoreManager service;
 
@@ -504,7 +507,7 @@ public class WebFeatureService extends AbstractOWS {
 		if (metadataUrlTemplate == null || ftMd == null || ftMd.getMetadataSetId() == null) {
 			return null;
 		}
-		return StringUtils.replaceAll(metadataUrlTemplate, "${metadataSetId}", ftMd.getMetadataSetId());
+		return StringUtils.replaceAll(metadataUrlTemplate, METADATA_SET_ID_PATTERN, ftMd.getMetadataSetId());
 	}
 
 	private void initOfferedVersions(SupportedVersions supportedVersions) {

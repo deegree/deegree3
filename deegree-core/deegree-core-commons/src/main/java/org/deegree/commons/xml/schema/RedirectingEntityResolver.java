@@ -37,6 +37,7 @@ package org.deegree.commons.xml.schema;
 import java.io.IOException;
 import java.net.URL;
 
+import java.util.regex.Pattern;
 import org.apache.xerces.xni.XMLResourceIdentifier;
 import org.apache.xerces.xni.XNIException;
 import org.apache.xerces.xni.parser.XMLEntityResolver;
@@ -61,6 +62,8 @@ public class RedirectingEntityResolver implements XMLEntityResolver {
 	private static final String ROOT = "/META-INF/SCHEMAS_OPENGIS_NET/";
 
 	private static final URL baseURL;
+
+	private static final Pattern HTTP_PATTERN = Pattern.compile("http://");
 
 	static {
 		baseURL = RedirectingEntityResolver.class.getResource(ROOT);
@@ -87,7 +90,7 @@ public class RedirectingEntityResolver implements XMLEntityResolver {
 			}
 		}
 		else if (systemId.startsWith(INSPIRE_SCHEMAS_URL)) {
-			return systemId.replaceFirst("http://", "https://");
+			return HTTP_PATTERN.matcher(systemId).replaceFirst("https://");
 		}
 		else if (systemId.equals("http://www.w3.org/2001/xml.xsd")) {
 			// workaround for schemas that include the xml base schema...

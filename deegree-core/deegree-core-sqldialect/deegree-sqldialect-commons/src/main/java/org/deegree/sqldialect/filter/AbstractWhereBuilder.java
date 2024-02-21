@@ -43,6 +43,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.regex.Pattern;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
@@ -116,6 +117,18 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractWhereBuilder {
 
 	private static final Logger LOG = LoggerFactory.getLogger(AbstractWhereBuilder.class);
+
+	private static final String WILDCARD = "*";
+
+	private static final String SINGLECHAR = "?";
+
+	private static final String ESCAPECHAR = "\\";
+
+	private static final Pattern ESCAPE_CHAR_PATTERN = Pattern.compile(Pattern.quote(ESCAPECHAR));
+
+	private static final Pattern SINGLE_CHAR_PATTERN = Pattern.compile(Pattern.quote(SINGLECHAR));
+
+	private static final Pattern WILDCARD_PATTERN = Pattern.compile(Pattern.quote(WILDCARD));
 
 	protected final SQLDialect dialect;
 
@@ -540,15 +553,12 @@ public abstract class AbstractWhereBuilder {
 			throw new UnmappableException(msg);
 		}
 
-		String wildCard = "*";
-		String singleChar = "?";
-		String escapeChar = "\\";
 		String s = ((Literal<?>) literal).getValue().toString();
-		s = StringUtils.replaceAll(s, escapeChar, escapeChar + escapeChar);
-		s = StringUtils.replaceAll(s, singleChar, escapeChar + singleChar);
-		s = StringUtils.replaceAll(s, wildCard, escapeChar + wildCard);
+		s = StringUtils.replaceAll(s, ESCAPE_CHAR_PATTERN, ESCAPECHAR + ESCAPECHAR);
+		s = StringUtils.replaceAll(s, SINGLE_CHAR_PATTERN, ESCAPECHAR + SINGLECHAR);
+		s = StringUtils.replaceAll(s, WILDCARD_PATTERN, ESCAPECHAR + WILDCARD);
 		Literal<PrimitiveValue> escapedLiteral = new Literal<PrimitiveValue>(new PrimitiveValue(s), null);
-		return new PropertyIsLike((ValueReference) propName, escapedLiteral, wildCard, singleChar, escapeChar,
+		return new PropertyIsLike((ValueReference) propName, escapedLiteral, WILDCARD, SINGLECHAR, ESCAPECHAR,
 				matchCase, null);
 	}
 

@@ -50,6 +50,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import java.util.regex.Pattern;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.data.container.BufferResult;
@@ -77,6 +78,14 @@ public class CacheRasterReader extends GridFileReader {
 	private static final Logger LOG = getLogger(CacheRasterReader.class);
 
 	private static final int TILE_SIZE = 500;
+
+	private static final Pattern CURLY_BRACKET_OPEN_PATTERN = Pattern.compile("\\{");
+
+	private static final Pattern CURLY_BRACKET_CLOSE_PATTERN = Pattern.compile("\\}");
+
+	private static final Pattern SEMICOLON_PATTERN = Pattern.compile("\\:");
+
+	private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s");
 
 	private final Object LOCK = new Object();
 
@@ -498,10 +507,10 @@ public class CacheRasterReader extends GridFileReader {
 		sb.append("_w_").append(width);
 		sb.append("_h_").append(height);
 		String result = sb.toString();
-		result = result.replaceAll("\\{", "_");
-		result = result.replaceAll("\\}", "_");
-		result = result.replaceAll("\\:", "_");
-		result = result.replaceAll("\\s", "_");
+		result = CURLY_BRACKET_OPEN_PATTERN.matcher(result).replaceAll("_");
+		result = CURLY_BRACKET_CLOSE_PATTERN.matcher(result).replaceAll("_");
+		result = SEMICOLON_PATTERN.matcher(result).replaceAll("_");
+		result = WHITESPACE_PATTERN.matcher(result).replaceAll("_");
 		return result;
 	}
 

@@ -36,6 +36,7 @@ package org.deegree.metadata.iso.persistence.sql;
 
 import java.util.List;
 
+import java.util.regex.Pattern;
 import org.deegree.metadata.iso.persistence.ISOPropertyNameMapper;
 import org.deegree.metadata.iso.persistence.queryable.Queryable;
 import org.deegree.sqldialect.SQLDialect;
@@ -50,6 +51,8 @@ import org.deegree.sqldialect.filter.PropertyNameMapping;
  * @author <a href="mailto:goltz@lat-lon.org">Lyn Goltz</a>
  */
 abstract class AbstractSqlHelper {
+
+	private static final Pattern ASC_DESC_PATTERN = Pattern.compile(" ASC| DESC");
 
 	protected String idColumn;
 
@@ -102,7 +105,7 @@ abstract class AbstractSqlHelper {
 			String orderColList = builder.getOrderBy().getSQL().toString();
 			int i = 1;
 			while (orderColList.contains(" ASC") || orderColList.contains("DESC")) {
-				orderColList = orderColList.replaceFirst(" ASC| DESC", " AS crit" + (i++));
+				orderColList = ASC_DESC_PATTERN.matcher(orderColList).replaceFirst(" AS crit" + (i++));
 			}
 			getDatasetIDs.append(',');
 			getDatasetIDs.append(orderColList);

@@ -44,6 +44,7 @@ import static org.deegree.protocol.wcs.WCSConstants.WCS_100_SCHEMA;
 
 import java.util.List;
 
+import java.util.regex.Pattern;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
@@ -81,6 +82,8 @@ public class CoverageDescription100XMLAdapter extends XMLAdapter {
 	private static final String GML_PREFIX = "gml";
 
 	private static final String GML_NS = "http://www.opengis.net/gml";
+
+	private static final Pattern UNDERSCORE_PATTERN = Pattern.compile("_");
 
 	/**
 	 * @param writer
@@ -308,7 +311,8 @@ public class CoverageDescription100XMLAdapter extends XMLAdapter {
 
 			writer.writeAttribute("atomic", interval.isAtomic() ? "true" : "false");
 			Closure closure = interval.getClosure();
-			writer.writeAttribute(WCS_100_PRE, WCS_100_NS, "closure", closure.name().replaceAll("_", "-"));
+			writer.writeAttribute(WCS_100_PRE, WCS_100_NS, "closure",
+					UNDERSCORE_PATTERN.matcher(closure.name()).replaceAll("-"));
 
 			exportSingleValueType(writer, interval.getMin(), "min");
 			exportSingleValueType(writer, interval.getMax(), "max");

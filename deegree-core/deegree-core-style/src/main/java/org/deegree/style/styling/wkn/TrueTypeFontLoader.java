@@ -39,6 +39,8 @@ import org.slf4j.LoggerFactory;
 
 public class TrueTypeFontLoader implements WellKnownNameLoader {
 
+	private static final Pattern FONT_PREFIX_PATTERN = Pattern.compile("[tT][tT][fF]://(.*)#(.*)");
+
 	private static final Logger LOG = LoggerFactory.getLogger(TrueTypeFontLoader.class);
 
 	private static final String PREFIX = "ttf://";
@@ -52,7 +54,7 @@ public class TrueTypeFontLoader implements WellKnownNameLoader {
 		if (wellKnownName == null || !wellKnownName.startsWith(PREFIX))
 			return null;
 
-		Matcher m = Pattern.compile("[tT][tT][fF]://(.*)#(.*)").matcher(wellKnownName);
+		Matcher m = FONT_PREFIX_PATTERN.matcher(wellKnownName);
 		if (!m.matches()) {
 			throw new IllegalArgumentException("Invalid WellKnownName, use syntax ttf://<fontName>#<charCode>");
 		}

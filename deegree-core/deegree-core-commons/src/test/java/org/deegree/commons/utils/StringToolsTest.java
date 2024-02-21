@@ -41,6 +41,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
+import java.util.regex.Pattern;
 import org.junit.Test;
 
 /**
@@ -49,25 +50,27 @@ import org.junit.Test;
  */
 public class StringToolsTest {
 
+	private static final Pattern QUOTE_PATTERN = Pattern.compile(Pattern.quote("*"));
+
 	/**
 	 * Test method for
-	 * {@link org.deegree.commons.utils.StringUtils#replaceAll(java.lang.String, java.lang.String, java.lang.String)}.
+	 * {@link org.deegree.commons.utils.StringUtils#replaceAll(java.lang.String, java.util.regex.Pattern, java.lang.String)}.
 	 */
 	@Test
 	public void testReplaceAll() {
-		assertEquals("foo|bar||baz", StringUtils.replaceAll("foo*bar**baz", "*", "|"));
-		assertEquals("foo$1bar$1baz", StringUtils.replaceAll("foo*bar*baz", "*", "$1"));
-		assertEquals("", StringUtils.replaceAll("", "*", "$1"));
+		assertEquals("foo|bar||baz", StringUtils.replaceAll("foo*bar**baz", QUOTE_PATTERN, "|"));
+		assertEquals("foo$1bar$1baz", StringUtils.replaceAll("foo*bar*baz", QUOTE_PATTERN, "$1"));
+		assertEquals("", StringUtils.replaceAll("", QUOTE_PATTERN, "$1"));
 	}
 
 	/**
 	 * Test method for
-	 * {@link org.deegree.commons.utils.StringUtils#replaceAll(java.lang.String, java.lang.String, java.lang.String)}.
+	 * {@link org.deegree.commons.utils.StringUtils#replaceAll(java.lang.String, java.util.regex.Pattern, java.lang.String)}.
 	 */
 	@Test(expected = NullPointerException.class)
 	public void testReplaceAllNull() {
 		// should that be the correct behaviour? or should it return an empty string?
-		StringUtils.replaceAll(null, "*", "$1");
+		StringUtils.replaceAll(null, QUOTE_PATTERN, "$1");
 	}
 
 	/**
