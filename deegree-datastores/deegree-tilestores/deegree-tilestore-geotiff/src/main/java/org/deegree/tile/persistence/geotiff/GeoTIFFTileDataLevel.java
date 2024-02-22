@@ -119,4 +119,8 @@ public class GeoTIFFTileDataLevel implements TileDataLevel {
 		return null;
 	}
 
+	public void clearPool() {
+		this.readerPool.clear();
+	}
+
 }
