@@ -562,7 +562,7 @@
       <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
-        <version>1.16.0</version>
+        <version>1.16.1</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -1235,7 +1235,7 @@
     <slf4j.version>1.7.36</slf4j.version>
     <spring-boot.version>2.7.18</spring-boot.version>
     <spring-batch.version>4.3.10</spring-batch.version>
-    <spring-framework.version>5.3.31</spring-framework.version>
+    <spring-framework.version>5.3.32</spring-framework.version>
     <batik.version>1.17</batik.version>
     <axoim.version>1.4.0</axoim.version>
     <jsonpath.version>2.7.0</jsonpath.version>
