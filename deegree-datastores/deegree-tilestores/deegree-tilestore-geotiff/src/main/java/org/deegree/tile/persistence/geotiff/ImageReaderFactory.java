@@ -71,9 +71,10 @@ public class ImageReaderFactory implements PooledObjectFactory<ImageReader> {
 
 	@Override
 	public void destroyObject(PooledObject<ImageReader> pooledObject) throws Exception {
-		ImageReader reader = (ImageReader) pooledObject;
-		((ImageInputStream) reader.getInput()).close();
-		reader.dispose();
+		ImageReader reader = pooledObject.getObject();
+		try (ImageInputStream input = (ImageInputStream) reader.getInput()) {
+			reader.dispose();
+		}
 	}
 
 	@Override
@@ -96,13 +97,12 @@ public class ImageReaderFactory implements PooledObjectFactory<ImageReader> {
 
 	@Override
 	public PooledObject<ImageReader> makeObject() throws Exception {
-		ImageInputStream iis;
 		ImageReader reader = null;
 		Iterator<ImageReader> readers = getImageReadersBySuffix("tiff");
 		while (readers.hasNext() && !(reader instanceof TIFFImageReader)) {
 			reader = readers.next();
 		}
-		iis = createImageInputStream(file);
+		ImageInputStream iis = createImageInputStream(file);
 		// already checked in provider
 		reader.setInput(iis);
 		return new DefaultPooledObject<>(reader);
