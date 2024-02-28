@@ -27,6 +27,7 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.commons.gdal.pool;
 
+import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.Closeable;
@@ -151,6 +152,14 @@ public class LimitedKeyedResourcePool<T extends KeyedResource> implements Closea
 			keyToIdleQueue.put(key, queue);
 		}
 		return queue;
+	}
+
+	public void removeAndClose(final String key) {
+		LOG.debug("Destroying resource, key: " + key);
+		BlockingQueue<T> queue = getQueue(key);
+		T resource = queue.poll();
+		closeQuietly(resource);
+		keyTracker.remove(key);
 	}
 
 }

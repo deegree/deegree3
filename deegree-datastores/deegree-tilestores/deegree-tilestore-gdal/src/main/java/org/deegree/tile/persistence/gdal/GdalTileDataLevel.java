@@ -28,6 +28,7 @@
 package org.deegree.tile.persistence.gdal;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import org.deegree.commons.gdal.GdalDataset;
@@ -47,7 +48,7 @@ import org.deegree.tile.TileMatrix;
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @since 3.4
  */
-class GdalTileDataLevel implements TileDataLevel {
+public class GdalTileDataLevel implements TileDataLevel {
 
 	private final TileMatrix metadata;
 
@@ -118,6 +119,10 @@ class GdalTileDataLevel implements TileDataLevel {
 	@Override
 	public List<String> getStyles() {
 		return null;
+	}
+
+	public void clearPool() throws IOException {
+		gdalSettings.getDatasetPool().removeAndClose(file);
 	}
 
 }
