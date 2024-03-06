@@ -105,4 +105,8 @@ public class GdalDatasetPool {
 		}
 	}
 
+	public void removeAndClose(File file) throws IOException {
+		pool.removeAndClose(file.getCanonicalFile().toString());
+	}
+
 }

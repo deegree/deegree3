@@ -111,19 +111,20 @@ class GeoTiffTileDataSetMapBuilder {
 				continue;
 			}
 
-			ImageInputStream iis = createImageInputStream(file);
-			reader.setInput(iis, false, true);
-			IIOMetadata md = reader.getImageMetadata(0);
-			Envelope envelope = getEnvelope(md, reader.getWidth(0), reader.getHeight(0), null);
+			try (ImageInputStream iis = createImageInputStream(file)) {
+				reader.setInput(iis, false, true);
+				IIOMetadata md = reader.getImageMetadata(0);
+				Envelope envelope = getEnvelope(md, reader.getWidth(0), reader.getHeight(0), null);
+				reader.dispose();
 
-			if (envelope == null) {
-				throw new ResourceInitException(
-						"No envelope information could be read from GeoTIFF. " + "Please add one to the GeoTIFF.");
+				if (envelope == null) {
+					throw new ResourceInitException(
+							"No envelope information could be read from GeoTIFF. " + "Please add one to the GeoTIFF.");
+				}
+				LOG.debug("Envelope from GeoTIFF was {}.", envelope);
+
+				map.put(id, builder.buildTileDataSet(tds, location, envelope));
 			}
-
-			LOG.debug("Envelope from GeoTIFF was {}.", envelope);
-
-			map.put(id, builder.buildTileDataSet(tds, location, envelope));
 		}
 		return map;
 	}
