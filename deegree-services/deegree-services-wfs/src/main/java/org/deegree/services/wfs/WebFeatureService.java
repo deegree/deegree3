@@ -34,6 +34,70 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wfs;
 
+import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang.StringUtils.trim;
+import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
+import static org.deegree.commons.ows.exception.OWSException.LOCK_HAS_EXPIRED;
+import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
+import static org.deegree.commons.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
+import static org.deegree.commons.utils.StringUtils.REMOVE_DOUBLE_FIELDS;
+import static org.deegree.commons.utils.StringUtils.REMOVE_EMPTY_FIELDS;
+import static org.deegree.gml.GMLVersion.GML_2;
+import static org.deegree.gml.GMLVersion.GML_30;
+import static org.deegree.gml.GMLVersion.GML_31;
+import static org.deegree.gml.GMLVersion.GML_32;
+import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
+import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
+import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
+import static org.deegree.protocol.wfs.WFSRequestType.CreateStoredQuery;
+import static org.deegree.protocol.wfs.WFSRequestType.DescribeFeatureType;
+import static org.deegree.protocol.wfs.WFSRequestType.DescribeStoredQueries;
+import static org.deegree.protocol.wfs.WFSRequestType.DropStoredQuery;
+import static org.deegree.protocol.wfs.WFSRequestType.GetCapabilities;
+import static org.deegree.protocol.wfs.WFSRequestType.GetFeature;
+import static org.deegree.protocol.wfs.WFSRequestType.GetFeatureWithLock;
+import static org.deegree.protocol.wfs.WFSRequestType.GetGmlObject;
+import static org.deegree.protocol.wfs.WFSRequestType.GetPropertyValue;
+import static org.deegree.protocol.wfs.WFSRequestType.ListStoredQueries;
+import static org.deegree.protocol.wfs.WFSRequestType.LockFeature;
+import static org.deegree.protocol.wfs.WFSRequestType.Transaction;
+import static org.deegree.protocol.wfs.getfeature.ResultType.HITS;
+import static org.deegree.services.jaxb.wfs.IdentifierGenerationOptionType.USE_EXISTING_RESOLVING_REFERENCES_INTERNALLY;
+import static org.deegree.services.jaxb.wfs.IdentifierGenerationOptionType.USE_EXISTING_SKIP_RESOLVING_REFERENCES;
+import static org.deegree.services.wfs.ReferenceResolvingMode.CHECK_ALL;
+import static org.deegree.services.wfs.ReferenceResolvingMode.CHECK_INTERNALLY;
+import static org.deegree.services.wfs.ReferenceResolvingMode.SKIP_ALL;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.xml.bind.JAXBElement;
+import java.io.File;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+import javax.xml.transform.dom.DOMSource;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMException;
 import org.apache.axiom.soap.SOAP11Version;
@@ -140,7 +204,9 @@ import org.deegree.services.ows.OWS100ExceptionReportSerializer;
 import org.deegree.services.ows.OWS110ExceptionReportSerializer;
 import org.deegree.services.ows.PreOWSExceptionReportSerializer;
 import org.deegree.services.wfs.format.Format;
+import org.deegree.services.wfs.format.csv.CsvFeatureWriter;
 import org.deegree.services.wfs.format.csv.CsvFormat;
+import org.deegree.services.wfs.format.csv.CsvFormatConfig;
 import org.deegree.services.wfs.format.geojson.GeoJsonFormat;
 import org.deegree.services.wfs.query.StoredQueryHandler;
 import org.deegree.workspace.ResourceIdentifier;
@@ -150,66 +216,6 @@ import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
-
-import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-import javax.xml.transform.dom.DOMSource;
-import java.io.File;
-import java.io.IOException;
-import java.math.BigInteger;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-
-import static org.apache.commons.lang.StringUtils.trim;
-import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
-import static org.deegree.commons.ows.exception.OWSException.LOCK_HAS_EXPIRED;
-import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
-import static org.deegree.commons.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
-import static org.deegree.commons.utils.StringUtils.REMOVE_DOUBLE_FIELDS;
-import static org.deegree.commons.utils.StringUtils.REMOVE_EMPTY_FIELDS;
-import static org.deegree.gml.GMLVersion.GML_2;
-import static org.deegree.gml.GMLVersion.GML_30;
-import static org.deegree.gml.GMLVersion.GML_31;
-import static org.deegree.gml.GMLVersion.GML_32;
-import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
-import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
-import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
-import static org.deegree.protocol.wfs.WFSRequestType.CreateStoredQuery;
-import static org.deegree.protocol.wfs.WFSRequestType.DescribeFeatureType;
-import static org.deegree.protocol.wfs.WFSRequestType.DescribeStoredQueries;
-import static org.deegree.protocol.wfs.WFSRequestType.DropStoredQuery;
-import static org.deegree.protocol.wfs.WFSRequestType.GetCapabilities;
-import static org.deegree.protocol.wfs.WFSRequestType.GetFeature;
-import static org.deegree.protocol.wfs.WFSRequestType.GetFeatureWithLock;
-import static org.deegree.protocol.wfs.WFSRequestType.GetGmlObject;
-import static org.deegree.protocol.wfs.WFSRequestType.GetPropertyValue;
-import static org.deegree.protocol.wfs.WFSRequestType.ListStoredQueries;
-import static org.deegree.protocol.wfs.WFSRequestType.LockFeature;
-import static org.deegree.protocol.wfs.WFSRequestType.Transaction;
-import static org.deegree.protocol.wfs.getfeature.ResultType.HITS;
-import static org.deegree.services.jaxb.wfs.IdentifierGenerationOptionType.USE_EXISTING_RESOLVING_REFERENCES_INTERNALLY;
-import static org.deegree.services.jaxb.wfs.IdentifierGenerationOptionType.USE_EXISTING_SKIP_RESOLVING_REFERENCES;
-import static org.deegree.services.wfs.ReferenceResolvingMode.CHECK_ALL;
-import static org.deegree.services.wfs.ReferenceResolvingMode.CHECK_INTERNALLY;
-import static org.deegree.services.wfs.ReferenceResolvingMode.SKIP_ALL;
 
 /**
  * Implementation of the <a href="http://www.opengeospatial.org/standards/wfs">OpenGIS Web
@@ -339,7 +345,7 @@ public class WebFeatureService extends AbstractOWS {
 		storedQueryHandler = new StoredQueryHandler(this, list, managedStoredQueryDirectory);
 
 		initQueryCRS(jaxbConfig.getQueryCRS());
-		initFormats(jaxbConfig.getAbstractFormat());
+		initFormats(jaxbConfig.getAbstractFormat(), jaxbConfig.getDefaultFormats());
 		mdProvider = initMetadataProvider(serviceMetadata, jaxbConfig);
 
 		supportedEncodings = parseEncodings(jaxbConfig);
@@ -545,39 +551,58 @@ public class WebFeatureService extends AbstractOWS {
 		defaultQueryCRS = this.queryCRS.get(0);
 	}
 
-	private void initFormats(List<JAXBElement<? extends AbstractFormatType>> formatList) {
+	private void initDefaultFormats(List<String> excludes) {
+		Map<String, Format> formats = new HashMap<>();
 
+		org.deegree.services.wfs.format.gml.GmlFormat gml21 = new org.deegree.services.wfs.format.gml.GmlFormat(this,
+				GML_2);
+		org.deegree.services.wfs.format.gml.GmlFormat gml30 = new org.deegree.services.wfs.format.gml.GmlFormat(this,
+				GML_30);
+		org.deegree.services.wfs.format.gml.GmlFormat gml31 = new org.deegree.services.wfs.format.gml.GmlFormat(this,
+				GML_31);
+		org.deegree.services.wfs.format.gml.GmlFormat gml32 = new org.deegree.services.wfs.format.gml.GmlFormat(this,
+
+				GML_32);
+		formats.put("application/gml+xml; version=2.1", gml21);
+		formats.put("application/gml+xml; version=3.0", gml30);
+		formats.put("application/gml+xml; version=3.1", gml31);
+		formats.put("application/gml+xml; version=3.2", gml32);
+		formats.put("text/xml; subtype=gml/2.1.2", gml21);
+		formats.put("text/xml; subtype=gml/3.0.1", gml30);
+		formats.put("text/xml; subtype=gml/3.1.1", gml31);
+		formats.put("text/xml; subtype=gml/3.2.1", gml32);
+		formats.put("text/xml; subtype=gml/3.2.2", gml32);
+		formats.put("text/xml; subtype=\"gml/2.1.2\"", gml21);
+		formats.put("text/xml; subtype=\"gml/3.0.1\"", gml30);
+		formats.put("text/xml; subtype=\"gml/3.1.1\"", gml31);
+		formats.put("text/xml; subtype=\"gml/3.2.1\"", gml32);
+		formats.put("text/xml; subtype=\"gml/3.2.2\"", gml32);
+		formats.put("text/csv", new CsvFormat(this));
+		formats.put("application/geo+json", new GeoJsonFormat(this));
+
+		List<Pattern> excludePatterns = excludes.stream().map(this::getPatternFromSimpleGlob).collect(toList());
+		formats.forEach((mimeType, format) -> {
+			if (excludePatterns.stream().anyMatch(p -> p.matcher(mimeType).matches())) {
+				LOG.debug("The format '{}' was configured to be excluded.", mimeType);
+			}
+			else {
+				mimeTypeToFormat.put(mimeType, format);
+			}
+		});
+	}
+
+	private void initFormats(List<JAXBElement<? extends AbstractFormatType>> formatList,
+			DeegreeWFS.DefaultFormats defaultFormats) {
 		if (formatList == null || formatList.isEmpty()) {
 			LOG.debug("Using default format configuration.");
-			org.deegree.services.wfs.format.gml.GmlFormat gml21 = new org.deegree.services.wfs.format.gml.GmlFormat(
-					this, GML_2);
-			org.deegree.services.wfs.format.gml.GmlFormat gml30 = new org.deegree.services.wfs.format.gml.GmlFormat(
-					this, GML_30);
-			org.deegree.services.wfs.format.gml.GmlFormat gml31 = new org.deegree.services.wfs.format.gml.GmlFormat(
-					this, GML_31);
-			org.deegree.services.wfs.format.gml.GmlFormat gml32 = new org.deegree.services.wfs.format.gml.GmlFormat(
-					this,
-
-					GML_32);
-			mimeTypeToFormat.put("application/gml+xml; version=2.1", gml21);
-			mimeTypeToFormat.put("application/gml+xml; version=3.0", gml30);
-			mimeTypeToFormat.put("application/gml+xml; version=3.1", gml31);
-			mimeTypeToFormat.put("application/gml+xml; version=3.2", gml32);
-			mimeTypeToFormat.put("text/xml; subtype=gml/2.1.2", gml21);
-			mimeTypeToFormat.put("text/xml; subtype=gml/3.0.1", gml30);
-			mimeTypeToFormat.put("text/xml; subtype=gml/3.1.1", gml31);
-			mimeTypeToFormat.put("text/xml; subtype=gml/3.2.1", gml32);
-			mimeTypeToFormat.put("text/xml; subtype=gml/3.2.2", gml32);
-			mimeTypeToFormat.put("text/xml; subtype=\"gml/2.1.2\"", gml21);
-			mimeTypeToFormat.put("text/xml; subtype=\"gml/3.0.1\"", gml30);
-			mimeTypeToFormat.put("text/xml; subtype=\"gml/3.1.1\"", gml31);
-			mimeTypeToFormat.put("text/xml; subtype=\"gml/3.2.1\"", gml32);
-			mimeTypeToFormat.put("text/xml; subtype=\"gml/3.2.2\"", gml32);
-			mimeTypeToFormat.put("text/csv", new CsvFormat(this));
-			mimeTypeToFormat.put("application/geo+json", new GeoJsonFormat(this));
+			initDefaultFormats(defaultFormats != null ? defaultFormats.getExcludeMimeType() : emptyList());
 		}
 		else {
 			LOG.debug("Using customized format configuration.");
+			if (defaultFormats != null) {
+				LOG.debug("Including default formats except {}", defaultFormats.getExcludeMimeType());
+				initDefaultFormats(defaultFormats.getExcludeMimeType());
+			}
 			for (JAXBElement<? extends AbstractFormatType> formatEl : formatList) {
 				AbstractFormatType formatDef = formatEl.getValue();
 				List<String> mimeTypes = formatDef.getMimeType();
@@ -586,7 +611,9 @@ public class WebFeatureService extends AbstractOWS {
 					format = new org.deegree.services.wfs.format.gml.GmlFormat(this, (GMLFormat) formatDef);
 				}
 				else if (formatDef instanceof org.deegree.services.jaxb.wfs.CsvFormat) {
-					format = new CsvFormat(this);
+					CsvFormatConfig csvConfig = buildCsvFormatConfig(
+							(org.deegree.services.jaxb.wfs.CsvFormat) formatDef);
+					format = new CsvFormat(this, csvConfig);
 				}
 				else if (formatDef instanceof GeoJSONFormat) {
 					boolean allowOtherCrsThanWGS84 = ((GeoJSONFormat) formatDef).isAllowOtherCrsThanWGS84();
@@ -620,6 +647,36 @@ public class WebFeatureService extends AbstractOWS {
 					.put(((org.deegree.services.wfs.format.gml.GmlFormat) f).getGmlFormatOptions().getGmlVersion(), f);
 			}
 		}
+	}
+
+	private static CsvFormatConfig buildCsvFormatConfig(org.deegree.services.jaxb.wfs.CsvFormat csvConfig)
+			throws ResourceInitException {
+		CsvFormatConfig.Builder builder = new CsvFormatConfig.Builder();
+
+		if (csvConfig.getEncoding() != null) {
+			try {
+				builder.setEncoding(Charset.forName(csvConfig.getEncoding()));
+			}
+			catch (Exception t) {
+				throw new ResourceInitException("Error setting charset/encoding for csv format: " + t.getMessage(), t);
+			}
+		}
+
+		builder.setExportGeometry(csvConfig.isGeometries());
+		builder.setDelimiter(csvConfig.getDelimiter());
+		builder.setQuoteCharacter(csvConfig.getQuoteCharacter());
+		builder.setEscape(csvConfig.getEscape());
+		builder.setRecordSeparator(csvConfig.getRecordSeparator());
+		builder.setColumnHeaders(CsvFormatConfig.ColumnHeaders.valueOf(csvConfig.getColumnHeaders().name()));
+
+		if (csvConfig.getExtraColumns() != null) {
+			builder.setColumnIdentifier(csvConfig.getExtraColumns().getIdentifier());
+			builder.setColumnCRS(csvConfig.getExtraColumns().getCoordinateReferenceSystem());
+		}
+		else {
+			builder.setColumnCRS(CsvFeatureWriter.DEFAULT_COLUMN_NAME_CRS);
+		}
+		return builder.build();
 	}
 
 	private OWSMetadataProvider initMetadataProvider(DeegreeServicesMetadataType serviceMetadata, DeegreeWFS jaxbConfig)
@@ -1547,6 +1604,18 @@ public class WebFeatureService extends AbstractOWS {
 				&& HITS.equals(getFeatureWithLock.getPresentationParams().getResultType()))
 			throw new InvalidParameterValueException(
 					"ResultType 'hits' is not allowed in GetFeatureWithLock requests!");
+	}
+
+	private Pattern getPatternFromSimpleGlob(String glob) {
+		try {
+			return Pattern.compile("^" + Pattern.quote(glob) //
+				.replace("*", "\\E.*\\Q") //
+				.replace("?", "\\E.\\Q") //
+					+ "$");
+		}
+		catch (PatternSyntaxException pse) {
+			throw new ResourceInitException("Unable to parse glob pattern '" + glob + "': " + pse.getMessage(), pse);
+		}
 	}
 
 }
