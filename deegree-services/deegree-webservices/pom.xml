@@ -282,13 +282,13 @@
     <dependency>
       <groupId>org.primefaces</groupId>
       <artifactId>primefaces</artifactId>
-      <version>13.0.4</version>
+      <version>13.0.6</version>
       <classifier>jakarta</classifier>
     </dependency>
     <dependency>
       <groupId>org.primefaces.extensions</groupId>
       <artifactId>primefaces-extensions</artifactId>
-      <version>13.0.4</version>
+      <version>13.0.6</version>
       <classifier>jakarta</classifier>
     </dependency>
     <dependency>
