@@ -20,7 +20,7 @@ public class CycleAnalyser {
 
 	private static final Logger LOG = LoggerFactory.getLogger(CycleAnalyser.class);
 
-	private final List<QName> path = new ArrayList<>();
+	private final List<PathStep> path = new ArrayList<>();
 
 	private final List<XSElementDeclaration> parentEls = new ArrayList<>();
 
@@ -67,7 +67,7 @@ public class CycleAnalyser {
 	 * @param pt never <code>null</code>
 	 */
 	public void start(PropertyType pt) {
-		path.add(pt.getName());
+		path.add(new PathStep(pt.getName()));
 	}
 
 	/**
@@ -87,7 +87,7 @@ public class CycleAnalyser {
 		if (typeDef.getAnonymous())
 			return;
 		parentCTs.add(typeDef);
-		path.add(getQName(typeDef));
+		path.add(new PathStep(getQName(typeDef), true));
 	}
 
 	/**
@@ -96,7 +96,7 @@ public class CycleAnalyser {
 	 */
 	public void add(XSElementDeclaration elDecl) {
 		parentEls.add(elDecl);
-		path.add(getQName(elDecl));
+		path.add(new PathStep(getQName(elDecl)));
 	}
 
 	/**
@@ -143,21 +143,22 @@ public class CycleAnalyser {
 	/**
 	 * @return the current path. May be empty but never <code>null</code>
 	 */
-	public List<QName> getPath() {
+	public List<PathStep> getPath() {
 		return path;
 	}
 
 	private void log() {
 		StringBuffer sb = new StringBuffer();
 		Map<QName, Integer> nameToCycleDepth = new HashMap<>();
-		for (QName step : path) {
+		for (PathStep pathStep : path) {
+			QName stepName = pathStep.getName();
 			sb.append("\n      -> ");
-			if (nameToCycleDepth.containsKey(step))
-				nameToCycleDepth.put(step, (nameToCycleDepth.get(step) + 1));
+			if (nameToCycleDepth.containsKey(stepName))
+				nameToCycleDepth.put(stepName, (nameToCycleDepth.get(stepName) + 1));
 			else
-				nameToCycleDepth.put(step, 0);
-			sb.append(step);
-			sb.append(" (cycle depth: ").append(nameToCycleDepth.get(step)).append(")");
+				nameToCycleDepth.put(stepName, 0);
+			sb.append(stepName);
+			sb.append(" (cycle depth: ").append(nameToCycleDepth.get(stepName)).append(")");
 		}
 		LOG.info("Current path:" + sb.toString());
 	}
@@ -191,11 +192,16 @@ public class CycleAnalyser {
 	}
 
 	private long currentCycleDepth(QName qname) {
-		return this.path.stream().filter(e -> qname.equals(e)).count();
+		return this.path.stream().filter(e -> qname.equals(e.getName())).count();
 	}
 
 	private <T> boolean isLast(List<T> list, T entry) {
 		return list.lastIndexOf(entry) == list.size() - 1;
+	}
+
+	private boolean isLast(List<PathStep> list, QName entry) {
+		PathStep last = list.get(list.size() - 1);
+		return entry.equals(last.getName());
 	}
 
 }

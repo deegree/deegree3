@@ -22,9 +22,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
 import static org.hamcrest.CoreMatchers.is;
@@ -490,9 +491,9 @@ public class AppSchemaMapperTest {
 		ReferenceData referenceData = mock(ReferenceData.class);
 		when(referenceData.shouldFeatureTypeMapped(featureTypeName)).thenReturn(true);
 		QName propA1 = new QName("http://test.de/schema", "prop_A1", "te");
-		when(referenceData.hasZeroOrOneProperty(featureTypeName, Collections.singletonList(propA1))).thenReturn(false);
+		when(referenceData.hasZeroOrOneProperty(featureTypeName, asPathStep(propA1))).thenReturn(false);
 		QName propA3 = new QName("http://test.de/schema", "prop_A3", "te");
-		when(referenceData.hasZeroOrOneProperty(featureTypeName, Collections.singletonList(propA3))).thenReturn(true);
+		when(referenceData.hasZeroOrOneProperty(featureTypeName, asPathStep(propA3))).thenReturn(true);
 
 		CRSRef storageCrs = CRSManager.getCRSRef("EPSG:4326");
 		GeometryStorageParams geometryParams = new GeometryStorageParams(storageCrs, "0", DIM_2);
@@ -521,19 +522,18 @@ public class AppSchemaMapperTest {
 		ReferenceData referenceData = mock(ReferenceData.class);
 		when(referenceData.shouldFeatureTypeMapped(featureTypeName)).thenReturn(true);
 		QName propA1 = new QName("http://test.de/schema", "prop_A1", "te");
-		when(referenceData.hasZeroOrOneProperty(featureTypeName, Collections.singletonList(propA1))).thenReturn(false);
+		when(referenceData.hasZeroOrOneProperty(featureTypeName, asPathStep(propA1))).thenReturn(false);
 		QName propA3 = new QName("http://test.de/schema", "prop_A3", "te");
-		when(referenceData.hasZeroOrOneProperty(featureTypeName, Collections.singletonList(propA3))).thenReturn(true);
+		when(referenceData.hasZeroOrOneProperty(featureTypeName, asPathStep(propA3))).thenReturn(true);
 		QName propComplexA4 = new QName("http://test.de/schema", "complex_A4", "te");
-		when(referenceData.hasZeroOrOneProperty(featureTypeName, Collections.singletonList(propComplexA4)))
-			.thenReturn(false);
-		List<QName> complexA4_1 = new ArrayList<>();
-		complexA4_1.add(new QName("http://test.de/schema", "complex_A4", "te"));
-		complexA4_1.add(new QName("http://test.de/schema", "prop_A4_1", "te"));
+		when(referenceData.hasZeroOrOneProperty(featureTypeName, asPathStep(propComplexA4))).thenReturn(false);
+		List<PathStep> complexA4_1 = new ArrayList<>();
+		complexA4_1.add(asPathStep("http://test.de/schema", "complex_A4", "te"));
+		complexA4_1.add(asPathStep("http://test.de/schema", "prop_A4_1", "te"));
 		when(referenceData.hasZeroOrOneProperty(featureTypeName, complexA4_1)).thenReturn(false);
-		List<QName> complexA4_2 = new ArrayList<>();
-		complexA4_2.add(new QName("http://test.de/schema", "complex_A4", "te"));
-		complexA4_2.add(new QName("http://test.de/schema", "prop_A4_3", "te"));
+		List<PathStep> complexA4_2 = new ArrayList<>();
+		complexA4_2.add(asPathStep("http://test.de/schema", "complex_A4", "te"));
+		complexA4_2.add(asPathStep("http://test.de/schema", "prop_A4_3", "te"));
 		when(referenceData.hasZeroOrOneProperty(featureTypeName, complexA4_2)).thenReturn(true);
 
 		CRSRef storageCrs = CRSManager.getCRSRef("EPSG:4326");
@@ -569,19 +569,18 @@ public class AppSchemaMapperTest {
 		ReferenceData referenceData = mock(ReferenceData.class);
 		when(referenceData.shouldFeatureTypeMapped(featureTypeName)).thenReturn(true);
 		QName propA1 = new QName("http://test.de/schema", "prop_A1", "te");
-		when(referenceData.hasZeroOrOneProperty(featureTypeName, Collections.singletonList(propA1))).thenReturn(false);
+		when(referenceData.hasZeroOrOneProperty(featureTypeName, asPathStep(propA1))).thenReturn(false);
 		QName propA3 = new QName("http://test.de/schema", "prop_A3", "te");
-		when(referenceData.hasZeroOrOneProperty(featureTypeName, Collections.singletonList(propA3))).thenReturn(true);
+		when(referenceData.hasZeroOrOneProperty(featureTypeName, asPathStep(propA3))).thenReturn(true);
 		QName propComplexA4 = new QName("http://test.de/schema", "complex_A4", "te");
-		when(referenceData.hasZeroOrOneProperty(featureTypeName, Collections.singletonList(propComplexA4)))
-			.thenReturn(true);
-		List<QName> complexA4_1 = new ArrayList<>();
-		complexA4_1.add(new QName("http://test.de/schema", "complex_A4", "te"));
-		complexA4_1.add(new QName("http://test.de/schema", "prop_A4_1", "te"));
+		when(referenceData.hasZeroOrOneProperty(featureTypeName, asPathStep(propComplexA4))).thenReturn(true);
+		List<PathStep> complexA4_1 = new ArrayList<>();
+		complexA4_1.add(asPathStep("http://test.de/schema", "complex_A4", "te"));
+		complexA4_1.add(asPathStep("http://test.de/schema", "prop_A4_1", "te"));
 		when(referenceData.hasZeroOrOneProperty(featureTypeName, complexA4_1)).thenReturn(false);
-		List<QName> complexA4_2 = new ArrayList<>();
-		complexA4_2.add(new QName("http://test.de/schema", "complex_A4", "te"));
-		complexA4_2.add(new QName("http://test.de/schema", "prop_A4_3", "te"));
+		List<PathStep> complexA4_2 = new ArrayList<>();
+		complexA4_2.add(asPathStep("http://test.de/schema", "complex_A4", "te"));
+		complexA4_2.add(asPathStep("http://test.de/schema", "prop_A4_3", "te"));
 		when(referenceData.hasZeroOrOneProperty(featureTypeName, complexA4_2)).thenReturn(true);
 
 		CRSRef storageCrs = CRSManager.getCRSRef("EPSG:4326");
@@ -617,19 +616,18 @@ public class AppSchemaMapperTest {
 		ReferenceData referenceData = mock(ReferenceData.class);
 		when(referenceData.shouldFeatureTypeMapped(featureTypeNameB)).thenReturn(true);
 		QName propB1 = new QName("http://test.de/schema", "prop_B1", "te");
-		when(referenceData.hasZeroOrOneProperty(featureTypeNameB, Collections.singletonList(propB1))).thenReturn(false);
+		when(referenceData.hasZeroOrOneProperty(featureTypeNameB, asPathStep(propB1))).thenReturn(false);
 		QName propB3 = new QName("http://test.de/schema", "prop_B3", "te");
-		when(referenceData.hasZeroOrOneProperty(featureTypeNameB, Collections.singletonList(propB3))).thenReturn(true);
+		when(referenceData.hasZeroOrOneProperty(featureTypeNameB, asPathStep(propB3))).thenReturn(true);
 		QName propFfeatureA = new QName("http://test.de/schema", "featureA", "te");
-		when(referenceData.hasZeroOrOneProperty(featureTypeNameB, Collections.singletonList(propFfeatureA)))
-			.thenReturn(false);
+		when(referenceData.hasZeroOrOneProperty(featureTypeNameB, asPathStep(propFfeatureA))).thenReturn(false);
 
 		QName featureTypeNameA = new QName("http://test.de/schema", "FeatureA", "te");
 		QName propA1 = new QName("http://test.de/schema", "prop_A1", "te");
 		when(referenceData.shouldFeatureTypeMapped(featureTypeNameA)).thenReturn(true);
-		when(referenceData.hasZeroOrOneProperty(featureTypeNameA, Collections.singletonList(propA1))).thenReturn(false);
+		when(referenceData.hasZeroOrOneProperty(featureTypeNameA, asPathStep(propA1))).thenReturn(false);
 		QName propA3 = new QName("http://test.de/schema", "prop_A3", "te");
-		when(referenceData.hasZeroOrOneProperty(featureTypeNameA, Collections.singletonList(propA3))).thenReturn(true);
+		when(referenceData.hasZeroOrOneProperty(featureTypeNameA, asPathStep(propA3))).thenReturn(true);
 
 		CRSRef storageCrs = CRSManager.getCRSRef("EPSG:4326");
 		GeometryStorageParams geometryParams = new GeometryStorageParams(storageCrs, "0", DIM_2);
@@ -666,19 +664,18 @@ public class AppSchemaMapperTest {
 		ReferenceData referenceData = mock(ReferenceData.class);
 		when(referenceData.shouldFeatureTypeMapped(featureTypeNameB)).thenReturn(true);
 		QName propB1 = new QName("http://test.de/schema", "prop_B1", "te");
-		when(referenceData.hasZeroOrOneProperty(featureTypeNameB, Collections.singletonList(propB1))).thenReturn(false);
+		when(referenceData.hasZeroOrOneProperty(featureTypeNameB, asPathStep(propB1))).thenReturn(false);
 		QName propB3 = new QName("http://test.de/schema", "prop_B3", "te");
-		when(referenceData.hasZeroOrOneProperty(featureTypeNameB, Collections.singletonList(propB3))).thenReturn(true);
+		when(referenceData.hasZeroOrOneProperty(featureTypeNameB, asPathStep(propB3))).thenReturn(true);
 		QName propFfeatureA = new QName("http://test.de/schema", "featureA", "te");
-		when(referenceData.hasZeroOrOneProperty(featureTypeNameB, Collections.singletonList(propFfeatureA)))
-			.thenReturn(true);
+		when(referenceData.hasZeroOrOneProperty(featureTypeNameB, asPathStep(propFfeatureA))).thenReturn(true);
 
 		QName featureTypeNameA = new QName("http://test.de/schema", "FeatureA", "te");
 		when(referenceData.shouldFeatureTypeMapped(featureTypeNameA)).thenReturn(true);
 		QName propA1 = new QName("http://test.de/schema", "prop_A1", "te");
-		when(referenceData.hasZeroOrOneProperty(featureTypeNameA, Collections.singletonList(propA1))).thenReturn(false);
+		when(referenceData.hasZeroOrOneProperty(featureTypeNameA, asPathStep(propA1))).thenReturn(false);
 		QName propA3 = new QName("http://test.de/schema", "prop_A3", "te");
-		when(referenceData.hasZeroOrOneProperty(featureTypeNameA, Collections.singletonList(propA3))).thenReturn(true);
+		when(referenceData.hasZeroOrOneProperty(featureTypeNameA, asPathStep(propA3))).thenReturn(true);
 
 		CRSRef storageCrs = CRSManager.getCRSRef("EPSG:4326");
 		GeometryStorageParams geometryParams = new GeometryStorageParams(storageCrs, "0", DIM_2);
@@ -715,9 +712,9 @@ public class AppSchemaMapperTest {
 		ReferenceData referenceData = mock(ReferenceData.class);
 		when(referenceData.shouldFeatureTypeMapped(featureTypeName)).thenReturn(true);
 		QName propA1 = new QName("http://test.de/schema", "prop_A1", "te");
-		when(referenceData.hasProperty(featureTypeName, Collections.singletonList(propA1))).thenReturn(false);
+		when(referenceData.hasProperty(featureTypeName, asPathStep(propA1))).thenReturn(false);
 		QName propA3 = new QName("http://test.de/schema", "prop_A3", "te");
-		when(referenceData.hasProperty(featureTypeName, Collections.singletonList(propA3))).thenReturn(false);
+		when(referenceData.hasProperty(featureTypeName, asPathStep(propA3))).thenReturn(false);
 
 		CRSRef storageCrs = CRSManager.getCRSRef("EPSG:4326");
 		GeometryStorageParams geometryParams = new GeometryStorageParams(storageCrs, "0", DIM_2);
@@ -746,11 +743,11 @@ public class AppSchemaMapperTest {
 		ReferenceData referenceData = mock(ReferenceData.class);
 		when(referenceData.shouldFeatureTypeMapped(featureTypeName)).thenReturn(true);
 		QName propA3 = new QName("http://test.de/schema", "prop_A3", "te");
-		when(referenceData.hasProperty(featureTypeName, Collections.singletonList(propA3))).thenReturn(true);
-		when(referenceData.isPropertyNilled(featureTypeName, Collections.singletonList(propA3))).thenReturn(true);
+		when(referenceData.hasProperty(featureTypeName, asPathStep(propA3))).thenReturn(true);
+		when(referenceData.isPropertyNilled(featureTypeName, asPathStep(propA3))).thenReturn(true);
 		QName propA4 = new QName("http://test.de/schema", "complex_A4", "te");
-		when(referenceData.hasProperty(featureTypeName, Collections.singletonList(propA4))).thenReturn(true);
-		when(referenceData.isPropertyNilled(featureTypeName, Collections.singletonList(propA4))).thenReturn(true);
+		when(referenceData.hasProperty(featureTypeName, asPathStep(propA4))).thenReturn(true);
+		when(referenceData.isPropertyNilled(featureTypeName, asPathStep(propA4))).thenReturn(true);
 
 		CRSRef storageCrs = CRSManager.getCRSRef("EPSG:4326");
 		GeometryStorageParams geometryParams = new GeometryStorageParams(storageCrs, "0", DIM_2);
@@ -857,9 +854,19 @@ public class AppSchemaMapperTest {
 
 	private File copyToTmpFolder(String resourceName) throws IOException {
 		InputStream resource = AppSchemaMapperTest.class.getResourceAsStream(resourceName);
-		File schema = folder.newFile(resourceName);
+		String fileName = resourceName.contains("/") ? resourceName.substring(resourceName.indexOf("/") + 1)
+				: resourceName;
+		File schema = folder.newFile(fileName);
 		IOUtils.copy(resource, new FileOutputStream(schema));
 		return schema;
+	}
+
+	private PathStep asPathStep(String namespaceUrl, String localPart, String prefix) {
+		return new PathStep(new QName(namespaceUrl, localPart, prefix));
+	}
+
+	private List<PathStep> asPathStep(QName... name) {
+		return Arrays.stream(name).map(qName -> new PathStep(qName)).collect(Collectors.toList());
 	}
 
 }
