@@ -57,6 +57,9 @@ public class IsSurface implements FunctionProvider {
 					throws FilterEvaluationException {
 				TypedObjectNode[] vals = getParams()[0].evaluate(obj, xpathEvaluator);
 
+				if (vals.length == 0) {
+					new PrimitiveValue(Boolean.toString(false));
+				}
 				if (vals.length != 1) {
 					throw new FilterEvaluationException(
 							"The " + NAME + " function's first argument must evaluate" + " to exactly one value.");
