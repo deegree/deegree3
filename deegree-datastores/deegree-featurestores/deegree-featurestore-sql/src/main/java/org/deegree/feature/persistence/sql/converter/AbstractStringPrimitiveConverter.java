@@ -52,6 +52,14 @@ import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
 import org.slf4j.Logger;
 
+/**
+ * Base for building a custom converter on top of primitive mappings of strings
+ *
+ * @see BlobBase64PrimitiveConverter
+ * @see BlobDataUrlPrimitiveConverter
+ * @see ClobPrimitiveConverter
+ * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
+ */
 public abstract class AbstractStringPrimitiveConverter implements CustomParticleConverter<PrimitiveValue> {
 
 	private static final Logger LOG = getLogger(AbstractStringPrimitiveConverter.class);
@@ -80,7 +88,6 @@ public abstract class AbstractStringPrimitiveConverter implements CustomParticle
 
 	@Override
 	public void init(Mapping mapping, SQLFeatureStore fs) {
-
 		if (mapping.getConverter() == null) {
 			return;
 		}

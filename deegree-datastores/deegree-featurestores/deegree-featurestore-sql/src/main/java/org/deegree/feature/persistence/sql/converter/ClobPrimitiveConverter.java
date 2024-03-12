@@ -41,7 +41,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.converter;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.io.IOException;
+import java.io.Reader;
 import java.io.StringReader;
 import java.sql.Clob;
 import java.sql.PreparedStatement;
@@ -50,19 +53,37 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Types;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.input.BoundedReader;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.feature.persistence.sql.SQLFeatureStore;
+import org.deegree.feature.persistence.sql.rules.Mapping;
+import org.slf4j.Logger;
 
+/**
+ * Converts CLOB database columns from/to primitive strings
+ * <p>
+ * Note that the maximum length of allowed data is limited to prevent Denial of Service
+ * Attacks. The allowed maximum length can be set through the max-length parameter in
+ * bytes (see {@link AbstractStringPrimitiveConverter#init(Mapping, SQLFeatureStore)}).
+ * </p>
+ *
+ * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
+ */
 public class ClobPrimitiveConverter extends AbstractStringPrimitiveConverter {
+
+	private static final Logger LOG = getLogger(ClobPrimitiveConverter.class);
 
 	@Override
 	public PrimitiveValue toParticle(ResultSet rs, int colIndex) throws SQLException {
 		Clob lob = rs.getClob(colIndex);
-		try (BoundedReader br = new BoundedReader(lob.getCharacterStream(), maxLen)) {
-			return new PrimitiveValue(IOUtils.toString(br), pt);
+		if (lob == null) {
+			return null;
+		}
+		try (Reader rdr = lob.getCharacterStream()) {
+			return new PrimitiveValue(IOUtils.toString(rdr), pt);
 		}
 		catch (IOException ioe) {
-			throw new SQLException("Maximum length of " + maxLen + " bytes exceeded.");
+			LOG.trace("Exception", ioe);
+			throw new SQLException("Failed to read CLOB: " + ioe.getMessage());
 		}
 	}
 

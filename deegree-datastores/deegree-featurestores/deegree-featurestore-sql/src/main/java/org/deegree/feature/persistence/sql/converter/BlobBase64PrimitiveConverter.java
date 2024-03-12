@@ -43,6 +43,7 @@ package org.deegree.feature.persistence.sql.converter;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Blob;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -51,9 +52,22 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Types;
 import java.util.Base64;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.input.BoundedInputStream;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.feature.persistence.sql.SQLFeatureStore;
+import org.deegree.feature.persistence.sql.rules.Mapping;
 
+/**
+ * Converts BLOB database columns from/to primitive strings encoded as Base64
+ * <p>
+ * Note that the maximum length of allowed data is limited to prevent Denial of Service
+ * Attacks. The allowed maximum length can be set through the max-length parameter in
+ * bytes (see {@link AbstractStringPrimitiveConverter#init(Mapping, SQLFeatureStore)}).
+ * </p>
+ *
+ * @see <a href="https://www.rfc-editor.org/rfc/rfc4648.txt">The Base16, Base32, and
+ * Base64 Data Encodings</a>
+ * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
+ */
 public class BlobBase64PrimitiveConverter extends AbstractStringPrimitiveConverter {
 
 	protected final Base64.Decoder decoder;
@@ -80,13 +94,16 @@ public class BlobBase64PrimitiveConverter extends AbstractStringPrimitiveConvert
 	@Override
 	public PrimitiveValue toParticle(ResultSet rs, int colIndex) throws SQLException {
 		Blob lob = rs.getBlob(colIndex);
-
-		try (BoundedInputStream br = new BoundedInputStream(lob.getBinaryStream(), maxLen)) {
-			byte[] raw = IOUtils.toByteArray(br);
+		if (lob == null) {
+			return null;
+		}
+		try (InputStream is = lob.getBinaryStream()) {
+			byte[] raw = IOUtils.toByteArray(is);
 			return new PrimitiveValue(formatOutput(encoder.encodeToString(raw)), pt);
 		}
 		catch (IOException ioe) {
-			throw new SQLException("Maximum length of " + maxLen + " bytes exceeded.");
+			LOG.trace("Exception", ioe);
+			throw new SQLException("Conversation from BLOB to BASE64 failed: " + ioe.getMessage());
 		}
 	}
 
