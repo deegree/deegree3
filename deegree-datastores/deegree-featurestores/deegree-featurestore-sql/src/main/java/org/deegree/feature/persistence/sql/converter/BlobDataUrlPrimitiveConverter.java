@@ -55,6 +55,21 @@ import org.deegree.feature.persistence.sql.jaxb.CustomConverterJAXB;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.slf4j.Logger;
 
+/**
+ * Converts BLOB database columns from/to primitive strings encoded as data URL
+ * <p>
+ * Note that the maximum length of allowed data is limited to prevent Denial of Service
+ * Attacks. The allowed maximum length can be set through the max-length parameter in
+ * bytes (see {@link AbstractStringPrimitiveConverter#init(Mapping, SQLFeatureStore)}).
+ * Currently, only some generic image file types are configured by default. Additional
+ * mime mappings can be added by supplied by adding magic numbers with mime type as
+ * parameter. These parameter keys have to start with <code>magic-</code> followed by the
+ * magic bytes in hex and the corresponding mime type.
+ * </p>
+ *
+ * @see <a href="https://www.ietf.org/rfc/rfc2397.txt">RFC 2397 The "data" URL scheme</a>
+ * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
+ */
 public class BlobDataUrlPrimitiveConverter extends BlobBase64PrimitiveConverter {
 
 	private static final Logger LOG = getLogger(BlobDataUrlPrimitiveConverter.class);
@@ -79,7 +94,7 @@ public class BlobDataUrlPrimitiveConverter extends BlobBase64PrimitiveConverter 
 	}
 
 	public BlobDataUrlPrimitiveConverter() {
-		super(Base64.getUrlEncoder(), Base64.getUrlDecoder());
+		super(Base64.getEncoder(), Base64.getDecoder());
 
 		// https://en.wikipedia.org/wiki/List_of_file_signatures
 		LOG.trace("Adding default mappings for gif, jpg and png");
@@ -94,10 +109,13 @@ public class BlobDataUrlPrimitiveConverter extends BlobBase64PrimitiveConverter 
 
 	@Override
 	String formatInput(String value) throws SQLException {
+		if (value == null) {
+			return null;
+		}
 		String search = value.substring(0, Math.min(200, value.length()));
 		int pos = search.indexOf(";base64,");
-		if (search.startsWith("data:") || pos == -1) {
-			throw new SQLException("Input data is not a data URL encoded in base64!");
+		if (!search.startsWith("data:") || pos == -1) {
+			throw new SQLException("Input data is not encoded in base64!");
 		}
 		return super.formatInput(value.substring(pos + 8));
 	}
