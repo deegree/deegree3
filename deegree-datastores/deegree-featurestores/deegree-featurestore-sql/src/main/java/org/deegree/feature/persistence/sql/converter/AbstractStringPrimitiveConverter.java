@@ -55,9 +55,9 @@ import org.slf4j.Logger;
 /**
  * Base for building a custom converter on top of primitive mappings of strings
  *
- * @see BlobBase64PrimitiveConverter
- * @see BlobDataUrlPrimitiveConverter
- * @see ClobPrimitiveConverter
+ * @see BinaryBase64PrimitiveConverter
+ * @see BinaryDataUrlPrimitiveConverter
+ * @see CharacterPrimitiveConverter
  * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  */
 public abstract class AbstractStringPrimitiveConverter implements CustomParticleConverter<PrimitiveValue> {
@@ -69,6 +69,12 @@ public abstract class AbstractStringPrimitiveConverter implements CustomParticle
 	private String column = null;
 
 	protected int maxLen = 256 * 1024 * 1024; // Default limit of 256 MiB
+
+	protected int sqlType;
+
+	protected AbstractStringPrimitiveConverter(int defaultSqlType) {
+		this.sqlType = defaultSqlType;
+	}
 
 	@Override
 	public String getSelectSnippet(String tableAlias) {
@@ -94,6 +100,9 @@ public abstract class AbstractStringPrimitiveConverter implements CustomParticle
 		for (CustomConverterJAXB.Param p : mapping.getConverter().getParam()) {
 			if ("max-length".equalsIgnoreCase(p.getName())) {
 				maxLen = Math.max(1, Integer.parseInt(p.getValue()));
+			}
+			if ("sql-type".equalsIgnoreCase(p.getName())) {
+				sqlType = Integer.parseInt(p.getValue());
 			}
 		}
 		if (mapping instanceof PrimitiveMapping) {

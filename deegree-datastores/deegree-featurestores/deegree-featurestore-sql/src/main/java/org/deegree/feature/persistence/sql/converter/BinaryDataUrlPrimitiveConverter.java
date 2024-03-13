@@ -56,7 +56,7 @@ import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.slf4j.Logger;
 
 /**
- * Converts BLOB database columns from/to primitive strings encoded as data URL
+ * Converts binary database columns from/to primitive strings encoded as data URL
  * <p>
  * Note that the maximum length of allowed data is limited to prevent Denial of Service
  * Attacks. The allowed maximum length can be set through the max-length parameter in
@@ -70,9 +70,9 @@ import org.slf4j.Logger;
  * @see <a href="https://www.ietf.org/rfc/rfc2397.txt">RFC 2397 The "data" URL scheme</a>
  * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  */
-public class BlobDataUrlPrimitiveConverter extends BlobBase64PrimitiveConverter {
+public class BinaryDataUrlPrimitiveConverter extends BinaryBase64PrimitiveConverter {
 
-	private static final Logger LOG = getLogger(BlobDataUrlPrimitiveConverter.class);
+	private static final Logger LOG = getLogger(BinaryDataUrlPrimitiveConverter.class);
 
 	private static final Pattern PAT_NON_HEX = Pattern.compile("[^0-9a-fA-F]+");
 
@@ -93,7 +93,7 @@ public class BlobDataUrlPrimitiveConverter extends BlobBase64PrimitiveConverter 
 		}
 	}
 
-	public BlobDataUrlPrimitiveConverter() {
+	public BinaryDataUrlPrimitiveConverter() {
 		super(Base64.getEncoder(), Base64.getDecoder());
 
 		// https://en.wikipedia.org/wiki/List_of_file_signatures
@@ -139,7 +139,7 @@ public class BlobDataUrlPrimitiveConverter extends BlobBase64PrimitiveConverter 
 		}
 		for (CustomConverterJAXB.Param p : mapping.getConverter().getParam()) {
 			if (p.getName() != null && p.getName().toLowerCase().startsWith("magic-") && p.getName().length() > 7) {
-				addImageMapping(p.getName().substring(7), p.getValue());
+				addImageMapping(p.getName().substring(6), p.getValue());
 			}
 		}
 	}
