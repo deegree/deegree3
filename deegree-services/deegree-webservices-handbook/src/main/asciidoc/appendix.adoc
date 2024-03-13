@@ -93,3 +93,53 @@ This chapter is only intended as an entry point to make it easier to reach these
 |org.deegree.services.wms.controller.plugins.GetFeatureInfoProvider |org.deegree.services.wms.controller.plugins.DefaultGetFeatureInfoProvider |0..1
 
 |===
+
+[[anchor-appendix-customconverter]]
+=== Custom converters for the SQL feature store
+
+Custom converters provide an extension point for plugins to provide a specialized DB-to-ObjectModel converter implementation.
+
+The configuration is not defined as an XML schema, but consists of the specification of the class and an optional list of parameters, 
+which in turn consist of keys and values. 
+
+A configuration might look something like this:
+
+[source,xml]
+----
+<CustomConverter class="com.example.CustomConverter">
+    <Param name="color">RED</Param>
+    <Param name="size">42</Param>
+</CustomConverter>
+----
+
+The following table lists converter that are already available for use or as a reference.
+
+[width="100%",cols="35%,15%,40%",options="header",]
+|===
+|Class |Parameter |Description
+
+|org.deegree.feature.persistence.sql.converter.BinaryBase64PrimitiveConverter |  |Converts binary database columns from/to primitive strings encoded as Base64 (RFC 4648)
+|  |max-length |The maximum length of allowed data is limited to prevent Denial of Service Attacks. Specified in bytes and defaults to 256 MiB.
+
+|org.deegree.feature.persistence.sql.converter.BinaryDataUrlPrimitiveConverter |  |Converts binary database columns from/to primitive strings encoded as data URL (RFC 2397)
+|  |max-length |The maximum length of allowed data is limited to prevent Denial of Service Attacks. Specified in bytes and defaults to 256 MiB.
+|  |magic-XX |Mime type for records which data start with the magic numbers  (`XX`) encoded as a hexadecimal value. The converter contains some common magic numbers for PNG, JPEG and GIF.
+
+|org.deegree.feature.persistence.sql.converter.CharacterPrimitiveConverter |  |Converts large character type database columns from/to primitive strings
+|  |max-length |The maximum length of allowed data is limited to prevent Denial of Service Attacks. Specified in bytes and defaults to 256 MiB.
+
+|===
+
+Here's an example:
+
+[source,xml]
+----
+<FeatureTypeMapping table="TABLENAME" name="LargeObjectFeature">
+    <!-- ... -->
+    <Primitive mapping="IMAGE" path="image" type="string">
+        <CustomConverter class="org.deegree.feature.persistence.sql.converter.BinaryDataUrlPrimitiveConverter">
+            <Param name="magic-424D">image/bmp</Param>
+        </CustomConverter>
+    </Primitive>
+</FeatureTypeMapping>
+----
