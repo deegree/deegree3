@@ -41,69 +41,51 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.converter;
 
-import java.io.ByteArrayInputStream;
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.io.IOException;
-import java.io.InputStream;
-import java.sql.Blob;
+import java.io.Reader;
+import java.io.StringReader;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Types;
-import java.util.Base64;
 import org.apache.commons.io.IOUtils;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.rules.Mapping;
+import org.slf4j.Logger;
 
 /**
- * Converts BLOB database columns from/to primitive strings encoded as Base64
+ * Converts large character type database columns from/to primitive strings
  * <p>
  * Note that the maximum length of allowed data is limited to prevent Denial of Service
  * Attacks. The allowed maximum length can be set through the max-length parameter in
  * bytes (see {@link AbstractStringPrimitiveConverter#init(Mapping, SQLFeatureStore)}).
  * </p>
  *
- * @see <a href="https://www.rfc-editor.org/rfc/rfc4648.txt">The Base16, Base32, and
- * Base64 Data Encodings</a>
  * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  */
-public class BlobBase64PrimitiveConverter extends AbstractStringPrimitiveConverter {
+public class CharacterPrimitiveConverter extends AbstractStringPrimitiveConverter {
 
-	protected final Base64.Decoder decoder;
+	private static final Logger LOG = getLogger(CharacterPrimitiveConverter.class);
 
-	protected final Base64.Encoder encoder;
-
-	protected BlobBase64PrimitiveConverter(Base64.Encoder enc, Base64.Decoder dec) {
-		this.decoder = dec;
-		this.encoder = enc;
-	}
-
-	public BlobBase64PrimitiveConverter() {
-		this(Base64.getEncoder(), Base64.getDecoder());
-	}
-
-	String formatInput(String value) throws SQLException {
-		return value;
-	}
-
-	String formatOutput(String value) throws SQLException {
-		return value;
+	public CharacterPrimitiveConverter() {
+		super(Types.CLOB);
 	}
 
 	@Override
 	public PrimitiveValue toParticle(ResultSet rs, int colIndex) throws SQLException {
-		Blob lob = rs.getBlob(colIndex);
-		if (lob == null) {
-			return null;
-		}
-		try (InputStream is = lob.getBinaryStream()) {
-			byte[] raw = IOUtils.toByteArray(is);
-			return new PrimitiveValue(formatOutput(encoder.encodeToString(raw)), pt);
+		try (Reader rdr = rs.getCharacterStream(colIndex)) {
+			if (rdr == null) {
+				return null;
+			}
+			return new PrimitiveValue(IOUtils.toString(rdr), pt);
 		}
 		catch (IOException ioe) {
 			LOG.trace("Exception", ioe);
-			throw new SQLException("Conversation from BLOB to BASE64 failed: " + ioe.getMessage());
+			throw new SQLException("Failed to read CLOB: " + ioe.getMessage());
 		}
 	}
 
@@ -118,24 +100,17 @@ public class BlobBase64PrimitiveConverter extends AbstractStringPrimitiveConvert
 		}
 		if (val == null) {
 			try {
-				stmt.setNull(paramIndex, Types.BLOB);
+				stmt.setNull(paramIndex, sqlType);
 			}
 			catch (SQLFeatureNotSupportedException ignored) {
 				stmt.setString(paramIndex, null);
 			}
 		}
-		else if (val.length() > (((float) maxLen / 3) * 4 * 1.1)) {
-			// NOTE encoded is 4/3 the size of the not encoded content, but 10 percent is
-			// added for linebreak etc.
-			throw new SQLException("Maximum length of " + maxLen + " bytes exceeded in pre check.");
+		else if (val.length() > maxLen) {
+			throw new SQLException("Maximum length of " + maxLen + " bytes exceeded.");
 		}
 		else {
-			byte[] raw = decoder.decode(formatInput(val));
-			if (raw.length > maxLen) {
-				throw new SQLException("Maximum length of " + maxLen + " bytes exceeded.");
-			}
-
-			stmt.setBlob(paramIndex, new ByteArrayInputStream(raw), raw.length);
+			stmt.setCharacterStream(paramIndex, new StringReader(val), val.length());
 		}
 	}
 
