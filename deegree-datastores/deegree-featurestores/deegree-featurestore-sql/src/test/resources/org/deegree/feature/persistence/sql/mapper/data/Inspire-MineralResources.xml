@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gml:FeatureCollection xmlns:gml="http://www.opengis.net/gml/3.2"
+                       xmlns:base="http://inspire.ec.europa.eu/schemas/base/3.3"
+                       xmlns:base2="http://inspire.ec.europa.eu/schemas/base2/2.0"
+                       xmlns:xlink="http://www.w3.org/1999/xlink"
+                       xmlns:ge="http://inspire.ec.europa.eu/schemas/ge-core/4.0"
+                       xmlns:mr-core="http://inspire.ec.europa.eu/schemas/mr-core/4.0"
+                       xmlns:swe="http://www.opengis.net/swe/2.0"
+                       xmlns:gmd="http://www.isotc211.org/2005/gmd"
+                       xmlns:gco="http://www.isotc211.org/2005/gco"
+                       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+>
+  <gml:featureMember>
+    <mr-core:MineralOccurrence gml:id="MineralOccurrence_1">
+      <gml:description>Number: 1</gml:description>
+      <gml:identifier codeSpace="https://inspire.ec.europa.eu/ids">
+        https://registry.gdi-de.org/id/test1/MineralOccurrence_1
+      </gml:identifier>
+      <ge:inspireId>
+        <base:Identifier>
+          <base:localId>MineralOccurrence_1</base:localId>
+          <base:namespace>https://registry.gdi-de.org/id/test1</base:namespace>
+        </base:Identifier>
+      </ge:inspireId>
+      <ge:name>Test</ge:name>
+      <ge:geologicHistory>
+        <ge:GeologicEvent>
+          <ge:name nilReason="other:unpopulated" xsi:nil="true"></ge:name>
+          <ge:eventEnvironment
+                  xlink:href="http://inspire.ec.europa.eu/codelist/EventEnvironmentValue/glaciolacustrineSetting"></ge:eventEnvironment>
+          <ge:eventProcess
+                  xlink:href="http://inspire.ec.europa.eu/codelist/EventProcessValue/depositionByOrFromMovingIce"></ge:eventProcess>
+          <ge:olderNamedAge
+                  xlink:href="http://inspire.ec.europa.eu/codelist/GeochronologicEraValue/weichselian"></ge:olderNamedAge>
+          <ge:youngerNamedAge
+                  xlink:href="http://inspire.ec.europa.eu/codelist/GeochronologicEraValue/weichselian"></ge:youngerNamedAge>
+        </ge:GeologicEvent>
+      </ge:geologicHistory>
+      <mr-core:beginLifespanVersion>2016-06-19T22:00:00Z</mr-core:beginLifespanVersion>
+      <mr-core:explorationHistory
+              xlink:href="#ExplorationActivity_1"></mr-core:explorationHistory>
+      <mr-core:commodityDescription
+              xlink:href="#Commodity_1"></mr-core:commodityDescription>
+      <mr-core:sourceReference>
+        <base2:DocumentCitation gml:id="DocumentCitation_1">
+          <gml:identifier codeSpace="https://inspire.ec.europa.eu/ids">
+            https://registry.gdi-de.org/id/test1/DocumentCitation_1
+          </gml:identifier>
+          <base2:name>Map of the ...</base2:name>
+          <base2:shortName>MAP</base2:shortName>
+          <base2:date>
+            <gmd:CI_Date>
+              <gmd:date>
+                <gco:Date>2023-01-01</gco:Date>
+              </gmd:date>
+              <gmd:dateType>
+                <gmd:CI_DateTypeCode
+                        codeList="https://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode"
+                        codeListValue="publication">publication
+                </gmd:CI_DateTypeCode>
+              </gmd:dateType>
+            </gmd:CI_Date>
+          </base2:date>
+          <base2:link>https://example.org/test.pdf</base2:link>
+          <base2:specificReference>Karte...</base2:specificReference>
+        </base2:DocumentCitation>
+      </mr-core:sourceReference>
+      <mr-core:dimension nilReason="other:unpopulated" xsi:nil="true"></mr-core:dimension>
+      <mr-core:expression>
+        <swe:Category>
+          <swe:constraint>
+            <swe:AllowedTokens>
+              <swe:value>value1</swe:value>
+              <swe:value>value2</swe:value>
+            </swe:AllowedTokens>
+          </swe:constraint>
+          <swe:value>value</swe:value>
+        </swe:Category>
+      </mr-core:expression>
+      <mr-core:form nilReason="other:unpopulated" xsi:nil="true"></mr-core:form>
+      <mr-core:linearOrientation nilReason="other:unpopulated" xsi:nil="true"></mr-core:linearOrientation>
+      <mr-core:planarOrientation nilReason="other:unpopulated" xsi:nil="true"></mr-core:planarOrientation>
+      <mr-core:shape nilReason="other:unpopulated" xsi:nil="true"></mr-core:shape>
+      <mr-core:classification nilReason="unknown" xsi:nil="true"></mr-core:classification>
+      <mr-core:oreAmount nilReason="other:unpopulated" xsi:nil="true"></mr-core:oreAmount>
+      <mr-core:type
+              xlink:href="http://inspire.ec.europa.eu/codelist/MineralOccurrenceTypeValue/mineralDeposit"></mr-core:type>
+      <mr-core:endusePotential
+              xlink:href="http://inspire.ec.europa.eu/codelist/EndusePotentialValue/structuralClayProducts"></mr-core:endusePotential>
+    </mr-core:MineralOccurrence>
+  </gml:featureMember>
+</gml:FeatureCollection>
