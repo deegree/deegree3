@@ -966,7 +966,7 @@ public class AppSchemaMapper {
 	private boolean referenceDataHasProperty(CycleAnalyser cycleAnalyser) {
 		if (referenceData == null || !useRefDataProps)
 			return true;
-		List<QName> xpath = cycleAnalyser.getPath();
+		List<PathStep> xpath = cycleAnalyser.getPath();
 		QName featureTypeName = cycleAnalyser.getFeatureTypeName();
 		return referenceData.hasProperty(featureTypeName, xpath);
 	}
@@ -974,7 +974,7 @@ public class AppSchemaMapper {
 	private boolean referenceDataPropertyIsNil(CycleAnalyser cycleAnalyser) {
 		if (referenceData == null || !useRefDataProps)
 			return false;
-		List<QName> xpath = cycleAnalyser.getPath();
+		List<PathStep> xpath = cycleAnalyser.getPath();
 		QName featureTypeName = cycleAnalyser.getFeatureTypeName();
 		return referenceData.isPropertyNilled(featureTypeName, xpath);
 	}
@@ -982,7 +982,7 @@ public class AppSchemaMapper {
 	private boolean referenceDataHasOnlyOne(CycleAnalyser cycleAnalyser) {
 		if (referenceData == null)
 			return false;
-		List<QName> xpath = cycleAnalyser.getPath();
+		List<PathStep> xpath = cycleAnalyser.getPath();
 		QName featureTypeName = cycleAnalyser.getFeatureTypeName();
 		return referenceData.hasZeroOrOneProperty(featureTypeName, xpath);
 	}
