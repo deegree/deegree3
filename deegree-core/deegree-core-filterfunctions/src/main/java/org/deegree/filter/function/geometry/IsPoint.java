@@ -57,7 +57,7 @@ public class IsPoint implements FunctionProvider {
 				TypedObjectNode[] vals = getParams()[0].evaluate(obj, xpathEvaluator);
 
 				if (vals.length == 0) {
-					new PrimitiveValue(Boolean.toString(false));
+					return new TypedObjectNode[] { new PrimitiveValue(Boolean.toString(false)) };
 				}
 				if (vals.length != 1) {
 					throw new FilterEvaluationException(
