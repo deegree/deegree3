@@ -908,7 +908,7 @@ _<Primitive>_ and _<Geometry>_:
 
 |_<Join>_ |0..1 |Complex |Defines a change in the table context
 
-|_<CustomConverter>_ |0..1 |Complex |Plugs-in a specialized
+|_<CustomConverter>_ |0..1 |Complex |Plug-ins a specialized
 DB-to-ObjectModel converter implementation
 
 |_<StorageCRS>_ |0..1 |Complex |CRS of stored geometries and database
@@ -919,6 +919,10 @@ NOTE: If your configuration file is stored in UTF-8 encoding deegree allows
 special chars from this charset in the mapping (e.g. the property Straße
 can be stored in the column 'strasse' or 'straße'). Required is that the
 database supports UTF-8 as well.
+
+NOTE: Since _<CustomConverter>_ plug-ins require specific knowledge about 
+the used database, drivers and configuration, these are described in the
+appendix at <<anchor-appendix-customconverter>>.
 
 ==== Mapping GML application schemas
 
