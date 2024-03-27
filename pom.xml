@@ -792,6 +792,11 @@
         <artifactId>json-path</artifactId>
         <version>${jsonpath.version}</version>
       </dependency>
+      <dependency>
+        <groupId>net.minidev</groupId>
+        <artifactId>json-smart</artifactId>
+        <version>${jsonsmart.version}</version>
+      </dependency>
       <!-- JAI -->
       <dependency>
         <groupId>javax.media</groupId>
@@ -1229,7 +1234,8 @@
     <spring-framework.version>5.3.32</spring-framework.version>
     <batik.version>1.17</batik.version>
     <axoim.version>1.2.22</axoim.version>
-    <jsonpath.version>2.7.0</jsonpath.version>
+    <jsonpath.version>2.9.0</jsonpath.version>
+    <jsonsmart.version>2.5.1</jsonsmart.version>
   </properties>
 
   <modules>
