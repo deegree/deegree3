@@ -832,7 +832,7 @@ StoredQueryDefinition file. Here's an example:
   </Parameter>
   <QueryExpressionText returnFeatureTypes="ad:Address"
    language="urn:ogc:def:queryLanguage:OGC-:WFSQueryExpression">
-    <Query typeNames="ad:Address">
+    <Query srsName="${srsName}" typeNames="ad:Address">
       <Filter xmlns="http://www.opengis.net/fes/2.0">
         <PropertyIsEqualTo>
           <ValueReference>
@@ -865,6 +865,8 @@ configure it as expected: Usually values of the typeNames of the
 Query-Elements should be used. An exception is thrown as
 DescribeStoredQueries response, if the configured feature type is not
 served by the WFS.
+
+The optional attribute _srsName="${srsName}"_ can be set to support the parameter _srsName_ in the GetFeature request to determine the CRS of the returned geometries. If the paramater is missing in the request, the default CRS of the WFS is returned.
 
 To enable support for the Manage Stored Queries conformance class for WFS 2.0.0 it is required to create a directory storedqueries/managed in your workspace. The stored queries created with _CreateStoredQuery_ requests are stored in this directory. They are loaded during startup of deegree automatically. It is not recommend to put the StoredQueries configured in the WFS configuration with the StoredQuery element into this folder. If the directory is missing the _CreateStoredQuery_ request returns an exception.
 
