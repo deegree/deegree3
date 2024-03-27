@@ -3,7 +3,7 @@
   xsi:schemaLocation="http://www.deegree.org/connectionprovider/datasource https://schemas.deegree.org/core/3.5/connectionprovider/datasource/datasource.xsd">
 
   <!-- Creation / lookup of javax.sql.DataSource instance -->
-  <DataSource javaClass="org.apache.commons.dbcp2.BasicDataSource" />
+  <DataSource javaClass="org.apache.commons.dbcp2.BasicDataSource" destroyMethod="close" />
 
   <!-- Configuration of DataSource properties -->
   <Property name="driverClassName" value="oracle.jdbc.OracleDriver" />
