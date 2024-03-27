@@ -198,7 +198,15 @@ Some common ones are:
 |appschemas/ |GML application schemas
 |data/ |Datasets (GML, GeoTIFF, ...)
 |manager/ |Example requests (for the generic client)
+|fonts/ |Fonts
 |===
+
+____
+NOTE: Font files are processed only once per file and are not
+deregistered when a workspace is changed, stopped or reloaded.
+To remove a font, remove the font file from the folder and restart
+the container.
+____
 
 ==== Workspace files and resources
 
