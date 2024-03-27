@@ -48,18 +48,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
-
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
-
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.tom.gml.property.PropertyType;
@@ -76,13 +72,17 @@ import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.GeometryStorageParams;
 import org.deegree.feature.persistence.sql.MappedAppSchema;
-import org.deegree.sqldialect.SortCriterion;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.id.IDGenerator;
-import org.deegree.feature.persistence.sql.jaxb.*;
+import org.deegree.feature.persistence.sql.jaxb.AbstractParticleJAXB;
+import org.deegree.feature.persistence.sql.jaxb.FIDMappingJAXB;
 import org.deegree.feature.persistence.sql.jaxb.FIDMappingJAXB.ColumnJAXB;
+import org.deegree.feature.persistence.sql.jaxb.FeatureTypeMappingJAXB;
+import org.deegree.feature.persistence.sql.jaxb.GeometryParticleJAXB;
+import org.deegree.feature.persistence.sql.jaxb.Join;
+import org.deegree.feature.persistence.sql.jaxb.PrimitiveParticleJAXB;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
@@ -95,6 +95,7 @@ import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.deegree.sqldialect.SQLDialect;
+import org.deegree.sqldialect.SortCriterion;
 import org.deegree.sqldialect.filter.DBField;
 import org.deegree.sqldialect.filter.MappingExpression;
 import org.deegree.workspace.Workspace;
@@ -354,7 +355,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
 			}
 			pt = new SimplePropertyType(propName, minOccurs, maxOccurs, primType, null, null);
 			m = new PrimitiveMapping(path, minOccurs == 0, mapping, ((SimplePropertyType) pt).getPrimitiveType(), jc,
-					null);
+					propDecl.getCustomConverter());
 		}
 		else if (propDecl instanceof GeometryParticleJAXB) {
 			GeometryParticleJAXB geomDecl = (GeometryParticleJAXB) propDecl;
@@ -381,7 +382,8 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
 			}
 			CoordinateDimension dim = crs.getDimension() == 3 ? DIM_2 : DIM_3;
 			pt = new GeometryPropertyType(propName, minOccurs, maxOccurs, null, null, type, dim, INLINE);
-			m = new GeometryMapping(path, minOccurs == 0, mapping, type, new GeometryStorageParams(crs, srid, dim), jc);
+			m = new GeometryMapping(path, minOccurs == 0, mapping, type, new GeometryStorageParams(crs, srid, dim), jc,
+					propDecl.getCustomConverter());
 		}
 		else {
 			LOG.warn("Unhandled property declaration '" + propDecl.getClass() + "'. Skipping it.");
