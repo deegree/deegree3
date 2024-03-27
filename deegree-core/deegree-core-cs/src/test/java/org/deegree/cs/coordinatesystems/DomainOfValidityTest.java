@@ -34,7 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs.coordinatesystems;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.deegree.cs.transformations.CRSDefines;
 import org.junit.Test;

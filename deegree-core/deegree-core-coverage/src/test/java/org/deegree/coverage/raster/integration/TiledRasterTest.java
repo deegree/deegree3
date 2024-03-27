@@ -43,7 +43,7 @@ import static org.deegree.coverage.raster.utils.RasterFactory.loadRasterFromStre
 import java.io.IOException;
 import java.io.InputStream;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;

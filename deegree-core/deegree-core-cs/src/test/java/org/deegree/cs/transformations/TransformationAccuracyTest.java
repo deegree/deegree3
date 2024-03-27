@@ -41,7 +41,7 @@ import java.util.Collections;
 
 import javax.vecmath.Point3d;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;

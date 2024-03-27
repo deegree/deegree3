@@ -38,7 +38,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;

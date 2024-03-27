@@ -34,8 +34,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry;
 
-import static junit.framework.Assert.assertTrue;
-import junit.framework.Assert;
+import static org.junit.Assert.assertTrue;
+import org.junit.Assert;
 
 import org.deegree.cs.CRSUtils;
 import org.deegree.cs.coordinatesystems.ICRS;

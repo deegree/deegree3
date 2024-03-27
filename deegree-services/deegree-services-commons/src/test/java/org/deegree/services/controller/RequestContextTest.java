@@ -36,7 +36,7 @@ package org.deegree.services.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.junit.Test;
 import org.mockito.Mockito;

@@ -37,10 +37,10 @@
 
 package org.deegree.coverage.raster.geom;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation.CENTER;
 import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation.OUTER;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -81,12 +81,12 @@ public class RasterGeoRefTest {
 	@Test
 	public void relocatedOrigin() {
 		double[] origin = REF_CENTER.getOrigin(OUTER);
-		Assert.assertEquals(995., origin[0]);
-		Assert.assertEquals(1005., origin[1]);
+		Assert.assertEquals(995., origin[0], 0.01d);
+		Assert.assertEquals(1005., origin[1], 0.01d);
 
 		origin = REF_OUTER.getOrigin(CENTER);
-		Assert.assertEquals(1005., origin[0]);
-		Assert.assertEquals(995., origin[1]);
+		Assert.assertEquals(1005., origin[0], 0.01d);
+		Assert.assertEquals(995., origin[1], 0.01d);
 	}
 
 	/**

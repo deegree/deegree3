@@ -40,7 +40,7 @@
 
 package org.deegree.commons.xml.stax;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.net.URL;

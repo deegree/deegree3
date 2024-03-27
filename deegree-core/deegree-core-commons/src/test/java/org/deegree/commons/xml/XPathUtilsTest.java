@@ -36,7 +36,7 @@ package org.deegree.commons.xml;
 
 import javax.xml.namespace.QName;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import junit.framework.TestCase;
 
 import org.junit.Test;

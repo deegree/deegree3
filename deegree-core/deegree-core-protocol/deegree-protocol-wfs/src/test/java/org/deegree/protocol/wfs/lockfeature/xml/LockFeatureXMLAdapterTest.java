@@ -37,8 +37,8 @@
 
 package org.deegree.protocol.wfs.lockfeature.xml;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
 import static org.junit.Assert.assertFalse;
 

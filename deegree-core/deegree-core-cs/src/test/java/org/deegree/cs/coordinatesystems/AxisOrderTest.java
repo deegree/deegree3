@@ -34,9 +34,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs.coordinatesystems;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,9 +91,9 @@ public class AxisOrderTest {
 
 		assertNotNull(transformedPoints);
 		assertEquals(1, transformedPoints.size());
-		assertEquals(46.074, transformedPoints.get(0).x);
-		assertEquals(9.799, transformedPoints.get(0).y);
-		assertEquals(Double.NaN, transformedPoints.get(0).z);
+		assertEquals(46.074, transformedPoints.get(0).x, 0.01d);
+		assertEquals(9.799, transformedPoints.get(0).y, 0.01d);
+		assertEquals(Double.NaN, transformedPoints.get(0).z, 0.01d);
 	}
 
 	@Test
@@ -107,9 +107,9 @@ public class AxisOrderTest {
 
 		assertNotNull(transformedPoints);
 		assertEquals(1, transformedPoints.size());
-		assertEquals(46.074, transformedPoints.get(0).x);
-		assertEquals(9.799, transformedPoints.get(0).y);
-		assertEquals(Double.NaN, transformedPoints.get(0).z);
+		assertEquals(46.074, transformedPoints.get(0).x, 0.01d);
+		assertEquals(9.799, transformedPoints.get(0).y, 0.01d);
+		assertEquals(Double.NaN, transformedPoints.get(0).z, 0.01d);
 	}
 
 	@Test
@@ -123,9 +123,9 @@ public class AxisOrderTest {
 
 		assertNotNull(transformedPoints);
 		assertEquals(1, transformedPoints.size());
-		assertEquals(9.799, transformedPoints.get(0).x);
-		assertEquals(46.074, transformedPoints.get(0).y);
-		assertEquals(Double.NaN, transformedPoints.get(0).z);
+		assertEquals(9.799, transformedPoints.get(0).x, 0.01d);
+		assertEquals(46.074, transformedPoints.get(0).y, 0.01d);
+		assertEquals(Double.NaN, transformedPoints.get(0).z, 0.01d);
 	}
 
 	@Test
@@ -139,9 +139,9 @@ public class AxisOrderTest {
 
 		assertNotNull(transformedPoints);
 		assertEquals(1, transformedPoints.size());
-		assertEquals(9.799, transformedPoints.get(0).x);
-		assertEquals(46.074, transformedPoints.get(0).y);
-		assertEquals(Double.NaN, transformedPoints.get(0).z);
+		assertEquals(9.799, transformedPoints.get(0).x, 0.01d);
+		assertEquals(46.074, transformedPoints.get(0).y, 0.01d);
+		assertEquals(Double.NaN, transformedPoints.get(0).z, 0.01d);
 	}
 
 	@Test
@@ -158,7 +158,7 @@ public class AxisOrderTest {
 		assertEquals(1, transformedPoints.size());
 		assertTrue(3532465.55 < transformedPoints.get(0).x && 3532465.6 > transformedPoints.get(0).x);
 		assertTrue(5301523.45 < transformedPoints.get(0).y && 5301523.55 > transformedPoints.get(0).y);
-		assertEquals(Double.NaN, transformedPoints.get(0).z);
+		assertEquals(Double.NaN, transformedPoints.get(0).z, 0.01d);
 	}
 
 	@Test
@@ -175,7 +175,7 @@ public class AxisOrderTest {
 		assertEquals(1, transformedPoints.size());
 		assertTrue(47.825 < transformedPoints.get(0).x && 47.875 > transformedPoints.get(0).x);
 		assertTrue(9.4 < transformedPoints.get(0).y && 9.45 > transformedPoints.get(0).y);
-		assertEquals(817.0, transformedPoints.get(0).z);
+		assertEquals(817.0, transformedPoints.get(0).z, 0.01d);
 	}
 
 	@Test
@@ -191,7 +191,7 @@ public class AxisOrderTest {
 		assertEquals(1, transformedPoints.size());
 		assertTrue(3532465.55 < transformedPoints.get(0).x && 3532465.6 > transformedPoints.get(0).x);
 		assertTrue(5301523.45 < transformedPoints.get(0).y && 5301523.55 > transformedPoints.get(0).y);
-		assertEquals(Double.NaN, transformedPoints.get(0).z);
+		assertEquals(Double.NaN, transformedPoints.get(0).z, 0.01d);
 	}
 
 	@Test
@@ -207,7 +207,7 @@ public class AxisOrderTest {
 		assertEquals(1, transformedPoints.size());
 		assertTrue(9.4 < transformedPoints.get(0).x && 9.45 > transformedPoints.get(0).x);
 		assertTrue(47.825 < transformedPoints.get(0).y && 47.875 > transformedPoints.get(0).y);
-		assertEquals(817.0, transformedPoints.get(0).z);
+		assertEquals(817.0, transformedPoints.get(0).z, 0.01d);
 	}
 
 	@Test

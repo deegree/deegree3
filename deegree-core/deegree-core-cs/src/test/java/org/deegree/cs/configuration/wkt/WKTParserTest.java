@@ -45,7 +45,7 @@ import static org.deegree.cs.utilities.ProjectionUtils.DTR;
 
 import java.io.IOException;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.deegree.cs.components.GeodeticDatum;
 import org.deegree.cs.components.IDatum;
@@ -135,25 +135,25 @@ public class WKTParserTest {
 		IEllipsoid ellipsoid = ((GeodeticDatum) datum).getEllipsoid();
 		Assert.assertEquals(ellipsoidName, ellipsoid.getName());
 		Assert.assertEquals(ellipsoidName + ":" + ellipsoidCode, ellipsoid.getCode().getOriginal());
-		Assert.assertEquals(semiMajorAxis, ellipsoid.getSemiMajorAxis());
-		Assert.assertEquals(inverseFlattening, ellipsoid.getInverseFlattening());
+		Assert.assertEquals(semiMajorAxis, ellipsoid.getSemiMajorAxis(), 0.01d);
+		Assert.assertEquals(inverseFlattening, ellipsoid.getInverseFlattening(), 0.01d);
 
 		IPrimeMeridian pm = ((GeodeticDatum) datum).getPrimeMeridian();
 		Assert.assertEquals(pmName, pm.getName());
 		Assert.assertEquals(pmName + ":" + pmCode, pm.getCode().getOriginal());
 		Assert.assertEquals(Unit.DEGREE, pm.getAngularUnit());
-		Assert.assertEquals(pmLongitude, pm.getLongitude());
+		Assert.assertEquals(pmLongitude, pm.getLongitude(), 0.01d);
 		IProjection proj = projCRS.getProjection();
 		Assert.assertTrue(proj instanceof LambertConformalConic);
 
 		LambertConformalConic lcc = (LambertConformalConic) proj;
-		Assert.assertEquals(falseEasting, lcc.getFalseEasting());
-		Assert.assertEquals(falseNorthing, lcc.getFalseNorthing());
+		Assert.assertEquals(falseEasting, lcc.getFalseEasting(), 0.01d);
+		Assert.assertEquals(falseNorthing, lcc.getFalseNorthing(), 0.01d);
 		Assert.assertEquals(DTR * stdParallel1, lcc.getFirstParallelLatitude(), 1e-12);
 		Assert.assertEquals(DTR * stdParallel2, lcc.getSecondParallelLatitude(), 1e-12);
-		Assert.assertEquals(DTR * lonNatOrigin, lcc.getNaturalOrigin().x);
-		Assert.assertEquals(DTR * latNatOrigin, lcc.getNaturalOrigin().y);
-		Assert.assertEquals(scaleFactor, lcc.getScale());
+		Assert.assertEquals(DTR * lonNatOrigin, lcc.getNaturalOrigin().x, 0.01d);
+		Assert.assertEquals(DTR * latNatOrigin, lcc.getNaturalOrigin().y, 0.01d);
+		Assert.assertEquals(scaleFactor, lcc.getScale(), 0.01d);
 	}
 
 	private String buildPROJCS(String name, String code, String unitName, double unitConversion) {

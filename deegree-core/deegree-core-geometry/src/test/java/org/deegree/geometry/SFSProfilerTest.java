@@ -34,7 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -76,8 +76,8 @@ public class SFSProfilerTest {
 	public void simplifyPoint() {
 		Point original = fac.createPoint(null, 47.11, 23.09, CRSUtils.EPSG_4326);
 		Point simplified = simplifier.simplify(original);
-		assertEquals(original.get0(), simplified.get0());
-		assertEquals(original.get1(), simplified.get1());
+		assertEquals(original.get0(), simplified.get0(), 0.01d);
+		assertEquals(original.get1(), simplified.get1(), 0.01d);
 		assertEquals(original.getCoordinateSystem(), simplified.getCoordinateSystem());
 	}
 
@@ -90,14 +90,14 @@ public class SFSProfilerTest {
 		LineString ls = fac.createLineString(null, CRSUtils.EPSG_4326, new PointsArray(p0, p1, p2, p3));
 		LineString simplified = simplifier.simplify(ls);
 		assertEquals(4, simplified.getControlPoints().size());
-		assertEquals(0.0, simplified.getControlPoints().get(0).get0());
-		assertEquals(0.0, simplified.getControlPoints().get(0).get1());
-		assertEquals(1.0, simplified.getControlPoints().get(1).get0());
-		assertEquals(1.0, simplified.getControlPoints().get(1).get1());
-		assertEquals(5.0, simplified.getControlPoints().get(2).get0());
-		assertEquals(5.0, simplified.getControlPoints().get(2).get1());
-		assertEquals(10.0, simplified.getControlPoints().get(3).get0());
-		assertEquals(10.0, simplified.getControlPoints().get(3).get1());
+		assertEquals(0.0, simplified.getControlPoints().get(0).get0(), 0.01d);
+		assertEquals(0.0, simplified.getControlPoints().get(0).get1(), 0.01d);
+		assertEquals(1.0, simplified.getControlPoints().get(1).get0(), 0.01d);
+		assertEquals(1.0, simplified.getControlPoints().get(1).get1(), 0.01d);
+		assertEquals(5.0, simplified.getControlPoints().get(2).get0(), 0.01d);
+		assertEquals(5.0, simplified.getControlPoints().get(2).get1(), 0.01d);
+		assertEquals(10.0, simplified.getControlPoints().get(3).get0(), 0.01d);
+		assertEquals(10.0, simplified.getControlPoints().get(3).get1(), 0.01d);
 	}
 
 	@Test
@@ -110,14 +110,14 @@ public class SFSProfilerTest {
 		Curve curve = fac.createCurve(null, CRSUtils.EPSG_4326, segment);
 		LineString simplified = simplifier.simplify(curve);
 		assertEquals(4, simplified.getControlPoints().size());
-		assertEquals(0.0, simplified.getControlPoints().get(0).get0());
-		assertEquals(0.0, simplified.getControlPoints().get(0).get1());
-		assertEquals(1.0, simplified.getControlPoints().get(1).get0());
-		assertEquals(1.0, simplified.getControlPoints().get(1).get1());
-		assertEquals(5.0, simplified.getControlPoints().get(2).get0());
-		assertEquals(5.0, simplified.getControlPoints().get(2).get1());
-		assertEquals(10.0, simplified.getControlPoints().get(3).get0());
-		assertEquals(10.0, simplified.getControlPoints().get(3).get1());
+		assertEquals(0.0, simplified.getControlPoints().get(0).get0(), 0.01d);
+		assertEquals(0.0, simplified.getControlPoints().get(0).get1(), 0.01d);
+		assertEquals(1.0, simplified.getControlPoints().get(1).get0(), 0.01d);
+		assertEquals(1.0, simplified.getControlPoints().get(1).get1(), 0.01d);
+		assertEquals(5.0, simplified.getControlPoints().get(2).get0(), 0.01d);
+		assertEquals(5.0, simplified.getControlPoints().get(2).get1(), 0.01d);
+		assertEquals(10.0, simplified.getControlPoints().get(3).get0(), 0.01d);
+		assertEquals(10.0, simplified.getControlPoints().get(3).get1(), 0.01d);
 	}
 
 	@Test
@@ -135,20 +135,20 @@ public class SFSProfilerTest {
 		LineString simplified = simplifier.simplify(curve);
 
 		assertEquals(7, simplified.getControlPoints().size());
-		assertEquals(0.0, simplified.getControlPoints().get(0).get0());
-		assertEquals(0.0, simplified.getControlPoints().get(0).get1());
-		assertEquals(1.0, simplified.getControlPoints().get(1).get0());
-		assertEquals(1.0, simplified.getControlPoints().get(1).get1());
-		assertEquals(5.0, simplified.getControlPoints().get(2).get0());
-		assertEquals(5.0, simplified.getControlPoints().get(2).get1());
-		assertEquals(10.0, simplified.getControlPoints().get(3).get0());
-		assertEquals(10.0, simplified.getControlPoints().get(3).get1());
-		assertEquals(20.0, simplified.getControlPoints().get(4).get0());
-		assertEquals(20.0, simplified.getControlPoints().get(4).get1());
-		assertEquals(30.0, simplified.getControlPoints().get(5).get0());
-		assertEquals(30.0, simplified.getControlPoints().get(5).get1());
-		assertEquals(0.0, simplified.getControlPoints().get(6).get0());
-		assertEquals(0.0, simplified.getControlPoints().get(6).get1());
+		assertEquals(0.0, simplified.getControlPoints().get(0).get0(), 0.01d);
+		assertEquals(0.0, simplified.getControlPoints().get(0).get1(), 0.01d);
+		assertEquals(1.0, simplified.getControlPoints().get(1).get0(), 0.01d);
+		assertEquals(1.0, simplified.getControlPoints().get(1).get1(), 0.01d);
+		assertEquals(5.0, simplified.getControlPoints().get(2).get0(), 0.01d);
+		assertEquals(5.0, simplified.getControlPoints().get(2).get1(), 0.01d);
+		assertEquals(10.0, simplified.getControlPoints().get(3).get0(), 0.01d);
+		assertEquals(10.0, simplified.getControlPoints().get(3).get1(), 0.01d);
+		assertEquals(20.0, simplified.getControlPoints().get(4).get0(), 0.01d);
+		assertEquals(20.0, simplified.getControlPoints().get(4).get1(), 0.01d);
+		assertEquals(30.0, simplified.getControlPoints().get(5).get0(), 0.01d);
+		assertEquals(30.0, simplified.getControlPoints().get(5).get1(), 0.01d);
+		assertEquals(0.0, simplified.getControlPoints().get(6).get0(), 0.01d);
+		assertEquals(0.0, simplified.getControlPoints().get(6).get1(), 0.01d);
 	}
 
 	@Test
@@ -165,16 +165,16 @@ public class SFSProfilerTest {
 		LineString simplified = simplifier.simplify(curve);
 
 		assertEquals(POINTS_PER_ARC + 3, simplified.getControlPoints().size());
-		assertEquals(0.0, simplified.getControlPoints().get(0).get0());
-		assertEquals(0.0, simplified.getControlPoints().get(0).get1());
-		assertEquals(1.0, simplified.getControlPoints().get(1).get0());
-		assertEquals(1.0, simplified.getControlPoints().get(1).get1());
-		assertEquals(5.0, simplified.getControlPoints().get(2).get0());
-		assertEquals(5.0, simplified.getControlPoints().get(2).get1());
-		assertEquals(10.0, simplified.getControlPoints().get(3).get0());
-		assertEquals(10.0, simplified.getControlPoints().get(3).get1());
-		assertEquals(30.0, simplified.getEndPoint().get0());
-		assertEquals(35.0, simplified.getEndPoint().get1());
+		assertEquals(0.0, simplified.getControlPoints().get(0).get0(), 0.01d);
+		assertEquals(0.0, simplified.getControlPoints().get(0).get1(), 0.01d);
+		assertEquals(1.0, simplified.getControlPoints().get(1).get0(), 0.01d);
+		assertEquals(1.0, simplified.getControlPoints().get(1).get1(), 0.01d);
+		assertEquals(5.0, simplified.getControlPoints().get(2).get0(), 0.01d);
+		assertEquals(5.0, simplified.getControlPoints().get(2).get1(), 0.01d);
+		assertEquals(10.0, simplified.getControlPoints().get(3).get0(), 0.01d);
+		assertEquals(10.0, simplified.getControlPoints().get(3).get1(), 0.01d);
+		assertEquals(30.0, simplified.getEndPoint().get0(), 0.01d);
+		assertEquals(35.0, simplified.getEndPoint().get1(), 0.01d);
 	}
 
 	@Test

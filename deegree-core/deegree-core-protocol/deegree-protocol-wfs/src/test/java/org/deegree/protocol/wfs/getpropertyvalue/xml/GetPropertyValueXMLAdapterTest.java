@@ -37,10 +37,10 @@
 
 package org.deegree.protocol.wfs.getpropertyvalue.xml;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.deegree.commons.tom.ResolveMode;
 import org.deegree.filter.OperatorFilter;
