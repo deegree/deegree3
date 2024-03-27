@@ -17,6 +17,7 @@
     <module>deegree-tilestore-filesystem</module>
     <module>deegree-tilestore-gdal</module>
     <module>deegree-tilestore-geotiff</module>
+    <module>deegree-tilestore-gpkg</module>
     <module>deegree-tilestore-merge</module>
     <module>deegree-tilestore-remotewms</module>
     <module>deegree-tilestore-remotewmts</module>

@@ -54,6 +54,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <artifactId>deegree-sqldialect-gpkg</artifactId>
+      <groupId>org.deegree</groupId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
     </dependency>
