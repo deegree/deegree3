@@ -466,7 +466,7 @@ public class AppSchemaMapperTest {
 		CRSRef storageCrs = CRSManager.getCRSRef("EPSG:4326");
 		GeometryStorageParams geometryParams = new GeometryStorageParams(storageCrs, "0", DIM_2);
 		AppSchemaMapper mapper = new AppSchemaMapper(appSchema, false, true, geometryParams, 63, true, true, 0, null,
-				false);
+				false, null);
 
 		MappedAppSchema mappedSchema = mapper.getMappedSchema();
 
@@ -497,7 +497,7 @@ public class AppSchemaMapperTest {
 		CRSRef storageCrs = CRSManager.getCRSRef("EPSG:4326");
 		GeometryStorageParams geometryParams = new GeometryStorageParams(storageCrs, "0", DIM_2);
 		AppSchemaMapper mapper = new AppSchemaMapper(appSchema, false, true, geometryParams, 63, true, true, 0,
-				referenceData, false);
+				referenceData, false, null);
 
 		MappedAppSchema mappedSchema = mapper.getMappedSchema();
 
@@ -539,7 +539,7 @@ public class AppSchemaMapperTest {
 		CRSRef storageCrs = CRSManager.getCRSRef("EPSG:4326");
 		GeometryStorageParams geometryParams = new GeometryStorageParams(storageCrs, "0", DIM_2);
 		AppSchemaMapper mapper = new AppSchemaMapper(appSchema, false, true, geometryParams, 63, true, true, 0,
-				referenceData, false);
+				referenceData, false, null);
 
 		MappedAppSchema mappedSchema = mapper.getMappedSchema();
 
@@ -587,7 +587,7 @@ public class AppSchemaMapperTest {
 		CRSRef storageCrs = CRSManager.getCRSRef("EPSG:4326");
 		GeometryStorageParams geometryParams = new GeometryStorageParams(storageCrs, "0", DIM_2);
 		AppSchemaMapper mapper = new AppSchemaMapper(appSchema, false, true, geometryParams, 63, true, true, 0,
-				referenceData, false);
+				referenceData, false, null);
 
 		MappedAppSchema mappedSchema = mapper.getMappedSchema();
 
@@ -634,7 +634,7 @@ public class AppSchemaMapperTest {
 		CRSRef storageCrs = CRSManager.getCRSRef("EPSG:4326");
 		GeometryStorageParams geometryParams = new GeometryStorageParams(storageCrs, "0", DIM_2);
 		AppSchemaMapper mapper = new AppSchemaMapper(appSchema, false, true, geometryParams, 63, true, true, 0,
-				referenceData, false);
+				referenceData, false, null);
 
 		MappedAppSchema mappedSchema = mapper.getMappedSchema();
 
@@ -683,7 +683,7 @@ public class AppSchemaMapperTest {
 		CRSRef storageCrs = CRSManager.getCRSRef("EPSG:4326");
 		GeometryStorageParams geometryParams = new GeometryStorageParams(storageCrs, "0", DIM_2);
 		AppSchemaMapper mapper = new AppSchemaMapper(appSchema, false, true, geometryParams, 63, true, true, 0,
-				referenceData, false);
+				referenceData, false, null);
 
 		MappedAppSchema mappedSchema = mapper.getMappedSchema();
 
@@ -722,7 +722,7 @@ public class AppSchemaMapperTest {
 		CRSRef storageCrs = CRSManager.getCRSRef("EPSG:4326");
 		GeometryStorageParams geometryParams = new GeometryStorageParams(storageCrs, "0", DIM_2);
 		AppSchemaMapper mapper = new AppSchemaMapper(appSchema, false, true, geometryParams, 63, true, true, 0,
-				referenceData, true);
+				referenceData, true, null);
 
 		MappedAppSchema mappedSchema = mapper.getMappedSchema();
 
@@ -755,7 +755,7 @@ public class AppSchemaMapperTest {
 		CRSRef storageCrs = CRSManager.getCRSRef("EPSG:4326");
 		GeometryStorageParams geometryParams = new GeometryStorageParams(storageCrs, "0", DIM_2);
 		AppSchemaMapper mapper = new AppSchemaMapper(appSchema, false, true, geometryParams, 63, true, true, 0,
-				referenceData, true);
+				referenceData, true, null);
 
 		MappedAppSchema mappedSchema = mapper.getMappedSchema();
 
@@ -778,7 +778,7 @@ public class AppSchemaMapperTest {
 		CRSRef storageCrs = CRSManager.getCRSRef("EPSG:4326");
 		GeometryStorageParams geometryParams = new GeometryStorageParams(storageCrs, "0", DIM_2);
 		AppSchemaMapper mapper = new AppSchemaMapper(appSchema, false, true, geometryParams, 63, true, true, 0, null,
-				false);
+				false, null);
 
 		MappedAppSchema mappedSchema = mapper.getMappedSchema();
 
@@ -818,6 +818,27 @@ public class AppSchemaMapperTest {
 		assertThat(getPrimitive(timePeriodOfTimeObject.getParticles(), "beginPosition"), is(notNullValue()));
 		assertThat(getPrimitive(timePeriodOfTimeObject.getParticles(), "endPosition"), is(notNullValue()));
 		assertThat(getPrimitive(timePeriodOfTimeObject.getParticles(), "@gml:id"), is(notNullValue()));
+	}
+
+	@Test
+	public void testWithoutDbSchema() throws Exception {
+		GMLAppSchemaReader xsdDecoder = new GMLAppSchemaReader(null, null, schemaForSampleValues);
+		AppSchema appSchema = xsdDecoder.extractAppSchema();
+
+		CRSRef storageCrs = CRSManager.getCRSRef("EPSG:4326");
+		GeometryStorageParams geometryParams = new GeometryStorageParams(storageCrs, "0", DIM_2);
+		String dbSchema = "test";
+		AppSchemaMapper mapper = new AppSchemaMapper(appSchema, false, true, geometryParams, 63, true, true, 0, null,
+				false, dbSchema);
+
+		MappedAppSchema mappedSchema = mapper.getMappedSchema();
+
+		Map<QName, FeatureTypeMapping> ftMappings = mappedSchema.getFtMappings();
+		assertThat(ftMappings.size(), is(2));
+
+		FeatureTypeMapping featureA = mappedSchema.getFtMapping(FEATURE_A);
+
+		assertThat(featureA.getFtTable().getSchema(), is(dbSchema));
 	}
 
 	private CompoundMapping getFeatureC(List<Mapping> mappings) {

@@ -73,6 +73,8 @@ public abstract class DDLCreator {
 
 	protected TableName currentFtTable;
 
+	protected List<String> createdSchemas = new ArrayList<>();
+
 	/**
 	 * Creates a new {@link DDLCreator} instance for the given {@link MappedAppSchema}.
 	 * @param schema mapped application schema, must not be <code>null</code>
@@ -121,7 +123,9 @@ public abstract class DDLCreator {
 
 		currentFtTable = ftMapping.getFtTable();
 
-		StringBuffer sql = new StringBuffer("CREATE TABLE ");
+		StringBuffer sql = new StringBuffer();
+		appendCreateSchema(currentFtTable.getSchema(), sql);
+		sql.append("CREATE TABLE ");
 		ddls.add(sql);
 		sql.append(currentFtTable);
 		sql.append(" (");
@@ -166,6 +170,13 @@ public abstract class DDLCreator {
 		}
 		sql.append(")\n)");
 		return ddls;
+	}
+
+	protected void appendCreateSchema(String schema, StringBuffer sql) {
+		if (schema != null && !createdSchemas.contains(schema)) {
+			sql.append("CREATE SCHEMA ").append(schema).append(";\n");
+			createdSchemas.add(schema);
+		}
 	}
 
 	private String getPkConstraintName(TableName ftTable) {

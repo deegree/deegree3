@@ -82,7 +82,7 @@ public class FeatureStoreConfigWriter implements ItemWriter<AppSchema> {
 		AppSchemaMapper mapper = new AppSchemaMapper(appSchema, !loadParameter.isRelationalMapping(),
 				loadParameter.isRelationalMapping(), geometryParams, sqlDialect.getMaxColumnNameLength(), true,
 				loadParameter.isUseIntegerFids(), loadParameter.getDepth(), loadParameter.getReferenceData(),
-				loadParameter.isUseRefDataProps());
+				loadParameter.isUseRefDataProps(), loadParameter.getDbSchema());
 		MappedAppSchema mappedSchema = mapper.getMappedSchema();
 		SQLFeatureStoreConfigWriter configWriter = new SQLFeatureStoreConfigWriter(mappedSchema,
 				loadParameter.getPropertiesWithPrimitiveHref());
