@@ -139,16 +139,11 @@ public class PostGISDDLCreator extends DDLCreator {
 		StringBuffer indexSql = new StringBuffer("CREATE INDEX ");
 		String idxName = createIdxName(tableName, column);
 		indexSql.append(idxName);
-		indexSql.append(" ON ").append(createQualifiedTableName(schema, tableName).toLowerCase());
+		indexSql.append(" ON ");
+		indexSql.append(table.toString().toLowerCase());
 		indexSql.append(" USING GIST (").append(column).append(" ); ");
 		ddls.add(indexSql);
 		return ddls;
-	}
-
-	public String createQualifiedTableName(String schema, String table) {
-		if (schema == null)
-			return table;
-		return schema + "." + table;
 	}
 
 	@Override
@@ -194,7 +189,9 @@ public class PostGISDDLCreator extends DDLCreator {
 	@Override
 	protected StringBuffer createJoinedTable(TableName fromTable, TableJoin jc, List<StringBuffer> ddls,
 			FIDMapping fidMapping) {
-		StringBuffer sb = new StringBuffer("CREATE TABLE ");
+		StringBuffer sb = new StringBuffer();
+		appendCreateSchema(jc.getToTable().getSchema(), sb);
+		sb.append("CREATE TABLE ");
 		sb.append(jc.getToTable());
 		sb.append(" (\n    ");
 		sb.append("id serial PRIMARY KEY,\n    ");

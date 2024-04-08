@@ -54,7 +54,8 @@ public class SqlFeatureStoreConfigCreatorConfiguration {
 	public LoadParameter parseJobParameter(@Value("#{jobParameters[schemaUrl]}") String schemaUrl,
 			@Value("#{jobParameters[format]}") String format, @Value("#{jobParameters[srid]}") String srid,
 			@Value("#{jobParameters[idtype]}") String idtype, @Value("#{jobParameters[mapping]}") String mapping,
-			@Value("#{jobParameters[dialect]}") String dialect, @Value("#{jobParameters[cycledepth]}") String depth,
+			@Value("#{jobParameters[dialect]}") String dialect, @Value("#{jobParameters[dbschema]}") String dbSchema,
+			@Value("#{jobParameters[cycledepth]}") String depth,
 			@Value("#{jobParameters[listOfPropertiesWithPrimitiveHref]}") String listOfPropertiesWithPrimitiveHref,
 			@Value("#{jobParameters[referenceData]}") String referenceData,
 			@Value("#{jobParameters[useRefDataProps]}") String useRefDataProps) {
@@ -64,6 +65,7 @@ public class SqlFeatureStoreConfigCreatorConfiguration {
 			.setIdType(idtype)
 			.setMappingType(mapping)
 			.setDialect(dialect)
+			.setDbSchema(dbSchema)
 			.setDepth(depth)
 			.setListOfPropertiesWithPrimitiveHref(listOfPropertiesWithPrimitiveHref)
 			.setReferenceData(referenceData)
