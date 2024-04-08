@@ -128,7 +128,7 @@ public class GmlReferenceDataTest {
 		assertThat(hasMaxOneA1, is(false));
 
 		boolean hasMaxOneA3 = gmlReferenceData.hasZeroOrOneProperty(FEATURETYPE_A_NAME, asPathStep(PROP_A3_NAME));
-		assertThat(hasMaxOneA3, is(false));
+		assertThat(hasMaxOneA3, is(true));
 	}
 
 	@Test
@@ -247,6 +247,23 @@ public class GmlReferenceDataTest {
 
 	private PathStep asPathStep(String nsUrl, String localPart, String prefix, boolean isTypeDefinition) {
 		return new PathStep(new QName(nsUrl, localPart, prefix), isTypeDefinition);
+	}
+
+	@Test
+	public void test_Inspire_shouldFeatureTypeMapped_withInlinedFeture() throws Exception {
+		URL resource = getClass().getResource("data/Inspire-Adress_withInlineFeature.xml");
+		GmlReferenceData gmlReferenceData = new GmlReferenceData(resource);
+
+		QName AdressFeatureTypeName = new QName("http://inspire.ec.europa.eu/schemas/ad/4.0", "Address", "ad");
+		QName AdminUnitNameFeatureTypeName = new QName("http://inspire.ec.europa.eu/schemas/ad/4.0", "AdminUnitName",
+				"ad");
+
+		boolean explicitFeatureTypeShouldBeMapped = gmlReferenceData.shouldFeatureTypeMapped(AdressFeatureTypeName);
+		assertThat(explicitFeatureTypeShouldBeMapped, is(true));
+
+		boolean referencedFeatureTypeShouldBeMapped = gmlReferenceData
+			.shouldFeatureTypeMapped(AdminUnitNameFeatureTypeName);
+		assertThat(referencedFeatureTypeShouldBeMapped, is(true));
 	}
 
 }

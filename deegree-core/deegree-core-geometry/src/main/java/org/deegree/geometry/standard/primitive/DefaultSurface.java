@@ -37,6 +37,8 @@ package org.deegree.geometry.standard.primitive;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
@@ -55,6 +57,7 @@ import org.deegree.geometry.standard.AbstractDefaultGeometry;
 import org.locationtech.jts.algorithm.InteriorPointArea;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.Polygon;
 
 /**
  * Default implementation of {@link Surface}.
@@ -155,13 +158,28 @@ public class DefaultSurface extends AbstractDefaultGeometry implements Surface {
 
 	@Override
 	protected org.locationtech.jts.geom.Geometry buildJTSGeometry() {
-
-		if (patches.size() < 1 || !(patches.get(0) instanceof PolygonPatch)) {
+		if (patches.size() < 1 || containsNonPolygonPatches()) {
 			throw new IllegalArgumentException(Messages.getMessage("SURFACE_NOT_EQUIVALENT_TO_POLYGON"));
 		}
+		if (patches.size() == 1) {
+			PolygonPatch patch = (PolygonPatch) patches.get(0);
+			return createJtsPolygon(patch);
+		}
+		Polygon[] jtsPolygons = patches.stream()
+			.map(patch -> createJtsPolygon((PolygonPatch) patch))
+			.collect(Collectors.toList())
+			.toArray(Polygon[]::new);
+		return jtsFactory.createMultiPolygon(jtsPolygons);
+	}
 
-		// TODO handle the other patches as well
-		PolygonPatch patch = (PolygonPatch) patches.get(0);
+	private boolean containsNonPolygonPatches() {
+		Optional<? extends SurfacePatch> nonPolygonPatch = patches.stream()
+			.filter(patch -> !(patch instanceof PolygonPatch))
+			.findAny();
+		return nonPolygonPatch.isPresent();
+	}
+
+	private static Polygon createJtsPolygon(PolygonPatch patch) {
 		Ring exteriorRing = patch.getExteriorRing();
 		List<Ring> interiorRings = patch.getInteriorRings();
 

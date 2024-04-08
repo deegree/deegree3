@@ -10,7 +10,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-services</artifactId>
-    <version>3.5.6-SNAPSHOT</version>
+    <version>3.5.7-SNAPSHOT</version>
   </parent>
   <build>
     <plugins>
@@ -278,12 +278,12 @@
     <dependency>
       <groupId>org.primefaces</groupId>
       <artifactId>primefaces</artifactId>
-      <version>13.0.3</version>
+      <version>13.0.6</version>
     </dependency>
     <dependency>
       <groupId>org.primefaces.extensions</groupId>
       <artifactId>primefaces-extensions</artifactId>
-      <version>13.0.3</version>
+      <version>13.0.6</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>

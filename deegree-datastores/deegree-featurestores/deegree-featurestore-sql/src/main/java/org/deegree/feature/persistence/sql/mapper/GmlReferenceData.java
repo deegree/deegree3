@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -31,12 +32,36 @@ import static org.deegree.commons.xml.CommonNamespaces.XSI_PREFIX;
  */
 public class GmlReferenceData implements ReferenceData {
 
-	private Map<QName, List<Feature>> features;
+	private Map<QName, List<Feature>> features = new HashMap<>();
 
 	public GmlReferenceData(URL referenceData) throws IOException, XMLStreamException, UnknownCRSException {
 		GMLStreamReader gmlStreamReader = GMLInputFactory.createGMLStreamReader(GMLVersion.GML_32, referenceData);
 		FeatureCollection featureCollection = gmlStreamReader.readFeatureCollection();
-		this.features = featureCollection.stream().collect(Collectors.groupingBy(Feature::getName));
+		addFeatures(featureCollection);
+	}
+
+	private void addFeatures(FeatureCollection featureCollection) {
+		Iterator<Feature> iterator = featureCollection.iterator();
+		while (iterator.hasNext()) {
+			Feature feature = iterator.next();
+			addFeature(feature);
+			List<Property> properties = feature.getProperties();
+			for (Property prop : properties) {
+				// add inline features
+				if (prop.getValue() instanceof GenericFeature) {
+					Feature inlineFeature = (Feature) prop.getValue();
+					addFeature(inlineFeature);
+				}
+			}
+		}
+	}
+
+	private void addFeature(Feature feature) {
+		QName name = feature.getName();
+		if (!features.containsKey(name)) {
+			features.put(name, new ArrayList<>());
+		}
+		features.get(name).add(feature);
 	}
 
 	@Override

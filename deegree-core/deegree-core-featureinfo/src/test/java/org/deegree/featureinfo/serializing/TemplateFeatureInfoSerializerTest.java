@@ -44,7 +44,7 @@ public class TemplateFeatureInfoSerializerTest {
 		GMLStreamReader gmlStreamReader = GMLInputFactory.createGMLStreamReader(GMLVersion.GML_32, resource);
 		Map<String, String> nsBindings = new HashMap<>();
 		FeatureCollection col = gmlStreamReader.readFeatureCollection();
-		return new FeatureInfoParams(nsBindings, col, "text/html", true, null, null, null);
+		return new FeatureInfoParams(nsBindings, col, "text/html", true, null, null, null, null);
 	}
 
 	private FeatureInfoContext mockContext(OutputStream os) throws IOException {

@@ -42,6 +42,7 @@ package org.deegree.services.controller.utils;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Writer;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -55,6 +56,8 @@ public class StandardFeatureInfoContext implements FeatureInfoContext {
 	private OutputStream outputStream = null;
 
 	private XMLStreamWriter xmlWriter = null;
+
+	private Writer writer = null;
 
 	private boolean redirected = false;
 
@@ -96,6 +99,20 @@ public class StandardFeatureInfoContext implements FeatureInfoContext {
 		}
 
 		return xmlWriter = response.getXMLWriter();
+	}
+
+	@Override
+	public Writer getWriter() throws IOException {
+		if (writer != null) {
+			return writer;
+		}
+		if (redirected) {
+			throw new IllegalStateException("sendRedirect() already called for FeatureInfoContext");
+		}
+		if (outputStream != null) {
+			throw new IllegalStateException("getOutputStream() already called for FeatureInfoContext");
+		}
+		return writer = response.getWriter();
 	}
 
 	@Override

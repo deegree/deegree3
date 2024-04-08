@@ -40,14 +40,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wmts.controller;
 
-import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
-
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.FeatureCollection;
@@ -60,6 +52,13 @@ import org.deegree.services.controller.utils.StandardFeatureInfoContext;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileDataLevel;
 import org.deegree.tile.TileDataSet;
+
+import javax.xml.stream.XMLStreamException;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+
+import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
 
 /**
  * Responsible for fetching features from tile layers, prepared to immediately be
@@ -105,7 +104,8 @@ class FeatureInfoFetcher {
 		ICRS crs = tds.getTileMatrixSet().getSpatialMetadata().getEnvelope().getCoordinateSystem();
 		HashMap<String, String> nsBindings = new HashMap<String, String>();
 
-		FeatureInfoParams params = new FeatureInfoParams(nsBindings, col, gfi.getInfoFormat(), false, null, null, crs);
+		FeatureInfoParams params = new FeatureInfoParams(nsBindings, col, gfi.getInfoFormat(), false, null, null, crs,
+				null);
 
 		featureInfoManager.serializeFeatureInfo(params, new StandardFeatureInfoContext(response));
 	}
