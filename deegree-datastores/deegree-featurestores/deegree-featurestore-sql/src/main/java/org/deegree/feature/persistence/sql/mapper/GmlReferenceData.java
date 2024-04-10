@@ -18,9 +18,11 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.commons.xml.CommonNamespaces.XSI_PREFIX;
@@ -63,7 +65,7 @@ public class GmlReferenceData implements ReferenceData {
 	}
 
 	@Override
-	public boolean hasProperty(QName featureTypeName, List<QName> xpath) {
+	public boolean hasProperty(QName featureTypeName, List<PathStep> xpath) {
 		List<Feature> featuresOfType = this.features.get(featureTypeName);
 		if (featuresOfType != null && !featuresOfType.isEmpty()) {
 			for (Feature feature : featuresOfType) {
@@ -75,7 +77,7 @@ public class GmlReferenceData implements ReferenceData {
 	}
 
 	@Override
-	public boolean isPropertyNilled(QName featureTypeName, List<QName> xpath) {
+	public boolean isPropertyNilled(QName featureTypeName, List<PathStep> xpath) {
 		List<Feature> featuresOfType = this.features.get(featureTypeName);
 		if (featuresOfType != null && !featuresOfType.isEmpty()) {
 			for (Feature feature : featuresOfType) {
@@ -87,7 +89,7 @@ public class GmlReferenceData implements ReferenceData {
 	}
 
 	@Override
-	public boolean hasZeroOrOneProperty(QName featureTypeName, List<QName> xpath) {
+	public boolean hasZeroOrOneProperty(QName featureTypeName, List<PathStep> xpath) {
 		List<Feature> featuresOfType = this.features.get(featureTypeName);
 		if (featuresOfType != null && !featuresOfType.isEmpty()) {
 			for (Feature feature : featuresOfType) {
@@ -104,26 +106,26 @@ public class GmlReferenceData implements ReferenceData {
 		return features.containsKey(featureTypeName);
 	}
 
-	private boolean hasProperty(Feature feature, List<QName> xpath) {
+	private boolean hasProperty(Feature feature, List<PathStep> xpath) {
 		if (xpath.isEmpty())
 			return true;
-		Iterator<QName> iterator = xpath.iterator();
-		QName firstProperty = iterator.next();
-		List<Property> properties = feature.getProperties(firstProperty);
+		Iterator<PathStep> iterator = xpath.iterator();
+		PathStep firstProperty = getNext(iterator);
+		List<Property> properties = feature.getProperties(firstProperty.getName());
 		return hasProperty(iterator, properties);
 	}
 
-	private <T extends ElementNode> boolean hasProperty(Iterator<QName> iterator, List<T> properties) {
-		if (!iterator.hasNext()) {
+	private <T extends TypedObjectNode> boolean hasProperty(Iterator<PathStep> iterator, List<T> properties) {
+		PathStep next = getNext(iterator);
+		if (next == null) {
 			if (properties.size() >= 1)
 				return true;
 			else
 				return false;
 		}
 		else {
-			QName next = iterator.next();
-			for (ElementNode property : properties) {
-				List<ElementNode> subProperties = getChildsByName(property, next);
+			for (TypedObjectNode property : properties) {
+				List<TypedObjectNode> subProperties = getChildsByName(property, next);
 				if (hasProperty(iterator, subProperties))
 					return true;
 			}
@@ -131,27 +133,28 @@ public class GmlReferenceData implements ReferenceData {
 		}
 	}
 
-	private boolean hasNilledPropertyOrIsMissing(Feature feature, List<QName> xpath) {
+	private boolean hasNilledPropertyOrIsMissing(Feature feature, List<PathStep> xpath) {
 		if (xpath.isEmpty()) {
 			return true;
 		}
-		Iterator<QName> iterator = xpath.iterator();
-		QName firstProperty = iterator.next();
-		List<Property> properties = feature.getProperties(firstProperty);
+		Iterator<PathStep> iterator = xpath.iterator();
+		PathStep firstProperty = getNext(iterator);
+		List<Property> properties = feature.getProperties(firstProperty.getName());
 		return hasNilledPropertyOrIsMissing(iterator, properties);
 	}
 
-	private <T extends ElementNode> boolean hasNilledPropertyOrIsMissing(Iterator<QName> iterator, List<T> properties) {
-		if (iterator.hasNext()) {
-			QName next = iterator.next();
-			for (ElementNode property : properties) {
-				List<ElementNode> subProperties = getChildsByName(property, next);
+	private <T extends TypedObjectNode> boolean hasNilledPropertyOrIsMissing(Iterator<PathStep> iterator,
+			List<T> properties) {
+		PathStep next = getNext(iterator);
+		if (next != null) {
+			for (TypedObjectNode property : properties) {
+				List<TypedObjectNode> subProperties = getChildsByName(property, next);
 				if (hasNilledPropertyOrIsMissing(iterator, subProperties))
 					return true;
 			}
 		}
 		else if (!properties.isEmpty()) {
-			for (ElementNode property : properties) {
+			for (TypedObjectNode property : properties) {
 				if (!isNilTrue(property))
 					return false;
 			}
@@ -160,34 +163,36 @@ public class GmlReferenceData implements ReferenceData {
 		return false;
 	}
 
-	private boolean isNilTrue(ElementNode property) {
-		Map<QName, PrimitiveValue> attributes = property.getAttributes();
+	private boolean isNilTrue(TypedObjectNode property) {
+		if (!(property instanceof ElementNode))
+			return false;
+		Map<QName, PrimitiveValue> attributes = ((ElementNode) property).getAttributes();
 		PrimitiveValue nil = attributes.get(new QName(XSINS, "nil", XSI_PREFIX));
 		if (nil == null)
 			return false;
 		return Boolean.parseBoolean(nil.getAsText());
 	}
 
-	private boolean hasMoreThanOne(Feature feature, List<QName> xpath) {
+	private boolean hasMoreThanOne(Feature feature, List<PathStep> xpath) {
 		if (xpath.isEmpty())
 			return true;
-		Iterator<QName> iterator = xpath.iterator();
-		QName firstProperty = iterator.next();
-		List<Property> properties = feature.getProperties(firstProperty);
+		Iterator<PathStep> iterator = xpath.iterator();
+		PathStep firstProperty = getNext(iterator);
+		List<Property> properties = feature.getProperties(firstProperty.getName());
 		return hasMoreThanOne(iterator, properties);
 	}
 
-	private <T extends ElementNode> boolean hasMoreThanOne(Iterator<QName> iterator, List<T> properties) {
-		if (!iterator.hasNext()) {
+	private <T extends TypedObjectNode> boolean hasMoreThanOne(Iterator<PathStep> iterator, List<T> properties) {
+		PathStep next = getNext(iterator);
+		if (next == null) {
 			if (properties.size() > 1)
 				return true;
 			else
 				return false;
 		}
 		else {
-			QName next = iterator.next();
-			for (ElementNode property : properties) {
-				List<ElementNode> subProperties = getChildsByName(property, next);
+			for (TypedObjectNode property : properties) {
+				List<TypedObjectNode> subProperties = getChildsByName(property, next);
 				if (hasMoreThanOne(iterator, subProperties))
 					return true;
 			}
@@ -195,17 +200,45 @@ public class GmlReferenceData implements ReferenceData {
 		}
 	}
 
-	private List<ElementNode> getChildsByName(ElementNode property, QName propertyName) {
-		List<ElementNode> properties = new ArrayList<>();
-		List<TypedObjectNode> children = property.getChildren();
-		for (TypedObjectNode child : children) {
+	private List<TypedObjectNode> getChildsByName(TypedObjectNode property, PathStep pathStep) {
+		if (property instanceof ElementNode)
+			return getChildsByName((ElementNode) property, pathStep);
+		if (property instanceof GenericFeature)
+			return getChildsByName((GenericFeature) property, pathStep);
+		return Collections.emptyList();
+	}
+
+	private List<TypedObjectNode> getChildsByName(ElementNode property, PathStep pathStep) {
+		List<TypedObjectNode> properties = new ArrayList<>();
+		for (TypedObjectNode child : property.getChildren()) {
 			if (child instanceof ElementNode) {
 				QName name = ((ElementNode) child).getName();
-				if (name.equals(propertyName))
-					properties.add((ElementNode) child);
+				if (name.equals(pathStep.getName()))
+					properties.add(child);
+			}
+			else if (child instanceof GenericFeature) {
+				QName name = ((GenericFeature) child).getName();
+				if (name.equals(pathStep.getName()))
+					properties.add(child);
 			}
 		}
 		return properties;
+	}
+
+	private List<TypedObjectNode> getChildsByName(GenericFeature property, PathStep pathStep) {
+		return property.getProperties(pathStep.getName())
+			.stream()
+			.map(prop -> (TypedObjectNode) prop)
+			.collect(Collectors.toList());
+	}
+
+	private PathStep getNext(Iterator<PathStep> iterator) {
+		while (iterator.hasNext()) {
+			PathStep next = iterator.next();
+			if (!next.isTypeDefinition())
+				return next;
+		}
+		return null;
 	}
 
 }

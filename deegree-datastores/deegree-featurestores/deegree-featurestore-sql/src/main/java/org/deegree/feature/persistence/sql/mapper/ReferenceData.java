@@ -15,7 +15,7 @@ public interface ReferenceData {
 	 * @return <code>true</code> if the property identified by the path occurs at least
 	 * one time, <code>false</code> otherwise
 	 */
-	boolean hasProperty(QName featureTypeName, List<QName> xpath);
+	boolean hasProperty(QName featureTypeName, List<PathStep> xpath);
 
 	/**
 	 * @param featureTypeName the name of the feature type, never <code>null</code>
@@ -24,7 +24,7 @@ public interface ReferenceData {
 	 * @return <code>true</code> if the property identified by the path occurs at least
 	 * one time has AND is nilled and contains no value, <code>false</code> otherwise
 	 */
-	boolean isPropertyNilled(QName featureTypeName, List<QName> xpath);
+	boolean isPropertyNilled(QName featureTypeName, List<PathStep> xpath);
 
 	/**
 	 * @param featureTypeName the name of the feature type, never <code>null</code>
@@ -33,7 +33,7 @@ public interface ReferenceData {
 	 * @return <code>true</code> if the property identified by the path occurs one or zero
 	 * times, <code>false</code> otherwise
 	 */
-	boolean hasZeroOrOneProperty(QName featureTypeName, List<QName> xpath);
+	boolean hasZeroOrOneProperty(QName featureTypeName, List<PathStep> xpath);
 
 	/**
 	 * @param featureTypeName the name of the feature type, never <code>null</code>
