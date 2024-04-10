@@ -54,7 +54,9 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
@@ -223,9 +225,20 @@ public class XMLSchemaInfoSet {
 									if (prefix != null && !prefix.equals(XMLConstants.DEFAULT_NS_PREFIX)) {
 										String nsUri = xmlStream.getNamespaceURI(i);
 										String oldPrefix = nsToPrefix.get(nsUri);
+										Optional<String> oldNsUri = nsToPrefix.entrySet()
+											.stream()
+											.filter(entry -> prefix.equals(entry.getValue()))
+											.map(Map.Entry::getKey)
+											.findFirst();
 										if (oldPrefix != null && !oldPrefix.equals(prefix)) {
 											LOG.debug("Multiple prefices for namespace '{}': {} / {}", nsUri, prefix,
 													oldPrefix);
+										}
+										else if (oldNsUri.isPresent() && !oldNsUri.get().equals(nsUri)) {
+											String newPrefix = prefix + UUID.randomUUID();
+											LOG.warn("Multiple nsUrls for prefix '" + prefix + "': " + nsUri
+													+ ". Created new prefix: " + newPrefix);
+											nsToPrefix.put(nsUri, newPrefix);
 										}
 										else {
 											nsToPrefix.put(nsUri, prefix);
