@@ -5,10 +5,10 @@ import org.junit.Test;
 import javax.xml.namespace.QName;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -40,8 +40,7 @@ public class GmlReferenceDataTest {
 		URL resource = getClass().getResource("data/sampleValues_simple_1.xml");
 		GmlReferenceData gmlReferenceData = new GmlReferenceData(resource);
 
-		boolean hasMaxOne1 = gmlReferenceData.hasZeroOrOneProperty(FEATURETYPE_B_NAME,
-				Collections.singletonList(PROP_B1_NAME));
+		boolean hasMaxOne1 = gmlReferenceData.hasZeroOrOneProperty(FEATURETYPE_B_NAME, asPathStep(PROP_B1_NAME));
 		assertThat(hasMaxOne1, is(false));
 	}
 
@@ -50,8 +49,7 @@ public class GmlReferenceDataTest {
 		URL resource = getClass().getResource("data/sampleValues_simple_1.xml");
 		GmlReferenceData gmlReferenceData = new GmlReferenceData(resource);
 
-		boolean hasMaxOne2 = gmlReferenceData.hasZeroOrOneProperty(FEATURETYPE_A_NAME,
-				Collections.singletonList(PROP_A3_NAME));
+		boolean hasMaxOne2 = gmlReferenceData.hasZeroOrOneProperty(FEATURETYPE_A_NAME, asPathStep(PROP_A3_NAME));
 		assertThat(hasMaxOne2, is(true));
 	}
 
@@ -60,12 +58,10 @@ public class GmlReferenceDataTest {
 		URL resource = getClass().getResource("data/sampleValues_simple_1.xml");
 		GmlReferenceData gmlReferenceData = new GmlReferenceData(resource);
 
-		boolean hasMaxOne1 = gmlReferenceData.hasZeroOrOneProperty(FEATURETYPE_A_NAME,
-				Collections.singletonList(PROP_A1_NAME));
+		boolean hasMaxOne1 = gmlReferenceData.hasZeroOrOneProperty(FEATURETYPE_A_NAME, asPathStep(PROP_A1_NAME));
 		assertThat(hasMaxOne1, is(true));
 
-		boolean hasMaxOne3 = gmlReferenceData.hasZeroOrOneProperty(FEATURETYPE_A_NAME,
-				Collections.singletonList(PROP_A3_NAME));
+		boolean hasMaxOne3 = gmlReferenceData.hasZeroOrOneProperty(FEATURETYPE_A_NAME, asPathStep(PROP_A3_NAME));
 		assertThat(hasMaxOne3, is(true));
 	}
 
@@ -74,12 +70,10 @@ public class GmlReferenceDataTest {
 		URL resource = getClass().getResource("data/sampleValues_simple_N.xml");
 		GmlReferenceData gmlReferenceData = new GmlReferenceData(resource);
 
-		boolean hasMaxOne1 = gmlReferenceData.hasZeroOrOneProperty(FEATURETYPE_A_NAME,
-				Collections.singletonList(PROP_A1_NAME));
+		boolean hasMaxOne1 = gmlReferenceData.hasZeroOrOneProperty(FEATURETYPE_A_NAME, asPathStep(PROP_A1_NAME));
 		assertThat(hasMaxOne1, is(false));
 
-		boolean hasMaxOne3 = gmlReferenceData.hasZeroOrOneProperty(FEATURETYPE_A_NAME,
-				Collections.singletonList(PROP_A3_NAME));
+		boolean hasMaxOne3 = gmlReferenceData.hasZeroOrOneProperty(FEATURETYPE_A_NAME, asPathStep(PROP_A3_NAME));
 		assertThat(hasMaxOne3, is(false));
 	}
 
@@ -89,15 +83,15 @@ public class GmlReferenceDataTest {
 		GmlReferenceData gmlReferenceData = new GmlReferenceData(resource);
 
 		boolean hasMaxOneB1 = gmlReferenceData.hasZeroOrOneProperty(FEATURETYPE_A_NAME,
-				Collections.singletonList(PROP_COMPLEX_A4_NAME));
+				asPathStep(PROP_COMPLEX_A4_NAME));
 		assertThat(hasMaxOneB1, is(true));
 
 		boolean hasMaxOneA4_1 = gmlReferenceData.hasZeroOrOneProperty(FEATURETYPE_A_NAME,
-				asList(PROP_COMPLEX_A4_NAME, PROP_COMPLEX_A4_1_NAME));
+				asPathStep(PROP_COMPLEX_A4_NAME, PROP_COMPLEX_A4_1_NAME));
 		assertThat(hasMaxOneA4_1, is(true));
 
 		boolean hasMaxOneA4_3 = gmlReferenceData.hasZeroOrOneProperty(FEATURETYPE_A_NAME,
-				asList(PROP_COMPLEX_A4_NAME, PROP_COMPLEX_A4_3_NAME));
+				asPathStep(PROP_COMPLEX_A4_NAME, PROP_COMPLEX_A4_3_NAME));
 		assertThat(hasMaxOneA4_3, is(true));
 	}
 
@@ -107,15 +101,15 @@ public class GmlReferenceDataTest {
 		GmlReferenceData gmlReferenceData = new GmlReferenceData(resource);
 
 		boolean hasMaxOneB1 = gmlReferenceData.hasZeroOrOneProperty(FEATURETYPE_A_NAME,
-				Collections.singletonList(PROP_COMPLEX_A4_NAME));
+				asPathStep(PROP_COMPLEX_A4_NAME));
 		assertThat(hasMaxOneB1, is(false));
 
 		boolean hasMaxOneA4_1 = gmlReferenceData.hasZeroOrOneProperty(FEATURETYPE_A_NAME,
-				asList(PROP_COMPLEX_A4_NAME, PROP_COMPLEX_A4_1_NAME));
+				asPathStep(PROP_COMPLEX_A4_NAME, PROP_COMPLEX_A4_1_NAME));
 		assertThat(hasMaxOneA4_1, is(false));
 
 		boolean hasMaxOneA4_3 = gmlReferenceData.hasZeroOrOneProperty(FEATURETYPE_A_NAME,
-				asList(PROP_COMPLEX_A4_NAME, PROP_COMPLEX_A4_3_NAME));
+				asPathStep(PROP_COMPLEX_A4_NAME, PROP_COMPLEX_A4_3_NAME));
 		assertThat(hasMaxOneA4_3, is(true));
 	}
 
@@ -124,20 +118,16 @@ public class GmlReferenceDataTest {
 		URL resource = getClass().getResource("data/sampleValues_reference_1.xml");
 		GmlReferenceData gmlReferenceData = new GmlReferenceData(resource);
 
-		boolean hasMaxOneB1 = gmlReferenceData.hasZeroOrOneProperty(FEATURETYPE_B_NAME,
-				Collections.singletonList(PROP_B1_NAME));
+		boolean hasMaxOneB1 = gmlReferenceData.hasZeroOrOneProperty(FEATURETYPE_B_NAME, asPathStep(PROP_B1_NAME));
 		assertThat(hasMaxOneB1, is(false));
 
-		boolean hasMaxOneB3 = gmlReferenceData.hasZeroOrOneProperty(FEATURETYPE_B_NAME,
-				Collections.singletonList(PROP_B3_NAME));
+		boolean hasMaxOneB3 = gmlReferenceData.hasZeroOrOneProperty(FEATURETYPE_B_NAME, asPathStep(PROP_B3_NAME));
 		assertThat(hasMaxOneB3, is(false));
 
-		boolean hasMaxOneA1 = gmlReferenceData.hasZeroOrOneProperty(FEATURETYPE_A_NAME,
-				Collections.singletonList(PROP_A1_NAME));
+		boolean hasMaxOneA1 = gmlReferenceData.hasZeroOrOneProperty(FEATURETYPE_A_NAME, asPathStep(PROP_A1_NAME));
 		assertThat(hasMaxOneA1, is(false));
 
-		boolean hasMaxOneA3 = gmlReferenceData.hasZeroOrOneProperty(FEATURETYPE_A_NAME,
-				Collections.singletonList(PROP_A3_NAME));
+		boolean hasMaxOneA3 = gmlReferenceData.hasZeroOrOneProperty(FEATURETYPE_A_NAME, asPathStep(PROP_A3_NAME));
 		assertThat(hasMaxOneA3, is(true));
 	}
 
@@ -146,20 +136,16 @@ public class GmlReferenceDataTest {
 		URL resource = getClass().getResource("data/sampleValues_reference_N.xml");
 		GmlReferenceData gmlReferenceData = new GmlReferenceData(resource);
 
-		boolean hasMaxOneB1 = gmlReferenceData.hasZeroOrOneProperty(FEATURETYPE_B_NAME,
-				Collections.singletonList(PROP_B1_NAME));
+		boolean hasMaxOneB1 = gmlReferenceData.hasZeroOrOneProperty(FEATURETYPE_B_NAME, asPathStep(PROP_B1_NAME));
 		assertThat(hasMaxOneB1, is(false));
 
-		boolean hasMaxOneB3 = gmlReferenceData.hasZeroOrOneProperty(FEATURETYPE_B_NAME,
-				Collections.singletonList(PROP_B3_NAME));
+		boolean hasMaxOneB3 = gmlReferenceData.hasZeroOrOneProperty(FEATURETYPE_B_NAME, asPathStep(PROP_B3_NAME));
 		assertThat(hasMaxOneB3, is(false));
 
-		boolean hasMaxOneA1 = gmlReferenceData.hasZeroOrOneProperty(FEATURETYPE_A_NAME,
-				Collections.singletonList(PROP_A1_NAME));
+		boolean hasMaxOneA1 = gmlReferenceData.hasZeroOrOneProperty(FEATURETYPE_A_NAME, asPathStep(PROP_A1_NAME));
 		assertThat(hasMaxOneA1, is(false));
 
-		boolean hasMaxOneA3 = gmlReferenceData.hasZeroOrOneProperty(FEATURETYPE_A_NAME,
-				Collections.singletonList(PROP_A3_NAME));
+		boolean hasMaxOneA3 = gmlReferenceData.hasZeroOrOneProperty(FEATURETYPE_A_NAME, asPathStep(PROP_A3_NAME));
 		assertThat(hasMaxOneA3, is(false));
 	}
 
@@ -171,13 +157,12 @@ public class GmlReferenceDataTest {
 		QName AdressFeatureTypeName = new QName("http://inspire.ec.europa.eu/schemas/ad/4.0", "Address", "ad");
 		QName position = new QName("http://test.de/schema", "position", "te");
 
-		List<QName> posSpec = new ArrayList<>();
-		posSpec.add(position);
-		posSpec.add(new QName("http://test.de/schema", "GeographicPosition", "te"));
-		posSpec.add(new QName("http://test.de/schema", "specification", "te"));
+		List<PathStep> posSpec = new ArrayList<>();
+		posSpec.add(new PathStep(position));
+		posSpec.add(new PathStep(new QName("http://test.de/schema", "GeographicPosition", "te")));
+		posSpec.add(new PathStep(new QName("http://test.de/schema", "specification", "te")));
 
-		boolean hasMaxOnePosition = gmlReferenceData.hasZeroOrOneProperty(AdressFeatureTypeName,
-				Collections.singletonList(position));
+		boolean hasMaxOnePosition = gmlReferenceData.hasZeroOrOneProperty(AdressFeatureTypeName, asPathStep(position));
 		assertThat(hasMaxOnePosition, is(true));
 
 		boolean hasMaxOnePosSpec = gmlReferenceData.hasZeroOrOneProperty(AdressFeatureTypeName, posSpec);
@@ -192,20 +177,19 @@ public class GmlReferenceDataTest {
 		QName AdressFeatureTypeName = new QName("http://inspire.ec.europa.eu/schemas/ad/4.0", "Address", "ad");
 		QName inspireId = new QName("http://inspire.ec.europa.eu/schemas/ad/4.0", "inspireId", "ad");
 
-		List<QName> posSpec = new ArrayList<>();
-		posSpec.add(inspireId);
-		posSpec.add(new QName("http://inspire.ec.europa.eu/schemas/base/3.3", "Identifier", "ad"));
-		posSpec.add(new QName("http://inspire.ec.europa.eu/schemas/base/3.3", "localId", "ad"));
+		List<PathStep> posSpec = new ArrayList<>();
+		posSpec.add(new PathStep(inspireId));
+		posSpec.add(new PathStep(new QName("http://inspire.ec.europa.eu/schemas/base/3.3", "Identifier", "ad")));
+		posSpec.add(new PathStep(new QName("http://inspire.ec.europa.eu/schemas/base/3.3", "localId", "ad")));
 
-		boolean hasProperty = gmlReferenceData.hasProperty(AdressFeatureTypeName, Collections.singletonList(inspireId));
+		boolean hasProperty = gmlReferenceData.hasProperty(AdressFeatureTypeName, asPathStep(inspireId));
 		assertThat(hasProperty, is(true));
 
 		boolean hasPropertyPosSpec = gmlReferenceData.hasZeroOrOneProperty(AdressFeatureTypeName, posSpec);
 		assertThat(hasPropertyPosSpec, is(true));
 
 		QName unknown = new QName("http://test.de/schema", "unknown", "te");
-		boolean hasPropertyUnknown = gmlReferenceData.hasProperty(AdressFeatureTypeName,
-				Collections.singletonList(unknown));
+		boolean hasPropertyUnknown = gmlReferenceData.hasProperty(AdressFeatureTypeName, asPathStep(unknown));
 		assertThat(hasPropertyUnknown, is(false));
 	}
 
@@ -217,22 +201,52 @@ public class GmlReferenceDataTest {
 		QName adressFeatureTypeName = new QName("http://inspire.ec.europa.eu/schemas/ad/4.0", "Address", "ad");
 		QName inspireId = new QName("http://inspire.ec.europa.eu/schemas/ad/4.0", "inspireId", "ad");
 
-		List<QName> versionId = new ArrayList<>();
-		versionId.add(inspireId);
-		versionId.add(new QName("http://inspire.ec.europa.eu/schemas/base/3.3", "Identifier", "ad"));
-		versionId.add(new QName("http://inspire.ec.europa.eu/schemas/base/3.3", "versionId", "ad"));
+		List<PathStep> versionId = new ArrayList<>();
+		versionId.add(new PathStep(inspireId));
+		versionId.add(new PathStep(new QName("http://inspire.ec.europa.eu/schemas/base/3.3", "Identifier", "ad")));
+		versionId.add(new PathStep(new QName("http://inspire.ec.europa.eu/schemas/base/3.3", "versionId", "ad")));
 
-		boolean propertyIsNilled = gmlReferenceData.isPropertyNilled(adressFeatureTypeName,
-				Collections.singletonList(inspireId));
+		boolean propertyIsNilled = gmlReferenceData.isPropertyNilled(adressFeatureTypeName, asPathStep(inspireId));
 		assertThat(propertyIsNilled, is(false));
 
 		boolean propertyIsNilledVersionId = gmlReferenceData.isPropertyNilled(adressFeatureTypeName, versionId);
 		assertThat(propertyIsNilledVersionId, is(true));
 
 		QName status = new QName("http://inspire.ec.europa.eu/schemas/ad/4.0", "status", "ad");
-		boolean propertyIsNilledStatus = gmlReferenceData.isPropertyNilled(adressFeatureTypeName,
-				Collections.singletonList(status));
+		boolean propertyIsNilledStatus = gmlReferenceData.isPropertyNilled(adressFeatureTypeName, asPathStep(status));
 		assertThat(propertyIsNilledStatus, is(true));
+	}
+
+	@Test
+	public void test_InspireMineralResources_hasProperty() throws Exception {
+		URL resource = getClass().getResource("data/Inspire-MineralResources.xml");
+		GmlReferenceData gmlReferenceData = new GmlReferenceData(resource);
+
+		String mrCoreNs = "http://inspire.ec.europa.eu/schemas/mr-core/4.0";
+		String sweNs = "http://www.opengis.net/swe/2.0";
+
+		QName mineralOccurrenceFeatureTypeName = new QName(mrCoreNs, "MineralOccurrence", "mr-core");
+
+		List<PathStep> xPath = new ArrayList<>();
+		xPath.add(asPathStep(mrCoreNs, "expression", "mr-core", false));
+		xPath.add(asPathStep(sweNs, "Category", "swe", false));
+		xPath.add(asPathStep(sweNs, "CategoryType", "swe", true));
+		xPath.add(asPathStep(sweNs, "constraint", "swe", false));
+		xPath.add(asPathStep(sweNs, "AllowedTokensPropertyType", "swe", true));
+		xPath.add(asPathStep(sweNs, "AllowedTokens", "swe", false));
+		xPath.add(asPathStep(sweNs, "AllowedTokensType", "swe", true));
+		xPath.add(asPathStep(sweNs, "value", "swe", false));
+
+		boolean hasZeroOrOneProperty = gmlReferenceData.hasZeroOrOneProperty(mineralOccurrenceFeatureTypeName, xPath);
+		assertThat(hasZeroOrOneProperty, is(false));
+	}
+
+	private List<PathStep> asPathStep(QName... name) {
+		return Arrays.stream(name).map(qName -> new PathStep(qName)).collect(Collectors.toList());
+	}
+
+	private PathStep asPathStep(String nsUrl, String localPart, String prefix, boolean isTypeDefinition) {
+		return new PathStep(new QName(nsUrl, localPart, prefix), isTypeDefinition);
 	}
 
 	@Test
