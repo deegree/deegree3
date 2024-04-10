@@ -564,8 +564,8 @@ public class AppSchemaMapper {
 	}
 
 	private List<TableJoin> generateJoinChain(MappingContext from, MappingContext to) {
-		TableName fromTable = new TableName(from.getTable());
-		TableName toTable = new TableName(to.getTable());
+		TableName fromTable = new TableName(from.getTable(), dbSchema);
+		TableName toTable = new TableName(to.getTable(), dbSchema);
 		List<String> fromColumns = Collections.singletonList(from.getIdColumn());
 		List<String> toColumns = Collections.singletonList("parentfk");
 		List<String> orderColumns = Collections.singletonList("num");
@@ -580,7 +580,7 @@ public class AppSchemaMapper {
 		if (valueFt != null && valueFt.getSchema().getSubtypes(valueFt).length == 1) {
 			LOG.warn("Ambiguous feature join.");
 		}
-		TableName fromTable = new TableName(from.getTable());
+		TableName fromTable = new TableName(from.getTable(), dbSchema);
 		TableName toTable = new TableName("?");
 		List<String> fromColumns = Collections.singletonList(from.getColumn());
 		List<String> toColumns = Collections.singletonList(detectPrimaryKeyColumnName());
