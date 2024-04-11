@@ -56,17 +56,14 @@ database:
 <DataSourceConnectionProvider
   xmlns="http://www.deegree.org/connectionprovider/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/connectionprovider/datasource https://schemas.deegree.org/core/3.5/connectionprovider/datasource/datasource.xsd">
-
   <!-- Creation of javax.sql.DataSource instance -->
   <DataSource javaClass="org.apache.commons.dbcp2.BasicDataSource" destroyMethod="close" />
-
   <!-- Configuration of DataSource properties -->
   <Property name="driverClassName" value="org.postgresql.Driver" />
   <Property name="url" value="jdbc:postgresql://localhost/deegree-db" />
   <Property name="username" value="kelvin" />
   <Property name="password" value="s3cr3t" />
   <Property name="maxTotal" value="10" />
-
 </DataSourceConnectionProvider>
 ----
 
@@ -74,12 +71,12 @@ database:
 _org.apache.commons.dbcp2.BasicDataSource_ (a connection pool class
 provided by
 https://commons.apache.org/proper/commons-dbcp/index.html[Apache Commons
-DBCP].). If you don't know what this means, then this is most likely
+DBCP] project). If you don't know what this means, then this is most likely
 what you want to use.
 * The JDBC driver class is _org.postgresql.Driver_ (this is the Java
-class name to use for PostgreSQL/PostGIS databases).
+class name to use when connecting to PostgreSQL/PostGIS databases).
 * The JDBC URL is _jdbc:postgresql://localhost:5432/deegree-db_. This
-means that PostgreSQL is running on the same machine, port 5432
+means that PostgreSQL is running on the same host, port 5432
 (default). The database identifier is _deegree-db_. Adapt these values
 to match to your setup.
 * The database username is _kelvin_, password is _s3cr3t_. Adapt
@@ -103,10 +100,8 @@ This example defines a connection pool for an Oracle database:
 <DataSourceConnectionProvider
   xmlns="http://www.deegree.org/connectionprovider/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/connectionprovider/datasource https://schemas.deegree.org/core/3.5/connectionprovider/datasource/datasource.xsd">
-
   <!-- Creation of javax.sql.DataSource instance -->
   <DataSource javaClass="org.apache.commons.dbcp2.BasicDataSource" destroyMethod="close" />
-
   <!-- Configuration of DataSource properties -->
   <Property name="driverClassName" value="oracle.jdbc.OracleDriver" />
   <Property name="url" value="jdbc:oracle:thin:@localhost:1521:deegree" />
@@ -115,7 +110,6 @@ This example defines a connection pool for an Oracle database:
   <Property name="poolPreparedStatements" value="true" />
   <Property name="maxTotal" value="10" />
   <Property name="maxIdle" value="10" />
-
 </DataSourceConnectionProvider>
 ----
 
@@ -123,11 +117,13 @@ This defines a database connection with the following properties:
 
 * The DataSource object uses the Java class
 _org.apache.commons.dbcp2.BasicDataSource_ (a connection pool class
-provided by Apache DBCP). If you are not familiar with J2EE containers,
-this is most likely what you want to use.
+provided by
+https://commons.apache.org/proper/commons-dbcp/index.html[Apache Commons
+DBCP] project). If you don't know what this means, then this is most likely
+what you want to use.
 * The JDBC driver class is _oracle.jdbc.OracleDriver_. This is the
-Java class name to use for Oracle.
-* The so-called JDBC URL is
+Java class name to use when connecting to Oracle databases.
+* The JDBC URL is
 _jdbc:oracle:thin:@localhost:1521:deegree_. This means that Oracle is
 running on the local machine, port 1521 (adapt host name and port as
 required). The database identifier is _deegree_.
@@ -148,19 +144,14 @@ This example defines a connection pool for a Microsoft SQL Server:
 <DataSourceConnectionProvider
   xmlns="http://www.deegree.org/connectionprovider/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/connectionprovider/datasource https://schemas.deegree.org/core/3.5/connectionprovider/datasource/datasource.xsd">
-
   <!-- Creation of javax.sql.DataSource instance -->
   <DataSource javaClass="org.apache.commons.dbcp2.BasicDataSource" destroyMethod="close" />
-
   <!-- Configuration of DataSource properties -->
-  <Property name="driverClassName" value="org.postgresql.Driver" />
-  <Property name="url" value="jdbc:postgresql://localhost/deegree-db" />
+  <Property name="driverClassName" value="com.microsoft.sqlserver.jdbc.SQLServerDriver" />
+  <Property name="url" value="jdbc:sqlserver://localhost:1433;databaseName=deegree-db" />
   <Property name="username" value="kelvin" />
   <Property name="password" value="s3cr3t" />
-  <Property name="poolPreparedStatements" value="true" />
   <Property name="maxTotal" value="10" />
-  <Property name="maxIdle" value="10" />
-
 </DataSourceConnectionProvider>
 ----
 
@@ -168,13 +159,15 @@ This defines a database connection with the following properties:
 
 * The DataSource object uses the Java class
 _org.apache.commons.dbcp2.BasicDataSource_ (a connection pool class
-provided by Apache DBCP). If you are not familiar with J2EE containers,
-this is most likely what you want to use.
-* The JDBC driver class is _org.postgresql.Driver_. This is the Java
-class name to use for PostgreSQL/PostGIS.
-* The so-called JDBC URL is
-_jdbc:postgresql://localhost:5432/deegree-db_. This means that
-PostgreSQL is running on the local machine, port 5432 (adapt host name
+provided by
+https://commons.apache.org/proper/commons-dbcp/index.html[Apache Commons
+DBCP] project). If you don't know what this means, then this is most likely
+what you want to use.
+* The JDBC driver class is _com.microsoft.sqlserver.jdbc.SQLServerDriver_. This is the Java
+class name to use when connecting to Microsoft SQL Server databases.
+* The JDBC URL is
+_jdbc:sqlserver://localhost:1433;databaseName=deegree-db_. This means that
+SQL Server is running on the local machine, port 1433 (adapt host name
 and port as required). The database identifier is _deegree-db_.
 * The database username is _kelvin_, password is _s3cr3t_.
 * The maximum number of simultaneous connections is 10.
@@ -189,12 +182,10 @@ servlet container that runs deegree webservices (e.g. Apache Tomcat):
 <DataSourceConnectionProvider
   xmlns="http://www.deegree.org/connectionprovider/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/connectionprovider/datasource https://schemas.deegree.org/core/3.5/connectionprovider/datasource/datasource.xsd">
-
   <!-- Lookup of javax.sql.DataSource instance via JNDI -->
   <DataSource javaClass="org.deegree.db.datasource.JndiLookup" factoryMethod="lookup">
     <Argument value="java:comp/env/jdbc/DatabaseName" javaClass="java.lang.String" />
   </DataSource>
-
 </DataSourceConnectionProvider>
 ----
 
@@ -219,10 +210,8 @@ Connection Pool):
 <DataSourceConnectionProvider
   xmlns="http://www.deegree.org/connectionprovider/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/connectionprovider/datasource https://schemas.deegree.org/core/3.5/connectionprovider/datasource/datasource.xsd">
-
-  <!-- Creation / lookup of javax.sql.DataSource instance -->
+  <!-- Creation of javax.sql.DataSource instance -->
   <DataSource javaClass="oracle.ucp.jdbc.PoolDataSourceFactory" factoryMethod="getPoolDataSource" />
-
   <!-- Configuration of DataSource properties -->
   <Property name="connectionFactoryClassName" value="oracle.jdbc.pool.OracleDataSource" />
   <Property name="URL" value="jdbc:oracle:thin:@//localhost:1521/XE" />
@@ -232,7 +221,6 @@ Connection Pool):
   <Property name="minPoolSize" value="5" />
   <Property name="maxPoolSize" value="10" />
   <Property name="maxStatements" value="50" />
-
 </DataSourceConnectionProvider>
 ----
 
@@ -248,7 +236,7 @@ The database connection config file format is defined by schema file
 https://schemas.deegree.org/core/3.5/connectionprovider/datasource/datasource.xsd. The
 root element is _DataSourceConnectionProvider_ and the optional
 attribute `config` can be set to _3.5.0_. The following table lists the available
-configuration options. When specifiying them, their order must be
+configuration options. When specifying them, their order must be
 respected.
 
 [width="100%",cols="17%,15%,11%,57%",options="header",]
@@ -350,7 +338,7 @@ The properties available for configuration depend on the implementation
 of _javax.sql.DataSource_:
 
 * Apache Commons DBCP: See
-https://commons.apache.org/proper/commons-dbcp/api-2.7.0/org/apache/commons/dbcp2/BasicDataSource.html
+https://commons.apache.org/proper/commons-dbcp/apidocs/org/apache/commons/dbcp2/BasicDataSource.html
 * Oracle UCP:
 https://docs.oracle.com/cd/E11882_01/java.112/e12826/oracle/ucp/jdbc/PoolDataSource.html
 
@@ -374,6 +362,79 @@ the element _DialectProvider_:
 org.deegree.sqldialect.postgis.PostGISDialectProvider)
 |===
 
+[[anchor-configuration-jdbc-cp]]
+==== JDBC connection pools
+
+By default, the Apache Commons DBCP connection pool library is provided with deegree webservices WAR file. In some cases you may consider another implementation as more appropriate to use. The following examples show how to use other connection pool provider. Keep in mind to add the mentioned libraries to the same classpath as the JDBC driver.
+
+==== PostgreSQL JDBC
+
+The PostgreSQL JDBC driver provides two DataSource implementations which support, among other things, the configuration for multiple hosts. Read further in the https://jdbc.postgresql.org/documentation/datasource/[PostgreSQL JDBC driver documentation].
+This DataSource implementation requires the official PostgreSQL JDBC driver on the classpath.
+Download the driver from: https://jdbc.postgresql.org/download/
+
+.Configuration of `PGSimpleDataSource`
+[source,xml]
+----
+<DataSourceConnectionProvider
+  xmlns="http://www.deegree.org/connectionprovider/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/connectionprovider/datasource https://schemas.deegree.org/core/3.5/connectionprovider/datasource/datasource.xsd">
+  <!-- Creation of javax.sql.DataSource instance -->
+  <DataSource javaClass="org.postgresql.ds.PGSimpleDataSource"/>
+  <!-- Configuration of DataSource properties -->
+  <Property name="serverName" value="localhost"/>
+  <Property name="databaseName" value="deegree-db"/>
+  <Property name="portNumber" value="5432"/>
+  <Property name="user" value="kelvin"/>
+  <Property name="password" value="s3cr3t"/>
+</DataSourceConnectionProvider>
+----
+
+==== HikariCP
+
+The HikariCP project states that the implementation is a "zero-overhead" production ready JDBC connection pool and very lightweight.
+
+This DataSource implementation requires the `com.zaxxer:HikariCP` library on the classpath.
+Download the connection pool from: https://github.com/brettwooldridge/HikariCP
+
+.Configuration of `HikariDataSource`
+[source,xml]
+----
+<DataSourceConnectionProvider
+  xmlns="http://www.deegree.org/connectionprovider/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/connectionprovider/datasource https://schemas.deegree.org/core/3.5/connectionprovider/datasource/datasource.xsd">
+  <!-- Creation of javax.sql.DataSource instance -->
+  <DataSource javaClass="com.zaxxer.hikari.HikariDataSource" />
+  <!-- Configuration of DataSource properties -->
+  <Property name="jdbcUrl" value="jdbc:postgresql://localhost:5432/deegree-db" />
+  <Property name="username" value="kelvin" />
+  <Property name="password" value="s3cr3t" />
+</DataSourceConnectionProvider>
+----
+
+===== c3p0
+
+The c3p0 project states that the implementation is an easy-to-use library for making traditional JDBC drivers "enterprise-ready" by augmenting them with functionality defined by the JDBC 3 and 4 specs and the optional extensions to JDBC 2.
+
+This DataSource implementation requires the `com.mchange:c3p0` library on the classpath.
+Download the connection pool from: https://www.mchange.com/projects/c3p0/
+
+.Configuration of `ComboPooledDataSource`
+[source,xml]
+----
+<DataSourceConnectionProvider
+  xmlns="http://www.deegree.org/connectionprovider/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/connectionprovider/datasource https://schemas.deegree.org/core/3.5/connectionprovider/datasource/datasource.xsd">
+  <!-- Creation of javax.sql.DataSource instance -->
+  <DataSource javaClass="com.mchange.v2.c3p0.ComboPooledDataSource" />
+  <!-- Configuration of DataSource properties -->
+  <Property name="driverClass" value="org.postgresql.Driver" />
+  <Property name="jdbcUrl" value="jdbc:postgresql://localhost:5432/deegree-db" />
+  <Property name="user" value="kelvin" />
+  <Property name="password" value="s3cr3t" />
+</DataSourceConnectionProvider>
+----
+
 ==== Legacy configuration format
 
 Prior to deegree webservices release 3.4, a simpler (but limited)
@@ -394,9 +455,9 @@ is called 'inspire', the database user is 'postgres' and password is
 
 The legacy connection config file format is defined by schema file
 https://schemas.deegree.org/core/3.5/jdbc/jdbc.xsd. The root element is
-_JDBCConnection_ and the config attribute must be _3.0.0_. The
+_JDBCConnection_. The
 following table lists the available configuration options. When
-specifiying them, their order must be respected.
+specifying them, their order must be respected.
 
 [width="100%",cols="16%,18%,12%,54%",options="header",]
 |===
