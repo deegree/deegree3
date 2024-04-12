@@ -43,7 +43,7 @@ to add additional modules first. This is described in
 NOTE: By default, deegree webservices includes a JDBC driver for connecting to
 PostgreSQL. If you want to make a connection to other SQL databases 
 (e.g. Oracle), you will need to add a compatible JDBC driver manually. 
-This is described in <<anchor-oraclejars>>.
+This is described in <<anchor-oraclejars>> and <<anchor-sqlserverjars>>.
 
 
 ==== Minimal configuration example (PostgreSQL)
@@ -135,7 +135,7 @@ required). The database identifier is _deegree_.
 NOTE: By default, deegree webservices includes JDBC drivers for connecting to
 PostgreSQL and Derby databases. In order to connect to Microsoft SQL
 Server, you need to add a compatible JDBC driver manually. This is
-described in <<anchor-oraclejars>>.
+described in <<anchor-sqlserverjars>>.
 
 This example defines a connection pool for a Microsoft SQL Server:
 
@@ -373,7 +373,7 @@ The PostgreSQL JDBC driver provides two DataSource implementations which support
 This DataSource implementation requires the official PostgreSQL JDBC driver on the classpath.
 Download the driver from: https://jdbc.postgresql.org/download/
 
-.Configuration of `PGSimpleDataSource`
+.Configuration example using `PGSimpleDataSource`
 [source,xml]
 ----
 <DataSourceConnectionProvider
@@ -397,7 +397,7 @@ The HikariCP project states that the implementation is a "zero-overhead" product
 This DataSource implementation requires the `com.zaxxer:HikariCP` library on the classpath.
 Download the connection pool from: https://github.com/brettwooldridge/HikariCP
 
-.Configuration of `HikariDataSource`
+.Configuration example using `HikariDataSource`
 [source,xml]
 ----
 <DataSourceConnectionProvider
@@ -419,7 +419,7 @@ The c3p0 project states that the implementation is an easy-to-use library for ma
 This DataSource implementation requires the `com.mchange:c3p0` library on the classpath.
 Download the connection pool from: https://www.mchange.com/projects/c3p0/
 
-.Configuration of `ComboPooledDataSource`
+.Configuration example using `ComboPooledDataSource`
 [source,xml]
 ----
 <DataSourceConnectionProvider
