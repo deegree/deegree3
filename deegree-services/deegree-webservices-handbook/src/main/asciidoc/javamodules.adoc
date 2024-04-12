@@ -140,6 +140,7 @@ not available the _xmlparserv2_ can be used instead. (In rare
 conditions this could set the oracle library as default XML parser,
 which could lead to unexpected behavior).
 
+[[anchor-sqlserverjars]]
 ==== Adding Microsoft SQL server support
 
 The following deegree resources support Microsoft SQL Server:
