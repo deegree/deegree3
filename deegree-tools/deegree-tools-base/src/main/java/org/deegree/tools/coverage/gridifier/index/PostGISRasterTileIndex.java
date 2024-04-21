@@ -49,9 +49,9 @@ import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.tools.coverage.gridifier.RasterLevel;
-import org.postgis.PGgeometry;
-import org.postgis.Point;
-import org.postgis.Polygon;
+import net.postgis.jdbc.PGgeometry;
+import net.postgis.jdbc.geometry.Point;
+import net.postgis.jdbc.geometry.Polygon;
 
 public class PostGISRasterTileIndex implements MultiLevelRasterTileIndex {
 

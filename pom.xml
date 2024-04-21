@@ -851,17 +851,17 @@
       <dependency>
         <groupId>net.postgis</groupId>
         <artifactId>postgis-jdbc</artifactId>
-        <version>2.5.1</version>
+        <version>2023.1.0</version>
       </dependency>
       <dependency>
         <groupId>net.postgis</groupId>
         <artifactId>postgis-geometry</artifactId>
-        <version>2.5.1</version>
+        <version>2023.1.0</version>
       </dependency>
       <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>42.7.2</version>
+        <version>42.7.3</version>
       </dependency>
       <!-- Oracle (Official provided driver from repo1.maven.org) -->
       <dependency>
