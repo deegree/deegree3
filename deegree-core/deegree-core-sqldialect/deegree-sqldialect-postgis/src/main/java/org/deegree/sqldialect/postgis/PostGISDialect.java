@@ -61,7 +61,7 @@ import org.deegree.sqldialect.SortCriterion;
 import org.deegree.sqldialect.filter.AbstractWhereBuilder;
 import org.deegree.sqldialect.filter.PropertyNameMapper;
 import org.deegree.sqldialect.filter.UnmappableException;
-import org.postgis.PGboxbase;
+import net.postgis.jdbc.PGboxbase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -207,7 +207,7 @@ public class PostGISDialect extends AbstractSQLDialect implements SQLDialect {
 		return env;
 	}
 
-	private org.deegree.geometry.primitive.Point buildPoint(org.postgis.Point p, ICRS crs) {
+	private org.deegree.geometry.primitive.Point buildPoint(net.postgis.jdbc.geometry.Point p, ICRS crs) {
 		double[] coords = new double[p.getDimension()];
 		coords[0] = p.getX();
 		coords[1] = p.getY();
