@@ -47,12 +47,12 @@ import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r3d.persistence.RenderableStore;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
-import org.postgis.Geometry;
-import org.postgis.LinearRing;
-import org.postgis.PGbox3d;
-import org.postgis.PGgeometry;
-import org.postgis.Point;
-import org.postgis.Polygon;
+import net.postgis.jdbc.geometry.Geometry;
+import net.postgis.jdbc.geometry.LinearRing;
+import net.postgis.jdbc.PGbox3d;
+import net.postgis.jdbc.PGgeometry;
+import net.postgis.jdbc.geometry.Point;
+import net.postgis.jdbc.geometry.Polygon;
 
 /**
  * The <code>PostgisBackend</code> class adds postgis specific methods to the model
@@ -85,7 +85,7 @@ public class PostgisBackend extends DBBackend<PGgeometry> {
 			}
 			Polygon pgPolygon = (Polygon) geom;
 			ICRS crs = CRSManager.getCRSRef("EPSG:" + pgPolygon.getSrid());
-			org.postgis.LinearRing ring = pgPolygon.getRing(0);
+			net.postgis.jdbc.geometry.LinearRing ring = pgPolygon.getRing(0);
 			Point min = ring.getPoint(0);
 			Point max = ring.getPoint(2);
 			double[] mi = null;
@@ -145,7 +145,7 @@ public class PostgisBackend extends DBBackend<PGgeometry> {
 			points[4] = new Point(minD[0], minD[1], minD[2]);
 		}
 		linRing[0] = new LinearRing(points);
-		org.postgis.Polygon pgPoly = new org.postgis.Polygon(linRing);
+		net.postgis.jdbc.geometry.Polygon pgPoly = new net.postgis.jdbc.geometry.Polygon(linRing);
 		pgPoly.setSrid(parseSRID(geometry.getCoordinateSystem()));
 		return new PGgeometry(pgPoly);
 
