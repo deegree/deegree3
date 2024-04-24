@@ -60,7 +60,7 @@ When deegree webservices initializes the workspace, it scans directory
 _modules/_ of the active deegree workspace for files ending with
 _.jar_ and adds them to the classpath. This can be very handy, as it
 allows to create self-contained workspaces (no fiddling with other
-directories required) and also has the benefit the you can reload the
+directories required) and also has the benefit that you can reload the
 deegree workspace only after adding your libraries (instead of
 restarting the deegree webapp or the whole web application container).
 
@@ -151,5 +151,5 @@ The following deegree resources support Microsoft SQL Server:
 
 In order to enable Microsoft SQL Server connectivity for these
 resources, you need to add a compatible Microsoft JDBC driver (e.g.
-_sqljdbc4.jar_)footnote:[https://learn.microsoft.com/en-us/sql/connect/jdbc/download-microsoft-jdbc-driver-for-sql-server] 
+_mssql-jdbc-12.6.1.jre11.jar_)footnote:[https://learn.microsoft.com/en-us/sql/connect/jdbc/download-microsoft-jdbc-driver-for-sql-server]
 (see <<anchor-adding-jars>>).

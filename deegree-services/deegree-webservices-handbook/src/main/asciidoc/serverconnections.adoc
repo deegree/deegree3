@@ -365,7 +365,7 @@ org.deegree.sqldialect.postgis.PostGISDialectProvider)
 [[anchor-configuration-jdbc-cp]]
 ==== JDBC connection pools
 
-By default, the Apache Commons DBCP connection pool library is provided with deegree webservices WAR file. In some cases you may consider another implementation as more appropriate to use. The following examples show how to use other connection pool provider. Keep in mind to add the mentioned libraries to the same classpath as the JDBC driver.
+By default, the https://commons.apache.org/proper/commons-dbcp/[Apache Commons DBCP connection pool library] is provided with deegree webservices WAR file. In some cases you may consider another implementation as more appropriate to use. The following examples show how to use other connection pool provider. Keep in mind to add the mentioned libraries to the same classpath as the JDBC driver.
 
 ==== PostgreSQL JDBC
 
