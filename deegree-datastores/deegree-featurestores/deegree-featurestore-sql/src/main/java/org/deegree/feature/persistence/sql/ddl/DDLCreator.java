@@ -174,7 +174,7 @@ public abstract class DDLCreator {
 
 	protected void appendCreateSchema(String schema, StringBuffer sql) {
 		if (schema != null && !createdSchemas.contains(schema)) {
-			sql.append("CREATE SCHEMA ").append(schema).append(";\n");
+			createSchemaSnippet(schema, sql);
 			createdSchemas.add(schema);
 		}
 	}
@@ -189,6 +189,10 @@ public abstract class DDLCreator {
 			s = table + "_pkey";
 		}
 		return s;
+	}
+
+	protected void createSchemaSnippet(String schema, StringBuffer sql) {
+		sql.append("CREATE SCHEMA ").append(schema).append(";\n");
 	}
 
 	protected abstract void primitiveMappingSnippet(StringBuffer sql, PrimitiveMapping mapping);
