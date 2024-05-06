@@ -241,6 +241,10 @@ public class PostGISDDLCreator extends DDLCreator {
 		return postgresqlType;
 	}
 
+	protected void createSchemaSnippet(String schema, StringBuffer sql) {
+		sql.append("CREATE SCHEMA IF NOT EXISTS ").append(schema).append(";\n");
+	}
+
 	private String retrieveTypeOfPrimaryKey(TableName fromTable, SQLIdentifier toColumn, FIDMapping fidMapping) {
 		if (fidMapping != null) {
 			for (Pair<SQLIdentifier, BaseType> column : fidMapping.getColumns()) {
