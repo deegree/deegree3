@@ -866,7 +866,7 @@
       <!-- Oracle (Official provided driver from repo1.maven.org) -->
       <dependency>
         <groupId>com.oracle.database.jdbc</groupId>
-        <artifactId>ojdbc8</artifactId>
+        <artifactId>ojdbc11</artifactId>
         <version>${oracle.version}</version>
       </dependency>
       <!-- Oracle GeoRaster -->
@@ -890,8 +890,9 @@
         <artifactId>sdoutl</artifactId>
         <version>${oracle.version}</version>
       </dependency>
+      <!-- Oracle GeoRaster (Official provided driver from repo1.maven.org) -->
       <dependency>
-        <groupId>com.oracle</groupId>
+        <groupId>com.oracle.database.xml</groupId>
         <artifactId>xmlparserv2_sans_jaxp_services</artifactId>
         <version>${oracle.version}</version>
       </dependency>
@@ -1235,7 +1236,7 @@
     <site.dir>${user.home}/Sites</site.dir>
     <java.version>11</java.version>
     <antlr.version>3.5.3</antlr.version>
-    <oracle.version>19.9.0.0</oracle.version>
+    <oracle.version>23.4.0.24.05</oracle.version>
     <log4j.version>2.23.1</log4j.version>
     <slf4j.version>2.0.12</slf4j.version>
     <spring-boot.version>2.7.18</spring-boot.version>
