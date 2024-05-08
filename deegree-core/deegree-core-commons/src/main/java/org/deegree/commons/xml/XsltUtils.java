@@ -53,6 +53,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.XMLConstants;
 
 /**
  * Utility methods to transform xml streams with xslt.
@@ -72,6 +73,7 @@ public class XsltUtils {
 		StreamSource source = new StreamSource(doc);
 		StreamSource xslt = new StreamSource(new File(xsltUrl.toURI()));
 		TransformerFactory fac = TransformerFactory.newInstance();
+		fac.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 		Transformer t = fac.newTransformer(xslt);
 		Result result = new StreamResult(out);
 		t.transform(source, result);
