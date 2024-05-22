@@ -125,20 +125,15 @@ add the following JAR files (see <<anchor-adding-jars>>):
 ** sdogr.jar
 ** sdotype.jar
 ** sdoutl.jar
-** xdb6.jar
+** xdb.jar
 ** xmlparserv2_sans_jaxp_services.jar
 
 NOTE: The Oracle Spatial and GeoRaster libraries can be found, without version
 number in filename, inside the Oracle Database installation directory.
-The _sdo*_ files can be found at _ORACLE_HOME/md/jlib_, xdb6.jar at
-_ORACLE_HOME/rdbms/jlib_ and xmlparserv2_sans_jaxp_services or
-xmlparserv2 at _ORACLE_HOME/xdk/lib_.
-
-NOTE: The _xmlparserv2_sans_jaxp_services_ is the recommended library, as it
-does not contain _META-INF/services/_ entries. But if this library is
-not available the _xmlparserv2_ can be used instead. (In rare
-conditions this could set the oracle library as default XML parser,
-which could lead to unexpected behavior).
+The _sdo*_ files can be found at _ORACLE_HOME/md/jlib_, xdb.jar and
+xmlparserv2_sans_jaxp_services.jar are available at maven central 
+xdb:[https://repo1.maven.org/maven2/com/oracle/database/xml/xdb/] and
+xmlparserv2_sans_jaxp_services:[https://repo1.maven.org/maven2/com/oracle/database/xml/xmlparserv2_sans_jaxp_services/].
 
 [[anchor-sqlserverjars]]
 ==== Adding Microsoft SQL server support
