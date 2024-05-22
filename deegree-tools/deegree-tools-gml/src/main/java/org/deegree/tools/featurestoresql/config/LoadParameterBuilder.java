@@ -83,6 +83,14 @@ public class LoadParameterBuilder {
 		return this;
 	}
 
+	public LoadParameterBuilder setDbSchema(String dbSchema) {
+		if (dbSchema != null && dbSchema.isEmpty())
+			loadParameter.setDbSchema(null);
+		else
+			loadParameter.setDbSchema(dbSchema);
+		return this;
+	}
+
 	public LoadParameterBuilder setSrid(String srid) {
 		if (srid == null)
 			loadParameter.setSrid(DEFAULT_SRID);

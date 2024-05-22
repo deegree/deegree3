@@ -23,9 +23,8 @@ package org.deegree.tools.featurestoresql.config;
 
 import org.deegree.feature.persistence.sql.mapper.ReferenceData;
 
-import java.util.List;
-
 import javax.xml.namespace.QName;
+import java.util.List;
 
 /**
  * Load parameter.
@@ -53,6 +52,8 @@ public class LoadParameter {
 	private int depth;
 
 	private boolean useRefDataProps;
+
+	private String dbSchema;
 
 	LoadParameter() {
 	}
@@ -119,6 +120,14 @@ public class LoadParameter {
 
 	public void setDialect(String dialect) {
 		this.dialect = dialect;
+	}
+
+	public void setDbSchema(String dbSchema) {
+		this.dbSchema = dbSchema;
+	}
+
+	public String getDbSchema() {
+		return dbSchema;
 	}
 
 	public void setDepth(int depth) {

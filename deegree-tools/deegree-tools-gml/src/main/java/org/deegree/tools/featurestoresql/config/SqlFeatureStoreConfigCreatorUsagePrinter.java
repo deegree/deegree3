@@ -42,6 +42,7 @@ public class SqlFeatureStoreConfigCreatorUsagePrinter {
 		System.out.println(" -idtype={int|uuid}, default=int");
 		System.out.println(" -mapping={relational|blob}, default=relational");
 		System.out.println(" -dialect={postgis|oracle}, default=postgis");
+		System.out.println(" -dbschema=STRING, name of the db schema to use, default: no schema");
 		System.out.println(" -cycledepth=INT, positive integer value to specify the depth of cycles, default=0");
 		System.out.println(" -listOfPropertiesWithPrimitiveHref=<path/to/file>, not set by default");
 		System.out.println(
