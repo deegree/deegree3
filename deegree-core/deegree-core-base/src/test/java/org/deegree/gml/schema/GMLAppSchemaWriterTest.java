@@ -34,7 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.schema;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;

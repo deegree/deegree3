@@ -40,7 +40,7 @@ import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
@@ -71,10 +71,10 @@ public class GML3SurfacePatchReaderTest {
 		XMLStreamReaderWrapper parser = getParser("PolygonPatch.gml");
 		PolygonPatch patch = (PolygonPatch) getPatchParser().parseSurfacePatch(parser,
 				CRSManager.getCRSRef("EPSG:4326"));
-		Assert.assertEquals(2.0, patch.getExteriorRing().getStartPoint().get0());
-		Assert.assertEquals(0.0, patch.getExteriorRing().getStartPoint().get1());
-		Assert.assertEquals(2.0, patch.getExteriorRing().getEndPoint().get0());
-		Assert.assertEquals(0.0, patch.getExteriorRing().getEndPoint().get1());
+		Assert.assertEquals(2.0, patch.getExteriorRing().getStartPoint().get0(), 0.01d);
+		Assert.assertEquals(0.0, patch.getExteriorRing().getStartPoint().get1(), 0.01d);
+		Assert.assertEquals(2.0, patch.getExteriorRing().getEndPoint().get0(), 0.01d);
+		Assert.assertEquals(0.0, patch.getExteriorRing().getEndPoint().get1(), 0.01d);
 		Assert.assertEquals(2, patch.getInteriorRings().size());
 	}
 

@@ -37,7 +37,7 @@
 
 package org.deegree.protocol.wfs.describefeaturetype.xml;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
 
 import java.net.MalformedURLException;

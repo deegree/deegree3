@@ -43,7 +43,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import junit.framework.TestCase;
 
 import org.deegree.commons.tom.ResolveMode;

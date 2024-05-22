@@ -34,7 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.dictionary;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static org.deegree.gml.GMLVersion.GML_30;
 
 import java.io.IOException;

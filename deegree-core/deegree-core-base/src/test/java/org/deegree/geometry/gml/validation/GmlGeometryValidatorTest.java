@@ -34,7 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry.gml.validation;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static org.deegree.gml.GMLVersion.GML_31;
 
 import java.io.IOException;
@@ -45,7 +45,7 @@ import java.util.List;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.validation.event.CurveDiscontinuity;

@@ -34,7 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.client;
 
-import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertNotNull;
 import static org.deegree.gml.GMLVersion.GML_31;
 import static org.deegree.protocol.wfs.WFSVersion.WFS_100;
 import static org.deegree.protocol.wfs.WFSVersion.WFS_110;

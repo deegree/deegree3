@@ -37,7 +37,7 @@
 
 package org.deegree.coverage.raster.integration;
 
-import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertNotNull;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.image.BufferedImage;
@@ -47,7 +47,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URISyntaxException;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.deegree.commons.utils.PixelCounter;
 import org.deegree.coverage.raster.SimpleRaster;

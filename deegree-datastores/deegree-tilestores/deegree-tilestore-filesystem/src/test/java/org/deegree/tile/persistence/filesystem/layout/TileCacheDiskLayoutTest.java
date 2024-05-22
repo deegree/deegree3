@@ -33,7 +33,7 @@
 package org.deegree.tile.persistence.filesystem.layout;
 
 import static java.util.Collections.singletonList;
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
