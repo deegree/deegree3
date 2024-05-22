@@ -140,6 +140,8 @@ public class AppSchemaMapper {
 
 	private final boolean useRefDataProps;
 
+	private final String dbSchema;
+
 	/**
 	 * Creates a new {@link AppSchemaMapper} instance for the given schema.
 	 * @param appSchema application schema to be mapped, must not be <code>null</code>
@@ -180,7 +182,7 @@ public class AppSchemaMapper {
 			GeometryStorageParams geometryParams, int maxLength, boolean usePrefixedSQLIdentifiers,
 			boolean useIntegerFids, int allowedCycleDepth) {
 		this(appSchema, createBlobMapping, createRelationalMapping, geometryParams, maxLength,
-				usePrefixedSQLIdentifiers, useIntegerFids, allowedCycleDepth, null, false);
+				usePrefixedSQLIdentifiers, useIntegerFids, allowedCycleDepth, null, false, null);
 	}
 
 	/**
@@ -203,7 +205,8 @@ public class AppSchemaMapper {
 	 */
 	public AppSchemaMapper(AppSchema appSchema, boolean createBlobMapping, boolean createRelationalMapping,
 			GeometryStorageParams geometryParams, int maxLength, boolean usePrefixedSQLIdentifiers,
-			boolean useIntegerFids, int allowedCycleDepth, ReferenceData referenceData, boolean useRefDataProps) {
+			boolean useIntegerFids, int allowedCycleDepth, ReferenceData referenceData, boolean useRefDataProps,
+			String dbSchema) {
 		this.appSchema = appSchema;
 		this.geometryParams = geometryParams;
 		this.useIntegerFids = useIntegerFids;
@@ -211,6 +214,7 @@ public class AppSchemaMapper {
 		this.maxComplexityIndex = DEFAULT_COMPLEXITY_INDEX * (allowedCycleDepth + 1);
 		this.referenceData = referenceData;
 		this.useRefDataProps = useRefDataProps;
+		this.dbSchema = dbSchema;
 
 		List<FeatureType> ftList = appSchema.getFeatureTypes(null, false, false);
 		List<FeatureType> blackList = new ArrayList<FeatureType>();
@@ -285,10 +289,7 @@ public class AppSchemaMapper {
 		LOG.info("Mapping feature type '{}'", ft.getName());
 		MappingContext mc = mcManager.newContext(ft.getName(), detectPrimaryKeyColumnName());
 
-		// TODO
-		TableName table = new TableName(mc.getTable());
-		// TODO
-
+		TableName table = new TableName(mc.getTable(), dbSchema);
 		FIDMapping fidMapping = generateFidMapping(ft);
 
 		List<Mapping> mappings = new ArrayList<>();
@@ -563,8 +564,8 @@ public class AppSchemaMapper {
 	}
 
 	private List<TableJoin> generateJoinChain(MappingContext from, MappingContext to) {
-		TableName fromTable = new TableName(from.getTable());
-		TableName toTable = new TableName(to.getTable());
+		TableName fromTable = new TableName(from.getTable(), dbSchema);
+		TableName toTable = new TableName(to.getTable(), dbSchema);
 		List<String> fromColumns = Collections.singletonList(from.getIdColumn());
 		List<String> toColumns = Collections.singletonList("parentfk");
 		List<String> orderColumns = Collections.singletonList("num");
@@ -579,7 +580,7 @@ public class AppSchemaMapper {
 		if (valueFt != null && valueFt.getSchema().getSubtypes(valueFt).length == 1) {
 			LOG.warn("Ambiguous feature join.");
 		}
-		TableName fromTable = new TableName(from.getTable());
+		TableName fromTable = new TableName(from.getTable(), dbSchema);
 		TableName toTable = new TableName("?");
 		List<String> fromColumns = Collections.singletonList(from.getColumn());
 		List<String> toColumns = Collections.singletonList(detectPrimaryKeyColumnName());
