@@ -33,6 +33,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 package org.deegree.console.datastore.feature;
+
 import static jakarta.faces.application.FacesMessage.SEVERITY_ERROR;
 import static org.apache.commons.io.FileUtils.readFileToByteArray;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
