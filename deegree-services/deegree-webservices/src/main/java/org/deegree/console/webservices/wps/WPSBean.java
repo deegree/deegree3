@@ -34,6 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.webservices.wps;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,7 +51,7 @@ import org.deegree.services.wps.WPService;
  */
 @Named
 @RequestScoped
-public class WPSBean {
+public class WPSBean implements Serializable {
 
 	private final String version;
 

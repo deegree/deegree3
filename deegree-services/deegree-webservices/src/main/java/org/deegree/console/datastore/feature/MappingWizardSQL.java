@@ -33,7 +33,6 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 package org.deegree.console.datastore.feature;
-
 import static jakarta.faces.application.FacesMessage.SEVERITY_ERROR;
 import static org.apache.commons.io.FileUtils.readFileToByteArray;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
@@ -91,6 +90,8 @@ import org.deegree.workspace.standard.IncorporealResourceLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
+
 /**
  * JSF bean that helps with creating configurations for the {@link SQLFeatureStore}.
  *
@@ -98,7 +99,7 @@ import org.slf4j.LoggerFactory;
  */
 @Named
 @SessionScoped
-public class MappingWizardSQL {
+public class MappingWizardSQL implements Serializable {
 
 	private static transient Logger LOG = LoggerFactory.getLogger(MappingWizardSQL.class);
 

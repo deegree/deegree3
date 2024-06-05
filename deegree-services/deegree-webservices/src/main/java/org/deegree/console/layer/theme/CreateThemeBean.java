@@ -32,6 +32,8 @@ import jakarta.inject.Named;
 import org.deegree.console.AbstractCreateResourceBean;
 import org.deegree.theme.persistence.ThemeManager;
 
+import java.io.Serializable;
+
 /**
  * JSF backing bean for "Create new theme" view.
  *
@@ -40,7 +42,7 @@ import org.deegree.theme.persistence.ThemeManager;
  */
 @Named
 @ViewScoped
-public class CreateThemeBean extends AbstractCreateResourceBean {
+public class CreateThemeBean extends AbstractCreateResourceBean implements Serializable {
 
 	public CreateThemeBean() {
 		super(ThemeManager.class);

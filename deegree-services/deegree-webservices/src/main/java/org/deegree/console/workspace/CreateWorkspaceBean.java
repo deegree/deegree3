@@ -28,6 +28,7 @@
 package org.deegree.console.workspace;
 
 import java.io.File;
+import java.io.Serializable;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Named;
@@ -42,7 +43,7 @@ import org.deegree.console.JsfUtils;
  */
 @Named
 @RequestScoped
-public class CreateWorkspaceBean {
+public class CreateWorkspaceBean implements Serializable {
 
 	private String workspaceName;
 

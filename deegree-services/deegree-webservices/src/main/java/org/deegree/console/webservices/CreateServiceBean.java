@@ -32,6 +32,8 @@ import jakarta.inject.Named;
 import org.deegree.console.AbstractCreateResourceBean;
 import org.deegree.services.OwsManager;
 
+import java.io.Serializable;
+
 /**
  * JSF backing bean for "Create new webservice" view.
  *
@@ -40,7 +42,7 @@ import org.deegree.services.OwsManager;
  */
 @Named
 @ViewScoped
-public class CreateServiceBean extends AbstractCreateResourceBean {
+public class CreateServiceBean extends AbstractCreateResourceBean implements Serializable {
 
 	public CreateServiceBean() {
 		super(OwsManager.class);

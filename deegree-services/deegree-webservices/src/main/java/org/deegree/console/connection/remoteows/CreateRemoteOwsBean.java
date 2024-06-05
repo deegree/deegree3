@@ -32,6 +32,8 @@ import jakarta.inject.Named;
 import org.deegree.console.AbstractCreateResourceBean;
 import org.deegree.remoteows.RemoteOWSManager;
 
+import java.io.Serializable;
+
 /**
  * JSF backing bean for "Create new remote OWS connection" view.
  *
@@ -40,7 +42,7 @@ import org.deegree.remoteows.RemoteOWSManager;
  */
 @Named
 @ViewScoped
-public class CreateRemoteOwsBean extends AbstractCreateResourceBean {
+public class CreateRemoteOwsBean extends AbstractCreateResourceBean implements Serializable {
 
 	public CreateRemoteOwsBean() {
 		super(RemoteOWSManager.class);

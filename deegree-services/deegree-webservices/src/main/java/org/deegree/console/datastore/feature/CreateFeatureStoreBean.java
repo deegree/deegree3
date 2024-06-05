@@ -32,6 +32,8 @@ import jakarta.inject.Named;
 import org.deegree.console.AbstractCreateResourceBean;
 import org.deegree.feature.persistence.FeatureStoreManager;
 
+import java.io.Serializable;
+
 /**
  * JSF backing bean for "Create new feature store" view.
  *
@@ -40,7 +42,7 @@ import org.deegree.feature.persistence.FeatureStoreManager;
  */
 @Named
 @ViewScoped
-public class CreateFeatureStoreBean extends AbstractCreateResourceBean {
+public class CreateFeatureStoreBean extends AbstractCreateResourceBean implements Serializable {
 
 	public CreateFeatureStoreBean() {
 		super(FeatureStoreManager.class);

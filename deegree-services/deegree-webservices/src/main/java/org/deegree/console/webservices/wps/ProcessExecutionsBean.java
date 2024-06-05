@@ -34,6 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.webservices.wps;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +50,7 @@ import org.deegree.services.wps.WPService;
  */
 @Named
 @RequestScoped
-public class ProcessExecutionsBean {
+public class ProcessExecutionsBean implements Serializable {
 
 	private final List<ProcessExecution> executions = new ArrayList<ProcessExecution>();
 

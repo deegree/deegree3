@@ -42,12 +42,13 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
-
 import jakarta.inject.Named;
 import org.deegree.console.workspace.WorkspaceBean;
 import org.deegree.db.ConnectionProvider;
 import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.workspace.Workspace;
+
+import java.io.Serializable;
 
 /**
  * JSF Bean for testing the availability of connections offered by
@@ -58,7 +59,7 @@ import org.deegree.workspace.Workspace;
  */
 @Named
 @SessionScoped
-public class ConnectionTester {
+public class ConnectionTester implements Serializable {
 
 	private Workspace getWorkspace() {
 		ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();

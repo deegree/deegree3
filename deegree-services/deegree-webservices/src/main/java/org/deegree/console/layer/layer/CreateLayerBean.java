@@ -32,6 +32,8 @@ import jakarta.inject.Named;
 import org.deegree.console.AbstractCreateResourceBean;
 import org.deegree.layer.persistence.LayerStoreManager;
 
+import java.io.Serializable;
+
 /**
  * JSF backing bean for "Create new layer" view.
  *
@@ -40,7 +42,7 @@ import org.deegree.layer.persistence.LayerStoreManager;
  */
 @Named
 @ViewScoped
-public class CreateLayerBean extends AbstractCreateResourceBean {
+public class CreateLayerBean extends AbstractCreateResourceBean implements Serializable {
 
 	public CreateLayerBean() {
 		super(LayerStoreManager.class);
