@@ -32,6 +32,8 @@ import jakarta.inject.Named;
 import org.deegree.console.AbstractCreateResourceBean;
 import org.deegree.db.ConnectionProviderManager;
 
+import java.io.Serializable;
+
 /**
  * JSF backing bean for "Create new database connection" view.
  *
@@ -40,7 +42,7 @@ import org.deegree.db.ConnectionProviderManager;
  */
 @Named
 @ViewScoped
-public class CreateSqlConnectionBean extends AbstractCreateResourceBean {
+public class CreateSqlConnectionBean extends AbstractCreateResourceBean implements Serializable {
 
 	public CreateSqlConnectionBean() {
 		super(ConnectionProviderManager.class);

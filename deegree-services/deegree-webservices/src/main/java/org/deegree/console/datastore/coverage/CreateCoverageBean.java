@@ -32,6 +32,8 @@ import jakarta.inject.Named;
 import org.deegree.console.AbstractCreateResourceBean;
 import org.deegree.coverage.persistence.CoverageManager;
 
+import java.io.Serializable;
+
 /**
  * JSF backing bean for "Create new coverage" view.
  *
@@ -40,7 +42,7 @@ import org.deegree.coverage.persistence.CoverageManager;
  */
 @Named
 @ViewScoped
-public class CreateCoverageBean extends AbstractCreateResourceBean {
+public class CreateCoverageBean extends AbstractCreateResourceBean implements Serializable {
 
 	public CreateCoverageBean() {
 		super(CoverageManager.class);

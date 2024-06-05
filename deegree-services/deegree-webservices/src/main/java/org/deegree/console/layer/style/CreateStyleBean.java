@@ -32,6 +32,8 @@ import jakarta.inject.Named;
 import org.deegree.console.AbstractCreateResourceBean;
 import org.deegree.style.persistence.StyleStoreManager;
 
+import java.io.Serializable;
+
 /**
  * JSF backing bean for "Create new style" view.
  *
@@ -40,7 +42,7 @@ import org.deegree.style.persistence.StyleStoreManager;
  */
 @Named
 @ViewScoped
-public class CreateStyleBean extends AbstractCreateResourceBean {
+public class CreateStyleBean extends AbstractCreateResourceBean implements Serializable {
 
 	public CreateStyleBean() {
 		super(StyleStoreManager.class);

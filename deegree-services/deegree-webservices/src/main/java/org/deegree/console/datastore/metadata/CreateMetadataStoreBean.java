@@ -32,6 +32,8 @@ import jakarta.inject.Named;
 import org.deegree.console.AbstractCreateResourceBean;
 import org.deegree.metadata.persistence.MetadataStoreManager;
 
+import java.io.Serializable;
+
 /**
  * JSF backing bean for "Create new metadata store" view.
  *
@@ -40,7 +42,7 @@ import org.deegree.metadata.persistence.MetadataStoreManager;
  */
 @Named
 @ViewScoped
-public class CreateMetadataStoreBean extends AbstractCreateResourceBean {
+public class CreateMetadataStoreBean extends AbstractCreateResourceBean implements Serializable {
 
 	public CreateMetadataStoreBean() {
 		super(MetadataStoreManager.class);

@@ -32,6 +32,8 @@ import jakarta.inject.Named;
 import org.deegree.console.AbstractCreateResourceBean;
 import org.deegree.services.wps.ProcessManager;
 
+import java.io.Serializable;
+
 /**
  * JSF backing bean for "Create new process" view.
  *
@@ -40,7 +42,7 @@ import org.deegree.services.wps.ProcessManager;
  */
 @Named
 @ViewScoped
-public class CreateProcessBean extends AbstractCreateResourceBean {
+public class CreateProcessBean extends AbstractCreateResourceBean implements Serializable {
 
 	public CreateProcessBean() {
 		super(ProcessManager.class);

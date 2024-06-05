@@ -32,6 +32,8 @@ import jakarta.inject.Named;
 import org.deegree.console.AbstractCreateResourceBean;
 import org.deegree.tile.persistence.TileStoreManager;
 
+import java.io.Serializable;
+
 /**
  * JSF backing bean for "Create new tile store" view.
  *
@@ -40,7 +42,7 @@ import org.deegree.tile.persistence.TileStoreManager;
  */
 @Named
 @ViewScoped
-public class CreateTileStoreBean extends AbstractCreateResourceBean {
+public class CreateTileStoreBean extends AbstractCreateResourceBean implements Serializable {
 
 	public CreateTileStoreBean() {
 		super(TileStoreManager.class);

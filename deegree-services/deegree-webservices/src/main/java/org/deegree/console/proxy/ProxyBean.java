@@ -27,18 +27,19 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.console.proxy;
 
-import java.io.IOException;
-
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Named;
 import org.deegree.commons.proxy.ProxySettings;
+
+import java.io.IOException;
+import java.io.Serializable;
 
 /**
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  */
 @Named
 @RequestScoped
-public class ProxyBean {
+public class ProxyBean implements Serializable {
 
 	public ProxyConfig getProxyConfig() throws IOException {
 		return new ProxyConfig();

@@ -27,12 +27,13 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.console.workspace;
 
-import java.io.File;
-
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Named;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.console.JsfUtils;
+
+import java.io.File;
+import java.io.Serializable;
 
 /**
  * JSF backing bean for creating a new workspace folder.
@@ -42,7 +43,7 @@ import org.deegree.console.JsfUtils;
  */
 @Named
 @RequestScoped
-public class CreateWorkspaceBean {
+public class CreateWorkspaceBean implements Serializable {
 
 	private String workspaceName;
 
