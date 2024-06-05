@@ -1,3 +1,0 @@
-<SpringServicesTest xmlns="http://www.deegree.org/spring/test" xmlns:g="http://www.deegree.org/spring/generic">
-	<g:ApplicationContextHolder>test</g:ApplicationContextHolder>
-</SpringServicesTest>

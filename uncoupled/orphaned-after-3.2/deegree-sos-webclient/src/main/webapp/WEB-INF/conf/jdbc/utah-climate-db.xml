@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<PooledConnection xmlns="http://www.deegree.org/jdbc" configVersion="0.5.0">
-	<Url>jdbc:derby:classpath:utah_climate_2004</Url>
-	<User />
-	<Password />
-	<PoolMinSize>5</PoolMinSize>
-	<PoolMaxSize>20</PoolMaxSize>
-	<ReadOnly>true</ReadOnly>
-</PooledConnection>

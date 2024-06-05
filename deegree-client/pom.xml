@@ -14,8 +14,6 @@
 
   <modules>
     <module>deegree-jsf-core</module>
-    <module>deegree-wps-webclient</module>
-    <module>deegree-wpsprinter-webclient</module>
   </modules>
 
 </project>
