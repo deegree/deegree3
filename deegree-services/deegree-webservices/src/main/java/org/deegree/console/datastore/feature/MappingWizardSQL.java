@@ -33,11 +33,27 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 package org.deegree.console.datastore.feature;
+import static jakarta.faces.application.FacesMessage.SEVERITY_ERROR;
+import static org.apache.commons.io.FileUtils.readFileToByteArray;
+import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamWriter;
+
 import jakarta.inject.Named;
 import org.apache.commons.io.IOUtils;
 import org.deegree.client.core.utils.SQLExecution;
@@ -74,22 +90,7 @@ import org.deegree.workspace.standard.IncorporealResourceLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import static jakarta.faces.application.FacesMessage.SEVERITY_ERROR;
-import static org.apache.commons.io.FileUtils.readFileToByteArray;
-import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
 
 /**
  * JSF bean that helps with creating configurations for the {@link SQLFeatureStore}.

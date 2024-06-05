@@ -34,6 +34,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.connection.sql;
 
+import static jakarta.faces.application.FacesMessage.SEVERITY_ERROR;
+import static jakarta.faces.application.FacesMessage.SEVERITY_INFO;
+import static org.deegree.client.core.utils.ActionParams.getParam1;
+
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.ExternalContext;
@@ -45,10 +49,6 @@ import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.workspace.Workspace;
 
 import java.io.Serializable;
-
-import static jakarta.faces.application.FacesMessage.SEVERITY_ERROR;
-import static jakarta.faces.application.FacesMessage.SEVERITY_INFO;
-import static org.deegree.client.core.utils.ActionParams.getParam1;
 
 /**
  * JSF Bean for testing the availability of connections offered by

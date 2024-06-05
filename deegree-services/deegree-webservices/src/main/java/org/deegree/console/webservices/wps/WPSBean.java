@@ -34,15 +34,15 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.webservices.wps;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Named;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.wps.WPSProcess;
 import org.deegree.services.wps.WPService;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * JSF-Bean for the WPS main info page.

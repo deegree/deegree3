@@ -35,6 +35,8 @@
 
 package org.deegree.client.core.debug;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import jakarta.faces.event.PhaseEvent;
 import jakarta.faces.event.PhaseId;
 import jakarta.faces.event.PhaseListener;
@@ -42,8 +44,6 @@ import org.slf4j.Logger;
 
 import java.util.Map;
 import java.util.Map.Entry;
-
-import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * TODO add class documentation here
@@ -62,11 +62,13 @@ public class DebugPhaseListener implements PhaseListener {
 
 	public void beforePhase(PhaseEvent event) {
 		LOG.debug("Before phase: {}", event.getPhaseId());
-		Map<String, Object> sessionMap = event.getFacesContext().getExternalContext().getSessionMap();
-		for (Entry<String, Object> beanEntry : sessionMap.entrySet()) {
-			String beanName = beanEntry.getKey();
-			Object bean = beanEntry.getValue();
-			LOG.debug(" - {}: {}", beanName, bean);
+		if (LOG.isDebugEnabled()) {
+			Map<String, Object> sessionMap = event.getFacesContext().getExternalContext().getSessionMap();
+			for (Entry<String, Object> beanEntry : sessionMap.entrySet()) {
+				String beanName = beanEntry.getKey();
+				Object bean = beanEntry.getValue();
+				LOG.debug(" - {}: {}", beanName, bean);
+			}
 		}
 	}
 
