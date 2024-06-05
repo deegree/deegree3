@@ -833,7 +833,7 @@
       <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>42.7.2</version>
+        <version>42.7.3</version>
       </dependency>
       <!-- Oracle (Official provided driver from repo1.maven.org) -->
       <dependency>
@@ -1227,11 +1227,11 @@
     <java.version>11</java.version>
     <antlr.version>3.5.3</antlr.version>
     <oracle.version>19.9.0.0</oracle.version>
-    <log4j.version>2.23.0</log4j.version>
+    <log4j.version>2.23.1</log4j.version>
     <slf4j.version>1.7.36</slf4j.version>
     <spring-boot.version>2.7.18</spring-boot.version>
     <spring-batch.version>4.3.10</spring-batch.version>
-    <spring-framework.version>5.3.32</spring-framework.version>
+    <spring-framework.version>5.3.36</spring-framework.version>
     <batik.version>1.17</batik.version>
     <axoim.version>1.2.22</axoim.version>
     <jsonpath.version>2.9.0</jsonpath.version>
