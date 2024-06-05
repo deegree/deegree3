@@ -564,7 +564,7 @@ public class WebFeatureService extends AbstractOWS {
 				GML_31);
 		org.deegree.services.wfs.format.gml.GmlFormat gml32 = new org.deegree.services.wfs.format.gml.GmlFormat(this,
 
-					GML_32);
+				GML_32);
 		formats.put("application/gml+xml; version=2.1", gml21);
 		formats.put("application/gml+xml; version=3.0", gml30);
 		formats.put("application/gml+xml; version=3.1", gml31);
@@ -586,8 +586,8 @@ public class WebFeatureService extends AbstractOWS {
 		formats.forEach((mimeType, format) -> {
 			if (excludePatterns.stream().anyMatch(p -> p.matcher(mimeType).matches())) {
 				LOG.debug("The format '{}' was configured to be excluded.", mimeType);
-		}
-		else {
+			}
+			else {
 				mimeTypeToFormat.put(mimeType, format);
 			}
 		});
@@ -1614,7 +1614,7 @@ public class WebFeatureService extends AbstractOWS {
 				.replace("*", "\\E.*\\Q") //
 				.replace("?", "\\E.\\Q") //
 					+ "$");
-}
+		}
 		catch (PatternSyntaxException pse) {
 			throw new ResourceInitException("Unable to parse glob pattern '" + glob + "': " + pse.getMessage(), pse);
 		}
