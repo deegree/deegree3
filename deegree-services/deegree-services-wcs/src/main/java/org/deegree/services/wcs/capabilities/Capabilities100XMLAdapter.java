@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import java.util.regex.Pattern;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
@@ -74,6 +75,8 @@ public class Capabilities100XMLAdapter extends XMLAdapter {
 	private static final String GML_PREFIX = "gml";
 
 	private static final String GML_NS = "http://www.opengis.net/gml";
+
+	private static final Pattern NON_WORD_PATTERN = Pattern.compile("\\W");
 
 	/**
 	 * The sections of the Capabilities document.
@@ -260,7 +263,7 @@ public class Capabilities100XMLAdapter extends XMLAdapter {
 				fees = identification.getFees();
 
 			}
-			fees = fees.replaceAll("\\W", " ");
+			fees = NON_WORD_PATTERN.matcher(fees).replaceAll(" ");
 			writeElement(writer, WCS_100_NS, "fees", fees);
 
 			// accessConstraints [1, n]

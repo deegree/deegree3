@@ -62,6 +62,8 @@ class IdUtils {
 
 	private static final Logger LOG = getLogger(IdUtils.class);
 
+	private static final Pattern NUMBER_PATTERN = Pattern.compile("[0-9]");
+
 	private final Connection conn;
 
 	private String mainTable;
@@ -96,8 +98,7 @@ class IdUtils {
 
 			uuid = UUID.randomUUID().toString();
 			char firstChar = uuid.charAt(0);
-			Pattern p = Pattern.compile("[0-9]");
-			Matcher m = p.matcher("" + firstChar);
+			Matcher m = NUMBER_PATTERN.matcher("" + firstChar);
 			if (m.matches()) {
 				int i;
 				double ma = Math.random();
@@ -110,7 +111,7 @@ class IdUtils {
 				}
 
 				firstChar = (char) ((int) (i + ma * 26));
-				uuid = uuid.replaceFirst("[0-9]", String.valueOf(firstChar));
+				uuid = NUMBER_PATTERN.matcher(uuid).replaceFirst(String.valueOf(firstChar));
 			}
 			boolean uuidIsEqual = false;
 
@@ -146,12 +147,8 @@ class IdUtils {
 	boolean checkUUIDCompliance(String uuid) {
 
 		char firstChar = uuid.charAt(0);
-		Pattern p = Pattern.compile("[0-9]");
-		Matcher m = p.matcher("" + firstChar);
-		if (m.matches()) {
-			return false;
-		}
-		return true;
+		Matcher m = NUMBER_PATTERN.matcher("" + firstChar);
+		return !m.matches();
 	}
 
 	boolean checkUUIDCompliance(List<String> list) {

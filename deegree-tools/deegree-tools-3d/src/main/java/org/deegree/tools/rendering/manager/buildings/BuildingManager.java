@@ -45,6 +45,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import java.util.regex.Pattern;
 import org.apache.commons.cli.CommandLine;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.rendering.r3d.model.geometry.SimpleGeometryStyle;
@@ -68,7 +69,9 @@ import org.deegree.tools.rendering.manager.buildings.importers.VRMLImporter;
  */
 public class BuildingManager extends ModelManager<WorldRenderableObject> {
 
-	private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(BuildingManager.class);
+	private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(BuildingManager.class);
+
+	private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s");
 
 	private final String buildingID;
 
@@ -231,7 +234,7 @@ public class BuildingManager extends ModelManager<WorldRenderableObject> {
 		String id = buildingID;
 		if (buildingID == null) {
 			id = FileUtils.getFilename(new File(fileName));
-			id = id.replaceAll("\\s", "_");
+			id = WHITESPACE_PATTERN.matcher(id).replaceAll("_");
 		}
 		params.put("id", id);
 		if (textureDir != null) {

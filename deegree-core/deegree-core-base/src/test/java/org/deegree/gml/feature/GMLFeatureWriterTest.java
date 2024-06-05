@@ -35,6 +35,7 @@
 
 package org.deegree.gml.feature;
 
+import java.util.regex.Pattern;
 import org.apache.commons.io.IOUtils;
 import org.deegree.commons.tom.ResolveMode;
 import org.deegree.commons.tom.ResolveParams;
@@ -107,6 +108,8 @@ import static org.xmlunit.matchers.EvaluateXPathMatcher.hasXPath;
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  */
 public class GMLFeatureWriterTest {
+
+	private static final Pattern NEWLINE_PATTERN = Pattern.compile("\n");
 
 	private final String SOURCE_FILE_31 = "../misc/feature/Philosopher_FeatureCollection.xml";
 
@@ -596,8 +599,8 @@ public class GMLFeatureWriterTest {
 				Object controlValue = comparison.getControlDetails().getValue();
 				if (testValue instanceof String && controlValue instanceof String && testValue != null
 						&& testValue != null) {
-					String control = ((String) controlValue).replaceAll("\n", "").replace(" ", "");
-					String test = ((String) testValue).replaceAll("\n", "").replace(" ", "");
+					String control = NEWLINE_PATTERN.matcher(((String) controlValue)).replaceAll("").replace(" ", "");
+					String test = NEWLINE_PATTERN.matcher(((String) testValue)).replaceAll("").replace(" ", "");
 					return control.equals(test) ? EQUAL : DIFFERENT;
 				}
 				return comparisonResult;

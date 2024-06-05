@@ -37,6 +37,8 @@
 
 package org.deegree.coverage.rangeset;
 
+import java.util.regex.Pattern;
+
 /**
  * The <code>Interval</code> an intervall.
  *
@@ -86,6 +88,9 @@ public class Interval<T extends Comparable<T>, R extends Comparable<R>> {
 		/** simple boundary representation of the end of an interval */
 		public final String end;
 
+		/** precompiled pattern for matching the character - */
+		private static final Pattern DASH_PATTERN = Pattern.compile("-");
+
 		private Closure(String begin, String end) {
 			this.begin = begin;
 			this.end = end;
@@ -98,7 +103,7 @@ public class Interval<T extends Comparable<T>, R extends Comparable<R>> {
 		public static Closure fromString(String closureValue) {
 			Closure result = Closure.closed;
 			if (closureValue != null && !"".equals(closureValue)) {
-				String mapped = closureValue.replaceAll("-", "_");
+				String mapped = DASH_PATTERN.matcher(closureValue).replaceAll("_");
 				try {
 					result = Closure.valueOf(mapped.toLowerCase());
 				}
