@@ -37,9 +37,6 @@ package org.deegree.console.datastore.metadata;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
-import jakarta.el.ELContext;
-import jakarta.el.ELResolver;
-import jakarta.faces.application.Application;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.component.html.HtmlCommandButton;
 import jakarta.faces.context.FacesContext;
