@@ -5,8 +5,11 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.not;
 
 import java.io.File;
+import org.deegree.commons.utils.TunableParameter;
 import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.DefaultWorkspace;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class WorkspaceFontTest {
@@ -14,6 +17,18 @@ public class WorkspaceFontTest {
 	private static final File TEST_DIR = new File("src/test/resources/org/deegree/commons/fontworkspace");
 
 	private static Workspace ws = new DefaultWorkspace(TEST_DIR);
+
+	@BeforeClass
+	public static void before() {
+		TunableParameter.resetCache();
+		System.setProperty("deegree.workspace.allow-font-loading", "true");
+	}
+
+	@AfterClass
+	public static void after() {
+		System.setProperty("deegree.workspace.allow-font-loading", "");
+		TunableParameter.resetCache();
+	}
 
 	@Test
 	public void testFontLoader() {
