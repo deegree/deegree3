@@ -34,59 +34,84 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.security;
 
+import org.apache.commons.codec.digest.Sha2Crypt;
+
 import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Date;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Encapsulates a salt value and the hash of a password that has been salted with the same
- * value.
+ * value using Apache Commons Codec SHA-256 implementation.
+ *
+ * As of deegree version 3.6 the encoding format has been changed to the format of the
+ * extended password format as used in UNIX crypt:
+ *
+ * <pre>
+ *    $ID$SALT$PWD
+ * </pre>
+ *
+ * The ID for the SHA-256 and SHA-512 methods are as follows:
+ *
+ * <pre>
+ *      ID       |    Method
+ *   -------------------------------
+ *      5        |  SHA-256
+ *      6        |  SHA-512
+ * </pre>
+ *
+ * Currently only the SHA-256 method is used.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
+ * @author <a href="mailto:friebe@lat-lon.de">Torsten Friebe</a>
+ * @version 3.6
+ * @since 3.3
+ * @see <a href=
+ * "https://commons.apache.org/proper/commons-codec/apidocs/org/apache/commons/codec/digest/Sha2Crypt.html">Apache
+ * Commons Codec Sha2Crypt</a>
+ * @see <a href="https://www.akkadia.org/drepper/SHA-crypt.txt">Unix crypt using SHA-256
+ * and SHA-512</a>
  */
 public class SaltedPassword {
 
-	private static final String HASH_ALGORITHM_ID = "SHA-256";
-
-	private static final String CHARSET = "UTF-8";
+	private static final String CHARSET = StandardCharsets.UTF_8.toString();
 
 	private final byte[] saltedAndHashedPassword;
 
-	private final byte[] salt;
+	private final String salt;
 
-	public SaltedPassword(byte[] saltedAndHashedPassword, byte[] salt) {
+	public SaltedPassword(byte[] saltedAndHashedPassword, String salt) {
 		this.saltedAndHashedPassword = saltedAndHashedPassword;
 		this.salt = salt;
 	}
 
-	public SaltedPassword(String plainPassword, byte[] salt)
-			throws UnsupportedEncodingException, NoSuchAlgorithmException {
+	public SaltedPassword(String plainPassword, String salt) throws UnsupportedEncodingException {
 		byte[] plainPasswordBinary = plainPassword.getBytes(CHARSET);
-		byte[] saltedAndHashedPassword = getHashedAndSaltedPassword(plainPasswordBinary, salt);
-		this.saltedAndHashedPassword = saltedAndHashedPassword;
-		this.salt = salt;
+		String saltedPassword = generateHashedAndSaltedPassword(plainPasswordBinary);
+		int delimiterPos = nthIndexOf(saltedPassword, "$", 3);
+		this.salt = saltedPassword.substring(0, delimiterPos);
+		this.saltedAndHashedPassword = saltedPassword.substring(delimiterPos + 1, saltedPassword.length())
+			.getBytes(StandardCharsets.UTF_8);
 	}
 
-	public SaltedPassword(String plainPassword) throws UnsupportedEncodingException, NoSuchAlgorithmException {
-		this(plainPassword, getNewSalt());
+	public SaltedPassword(String plainPassword) throws UnsupportedEncodingException {
+		this(plainPassword, null);
 	}
 
-	private byte[] getHashedAndSaltedPassword(byte[] plainPassword, byte[] salt)
-			throws NoSuchAlgorithmException, UnsupportedEncodingException {
-		MessageDigest md = MessageDigest.getInstance(HASH_ALGORITHM_ID);
-		md.update(plainPassword);
-		md.update(salt);
-		return md.digest();
+	private String generateHashedAndSaltedPassword(byte[] plainPassword) {
+		return Sha2Crypt.sha256Crypt(plainPassword);
 	}
 
 	public byte[] getSaltedAndHashedPassword() {
 		return saltedAndHashedPassword;
 	}
 
-	public byte[] getSalt() {
+	public String getSalt() {
 		return salt;
+	}
+
+	@Override
+	public String toString() {
+		return this.getSalt() + "$" + new String(this.getSaltedAndHashedPassword(), StandardCharsets.UTF_8);
 	}
 
 	@Override
@@ -113,10 +138,13 @@ public class SaltedPassword {
 		return true;
 	}
 
-	private static byte[] getNewSalt() {
-		ByteBuffer byteBuffer = ByteBuffer.allocate(Long.SIZE / 8);
-		byteBuffer.putLong(new Date().getTime());
-		return byteBuffer.array();
+	private int nthIndexOf(String input, String substring, int nth) {
+		if (nth == 1) {
+			return input.indexOf(substring);
+		}
+		else {
+			return input.indexOf(substring, nthIndexOf(input, substring, nth - 1) + substring.length());
+		}
 	}
 
 }

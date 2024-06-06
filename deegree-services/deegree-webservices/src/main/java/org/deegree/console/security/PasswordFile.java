@@ -36,10 +36,27 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 
+/**
+ * An instance of the <code>PasswordFile</code> class encapsulates a text file storing a
+ * <code>SaltedPassword</code>.
+ *
+ * As of deegree version 3.6 the encoding format of the salted password has been changed
+ * to <code>$ID$SALT$PWD</code>. In previous versions of deegree the format has been
+ * <code>SALT:PWD</code>.
+ *
+ * <b>Attention:</b> There is no automatic password migration available. Files created
+ * with older versions of deegree need to be recreated with deegree 3.6.
+ *
+ * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
+ * @author <a href="mailto:friebe@lat-lon.de">Torsten Friebe</a>
+ * @since 3.0
+ * @see SaltedPassword
+ */
 public class PasswordFile implements Serializable {
 
 	private static final long serialVersionUID = -8331316987059763053L;
@@ -55,7 +72,6 @@ public class PasswordFile implements Serializable {
 	 * @return salted password, never <code>null</code>
 	 */
 	public SaltedPassword getCurrentContent() throws IOException {
-
 		SaltedPassword saltedPw = null;
 		if (file.exists()) {
 			BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
@@ -64,7 +80,7 @@ public class PasswordFile implements Serializable {
 				if (lines.size() != 1) {
 					throw new IOException("Password file has incorrect format.");
 				}
-				saltedPw = decodeHexEncodedSaltAndPassword(lines.get(0));
+				saltedPw = parseSaltedPassword(lines.get(0));
 			}
 			finally {
 				in.close();
@@ -73,26 +89,14 @@ public class PasswordFile implements Serializable {
 		return saltedPw;
 	}
 
-	private SaltedPassword decodeHexEncodedSaltAndPassword(String encoded) throws IOException {
-
-		int offset = encoded.indexOf(':');
+	private SaltedPassword parseSaltedPassword(String encoded) throws IOException {
+		int offset = encoded.indexOf('$');
 		if (offset == -1) {
 			throw new IOException("Password file has incorrect format.");
 		}
-		String hexEncodedSalt = encoded.substring(0, offset);
-		String hexEncodedSaltedAndHashedPassword = encoded.substring(offset + 1, encoded.length());
-		byte[] salt = decodeHexString(hexEncodedSalt);
-		byte[] saltedAndHashedPassword = decodeHexString(hexEncodedSaltedAndHashedPassword);
-		return new SaltedPassword(saltedAndHashedPassword, salt);
-	}
+		String[] parts = encoded.split("\\$");
 
-	private byte[] decodeHexString(String s) {
-		int len = s.length();
-		byte[] data = new byte[len / 2];
-		for (int i = 0; i < len; i += 2) {
-			data[i / 2] = (byte) ((digit(s.charAt(i), 16) << 4) + digit(s.charAt(i + 1), 16));
-		}
-		return data;
+		return new SaltedPassword(parts[3].getBytes(StandardCharsets.UTF_8), parts[2]);
 	}
 
 	/**
@@ -101,7 +105,6 @@ public class PasswordFile implements Serializable {
 	 * @throws IOException if the password could not be stored
 	 */
 	public void update(SaltedPassword pw) throws IOException {
-
 		if (file.exists()) {
 			if (!file.delete()) {
 				throw new IOException("Could not delete existing password file '" + file + "'.");
@@ -112,25 +115,13 @@ public class PasswordFile implements Serializable {
 			file.getParentFile().mkdirs();
 		}
 
-		PrintWriter writer = new PrintWriter(file, "UTF-8");
-		writer.print(encodeHexString(pw.getSalt()));
-		writer.print(':');
-		writer.println(encodeHexString(pw.getSaltedAndHashedPassword()));
-		writer.close();
+		writePasswordToWriter(new PrintWriter(file, StandardCharsets.UTF_8), pw);
 	}
 
-	private String encodeHexString(final byte[] bytes) {
-		if (bytes == null) {
-			return null;
-		}
-		final StringBuilder hex = new StringBuilder(2 * bytes.length);
-		for (final byte b : bytes) {
-			final int hiVal = (b & 0xF0) >> 4;
-			final int loVal = b & 0x0F;
-			hex.append((char) ('0' + (hiVal + (hiVal / 10 * 7))));
-			hex.append((char) ('0' + (loVal + (loVal / 10 * 7))));
-		}
-		return hex.toString();
+	protected void writePasswordToWriter(PrintWriter writer, SaltedPassword pw) {
+		writer.print(pw.toString());
+		writer.flush();
+		writer.close();
 	}
 
 	public boolean exists() {
