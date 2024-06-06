@@ -11,14 +11,15 @@ import org.junit.Test;
 
 public class WorkspaceFontTest {
 
-    private static final File TEST_DIR = new File( "src/test/resources/org/deegree/commons/fontworkspace" );
+	private static final File TEST_DIR = new File("src/test/resources/org/deegree/commons/fontworkspace");
 
-    private static Workspace ws = new DefaultWorkspace( TEST_DIR );
+	private static Workspace ws = new DefaultWorkspace(TEST_DIR);
 
-    @Test
-    public void testFontLoader() {
-        WorkspaceFonts wsf = new WorkspaceFonts();
-        wsf.init( ws );
-        assertThat( WorkspaceFonts.PROCESSED_FILES, not( empty() ) );
-    }
+	@Test
+	public void testFontLoader() {
+		WorkspaceFonts wsf = new WorkspaceFonts();
+		wsf.init(ws);
+		assertThat(WorkspaceFonts.PROCESSED_FILES, not(empty()));
+	}
+
 }

@@ -202,7 +202,9 @@ Some common ones are:
 |===
 
 ____
-NOTE: Font files are processed only once per file and are not
+NOTE: Font registration on workspace startup is not allowed by default
+and has to be enabled with a parameter, see <<anchor-appendix>>
+for details. Font files are processed only once per file and are not
 deregistered when a workspace is changed, stopped or reloaded.
 To remove a font, remove the font file from the folder and restart
 the container.
