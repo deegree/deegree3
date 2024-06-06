@@ -116,7 +116,7 @@ public class WorkspaceFonts implements Initializable {
 					fontFile.getName());
 		}
 		catch (Exception e) {
-			LOG.warn("Font '{}' could not be loaded: {}", e.getMessage());
+			LOG.warn("Font '{}' could not be loaded: {}", fontFile, e.getMessage());
 			LOG.trace("Exception", e);
 		}
 	}
