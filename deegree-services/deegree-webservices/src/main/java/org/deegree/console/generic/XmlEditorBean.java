@@ -188,14 +188,17 @@ public class XmlEditorBean implements Serializable {
 		if (content == null) {
 			LOG.trace("No content set for {}", this.toString());
 			if (resourceProviderClass == null) {
-				File file = getFile();
-				if (fileName != null && file.exists()) {
-					LOG.trace("Loading content from file: {}", file.getAbsolutePath());
-					content = FileUtils.readFileToString(file);
-					LOG.trace("Setting content to: {}", content);
-					return content;
+				if (fileName != null) {
+					File file = getFile();
+					if (file.exists()) {
+						LOG.trace("Loading content from file: {}", file.getAbsolutePath());
+						content = FileUtils.readFileToString(file);
+						LOG.trace("Setting content to: {}", content);
+						return content;
+					}
 				}
-				else if (emptyTemplate != null) {
+
+				if (emptyTemplate != null) {
 					// load template content if the requested file did not exists
 					LOG.trace("Loading template from {}", emptyTemplate);
 					StringWriter sw = new StringWriter();
