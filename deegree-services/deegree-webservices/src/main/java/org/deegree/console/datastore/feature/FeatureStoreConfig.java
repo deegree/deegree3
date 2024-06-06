@@ -71,8 +71,7 @@ public class FeatureStoreConfig extends Config {
 	}
 
 	private Workspace getWorkspace() {
-		ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-		return ((WorkspaceBean) ctx.getApplicationMap().get("workspace")).getActiveWorkspace().getNewWorkspace();
+		return WorkspaceBean.getInstance().getActiveWorkspace().getNewWorkspace();
 	}
 
 	public boolean getSql() {

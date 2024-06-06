@@ -54,7 +54,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import jakarta.el.ELContext;
+import jakarta.el.ELResolver;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.faces.application.Application;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 
@@ -426,6 +429,16 @@ public class WorkspaceBean implements Serializable {
 		this.uploadWorkspace();
 		this.unzipWorkspace();
 		LOG.debug("Workspace {} unzipped into workspace root directory", workspaceImportName);
+	}
+
+	public static WorkspaceBean getInstance() {
+		FacesContext facesContext = FacesContext.getCurrentInstance();
+		Application application = facesContext.getApplication();
+
+		ELResolver elResolver = application.getELResolver();
+		ELContext elContext = facesContext.getELContext();
+
+		return (WorkspaceBean) elResolver.getValue(elContext, null, "workspace");
 	}
 
 }

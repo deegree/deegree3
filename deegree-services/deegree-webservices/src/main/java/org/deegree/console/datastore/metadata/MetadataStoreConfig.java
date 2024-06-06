@@ -37,9 +37,11 @@ package org.deegree.console.datastore.metadata;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
+import jakarta.el.ELContext;
+import jakarta.el.ELResolver;
+import jakarta.faces.application.Application;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.component.html.HtmlCommandButton;
-import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.event.ActionEvent;
 
@@ -63,8 +65,7 @@ public class MetadataStoreConfig extends Config {
 	}
 
 	private Workspace getWorkspace() {
-		ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-		return ((WorkspaceBean) ctx.getApplicationMap().get("workspace")).getActiveWorkspace().getNewWorkspace();
+		return WorkspaceBean.getInstance().getActiveWorkspace().getNewWorkspace();
 	}
 
 	public void updateId(ActionEvent evt) {

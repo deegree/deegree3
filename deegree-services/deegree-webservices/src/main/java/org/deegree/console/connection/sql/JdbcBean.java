@@ -205,8 +205,7 @@ public class JdbcBean implements Serializable {
 
 	private void create() {
 		ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-		Workspace ws = ((WorkspaceBean) ctx.getApplicationMap().get("workspace")).getActiveWorkspace()
-			.getNewWorkspace();
+		Workspace ws = WorkspaceBean.getInstance().getActiveWorkspace().getNewWorkspace();
 		try {
 			Map<String, Object> sMap = ctx.getSessionMap();
 			String newId = (String) sMap.get("newConfigId");
