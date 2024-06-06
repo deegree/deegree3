@@ -57,8 +57,7 @@ import org.slf4j.Logger;
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @since 3.4
  */
-@Named
-@RequestScoped
+
 public class Config implements Comparable<Config>, Serializable {
 
 	private static final long serialVersionUID = -175529275940063759L;
