@@ -7,18 +7,13 @@
         <legend>
           <h:outputText styleClass="titel" value="Setup database" />
         </legend>
-        <pe:codeMirror id="sqlArea" mode="sql" theme="dracular"
-                       value="#{execution.statements}" keyMap="debug" lineNumbers="true"
-                       matchBrackets="true"/>
-        <h:inputTextarea id="sqlArea" cols="70" rows="21" value="" />
+        <h:inputTextarea id="sqlArea" cols="70" rows="21" value="#{execution.statements}" />
         <h:outputText value="#{execution.message}" />
         <br /> <br />
         <h:commandButton styleClass="buttonSave" value="#{labels.sql_execute}" action="#{execution.execute}" />
         <h:commandButton styleClass="buttonCancel" value="#{labels.sql_back}" action="#{execution.getBackOutcome}" />
         <p id="highlighting" style="cursor: pointer;" class="schema" onclick="activateEditor();">Turn on
           highlighting</p>
-        <pe:codeMirror id="xmltextarea" mode="xml" theme="dracular" lineNumbers="true" matchBrackets="true"
-                       value="${xmlEditorBean.content}" />
       </fieldset>
     </h:form>
   </ui:define>
