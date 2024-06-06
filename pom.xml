@@ -146,17 +146,6 @@
           <artifactId>maven-surefire-plugin</artifactId>
           <version>3.2.2</version>
           <configuration>
-            <!-- provide simple logging for unit tests -->
-            <additionalClasspathDependencies>
-              <additionalClasspathDependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-simple</artifactId>
-                <version>${slf4j.version}</version>
-              </additionalClasspathDependency>
-            </additionalClasspathDependencies>
-            <systemProperties>
-              <org.slf4j.simpleLogger.defaultLogLevel>warn</org.slf4j.simpleLogger.defaultLogLevel>
-            </systemProperties>
             <!-- Travis build workaround -->
             <argLine>-Djava.awt.headless=true -Dfile.encoding=UTF-8 -Xms1024m -Xmx2048m --illegal-access=permit
               --add-opens java.base/java.lang=ALL-UNNAMED
@@ -684,11 +673,6 @@
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>jul-to-slf4j</artifactId>
-        <version>${slf4j.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-simple</artifactId>
         <version>${slf4j.version}</version>
       </dependency>
       <!-- 3d -->
