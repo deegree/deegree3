@@ -1,13 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>deegree-webservices-handbook</artifactId>
+  <artifactId>deegree-documentation</artifactId>
   <packaging>pom</packaging>
-  <name>deegree-webservices-handbook</name>
+  <name>deegree-documentation</name>
   <description>Documentation for using and configuring deegree Web Services</description>
 
   <parent>
     <groupId>org.deegree</groupId>
-    <artifactId>deegree-services</artifactId>
+    <artifactId>deegree</artifactId>
     <version>3.6.0-SNAPSHOT</version>
   </parent>
 
