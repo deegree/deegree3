@@ -5,10 +5,6 @@
   <name>deegree-mdstore-commons</name>
   <description>Common interfaces and functionality for metadata store implementations</description>
 
-  <properties>
-    <deegree.module.status>check</deegree.module.status>
-  </properties>
-
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-mdstores</artifactId>

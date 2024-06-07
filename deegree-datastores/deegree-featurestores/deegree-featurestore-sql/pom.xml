@@ -5,10 +5,6 @@
   <name>deegree-featurestore-sql</name>
   <description>Feature store implementation for accessing features stored in SQL databases that supports mapping of complex data models</description>
 
-  <properties>
-    <deegree.module.status>ok</deegree.module.status>
-  </properties>
-
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-featurestores</artifactId>

@@ -5,10 +5,6 @@
   <packaging>jar</packaging>
   <description>Data model and utilities for vector geometries</description>
 
-  <properties>
-    <deegree.module.status>ok</deegree.module.status>
-  </properties>
-
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-core</artifactId>

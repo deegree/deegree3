@@ -5,10 +5,6 @@
   <name>deegree-layers-feature</name>
   <description>Layers implementation for layers created from feature stores</description>
 
-  <properties>
-    <deegree.module.status>check</deegree.module.status>
-  </properties>
-
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-layers</artifactId>

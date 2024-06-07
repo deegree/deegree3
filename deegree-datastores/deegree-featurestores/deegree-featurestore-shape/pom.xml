@@ -5,10 +5,6 @@
   <name>deegree-featurestore-shape</name>
   <description>Feature store implementation that accesses shapefiles</description>
 
-  <properties>
-    <deegree.module.status>ok</deegree.module.status>
-  </properties>
-
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-featurestores</artifactId>

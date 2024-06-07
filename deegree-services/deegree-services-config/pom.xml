@@ -5,10 +5,6 @@
   <name>deegree-services-config</name>
   <description>REST interface for accessing and modifying deegree workspaces</description>
 
-  <properties>
-    <deegree.module.status>check</deegree.module.status>
-  </properties>
-
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-services</artifactId>

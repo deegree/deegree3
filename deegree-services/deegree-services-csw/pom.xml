@@ -5,10 +5,6 @@
   <name>deegree-services-csw</name>
   <description>Catalogue Service for the Web (CSW) implementation - Querying and modifying of metadata records for geospatial services and datasets</description>
 
-  <properties>
-    <deegree.module.status>ok</deegree.module.status>
-  </properties>
-
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-services</artifactId>

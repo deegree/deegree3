@@ -5,10 +5,6 @@
   <name>deegree-services-wps</name>
   <description>OGC Web Processing Service (WPS) implementation - Executing of geospatial processes</description>
 
-  <properties>
-    <deegree.module.status>ok</deegree.module.status>
-  </properties>
-
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-services</artifactId>

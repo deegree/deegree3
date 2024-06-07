@@ -5,10 +5,6 @@
   <name>deegree-workspace-wcts</name>
   <description>Example configuration for deploying a coordinate transformation service via deegree WPS</description>
 
-  <properties>
-    <deegree.module.status>check</deegree.module.status>
-  </properties>
-
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-workspaces</artifactId>

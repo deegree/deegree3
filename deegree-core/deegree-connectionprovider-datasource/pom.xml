@@ -5,10 +5,6 @@
   <packaging>jar</packaging>
   <description>Database connection provider based on javax.sql.Datasource</description>
 
-  <properties>
-    <deegree.module.status>ok</deegree.module.status>
-  </properties>
-
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-core</artifactId>
