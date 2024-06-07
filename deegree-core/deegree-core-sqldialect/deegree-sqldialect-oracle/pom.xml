@@ -27,6 +27,12 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-core-test-logging</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>com.oracle.database.jdbc</groupId>
       <artifactId>ojdbc11</artifactId>
     </dependency>

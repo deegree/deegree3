@@ -36,6 +36,7 @@
     <module>deegree-core-protocol</module>
     <module>deegree-core-workspace</module>
     <module>deegree-connectionprovider-datasource</module>
+    <module>deegree-core-test-logging</module>
   </modules>
 
 </project>

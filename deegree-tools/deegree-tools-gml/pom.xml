@@ -123,6 +123,12 @@
       <optional>true</optional>
     </dependency>
     <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-core-test-logging</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>
@@ -173,6 +179,10 @@
         <exclusion>
           <groupId>org.slf4j</groupId>
           <artifactId>log4j-over-slf4j</artifactId>
+        </exclusion>
+        <exclusion>
+          <artifactId>log4j-to-slf4j</artifactId>
+          <groupId>org.apache.logging.log4j</groupId>
         </exclusion>
       </exclusions>
     </dependency>
