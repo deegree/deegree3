@@ -76,8 +76,7 @@ public class ModulesBean implements Serializable {
 	}
 
 	public List<String> getWorkspaceModules() {
-		ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-		WorkspaceBean wsBean = ((WorkspaceBean) ctx.getApplicationMap().get("workspace"));
+		WorkspaceBean wsBean = WorkspaceBean.getInstance();
 		if (wsBean == null) {
 			return Collections.emptyList();
 		}

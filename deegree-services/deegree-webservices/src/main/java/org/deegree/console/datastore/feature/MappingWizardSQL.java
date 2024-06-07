@@ -48,7 +48,10 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import jakarta.el.ELContext;
+import jakarta.el.ELResolver;
 import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.application.Application;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
@@ -133,8 +136,7 @@ public class MappingWizardSQL implements Serializable {
 	}
 
 	private DeegreeWorkspace getWorkspace() {
-		ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-		return ((WorkspaceBean) ctx.getApplicationMap().get("workspace")).getActiveWorkspace();
+		return WorkspaceBean.getInstance().getActiveWorkspace();
 	}
 
 	public SortedSet<String> getAvailableJdbcConns() {
@@ -279,9 +281,7 @@ public class MappingWizardSQL implements Serializable {
 	public String generateConfig() {
 
 		try {
-			ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-			Workspace ws = ((WorkspaceBean) ctx.getApplicationMap().get("workspace")).getActiveWorkspace()
-				.getNewWorkspace();
+			Workspace ws = WorkspaceBean.getInstance().getActiveWorkspace().getNewWorkspace();
 
 			CRSRef storageCrs = CRSManager.getCRSRef(this.storageCrs);
 			boolean createBlobMapping = storageMode.equals("hybrid") || storageMode.equals("blob");
@@ -336,9 +336,7 @@ public class MappingWizardSQL implements Serializable {
 
 	public String createTables() throws ClassNotFoundException, SecurityException, NoSuchMethodException,
 			IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-		ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-		Workspace ws = ((WorkspaceBean) ctx.getApplicationMap().get("workspace")).getActiveWorkspace()
-			.getNewWorkspace();
+		Workspace ws = WorkspaceBean.getInstance().getActiveWorkspace().getNewWorkspace();
 		FeatureStore fs = ws
 			.init(new DefaultResourceIdentifier<FeatureStore>(FeatureStoreProvider.class, getFeatureStoreId()), null);
 		SQLFeatureStore store = (SQLFeatureStore) fs;
@@ -368,7 +366,7 @@ public class MappingWizardSQL implements Serializable {
 	public String activateFS() {
 		try {
 			ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-			WorkspaceBean workspaceBean = (WorkspaceBean) ctx.getApplicationMap().get("workspace");
+			WorkspaceBean workspaceBean = WorkspaceBean.getInstance();
 			Workspace ws = workspaceBean.getActiveWorkspace().getNewWorkspace();
 			WorkspaceUtils.reinitializeChain(ws,
 					new DefaultResourceIdentifier<FeatureStore>(FeatureStoreProvider.class, getFeatureStoreId()));

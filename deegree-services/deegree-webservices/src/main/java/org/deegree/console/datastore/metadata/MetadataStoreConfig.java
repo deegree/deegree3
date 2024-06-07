@@ -39,7 +39,6 @@ import java.io.UnsupportedEncodingException;
 
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.component.html.HtmlCommandButton;
-import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.event.ActionEvent;
 
@@ -63,8 +62,7 @@ public class MetadataStoreConfig extends Config {
 	}
 
 	private Workspace getWorkspace() {
-		ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-		return ((WorkspaceBean) ctx.getApplicationMap().get("workspace")).getActiveWorkspace().getNewWorkspace();
+		return WorkspaceBean.getInstance().getActiveWorkspace().getNewWorkspace();
 	}
 
 	public void updateId(ActionEvent evt) {

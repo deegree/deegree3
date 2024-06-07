@@ -62,8 +62,7 @@ public class Connection implements Serializable {
 	private String status = "OK";
 
 	private Workspace getWorkspace() {
-		ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-		return ((WorkspaceBean) ctx.getApplicationMap().get("workspace")).getActiveWorkspace().getNewWorkspace();
+		return WorkspaceBean.getInstance().getActiveWorkspace().getNewWorkspace();
 	}
 
 	public String getId() {

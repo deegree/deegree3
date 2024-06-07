@@ -62,8 +62,7 @@ import java.io.Serializable;
 public class ConnectionTester implements Serializable {
 
 	private Workspace getWorkspace() {
-		ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-		return ((WorkspaceBean) ctx.getApplicationMap().get("workspace")).getActiveWorkspace().getNewWorkspace();
+		return WorkspaceBean.getInstance().getActiveWorkspace().getNewWorkspace();
 	}
 
 	public void test() {
