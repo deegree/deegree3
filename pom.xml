@@ -276,7 +276,6 @@
         <configuration>
           <release>${java.version}</release>
           <encoding>${project.build.sourceEncoding}</encoding>
-          <compilerArgument>-Alog4j.outputdir=${project.basedir}/target/classes/META-INF/deegree/log4j/</compilerArgument>
         </configuration>
       </plugin>
       <plugin>
@@ -1221,7 +1220,6 @@
     <java.version>17</java.version>
     <antlr.version>3.5.3</antlr.version>
     <oracle.version>23.4.0.24.05</oracle.version>
-    <log4j.version>2.23.1</log4j.version>
     <logback.version>1.5.6</logback.version>
     <slf4j.version>2.0.12</slf4j.version>
     <spring-boot.version>3.3.0</spring-boot.version>
