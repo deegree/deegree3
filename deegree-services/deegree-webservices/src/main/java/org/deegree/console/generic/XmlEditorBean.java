@@ -378,21 +378,23 @@ public class XmlEditorBean implements Serializable {
 			return fileName;
 		}
 
-		Workspace workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
-		Class<?> cls = workspace.getModuleClassLoader().loadClass(resourceProviderClass);
-		ResourceMetadata<?> md = workspace.getResourceMetadata((Class) cls, id);
+		if (resourceProviderClass != null) {
+			Workspace workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
+			Class<?> cls = workspace.getModuleClassLoader().loadClass(resourceProviderClass);
+			ResourceMetadata<?> md = workspace.getResourceMetadata((Class) cls, id);
 
-		if (md == null) {
-			// lookup path if file will be created from template
-			ResourceManager<?> mgr = lookupResourceManager(workspace, cls);
-			if (mgr != null) {
-				return mgr.getMetadata().getWorkspacePath() + "/" + id;
+			if (md == null) {
+				// lookup path if file will be created from template
+				ResourceManager<?> mgr = lookupResourceManager(workspace, cls);
+				if (mgr != null) {
+					return mgr.getMetadata().getWorkspacePath() + "/" + id;
+				}
 			}
-		}
-		else {
-			for (ResourceManager<? extends Resource> resourceManager : workspace.getResourceManagers()) {
-				if (resourceManager.getProviders().contains(md.getProvider())) {
-					return resourceManager.getMetadata().getWorkspacePath() + "/" + id;
+			else {
+				for (ResourceManager<? extends Resource> resourceManager : workspace.getResourceManagers()) {
+					if (resourceManager.getProviders().contains(md.getProvider())) {
+						return resourceManager.getMetadata().getWorkspacePath() + "/" + id;
+					}
 				}
 			}
 		}
