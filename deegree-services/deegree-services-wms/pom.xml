@@ -5,10 +5,6 @@
   <name>deegree-services-wms</name>
   <description>Web Map Service (WMS) implementation - Rendering of maps from geospatial data</description>
 
-  <properties>
-    <deegree.module.status>ok</deegree.module.status>
-  </properties>
-
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-services</artifactId>

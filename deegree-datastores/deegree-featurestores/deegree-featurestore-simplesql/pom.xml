@@ -5,10 +5,6 @@
   <name>deegree-featurestore-simplesql</name>
   <description>Feature store implementation for retrieving features from SQL databases, configuration based on SELECT statements</description>
 
-  <properties>
-    <deegree.module.status>ok</deegree.module.status>
-  </properties>
-
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-featurestores</artifactId>

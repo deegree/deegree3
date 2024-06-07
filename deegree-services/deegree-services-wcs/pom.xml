@@ -5,10 +5,6 @@
   <name>deegree-services-wcs</name>
   <description>OGC Web Coverage Service (WCS) implementation - Rendering of geospatial coverage (e.g. raster) data</description>
 
-  <properties>
-    <deegree.module.status>check</deegree.module.status>
-  </properties>
-
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-services</artifactId>

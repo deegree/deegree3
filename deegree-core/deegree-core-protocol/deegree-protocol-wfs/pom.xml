@@ -5,10 +5,6 @@
   <packaging>jar</packaging>
   <description>Protocol and Client for accessing remote Web Feature Services</description>
 
-  <properties>
-    <deegree.module.status>check</deegree.module.status>
-  </properties>
-
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-core-protocol</artifactId>

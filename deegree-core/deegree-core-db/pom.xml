@@ -5,10 +5,6 @@
   <packaging>jar</packaging>
   <description>Database connections module</description>
 
-  <properties>
-    <deegree.module.status>rework</deegree.module.status>
-  </properties>
-
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-core</artifactId>

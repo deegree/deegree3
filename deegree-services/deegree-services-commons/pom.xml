@@ -5,10 +5,6 @@
   <name>deegree-services-commons</name>
   <description>Base interfaces and common functionality for OGC Web Service implementations</description>
 
-  <properties>
-    <deegree.module.status>check</deegree.module.status>
-  </properties>
-
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-services</artifactId>

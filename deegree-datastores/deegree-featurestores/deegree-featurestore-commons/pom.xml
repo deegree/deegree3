@@ -5,10 +5,6 @@
   <name>deegree-featurestore-commons</name>
   <description>Base interfaces and common functionality for feature store implementations</description>
 
-  <properties>
-    <deegree.module.status>ok</deegree.module.status>
-  </properties>
-
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-featurestores</artifactId>
