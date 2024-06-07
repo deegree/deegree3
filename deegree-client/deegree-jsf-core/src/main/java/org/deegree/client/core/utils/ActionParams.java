@@ -34,7 +34,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.core.utils;
 
+import jakarta.el.ELContext;
+import jakarta.el.ELResolver;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.faces.application.Application;
 import jakarta.faces.context.FacesContext;
 import jakarta.inject.Named;
 
@@ -91,10 +94,13 @@ public class ActionParams implements Serializable {
 	}
 
 	private static ActionParams getInstance() {
-		return (ActionParams) FacesContext.getCurrentInstance()
-			.getExternalContext()
-			.getRequestMap()
-			.get("actionParams");
+		FacesContext facesContext = FacesContext.getCurrentInstance();
+		Application application = facesContext.getApplication();
+
+		ELResolver elResolver = application.getELResolver();
+		ELContext elContext = facesContext.getELContext();
+
+		return (ActionParams) elResolver.getValue(elContext, null, "actionParams");
 	}
 
 }
