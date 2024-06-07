@@ -90,6 +90,10 @@ public class JdbcBean implements Serializable {
 			dbConn = "jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbName;
 			return;
 		}
+		if (dbType.equals("sqlite")) {
+			dbConn = "jdbc:sqlite:" + dbName;
+			return;
+		}
 	}
 
 	public void setDbPort(String dbPort) {
@@ -142,6 +146,10 @@ public class JdbcBean implements Serializable {
 				dbPort = "5432";
 			}
 			dbConn = "jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbName;
+			return;
+		}
+		if (dbType.equals("sqlite")) {
+			dbConn = "jdbc:sqlite:" + dbName;
 			return;
 		}
 	}

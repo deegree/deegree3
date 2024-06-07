@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<GpkgTileStore xmlns="http://www.deegree.org/datasource/tile/gpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:schemaLocation="http://www.deegree.org/datasource/tile/gpkg http://schemas.deegree.org/3.5/datasource/tile/gpkg/geopackage.xsd">
+
+  <TileDataSet>
+    <!-- [0..1]: the identifier for the tile data set -->
+    <Identifier>test</Identifier>
+    <File>home/user/World.gpkg</File>
+    <TileMapping table=""></TileMapping>
+    <!-- [0..1]: the mime type of the desired image output format. Default is image/jpg -->
+    <ImageFormat>image/jpg</ImageFormat>
+  </TileDataSet>
+
+</GpkgTileStore>

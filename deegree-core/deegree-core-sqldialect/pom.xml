@@ -13,6 +13,7 @@
 
   <modules>
     <module>deegree-sqldialect-commons</module>
+    <module>deegree-sqldialect-gpkg</module>
     <module>deegree-sqldialect-postgis</module>
     <module>deegree-sqldialect-oracle</module>
     <module>deegree-sqldialect-mssql</module>
