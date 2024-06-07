@@ -182,7 +182,6 @@
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-test-logging</artifactId>
       <version>${project.version}</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.h2database</groupId>
