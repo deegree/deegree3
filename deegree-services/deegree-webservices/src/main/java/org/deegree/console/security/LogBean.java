@@ -29,6 +29,7 @@ package org.deegree.console.security;
 
 import static jakarta.faces.application.FacesMessage.SEVERITY_ERROR;
 import static jakarta.faces.application.FacesMessage.SEVERITY_WARN;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,6 +42,7 @@ import jakarta.faces.context.FacesContext;
 
 import jakarta.inject.Named;
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.slf4j.Logger;
 
 /**
  * JSF backing bean for logging in, logging out, checking login status and password
@@ -56,7 +58,9 @@ public class LogBean implements Serializable {
 
 	private static final long serialVersionUID = -4865071415988778817L;
 
-	private static final String PASSWORD_FILE = "console.pw";
+	private static final Logger LOG = getLogger(LogBean.class);
+
+	protected static final String PASSWORD_FILE = "console.pw";
 
 	public static final String CONSOLE = "/index";
 
@@ -109,7 +113,7 @@ public class LogBean implements Serializable {
 		return newPassword2;
 	}
 
-	public String logIn() throws NoSuchAlgorithmException, IOException {
+	public String logIn() throws IOException {
 
 		SaltedPassword storedPassword = passwordFile.getCurrentContent();
 		if (storedPassword == null) {
@@ -121,6 +125,7 @@ public class LogBean implements Serializable {
 
 		SaltedPassword givenPassword = new SaltedPassword(currentPassword, storedPassword.getSalt());
 		loggedIn = storedPassword.equals(givenPassword);
+		LOG.debug("Provided password matches stored password: {}", loggedIn);
 		return FacesContext.getCurrentInstance().getViewRoot().getViewId();
 	}
 
@@ -145,9 +150,10 @@ public class LogBean implements Serializable {
 
 			SaltedPassword newSaltedPassword = new SaltedPassword(newPassword);
 			passwordFile.update(newSaltedPassword);
+			LOG.info("Password file updated successfully");
 		}
 		catch (Throwable e) {
-			e.printStackTrace();
+			LOG.error("Failed to update password file due to {}", e.getMessage(), e);
 			FacesMessage fm = new FacesMessage(SEVERITY_ERROR, "Error updating password: " + e.getMessage(), null);
 			FacesContext.getCurrentInstance().addMessage(null, fm);
 			return CHANGE_PASSWORD;
