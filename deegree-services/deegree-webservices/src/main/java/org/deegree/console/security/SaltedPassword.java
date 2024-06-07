@@ -71,9 +71,11 @@ import java.nio.charset.StandardCharsets;
  * @see <a href="https://www.akkadia.org/drepper/SHA-crypt.txt">Unix crypt using SHA-256
  * and SHA-512</a>
  */
-public class SaltedPassword {
+public final class SaltedPassword {
 
 	private static final String CHARSET = StandardCharsets.UTF_8.toString();
+
+	static final String SHA256_PREFIX = "$5$";
 
 	private final byte[] saltedAndHashedPassword;
 
@@ -86,19 +88,20 @@ public class SaltedPassword {
 
 	public SaltedPassword(String plainPassword, String salt) throws UnsupportedEncodingException {
 		byte[] plainPasswordBinary = plainPassword.getBytes(CHARSET);
-		String saltedPassword = generateHashedAndSaltedPassword(plainPasswordBinary);
+		String saltedPassword = Sha2Crypt.sha256Crypt(plainPasswordBinary, salt);
+		int delimiterPos = nthIndexOf(saltedPassword, "$", 3);
+		this.saltedAndHashedPassword = saltedPassword.substring(delimiterPos + 1, saltedPassword.length())
+			.getBytes(StandardCharsets.UTF_8);
+		this.salt = salt;
+	}
+
+	public SaltedPassword(String plainPassword) throws UnsupportedEncodingException {
+		byte[] plainPasswordBinary = plainPassword.getBytes(CHARSET);
+		String saltedPassword = Sha2Crypt.sha256Crypt(plainPasswordBinary);
 		int delimiterPos = nthIndexOf(saltedPassword, "$", 3);
 		this.salt = saltedPassword.substring(0, delimiterPos);
 		this.saltedAndHashedPassword = saltedPassword.substring(delimiterPos + 1, saltedPassword.length())
 			.getBytes(StandardCharsets.UTF_8);
-	}
-
-	public SaltedPassword(String plainPassword) throws UnsupportedEncodingException {
-		this(plainPassword, null);
-	}
-
-	private String generateHashedAndSaltedPassword(byte[] plainPassword) {
-		return Sha2Crypt.sha256Crypt(plainPassword);
 	}
 
 	public byte[] getSaltedAndHashedPassword() {

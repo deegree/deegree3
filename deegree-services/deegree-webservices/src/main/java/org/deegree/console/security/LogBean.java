@@ -113,7 +113,7 @@ public class LogBean implements Serializable {
 		return newPassword2;
 	}
 
-	public String logIn() throws NoSuchAlgorithmException, IOException {
+	public String logIn() throws IOException {
 
 		SaltedPassword storedPassword = passwordFile.getCurrentContent();
 		if (storedPassword == null) {
@@ -125,7 +125,7 @@ public class LogBean implements Serializable {
 
 		SaltedPassword givenPassword = new SaltedPassword(currentPassword, storedPassword.getSalt());
 		loggedIn = storedPassword.equals(givenPassword);
-		LOG.debug("Provided password matches stored password. Successfully logged in.");
+		LOG.debug("Provided password matches stored password: {}", loggedIn);
 		return FacesContext.getCurrentInstance().getViewRoot().getViewId();
 	}
 

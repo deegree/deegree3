@@ -28,6 +28,7 @@
 package org.deegree.console.security;
 
 import static java.lang.Character.digit;
+import static org.deegree.console.security.SaltedPassword.SHA256_PREFIX;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -96,7 +97,7 @@ public class PasswordFile implements Serializable {
 		}
 		String[] parts = encoded.split("\\$");
 
-		return new SaltedPassword(parts[3].getBytes(StandardCharsets.UTF_8), parts[2]);
+		return new SaltedPassword(parts[3].getBytes(StandardCharsets.UTF_8), SHA256_PREFIX + parts[2]);
 	}
 
 	/**

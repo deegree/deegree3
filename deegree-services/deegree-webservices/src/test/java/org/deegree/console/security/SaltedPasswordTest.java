@@ -5,8 +5,10 @@ import org.junit.Test;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
+import static org.deegree.console.security.SaltedPassword.SHA256_PREFIX;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author <a href="mailto:friebe@lat-lon.de">Torsten Friebe</a>
@@ -18,7 +20,7 @@ public class SaltedPasswordTest {
 	public void testCreatingFromPlainPassword() throws UnsupportedEncodingException {
 		SaltedPassword plainpassword = new SaltedPassword("foo");
 		String saltedPassword = new String(plainpassword.getSaltedAndHashedPassword(), StandardCharsets.UTF_8);
-		assertThat(plainpassword.getSalt(), startsWith("$5$"));
+		assertThat(plainpassword.getSalt(), startsWith(SHA256_PREFIX));
 		assertThat(saltedPassword, is(notNullValue()));
 	}
 
@@ -29,6 +31,15 @@ public class SaltedPasswordTest {
 		SaltedPassword saltedpassword = new SaltedPassword(password.getBytes(StandardCharsets.UTF_8), salt);
 		assertThat(new String(saltedpassword.getSaltedAndHashedPassword(), StandardCharsets.UTF_8), is(password));
 		assertThat(saltedpassword.getSalt(), is(salt));
+	}
+
+	@Test
+	public void testCreateNewPasswordWithSaltFromOtherPassword() throws UnsupportedEncodingException {
+		String plainpassword = "foo";
+		SaltedPassword storedPassword = new SaltedPassword(plainpassword);
+		String saltFromStoredPassword = storedPassword.getSalt();
+		SaltedPassword givenPassword = new SaltedPassword(plainpassword, saltFromStoredPassword);
+		assertTrue(storedPassword.equals(givenPassword));
 	}
 
 	@Test
@@ -45,7 +56,5 @@ public class SaltedPasswordTest {
 		// the hashed password
 		assertThat(parts[3], hasLength(43));
 	}
-
-
 
 }
