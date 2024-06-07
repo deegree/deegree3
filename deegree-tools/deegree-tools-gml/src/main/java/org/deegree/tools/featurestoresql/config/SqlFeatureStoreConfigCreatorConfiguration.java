@@ -25,14 +25,16 @@ import org.deegree.feature.types.AppSchema;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
-import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
-import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
+import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.batch.core.step.builder.SimpleStepBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.support.JdbcTransactionManager;
 
 /**
  * Configuration of the FeatureStoreLoader.
@@ -42,12 +44,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @EnableBatchProcessing
 public class SqlFeatureStoreConfigCreatorConfiguration {
-
-	@Autowired
-	private JobBuilderFactory jobBuilderFactory;
-
-	@Autowired
-	private StepBuilderFactory stepBuilderFactory;
 
 	@StepScope
 	@Bean
@@ -86,18 +82,19 @@ public class SqlFeatureStoreConfigCreatorConfiguration {
 	}
 
 	@Bean
-	public Step step(AppSchemaReader appSchemaReader, FeatureStoreConfigWriter featureStoreConfigWriter) {
-		return stepBuilderFactory.get("featureStoreConfigLoaderStep")
-			.<AppSchema, AppSchema>chunk(1)
+	public Step step(AppSchemaReader appSchemaReader, FeatureStoreConfigWriter featureStoreConfigWriter,
+			JobRepository jobRepository, JdbcTransactionManager transactionManager) {
+		StepBuilder stepBuilder = new StepBuilder("featureStoreConfigLoaderStep", jobRepository);
+		return new SimpleStepBuilder<AppSchema, AppSchema>(stepBuilder).<AppSchema, AppSchema>chunk(1)
+			.transactionManager(transactionManager)
 			.reader(appSchemaReader)
 			.writer(featureStoreConfigWriter)
 			.build();
 	}
 
 	@Bean
-	public Job job(Step step) {
-		return jobBuilderFactory.get("featureStoreConfigLoaderJob")
-			.incrementer(new RunIdIncrementer())
+	public Job job(Step step, JobRepository jobRepository) {
+		return new JobBuilder("featureStoreConfigLoaderJob", jobRepository).incrementer(new RunIdIncrementer())
 			.start(step)
 			.build();
 	}

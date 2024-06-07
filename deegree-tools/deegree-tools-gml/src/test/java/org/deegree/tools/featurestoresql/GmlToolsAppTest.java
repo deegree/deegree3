@@ -8,37 +8,37 @@ import org.junit.Test;
 public class GmlToolsAppTest {
 
 	@Test
-	public void testMain_Empty() {
+	public void testMain_Empty() throws Exception {
 		String[] args = new String[] {};
 		GmlToolsApp.main(args);
 	}
 
 	@Test
-	public void testMain_H() {
+	public void testMain_H() throws Exception {
 		String[] args = new String[] { "-h" };
 		GmlToolsApp.main(args);
 	}
 
 	@Test
-	public void testMain_Help() {
+	public void testMain_Help() throws Exception {
 		String[] args = new String[] { "-help" };
 		GmlToolsApp.main(args);
 	}
 
 	@Test
-	public void testMain_Help2() {
+	public void testMain_Help2() throws Exception {
 		String[] args = new String[] { "--help" };
 		GmlToolsApp.main(args);
 	}
 
 	@Test
-	public void testMain_GmlLoader() {
+	public void testMain_GmlLoader() throws Exception {
 		String[] args = new String[] { "gmlLoader", "--help" };
 		GmlToolsApp.main(args);
 	}
 
 	@Test
-	public void testMain_FeatureStoreConfigLoader() {
+	public void testMain_FeatureStoreConfigLoader() throws Exception {
 		String[] args = new String[] { "sqlFeatureStoreConfigCreator", "--help" };
 		GmlToolsApp.main(args);
 	}

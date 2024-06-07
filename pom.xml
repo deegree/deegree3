@@ -1227,6 +1227,11 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+      <dependency>
+        <groupId>org.hsqldb</groupId>
+        <artifactId>hsqldb</artifactId>
+        <version>2.7.3</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -1234,14 +1239,14 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
     <site.dir>${user.home}/Sites</site.dir>
-    <java.version>11</java.version>
+    <java.version>17</java.version>
     <antlr.version>3.5.3</antlr.version>
     <oracle.version>23.4.0.24.05</oracle.version>
     <log4j.version>2.23.1</log4j.version>
     <slf4j.version>2.0.12</slf4j.version>
-    <spring-boot.version>2.7.18</spring-boot.version>
-    <spring-batch.version>4.3.10</spring-batch.version>
-    <spring-framework.version>5.3.32</spring-framework.version>
+    <spring-boot.version>3.3.0</spring-boot.version>
+    <spring-batch.version>5.1.2</spring-batch.version>
+    <spring-framework.version>6.1.8</spring-framework.version>
     <batik.version>1.17</batik.version>
     <axoim.version>1.4.0</axoim.version>
     <jsonpath.version>2.9.0</jsonpath.version>

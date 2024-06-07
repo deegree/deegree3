@@ -21,7 +21,6 @@
  */
 package org.deegree.tools.featurestoresql.config;
 
-import java.util.regex.Pattern;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.cs.refs.coordinatesystem.CRSRef;
@@ -35,6 +34,7 @@ import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.oracle.OracleDialect;
 import org.deegree.sqldialect.postgis.PostGISDialect;
 import org.slf4j.Logger;
+import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
 
 import javax.xml.stream.XMLOutputFactory;
@@ -50,6 +50,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -73,11 +74,11 @@ public class FeatureStoreConfigWriter implements ItemWriter<AppSchema> {
 	}
 
 	@Override
-	public void write(List<? extends AppSchema> appSchemas) throws Exception {
+	public void write(Chunk<? extends AppSchema> appSchemas) throws Exception {
 		if (appSchemas.isEmpty())
 			return;
 
-		AppSchema appSchema = appSchemas.get(0);
+		AppSchema appSchema = appSchemas.getItems().get(0);
 
 		CRSRef storageCrs = CRSManager.getCRSRef("EPSG:" + loadParameter.getSrid());
 		GeometryStorageParams geometryParams = new GeometryStorageParams(storageCrs, loadParameter.getSrid(), DIM_2);

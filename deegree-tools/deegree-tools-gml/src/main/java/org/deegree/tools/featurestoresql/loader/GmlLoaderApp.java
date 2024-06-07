@@ -21,21 +21,21 @@
  */
 package org.deegree.tools.featurestoresql.loader;
 
-import org.springframework.boot.Banner;
-import org.springframework.boot.SpringApplication;
-
 import org.deegree.tools.featurestoresql.CommonConfiguration;
+import org.deegree.tools.featurestoresql.JobRepositoryConfiguration;
+import org.deegree.tools.featurestoresql.SubcommandApp;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**
  * Entry point of the command line interface of GmlLoader.
  *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz </a>
  */
-public class GmlLoaderApp {
+public class GmlLoaderApp extends SubcommandApp {
 
-	public static void run(String[] args) {
-		if (args.length == 1
-				|| (args.length > 1 && ("--help".equals(args[1]) || "-help".equals(args[1]) || "-h".equals(args[1])))) {
+	public static void run(String[] args) throws Exception {
+		if (isHelpRequested(args)) {
 			GmlLoaderHelpUsage.printUsage();
 		}
 		else if (args.length < 4) {
@@ -43,9 +43,9 @@ public class GmlLoaderApp {
 			GmlLoaderHelpUsage.printUsage();
 		}
 		else {
-			SpringApplication app = new SpringApplication(CommonConfiguration.class, GmlLoaderConfiguration.class);
-			app.setBannerMode(Banner.Mode.OFF);
-			app.run(args);
+			ApplicationContext applicationContext = new AnnotationConfigApplicationContext(
+					JobRepositoryConfiguration.class, CommonConfiguration.class, GmlLoaderConfiguration.class);
+			runJob(args, applicationContext);
 		}
 	}
 

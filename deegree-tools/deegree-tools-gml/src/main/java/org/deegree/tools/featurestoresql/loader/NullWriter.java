@@ -22,9 +22,8 @@
 package org.deegree.tools.featurestoresql.loader;
 
 import org.deegree.feature.Feature;
+import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
-
-import java.util.List;
 
 /**
  * Dummy ItemWriter not writing any features.
@@ -34,7 +33,7 @@ import java.util.List;
 public class NullWriter implements ItemWriter<Feature> {
 
 	@Override
-	public void write(List<? extends Feature> list) throws Exception {
+	public void write(Chunk<? extends Feature> list) throws Exception {
 
 	}
 

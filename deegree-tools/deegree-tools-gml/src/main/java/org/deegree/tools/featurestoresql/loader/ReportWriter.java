@@ -32,8 +32,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
-import java.util.Date;
 
 import static java.util.concurrent.TimeUnit.HOURS;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
@@ -115,7 +116,9 @@ public class ReportWriter extends JobExecutionListenerSupport {
 
 	private String getTimeNeeded(StepExecution stepExecution) {
 		if (stepExecution != null && stepExecution.getStartTime() != null) {
-			long millis = new Date().getTime() - stepExecution.getStartTime().getTime();
+			LocalDateTime startTime = stepExecution.getStartTime();
+			LocalDateTime endTime = LocalDateTime.now();
+			long millis = ChronoUnit.MILLIS.between(startTime, endTime);
 			long hours = MILLISECONDS.toHours(millis);
 			long minutes = MILLISECONDS.toMinutes(millis);
 			long seconds = MILLISECONDS.toSeconds(millis);
