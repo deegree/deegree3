@@ -128,7 +128,7 @@
   <!-- end -->
 
   <error-page>
-    <exception-type>javax.faces.application.ViewExpiredException</exception-type>
+    <exception-type>jakarta.faces.application.ViewExpiredException</exception-type>
     <location>/index.jsf</location>
   </error-page>
 
