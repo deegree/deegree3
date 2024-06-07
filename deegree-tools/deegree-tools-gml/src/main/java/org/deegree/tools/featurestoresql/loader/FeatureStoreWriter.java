@@ -25,14 +25,13 @@ package org.deegree.tools.featurestoresql.loader;
 import static org.deegree.protocol.wfs.transaction.action.IDGenMode.USE_EXISTING;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.util.List;
-
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.SQLFeatureStoreTransaction;
 import org.slf4j.Logger;
+import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.util.Assert;
 
@@ -62,7 +61,7 @@ public class FeatureStoreWriter implements ItemWriter<Feature> {
 	}
 
 	@Override
-	public void write(List<? extends Feature> features) throws Exception {
+	public void write(Chunk<? extends Feature> features) throws Exception {
 
 		FeatureCollection featureCollection = new GenericFeatureCollection();
 		for (Feature featureToAdd : features) {

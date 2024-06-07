@@ -12,7 +12,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class GmlToolsApp {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		if (args.length == 0 || "--help".equals(args[0]) || "-help".equals(args[0]) || "-h".equals(args[0])) {
 			printUsage();
 		}

@@ -21,21 +21,21 @@
  */
 package org.deegree.tools.featurestoresql.config;
 
-import org.springframework.boot.Banner;
-import org.springframework.boot.SpringApplication;
-
 import org.deegree.tools.featurestoresql.CommonConfiguration;
+import org.deegree.tools.featurestoresql.JobRepositoryConfiguration;
+import org.deegree.tools.featurestoresql.SubcommandApp;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**
  * Entry point of the command line interface of SqlFeatureStoreConfigCreator.
  *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz </a>
  */
-public class SqlFeatureStoreConfigCreatorApp {
+public class SqlFeatureStoreConfigCreatorApp extends SubcommandApp {
 
-	public static void run(String[] args) {
-		if (args.length == 1
-				|| (args.length > 1 && ("--help".equals(args[1]) || "-help".equals(args[1]) || "-h".equals(args[1])))) {
+	public static void run(String[] args) throws Exception {
+		if (isHelpRequested(args)) {
 			SqlFeatureStoreConfigCreatorUsagePrinter.printUsage();
 		}
 		else if (args.length == 1) {
@@ -43,10 +43,10 @@ public class SqlFeatureStoreConfigCreatorApp {
 			SqlFeatureStoreConfigCreatorUsagePrinter.printUsage();
 		}
 		else {
-			SpringApplication app = new SpringApplication(CommonConfiguration.class,
+			ApplicationContext applicationContext = new AnnotationConfigApplicationContext(
+					JobRepositoryConfiguration.class, CommonConfiguration.class,
 					SqlFeatureStoreConfigCreatorConfiguration.class);
-			app.setBannerMode(Banner.Mode.OFF);
-			app.run(args);
+			runJob(args, applicationContext);
 		}
 	}
 
