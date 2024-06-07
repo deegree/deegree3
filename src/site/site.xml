@@ -8,8 +8,8 @@
   <body>
 
     <links>
-      <item name="Home" href="http://www.deegree.org/"/>
-      <item name="User Documentation" href="http://www.deegree.org/Documentation"/>
+      <item name="Home" href="https://www.deegree.org"/>
+      <item name="User Documentation" href="https://www.deegree.org/documentation/"/>
       <item name="Source Code Repository" href="https://github.com/deegree/deegree3"/>
     </links>
 
