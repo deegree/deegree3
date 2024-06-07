@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
@@ -6,23 +5,11 @@
 		</encoder>
 	</appender>
 
-	<!-- level: TRACE > DEBUG > INFO > WARN > ERROR > OFF -->
-
-	<logger name="org.deegree" level="WARN"/>
-	<logger name="org.deegree.commons.utils.net" level="DEBUG"/>
-	<logger name="org.deegree.services.wms" level="DEBUG"/>
 	<!--
-	<logger name="org.deegree.geometry.standard.AbstractDefaultGeometry" level="OFF"/>
+	<logger name="org.deegree" level="INFO"/>
 	-->
 
-	<logger name="org.apache.http" level="ERROR"/>
-	<logger name="org.apache.http.wire" level="OFF"/>
-
-	<logger name="net.sf.saxon" level="WARN"/>
-	<logger name="com.galdosinc" level="WARN"/>
-	<logger name="com.occamlab" level="WARN"/>
-
-	<root level="INFO">
+	<root level="WARN">
 		<appender-ref ref="STDOUT" />
 	</root>
 </configuration>
