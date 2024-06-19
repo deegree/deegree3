@@ -1,0 +1,40 @@
+<configuration>
+	<variable name="log.prefix" value="deegree"/>
+	<variable name="log.dir" value="logs"/>
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%date %level %logger{1} [%thread] %msg%n</pattern>
+		</encoder>
+		<!--
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>INFO</level>
+		</filter>
+		-->
+	</appender>
+
+	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${log.dir}/${log.prefix}.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<fileNamePattern>${log.dir}/${log.prefix}-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+			<maxFileSize>100MB</maxFileSize>
+			<maxHistory>20</maxHistory>
+			<totalSizeCap>1GB</totalSizeCap>
+		</rollingPolicy>
+		<!--
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>INFO</level>
+		</filter>
+		-->
+		<encoder>
+			<pattern>%date %level %logger{1} [%thread] %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<logger name="org.deegree" level="INFO"/>
+
+	<root level="INFO">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILE" />
+	</root>
+</configuration>
