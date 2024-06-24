@@ -144,8 +144,8 @@ public class Capabilities130XMLAdapter {
 		writer.writeNamespace("sld", SLDNS);
 
 		writer.writeAttribute(XSINS, "schemaLocation",
-				"http://www.opengis.net/wms http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd "
-						+ "http://www.opengis.net/sld http://schemas.opengis.net/sld/1.1.0/sld_capabilities.xsd");
+				"http://www.opengis.net/wms https://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd "
+						+ "http://www.opengis.net/sld https://schemas.opengis.net/sld/1.1.0/sld_capabilities.xsd");
 
 		metadataWriter.writeService(writer);
 
