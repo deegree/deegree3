@@ -715,7 +715,7 @@
       <dependency>
         <groupId>org.apache.ws.commons.axiom</groupId>
         <artifactId>axiom-impl</artifactId>
-        <version>${axoim.version}</version>
+        <version>${axiom.version}</version>
         <exclusions>
           <exclusion>
             <groupId>org.codehaus.woodstox</groupId>
@@ -730,7 +730,7 @@
       <dependency>
         <groupId>org.apache.ws.commons.axiom</groupId>
         <artifactId>axiom-api</artifactId>
-        <version>${axoim.version}</version>
+        <version>${axiom.version}</version>
         <exclusions>
           <exclusion>
             <groupId>commons-logging</groupId>
@@ -1232,7 +1232,7 @@
     <spring-batch.version>5.1.2</spring-batch.version>
     <spring-framework.version>6.1.8</spring-framework.version>
     <batik.version>1.17</batik.version>
-    <axoim.version>1.4.0</axoim.version>
+    <axiom.version>1.4.0</axiom.version>
     <jsonpath.version>2.9.0</jsonpath.version>
     <jsonsmart.version>2.5.1</jsonsmart.version>
   </properties>
