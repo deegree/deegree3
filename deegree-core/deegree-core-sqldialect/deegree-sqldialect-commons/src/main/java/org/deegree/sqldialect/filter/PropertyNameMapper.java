@@ -37,6 +37,8 @@ package org.deegree.sqldialect.filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.ValueReference;
 
+import java.util.List;
+
 /**
  * Implementations provide {@link ValueReference} to table/column mappings for
  * {@link AbstractWhereBuilder} implementations.
@@ -56,10 +58,10 @@ public interface PropertyNameMapper {
 	 * invalid
 	 * @throws UnmappableException
 	 */
-	public PropertyNameMapping getMapping(ValueReference propName, TableAliasManager aliasManager)
+	PropertyNameMapping getMapping(ValueReference propName, TableAliasManager aliasManager)
 			throws FilterEvaluationException, UnmappableException;
 
-	public PropertyNameMapping getSpatialMapping(ValueReference propName, TableAliasManager aliasManager)
+	List<PropertyNameMapping> getSpatialMappings(ValueReference propName, TableAliasManager aliasManager)
 			throws FilterEvaluationException, UnmappableException;
 
 }

@@ -129,11 +129,7 @@ class OracleWhereBuilder extends AbstractWhereBuilder {
 	}
 
 	@Override
-	protected SQLOperation toProtoSQL(SpatialOperator op) throws UnmappableException, FilterEvaluationException {
-
-		SQLOperationBuilder builder = new SQLOperationBuilder(BOOLEAN);
-		SQLExpression propNameExpr = toProtoSQLSpatial(op.getPropName());
-
+	protected void toProtoSql(SpatialOperator op, SQLExpression propNameExpr, SQLOperationBuilder builder) {
 		switch (op.getSubType()) {
 			case BBOX:
 				BBOX bbox = (BBOX) op;
@@ -178,8 +174,6 @@ class OracleWhereBuilder extends AbstractWhereBuilder {
 				appendDWithinOperation(builder, propNameExpr, ((Beyond) op).getGeometry(), ((Beyond) op).getDistance());
 				break;
 		}
-
-		return builder.toOperation();
 	}
 
 	/**
