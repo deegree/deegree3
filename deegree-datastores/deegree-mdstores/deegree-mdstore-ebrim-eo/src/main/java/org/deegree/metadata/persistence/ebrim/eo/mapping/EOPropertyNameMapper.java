@@ -593,9 +593,9 @@ public class EOPropertyNameMapper implements PropertyNameMapper {
 	}
 
 	@Override
-	public PropertyNameMapping getSpatialMapping(ValueReference propName, TableAliasManager aliasManager)
+	public List<PropertyNameMapping> getSpatialMappings(ValueReference propName, TableAliasManager aliasManager)
 			throws FilterEvaluationException, UnmappableException {
-		return getMapping(propName, aliasManager);
+		return Collections.singletonList(getMapping(propName, aliasManager));
 	}
 
 }
