@@ -7,7 +7,10 @@ import java.nio.charset.StandardCharsets;
 
 import static org.deegree.console.security.SaltedPassword.SHA256_PREFIX;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasLength;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertTrue;
 
 /**
