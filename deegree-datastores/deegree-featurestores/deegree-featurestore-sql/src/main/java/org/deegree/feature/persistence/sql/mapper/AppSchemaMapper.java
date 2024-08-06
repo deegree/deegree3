@@ -819,21 +819,24 @@ public class AppSchemaMapper {
 		// }
 		if (childElMappings.isEmpty()) {
 			if (particle.getMaxOccursUnbounded()) {
-				childElMappings.addAll(generateMapping(particle.getTerm(), -1, mc, cycleAnalyser));
+				childElMappings
+					.addAll(generateMapping(particle.getTerm(), particle.getMinOccurs(), -1, mc, cycleAnalyser));
 			}
 			else {
 				for (int i = 1; i <= particle.getMaxOccurs(); i++) {
-					childElMappings.addAll(generateMapping(particle.getTerm(), i, mc, cycleAnalyser));
+					childElMappings
+						.addAll(generateMapping(particle.getTerm(), particle.getMinOccurs(), i, mc, cycleAnalyser));
 				}
 			}
 		}
 		return childElMappings;
 	}
 
-	private List<Mapping> generateMapping(XSTerm term, int occurence, MappingContext mc, CycleAnalyser cycleAnalyser) {
+	private List<Mapping> generateMapping(XSTerm term, int minOccurs, int occurence, MappingContext mc,
+			CycleAnalyser cycleAnalyser) {
 		List<Mapping> mappings = new ArrayList<Mapping>();
 		if (term instanceof XSElementDeclaration) {
-			mappings.addAll(generateMapping((XSElementDeclaration) term, occurence, mc, cycleAnalyser));
+			mappings.addAll(generateMapping((XSElementDeclaration) term, minOccurs, occurence, mc, cycleAnalyser));
 		}
 		else if (term instanceof XSModelGroup) {
 			mappings.addAll(generateMapping((XSModelGroup) term, occurence, mc, cycleAnalyser));
@@ -844,9 +847,13 @@ public class AppSchemaMapper {
 		return mappings;
 	}
 
-	private List<Mapping> generateMapping(XSElementDeclaration elDecl, int occurence, MappingContext mc,
+	private List<Mapping> generateMapping(XSElementDeclaration elDecl, int minOccurs, int occurence, MappingContext mc,
 			CycleAnalyser cycleAnalyser) {
 		cycleAnalyser.add(elDecl);
+		if (minOccurs < 1 && !referenceDataHasProperty(cycleAnalyser)) {
+			cycleAnalyser.remove(elDecl);
+			return Collections.emptyList();
+		}
 		if (referenceDataHasOnlyOne(cycleAnalyser))
 			occurence = 1;
 
