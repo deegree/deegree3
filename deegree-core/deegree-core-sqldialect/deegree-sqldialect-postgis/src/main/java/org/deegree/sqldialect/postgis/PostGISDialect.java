@@ -40,6 +40,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
@@ -192,6 +193,29 @@ public class PostGISDialect extends AbstractSQLDialect implements SQLDialect {
 		sql.append("(");
 		sql.append(column);
 		sql.append(")::BOX2D");
+		return sql.toString();
+	}
+
+	@Override
+	public String getSelectBBox(List<String> columns, List<TableName> tables) {
+		if (columns.size() <= 1) {
+			return super.getSelectBBox(columns, tables);
+		}
+		StringBuilder sql = new StringBuilder("SELECT ");
+		sql.append("ST_Extent( u.union )::BOX2D FROM (");
+		// subquery start
+		sql.append("SELECT ST_Union( ARRAY[ ");
+		boolean isFirst = true;
+		for (String column : columns) {
+			if (!isFirst)
+				sql.append(", ");
+			sql.append(getBBoxAggregateSnippet(column));
+			isFirst = false;
+		}
+		sql.append(" ] ) as union FROM ");
+		sql.append(tables.stream().map(SQLIdentifier::toString).collect(Collectors.joining(", ")));
+		// subquery end
+		sql.append(") u");
 		return sql.toString();
 	}
 
