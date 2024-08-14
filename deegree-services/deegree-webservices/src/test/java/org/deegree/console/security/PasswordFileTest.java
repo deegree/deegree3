@@ -2,9 +2,11 @@ package org.deegree.console.security;
 
 import static org.deegree.console.security.LogBean.PASSWORD_FILE;
 import static org.deegree.console.security.SaltedPassword.SHA256_PREFIX;
-import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertTrue;
 
