@@ -47,7 +47,7 @@ class files)
 * Global directories for all web applications running in the container
 (depends on the actual web container)
 
-When you add files to the web application claspath, you have to restart
+When you add files to the web application classpath, you have to restart
 the web application or the web application container to make the new
 code available to deegree webservices.
 
@@ -60,7 +60,7 @@ When deegree webservices initializes the workspace, it scans directory
 _modules/_ of the active deegree workspace for files ending with
 _.jar_ and adds them to the classpath. This can be very handy, as it
 allows to create self-contained workspaces (no fiddling with other
-directories required) and also has the benefit the you can reload the
+directories required) and also has the benefit that you can reload the
 deegree workspace only after adding your libraries (instead of
 restarting the deegree webapp or the whole web application container).
 
@@ -92,7 +92,7 @@ workspace classpath.
 By default, deegree webservices includes everything that is needed for
 connecting to PostgreSQL/PostGIS and Derby databases. If you want to
 connect to an Oracle Spatial or Microsoft SQL Server instance, you need
-to add additional Java libraries manually, as the required JDBC
+to add additional libraries manually, as the required JDBC
 libraries are not included in the deegree webservices download (for
 license reasons).
 
@@ -140,6 +140,7 @@ not available the _xmlparserv2_ can be used instead. (In rare
 conditions this could set the oracle library as default XML parser,
 which could lead to unexpected behavior).
 
+[[anchor-sqlserverjars]]
 ==== Adding Microsoft SQL server support
 
 The following deegree resources support Microsoft SQL Server:
@@ -150,5 +151,5 @@ The following deegree resources support Microsoft SQL Server:
 
 In order to enable Microsoft SQL Server connectivity for these
 resources, you need to add a compatible Microsoft JDBC driver (e.g.
-_sqljdbc4.jar_)footnote:[https://learn.microsoft.com/en-us/sql/connect/jdbc/download-microsoft-jdbc-driver-for-sql-server] 
+_mssql-jdbc-12.6.1.jre11.jar_)footnote:[https://learn.microsoft.com/en-us/sql/connect/jdbc/download-microsoft-jdbc-driver-for-sql-server]
 (see <<anchor-adding-jars>>).
