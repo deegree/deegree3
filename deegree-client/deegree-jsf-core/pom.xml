@@ -76,7 +76,7 @@
     <dependency>
       <groupId>org.jboss.weld.servlet</groupId>
       <artifactId>weld-servlet-shaded</artifactId>
-      <version>5.1.2.Final</version>
+      <version>5.1.3.Final</version>
     </dependency>
     <dependency>
       <groupId>jakarta.el</groupId>
