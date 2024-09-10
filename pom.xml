@@ -1228,9 +1228,9 @@
     <oracle.version>23.4.0.24.05</oracle.version>
     <log4j.version>2.23.1</log4j.version>
     <slf4j.version>2.0.16</slf4j.version>
-    <spring-boot.version>3.3.0</spring-boot.version>
+    <spring-boot.version>3.3.3</spring-boot.version>
     <spring-batch.version>5.1.2</spring-batch.version>
-    <spring-framework.version>6.1.8</spring-framework.version>
+    <spring-framework.version>6.1.12</spring-framework.version>
     <batik.version>1.17</batik.version>
     <axiom.version>1.4.0</axiom.version>
     <jsonpath.version>2.9.0</jsonpath.version>
