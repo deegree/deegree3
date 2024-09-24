@@ -491,7 +491,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
 		writeAttributeWithNS(XSI_NIL.getNamespaceURI(), XSI_NIL.getLocalPart(), "true");
 		PrimitiveValue value = attributes.get(NIL_REASON);
 		if (value != null)
-			writeAttributeWithNS(NIL_REASON.getNamespaceURI(), NIL_REASON.getLocalPart(), "true");
+			writeAttributeWithNS(NIL_REASON.getNamespaceURI(), NIL_REASON.getLocalPart(), value.getAsText());
 	}
 
 	private boolean excludeByTimeSliceFilter(Property property) {
