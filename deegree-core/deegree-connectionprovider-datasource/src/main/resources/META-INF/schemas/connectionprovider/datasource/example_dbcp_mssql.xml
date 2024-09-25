@@ -6,8 +6,8 @@
   <DataSource javaClass="org.apache.commons.dbcp2.BasicDataSource" destroyMethod="close" />
 
   <!-- Configuration of DataSource properties -->
-  <Property name="driverClassName" value="com.microsoft.sqlserver.jdbc.SQLServerDriver" />
-  <Property name="url" value="jdbc:sqlserver://localhost:1433;databaseName=deegree-db"/>
+  <Property name="driverClassName" value="com.mysql.jdbc.Driver" />
+  <Property name="url" value="jdbc:mysql://localhost:3306/deegree"/>
   <Property name="username" value="kelvin" />
   <Property name="password" value="s3cr3t" />
   <Property name="poolPreparedStatements" value="true" />
