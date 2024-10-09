@@ -57,6 +57,7 @@
             <jetty.home>${project.basedir}/src/main/resources</jetty.home>
             <javax.xml.transform.TransformerFactory>net.sf.saxon.TransformerFactoryImpl</javax.xml.transform.TransformerFactory>
           </systemProperties>
+          <jvmArgs>${jvm.args}</jvmArgs>
           <loginServices>
             <loginService implementation="org.eclipse.jetty.security.HashLoginService">
               <name>deegree web configuration API</name>
@@ -77,7 +78,6 @@
               <goal>start</goal>
             </goals>
             <configuration>
-              <scanIntervalSeconds>0</scanIntervalSeconds>
             </configuration>
           </execution>
           <execution>
