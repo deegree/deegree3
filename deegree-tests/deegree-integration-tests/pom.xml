@@ -54,7 +54,7 @@
       <plugin>
         <groupId>com.smartbear.soapui</groupId>
         <artifactId>soapui-maven-plugin</artifactId>
-        <version>5.7.0</version>
+        <version>5.7.2</version>
         <dependencies>
           <dependency>
             <groupId>com.jgoodies</groupId>
