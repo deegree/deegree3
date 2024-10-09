@@ -94,7 +94,7 @@ public class MappedXPath {
 
 	private String currentTableAlias;
 
-	private PropertyNameMapping propMapping;
+	private List<PropertyNameMapping> propMappings = new ArrayList<>();
 
 	/**
 	 * @param fs
@@ -141,8 +141,8 @@ public class MappedXPath {
 		map(ftMapping.getMappings(), steps);
 	}
 
-	public PropertyNameMapping getPropertyNameMapping() {
-		return propMapping;
+	public List<PropertyNameMapping> getPropertyNameMappings() {
+		return propMappings;
 	}
 
 	private void map(Collection<Mapping> mappedParticles, List<MappableStep> steps) throws UnmappableException {
@@ -202,13 +202,14 @@ public class MappedXPath {
 				throw new InvalidParameterValueException(msg);
 			}
 			// determine path to nearest geometry mapping
-			List<Mapping> additionalSteps = new ArrayList<Mapping>();
-			if (determineNearestGeometryMapping(mappedParticles, additionalSteps)) {
+			List<GeometryMapping> additionalSteps = new ArrayList<>();
+			determineNearestGeometryMappings(mappedParticles, additionalSteps);
+			if (!additionalSteps.isEmpty()) {
 				matchFound = true;
-				for (int i = 0; i < additionalSteps.size() - 1; i++) {
-					followJoins(additionalSteps.get(i).getJoinedTable());
+				for (GeometryMapping geomStep : additionalSteps) {
+					followJoins(geomStep.getJoinedTable());
+					map(geomStep, steps);
 				}
-				map((GeometryMapping) additionalSteps.get(additionalSteps.size() - 1), steps);
 			}
 		}
 
@@ -224,24 +225,15 @@ public class MappedXPath {
 		}
 	}
 
-	private boolean determineNearestGeometryMapping(Collection<Mapping> mappedParticles, List<Mapping> steps) {
-		boolean found = false;
+	private void determineNearestGeometryMappings(Collection<Mapping> mappedParticles, List<GeometryMapping> steps) {
 		for (Mapping mapping : mappedParticles) {
 			if (mapping instanceof GeometryMapping) {
-				steps.add(mapping);
-				found = true;
-				break;
+				steps.add((GeometryMapping) mapping);
 			}
 			else if (mapping instanceof CompoundMapping) {
-				steps.add(mapping);
-				found = determineNearestGeometryMapping(((CompoundMapping) mapping).getParticles(), steps);
-				if (found) {
-					break;
-				}
-				steps.remove(steps.size() - 1);
+				determineNearestGeometryMappings(((CompoundMapping) mapping).getParticles(), steps);
 			}
 		}
-		return found;
 	}
 
 	private void map(PrimitiveMapping mapping, List<MappableStep> remaining) throws UnmappableException {
@@ -253,10 +245,10 @@ public class MappedXPath {
 		}
 		if (!(me instanceof DBField)) {
 			final String qualifiedExpr = me.toString().replace("$0", currentTableAlias);
-			propMapping = new PropertyNameMapping(converter, joins, qualifiedExpr, null);
+			propMappings.add(new PropertyNameMapping(converter, joins, qualifiedExpr, null));
 			return;
 		}
-		propMapping = new PropertyNameMapping(converter, joins, ((DBField) me).getColumn(), currentTableAlias);
+		propMappings.add(new PropertyNameMapping(converter, joins, ((DBField) me).getColumn(), currentTableAlias));
 	}
 
 	private void map(GeometryMapping mapping, List<MappableStep> remaining) throws UnmappableException {
@@ -270,7 +262,7 @@ public class MappedXPath {
 		if (fs != null) {
 			converter = fs.getConverter(geomMapping);
 		}
-		propMapping = new PropertyNameMapping(converter, joins, ((DBField) me).getColumn(), currentTableAlias);
+		propMappings.add(new PropertyNameMapping(converter, joins, ((DBField) me).getColumn(), currentTableAlias));
 	}
 
 	private void map(FeatureMapping mapping, List<MappableStep> remaining) throws UnmappableException {

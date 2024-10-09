@@ -48,6 +48,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -56,6 +57,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.xml.namespace.QName;
 
@@ -488,25 +490,36 @@ public class SQLFeatureStore implements FeatureStore {
 
 		LOG.trace("Determining BBOX for feature type '{}' (relational mode)", ftMapping.getFeatureType());
 
-		String column = null;
-		Pair<TableName, GeometryMapping> propMapping = ftMapping.getDefaultGeometryMapping();
-		if (propMapping == null) {
+		List<Pair<TableName, GeometryMapping>> geometryMappings = ftMapping.getAllGeometryMappings();
+		if (geometryMappings.isEmpty()) {
 			return null;
 		}
-		MappingExpression me = propMapping.second.getMapping();
-		if (me == null || !(me instanceof DBField)) {
-			String msg = "Cannot determine BBOX for feature type '" + ftMapping.getFeatureType()
-					+ "' (relational mode).";
-			LOG.warn(msg);
-			return null;
-		}
-		column = ((DBField) me).getColumn();
 
-		Envelope env = null;
-		StringBuilder sql = new StringBuilder("SELECT ");
-		sql.append(dialect.getBBoxAggregateSnippet(column));
-		sql.append(" FROM ");
-		sql.append(propMapping.first);
+		boolean containsUnsupportedMapping = geometryMappings.stream().anyMatch(geometryMapping -> {
+			MappingExpression mapping = geometryMapping.second.getMapping();
+			return mapping == null || !(mapping instanceof DBField);
+		});
+		if (containsUnsupportedMapping) {
+			LOG.warn("Cannot determine BBOX for feature type '{}' (relational mode).", ftMapping.getFeatureType());
+			return null;
+		}
+		long noOfDifferentCrs = geometryMappings.stream()
+			.map(geometryMapping -> geometryMapping.second.getCRS())
+			.distinct()
+			.count();
+		if (noOfDifferentCrs > 1) {
+			LOG.warn("Multiple geometries with different CRS are currently not supported");
+			return null;
+		}
+
+		List<String> columns = geometryMappings.stream()
+			.map(geometryMapping -> ((DBField) geometryMapping.second.getMapping()).getColumn())
+			.collect(Collectors.toList());
+		List<TableName> uniqueTableNames = geometryMappings.stream()
+			.map(geometryMapping -> geometryMapping.first)
+			.distinct()
+			.collect(Collectors.toUnmodifiableList());
+		String sql = dialect.getSelectBBox(columns, uniqueTableNames);
 
 		Statement stmt = null;
 		ResultSet rs = null;
@@ -515,8 +528,8 @@ public class SQLFeatureStore implements FeatureStore {
 			LOG.debug("Executing envelope SELECT: {}", sql);
 			rs = stmt.executeQuery(sql.toString());
 			rs.next();
-			ICRS crs = propMapping.second.getCRS();
-			env = dialect.getBBoxAggregateValue(rs, 1, crs);
+			ICRS crs = geometryMappings.get(0).second.getCRS();
+			return dialect.getBBoxAggregateValue(rs, 1, crs);
 		}
 		catch (SQLException e) {
 			LOG.debug(e.getMessage(), e);
@@ -525,7 +538,6 @@ public class SQLFeatureStore implements FeatureStore {
 		finally {
 			release(rs, stmt, null);
 		}
-		return env;
 	}
 
 	private Envelope calcEnvelope(QName ftName, BlobMapping blobMapping, Connection conn) throws FeatureStoreException {
@@ -1669,8 +1681,7 @@ public class SQLFeatureStore implements FeatureStore {
 		final String srid = detectConfiguredSrid();
 		PropertyNameMapper mapper = new PropertyNameMapper() {
 			@Override
-			public PropertyNameMapping getMapping(ValueReference propName, TableAliasManager aliasManager)
-					throws FilterEvaluationException, UnmappableException {
+			public PropertyNameMapping getMapping(ValueReference propName, TableAliasManager aliasManager) {
 				GeometryStorageParams geometryParams = new GeometryStorageParams(blobMapping.getCRS(), srid,
 						CoordinateDimension.DIM_2);
 				GeometryMapping bboxMapping = new GeometryMapping(null, false, new DBField(blobMapping.getBBoxColumn()),
@@ -1680,9 +1691,9 @@ public class SQLFeatureStore implements FeatureStore {
 			}
 
 			@Override
-			public PropertyNameMapping getSpatialMapping(ValueReference propName, TableAliasManager aliasManager)
-					throws FilterEvaluationException, UnmappableException {
-				return getMapping(propName, aliasManager);
+			public List<PropertyNameMapping> getSpatialMappings(ValueReference propName,
+					TableAliasManager aliasManager) {
+				return Collections.singletonList(getMapping(propName, aliasManager));
 			}
 		};
 		return dialect.getWhereBuilder(mapper, filter, null, null, allowInMemoryFiltering);
