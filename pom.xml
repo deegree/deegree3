@@ -34,6 +34,13 @@
         <updatePolicy>never</updatePolicy>
       </releases>
     </repository>
+    <repository>
+      <id>geo-solutions-cache</id>
+      <url>https://repo.osgeo.org/repository/geo-solutions-cache/</url>
+      <releases>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+    </repository>
   </repositories>
 
   <distributionManagement>
@@ -1094,7 +1101,7 @@
       <dependency>
         <groupId>it.geosolutions.imageio-ext</groupId>
         <artifactId>imageio-ext-utilities</artifactId>
-        <version>1.1.29</version>
+        <version>1.4.12</version>
         <exclusions>
           <exclusion>
             <groupId>javax.media</groupId>
@@ -1107,13 +1114,21 @@
           <exclusion>
             <groupId>javax.media</groupId>
             <artifactId>jai_imageio</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>javax.activation</groupId>
+            <artifactId>javax.activation-api</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
       <dependency>
         <groupId>it.geosolutions.imageio-ext</groupId>
         <artifactId>imageio-ext-tiff</artifactId>
-        <version>1.1.29</version>
+        <version>1.4.12</version>
         <exclusions>
           <exclusion>
             <groupId>javax.media</groupId>
@@ -1126,6 +1141,14 @@
           <exclusion>
             <groupId>javax.media</groupId>
             <artifactId>jai_imageio</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>javax.activation</groupId>
+            <artifactId>javax.activation-api</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
