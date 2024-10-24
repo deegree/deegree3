@@ -202,9 +202,9 @@ public class PostGISDialect extends AbstractSQLDialect implements SQLDialect {
 			return super.getSelectBBox(columns, tables);
 		}
 		StringBuilder sql = new StringBuilder("SELECT ");
-		sql.append("ST_Extent( u.union )::BOX2D FROM (");
+		sql.append("ST_Extent( u.allbboxes )::BOX2D FROM (");
 		// subquery start
-		sql.append("SELECT ST_Union( ARRAY[ ");
+		sql.append("SELECT ST_Collect( ARRAY[ ");
 		boolean isFirst = true;
 		for (String column : columns) {
 			if (!isFirst)
@@ -212,7 +212,7 @@ public class PostGISDialect extends AbstractSQLDialect implements SQLDialect {
 			sql.append(getBBoxAggregateSnippet(column));
 			isFirst = false;
 		}
-		sql.append(" ] ) as union FROM ");
+		sql.append(" ] ) as allbboxes FROM ");
 		sql.append(tables.stream().map(SQLIdentifier::toString).collect(Collectors.joining(", ")));
 		// subquery end
 		sql.append(") u");
