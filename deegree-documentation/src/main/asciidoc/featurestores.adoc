@@ -9,7 +9,7 @@ features. The two most common use cases for feature stores are:
 
 The remainder of this chapter describes some relevant terms and the
 feature store configuration files in detail. You can access this
-configuration level by clicking *feature stores* in the service console.
+configuration level by clicking *feature stores* in the administration console.
 The corresponding resource configuration files are located in
 subdirectory _datasources/feature/_ of the active deegree workspace
 directory.
@@ -991,9 +991,9 @@ using a lot of trial-and-error. Here are some general practices to make
 this as painless as possible.
 
 * Map one property of a feature type at a time.
-* Use the *Reload* link in the services console to activate changes.
+* Use the *Reload* link in the administration console to activate changes.
 * After changing the configuration file, make sure that the status of
-the feature store stays green (in the console). If an exclamation mark
+the feature store stays green (in the administration console). If an exclamation mark
 occurs, you have an error in your configuration. Check the error message
 and fix it.
 * Check the results of your change (see below)

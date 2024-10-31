@@ -4,7 +4,7 @@
 Coverage stores are resources that provide access to raster data. The
 most common use case for coverage stores is to provide data for coverage
 layers. You can access this configuration level by clicking the
-*coverage stores* link in the service console. The corresponding
+*coverage stores* link in the administration console. The corresponding
 resource configuration files are located in subdirectory
 *datasources/coverage/* of the active deegree workspace directory.
 
@@ -196,7 +196,7 @@ only want to server a single band you could specifiy the following:
 ----
 <Bands>
 <Single>1</Single>
-</Bands>]
+</Bands>
 ----
 
 [width="100%",cols="20%,11%,7%,62%",options="header",]

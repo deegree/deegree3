@@ -77,10 +77,10 @@ libraries) or by the application (_WEB-INF/lib_).
 
 In order to see which JARs are available to your deegree webservices
 instance/workspace, use the "module info" link in the general section of
-the service console:
+the administration console:
 
-.Displaying available JARs using the service console
-image::module_info.png[Displaying available JARs using the service console,scaledwidth=50.0%]
+.Displaying available JARs using the administration console
+image::module_info.png[Displaying available JARs using the administration console,scaledwidth=50.0%]
 
 The list of JARs section displays the JARs found on the web application
 classpath, while the lower section displays the JARs found on the

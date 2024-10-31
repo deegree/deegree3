@@ -2,7 +2,7 @@
 == Configuration basics
 
 In the previous chapter, you learned how to access and log in to the
-deegree service console and how to download and activate example
+deegree webservices administration console and how to download and activate example
 workspaces. This chapter introduces the basic concepts of deegree
 webservices configuration:
 
@@ -10,7 +10,7 @@ webservices configuration:
 * Workspace files and resources
 * Workspace directories and resource types
 * Resource identifiers and dependencies
-* Usage of the service console for workspace configuration
+* Usage of the administration console for workspace configuration
 
 The final section of this chapter describes recommended practices for
 creating your own workspace. The remaining chapters of the documentation
@@ -121,7 +121,7 @@ read/write access to this directory!
 [[anchor-global-configuration]]
 ==== Global configuration files and the active workspace
 
-If you downloaded all four example workspaces (as described in <<anchor-lightly>>), set a console password and the proxy parameters,
+If you downloaded all four example workspaces (as described in <<anchor-lightly>>), set an administration console password and the proxy parameters,
 your _.deegree_ directory will look like this:
 
 .Example _.deegree_ directory
@@ -136,7 +136,7 @@ files exist:
 |===
 |File name |Function
 |<subdirectory> |Workspace directory
-|console.pw |Password for services console
+|console.pw |Password for the administration console
 |proxy.xml |Proxy settings
 |webapps.properties |Selects the active workspace
 |config.apikey |Contains the key to protect the REST API
@@ -146,7 +146,7 @@ NOTE: Only one single workspace can be active at a time! The
 information on the active one is stored in file _webapps.properties_.
 
 TIP: Usually, you don't need to care about the three files that are located
-at the top level of this directory. The service console creates and
+at the top level of this directory. The administration console creates and
 modifies them as required (e.g. when switching to a different
 workspace). In order to create a deegree webservices setup, you will
 need to create or edit resource configuration files in the active
@@ -363,18 +363,18 @@ protocol if possible and to define the settings for
 `HttpProxy...` and `HttpsProxy...` identically.
 ____
 
-=== Using the service console for managing resources
+=== Using the deegree webservices administration console for managing resources
 
 As an alternative to dealing with the workspace resource configuration
-files directly on the filesystem, you can also use the service console
-for this task. The service console has a corresponding menu entry for
+files directly on the filesystem, you can also use the administration console
+for this task. The administration console has a corresponding menu entry for
 every type of workspace resource. All resource menu entries are grouped
 in the lower menu on the left:
 
 .Workspace resource menu entries
 image::console_resources.png[Workspace resource menu entries,scaledwidth=50.0%]
 
-Although the console offers additional functionality for some resource
+Although the administration console offers additional functionality for some resource
 types, the basic management of resources is always identical.
 
 ==== Displaying configured resources
@@ -433,7 +433,7 @@ configuration format.
 
 If there are no (syntactical) errors in the configuration, the "Save"
 link will take you back to the corresponding resource view. Before
-actually saving the file, the service console will perform an XML
+actually saving the file, the administration console will perform an XML
 validation of the file and display any syntactical errors:
 
 .Displaying a syntax error
@@ -467,7 +467,7 @@ configuration file in the workspace.
 [[anchor-console-errors]]
 ==== Displaying error messages
 
-One of the most helpful features of the console is that it can help to
+One of the most helpful features of the administration console is that it can help to
 detect and fix errors in a workspace setup. For example, if you delete
 (or deactivate) JDBC connection "conn1" in deegree-workspace-csw and
 click "[Reload]", you will see the following:
@@ -535,7 +535,7 @@ _.deegree_ directory.
 .Creating the new workspace _myscenario_
 image::workspace-new.png[Creating the new workspace _myscenario_]
 
-Afterwards, switch to the new workspace using the services console, as
+Afterwards, switch to the new workspace using the administration console, as
 described in <<anchor-downloading-workspaces>>.
 
 ==== Find out which resources you need
@@ -580,12 +580,12 @@ created later (references have to be added to the layers configuration).
 
 All deegree XML configuration files have a corresponding XML schema,
 which allows to detect syntactical errors easily. The editor built into
-the services console performs validation when you save a configuration
+the administration console performs validation when you save a configuration
 file. If the contents is not valid according to the schema, the file
 will not be saved, but an error message will be displayed:
 
-.The services console displays an XML syntax error
-image::console_edit_error.png[The services console displays an XML syntax error,scaledwidth=50.0%]
+.The administration console displays an XML syntax error
+image::console_edit_error.png[The administration console displays an XML syntax error,scaledwidth=50.0%]
 
 If you prefer to use a different editor for editing deegree's
 configuration files, it is highly recommended to choose a validating XML
@@ -598,7 +598,7 @@ schema files are hosted at https://schemas.deegree.org.
 
 ==== Check the resource status and error messages
 
-As pointed out in <<anchor-console-errors>>, the service console
+As pointed out in <<anchor-console-errors>>, the administration console
 indicates errors if resources cannot be initialized. Here's an example:
 
 .Error message

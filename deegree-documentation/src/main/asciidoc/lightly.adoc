@@ -2,8 +2,8 @@
 == Getting started
 
 In the previous chapter, you learned how to install and start deegree
-webservices. In this chapter, we will introduce the deegree service
-console and learn how to use it to perform basic tasks such as
+webservices. In this chapter, we will introduce the deegree webservices
+administration console and learn how to use it to perform basic tasks such as
 downloading and activating example configurations. In deegree
 terminology, a complete configuration for a deegree instance is called
 "deegree workspace".
@@ -15,17 +15,17 @@ contains a complete configuration for a deegree webservice instance. You
 may have multiple deegree workspaces on your machine, but only a single
 workspace can be active.
 
-=== Accessing deegree's service console
+=== Accessing the deegree webservices administration console
 
-The service console is a web-based administration interface for
+The console is a web-based administration interface for
 configuring your deegree webservices installation. If deegree
-webservices are running on your machine, you can usually access the
+webservices are running on your machine, you can usually access the administration
 console from your browser via http://localhost:8080/deegree-webservices
 
 .deegree webservices administration console
 image::console_start.png[deegree webservices administration console,scaledwidth=50.0%]
 
-TIP: You can access the service console from other machines on your network
+TIP: You can access the administration console from other machines on your network
 by exchanging _localhost_ with the name or IP address of the machine
 that runs deegree webservices.
 
@@ -34,7 +34,7 @@ relevant. The menu items in this section:
 
 * *workspaces*: Download and activate example configurations
 * *proxy*: Configure network proxy settings
-* *password*: Set a password for accessing the service console
+* *password*: Set a password for accessing the administration console
 * *module info*: Display loaded deegree modules
 * *send requests*: Send raw OGC web service requests
 * *see layers*: Display WMS layers
@@ -114,7 +114,7 @@ button in the map area.
 image::console_workspace_utah3.png[Exploring Utah layers,scaledwidth=50.0%]
 
 In order to send requests against the WFS, you may use the *send
-requests* link in the service console (you may need to go back in your
+requests* link in the administration console (you may need to go back in your
 browser first). A simple interface for sending XML requests will open
 up. This interface is meant for accessing OGC web services on the
 protocol level and contains some reasonable example requests.
