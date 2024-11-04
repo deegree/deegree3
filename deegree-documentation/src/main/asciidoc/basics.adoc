@@ -159,7 +159,7 @@ _webapps.properties_ stores the active workspace for every deegree
 webapp separately.
 
 TIP: If there is no _config.apikey_ file, one will be generated on startup
-with an random value. Alternatively, a value of `*` in config.apikey will 
+with a random value. Alternatively, a value of `*` in config.apikey will
 turn off security for the REST API. We strongly advise against doing this
 in productive environments.
 
@@ -358,7 +358,7 @@ specifiying them, their order must be respected.
 
 ____
 NOTE: When specifying the proxy server, this can be defined individually
-per protocol or in general. It is recommend to specify the proxy servers with
+per protocol or in general. It is recommended to specify the proxy servers with
 protocol if possible and to define the settings for
 `HttpProxy...` and `HttpsProxy...` identically.
 ____
