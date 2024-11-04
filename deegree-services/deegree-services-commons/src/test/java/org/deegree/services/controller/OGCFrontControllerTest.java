@@ -136,8 +136,10 @@ public class OGCFrontControllerTest {
 		PowerMockito.when(OGCFrontController.class, "getHttpURL").thenCallRealMethod();
 		PowerMockito.when(OGCFrontController.class, "buildUrlFromForwardedHeader", eq(mockedContext), any(URL.class))
 			.thenCallRealMethod();
+		PowerMockito.when(OGCFrontController.class, "parseHost", anyString()).thenCallRealMethod();
 		PowerMockito.when(OGCFrontController.class, "parseProtocol", anyString(), any(URL.class)).thenCallRealMethod();
-		PowerMockito.when(OGCFrontController.class, "parsePort", anyString(), any(URL.class)).thenCallRealMethod();
+		PowerMockito.when(OGCFrontController.class, "parsePort", anyString(), anyString(), any(URL.class))
+			.thenCallRealMethod();
 		PowerMockito.when(OGCFrontController.getContext()).thenReturn(mockedContext);
 	}
 
@@ -161,6 +163,36 @@ public class OGCFrontControllerTest {
 		when(context.getXForwardedPort()).thenReturn(xForwardedPort);
 		when(context.getXForwardedProto()).thenReturn(xForwardedProto);
 		return context;
+	}
+
+	@Test
+	public void testGetHttpPostURLWithXForwardedHostWithPortAndXForwardedPort() throws Exception {
+		String serviceUrl = "http://myservice.de:9090/deegree-webservices/test";
+		String xForwardedHost = "xForwardedHost.de:8088";
+		String xForwardedPort = "8089";
+		String xForwardedProto = "https";
+		RequestContext mockedContext = mockContext(serviceUrl, xForwardedHost, xForwardedPort, xForwardedProto);
+
+		prepareOGCFrontController(mockedContext);
+
+		String httpPostURL = OGCFrontController.getHttpPostURL();
+
+		assertThat(httpPostURL, is("https://xForwardedHost.de:8089/deegree-webservices/test"));
+	}
+
+	@Test
+	public void testGetHttpPostURLWithXForwardedHostWithPortWithoutXForwardedPort() throws Exception {
+		String serviceUrl = "http://myservice.de:9090/deegree-webservices/test";
+		String xForwardedHost = "xForwardedHost.de:8089";
+		String xForwardedPort = null;
+		String xForwardedProto = "https";
+		RequestContext mockedContext = mockContext(serviceUrl, xForwardedHost, xForwardedPort, xForwardedProto);
+
+		prepareOGCFrontController(mockedContext);
+
+		String httpPostURL = OGCFrontController.getHttpPostURL();
+
+		assertThat(httpPostURL, is("https://xForwardedHost.de:8089/deegree-webservices/test"));
 	}
 
 }
