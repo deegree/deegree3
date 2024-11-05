@@ -138,7 +138,7 @@ public class OGCFrontControllerTest {
 			.thenCallRealMethod();
 		PowerMockito.when(OGCFrontController.class, "parseHost", anyString()).thenCallRealMethod();
 		PowerMockito.when(OGCFrontController.class, "parseProtocol", anyString(), any(URL.class)).thenCallRealMethod();
-		PowerMockito.when(OGCFrontController.class, "parsePort", anyString(), anyString(), any(URL.class))
+		PowerMockito.when(OGCFrontController.class, "parsePort", any(), anyString(), any(URL.class))
 			.thenCallRealMethod();
 		PowerMockito.when(OGCFrontController.getContext()).thenReturn(mockedContext);
 	}
