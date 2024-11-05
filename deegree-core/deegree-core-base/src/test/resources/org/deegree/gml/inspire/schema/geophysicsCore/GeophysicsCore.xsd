@@ -1,0 +1,492 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:base="http://inspire.ec.europa.eu/schemas/base/3.3" xmlns:base2="http://inspire.ec.europa.eu/schemas/base2/2.0" xmlns:ge_gp="http://inspire.ec.europa.eu/schemas/ge_gp/4.0" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:sams="http://www.opengis.net/samplingSpatial/2.0" xmlns:sc="http://www.interactive-instruments.de/ShapeChange/AppInfo" elementFormDefault="qualified" targetNamespace="http://inspire.ec.europa.eu/schemas/ge_gp/4.0" version="4.0.1">
+	<import namespace="http://inspire.ec.europa.eu/schemas/base/3.3" schemaLocation="BaseTypes.xsd"/>
+	<import namespace="http://inspire.ec.europa.eu/schemas/base2/2.0" schemaLocation="BaseTypes2.xsd"/>
+	<import namespace="http://www.interactive-instruments.de/ShapeChange/AppInfo" schemaLocation="ShapeChangeAppinfo.xsd"/>
+	<import namespace="http://www.isotc211.org/2005/gmd" schemaLocation="http://schemas.opengis.net/iso/19139/20070417/gmd.xsd"/>
+	<import namespace="http://www.opengis.net/gml/3.2" schemaLocation="http://schemas.opengis.net/gml/3.2.1/gml.xsd"/>
+	<import namespace="http://www.opengis.net/samplingSpatial/2.0" schemaLocation="spatialSamplingFeature.xsd"/>
+	<!-- v4.0.1 of this schema released in INSPIRE schema release v.2021.2.
+	     Change performed: Added type and nilReason to the distributioninfo - non breaking change - bugfix.
+	     See https://github.com/INSPIRE-MIF/helpdesk-validator/releases/v2021.2 -->
+	<element name="Campaign" substitutionGroup="ge_gp:GeophObjectSet" type="ge_gp:CampaignType">
+
+		<annotation>
+			<documentation>-- Definition --
+Geophysical activity extending over a limited time range and limited area for producing similar geophysical measurements, processing results or models.
+
+-- Description --
+Campaigns can be considered as parents of geophysical measurements or models. Children may refer to parent campaigns through the largerWork  identifier.</documentation>
+		</annotation>
+	</element>
+	<complexType name="CampaignType">
+		<complexContent>
+			<extension base="ge_gp:GeophObjectSetType">
+				<sequence>
+					<element name="campaignType" type="gml:ReferenceType">
+						<annotation>
+							<documentation>-- Definition --
+Type of activity to produce data
+
+-- Description --
+Value shall be one of the items defined in codelist CampaignTypeValue</documentation>
+							<appinfo>
+								<taggedValue xmlns="http://www.interactive-instruments.de/ShapeChange/AppInfo" tag="obligation">implementingRule</taggedValue>
+							</appinfo>
+						</annotation>
+					</element>
+					<element name="surveyType" type="gml:ReferenceType">
+						<annotation>
+							<documentation>-- Definition --
+Type of geophysical survey
+
+-- Description --
+The geophysical method is specified by this attribute. Value shall be one of the items defined in codelist SurveyTypeValue.</documentation>
+							<appinfo>
+								<taggedValue xmlns="http://www.interactive-instruments.de/ShapeChange/AppInfo" tag="obligation">implementingRule</taggedValue>
+							</appinfo>
+						</annotation>
+					</element>
+					<element name="client" nillable="true">
+						<annotation>
+							<documentation>-- Definition --
+Party for which data was created.</documentation>
+						</annotation>
+						<complexType>
+							<sequence>
+								<element ref="base2:RelatedParty"/>
+							</sequence>
+							<attribute name="nilReason" type="gml:NilReasonType"/>
+						</complexType>
+					</element>
+					<element name="contractor" nillable="true">
+						<annotation>
+							<documentation>-- Definition --
+Party by which data was created
+
+-- Description --
+Party responsible for creating the data related to the campaign</documentation>
+						</annotation>
+						<complexType>
+							<sequence>
+								<element ref="base2:RelatedParty"/>
+							</sequence>
+							<attribute name="nilReason" type="gml:NilReasonType"/>
+						</complexType>
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="CampaignPropertyType">
+		<sequence minOccurs="0">
+			<element ref="ge_gp:Campaign"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+	</complexType>
+	<element abstract="true" name="GeophMeasurement" substitutionGroup="ge_gp:GeophObject" type="ge_gp:GeophMeasurementType">
+		<annotation>
+			<documentation>-- Definition --
+Generic spatial object type for geophysical measurements.
+
+-- Description --
+Geophysical measurements collect data outside or on the boundary of the observed spatial domain.</documentation>
+		</annotation>
+	</element>
+	<complexType abstract="true" name="GeophMeasurementType">
+		<complexContent>
+			<extension base="ge_gp:GeophObjectType">
+				<sequence>
+					<element maxOccurs="unbounded" name="relatedModel" nillable="true">
+						<annotation>
+							<documentation>-- Definition --
+Identifier of the geophysical model that was created from the measurement
+
+-- Description --
+Results of the measurement can be referenced by these identifiers.</documentation>
+						</annotation>
+						<complexType>
+							<sequence>
+								<element ref="base:Identifier"/>
+							</sequence>
+							<attribute name="nilReason" type="gml:NilReasonType"/>
+						</complexType>
+					</element>
+					<element name="platformType" type="gml:ReferenceType">
+						<annotation>
+							<documentation>-- Definition --
+Platform from which the measurement was carried out
+
+-- Description --
+Values to be used are defined in codelist  PlatformTypeValue.</documentation>
+							<appinfo>
+								<taggedValue xmlns="http://www.interactive-instruments.de/ShapeChange/AppInfo" tag="obligation">implementingRule</taggedValue>
+							</appinfo>
+						</annotation>
+					</element>
+					<element maxOccurs="unbounded" name="relatedNetwork" nillable="true" type="gml:ReferenceType">
+						<annotation>
+							<documentation>-- Definition --
+Name of a national or international observation network to which the facility belongs, or  to which measured data is reported.
+
+-- Description --
+Permanent measuring installations maz be part of larger observation networks. It means that observation data is regularly sent to the archives of the related network in an official way.</documentation>
+							<appinfo>
+								<taggedValue xmlns="http://www.interactive-instruments.de/ShapeChange/AppInfo" tag="obligation">implementingRule</taggedValue>
+							</appinfo>
+						</annotation>
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="GeophMeasurementPropertyType">
+		<sequence minOccurs="0">
+			<element ref="ge_gp:GeophMeasurement"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+	</complexType>
+	<element abstract="true" name="GeophObject" substitutionGroup="sams:SF_SpatialSamplingFeature" type="ge_gp:GeophObjectType">
+		<annotation>
+			<documentation>-- Definition --
+A generic class for  geophysical objects. 
+
+-- Description --
+GeophObject models single geophysical entities that are used for spatial sampling either by means of data acquisition or data processing.</documentation>
+		</annotation>
+	</element>
+	<complexType abstract="true" name="GeophObjectType">
+		<complexContent>
+			<extension base="sams:SF_SpatialSamplingFeatureType">
+				<sequence>
+					<element name="inspireId" type="base:IdentifierPropertyType">
+						<annotation>
+							<documentation>-- Definition --
+External object identifier of the measurement.
+
+-- Description --
+NOTE An external object identifier is a unique object identifier published by the responsible body, which may be used by external applications to reference the spatial object. The identifier is an identifier of the spatial object, not an identifier of the real-world phenomenon.</documentation>
+						</annotation>
+					</element>
+					<element name="citation">
+						<annotation>
+							<documentation>-- Definition --
+Citation of geophysical documentation
+
+-- Description --
+Used for title,  date of related documentation and URL for  online access. At the minimum a short name (title) shall be given.</documentation>
+						</annotation>
+						<complexType>
+							<complexContent>
+								<extension base="gml:AbstractMemberType">
+									<sequence minOccurs="0">
+										<element ref="base2:DocumentCitation"/>
+									</sequence>
+									<attributeGroup ref="gml:AssociationAttributeGroup"/>
+								</extension>
+							</complexContent>
+						</complexType>
+					</element>
+					<element maxOccurs="unbounded" name="projectedGeometry" type="gml:GeometryPropertyType">
+						<annotation>
+							<documentation>-- Definition --
+2D projection of the feature to the ground surface (as a representative point, curve or bounding polygon) to be used by an INSPIRE view service to display the spatial object location on a map. 
+
+-- Description --
+When measurement setup is 3 dimensional, it is necessary to define a 2D geometry for displaying purposes. It shall be the 2D projection of the spatial object on the ground surface. Allowed types: point, track and outline. Examples: projected geometry of a borehole logging measurement is a point coincident with the borehole collar location. Projected geometry of a 3D multielectrode DC measurement is a polygon</documentation>
+						</annotation>
+					</element>
+					<element name="verticalExtent" nillable="true">
+						<annotation>
+							<documentation>-- Definition --
+Vertical extent of the range of interest. 
+
+-- Description --
+This parameter serves discovery purposes. It may refer both to the vertical extent of the measurement setup (p.e. borehole logging) or the extent of the range where processed data is spatially referenced to (Vertical Electric Sounding). The aim is to give an idea to the user about the estimated depth of investigation.</documentation>
+						</annotation>
+						<complexType>
+							<complexContent>
+								<extension base="gml:AbstractMetadataPropertyType">
+									<sequence minOccurs="0">
+										<element ref="gmd:EX_VerticalExtent"/>
+									</sequence>
+									<attributeGroup ref="gml:AssociationAttributeGroup"/>
+								</extension>
+							</complexContent>
+						</complexType>
+					</element>
+					<element name="distributionInfo" nillable="true">
+						<annotation>
+							<documentation>-- Definition --
+Distribution metadata
+
+-- Description --
+Data providers may use external services to provide information on a geophysical measurement. Links to the access points, description of ordering procedures or external services can be added in distributionInfo, that is an ISO MD_Distributor record.</documentation>
+						</annotation>
+<!--SM-Oct 2021 added type for the distributioninfo element -->
+						<complexType>
+							<sequence>
+								<element ref="gmd:MD_Distributor"/>
+							</sequence>
+							<attribute name="nilReason" type="gml:NilReasonType"/>
+						</complexType>						
+					</element>
+					<element maxOccurs="unbounded" name="largerWork" nillable="true">
+						<annotation>
+							<documentation>-- Definition --
+Identifier of a larger work dataset, typically a campaign or project
+
+-- Description --
+Measurements are usually made in campaigns. The largerWork identifier points to the parent Campaign or Project</documentation>
+						</annotation>
+						<complexType>
+							<sequence>
+								<element ref="base:Identifier"/>
+							</sequence>
+							<attribute name="nilReason" type="gml:NilReasonType"/>
+						</complexType>
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="GeophObjectPropertyType">
+		<sequence minOccurs="0">
+			<element ref="ge_gp:GeophObject"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+	</complexType>
+	<element name="GeophObjectSet" substitutionGroup="sams:SF_SpatialSamplingFeature" type="ge_gp:GeophObjectSetType">
+		<annotation>
+			<documentation>-- Definition --
+Generic class for collections of geophysical objects
+
+-- Description --
+It is a set of geophysical objects that are grouped by some common property. p.e: created in the same measuring campaign. GeophObjectSets are used for spatial sampling either by means of data acquisition or data processing. The produced  result of a geophObjectSet is always collective, e.g. a map constructed from the results of the individual member objects.</documentation>
+		</annotation>
+	</element>
+	<complexType name="GeophObjectSetType">
+		<complexContent>
+			<extension base="sams:SF_SpatialSamplingFeatureType">
+				<sequence>
+					<element name="inspireId" type="base:IdentifierPropertyType">
+						<annotation>
+							<documentation>-- Definition --
+External object identifier of the spatial object.
+
+-- Description --
+NOTE An external object identifier is a unique object identifier published by the responsible body, which may be used by external applications to reference the spatial object. The identifier is an identifier of the spatial object, not an identifier of the real-world phenomenon.</documentation>
+						</annotation>
+					</element>
+					<element name="citation">
+						<annotation>
+							<documentation>-- Definition --
+Citation of geophysical documentation
+
+-- Description --
+Used for title,  date of related documentation and URL for  online access. At the minimum a short name (title) shall be given.</documentation>
+						</annotation>
+						<complexType>
+							<complexContent>
+								<extension base="gml:AbstractMemberType">
+									<sequence minOccurs="0">
+										<element ref="base2:DocumentCitation"/>
+									</sequence>
+									<attributeGroup ref="gml:AssociationAttributeGroup"/>
+								</extension>
+							</complexContent>
+						</complexType>
+					</element>
+					<element name="verticalExtent" nillable="true">
+						<annotation>
+							<documentation>-- Definition --
+Vertical extent of the range of interest. 
+
+-- Description --
+This parameter serves discovery purposes. It may refer both to the vertical extent of the setup of measurements within the survey, or the extent of the range where processed data is spatially referenced to (estimated depth of investigation). The aim is to give an idea to the user about the estimated depth of investigation.</documentation>
+						</annotation>
+						<complexType>
+							<complexContent>
+								<extension base="gml:AbstractMetadataPropertyType">
+									<sequence minOccurs="0">
+										<element ref="gmd:EX_VerticalExtent"/>
+									</sequence>
+									<attributeGroup ref="gml:AssociationAttributeGroup"/>
+								</extension>
+							</complexContent>
+						</complexType>
+					</element>
+					<element name="distributionInfo" nillable="true">
+						<annotation>
+							<documentation>-- Definition --
+Distribution metadata
+
+-- Description --
+Data providers may use external services to provide access to data or information on a survey. Links to the access points, description of ordering procedures, fees can be added in distributionInfo that is an ISO MD_Distributor record.</documentation>
+						</annotation>
+<!--SM-Oct 2021 added type for the distributioninfo element -->
+						<complexType>
+							<sequence>
+								<element ref="gmd:MD_Distributor"/>
+							</sequence>
+							<attribute name="nilReason" type="gml:NilReasonType"/>
+						</complexType>
+												
+						
+					</element>
+					<element maxOccurs="unbounded" name="projectedGeometry" type="gml:GeometryPropertyType">
+						<annotation>
+							<documentation>-- Definition --
+2D projection of the feature to the ground surface (as a representative point, curve or bounding polygon) to be used by an INSPIRE view service to display the spatial object on a map.. 
+
+-- Description --
+Projected geometry of the object set  (survey), that is usually the bounding polygon of the working area.</documentation>
+						</annotation>
+					</element>
+					<element maxOccurs="unbounded" name="largerWork" nillable="true">
+						<annotation>
+							<documentation>-- Definition --
+Identifier of a larger work dataset
+
+-- Description --
+The largerWork identifier points to the parent Campaign or Project</documentation>
+						</annotation>
+						<complexType>
+							<sequence>
+								<element ref="base:Identifier"/>
+							</sequence>
+							<attribute name="nilReason" type="gml:NilReasonType"/>
+						</complexType>
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="GeophObjectSetPropertyType">
+		<sequence minOccurs="0">
+			<element ref="ge_gp:GeophObjectSet"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+	</complexType>
+	<element name="GeophProfile" substitutionGroup="ge_gp:GeophMeasurement" type="ge_gp:GeophProfileType">
+		<annotation>
+			<documentation>-- Definition --
+Geophysical measurement spatially referenced to a curve
+
+-- Description --
+Used to collect data along a curve. Examples: 2D seismic line (field measurement), borehole logging, airborne geophysical flight line
+
+NOTE1. Processing results of geophProfiles are often vertical surface coverages</documentation>
+		</annotation>
+	</element>
+	<complexType name="GeophProfileType">
+		<complexContent>
+			<extension base="ge_gp:GeophMeasurementType">
+				<sequence>
+					<element name="profileType" type="gml:ReferenceType">
+						<annotation>
+							<documentation>-- Definition --
+Type of geophysical profile</documentation>
+							<appinfo>
+								<taggedValue xmlns="http://www.interactive-instruments.de/ShapeChange/AppInfo" tag="obligation">implementingRule</taggedValue>
+							</appinfo>
+						</annotation>
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="GeophProfilePropertyType">
+		<sequence minOccurs="0">
+			<element ref="ge_gp:GeophProfile"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+	</complexType>
+	<element name="GeophStation" substitutionGroup="ge_gp:GeophMeasurement" type="ge_gp:GeophStationType">
+		<annotation>
+			<documentation>-- Definition --
+Geophysical measurement spatially referenced to a single point location
+
+-- Description --
+Used to collect data at a single location. The source-sensor setup may be elongated or two dimensional, but the collected data is spatially referenced to a single point. Example: Gravity station, Magnetic station
+
+NOTE 1. Processing results of geophStations are often vertical curve coverages</documentation>
+		</annotation>
+	</element>
+	<complexType name="GeophStationType">
+		<complexContent>
+			<extension base="ge_gp:GeophMeasurementType">
+				<sequence>
+					<element name="stationType" type="gml:ReferenceType">
+						<annotation>
+							<documentation>-- Definition --
+Type of geophysical station</documentation>
+							<appinfo>
+								<taggedValue xmlns="http://www.interactive-instruments.de/ShapeChange/AppInfo" tag="obligation">implementingRule</taggedValue>
+							</appinfo>
+						</annotation>
+					</element>
+					<element maxOccurs="unbounded" name="stationRank" nillable="true" type="gml:ReferenceType">
+						<annotation>
+							<documentation>-- Definition --
+Geophysical stations may be part of a hierarchical system. Rank is proportional to the importance of a station 
+
+-- Description --
+Significance of stations can be very different even for the same geophysical method. Rank maz take the following values: 1stOrderBase, 2ndOrderBase, secularStation, observatory. Base stations are used to tie local measurements to higher level networks. Secular stations are visited from time to time to detect long term temporal changes of physical parameters. Observatories are important facilities that collect data continuously, or on a regular basis.</documentation>
+							<appinfo>
+								<taggedValue xmlns="http://www.interactive-instruments.de/ShapeChange/AppInfo" tag="obligation">implementingRule</taggedValue>
+							</appinfo>
+						</annotation>
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="GeophStationPropertyType">
+		<sequence minOccurs="0">
+			<element ref="ge_gp:GeophStation"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+	</complexType>
+	<element name="GeophSwath" substitutionGroup="ge_gp:GeophMeasurement" type="ge_gp:GeophSwathType">
+		<annotation>
+			<documentation>-- Definition --
+Geophysical measurement spatially referenced to a surface
+
+-- Description --
+Used to collect data over a surface. Example: 3D seismic swath
+
+NOTE1. Processing results of geophSwaths can be both surface and solid coverages</documentation>
+		</annotation>
+	</element>
+	<complexType name="GeophSwathType">
+		<complexContent>
+			<extension base="ge_gp:GeophMeasurementType">
+				<sequence>
+					<element name="swathType" type="gml:ReferenceType">
+						<annotation>
+							<documentation>-- Definition --
+Type of geophysical swath</documentation>
+							<appinfo>
+								<taggedValue xmlns="http://www.interactive-instruments.de/ShapeChange/AppInfo" tag="obligation">implementingRule</taggedValue>
+							</appinfo>
+						</annotation>
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="GeophSwathPropertyType">
+		<sequence minOccurs="0">
+			<element ref="ge_gp:GeophSwath"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+	</complexType>
+</schema>
