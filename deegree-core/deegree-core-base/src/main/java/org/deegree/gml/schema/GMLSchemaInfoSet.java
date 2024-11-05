@@ -45,6 +45,7 @@ import static org.deegree.commons.tom.gml.GMLObjectCategory.FEATURE;
 import static org.deegree.commons.tom.gml.GMLObjectCategory.GEOMETRY;
 import static org.deegree.commons.tom.gml.GMLObjectCategory.TIME_OBJECT;
 import static org.deegree.commons.tom.gml.GMLObjectCategory.TIME_SLICE;
+import static org.deegree.commons.utils.TunableParameter.get;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.commons.xml.CommonNamespaces.ISOAP10GMDNS;
@@ -133,6 +134,20 @@ import org.w3c.dom.ls.LSInput;
 public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
 
 	private static final Logger LOG = LoggerFactory.getLogger(GMLSchemaInfoSet.class);
+
+	/**
+	 * This option controls the recognition of GML 3.2 feature collections on the basis of
+	 * FeaturePropertyType.
+	 *
+	 * <code>true</code>: feature types not in GML 3.2 namespace with at least one
+	 * property derived from FeaturePropertyType are recognized as feature collection
+	 *
+	 * <code>false</code> only feature types in GML 3.2 namespace with at least one
+	 * property derived from FeaturePropertyType are recognized as feature collection
+	 */
+	protected static final String RECOGNIZE_DEPRECATED_TYPES = "deegree.gml.parse.recognize-deprecated-types";
+
+	private static boolean recognizeAllDeprecatedTypesAsFeatureCollection = get(RECOGNIZE_DEPRECATED_TYPES, true);
 
 	private static final String GML_PRE_32_NS = CommonNamespaces.GMLNS;
 
@@ -559,16 +574,33 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
 			// handle deprecated FeatureCollection types as well (their properties are not
 			// based on
 			// AbstractFeatureMemberType, but on FeaturePropertyType)
-			if (propType.derivedFrom(GML_32_NS, "FeaturePropertyType", (short) (XSConstants.DERIVATION_RESTRICTION
-					| XSConstants.DERIVATION_EXTENSION | XSConstants.DERIVATION_UNION | XSConstants.DERIVATION_LIST))) {
-				XSParticle particle = getEnclosingParticle(propDecl);
-				if (particle != null) {
-					int maxOccurs = particle.getMaxOccurs();
-					boolean maxOccursUnbounded = particle.getMaxOccursUnbounded();
-					return maxOccurs > 1 || maxOccursUnbounded;
+			boolean deprecatedGml32FeatureCollection = isDeprecatedGml32FeatureCollection(propDecl, propType);
+			if (deprecatedGml32FeatureCollection) {
+				if (isGMLNamespace(type.getNamespace())) {
+					return true;
 				}
-				return true;
+				else if (recognizeAllDeprecatedTypesAsFeatureCollection) {
+					LOG.warn(
+							"Recognized feature declaration {{}}{} as deprecated FeatureCollection type. Use tunable {} "
+									+ "to disable parsing of deprecated feature types not in the GML namespace.",
+							featureDecl.getNamespace(), featureDecl.getName(), RECOGNIZE_DEPRECATED_TYPES);
+					return true;
+				}
 			}
+		}
+		return false;
+	}
+
+	private boolean isDeprecatedGml32FeatureCollection(XSElementDeclaration propDecl, XSTypeDefinition propType) {
+		if (propType.derivedFrom(GML_32_NS, "FeaturePropertyType", (short) (XSConstants.DERIVATION_RESTRICTION
+				| XSConstants.DERIVATION_EXTENSION | XSConstants.DERIVATION_UNION | XSConstants.DERIVATION_LIST))) {
+			XSParticle particle = getEnclosingParticle(propDecl);
+			if (particle != null) {
+				int maxOccurs = particle.getMaxOccurs();
+				boolean maxOccursUnbounded = particle.getMaxOccursUnbounded();
+				return maxOccurs > 1 || maxOccursUnbounded;
+			}
+			return true;
 		}
 		return false;
 	}
@@ -1158,7 +1190,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
 
 	/**
 	 * Returns the {@link GMLObjectCategory} of the given element declaration..
-	 * @param elName element declaration, must not be <code>null</code>
+	 * @param elDecl element declaration, must not be <code>null</code>
 	 * @return category, can be <code>null</code> (element is not a recognized GML object)
 	 */
 	public GMLObjectCategory getObjectCategory(final XSElementDeclaration elDecl) {
@@ -1269,6 +1301,10 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
 			pt = elDeclToGMLObjectPropDecl.get(elDecl);
 		}
 		return pt;
+	}
+
+	protected static void setRecognizeDeprecatedTypes(boolean isRecognizeAllDeprecatedTypesAsFeatureCollection) {
+		recognizeAllDeprecatedTypesAsFeatureCollection = isRecognizeAllDeprecatedTypesAsFeatureCollection;
 	}
 
 	private void addChildElementDecls(final XSParticle particle, final List<XSTerm> propDecls) {
