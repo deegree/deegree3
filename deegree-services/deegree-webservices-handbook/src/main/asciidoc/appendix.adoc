@@ -59,7 +59,7 @@ f
 
 |deegree.config.apikey.warn-when-disabled |java.lang.Boolean |true |Log warning if security on REST api is disabled by specifying `*` in _config.apikey_.
 
-|deegree.gml.parse.recognize-deprecated-types |java.lang.Boolean |true |When deegree reads application schemas feature types not in GML 3.2 namespace with at least one property derived from FeaturePropertyType are recognized as feature collection. If false only feature types in GML 3.2 namespace with at least one property derived from FeaturePropertyType are recognized as feature collection.
+|deegree.gml.parse.recognize-deprecated-types |java.lang.Boolean |true |When deegree reads application schemas the feature types, not in GML 3.2 namespace with at least one property derived from FeaturePropertyType, are recognized as feature collections. If set to false only feature types in GML 3.2 namespace, with at least one property derived from FeaturePropertyType, are recognized as feature collections.
 
 |===
 
