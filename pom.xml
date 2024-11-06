@@ -392,7 +392,7 @@
           <dependency>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>extra-enforcer-rules</artifactId>
-            <version>1.6.2</version>
+            <version>1.8.0</version>
           </dependency>
         </dependencies>
       </plugin>
@@ -507,7 +507,7 @@
       <dependency>
         <groupId>org.xmlunit</groupId>
         <artifactId>xmlunit-matchers</artifactId>
-        <version>2.9.1</version>
+        <version>2.10.0</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -1068,7 +1068,7 @@
       <dependency>
         <groupId>org.locationtech.jts</groupId>
         <artifactId>jts-core</artifactId>
-        <version>1.19.0</version>
+        <version>1.20.0</version>
       </dependency>
       <dependency>
         <groupId>it.geosolutions.jgridshift</groupId>
@@ -1207,7 +1207,7 @@
     <antlr.version>3.5.3</antlr.version>
     <oracle.version>23.4.0.24.05</oracle.version>
     <log4j.version>2.23.1</log4j.version>
-    <slf4j.version>2.0.13</slf4j.version>
+    <slf4j.version>2.0.16</slf4j.version>
     <spring-boot.version>3.3.0</spring-boot.version>
     <spring-batch.version>5.1.2</spring-batch.version>
     <spring-framework.version>6.1.8</spring-framework.version>
