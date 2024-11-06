@@ -94,6 +94,8 @@ This chapter is only intended as an entry point to make it easier to reach these
 
 |org.deegree.services.wms.controller.plugins.GetFeatureInfoProvider |org.deegree.services.wms.controller.plugins.DefaultGetFeatureInfoProvider |0..1
 
+|deegree.gml.parse.recognize-deprecated-types |java.lang.Boolean |false |When deegree reads application schemas feature types not in GML 3.2 namespace with at least one property derived from FeaturePropertyType are ignored as feature collection. If true all feature types with at least one property derived from FeaturePropertyType are recognized as feature collection.
+
 |===
 
 [[anchor-appendix-customconverter]]
