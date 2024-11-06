@@ -99,7 +99,7 @@
             <port>8080</port>
             <idleTimeout>60000</idleTimeout>
           </httpConnector>
-          <jvmArgs>--illegal-access=warn --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.desktop/com.sun.imageio.spi=ALL-UNNAMED --add-opens java.desktop/javax.imageio.spi=ALL-UNNAMED --add-exports java.desktop/sun.awt=ALL-UNNAMED --add-exports java.desktop/com.sun.imageio.spi=ALL-UNNAMED --add-exports java.desktop/sun.swing=ALL-UNNAMED --add-opens java.desktop/javax.imageio.spi=ALL-UNNAMED</jvmArgs>
+          <jvmArgs>${jvm.args}</jvmArgs>
         </configuration>
       </plugin>
     </plugins>

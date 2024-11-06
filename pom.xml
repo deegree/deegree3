@@ -153,8 +153,7 @@
           <artifactId>maven-surefire-plugin</artifactId>
           <version>3.5.0</version>
           <configuration>
-            <!-- Travis build workaround -->
-            <argLine>-Djava.awt.headless=true -Dfile.encoding=UTF-8 -Xms1024m -Xmx2048m --illegal-access=permit
+            <argLine>-Djava.awt.headless=true -Dfile.encoding=UTF-8 -Xms1024m -Xmx2048m
               --add-opens java.base/java.lang=ALL-UNNAMED
               --add-opens java.base/java.net=ALL-UNNAMED
               --add-opens java.base/java.util=ALL-UNNAMED
@@ -170,9 +169,7 @@
           <artifactId>maven-failsafe-plugin</artifactId>
           <version>3.5.0</version>
           <configuration>
-            <argLine>
-              --illegal-access=permit
-            </argLine>
+            <argLine>${jvm.args}</argLine>
           </configuration>
         </plugin>
         <!-- reporting and site -->
@@ -1238,6 +1235,7 @@
     <axiom.version>1.4.0</axiom.version>
     <jsonpath.version>2.9.0</jsonpath.version>
     <jsonsmart.version>2.5.1</jsonsmart.version>
+    <jvm.args>--add-exports java.desktop/sun.awt=ALL-UNNAMED --add-exports java.desktop/com.sun.imageio.spi=ALL-UNNAMED --add-exports java.desktop/sun.swing=ALL-UNNAMED --add-opens java.desktop/javax.imageio.spi=ALL-UNNAMED --add-opens java.desktop/com.sun.imageio.spi=ALL-UNNAMED</jvm.args>
   </properties>
 
   <modules>
