@@ -48,11 +48,11 @@ declare the pixel origin of the coverage. If omitted, center is used
 as origin location.
 * The nodata attribute can be optionally used to declare a nodata value.
 * The readWorldFiles parameter can have the values true or false to
-indicate if worlfiles will be read. Default value is true.
-* The StorageCRS paramter is optional but recommended. It contains the
+indicate if world files will be read. Default value is true.
+* The StorageCRS parameter is optional but recommended. It contains the
 EPSG code of the coverage sources.
 * The RasterFile and RasterDirectory parameters contain the path to your
-coverage sources. The RasterDirectory paramter can additionally have the
+coverage sources. The RasterDirectory parameter can additionally have the
 recursive attribute with true and false as value to declare
 subdirectories to be included.
 
@@ -61,7 +61,7 @@ Depending on the raster data used, the size of the cache files may vary.
 In individual cases, the use of cache files can be prevented by creating a 
 file _<filename>.no-cache_ or _<filename>.no-cache-<level>_ for whole files 
 or individual levels. Disabling the cache files can have a negative effect 
-on memory consumption. It is recommend to leave the cache enabled if possible.
+on memory consumption. It is recommended to leave the cache enabled if possible.
 
 === MultiResolutionRaster
 
@@ -93,7 +93,7 @@ Here is an example for a MultiResolutionRaster:
 * A MultiResolustionRaster contains at least one Resolution
 * The Raster parameter has a res attribute. Its value is related to the
 provided resolution.
-* The StorageCRS paramter is optional but recommended. It contains the
+* The StorageCRS parameter is optional but recommended. It contains the
 EPSG code of the coverage sources.
 * All elements and attributes from the Raster configuration can be used
 for the resolutions.
@@ -105,7 +105,7 @@ it is required that the raster pyramid must be a GeoTIFF, containing the
 extent and coordinate system of the data. Overlays must be multiples of
 2. This is best tested with source data being processed with GDAL.
 
-==== Prerequisities for Pyramids
+==== Prerequisites for Pyramids
 
 * Must be a GeoTiff as BigTiff
 * Must be RGB or RGBA
@@ -144,7 +144,7 @@ To be able to use the module it is required that the Oracle GeoRaster
 libraries are available, see <<anchor-db-libraries>> for details.
 
 The following example shows, how to configure a GeoRaster coverage
-(minmal required options):
+(minimal required options):
 
 [source,xml]
 ----
@@ -189,8 +189,8 @@ store.
 </OracleGeoraster>
 ----
 
-If your GeoRaster coverage only consist in a greyscale coverage or you
-only want to server a single band you could specifiy the following:
+If your GeoRaster coverage only consist in a greyscale coverage, or you
+only want to server a single band you could specify the following:
 
 [source,xml]
 ----

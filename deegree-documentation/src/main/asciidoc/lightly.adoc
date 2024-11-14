@@ -55,7 +55,7 @@ the deegree project. You should see the following items:
 * *deegree-workspace-wps*: <<anchor-workspace-wps>>
 
 TIP: If the machine running deegree webservices uses a proxy to access the
-internet and you don't see any available example configurations, you
+internet, and you don't see any available example configurations, you
 will probably have to configure the proxy settings. Ask your network
 administrator for details and use the *proxy* link to setup deegree's
 proxy settings.
@@ -89,6 +89,7 @@ Raster data is read from GeoTIFF files, vector data is backed by
 shapefiles. Additionally, a WFS (2.0.0, 1.1.0 and 1.0.0) is configured
 that allows to access the raw vector data in GML format.
 
+////
 After downloading and activating the "deegree-workspace-utah" workspace,
 you can click on the *see layers* link, which opens a simple map client
 that displays a base map (not rendered by deegree, but loaded from the
@@ -142,6 +143,7 @@ http://localhost:8080/deegree-webservices/services.
 
 .QGIS displaying a WMS layer from the Utah workspace
 image::qgis_workspace_utah.png[QGIS displaying a WMS layer from the Utah workspace,scaledwidth=50.0%]
+////
 
 [[anchor-workspace-csw]]
 === Example workspace 2: An ISO Catalogue Service setup
@@ -179,8 +181,8 @@ You should now have a working connection to your database, and the
 exclamation mark for *conn1* should disappear. Click *Reload* to force a
 full reinitialization of the workspace:
 
-.Reinitializing the workspace
-image::console_workspace_csw4.png[Reinitializing the workspace,scaledwidth=50.0%]
+.Saving the configuration and reinitializing the workspace
+image::console_workspace_csw4.png[Saving the configuration and reinitializing the workspace,scaledwidth=50.0%]
 
 The indicated problems are gone now, but we still need to create the
 required database tables. Change to the metadata store view (*data
@@ -198,8 +200,10 @@ image::console_workspace_csw6.png[Creating tables for storing ISO metadata recor
 image::console_workspace_csw7.png[After table creation,scaledwidth=50.0%]
 
 If all went well, you should now have a working, but empty CSW setup.
-You can connect to the CSW with compliant clients or use the *send
-requests* link to send raw CSW requests to the service. The workspace
+You can connect to the CSW with compliant clients and import data.
+
+////
+or use the *send requests* link to send raw CSW requests to the service. The workspace
 comes with some suitable example requests. Use the third drop-down menu
 to select an example request. Entry *complex_insert.xml* can be used to
 insert some ISO example records using a CSW transaction request:
@@ -213,7 +217,7 @@ explore other example requests as well, e.g. for retrieving records:
 
 .Other example CSW requests
 image::console_workspace_csw9.png[Other example CSW requests,scaledwidth=50.0%]
-
+////
 [[anchor-workspace-wps]]
 === Example workspace 3: Web Processing Service demo
 

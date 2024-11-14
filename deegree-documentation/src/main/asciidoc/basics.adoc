@@ -75,7 +75,7 @@ sections:
 
 
 For example, to offer a Web Feature Service, a feature store (based on a
-shapefile, database, etc) must be configured. With a rasterfile, like a
+shapefile, database, etc.) must be configured. With a rasterfile, like a
 GeoTIFF, you can configure a tile store and a coverage store to offer a
 Web Map Service.
 
@@ -290,7 +290,7 @@ documented for each resource configuration format.
 The configuration format for the deegree proxy configuration is defined
 by schema file https://schemas.deegree.org/core/3.5/proxy/proxy.xsd. The
 following table lists all available configuration options. When
-specifiying them, their order must be respected.
+specifying them, their order must be respected.
 
 [width="100%",cols="24%,10%,7%,59%",options="header",]
 |===
@@ -313,21 +313,21 @@ specifiying them, their order must be respected.
 
 |FtpProxyPort | 0..1 | Integer | The port number of the proxy server for protocol `FTP`
 
-|ProxyUser |0..1 | String | Username for proxy server authtentication
+|ProxyUser |0..1 | String | Username for proxy server authentication
 
-|HttpProxyUser |0..1 | String | Username for proxy server authtentication for protocol `HTTP`
+|HttpProxyUser |0..1 | String | Username for proxy server authentication for protocol `HTTP`
 
-|HttpsProxyUser |0..1 | String | Username for proxy server authtentication for protocol `HTTPS`
+|HttpsProxyUser |0..1 | String | Username for proxy server authentication for protocol `HTTPS`
 
-|FtpProxyUser |0..1 | String | Username for proxy server authtentication for protocol `FTP`
+|FtpProxyUser |0..1 | String | Username for proxy server authentication for protocol `FTP`
 
-|ProxyPassword |0..1 | String | Password for proxy server authtentication
+|ProxyPassword |0..1 | String | Password for proxy server authentication
 
-|HttpProxyPassword |0..1 | String | Password for proxy server authtentication for protocol `HTTP`
+|HttpProxyPassword |0..1 | String | Password for proxy server authentication for protocol `HTTP`
 
-|HttpsProxyPassword |0..1 | String | Password for proxy server authtentication for protocol `HTTPS`
+|HttpsProxyPassword |0..1 | String | Password for proxy server authentication for protocol `HTTPS`
 
-|FtpProxyPassword |0..1 | String | Password for proxy server authtentication for protocol `FTP`
+|FtpProxyPassword |0..1 | String | Password for proxy server authentication for protocol `FTP`
 
 |NonProxyHosts |0..1 | String | Indicates the hosts that should be accessed without going through the proxy. Multiple values can be separated by the `{vbar}` character.
 
@@ -381,14 +381,14 @@ types, the basic management of resources is always identical.
 
 In order to display the configured workspace resources of a certain
 type, click on the corresponding menu entry. The following screenshot
-shows the metadata store resources in deegree-workspace-csw:
+shows the tile store resources in deegree-workspace-utah:
 
-.Displaying metadata store resources
-image::console_metadata_stores.png[Displaying metadata store resources,scaledwidth=50.0%]
+.Displaying tile store resources
+image::console_tile_stores.png[Displaying tile store resources,scaledwidth=50.0%]
 
 The right part of the window displays a table with all configured
-metadata store resources. In this case, the workspace contains a single
-resource with identifier "iso19115" which is in status "On".
+tile store resources. In this case, the workspace contains a single
+resource with identifier "utah_ortho" which is in status "On".
 
 ==== Deactivating a resource
 
@@ -426,10 +426,8 @@ image::console_editing.png[Editing a resource configuration,scaledwidth=50.0%]
 You can now perform configuration changes in the text area and click on
 "Save". Or click any of the links:
 
-* Display Schema: Displays the XML schema file for the resource
-configuration format.
 * Cancel: Discards any changes.
-* Turn on highlighting: Perform syntax highlighting.
+* Validate: Perform an XML validation.
 
 If there are no (syntactical) errors in the configuration, the "Save"
 link will take you back to the corresponding resource view. Before
@@ -439,7 +437,7 @@ validation of the file and display any syntactical errors:
 .Displaying a syntax error
 image::console_edit_error.png[Displaying a syntax error,scaledwidth=50.0%]
 
-In this case, the mandatory "JDBCConnId" element was removed, which
+In this case, the mandatory "TileMatrixSetId" element was removed, which
 violates the configuration schema. This needs to be corrected, before
 "Save" will actually save the file to the workspace directory.
 

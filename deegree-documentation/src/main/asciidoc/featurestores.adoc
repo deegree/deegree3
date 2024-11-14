@@ -310,7 +310,7 @@ _urn:ogc:def:crs:EPSG::4258_.
 The configuration format for the deegree memory feature store is defined
 by schema file https://schemas.deegree.org/core/3.5/datasource/feature/memory/memory.xsd.
 The following table lists all available configuration options (the
-complex ones contain nested options themselves). When specifiying them,
+complex ones contain nested options themselves). When specifying them,
 their order must be respected.
 
 [width="100%",cols="24%,10%,7%,59%",options="header",]
@@ -399,7 +399,7 @@ _BBoxStatement_. A minimal configuration example looks like this:
 The configuration format is defined by schema file
 https://schemas.deegree.org/core/3.5/datasource/feature/simplesql/simplesql.xsd.
 The following table lists all available configuration options (the
-complex ones contain nested options themselves). When specifiying them,
+complex ones contain nested options themselves). When specifying them,
 their order must be respected.
 
 [width="100%",cols="24%,10%,7%,59%",options="header",]
@@ -441,7 +441,7 @@ contrast to the simple SQL feature store, the SQL feature store is
 transaction capable (even for complex mappings) and ideally suited for
 mapping rich GML application schemas.
 
-TIP: SQLFeatureStore configurations can be filed in sub directories. To reference a feature store the id must include the directory. Example: 'dir/featureStore' if the SQLFeatureStore configuration file 'featureStore.xml' is filed in the directory 'dir'.
+TIP: SQLFeatureStore configurations can be filed in subdirectories. To reference a feature store the id must include the directory. Example: 'dir/featureStore' if the SQLFeatureStore configuration file 'featureStore.xml' is filed in the directory 'dir'.
 
 ==== Minimal configuration example
 
@@ -721,7 +721,7 @@ subsections.
 By default, the name of a mapped feature type will be derived from the
 table name. If the table is named _country_, the feature type name
 will be _app:country_ (app=http://www.deegree.org/app). The _name_
-attribute allows to set the feature type name explicity. In the
+attribute allows to set the feature type name explicitly. In the
 following example, it will be _app:Land_ (Land is German for country).
 
 *SQL feature store: Customizing the feature type name*
@@ -819,7 +819,7 @@ _<FeatureTypeMapping>_ must have a unique feature id prefix.
 
 ===== Customizing the default sort order of features
 
-By default the sort order of the features returned is given by the underlying database.
+By default, the sort order of the features returned is given by the underlying database.
 To configure a defined sort order the _<OrderBy>_ element can be used. The configuration
 applies to simple properties only. It is possible to define multiple properties and
 if sorting should be ascending or descending. If this configuration is applied it is
@@ -1722,11 +1722,11 @@ newly assigned feature id.
 
 ===== UUID generator
 
-The UUID generator generator uses Java's UUID implementation to generate
+The UUID generator uses Java's UUID implementation to generate
 new and unique identifiers. This requires that the database column for
 the id is a character column that can store strings with a length of 36
 characters and that the database does not perform any kind of insertion
-value generation for this column (e.g triggers).
+value generation for this column (e.g. triggers).
 
 *SQL feature store: UUID generator example*
 
