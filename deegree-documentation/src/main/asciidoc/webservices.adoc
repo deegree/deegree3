@@ -395,7 +395,6 @@ The _DefaultFormats_ option has the following sub-options:
 |Option |Cardinality |Value |Description
 
 |ExcludeMimeType |0..n |String |Mime types or pattern to exclude.
-configuration
 |===
 
 *Example of using the defaults, except the CSV and GeoJSON*

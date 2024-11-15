@@ -80,7 +80,7 @@ deegree instance is now running the configuration that is contained in
 the downloaded workspace.
 
 [[anchor-workspace-utah]]
-=== Example workspace 1: Utah Webmapping Services
+=== Example workspace 1: Utah Web Mapping Services
 
 The Utah example workspace contains a web mapping setup based on data
 from the state of Utah. It contains a WMS configuration (1.3.0 and
@@ -89,61 +89,32 @@ Raster data is read from GeoTIFF files, vector data is backed by
 shapefiles. Additionally, a WFS (2.0.0, 1.1.0 and 1.0.0) is configured
 that allows to access the raw vector data in GML format.
 
-////
 After downloading and activating the "deegree-workspace-utah" workspace,
-you can click on the *see layers* link, which opens a simple map client
-that displays a base map (not rendered by deegree, but loaded from the
-OpenStreetMap servers).
-
-.Map client showing base map
-image::console_workspace_utah1.png[Map client showing base map,scaledwidth=50.0%]
-
-Click the *+* on the right to see a list of available layers. Tick the
-ones you want to see. They will be rendered by your deegree webservices
-instance.
-
-.Selecting WMS layers to be displayed
-image::console_workspace_utah2.png[Selecting WMS layers to be displayed,scaledwidth=50.0%]
-
-TIP: The map client is based on https://openlayers.org/[OpenLayers]. Drag the
-map by holding the mouse button and moving your mouse. Zoom using the
-controls on the left or with the mouse wheel. Alternatively, you can
-open a zoom rectangle by holding the SHIFT key and clicking the mouse
-button in the map area.
-
-.Exploring Utah layers
-image::console_workspace_utah3.png[Exploring Utah layers,scaledwidth=50.0%]
-
-In order to send requests against the WFS, you may use the *send
-requests* link in the administration console (you may need to go back in your
-browser first). A simple interface for sending XML requests will open
-up. This interface is meant for accessing OGC web services on the
-protocol level and contains some reasonable example requests.
-
-.Sending example requests
-image::console_workspace_utah4.png[Sending example requests,scaledwidth=50.0%]
-
-Select one of the example requests from the third drop-down menu and
-click *Send*. The server response will be displayed in the lower
-section.
-
-.Sending example requests
-image::console_workspace_utah5.png[Sending example requests,scaledwidth=50.0%]
-
-TIP: WFS request types and their format are specified in the
-https://www.ogc.org/standard/wfs/[OGC Web Feature Service
-specification].
-
-TIP: Instead of using the built-in layer preview or the generic OGC client,
 you may use any compliant OGC client for accessing the WMS and WFS.
-Successfully tested desktop clients include QGIS (install WFS
-plugin for accessing WFS), uDig and OpenJUMP. The
-service address to enter in your client is:
-http://localhost:8080/deegree-webservices/services.
+Successfully tested desktop clients include QGIS, uDig and OpenJUMP.
 
-.QGIS displaying a WMS layer from the Utah workspace
+The service addresses to enter in your client are:
+
+* http://localhost:8080/deegree-webservices/services/wfs
+** WFS 2.0.0, 1.1.0 and 1.0.0
+* http://localhost:8080/deegree-webservices/services/wms
+** WMS 1.3.0 and 1.1.1
+* http://localhost:8080/deegree-webservices/services/wmts
+** WMTS 1.0.0
+
+Here is an example of QGIS displaying multiple WMS layers from the Utah workspace,
+including county names, groundwater, energy resources, and dominant vegetation data for Utah:
+
+.QGIS displaying multiple WMS layer from the Utah workspace
 image::qgis_workspace_utah.png[QGIS displaying a WMS layer from the Utah workspace,scaledwidth=50.0%]
-////
+
+The following WFS `GetFeature` request retrieves all airport features available in the Utah workspace:
+
+[source, bash]
+----
+curl -i -X GET \
+ 'http://localhost:8080/deegree-webservices/services/wfs?service=WFS&request=GetFeature&version=2.0.0&typenames=app:Airports'
+----
 
 [[anchor-workspace-csw]]
 === Example workspace 2: An ISO Catalogue Service setup
