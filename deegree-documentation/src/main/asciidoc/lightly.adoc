@@ -223,32 +223,133 @@ image::console_workspace_csw9.png[Other example CSW requests,scaledwidth=50.0%]
 
 This workspace contains a WPS setup with simple example processes and
 example requests. It's a good starting point for learning the WPS
-protocol and the development of WPS processes. After downloading and
-starting it, click *send requests* in order to find example requests
-that can be sent to the WPS. Use the third drop-down menu to select an
-example request:
+protocol and the development of WPS processes. The WPS workspace includes preconfigured
+example requests that can be sent to the deegree WPS after starting the workspace.
 
-.Choosing a WPS example request
-image::console_workspace_wps1.png[Choosing a WPS example request,scaledwidth=50.0%]
+The following `DescribeProcess` request retrieves details about all available processes:
 
-Click *Send* to fire it against the WPS:
+[source, bash]
+----
+curl -i -X GET \
+ 'http://localhost:8080/deegree-webservices/services/wps?service=WPS&version=1.0.0&request=DescribeProcess&Identifier=ALL'
+----
 
-.Sending an example request against the WPS
-image::console_workspace_wps2.png[Sending an example request against the WPS,scaledwidth=50.0%]
+Available WPS processes listed in the response of the request:
+[width="100%",cols="26%,80%",options="header",]
+|===
+|Process Identifier |Description
 
-The response of the WPS will be displayed in the lower section:
+|Touches |Determining whether two GML geometries touch or not.
+|Distance |Calculating the distance between two GML geometries.
+|Centroid |Process for finding the centroid of a GML geometry.
+|Union |Calculates the union of two GML geometries.
+|ConvexHull |Calculating the Convex Hull of a GML geometry.
+|Buffer |Process for creating a buffer around a GML geometry.
+|Equals |Determining whether two GML geometries are equal.
+|Intersection |Determining the intersection points between two GML geometries.
+|Difference |Calculating the geometric-difference of two GML geometries.
+|Contains |Determining whether a GML geometry contain another.
+|ParameterDemoProcess |Process for demonstrating the use of different types of input and output parameters.
+|===
 
-.WPS response is displayed
-image::console_workspace_wps3.png[WPS response is displayed,scaledwidth=50.0%]
+**Example usages:**
 
-Besides the geometry example processes, the parameter example process
-and example requests may be interesting to developers who want to learn
-development of WPS processes with deegree webservices:
+Here is an example `Execute` request using the `Buffer` example process:
 
-.Example requests for the parameter demo process
-image::console_workspace_wps4.png[Example requests for the parameter demo process,scaledwidth=50.0%]
+[source, bash]
+----
+curl -i -X POST \
+   -H "Content-Type:application/json" \
+   -d \
+'<?xml version="1.0" encoding="UTF-8"?>
+<wps:Execute xmlns:wps="http://www.opengis.net/wps/1.0.0"
+             xmlns:ows="http://www.opengis.net/ows/1.1"
+             xmlns:xlink="http://www.w3.org/1999/xlink"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             service="WPS" version="1.0.0"
+             xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd">
+    <ows:Identifier>Buffer</ows:Identifier>
+    <wps:DataInputs>
+        <wps:Input>
+            <ows:Identifier>GMLInput</ows:Identifier>
+            <wps:Data>
+                <wps:ComplexData mimeType="text/xml" encoding="UTF-8">
+                    <gml:Polygon xmlns:gml="http://www.opengis.net/gml">
+                        <gml:exterior>
+                            <gml:LinearRing>
+                                <gml:posList>
+                                    10.0 10.0 20.0 10.0 20.0 20.0 10.0 20.0 10.0 10.0
+                                </gml:posList>
+                            </gml:LinearRing>
+                        </gml:exterior>
+                    </gml:Polygon>
+                </wps:ComplexData>
+            </wps:Data>
+        </wps:Input>
+        <wps:Input>
+            <ows:Identifier>BufferDistance</ows:Identifier>
+            <wps:Data>
+                <wps:LiteralData>5.0</wps:LiteralData>
+            </wps:Data>
+        </wps:Input>
+    </wps:DataInputs>
+    <wps:ResponseForm>
+        <wps:RawDataOutput mimeType="text/xml">
+            <ows:Identifier>BufferedGeometry</ows:Identifier>
+        </wps:RawDataOutput>
+    </wps:ResponseForm>
+</wps:Execute>
+' \
+ 'http://localhost:8080/deegree-webservices/services/wps?service=WPS&version=1.0.0&request=Execute&Identifier=Buffer'
+----
 
-The process has four input parameters (literal, bounding box, xml and
+The response is the resulting GML representation of the buffered geometry based on the provided input geometry and buffer distance.
+The output will be returned as XML in the specified text/xml format, containing the buffered geometry in the GML format:
+[source,xml]
+----
+<?xml version='1.0' encoding='UTF-8' ?>
+<gml:Polygon xmlns:gml="http://www.opengis.net/gml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/base/geometryAggregates.xsd">
+    <gml:exterior>
+        <gml:LinearRing>
+            <gml:posList>5.000000 10.000000 5.000000 20.000000 5.096074 20.975452 5.380602 21.913417 5.842652 22.777851 6.464466 23.535534 7.222149 24.157348 8.086583 24.619398 9.024548 24.903926 10.000000 25.000000 20.000000 25.000000 20.975452 24.903926 21.913417 24.619398 22.777851 24.157348 23.535534 23.535534 24.157348 22.777851 24.619398 21.913417 24.903926 20.975452 25.000000 20.000000 25.000000 10.000000 24.903926 9.024548 24.619398 8.086583 24.157348 7.222149 23.535534 6.464466 22.777851 5.842652 21.913417 5.380602 20.975452 5.096074 20.000000 5.000000 10.000000 5.000000 9.024548 5.096074 8.086583 5.380602 7.222149 5.842652 6.464466 6.464466 5.842652 7.222149 5.380602 8.086583 5.096074 9.024548 5.000000 10.000000</gml:posList>
+        </gml:LinearRing>
+    </gml:exterior>
+</gml:Polygon>
+----
+
+Besides the geometry example processes, the `ParameterDemoProcess` example process
+may be interesting to developers who want to learn development of WPS processes with deegree webservices.
+The following `DescribeProcess` request retrieves details about this process:
+[source, bash]
+----
+curl -i -X GET \
+ 'http://localhost:8080/deegree-webservices/services/wps?service=WPS&version=1.0.0&request=DescribeProcess&Identifier=ParameterDemoProcess'
+----
+Response (simplified):
+[source,xml]
+----
+<?xml version='1.0' encoding='UTF-8' ?>
+<wps:ProcessDescriptions xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" service="WPS" version="1.0.0" xml:lang="en" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd">
+    <ProcessDescription wps:processVersion="1.0.0">
+        <ows:Identifier>ParameterDemoProcess</ows:Identifier>
+        <DataInputs>
+            <Input><ows:Identifier>LiteralInput</ows:Identifier></Input>
+            <Input><ows:Identifier>BBOXInput</ows:Identifier></Input>
+            <Input><ows:Identifier>XMLInput</ows:Identifier></Input>
+            <Input><ows:Identifier>BinaryInput</ows:Identifier></Input>
+        </DataInputs>
+        <ProcessOutputs>
+            <Output><ows:Identifier>LiteralOutput</ows:Identifier></Output>
+            <Output><ows:Identifier>BBOXOutput</ows:Identifier></Output>
+            <Output><ows:Identifier>XMLOutput</ows:Identifier></Output>
+            <Output><ows:Identifier>BinaryOutput</ows:Identifier></Output>
+        </ProcessOutputs>
+    </ProcessDescription>
+</wps:ProcessDescriptions>
+
+----
+
+The process `ParameterDemoProcess` has four input parameters (literal, bounding box, xml and
 binary) that are simply piped to four corresponding output parameters.
 There's practically no process logic, but the included example requests
 demonstrate many of the possibilities of the WPS protocol:
@@ -258,9 +359,6 @@ demonstrate many of the possibilities of the WPS protocol:
 * Response variants (ResponseDocument vs. RawData)
 * Storing of response documents
 * Asynchronous execution
-
-.Example requests for the ParameterDemo process
-image::console_workspace_wps5.png[Example requests for the ParameterDemo process,scaledwidth=50.0%]
 
 TIP: WPS request types and their format are specified in the
 https://www.ogc.org/standard/wps/[OGC Web Processing Service
