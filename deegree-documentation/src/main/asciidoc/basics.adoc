@@ -511,9 +511,7 @@ chapters, but here's a short overview:
 service metadata ("Edit metadata"), edit controller configuration ("Edit
 global config")
 * Feature Stores: Display feature types and number of stored features
-("Info"), Import GML feature collections ("Loader")
-* Metadata Stores: Import metadata sets ("Loader"), create database
-tables ("Setup tables")
+("Info")
 
 === Best practices for creating workspaces
 
