@@ -32,21 +32,25 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
-import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.JobScope;
-import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
+import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.SimpleStepBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.file.MultiResourceItemReader;
 import org.springframework.batch.item.support.AbstractItemStreamItemReader;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.batch.support.transaction.ResourcelessTransactionManager;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.PathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -59,6 +63,8 @@ import java.util.stream.Collectors;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+import javax.sql.DataSource;
+
 /**
  * Configuration of the GMLLoader.
  *
@@ -70,12 +76,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class GmlLoaderConfiguration {
 
 	private static final Logger LOG = getLogger(GmlLoaderConfiguration.class);
-
-	@Autowired
-	private JobBuilderFactory jobBuilderFactory;
-
-	@Autowired
-	private StepBuilderFactory stepBuilderFactory;
 
 	@JobScope
 	@Bean
@@ -192,13 +192,14 @@ public class GmlLoaderConfiguration {
 
 	@JobScope
 	@Bean
-	public Step step(StepExecutionListener referenceCheckListener, AbstractItemStreamItemReader<Feature> gmlReader,
+	public Step step(JobRepository jobRepository, PlatformTransactionManager transactionManager,
+			StepExecutionListener referenceCheckListener, AbstractItemStreamItemReader<Feature> gmlReader,
 			FeatureReferencesParser featureReferencesParser, ItemWriter<Feature> featureStoreWriter,
 			@Value("#{jobParameters['chunkSize']}") Integer chunkSize,
 			@Value("#{jobParameters['skipReferenceCheck'] ?: false}") boolean skipReferenceCheck) {
 		int chunk = chunkSize != null && chunkSize.intValue() > 10 ? chunkSize.intValue() : 10;
-		SimpleStepBuilder<Feature, Feature> builder = stepBuilderFactory.get("gmlLoaderStep")
-			.<Feature, Feature>chunk(chunk);
+		SimpleStepBuilder<Feature, Feature> builder = new StepBuilder("gmlLoaderStep", jobRepository)
+			.<Feature, Feature>chunk(chunk, transactionManager);
 		builder.reader(gmlReader);
 		if (skipReferenceCheck) {
 			LOG.warn("The feature reference check will be skipped.");
@@ -210,12 +211,25 @@ public class GmlLoaderConfiguration {
 	}
 
 	@Bean
-	public Job job(Step step, ReportWriter reportWriter) {
-		return jobBuilderFactory.get("gmlLoaderJob")
-			.incrementer(new RunIdIncrementer())
+	public Job job(JobRepository jobRepository, Step step, ReportWriter reportWriter) {
+		return new JobBuilder("gmlLoaderJob", jobRepository).incrementer(new RunIdIncrementer())
 			.start(step)
 			.listener(reportWriter)
 			.build();
+	}
+
+	@Bean
+	public DataSource dataSource() {
+		EmbeddedDatabaseBuilder embeddedDatabaseBuilder = new EmbeddedDatabaseBuilder();
+		return embeddedDatabaseBuilder.addScript("classpath:org/springframework/batch/core/schema-drop-h2.sql")
+			.addScript("classpath:org/springframework/batch/core/schema-h2.sql")
+			.setType(EmbeddedDatabaseType.H2)
+			.build();
+	}
+
+	@Bean
+	public ResourcelessTransactionManager transactionManager() {
+		return new ResourcelessTransactionManager();
 	}
 
 	private List<String> parseDisabledResources(String disabledResources) {

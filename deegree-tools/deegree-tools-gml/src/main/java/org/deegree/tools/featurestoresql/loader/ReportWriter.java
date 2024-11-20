@@ -32,7 +32,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 
@@ -51,7 +53,7 @@ public class ReportWriter extends JobExecutionListenerSupport {
 
 	private static final Logger LOG = getLogger(ReportWriter.class);
 
-	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+	private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 
 	private final Summary summary;
 
@@ -134,13 +136,13 @@ public class ReportWriter extends JobExecutionListenerSupport {
 
 	private String getStartTime(StepExecution stepExecution) {
 		if (stepExecution != null && stepExecution.getStartTime() != null)
-			return DATE_FORMAT.format(stepExecution.getStartTime());
+			return stepExecution.getStartTime().format(DATE_FORMAT);
 		return "UNKNOWN";
 	}
 
 	private String getEndTime(StepExecution stepExecution) {
 		if (stepExecution != null && stepExecution.getEndTime() != null)
-			return DATE_FORMAT.format(stepExecution.getEndTime());
+			return stepExecution.getEndTime().format(DATE_FORMAT);
 		return "UNKNOWN";
 	}
 
