@@ -34,9 +34,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.sqldialect.mssql;
 
-import static java.sql.Types.BOOLEAN;
-import static org.deegree.commons.tom.primitive.BaseType.DECIMAL;
-
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.sql.DefaultPrimitiveConverter;
@@ -73,6 +70,9 @@ import org.deegree.sqldialect.filter.expression.SQLOperationBuilder;
 import org.deegree.sqldialect.filter.islike.IsLikeString;
 
 import java.util.List;
+
+import static java.sql.Types.BOOLEAN;
+import static org.deegree.commons.tom.primitive.BaseType.DECIMAL;
 
 /**
  * {@link AbstractWhereBuilder} implementation for Microsoft SQL Server databases.
@@ -162,17 +162,7 @@ public class MSSQLWhereBuilder extends AbstractWhereBuilder {
 	}
 
 	@Override
-	protected SQLOperation toProtoSQL(SpatialOperator op) throws UnmappableException, FilterEvaluationException {
-
-		SQLOperationBuilder builder = new SQLOperationBuilder(BOOLEAN);
-
-		SQLExpression propNameExpr = toProtoSQLSpatial(op.getPropName());
-		if (!propNameExpr.isSpatial()) {
-			String msg = "Cannot evaluate spatial operator on database. Targeted property name '" + op.getPropName()
-					+ "' does not denote a spatial column.";
-			throw new FilterEvaluationException(msg);
-		}
-
+	protected void toProtoSql(SpatialOperator op, SQLExpression propNameExpr, SQLOperationBuilder builder) {
 		ICRS storageCRS = propNameExpr.getCRS();
 		int srid = propNameExpr.getSRID() != null ? Integer.parseInt(propNameExpr.getSRID()) : 0;
 
@@ -269,7 +259,6 @@ public class MSSQLWhereBuilder extends AbstractWhereBuilder {
 				break;
 			}
 		}
-		return builder.toOperation();
 	}
 
 	private SQLExpression toProtoSQL(Geometry geom, ICRS targetCRS, int srid) {
