@@ -43,7 +43,7 @@ In order to run the WAR version, move it into the local deployment directory of 
 
 TIP: If you deploy the WAR into
 a web container, you most probably will have to use a different URL for
-accessing the deegree console and webservices, e.g.
+accessing the administration console and webservices, e.g.
 http://localhost:8080/deegree-webservices-${project.version}. The port
 number and webapp name depend on your installation and deployment setup.
 In the following the base URL http://localhost:8080/deegree-webservices without the version number will be used. You may rename the WAR file from _deegree-webservices-${project.version}.war_ to _deegree-webservices.war_ before deploying it.
@@ -109,21 +109,21 @@ behind a web server such as Apache httpd oder NGINX.
 TIP: If you are running Apache Tomcat read the
 https://tomcat.apache.org/tomcat-9.0-doc/ssl-howto.html[SSL HowTo].
 
-==== Securing deegree console and REST API
+==== Securing the deegree webservices administration console and REST API
 
 It is as a huge security problem to operate the deegree web application without
-setting a password for the deegree console. How to set the password for
-the deegree console is described in <<anchor-configuration-basics>>. The
+setting a password for the administration console. How to set the password for
+the administration console is described in <<anchor-configuration-basics>>. The
 same applies to the deegree REST API. Since both transfer the
 credentials as clear text (with a little bit of obscurity) it is highly
 recommended to enable encryption on the protocol level as described
 above! For further information how to protect the deegree REST API read
 more in <<anchor-configuration-restapi>>. You should also consider to
 limit the access to both resources. Apply a filter by IP or hostname to
-only allow a subset of machines to connect and access the deegree
+only allow a subset of machines to connect and access the administration
 console and REST API.
 
-WARNING: The deegree console provides access to the server file system. Therefore,
+WARNING: The administration console provides access to the server file system. Therefore,
 you must not operate the Java Servlet container as root user!
 Furthermore, you should consider to enable the Java Security Manager and
 define restrictive file permissions.footnote:[How to run securely Java

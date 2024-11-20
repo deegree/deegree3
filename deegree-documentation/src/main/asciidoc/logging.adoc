@@ -1,8 +1,10 @@
 [[anchor-logging-configuration]]
 === Logging configuration
 
-The deegree webservices do use the https://logging.apache.org/log4j/2.x[Apache Log4j 2 framework] for logging. The configuration of the logging submodule can be stored in XML, YAML, JSON, or properties format.
-The web application contains a default configuration file _/WEB-INF/classes/log4j2.properties_ with two appenders, one logging to the console Stdout (`System.out`) and the other writes the log messages into a file _logs/deegree.log_.
+The deegree webservices do use the https://logging.apache.org/log4j/2.x[Apache Log4j 2 framework] for logging.
+The configuration of the logging submodule can be stored in XML, YAML, JSON, or properties format.
+The web application contains a default configuration file _/WEB-INF/classes/log4j2.properties_ with two appenders,
+one logging to the console Stdout (`System.out`) and the other writes the log messages into a file _logs/deegree.log_.
 
 The configuration in a nutshell:
 

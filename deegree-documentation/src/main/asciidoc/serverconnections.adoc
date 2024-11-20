@@ -506,11 +506,11 @@ connection before throwing an error. Default is 5 seconds.
 * The request timeout defines (in seconds) how long to wait for data
 before throwing an error. Default is 60 seconds.
 * The http basic authentication options can be used to provide
-authentication credentials to use a HTTP basic protected service.
+authentication credentials to use an HTTP basic protected service.
 Default is not to authenticate.
 
 The WMS version will be detected from the capabilities document version.
-When using 1.3.0, there are some limitations (eg. GetFeatureInfo is not
+When using 1.3.0, there are some limitations (e.g. GetFeatureInfo is not
 supported), and it is tested to a lesser extent compared with the 1.1.1
 version.
 
@@ -544,7 +544,7 @@ connection before throwing an error. Default is 5 seconds.
 * The request timeout defines (in seconds) how long to wait for data
 before throwing an error. Default is 60 seconds.
 * The http basic authentication options can be used to provide
-authentication credentials to use a HTTP basic protected service.
+authentication credentials to use an HTTP basic protected service.
 Default is not to authenticate.
 
 GetTile and GetFeatureInfo operations are supported for remote WMTS

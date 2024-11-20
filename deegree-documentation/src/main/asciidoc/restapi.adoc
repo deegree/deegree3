@@ -12,7 +12,8 @@ use the standard _web.xml_ deployment descriptor. For security reasons
 the REST API is secured by default with an API key read from the 
 _config.apikey_ file in deegree workspace directory.
 
-The API key can be provide in multiple different ways.
+The API key can be provided in multiple different ways.
+
 * As header value of key `X-API-Key`
 * As authorization header of bearer type
 * As basic authorization password where username will be ignored
@@ -79,7 +80,7 @@ workspace.
 In order to download the complete workspace, you request
 _http://localhost:8080/deegree-webservices/config/download_. Since the
 workspace is made up of many files, you get a _.zip_ file. If you just
-want to download the featurestore configuration named _inspire_, you
+want to download the FeatureStore configuration named _inspire_, you
 request
 _http://localhost:8080/deegree-webservices/config/download/datasources/feature/inspire.xml_.
 
@@ -109,7 +110,7 @@ You can see what workspaces are available to the deegree installation by
 running
 _http://localhost:8080/deegree-webservices/config/listworkspaces_.
 
-You can also browse through a workspace's files by requesting eg.
+You can also browse through a workspace's files by requesting e.g.
 _http://localhost:8080/deegree-webservices/config/list/datasources/_,
 or to see the files in a workspace other than the one currently running
 _http://localhost:8080/deegree-webservices/config/list/someworkspace/services/_.
@@ -117,7 +118,7 @@ _http://localhost:8080/deegree-webservices/config/list/someworkspace/services/_.
 ==== Storing
 
 You can update or add files in a workspace, or upload a completely new
-workspace by sending a HTTP PUT request.
+workspace by sending an HTTP PUT request.
 
 To upload a new workspace, send a _.zip_ file with the workspace
 contents to
@@ -154,7 +155,7 @@ You can get a list of all available CRS definitions by requesting
 _http://localhost:8080/deegree-webservices/config/crs/list_. Check if
 a specific CRS is configured in deegree by requesting
 _http://localhost:8080/deegree-webservices/config/crs/EPSG:12345_. The
-response will be the text _true_ or _false_, depending whether the
+response will be the text _true_ or _false_, depending on whether the
 CRS is defined or not. If you have a WKT CRS definition, you can POST
 against
 _http://localhost:8080/deegree-webservices/config/crs/getcodes_ to get

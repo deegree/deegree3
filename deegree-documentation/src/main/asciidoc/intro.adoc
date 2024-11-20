@@ -48,8 +48,7 @@ Server, Shapefiles or GML instance documents
 
 TIP: In order to learn the setup and configuration of a deegree-based WFS, we
 recommend to read chapters <<anchor-installation>> and
-<<anchor-lightly>> first. Check out <<anchor-workspace-inspire>> and
-<<anchor-workspace-utah>> for example deegree WFS configurations.
+<<anchor-lightly>> first. Check out <<anchor-workspace-utah>> for an example deegree WFS configuration.
 Continue with <<anchor-configuration-basics>> and
 <<anchor-configuration-wfs>>.
 
@@ -82,8 +81,7 @@ Shapefiles or GML instance documents
 
 TIP: In order to learn the setup and configuration of a deegree-based WMS, we
 recommend to read chapters <<anchor-installation>> and
-<<anchor-lightly>> first. Check out <<anchor-workspace-utah>> and
-<<anchor-workspace-inspire>> for example deegree WMS configurations.
+<<anchor-lightly>> first. Check out <<anchor-workspace-utah>> for an example deegree WMS configuration.
 Continue with <<anchor-configuration-basics>> and
 <<anchor-configuration-wms>>.
 

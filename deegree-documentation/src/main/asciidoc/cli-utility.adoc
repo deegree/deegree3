@@ -1,6 +1,6 @@
 [[deegree-gml-tools]]
 == deegree GML tools CLI
-The deegree GML tools command line interface (CLI) provides commands to generate SQL DDL scripts and deegree SQLFeatureStore configuration files from GML application schemas. Furthermore it provides a interface to load a GML file from disk into a deegree SQLFeatureStore splitting large files into smaller chunks so that even huge (1 GB and more) files can be imported.
+The deegree GML tools command line interface (CLI) provides commands to generate SQL DDL scripts and deegree SQLFeatureStore configuration files from GML application schemas. Furthermore, it provides a interface to load a GML file from disk into a deegree SQLFeatureStore splitting large files into smaller chunks so that even huge (1 GB and more) files can be imported.
 
 You can download the latest release from https://repo.deegree.org/repository/public/org/deegree/deegree-tools-gml/.
 

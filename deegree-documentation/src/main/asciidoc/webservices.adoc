@@ -129,7 +129,7 @@ The deegree WFS config file format is defined by schema file
 https://schemas.deegree.org/core/3.5/services/wfs/wfs_configuration.xsd. The
 root element is <deegreeWFS> and the optional
 attribute `config` can be set to _3.5.0_. The following table lists all available configuration options
-(complex ones contain nested options themselves). When specifiying them,
+(complex ones contain nested options themselves). When specifying them,
 their order must be respected.
 
 [width="100%",cols="24%,11%,8%,57%",options="header",]
@@ -212,7 +212,7 @@ will be discarded, and an exception report will be sent to the client.
 Buffering is performed in memory, but switches to a temp file in case
 the buffer grows bigger than 1 MiB.
 * _DisabledResources_: By default all xlink:href attribute references
-are tried to resolved as feature references during insert. This can be
+are tried to be resolved as feature references during insert. This can be
 avoided by configuring one or multiple base url patterns within the
 child element _Pattern_. _Pattern_ can occur multiple times, one for
 each base url. In the complex example above resolving of
@@ -225,7 +225,7 @@ and _http://deegree.org/external/feature_.
 * _EnableResponsePaging_: By default, WFS 2.0.0 does not support
 response paging. By specifying _true_ here, you can explicitly enable
 response paging. Response Paging works only when streaming is disabled.
-Currently @next and @previous URLs bases on the original GetFeature
+Currently, @next and @previous URLs bases on the original GetFeature
 request in KVP encoding.
 * _QueryCRS_: Coordinate reference systems for returned geometries.
 This element can be specified multiple times, and the WFS will announce
@@ -256,18 +256,18 @@ This may lead to errors if the provided ids are already in use.
 * *UseExistingResolvingReferencesInternally*: Same as UseExisting, but
 it is allowed to insert features with references to already inserted
 features.
-* **UseExistingSkipResolvingReferences**: Same as UseExisting, but references to features are not checked. The user is fully responsible of the data integrity!
+* **UseExistingSkipResolvingReferences**: Same as UseExisting, but references to features are not checked. The user is fully responsible for the data integrity!
 * *GenerateNew* (default): New and unique ids are generated. References
-in the input GML (xlink:href) that point to a feature with an reassigned
+in the input GML (xlink:href) that point to a feature with a reassigned
 id are fixed as well, so reference consistency is maintained.
 * *ReplaceDuplicate*: The WFS will try to use the original gml:id values
 that have been provided in the input. In case a certain identifier
 already exists in the backend, a new and unique identifier will be
 generated. References in the input GML (xlink:href) that point to a
-feature with an reassigned id are fixed as well, so reference
+feature with a reassigned id are fixed as well, so reference
 consistency is maintained.
 
-Furthermore the option _EnableTransactions_ has the optional attribute _checkAreaOfUse_ which is false by default. This means that it is not checked if the geometries in a transaction request are in the valid area of the CRS. The check can be activated by setting the attribute to true.
+Furthermore, the option _EnableTransactions_ has the optional attribute _checkAreaOfUse_ which is false by default. This means that it is not checked if the geometries in a transaction request are in the valid area of the CRS. The check can be activated by setting the attribute to true.
 
 NOTE: Currently, transactions can only be enabled if your WFS is attached to a
 single feature store.
@@ -291,7 +291,7 @@ feature to be replaced.
 ==== SupportedRequests
 
 This option can be used to configure the supported request types.
-Currently the supported encodings can be specified for each request
+Currently, the supported encodings can be specified for each request
 type. If the option is missing all encodings are supported for each
 request type. The option has the following sup-options:
 
@@ -345,11 +345,10 @@ types. Allowed values: 'kvp', 'xml', 'soap'. Multiple values must be
 separated by a white space.
 |===
 
-By default deegree will provide all supported request types with all
+By default, deegree will provide all supported request types with all
 available encodings (kvp, xml, soap).
 
-If a single supported request or encoding is configured, all non
-configured requests or encodings are disabled.
+If a single supported request or encoding is configured, all non-configured requests or encodings are disabled.
 
 Example: To limit the provided request types to GetCapabilities and
 GetFeature this request types can be added without SupportedEncodings
@@ -396,7 +395,6 @@ The _DefaultFormats_ option has the following sub-options:
 |Option |Cardinality |Value |Description
 
 |ExcludeMimeType |0..n |String |Mime types or pattern to exclude.
-configuration
 |===
 
 *Example of using the defaults, except the CSV and GeoJSON*
@@ -537,7 +535,7 @@ can add additional namespace/URL pairs for adding additional schemas.
 This may be required when you override the returned container or feature
 member elements in order to achieve schema-valid output.
 * _DisableDynamicSchema_: By default, the GML application schema
-returned in DescribeFeatureType reponses (and referenced in the
+returned in DescribeFeatureType responses (and referenced in the
 _xsi:schemaLocation_ of query responses) will be generated dynamically
 from the internal feature type representation. This allows generation of
 application schemas for different GML versions and is fine for simple
@@ -551,7 +549,7 @@ to an external copy of your GML application schema files (instead of
 pointing back to the deegree WFS), use the optional attribute
 _baseURL_ that this element provides.
 * _SchemaLocation_: By default, the GML application schema
-returned in DescribeFeatureType reponses (and referenced in the
+returned in DescribeFeatureType responses (and referenced in the
 _xsi:schemaLocation_ of GetFeature responses) will be generated dynamically
 from the internal feature type representation or, if DisableDynamicSchema
 is set to _true_, the original schema files used for configuring the feature
@@ -601,7 +599,7 @@ override this, two options are available:
 
 * _DecimalCoordinatesFormatter_: Empty element, attribute _places_
 specifies the number of decimal places.
-* _CustomCoordinateFormatter_: By specifiying this element, an
+* _CustomCoordinateFormatter_: By specifying this element, an
 implementation of Java interface
 _org.deegree.geometry.io.CoordinateFormatter_ can be instantiated.
 Child element _JavaClass_ contains the qualified name of the Java
@@ -737,7 +735,7 @@ The _CsvFormat_ option has the following sub-options:
 |@quoteCharacter |0..1 |String |Single character to be used as delimiter in output. Defaults to comma (`,`).
 |@escape |0..1 |String |Single sign to be used as delimiter in output.
 |@delimiter |0..1 |String |Single sign to be used as escape character. Default to double quote (`"`)
-|@instanceSeparator |0..1 |String |Text used when the property with multiple instances is joined. Defaults to the pipe sign with spaces around (` | `).
+|@instanceSeparator |0..1 |String |Text used when the property with multiple instances is joined. Defaults to the pipe sign with spaces around (`{vbar}`).
 |@recordSeparator |0..1 |String |Text to be used between records. Defaults to carriage return with line feed (`\r\n`).
 |@geometries |0..1 |Boolean |Defines if geometry columns should be included or not. Enabled by default.
 |MimeType |1..n |String |Mime types associated with this format configuration
@@ -811,7 +809,7 @@ stored queries. When WFS 2.0.0 support is activated, your WFS will
 automatically support the well-known stored query
 _urn:ogc:def:storedQuery:OGC-WFS::GetFeatureById_ (defined in the WFS
 2.0.0 specification). It can be used to query a feature instance by
-specifying it's gml:id (similar to GetGmlObject requests in WFS 1.1.0).
+specifying its gml:id (similar to GetGmlObject requests in WFS 1.1.0).
 In order to define custom stored queries, use the _StoredQuery_
 element to specify the file name of a StoredQueryDefinition file. The
 given file name (can be relative) must point to a valid WFS 2.0.0
@@ -866,7 +864,7 @@ Query-Elements should be used. An exception is thrown as
 DescribeStoredQueries response, if the configured feature type is not
 served by the WFS.
 
-The optional attribute _srsName="${srsName}"_ can be set to support the parameter _srsName_ in the GetFeature request to determine the CRS of the returned geometries. If the paramater is missing in the request, the default CRS of the WFS is returned.
+The optional attribute _srsName="${srsName}"_ can be set to support the parameter _srsName_ in the GetFeature request to determine the CRS of the returned geometries. If the parameter is missing in the request, the default CRS of the WFS is returned.
 
 To enable support for the Manage Stored Queries conformance class for WFS 2.0.0 it is required to create a directory storedqueries/managed in your workspace. The stored queries created with _CreateStoredQuery_ requests are stored in this directory. They are loaded during startup of deegree automatically. It is not recommend to put the StoredQueries configured in the WFS configuration with the StoredQuery element into this folder. If the directory is missing the _CreateStoredQuery_ request returns an exception.
 
@@ -1038,7 +1036,7 @@ _<Version>1.3.0</Version>_.
 * _MetadataStoreId_: If set to a valid metadata store, the store is
 queried upon startup with all configured layer metadata set ids. If a
 metadata set does not exist in the metadata store, it will not be
-exported as metadata URL in the capabilties. This is a useful option if
+exported as metadata URL in the capabilities. This is a useful option if
 you want to automatically check for configuration errors/typos. By
 default, no checking is done.
 * _MetadataURLTemplate_: By default, no metadata URLs are generated
@@ -1106,11 +1104,10 @@ types. Allowed values: 'kvp', 'xml', 'soap'. Multiple values must be
 separated by a white space.
 |===
 
-By default deegree will provide all supported request types with all
+By default, deegree will provide all supported request types with all
 available encodings (kvp, xml, soap).
 
-If a single supported request or encoding is configured, all non
-configured requests or encodings are disabled.
+If a single supported request or encoding is configured, all non-configured requests or encodings are disabled.
 
 Example: To limit the provided request types to GetCapabilities and
 GetFeature this request types can be added without SupportedEncodings
@@ -1195,7 +1192,7 @@ The following table shows the _Copyright_ configuration:
 |===
 |Option |Cardinality |String |Description
 | Text     | 0..1        | String  | The text of the copyright.
-| Image    | 0..1        | String  | An image used as copyright. May be a relative or absolute reference to a file or a http url.
+| Image    | 0..1        | String  | An image used as copyright. It may be a relative or absolute reference to a file or a http url.
 | OffsetX  | 0..1        | Integer | The offset from the left of the GetMap response image to the left of the copyright in pixel (default: 8).
 | OffsetY  | 0..1        | Integer | The offset from the bottom of the GetMap response image to the bottom of the copyright in pixel (default: 13).
 |===
@@ -1244,7 +1241,7 @@ The implementation of the visibility inspector checks whether a requested layer 
 Of course, also non category layers can be configured here, but for most use cases category layers will be more useful.
 If no _CategoryLayerIdentifier_ are configured, the VisibilityInspector is applied to all layers.
 
-Note: If a _CategoryLayerIdentifier_ is configured, the visibility inspector will just be executed if exactly this layer is requested. Still, as already stated above, the visiblity inspector is applied to the requested layer plus all of its sublayers.
+Note: If a _CategoryLayerIdentifier_ is configured, the visibility inspector will just be executed if exactly this layer is requested. Still, as already stated above, the visibility inspector is applied to the requested layer plus all of its sublayers.
 If just one or more sublayers of the configured _CategoryLayerIdentifier_ are requested, the visibility inspector is NOT applied.
 This behaviour prevents that complex analyses and/or functions are executed during each GetMap request.
 
@@ -1265,7 +1262,7 @@ If layer1 and/or layer2 are requested by a GetMap request, the visibility inspec
 
 Any mime type can be configured to be available as response format for
 GetCapabilities requests, although the most commonly used is probably
-_text/html_. A XSLT script is used to generate the output.
+_text/html_. An XSLT script is used to generate the output.
 
 This is how the configuration section looks like:
 
@@ -1279,7 +1276,7 @@ This is how the configuration section looks like:
 </GetCapabilitiesFormats>
 ----
 
-Of course it is possible to define as many custom formats as you want,
+Of course, it is possible to define as many custom formats as you want,
 as long as you use a different mime type for each (just duplicate the
 _GetCapabilitiesFormat_ element). If you use one of the default
 formats, the default output will be overridden with your configuration.
@@ -1323,7 +1320,7 @@ The configuration for the XSLT approach looks like this:
 </FeatureInfoFormats>
 ----
 
-Of course it is possible to define as many custom formats as you want,
+Of course, it is possible to define as many custom formats as you want,
 as long as you use a different mime type for each (just duplicate the
 _GetFeatureInfoFormat_ element). If you use one of the default
 formats, the default output will be overridden with your configuration.
@@ -1366,7 +1363,7 @@ The _GeoJSON_ option has the following sub-options:
 ==== FeatureInfo templating format
 
 The templating format can be used to create text based output formats
-for featureinfo output. It uses a number of definitions, rules and
+for FeatureInfo output. It uses a number of definitions, rules and
 special constructs to replace content with other content based on
 feature and property values. Please note that you should make sure your
 file is UTF-8 encoded if you're using umlauts.
@@ -1393,7 +1390,7 @@ features coming in looks like this:
 </html>
 ----
 
-A featureinfo request will now always yield the body of this template.
+A FeatureInfo request will now always yield the body of this template.
 In order to use the features coming in, you need to define other
 templates, and call them from a template. So let's add another template,
 and call it from the _start_ template:
@@ -1467,8 +1464,8 @@ property level. The _<?name>_ and _<?value>_ special constructs
 yield the property name and value, respectively (remember, we're at
 property level here).
 
-While that's already nice, people often put non human readable values in
-properties, even property names are sometimes not human readable. In
+While that's already nice, people often put non human-readable values in
+properties, even property names are sometimes not human-readable. In
 order to fix that, you often have code lists mapping the codes to proper
 text. To use these, there's a special kind of template called a _map_. A
 map is like a simple property file. Let's have a look at how to define
@@ -1730,7 +1727,7 @@ the whole request. Most of the parameters correspond to the layer
 options above.
 
 The parameters which are supported on a per layer basis can be used to
-set an option globally, eg. ...&REQUEST=GetMap&ANTIALIAS=BOTH&..., or
+set an option globally, e.g. ...&REQUEST=GetMap&ANTIALIAS=BOTH&..., or
 for each layer separately (using a comma separated list):
 ...&REQUEST=GetMap&ANTIALIAS=BOTH,TEXT,NONE&LAYERS=layer1,layer2,layer3&...
 Most of the layer options have a corresponding parameter with a similar
@@ -2146,7 +2143,7 @@ featureinfo format handlers:
 ----
 
 Have a look at section <<anchor-featureinfo-configuration>> (in the WMS
-chapter) to see how custom featureinfo formats are configured. Take note
+chapter) to see how custom FeatureInfo formats are configured. Take note
 that the GetFeatureInfo operation is currently only supported for remote
 WMS tile store backends.
 
@@ -2282,9 +2279,9 @@ NOTE: Further information of the configuration of the cache can be found in http
    <CacheName>map_cache</CacheName>
 </CachingTileStore>
 
-==== Supported steps by deegree services console
+==== Supported steps by the deegree webservices administration console
 
-Currently the deegree services console supports the following steps:
+Currently, the administration console supports the following steps:
 
 * creating TileStore and TileMatrixSet configuration files
 * creating Layer and Themes configuration files
@@ -2334,7 +2331,7 @@ https://schemas.deegree.org/core/3.5/services/csw/csw_configuration.xsd. The
 root element is _deegreeCSW_ and the optional attribute `config` can be set to _3.5.0_.
 
 The following table lists all available configuration options. When
-specifiying them, their order must be respected.
+specifying them, their order must be respected.
 
 [width="100%",cols="20%,10%,6%,64%",options="header",]
 |===
@@ -2344,7 +2341,7 @@ specifiying them, their order must be respected.
 |MaxMatches |0..1 |Integer |Not negative number of matches (Default:0)
 
 |MetadataStoreId |0..1 |String |Id of the meradatastoreId to use as
-backenend. By default the only configured store is used.
+backend. By default, the only configured store is used.
 
 |EnableTransactions |0..1 |Boolean |Enable transactions (CSW operations)
 default: disabled. (Default: false)
@@ -2595,7 +2592,7 @@ https://schemas.deegree.org/core/3.5/services/metadata/metadata.xsd. The
 root element is _deegreeServicesMetadata_ and the optional
 attribute `config` can be set to _3.5.0_. The following table lists all available configuration
 options (complex ones contain nested options themselves). When
-specifiying them, their order must be respected.
+specifying them, their order must be respected.
 
 [width="100%",cols="24%,11%,8%,57%",options="header",]
 |===
@@ -2690,7 +2687,7 @@ Configuration for the template looks like this:
 You can also configure _ExternalMetadataAuthority_ elements, which are
 currently only used by the WMS. You can define multiple authorities,
 with the authority URL as text content and a unique _name_ attribute.
-For each dataset you can define an ID for an authority by refering to
+For each dataset you can define an ID for an authority by referring to
 that name. This will generate an _AuthorityURL_ and _Identifier_
 pair in WMS capabilities documents (version 1.3.0 only).
 
@@ -2796,7 +2793,7 @@ An empty example file looks like follows:
 ----
 
 The following table lists all available configuration options. When
-specifiying them, their order must be respected.
+specifying them, their order must be respected.
 
 [width="100%",cols="30%,14%,10%,46%",options="header",]
 |===
@@ -2875,7 +2872,7 @@ replaced by the values from the header. If X-Forwarded-Port or
 X-Forwarded-Proto are missing the values are taken from the request URL,
 deegree would report
 _http://www.mysecondgeoportal.com/deegree-webservices/services/inspire-wfs-ad_.
-This behaviour is usefull when the deegree webservice can be requested
+This behaviour is useful when the deegree webservice can be requested
 via different URLs.
 
 ==== Request timeouts
