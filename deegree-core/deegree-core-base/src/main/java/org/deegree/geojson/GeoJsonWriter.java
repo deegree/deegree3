@@ -219,7 +219,10 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter, G
 			exportFeaturePropertyType(property);
 		}
 		else if (propertyType instanceof GeometryPropertyType) {
-			// Do nothing as geometry was exported before.
+			// geometry was exported before
+			// need to throw an exception here, because if we do nothing the Json is
+			// invalid (condition should be handled before)
+			throw new IOException("Geometry should not be rendered as part of GeoJson properties.");
 		}
 		else if (property instanceof GenericProperty) {
 			exportGenericProperty((GenericProperty) property);
@@ -360,8 +363,16 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter, G
 			exportValue(primitiveValue);
 		}
 		else if (node instanceof Property) {
-			name(((Property) node).getName().getLocalPart());
-			export((Property) node);
+			Property prop = (Property) node;
+			PropertyType type = prop.getType();
+
+			if (type instanceof GeometryPropertyType) {
+				// don't write geometry properties, geometry is written before
+			}
+			else {
+				name(prop.getName().getLocalPart());
+				export(prop);
+			}
 		}
 		else if (node instanceof GenericXMLElement) {
 			name(((GenericXMLElement) node).getName().getLocalPart());

@@ -91,6 +91,30 @@ public class GeoJsonFeatureWriterTest {
 	}
 
 	@Test
+	public void testWrite_GovServ_skipGeometries() throws Exception {
+		StringWriter featureAsJson = new StringWriter();
+		GeoJsonWriter geoJsonFeatureWriter = new GeoJsonWriter(featureAsJson, null, true);
+		Feature govserv = parseFeature("govserv.xml");
+
+		geoJsonFeatureWriter.startFeatureCollection();
+		geoJsonFeatureWriter.write(govserv);
+		geoJsonFeatureWriter.endFeatureCollection();
+
+		String featureCollection = featureAsJson.toString();
+
+		assertThat(featureCollection, JsonPathMatchers.isJson());
+		assertThat(featureCollection, hasJsonPath("$.type", is("FeatureCollection")));
+		assertThat(featureCollection, hasJsonPath("$.features.length()", is(1)));
+		assertThat(featureCollection, hasJsonPath("$.features[0].type", is("Feature")));
+		assertThat(featureCollection, hasNoJsonPath("$.features[0].srsName"));
+		assertThat(featureCollection, hasJsonPath("$.features[0].id", is("schule_3600")));
+
+		assertThat(featureCollection, not(hasJsonPath("$.features[0].geometry")));
+
+		assertThat(featureCollection, hasJsonPath("$.features[0].properties.name", is("Carl-Weyprecht-Schule")));
+	}
+
+	@Test
 	public void testWrite_SingleFeature() throws Exception {
 		StringWriter featureAsJson = new StringWriter();
 		GeoJsonWriter geoJsonFeatureWriter = new GeoJsonWriter(featureAsJson, null);
