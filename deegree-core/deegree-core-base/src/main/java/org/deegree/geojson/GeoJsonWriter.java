@@ -11,6 +11,7 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
+import org.deegree.feature.GenericFeature;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.property.SimpleProperty;
 import org.deegree.feature.types.property.CustomPropertyType;
@@ -26,6 +27,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -135,7 +137,7 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter, G
 	private void writeGeometry(Feature feature) throws IOException, UnknownCRSException, TransformationException {
 		if (geoJsonGeometryWriter == null)
 			return;
-		List<Property> geometryProperties = feature.getGeometryProperties();
+		List<Property> geometryProperties = findGeometryProperties(feature);
 		if (geometryProperties.isEmpty()) {
 			name("geometry").nullValue();
 		}
@@ -148,6 +150,66 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter, G
 		}
 		else {
 			throw new IOException("Could not write Feature as GeoJSON. The feature contains more than one geometry.");
+		}
+	}
+
+	private List<Property> findGeometryProperties(Feature feature) {
+		// try default geometry properties
+		List<Property> result = feature.getGeometryProperties();
+		if (!result.isEmpty()) {
+			return result;
+		}
+
+		// search for geometries in the properties recursively
+		result = new ArrayList<>();
+
+		// XXX would be nice to have a nice visitor pattern implementation for this model
+		// instead of implementing traversal logic everywhere
+		for (Property property : feature.getProperties()) {
+			findGeometryPropertiesInProperty(property, result);
+		}
+
+		return result;
+	}
+
+	private void findGeometryPropertiesInProperty(Property property, List<Property> result) {
+		if (property.getValue() instanceof Geometry) {
+			result.add(property);
+		}
+		else {
+			PropertyType propertyType = property.getType();
+			if (propertyType instanceof CustomPropertyType) {
+				findGeometryPropertiesInChildren(property, result);
+			}
+			else if (property instanceof GenericProperty) {
+				findGeometryProperties(property.getValue(), result);
+			}
+		}
+	}
+
+	private void findGeometryProperties(TypedObjectNode node, List<Property> result) {
+		if (node == null) {
+			return;
+		}
+		if (node instanceof Property) {
+			findGeometryPropertiesInProperty((Property) node, result);
+		}
+		else if (node instanceof GenericXMLElement) {
+			findGeometryPropertiesInChildren((GenericXMLElement) node, result);
+		}
+		else if (node instanceof GenericFeature) {
+			result.addAll(findGeometryProperties((GenericFeature) node));
+		}
+	}
+
+	private void findGeometryPropertiesInChildren(ElementNode property, List<Property> result) {
+		for (TypedObjectNode child : property.getChildren()) {
+			if (child instanceof Property) {
+				findGeometryPropertiesInProperty((Property) child, result);
+			}
+			else if (child instanceof GenericXMLElement) {
+				findGeometryPropertiesInChildren((GenericXMLElement) child, result);
+			}
 		}
 	}
 
