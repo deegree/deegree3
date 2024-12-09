@@ -9,15 +9,15 @@ import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URL;
 
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 /**
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz </a>
@@ -88,6 +88,78 @@ public class GeoJsonFeatureWriterTest {
 		assertThat(featureCollection,
 				hasJsonPath("$.features[0].properties.levelName.LocalisedCharacterString.value", is("Bundesland")));
 
+	}
+
+	@Test
+	public void testWrite_GovServ_skipGeometries() throws Exception {
+		StringWriter featureAsJson = new StringWriter();
+		GeoJsonWriter geoJsonFeatureWriter = new GeoJsonWriter(featureAsJson, null, true);
+		Feature govserv = parseFeature("govserv.xml");
+
+		geoJsonFeatureWriter.startFeatureCollection();
+		geoJsonFeatureWriter.write(govserv);
+		geoJsonFeatureWriter.endFeatureCollection();
+
+		String featureCollection = featureAsJson.toString();
+
+		assertThat(featureCollection, JsonPathMatchers.isJson());
+		assertThat(featureCollection, hasJsonPath("$.type", is("FeatureCollection")));
+		assertThat(featureCollection, hasJsonPath("$.features.length()", is(1)));
+		assertThat(featureCollection, hasJsonPath("$.features[0].type", is("Feature")));
+		assertThat(featureCollection, hasNoJsonPath("$.features[0].srsName"));
+		assertThat(featureCollection, hasJsonPath("$.features[0].id", is("schule_3600")));
+
+		assertThat(featureCollection, not(hasJsonPath("$.features[0].geometry")));
+
+		assertThat(featureCollection, hasJsonPath("$.features[0].properties.name", is("Carl-Weyprecht-Schule")));
+	}
+
+	@Test
+	public void testWrite_GovServ_MultiGeom() throws Exception {
+		StringWriter featureAsJson = new StringWriter();
+		GeoJsonWriter geoJsonFeatureWriter = new GeoJsonWriter(featureAsJson, null, false);
+		Feature govserv = parseFeature("govserv.xml");
+
+		geoJsonFeatureWriter.startFeatureCollection();
+		try {
+			geoJsonFeatureWriter.write(govserv);
+		}
+		catch (IOException e) {
+			// currently expected to fail if there are multiple geometries
+			assertThat(e.getMessage(), containsString("more than one geometry"));
+			return;
+		}
+		geoJsonFeatureWriter.endFeatureCollection();
+
+		String featureCollection = featureAsJson.toString();
+
+		fail("Expected to fail because of multiple geometries");
+	}
+
+	@Test
+	public void testWrite_GovServ_SingleGeom() throws Exception {
+		StringWriter featureAsJson = new StringWriter();
+		GeoJsonWriter geoJsonFeatureWriter = new GeoJsonWriter(featureAsJson, null, false);
+		Feature govserv = parseFeature("govserv_single-geom.xml");
+
+		geoJsonFeatureWriter.startFeatureCollection();
+		geoJsonFeatureWriter.write(govserv);
+		geoJsonFeatureWriter.endFeatureCollection();
+
+		String featureCollection = featureAsJson.toString();
+
+		assertThat(featureCollection, JsonPathMatchers.isJson());
+		assertThat(featureCollection, hasJsonPath("$.type", is("FeatureCollection")));
+		assertThat(featureCollection, hasJsonPath("$.features.length()", is(1)));
+		assertThat(featureCollection, hasJsonPath("$.features[0].type", is("Feature")));
+		assertThat(featureCollection, hasNoJsonPath("$.features[0].srsName"));
+		assertThat(featureCollection, hasJsonPath("$.features[0].id", is("schule_3600")));
+
+		assertThat(featureCollection, hasJsonPath("$.features[0].geometry"));
+		assertThat(featureCollection, hasJsonPath("$.features[0].geometry.type", is("Point")));
+		assertThat(featureCollection, hasJsonPath("$.features[0].geometry.coordinates"));
+
+		assertThat(featureCollection, hasJsonPath("$.features[0].properties.name", is("Carl-Weyprecht-Schule")));
 	}
 
 	@Test
