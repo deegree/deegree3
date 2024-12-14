@@ -530,7 +530,7 @@
       <dependency>
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
-        <version>2.17.0</version>
+        <version>2.18.0</version>
       </dependency>
       <dependency>
         <groupId>commons-beanutils</groupId>
@@ -561,7 +561,7 @@
       <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
-        <version>1.16.1</version>
+        <version>1.17.1</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -1093,7 +1093,7 @@
       <dependency>
         <groupId>com.h2database</groupId>
         <artifactId>h2</artifactId>
-        <version>2.2.224</version>
+        <version>2.3.232</version>
       </dependency>
       <dependency>
         <groupId>it.geosolutions.imageio-ext</groupId>
@@ -1158,7 +1158,7 @@
       <dependency>
         <groupId>com.google.code.gson</groupId>
         <artifactId>gson</artifactId>
-        <version>2.10.1</version>
+        <version>2.11.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -1226,7 +1226,7 @@
     <java.version>17</java.version>
     <antlr.version>3.5.3</antlr.version>
     <oracle.version>23.4.0.24.05</oracle.version>
-    <log4j.version>2.23.1</log4j.version>
+    <log4j.version>2.24.1</log4j.version>
     <slf4j.version>2.0.16</slf4j.version>
     <spring-boot.version>3.3.5</spring-boot.version>
     <spring-batch.version>5.1.2</spring-batch.version>
