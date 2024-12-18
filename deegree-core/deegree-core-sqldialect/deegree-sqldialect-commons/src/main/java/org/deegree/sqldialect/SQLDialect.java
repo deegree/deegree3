@@ -139,11 +139,22 @@ public interface SQLDialect {
 	/**
 	 * Returns an SQL snippet for SELECTing the aggregate bounding box of the given
 	 * column.
-	 * @param colummn name of the column that stores the bounding box, never
+	 * @param column name of the column that stores the bounding box, never
 	 * <code>null</code>
 	 * @return SQL snippet, never <code>null</code>
 	 */
-	String getBBoxAggregateSnippet(String colummn);
+	String getBBoxAggregateSnippet(String column);
+
+	/**
+	 * Returns an SQL snippet for SELECTing the aggregate bounding box of the given
+	 * columns.
+	 * @param columns list of column names that stores the bounding box, never
+	 * <code>null</code>
+	 * @param tables list of table names that stores the bounding box, never
+	 * <code>null</code>
+	 * @return SQL snippet, never <code>null</code>
+	 */
+	String getSelectBBox(List<String> columns, List<TableName> tables);
 
 	/**
 	 * Converts the value that has been SELECTed via
