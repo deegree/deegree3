@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<us-govserv:GovernmentalService gml:id="schule_3600" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd http://inspire.ec.europa.eu/schemas/us-govserv/4.0 http://172.17.0.1:8329/services/8f6a_wfs?SERVICE=WFS&amp;VERSION=2.0.0&amp;REQUEST=DescribeFeatureType&amp;OUTPUTFORMAT=application%2Fgml%2Bxml%3B+version%3D3.2&amp;TYPENAME=us-govserv:GovernmentalService&amp;NAMESPACES=xmlns(us-govserv,http%3A%2F%2Finspire.ec.europa.eu%2Fschemas%2Fus-govserv%2F4.0)" xmlns:wfs="http://www.opengis.net/wfs/2.0" timeStamp="2024-12-03T14:50:31Z" xmlns:ad="http://inspire.ec.europa.eu/schemas/ad/4.0" xmlns:gss="http://www.isotc211.org/2005/gss" xmlns:gn="http://inspire.ec.europa.eu/schemas/gn/4.0" xmlns:gsr="http://www.isotc211.org/2005/gsr" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:ogc="http://www.opengis.net/ogc" xmlns:cp="http://inspire.ec.europa.eu/schemas/cp/4.0" xmlns:act-core="http://inspire.ec.europa.eu/schemas/act-core/4.0" xmlns:sc="http://www.interactive-instruments.de/ShapeChange/AppInfo" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:base2="http://inspire.ec.europa.eu/schemas/base2/2.0" xmlns:au="http://inspire.ec.europa.eu/schemas/au/4.0" xmlns:us-govserv="http://inspire.ec.europa.eu/schemas/us-govserv/4.0" xmlns:tn="http://inspire.ec.europa.eu/schemas/tn/4.0" xmlns:us-net-common="http://inspire.ec.europa.eu/schemas/us-net-common/4.0" xmlns:bu-base="http://inspire.ec.europa.eu/schemas/bu-base/4.0" xmlns:net="http://inspire.ec.europa.eu/schemas/net/4.0" xmlns:bu-core2d="http://inspire.ec.europa.eu/schemas/bu-core2d/4.0" xmlns:base="http://inspire.ec.europa.eu/schemas/base/3.3" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gml="http://www.opengis.net/gml/3.2">
+  <gml:description>Für rechtsverbindliche Auskünfte wenden Sie sich bitte an den zuständigen Schulträger. Es besteht kein Anspruch auf Vollständigkeit.</gml:description>
+  <gml:name>Carl-Weyprecht-Schule</gml:name>
+  <us-govserv:beginLifespanVersion xsi:nil="true"/>
+  <us-govserv:inspireId>
+    <base:Identifier>
+      <base:localId>3600</base:localId>
+      <base:namespace>http://www.inspire-umsetzer.de/schulstandorte/</base:namespace>
+    </base:Identifier>
+  </us-govserv:inspireId>
+  <us-govserv:pointOfContact>
+    <base2:Contact>
+      <base2:address>
+        <ad:AddressRepresentation>
+          <ad:adminUnit>
+            <gn:GeographicalName>
+              <gn:language xsi:nil="true"/>
+              <gn:nativeness xsi:nil="true"/>
+              <gn:nameStatus xsi:nil="true"/>
+              <gn:sourceOfName xsi:nil="true"/>
+              <gn:pronunciation xsi:nil="true"/>
+              <gn:spelling>
+                <gn:SpellingOfName>
+                  <gn:text>Bad König</gn:text>
+                  <gn:script xsi:nil="true"/>
+                </gn:SpellingOfName>
+              </gn:spelling>
+            </gn:GeographicalName>
+          </ad:adminUnit>
+          <ad:postCode>64732</ad:postCode>
+        </ad:AddressRepresentation>
+      </base2:address>
+      <base2:website>http://www.odenwaldkreis.de/index.php?id=132</base2:website>
+    </base2:Contact>
+  </us-govserv:pointOfContact>
+  <us-govserv:serviceLocation>
+    <us-govserv:ServiceLocationType>
+      <us-govserv:serviceLocationByGeometry>
+        <!--Inlined geometry '_3eefa123-71f6-409c-baf5-44a1d81c8beb'-->
+        <gml:Point gml:id="_3eefa123-71f6-409c-baf5-44a1d81c8beb" srsName="http://www.opengis.net/def/crs/EPSG/0/4326">
+          <gml:pos>49.746634 9.015993</gml:pos>
+        </gml:Point>
+      </us-govserv:serviceLocationByGeometry>
+    </us-govserv:ServiceLocationType>
+  </us-govserv:serviceLocation>
+  <us-govserv:serviceType xlink:href="http://inspire.ec.europa.eu/codelist/ServiceTypeValue/lowerSecondaryEducation"/>
+</us-govserv:GovernmentalService>
