@@ -71,6 +71,7 @@ import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.schema.GMLAppSchemaReader;
+import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.deegree.time.primitive.TimePeriod;
 import org.junit.Assert;
 import org.junit.Test;
@@ -351,6 +352,7 @@ public class GMLFeatureReaderTest {
 	public void testINSPIREAddresses1() throws XMLStreamException, FactoryConfigurationError, IOException,
 			ClassCastException, ClassNotFoundException, InstantiationException, IllegalAccessException,
 			XMLParsingException, UnknownCRSException, ReferenceResolvingException {
+		GMLSchemaInfoSet.setRecognizeDeprecatedTypes(true);
 
 		URL schemaURL = GMLFeatureReaderTest.class.getResource("../inspire/schema/Addresses.xsd");
 		GMLAppSchemaReader adapter = new GMLAppSchemaReader(GML_32, null, schemaURL.toString());
@@ -369,6 +371,7 @@ public class GMLFeatureReaderTest {
 	public void testINSPIREAddresses1Stream() throws XMLStreamException, FactoryConfigurationError, IOException,
 			ClassCastException, ClassNotFoundException, InstantiationException, IllegalAccessException,
 			XMLParsingException, UnknownCRSException, ReferenceResolvingException {
+		GMLSchemaInfoSet.setRecognizeDeprecatedTypes(true);
 
 		URL schemaURL = GMLFeatureReaderTest.class.getResource("../inspire/schema/Addresses.xsd");
 		GMLAppSchemaReader adapter = new GMLAppSchemaReader(GML_32, null, schemaURL.toString());
