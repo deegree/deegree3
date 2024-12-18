@@ -3,7 +3,7 @@
 
 deegree makes extensive use of the OGC Filter Encoding standard. Within
 deegree there are implementations of the versions 1.1.0 and 2.0.0 of
-this standards and several extensions and additional functions. This
+these standards and several extensions and additional functions. This
 chapter is meant to explain the filter capabilities of deegree which can
 be used within <<anchor-configuration-renderstyles>> and <<anchor-configuration-wfs>> requests.
 
@@ -12,7 +12,7 @@ be used within <<anchor-configuration-renderstyles>> and <<anchor-configuration-
 The purpose of FE is to have a standardized way for defining selection
 criteria on data. This requires the definition of operators for the
 creation of filter expressions. Within this section, the supported
-operators are explained. Additionally there is information about deegree
+operators are explained. Additionally, there is information about deegree
 specific behaviour. Depending on the version of FE, syntax may differ.
 In the following, FE 1.1.0 syntax is used.
 
@@ -21,7 +21,7 @@ In the following, FE 1.1.0 syntax is used.
 FE enables the use of the following arithmetic operators:
 
 * `Add`: used for addition
-* `Sub`: used for substraction
+* `Sub`: used for subtraction
 * `Mul`: used for multiplication
 * `Div`: used for division
 
@@ -65,7 +65,7 @@ operators:
 * `PropertyIsLessThan`: Evaluates if a property value is smaller than another value.
 * `PropertyIsGreaterThan`: Evaluates if a property value is greater than another value.
 * `PropertyIsLessThanOrEqualTo`: Evaluates if a property value is smaller than or equal to another value.
-* `PropertyIsGreaterThanOrEqualTo`: Evaluates if a property value is greater than or euqal to another value.
+* `PropertyIsGreaterThanOrEqualTo`: Evaluates if a property value is greater than or equal to another value.
 * `PropertyIsLike`: Evaluates if a property value is like another value. It compares string values which each other.
 * `PropertyIsNull`: Evaluates if a property value is NULL.
 * `PropertyIsBetween`: Evaluates if a property value is between 2 defined values.
@@ -446,7 +446,7 @@ The following parameters are predefined and cannot be passed:
 
 |wms_width |Integer |width in pixel  (GetMap request)
 
-|wms_height |Integer |height in pixle  (GetMap request)
+|wms_height |Integer |height in pixel  (GetMap request)
 
 |wms_scale_denominator |Double |scale  (GetMap request)
 
