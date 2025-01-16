@@ -278,12 +278,12 @@
     <dependency>
       <groupId>org.primefaces</groupId>
       <artifactId>primefaces</artifactId>
-      <version>14.0.6</version>
+      <version>13.0.10</version>
     </dependency>
     <dependency>
       <groupId>org.primefaces.extensions</groupId>
       <artifactId>primefaces-extensions</artifactId>
-      <version>14.0.6</version>
+      <version>13.0.14</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
