@@ -1235,7 +1235,7 @@
     <batik.version>1.17</batik.version>
     <axoim.version>1.2.22</axoim.version>
     <jsonpath.version>2.9.0</jsonpath.version>
-    <jsonsmart.version>2.5.1</jsonsmart.version>
+    <jsonsmart.version>2.5.2</jsonsmart.version>
   </properties>
 
   <modules>
