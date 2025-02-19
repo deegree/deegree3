@@ -48,6 +48,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -1669,8 +1670,7 @@ public class SQLFeatureStore implements FeatureStore {
 		final String srid = detectConfiguredSrid();
 		PropertyNameMapper mapper = new PropertyNameMapper() {
 			@Override
-			public PropertyNameMapping getMapping(ValueReference propName, TableAliasManager aliasManager)
-					throws FilterEvaluationException, UnmappableException {
+			public PropertyNameMapping getMapping(ValueReference propName, TableAliasManager aliasManager) {
 				GeometryStorageParams geometryParams = new GeometryStorageParams(blobMapping.getCRS(), srid,
 						CoordinateDimension.DIM_2);
 				GeometryMapping bboxMapping = new GeometryMapping(null, false, new DBField(blobMapping.getBBoxColumn()),
@@ -1680,9 +1680,9 @@ public class SQLFeatureStore implements FeatureStore {
 			}
 
 			@Override
-			public PropertyNameMapping getSpatialMapping(ValueReference propName, TableAliasManager aliasManager)
-					throws FilterEvaluationException, UnmappableException {
-				return getMapping(propName, aliasManager);
+			public List<PropertyNameMapping> getSpatialMappings(ValueReference propName,
+					TableAliasManager aliasManager) {
+				return Collections.singletonList(getMapping(propName, aliasManager));
 			}
 		};
 		return dialect.getWhereBuilder(mapper, filter, null, null, allowInMemoryFiltering);
