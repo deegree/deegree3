@@ -559,7 +559,7 @@
       <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
-        <version>1.16.1</version>
+        <version>1.17.2</version>
       </dependency>
       <dependency>
         <groupId>commons-fileupload</groupId>
@@ -833,7 +833,7 @@
       <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>42.7.4</version>
+        <version>42.7.5</version>
       </dependency>
       <!-- Oracle (Official provided driver from repo1.maven.org) -->
       <dependency>
@@ -1235,7 +1235,7 @@
     <batik.version>1.17</batik.version>
     <axoim.version>1.2.22</axoim.version>
     <jsonpath.version>2.9.0</jsonpath.version>
-    <jsonsmart.version>2.5.1</jsonsmart.version>
+    <jsonsmart.version>2.5.2</jsonsmart.version>
   </properties>
 
   <modules>
@@ -1319,9 +1319,9 @@
           <plugin>
             <groupId>org.owasp</groupId>
             <artifactId>dependency-check-maven</artifactId>
-            <version>11.1.0</version>
+            <version>12.1.0</version>
             <configuration>
-              <cveValidForHours>24</cveValidForHours>
+              <nvdValidForHours>24</nvdValidForHours>
               <knownExploitedEnabled>false</knownExploitedEnabled>
             </configuration>
             <reportSets>
