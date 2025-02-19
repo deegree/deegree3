@@ -1321,7 +1321,7 @@
             <artifactId>dependency-check-maven</artifactId>
             <version>12.1.0</version>
             <configuration>
-              <cveValidForHours>24</cveValidForHours>
+              <nvdValidForHours>24</nvdValidForHours>
               <knownExploitedEnabled>false</knownExploitedEnabled>
             </configuration>
             <reportSets>
