@@ -44,16 +44,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import javax.xml.namespace.QName;
 import java.util.List;
 
-import javax.xml.namespace.QName;
-
 import org.apache.xerces.impl.xs.XSAttributeDecl;
-import org.apache.xerces.xs.XSAttributeDeclaration;
 import org.apache.xerces.xs.XSAttributeUse;
 import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.apache.xerces.xs.XSElementDeclaration;
-import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.utils.test.TestProperties;
@@ -472,6 +469,46 @@ public class GMLAppSchemaReaderTest {
 			}
 		}
 		assertFalse(attrUse.getRequired());
+	}
+
+	@Test
+	public void testGml32DeprecatedFeatureCollections()
+			throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+		GMLSchemaInfoSet.setRecognizeDeprecatedTypes(true);
+		String schemaURL = this.getClass()
+			.getResource("../inspire/schema/geophysicsCore/GeophysicsCore.xsd")
+			.toString();
+		GMLAppSchemaReader adapter = new GMLAppSchemaReader(null, null, schemaURL);
+		AppSchema schema = adapter.extractAppSchema();
+		FeatureType geophProfile = schema
+			.getFeatureType(new QName("http://inspire.ec.europa.eu/schemas/ge_gp/4.0", "GeophProfile"));
+		assertTrue(geophProfile instanceof FeatureCollectionType);
+		FeatureType campaign = schema
+			.getFeatureType(new QName("http://inspire.ec.europa.eu/schemas/ge_gp/4.0", "Campaign"));
+		assertTrue(campaign instanceof FeatureCollectionType);
+
+		FeatureType gml32FeatureCollection = schema.getFeatureType(new QName(GML3_2_NS, "FeatureCollection"));
+		assertTrue(gml32FeatureCollection instanceof FeatureCollectionType);
+	}
+
+	@Test
+	public void testGml32DeprecatedFeatureCollections_recognitionDisabled()
+			throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+		GMLSchemaInfoSet.setRecognizeDeprecatedTypes(false);
+		String schemaURL = this.getClass()
+			.getResource("../inspire/schema/geophysicsCore/GeophysicsCore.xsd")
+			.toString();
+		GMLAppSchemaReader adapter = new GMLAppSchemaReader(null, null, schemaURL);
+		AppSchema schema = adapter.extractAppSchema();
+		FeatureType geophProfile = schema
+			.getFeatureType(new QName("http://inspire.ec.europa.eu/schemas/ge_gp/4.0", "GeophProfile"));
+		assertFalse(geophProfile instanceof FeatureCollectionType);
+		FeatureType campaign = schema
+			.getFeatureType(new QName("http://inspire.ec.europa.eu/schemas/ge_gp/4.0", "Campaign"));
+		assertFalse(campaign instanceof FeatureCollectionType);
+
+		FeatureType gml32FeatureCollection = schema.getFeatureType(new QName(GML3_2_NS, "FeatureCollection"));
+		assertTrue(gml32FeatureCollection instanceof FeatureCollectionType);
 	}
 
 	private void assertPropertyType(GMLObjectType geometryDecl, int propDeclIdx, QName propName, int minOccurs,
