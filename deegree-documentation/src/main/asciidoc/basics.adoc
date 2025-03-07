@@ -388,31 +388,31 @@ image::console_tile_stores.png[Displaying tile store resources,scaledwidth=50.0%
 
 The right part of the window displays a table with all configured
 tile store resources. In this case, the workspace contains a single
-resource with identifier "utah_ortho" which is in status "On".
+resource with identifier *utah_ortho* which is in status *On*.
 
 ==== Deactivating a resource
 
-The "Deactivate" link allows to turn off a resource temporarily (while
+The *Deactivate* link allows to turn off a resource temporarily (while
 keeping the configuration):
 
 .Deactivate action
 image::console_deactivate.png[Deactivate action,scaledwidth=50.0%]
 
-After clicking on "Deactivate", the status of the resource will be
-"Off", and the "Deactivate" link will change to "Activate". Also, the
-"Reload" link at the top will turn red to notify that there may be
+After clicking on *Deactivate*, the status of the resource will be
+*Off*, and the *Deactivate* link will change to *Activate*. Also, the
+*Reload* link at the top will turn red to notify that there may be
 changes that need to be propagated to dependent resources:
 
 .Deactivated a resource
 image::console_deactivated.png[Deactivated a resource,scaledwidth=50.0%]
 
 TIP: When a resource is being deactivated, the suffix of the corresponding
-configuration file is changed to ".ignore". Reactivating changes the
-suffix back to ".xml".
+configuration file is changed to *.ignore*. Reactivating changes the
+suffix back to *.xml*.
 
 ==== Editing a resource
 
-By clicking on the "Edit" link, you can edit the corresponding XML
+By clicking on the *Edit* link, you can edit the corresponding XML
 configuration inside your browser:
 
 .Edit action
@@ -424,12 +424,12 @@ The XML configuration will be displayed:
 image::console_editing.png[Editing a resource configuration,scaledwidth=50.0%]
 
 You can now perform configuration changes in the text area and click on
-"Save". Or click any of the links:
+*Save*. Or click any of the links:
 
 * Cancel: Discards any changes.
 * Validate: Perform an XML validation.
 
-If there are no (syntactical) errors in the configuration, the "Save"
+If there are no (syntactical) errors in the configuration, the *Save*
 link will take you back to the corresponding resource view. Before
 actually saving the file, the administration console will perform an XML
 validation of the file and display any syntactical errors:
@@ -437,13 +437,13 @@ validation of the file and display any syntactical errors:
 .Displaying a syntax error
 image::console_edit_error.png[Displaying a syntax error,scaledwidth=50.0%]
 
-In this case, the mandatory "TileMatrixSetId" element was removed, which
+In this case, the mandatory *TileMatrixSetId* element was removed, which
 violates the configuration schema. This needs to be corrected, before
-"Save" will actually save the file to the workspace directory.
+*Save* will actually save the file to the workspace directory.
 
 ==== Deleting a resource
 
-The "Delete" link will deactivate the resource and delete the
+The *Delete* link will deactivate the resource and delete the
 corresponding configuration file from the workspace:
 
 .Delete action
@@ -453,10 +453,10 @@ image::console_delete.png[Delete action,scaledwidth=50.0%]
 
 In order to add a new resource, enter a new identifier in the text
 field, select a resource sub-type from the drop-down and click on
-"Create new":
+*Create new*:
 
-.Adding a WMS resource with identifier "mywms"
-image::console_add.png[Adding a WMS resource with identifier "mywms",scaledwidth=50.0%]
+.Adding a WMS resource with identifier *mywms*
+image::console_add.png[Adding a WMS resource with identifier mywms,scaledwidth=50.0%]
 
 The next steps depend on the type of resource, but generally you have to
 choose between different options and the result will be a new resource
@@ -467,39 +467,39 @@ configuration file in the workspace.
 
 One of the most helpful features of the administration console is that it can help to
 detect and fix errors in a workspace setup. For example, if you delete
-(or deactivate) JDBC connection "conn1" in deegree-workspace-csw and
-click "[Reload]", you will see the following:
+(or deactivate) JDBC connection *conn1* in deegree-workspace-csw and
+click *Reload*, you will see the following:
 
 .Errors in resource categories
 image::console_error.png[Errors in resource categories,scaledwidth=50.0%]
 
-The red exclamation marks near "services" and "metadata" show that these
+The red exclamation marks near *services* and *metadata* show that these
 resource categories have resources with errors. Let's click on the
 metadata link to see what's going on:
 
-.Resource "iso19115" has an error
-image::console_error2.png[Resource "iso19115" has an error,scaledwidth=50.0%]
+.Resource *iso19115* has an error
+image::console_error2.png[Resource iso19115 has an error,scaledwidth=50.0%]
 
-The metadata resource view reveals that the metadata store "iso19115"
-has an error. Clicking on "Show errors" leads to:
+The metadata resource view reveals that the metadata store *iso19115*
+has an error. Clicking on *Show errors* leads to:
 
-.Details on the problem with "iso19115"
-image::console_error3.png[Details on the problem with "iso19115",scaledwidth=50.0%]
+.Details on the problem with *iso19115*
+image::console_error3.png[Details on the problem with iso19115,scaledwidth=50.0%]
 
-The error message gives an important hint: "No JDBC connection pool with
-id 'conn1' defined." deegree was unable to initialize the metadata
-store, because it refers to a JDBC connection pool "conn1". You may
-wonder what the error in the services category is about:
+The error message gives an important hint: "Initialization of resource 'iso19115' failed:
+Dependent resource ConnectionProviderProvider:conn1 failed to initialize." deegree was unable to
+initialize the metadata store because it depends on the JDBC connection pool *conn1*, which also failed to initialize.
+You may wonder what the error in the services category is about:
 
-.Details on the problem with "csw"
-image::console_error4.png[Details on the problem with "csw",scaledwidth=50.0%]
+.Details on the problem with *csw*
+image::console_error4.png[Details on the problem with csw,scaledwidth=50.0%]
 
 As you see, the problem with the service resource ("There is no
-MetadataStore configured, ensure that exactly one store is available!)
+MetadataStore configured, ensure that exactly one store is available!")
 is actually a consequence of the other issue. Because deegree couldn't
 initialize the metadata store, it was also unable to start up the CSW
-correctly. If you add a new JDBC connection "conn1" and click on
-"[Reload]", both problems should disappear.
+correctly. If you add a new JDBC connection *conn1* and click on
+*Reload*, both problems should disappear.
 
 ==== Resource type specific actions
 
@@ -507,11 +507,11 @@ In addition to the common management functionality, some resource views
 offer additional actions. This is described in the corresponding
 chapters, but here's a short overview:
 
-* Web Services: Display service capabilities ("Capabilities"), edit
-service metadata ("Edit metadata"), edit controller configuration ("Edit
-global config")
+* Web Services: Display service capabilities (*Capabilities*), edit
+service metadata (*Edit metadata*), edit controller configuration (*Edit
+global config*)
 * Feature Stores: Display feature types and number of stored features
-("Info")
+(*Info*)
 
 === Best practices for creating workspaces
 
@@ -603,9 +603,9 @@ image::console_error3.png[Error message,scaledwidth=50.0%]
 In this case, it was not possible to initialize the JDBC connection (and
 the resources that depend on it). You can spot resource categories and
 resources that have errors easily, as they have a red exclamation mark.
-Click on the respective resource level and on "Errors" near the broken
+Click on the respective resource level and on *Errors* near the broken
 resource to see the error message. After fixing the error, click on
-"Reload" to re-initialize the workspace. If your fix was successful, the
+*Reload* to re-initialize the workspace. If your fix was successful, the
 exclamation mark will be gone.
 
 Additional information can be found in the log output of the Java Servlet container. When

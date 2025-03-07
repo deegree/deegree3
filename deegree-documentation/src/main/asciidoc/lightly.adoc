@@ -6,7 +6,7 @@ webservices. In this chapter, we will introduce the deegree webservices
 administration console and learn how to use it to perform basic tasks such as
 downloading and activating example configurations. In deegree
 terminology, a complete configuration for a deegree instance is called
-"deegree workspace".
+"_deegree workspace_".
 
 The following chapters describe the structure and the aspects of the
 deegree workspace in detail. For the remainder of this chapter, just
@@ -67,7 +67,7 @@ and your internet connection, this may take a while (the Utah workspace
 is the largest one and about 70 MB in size).
 
 After downloading has completed, the new workspace will be listed in
-section "Available workspaces":
+section _Available workspaces_:
 
 .Downloaded, but inactive workspace
 image::console_workspace_imported.png[Downloaded, but inactive workspace,scaledwidth=50.0%]
@@ -75,7 +75,7 @@ image::console_workspace_imported.png[Downloaded, but inactive workspace,scaledw
 You can now activate the downloaded workspace by clicking *Start*.
 Again, this may take a bit, as it may require some initialization. The
 workspace will be removed from the list of inactive workspaces and
-displayed next to "Active workspace:" (below the deegree logo). Your
+displayed next to _Active workspace:_ (below the deegree logo). Your
 deegree instance is now running the configuration that is contained in
 the downloaded workspace.
 
@@ -89,7 +89,7 @@ Raster data is read from GeoTIFF files, vector data is backed by
 shapefiles. Additionally, a WFS (2.0.0, 1.1.0 and 1.0.0) is configured
 that allows to access the raw vector data in GML format.
 
-After downloading and activating the "deegree-workspace-utah" workspace,
+After downloading and activating the _deegree-workspace-utah_ workspace,
 you may use any compliant OGC client for accessing the WMS and WFS.
 Successfully tested desktop clients include QGIS, uDig and OpenJUMP.
 
