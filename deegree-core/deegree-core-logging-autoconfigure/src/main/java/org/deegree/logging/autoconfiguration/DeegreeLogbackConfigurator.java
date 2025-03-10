@@ -284,7 +284,7 @@ public class DeegreeLogbackConfigurator extends ContextAwareBase implements Conf
 		}
 
 		Level threshold = Level.toLevel(config.subst("${FILE_LOG_THRESHOLD:-}"), Level.TRACE);
-		String pattern = config.subst("${FILE_LOG_PATTERN:-}");
+		String pattern = config.subst("${FILE_LOG_PATTERN:-${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz}");
 		Charset charset = charsetOrDefault("file", config.subst("${FILE_LOG_CHARSET:-}"));
 		debug("Creating file appender with pattern " + pattern + " and threshold " + threshold);
 
