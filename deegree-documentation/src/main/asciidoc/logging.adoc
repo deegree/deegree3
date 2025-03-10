@@ -8,88 +8,150 @@ The autoconfiguration submodule can provide logging to console and file, if need
 If more extended configurations are needed a Logback configuration file in XML format can be configured which disables
  autoconfiguration and allows even complex setups.
 
-TODO NOTE that deegree-tools-gml.jar uses spring configuration
+NOTE: This section of the manual focuses on the use of the deegree webapps. The <<deegree-gml-tools>> are similar by
+including a configuration file as described in paragraph <<anchor-logging-file-configuration>>.
 
 ==== Autoconfiguration
 
-TODO introduction
-TODO parameter and environment order and available parameters to configure
+With autoconfiguration and without further configuration provided, log messages are logged to the console so that they
+can be found at the same place your server container (e.g. Apache Tomcat) uses.
+The logging can be changed by providing system properties or environment variables. When environment variables are used,
+these are expected to be written in upper case and have dots replaced by underscore characters.
 
-==== File based configuration
+The following table lists the available variables.
 
-TODO introduction
-TODO describe parameter logback.configurationFile / logging.config / LOGGING_CONFIG
+[width="100%",cols="25%,25%,50%",options="header",]
+|===
+|System Property |Environment Variable |Description
+|logging.level.*
+|LOGGING_LEVEL_*
+|Defines the logging level (`TRACE` > `DEBUG` > `INFO` > `WARN` > `ERROR` > `OFF`) of a specific package or class.
+When using environment variables, only packages can be addressed, while individual classes can also be configured with
+system properties. E.g. `logging.level.org.deegree=DEBUG` / `LOGGIN_LEVEL_ORG_DEEGREE=DEBUG`
 
-==== Text from PR
+|logging.group.*
+|LOGGING_GROUP_*
+|If multiple packages or classes should be addressed at once, these can be grouped under a group name. E.g. `logging.group.my-group=org.example,com.example,net.example` and `logging.level.my-group=INFO`.
 
-The configuration in:
+|logging.console.log.pattern
+|LOGGING_CONSOLE_LOG_PATTERN
+|Pattern used for logging to console e.g. `%date %level %logger{1} [%thread] %msg%n`. All available placeholders are described in the https://logback.qos.ch/manual/layouts.html#conversionWord[pattern section of the Logback manual].
 
-The console appender is configured with:
+|logging.console.log.charset |LOGGING_CONSOLE_LOG_CHARSET |Charset used to encode logging output to console, defaults to `UTF-8`.
+
+|logging.file.name
+|LOGGING_FILE_NAME
+|If configured a logfile with this name will be created. E.g. `deegree.log`
+
+|logging.file.path
+|LOGGING_FILE_PATH
+|Path to be used instead of the default folder of your servlet container to store the logging file.
+
+|logging.file.log.pattern
+|LOGGING_FILE_LOG_PATTERN
+|Pattern used for logging to file, if a file is configured, e.g. `%date %level %logger{1} [%thread] %msg%n`. All available placeholders are described in the https://logback.qos.ch/manual/layouts.html#conversionWord[pattern section of the Logback manual].
+
+|logging.file.log.charset |LOGGING_FILE_LOG_CHARSET |Charset used to encode logging output to file, defaults to `UTF-8`.
+
+|logging.file.log.threshold
+|LOGGING_FILE_LOG_THRESHOLD
+|Limit messages logged to file by level (`TRACE` > `DEBUG` > `INFO` > `WARN` > `ERROR`), defaults to `TRACE`.
+
+|logging.logback.rollingpolicy.clean-history-on-start
+|LOGGING_LOGBACK_ROLLINGPOLICY_CLEAN-HISTORY-ON-START
+|If log archive cleanup should occur on starts (defaults to `false`).
+
+|logging.logback.rollingpolicy.file-name-pattern
+|LOGGING_LOGBACK_ROLLINGPOLICY_FILE-NAME-PATTERN
+|The filename pattern used to create log archives (defaults to `${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz`).
+
+|logging.logback.rollingpolicy.max-file-size
+|LOGGING_LOGBACK_ROLLINGPOLICY_MAX-FILE-SIZE
+|The maximum size of log file before it is archived (defaults to `10MB`).
+
+|logging.logback.rollingpolicy.max-history
+|LOGGING_LOGBACK_ROLLINGPOLICY_MAX-HISTORY
+|The maximum number of archive log files to keep (defaults to 7).
+
+|logging.logback.rollingpolicy.total-size-cap
+|LOGGING_LOGBACK_ROLLINGPOLICY_TOTAL-SIZE-CAP
+|The maximum amount of size log archives can take before being deleted.
+
+|===
+
+TIP: As a sensible default, the default log level for its own package `org.deegree` is set to `INFO`.
+Besides this, the groups `deegree-recommendations-error` and `deegree-recommendations-warn` are predefined
+and set to `ERROR` and  `WARN` as their names suggest.
+
+To debug the autoconfiguration, the system property `logging.level.org.deegree.logging.autoconfiguration` or
+Environment variable `LOGGING_LEVEL_ORG_DEEGREE_LOGGING_AUTOCONFIGURATION` can be set to `DEBUG` or `TRACE` so that
+the status messages of the logging system configuring itself are sent to the console output.
+
+For details and more configuration options, see https://logback.qos.ch/manual/configuration.html#dumpingStatusData[Logback Documentation of status data].
+
+[[anchor-logging-file-configuration]]
+==== File-based configuration
+
+If autoconfiguration is not desired, a Logback configuration file can be provided in one of the following ways:
+
+ . Define the system property `logback.configurationFile` pointing to a configuration file
+ . Define the system property `logging.config` pointing to a configuration file
+ . Set the environment variable `LOGGING_CONFIG` with the file location
+ . add a `logback.xml` configuration file to the classpath of the deegree application
+
+An exemplary configuration may look like:
 
 [source,xml]
 ----
-<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender"> <1>
-    <encoder>
-        <pattern>%date %level %logger{1} [%thread] %msg%n</pattern> <2>
-    </encoder>
-    <!--
-    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-        <level>INFO</level> <3>
-    </filter>
-    -->
-</appender>
+<configuration debug="true">
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender"> <1>
+        <encoder>
+            <pattern>%date %level %logger{1} [%thread] %msg%n</pattern> <2>
+        </encoder>
+    </appender>
+
+    <variable name="log.prefix" value="deegree" /> <3>
+    <variable name="log.dir" value="logs"/> <4>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender"> <5>
+        <file>${log.dir}/${log.prefix}.log</file> <6>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy"> <7>
+            <fileNamePattern>${log.dir}/${log.prefix}-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern> <8>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>20</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%date %level %logger{1} [%thread] %msg%n</pattern> <9>
+        </encoder>
+    </appender>
+
+    <root level="debug">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="FILE" />
+    </root>
+
+    <logger name="org.deegree" level="INFO"/> <10>
+</configuration>
 ----
+
 <1> defines the type of the appender
 <2> defines the pattern for formatting the log message
-<3> defines the threshold for this appender (In this example, it's disabled/commented out)
-
-The file appender is configured with:
-
-[source,xml]
-----
-<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender"> <1>
-    <file>${log.dir}/${log.prefix}.log</file> <2>
-    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy"> <3>
-        <fileNamePattern>${log.dir}/${log.prefix}-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern> <4>
-        <maxFileSize>100MB</maxFileSize>
-        <maxHistory>20</maxHistory>
-        <totalSizeCap>1GB</totalSizeCap>
-    </rollingPolicy>
-    <!--
-    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-        <level>INFO</level> <6>
-    </filter>
-    -->
-    <encoder>
-        <pattern>%date %level %logger{1} [%thread] %msg%n</pattern> <5>
-    </encoder>
-</appender>
-----
-<1> defines the type of the appender
-<2> defines the file name
-<3> defines the policies when rolling over the files, triggered by size (>100MB) and time (> 1 day)
-<4> defines the format of the archived file names, when the policies are applied
-<5> defines the pattern for formatting the log message
-<6> defines the threshold for this appender (In this example, it's disabled/commented out)
-
-The log file name is defined by the following settings:
-
-[source,xml]
-----
-<variable name="log.prefix" value="deegree" /> <1>
-<variable name="log.dir" value="logs"/> <2>
-----
-<1> defines the prefix of the logfiles, default is _deegree_ and can be defined by an environment variable `log.prefix`
-<2> defines the log directory, default is _logs/_ and can be defined by an environment variable `log.dir`
-
-To turn off or on a specific logger use the logger definition as in the following example for `org.deegree`:
-
-[source,xml]
-----
-<logger name="org.deegree" level="INFO"/> <1>
-----
-<1> defines the logger name and threshold which are applied to all logger starting with `org.deegree`
+<3> defines the prefix of the log files, default is _deegree_ and can be defined by a system property (or environment variable) `log.prefix`
+<4> defines the log directory, default is _logs/_ and can be defined by a system property (or environment variable) `log.dir`
+<5> defines the type of the appender
+<6> defines the file location and name
+<7> defines the policies when rolling over the files, triggered by size (>100MB) and time (> 1 day)
+<8> defines the format of the archived file names, when the policies are applied
+<9> defines the pattern for formatting the log message
+<10> defines the logger name and threshold which are applied to all packages starting with `org.deegree`
 
 You will find more information about Logback configuration in the https://logback.qos.ch/documentation.html[Logback documentation].
 
+[[anchor-logging-expert]]
+==== Providing another logging framework
 
+It is generally recommended to use the included library for logging. As deegree builds on the Simple Logging
+Facade for Java (SLF4J) (https://www.slf4j.org) it is, with specialized knowledge, possible to replace Logback and
+the autoconfiguration by replacing the libraries `logback-*.jar` and `deegree-core-logging-autoconfigure-*.jar` on its
+classpath with another SLF4J compatible logging framework and their dependencies.
