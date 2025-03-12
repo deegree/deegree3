@@ -1822,3 +1822,30 @@ The file can also be used to configure the bounding box to a larger extent than 
 The extent of a FeatureType is written in the capabilities as WGS84BoundingBox (WFS 2.0) of the FeatureType.
 
 TIP: It is possible to configure a _bbox_cache_<FeatureStoreId>.properties_ per SQLFeatureStore, this FeatureStore specific configuration is preferred over the bbox_cache.properties.
+
+[[anchor-setup-tables]]
+==== Auto-generating database tables
+
+After you have created a valid deegree workspace with a database connection as well as a FeatureStore configuration for example by using the deegree SqlFeatureStoreConfigCreator,
+the *Setup tables* should be visible on the right side of your configured FeatureStore. Click on *Setup tables* to auto-generate a SQL script for creating the required
+tables in the corresponding database:
+
+.Setup tables action
+image::console_setup_tables1.png[Setup tables action ,scaledwidth=80.0%]
+
+Once you clicked the *Setup tables* link, a preview of the generated SQL script will be presented:
+
+.Auto-generated database table statements
+image::console_setup_tables2.png[Auto-generated database tables statements,scaledwidth=80.0%]
+
+In order to execute the SQL script, click the link *Execute*. The SQL statements will now be executed against your database and the tables will be created:
+
+.Executing database table statements
+image::console_setup_tables3.png[Executed database table statements,scaledwidth=80.0%]
+
+Next, reinitialize the other workspace resources by clicking *Reload* next to your active workspace.
+If there are no error messages showing, the execution of the SQL script using *Setup tables* was successful!
+
+The WFS and WMS now retrieve features directly from your database. However, since the database is currently empty, the
+WMS will not render any data, and the WFS will return no features when queried. In order to access features,
+you need to insert data into the database first. This can be done for example by using the deegree GmlLoader.
