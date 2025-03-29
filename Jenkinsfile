@@ -56,8 +56,7 @@ pipeline {
             }
             post {
                 always {
-                    recordIssues enabledForFailure: true, tools: [mavenConsole(), java(), javaDoc()]
-                    recordIssues enabledForFailure: true, tool: spotBugs()
+                    recordIssues enabledForFailure: true, tools: [mavenConsole(), java(), javaDoc(), spotBugs()]
                 }
             }
         }
@@ -73,7 +72,8 @@ pipeline {
                 withMaven(mavenSettingsConfig: 'mvn-server-settings', options: [junitPublisher(healthScaleFactor: 1.0)], publisherStrategy: 'EXPLICIT') {
                   withCredentials([usernamePassword(credentialsId:'nexus-deploy', passwordVariable: 'PASSWORD_VAR', usernameVariable: 'USERNAME_VAR')]) {
                     sshagent(credentials: ['jenkins-deegree-ssh-key']) {
-                      sh 'mvn -Dresume=false -DreleaseVersion=${REL_VERSION} -DdevelopmentVersion=${DEV_VERSION} -Darguments="-Drepo.username=${USERNAME_VAR} -Drepo.password=${PASSWORD_VAR}" -DdeployAtEnd=true -Dgoals=deploy release:prepare release:perform -P integration-tests,oracle,handbook'
+                      sh 'mvn release:clean release:prepare -P integration-tests,oracle,handbook -Dresume=false -DreleaseVersion=${REL_VERSION} -DdevelopmentVersion=${DEV_VERSION}'
+                      sh 'mvn release:perform -P integration-tests,oracle,handbook -DdeployAtEnd=true -Dgoals=deploy -Drepo.username=${USERNAME_VAR} -Drepo.password=${PASSWORD_VAR}'
                     }
                   }
                 }
