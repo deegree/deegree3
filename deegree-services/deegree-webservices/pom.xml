@@ -273,6 +273,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-core-logging-autoconfigure</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
     </dependency>
@@ -299,10 +304,6 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>jul-to-slf4j</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-slf4j2-impl</artifactId>
     </dependency>
     <dependency>
       <groupId>jakarta.annotation</groupId>
