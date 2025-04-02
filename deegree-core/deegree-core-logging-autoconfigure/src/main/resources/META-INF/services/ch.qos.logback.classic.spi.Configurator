@@ -1,0 +1,5 @@
+# default configuration of logback, excluding the fallback
+ch.qos.logback.classic.util.DefaultJoranConfigurator
+# deegree custom default (auto)configuration
+org.deegree.logging.autoconfiguration.EarlyLogbackSystemPropertySetter
+org.deegree.logging.autoconfiguration.DeegreeLogbackConfigurator

@@ -37,6 +37,7 @@
     <module>deegree-core-workspace</module>
     <module>deegree-connectionprovider-datasource</module>
     <module>deegree-core-test-logging</module>
+    <module>deegree-core-logging-autoconfigure</module>
   </modules>
 
 </project>

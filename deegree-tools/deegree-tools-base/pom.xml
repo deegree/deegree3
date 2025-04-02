@@ -46,8 +46,9 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-slf4j2-impl</artifactId>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-jsf-core</artifactId>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
 
