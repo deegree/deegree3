@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.interactive-instruments.de/ShapeChange/AppInfo"
+ xmlns="http://www.w3.org/2001/XMLSchema"
+ xmlns:sc="http://www.interactive-instruments.de/ShapeChange/AppInfo" elementFormDefault="qualified"
+ attributeFormDefault="unqualified">
+ <element name="profiles" type="string"/>
+ <element name="name" type="string"/>
+ <element name="code" type="string"/>
+ <element name="taggedValue">
+  <complexType>
+   <simpleContent>
+    <extension base="string">
+     <attribute name="tag" type="string"/>
+    </extension>
+   </simpleContent>
+  </complexType>
+ </element>
+ <element name="targetCodeListURI" type="string"/>
+ <element name="globalIdentifier" type="string"/>
+ <element name="descriptor">
+  <complexType>
+   <simpleContent>
+    <extension base="string">
+     <attribute name="name" type="string" use="required"/>
+     <attribute name="lang" type="string"/>
+    </extension>
+   </simpleContent>
+  </complexType>
+ </element>
+ <element name="geometryType" type="string"/>
+ <element name="srid" type="positiveInteger"/>
+</schema>
