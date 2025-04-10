@@ -12,7 +12,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-workspaces</artifactId>
-    <version>3.6.0-pre4</version>
+    <version>3.6.0-SNAPSHOT</version>
   </parent>
 
   <build>
