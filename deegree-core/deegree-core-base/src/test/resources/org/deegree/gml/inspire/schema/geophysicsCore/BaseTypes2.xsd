@@ -1,0 +1,515 @@
+<?xml version="1.0" encoding="UTF-8"?><schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:ad="http://inspire.ec.europa.eu/schemas/ad/4.0" xmlns:base2="http://inspire.ec.europa.eu/schemas/base2/2.0" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:sc="http://www.interactive-instruments.de/ShapeChange/AppInfo" elementFormDefault="qualified" targetNamespace="http://inspire.ec.europa.eu/schemas/base2/2.0" version="2.0">
+  <annotation>
+    <documentation>-- Definition --
+schema for additional basic types used by multiple themes
+
+-- Description --
+NOTE	The additional types specified with Annex II/III data specifications are placed in a separate schema to maintain backwards compatibility.</documentation>
+  </annotation>
+  <import namespace="http://inspire.ec.europa.eu/schemas/ad/4.0" schemaLocation="Addresses.xsd"/>
+  <import namespace="http://www.interactive-instruments.de/ShapeChange/AppInfo" schemaLocation="ShapeChangeAppinfo.xsd"/>
+  <import namespace="http://www.isotc211.org/2005/gmd" schemaLocation="http://schemas.opengis.net/iso/19139/20070417/gmd.xsd"/>
+  <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="http://schemas.opengis.net/gml/3.2.1/gml.xsd"/>
+  <!--XML Schema document created by ShapeChange-->
+  <element name="Contact" substitutionGroup="gml:AbstractObject" type="base2:ContactType">
+    <annotation>
+      <documentation>-- Name --
+contact
+
+-- Definition --
+Communication channels by which it is possible to gain access to someone or something.
+
+-- Description --</documentation>
+    </annotation>
+  </element>
+  <complexType name="ContactType">
+    <sequence>
+      <element minOccurs="0" name="address" nillable="true">
+        <annotation>
+          <documentation>-- Definition --
+An address provided as free text.</documentation>
+        </annotation>
+        <complexType>
+          <sequence>
+            <element ref="ad:AddressRepresentation"/>
+          </sequence>
+          <attribute name="nilReason" type="gml:NilReasonType"/>
+        </complexType>
+      </element>
+      <element minOccurs="0" name="contactInstructions" nillable="true" type="gmd:PT_FreeText_PropertyType">
+        <annotation>
+          <documentation>-- Definition --
+Supplementary instructions on how or when to contact an individual or organisation.
+
+
+-- Description --</documentation>
+        </annotation>
+      </element>
+      <element minOccurs="0" name="electronicMailAddress" nillable="true">
+        <annotation>
+          <documentation>-- Definition --
+An address of the organisation's or individual's electronic mailbox.
+
+-- Description --</documentation>
+        </annotation>
+        <complexType>
+          <simpleContent>
+            <extension base="string">
+              <attribute name="nilReason" type="gml:NilReasonType"/>
+            </extension>
+          </simpleContent>
+        </complexType>
+      </element>
+      <element minOccurs="0" name="hoursOfService" nillable="true" type="gmd:PT_FreeText_PropertyType">
+        <annotation>
+          <documentation>-- Definition --
+Periods of time when the organisation or individual can be contacted.
+
+-- Description --</documentation>
+        </annotation>
+      </element>
+      <element maxOccurs="unbounded" minOccurs="0" name="telephoneFacsimile" nillable="true">
+        <annotation>
+          <documentation>-- Definition --
+Number of a facsimile machine of the organisation or individual.
+
+-- Description --</documentation>
+        </annotation>
+        <complexType>
+          <simpleContent>
+            <extension base="string">
+              <attribute name="nilReason" type="gml:NilReasonType"/>
+            </extension>
+          </simpleContent>
+        </complexType>
+      </element>
+      <element maxOccurs="unbounded" minOccurs="0" name="telephoneVoice" nillable="true">
+        <annotation>
+          <documentation>-- Definition --
+Telephone number of the organisation or individual.
+
+-- Description --</documentation>
+        </annotation>
+        <complexType>
+          <simpleContent>
+            <extension base="string">
+              <attribute name="nilReason" type="gml:NilReasonType"/>
+            </extension>
+          </simpleContent>
+        </complexType>
+      </element>
+      <element minOccurs="0" name="website" nillable="true">
+        <annotation>
+          <documentation>-- Definition --
+Pages provided on the World Wide Web by the organisation or individual.
+
+-- Description --</documentation>
+        </annotation>
+        <complexType>
+          <simpleContent>
+            <extension base="anyURI">
+              <attribute name="nilReason" type="gml:NilReasonType"/>
+            </extension>
+          </simpleContent>
+        </complexType>
+      </element>
+    </sequence>
+  </complexType>
+  <complexType name="ContactPropertyType">
+    <sequence>
+      <element ref="base2:Contact"/>
+    </sequence>
+  </complexType>
+  <element name="DocumentCitation" substitutionGroup="gml:AbstractGML" type="base2:DocumentCitationType">
+    <annotation>
+      <documentation>-- Name --
+document citation
+
+-- Definition --
+Citation for the purposes of unambiguously referencing a document.</documentation>
+    </annotation>
+  </element>
+  <complexType name="DocumentCitationType">
+    <complexContent>
+      <extension base="gml:AbstractGMLType">
+        <sequence>
+          <element name="name" type="string">
+            <annotation>
+              <documentation>-- Name --
+name
+
+-- Definition --
+Name of the document.
+
+-- Description --
+NOTE	For legal documents, this should be the official name assigned to the legislative instrument.
+
+EXAMPLE The official legal name for the INSPIRE Directive is "Directive 2007/2/EC of the European Parliament and of the Council of 14 March 2007 establishing an Infrastructure for Spatial Information in the European Community (INSPIRE)"</documentation>
+            </annotation>
+          </element>
+          <element minOccurs="0" name="shortName" nillable="true">
+            <annotation>
+              <documentation>-- Name --
+short name
+
+-- Definition --
+Short name or alternative title of the document.
+
+-- Description --
+NOTE	For legal documents, this should be a short name or alternative title commonly used to identify the legislation.
+
+EXAMPLE 1: INSPIRE Directive is the short name for "Directive 2007/2/EC of the European Parliament and of the Council of 14 March 2007 establishing an Infrastructure for Spatial Information in the European Community (INSPIRE)"
+
+EXAMPLE 2: CAFE Directive is the short name for the Directive 2008/50/EC of the European Parliament and of the Council of 21 May 2008 on ambient air quality and cleaner air for Europe" 
+
+EXAMPLE  3: Water Framework Directive the short name for "Directive 2000/60/EC of the European Parliament and of the Council establishing a framework for the Community action in the field of water policy"</documentation>
+            </annotation>
+            <complexType>
+              <simpleContent>
+                <extension base="string">
+                  <attribute name="nilReason" type="gml:NilReasonType"/>
+                </extension>
+              </simpleContent>
+            </complexType>
+          </element>
+          <element name="date" nillable="true">
+            <annotation>
+              <documentation>-- Name --
+date
+
+-- Definition --
+Date of creation, publication or revision of the document.</documentation>
+            </annotation>
+            <complexType>
+              <complexContent>
+                <extension base="gml:AbstractMetadataPropertyType">
+                  <sequence>
+                    <element ref="gmd:CI_Date"/>
+                  </sequence>
+                  <attribute name="nilReason" type="gml:NilReasonType"/>
+                </extension>
+              </complexContent>
+            </complexType>
+          </element>
+          <element maxOccurs="unbounded" name="link" nillable="true">
+            <annotation>
+              <documentation>-- Name --
+link to online version
+
+-- Definition --
+Link to an online version of the document</documentation>
+            </annotation>
+            <complexType>
+              <simpleContent>
+                <extension base="anyURI">
+                  <attribute name="nilReason" type="gml:NilReasonType"/>
+                </extension>
+              </simpleContent>
+            </complexType>
+          </element>
+          <element maxOccurs="unbounded" minOccurs="0" name="specificReference" nillable="true">
+            <annotation>
+              <documentation>-- Name --
+specific reference
+
+-- Definition --
+Reference to a specific part of the document.
+
+-- Description --
+EXAMPLE For legal documents, this attribute can contain a reference to article(s) that specify a specific requirement or obligation.</documentation>
+            </annotation>
+            <complexType>
+              <simpleContent>
+                <extension base="string">
+                  <attribute name="nilReason" type="gml:NilReasonType"/>
+                </extension>
+              </simpleContent>
+            </complexType>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="DocumentCitationPropertyType">
+    <sequence minOccurs="0">
+      <element ref="base2:DocumentCitation"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="LegislationCitation" substitutionGroup="base2:DocumentCitation" type="base2:LegislationCitationType">
+    <annotation>
+      <documentation>-- Name --
+legislation citation
+
+-- Definition --
+Citation for the purposes of unambiguously referencing a legal act or a specific part of a legal act.</documentation>
+    </annotation>
+  </element>
+  <complexType name="LegislationCitationType">
+    <complexContent>
+      <extension base="base2:DocumentCitationType">
+        <sequence>
+          <element minOccurs="0" name="identificationNumber" type="string">
+            <annotation>
+              <documentation>-- Name --
+identification number
+
+-- Definition --
+Code used to identify the legislative instrument
+
+-- Description --
+
+EXAMPLE 1: 2007/2/EC is the identification number for the INSPIRE Directive
+
+EXAMPLE 2: 2008/50/EC is the identification number for the CAFE Directive
+
+EXAMPLE 3: 2000/60/EC is the identification number for the  Water Framework Directive</documentation>
+            </annotation>
+          </element>
+          <element minOccurs="0" name="officialDocumentNumber" type="string">
+            <annotation>
+              <documentation>-- Name --
+official document number
+
+-- Definition --
+Official document number used to uniquely identify the legislative instrument.
+
+-- Description --
+NOTE: An official document number may be assigned to uniquely identify the legislative instrument.
+
+EXAMPLE: CELEX Number used to uniquely identify European Union Legislation</documentation>
+            </annotation>
+          </element>
+          <element minOccurs="0" name="dateEnteredIntoForce" type="gml:TimePositionType">
+            <annotation>
+              <documentation>-- Name --
+date entered into force
+
+-- Definition --
+Date the legislative instrument entered into force.</documentation>
+            </annotation>
+          </element>
+          <element minOccurs="0" name="dateRepealed" type="gml:TimePositionType">
+            <annotation>
+              <documentation>-- Name --
+date repealed
+
+-- Definition --
+Date the legislative instrument was repealed.</documentation>
+            </annotation>
+          </element>
+          <element name="level" type="gml:ReferenceType">
+            <annotation>
+              <documentation>-- Name --
+name
+
+-- Definition --
+The level at which the legislative instrument is adopted.</documentation>
+            </annotation>
+          </element>
+          <element minOccurs="0" name="journalCitation" type="base2:OfficialJournalInformationPropertyType">
+            <annotation>
+              <documentation>-- Name --
+journal citation
+
+-- Definition --
+Citation of the official journal in which the legislation is published.</documentation>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="LegislationCitationPropertyType">
+    <sequence minOccurs="0">
+      <element ref="base2:LegislationCitation"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="OfficialJournalInformation" substitutionGroup="gml:AbstractObject" type="base2:OfficialJournalInformationType">
+    <annotation>
+      <documentation>-- Name --
+official journal information
+
+-- Definition --
+Full citation of the location of the legislative instrument within the official journal.</documentation>
+    </annotation>
+  </element>
+  <complexType name="OfficialJournalInformationType">
+    <sequence>
+      <element name="officialJournalIdentification" type="string">
+        <annotation>
+          <documentation>-- Name --
+official journal identification
+
+-- Definition --
+Reference to the location within the official journal within which the legislative instrument was published. This reference shall be comprised of three parts:
+&lt;ul&gt;
+	&lt;li&gt;the title of the official journal&lt;/li&gt;
+	&lt;li&gt;the volume and/or series number&lt;/li&gt;
+	&lt;li&gt;Page number(s)&lt;/li&gt;
+&lt;/ul&gt;
+
+-- Description --
+EXAMPLE: Official Journal of European Union (OJEU), L108, Volume 50, 1-14</documentation>
+        </annotation>
+      </element>
+      <element minOccurs="0" name="ISSN" type="string">
+        <annotation>
+          <documentation>-- Name --
+ISSN
+
+-- Definition --
+The International Standard Serial Number (ISSN) is an eight-digit number that identifies the periodical publication in which the legislative instrument was published.
+
+-- Description --
+NOTE: Periodical publilcations are issued in successive parts, usually having numerical or chronological designations and required that each serial publication can be uniquely identified.
+
+EXAMPLE: OJ Series in which INSPIRE Directive is published has been assigned the ISSN: 1725-2555</documentation>
+        </annotation>
+      </element>
+      <element minOccurs="0" name="ISBN" type="string">
+        <annotation>
+          <documentation>-- Name --
+ISBN
+
+-- Definition --
+International Standard Book Number (ISBN) is an nine-digit number that uniquely identifies the book in which the legislative instrument was published.</documentation>
+        </annotation>
+      </element>
+      <element minOccurs="0" name="linkToJournal" type="anyURI">
+        <annotation>
+          <documentation>-- Name --
+link to online version
+
+-- Definition --
+Link to an online version of the official journal</documentation>
+        </annotation>
+      </element>
+    </sequence>
+  </complexType>
+  <complexType name="OfficialJournalInformationPropertyType">
+    <sequence>
+      <element ref="base2:OfficialJournalInformation"/>
+    </sequence>
+  </complexType>
+  <element name="RelatedParty" substitutionGroup="gml:AbstractObject" type="base2:RelatedPartyType">
+    <annotation>
+      <documentation>-- Name --
+related party
+
+-- Definition --
+An organisation or a person with a role related to a resource.
+
+-- Description --
+NOTE 1 A party, typically an individual person, acting as a general point of contact for a resource can be specified without providing any particular role.</documentation>
+    </annotation>
+  </element>
+  <complexType name="RelatedPartyType">
+    <sequence>
+      <element minOccurs="0" name="individualName" nillable="true" type="gmd:PT_FreeText_PropertyType">
+        <annotation>
+          <documentation>-- Name --
+individual name
+
+-- Definition --
+Name of the related person.</documentation>
+        </annotation>
+      </element>
+      <element minOccurs="0" name="organisationName" nillable="true" type="gmd:PT_FreeText_PropertyType">
+        <annotation>
+          <documentation>-- Name --
+organisation name
+
+-- Definition --
+Name of the related organisation.</documentation>
+        </annotation>
+      </element>
+      <element minOccurs="0" name="positionName" nillable="true" type="gmd:PT_FreeText_PropertyType">
+        <annotation>
+          <documentation>-- Name --
+position name
+
+-- Definition --
+Position of the party in relation to a resource, such as head of department.</documentation>
+        </annotation>
+      </element>
+      <element minOccurs="0" name="contact" nillable="true">
+        <annotation>
+          <documentation>-- Name --
+contact
+
+-- Definition --
+Contact information for the related party.</documentation>
+        </annotation>
+        <complexType>
+          <sequence>
+            <element ref="base2:Contact"/>
+          </sequence>
+          <attribute name="nilReason" type="gml:NilReasonType"/>
+        </complexType>
+      </element>
+      <element maxOccurs="unbounded" minOccurs="0" name="role" nillable="true" type="gml:ReferenceType">
+        <annotation>
+          <documentation>-- Definition --
+Role(s) of the party in relation to a resource, such as owner.</documentation>
+          <appinfo>
+            <taggedValue xmlns="http://www.interactive-instruments.de/ShapeChange/AppInfo" tag="obligation">TG</taggedValue>
+          </appinfo>
+        </annotation>
+      </element>
+    </sequence>
+  </complexType>
+  <complexType name="RelatedPartyPropertyType">
+    <sequence>
+      <element ref="base2:RelatedParty"/>
+    </sequence>
+  </complexType>
+  <element name="ThematicIdentifier" substitutionGroup="gml:AbstractObject" type="base2:ThematicIdentifierType">
+    <annotation>
+      <documentation>-- Name --
+thematic identifier
+
+-- Definition --
+Thematic identifier to uniquely identify the spatial object. 
+
+-- Description --
+Some spatial objects may be assigned multiple unique identifiers. 
+These may have been established to meet data exchange requirements of different reporting obligations at International, European or national levels and/or internal data maintenance requirements.</documentation>
+    </annotation>
+  </element>
+  <complexType name="ThematicIdentifierType">
+    <sequence>
+      <element name="identifier" type="string">
+        <annotation>
+          <documentation>-- Name --
+identifier
+
+-- Definition --
+Unique identifier used to identify the spatial object within the specified identification scheme.</documentation>
+        </annotation>
+      </element>
+      <element name="identifierScheme" type="string">
+        <annotation>
+          <documentation>-- Name --
+identifier scheme
+
+-- Definition --
+Identifier defining the scheme used to assign the identifier.
+
+-- Description --
+NOTE 1: Reporting requirements for different environmental legislation mandate that each spatial object is assigned an identifier conforming to specific lexical rules. 
+
+NOTE 2: These rules are often inconsistent so a spatial object may be assigned multiple identifiers which are used for object referencing to link information to the spatial object.</documentation>
+        </annotation>
+      </element>
+    </sequence>
+  </complexType>
+  <complexType name="ThematicIdentifierPropertyType">
+    <sequence>
+      <element ref="base2:ThematicIdentifier"/>
+    </sequence>
+  </complexType>
+</schema>
