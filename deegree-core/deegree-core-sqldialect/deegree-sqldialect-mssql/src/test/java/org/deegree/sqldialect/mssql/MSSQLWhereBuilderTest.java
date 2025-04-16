@@ -54,6 +54,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Tests for {@link MSSQLWhereBuilder}.
  *
@@ -70,14 +73,13 @@ public class MSSQLWhereBuilderTest {
 		PropertyNameMapper mapper = new PropertyNameMapper() {
 
 			@Override
-			public PropertyNameMapping getSpatialMapping(ValueReference propName, TableAliasManager aliasManager)
-					throws FilterEvaluationException, UnmappableException {
-				return new PropertyNameMapping(null, null, propName.getAsText(), "table");
+			public List<PropertyNameMapping> getSpatialMappings(ValueReference propName,
+					TableAliasManager aliasManager) {
+				return Collections.singletonList(new PropertyNameMapping(null, null, propName.getAsText(), "table"));
 			}
 
 			@Override
-			public PropertyNameMapping getMapping(ValueReference propName, TableAliasManager aliasManager)
-					throws FilterEvaluationException, UnmappableException {
+			public PropertyNameMapping getMapping(ValueReference propName, TableAliasManager aliasManager) {
 				return new PropertyNameMapping(null, null, propName.getAsText(), "table");
 			}
 		};
