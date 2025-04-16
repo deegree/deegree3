@@ -131,7 +131,6 @@ public class SimpleSqlFeatureStoreTest {
 	}
 
 	@Test
-	@Ignore
 	public void testDestroySingle() {
 		FeatureStore fs = workspace.getResource(FeatureStoreProvider.class, "simplesql-ok");
 		Assert.assertNotNull("Feature store is expected to be created.", fs);
@@ -144,7 +143,6 @@ public class SimpleSqlFeatureStoreTest {
 	}
 
 	@Test
-	@Ignore
 	public void testDestroyInitializeSingle() {
 		FeatureStore fs = workspace.getResource(FeatureStoreProvider.class, "simplesql-ok");
 		Assert.assertNotNull("Feature store is expected to be created.", fs);
@@ -158,7 +156,6 @@ public class SimpleSqlFeatureStoreTest {
 	}
 
 	@Test
-	@Ignore
 	public void testReinitializeChain() {
 		FeatureStore fs = workspace.getResource(FeatureStoreProvider.class, "simplesql-ok");
 		Assert.assertNotNull("Feature store is expected to be created.", fs);
