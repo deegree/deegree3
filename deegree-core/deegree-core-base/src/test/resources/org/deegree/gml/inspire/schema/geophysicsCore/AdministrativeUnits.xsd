@@ -1,0 +1,588 @@
+<?xml version="1.0" encoding="UTF-8"?><schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:au="http://inspire.ec.europa.eu/schemas/au/4.0" xmlns:base="http://inspire.ec.europa.eu/schemas/base/3.3" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gn="http://inspire.ec.europa.eu/schemas/gn/4.0" elementFormDefault="qualified" targetNamespace="http://inspire.ec.europa.eu/schemas/au/4.0" version="4.0">
+  <import namespace="http://inspire.ec.europa.eu/schemas/base/3.3" schemaLocation="BaseTypes.xsd"/>
+  <import namespace="http://inspire.ec.europa.eu/schemas/gn/4.0" schemaLocation="GeographicalNames.xsd"/>
+  <import namespace="http://www.isotc211.org/2005/gmd" schemaLocation="http://schemas.opengis.net/iso/19139/20070417/gmd.xsd"/>
+  <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="http://schemas.opengis.net/gml/3.2.1/gml.xsd"/>
+  <!--XML Schema document created by ShapeChange-->
+  <element name="AdministrativeBoundary" substitutionGroup="gml:AbstractFeature" type="au:AdministrativeBoundaryType">
+    <annotation>
+      <documentation>-- Name --
+administrative boundary
+
+-- Definition --
+A line of demarcation between administrative units.</documentation>
+    </annotation>
+  </element>
+  <complexType name="AdministrativeBoundaryType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element name="geometry" type="gml:CurvePropertyType">
+            <annotation>
+              <documentation>-- Name --
+geometry
+
+-- Definition --
+Geometric representation of border line.</documentation>
+            </annotation>
+          </element>
+          <element name="inspireId" type="base:IdentifierPropertyType">
+            <annotation>
+              <documentation>-- Name --
+inspire id
+
+-- Definition --
+External object identifier of the spatial object.
+
+-- Description --
+NOTE An external object identifier is a unique object identifier published by the responsible body, which may be used by external applications to reference the spatial object. The identifier is an identifier of the spatial object, not an identifier of the real-world phenomenon.</documentation>
+            </annotation>
+          </element>
+          <element name="country" type="gmd:Country_PropertyType">
+            <annotation>
+              <documentation>-- Name --
+country
+
+-- Definition --
+Two-character country code according to the Interinstitutional style guide published by the Publications Office of the European Union.</documentation>
+            </annotation>
+          </element>
+          <element maxOccurs="6" name="nationalLevel" type="gml:ReferenceType">
+            <annotation>
+              <documentation>-- Name --
+national level
+
+-- Definition --
+The hierarchy levels of all adjacent administrative units this boundary is part of.</documentation>
+            </annotation>
+          </element>
+          <element name="legalStatus" nillable="true">
+            <annotation>
+              <documentation>-- Name --
+legal status
+
+-- Definition --
+Legal status of this administrative boundary. 
+
+-- Description --
+NOTE The legal status is considered in terms of political agreement or disagreement of the administrative units separated by this boundary.</documentation>
+            </annotation>
+            <complexType>
+              <simpleContent>
+                <extension base="au:LegalStatusValueType">
+                  <attribute name="nilReason" type="gml:NilReasonType"/>
+                </extension>
+              </simpleContent>
+            </complexType>
+          </element>
+          <element name="technicalStatus" nillable="true">
+            <annotation>
+              <documentation>-- Name --
+technical status
+
+-- Definition --
+The technical status of the administrative boundary.
+
+-- Description --
+NOTE The technical status of the boundary is considered in terms of its topological matching or not-matching with the borders of all separated administrative units. Edge-matched means that the same set of coordinates is used.</documentation>
+            </annotation>
+            <complexType>
+              <simpleContent>
+                <extension base="au:TechnicalStatusValueType">
+                  <attribute name="nilReason" type="gml:NilReasonType"/>
+                </extension>
+              </simpleContent>
+            </complexType>
+          </element>
+          <element name="beginLifespanVersion" nillable="true">
+            <annotation>
+              <documentation>-- Name --
+begin lifespan version
+
+-- Definition --
+Date and time at which this version of the spatial object was inserted or changed in the spatial data set.</documentation>
+            </annotation>
+            <complexType>
+              <simpleContent>
+                <extension base="dateTime">
+                  <attribute name="nilReason" type="gml:NilReasonType"/>
+                </extension>
+              </simpleContent>
+            </complexType>
+          </element>
+          <element minOccurs="0" name="endLifespanVersion" nillable="true">
+            <annotation>
+              <documentation>-- Name --
+end lifespan version
+
+-- Definition --
+Date and time at which this version of the spatial object was superseded or retired in the spatial data set.</documentation>
+            </annotation>
+            <complexType>
+              <simpleContent>
+                <extension base="dateTime">
+                  <attribute name="nilReason" type="gml:NilReasonType"/>
+                </extension>
+              </simpleContent>
+            </complexType>
+          </element>
+          <element maxOccurs="unbounded" name="admUnit" nillable="true" type="gml:ReferenceType">
+            <annotation>
+              <documentation>-- Name --
+adm unit
+
+-- Definition --
+The administrative units separated by this administrative boundary. 
+
+-- Description --
+NOTE In case of a national boundary (i.e. nationalLevel='1st order')  only one national administrative unit (i.e. country) is provided.</documentation>
+              <appinfo>
+                <targetElement xmlns="http://www.opengis.net/gml/3.2">au:AdministrativeUnit</targetElement>
+                <reversePropertyName xmlns="http://www.opengis.net/gml/3.2">au:boundary</reversePropertyName>
+              </appinfo>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="AdministrativeBoundaryPropertyType">
+    <sequence minOccurs="0">
+      <element ref="au:AdministrativeBoundary"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="AdministrativeUnit" substitutionGroup="gml:AbstractFeature" type="au:AdministrativeUnitType">
+    <annotation>
+      <documentation>-- Name --
+administrative unit
+
+-- Definition --
+Unit of administration where a Member State has and/or exercises jurisdictional rights, for local, regional and national governance.</documentation>
+    </annotation>
+  </element>
+  <complexType name="AdministrativeUnitType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element name="geometry" type="gml:MultiSurfacePropertyType">
+            <annotation>
+              <documentation>-- Name --
+geometry
+
+-- Definition --
+Geometric representation of spatial area covered by this administrative unit.</documentation>
+            </annotation>
+          </element>
+          <element name="nationalCode" type="string">
+            <annotation>
+              <documentation>-- Name --
+national code
+
+-- Definition --
+Thematic identifier corresponding to the national administrative codes defined in each country.</documentation>
+            </annotation>
+          </element>
+          <element name="inspireId" type="base:IdentifierPropertyType">
+            <annotation>
+              <documentation>-- Name --
+inspire id
+
+-- Definition --
+External object identifier of the spatial object.
+
+-- Description --
+NOTE An external object identifier is a unique object identifier published by the responsible body, which may be used by external applications to reference the spatial object. The identifier is an identifier of the spatial object, not an identifier of the real-world phenomenon.</documentation>
+            </annotation>
+          </element>
+          <element name="nationalLevel" type="gml:ReferenceType">
+            <annotation>
+              <documentation>-- Name --
+national level
+
+-- Definition --
+Level in the national administrative hierarchy, at which the administrative unit is established.</documentation>
+            </annotation>
+          </element>
+          <element maxOccurs="unbounded" name="nationalLevelName" nillable="true" type="gmd:LocalisedCharacterString_PropertyType">
+            <annotation>
+              <documentation>-- Name --
+national level name
+
+-- Definition --
+Name of the level in the national administrative hierarchy, at which  the administrative unit is established.</documentation>
+            </annotation>
+          </element>
+          <element name="country" type="gmd:Country_PropertyType">
+            <annotation>
+              <documentation>-- Name --
+country
+
+-- Definition --
+Two-character country code according to the Interinstitutional style guide published by the Publications Office of the European Union.</documentation>
+            </annotation>
+          </element>
+          <element maxOccurs="unbounded" name="name" type="gn:GeographicalNamePropertyType">
+            <annotation>
+              <documentation>-- Name --
+name
+
+-- Definition --
+Official national geographical name of the administrative unit, given in several languages where required.</documentation>
+            </annotation>
+          </element>
+          <element maxOccurs="unbounded" name="residenceOfAuthority" nillable="true">
+            <annotation>
+              <documentation>-- Name --
+residence of authority
+
+-- Definition --
+Center for national or local administration.</documentation>
+            </annotation>
+            <complexType>
+              <sequence>
+                <element ref="au:ResidenceOfAuthority"/>
+              </sequence>
+              <attribute name="nilReason" type="gml:NilReasonType"/>
+            </complexType>
+          </element>
+          <element name="beginLifespanVersion" nillable="true">
+            <annotation>
+              <documentation>-- Name --
+begin lifespan version
+
+-- Definition --
+Date and time at which this version of the spatial object was inserted or changed in the spatial data set.</documentation>
+            </annotation>
+            <complexType>
+              <simpleContent>
+                <extension base="dateTime">
+                  <attribute name="nilReason" type="gml:NilReasonType"/>
+                </extension>
+              </simpleContent>
+            </complexType>
+          </element>
+          <element minOccurs="0" name="endLifespanVersion" nillable="true">
+            <annotation>
+              <documentation>-- Name --
+end lifespan version
+
+-- Definition --
+Date and time at which this version of the spatial object was superseded or retired in the spatial data set.</documentation>
+            </annotation>
+            <complexType>
+              <simpleContent>
+                <extension base="dateTime">
+                  <attribute name="nilReason" type="gml:NilReasonType"/>
+                </extension>
+              </simpleContent>
+            </complexType>
+          </element>
+          <element maxOccurs="unbounded" minOccurs="0" name="condominium" nillable="true" type="gml:ReferenceType">
+            <annotation>
+              <documentation>-- Name --
+condominium
+
+-- Definition --
+Condominium administered by this administrative unit.
+
+-- Description --
+NOTE Condominiums may only exist at state level and can be administered only by administrative units at the highest level of the national administrative hierarchy (i.e. countries).</documentation>
+              <appinfo>
+                <targetElement xmlns="http://www.opengis.net/gml/3.2">au:Condominium</targetElement>
+                <reversePropertyName xmlns="http://www.opengis.net/gml/3.2">au:admUnit</reversePropertyName>
+              </appinfo>
+            </annotation>
+          </element>
+          <element maxOccurs="unbounded" minOccurs="0" name="lowerLevelUnit" nillable="true">
+            <annotation>
+              <documentation>-- Name --
+lower level unit
+
+-- Definition --
+Units established at a lower level of the national administrative hierarchy which are administered by the administrative unit. 
+
+-- Description --
+NOTE For administrative units at the lowest level of the national hierarchy no lower level unit exists. 
+
+CONSTRAINT Each administrative unit except for the lowest level units shall refer to its lower level units</documentation>
+              <appinfo>
+                <targetElement xmlns="http://www.opengis.net/gml/3.2">au:AdministrativeUnit</targetElement>
+                <reversePropertyName xmlns="http://www.opengis.net/gml/3.2">au:upperLevelUnit</reversePropertyName>
+              </appinfo>
+            </annotation>
+            <complexType>
+              <complexContent>
+                <extension base="gml:AbstractMemberType">
+                  <sequence/>
+                  <attributeGroup ref="gml:AssociationAttributeGroup"/>
+                </extension>
+              </complexContent>
+            </complexType>
+          </element>
+          <element minOccurs="0" name="upperLevelUnit" nillable="true" type="gml:ReferenceType">
+            <annotation>
+              <documentation>-- Name --
+upper level unit
+
+-- Definition --
+A unit established at a higher level of national administrative hierarchy that this administrative unit administers. 
+
+-- Description --
+NOTE Administrative units at the highest level of national hierarchy (i.e. the country) do not have upper level units. 
+
+CONSTRAINT Each administrative unit at the level other than '1st order' (i.e. nationalLevel &lt;&gt; '1st order') shall refer their upper level unit.</documentation>
+              <appinfo>
+                <targetElement xmlns="http://www.opengis.net/gml/3.2">au:AdministrativeUnit</targetElement>
+                <reversePropertyName xmlns="http://www.opengis.net/gml/3.2">au:lowerLevelUnit</reversePropertyName>
+              </appinfo>
+            </annotation>
+          </element>
+          <element maxOccurs="unbounded" minOccurs="0" name="administeredBy" nillable="true" type="gml:ReferenceType">
+            <annotation>
+              <documentation>-- Name --
+administered by
+
+-- Definition --
+Administrative unit established at same level of national administrative hierarchy that administers this administrative unit.</documentation>
+              <appinfo>
+                <targetElement xmlns="http://www.opengis.net/gml/3.2">au:AdministrativeUnit</targetElement>
+                <reversePropertyName xmlns="http://www.opengis.net/gml/3.2">au:coAdminister</reversePropertyName>
+              </appinfo>
+            </annotation>
+          </element>
+          <element maxOccurs="unbounded" minOccurs="0" name="coAdminister" nillable="true" type="gml:ReferenceType">
+            <annotation>
+              <documentation>-- Name --
+co administer
+
+-- Definition --
+Administrative unit established at same level of national administrative hierarchy which is co-administered by this administrative unit.</documentation>
+              <appinfo>
+                <targetElement xmlns="http://www.opengis.net/gml/3.2">au:AdministrativeUnit</targetElement>
+                <reversePropertyName xmlns="http://www.opengis.net/gml/3.2">au:administeredBy</reversePropertyName>
+              </appinfo>
+            </annotation>
+          </element>
+          <element maxOccurs="unbounded" name="boundary" nillable="true" type="gml:ReferenceType">
+            <annotation>
+              <documentation>-- Name --
+boundary
+
+-- Definition --
+The administrative boundaries between this administrative unit and all the units adjacent to it.
+
+-- Description --
+NOTE Administrative boundary corresponds to the curve established between the  nodes  at lowest level of territory division in Member State. Thus, it does not necessarily represents boundary in political terms, but just part of it.</documentation>
+              <appinfo>
+                <targetElement xmlns="http://www.opengis.net/gml/3.2">au:AdministrativeBoundary</targetElement>
+                <reversePropertyName xmlns="http://www.opengis.net/gml/3.2">au:admUnit</reversePropertyName>
+              </appinfo>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="AdministrativeUnitPropertyType">
+    <sequence minOccurs="0">
+      <element ref="au:AdministrativeUnit"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Condominium" substitutionGroup="gml:AbstractFeature" type="au:CondominiumType">
+    <annotation>
+      <documentation>-- Name --
+condominium
+
+-- Definition --
+An administrative area established independently to any national administrative division of territory  and administered by two or more countries. 
+
+-- Description --
+NOTE Condominium is not a part of any national administrative hierarchy of territory division in Member State.</documentation>
+    </annotation>
+  </element>
+  <complexType name="CondominiumType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element name="inspireId" type="base:IdentifierPropertyType">
+            <annotation>
+              <documentation>-- Name --
+inspire id
+
+-- Definition --
+External object identifier of the spatial object.
+
+-- Description --
+NOTE An external object identifier is a unique object identifier published by the responsible body, which may be used by external applications to reference the spatial object. The identifier is an identifier of the spatial object, not an identifier of the real-world phenomenon.</documentation>
+            </annotation>
+          </element>
+          <element maxOccurs="unbounded" minOccurs="0" name="name" nillable="true">
+            <annotation>
+              <documentation>-- Name --
+name
+
+-- Definition --
+Official geographical name of this condominium, given in several languages where required.</documentation>
+            </annotation>
+            <complexType>
+              <sequence>
+                <element ref="gn:GeographicalName"/>
+              </sequence>
+              <attribute name="nilReason" type="gml:NilReasonType"/>
+            </complexType>
+          </element>
+          <element name="geometry" type="gml:MultiSurfacePropertyType">
+            <annotation>
+              <documentation>-- Name --
+geometry
+
+-- Definition --
+Geometric representation of spatial area covered by this condominium.</documentation>
+            </annotation>
+          </element>
+          <element name="beginLifespanVersion" nillable="true">
+            <annotation>
+              <documentation>-- Name --
+begin lifespan version
+
+-- Definition --
+Date and time at which this version of the spatial object was inserted or changed in the spatial data set.</documentation>
+            </annotation>
+            <complexType>
+              <simpleContent>
+                <extension base="dateTime">
+                  <attribute name="nilReason" type="gml:NilReasonType"/>
+                </extension>
+              </simpleContent>
+            </complexType>
+          </element>
+          <element minOccurs="0" name="endLifespanVersion" nillable="true">
+            <annotation>
+              <documentation>-- Name --
+end lifespan version
+
+-- Definition --
+Date and time at which this version of the spatial object was superseded or retired in the spatial data set.</documentation>
+            </annotation>
+            <complexType>
+              <simpleContent>
+                <extension base="dateTime">
+                  <attribute name="nilReason" type="gml:NilReasonType"/>
+                </extension>
+              </simpleContent>
+            </complexType>
+          </element>
+          <element maxOccurs="unbounded" name="admUnit" nillable="true" type="gml:ReferenceType">
+            <annotation>
+              <documentation>-- Name --
+adm unit
+
+-- Definition --
+The administrative unit administering the condominium.</documentation>
+              <appinfo>
+                <targetElement xmlns="http://www.opengis.net/gml/3.2">au:AdministrativeUnit</targetElement>
+                <reversePropertyName xmlns="http://www.opengis.net/gml/3.2">au:condominium</reversePropertyName>
+              </appinfo>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="CondominiumPropertyType">
+    <sequence minOccurs="0">
+      <element ref="au:Condominium"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <simpleType name="LegalStatusValueType">
+    <annotation>
+      <documentation>-- Name --
+legal status value
+
+-- Definition --
+Description of the legal status of administrative boundaries.</documentation>
+    </annotation>
+    <restriction base="string">
+      <enumeration value="agreed">
+        <annotation>
+          <documentation>-- Name --
+agreed
+
+-- Definition --
+The edge-matched boundary has been agreed between neighbouring administrative units and is stable now.</documentation>
+        </annotation>
+      </enumeration>
+      <enumeration value="notAgreed">
+        <annotation>
+          <documentation>-- Name --
+not agreed
+
+-- Definition --
+The edge-matched boundary has not yet been agreed between neighbouring administrative units and could be changed.</documentation>
+        </annotation>
+      </enumeration>
+    </restriction>
+  </simpleType>
+  <element name="ResidenceOfAuthority" substitutionGroup="gml:AbstractObject" type="au:ResidenceOfAuthorityType">
+    <annotation>
+      <documentation>-- Definition --
+Data type representing the name and position of a residence of authority.</documentation>
+    </annotation>
+  </element>
+  <complexType name="ResidenceOfAuthorityType">
+    <sequence>
+      <element name="name" type="gn:GeographicalNamePropertyType">
+        <annotation>
+          <documentation>-- Definition --
+Name of the residence of authority.</documentation>
+        </annotation>
+      </element>
+      <element name="geometry" nillable="true" type="gml:PointPropertyType">
+        <annotation>
+          <documentation>-- Definition --
+Position of the residence of authority.</documentation>
+        </annotation>
+      </element>
+    </sequence>
+  </complexType>
+  <complexType name="ResidenceOfAuthorityPropertyType">
+    <sequence>
+      <element ref="au:ResidenceOfAuthority"/>
+    </sequence>
+  </complexType>
+  <simpleType name="TechnicalStatusValueType">
+    <annotation>
+      <documentation>-- Name --
+technical status value
+
+-- Definition --
+Description of the technical status of administrative boundaries.</documentation>
+    </annotation>
+    <restriction base="string">
+      <enumeration value="edgeMatched">
+        <annotation>
+          <documentation>-- Name --
+edge matched
+
+-- Definition --
+The boundaries of neighbouring administrative units have the same set of coordinates.</documentation>
+        </annotation>
+      </enumeration>
+      <enumeration value="notEdgeMatched">
+        <annotation>
+          <documentation>-- Name --
+not edge matched
+
+-- Definition --
+The boundaries of neighbouring administrative units do not have the same set of coordinates.</documentation>
+        </annotation>
+      </enumeration>
+    </restriction>
+  </simpleType>
+</schema>
