@@ -1574,11 +1574,12 @@ public class OGCFrontController extends HttpServlet {
         String xForwardedProto = context.getXForwardedProto();
 
         String protocol = parseProtocol( xForwardedProto, serviceUrl );
-        String port = parsePort( xForwardedPort, serviceUrl );
+        String port = parsePort( xForwardedPort, xForwardedHost, serviceUrl );
         String path = serviceUrl.getPath();
+        String host = parseHost( xForwardedHost );
 
         StringBuffer urlBuilder = new StringBuffer();
-        urlBuilder.append( protocol ).append( "://" ).append( xForwardedHost );
+        urlBuilder.append( protocol ).append( "://" ).append( host );
         if ( port != null )
             urlBuilder.append( ":" ).append( port );
         if ( path != null && !"".equals( path ) )
@@ -1593,12 +1594,19 @@ public class OGCFrontController extends HttpServlet {
             return serviceUrl.getProtocol();
     }
 
-    private static String parsePort( String xForwardedPort, URL serviceUrl ) {
+    private static String parsePort( String xForwardedPort, String xForwardedHost, URL serviceUrl ) {
         if ( xForwardedPort != null && !"".equals( xForwardedPort ) )
             return xForwardedPort;
+        else if ( xForwardedHost != null && xForwardedHost.contains( ":" ) && ( xForwardedHost.lastIndexOf( ":" ) + 1 ) < xForwardedHost.length() )
+            return xForwardedHost.substring( xForwardedHost.lastIndexOf( ":" ) + 1 );
         else if ( serviceUrl.getPort() > -1 )
             return Integer.toString( serviceUrl.getPort() );
         return null;
     }
 
+	private static String parseHost(String xForwardedHost) {
+		if ( xForwardedHost != null && xForwardedHost.contains(":") )
+			return xForwardedHost.substring( 0, xForwardedHost.indexOf(":") );
+		return xForwardedHost;
+	}
 }

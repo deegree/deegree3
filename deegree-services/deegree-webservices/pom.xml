@@ -99,7 +99,7 @@
             <port>8080</port>
             <idleTimeout>60000</idleTimeout>
           </httpConnector>
-          <jvmArgs>--illegal-access=warn --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.desktop/com.sun.imageio.spi=ALL-UNNAMED --add-opens java.desktop/javax.imageio.spi=ALL-UNNAMED --add-exports java.desktop/sun.awt=ALL-UNNAMED --add-exports java.desktop/com.sun.imageio.spi=ALL-UNNAMED --add-exports java.desktop/sun.swing=ALL-UNNAMED --add-opens java.desktop/javax.imageio.spi=ALL-UNNAMED</jvmArgs>
+          <jvmArgs>${jvm.args}</jvmArgs>
         </configuration>
       </plugin>
     </plugins>
@@ -273,6 +273,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-core-logging-autoconfigure</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
     </dependency>
@@ -283,13 +288,13 @@
     <dependency>
       <groupId>org.primefaces</groupId>
       <artifactId>primefaces</artifactId>
-      <version>13.0.10</version>
+      <version>14.0.12</version>
       <classifier>jakarta</classifier>
     </dependency>
     <dependency>
       <groupId>org.primefaces.extensions</groupId>
       <artifactId>primefaces-extensions</artifactId>
-      <version>13.0.11</version>
+      <version>14.0.12</version>
       <classifier>jakarta</classifier>
     </dependency>
     <dependency>
@@ -299,10 +304,6 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>jul-to-slf4j</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-slf4j2-impl</artifactId>
     </dependency>
     <dependency>
       <groupId>jakarta.annotation</groupId>

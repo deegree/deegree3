@@ -2,7 +2,7 @@
 == Configuration basics
 
 In the previous chapter, you learned how to access and log in to the
-deegree service console and how to download and activate example
+deegree webservices administration console and how to download and activate example
 workspaces. This chapter introduces the basic concepts of deegree
 webservices configuration:
 
@@ -10,7 +10,7 @@ webservices configuration:
 * Workspace files and resources
 * Workspace directories and resource types
 * Resource identifiers and dependencies
-* Usage of the service console for workspace configuration
+* Usage of the administration console for workspace configuration
 
 The final section of this chapter describes recommended practices for
 creating your own workspace. The remaining chapters of the documentation
@@ -75,7 +75,7 @@ sections:
 
 
 For example, to offer a Web Feature Service, a feature store (based on a
-shapefile, database, etc) must be configured. With a rasterfile, like a
+shapefile, database, etc.) must be configured. With a rasterfile, like a
 GeoTIFF, you can configure a tile store and a coverage store to offer a
 Web Map Service.
 
@@ -121,7 +121,7 @@ read/write access to this directory!
 [[anchor-global-configuration]]
 ==== Global configuration files and the active workspace
 
-If you downloaded all four example workspaces (as described in <<anchor-lightly>>), set a console password and the proxy parameters,
+If you downloaded all four example workspaces (as described in <<anchor-lightly>>), set an administration console password and the proxy parameters,
 your _.deegree_ directory will look like this:
 
 .Example _.deegree_ directory
@@ -136,7 +136,7 @@ files exist:
 |===
 |File name |Function
 |<subdirectory> |Workspace directory
-|console.pw |Password for services console
+|console.pw |Password for the administration console
 |proxy.xml |Proxy settings
 |webapps.properties |Selects the active workspace
 |config.apikey |Contains the key to protect the REST API
@@ -146,7 +146,7 @@ NOTE: Only one single workspace can be active at a time! The
 information on the active one is stored in file _webapps.properties_.
 
 TIP: Usually, you don't need to care about the three files that are located
-at the top level of this directory. The service console creates and
+at the top level of this directory. The administration console creates and
 modifies them as required (e.g. when switching to a different
 workspace). In order to create a deegree webservices setup, you will
 need to create or edit resource configuration files in the active
@@ -159,7 +159,7 @@ _webapps.properties_ stores the active workspace for every deegree
 webapp separately.
 
 TIP: If there is no _config.apikey_ file, one will be generated on startup
-with an random value. Alternatively, a value of `*` in config.apikey will 
+with a random value. Alternatively, a value of `*` in config.apikey will
 turn off security for the REST API. We strongly advise against doing this
 in productive environments.
 
@@ -290,7 +290,7 @@ documented for each resource configuration format.
 The configuration format for the deegree proxy configuration is defined
 by schema file https://schemas.deegree.org/core/3.5/proxy/proxy.xsd. The
 following table lists all available configuration options. When
-specifiying them, their order must be respected.
+specifying them, their order must be respected.
 
 [width="100%",cols="24%,10%,7%,59%",options="header",]
 |===
@@ -313,21 +313,21 @@ specifiying them, their order must be respected.
 
 |FtpProxyPort | 0..1 | Integer | The port number of the proxy server for protocol `FTP`
 
-|ProxyUser |0..1 | String | Username for proxy server authtentication
+|ProxyUser |0..1 | String | Username for proxy server authentication
 
-|HttpProxyUser |0..1 | String | Username for proxy server authtentication for protocol `HTTP`
+|HttpProxyUser |0..1 | String | Username for proxy server authentication for protocol `HTTP`
 
-|HttpsProxyUser |0..1 | String | Username for proxy server authtentication for protocol `HTTPS`
+|HttpsProxyUser |0..1 | String | Username for proxy server authentication for protocol `HTTPS`
 
-|FtpProxyUser |0..1 | String | Username for proxy server authtentication for protocol `FTP`
+|FtpProxyUser |0..1 | String | Username for proxy server authentication for protocol `FTP`
 
-|ProxyPassword |0..1 | String | Password for proxy server authtentication
+|ProxyPassword |0..1 | String | Password for proxy server authentication
 
-|HttpProxyPassword |0..1 | String | Password for proxy server authtentication for protocol `HTTP`
+|HttpProxyPassword |0..1 | String | Password for proxy server authentication for protocol `HTTP`
 
-|HttpsProxyPassword |0..1 | String | Password for proxy server authtentication for protocol `HTTPS`
+|HttpsProxyPassword |0..1 | String | Password for proxy server authentication for protocol `HTTPS`
 
-|FtpProxyPassword |0..1 | String | Password for proxy server authtentication for protocol `FTP`
+|FtpProxyPassword |0..1 | String | Password for proxy server authentication for protocol `FTP`
 
 |NonProxyHosts |0..1 | String | Indicates the hosts that should be accessed without going through the proxy. Multiple values can be separated by the `{vbar}` character.
 
@@ -358,61 +358,61 @@ specifiying them, their order must be respected.
 
 ____
 NOTE: When specifying the proxy server, this can be defined individually
-per protocol or in general. It is recommend to specify the proxy servers with
+per protocol or in general. It is recommended to specify the proxy servers with
 protocol if possible and to define the settings for
 `HttpProxy...` and `HttpsProxy...` identically.
 ____
 
-=== Using the service console for managing resources
+=== Using the deegree webservices administration console for managing resources
 
 As an alternative to dealing with the workspace resource configuration
-files directly on the filesystem, you can also use the service console
-for this task. The service console has a corresponding menu entry for
+files directly on the filesystem, you can also use the administration console
+for this task. The administration console has a corresponding menu entry for
 every type of workspace resource. All resource menu entries are grouped
 in the lower menu on the left:
 
 .Workspace resource menu entries
 image::console_resources.png[Workspace resource menu entries,scaledwidth=50.0%]
 
-Although the console offers additional functionality for some resource
+Although the administration console offers additional functionality for some resource
 types, the basic management of resources is always identical.
 
 ==== Displaying configured resources
 
 In order to display the configured workspace resources of a certain
 type, click on the corresponding menu entry. The following screenshot
-shows the metadata store resources in deegree-workspace-csw:
+shows the tile store resources in deegree-workspace-utah:
 
-.Displaying metadata store resources
-image::console_metadata_stores.png[Displaying metadata store resources,scaledwidth=50.0%]
+.Displaying tile store resources
+image::console_tile_stores.png[Displaying tile store resources,scaledwidth=50.0%]
 
 The right part of the window displays a table with all configured
-metadata store resources. In this case, the workspace contains a single
-resource with identifier "iso19115" which is in status "On".
+tile store resources. In this case, the workspace contains a single
+resource with identifier *utah_ortho* which is in status *On*.
 
 ==== Deactivating a resource
 
-The "Deactivate" link allows to turn off a resource temporarily (while
+The *Deactivate* link allows to turn off a resource temporarily (while
 keeping the configuration):
 
 .Deactivate action
 image::console_deactivate.png[Deactivate action,scaledwidth=50.0%]
 
-After clicking on "Deactivate", the status of the resource will be
-"Off", and the "Deactivate" link will change to "Activate". Also, the
-"Reload" link at the top will turn red to notify that there may be
+After clicking on *Deactivate*, the status of the resource will be
+*Off*, and the *Deactivate* link will change to *Activate*. Also, the
+*Reload* link at the top will turn red to notify that there may be
 changes that need to be propagated to dependent resources:
 
 .Deactivated a resource
 image::console_deactivated.png[Deactivated a resource,scaledwidth=50.0%]
 
 TIP: When a resource is being deactivated, the suffix of the corresponding
-configuration file is changed to ".ignore". Reactivating changes the
-suffix back to ".xml".
+configuration file is changed to *.ignore*. Reactivating changes the
+suffix back to *.xml*.
 
 ==== Editing a resource
 
-By clicking on the "Edit" link, you can edit the corresponding XML
+By clicking on the *Edit* link, you can edit the corresponding XML
 configuration inside your browser:
 
 .Edit action
@@ -424,28 +424,26 @@ The XML configuration will be displayed:
 image::console_editing.png[Editing a resource configuration,scaledwidth=50.0%]
 
 You can now perform configuration changes in the text area and click on
-"Save". Or click any of the links:
+*Save*. Or click any of the links:
 
-* Display Schema: Displays the XML schema file for the resource
-configuration format.
 * Cancel: Discards any changes.
-* Turn on highlighting: Perform syntax highlighting.
+* Validate: Perform an XML validation.
 
-If there are no (syntactical) errors in the configuration, the "Save"
+If there are no (syntactical) errors in the configuration, the *Save*
 link will take you back to the corresponding resource view. Before
-actually saving the file, the service console will perform an XML
+actually saving the file, the administration console will perform an XML
 validation of the file and display any syntactical errors:
 
 .Displaying a syntax error
 image::console_edit_error.png[Displaying a syntax error,scaledwidth=50.0%]
 
-In this case, the mandatory "JDBCConnId" element was removed, which
+In this case, the mandatory *TileMatrixSetId* element was removed, which
 violates the configuration schema. This needs to be corrected, before
-"Save" will actually save the file to the workspace directory.
+*Save* will actually save the file to the workspace directory.
 
 ==== Deleting a resource
 
-The "Delete" link will deactivate the resource and delete the
+The *Delete* link will deactivate the resource and delete the
 corresponding configuration file from the workspace:
 
 .Delete action
@@ -455,10 +453,10 @@ image::console_delete.png[Delete action,scaledwidth=50.0%]
 
 In order to add a new resource, enter a new identifier in the text
 field, select a resource sub-type from the drop-down and click on
-"Create new":
+*Create new*:
 
-.Adding a WMS resource with identifier "mywms"
-image::console_add.png[Adding a WMS resource with identifier "mywms",scaledwidth=50.0%]
+.Adding a WMS resource with identifier *mywms*
+image::console_add.png[Adding a WMS resource with identifier mywms,scaledwidth=50.0%]
 
 The next steps depend on the type of resource, but generally you have to
 choose between different options and the result will be a new resource
@@ -467,41 +465,41 @@ configuration file in the workspace.
 [[anchor-console-errors]]
 ==== Displaying error messages
 
-One of the most helpful features of the console is that it can help to
+One of the most helpful features of the administration console is that it can help to
 detect and fix errors in a workspace setup. For example, if you delete
-(or deactivate) JDBC connection "conn1" in deegree-workspace-csw and
-click "[Reload]", you will see the following:
+(or deactivate) JDBC connection *conn1* in deegree-workspace-csw and
+click *Reload*, you will see the following:
 
 .Errors in resource categories
 image::console_error.png[Errors in resource categories,scaledwidth=50.0%]
 
-The red exclamation marks near "services" and "metadata" show that these
+The red exclamation marks near *services* and *metadata* show that these
 resource categories have resources with errors. Let's click on the
 metadata link to see what's going on:
 
-.Resource "iso19115" has an error
-image::console_error2.png[Resource "iso19115" has an error,scaledwidth=50.0%]
+.Resource *iso19115* has an error
+image::console_error2.png[Resource iso19115 has an error,scaledwidth=50.0%]
 
-The metadata resource view reveals that the metadata store "iso19115"
-has an error. Clicking on "Show errors" leads to:
+The metadata resource view reveals that the metadata store *iso19115*
+has an error. Clicking on *Show errors* leads to:
 
-.Details on the problem with "iso19115"
-image::console_error3.png[Details on the problem with "iso19115",scaledwidth=50.0%]
+.Details on the problem with *iso19115*
+image::console_error3.png[Details on the problem with iso19115,scaledwidth=50.0%]
 
-The error message gives an important hint: "No JDBC connection pool with
-id 'conn1' defined." deegree was unable to initialize the metadata
-store, because it refers to a JDBC connection pool "conn1". You may
-wonder what the error in the services category is about:
+The error message gives an important hint: "Initialization of resource 'iso19115' failed:
+Dependent resource ConnectionProviderProvider:conn1 failed to initialize." deegree was unable to
+initialize the metadata store because it depends on the JDBC connection pool *conn1*, which also failed to initialize.
+You may wonder what the error in the services category is about:
 
-.Details on the problem with "csw"
-image::console_error4.png[Details on the problem with "csw",scaledwidth=50.0%]
+.Details on the problem with *csw*
+image::console_error4.png[Details on the problem with csw,scaledwidth=50.0%]
 
 As you see, the problem with the service resource ("There is no
-MetadataStore configured, ensure that exactly one store is available!)
+MetadataStore configured, ensure that exactly one store is available!")
 is actually a consequence of the other issue. Because deegree couldn't
 initialize the metadata store, it was also unable to start up the CSW
-correctly. If you add a new JDBC connection "conn1" and click on
-"[Reload]", both problems should disappear.
+correctly. If you add a new JDBC connection *conn1* and click on
+*Reload*, both problems should disappear.
 
 ==== Resource type specific actions
 
@@ -509,15 +507,11 @@ In addition to the common management functionality, some resource views
 offer additional actions. This is described in the corresponding
 chapters, but here's a short overview:
 
-* Web Services: Display service capabilities ("Capabilities"), edit
-service metadata ("Edit metadata"), edit controller configuration ("Edit
-global config")
+* Web Services: Display service capabilities (*Capabilities*), edit
+service metadata (*Edit metadata*), edit controller configuration (*Edit
+global config*)
 * Feature Stores: Display feature types and number of stored features
-("Info"), Import GML feature collections ("Loader"), Mapping wizard
-("Create new" SQL feature store)
-* Metadata Stores: Import metadata sets ("Loader"), create database
-tables ("Setup tables")
-* Server Connections (JDBC): Test database connection ("Test")
+(*Info*)
 
 === Best practices for creating workspaces
 
@@ -529,9 +523,7 @@ For creating your own workspace, you have two options. Option 1 is to
 use an existing workspace as a template and adapt it to your needs.
 Option 2 is to start from scratch, using an empty workspace. Adapting an
 existing workspace makes a lot of sense if your use-case is close to the
-scenario of the workspace. For example, if you want to set up INSPIRE
-View and Download Services, it is a good option to use
-<<anchor-workspace-inspire>> as a starting point.
+scenario of the workspace.
 
 In order to create a new workspace, simply create a new directory in the
 _.deegree_ directory.
@@ -539,7 +531,7 @@ _.deegree_ directory.
 .Creating the new workspace _myscenario_
 image::workspace-new.png[Creating the new workspace _myscenario_]
 
-Afterwards, switch to the new workspace using the services console, as
+Afterwards, switch to the new workspace using the administration console, as
 described in <<anchor-downloading-workspaces>>.
 
 ==== Find out which resources you need
@@ -584,12 +576,12 @@ created later (references have to be added to the layers configuration).
 
 All deegree XML configuration files have a corresponding XML schema,
 which allows to detect syntactical errors easily. The editor built into
-the services console performs validation when you save a configuration
+the administration console performs validation when you save a configuration
 file. If the contents is not valid according to the schema, the file
 will not be saved, but an error message will be displayed:
 
-.The services console displays an XML syntax error
-image::console_edit_error.png[The services console displays an XML syntax error,scaledwidth=50.0%]
+.The administration console displays an XML syntax error
+image::console_edit_error.png[The administration console displays an XML syntax error,scaledwidth=50.0%]
 
 If you prefer to use a different editor for editing deegree's
 configuration files, it is highly recommended to choose a validating XML
@@ -602,7 +594,7 @@ schema files are hosted at https://schemas.deegree.org.
 
 ==== Check the resource status and error messages
 
-As pointed out in <<anchor-console-errors>>, the service console
+As pointed out in <<anchor-console-errors>>, the administration console
 indicates errors if resources cannot be initialized. Here's an example:
 
 .Error message
@@ -611,9 +603,9 @@ image::console_error3.png[Error message,scaledwidth=50.0%]
 In this case, it was not possible to initialize the JDBC connection (and
 the resources that depend on it). You can spot resource categories and
 resources that have errors easily, as they have a red exclamation mark.
-Click on the respective resource level and on "Errors" near the broken
+Click on the respective resource level and on *Errors* near the broken
 resource to see the error message. After fixing the error, click on
-"Reload" to re-initialize the workspace. If your fix was successful, the
+*Reload* to re-initialize the workspace. If your fix was successful, the
 exclamation mark will be gone.
 
 Additional information can be found in the log output of the Java Servlet container. When

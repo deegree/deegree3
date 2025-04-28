@@ -194,7 +194,7 @@ public class AdditionProcesslet implements Processlet {
 The configuration format for the Java process provider is defined by
 schema file https://schemas.deegree.org/core/3.5/processes/java/java.xsd.
 The following table lists all available configuration options. When
-specifiying them, their order must be respected.
+specifying them, their order must be respected.
 
 [width="100%",cols="17%,11%,8%,64%",options="header",]
 |===
@@ -421,7 +421,7 @@ defines KVP, XML and SOAP-encoded requests. All encodings are supported
 by the deegree WPS, so you can choose the most appropriate one for your
 use-case. For sending KVP-requests, you can simply use your web browser
 (or a command line tools like wget or curl). XML or SOAP requests can be
-send using deegree's generic client.
+sent using deegree's generic client.
 
 Some KVP _GetCapabilities_/_DescribeProcess_ request examples for
 checking the metadata of processes:
@@ -469,7 +469,7 @@ metadata (identifier, title, abstract, datatype) of the parameter. The
 WPS will report it in response to _DescribeProcess_ requests. When
 performing _Execute_ requests, the deegree WPS will also perform a
 basic check of the validity of the input parameters (identifier, number
-of occurences, type) and respond with an _ExceptionReport_ if the
+of occurrences, type) and respond with an _ExceptionReport_ if the
 constraints are not met.
 
 ===== Basics of defining input and output parameters

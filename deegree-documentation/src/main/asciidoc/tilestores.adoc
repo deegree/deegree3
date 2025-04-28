@@ -299,12 +299,12 @@ GetMap requests sent to the WMS:::
   * The layers parameter can be used to specify one or more (comma
   separated) layers to request
   * The styles parameter must correspond to the layers parameter (works
-  the same like GetMap)
+  the same as GetMap)
   * The format parameter specifies the image format to request from the
   WMS
   * The CRS parameter specifies which CRS to use when requesting
 
-Additionally you can specify default and override values for request
+Additionally, you can specify default and override values for request
 parameters within the request params block. Just add _Parameter_ tags
 as described in the <<anchor-configuration-layer-request-options>> layer
 chapter. The replacing/defaulting currently only works when you
@@ -367,7 +367,7 @@ not have the same identifier(s) (just configure the TileMatrixSetId
 option if they differ), but the structure (coordinate system, tile size,
 number of tiles per matrix etc.) needs to be identical.
 
-Additionally you can specify default and override values for request
+Additionally, you can specify default and override values for request
 parameters within the request params block. Just add _Parameter_ tags
 as described in the <<anchor-configuration-layer-request-options>> layer
 chapter. The replacing/defaulting currently only works when you

@@ -101,17 +101,17 @@
       <artifactId>deegree-core-base</artifactId>
       <version>${project.version}</version>
       <type>jar</type>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>jcl-over-slf4j</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-connectionprovider-datasource</artifactId>
       <version>${project.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-log4j12</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
@@ -122,12 +122,6 @@
       <groupId>org.deegree</groupId>
       <artifactId>deegree-sqldialect-postgis</artifactId>
       <version>${project.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-log4j12</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
@@ -135,44 +129,18 @@
       <version>${project.version}</version>
       <optional>true</optional>
     </dependency>
-    <dependency>
-      <groupId>org.deegree</groupId>
-      <artifactId>deegree-core-test-logging</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.hamcrest</groupId>
-      <artifactId>hamcrest</artifactId>
-      <scope>test</scope>
-    </dependency>
+    <!-- logging -->
+    <!-- NOTE: logging is configured by spring boot instead of org.deegree:deegree-core-logging-autoconfigure -->
     <!-- spring -->
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-core</artifactId>
       <version>${spring-framework.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-jcl</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
       <version>${spring-framework.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.springframework.batch</groupId>
@@ -183,20 +151,6 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-batch</artifactId>
       <version>${spring-boot.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>jul-to-slf4j</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>log4j-over-slf4j</artifactId>
-        </exclusion>
-        <exclusion>
-          <artifactId>log4j-to-slf4j</artifactId>
-          <groupId>org.apache.logging.log4j</groupId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>jakarta.xml.bind</groupId>
@@ -222,6 +176,21 @@
       <groupId>org.springframework.batch</groupId>
       <artifactId>spring-batch-test</artifactId>
       <version>${spring-batch.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

@@ -68,8 +68,8 @@ NOTE: In addition to workspace directory _modules/_, directory _classes/_
 can be used to add individual Java classes (and other files) to the
 classpath. This is usually not required.
 
-WARNING: Since deegree 3.4 jdbc drivers are not longer loaded from workspace
-classpath. Instead deegree follows the commonly used method to only use
+WARNING: Since deegree 3.4 jdbc drivers are no longer loaded from workspace
+classpath. Instead, deegree follows the commonly used method to only use
 jdbc drivers which are available either by the system (shared or server
 libraries) or by the application (_WEB-INF/lib_).
 
@@ -77,14 +77,12 @@ libraries) or by the application (_WEB-INF/lib_).
 
 In order to see which JARs are available to your deegree webservices
 instance/workspace, use the "module info" link in the general section of
-the service console:
+the administration console:
 
-.Displaying available JARs using the service console
-image::module_info.png[Displaying available JARs using the service console,scaledwidth=50.0%]
+.Displaying available JARs using the administration console
+image::module_info.png[Displaying available JARs using the administration console,scaledwidth=50.0%]
 
-The list of JARs section displays the JARs found on the web application
-classpath, while the lower section displays the JARs found on the
-workspace classpath.
+The deegree module section displays the JARs found on the web application classpath.
 
 [[anchor-db-libraries]]
 === Adding database modules
