@@ -494,6 +494,7 @@ public class GMLAppSchemaReaderTest {
 	@Test
 	public void testGml32DeprecatedFeatureCollections_recognitionDisabled()
 			throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+		GMLSchemaInfoSet.setRecognizeDeprecatedTypes(false);
 		String schemaURL = this.getClass()
 			.getResource("../inspire/schema/geophysicsCore/GeophysicsCore.xsd")
 			.toString();
