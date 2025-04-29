@@ -5,7 +5,7 @@
  >
 
   <!-- [1]: Id of the remote OWS to connect to (must be a WMS instance) -->
-  <RemoteWMSId>utah-wms</RemoteWMSId>
+  <RemoteWMSId>demo-wms</RemoteWMSId>
 
   <TileDataSet>
     <Identifier>tiles4326</Identifier>
@@ -13,7 +13,7 @@
     <OutputFormat>image/png</OutputFormat>
     <RequestParams>
       <!-- [1] Comma-separated list of layer names -->
-      <Layers>countyboundaries,countynames</Layers>
+      <Layers>cite:Autos,cite:BasicPolygons</Layers>
       <!-- [0..1] Comma-separated list of styles -->
       <Styles>default,default</Styles>
       <!-- [1] Image format -->
