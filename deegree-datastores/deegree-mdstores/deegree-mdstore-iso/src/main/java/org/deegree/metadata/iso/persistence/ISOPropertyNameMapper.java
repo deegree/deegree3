@@ -48,6 +48,7 @@ import static org.deegree.protocol.csw.CSWConstants.DC_NS;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -396,9 +397,9 @@ public class ISOPropertyNameMapper implements PropertyNameMapper {
 	}
 
 	@Override
-	public PropertyNameMapping getSpatialMapping(ValueReference propName, TableAliasManager aliasManager)
-			throws FilterEvaluationException, UnmappableException {
-		return getMapping(propName, aliasManager);
+	public List<PropertyNameMapping> getSpatialMappings(ValueReference propName, TableAliasManager aliasManager)
+			throws FilterEvaluationException {
+		return Collections.singletonList(getMapping(propName, aliasManager));
 	}
 
 }
