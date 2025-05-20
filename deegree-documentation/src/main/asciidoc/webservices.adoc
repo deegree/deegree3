@@ -1750,10 +1750,19 @@ actual extent returned will not be changed!). Use values like 1.1 to
 enlarge the envelope by 5% in each direction (this would be 10% in
 total).
 
-With the two vendorspecific parameter FILTERPROPERTY and FILTERVALUE you can request rendering just a defined list of features. Each feature to be rendered will be identified by the value of a given property. The name of the property is defined by the parameter filterproperty. The name of the property is not qualified so all properties with the given local name will be considered. A list of valid property values will be defined using parameter filtervalue, multiple values must be comma separated. Each layer - or better its underlying data source - requested by a GeMap will evaluated for having a feature with a property with given name and one of the defined values. Just the features matching this filter condition will be rendered. It's quite natural that only layer with an underlying Feature-DataSource can be filtered. The other parameters addressed in the GetMap (e.g. the style) request are not effected by this parameters. If the filter cannot be applied to the layer, e.g. cause it is a raster layer or the data source does not have a matching property, the filter will be ignored. If one the parameters is missing or the value empty, the filter is not applied.
-Example: FILTERPROPERTY=type&FILTERVALUE=stone,wood
+With the two vendorspecific parameter FILTERPROPERTY and FILTERVALUE you can request rendering just a defined list of features. Each feature to be rendered will be identified by the value of a given property. The name of the property is defined by the parameter filterproperty. The name of the property is not qualified so all properties with the given local name will be considered. A list of valid property values will be defined using parameter filtervalue, multiple values must be comma separated. Each layer - or better its underlying data source - requested by a GeMap will be evaluated for having a feature with a property with given name and one of the defined values. Just the features matching this filter condition will be rendered. It's quite natural that only layer with an underlying Feature-DataSource can be filtered.
+If one of the parameters is missing or the value empty, the filter is not applied. Example:
+----
+FILTERPROPERTY=type&FILTERVALUE=stone,wood
+----
 
+Using the vendorspecific parameter CQL2_FILTER a more complex expression can be used to filter the underlying data source. The CQL2_FILTER supports T_AFTER and S_INTERSECTS. Examples:
+----
+CQL2_FILTER=T_AFTER(creationDate,TIMESTAMP('2025-04-14T08:59:30Z'))
+CQL2_FILTER=S_INTERSECTS(geometry,BBOX(36.319836,32.288087,37.319836,33.288087))
+----
 
+The other parameters addressed in the GetMap request (e.g. the style) are not effected by the parameters FILTERPROPERTY, FILTERVALUE and CQL2FILTER. If the filter cannot be applied to the layer, e.g. because it is a raster layer or the data source does not match the filter, the filter will be ignored.
 
 In a GetFeatureInfo request the parameter GEOMETRIES can be used to return the geometries of a feature in GML and GeoJSON output. The default is false. The parameter INFO_CRS can be used in the GetFeatureInfo request to control the CRS of the geometries in the GeoJSON response. Default is WGS84. For GeoJSON output both parameters applies only if it is enabled in the configuration (<<geojson-featureinfo-configuration>>).
 

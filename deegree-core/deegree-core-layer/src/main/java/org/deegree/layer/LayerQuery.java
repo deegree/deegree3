@@ -35,12 +35,9 @@
 package org.deegree.layer;
 
 import static java.lang.Integer.parseInt;
-import static java.util.Arrays.asList;
 import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -60,6 +57,8 @@ public class LayerQuery {
 	public static final String FILTERPROPERTY = "FILTERPROPERTY";
 
 	public static final String FILTERVALUE = "FILTERVALUE";
+
+	public static final String CQL2_FILTER = "CQL2_FILTER";
 
 	public static final String RADIUS = "RADIUS";
 
@@ -92,12 +91,12 @@ public class LayerQuery {
 	 * @param width
 	 * @param height
 	 * @param style
-	 * @param filters
+	 * @param filter
 	 * @param parameters
 	 * @param dimensions
 	 * @param pixelSize must be in meter, not mm
 	 * @param options
-	 * @param layerRadius
+	 * @param queryBox
 	 */
 	public LayerQuery(Envelope envelope, int width, int height, StyleRef style, OperatorFilter filter,
 			Map<String, String> parameters, Map<String, List<?>> dimensions, double pixelSize, MapOptionsMaps options,
@@ -221,6 +220,17 @@ public class LayerQuery {
 			return null;
 		List<String> filterValues = parseFilterValues(filterValue);
 		return new Pair<String, List<String>>(filterProperty, filterValues);
+	}
+
+	/**
+	 * Returns the CQL2_FILTER value used for filtering.
+	 * @return the CQL2_FILTER as text, <code>null</code> if not available or empty
+	 */
+	public String cql2Filter() {
+		String cql2Filter = parameters.get(CQL2_FILTER);
+		if (cql2Filter != null && !cql2Filter.isEmpty())
+			return cql2Filter;
+		return null;
 	}
 
 	private List<String> parseFilterValues(String filterValue) {

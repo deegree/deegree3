@@ -40,10 +40,22 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.layer.persistence.feature;
 
+import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
+import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;
+
+import javax.xml.namespace.QName;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
+import org.deegree.cql2.CQL2FilterParser;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.filter.Expression;
@@ -62,16 +74,6 @@ import org.deegree.geometry.Envelope;
 import org.deegree.layer.LayerQuery;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.style.utils.Styles;
-
-import javax.xml.namespace.QName;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
-import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
-import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;
 
 /**
  * Responsible for building feature layer filters.
@@ -131,7 +133,17 @@ class FilterBuilder {
 
 	static OperatorFilter appendRequestFilter(OperatorFilter filter, LayerQuery query, Set<QName> propertyNames) {
 		OperatorFilter requestFilter = buildRequestFilter(query, propertyNames);
-		return Filters.and(filter, requestFilter);
+		OperatorFilter cql2Filter = buildCql2Filter(query, propertyNames);
+		return Filters.and(filter, Filters.and(requestFilter, cql2Filter));
+	}
+
+	static OperatorFilter buildCql2Filter(LayerQuery layerQuery, Set<QName> propertyNames) {
+		String cql2Filter = layerQuery.cql2Filter();
+		if (cql2Filter == null)
+			return null;
+		ICRS crs = layerQuery.getQueryBox().getCoordinateSystem();
+		Operator operator = CQL2FilterParser.parseCql2Filter(cql2Filter, crs, propertyNames);
+		return new OperatorFilter(operator);
 	}
 
 	static OperatorFilter buildRequestFilter(LayerQuery layerQuery, Set<QName> propertyNames) {
