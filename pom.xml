@@ -149,6 +149,11 @@
           <version>${antlr.version}</version>
         </plugin>
         <plugin>
+          <groupId>org.antlr</groupId>
+          <artifactId>antlr4-maven-plugin</artifactId>
+          <version>${antlr4.version}</version>
+        </plugin>
+        <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <version>3.5.3</version>
@@ -1197,6 +1202,11 @@
         <version>${antlr.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.antlr</groupId>
+        <artifactId>antlr4-runtime</artifactId>
+        <version>${antlr4.version}</version>
+      </dependency>
+      <dependency>
         <groupId>net.gcardone.junidecode</groupId>
         <artifactId>junidecode</artifactId>
         <version>0.4.1</version>
@@ -1220,6 +1230,7 @@
     <site.dir>${user.home}/Sites</site.dir>
     <java.version>17</java.version>
     <antlr.version>3.5.3</antlr.version>
+    <antlr4.version>4.13.2</antlr4.version>
     <oracle.version>23.4.0.24.05</oracle.version>
     <logback.version>1.5.18</logback.version>
     <slf4j.version>2.0.17</slf4j.version>
