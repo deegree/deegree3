@@ -1,12 +1,11 @@
 package org.deegree.layer.persistence.feature;
 
-import org.deegree.commons.utils.Pair;
-import org.deegree.filter.OperatorFilter;
-import org.deegree.filter.comparison.PropertyIsEqualTo;
-import org.deegree.filter.logical.Or;
-import org.deegree.layer.LayerQuery;
-import org.junit.Test;
-import org.mockito.Mockito;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import javax.xml.namespace.QName;
 import java.util.Arrays;
@@ -14,10 +13,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
+import org.deegree.commons.utils.Pair;
+import org.deegree.cs.persistence.CRSManager;
+import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.comparison.PropertyIsEqualTo;
+import org.deegree.filter.logical.Or;
+import org.deegree.filter.temporal.After;
+import org.deegree.geometry.Envelope;
+import org.deegree.layer.LayerQuery;
+import org.junit.Test;
 
 /**
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz </a>
@@ -60,7 +64,8 @@ public class FilterBuilderTest {
 
 	@Test
 	public void testBuildRequestFilter_NullRequestFilter() {
-		LayerQuery layerQuery = mockLayerQuery(null);
+		LayerQuery layerQuery = mock(LayerQuery.class);
+
 		Set<QName> propertyNames = createPropertyNames("abc");
 		OperatorFilter operatorFilter = FilterBuilder.buildRequestFilter(layerQuery, propertyNames);
 
@@ -79,15 +84,29 @@ public class FilterBuilderTest {
 		assertThat(operatorFilter, is(nullValue()));
 	}
 
-	private LayerQuery mockLayerQuery(String filterProperty, List<String> filterValues) {
-		Pair<String, List<String>> requestFilter = new Pair<String, List<String>>(filterProperty, filterValues);
+	@Test
+	public void testBuildCql2Filter() {
+		String cql2Filter = "T_AFTER(testDate,TIMESTAMP('2025-04-14T08:59:30Z'))";
+		LayerQuery layerQuery = mockLayerQuery(cql2Filter);
+		Set<QName> propertyNames = createPropertyNames("testDate");
+		OperatorFilter operatorFilter = FilterBuilder.buildCql2Filter(layerQuery, propertyNames);
 
-		return mockLayerQuery(requestFilter);
+		assertThat(operatorFilter.getOperator(), instanceOf(After.class));
 	}
 
-	private LayerQuery mockLayerQuery(Pair<String, List<String>> requestFilter) {
-		LayerQuery layerQueryMock = Mockito.mock(LayerQuery.class);
-		Mockito.when(layerQueryMock.requestFilter()).thenReturn(requestFilter);
+	private LayerQuery mockLayerQuery(String filterProperty, List<String> filterValues) {
+		Pair<String, List<String>> requestFilter = new Pair<>(filterProperty, filterValues);
+		LayerQuery layerQueryMock = mock(LayerQuery.class);
+		when(layerQueryMock.requestFilter()).thenReturn(requestFilter);
+		return layerQueryMock;
+	}
+
+	private LayerQuery mockLayerQuery(String cql2Filter) {
+		LayerQuery layerQueryMock = mock(LayerQuery.class);
+		when(layerQueryMock.cql2Filter()).thenReturn(cql2Filter);
+		Envelope envelope = mock(Envelope.class);
+		when(envelope.getCoordinateSystem()).thenReturn(CRSManager.getCRSRef("EPSG:4326"));
+		when(layerQueryMock.getQueryBox()).thenReturn(envelope);
 		return layerQueryMock;
 	}
 
