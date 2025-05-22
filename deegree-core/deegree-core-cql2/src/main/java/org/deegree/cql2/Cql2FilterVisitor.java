@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.antlr.v4.runtime.tree.TerminalNode;
 import org.deegree.commons.tom.datetime.ISO8601Converter;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
@@ -50,9 +51,12 @@ import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.filter.Expression;
 import org.deegree.filter.MatchAction;
+import org.deegree.filter.Operator;
 import org.deegree.filter.comparison.PropertyIsEqualTo;
+import org.deegree.filter.comparison.PropertyIsLike;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.ValueReference;
+import org.deegree.filter.logical.And;
 import org.deegree.filter.spatial.Intersects;
 import org.deegree.filter.spatial.SpatialOperator;
 import org.deegree.filter.temporal.After;
@@ -98,11 +102,12 @@ public class Cql2FilterVisitor extends Cql2ParserBaseVisitor {
 
 	@Override
 	public Object visitBooleanTerm(Cql2Parser.BooleanTermContext ctx) {
-		int factors = ctx.booleanFactor().size();
-		if (factors == 1) {
-			return ctx.booleanFactor(0).accept(this);
-		}
-		throw new Cql2UnsupportedExpressionException("More than one booleanFactor are currently not supported.");
+		List<Operator> operators = ctx.booleanFactor().stream().map(factor -> (Operator) factor.accept(this)).toList();
+		if (operators.isEmpty())
+			return null;
+		if (operators.size() == 1)
+			return operators.get(0);
+		return new And(operators.toArray(new Operator[0]));
 	}
 
 	@Override
@@ -137,7 +142,7 @@ public class Cql2FilterVisitor extends Cql2ParserBaseVisitor {
 		if (ctx.binaryComparisonPredicate() != null)
 			return ctx.binaryComparisonPredicate().accept(this);
 		if (ctx.isLikePredicate() != null)
-			throw new Cql2UnsupportedExpressionException("isLikePredicates are currently not supported.");
+			return ctx.isLikePredicate().accept(this);
 		if (ctx.isBetweenPredicate() != null)
 			throw new Cql2UnsupportedExpressionException("isBetweenPredicates are currently not supported.");
 		if (ctx.isInListPredicate() != null)
@@ -152,11 +157,20 @@ public class Cql2FilterVisitor extends Cql2ParserBaseVisitor {
 		String comparisonOperator = ctx.ComparisonOperator().getText();
 		switch (comparisonOperator) {
 			case "=":
+				boolean matchCase = ctx.getText().contains("CASEI");
 				Expression param1 = (Expression) ctx.scalarExpression().get(0).accept(this);
 				Expression param2 = (Expression) ctx.scalarExpression().get(1).accept(this);
-				return new PropertyIsEqualTo(param1, param2, false, MatchAction.ANY);
+				return new PropertyIsEqualTo(param1, param2, matchCase, MatchAction.ANY);
 		}
 		throw new Cql2UnsupportedExpressionException("Unsupported comparisonOperator " + comparisonOperator);
+	}
+
+	@Override
+	public Object visitIsLikePredicate(Cql2Parser.IsLikePredicateContext ctx) {
+		boolean matchCase = ctx.getText().contains("CASEI");
+		Expression param1 = (Expression) ctx.characterExpression().accept(this);
+		Expression param2 = (Expression) ctx.patternExpression().accept(this);
+		return new PropertyIsLike(param1, param2, "%", "_", "\\", matchCase, MatchAction.ANY);
 	}
 
 	@Override
@@ -165,14 +179,48 @@ public class Cql2FilterVisitor extends Cql2ParserBaseVisitor {
 			return ctx.characterClause().accept(this);
 		if (ctx.propertyName() != null)
 			return ctx.propertyName().accept(this);
+		if (ctx.NumericLiteral() != null) {
+			String numericText = ctx.NumericLiteral().getText();
+			try {
+				int i = Integer.parseInt(numericText);
+				return new Literal<>(new PrimitiveValue(i, new PrimitiveType(BaseType.INTEGER)), null);
+			}
+			catch (NumberFormatException e) {
+				double d = Double.parseDouble(numericText);
+				return new Literal<>(new PrimitiveValue(d, new PrimitiveType(BaseType.DOUBLE)), null);
+			}
+		}
 		if (ctx.function() != null)
 			throw new Cql2UnsupportedExpressionException("functions are currently not supported.");
 		throw new Cql2UnsupportedExpressionException("ScalarExpression is currently not supported.");
 	}
 
 	@Override
+	public Object visitCharacterExpression(Cql2Parser.CharacterExpressionContext ctx) {
+		if (ctx.characterClause() != null)
+			return ctx.characterClause().accept(this);
+		if (ctx.propertyName() != null)
+			return ctx.propertyName().accept(this);
+		if (ctx.function() != null)
+			throw new Cql2UnsupportedExpressionException("functions are currently not supported.");
+		throw new Cql2UnsupportedExpressionException("CharacterExpression is currently not supported.");
+	}
+
+	@Override
 	public Object visitCharacterClause(Cql2Parser.CharacterClauseContext ctx) {
-		return new Literal<>(ctx.getText().substring(1, ctx.getText().length() - 1));
+		return parseLiteral(ctx.getText(), ctx.CASEI());
+	}
+
+	@Override
+	public Object visitPatternExpression(Cql2Parser.PatternExpressionContext ctx) {
+		return parseLiteral(ctx.getText(), ctx.CASEI());
+	}
+
+	private static Literal<?> parseLiteral(String text, TerminalNode casei) {
+		if (casei != null) {
+			return new Literal<>(text.substring(7, text.length() - 2));
+		}
+		return new Literal<>(text.substring(1, text.length() - 1));
 	}
 
 	@Override

@@ -24,6 +24,7 @@ package org.deegree.cql2;
 import static java.util.Calendar.APRIL;
 import static org.deegree.cql2.CQL2FilterParser.parseCql2Filter;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import javax.xml.namespace.QName;
@@ -33,14 +34,18 @@ import java.util.Set;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.tom.datetime.DateTime;
+import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.filter.Expression;
+import org.deegree.filter.Operator;
 import org.deegree.filter.comparison.PropertyIsEqualTo;
+import org.deegree.filter.comparison.PropertyIsLike;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.ValueReference;
+import org.deegree.filter.logical.And;
 import org.deegree.filter.spatial.Intersects;
 import org.deegree.filter.temporal.After;
 import org.deegree.geometry.Envelope;
@@ -61,7 +66,8 @@ public class Cql2FilterParserTest {
 
 	public static final String NS_URL = "http://deegree.or/ns";
 
-	private static final Set<QName> PROPS = Set.of(new QName(NS_URL, "testDate"), new QName(NS_URL, "test"));
+	private static final Set<QName> PROPS = Set.of(new QName(NS_URL, "testDate"), new QName(NS_URL, "test"),
+			new QName(NS_URL, "test1"), new QName(NS_URL, "test2"));
 
 	@Test
 	public void test_parse_S_INTERSECTS_Point() throws UnknownCRSException {
@@ -264,19 +270,187 @@ public class Cql2FilterParserTest {
 		Object visit = parseCql2Filter(comp, crs(), PROPS);
 
 		assertTrue(visit instanceof PropertyIsEqualTo);
+		PropertyIsEqualTo propertyIsEqualTo = (PropertyIsEqualTo) visit;
+		assertFalse(propertyIsEqualTo.isMatchCase());
 
-		Expression param1 = ((PropertyIsEqualTo) visit).getParameter1();
+		Expression param1 = propertyIsEqualTo.getParameter1();
 		assertTrue(param1 instanceof ValueReference);
 		assertEquals("test", ((ValueReference) param1).getAsQName().getLocalPart());
 		assertEquals(NS_URL, ((ValueReference) param1).getAsQName().getNamespaceURI());
 
-		Expression param2 = ((PropertyIsEqualTo) visit).getParameter2();
+		Expression param2 = propertyIsEqualTo.getParameter2();
 		assertTrue(param2 instanceof Literal);
 		TypedObjectNode primitiveValue = ((Literal<?>) param2).getValue();
 		assertTrue(primitiveValue instanceof PrimitiveValue);
 		Object value = ((PrimitiveValue) primitiveValue).getValue();
 		assertTrue(value instanceof String);
 		assertEquals("VALUE", value);
+	}
+
+	@Test
+	public void test_parse_comparison_int() throws UnknownCRSException {
+		String comp = "test=10";
+		Object visit = parseCql2Filter(comp, crs(), PROPS);
+
+		assertTrue(visit instanceof PropertyIsEqualTo);
+		PropertyIsEqualTo propertyIsEqualTo = (PropertyIsEqualTo) visit;
+		assertFalse(propertyIsEqualTo.isMatchCase());
+
+		Expression param1 = propertyIsEqualTo.getParameter1();
+		assertTrue(param1 instanceof ValueReference);
+		assertEquals("test", ((ValueReference) param1).getAsQName().getLocalPart());
+		assertEquals(NS_URL, ((ValueReference) param1).getAsQName().getNamespaceURI());
+
+		Expression param2 = propertyIsEqualTo.getParameter2();
+		assertTrue(param2 instanceof Literal);
+		TypedObjectNode primitiveValue = ((Literal<?>) param2).getValue();
+		assertTrue(primitiveValue instanceof PrimitiveValue);
+		assertEquals(BaseType.INTEGER, ((PrimitiveValue) primitiveValue).getType().getBaseType());
+		Object value = ((PrimitiveValue) primitiveValue).getValue();
+		assertTrue(value instanceof Integer);
+		assertEquals(10, value);
+	}
+
+	@Test
+	public void test_parse_comparison_double() throws UnknownCRSException {
+		String comp = "test=10.9";
+		Object visit = parseCql2Filter(comp, crs(), PROPS);
+
+		assertTrue(visit instanceof PropertyIsEqualTo);
+		PropertyIsEqualTo propertyIsEqualTo = (PropertyIsEqualTo) visit;
+		assertFalse(propertyIsEqualTo.isMatchCase());
+
+		Expression param1 = propertyIsEqualTo.getParameter1();
+		assertTrue(param1 instanceof ValueReference);
+		assertEquals("test", ((ValueReference) param1).getAsQName().getLocalPart());
+		assertEquals(NS_URL, ((ValueReference) param1).getAsQName().getNamespaceURI());
+
+		Expression param2 = propertyIsEqualTo.getParameter2();
+		assertTrue(param2 instanceof Literal);
+		TypedObjectNode primitiveValue = ((Literal<?>) param2).getValue();
+		assertTrue(primitiveValue instanceof PrimitiveValue);
+		assertEquals(BaseType.DOUBLE, ((PrimitiveValue) primitiveValue).getType().getBaseType());
+		Object value = ((PrimitiveValue) primitiveValue).getValue();
+		assertTrue(value instanceof Double);
+		assertEquals(10.9, value);
+	}
+
+	@Test
+	public void test_parse_comparison_CASEI() throws UnknownCRSException {
+		String comp = "test=CASEI('VALUE')";
+		Object visit = parseCql2Filter(comp, crs(), PROPS);
+
+		assertTrue(visit instanceof PropertyIsEqualTo);
+		PropertyIsEqualTo propertyIsEqualTo = (PropertyIsEqualTo) visit;
+		assertTrue(propertyIsEqualTo.isMatchCase());
+
+		Expression param1 = propertyIsEqualTo.getParameter1();
+		assertTrue(param1 instanceof ValueReference);
+		assertEquals("test", ((ValueReference) param1).getAsQName().getLocalPart());
+		assertEquals(NS_URL, ((ValueReference) param1).getAsQName().getNamespaceURI());
+
+		Expression param2 = propertyIsEqualTo.getParameter2();
+		assertTrue(param2 instanceof Literal);
+		TypedObjectNode primitiveValue = ((Literal<?>) param2).getValue();
+		assertTrue(primitiveValue instanceof PrimitiveValue);
+		Object value = ((PrimitiveValue) primitiveValue).getValue();
+		assertTrue(value instanceof String);
+		assertEquals("VALUE", value);
+	}
+
+	@Test
+	public void test_parse_LIKE() throws UnknownCRSException {
+		String comp = "test LIKE 'V_L%'";
+		Object visit = parseCql2Filter(comp, crs(), PROPS);
+
+		assertTrue(visit instanceof PropertyIsLike);
+
+		PropertyIsLike propertyIsLike = (PropertyIsLike) visit;
+		assertEquals("_", propertyIsLike.getSingleChar());
+		assertEquals("%", propertyIsLike.getWildCard());
+		assertEquals("\\", propertyIsLike.getEscapeChar());
+		assertFalse(propertyIsLike.isMatchCase());
+
+		Expression param1 = propertyIsLike.getParams()[0];
+		assertTrue(param1 instanceof ValueReference);
+		assertEquals("test", ((ValueReference) param1).getAsQName().getLocalPart());
+		assertEquals(NS_URL, ((ValueReference) param1).getAsQName().getNamespaceURI());
+
+		Expression param2 = propertyIsLike.getParams()[1];
+		assertTrue(param2 instanceof Literal);
+		TypedObjectNode primitiveValue = ((Literal<?>) param2).getValue();
+		assertTrue(primitiveValue instanceof PrimitiveValue);
+		Object value = ((PrimitiveValue) primitiveValue).getValue();
+		assertTrue(value instanceof String);
+		assertEquals("V_L%", value);
+	}
+
+	@Test
+	public void test_parse_LIKE_CASEI() throws UnknownCRSException {
+		String comp = "test LIKE CASEI('V_L%')";
+		Object visit = parseCql2Filter(comp, crs(), PROPS);
+
+		assertTrue(visit instanceof PropertyIsLike);
+
+		PropertyIsLike propertyIsLike = (PropertyIsLike) visit;
+		assertEquals("_", propertyIsLike.getSingleChar());
+		assertEquals("%", propertyIsLike.getWildCard());
+		assertEquals("\\", propertyIsLike.getEscapeChar());
+		assertTrue(propertyIsLike.isMatchCase());
+
+		Expression param1 = propertyIsLike.getParams()[0];
+		assertTrue(param1 instanceof ValueReference);
+		assertEquals("test", ((ValueReference) param1).getAsQName().getLocalPart());
+		assertEquals(NS_URL, ((ValueReference) param1).getAsQName().getNamespaceURI());
+
+		Expression param2 = propertyIsLike.getParams()[1];
+		assertTrue(param2 instanceof Literal);
+		TypedObjectNode primitiveValue = ((Literal<?>) param2).getValue();
+		assertTrue(primitiveValue instanceof PrimitiveValue);
+		Object value = ((PrimitiveValue) primitiveValue).getValue();
+		assertTrue(value instanceof String);
+		assertEquals("V_L%", value);
+	}
+
+	@Test
+	public void test_parse_AND() throws UnknownCRSException {
+		String comp = "test1='VALUE1' AND test2 LIKE 'V_L%'";
+		Object visit = parseCql2Filter(comp, crs(), PROPS);
+
+		assertTrue(visit instanceof And);
+		assertEquals(2, ((And) visit).getSize());
+
+		Operator and1 = ((And) visit).getParameter(0);
+		Operator and2 = ((And) visit).getParameter(1);
+
+		assertTrue(and1 instanceof PropertyIsEqualTo);
+
+		Expression param1_1 = ((PropertyIsEqualTo) and1).getParameter1();
+		assertTrue(param1_1 instanceof ValueReference);
+		assertEquals("test1", ((ValueReference) param1_1).getAsQName().getLocalPart());
+		assertEquals(NS_URL, ((ValueReference) param1_1).getAsQName().getNamespaceURI());
+
+		Expression param1_2 = ((PropertyIsEqualTo) and1).getParameter2();
+		assertTrue(param1_2 instanceof Literal);
+		TypedObjectNode primitiveValue1 = ((Literal<?>) param1_2).getValue();
+		assertTrue(primitiveValue1 instanceof PrimitiveValue);
+		Object value1 = ((PrimitiveValue) primitiveValue1).getValue();
+		assertTrue(value1 instanceof String);
+		assertEquals("VALUE1", value1);
+
+		assertTrue(and2 instanceof PropertyIsLike);
+		Expression param2_1 = ((PropertyIsLike) and2).getParams()[0];
+		assertTrue(param2_1 instanceof ValueReference);
+		assertEquals("test2", ((ValueReference) param2_1).getAsQName().getLocalPart());
+		assertEquals(NS_URL, ((ValueReference) param2_1).getAsQName().getNamespaceURI());
+
+		Expression param2_2 = ((PropertyIsLike) and2).getParams()[1];
+		assertTrue(param2_2 instanceof Literal);
+		TypedObjectNode primitiveValue = ((Literal<?>) param2_2).getValue();
+		assertTrue(primitiveValue instanceof PrimitiveValue);
+		Object value = ((PrimitiveValue) primitiveValue).getValue();
+		assertTrue(value instanceof String);
+		assertEquals("V_L%", value);
 	}
 
 	private static ICRS crs() throws UnknownCRSException {

@@ -1756,10 +1756,34 @@ If one of the parameters is missing or the value empty, the filter is not applie
 FILTERPROPERTY=type&FILTERVALUE=stone,wood
 ----
 
-Using the vendorspecific parameter CQL2_FILTER a more complex expression can be used to filter the underlying data source. The CQL2_FILTER supports T_AFTER and S_INTERSECTS. Examples:
+Using the vendorspecific parameter CQL2_FILTER a more complex expression can be used to filter the underlying data source. The CQL2_FILTER supports:
+
+* Logical operators
+** AND
+* Comparison operators
+** equal to (=), with string, int and double values
+* Advanced Comparison Operators
+** LIKE
+* Case-insensitive Comparison
+** within supported comparison operators and advanced comparison operators
+* Spatial Functions
+** S_INTERSECTS
+* Temporal Functions
+** T_AFTER
+* Temporal Functions
+** T_AFTER
+
 ----
 CQL2_FILTER=T_AFTER(creationDate,TIMESTAMP('2025-04-14T08:59:30Z'))
 CQL2_FILTER=S_INTERSECTS(geometry,BBOX(36.319836,32.288087,37.319836,33.288087))
+# city='Bonn'
+CQL2_FILTER=city%3D%27Bonn%27
+#index=10
+CQL2_FILTER=index%3D10
+# city LIKE CASEI('B_N%')
+CQL2_FILTER=city%20LIKE%20CASEI%28%27B_N%25%27%29
+# city='Bonn' AND str LIKE 'Erm%'
+CQL2_FILTER=city%3D%27Bonn%27%20AND%20str%20LIKE%20%27Erm%25%27
 ----
 
 The other parameters addressed in the GetMap request (e.g. the style) are not effected by the parameters FILTERPROPERTY, FILTERVALUE and CQL2FILTER. If the filter cannot be applied to the layer, e.g. because it is a raster layer or the data source does not match the filter, the filter will be ignored.

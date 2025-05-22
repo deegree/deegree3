@@ -276,11 +276,11 @@ pointText : LEFTPAREN point RIGHTPAREN;
 
 point : xCoord (Whitespace)* yCoord ((Whitespace)* zCoord)?;
 
-xCoord : SignedNumericLiteral;
+xCoord : NumericLiteral;
 
-yCoord : SignedNumericLiteral;
+yCoord : NumericLiteral;
 
-zCoord : SignedNumericLiteral;
+zCoord : NumericLiteral;
 
 lineStringText : LEFTPAREN point COMMA point (COMMA point)? RIGHTPAREN;
 
@@ -300,17 +300,17 @@ bboxTaggedText : BBOX bboxText;
 
 bboxText : LEFTPAREN westBoundLon COMMA southBoundLat COMMA (minElev COMMA)? eastBoundLon COMMA northBoundLat (COMMA maxElev)? RIGHTPAREN;
 
-westBoundLon : SignedNumericLiteral;
+westBoundLon : NumericLiteral;
 
-eastBoundLon : SignedNumericLiteral;
+eastBoundLon : NumericLiteral;
 
-northBoundLat : SignedNumericLiteral;
+northBoundLat : NumericLiteral;
 
-southBoundLat : SignedNumericLiteral;
+southBoundLat : NumericLiteral;
 
-minElev : SignedNumericLiteral;
+minElev : NumericLiteral;
 
-maxElev : SignedNumericLiteral;
+maxElev : NumericLiteral;
 
 temporalInstance : instantInstance | intervalInstance;
 

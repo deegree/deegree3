@@ -180,6 +180,8 @@ SOLIDUS : '/';
 
 PERCENT : '%';
 
+PERIOD : '.';
+
 CARET : '^';
 
 EscapeQuote : '\'\'' | '\\\'';
@@ -190,14 +192,14 @@ EscapeQuote : '\'\'' | '\\\'';
 // Definition of NUMERIC literals
 //=============================================================================//
 
-SignedNumericLiteral : (Sign)? ExactNumericLiteral | ApproximateNumericLiteral;
+NumericLiteral : UnsignedNumericLiteral | SignedNumericLiteral;
 
 UnsignedNumericLiteral : ExactNumericLiteral | ApproximateNumericLiteral;
 
-NumericLiteral : UnsignedNumericLiteral | SignedNumericLiteral;
+SignedNumericLiteral : (Sign)? ExactNumericLiteral | ApproximateNumericLiteral;
 
-ExactNumericLiteral : UnsignedInteger ('.' (UnsignedInteger)? )?
-                      | '.' UnsignedInteger;
+ExactNumericLiteral : UnsignedInteger  (PERIOD (UnsignedInteger)? )?
+                        |  PERIOD UnsignedInteger;
 
 ApproximateNumericLiteral : Mantissa 'E' Exponent;
 
@@ -209,7 +211,7 @@ SignedInteger : (Sign)? UnsignedInteger;
 
 UnsignedInteger : (DIGIT)+;
 
-Sign : '+' | '-';
+Sign : PLUS | MINUS;
 
 // character & digit productions copied from:
 // https://www.w3.org/TR/REC-xml///charsets
