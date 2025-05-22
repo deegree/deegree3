@@ -49,6 +49,8 @@ import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.filter.Expression;
+import org.deegree.filter.MatchAction;
+import org.deegree.filter.comparison.PropertyIsEqualTo;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.spatial.Intersects;
@@ -67,7 +69,7 @@ import org.slf4j.Logger;
 /**
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz </a>
  */
-public class Cql2FilterVisitor extends Cql2BaseVisitor {
+public class Cql2FilterVisitor extends Cql2ParserBaseVisitor {
 
 	private static final Logger LOG = getLogger(Cql2FilterVisitor.class);
 
@@ -122,12 +124,55 @@ public class Cql2FilterVisitor extends Cql2BaseVisitor {
 	@Override
 	public Object visitPredicate(Cql2Parser.PredicateContext ctx) {
 		if (ctx.comparisonPredicate() != null)
-			throw new Cql2UnsupportedExpressionException("comparisonPredicate are currently not supported.");
+			return ctx.comparisonPredicate().accept(this);
 		if (ctx.temporalPredicate() != null)
 			return ctx.temporalPredicate().accept(this);
 		if (ctx.arrayPredicate() != null)
 			throw new Cql2UnsupportedExpressionException("arrayPredicate are currently not supported.");
 		return ctx.spatialPredicate().accept(this);
+	}
+
+	@Override
+	public Object visitComparisonPredicate(Cql2Parser.ComparisonPredicateContext ctx) {
+		if (ctx.binaryComparisonPredicate() != null)
+			return ctx.binaryComparisonPredicate().accept(this);
+		if (ctx.isLikePredicate() != null)
+			throw new Cql2UnsupportedExpressionException("isLikePredicates are currently not supported.");
+		if (ctx.isBetweenPredicate() != null)
+			throw new Cql2UnsupportedExpressionException("isBetweenPredicates are currently not supported.");
+		if (ctx.isInListPredicate() != null)
+			throw new Cql2UnsupportedExpressionException("isInListPredicates are currently not supported.");
+		if (ctx.isNullPredicate() != null)
+			throw new Cql2UnsupportedExpressionException("isNullPredicates are currently not supported.");
+		throw new Cql2UnsupportedExpressionException("ComparisonPredicate is currently not supported.");
+	}
+
+	@Override
+	public Object visitBinaryComparisonPredicate(Cql2Parser.BinaryComparisonPredicateContext ctx) {
+		String comparisonOperator = ctx.ComparisonOperator().getText();
+		switch (comparisonOperator) {
+			case "=":
+				Expression param1 = (Expression) ctx.scalarExpression().get(0).accept(this);
+				Expression param2 = (Expression) ctx.scalarExpression().get(1).accept(this);
+				return new PropertyIsEqualTo(param1, param2, false, MatchAction.ANY);
+		}
+		throw new Cql2UnsupportedExpressionException("Unsupported comparisonOperator " + comparisonOperator);
+	}
+
+	@Override
+	public Object visitScalarExpression(Cql2Parser.ScalarExpressionContext ctx) {
+		if (ctx.characterClause() != null)
+			return ctx.characterClause().accept(this);
+		if (ctx.propertyName() != null)
+			return ctx.propertyName().accept(this);
+		if (ctx.function() != null)
+			throw new Cql2UnsupportedExpressionException("functions are currently not supported.");
+		throw new Cql2UnsupportedExpressionException("ScalarExpression is currently not supported.");
+	}
+
+	@Override
+	public Object visitCharacterClause(Cql2Parser.CharacterClauseContext ctx) {
+		return new Literal<>(ctx.getText().substring(1, ctx.getText().length() - 1));
 	}
 
 	@Override
@@ -332,12 +377,8 @@ public class Cql2FilterVisitor extends Cql2BaseVisitor {
 
 	@Override
 	public Object visitDateInstant(Cql2Parser.DateInstantContext ctx) {
-		return ctx.dateInstantString().accept(this);
-	}
-
-	@Override
-	public Object visitDateInstantString(Cql2Parser.DateInstantStringContext ctx) {
-		return ISO8601Converter.parseDate(ctx.getText().substring(1, ctx.getText().length() - 1));
+		String substring = ctx.getText().substring(6, ctx.getText().length() - 2);
+		return ISO8601Converter.parseDate(substring);
 	}
 
 	@Override

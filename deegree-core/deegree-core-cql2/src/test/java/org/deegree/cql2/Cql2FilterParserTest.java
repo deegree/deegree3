@@ -28,7 +28,6 @@ import static org.junit.Assert.assertTrue;
 
 import javax.xml.namespace.QName;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Set;
 
 import org.deegree.commons.tom.TypedObjectNode;
@@ -39,6 +38,7 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.filter.Expression;
+import org.deegree.filter.comparison.PropertyIsEqualTo;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.spatial.Intersects;
@@ -59,7 +59,9 @@ import org.junit.Test;
  */
 public class Cql2FilterParserTest {
 
-	private static final Set<QName> PROPS = Collections.singleton(new QName("http://deegree.or/ns", "testDate"));
+	public static final String NS_URL = "http://deegree.or/ns";
+
+	private static final Set<QName> PROPS = Set.of(new QName(NS_URL, "testDate"), new QName(NS_URL, "test"));
 
 	@Test
 	public void test_parse_S_INTERSECTS_Point() throws UnknownCRSException {
@@ -218,8 +220,7 @@ public class Cql2FilterParserTest {
 		Expression param1 = ((After) visit).getParameter1();
 		assertTrue(param1 instanceof ValueReference);
 		assertEquals("testDate", ((ValueReference) param1).getAsQName().getLocalPart());
-		assertEquals(PROPS.stream().findFirst().get().getNamespaceURI(),
-				((ValueReference) param1).getAsQName().getNamespaceURI());
+		assertEquals(NS_URL, ((ValueReference) param1).getAsQName().getNamespaceURI());
 
 		Expression date = ((After) visit).getParameter2();
 		assertTrue(date instanceof Literal);
@@ -243,8 +244,7 @@ public class Cql2FilterParserTest {
 		Expression param1 = ((After) visit).getParameter1();
 		assertTrue(param1 instanceof ValueReference);
 		assertEquals("testDate", ((ValueReference) param1).getAsQName().getLocalPart());
-		assertEquals(PROPS.stream().findFirst().get().getNamespaceURI(),
-				((ValueReference) param1).getAsQName().getNamespaceURI());
+		assertEquals(NS_URL, ((ValueReference) param1).getAsQName().getNamespaceURI());
 
 		Expression date = ((After) visit).getParameter2();
 		assertTrue(date instanceof Literal);
@@ -256,6 +256,27 @@ public class Cql2FilterParserTest {
 		assertEquals(2025, calendar.get(Calendar.YEAR));
 		assertEquals(APRIL, calendar.get(Calendar.MONTH));
 		assertEquals(14, calendar.get(Calendar.DAY_OF_MONTH));
+	}
+
+	@Test
+	public void test_parse_comparison() throws UnknownCRSException {
+		String comp = "test='VALUE'";
+		Object visit = parseCql2Filter(comp, crs(), PROPS);
+
+		assertTrue(visit instanceof PropertyIsEqualTo);
+
+		Expression param1 = ((PropertyIsEqualTo) visit).getParameter1();
+		assertTrue(param1 instanceof ValueReference);
+		assertEquals("test", ((ValueReference) param1).getAsQName().getLocalPart());
+		assertEquals(NS_URL, ((ValueReference) param1).getAsQName().getNamespaceURI());
+
+		Expression param2 = ((PropertyIsEqualTo) visit).getParameter2();
+		assertTrue(param2 instanceof Literal);
+		TypedObjectNode primitiveValue = ((Literal<?>) param2).getValue();
+		assertTrue(primitiveValue instanceof PrimitiveValue);
+		Object value = ((PrimitiveValue) primitiveValue).getValue();
+		assertTrue(value instanceof String);
+		assertEquals("VALUE", value);
 	}
 
 	private static ICRS crs() throws UnknownCRSException {

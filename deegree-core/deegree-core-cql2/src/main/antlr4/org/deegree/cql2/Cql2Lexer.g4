@@ -35,252 +35,152 @@
 // adapted to suite the target implementation context.
 //=============================================================================//
 
-grammar Cql2;
+lexer grammar Cql2Lexer;
 
-booleanExpression : booleanTerm ('OR' booleanTerm)*;
+fragment A : ('A'|'a');
+fragment B : ('B'|'b');
+fragment C : ('C'|'c');
+fragment D : ('D'|'d');
+fragment E : ('E'|'e');
+fragment F : ('F'|'f');
+fragment G : ('G'|'g');
+fragment H : ('H'|'h');
+fragment I : ('I'|'i');
+fragment J : ('J'|'j');
+fragment K : ('K'|'k');
+fragment L : ('L'|'l');
+fragment M : ('M'|'m');
+fragment N : ('N'|'n');
+fragment O : ('O'|'o');
+fragment P : ('P'|'p');
+fragment Q : ('Q'|'q');
+fragment R : ('R'|'r');
+fragment S : ('S'|'s');
+fragment T : ('T'|'t');
+fragment U : ('U'|'u');
+fragment V : ('V'|'v');
+fragment W : ('W'|'w');
+fragment X : ('X'|'x');
+fragment Y : ('Y'|'y');
+fragment Z : ('Z'|'z');
 
-booleanTerm : booleanFactor ('AND' booleanFactor)*;
+ComparisonOperator : EQ | NEQ | LT | GT | LTEQ | GTEQ;
 
-booleanFactor : ('NOT')? booleanPrimary;
+LT : '<';
 
-booleanPrimary : function
-               | predicate
-               | BooleanLiteral
-               | '(' booleanExpression ')';
+EQ : '=';
 
-predicate : comparisonPredicate
-          | spatialPredicate
-          | temporalPredicate
-          | arrayPredicate;
+GT : '>';
 
-//=============================================================================//
-// A comparison predicate evaluates if two scalar expression statisfy the
-// specified comparison operator.  The comparion operators includes an operator
-// to evaluate pattern matching expressions (LIKE), a range evaluation operator
-// and an operator to test if a scalar expression is NULL or not.
-//=============================================================================//
-comparisonPredicate : binaryComparisonPredicate
-                    | isLikePredicate
-                    | isBetweenPredicate
-                    | isInListPredicate
-                    | isNullPredicate;
+NEQ : LT GT;
 
-// Binary comparison predicate
-//
-binaryComparisonPredicate : scalarExpression
-                            ComparisonOperator
-                            scalarExpression;
+GTEQ : GT EQ;
 
-scalarExpression : characterClause
-                 | NumericLiteral
-                 | instantInstance
-                 | arithmeticExpression
-                 | BooleanLiteral
-                 | propertyName
-                 | function;
-
-comparisonOperator : '='      // equal
-                   | '<' '>'  // not equal
-                   | '<'      // less than
-                   | '>'      // greater than
-                   | '<' '='  // less than or equal
-                   | '>' '='; // greater than or equal
-
-// LIKE predicate
-//
-isLikePredicate :  characterExpression ('NOT')? 'LIKE' patternExpression;
-
-patternExpression : 'CASEI' '(' patternExpression ')'
-                  | 'ACCENTI' '(' patternExpression ')'
-                  | characterLiteral;
-
-// BETWEEN predicate
-//
-isBetweenPredicate : numericExpression ('NOT')? 'BETWEEN'
-                     numericExpression 'AND' numericExpression;
-
-numericExpression : arithmeticExpression
-                  | NumericLiteral
-                  | propertyName
-                  | function;
-
-// IN LIST predicate
-//
-isInListPredicate : scalarExpression ('NOT')? IN '(' inList ')';
-
-inList : scalarExpression (',' scalarExpression)?;
-
-// IS NULL predicate
-//
-isNullPredicate : isNullOperand 'IS' ('NOT')? 'NULL';
-
-isNullOperand : characterClause
-              | NumericLiteral
-              | temporalInstance
-              | spatialInstance
-              | arithmeticExpression
-              | BooleanLiteral
-              | propertyName
-              | function;
+LTEQ : LT EQ;
 
 //=============================================================================//
-// A spatial predicate evaluates if two spatial expressions satisfy the
-// condition implied by a standardized spatial comparison function.  If the
-// conditions of the spatial comparison function are met, the function returns
-// a Boolean value of true.  Otherwise the function returns false.
+// Boolean literal
 //=============================================================================//
-spatialPredicate :  SpatialFunction '(' geomExpression ',' geomExpression ')';
+//
+BooleanLiteral : T R U E | F A L S E;
+
+AND : A N D;
+
+OR : O R;
+
+NOT : N O T;
+
+LIKE : L I K E;
+
+BETWEEN : B E T W E E N;
+
+IS : I S;
+
+NULL : N U L L;
 
 // NOTE: The buffer functions (DWITHIN and BEYOND) are not included because
 //       these are outside the scope of a 'simple' core for CQL2.  These
 //       can be added as extensions.
 //
-SpatialFunction : 'S_INTERSECTS'
-                | 'S_EQUALS'
-                | 'S_DISJOINT'
-                | 'S_TOUCHES'
-                | 'S_WITHIN'
-                | 'S_OVERLAPS'
-                | 'S_CROSSES'
-                | 'S_CONTAINS';
+SpatialFunction : S UNDERSCORE I N T E R S E C T S
+                | S UNDERSCORE E Q U A L S
+                | S UNDERSCORE D I S J O I N T
+                | S UNDERSCORE T O U C H E S
+                | S UNDERSCORE W I T H I N
+                | S UNDERSCORE O V E R L A P S
+                | S UNDERSCORE C R O S S E S
+                | S UNDERSCORE C O N T A I N S;
 
-// A geometric expression is a property name of a geometry-valued property,
-// a geometric literal (expressed as WKT) or a function that returns a
-// geometric value.
-//
-geomExpression : spatialInstance
-               | propertyName
-               | function;
+TemporalFunction : T UNDERSCORE A F T E R
+                 | T UNDERSCORE B E F O R E
+                 | T UNDERSCORE C O N T A I N S
+                 | T UNDERSCORE D I S J O I N T
+                 | T UNDERSCORE D U R I N G
+                 | T UNDERSCORE E Q U A L S
+                 | T UNDERSCORE F I N I S H E D B Y
+                 | T UNDERSCORE F I N I S H E S
+                 | T UNDERSCORE I N T E R S E C T S
+                 | T UNDERSCORE M E E T S
+                 | T UNDERSCORE M E T B Y
+                 | T UNDERSCORE O V E R L A P P E D B Y
+                 | T UNDERSCORE O V E R L A P S
+                 | T UNDERSCORE S T A R T E D B Y
+                 | T UNDERSCORE S T A R T S;
 
-//=============================================================================//
-// A temporal predicate evaluates if two temporal expressions satisfy the
-// condition implied by a standardized temporal comparison function.  If the
-// conditions of the temporal comparison function are met, the function returns
-// a Boolean value of true.  Otherwise the function returns false.
-//=============================================================================//
-temporalPredicate : TemporalFunction
-                    '(' temporalExpression ',' temporalExpression ')';
+ArrayFunction : A UNDERSCORE E Q U A L S
+              | A UNDERSCORE C O N T A I N S
+              | A UNDERSCORE C O N T A I N E D B Y
+              | A UNDERSCORE O V E R L A P S;
 
-temporalExpression : temporalInstance
-                   | propertyName
-                   | function;
+IN : I N;
 
-TemporalFunction : 'T_AFTER'
-                 | 'T_BEFORE'
-                 | 'T_CONTAINS'
-                 | 'T_DISJOINT'
-                 | 'T_DURING'
-                 | 'T_EQUALS'
-                 | 'T_FINISHEDBY'
-                 | 'T_FINISHES'
-                 | 'T_INTERSECTS'
-                 | 'T_MEETS'
-                 | 'T_METBY'
-                 | 'T_OVERLAPPEDBY'
-                 | 'T_OVERLAPS'
-                 | 'T_STARTEDBY'
-                 | 'T_STARTS';
+POINT : P O I N T;
 
-//=============================================================================//
-// An array predicate evaluates if two array expressions satisfy the
-// condition implied by a standardized array comparison function.  If the
-// conditions of the array comparison function are met, the function returns
-// a Boolean value of true.  Otherwise the function returns false.
-//=============================================================================//
-arrayPredicate : ArrayFunction
-                 '(' arrayExpression ',' arrayExpression ')';
+LINESTRING : L I N E S T R I N G;
 
-arrayExpression : array
-                | propertyName
-                | function;
+POLYGON : P O L Y G O N;
 
-// An array is a parentheses-delimited, comma-separated list of array
-// elements.
-array : '(' ')'
-      | '(' arrayElement (  ',' arrayElement )* ')';
+MULTIPOINT : M U L T I P O I N T;
 
-// An array element is either a character literal, a numeric literal,
-// a geometric literal, a temporal instance, a property name, a function,
-// an arithmetic expression or an array.
-arrayElement : characterClause
-             | NumericLiteral
-             | temporalInstance
-             | spatialInstance
-             | array
-             | arithmeticExpression
-             | BooleanLiteral
-             | propertyName
-             | function;
+MULTILINESTRING : M U L T I L I N E S T R I N G;
 
-arrayFunction : 'A_EQUALS'
-              | 'A_CONTAINS'
-              | 'A_CONTAINEDBY'
-              | 'A_OVERLAPS';
+MULTIPOLYGON : M U L T I P O L Y G O N;
 
-//=============================================================================//
-// An arithmetic expression is an expression composed of an arithmetic
-// operand (a property name, a number or a function that returns a number),
-// an arithmetic operators (+,-,*,/,%,div,^) and another arithmetic operand.
-//=============================================================================//
+GEOMETRYCOLLECTION : G E O M E T R Y C O L L E C T I O N;
 
-arithmeticExpression : arithmeticTerm ( arithmeticOperatorPlusMinus arithmeticTerm );
+BBOX : B B O X;
 
-arithmeticOperatorPlusMinus : '+' | '-';
+CharacterStringLiteralStart : QUOTE -> more, mode(STR);
 
-arithmeticTerm : powerTerm (arithmeticOperatorMultDiv powerTerm);
+CASEI : C A S E I;
 
-arithmeticOperatorMultDiv : '*' | '/' | '%' | 'div';
+ACCENTI : A C C E N T I;
 
-powerTerm : arithmeticFactor ('^' arithmeticFactor);
+DIV : D I V;
 
-arithmeticFactor : '(' arithmeticExpression ')'
-                 | ('-') arithmeticOperand;
+UNDERSCORE : '_';
 
-arithmeticOperand : NumericLiteral
-                  | propertyName
-                  | function;
+DOUBLEQUOTE : '"';
 
-//=============================================================================//
-// Definition of a PROPERTYNAME
-// Production copied from: https://www.w3.org/TR/REC-xml///sec-common-syn,
-//                         'Names and Tokens'.
-//=============================================================================//
-propertyName : Identifier | '"' Identifier '"';
+QUOTE : '\'';
 
-//=============================================================================//
-// Definition of a FUNCTION
-//=============================================================================//
-function : Identifier '(' argumentList ')';
+LEFTPAREN : '(';
 
-argumentList : argument ( ',' argument )*;
+RIGHTPAREN : ')';
 
-argument : characterClause
-         | NumericLiteral
-         | temporalInstance
-         | spatialInstance
-         | array
-         | arithmeticExpression
-         | BooleanLiteral
-         | propertyName
-         | function;
+COMMA : ',';
 
-//=============================================================================//
-// Character expression
-//=============================================================================//
-characterExpression : characterClause
-                    | propertyName
-                    | function;
+PLUS : '+';
 
-characterClause : 'CASEI' '(' characterExpression ')'
-                | 'ACCENTI' '(' characterExpression ')'
-                | characterLiteral;
+MINUS : '-';
 
-//=============================================================================//
-// Definition of CHARACTER literals
-//=============================================================================//
-characterLiteral : '\'' character '\'';
+ASTERISK : '*';
 
-character : ALPHA | DIGIT | Whitespace | EscapeQuote;
+SOLIDUS : '/';
+
+PERCENT : '%';
+
+CARET : '^';
 
 EscapeQuote : '\'\'' | '\\\'';
 
@@ -310,148 +210,6 @@ SignedInteger : (Sign)? UnsignedInteger;
 UnsignedInteger : (DIGIT)+;
 
 Sign : '+' | '-';
-
-//=============================================================================//
-// Boolean literal
-//=============================================================================//
-//
-BooleanLiteral : 'TRUE' | 'FALSE';
-
-//=============================================================================//
-// Definition of GEOMETRIC literals
-//
-// NOTE: This is basically BNF that define WKT encoding. It would be nice
-//       to instead reference some normative BNF for WKT.
-//=============================================================================//
-spatialInstance : geometryLiteral
-                | geometryCollectionTaggedText
-                | bboxTaggedText;
-
-geometryLiteral : pointTaggedText
-                | linestringTaggedText
-                | polygonTaggedText
-                | multipointTaggedText
-                | multilinestringTaggedText
-                | multipolygonTaggedText;
-
-pointTaggedText : 'POINT' ('Z')? pointText;
-
-linestringTaggedText : 'LINESTRING' ('Z')? lineStringText;
-
-polygonTaggedText : 'POLYGON' ('Z')? polygonText;
-
-multipointTaggedText : 'MULTIPOINT' ('Z')? multiPointText;
-
-multilinestringTaggedText : 'MULTILINESTRING' ('Z')? multiLineStringText;
-
-multipolygonTaggedText : 'MULTIPOLYGON' ('Z')? multiPolygonText;
-
-geometryCollectionTaggedText : 'GEOMETRYCOLLECTION' ('Z')? geometryCollectionText;
-
-pointText : '(' point ')';
-
-point : xCoord (Whitespace)* yCoord ((Whitespace)* zCoord)?;
-
-xCoord : SignedNumericLiteral;
-
-yCoord : SignedNumericLiteral;
-
-zCoord : SignedNumericLiteral;
-
-lineStringText : '(' point ',' point (',' point)? ')';
-
-linearRingText : '(' point ',' point ',' point ',' point (',' point )? ')';
-
-polygonText :  '(' linearRingText (',' linearRingText)? ')';
-
-multiPointText : '(' pointText (',' pointText)? ')';
-
-multiLineStringText : '(' lineStringText (',' lineStringText)? ')';
-
-multiPolygonText : '(' polygonText (',' polygonText)? ')';
-
-geometryCollectionText : '(' geometryLiteral (',' geometryLiteral)* ')';
-
-bboxTaggedText : 'BBOX' bboxText;
-
-bboxText : '(' westBoundLon ',' southBoundLat ',' (minElev ',')? eastBoundLon ',' northBoundLat (',' maxElev)? ')';
-
-westBoundLon : SignedNumericLiteral;
-
-eastBoundLon : SignedNumericLiteral;
-
-northBoundLat : SignedNumericLiteral;
-
-southBoundLat : SignedNumericLiteral;
-
-minElev : SignedNumericLiteral;
-
-maxElev : SignedNumericLiteral;
-
-temporalInstance : instantInstance | intervalInstance;
-
-instantInstance : dateInstant | timestampInstant;
-
-dateInstant : 'DATE'
-              '(' dateInstantString ')';
-
-dateInstantString : '\'' FullDate '\'';
-
-timestampInstant : 'TIMESTAMP'
-                   '(' TimestampInstantString ')';
-
-TimestampInstantString : '\'' FullDate 'T' UtcTime '\'';
-
-intervalInstance : 'INTERVAL' '(' instantParameter ',' instantParameter ')';
-
-instantParameter : dateInstantString
-                 | TimestampInstantString
-//TODO: convert to antlr    | ''..''
-                 | propertyName
-                 | function;
-
-FullDate   : DateYear '-' DateMonth '-' DateDay;
-
-DateYear   : DIGIT DIGIT DIGIT DIGIT;
-
-DateMonth  : DIGIT DIGIT;
-
-DateDay    : DIGIT DIGIT;
-
-UtcTime  : TimeHour ':' TimeMinute ':' TimeSecond 'Z';
-
-TimeHour   : DIGIT DIGIT;
-
-TimeMinute : DIGIT DIGIT;
-
-TimeSecond : DIGIT DIGIT ('.' DIGIT (DIGIT)?)?;
-
-fragment A : ('A'|'a');
-fragment B : ('B'|'b');
-fragment C : ('D'|'c');
-fragment D : ('D'|'d');
-fragment E : ('E'|'e');
-fragment F : ('F'|'f');
-fragment G : ('G'|'g');
-fragment H : ('H'|'h');
-fragment I : ('I'|'i');
-fragment J : ('A'|'j');
-fragment K : ('A'|'k');
-fragment L : ('L'|'l');
-fragment M : ('M'|'m');
-fragment N : ('N'|'n');
-fragment O : ('O'|'o');
-fragment P : ('P'|'p');
-fragment Q : ('Q'|'q');
-fragment R : ('R'|'r');
-fragment S : ('S'|'s');
-fragment T : ('T'|'t');
-fragment U : ('U'|'u');
-fragment V : ('V'|'v');
-fragment W : ('W'|'w');
-fragment X : ('X'|'x');
-fragment Y : ('Y'|'y');
-fragment Z : ('Z'|'z');
 
 // character & digit productions copied from:
 // https://www.w3.org/TR/REC-xml///charsets
@@ -520,42 +278,6 @@ ALPHA : '\u0007'..'\u0008'    // bell, bs
 //         Ideographs Extension H, Tags, Variation Selectors Supplement,
 //         Supplementary Private Use Area-A, Supplementary Private Use Area-B
 
-DIGIT : '\u0030'..'\u0039';
-
-Whitespace : '\u0009'  // Character tabulation
-           | '\u000A'  // Line feed
-           | '\u000B'  // Line tabulation
-           | '\u000C'  // Form feed
-           | '\u000D'  // Carriage return
-           | '\u0020'  // Space
-           | '\u0085'  // Next line
-           | '\u00A0'  // No-break space
-           | '\u1680'  // Ogham space mark
-           | '\u2000'  // En quad
-           | '\u2001'  // Em quad
-           | '\u2002'  // En space
-           | '\u2003'  // Em space
-           | '\u2004'  // Three-per-em space
-           | '\u2005'  // Four-per-em space
-           | '\u2006'  // Six-per-em space
-           | '\u2007'  // Figure space
-           | '\u2008'  // Punctuation space
-           | '\u2009'  // Thin space
-           | '\u200A'  // Hair space
-           | '\u2028'  // Line separator
-           | '\u2029'  // Paragraph separator
-           | '\u202F'  // Narrow no-break space
-           | '\u205F'  // Medium mathematical space
-           | '\u3000'; // Ideographic space
-
-
-Identifier : IDENTIFIERSTART ( IDENTIFIERPART )*;
-
-IDENTIFIERPART : IDENTIFIERSTART
-               | '.'                    // '\u002E'
-               | DIGIT                  // 0-9
-               | '\u0300'..'\u036F'     // combining and diacritical marks
-               | '\u203F'..'\u2040';    // ‿ and ⁀
 
 IDENTIFIERSTART : '\u003A'              // colon
                 | '\u005F'              // underscore
@@ -573,6 +295,38 @@ IDENTIFIERSTART : '\u003A'              // colon
                 | '\uF900'..'\uFDCF'    // See note 5.
                 | '\uFDF0'..'\uFFFD'    // See note 6.
                 | '\u{10000}'..'\u{EFFFF}'; // See note 7.
+
+IDENTIFIERPART : IDENTIFIERSTART
+               | '.'                    // '\u002E'
+               | DIGIT                  // 0-9
+               | '\u0300'..'\u036F'     // combining and diacritical marks
+               | '\u203F'..'\u2040';    // ‿ and ⁀
+
+DATE : D A T E;
+
+TIMESTAMP : T I M E S T A M P;
+
+INTERVAL : I N T E R V A L;
+
+DateInstantString : QUOTE FullDate QUOTE;
+
+TimestampInstantString : QUOTE FullDate 'T' UtcTime QUOTE;
+
+FullDate   : DateYear '-' DateMonth '-' DateDay;
+
+DateYear   : DIGIT DIGIT DIGIT DIGIT;
+
+DateMonth  : DIGIT DIGIT;
+
+DateDay    : DIGIT DIGIT;
+
+UtcTime  : TimeHour ':' TimeMinute ':' TimeSecond 'Z';
+
+TimeHour   : DIGIT DIGIT;
+
+TimeMinute : DIGIT DIGIT;
+
+TimeSecond : DIGIT DIGIT ('.' DIGIT (DIGIT)?)?;
 
 // See: https://unicode-table.com/en/blocks/
 
@@ -658,3 +412,51 @@ IDENTIFIERSTART : '\u003A'              // colon
 //         Unified Ideographs Extension F, CJK Compatibility Ideographs
 //         Supplement, CJK Unified Ideographs Extension G, Tags, Variation
 //         Selectors Supplement
+
+DIGIT : '\u0030'..'\u0039';
+
+Identifier : IdentifierBare;
+
+IdentifierBare : IDENTIFIERSTART (IDENTIFIERPART)*;
+
+fragment Whitespace :
+            '\u0009'  // Character tabulation
+           | '\u000A'  // Line feed
+           | '\u000B'  // Line tabulation
+           | '\u000C'  // Form feed
+           | '\u000D'  // Carriage return
+           | '\u0020'  // Space
+           | '\u0085'  // Next line
+           | '\u00A0'  // No-break space
+           | '\u1680'  // Ogham space mark
+           | '\u2000'  // En quad
+           | '\u2001'  // Em quad
+           | '\u2002'  // En space
+           | '\u2003'  // Em space
+           | '\u2004'  // Three-per-em space
+           | '\u2005'  // Four-per-em space
+           | '\u2006'  // Six-per-em space
+           | '\u2007'  // Figure space
+           | '\u2008'  // Punctuation space
+           | '\u2009'  // Thin space
+           | '\u200A'  // Hair space
+           | '\u2028'  // Line separator
+           | '\u2029'  // Paragraph separator
+           | '\u202F'  // Narrow no-break space
+           | '\u205F'  // Medium mathematical space
+           | '\u3000'; // Ideographic space
+
+WS : Whitespace+ -> skip; // skip spaces, tabs, newlines, etc.
+
+/*
+#=============================================================================#
+# ANTLR mode for CharacterStringLiteral with whitespaces
+#=============================================================================#
+*/
+mode STR;
+
+CharacterStringLiteral: '\'' -> mode(DEFAULT_MODE);
+
+QuotedQuote: '\'\'' -> more;
+
+Character : ~['] -> more;
