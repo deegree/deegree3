@@ -39,6 +39,7 @@ import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import javax.xml.namespace.QName;
 import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.sql.Connection;
@@ -56,8 +57,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-
-import javax.xml.namespace.QName;
 
 import org.deegree.commons.jdbc.ResultSetIterator;
 import org.deegree.commons.jdbc.SQLIdentifier;
@@ -1844,10 +1843,9 @@ public class SQLFeatureStore implements FeatureStore {
 	}
 
 	private void appendOffsetAndFetch(StringBuilder sql, int maxFeatures, int startIndex) {
-		if (startIndex > 0)
-			sql.append(" OFFSET ").append(startIndex).append(" ROWS");
-		if (maxFeatures > -1)
-			sql.append(" FETCH NEXT ").append(maxFeatures).append(" ROWS ONLY ");
+		String offsetAndFetchClause = dialect.getOffsetAndFetchClause(maxFeatures, startIndex);
+		if (offsetAndFetchClause != null)
+			sql.append(offsetAndFetchClause);
 	}
 
 }
