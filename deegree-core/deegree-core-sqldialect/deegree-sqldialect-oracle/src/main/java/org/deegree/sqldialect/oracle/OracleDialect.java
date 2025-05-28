@@ -64,13 +64,13 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.utils.GeometryParticleConverter;
+import org.deegree.sqldialect.AbstractSQLDialect;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.SortCriterion;
 import org.deegree.sqldialect.filter.AbstractWhereBuilder;
 import org.deegree.sqldialect.filter.PropertyNameMapper;
 import org.deegree.sqldialect.filter.UnmappableException;
 import org.slf4j.Logger;
-import org.deegree.sqldialect.AbstractSQLDialect;
 
 /**
  * {@link SQLDialect} for Oracle Spatial databases.
@@ -282,6 +282,16 @@ public class OracleDialect extends AbstractSQLDialect implements SQLDialect {
 	@Override
 	public boolean isRowLimitingCapable() {
 		return versionMajor < 12 ? false : true;
+	}
+
+	@Override
+	public String getOffsetAndFetchClause(int maxFeatures, int startIndex) {
+		StringBuilder sql = new StringBuilder();
+		if (startIndex > 0)
+			sql.append(" OFFSET ").append(startIndex).append(" ROWS");
+		if (maxFeatures > -1)
+			sql.append(" FETCH NEXT ").append(maxFeatures).append(" ROWS ONLY ");
+		return sql.toString();
 	}
 
 }
