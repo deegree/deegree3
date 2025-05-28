@@ -18,6 +18,7 @@
     <module>deegree-core-commons</module>
     <module>deegree-core-coverage</module>
     <module>deegree-core-cs</module>
+    <module>deegree-core-cql2</module>
     <module>deegree-core-db</module>
     <module>deegree-core-featureinfo</module>
     <module>deegree-core-filterfunctions</module>
