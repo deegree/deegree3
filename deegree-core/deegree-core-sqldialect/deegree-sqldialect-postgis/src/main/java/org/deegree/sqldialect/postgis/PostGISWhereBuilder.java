@@ -82,6 +82,8 @@ import org.deegree.time.position.IndeterminateValue;
 import org.deegree.time.position.TimePosition;
 import org.deegree.time.primitive.GenericTimeInstant;
 import org.deegree.time.primitive.GenericTimePeriod;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link AbstractWhereBuilder} implementation for PostGIS databases.
@@ -89,6 +91,8 @@ import org.deegree.time.primitive.GenericTimePeriod;
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  */
 public class PostGISWhereBuilder extends AbstractWhereBuilder {
+
+	private static final Logger LOG = LoggerFactory.getLogger(PostGISWhereBuilder.class);
 
 	private final boolean useLegacyPredicates;
 
@@ -187,13 +191,8 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
 	}
 
 	@Override
-	protected SQLOperation toProtoSQL(SpatialOperator op) throws UnmappableException, FilterEvaluationException {
-
-		SQLOperationBuilder builder = new SQLOperationBuilder(BOOLEAN);
-
-		SQLExpression propNameExpr = toProtoSQLSpatial(op.getPropName());
-		checkIfExpressionIsSpatial(propNameExpr, op.getPropName());
-
+	protected void toProtoSql(SpatialOperator op, SQLExpression propNameExpr, SQLOperationBuilder builder)
+			throws FilterEvaluationException, UnmappableException {
 		ICRS storageCRS = propNameExpr.getCRS();
 		int srid = propNameExpr.getSRID() != null ? Integer.parseInt(propNameExpr.getSRID()) : -1;
 
@@ -376,7 +375,6 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
 				break;
 			}
 		}
-		return builder.toOperation();
 	}
 
 	protected SQLOperation toProtoSQL(TemporalOperator op) throws UnmappableException, FilterEvaluationException {
@@ -495,7 +493,10 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
 	private SQLExpression toProtoSqlSecondParameter(SpatialOperator spatialOperator, ICRS storageCRS, int srid)
 			throws FilterEvaluationException, UnmappableException {
 		if (spatialOperator.getValueReference() != null) {
-			SQLExpression sqlExpression = toProtoSQLSpatial(spatialOperator.getValueReference());
+			List<SQLExpression> sqlExpressions = toProtoSQLSpatial(spatialOperator.getValueReference());
+			if (sqlExpressions.size() > 1)
+				LOG.warn("Multiple spatial geometry mappings as second parameter are currently not supported.");
+			SQLExpression sqlExpression = sqlExpressions.get(0);
 			checkIfExpressionIsSpatial(sqlExpression, spatialOperator.getValueReference());
 			return sqlExpression;
 		}
@@ -573,15 +574,6 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
 
 	private boolean isTimeInstant(Expression parameter2) {
 		return parameter2 instanceof Literal && ((Literal<?>) parameter2).getValue() instanceof GenericTimeInstant;
-	}
-
-	private void checkIfExpressionIsSpatial(SQLExpression sqlExpression, ValueReference propName)
-			throws FilterEvaluationException {
-		if (!sqlExpression.isSpatial()) {
-			String msg = "Cannot evaluate spatial operator on database. Targeted property name '" + propName
-					+ "' does not denote a spatial column.";
-			throw new FilterEvaluationException(msg);
-		}
 	}
 
 }
