@@ -294,7 +294,7 @@
     <dependency>
       <groupId>org.primefaces.extensions</groupId>
       <artifactId>primefaces-extensions</artifactId>
-      <version>14.0.12</version>
+      <version>14.0.16</version>
       <classifier>jakarta</classifier>
     </dependency>
     <dependency>
