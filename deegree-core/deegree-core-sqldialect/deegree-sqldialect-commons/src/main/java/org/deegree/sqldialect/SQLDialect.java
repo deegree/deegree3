@@ -214,4 +214,6 @@ public interface SQLDialect {
 	 */
 	boolean isRowLimitingCapable();
 
+	String getOffsetAndFetchClause(int maxFeatures, int startIndex);
+
 }

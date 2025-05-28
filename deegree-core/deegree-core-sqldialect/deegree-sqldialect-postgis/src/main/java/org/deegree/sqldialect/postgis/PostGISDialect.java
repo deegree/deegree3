@@ -41,6 +41,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+import net.postgis.jdbc.PGboxbase;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.tom.primitive.PrimitiveType;
@@ -61,7 +62,6 @@ import org.deegree.sqldialect.SortCriterion;
 import org.deegree.sqldialect.filter.AbstractWhereBuilder;
 import org.deegree.sqldialect.filter.PropertyNameMapper;
 import org.deegree.sqldialect.filter.UnmappableException;
-import net.postgis.jdbc.PGboxbase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -292,6 +292,16 @@ public class PostGISDialect extends AbstractSQLDialect implements SQLDialect {
 	@Override
 	public char getTailingEscapeChar() {
 		return escapeChar;
+	}
+
+	@Override
+	public String getOffsetAndFetchClause(int maxFeatures, int startIndex) {
+		StringBuilder sql = new StringBuilder();
+		if (startIndex > 0)
+			sql.append(" OFFSET ").append(startIndex).append(" ROWS");
+		if (maxFeatures > -1)
+			sql.append(" FETCH NEXT ").append(maxFeatures).append(" ROWS ONLY ");
+		return sql.toString();
 	}
 
 }

@@ -55,6 +55,7 @@ import org.deegree.filter.sort.SortProperty;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.utils.GeometryParticleConverter;
+import org.deegree.sqldialect.AbstractSQLDialect;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.SortCriterion;
 import org.deegree.sqldialect.filter.AbstractWhereBuilder;
@@ -62,7 +63,6 @@ import org.deegree.sqldialect.filter.PropertyNameMapper;
 import org.deegree.sqldialect.filter.UnmappableException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.deegree.sqldialect.AbstractSQLDialect;
 
 /**
  * {@link SQLDialect} for Microsoft SQL Server databases.
@@ -192,6 +192,19 @@ public class MSSQLDialect extends AbstractSQLDialect implements SQLDialect {
 	public String getSelectSequenceNextVal(String sequence) {
 		throw new UnsupportedOperationException(
 				"Using DB sequences for FIDs is currently not supported on Microsoft SQL Server.");
+	}
+
+	@Override
+	public String getOffsetAndFetchClause(int maxFeatures, int startIndex) {
+		StringBuilder sql = new StringBuilder();
+		if (maxFeatures < 0)
+			return null;
+		if (startIndex > 0)
+			sql.append(" OFFSET ").append(startIndex).append(" ROWS");
+		else
+			sql.append(" OFFSET 0 ROWS");
+		sql.append(" FETCH NEXT ").append(maxFeatures).append(" ROWS ONLY ");
+		return sql.toString();
 	}
 
 }
