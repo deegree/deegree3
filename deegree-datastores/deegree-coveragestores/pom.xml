@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-datastores</artifactId>
-    <version>3.5.13-SNAPSHOT</version>
+    <version>3.5.13</version>
   </parent>
 
   <profiles>
