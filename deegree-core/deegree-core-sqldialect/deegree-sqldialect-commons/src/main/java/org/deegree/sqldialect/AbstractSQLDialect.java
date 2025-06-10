@@ -72,7 +72,8 @@ public abstract class AbstractSQLDialect implements SQLDialect {
 	@Override
 	public String getSelectBBox(List<String> columns, List<TableName> tables) {
 		if (columns.size() > 1 || tables.size() > 1)
-			LOG.warn("Multiple geometry columns are currently not supported. Using first.");
+			LOG.warn("Multiple geometry columns are currently not supported for all SQL dialects or "
+					+ "tunable deegree.sqldialect.consider-all-geometry-columns is false. Using first.");
 		StringBuilder sql = new StringBuilder("SELECT ");
 		sql.append(getBBoxAggregateSnippet(columns.get(0)));
 		sql.append(" FROM ");
