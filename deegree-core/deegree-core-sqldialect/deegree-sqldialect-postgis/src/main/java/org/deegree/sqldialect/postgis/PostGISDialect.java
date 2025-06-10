@@ -95,7 +95,7 @@ public class PostGISDialect extends AbstractSQLDialect implements SQLDialect {
 	private static Logger LOG = LoggerFactory.getLogger(PostGISDialect.class);
 
 	private static final boolean PROPERTY_CONSIDER_ALL_GEOM_COLUMNS = TunableParameter
-		.get("deegree.sqldialect.consider-all-geometry-columns", true);
+		.get("deegree.sqldialect.consider-all-geometry-columns", false);
 
 	private final String undefinedSrid;
 
