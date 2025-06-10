@@ -83,11 +83,13 @@ import org.deegree.style.utils.Styles;
 class FilterBuilder {
 
 	static OperatorFilter buildFilterForMap(OperatorFilter filter, Style style, LayerQuery query,
-			DimensionFilterBuilder dimFilterBuilder, List<String> headers) throws OWSException {
+			DimensionFilterBuilder dimFilterBuilder, List<String> headers, Set<QName> propertyNames)
+			throws OWSException {
 		style = style.filter(query.getScale());
 		filter = Filters.and(filter, Styles.getStyleFilters(style, query.getScale()));
 		filter = Filters.and(filter, query.getFilter());
 		filter = Filters.and(filter, dimFilterBuilder.getDimensionFilter(query.getDimensions(), headers));
+		filter = FilterBuilder.appendRequestFilter(filter, query, propertyNames);
 		return filter;
 	}
 

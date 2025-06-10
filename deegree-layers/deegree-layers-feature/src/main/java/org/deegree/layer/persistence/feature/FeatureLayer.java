@@ -52,7 +52,6 @@ import org.deegree.geometry.Envelope;
 import org.deegree.layer.AbstractLayer;
 import org.deegree.layer.LayerQuery;
 import org.deegree.layer.metadata.LayerMetadata;
-import org.deegree.style.StyleRef;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.style.utils.Styles;
 import org.slf4j.Logger;
@@ -64,7 +63,6 @@ import java.util.Set;
 
 import static org.deegree.filter.Filters.addBBoxConstraint;
 import static org.deegree.layer.persistence.feature.FilterBuilder.buildFilterForMap;
-import static org.deegree.style.utils.Styles.getStyleFilters;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
@@ -106,33 +104,20 @@ public class FeatureLayer extends AbstractLayer {
 			throw new OWSException("The style " + query.getStyle().getName() + " is not defined for layer "
 					+ getMetadata().getName() + ".", "StyleNotDefined", "styles");
 		}
-		style = style.filter(query.getScale());
-
-		OperatorFilter filter = buildFilterForMap(this.filter, style, query, dimFilterBuilder, headers);
-
-		final Envelope bbox = query.getQueryBox();
-
-		Set<Expression> exprs = new HashSet<Expression>(Styles.getGeometryExpressions(style));
-
-		final ValueReference geomProp;
-
-		if (exprs.size() == 1 && exprs.iterator().next() instanceof ValueReference) {
-			geomProp = (ValueReference) exprs.iterator().next();
-		}
-		else {
-			geomProp = null;
-		}
-
 		QName ftName = featureType == null ? style.getFeatureType() : featureType;
 		if (ftName != null && featureStore.getSchema().getFeatureType(ftName) == null) {
 			LOG.warn("FeatureType '{}' is not known to the FeatureStore.", ftName);
 			return null;
 		}
+		style = style.filter(query.getScale());
 
 		Set<QName> propertyNames = AppSchemas.collectProperyNames(featureStore.getSchema(), ftName);
-		filter = FilterBuilder.appendRequestFilter(filter, query, propertyNames);
+		OperatorFilter filter = buildFilterForMap(this.filter, style, query, dimFilterBuilder, headers, propertyNames);
+
 		filter = Filters.repair(filter, propertyNames);
 
+		final Envelope bbox = query.getQueryBox();
+		final ValueReference geomProp = findGeometryProperty(style);
 		QueryBuilder builder = new QueryBuilder(featureStore, filter, ftName, bbox, query, geomProp, sortBy,
 				getMetadata().getName());
 		List<Query> queries = builder.buildMapQueries();
@@ -150,13 +135,15 @@ public class FeatureLayer extends AbstractLayer {
 
 	@Override
 	public FeatureLayerData infoQuery(final LayerQuery query, List<String> headers) throws OWSException {
-		OperatorFilter filter = this.filter;
-		filter = Filters.and(filter, dimFilterBuilder.getDimensionFilter(query.getDimensions(), headers));
 		Style style = resolveStyleRef(query.getStyle());
-		style = style.filter(query.getScale());
+		if (style == null) {
+			throw new OWSException("The style " + query.getStyle().getName() + " is not defined for layer "
+					+ getMetadata().getName() + ".", "StyleNotDefined", "styles");
+		}
+		QName featureType = this.featureType == null ? style.getFeatureType() : this.featureType;
+		Set<QName> propertyNames = AppSchemas.collectProperyNames(featureStore.getSchema(), featureType);
 
-		filter = Filters.and(filter, getStyleFilters(style, query.getScale()));
-		filter = Filters.and(filter, query.getFilter());
+		OperatorFilter filter = buildFilterForMap(this.filter, style, query, dimFilterBuilder, headers, propertyNames);
 
 		int layerRadius = -1;
 		if (getMetadata().getMapOptions() != null) {
@@ -165,9 +152,6 @@ public class FeatureLayer extends AbstractLayer {
 		final Envelope clickBox = query.calcClickBox(layerRadius > -1 ? layerRadius : query.getLayerRadius());
 
 		filter = (OperatorFilter) addBBoxConstraint(clickBox, filter, null, false);
-
-		QName featureType = this.featureType == null ? style.getFeatureType() : this.featureType;
-
 		filter = Filters.repair(filter, AppSchemas.collectProperyNames(featureStore.getSchema(), featureType));
 
 		LOG.debug("Querying the feature store(s)...");
@@ -179,6 +163,13 @@ public class FeatureLayer extends AbstractLayer {
 		LOG.debug("Finished querying the feature store(s).");
 
 		return new FeatureLayerData(queries, featureStore, query.getFeatureCount(), style, featureType);
+	}
+
+	private static ValueReference findGeometryProperty(Style style) {
+		Set<Expression> exprs = new HashSet<>(Styles.getGeometryExpressions(style));
+		if (exprs.size() == 1 && exprs.iterator().next() instanceof ValueReference)
+			return (ValueReference) exprs.iterator().next();
+		return null;
 	}
 
 }
