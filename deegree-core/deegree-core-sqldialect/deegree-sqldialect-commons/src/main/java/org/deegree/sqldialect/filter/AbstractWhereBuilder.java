@@ -42,14 +42,15 @@ import static org.deegree.filter.Filters.extractPrefilterBBoxConstraint;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
-
 import java.util.regex.Pattern;
+
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.sql.DefaultPrimitiveConverter;
 import org.deegree.commons.tom.sql.PrimitiveParticleConverter;
 import org.deegree.commons.utils.StringUtils;
+import org.deegree.commons.utils.TunableParameter;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.filter.Expression;
@@ -129,6 +130,9 @@ public abstract class AbstractWhereBuilder {
 	private static final Pattern SINGLE_CHAR_PATTERN = Pattern.compile(Pattern.quote(SINGLECHAR));
 
 	private static final Pattern WILDCARD_PATTERN = Pattern.compile(Pattern.quote(WILDCARD));
+
+	private static final boolean PROPERTY_CONSIDER_ALL_GEOM_COLUMNS = TunableParameter
+		.get("deegree.sqldialect.consider-all-geometry-columns", true);
 
 	protected final SQLDialect dialect;
 
@@ -683,13 +687,20 @@ public abstract class AbstractWhereBuilder {
 		checkIfExpressionsAreSpatial(propNameExprs, op.getPropName());
 
 		SQLOperationBuilder builder = new SQLOperationBuilder(BOOLEAN);
-		boolean isFirst = true;
-		for (SQLExpression propNameExpr : propNameExprs) {
-			if (!isFirst) {
-				builder.add(" OR ");
+		if (!propNameExprs.isEmpty()) {
+			if (PROPERTY_CONSIDER_ALL_GEOM_COLUMNS) {
+				boolean isFirst = true;
+				for (SQLExpression propNameExpr : propNameExprs) {
+					if (!isFirst) {
+						builder.add(" OR ");
+					}
+					toProtoSql(op, propNameExpr, builder);
+					isFirst = false;
+				}
 			}
-			toProtoSql(op, propNameExpr, builder);
-			isFirst = false;
+			else {
+				toProtoSql(op, propNameExprs.get(0), builder);
+			}
 		}
 		return builder.toOperation();
 	}
