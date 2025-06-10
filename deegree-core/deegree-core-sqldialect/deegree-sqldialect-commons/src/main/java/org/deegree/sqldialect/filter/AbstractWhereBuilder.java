@@ -132,7 +132,7 @@ public abstract class AbstractWhereBuilder {
 	private static final Pattern WILDCARD_PATTERN = Pattern.compile(Pattern.quote(WILDCARD));
 
 	private static final boolean PROPERTY_CONSIDER_ALL_GEOM_COLUMNS = TunableParameter
-		.get("deegree.sqldialect.consider-all-geometry-columns", true);
+		.get("deegree.sqldialect.consider-all-geometry-columns", false);
 
 	protected final SQLDialect dialect;
 
