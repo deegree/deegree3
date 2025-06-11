@@ -40,6 +40,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import net.postgis.jdbc.PGboxbase;
 import org.deegree.commons.jdbc.SQLIdentifier;
@@ -48,6 +49,7 @@ import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.sql.DefaultPrimitiveConverter;
 import org.deegree.commons.tom.sql.PrimitiveParticleConverter;
 import org.deegree.commons.utils.JDBCUtils;
+import org.deegree.commons.utils.TunableParameter;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
@@ -91,6 +93,9 @@ import org.slf4j.LoggerFactory;
 public class PostGISDialect extends AbstractSQLDialect implements SQLDialect {
 
 	private static Logger LOG = LoggerFactory.getLogger(PostGISDialect.class);
+
+	private static final boolean PROPERTY_CONSIDER_ALL_GEOM_COLUMNS = TunableParameter
+		.get("deegree.sqldialect.consider-all-geometry-columns", false);
 
 	private final String undefinedSrid;
 
@@ -192,6 +197,29 @@ public class PostGISDialect extends AbstractSQLDialect implements SQLDialect {
 		sql.append("(");
 		sql.append(column);
 		sql.append(")::BOX2D");
+		return sql.toString();
+	}
+
+	@Override
+	public String getSelectBBox(List<String> columns, List<TableName> tables) {
+		if (!PROPERTY_CONSIDER_ALL_GEOM_COLUMNS || columns.size() <= 1) {
+			return super.getSelectBBox(columns, tables);
+		}
+		StringBuilder sql = new StringBuilder("SELECT ");
+		sql.append("ST_Extent( u.allbboxes )::BOX2D FROM (");
+		// subquery start
+		sql.append("SELECT ST_Collect( ARRAY[ ");
+		boolean isFirst = true;
+		for (String column : columns) {
+			if (!isFirst)
+				sql.append(", ");
+			sql.append(getBBoxAggregateSnippet(column));
+			isFirst = false;
+		}
+		sql.append(" ] ) as allbboxes FROM ");
+		sql.append(tables.stream().map(SQLIdentifier::toString).collect(Collectors.joining(", ")));
+		// subquery end
+		sql.append(") u");
 		return sql.toString();
 	}
 

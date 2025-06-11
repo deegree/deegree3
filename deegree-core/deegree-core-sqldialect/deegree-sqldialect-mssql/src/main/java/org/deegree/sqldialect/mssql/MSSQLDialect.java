@@ -121,7 +121,7 @@ public class MSSQLDialect extends AbstractSQLDialect implements SQLDialect {
 	}
 
 	@Override
-	public String getBBoxAggregateSnippet(String colummn) {
+	public String getBBoxAggregateSnippet(String column) {
 		return "1";
 	}
 
