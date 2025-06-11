@@ -43,6 +43,8 @@ f
 
 |deegree.rendering.stroke.miterlimit |java.lang.Float |10 |When the configured factor is exceeded portrayal changes from JOIN_MITER to JOIN_BEVEL (see https://docs.oracle.com/javase/tutorial/2d/geometry/strokeandfill.html).
 
+|deegree.sqldialect.consider-all-geometry-columns |java.lang.Boolean |false |Enables the considerations of all geometry properties of a feature type for GetFeature requests with bbox parameter and without property name (all SQL Dialects), as well as the calculation of the bbox cache (PostgreSQL only).
+
 |deegree.sqldialect.oracle.export_oriented_point |java.lang.Boolean |false |Read the orientation of Oracle orientated points as additional properties, disabled by default. The properties are located in the deegree extraprop namespace `http://www.deegree.org/extraprop` and are named `orientation0`, `orientation1`, etc. 
 
 |deegree.sqldialect.oracle.optimized_point_storage |java.lang.Boolean |true |Use optimized point storage for 2D points in oracle database.

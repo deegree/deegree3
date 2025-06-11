@@ -42,14 +42,15 @@ import static org.deegree.filter.Filters.extractPrefilterBBoxConstraint;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
-
 import java.util.regex.Pattern;
+
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.sql.DefaultPrimitiveConverter;
 import org.deegree.commons.tom.sql.PrimitiveParticleConverter;
 import org.deegree.commons.utils.StringUtils;
+import org.deegree.commons.utils.TunableParameter;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.filter.Expression;
@@ -129,6 +130,9 @@ public abstract class AbstractWhereBuilder {
 	private static final Pattern SINGLE_CHAR_PATTERN = Pattern.compile(Pattern.quote(SINGLECHAR));
 
 	private static final Pattern WILDCARD_PATTERN = Pattern.compile(Pattern.quote(WILDCARD));
+
+	private static final boolean PROPERTY_CONSIDER_ALL_GEOM_COLUMNS = TunableParameter
+		.get("deegree.sqldialect.consider-all-geometry-columns", false);
 
 	protected final SQLDialect dialect;
 
@@ -678,8 +682,31 @@ public abstract class AbstractWhereBuilder {
 	 * @throws FilterEvaluationException if the filter contains invalid
 	 * {@link ValueReference}s
 	 */
-	protected abstract SQLOperation toProtoSQL(SpatialOperator op)
-			throws UnmappableException, FilterEvaluationException;
+	protected SQLOperation toProtoSQL(SpatialOperator op) throws UnmappableException, FilterEvaluationException {
+		List<SQLExpression> propNameExprs = toProtoSQLSpatial(op.getPropName());
+		checkIfExpressionsAreSpatial(propNameExprs, op.getPropName());
+
+		SQLOperationBuilder builder = new SQLOperationBuilder(BOOLEAN);
+		if (!propNameExprs.isEmpty()) {
+			if (PROPERTY_CONSIDER_ALL_GEOM_COLUMNS) {
+				boolean isFirst = true;
+				for (SQLExpression propNameExpr : propNameExprs) {
+					if (!isFirst) {
+						builder.add(" OR ");
+					}
+					toProtoSql(op, propNameExpr, builder);
+					isFirst = false;
+				}
+			}
+			else {
+				toProtoSql(op, propNameExprs.get(0), builder);
+			}
+		}
+		return builder.toOperation();
+	}
+
+	protected abstract void toProtoSql(SpatialOperator op, SQLExpression propNameExpr, SQLOperationBuilder builder)
+			throws FilterEvaluationException, UnmappableException;
 
 	/**
 	 * Translates the given {@link TemporalOperator} into an {@link SQLOperation}.
@@ -916,22 +943,25 @@ public abstract class AbstractWhereBuilder {
 	 * @throws FilterEvaluationException if the filter contains invalid
 	 * {@link ValueReference}s
 	 */
-	protected SQLExpression toProtoSQLSpatial(ValueReference propName)
+	protected List<SQLExpression> toProtoSQLSpatial(ValueReference propName)
 			throws FilterEvaluationException, UnmappableException {
-		SQLExpression sql = null;
-		PropertyNameMapping propMapping = mapper.getSpatialMapping(propName, aliasManager);
-		if (propMapping != null) {
-			propNameMappingList.add(propMapping);
-			if (propMapping instanceof ConstantPropertyNameMapping) {
-				// TODO get rid of ConstantPropertyNameMapping
-				PrimitiveType pt = new PrimitiveType(STRING);
-				PrimitiveValue value = new PrimitiveValue("" + ((ConstantPropertyNameMapping) propMapping).getValue(),
-						pt);
-				PrimitiveParticleConverter converter = new DefaultPrimitiveConverter(pt, null, false);
-				sql = new SQLArgument(value, converter);
-			}
-			else {
-				sql = new SQLColumn(propMapping.getTableAlias(), propMapping.getColumn(), propMapping.getConverter());
+		List<SQLExpression> sql = new ArrayList<>();
+		List<PropertyNameMapping> propMappings = mapper.getSpatialMappings(propName, aliasManager);
+		if (!propMappings.isEmpty()) {
+			for (PropertyNameMapping propMapping : propMappings) {
+				propNameMappingList.add(propMapping);
+				if (propMapping instanceof ConstantPropertyNameMapping) {
+					// TODO get rid of ConstantPropertyNameMapping
+					PrimitiveType pt = new PrimitiveType(STRING);
+					PrimitiveValue value = new PrimitiveValue(
+							"" + ((ConstantPropertyNameMapping) propMapping).getValue(), pt);
+					PrimitiveParticleConverter converter = new DefaultPrimitiveConverter(pt, null, false);
+					sql.add(new SQLArgument(value, converter));
+				}
+				else {
+					sql.add(new SQLColumn(propMapping.getTableAlias(), propMapping.getColumn(),
+							propMapping.getConverter()));
+				}
 			}
 		}
 		else {
@@ -1013,6 +1043,21 @@ public abstract class AbstractWhereBuilder {
 			throw new UnsupportedOperationException(msg);
 		}
 		return ((PrimitiveValue) value).getAsText();
+	}
+
+	private void checkIfExpressionsAreSpatial(List<SQLExpression> sqlExpressions, ValueReference propName)
+			throws FilterEvaluationException {
+		for (SQLExpression sqlExpression : sqlExpressions)
+			checkIfExpressionIsSpatial(sqlExpression, propName);
+	}
+
+	protected void checkIfExpressionIsSpatial(SQLExpression sqlExpression, ValueReference propName)
+			throws FilterEvaluationException {
+		if (!sqlExpression.isSpatial()) {
+			String msg = "Cannot evaluate spatial operator on database. Targeted property name '" + propName
+					+ "' does not denote a spatial column.";
+			throw new FilterEvaluationException(msg);
+		}
 	}
 
 }
