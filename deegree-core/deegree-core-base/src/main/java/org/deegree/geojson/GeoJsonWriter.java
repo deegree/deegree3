@@ -1,5 +1,7 @@
 package org.deegree.geojson;
 
+import static org.deegree.commons.xml.CommonNamespaces.XSINS;
+
 import com.google.gson.stream.JsonWriter;
 import org.deegree.commons.tom.ElementNode;
 import org.deegree.commons.tom.TypedObjectNode;
@@ -42,6 +44,8 @@ import java.util.stream.Collectors;
 public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter, GeoJsonSingleFeatureWriter {
 
 	private static final Logger LOG = LoggerFactory.getLogger(GeoJsonWriter.class);
+
+	private static final QName XSI_NIL = new QName(XSINS, "nil", "xsi");
 
 	private GeoJsonGeometryWriter geoJsonGeometryWriter;
 
@@ -193,7 +197,7 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter, G
 		if (firstProperty.getType() instanceof GeometryPropertyType) {
 			return;
 		}
-		if (properties.size() == 1) {
+		if (properties.size() == 1 && !isNilledAndHasNoOtherAttributesOrProperties(firstProperty)) {
 			name(propertyName.getLocalPart());
 			export(firstProperty);
 		}
@@ -458,6 +462,16 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter, G
 		if (children != null)
 			return children;
 		return Collections.emptyList();
+	}
+
+	private boolean isNilledAndHasNoOtherAttributesOrProperties(Property property) {
+		if (property.getChildren().isEmpty() && property.getAttributes().size() == 1) {
+			TypedObjectNode nil = property.getAttributes().get(XSI_NIL);
+			if (nil instanceof PrimitiveValue) {
+				return Boolean.TRUE.equals(((PrimitiveValue) nil).getValue());
+			}
+		}
+		return false;
 	}
 
 }
