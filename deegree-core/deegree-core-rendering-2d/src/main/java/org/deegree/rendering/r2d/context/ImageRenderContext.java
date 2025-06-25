@@ -96,20 +96,31 @@ public class ImageRenderContext extends Java2DRenderContext {
 			graphics.dispose();
 
 			if (outputStream != null) {
-				BufferedImage image = this.image;
-				String format = this.format.substring(this.format.indexOf("/") + 1);
-				if (format.equals("x-ms-bmp")) {
-					format = "bmp";
-				}
-				if (format.equals("png; subtype=8bit") || format.equals("png; mode=8bit")) {
-					image = ColorQuantizer.quantizeImage(image, 256, false, false);
-					format = "png";
-				}
-
 				if (info.getSerializer() != null) {
 					info.getSerializer().serialize(info, image, outputStream);
 				}
 				else {
+					BufferedImage image = this.image;
+					String format = this.format.substring(this.format.indexOf("/") + 1);
+					if (format.equals("x-ms-bmp")) {
+						format = "bmp";
+					}
+					if (format.equals("png; subtype=8bit") || format.equals("png; mode=8bit")) {
+						image = ColorQuantizer.quantizeImage(image, 256, false, false);
+						format = "png";
+					}
+					if (format.equals("jpeg") || !info.getTransparent()) {
+						BufferedImage rgbImage = new BufferedImage(image.getWidth(), image.getHeight(),
+								BufferedImage.TYPE_INT_RGB);
+
+						Graphics2D g = rgbImage.createGraphics();
+						g.setColor(info.getBgColor());
+						g.fillRect(0, 0, rgbImage.getWidth(), rgbImage.getHeight());
+						g.drawImage(image, 0, 0, null);
+						g.dispose();
+
+						image = rgbImage;
+					}
 					return write(image, format, outputStream);
 				}
 			}
