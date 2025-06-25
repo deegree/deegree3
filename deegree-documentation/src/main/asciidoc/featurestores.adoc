@@ -1849,3 +1849,13 @@ If there are no error messages showing, the execution of the SQL script using *S
 The WFS and WMS now retrieve features directly from your database. However, since the database is currently empty, the
 WMS will not render any data, and the WFS will return no features when queried. In order to access features,
 you need to insert data into the database first. This can be done for example by using the deegree GmlLoader.
+
+The deegree GmlLoader is available as a standalone download at:
+
+* https://www.deegree.org/download/
+
+It is also included in the deegree webservices Docker images at the following path inside the container:
+
+* `/opt/deegree-tools-gml.jar`
+
+See usage information in chapter <<anchor-usage-gmlloader>>.

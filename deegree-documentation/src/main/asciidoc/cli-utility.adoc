@@ -161,6 +161,7 @@ The option useRefDataProps must be used with the option referenceData and result
  * Mapping of optional properties not in the referenceData is omitted.
  * Mapping of properties with xsi:nil="true" in the referenceData is reduced to the mapping of @xsi:nil and @nilReason.
 
+[[anchor-usage-gmlloader]]
 === Using the GmlLoader CLI GmlLoader
 
 ----
