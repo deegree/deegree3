@@ -54,7 +54,10 @@ public class GeoJsonFeatureWriterTest {
 				"$.features[0].properties.name.GeographicalName.spelling.SpellingOfName.text", is("Hamburg")));
 		assertThat(featureCollection,
 				hasJsonPath("$.features[0].properties.levelName.LocalisedCharacterString.value", is("Bundesland")));
-
+		assertThat(featureCollection, hasJsonPath("$.features[0].properties.validFrom.nil", is(true)));
+		assertThat(featureCollection, hasJsonPath("$.features[0].properties.validFrom.nilReason", is("unpopulated")));
+		assertThat(featureCollection, hasJsonPath("$.features[0].properties.validTo.nil", is(true)));
+		assertThat(featureCollection, hasJsonPath("$.features[0].properties.validTo.nilReason", is("unpopulated")));
 	}
 
 	@Test
@@ -265,6 +268,23 @@ public class GeoJsonFeatureWriterTest {
 		assertThat(featureCollection, hasJsonPath(
 				"$.features[0].properties.wohnungslose_jep.zeitreihe.zeitreihen-element[0].country-list[1].country-complex[1].name",
 				is("Nordkorea")));
+	}
+
+	@Test
+	public void testWrite_onlyNilReasonTrue() throws Exception {
+		StringWriter featureAsJson = new StringWriter();
+		GeoJsonWriter geoJsonFeatureWriter = new GeoJsonWriter(featureAsJson, null);
+		Feature cadastralZoning = parseFeature("CadastralZoning_nilReasonTrue.gml");
+
+		geoJsonFeatureWriter.startFeatureCollection();
+		geoJsonFeatureWriter.write(cadastralZoning);
+		geoJsonFeatureWriter.endFeatureCollection();
+
+		String featureCollection = featureAsJson.toString();
+
+		assertThat(featureCollection, JsonPathMatchers.isJson());
+		assertThat(featureCollection, not(hasJsonPath("$.features[0].properties.validFrom")));
+		assertThat(featureCollection, not(hasJsonPath("$.features[0].properties.validTo")));
 	}
 
 	private Feature parseFeature(String resourceName) throws Exception {
