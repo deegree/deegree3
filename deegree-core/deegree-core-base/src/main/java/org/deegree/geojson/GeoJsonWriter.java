@@ -538,7 +538,8 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter, G
 	}
 
 	private boolean isNilledAndHasNoOtherAttributesOrProperties(Property property) {
-		if (property.getChildren().isEmpty() && property.getAttributes().size() == 1) {
+		if ((property.getChildren() == null || property.getChildren().isEmpty()) && property.getAttributes() != null
+				&& property.getAttributes().size() == 1) {
 			TypedObjectNode nil = property.getAttributes().get(XSI_NIL);
 			if (nil instanceof PrimitiveValue) {
 				return Boolean.TRUE.equals(((PrimitiveValue) nil).getValue());
