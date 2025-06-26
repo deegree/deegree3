@@ -20,6 +20,7 @@ import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.io.WKTWriter;
 import org.deegree.gml.reference.FeatureReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -48,6 +50,10 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter, G
 	private static final Logger LOG = LoggerFactory.getLogger(GeoJsonWriter.class);
 
 	private static final QName XSI_NIL = new QName(XSINS, "nil", "xsi");
+
+	private QName geometryPropertyToExport;
+
+	private boolean skipExportAsWkt = true;
 
 	private GeoJsonGeometryWriter geoJsonGeometryWriter;
 
@@ -83,6 +89,24 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter, G
 			this.geoJsonGeometryWriter = new GeoJsonGeometryWriter(this, crs);
 		}
 		this.crs = crs;
+	}
+
+	/**
+	 * Instantiates a new {@link GeoJsonWriter}.
+	 * @param writer the writer to write the GeoJSON into, never <code>null</code>
+	 * @param crs the target crs of the geometries, may be <code>null</code>, then
+	 * "EPSG:4326" will be used
+	 * @param geometryPropertyToExport the name of the geometry to export as GeoJSON
+	 * geometry, required if multiple geometries available
+	 * @param skipExportAsWkt <code>false</code> if geometries should be exported as WKT,
+	 * <code>true</code> otherwise (default: true)
+	 * @throws UnknownCRSException if "crs:84" is not known as CRS (should never happen)
+	 */
+	public GeoJsonWriter(Writer writer, ICRS crs, QName geometryPropertyToExport, boolean skipExportAsWkt)
+			throws UnknownCRSException {
+		this(writer, crs, false);
+		this.geometryPropertyToExport = geometryPropertyToExport;
+		this.skipExportAsWkt = skipExportAsWkt;
 	}
 
 	@Override
@@ -133,28 +157,45 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter, G
 	@Override
 	public void writeSingleFeature(Feature feature) throws IOException, UnknownCRSException, TransformationException {
 		name("id").value(feature.getId());
-		writeGeometry(feature);
-		writeProperties(feature);
+		Property exportedGeometryProperty = writeGeometry(feature);
+		writeProperties(feature, exportedGeometryProperty);
 		writeCrs();
 	}
 
-	private void writeGeometry(Feature feature) throws IOException, UnknownCRSException, TransformationException {
+	private Property writeGeometry(Feature feature) throws IOException, UnknownCRSException, TransformationException {
 		if (geoJsonGeometryWriter == null)
-			return;
+			return null;
 		List<Property> geometryProperties = findGeometryProperties(feature);
 		if (geometryProperties.isEmpty()) {
 			name("geometry").nullValue();
+			return null;
 		}
 		else if (geometryProperties.size() == 1) {
-			name("geometry");
-			Property property = geometryProperties.get(0);
-
-			Geometry value = (Geometry) property.getValue();
-			geoJsonGeometryWriter.writeGeometry(value);
+			return exportGeometry(geometryProperties.get(0));
+		}
+		else if (geometryPropertyToExport != null) {
+			Optional<Property> mainGeometryFromTunable = geometryProperties.stream()
+				.filter(geomProp -> geomProp.getName().equals(geometryPropertyToExport))
+				.findFirst();
+			if (mainGeometryFromTunable.isPresent()) {
+				return exportGeometry(mainGeometryFromTunable.get());
+			}
+			else {
+				throw new IOException("Could not write Feature as GeoJSON. Geometry to export ("
+						+ geometryPropertyToExport + ") is not available.");
+			}
 		}
 		else {
 			throw new IOException("Could not write Feature as GeoJSON. The feature contains more than one geometry.");
 		}
+	}
+
+	private Property exportGeometry(Property property)
+			throws IOException, TransformationException, UnknownCRSException {
+		name("geometry");
+		Geometry value = (Geometry) property.getValue();
+		geoJsonGeometryWriter.writeGeometry(value);
+		return property;
 	}
 
 	private List<Property> findGeometryProperties(Feature feature) {
@@ -217,14 +258,15 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter, G
 		}
 	}
 
-	private void writeProperties(Feature feature) throws IOException, TransformationException, UnknownCRSException {
+	private void writeProperties(Feature feature, Property exportedGeometryProperty)
+			throws IOException, TransformationException, UnknownCRSException {
 		List<Property> properties = feature.getProperties();
 		name("properties");
 		if (properties.isEmpty()) {
 			nullValue();
 		}
 		else {
-			exportProperties(feature);
+			exportProperties(feature, exportedGeometryProperty);
 		}
 	}
 
@@ -235,7 +277,8 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter, G
 		}
 	}
 
-	private void exportProperties(Feature feature) throws IOException, UnknownCRSException, TransformationException {
+	private void exportProperties(Feature feature, Property exportedGeometryProperty)
+			throws IOException, UnknownCRSException, TransformationException {
 		beginObject();
 
 		List<QName> propertyNames = feature.getProperties()
@@ -245,18 +288,19 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter, G
 			.collect(Collectors.toList());
 		for (QName propertyName : propertyNames) {
 			List<Property> properties = feature.getProperties(propertyName);
-			exportPropertyByName(propertyName, properties);
+			exportPropertyByName(propertyName, properties, exportedGeometryProperty);
 		}
 		endObject();
 	}
 
-	private void exportPropertyByName(QName propertyName, List<Property> properties)
+	private void exportPropertyByName(QName propertyName, List<Property> properties, Property exportedGeometryProperty)
 			throws IOException, TransformationException, UnknownCRSException {
 		if (properties.isEmpty()) {
 			return;
 		}
 		Property firstProperty = properties.get(0);
-		if (firstProperty.getType() instanceof GeometryPropertyType) {
+		if (firstProperty.getType() instanceof GeometryPropertyType && (skipExportAsWkt
+				|| propertyName.equals(exportedGeometryProperty != null ? exportedGeometryProperty.getName() : null))) {
 			return;
 		}
 		if (properties.size() == 1 && !isNilledAndHasNoOtherAttributesOrProperties(firstProperty)) {
@@ -285,10 +329,7 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter, G
 			exportFeaturePropertyType(property);
 		}
 		else if (propertyType instanceof GeometryPropertyType) {
-			// geometry was exported before
-			// need to throw an exception here, because if we do nothing the Json is
-			// invalid (condition should be handled before)
-			throw new IOException("Geometry should not be rendered as part of GeoJson properties.");
+			exportGeometryPropertyTypeAsWkt(property);
 		}
 		else if (property instanceof GenericProperty) {
 			exportGenericProperty((GenericProperty) property);
@@ -341,6 +382,14 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter, G
 			else {
 				nullValue();
 			}
+		}
+	}
+
+	private void exportGeometryPropertyTypeAsWkt(Property property) throws IOException {
+		TypedObjectNode value = property.getValue();
+		if (value instanceof Geometry) {
+			String wkt = WKTWriter.write((Geometry) value);
+			value(wkt);
 		}
 	}
 
@@ -476,28 +525,6 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter, G
 		}
 	}
 
-	private void exportName(TypedObjectNode node) throws IOException {
-		if (node == null) {
-			LOG.warn("Null node found.");
-			return;
-		}
-		if (node instanceof PrimitiveValue) {
-			name("value");
-		}
-		else if (node instanceof Property) {
-			name(((Property) node).getName().getLocalPart());
-		}
-		else if (node instanceof GenericXMLElement) {
-			name(((GenericXMLElement) node).getName().getLocalPart());
-		}
-		else if (node instanceof FeatureReference) {
-			name("href");
-		}
-		else {
-			throw new IOException("Unhandled node type '" + node.getClass());
-		}
-	}
-
 	private void exportValue(PrimitiveValue value) throws IOException {
 		if (value == null) {
 			nullValue();
@@ -546,6 +573,14 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter, G
 			}
 		}
 		return false;
+	}
+
+	void setSkipWktExport(boolean skipWktExport) {
+		this.skipExportAsWkt = skipWktExport;
+	}
+
+	void setGeometryPropertyToExport(QName geometryPropertyToExport) {
+		this.geometryPropertyToExport = geometryPropertyToExport;
 	}
 
 }
