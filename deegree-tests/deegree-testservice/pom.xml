@@ -10,7 +10,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-client</artifactId>
-    <version>3.5.14</version>
+    <version>3.5.15-SNAPSHOT</version>
     <relativePath>../../deegree-client</relativePath>
   </parent>
   <build>
