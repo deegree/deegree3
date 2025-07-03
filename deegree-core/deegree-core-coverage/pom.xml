@@ -50,7 +50,7 @@
       <artifactId>h2</artifactId>
     </dependency>
     <dependency>
-      <groupId>it.geosolutions.imageio-ext</groupId>
+      <groupId>org.deegree</groupId>
       <artifactId>imageio-ext-tiff</artifactId>
     </dependency>
     <dependency>
