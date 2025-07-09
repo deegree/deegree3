@@ -9,6 +9,7 @@ import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URL;
 
@@ -18,6 +19,8 @@ import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
+
+import javax.xml.namespace.QName;
 
 /**
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz </a>
@@ -58,6 +61,7 @@ public class GeoJsonFeatureWriterTest {
 		assertThat(featureCollection, hasJsonPath("$.features[0].properties.validFrom.nilReason", is("unpopulated")));
 		assertThat(featureCollection, hasJsonPath("$.features[0].properties.validTo.nil", is(true)));
 		assertThat(featureCollection, hasJsonPath("$.features[0].properties.validTo.nilReason", is("unpopulated")));
+		assertThat(featureCollection, not(hasJsonPath("$.features[0].properties.geometry")));
 	}
 
 	@Test
@@ -90,7 +94,7 @@ public class GeoJsonFeatureWriterTest {
 				"$.features[0].properties.name.GeographicalName.spelling.SpellingOfName.text", is("Hamburg")));
 		assertThat(featureCollection,
 				hasJsonPath("$.features[0].properties.levelName.LocalisedCharacterString.value", is("Bundesland")));
-
+		assertThat(featureCollection, not(hasJsonPath("$.features[0].properties.geometry")));
 	}
 
 	@Test
@@ -121,6 +125,7 @@ public class GeoJsonFeatureWriterTest {
 				hasJsonPath("$.properties.name.GeographicalName.spelling.SpellingOfName.text", is("Hamburg")));
 		assertThat(featureCollection,
 				hasJsonPath("$.properties.levelName.LocalisedCharacterString.value", is("Bundesland")));
+		assertThat(featureCollection, not(hasJsonPath("$.features[0].properties.geometry")));
 	}
 
 	@Test
@@ -154,6 +159,7 @@ public class GeoJsonFeatureWriterTest {
 				"$.features[0].properties.name.GeographicalName.spelling.SpellingOfName.text", is("Hamburg")));
 		assertThat(featureCollection,
 				hasJsonPath("$.features[0].properties.levelName.LocalisedCharacterString.value", is("Bundesland")));
+		assertThat(featureCollection, not(hasJsonPath("$.features[0].properties.geometry")));
 	}
 
 	@Test
@@ -187,6 +193,7 @@ public class GeoJsonFeatureWriterTest {
 				"$.features[0].properties.name.GeographicalName.spelling.SpellingOfName.text", is("Hamburg")));
 		assertThat(featureCollection,
 				hasJsonPath("$.features[0].properties.levelName.LocalisedCharacterString.value", is("Bundesland")));
+		assertThat(featureCollection, not(hasJsonPath("$.features[0].properties.geometry")));
 	}
 
 	@Test
@@ -223,6 +230,7 @@ public class GeoJsonFeatureWriterTest {
 				hasJsonPath("$.features[0].properties.levelName[0].LocalisedCharacterString.value", is("Bundesland")));
 		assertThat(featureCollection, hasJsonPath(
 				"$.features[0].properties.levelName[1].LocalisedCharacterString.value", is("federal state")));
+		assertThat(featureCollection, not(hasJsonPath("$.features[0].properties.geometry")));
 	}
 
 	@Test
@@ -244,6 +252,9 @@ public class GeoJsonFeatureWriterTest {
 		assertThat(featureCollection, hasNoJsonPath("$.features[0].srsName"));
 		assertThat(featureCollection, hasJsonPath("$.features[0].id", is("ZUWANDERUNG_0")));
 		assertThat(featureCollection, hasJsonPath("$.features[0].geometry"));
+		assertThat(featureCollection, hasJsonPath("$.features[0].geometry.type", is("Point")));
+		assertThat(featureCollection, hasJsonPath("$.features[0].geometry.coordinates[0]", is(10.026188)));
+		assertThat(featureCollection, hasJsonPath("$.features[0].geometry.coordinates[1]", is(53.487414)));
 		assertThat(featureCollection, hasJsonPath("$.features[0].properties.wohnungslose_jep"));
 		assertThat(featureCollection, hasJsonPath("$.features[0].properties.wohnungslose_jep.zeitreihe"));
 		assertThat(featureCollection,
@@ -268,6 +279,62 @@ public class GeoJsonFeatureWriterTest {
 		assertThat(featureCollection, hasJsonPath(
 				"$.features[0].properties.wohnungslose_jep.zeitreihe.zeitreihen-element[0].country-list[1].country-complex[1].name",
 				is("Nordkorea")));
+		assertThat(featureCollection, not(hasJsonPath("$.features[0].properties.test_geom")));
+	}
+
+	@Test(expected = IOException.class)
+	public void testWrite_multipleGeometries_noTunables() throws Exception {
+		StringWriter featureAsJson = new StringWriter();
+		GeoJsonWriter geoJsonFeatureWriter = new GeoJsonWriter(featureAsJson, null);
+		Feature cadastralZoning = parseFeature("zuwanderung_multipleGeometries.gml");
+
+		geoJsonFeatureWriter.startFeatureCollection();
+		geoJsonFeatureWriter.write(cadastralZoning);
+		geoJsonFeatureWriter.endFeatureCollection();
+	}
+
+	@Test
+	public void testWrite_multipleGeometries_tunableGeom() throws Exception {
+		StringWriter featureAsJson = new StringWriter();
+		GeoJsonWriter geoJsonFeatureWriter = new GeoJsonWriter(featureAsJson, null,
+				new QName("http://www.deegree.org/datasource/feature/sql", "test_geom2"), false);
+		Feature cadastralZoning = parseFeature("zuwanderung_multipleGeometries.gml");
+
+		geoJsonFeatureWriter.startFeatureCollection();
+		geoJsonFeatureWriter.write(cadastralZoning);
+		geoJsonFeatureWriter.endFeatureCollection();
+
+		String featureCollection = featureAsJson.toString();
+		assertThat(featureCollection, hasJsonPath("$.features[0].geometry.type", is("Point")));
+		assertThat(featureCollection, hasJsonPath("$.features[0].geometry.coordinates[0]", is(12.02)));
+		assertThat(featureCollection, hasJsonPath("$.features[0].geometry.coordinates[1]", is(52.48)));
+
+		assertThat(featureCollection,
+				hasJsonPath("$.features[0].properties.test_geom1", is("POINT (11.020000 51.480000)")));
+		assertThat(featureCollection, not(hasJsonPath("$.features[0].properties.test_geom2")));
+		assertThat(featureCollection,
+				hasJsonPath("$.features[0].properties.test_geom3", is("POINT (13.020000 53.480000)")));
+	}
+
+	@Test
+	public void testWrite_multipleGeometries_tunableGeomSkipWkt() throws Exception {
+		StringWriter featureAsJson = new StringWriter();
+		GeoJsonWriter geoJsonFeatureWriter = new GeoJsonWriter(featureAsJson, null,
+				new QName("http://www.deegree.org/datasource/feature/sql", "test_geom2"), true);
+		Feature cadastralZoning = parseFeature("zuwanderung_multipleGeometries.gml");
+
+		geoJsonFeatureWriter.startFeatureCollection();
+		geoJsonFeatureWriter.write(cadastralZoning);
+		geoJsonFeatureWriter.endFeatureCollection();
+
+		String featureCollection = featureAsJson.toString();
+		assertThat(featureCollection, hasJsonPath("$.features[0].geometry.type", is("Point")));
+		assertThat(featureCollection, hasJsonPath("$.features[0].geometry.coordinates[0]", is(12.02)));
+		assertThat(featureCollection, hasJsonPath("$.features[0].geometry.coordinates[1]", is(52.48)));
+
+		assertThat(featureCollection, not(hasJsonPath("$.features[0].properties.test_geom1")));
+		assertThat(featureCollection, not(hasJsonPath("$.features[0].properties.test_geom2")));
+		assertThat(featureCollection, not(hasJsonPath("$.features[0].properties.test_geom3")));
 	}
 
 	@Test
