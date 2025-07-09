@@ -341,8 +341,9 @@ public class MapService {
 				}
 
 				if (!l.getMetadata().isQueryable()) {
-					throw new OWSException("GetFeatureInfo is requested on a Layer (name: " + l.getMetadata().getName()
-							+ ") that is not queryable.", LAYER_NOT_QUERYABLE);
+					LOG.warn("GetFeatureInfo is requested on a Layer (name: " + l.getMetadata().getName()
+							+ ") that is not queryable. Layer will be ignored.", LAYER_NOT_QUERYABLE);
+					continue;
 				}
 
 				list.add(l.infoQuery(query, headers));
