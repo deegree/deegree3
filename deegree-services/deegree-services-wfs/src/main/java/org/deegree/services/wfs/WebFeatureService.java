@@ -36,7 +36,7 @@ package org.deegree.services.wfs;
 
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.lang.StringUtils.trim;
+import static org.apache.commons.lang3.StringUtils.trim;
 import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
 import static org.deegree.commons.ows.exception.OWSException.LOCK_HAS_EXPIRED;
 import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
