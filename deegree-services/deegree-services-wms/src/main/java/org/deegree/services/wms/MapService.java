@@ -334,18 +334,16 @@ public class MapService {
 		ListIterator<LayerQuery> queryIter = queries.listIterator();
 		for (LayerRef n : gfi.getQueryLayers()) {
 			LayerQuery query = queryIter.next();
-			for (org.deegree.layer.Layer l : Themes.getAllLayers(themeMap.get(n.getName()))) {
+			List<Layer> queryableLayers = collectQueryableLayers(themeMap, n.getName());
+			if (queryableLayers.isEmpty())
+				throw new OWSException(
+						"GetFeatureInfo is requested on a Layer (name: " + n.getName() + ") that is not queryable.",
+						LAYER_NOT_QUERYABLE);
+			for (org.deegree.layer.Layer l : queryableLayers) {
 				if (l.getMetadata().getScaleDenominators().first > scale
 						|| l.getMetadata().getScaleDenominators().second < scale) {
 					continue;
 				}
-
-				if (!l.getMetadata().isQueryable()) {
-					LOG.warn("GetFeatureInfo is requested on a Layer (name: " + l.getMetadata().getName()
-							+ ") that is not queryable. Layer will be ignored.", LAYER_NOT_QUERYABLE);
-					continue;
-				}
-
 				list.add(l.infoQuery(query, headers));
 			}
 		}
@@ -366,6 +364,21 @@ public class MapService {
 		GenericFeatureCollection col = new GenericFeatureCollection();
 		col.addAll(feats);
 		return col;
+	}
+
+	private static List<Layer> collectQueryableLayers(HashMap<String, Theme> themeMap, String name) {
+		List<Layer> layerRefLayers = getAllLayers(themeMap.get(name));
+		List<Layer> queryableLayers = new ArrayList<>();
+		for (Layer l : layerRefLayers) {
+			if (l.getMetadata().isQueryable()) {
+				queryableLayers.add(l);
+			}
+			else {
+				LOG.warn("GetFeatureInfo is requested on a Layer (name: " + l.getMetadata().getName()
+						+ ") that is not queryable. Layer will be ignored.", LAYER_NOT_QUERYABLE);
+			}
+		}
+		return queryableLayers;
 	}
 
 	private List<LayerQuery> prepareGetFeatures(org.deegree.protocol.wms.ops.GetFeatureInfo gfi) {
