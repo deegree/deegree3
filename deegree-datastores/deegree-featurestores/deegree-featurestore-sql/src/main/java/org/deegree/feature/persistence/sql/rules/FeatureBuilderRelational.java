@@ -36,7 +36,6 @@ package org.deegree.feature.persistence.sql.rules;
 
 import static java.lang.Boolean.TRUE;
 import static org.deegree.commons.tom.gml.GMLObjectCategory.TIME_OBJECT;
-import static org.deegree.commons.tom.gml.GMLObjectCategory.TIME_OBJECT;
 import static org.deegree.commons.utils.JDBCUtils.close;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.commons.xml.CommonNamespaces.XSI_PREFIX;
@@ -63,16 +62,13 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.apache.xerces.impl.xs.XSParticleDecl;
 import org.apache.xerces.xs.XSAttributeDeclaration;
 import org.apache.xerces.xs.XSAttributeUse;
 import org.apache.xerces.xs.XSComplexTypeDefinition;
-import org.apache.xerces.xs.XSConstants;
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSModelGroup;
 import org.apache.xerces.xs.XSObjectList;
 import org.apache.xerces.xs.XSParticle;
-import org.apache.xerces.xs.XSTerm;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.tom.TypedObjectNode;
@@ -627,6 +623,16 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 					LOG.warn("Unhandled mapping type '{}' for path: '{}'", particleMapping.getClass(),
 							particleMapping.getPath());
 				}
+
+				if (particleValues.isEmpty() && !particleMapping.isVoidable()
+						&& particleMapping instanceof CompoundMapping
+						&& ((CompoundMapping) particleMapping).getElementDecl() != null
+						&& ((CompoundMapping) particleMapping).getElementDecl().getNillable()) {
+					TypedObjectNode nilParticle = createNilParticle((CompoundMapping) particleMapping,
+							Collections.emptyMap());
+					if (nilParticle != null)
+						children.add(nilParticle);
+				}
 			}
 
 			PrimitiveValue nilled = attrs.get(new QName(CommonNamespaces.XSINS, "nil"));
@@ -639,39 +645,9 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 					LOG.debug("Materializing void by omitting particle for path {}.", mapping.getPath());
 				}
 				else if (cm.getElementDecl() != null && cm.getElementDecl().getNillable()) {
-					LOG.debug("Materializing void by nilling particle for path {}.", mapping.getPath());
-					QName elName = getName(mapping.getPath());
-					// required attributes must still be present even if element is
-					// nilled...
-					Map<QName, PrimitiveValue> nilAttrs = new HashMap<QName, PrimitiveValue>();
-					if (cm.getElementDecl().getTypeDefinition() instanceof XSComplexTypeDefinition) {
-						XSComplexTypeDefinition complexType = (XSComplexTypeDefinition) cm.getElementDecl()
-							.getTypeDefinition();
-						XSObjectList attrUses = complexType.getAttributeUses();
-						for (int i = 0; i < attrUses.getLength(); i++) {
-							XSAttributeUse attrUse = (XSAttributeUse) attrUses.item(i);
-							if (attrUse.getRequired()) {
-								QName attrName = null;
-								XSAttributeDeclaration attrDecl = attrUse.getAttrDeclaration();
-								if (attrDecl.getNamespace() == null || attrDecl.getNamespace().isEmpty()) {
-									attrName = new QName(attrDecl.getName());
-								}
-								else {
-									attrName = new QName(attrDecl.getNamespace(), attrDecl.getName());
-								}
-								PrimitiveValue attrValue = attrs.get(attrName);
-								if (attrValue == null) {
-									LOG.debug(
-											"Required attribute {}not present. Cannot void using xsi:nil. Escalating void value.",
-											attrName);
-									return null;
-								}
-								nilAttrs.put(attrName, attrValue);
-							}
-						}
-					}
-					nilAttrs.put(new QName(XSINS, "nil", XSI_PREFIX), new PrimitiveValue(TRUE));
-					particle = new GenericXMLElement(elName, cm.getElementDecl(), nilAttrs, null);
+					particle = createNilParticle(cm, attrs);
+					if (particle == null)
+						return null;
 				}
 			}
 			else {
@@ -699,6 +675,41 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 		}
 
 		return particle;
+	}
+
+	private TypedObjectNode createNilParticle(CompoundMapping cm, Map<QName, PrimitiveValue> attrs) {
+		LOG.debug("Materializing void by nilling particle for path {}.", cm.getPath());
+		QName elName = getName(cm.getPath());
+		// required attributes must still be present even if element is
+		// nilled...
+		Map<QName, PrimitiveValue> nilAttrs = new HashMap<QName, PrimitiveValue>();
+		if (cm.getElementDecl().getTypeDefinition() instanceof XSComplexTypeDefinition) {
+			XSComplexTypeDefinition complexType = (XSComplexTypeDefinition) cm.getElementDecl().getTypeDefinition();
+			XSObjectList attrUses = complexType.getAttributeUses();
+			for (int i = 0; i < attrUses.getLength(); i++) {
+				XSAttributeUse attrUse = (XSAttributeUse) attrUses.item(i);
+				if (attrUse.getRequired()) {
+					QName attrName = null;
+					XSAttributeDeclaration attrDecl = attrUse.getAttrDeclaration();
+					if (attrDecl.getNamespace() == null || attrDecl.getNamespace().isEmpty()) {
+						attrName = new QName(attrDecl.getName());
+					}
+					else {
+						attrName = new QName(attrDecl.getNamespace(), attrDecl.getName());
+					}
+					PrimitiveValue attrValue = attrs.get(attrName);
+					if (attrValue == null) {
+						LOG.debug(
+								"Required attribute {} not present. Cannot void using xsi:nil. Escalating void value.",
+								attrName);
+						return null;
+					}
+					nilAttrs.put(attrName, attrValue);
+				}
+			}
+		}
+		nilAttrs.put(new QName(XSINS, "nil", XSI_PREFIX), new PrimitiveValue(TRUE));
+		return new GenericXMLElement(elName, cm.getElementDecl(), nilAttrs, null);
 	}
 
 	// TODO where should this happen in the end?
