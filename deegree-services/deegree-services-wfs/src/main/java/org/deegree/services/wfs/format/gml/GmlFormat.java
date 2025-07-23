@@ -35,7 +35,7 @@
 package org.deegree.services.wfs.format.gml;
 
 import static java.lang.Integer.MAX_VALUE;
-import static org.apache.commons.lang.StringUtils.trim;
+import static org.apache.commons.lang3.StringUtils.trim;
 import static org.deegree.protocol.wfs.getfeature.ResultType.RESULTS;
 
 import java.io.IOException;
