@@ -79,7 +79,11 @@ public class ImageRenderContext extends Java2DRenderContext {
 		this.info = info;
 	}
 
-	public static RenderContext createInstance(RenderingInfo info, BufferedImage image, OutputStream outputStream) {
+	public static RenderContext createInstance(RenderingInfo info, BufferedImage existingImage,
+			OutputStream outputStream) {
+		BufferedImage image = ImageUtils.prepareImage(existingImage, info.getFormat(), info.getWidth(),
+				info.getHeight(), info.getTransparent(), info.getBgColor());
+
 		return new ImageRenderContext(info, image, image.createGraphics(), outputStream);
 	}
 
@@ -87,7 +91,7 @@ public class ImageRenderContext extends Java2DRenderContext {
 		BufferedImage image = ImageUtils.prepareImage(info.getFormat(), info.getWidth(), info.getHeight(),
 				info.getTransparent(), info.getBgColor());
 
-		return createInstance(info, image, outputStream);
+		return new ImageRenderContext(info, image, image.createGraphics(), outputStream);
 	}
 
 	@Override
@@ -101,9 +105,9 @@ public class ImageRenderContext extends Java2DRenderContext {
 				if (format.equals("x-ms-bmp")) {
 					format = "bmp";
 				}
-				if (format.equals("png; subtype=8bit") || format.equals("png; mode=8bit")) {
+				if (format.equals("png; subtype=8bit") || format.equals("png; mode=8bit") || format.equals("gif")) {
 					image = ColorQuantizer.quantizeImage(image, 256, false, false);
-					format = "png";
+					format = format.substring(0, 3);
 				}
 
 				if (info.getSerializer() != null) {

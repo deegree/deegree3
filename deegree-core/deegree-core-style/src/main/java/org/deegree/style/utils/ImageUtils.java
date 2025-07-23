@@ -59,22 +59,38 @@ import javax.media.jai.operator.ColorQuantizerDescriptor;
 public class ImageUtils {
 
 	private static int getType(boolean transparent, String format) {
-		if (!isTransparentAndTransparencySupported(format, transparent)) {
+		if (isTransparentAndTransparencySupported(format, transparent)) {
+			return TYPE_INT_ARGB;
+		}
+		else {
 			return TYPE_INT_RGB;
 		}
-		return transparent ? TYPE_INT_ARGB : TYPE_INT_RGB;
+	}
+
+	/**
+	 * @return an image conforming to the request parameters
+	 */
+	public static BufferedImage prepareImage(BufferedImage existingImage, String format, int width, int height,
+			boolean transparent, Color bgColor) {
+		int requiredType = getType(transparent, format);
+		int existingType = existingImage.getType();
+		if (existingType != requiredType) {
+			BufferedImage newImage = prepareImage(format, width, height, transparent, bgColor);
+
+			Graphics2D g = newImage.createGraphics();
+			g.drawImage(existingImage, 0, 0, null);
+			g.dispose();
+
+			return newImage;
+		}
+
+		return existingImage;
 	}
 
 	/**
 	 * @return an empty image conforming to the request parameters
 	 */
 	public static BufferedImage prepareImage(String format, int width, int height, boolean transparent, Color bgColor) {
-		if (format.equals("image/png; mode=8bit") || format.equals("image/png; subtype=8bit")
-				|| format.equals("image/gif")) {
-			ColorModel cm = PlanarImage.getDefaultColorModel(TYPE_BYTE, 4);
-			return new BufferedImage(cm, createBandedRaster(TYPE_BYTE, width, height, 4, null), false, null);
-		}
-
 		BufferedImage img = new BufferedImage(width, height, getType(transparent, format));
 		if (!isTransparentAndTransparencySupported(format, transparent)) {
 			Graphics2D g = img.createGraphics();
