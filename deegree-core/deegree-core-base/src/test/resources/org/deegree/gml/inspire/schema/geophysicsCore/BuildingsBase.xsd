@@ -1,0 +1,787 @@
+<?xml version="1.0" encoding="UTF-8"?><schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:base="http://inspire.ec.europa.eu/schemas/base/3.3" xmlns:bu-base="http://inspire.ec.europa.eu/schemas/bu-base/4.0" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gn="http://inspire.ec.europa.eu/schemas/gn/4.0" xmlns:sc="http://www.interactive-instruments.de/ShapeChange/AppInfo" elementFormDefault="qualified" targetNamespace="http://inspire.ec.europa.eu/schemas/bu-base/4.0" version="4.0">
+  <annotation>
+    <documentation>-- Name --
+Building base
+
+-- Definition --
+The base application schema for INSPIRE theme buildings.</documentation>
+  </annotation>
+  <import namespace="http://inspire.ec.europa.eu/schemas/base/3.3" schemaLocation="BaseTypes.xsd"/>
+  <import namespace="http://inspire.ec.europa.eu/schemas/gn/4.0" schemaLocation="GeographicalNames.xsd"/>
+  <import namespace="http://www.interactive-instruments.de/ShapeChange/AppInfo" schemaLocation="ShapeChangeAppinfo.xsd"/>
+  <import namespace="http://www.isotc211.org/2005/gmd" schemaLocation="http://schemas.opengis.net/iso/19139/20070417/gmd.xsd"/>
+  <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="http://schemas.opengis.net/gml/3.2.1/gml.xsd"/>
+  <!--XML Schema document created by ShapeChange-->
+  <element abstract="true" name="AbstractBuilding" substitutionGroup="bu-base:AbstractConstruction" type="bu-base:AbstractBuildingType">
+    <annotation>
+      <documentation>-- Name --
+Abstract building
+
+-- Definition --
+Abstract spatial object type grouping the common semantic properties of the spatial object types Building and BuildingPart.</documentation>
+    </annotation>
+  </element>
+  <complexType abstract="true" name="AbstractBuildingType">
+    <complexContent>
+      <extension base="bu-base:AbstractConstructionType">
+        <sequence>
+          <element maxOccurs="unbounded" minOccurs="0" name="buildingNature" nillable="true" type="gml:ReferenceType">
+            <annotation>
+              <documentation>-- Name --
+Building nature
+
+-- Definition --
+Characteristic of the building that makes it generally of interest for mappings applications. The characteristic may be related to the physical aspect and/or to the function of the building.
+
+-- Description --
+This attribute focuses on the physical aspect of the building; however, this physical aspect is often expressed as a function (e.g. stadium, silo, windmill); this attribute aims to fulfil mainly mapping purposes and addresses only specific, noticeable buildings.</documentation>
+              <appinfo>
+                <taggedValue xmlns="http://www.interactive-instruments.de/ShapeChange/AppInfo" tag="obligation">implementingRule</taggedValue>
+              </appinfo>
+            </annotation>
+          </element>
+          <element maxOccurs="unbounded" minOccurs="0" name="currentUse" nillable="true">
+            <annotation>
+              <documentation>-- Name --
+Current use
+
+-- Definition --
+Activity hosted within the building. This attribute addresses mainly the buildings hosting human activities.
+-- Description --
+NOTE: . This attribute aims to fulfill management requirements, such as computation of population or spatial planning ; this classification aims to be exhaustive for the functional buildings hosting human activities.</documentation>
+              <appinfo>
+                <taggedValue xmlns="http://www.interactive-instruments.de/ShapeChange/AppInfo" tag="obligation">implementingRule</taggedValue>
+              </appinfo>
+            </annotation>
+            <complexType>
+              <sequence>
+                <element ref="bu-base:CurrentUse"/>
+              </sequence>
+              <attribute name="nilReason" type="gml:NilReasonType"/>
+            </complexType>
+          </element>
+          <element minOccurs="0" name="numberOfDwellings" nillable="true">
+            <annotation>
+              <documentation>-- Name --
+Number of dwellings
+
+-- Definition --
+Number of dwellings.
+
+-- Description --
+A dwelling is a residential unit which may consist of one or several rooms designed for the occupation of households.
+NOTE: In the data sets including building units, a dwelling is a residential building unit or, only when that building has no building units, a residential building&lt;i&gt;.&lt;/i&gt;
+EXAMPLES: a single building dwelling could be a detached or semi-detached house.  A block of flats will contain multiple dwellings determined by the number of individual flats.</documentation>
+            </annotation>
+            <complexType>
+              <simpleContent>
+                <extension base="integer">
+                  <attribute name="nilReason" type="gml:NilReasonType"/>
+                </extension>
+              </simpleContent>
+            </complexType>
+          </element>
+          <element minOccurs="0" name="numberOfBuildingUnits" nillable="true">
+            <annotation>
+              <documentation>-- Name --
+Number of building units
+
+-- Definition --
+Number of building units in the building. A BuildingUnit is a subdivision of Building with its own lockable access from the outside or from a common area (i.e. not from another BuildingUnit), which is atomic, functionally independent, and may be separately sold, rented out, inherited, etc.
+-- Description --
+Building units are spatial objects aimed at subdividing buildings and/or building parts into smaller parts that are treated as seperate entities in daily life. A building unit is homogeneous, regarding management aspects.
+EXAMPLES: It may be e.g. an apartment in a condominium, a terraced house, or a shop inside a shopping arcade.
+NOTE 1: According to national regulations, a building unit may be a flat, a cellar, a garage or set of a flat, a cellar and a garage.
+NOTE 2: According to national regulation, a building that is one entity for daily life (typically, a single family house) may be considered as a Building composed of one BuildingUnit or as a Building composed of zero BuildingUnit.</documentation>
+            </annotation>
+            <complexType>
+              <simpleContent>
+                <extension base="integer">
+                  <attribute name="nilReason" type="gml:NilReasonType"/>
+                </extension>
+              </simpleContent>
+            </complexType>
+          </element>
+          <element minOccurs="0" name="numberOfFloorsAboveGround" nillable="true">
+            <annotation>
+              <documentation>-- Name --
+Number of floors above ground
+
+-- Definition --
+Number of floors above ground.</documentation>
+            </annotation>
+            <complexType>
+              <simpleContent>
+                <extension base="integer">
+                  <attribute name="nilReason" type="gml:NilReasonType"/>
+                </extension>
+              </simpleContent>
+            </complexType>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="AbstractBuildingPropertyType">
+    <sequence minOccurs="0">
+      <element ref="bu-base:AbstractBuilding"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element abstract="true" name="AbstractConstruction" substitutionGroup="gml:AbstractFeature" type="bu-base:AbstractConstructionType">
+    <annotation>
+      <documentation>-- Name --
+Abstract construction
+
+-- Definition --
+Abstract spatial object type grouping the semantic properties of  buildings, building parts and of some optional spatial object types that may be added in order to provide more information about the theme Buildings.
+
+-- Description --
+The optional spatial object types that may be added to core profiles are described in the extended profiles. The ones inheriting from the attributes of AbstractConstruction are Installation and OtherConstruction.</documentation>
+    </annotation>
+  </element>
+  <complexType abstract="true" name="AbstractConstructionType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element name="beginLifespanVersion" nillable="true">
+            <annotation>
+              <documentation>-- Name --
+Begin lifespan version
+
+-- Definition --
+Date and time at which this version of the spatial object was inserted or changed in the spatial data set.</documentation>
+            </annotation>
+            <complexType>
+              <simpleContent>
+                <extension base="dateTime">
+                  <attribute name="nilReason" type="gml:NilReasonType"/>
+                </extension>
+              </simpleContent>
+            </complexType>
+          </element>
+          <element name="conditionOfConstruction" nillable="true" type="gml:ReferenceType">
+            <annotation>
+              <documentation>-- Name --
+Condition of construction
+
+-- Definition --
+Status of the construction.
+
+-- Description --
+EXAMPLES: functional, projected, ruin</documentation>
+              <appinfo>
+                <taggedValue xmlns="http://www.interactive-instruments.de/ShapeChange/AppInfo" tag="obligation">implementingRule</taggedValue>
+              </appinfo>
+            </annotation>
+          </element>
+          <element minOccurs="0" name="dateOfConstruction" nillable="true">
+            <annotation>
+              <documentation>-- Name --
+Date of construction
+
+-- Definition --
+Date of construction.</documentation>
+            </annotation>
+            <complexType>
+              <sequence>
+                <element ref="bu-base:DateOfEvent"/>
+              </sequence>
+              <attribute name="nilReason" type="gml:NilReasonType"/>
+            </complexType>
+          </element>
+          <element minOccurs="0" name="dateOfDemolition" nillable="true">
+            <annotation>
+              <documentation>-- Name --
+Date of demolition
+
+-- Definition --
+Date of demolition.</documentation>
+            </annotation>
+            <complexType>
+              <sequence>
+                <element ref="bu-base:DateOfEvent"/>
+              </sequence>
+              <attribute name="nilReason" type="gml:NilReasonType"/>
+            </complexType>
+          </element>
+          <element minOccurs="0" name="dateOfRenovation" nillable="true">
+            <annotation>
+              <documentation>-- Name --
+Date of last major renovation
+
+-- Definition --
+Date of last major renovation.</documentation>
+            </annotation>
+            <complexType>
+              <sequence>
+                <element ref="bu-base:DateOfEvent"/>
+              </sequence>
+              <attribute name="nilReason" type="gml:NilReasonType"/>
+            </complexType>
+          </element>
+          <element maxOccurs="unbounded" minOccurs="0" name="elevation" nillable="true">
+            <annotation>
+              <documentation>-- Name --
+Elevation
+
+-- Definition --
+Vertically-constrained dimensional property consisting of an absolute measure referenced to a well-defined surface which is commonly taken as origin (geoïd, water level, etc.).
+-- Description --
+Source: adapted from the definition given in the data specification of the theme Elevation.</documentation>
+            </annotation>
+            <complexType>
+              <sequence>
+                <element ref="bu-base:Elevation"/>
+              </sequence>
+              <attribute name="nilReason" type="gml:NilReasonType"/>
+            </complexType>
+          </element>
+          <element minOccurs="0" name="endLifespanVersion" nillable="true">
+            <annotation>
+              <documentation>-- Name --
+End lifespan version
+
+-- Definition --
+Date and time at which this version of the spatial object was superseded or retired in the spatial data set.</documentation>
+            </annotation>
+            <complexType>
+              <simpleContent>
+                <extension base="dateTime">
+                  <attribute name="nilReason" type="gml:NilReasonType"/>
+                </extension>
+              </simpleContent>
+            </complexType>
+          </element>
+          <element maxOccurs="unbounded" minOccurs="0" name="externalReference" nillable="true">
+            <annotation>
+              <documentation>-- Name --
+External reference
+
+-- Definition --
+Reference to an external information system containing any piece of information related to the spatial object.
+
+-- Description --
+
+EXAMPLE 1: Reference to another spatial data set containing another view on buildings; the externalReference may be used for instance to ensure consistency between 2D and 3D representations of the same buildings
+
+EXAMPLE 2: Reference to cadastral or dwelling register. The reference to this register may enable to find legal information related to the building, such as the owner(s) or valuation criteria (e.g. type of heating, toilet, kitchen)
+
+EXAMPLE 3: Reference to the system recording the building permits. The reference to the building permits may be used to find detailed information about the building physical and temporal aspects.</documentation>
+            </annotation>
+            <complexType>
+              <sequence>
+                <element ref="bu-base:ExternalReference"/>
+              </sequence>
+              <attribute name="nilReason" type="gml:NilReasonType"/>
+            </complexType>
+          </element>
+          <element maxOccurs="unbounded" minOccurs="0" name="heightAboveGround" nillable="true">
+            <annotation>
+              <documentation>-- Name --
+Height above ground
+
+-- Definition --
+Height above ground.
+
+-- Description --
+NOTE: height above ground may be defined as the difference between elevation at a low reference (ground level) and elevation as a high reference (e.g. roof level, top of construction)</documentation>
+            </annotation>
+            <complexType>
+              <sequence>
+                <element ref="bu-base:HeightAboveGround"/>
+              </sequence>
+              <attribute name="nilReason" type="gml:NilReasonType"/>
+            </complexType>
+          </element>
+          <element name="inspireId" type="base:IdentifierPropertyType">
+            <annotation>
+              <documentation>-- Name --
+inspire id
+
+-- Definition --
+External object identifier of the spatial object.
+
+-- Description --
+An external object identifier is a unique object identifier published by the responsible body, which may be used by external applications to reference the spatial object. The identifier is an identifier of the spatial object, not an identifier of the real-world phenomenon.</documentation>
+            </annotation>
+          </element>
+          <element maxOccurs="unbounded" minOccurs="0" name="name" nillable="true">
+            <annotation>
+              <documentation>-- Name --
+Name
+
+-- Definition --
+Name of the construction.
+
+-- Description --
+EXAMPLES:  Big Ben, Eiffel Tower, Sacrada Familia</documentation>
+            </annotation>
+            <complexType>
+              <sequence>
+                <element ref="gn:GeographicalName"/>
+              </sequence>
+              <attribute name="nilReason" type="gml:NilReasonType"/>
+            </complexType>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="AbstractConstructionPropertyType">
+    <sequence minOccurs="0">
+      <element ref="bu-base:AbstractConstruction"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element abstract="true" name="Building" substitutionGroup="bu-base:AbstractBuilding" type="bu-base:BuildingType">
+    <annotation>
+      <documentation>-- Name --
+Building
+
+-- Definition --
+A Building is an enclosed &lt;b&gt;construction &lt;/b&gt;above and/or underground, used or intended for the shelter of humans, animals or things or for the production of economic goods. A building refers to any structure permanently constructed or erected on its site.</documentation>
+    </annotation>
+  </element>
+  <complexType abstract="true" name="BuildingType">
+    <complexContent>
+      <extension base="bu-base:AbstractBuildingType">
+        <sequence>
+          <element maxOccurs="unbounded" minOccurs="0" name="parts" nillable="true">
+            <annotation>
+              <documentation>-- Definition --
+The building parts composing the Building.
+-- Description --
+A building may be a simple building (with no BuildingPart) or a composed building (with several BuildingParts).</documentation>
+            </annotation>
+            <complexType>
+              <complexContent>
+                <extension base="gml:AbstractMemberType">
+                  <sequence minOccurs="0">
+                    <element ref="bu-base:BuildingPart"/>
+                  </sequence>
+                  <attributeGroup ref="gml:AssociationAttributeGroup"/>
+                </extension>
+              </complexContent>
+            </complexType>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="BuildingPropertyType">
+    <sequence minOccurs="0">
+      <element ref="bu-base:Building"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="BuildingGeometry2D" substitutionGroup="gml:AbstractObject" type="bu-base:BuildingGeometry2DType">
+    <annotation>
+      <documentation>-- Name --
+Building geometry 2D
+
+-- Definition --
+This data types includes the geometry of the building and metadata information about which element of the building was captured and how.</documentation>
+    </annotation>
+  </element>
+  <complexType name="BuildingGeometry2DType">
+    <sequence>
+      <element name="geometry" type="gml:GeometryPropertyType">
+        <annotation>
+          <documentation>-- Name --
+Geometry
+
+-- Definition --
+2D or 2.5D geometric representation</documentation>
+        </annotation>
+      </element>
+      <element name="referenceGeometry" type="boolean">
+        <annotation>
+          <documentation>-- Name --
+Reference geometry
+
+-- Definition --
+The geometry to be taken into account by view services, for portrayal.
+
+-- Description --
+NOTE 1: In case of multiple representation by point and by surface, it is generally recommended to provide the surface as reference geometry.
+NOTE 2: The geometric representation whose referenceGeometry is true may also be used preferably for spatial queries by download services (WFS) or by Geographical Information System (GIS).</documentation>
+        </annotation>
+      </element>
+      <element name="horizontalGeometryReference" type="gml:ReferenceType">
+        <annotation>
+          <documentation>-- Name --
+Horizontal geometry reference
+
+-- Definition --
+Element of the building that was captured by (X,Y) coordinates.</documentation>
+          <appinfo>
+            <taggedValue xmlns="http://www.interactive-instruments.de/ShapeChange/AppInfo" tag="obligation">implementingRule</taggedValue>
+          </appinfo>
+        </annotation>
+      </element>
+      <element minOccurs="0" name="verticalGeometryReference" type="gml:ReferenceType">
+        <annotation>
+          <documentation>-- Name --
+Vertical geometry reference
+
+-- Definition --
+Element of the building that was captured by vertical coordinates.</documentation>
+          <appinfo>
+            <taggedValue xmlns="http://www.interactive-instruments.de/ShapeChange/AppInfo" tag="obligation">implementingRule</taggedValue>
+          </appinfo>
+        </annotation>
+      </element>
+      <element name="horizontalGeometryEstimatedAccuracy" nillable="true">
+        <annotation>
+          <documentation>-- Name --
+Horizontal geometry estimated accuracy
+
+-- Definition --
+The estimated absolute positional accuracy of the (X,Y) coordinates of the building geometry, in the INSPIRE official Coordinate Reference System. Absolute positional accuracy is defined as the mean value of the positional uncertainties for a set of positions where the positional uncertainties are defined as the distance between a measured position and what is considered as the corresponding true position.
+-- Description --
+NOTE: This mean value may come from quality measures on a homogeneous population of buildings or from an estimation based on the knowledge of the production processes and of their accuracy.</documentation>
+        </annotation>
+        <complexType>
+          <simpleContent>
+            <extension base="gml:LengthType">
+              <attribute name="nilReason" type="gml:NilReasonType"/>
+            </extension>
+          </simpleContent>
+        </complexType>
+      </element>
+      <element minOccurs="0" name="verticalGeometryEstimatedAccuracy" nillable="true">
+        <annotation>
+          <documentation>-- Name --
+Vertical geometry estimated accuracy
+
+-- Definition --
+The estimated absolute positional accuracy of the Z coordinates of the  building geometry, in the INSPIRE official Coordinate Reference System. Absolute positional accuracy is defined as the mean value of the positional uncertainties for a set of positions where the positional uncertainties are defined as the distance between a measured position and what is considered as the corresponding true position.
+-- Description --
+NOTE: This mean value may come from quality measures on a homogeneous population of buildings or from an estimation based on the knowledge of the production processes and of their accuracy.</documentation>
+        </annotation>
+        <complexType>
+          <simpleContent>
+            <extension base="gml:LengthType">
+              <attribute name="nilReason" type="gml:NilReasonType"/>
+            </extension>
+          </simpleContent>
+        </complexType>
+      </element>
+    </sequence>
+  </complexType>
+  <complexType name="BuildingGeometry2DPropertyType">
+    <sequence>
+      <element ref="bu-base:BuildingGeometry2D"/>
+    </sequence>
+  </complexType>
+  <element abstract="true" name="BuildingPart" substitutionGroup="bu-base:AbstractBuilding" type="bu-base:BuildingPartType">
+    <annotation>
+      <documentation>-- Name --
+Building part
+
+-- Definition --
+A BuildingPart is a sub-division of a Building that might be considered itself as a building.
+
+-- Description --
+NOTE 1: A BuildingPart is homogeneous related to its physical, functional or temporal aspects. 
+
+NOTE 2: Building and BuildingPart share the same set of properties.
+EXAMPLE: A building may be composed of two building parts having different heights above ground.</documentation>
+    </annotation>
+  </element>
+  <complexType abstract="true" name="BuildingPartType">
+    <complexContent>
+      <extension base="bu-base:AbstractBuildingType">
+        <sequence/>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="BuildingPartPropertyType">
+    <sequence minOccurs="0">
+      <element ref="bu-base:BuildingPart"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="CurrentUse" substitutionGroup="gml:AbstractObject" type="bu-base:CurrentUseType">
+    <annotation>
+      <documentation>-- Name --
+Current use
+
+-- Definition --
+This data type enables to detail the current use(s).</documentation>
+    </annotation>
+  </element>
+  <complexType name="CurrentUseType">
+    <sequence>
+      <element name="currentUse" type="gml:ReferenceType">
+        <annotation>
+          <documentation>-- Name --
+Current use
+
+-- Definition --
+The current use.
+
+-- Description --
+EXAMPLE: trade</documentation>
+          <appinfo>
+            <taggedValue xmlns="http://www.interactive-instruments.de/ShapeChange/AppInfo" tag="obligation">implementingRule</taggedValue>
+          </appinfo>
+        </annotation>
+      </element>
+      <element name="percentage" nillable="true">
+        <annotation>
+          <documentation>-- Name --
+Percentage
+
+-- Definition --
+The proportion of the real world object, given as a percentage, devoted to this current use.
+-- Description --
+NOTE: The percentage of use is generally the percentage of floor area dedicated to this given use. If it is not the case, it is recommended to explain what the percentage refers to in metadata (template for additional information)
+EXAMPLE: 30 (if 30% of the building is occupied by trade activity).</documentation>
+        </annotation>
+        <complexType>
+          <simpleContent>
+            <extension base="integer">
+              <attribute name="nilReason" type="gml:NilReasonType"/>
+            </extension>
+          </simpleContent>
+        </complexType>
+      </element>
+    </sequence>
+  </complexType>
+  <complexType name="CurrentUsePropertyType">
+    <sequence>
+      <element ref="bu-base:CurrentUse"/>
+    </sequence>
+  </complexType>
+  <element name="DateOfEvent" substitutionGroup="gml:AbstractObject" type="bu-base:DateOfEventType">
+    <annotation>
+      <documentation>-- Name --
+Date of event
+
+-- Definition --
+This data type includes the different possible ways to define the date of an event.</documentation>
+    </annotation>
+  </element>
+  <complexType name="DateOfEventType">
+    <sequence>
+      <element minOccurs="0" name="anyPoint" nillable="true">
+        <annotation>
+          <documentation>-- Name --
+Any point
+
+-- Definition --
+A date and time of any point of the event, between its beginning and its end.</documentation>
+        </annotation>
+        <complexType>
+          <simpleContent>
+            <extension base="dateTime">
+              <attribute name="nilReason" type="gml:NilReasonType"/>
+            </extension>
+          </simpleContent>
+        </complexType>
+      </element>
+      <element minOccurs="0" name="beginning" nillable="true">
+        <annotation>
+          <documentation>-- Name --
+Beginning
+
+-- Definition --
+Date and time when the event begun.</documentation>
+        </annotation>
+        <complexType>
+          <simpleContent>
+            <extension base="dateTime">
+              <attribute name="nilReason" type="gml:NilReasonType"/>
+            </extension>
+          </simpleContent>
+        </complexType>
+      </element>
+      <element minOccurs="0" name="end" nillable="true">
+        <annotation>
+          <documentation>-- Name --
+End
+
+-- Definition --
+Date and time when the event ended.</documentation>
+        </annotation>
+        <complexType>
+          <simpleContent>
+            <extension base="dateTime">
+              <attribute name="nilReason" type="gml:NilReasonType"/>
+            </extension>
+          </simpleContent>
+        </complexType>
+      </element>
+    </sequence>
+  </complexType>
+  <complexType name="DateOfEventPropertyType">
+    <sequence>
+      <element ref="bu-base:DateOfEvent"/>
+    </sequence>
+  </complexType>
+  <element name="Elevation" substitutionGroup="gml:AbstractObject" type="bu-base:ElevationType">
+    <annotation>
+      <documentation>-- Name --
+Elevation
+
+-- Definition --
+This data types includes the elevation value itself  and information on how this elevation was measured.</documentation>
+    </annotation>
+  </element>
+  <complexType name="ElevationType">
+    <sequence>
+      <element name="elevationReference" type="gml:ReferenceType">
+        <annotation>
+          <documentation>-- Name --
+Elevation reference
+
+-- Definition --
+Element where the elevation was measured.</documentation>
+          <appinfo>
+            <taggedValue xmlns="http://www.interactive-instruments.de/ShapeChange/AppInfo" tag="obligation">implementingRule</taggedValue>
+          </appinfo>
+        </annotation>
+      </element>
+      <element name="elevationValue" type="gml:DirectPositionType">
+        <annotation>
+          <documentation>-- Name --
+elevation value
+
+-- Definition --
+Value of the elevation.</documentation>
+        </annotation>
+      </element>
+    </sequence>
+  </complexType>
+  <complexType name="ElevationPropertyType">
+    <sequence>
+      <element ref="bu-base:Elevation"/>
+    </sequence>
+  </complexType>
+  <element name="ExternalReference" substitutionGroup="gml:AbstractObject" type="bu-base:ExternalReferenceType">
+    <annotation>
+      <documentation>-- Name --
+External reference
+
+-- Definition --
+Reference to an external information system containing any piece of information related to the spatial object.</documentation>
+    </annotation>
+  </element>
+  <complexType name="ExternalReferenceType">
+    <sequence>
+      <element name="informationSystem" type="anyURI">
+        <annotation>
+          <documentation>-- Name --
+Information system
+
+-- Definition --
+Uniform Resource Identifier of the external information system.</documentation>
+        </annotation>
+      </element>
+      <element name="informationSystemName" type="gmd:PT_FreeText_PropertyType">
+        <annotation>
+          <documentation>-- Name --
+Information system name
+
+-- Definition --
+The name of the external information system.
+
+-- Description --
+EXAMPLES: Danish Register of Dwellings, Spanish Cadastre.</documentation>
+        </annotation>
+      </element>
+      <element name="reference" type="string">
+        <annotation>
+          <documentation>-- Name --
+Reference
+
+-- Definition --
+Thematic identifier of the spatial object or of any piece of information related to the spatial object.
+-- Description --
+NOTE: This reference will act as a foreign key to implement the association between the spatial object in the INSPIRE data set and in the external information system.
+EXAMPLE: The cadastral reference of a given building in the national cadastral register.</documentation>
+        </annotation>
+      </element>
+    </sequence>
+  </complexType>
+  <complexType name="ExternalReferencePropertyType">
+    <sequence>
+      <element ref="bu-base:ExternalReference"/>
+    </sequence>
+  </complexType>
+  <element name="HeightAboveGround" substitutionGroup="gml:AbstractObject" type="bu-base:HeightAboveGroundType">
+    <annotation>
+      <documentation>-- Name --
+Height above ground
+
+-- Definition --
+Vertical distance (measured or estimated) between a low reference and a high reference.</documentation>
+    </annotation>
+  </element>
+  <complexType name="HeightAboveGroundType">
+    <sequence>
+      <element name="heightReference" nillable="true" type="gml:ReferenceType">
+        <annotation>
+          <documentation>-- Name --
+Height reference
+
+-- Definition --
+Element used as the high reference.
+
+-- Description --
+EXAMPLE: The height of the building has been captured up to the top of building.</documentation>
+          <appinfo>
+            <taggedValue xmlns="http://www.interactive-instruments.de/ShapeChange/AppInfo" tag="obligation">implementingRule</taggedValue>
+          </appinfo>
+        </annotation>
+      </element>
+      <element name="lowReference" nillable="true" type="gml:ReferenceType">
+        <annotation>
+          <documentation>-- Name --
+Low reference
+
+-- Definition --
+Element  as the low reference.
+
+-- Description --
+EXAMPLE: the height of the building has been captured from its the lowest ground point.</documentation>
+          <appinfo>
+            <taggedValue xmlns="http://www.interactive-instruments.de/ShapeChange/AppInfo" tag="obligation">implementingRule</taggedValue>
+          </appinfo>
+        </annotation>
+      </element>
+      <element name="status" nillable="true" type="gml:ReferenceType">
+        <annotation>
+          <documentation>-- Name --
+Status
+
+-- Definition --
+The way the height has been captured.</documentation>
+          <appinfo>
+            <taggedValue xmlns="http://www.interactive-instruments.de/ShapeChange/AppInfo" tag="obligation">implementingRule</taggedValue>
+          </appinfo>
+        </annotation>
+      </element>
+      <element name="value" type="gml:LengthType">
+        <annotation>
+          <documentation>-- Name --
+Value
+
+-- Definition --
+Value of the height above ground.</documentation>
+        </annotation>
+      </element>
+    </sequence>
+  </complexType>
+  <complexType name="HeightAboveGroundPropertyType">
+    <sequence>
+      <element ref="bu-base:HeightAboveGround"/>
+    </sequence>
+  </complexType>
+</schema>
