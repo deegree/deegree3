@@ -55,6 +55,7 @@ import org.deegree.sqldialect.filter.expression.SQLArgument;
 import org.deegree.sqldialect.filter.expression.SQLColumn;
 import org.deegree.sqldialect.filter.expression.SQLExpression;
 import org.deegree.sqldialect.filter.expression.SQLOperation;
+import org.deegree.sqldialect.filter.expression.SQLOperationBuilder;
 
 /**
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
@@ -80,7 +81,8 @@ public class H2WhereBuilder extends AbstractWhereBuilder {
 	}
 
 	@Override
-	protected SQLOperation toProtoSQL(SpatialOperator op) throws UnmappableException, FilterEvaluationException {
+	protected void toProtoSql(SpatialOperator op, SQLExpression propNameExpr, SQLOperationBuilder builder)
+			throws UnmappableException {
 		throw new UnmappableException("Spatial operators are currently not mappable in h2.");
 	}
 
