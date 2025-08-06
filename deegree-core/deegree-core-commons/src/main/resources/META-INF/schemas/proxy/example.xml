@@ -1,5 +1,5 @@
 <ProxyConfiguration xmlns="http://www.deegree.org/proxy" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/proxy https://schemas.deegree.org/core/3.5/proxy/proxy.xsd"
+  xsi:schemaLocation="http://www.deegree.org/proxy https://schemas.deegree.org/core/3.6/proxy/proxy.xsd"
   overrideSystemSettings="true">
 
   <!-- set overrideSystemSettings above to true to be sure that these proxy settings are used -->

@@ -69,7 +69,7 @@ It is constructed like this:
 
 [source,xml]
 ----
-<FeatureTypeStyle xmlns="http://www.opengis.net/se" xmlns:ogc="http://www.opengis.net/ogc" xmlns:sed="http://www.deegree.org/se" xmlns:deegreeogc="http://www.deegree.org/ogc" xmlns:plan="http://www.deegree.org/plan" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se https://schemas.deegree.org/core/3.5/se/symbology-1.1.0.xsd">
+<FeatureTypeStyle xmlns="http://www.opengis.net/se" xmlns:ogc="http://www.opengis.net/ogc" xmlns:sed="http://www.deegree.org/se" xmlns:deegreeogc="http://www.deegree.org/ogc" xmlns:plan="http://www.deegree.org/plan" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se https://schemas.deegree.org/core/3.6/se/symbology-1.1.0.xsd">
 <FeatureTypeName>plan:yourFeatureType</FeatureTypeName>
     <Rule>
         ...
@@ -453,7 +453,7 @@ xmlns:ogc="http://www.opengis.net/ogc"
 xmlns:sed="http://www.deegree.org/se"
 xmlns:deegreeogc="http://www.deegree.org/ogc"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se https://schemas.deegree.org/core/3.5/se/symbology-1.1.0.xsd">
+xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se https://schemas.deegree.org/core/3.6/se/symbology-1.1.0.xsd">
 <Name>Weatherstations</Name>
  <Rule>
     <Name>Weatherstations</Name>
@@ -496,7 +496,7 @@ xmlns:ogc="http://www.opengis.net/ogc"
 xmlns:sed="http://www.deegree.org/se"
 xmlns:deegreeogc="http://www.deegree.org/ogc"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se https://schemas.deegree.org/core/3.5/se/symbology-1.1.0.xsd">
+xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se https://schemas.deegree.org/core/3.6/se/symbology-1.1.0.xsd">
 <Name>Railroads</Name>
   <Rule>
     <Name>Railroads</Name>
@@ -538,7 +538,7 @@ xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.
  xmlns:sed="http://www.deegree.org/se"
  xmlns:deegreeogc="http://www.deegree.org/ogc"
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se https://schemas.deegree.org/core/3.5/se/symbology-1.1.0.xsd">
+ xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se https://schemas.deegree.org/core/3.6/se/symbology-1.1.0.xsd">
 <Name>LandslideAreas</Name>
   <Rule>
     <Name>LandslideAreas</Name>
@@ -571,7 +571,7 @@ xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.
  xmlns:sed="http://www.deegree.org/se"
  xmlns:deegreeogc="http://www.deegree.org/ogc"
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se https://schemas.deegree.org/core/3.5/se/symbology-1.1.0.xsd">
+ xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se https://schemas.deegree.org/core/3.6/se/symbology-1.1.0.xsd">
 <Name>Municipalities</Name>
   <Rule>
     <Name>Municipalities</Name>
@@ -645,7 +645,7 @@ deegree supports some extensions of SLD/SE and filter encoding to enable
 more sophisticated styling. The following sections describe the
 respective extensions for SLD/SE and filter encoding. For several
 specific extensions, there is a deegree SE XML
-https://schemas.deegree.org/core/3.5/se/[Schema].
+https://schemas.deegree.org/core/3.6/se/[Schema].
 
 ==== SLD/SE extensions
 

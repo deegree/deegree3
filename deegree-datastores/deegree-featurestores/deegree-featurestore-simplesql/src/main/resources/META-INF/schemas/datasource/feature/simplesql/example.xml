@@ -1,6 +1,6 @@
 <SimpleSQLFeatureStore xmlns="http://www.deegree.org/datasource/feature/simplesql"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/datasource/feature/simplesql https://schemas.deegree.org/core/3.5/datasource/feature/simplesql/simplesql.xsd">
+  xsi:schemaLocation="http://www.deegree.org/datasource/feature/simplesql https://schemas.deegree.org/core/3.6/datasource/feature/simplesql/simplesql.xsd">
 
   <!-- [1] CRS for storing geometries -->
   <StorageCRS>EPSG:4326</StorageCRS>

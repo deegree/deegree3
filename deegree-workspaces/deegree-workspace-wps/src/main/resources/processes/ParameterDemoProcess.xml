@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ProcessDefinition processVersion="1.0.0" storeSupported="true" statusSupported="true"
   xmlns="http://www.deegree.org/processes/java" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/processes/java https://schemas.deegree.org/core/3.5/processes/java/java.xsd">
+  xsi:schemaLocation="http://www.deegree.org/processes/java https://schemas.deegree.org/core/3.6/processes/java/java.xsd">
   <Identifier>ParameterDemoProcess</Identifier>
   <JavaClass>org.deegree.wps.ParameterDemoProcesslet</JavaClass>
   <Title>Process for demonstrating the use of different types of input and output parameters.</Title>

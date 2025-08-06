@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Pyramid xmlns="http://www.deegree.org/datasource/coverage/pyramid" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/datasource/coverage/pyramid https://schemas.deegree.org/core/3.5/datasource/coverage/raster/pyramid.xsd">
+<Pyramid xmlns="http://www.deegree.org/datasource/coverage/pyramid" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/datasource/coverage/pyramid https://schemas.deegree.org/core/3.6/datasource/coverage/raster/pyramid.xsd">
   <PyramidFile>../../data/utah/raster/dem/dem30_geotiff_tiled.tiff</PyramidFile>
 </Pyramid>

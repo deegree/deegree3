@@ -1,5 +1,5 @@
 <deegreeServiceController xmlns="http://www.deegree.org/services/controller"
-  xsi:schemaLocation="http://www.deegree.org/services/controller https://schemas.deegree.org/core/3.5/services/controller/controller.xsd"
+  xsi:schemaLocation="http://www.deegree.org/services/controller https://schemas.deegree.org/core/3.6/services/controller/controller.xsd"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <!-- 
   OutputDirectory: Optional. Default is the java temp directory (java.io.tmpdir).

@@ -1,4 +1,4 @@
-<GeoTIFFTileMatrixSet xmlns="http://www.deegree.org/datasource/tile/tilematrixset/geotiff"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/datasource/tile/tilematrixset/geotiff https://schemas.deegree.org/core/3.5/datasource/tile/tilematrixset/geotiff/geotiff.xsd">
+<GeoTIFFTileMatrixSet xmlns="http://www.deegree.org/datasource/tile/tilematrixset/geotiff"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/datasource/tile/tilematrixset/geotiff https://schemas.deegree.org/core/3.6/datasource/tile/tilematrixset/geotiff/geotiff.xsd">
   <StorageCRS>EPSG:26912</StorageCRS>
   <File>../../../data/utah/raster/Satellite_Provo/Satellite_Provo.tif</File>
 </GeoTIFFTileMatrixSet>

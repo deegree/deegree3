@@ -1,6 +1,6 @@
 <SQLFeatureStore xmlns="http://www.deegree.org/datasource/feature/sql" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/feature/sql
-  https://schemas.deegree.org/core/3.5/datasource/feature/sql/sql.xsd">
+  https://schemas.deegree.org/core/3.6/datasource/feature/sql/sql.xsd">
   <JDBCConnId>myconn</JDBCConnId>
 
   <!-- Map table country to Feature Type -->
