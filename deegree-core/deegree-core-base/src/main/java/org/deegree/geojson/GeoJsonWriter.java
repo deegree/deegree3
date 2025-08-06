@@ -420,7 +420,15 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter, G
 			QName key = attributesAndChildren.keySet().iterator().next();
 			List<TypedObjectNode> values = attributesAndChildren.get(key);
 			if (values.size() == 1 && values.get(0) instanceof PrimitiveValue) {
-				exportValue((PrimitiveValue) values.get(0));
+				if (isNilled(key, values.get(0))) {
+					beginObject();
+					name(key.getLocalPart());
+					exportValue((PrimitiveValue) values.get(0));
+					endObject();
+				}
+				else {
+					exportValue((PrimitiveValue) values.get(0));
+				}
 			}
 			else if (values.size() == 1) {
 				beginObject();
@@ -572,6 +580,12 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter, G
 				return Boolean.TRUE.equals(((PrimitiveValue) nil).getValue());
 			}
 		}
+		return false;
+	}
+
+	private boolean isNilled(QName key, TypedObjectNode typedObjectNode) {
+		if (XSI_NIL.equals(key) && typedObjectNode instanceof PrimitiveValue)
+			return Boolean.TRUE.equals(((PrimitiveValue) typedObjectNode).getValue());
 		return false;
 	}
 
