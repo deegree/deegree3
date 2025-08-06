@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<crs:EllipsoidDefinitions xmlns:crs="http://www.deegree.org/crs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/crs https://schemas.deegree.org/core/3.5/crs/crsdefinition.xsd">
+<crs:EllipsoidDefinitions xmlns:crs="http://www.deegree.org/crs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/crs https://schemas.deegree.org/core/3.6/crs/crsdefinition.xsd">
     <crs:Ellipsoid>
       <crs:Id>ellipsoid_81</crs:Id>
       <crs:Name>Proj4 defined ellipsoid</crs:Name>

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <RemoteWFS xmlns="http://www.deegree.org/datasource/remoteows/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/datasource/remoteows/wfs https://schemas.deegree.org/core/3.5/datasource/remoteows/wfs/remotewfs.xsd"
+  xsi:schemaLocation="http://www.deegree.org/datasource/remoteows/wfs https://schemas.deegree.org/core/3.6/datasource/remoteows/wfs/remotewfs.xsd"
  >
   <CapabilitiesDocumentLocation location="http://demo.deegree.org/..." />
 </RemoteWFS>

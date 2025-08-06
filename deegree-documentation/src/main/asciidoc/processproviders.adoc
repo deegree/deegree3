@@ -41,7 +41,7 @@ A very minimal valid configuration example looks like this:
 [source,xml]
 ----
 <ProcessDefinition processVersion="1.0.0" xmlns="http://www.deegree.org/processes/java"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/processes/java https://schemas.deegree.org/core/3.5/processes/java/java.xsd">
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/processes/java https://schemas.deegree.org/core/3.6/processes/java/java.xsd">
   <Identifier>Process42</Identifier>
   <JavaClass>Processlet42</JavaClass>
   <Title>Calculates the answer to life, the universe and everything</Title>
@@ -109,7 +109,7 @@ A more complex configuration example looks like this:
 ----
 <ProcessDefinition processVersion="1.0.0" storeSupported="true" statusSupported="false"
   xmlns="http://www.deegree.org/processes/java" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/processes/java https://schemas.deegree.org/core/3.5/processes/java/java.xsd">
+  xsi:schemaLocation="http://www.deegree.org/processes/java https://schemas.deegree.org/core/3.6/processes/java/java.xsd">
   <Identifier>Addition</Identifier>
   <JavaClass>AdditionProcesslet</JavaClass>
   <Title>Process for adding two integer values.</Title>
@@ -192,7 +192,7 @@ public class AdditionProcesslet implements Processlet {
 ==== Configuration options
 
 The configuration format for the Java process provider is defined by
-schema file https://schemas.deegree.org/core/3.5/processes/java/java.xsd.
+schema file https://schemas.deegree.org/core/3.6/processes/java/java.xsd.
 The following table lists all available configuration options. When
 specifying them, their order must be respected.
 
@@ -765,7 +765,7 @@ clients. For the sub-options of the _AllowedValues_ and
 _ValidValueReference_ options, please refer to the
 https://www.ogc.org/standard/wps/[WPS 1.0.0 specification] or
 the XML schema for the Java process provider configuration format
-(https://schemas.deegree.org/core/3.5/processes/java/java.xsd).
+(https://schemas.deegree.org/core/3.6/processes/java/java.xsd).
 
 In order to work with a _LiteralInput_ parameter in the Processlet
 code, the corresponding Java type offers the following methods:
@@ -1119,7 +1119,7 @@ A very minimal valid configuration example looks like this:
 [source,xml]
 ----
 <FMEServer xmlns="http://www.deegree.org/processes/fme" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://www.deegree.org/processes/fme https://schemas.deegree.org/core/3.5/processes/fme/fme.xsd">
+           xsi:schemaLocation="http://www.deegree.org/processes/fme https://schemas.deegree.org/core/3.6/processes/fme/fme.xsd">
   <Address>http://fmeserver.example.com/</Address>
   <Username>guest</Username>
   <Password>guest</Password>

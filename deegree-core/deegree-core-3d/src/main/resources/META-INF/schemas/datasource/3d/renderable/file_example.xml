@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <RenderableFileStore xmlns="http://www.deegree.org/datasource/3d/renderable/file"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/datasource/3d/renderable/file https://schemas.deegree.org/core/3.5/datasource/3d/renderable/file.xsd">
+  xsi:schemaLocation="http://www.deegree.org/datasource/3d/renderable/file https://schemas.deegree.org/core/3.6/datasource/3d/renderable/file.xsd">
   <EntityFile>../../../data/renderable/buildings/objects</EntityFile>
   <PrototypeFile>../../../data/renderable/buildings/prototypes</PrototypeFile>
 </RenderableFileStore>

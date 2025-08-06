@@ -53,8 +53,8 @@ package org.deegree.services.wps;
  * </p>
  * <p>
  * A deegree WPS process consists of a Java class implementing the {@link Processlet} interface and an XML configuration
- * file that has to validate against <a href="https://schemas.deegree.org/core/3.5/wps/process_definition.xsd">
- * https://schemas.deegree.org/core/3.5/wps/process_definition.xsd</a>). Besides the definition of metadata, the XML
+ * file that has to validate against <a href="https://schemas.deegree.org/core/3.6/wps/process_definition.xsd">
+ * https://schemas.deegree.org/core/3.6/wps/process_definition.xsd</a>). Besides the definition of metadata, the XML
  * configuration file references the implementation class with its fully qualified class name.
  * </p>
  * <p>

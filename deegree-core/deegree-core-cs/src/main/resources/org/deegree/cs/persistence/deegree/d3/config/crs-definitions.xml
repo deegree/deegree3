@@ -2,7 +2,7 @@
 <crs:CRSDefinitions xmlns:crs="http://www.deegree.org/crs"
                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                     configVersion="3.0.0"
-                    xsi:schemaLocation="http://www.deegree.org/crs https://schemas.deegree.org/core/3.5/crs/crsdefinition.xsd">
+                    xsi:schemaLocation="http://www.deegree.org/crs https://schemas.deegree.org/core/3.6/crs/crsdefinition.xsd">
         <crs:GeographicCRS>
                 <crs:Id>epsg:4002</crs:Id>
                 <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#4002</crs:Id>

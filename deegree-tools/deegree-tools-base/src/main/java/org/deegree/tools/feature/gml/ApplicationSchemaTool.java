@@ -203,7 +203,7 @@ public class ApplicationSchemaTool implements ToolboxRegistration {
 		// m.setProperty( Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE );
 		// m.setProperty( Marshaller.JAXB_SCHEMA_LOCATION,
 		// "http://www.deegree.org/feature/featuretype
-		// https://schemas.deegree.org/core/3.5/feature/postgis_appschema.xsd"
+		// https://schemas.deegree.org/core/3.6/feature/postgis_appschema.xsd"
 		// );
 		// m.marshal( jaxbSchema, System.out );
 	}

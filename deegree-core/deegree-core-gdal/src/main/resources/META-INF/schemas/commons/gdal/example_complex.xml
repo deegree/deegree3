@@ -1,5 +1,5 @@
 <GDALSettings xmlns="http://www.deegree.org/gdal" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/gdal https://schemas.deegree.org/core/3.5/commons/gdal/gdal.xsd" />
+  xsi:schemaLocation="http://www.deegree.org/gdal https://schemas.deegree.org/core/3.6/commons/gdal/gdal.xsd" />
   <OpenDatasets>10</OpenDatasets>
   <GDALOption name="GDAL_CACHEMAX">1000</GDALOption>
   <GDALOption name="ECW_CACHE_MAXMEM">419430400</GDALOption>

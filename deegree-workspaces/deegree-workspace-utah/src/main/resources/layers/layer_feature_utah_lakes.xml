@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<FeatureLayers xmlns="http://www.deegree.org/layers/feature" xmlns:l="http://www.deegree.org/layers/base" xmlns:d="http://www.deegree.org/metadata/description" xmlns:s="http://www.deegree.org/metadata/spatial" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/layers/feature https://schemas.deegree.org/core/3.5/layers/feature/feature.xsd"
+<FeatureLayers xmlns="http://www.deegree.org/layers/feature" xmlns:l="http://www.deegree.org/layers/base" xmlns:d="http://www.deegree.org/metadata/description" xmlns:s="http://www.deegree.org/metadata/spatial" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/layers/feature https://schemas.deegree.org/core/3.6/layers/feature/feature.xsd"
  >
   <FeatureStoreId>utah_lakes</FeatureStoreId>
   <FeatureLayer>
