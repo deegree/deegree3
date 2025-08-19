@@ -355,7 +355,7 @@ public class GeoJsonFeatureWriterTest {
 	}
 
 	@Test(expected = IOException.class)
-	public void testWrite_multipleGeometries_noTunables() throws Exception {
+	public void testWrite_multipleGeometries_noSkipExportAsWkt() throws Exception {
 		StringWriter featureAsJson = new StringWriter();
 		GeoJsonWriter geoJsonFeatureWriter = new GeoJsonWriter(featureAsJson, null);
 		Feature cadastralZoning = parseFeature("zuwanderung_multipleGeometries.gml");
@@ -366,7 +366,7 @@ public class GeoJsonFeatureWriterTest {
 	}
 
 	@Test
-	public void testWrite_multipleGeometries_tunableGeom() throws Exception {
+	public void testWrite_multipleGeometries_skipExportAsWktFalse() throws Exception {
 		StringWriter featureAsJson = new StringWriter();
 		GeoJsonWriter geoJsonFeatureWriter = new GeoJsonWriter(featureAsJson, null,
 				new QName("http://www.deegree.org/datasource/feature/sql", "test_geom2"), false);
@@ -389,7 +389,7 @@ public class GeoJsonFeatureWriterTest {
 	}
 
 	@Test
-	public void testWrite_multipleGeometries_tunableGeomSkipWkt() throws Exception {
+	public void testWrite_multipleGeometries_skipExportAsWktTrue() throws Exception {
 		StringWriter featureAsJson = new StringWriter();
 		GeoJsonWriter geoJsonFeatureWriter = new GeoJsonWriter(featureAsJson, null,
 				new QName("http://www.deegree.org/datasource/feature/sql", "test_geom2"), true);
@@ -407,6 +407,30 @@ public class GeoJsonFeatureWriterTest {
 		assertThat(featureCollection, not(hasJsonPath("$.features[0].properties.test_geom1")));
 		assertThat(featureCollection, not(hasJsonPath("$.features[0].properties.test_geom2")));
 		assertThat(featureCollection, not(hasJsonPath("$.features[0].properties.test_geom3")));
+	}
+
+	@Test
+	public void testWrite_multipleGeometries_skipExportAsWktFalse_EPSG25832() throws Exception {
+		ICRS targetCrs = CRSManager.lookup("EPSG:25832");
+		StringWriter featureAsJson = new StringWriter();
+		GeoJsonWriter geoJsonFeatureWriter = new GeoJsonWriter(featureAsJson, targetCrs,
+				new QName("http://www.deegree.org/datasource/feature/sql", "test_geom2"), false);
+		Feature cadastralZoning = parseFeature("zuwanderung_multipleGeometries.gml");
+
+		geoJsonFeatureWriter.startFeatureCollection();
+		geoJsonFeatureWriter.write(cadastralZoning);
+		geoJsonFeatureWriter.endFeatureCollection();
+
+		String featureCollection = featureAsJson.toString();
+		assertThat(featureCollection, hasJsonPath("$.features[0].geometry.type", is("Point")));
+		assertThat(featureCollection, hasJsonPath("$.features[0].geometry.coordinates[0]", is(705075.4151535835)));
+		assertThat(featureCollection, hasJsonPath("$.features[0].geometry.coordinates[1]", is(5818715.751191899)));
+
+		assertThat(featureCollection,
+				hasJsonPath("$.features[0].properties.test_geom1", is("POINT (640268.604138 5705139.824517)")));
+		assertThat(featureCollection, not(hasJsonPath("$.features[0].properties.test_geom2")));
+		assertThat(featureCollection,
+				hasJsonPath("$.features[0].properties.test_geom3", is("POINT (766718.335245 5933193.592495)")));
 	}
 
 	@Test
