@@ -20,7 +20,6 @@ import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.geometry.Geometry;
-import org.deegree.geometry.io.WKTWriter;
 import org.deegree.gml.reference.FeatureReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -385,11 +384,11 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter, G
 		}
 	}
 
-	private void exportGeometryPropertyTypeAsWkt(Property property) throws IOException {
+	private void exportGeometryPropertyTypeAsWkt(Property property)
+			throws IOException, TransformationException, UnknownCRSException {
 		TypedObjectNode value = property.getValue();
 		if (value instanceof Geometry) {
-			String wkt = WKTWriter.write((Geometry) value);
-			value(wkt);
+			geoJsonGeometryWriter.writeWktGeometry((Geometry) value);
 		}
 	}
 
