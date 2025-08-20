@@ -1,4 +1,4 @@
-<Themes xmlns="http://www.deegree.org/themes/standard" xmlns:d="http://www.deegree.org/metadata/description" xmlns:s="http://www.deegree.org/metadata/spatial" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/themes/standard https://schemas.deegree.org/core/3.5/themes/themes.xsd">
+<Themes xmlns="http://www.deegree.org/themes/standard" xmlns:d="http://www.deegree.org/metadata/description" xmlns:s="http://www.deegree.org/metadata/spatial" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/themes/standard https://schemas.deegree.org/core/3.6/themes/themes.xsd">
 
   <LayerStoreId>layer_tile_utah_ortho</LayerStoreId>
   

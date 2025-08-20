@@ -1,3 +1,3 @@
-<RemoteWMTS xmlns="http://www.deegree.org/remoteows/wmts" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/remoteows/wmts https://schemas.deegree.org/core/3.5/remoteows/wmts/remotewmts.xsd">
+<RemoteWMTS xmlns="http://www.deegree.org/remoteows/wmts" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/remoteows/wmts https://schemas.deegree.org/core/3.6/remoteows/wmts/remotewmts.xsd">
   <CapabilitiesDocumentLocation location="http://deegree3-testing.deegree.org/utah-workspace/services/wmts?service=WMTS&amp;version=1.0.0&amp;request=GetCapabilities"/>
 </RemoteWMTS>

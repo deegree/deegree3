@@ -1,4 +1,4 @@
 <RemoteWMTS xmlns="http://www.deegree.org/remoteows/wmts" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/remoteows/wmts https://schemas.deegree.org/core/3.5/remoteows/wmts/remotewmts.xsd">
+  xsi:schemaLocation="http://www.deegree.org/remoteows/wmts https://schemas.deegree.org/core/3.6/remoteows/wmts/remotewmts.xsd">
   <CapabilitiesDocumentLocation location="capabilities_example.xml" />
 </RemoteWMTS>

@@ -123,7 +123,7 @@
           <con:request><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <deegreeWFS xmlns="http://www.deegree.org/services/wfs"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xsi:schemaLocation="http://www.deegree.org/services/wfs https://schemas.deegree.org/core/3.5/services/wfs/wfs_configuration.xsd"
+            xsi:schemaLocation="http://www.deegree.org/services/wfs https://schemas.deegree.org/core/3.6/services/wfs/wfs_configuration.xsd"
            >
 
   <SupportedVersions>

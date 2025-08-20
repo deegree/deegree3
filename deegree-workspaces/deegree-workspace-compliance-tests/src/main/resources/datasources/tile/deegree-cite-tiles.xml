@@ -1,4 +1,4 @@
-<RemoteWMSTileStore xmlns="http://www.deegree.org/datasource/tile/remotewms" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/datasource/tile/remotewms https://schemas.deegree.org/core/3.5/datasource/tile/remotewms/remotewms.xsd">
+<RemoteWMSTileStore xmlns="http://www.deegree.org/datasource/tile/remotewms" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/datasource/tile/remotewms https://schemas.deegree.org/core/3.6/datasource/tile/remotewms/remotewms.xsd">
 
   <!-- [1]: Id of the remote WMS to connect to -->
   <RemoteWMSId>deegree-cite</RemoteWMSId>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ShapeFeatureStore xmlns="http://www.deegree.org/datasource/feature/shape"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/datasource/feature/shape https://schemas.deegree.org/core/3.5/datasource/feature/shape/shape.xsd">
+  xsi:schemaLocation="http://www.deegree.org/datasource/feature/shape https://schemas.deegree.org/core/3.6/datasource/feature/shape/shape.xsd">
   <FeatureTypeNamespace>http://www.deegree.org/app</FeatureTypeNamespace>
   <File>../../data/cite/Streams.shp</File>
 </ShapeFeatureStore>
