@@ -37,6 +37,8 @@ package org.deegree.feature.persistence.shape;
 import static org.deegree.commons.tom.primitive.BaseType.BOOLEAN;
 import static org.deegree.commons.tom.primitive.BaseType.STRING;
 
+import java.util.List;
+
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
@@ -54,7 +56,6 @@ import org.deegree.sqldialect.filter.UnmappableException;
 import org.deegree.sqldialect.filter.expression.SQLArgument;
 import org.deegree.sqldialect.filter.expression.SQLColumn;
 import org.deegree.sqldialect.filter.expression.SQLExpression;
-import org.deegree.sqldialect.filter.expression.SQLOperation;
 import org.deegree.sqldialect.filter.expression.SQLOperationBuilder;
 
 /**
@@ -83,6 +84,11 @@ public class H2WhereBuilder extends AbstractWhereBuilder {
 	@Override
 	protected void toProtoSql(SpatialOperator op, SQLExpression propNameExpr, SQLOperationBuilder builder)
 			throws UnmappableException {
+		throw new UnmappableException("Spatial operators are currently not mappable in h2.");
+	}
+
+	@Override
+	protected List<SQLExpression> toProtoSQLSpatial(ValueReference propName) throws UnmappableException {
 		throw new UnmappableException("Spatial operators are currently not mappable in h2.");
 	}
 
