@@ -34,12 +34,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.xml.namespace.QName;
-
 import org.deegree.commons.utils.QNameUtils;
 import org.deegree.feature.persistence.sql.xpath.MappableNameStep;
 import org.deegree.feature.persistence.sql.xpath.MappableStep;
@@ -50,6 +44,13 @@ import org.deegree.sqldialect.filter.PropertyNameMapper;
 import org.deegree.sqldialect.filter.PropertyNameMapping;
 import org.deegree.sqldialect.filter.TableAliasManager;
 import org.deegree.sqldialect.filter.UnmappableException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.xml.namespace.QName;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * {@link PropertyNameMapper} for the {@link SQLFeatureStore}.
@@ -57,6 +58,8 @@ import org.deegree.sqldialect.filter.UnmappableException;
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  */
 public class SQLPropertyNameMapper implements PropertyNameMapper {
+
+	private static final Logger LOG = LoggerFactory.getLogger(SQLPropertyNameMapper.class);
 
 	private final SQLFeatureStore fs;
 
@@ -103,23 +106,36 @@ public class SQLPropertyNameMapper implements PropertyNameMapper {
 	@Override
 	public PropertyNameMapping getMapping(ValueReference propName, TableAliasManager aliasManager)
 			throws FilterEvaluationException, UnmappableException {
-		if (ftMapping != null || propName == null || propName.getAsText().isEmpty())
-			return new MappedXPath(fs, ftMapping, propName, aliasManager, false, handleStrict).getPropertyNameMapping();
+		if (ftMapping != null || propName == null || propName.getAsText().isEmpty()) {
+			List<PropertyNameMapping> propertyNameMappings = new MappedXPath(fs, ftMapping, propName, aliasManager,
+					false, handleStrict)
+				.getPropertyNameMappings();
+			if (propertyNameMappings.isEmpty())
+				return null;
+			else if (propertyNameMappings.size() > 1)
+				LOG.warn("Multiple non-spatial mappings are currently not supported!");
+			return propertyNameMappings.get(0);
+		}
 		FeatureTypeMapping correspondingFtMapping = findCorrespondingMapping(propName);
-		return new MappedXPath(fs, correspondingFtMapping, propName, aliasManager, false, handleStrict)
-			.getPropertyNameMapping();
+		List<PropertyNameMapping> propertyNameMappings = new MappedXPath(fs, correspondingFtMapping, propName,
+				aliasManager, false, handleStrict)
+			.getPropertyNameMappings();
+		if (propertyNameMappings.isEmpty())
+			return null;
+		else if (propertyNameMappings.size() > 1)
+			LOG.warn("Multiple non-spatial mappings are currently not supported!");
+		return propertyNameMappings.get(0);
 
 	}
 
 	@Override
-	public PropertyNameMapping getSpatialMapping(ValueReference propName, TableAliasManager aliasManager)
-			throws FilterEvaluationException, UnmappableException {
-
+	public List<PropertyNameMapping> getSpatialMappings(ValueReference propName, TableAliasManager aliasManager)
+			throws UnmappableException {
 		if (ftMapping != null || propName == null || propName.getAsText().isEmpty())
-			return new MappedXPath(fs, ftMapping, propName, aliasManager, true, handleStrict).getPropertyNameMapping();
-		FeatureTypeMapping correspondingFtMapping = findCorrespondingMapping(propName);
+			return new MappedXPath(fs, ftMapping, propName, aliasManager, true, handleStrict).getPropertyNameMappings();
+		FeatureTypeMapping correspondingFtMapping = ftMapping != null ? ftMapping : findCorrespondingMapping(propName);
 		return new MappedXPath(fs, correspondingFtMapping, propName, aliasManager, true, handleStrict)
-			.getPropertyNameMapping();
+			.getPropertyNameMappings();
 	}
 
 	private FeatureTypeMapping findCorrespondingMapping(ValueReference propName) throws UnmappableException {
