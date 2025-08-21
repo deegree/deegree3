@@ -42,6 +42,7 @@ package org.deegree.layer.persistence.remotewms;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -152,13 +153,18 @@ class RemoteWmsLayerBuilder {
 
 	private void removeUnconfiguredStyles(Map<String, Style> configuredLegendStyles,
 			Map<String, Style> remoteServiceLegendStyles, Map<String, Style> remoteServiceStyles) {
+		List<String> stylesToRemove = new ArrayList<>();
 		for (String remoteServiceStyleName : remoteServiceStyles.keySet()) {
 			if (!"default".equalsIgnoreCase(remoteServiceStyleName)
 					&& !configuredLegendStyles.containsKey(remoteServiceStyleName)) {
-				remoteServiceStyles.remove(remoteServiceStyleName);
-				remoteServiceLegendStyles.remove(remoteServiceStyleName);
+				stylesToRemove.add(remoteServiceStyleName);
 			}
 		}
+		stylesToRemove.forEach(styleToRemove -> {
+			remoteServiceStyles.remove(styleToRemove);
+			remoteServiceLegendStyles.remove(styleToRemove);
+		});
+
 	}
 
 	private void setLegendUrlAndFile(Style targetStyle, Style sourceStyle) {

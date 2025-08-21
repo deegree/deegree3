@@ -735,6 +735,49 @@ public class AppSchemaMapperTest {
 	}
 
 	@Test
+	public void testWithReferenceDataAndConsiderProperties_xomplexProperties() throws Exception {
+		GMLAppSchemaReader xsdDecoder = new GMLAppSchemaReader(null, null, schemaForSampleValues);
+		AppSchema appSchema = xsdDecoder.extractAppSchema();
+
+		QName featureTypeNameB = new QName("http://test.de/schema", "FeatureB", "te");
+		ReferenceData referenceData = mock(ReferenceData.class);
+		when(referenceData.shouldFeatureTypeMapped(featureTypeNameB)).thenReturn(true);
+		QName propB1 = new QName("http://test.de/schema", "prop_B1", "te");
+		when(referenceData.hasZeroOrOneProperty(featureTypeNameB, asPathStep(propB1))).thenReturn(false);
+		QName propFfeatureA = new QName("http://test.de/schema", "featureA", "te");
+		when(referenceData.hasZeroOrOneProperty(featureTypeNameB, asPathStep(propFfeatureA))).thenReturn(false);
+
+		QName featureTypeNameA = new QName("http://test.de/schema", "FeatureA", "te");
+		QName propA1 = new QName("http://test.de/schema", "prop_A1", "te");
+		when(referenceData.shouldFeatureTypeMapped(featureTypeNameA)).thenReturn(true);
+		when(referenceData.hasZeroOrOneProperty(featureTypeNameA, asPathStep(propA1))).thenReturn(false);
+
+		CRSRef storageCrs = CRSManager.getCRSRef("EPSG:4326");
+		GeometryStorageParams geometryParams = new GeometryStorageParams(storageCrs, "0", DIM_2);
+		AppSchemaMapper mapper = new AppSchemaMapper(appSchema, false, true, geometryParams, 63, true, true, 0,
+				referenceData, true, null);
+
+		MappedAppSchema mappedSchema = mapper.getMappedSchema();
+
+		Map<QName, FeatureTypeMapping> ftMappings = mappedSchema.getFtMappings();
+		assertThat(ftMappings.size(), is(2));
+
+		FeatureTypeMapping featureB = mappedSchema.getFtMapping(FEATURE_B);
+		List<Mapping> mappingsB = featureB.getMappings();
+		assertThat(mappingsB.size(), is(3));
+		assertThat(getPrimitive(mappingsB, "prop_B1").getJoinedTable(), is(notNullValue()));
+		assertThat(getPrimitive(mappingsB, "prop_B2").getJoinedTable(), is(nullValue()));
+		assertThat(getCompound(mappingsB, "featureA").getJoinedTable(), is(notNullValue()));
+
+		FeatureTypeMapping featureA = mappedSchema.getFtMapping(FEATURE_A);
+		List<Mapping> mappingsA = featureA.getMappings();
+		assertThat(mappingsA.size(), is(3));
+		assertThat(getPrimitive(mappingsA, "prop_A1").getJoinedTable(), is(notNullValue()));
+		assertThat(getPrimitive(mappingsA, "prop_A2").getJoinedTable(), is(nullValue()));
+		assertThat(getCompound(mappingsA, "complex_A4"), is(notNullValue()));
+	}
+
+	@Test
 	public void testWithReferenceDataAndNilProperties() throws Exception {
 		GMLAppSchemaReader xsdDecoder = new GMLAppSchemaReader(null, null, schemaWithNilValues);
 		AppSchema appSchema = xsdDecoder.extractAppSchema();

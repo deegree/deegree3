@@ -9,6 +9,7 @@ import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
+import org.deegree.geometry.io.WKTWriter;
 import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.geometry.multi.MultiLineString;
 import org.deegree.geometry.multi.MultiPoint;
@@ -55,13 +56,25 @@ public class GeoJsonGeometryWriter {
 	 * Writes the passed geometry as GeoJSON.
 	 * @param geometry geometry to export, never <code>null</code>
 	 * @throws IOException if GeoJSON could no be written
-	 * @throws TransformationException if a geometry to export cannot be transformed to
-	 * CRS:84
+	 * @throws TransformationException if a geometry to export cannot be transformed
 	 * @throws UnknownCRSException if the CRS of the geometry is not supported
 	 */
 	public void writeGeometry(Geometry geometry) throws IOException, TransformationException, UnknownCRSException {
 		Geometry geometryToExport = transformGeometryIfRequired(geometry);
 		exportGeometry(geometryToExport);
+	}
+
+	/**
+	 * Writes the passed geometry as WKT value.
+	 * @param geometry geometry to export as WKT, never <code>null</code>
+	 * @throws IOException if GeoJSON could no be written
+	 * @throws TransformationException if a geometry to export cannot be transformed
+	 * @throws UnknownCRSException if the CRS of the geometry is not supported
+	 */
+	public void writeWktGeometry(Geometry geometry) throws IOException, TransformationException, UnknownCRSException {
+		Geometry geometryToExport = transformGeometryIfRequired(geometry);
+		String wktGeom = WKTWriter.write(geometryToExport);
+		jsonWriter.value(wktGeom);
 	}
 
 	private Geometry transformGeometryIfRequired(Geometry geometry)

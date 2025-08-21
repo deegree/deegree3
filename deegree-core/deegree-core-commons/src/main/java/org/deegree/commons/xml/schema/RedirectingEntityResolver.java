@@ -54,7 +54,9 @@ public class RedirectingEntityResolver implements XMLEntityResolver {
 
 	private static final Logger LOG = LoggerFactory.getLogger(RedirectingEntityResolver.class);
 
-	private static final String SCHEMAS_OPENGIS_NET_URL = "http://schemas.opengis.net/";
+	private static final String OPENGIS_SCHEMAS_URL = "http://schemas.opengis.net/";
+
+	private static final String OASIS_SCHEMAS_URL = "http://docs.oasis-open.org/";
 
 	public static final String INSPIRE_SCHEMAS_URL = "http://inspire.ec.europa.eu/schemas";
 
@@ -77,15 +79,15 @@ public class RedirectingEntityResolver implements XMLEntityResolver {
 	 * <code>null</code>
 	 */
 	public String redirect(String systemId) {
-		if (systemId.startsWith(SCHEMAS_OPENGIS_NET_URL)) {
-			String localPart = systemId.substring(SCHEMAS_OPENGIS_NET_URL.length());
+		if (systemId.startsWith(OPENGIS_SCHEMAS_URL)) {
+			String localPart = systemId.substring(OPENGIS_SCHEMAS_URL.length());
 			URL u = RedirectingEntityResolver.class.getResource(ROOT + localPart);
 			if (u != null) {
 				LOG.debug("Local hit: " + systemId);
 				return u.toString();
 			}
 		}
-		else if (systemId.startsWith(INSPIRE_SCHEMAS_URL)) {
+		else if (systemId.startsWith(INSPIRE_SCHEMAS_URL) || systemId.startsWith(OASIS_SCHEMAS_URL)) {
 			return systemId.replaceFirst("http://", "https://");
 		}
 		else if (systemId.equals("http://www.w3.org/2001/xml.xsd")) {

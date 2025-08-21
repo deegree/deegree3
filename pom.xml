@@ -4,7 +4,7 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree</artifactId>
   <packaging>pom</packaging>
-  <version>3.5.9-SNAPSHOT</version>
+  <version>3.5.17-SNAPSHOT</version>
   <name>deegree</name>
   <description>Framework for OGC Web Service implementations and geospatial applications</description>
   <url>http://www.deegree.org/</url>
@@ -533,7 +533,7 @@
       <dependency>
         <groupId>commons-beanutils</groupId>
         <artifactId>commons-beanutils</artifactId>
-        <version>1.9.4</version>
+        <version>1.11.0</version>
         <exclusions>
           <exclusion>
             <groupId>commons-logging</groupId>
@@ -559,12 +559,12 @@
       <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
-        <version>1.16.1</version>
+        <version>1.17.2</version>
       </dependency>
       <dependency>
         <groupId>commons-fileupload</groupId>
         <artifactId>commons-fileupload</artifactId>
-        <version>1.5</version>
+        <version>1.6.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
@@ -823,17 +823,17 @@
       <dependency>
         <groupId>net.postgis</groupId>
         <artifactId>postgis-jdbc</artifactId>
-        <version>2.5.1</version>
+        <version>2024.1.0</version>
       </dependency>
       <dependency>
         <groupId>net.postgis</groupId>
         <artifactId>postgis-geometry</artifactId>
-        <version>2.5.1</version>
+        <version>2024.1.0</version>
       </dependency>
       <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>42.7.3</version>
+        <version>42.7.7</version>
       </dependency>
       <!-- Oracle (Official provided driver from repo1.maven.org) -->
       <dependency>
@@ -876,7 +876,7 @@
       <dependency>
         <groupId>com.microsoft.sqlserver</groupId>
         <artifactId>mssql-jdbc</artifactId>
-        <version>10.2.3.jre11</version>
+        <version>12.10.1.jre11</version>
       </dependency>
       <!-- Batik -->
       <dependency>
@@ -1231,11 +1231,11 @@
     <slf4j.version>1.7.36</slf4j.version>
     <spring-boot.version>2.7.18</spring-boot.version>
     <spring-batch.version>4.3.10</spring-batch.version>
-    <spring-framework.version>5.3.36</spring-framework.version>
+    <spring-framework.version>5.3.39</spring-framework.version>
     <batik.version>1.17</batik.version>
     <axoim.version>1.2.22</axoim.version>
     <jsonpath.version>2.9.0</jsonpath.version>
-    <jsonsmart.version>2.5.1</jsonsmart.version>
+    <jsonsmart.version>2.5.2</jsonsmart.version>
   </properties>
 
   <modules>
@@ -1319,9 +1319,9 @@
           <plugin>
             <groupId>org.owasp</groupId>
             <artifactId>dependency-check-maven</artifactId>
-            <version>9.0.9</version>
+            <version>12.1.0</version>
             <configuration>
-              <cveValidForHours>24</cveValidForHours>
+              <nvdValidForHours>24</nvdValidForHours>
               <knownExploitedEnabled>false</knownExploitedEnabled>
             </configuration>
             <reportSets>
