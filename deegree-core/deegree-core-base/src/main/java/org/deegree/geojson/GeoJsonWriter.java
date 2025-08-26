@@ -357,15 +357,7 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter, G
 			QName key = attributesAndChildren.keySet().iterator().next();
 			List<TypedObjectNode> values = attributesAndChildren.get(key);
 			if (values.size() == 1 && values.get(0) instanceof PrimitiveValue) {
-				if (isNilled(key, values.get(0))) {
-					beginObject();
-					name(key.getLocalPart());
-					exportValue((PrimitiveValue) values.get(0));
-					endObject();
-				}
-				else {
-					exportValue((PrimitiveValue) values.get(0));
-				}
+				exportValue((PrimitiveValue) values.get(0));
 			}
 			else if (values.size() == 1) {
 				beginObject();
@@ -423,12 +415,16 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter, G
 			exportValue(primitiveValue);
 		}
 		else if (node instanceof Property) {
-			name(((Property) node).getName().getLocalPart());
-			export((Property) node);
+			if (!isNilledAndHasNoOtherAttributesOrProperties(node)) {
+				name(((Property) node).getName().getLocalPart());
+				export((Property) node);
+			}
 		}
 		else if (node instanceof GenericXMLElement) {
-			name(((GenericXMLElement) node).getName().getLocalPart());
-			exportAttributesAndChildren((GenericXMLElement) node);
+			if (!isNilledAndHasNoOtherAttributesOrProperties(node)) {
+				name(((GenericXMLElement) node).getName().getLocalPart());
+				exportAttributesAndChildren((GenericXMLElement) node);
+			}
 		}
 		else if (node instanceof FeatureReference) {
 			name("href");
@@ -501,20 +497,27 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter, G
 		return Collections.emptyList();
 	}
 
-	private boolean isNilledAndHasNoOtherAttributesOrProperties(Property property) {
-		if ((property.getChildren() == null || property.getChildren().isEmpty()) && property.getAttributes() != null
-				&& property.getAttributes().size() == 1) {
-			TypedObjectNode nil = property.getAttributes().get(XSI_NIL);
-			if (nil instanceof PrimitiveValue) {
-				return Boolean.TRUE.equals(((PrimitiveValue) nil).getValue());
-			}
+	private boolean isNilledAndHasNoOtherAttributesOrProperties(TypedObjectNode node) {
+		if (node instanceof Property) {
+			Property property = (Property) node;
+			return isNilledAndHasNoOtherAttributesOrProperties(property.getChildren(), property.getAttributes());
+		}
+		else if (node instanceof GenericXMLElement) {
+			GenericXMLElement genericXMLElement = (GenericXMLElement) node;
+			return isNilledAndHasNoOtherAttributesOrProperties(genericXMLElement.getChildren(),
+					genericXMLElement.getAttributes());
 		}
 		return false;
 	}
 
-	private boolean isNilled(QName key, TypedObjectNode typedObjectNode) {
-		if (XSI_NIL.equals(key) && typedObjectNode instanceof PrimitiveValue)
-			return Boolean.TRUE.equals(((PrimitiveValue) typedObjectNode).getValue());
+	private static boolean isNilledAndHasNoOtherAttributesOrProperties(List<TypedObjectNode> children,
+			Map<QName, PrimitiveValue> attributes) {
+		if ((children == null || children.isEmpty()) && attributes != null && attributes.size() == 1) {
+			TypedObjectNode nil = attributes.get(XSI_NIL);
+			if (nil instanceof PrimitiveValue) {
+				return Boolean.TRUE.equals(((PrimitiveValue) nil).getValue());
+			}
+		}
 		return false;
 	}
 
