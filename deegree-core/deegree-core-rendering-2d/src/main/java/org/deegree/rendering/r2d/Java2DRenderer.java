@@ -148,7 +148,11 @@ public class Java2DRenderer implements Renderer {
 		if (clippedGeometry == null) {
 			return;
 		}
-		if (clippedGeometry instanceof Surface) {
+		if (clippedGeometry instanceof Point) {
+			rendererContext.pointRenderer.render(styling, ((Point) clippedGeometry).get0(),
+					((Point) clippedGeometry).get1());
+		}
+		else if (clippedGeometry instanceof Surface) {
 			rendererContext.polygonRenderer.render(styling, (Surface) clippedGeometry);
 		}
 		else if (clippedGeometry instanceof Curve) {
