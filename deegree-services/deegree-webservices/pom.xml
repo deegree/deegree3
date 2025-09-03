@@ -288,7 +288,7 @@
     <dependency>
       <groupId>org.primefaces</groupId>
       <artifactId>primefaces</artifactId>
-      <version>14.0.12</version>
+      <version>14.0.14-LTS</version>
       <classifier>jakarta</classifier>
     </dependency>
     <dependency>
