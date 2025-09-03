@@ -4,20 +4,18 @@
 [[system-requirements]]
 === System requirements
 
-deegree webservices work on any platform with a compatible Java SE 11
-installation, including:
+deegree webservices work on any platform with a compatible Java SE 17 installation, including:
 
 * Microsoft Windows
 * Linux
 * macOS
 
-Supported Java SE 11 versions are
-https://www.oracle.com/java/technologies/downloads/#java11[Oracle JDK 11]
-footnote:[Oracle JDK 8 and later requires a subscription from Oracle for use in production environments. Read further in https://www.oracle.com/java/java-se-subscription/[Oracle Java SE subscription].] and https://openjdk.org/projects/jdk/11/[OpenJDK 11]
-footnote:[OpenJDK binaries are provided by https://www.azul.com/downloads/#zulu[Azul Systems]
-or https://adoptium.net/[Eclipse Temurin].].
+Supported Java SE 17 versions are
+https://www.oracle.com/java/technologies/downloads/#java17[Oracle JDK 17]
+footnote:[Oracle JDK requires a subscription from Oracle for use in production environments. Read further in https://www.oracle.com/java/java-se-subscription/[Oracle Java SE subscription].] and https://adoptium.net/en-GB/temurin/releases?version=17&os=any&arch=any[Eclipse Temurin JDK 17]
+footnote:[OpenJDK binaries are also provided by https://www.azul.com/downloads/#zulu[Azul Systems] or https://aws.amazon.com/de/corretto[Amazon Corretto 17].].
 
-NOTE: Newer Java SE versions such as the LTS versions 17 are currently not supported by deegree 3.5. Please check out our wiki page https://github.com/deegree/deegree3/wiki/End-of-Life-and-Support-Matrix[End of Life and Support Matrix] for further information.
+NOTE: Newer Java SE versions such as the LTS versions 21 may work but are not tested by the community. Please check out our wiki page https://github.com/deegree/deegree3/wiki/End-of-Life-and-Support-Matrix[End of Life and Support Matrix] for further information.
 
 === Downloading
 
@@ -29,9 +27,9 @@ Tomcat footnote:[Requires an installation of Docker Community or
 Enterprise Edition, download Docker from
 https://www.docker.com/[www.docker.com].]
 * _WAR_: Generic Java Web Archive for deployment in an existing Java
-Servlet container footnote:[A Java Servlet 3.1 compliant container is
+Servlet container footnote:[A Java Servlet 6.0 compliant container is
 required. We recommend using the latest https://tomcat.apache.org/[Apache
-Tomcat 9] release.]
+Tomcat 10.1] release.]
 
 TIP: If you are confused by the options and unsure which version to pick,
 use the WAR. All variants contain exactly the same deegree webservices webapp,
@@ -72,8 +70,8 @@ To shut deegree webservices down, switch back to the terminal window and
 press _CTRL+c_ or simply close it.
 
 TIP: If you want to run deegree webservices on system startup automatically,
-consider installing https://tomcat.apache.org[Apache Tomcat 9] as a
-system service. Consult the https://tomcat.apache.org/tomcat-9.0-doc/index.html[Tomcat documentation]
+consider installing https://tomcat.apache.org[Apache Tomcat] as a
+system service. Consult the https://tomcat.apache.org/tomcat-10.1-doc/index.html[Tomcat documentation]
 for more information and options.
 
 === Securing deegree
@@ -98,7 +96,7 @@ releases of software:
 
 TIP: If you are running Apache Tomcat we recommend that you read and apply
 all recommendations as documented in
-https://tomcat.apache.org/tomcat-9.0-doc/security-howto.html[Apache Tomcat Security Considerations].
+https://tomcat.apache.org/tomcat-10.1-doc/security-howto.html[Apache Tomcat Security Considerations].
 
 ==== Encryption
 
@@ -107,7 +105,7 @@ or TLS. Either enable HTTPS on your Java Servlet Container or operate it
 behind a web server such as Apache httpd oder NGINX.
 
 TIP: If you are running Apache Tomcat read the
-https://tomcat.apache.org/tomcat-9.0-doc/ssl-howto.html[SSL HowTo].
+https://tomcat.apache.org/tomcat-10.1-doc/ssl-howto.html[SSL configuration HowTo].
 
 ==== Securing the deegree webservices administration console and REST API
 
@@ -128,5 +126,5 @@ you must not operate the Java Servlet container as root user!
 Furthermore, you should consider to enable the Java Security Manager and
 define restrictive file permissions.footnote:[How to run securely Java
 applications we recommend to follow the
-https://docs.oracle.com/en/java/javase/11/security/index.html[Java Security Guidelines] and for
-https://tomcat.apache.org/tomcat-9.0-doc/security-manager-howto.html[Apache Tomcat the Security Manager HowTo].]
+https://docs.oracle.com/en/java/javase/17/security/index.html[Java Security Guidelines] and for
+https://tomcat.apache.org/tomcat-10.1-doc/security-manager-howto.html[Apache Tomcat the Security Manager HowTo].]

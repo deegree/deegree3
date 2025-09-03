@@ -98,10 +98,10 @@ runs deegree. If you started the Java Servlet container as user
 _/home/kelvin/.deegree_.
 
 TIP: In order to use a different folder for deegree's configuration files,
-you can set the environment variable _DEEGREE_WORKSPACE_ROOT_, for example with `export DEEGREE_WORKSPACE_ROOT=/var/lib/tomcat9/.deegree`. When using Tomcat you can also set the path by defining a Java system property and appending the `JAVA_OPTS` or `CATALINA_OPTS` environment variable with `CATALINA_OPTS=-DDEEGREE_WORKSPACE_ROOT=/var/lib/tomcat9/.deegree`.
+you can set the environment variable _DEEGREE_WORKSPACE_ROOT_, for example with `export DEEGREE_WORKSPACE_ROOT=/var/lib/tomcat/.deegree`. When using Tomcat you can also set the path by defining a Java system property and appending the `JAVA_OPTS` or `CATALINA_OPTS` environment variable with `CATALINA_OPTS=-DDEEGREE_WORKSPACE_ROOT=/var/lib/tomcat/.deegree`.
 
 IMPORTANT: Note that the user running the web application container must have
-read/write access to this directory! Since Debian 11 you have to grant explicitly write access to the default home directory by setting `ReadWritePaths=/var/lib/tomcat9/.deegree` in _/etc/systemd/system/multi-user.target.wants/tomcat9.service_!
+read/write access to this directory! Since Debian 11 you have to grant explicitly write access to the default home directory by setting `ReadWritePaths=/var/lib/tomcat/.deegree` in _/etc/systemd/system/multi-user.target.wants/tomcat.service_!
 
 ==== Windows
 
