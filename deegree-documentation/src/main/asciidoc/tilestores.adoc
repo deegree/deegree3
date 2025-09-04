@@ -134,7 +134,7 @@ _-co BIGTIFF=YES_ option)
 * it must be created as a tiled tiff (eg. with GDAL using the
 _-co TILED=YES_ option)
 * it can contain overviews (it is best to use a recent GDAL version >=
-1.8.0, where you can use _GDAL_TIFF_OVR_BLOCKSIZE_ to specify the
+3.0, where you can use _GDAL_TIFF_OVR_BLOCKSIZE_ to specify the
 overview tile size)
 * it is recommended that the overviews contain the same tile size as the
 main level

@@ -105,7 +105,7 @@ The following deegree resources support Oracle Spatial databases:
 
 In order to enable Oracle connectivity for these resources, you need to
 add a compatible Oracle JDBC driver (e.g.
-_ojdbc11.jar_)footnote:[https://www.oracle.com/database/technologies/appdev/jdbc-downloads.html]
+_ojdbc17.jar_)footnote:[https://www.oracle.com/database/technologies/appdev/jdbc-downloads.html]
 (see <<anchor-adding-jars>>).
 
 ==== Adding Oracle GeoRaster support
@@ -117,7 +117,7 @@ In order to enable Oracle connectivity for these resources, you need to
 add the following JAR files (see <<anchor-adding-jars>>):
 
 * A compatible Oracle JDBC-driverfootnote:[https://www.oracle.com/database/technologies/appdev/jdbc-downloads.html]
-** ojdbc11.jar
+** ojdbc17.jar
 * The Oracle Spatial and GeoRaster libraries and their dependencies
 ** sdoapi.jar
 ** sdogr.jar
@@ -144,5 +144,5 @@ The following deegree resources support Microsoft SQL Server:
 
 In order to enable Microsoft SQL Server connectivity for these
 resources, you need to add a compatible Microsoft JDBC driver (e.g.
-_mssql-jdbc-12.6.1.jre11.jar_)footnote:[https://learn.microsoft.com/en-us/sql/connect/jdbc/download-microsoft-jdbc-driver-for-sql-server]
+_mssql-jdbc-13.2.0.jre11.jar_)footnote:[https://learn.microsoft.com/en-us/sql/connect/jdbc/download-microsoft-jdbc-driver-for-sql-server]
 (see <<anchor-adding-jars>>).

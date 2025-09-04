@@ -146,7 +146,7 @@ pages in the GDAL documentation.
 The configuration format for the GDAL settings file is defined by schema
 file https://schemas.deegree.org/core/3.6/commons/gdal/gdal.xsd. The
 following table lists the two available configuration options. When
-specifiying them, their order must be respected.
+specifying them, their order must be respected.
 
 [width="100%",cols="16%,14%,10%,60%",options="header",]
 |===

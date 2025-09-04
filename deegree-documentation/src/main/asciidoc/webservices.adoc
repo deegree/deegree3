@@ -127,8 +127,7 @@ A more complex configuration example looks like this:
 
 The deegree WFS config file format is defined by schema file
 https://schemas.deegree.org/core/3.6/services/wfs/wfs_configuration.xsd. The
-root element is <deegreeWFS> and the optional
-attribute `config` can be set to _3.5.0_. The following table lists all available configuration options
+root element is _deegreeWFS_. The following table lists all available configuration options
 (complex ones contain nested options themselves). When specifying them,
 their order must be respected.
 
@@ -2147,7 +2146,7 @@ like this:
 
 The deegree WMTS config file format is defined by schema file
 https://schemas.deegree.org/core/3.6/services/wmts/wmts.xsd. The root
-element is _deegreeWMTS_ and the optional attribute `config` can be set to _3.5.0_.
+element is _deegreeWMTS_.
 
 The following table lists all available configuration options. When
 specifying them, their order must be respected.
@@ -2361,7 +2360,7 @@ example looks like this:
 
 The deegree CSW config file format is defined by schema file
 https://schemas.deegree.org/core/3.6/services/csw/csw_configuration.xsd. The
-root element is _deegreeCSW_ and the optional attribute `config` can be set to _3.5.0_.
+root element is _deegreeCSW_.
 
 The following table lists all available configuration options. When
 specifying them, their order must be respected.
@@ -2492,9 +2491,8 @@ storage directory.
 
 The deegree WPS config file format is defined by schema file
 https://schemas.deegree.org/core/3.6/services/wps/wps_configuration.xsd. The
-root element is _deegreeWPS_ and the config attribute must be
-_3.1.0_. The following table lists all available configuration options
-(complex ones contain nested options themselves). When specifiying them,
+root element is _deegreeWPS_. The following table lists all available configuration options
+(complex ones contain nested options themselves). When specifying them,
 their order must be respected.
 
 [width="100%",cols="28%,14%,10%,48%",options="header",]
@@ -2622,8 +2620,7 @@ configuration works for all types of service alike.
 
 The metadata config file format is defined by schema file
 https://schemas.deegree.org/core/3.6/services/metadata/metadata.xsd. The
-root element is _deegreeServicesMetadata_ and the optional
-attribute `config` can be set to _3.5.0_. The following table lists all available configuration
+root element is _deegreeServicesMetadata_. The following table lists all available configuration
 options (complex ones contain nested options themselves). When
 specifying them, their order must be respected.
 

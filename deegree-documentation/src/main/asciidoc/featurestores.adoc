@@ -208,7 +208,7 @@ The configuration format for the deegree shape feature store is defined
 by schema file
 https://schemas.deegree.org/core/3.6/datasource/feature/shape/shape.xsd. The
 following table lists all available configuration options. When
-specifiying them, their order must be respected.
+specifying them, their order must be respected.
 
 [width="100%",cols="24%,10%,7%,59%",options="header",]
 |===
