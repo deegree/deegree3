@@ -181,6 +181,7 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
 			}
 			inStream.next();
 		}
+		buffer.reset();
 	}
 
 	private void copyAttributes(GMLStreamWriter gmlWriter, XMLStreamReader inStream) throws XMLStreamException {
