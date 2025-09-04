@@ -1,0 +1,786 @@
+<?xml version="1.0" encoding="UTF-8"?><schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:base="http://inspire.ec.europa.eu/schemas/base/3.3" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gn="http://inspire.ec.europa.eu/schemas/gn/4.0" xmlns:net="http://inspire.ec.europa.eu/schemas/net/4.0" xmlns:tn="http://inspire.ec.europa.eu/schemas/tn/4.0" elementFormDefault="qualified" targetNamespace="http://inspire.ec.europa.eu/schemas/tn/4.0" version="4.0">
+  <annotation>
+    <documentation>-- Definition --
+This package defines the types that are common for all transport networks subthemes.</documentation>
+  </annotation>
+  <import namespace="http://inspire.ec.europa.eu/schemas/base/3.3" schemaLocation="BaseTypes.xsd"/>
+  <import namespace="http://inspire.ec.europa.eu/schemas/gn/4.0" schemaLocation="GeographicalNames.xsd"/>
+  <import namespace="http://inspire.ec.europa.eu/schemas/net/4.0" schemaLocation="Network.xsd"/>
+  <import namespace="http://www.isotc211.org/2005/gmd" schemaLocation="http://schemas.opengis.net/iso/19139/20070417/gmd.xsd"/>
+  <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="http://schemas.opengis.net/gml/3.2.1/gml.xsd"/>
+  <!--XML Schema document created by ShapeChange-->
+  <element name="AccessRestriction" substitutionGroup="tn:TransportProperty" type="tn:AccessRestrictionType">
+    <annotation>
+      <documentation>-- Definition --
+A restriction on the access to a transport element.</documentation>
+    </annotation>
+  </element>
+  <complexType name="AccessRestrictionType">
+    <complexContent>
+      <extension base="tn:TransportPropertyType">
+        <sequence>
+          <element name="restriction" type="gml:ReferenceType">
+            <annotation>
+              <documentation>-- Definition --
+Nature of the access restriction.</documentation>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="AccessRestrictionPropertyType">
+    <sequence minOccurs="0">
+      <element ref="tn:AccessRestriction"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="ConditionOfFacility" substitutionGroup="tn:TransportProperty" type="tn:ConditionOfFacilityType">
+    <annotation>
+      <documentation>-- Definition --
+State of a transport network element with regards to its completion and use.</documentation>
+    </annotation>
+  </element>
+  <complexType name="ConditionOfFacilityType">
+    <complexContent>
+      <extension base="tn:TransportPropertyType">
+        <sequence>
+          <element name="currentStatus" type="gml:ReferenceType">
+            <annotation>
+              <documentation>-- Definition --
+Current status value of a transport network element with regards to its completion and use.</documentation>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ConditionOfFacilityPropertyType">
+    <sequence minOccurs="0">
+      <element ref="tn:ConditionOfFacility"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="MaintenanceAuthority" substitutionGroup="tn:TransportProperty" type="tn:MaintenanceAuthorityType">
+    <annotation>
+      <documentation>-- Definition --
+The authority responsible for maintenance of the transport element.</documentation>
+    </annotation>
+  </element>
+  <complexType name="MaintenanceAuthorityType">
+    <complexContent>
+      <extension base="tn:TransportPropertyType">
+        <sequence>
+          <element name="authority">
+            <annotation>
+              <documentation>-- Definition --
+Identification of the maintenance authority.</documentation>
+            </annotation>
+            <complexType>
+              <complexContent>
+                <extension base="gml:AbstractMetadataPropertyType">
+                  <sequence>
+                    <element ref="gmd:CI_Citation"/>
+                  </sequence>
+                </extension>
+              </complexContent>
+            </complexType>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="MaintenanceAuthorityPropertyType">
+    <sequence minOccurs="0">
+      <element ref="tn:MaintenanceAuthority"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="MarkerPost" substitutionGroup="tn:TransportPoint" type="tn:MarkerPostType">
+    <annotation>
+      <documentation>-- Definition --
+Reference marker placed along a route in a transport network, mostly at regular intervals, indicating the distance from the beginning of the route, or some other reference point, to the point where the marker is located.
+
+-- Description --
+EXAMPLE Examples of routes along which marker posts can be found are roads, railway lines and navigable waterways.</documentation>
+    </annotation>
+  </element>
+  <complexType name="MarkerPostType">
+    <complexContent>
+      <extension base="tn:TransportPointType">
+        <sequence>
+          <element name="location" type="gml:LengthType">
+            <annotation>
+              <documentation>-- Definition --
+Distance from the beginning of the route, or some other reference point, to the point where a marker post is located.</documentation>
+            </annotation>
+          </element>
+          <element name="route" nillable="true" type="gml:ReferenceType">
+            <annotation>
+              <documentation>-- Definition --
+Route in a transport network along which the marker post is placed.</documentation>
+              <appinfo>
+                <targetElement xmlns="http://www.opengis.net/gml/3.2">tn:TransportLinkSet</targetElement>
+                <reversePropertyName xmlns="http://www.opengis.net/gml/3.2">tn:post</reversePropertyName>
+              </appinfo>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="MarkerPostPropertyType">
+    <sequence minOccurs="0">
+      <element ref="tn:MarkerPost"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="OwnerAuthority" substitutionGroup="tn:TransportProperty" type="tn:OwnerAuthorityType">
+    <annotation>
+      <documentation>-- Definition --
+The authority owning the transport element.</documentation>
+    </annotation>
+  </element>
+  <complexType name="OwnerAuthorityType">
+    <complexContent>
+      <extension base="tn:TransportPropertyType">
+        <sequence>
+          <element name="authority">
+            <annotation>
+              <documentation>-- Definition --
+Identification of the owning authority.</documentation>
+            </annotation>
+            <complexType>
+              <complexContent>
+                <extension base="gml:AbstractMetadataPropertyType">
+                  <sequence>
+                    <element ref="gmd:CI_Citation"/>
+                  </sequence>
+                </extension>
+              </complexContent>
+            </complexType>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="OwnerAuthorityPropertyType">
+    <sequence minOccurs="0">
+      <element ref="tn:OwnerAuthority"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="RestrictionForVehicles" substitutionGroup="tn:TransportProperty" type="tn:RestrictionForVehiclesType">
+    <annotation>
+      <documentation>-- Definition --
+Restriction on vehicles on a transport element.</documentation>
+    </annotation>
+  </element>
+  <complexType name="RestrictionForVehiclesType">
+    <complexContent>
+      <extension base="tn:TransportPropertyType">
+        <sequence>
+          <element name="measure" type="gml:MeasureType">
+            <annotation>
+              <documentation>-- Definition --
+The measure for the restriction .
+
+-- Description --
+SOURCE [Euroroads].</documentation>
+            </annotation>
+          </element>
+          <element name="restrictionType" type="gml:ReferenceType">
+            <annotation>
+              <documentation>-- Definition --
+The type of restriction .
+
+-- Description --
+SOURCE [Euroroads].</documentation>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="RestrictionForVehiclesPropertyType">
+    <sequence minOccurs="0">
+      <element ref="tn:RestrictionForVehicles"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="TrafficFlowDirection" substitutionGroup="tn:TransportProperty" type="tn:TrafficFlowDirectionType">
+    <annotation>
+      <documentation>-- Definition --
+Indicates the direction of the flow of traffic in relation to the direction of the transport link vector.</documentation>
+    </annotation>
+  </element>
+  <complexType name="TrafficFlowDirectionType">
+    <complexContent>
+      <extension base="tn:TransportPropertyType">
+        <sequence>
+          <element name="direction" type="gml:ReferenceType">
+            <annotation>
+              <documentation>-- Definition --
+Indicates the direction of the flow of traffic.</documentation>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="TrafficFlowDirectionPropertyType">
+    <sequence minOccurs="0">
+      <element ref="tn:TrafficFlowDirection"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element abstract="true" name="TransportArea" substitutionGroup="net:NetworkArea" type="tn:TransportAreaType">
+    <annotation>
+      <documentation>-- Definition --
+Surface that represents the spatial extent of an element of a transport network.</documentation>
+    </annotation>
+  </element>
+  <complexType abstract="true" name="TransportAreaType">
+    <complexContent>
+      <extension base="net:NetworkAreaType">
+        <sequence>
+          <element minOccurs="0" name="geographicalName" nillable="true">
+            <annotation>
+              <documentation>-- Definition --
+A geographical name that is used to identify the transport network object in the real world. It provides a 'key' for implicitly associating different representations of the object.</documentation>
+            </annotation>
+            <complexType>
+              <sequence>
+                <element ref="gn:GeographicalName"/>
+              </sequence>
+              <attribute name="nilReason" type="gml:NilReasonType"/>
+            </complexType>
+          </element>
+          <element name="validFrom" nillable="true">
+            <annotation>
+              <documentation>-- Definition --
+The time when the transport area started to exist in the real world.</documentation>
+            </annotation>
+            <complexType>
+              <simpleContent>
+                <extension base="dateTime">
+                  <attribute name="nilReason" type="gml:NilReasonType"/>
+                </extension>
+              </simpleContent>
+            </complexType>
+          </element>
+          <element minOccurs="0" name="validTo" nillable="true">
+            <annotation>
+              <documentation>-- Definition --
+The time from which the transport area no longer exists in the real world.</documentation>
+            </annotation>
+            <complexType>
+              <simpleContent>
+                <extension base="dateTime">
+                  <attribute name="nilReason" type="gml:NilReasonType"/>
+                </extension>
+              </simpleContent>
+            </complexType>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="TransportAreaPropertyType">
+    <sequence minOccurs="0">
+      <element ref="tn:TransportArea"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element abstract="true" name="TransportLink" substitutionGroup="net:Link" type="tn:TransportLinkType">
+    <annotation>
+      <documentation>-- Definition --
+A linear spatial object that describes the geometry and connectivity of a transport network between two points in the network.</documentation>
+    </annotation>
+  </element>
+  <complexType abstract="true" name="TransportLinkType">
+    <complexContent>
+      <extension base="net:LinkType">
+        <sequence>
+          <element minOccurs="0" name="geographicalName" nillable="true">
+            <annotation>
+              <documentation>-- Definition --
+A geographical name that is used to identify the transport network object in the real world. It provides a 'key' for implicitly associating different representations of the object.</documentation>
+            </annotation>
+            <complexType>
+              <sequence>
+                <element ref="gn:GeographicalName"/>
+              </sequence>
+              <attribute name="nilReason" type="gml:NilReasonType"/>
+            </complexType>
+          </element>
+          <element name="validFrom" nillable="true">
+            <annotation>
+              <documentation>-- Definition --
+The time when the transport link started to exist in the real world.</documentation>
+            </annotation>
+            <complexType>
+              <simpleContent>
+                <extension base="dateTime">
+                  <attribute name="nilReason" type="gml:NilReasonType"/>
+                </extension>
+              </simpleContent>
+            </complexType>
+          </element>
+          <element minOccurs="0" name="validTo" nillable="true">
+            <annotation>
+              <documentation>-- Definition --
+The time from which the transport link no longer exists in the real world.</documentation>
+            </annotation>
+            <complexType>
+              <simpleContent>
+                <extension base="dateTime">
+                  <attribute name="nilReason" type="gml:NilReasonType"/>
+                </extension>
+              </simpleContent>
+            </complexType>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="TransportLinkPropertyType">
+    <sequence minOccurs="0">
+      <element ref="tn:TransportLink"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element abstract="true" name="TransportLinkSequence" substitutionGroup="net:LinkSequence" type="tn:TransportLinkSequenceType">
+    <annotation>
+      <documentation>-- Definition --
+A linear spatial object, composed of an ordered collection of transport links, which represents a continuous path in the transport network without any branches. The element has a defined beginning and end and every position on the transport link sequence is identifiable with one single parameter such as length. It describes an element of the transport network, characterized by one or more thematical identifiers and/or properties.</documentation>
+    </annotation>
+  </element>
+  <complexType abstract="true" name="TransportLinkSequenceType">
+    <complexContent>
+      <extension base="net:LinkSequenceType">
+        <sequence>
+          <element minOccurs="0" name="geographicalName" nillable="true">
+            <annotation>
+              <documentation>-- Definition --
+A geographical name that is used to identify the transport network object in the real world. It provides a 'key' for implicitly associating different representations of the object.</documentation>
+            </annotation>
+            <complexType>
+              <sequence>
+                <element ref="gn:GeographicalName"/>
+              </sequence>
+              <attribute name="nilReason" type="gml:NilReasonType"/>
+            </complexType>
+          </element>
+          <element name="validFrom" nillable="true">
+            <annotation>
+              <documentation>-- Definition --
+The time when the transport link sequence started to exist in the real world.</documentation>
+            </annotation>
+            <complexType>
+              <simpleContent>
+                <extension base="dateTime">
+                  <attribute name="nilReason" type="gml:NilReasonType"/>
+                </extension>
+              </simpleContent>
+            </complexType>
+          </element>
+          <element minOccurs="0" name="validTo" nillable="true">
+            <annotation>
+              <documentation>-- Definition --
+The time from which the transport link sequence no longer exists in the real world.</documentation>
+            </annotation>
+            <complexType>
+              <simpleContent>
+                <extension base="dateTime">
+                  <attribute name="nilReason" type="gml:NilReasonType"/>
+                </extension>
+              </simpleContent>
+            </complexType>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="TransportLinkSequencePropertyType">
+    <sequence minOccurs="0">
+      <element ref="tn:TransportLinkSequence"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element abstract="true" name="TransportLinkSet" substitutionGroup="net:LinkSet" type="tn:TransportLinkSetType">
+    <annotation>
+      <documentation>-- Definition --
+A collection of transport link sequences and or individual transport links that has a specific function or significance in a transport network. 
+
+-- Description --
+NOTE
+This spatial object type supports the aggregation of links to form objects with branches, loops, parallel sequences of links, gaps, etc.
+
+EXAMPLE
+A dual carriageway road, as a collection of the two link sequences that represent each carriageway.</documentation>
+    </annotation>
+  </element>
+  <complexType abstract="true" name="TransportLinkSetType">
+    <complexContent>
+      <extension base="net:LinkSetType">
+        <sequence>
+          <element minOccurs="0" name="geographicalName" nillable="true">
+            <annotation>
+              <documentation>-- Definition --
+A geographical name that is used to identify the transport network object in the real world. It provides a 'key' for implicitly associating different representations of the object.</documentation>
+            </annotation>
+            <complexType>
+              <sequence>
+                <element ref="gn:GeographicalName"/>
+              </sequence>
+              <attribute name="nilReason" type="gml:NilReasonType"/>
+            </complexType>
+          </element>
+          <element name="validFrom" nillable="true">
+            <annotation>
+              <documentation>-- Definition --
+The time when the transport link set started to exist in the real world.</documentation>
+            </annotation>
+            <complexType>
+              <simpleContent>
+                <extension base="dateTime">
+                  <attribute name="nilReason" type="gml:NilReasonType"/>
+                </extension>
+              </simpleContent>
+            </complexType>
+          </element>
+          <element minOccurs="0" name="validTo" nillable="true">
+            <annotation>
+              <documentation>-- Definition --
+The time from which the transport link set no longer exists in the real world.</documentation>
+            </annotation>
+            <complexType>
+              <simpleContent>
+                <extension base="dateTime">
+                  <attribute name="nilReason" type="gml:NilReasonType"/>
+                </extension>
+              </simpleContent>
+            </complexType>
+          </element>
+          <element maxOccurs="unbounded" minOccurs="0" name="post" nillable="true" type="gml:ReferenceType">
+            <annotation>
+              <documentation>-- Definition --
+Marker post along a route in a transport network.</documentation>
+              <appinfo>
+                <targetElement xmlns="http://www.opengis.net/gml/3.2">tn:MarkerPost</targetElement>
+                <reversePropertyName xmlns="http://www.opengis.net/gml/3.2">tn:route</reversePropertyName>
+              </appinfo>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="TransportLinkSetPropertyType">
+    <sequence minOccurs="0">
+      <element ref="tn:TransportLinkSet"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="TransportNetwork" substitutionGroup="net:Network" type="tn:TransportNetworkType">
+    <annotation>
+      <documentation>-- Definition --
+Collection of network elements that belong to a single mode of transport.
+
+-- Description --
+NOTE Road, rail, water and air transport are always considered separate transport modes. Even within these four categories, multiple modes of transport can be defined, based on infrastructure, vehicle types, propulsion system, operation and/or other defining characteristics.
+
+EXAMPLE All road transport can be considered one mode of transport for some applications. For other applications, it might be necessary to distinguish between different public road transport networks. Within water transport, marine and inland water transport can be considered to be separate modes of transport for some applications, as they use different types of ships.</documentation>
+    </annotation>
+  </element>
+  <complexType name="TransportNetworkType">
+    <complexContent>
+      <extension base="net:NetworkType">
+        <sequence>
+          <element name="inspireId" type="base:IdentifierPropertyType">
+            <annotation>
+              <documentation>-- Definition --
+External object identifier of the spatial object.</documentation>
+            </annotation>
+          </element>
+          <element name="typeOfTransport" type="tn:TransportTypeValueType">
+            <annotation>
+              <documentation>-- Definition --
+Type of transport network, based on the type of infrastructure the network uses.</documentation>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="TransportNetworkPropertyType">
+    <sequence minOccurs="0">
+      <element ref="tn:TransportNetwork"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element abstract="true" name="TransportNode" substitutionGroup="net:Node" type="tn:TransportNodeType">
+    <annotation>
+      <documentation>-- Definition --
+A point spatial object which is used for connectivity.
+
+-- Description --
+Nodes are found at either end of the TransportLink.</documentation>
+    </annotation>
+  </element>
+  <complexType abstract="true" name="TransportNodeType">
+    <complexContent>
+      <extension base="net:NodeType">
+        <sequence>
+          <element minOccurs="0" name="geographicalName" nillable="true">
+            <annotation>
+              <documentation>-- Definition --
+A geographical name that is used to identify the transport network object in the real world. It provides a 'key' for implicitly associating different representations of the object.</documentation>
+            </annotation>
+            <complexType>
+              <sequence>
+                <element ref="gn:GeographicalName"/>
+              </sequence>
+              <attribute name="nilReason" type="gml:NilReasonType"/>
+            </complexType>
+          </element>
+          <element name="validFrom" nillable="true">
+            <annotation>
+              <documentation>-- Definition --
+The time when the transport node started to exist in the real world.</documentation>
+            </annotation>
+            <complexType>
+              <simpleContent>
+                <extension base="dateTime">
+                  <attribute name="nilReason" type="gml:NilReasonType"/>
+                </extension>
+              </simpleContent>
+            </complexType>
+          </element>
+          <element minOccurs="0" name="validTo" nillable="true">
+            <annotation>
+              <documentation>-- Definition --
+The time from which the transport node no longer exists in the real world.</documentation>
+            </annotation>
+            <complexType>
+              <simpleContent>
+                <extension base="dateTime">
+                  <attribute name="nilReason" type="gml:NilReasonType"/>
+                </extension>
+              </simpleContent>
+            </complexType>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="TransportNodePropertyType">
+    <sequence minOccurs="0">
+      <element ref="tn:TransportNode"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <complexType name="TransportObjectPropertyType">
+    <choice minOccurs="0">
+      <element ref="tn:TransportArea"/>
+      <element ref="tn:TransportLink"/>
+      <element ref="tn:TransportLinkSequence"/>
+      <element ref="tn:TransportLinkSet"/>
+      <element ref="tn:TransportNode"/>
+      <element ref="tn:TransportPoint"/>
+    </choice>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element abstract="true" name="TransportPoint" substitutionGroup="net:NetworkElement" type="tn:TransportPointType">
+    <annotation>
+      <documentation>-- Definition --
+A point spatial object - which is not a node - that represents the position of an element of a transport network.</documentation>
+    </annotation>
+  </element>
+  <complexType abstract="true" name="TransportPointType">
+    <complexContent>
+      <extension base="net:NetworkElementType">
+        <sequence>
+          <element minOccurs="0" name="geographicalName" nillable="true">
+            <annotation>
+              <documentation>-- Definition --
+A geographical name that is used to identify the transport network object in the real world. It provides a 'key' for implicitly associating different representations of the object.</documentation>
+            </annotation>
+            <complexType>
+              <sequence>
+                <element ref="gn:GeographicalName"/>
+              </sequence>
+              <attribute name="nilReason" type="gml:NilReasonType"/>
+            </complexType>
+          </element>
+          <element name="geometry" type="gml:PointPropertyType">
+            <annotation>
+              <documentation>-- Definition --
+The location of the transport point.</documentation>
+            </annotation>
+          </element>
+          <element name="validFrom" nillable="true">
+            <annotation>
+              <documentation>-- Definition --
+The time when the transport point started to exist in the real world.</documentation>
+            </annotation>
+            <complexType>
+              <simpleContent>
+                <extension base="dateTime">
+                  <attribute name="nilReason" type="gml:NilReasonType"/>
+                </extension>
+              </simpleContent>
+            </complexType>
+          </element>
+          <element minOccurs="0" name="validTo" nillable="true">
+            <annotation>
+              <documentation>-- Definition --
+The time from which the transport point no longer exists in the real world.</documentation>
+            </annotation>
+            <complexType>
+              <simpleContent>
+                <extension base="dateTime">
+                  <attribute name="nilReason" type="gml:NilReasonType"/>
+                </extension>
+              </simpleContent>
+            </complexType>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="TransportPointPropertyType">
+    <sequence minOccurs="0">
+      <element ref="tn:TransportPoint"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element abstract="true" name="TransportProperty" substitutionGroup="net:NetworkProperty" type="tn:TransportPropertyType">
+    <annotation>
+      <documentation>-- Definition --
+A reference to a property that falls upon the network. This property can apply to the whole of the network element it is associated with or - for linear spatial objects - be described using linear referencing.</documentation>
+    </annotation>
+  </element>
+  <complexType abstract="true" name="TransportPropertyType">
+    <complexContent>
+      <extension base="net:NetworkPropertyType">
+        <sequence>
+          <element name="validFrom" nillable="true">
+            <annotation>
+              <documentation>-- Definition --
+The time when the transport property started to exist in the real world.</documentation>
+            </annotation>
+            <complexType>
+              <simpleContent>
+                <extension base="dateTime">
+                  <attribute name="nilReason" type="gml:NilReasonType"/>
+                </extension>
+              </simpleContent>
+            </complexType>
+          </element>
+          <element minOccurs="0" name="validTo" nillable="true">
+            <annotation>
+              <documentation>-- Definition --
+The time from which the transport property no longer exists in the real world.</documentation>
+            </annotation>
+            <complexType>
+              <simpleContent>
+                <extension base="dateTime">
+                  <attribute name="nilReason" type="gml:NilReasonType"/>
+                </extension>
+              </simpleContent>
+            </complexType>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="TransportPropertyPropertyType">
+    <sequence minOccurs="0">
+      <element ref="tn:TransportProperty"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <simpleType name="TransportTypeValueType">
+    <annotation>
+      <documentation>-- Definition --
+Possible types on transport networks.</documentation>
+    </annotation>
+    <restriction base="string">
+      <enumeration value="air">
+        <annotation>
+          <documentation>-- Definition --
+The transport network consists of transport by air.</documentation>
+        </annotation>
+      </enumeration>
+      <enumeration value="cable">
+        <annotation>
+          <documentation>-- Definition --
+The transport network consists of transport by cable.</documentation>
+        </annotation>
+      </enumeration>
+      <enumeration value="rail">
+        <annotation>
+          <documentation>-- Definition --
+The transport network consists of transport by rail.</documentation>
+        </annotation>
+      </enumeration>
+      <enumeration value="road">
+        <annotation>
+          <documentation>-- Definition --
+The transport network consists of transport by road.</documentation>
+        </annotation>
+      </enumeration>
+      <enumeration value="water">
+        <annotation>
+          <documentation>-- Definition --
+The transport network consists of transport by water.</documentation>
+        </annotation>
+      </enumeration>
+    </restriction>
+  </simpleType>
+  <element name="VerticalPosition" substitutionGroup="tn:TransportProperty" type="tn:VerticalPositionType">
+    <annotation>
+      <documentation>-- Definition --
+Vertical level relative to other transport network elements.</documentation>
+    </annotation>
+  </element>
+  <complexType name="VerticalPositionType">
+    <complexContent>
+      <extension base="tn:TransportPropertyType">
+        <sequence>
+          <element name="verticalPosition" type="base:VerticalPositionValueType">
+            <annotation>
+              <documentation>-- Definition --
+Relative vertical position of the transport element.</documentation>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="VerticalPositionPropertyType">
+    <sequence minOccurs="0">
+      <element ref="tn:VerticalPosition"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+</schema>
