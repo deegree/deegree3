@@ -278,7 +278,7 @@
     <dependency>
       <groupId>org.primefaces</groupId>
       <artifactId>primefaces</artifactId>
-      <version>13.0.19-LTS</version>
+      <version>13.0.10</version>
     </dependency>
     <dependency>
       <groupId>org.primefaces.extensions</groupId>
