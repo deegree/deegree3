@@ -12,26 +12,25 @@ NOTE: If there are alternative options for plugging your raster files into the
 deegree workspace (e.g. by using the GeoTIFFTileStore for GeoTIFF
 files), you may want to consider them first. As the GDAL library is not
 written in Java, it is required to install and connect additional
-(non-deegree) components in order to use it. Additionally, some
+(non-Java) components in order to use it. Additionally, some
 technical considerations about GDAL dataset pooling and GDAL memory
 settings may be necessary to achieve optimal performance.
 
 === Connecting GDAL and deegree
 
-Before you can set up GDAL-based resources, the native GDAL library has
-to be installed correctly and must be accessible by your deegree
+Before you can set up GDAL-based resources, the native GDAL library including the JNI interface has to be installed correctly and must be accessible by your deegree
 webservices installation. Please see https://www.gdal.org/ for general
 GDAL installation instructions.
 
 NOTE: Currently, GDAL library version 3 is supported.
 
-NOTE: deegree uses version 3.6.0 of the GDAL jar file.
+NOTE: deegree uses version 3.11.0 of the GDAL JAR file.
 Most likely, this is compatible with any minor version of GDAL library 3.
 The deegree developer team tested several combinations without detecting any issues.
-However, if any problems occur, you might try to exchange the version of the GDAL jar file inside the webapp to the GDAL library version installed on your operating system.
-The gdal-VERSION.jar is located in deegree-webapp/WEB-INF/lib/.
-You can delete it from the exploded war archive (make sure that the deegree-webservices.war is removed from webapp folder after shutting down Tomcat).
-Afterward, copy the correct gdal-VERSION.jar into deegree-webapp/WEB-INF/lib/.
+However, if any problems occur, you might try to exchange the version of the GDAL JAR file inside the webapp to the GDAL library version installed on your operating system.
+The _gdal-VERSION.jar_ is located in _deegree-webapp/WEB-INF/lib/_.
+You can delete it from the exploded WAR archive (make sure that the _deegree-webservices.war_ is removed from Tomcat _webapp_ folder after shutting down Tomcat).
+Afterward, copy the correct _gdal-VERSION.jar_ into _deegree-webapp/WEB-INF/lib/_.
 
 In order to verify that deegree webservices can use the GDAL library,
 check the log file of the web container (e.g. _catalina.out_ for
@@ -84,23 +83,21 @@ java.lang.UnsatisfiedLinkError: org.gdal.gdal.gdalJNI.AllRegister()V
 ----
 
 In this case, ensure that the GDAL library is installed on your system
-and available via the dynamic library path used by the Java VM. You may
-need to adapt environment variables (e.g. LD_LIBRARY_PATH on Linux) to
+and the JNI library file is available via the dynamic library path used by the Java VM. You may need to adapt environment variables (e.g. _LD_LIBRARY_PATH_ on Linux) to
 achieve this.
 
 [[anchor-configuration-gdal-settings]]
 === GDAL settings
 
-The GDAL settings file gdal.xml belongs in the main directory of the
+The GDAL settings file _gdal.xml_ belongs in the main directory of the
 deegree workspace.
 
 ==== Minimal GDAL settings example
 
-The only mandatory element is OpenDatasets. A minimal valid
+The only mandatory element is `OpenDatasets`. A minimal valid
 configuration example looks like this:
 
-*GDAL settings (minimal example)*
-
+GDAL settings (minimal example):
 [source,xml]
 ----
 <GDALSettings
@@ -115,8 +112,7 @@ maximum of five GDAL datasets to be kept open for simultaneous access.
 
 ==== More complex GDAL settings example
 
-*GDAL settings (more complex example)*
-
+GDAL settings (more complex example):
 [source,xml]
 ----
 <GDALSettings
@@ -133,12 +129,11 @@ settings:
 
 * A maximum of ten GDAL datasets will be kept open for simultaneous
 access
-* GDAL option GDAL_CACHEMAX is set to 1000
-* GDAL option ECW_CACHE_MAXMEM is set to 419430400
+* GDAL option `GDAL_CACHEMAX` is set to 1000
+* GDAL option `ECW_CACHE_MAXMEM` is set to 419430400
 
 NOTE: A list of general GDAL parameters is available at
-https://trac.osgeo.org/gdal/wiki/ConfigOptions. Some parameters (such as
-ECW_CACHE_MAXMEM) are format specific and outlined on the respective
+https://gdal.org/en/stable/user/configoptions.html#global-configuration-options. Some parameters (such as `ECW_CACHE_MAXMEM`) are format specific and outlined on the respective
 pages in the GDAL documentation.
 
 ==== Configuration options
