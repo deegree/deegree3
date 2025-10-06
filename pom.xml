@@ -1098,7 +1098,7 @@
       <dependency>
         <groupId>org.deegree</groupId>
         <artifactId>imageio-ext-utilities</artifactId>
-        <version>1.4.16-M1</version>
+        <version>1.4.16-M2</version>
         <exclusions>
           <exclusion>
             <groupId>javax.media</groupId>
@@ -1125,7 +1125,7 @@
       <dependency>
         <groupId>org.deegree</groupId>
         <artifactId>imageio-ext-tiff</artifactId>
-        <version>1.4.16-M1</version>
+        <version>1.4.16-M2</version>
         <exclusions>
           <exclusion>
             <groupId>javax.media</groupId>
