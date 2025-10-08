@@ -446,12 +446,12 @@
       <dependency>
         <groupId>jakarta.xml.bind</groupId>
         <artifactId>jakarta.xml.bind-api</artifactId>
-        <version>4.0.2</version>
+        <version>4.0.4</version>
       </dependency>
       <dependency>
         <groupId>org.glassfish.jaxb</groupId>
         <artifactId>jaxb-runtime</artifactId>
-        <version>4.0.5</version>
+        <version>4.0.6</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
@@ -510,13 +510,13 @@
       <dependency>
         <groupId>org.xmlunit</groupId>
         <artifactId>xmlunit-core</artifactId>
-        <version>2.10.3</version>
+        <version>2.10.4</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.xmlunit</groupId>
         <artifactId>xmlunit-matchers</artifactId>
-        <version>2.10.3</version>
+        <version>2.10.4</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -645,7 +645,7 @@
       <dependency>
         <groupId>org.glassfish</groupId>
         <artifactId>jakarta.faces</artifactId>
-        <version>4.0.11</version>
+        <version>4.0.12</version>
       </dependency>
       <dependency>
         <groupId>jakarta.enterprise</groupId>
@@ -837,7 +837,7 @@
       <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>42.7.7</version>
+        <version>42.7.8</version>
       </dependency>
       <!-- Oracle (Official provided driver from repo1.maven.org) -->
       <dependency>
@@ -1082,7 +1082,7 @@
       <dependency>
         <groupId>org.ehcache</groupId>
         <artifactId>ehcache</artifactId>
-        <version>3.11.0</version>
+        <version>3.11.1</version>
         <classifier>jakarta</classifier>
       </dependency>
       <dependency>
@@ -1098,7 +1098,7 @@
       <dependency>
         <groupId>org.deegree</groupId>
         <artifactId>imageio-ext-utilities</artifactId>
-        <version>1.4.16-M1</version>
+        <version>1.4.16-M2</version>
         <exclusions>
           <exclusion>
             <groupId>javax.media</groupId>
@@ -1125,7 +1125,7 @@
       <dependency>
         <groupId>org.deegree</groupId>
         <artifactId>imageio-ext-tiff</artifactId>
-        <version>1.4.16-M1</version>
+        <version>1.4.16-M2</version>
         <exclusions>
           <exclusion>
             <groupId>javax.media</groupId>
@@ -1158,7 +1158,7 @@
       <dependency>
         <groupId>com.google.code.gson</groupId>
         <artifactId>gson</artifactId>
-        <version>2.13.1</version>
+        <version>2.13.2</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -1173,13 +1173,13 @@
       <dependency>
         <groupId>jakarta.mail</groupId>
         <artifactId>jakarta.mail-api</artifactId>
-        <version>2.1.4</version>
+        <version>2.1.5</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>jakarta.activation</groupId>
         <artifactId>jakarta.activation-api</artifactId>
-        <version>2.1.3</version>
+        <version>2.1.4</version>
       </dependency>
       <dependency>
         <groupId>jakarta.xml.soap</groupId>
@@ -1232,9 +1232,9 @@
     <antlr.version>3.5.3</antlr.version>
     <antlr4.version>4.13.2</antlr4.version>
     <oracle.version>23.4.0.24.05</oracle.version>
-    <logback.version>1.5.18</logback.version>
+    <logback.version>1.5.19</logback.version>
     <slf4j.version>2.0.17</slf4j.version>
-    <spring-boot.version>3.4.9</spring-boot.version>
+    <spring-boot.version>3.4.10</spring-boot.version>
     <batik.version>1.17</batik.version>
     <axiom.version>1.4.0</axiom.version>
     <jsonpath.version>2.9.0</jsonpath.version>
