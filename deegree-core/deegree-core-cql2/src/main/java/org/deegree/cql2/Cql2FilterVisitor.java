@@ -34,13 +34,18 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cql2;
 
+import static org.deegree.cql2.FilterPropertyType.DATE;
+import static org.deegree.cql2.FilterPropertyType.DATE_TIME;
+import static org.deegree.cql2.FilterPropertyType.TIME;
+import static org.deegree.cql2.FilterPropertyType.UNKNOWN;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import javax.xml.namespace.QName;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -79,16 +84,16 @@ public class Cql2FilterVisitor extends Cql2ParserBaseVisitor {
 
 	private final ICRS filterCrs;
 
-	private final Set<QName> availableProperties;
+	private final List<FilterProperty> filterProperties;
 
 	/**
 	 * @param filterCrs never <code>null</code>
-	 * @param availableProperties used to identify properties with namespace bindings, may
-	 * be empty or <code>null</code>
+	 * @param filterProperties used to identify properties with namespace bindings, may be
+	 * empty or <code>null</code>
 	 */
-	public Cql2FilterVisitor(ICRS filterCrs, Set<QName> availableProperties) {
+	public Cql2FilterVisitor(ICRS filterCrs, List<FilterProperty> filterProperties) {
 		this.filterCrs = filterCrs;
-		this.availableProperties = availableProperties != null ? availableProperties : Collections.emptySet();
+		this.filterProperties = filterProperties != null ? filterProperties : Collections.emptyList();
 	}
 
 	@Override
@@ -229,9 +234,10 @@ public class Cql2FilterVisitor extends Cql2ParserBaseVisitor {
 		SpatialOperator.SubType type = SpatialOperator.SubType.valueOf(spatialFunctionType);
 		switch (type) {
 			case INTERSECTS:
-				Expression propeName = (Expression) ctx.geomExpression().get(0).accept(this);
+				Expression propName = checkExpressionType((Expression) ctx.geomExpression().get(0).accept(this),
+						FilterPropertyType.GEOMETRY);
 				Geometry geometry = (Geometry) ctx.geomExpression().get(1).accept(this);
-				return new Intersects(propeName, geometry);
+				return new Intersects(propName, geometry);
 		}
 		throw new Cql2UnsupportedExpressionException("Unsupported geometry type " + type);
 	}
@@ -239,7 +245,8 @@ public class Cql2FilterVisitor extends Cql2ParserBaseVisitor {
 	@Override
 	public Object visitPropertyName(Cql2Parser.PropertyNameContext ctx) {
 		String text = ctx.getText();
-		List<QName> filterPropWithSameLocalName = availableProperties.stream()
+		List<QName> filterPropWithSameLocalName = filterProperties.stream()
+			.map(FilterProperty::getName)
 			.filter(name -> name.getLocalPart().equals(text))
 			.toList();
 		if (!filterPropWithSameLocalName.isEmpty()) {
@@ -249,7 +256,7 @@ public class Cql2FilterVisitor extends Cql2ParserBaseVisitor {
 						filterPropWithSameLocalName.get(0));
 			return new ValueReference(filterPropWithSameLocalName.get(0));
 		}
-		return new ValueReference(text, null);
+		throw new IllegalArgumentException("Property with name " + text + " is not supported.");
 	}
 
 	@Override
@@ -395,7 +402,8 @@ public class Cql2FilterVisitor extends Cql2ParserBaseVisitor {
 		TemporalOperator.SubType type = TemporalOperator.SubType.valueOf(temporalFunctionType);
 		switch (type) {
 			case AFTER:
-				Expression propName = (Expression) ctx.temporalExpression(0).propertyName().accept(this);
+				Expression propName = checkExpressionType(
+						(Expression) ctx.temporalExpression(0).propertyName().accept(this), DATE, DATE_TIME, TIME);
 				Expression dateValue = (Expression) ctx.temporalExpression(1).temporalInstance().accept(this);
 				return new After(propName, dateValue);
 		}
@@ -432,6 +440,23 @@ public class Cql2FilterVisitor extends Cql2ParserBaseVisitor {
 	@Override
 	public Object visitTimestampInstant(Cql2Parser.TimestampInstantContext ctx) {
 		return ISO8601Converter.parseDateTime(ctx.getText().substring(11, ctx.getText().length() - 2));
+	}
+
+	private Expression checkExpressionType(Expression expression, FilterPropertyType... filterPropertyTypes)
+			throws IllegalArgumentException {
+		if (expression instanceof ValueReference reference) {
+			Optional<FilterProperty> filterProperty = filterProperties.stream()
+				.filter(fp -> fp.getName().equals(reference.getAsQName()))
+				.findFirst();
+			if (filterProperty.isPresent() && (!UNKNOWN.equals(filterProperty.get().getType())
+					&& Arrays.stream(filterPropertyTypes).noneMatch(fp -> fp == filterProperty.get().getType())))
+				throw new IllegalArgumentException(
+						"Property " + filterProperty.get().getName() + " is not of one of the expected types "
+								+ Arrays.stream(filterPropertyTypes)
+									.map(FilterPropertyType::name)
+									.collect(Collectors.joining(",")));
+		}
+		return expression;
 	}
 
 }

@@ -35,6 +35,8 @@
 package org.deegree.cql2;
 
 import javax.xml.namespace.QName;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import org.antlr.v4.runtime.CharStream;
@@ -51,7 +53,26 @@ public final class CQL2FilterParser {
 	private CQL2FilterParser() {
 	}
 
+	/**
+	 * @param filter the filter to parse, never <code>null</code>
+	 * @param crs never <code>null</code>
+	 * @param availableProperties used to identify properties with namespace bindings, may
+	 * be empty or <code>null</code>
+	 */
 	public static Operator parseCql2Filter(String filter, ICRS crs, Set<QName> availableProperties) {
+		List<FilterProperty> filterProperties = availableProperties != null ? availableProperties.stream()
+			.map(prop -> new FilterProperty(prop, FilterPropertyType.UNKNOWN))
+			.toList() : Collections.emptyList();
+		return parseCql2Filter(filter, crs, filterProperties);
+	}
+
+	/**
+	 * @param filter the filter to parse, never <code>null</code>
+	 * @param crs never <code>null</code>
+	 * @param filterProperties used to identify properties with namespace bindings, may be
+	 * empty or <code>null</code>
+	 */
+	public static Operator parseCql2Filter(String filter, ICRS crs, List<FilterProperty> filterProperties) {
 		CharStream input = CharStreams.fromString(filter);
 		Cql2Lexer lexer = new Cql2Lexer(input);
 		CommonTokenStream cts = new CommonTokenStream(lexer);
@@ -60,7 +81,7 @@ public final class CQL2FilterParser {
 		parser.removeErrorListeners();
 		parser.addErrorListener(new Cql2ErrorListener());
 		Cql2Parser.BooleanExpressionContext cql2 = parser.booleanExpression();
-		Cql2FilterVisitor visitor = new Cql2FilterVisitor(crs, availableProperties);
+		Cql2FilterVisitor visitor = new Cql2FilterVisitor(crs, filterProperties);
 		return (Operator) visitor.visit(cql2);
 	}
 
