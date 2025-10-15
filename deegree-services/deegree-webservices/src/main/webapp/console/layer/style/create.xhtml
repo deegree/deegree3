@@ -10,12 +10,12 @@
         </legend>
         <h:form>
           <h:panelGroup>
-            <h:outputLabel styleClass="label" for="newFSBt" value="Identifier" />
+            <p:outputLabel styleClass="label" for="newFSBt" value="Identifier" />
             <h:inputText styleClass="liste" id="newFSBt" value="#{createStyleBean.id}" size="16" required="true"
               requiredMessage="#{labels.resource_name_req}" />
             <br />
             <h:panelGroup>
-              <h:outputLabel styleClass="label" for="newFSBt" value="Type" />
+              <p:outputLabel styleClass="label" for="newFSBt" value="Type" />
               <h:selectOneMenu styleClass="liste" value="#{createStyleBean.type}">
                 <f:selectItems value="#{createStyleBean.types}" />
                 <f:ajax listener="#{createStyleBean.changeType}" render="templates" />

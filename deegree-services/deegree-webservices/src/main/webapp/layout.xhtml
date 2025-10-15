@@ -42,7 +42,7 @@
             <h:outputText value="#{workspace.activeWorkspace.name}" />
             <p:commandButton value="#{labels.apply_changes}" styleClass="buttongray" action="#{workspace.applyChanges}"
                              onclick="show();" rendered="#{!workspace.pendingChanges}" />
-            <p:commandButton value="#{labels.apply_changes}" styleClass="buttonError" action="#{workspace.applyChanges}"
+            <p:commandButton value="#{labels.apply_changes}" styleClass="ui-button buttonError" action="#{workspace.applyChanges}"
                              onclick="show();" rendered="#{workspace.pendingChanges}" />
             <p:commandButton value="#{labels.validate_changes}" styleClass="buttongray" action="#{workspace.validate}"
                              onclick="show();" />

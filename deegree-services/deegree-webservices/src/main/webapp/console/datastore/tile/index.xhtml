@@ -13,12 +13,12 @@
             <table style="font-size: small; margin-bottom: 20px">
               <ui:repeat value="#{tileStoreManagerBean.configs}" var="config">
                 <tr align="left">
-                  <td><h:outputLabel styleClass="buttonActivate" rendered="#{config.state=='Initialized'}"
-                      value="#{labels.featureStores_deactivate}" /> <h:outputLabel styleClass="buttonDeactivate"
-                      rendered="#{config.state=='Deactivated'}" value="#{labels.featureStores_activate}" /> <h:outputLabel
-                      styleClass="buttonError" rendered="#{config.state=='Error'}" value="!" /></td>
+                  <td><p:outputLabel styleClass="buttonActivate" rendered="#{config.state=='Initialized'}"
+                      value="#{labels.featureStores_deactivate}" /> <p:outputLabel styleClass="buttonDeactivate"
+                      rendered="#{config.state=='Deactivated'}" value="#{labels.featureStores_activate}" /> <p:outputLabel
+                      styleClass="ui-button buttonError" rendered="#{config.state=='Error'}" value="!" /></td>
                   <td />
-                  <td><h:outputLabel styleClass="buttonDeactivate" value="#{config.id}" /></td>
+                  <td><p:outputLabel styleClass="buttonDeactivate" value="#{config.id}" /></td>
                   <td><p:commandButton styleClass="buttonInfo" rendered="#{config.state!='Deactivated'}"
                       value="Deactivate" action="#{config.deactivate}" /> <p:commandButton styleClass="buttonInfo"
                       rendered="#{config.state=='Deactivated'}" value="Activate" action="#{config.activate}" /></td>
@@ -26,7 +26,7 @@
                       action="#{config.edit}" /></td>
                   <td><p:commandButton styleClass="buttonDelete" value="#{labels.featureStores_delete}"
                       action="#{config.delete}" onclick="return confirmDelete();" /></td>
-                  <td><p:commandButton styleClass="buttonError" rendered="#{config.state=='Error'}"
+                  <td><p:commandButton styleClass="ui-button buttonError" rendered="#{config.state=='Error'}"
                       value="Show errors" action="#{config.showErrors}" /></td>
                 </tr>
               </ui:repeat>

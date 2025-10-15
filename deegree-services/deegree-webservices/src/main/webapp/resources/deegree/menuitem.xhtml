@@ -14,7 +14,7 @@
   <h:panelGroup layout="block" styleClass="menuitem">
     <h:link value="#{cc.attrs.displayname}" outcome="#{cc.attrs.target}"
       styleClass="#{facesContext.viewRoot.viewId == cc.attrs.target ? 'naviactive' : 'navi'}" />
-    <h:outputLabel styleClass="buttonError" rendered="#{cc.attrs.hasErrors}" value=" !" />
+    <p:outputLabel styleClass="ui-button buttonError" rendered="#{cc.attrs.hasErrors}" value=" !" />
   </h:panelGroup>
 </cc:implementation>
 

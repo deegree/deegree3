@@ -17,7 +17,7 @@
             </h:selectOneRadio>
           </p>
           <p>
-            <h:outputLabel styleClass="label" for="jdbcConn" value="JDBC connection:" />
+            <p:outputLabel styleClass="label" for="jdbcConn" value="JDBC connection:" />
             <h:selectOneMenu id="jdbcConn" styleClass="liste" value="#{mappingWizardSQL.selectedJdbcConn}">
               <f:selectItems value="#{mappingWizardSQL.availableJdbcConns}" />
             </h:selectOneMenu>

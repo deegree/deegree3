@@ -6,7 +6,7 @@
     </h:panelGroup>
   </h:panelGroup>
   <h:panelGroup rendered="#{logBean.passwordSet and !logBean.loggedIn}">
-    <h:outputLabel styleClass="label" value="#{labels.password}" />
+    <p:outputLabel styleClass="label" value="#{labels.password}" />
     <h:inputSecret styleClass="liste" id="password" value="#{logBean.currentPassword}" />
     <p:commandButton styleClass="buttonLogin" value="#{labels.login}" action="#{logBean.logIn}" />
   </h:panelGroup>

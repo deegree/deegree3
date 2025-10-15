@@ -10,11 +10,11 @@
         </legend>
         <h:form>
           <h:panelGroup>
-            <h:outputLabel styleClass="label" for="newFSBt" value="Identifier" />
+            <p:outputLabel styleClass="label" for="newFSBt" value="Identifier" />
             <h:inputText styleClass="liste" id="newFSBt" value="#{createServiceBean.id}" size="16" required="true"
               requiredMessage="#{labels.resource_name_req}" />
             <br />
-            <h:outputLabel styleClass="label" for="newFSBt" value="Service type" />
+            <p:outputLabel styleClass="label" for="newFSBt" value="Service type" />
             <h:selectOneMenu styleClass="liste" value="#{createServiceBean.type}">
               <f:selectItems value="#{createServiceBean.types}" />
             </h:selectOneMenu>

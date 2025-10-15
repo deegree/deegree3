@@ -8,12 +8,12 @@
         </legend>
         <h:form>
           <h:panelGroup>
-            <h:outputLabel styleClass="label" for="newFSBt" value="Identifier" />
+            <p:outputLabel styleClass="label" for="newFSBt" value="Identifier" />
             <h:inputText styleClass="liste" id="newFSBt" value="#{createSqlConnectionBean.id}" size="16" required="true"
               requiredMessage="#{labels.resource_name_req}" />
             <br />
             <h:panelGroup>
-              <h:outputLabel styleClass="label" for="newFSBt" value="Type" />
+              <p:outputLabel styleClass="label" for="newFSBt" value="Type" />
               <h:selectOneMenu styleClass="liste" value="#{createSqlConnectionBean.type}">
                 <f:selectItems value="#{createSqlConnectionBean.types}" />
                 <f:ajax listener="#{createSqlConnectionBean.changeType}" render="templates" />
