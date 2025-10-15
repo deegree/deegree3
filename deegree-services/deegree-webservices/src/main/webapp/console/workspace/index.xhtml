@@ -34,15 +34,15 @@
               <h:form>
                 <tr align="left">
                   <td><h:outputText value="#{workspaceName}" /></td>
-                  <td><h:commandButton styleClass="buttonInfo" label="#{workspaceName}"
+                  <td><p:commandButton styleClass="buttonInfo" label="#{workspaceName}"
                       value="#{labels.start_workspace}" onclick="show();" action="#{workspace.startWorkspace}">
                       <f:setPropertyActionListener target="#{actionParams.param1}" value="#{workspaceName}" />
-                    </h:commandButton></td>
-                  <td><h:commandButton styleClass="buttonDelete" label="#{workspaceName}"
+                    </p:commandButton></td>
+                  <td><p:commandButton styleClass="buttonDelete" label="#{workspaceName}"
                       onclick="return confirmDelete();" value="#{labels.delete_workspace}"
                       action="#{workspace.deleteWorkspace}">
                       <f:setPropertyActionListener target="#{actionParams.param1}" value="#{workspaceName}" />
-                    </h:commandButton></td>
+                    </p:commandButton></td>
                 </tr>
               </h:form>
             </h:panelGroup>
@@ -56,10 +56,10 @@
             <h:form>
               <tr align="left">
                 <td><h:outputText value="#{workspaceName}" /></td>
-                <td><h:commandButton styleClass="buttonEdit" label="#{workspaceName}" value="Import"
+                <td><p:commandButton styleClass="buttonEdit" label="#{workspaceName}" value="Import"
                     onclick="show();" action="#{workspace.downloadWorkspace}">
                     <f:setPropertyActionListener target="#{actionParams.param1}" value="#{workspaceName}" />
-                  </h:commandButton></td>
+                  </p:commandButton></td>
               </tr>
             </h:form>
           </ui:repeat>
@@ -78,7 +78,7 @@
                 requiredMessage="#{labels.resource_name_req}" /></td>
             </tr>
             <tr>
-              <td><h:commandButton styleClass="buttonCreateNew" value="#{labels.featureStores_new}"
+              <td><p:commandButton styleClass="buttonCreateNew" value="#{labels.featureStores_new}"
                 action="#{createWorkspaceBean.createWorkspaceFolder}" /></td>
             </tr>
           </h:form>
@@ -97,7 +97,7 @@
                                 allowTypes="/(\.|\/)(zip|gzip|tar.gz)$/"/></td>
             </tr>
 <!--            <tr>-->
-<!--              <td><h:commandButton styleClass="buttonInfo" value="Upload" ajax="false"/></td>-->
+<!--              <td><p:commandButton styleClass="buttonInfo" value="Upload" ajax="false"/></td>-->
 <!--            </tr>-->
           </table>
         </h:form>

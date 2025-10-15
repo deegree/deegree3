@@ -1,5 +1,5 @@
 <h:form id="logInForm" xmlns:h="http://xmlns.jcp.org/jsf/html" xmlns:f="http://xmlns.jcp.org/jsf/core"
-  xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+  xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:p="http://primefaces.org/ui">
   <h:panelGroup rendered="#{!logBean.passwordSet}">
     <h:panelGroup>
       <h:outputText styleClass="error" value="Security hint: No password has been set." />
@@ -8,9 +8,9 @@
   <h:panelGroup rendered="#{logBean.passwordSet and !logBean.loggedIn}">
     <h:outputLabel styleClass="label" value="#{labels.password}" />
     <h:inputSecret styleClass="liste" id="password" value="#{logBean.currentPassword}" />
-    <h:commandButton styleClass="buttonLogin" value="#{labels.login}" action="#{logBean.logIn}" />
+    <p:commandButton styleClass="buttonLogin" value="#{labels.login}" action="#{logBean.logIn}" />
   </h:panelGroup>
   <h:panelGroup rendered="#{logBean.passwordSet and logBean.loggedIn}">
-    <h:commandButton styleClass="buttonLogout" value="#{labels.logout}" action="#{logBean.logOut}" />
+    <p:commandButton styleClass="buttonLogout" value="#{labels.logout}" action="#{logBean.logOut}" />
   </h:panelGroup>
 </h:form>

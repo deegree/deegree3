@@ -2,7 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
 				xmlns:composite="http://xmlns.jcp.org/jsf/composite" xmlns:f="http://xmlns.jcp.org/jsf/core"
-				xmlns:dg="http://deegree.org/jsf" xmlns:dgc="http://xmlns.jcp.org/jsf/composite/deegree">
+				xmlns:dg="http://deegree.org/jsf" xmlns:dgc="http://xmlns.jcp.org/jsf/composite/deegree" xmlns:p="http://primefaces.org/ui">
 <head>
 <title>A composite component to edit configuration xml files</title>
 </head>
@@ -39,10 +39,10 @@
 								<dg:inputConfigurationXML id="inputXML" value="#{cc.attrs.editBean.map[cc.attrs.editorID].xml}"
 												schemaURLS="#{cc.attrs.editBean.map[cc.attrs.editorID].schemaURLS}" style="width:500px; height:300px;" />
 								<br />
-								<h:commandButton id="save" value="#{cc.attrs.saveLabel != null ? cc.attrs.saveLabel : 'save'}">
+								<p:commandButton id="save" value="#{cc.attrs.saveLabel != null ? cc.attrs.saveLabel : 'save'}">
 												<f:param name="id" value="#{cc.attrs.editorID}" />
 												<f:ajax execute="@form" render="editPanel" listener="#{cc.attrs.editBean.saveXMLAndCloseGUI}" />
-								</h:commandButton>
+								</p:commandButton>
 								<dgc:ajaxStatus text="Working" />
 								<br />
 								<h:message for="#{cc.clientId}:inputXML" showDetail="true" showSummary="true" />

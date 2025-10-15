@@ -2,7 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
-				xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+				xmlns:composite="http://xmlns.jcp.org/jsf/composite" xmlns:p="http://primefaces.org/ui">
 <head>
 <title>A collapsible panel composite component</title>
 </head>
@@ -19,7 +19,7 @@
 				<div class="#{cc.attrs.styleClass}" id="#{cc.clientId}">
 				<h:panelGrid columns="2" styleClass="header" layout="block" style="vertical-align:middle;">
 								<composite:renderFacet name="header" />
-								<h:commandButton id="collapse"
+								<p:commandButton id="collapse"
 												onclick="collapse(this, '#{cc.clientId}:content', '#{cc.attrs.openImg}', '#{cc.attrs.collapseImg}');"
 												image="#{cc.attrs.collapsed ? cc.attrs.openImg : cc.attrs.collapseImg }" />
 				</h:panelGrid> <h:panelGroup id="content" style="#{cc.attrs.collapsed ? 'display:none;' : 'display:inline;' }"

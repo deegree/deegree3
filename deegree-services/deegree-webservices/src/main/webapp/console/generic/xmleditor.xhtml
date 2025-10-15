@@ -22,14 +22,14 @@
         </h:panelGroup>
         <h:panelGroup id="xmleditor" layout="block">
           <h:panelGroup id="xmleditor-actions" layout="block">            
-            <h:commandButton styleClass="buttonSave" value="#{labels.xmlEditor_save}" onclick="save()"
+            <p:commandButton styleClass="buttonSave" value="#{labels.xmlEditor_save}" onclick="save()"
               action="${xmlEditorBean.save}" />
-            <h:commandButton styleClass="buttonCancel" value="#{labels.xmlEditor_cancel}"
+            <p:commandButton styleClass="buttonCancel" value="#{labels.xmlEditor_cancel}"
               action="${xmlEditorBean.cancel}" />
-            <h:commandButton styleClass="buttonCancel" value="Validate" onclick="save()"
+            <p:commandButton styleClass="buttonCancel" value="Validate" onclick="save()"
               action="${xmlEditorBean.validate}">
               <f:ajax execute="xmltextarea" />
-            </h:commandButton>
+            </p:commandButton>
           </h:panelGroup>
           <h:panelGroup id="xmleditor-input" layout="block">
             <pe:codeMirror id="xmltextarea" mode="xml" theme="ambiance" lineNumbers="true" matchBrackets="true"

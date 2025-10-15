@@ -20,8 +20,8 @@
                       rendered="#{config.state=='Error'}" value="!" /></td>
                   <td />
                   <td><h:outputLabel styleClass="buttonDeactivate" value="#{config.id}" /></td>
-                  <td><h:commandButton styleClass="buttonInfo" rendered="#{config.state=='Initialized'}"
-                      value="Deactivate" action="#{config.deactivate}" /> <h:commandButton styleClass="buttonInfo"
+                  <td><p:commandButton styleClass="buttonInfo" rendered="#{config.state=='Initialized'}"
+                      value="Deactivate" action="#{config.deactivate}" /> <p:commandButton styleClass="buttonInfo"
                       rendered="#{config.state!='Error' and config.state!='Initialized'}" value="Activate"
                       action="#{config.activate}" /></td>
                   <td><h:link outcome="/console/generic/xmleditor" styleClass="buttonEdit" value="Edit">
@@ -30,15 +30,15 @@
                       <f:param name="resourceProviderClass" value="org.deegree.services.OWSProvider" />
                       <f:param name="nextView" value="/console/webservices/index" />
                     </h:link></td>
-                  <td><h:commandButton styleClass="buttonDelete" value="#{labels.featureStores_delete}"
+                  <td><p:commandButton styleClass="buttonDelete" value="#{labels.featureStores_delete}"
                       action="#{config.delete}" onclick="return confirmDelete();" /></td>
-                  <td><h:commandButton styleClass="buttonInfo" value="Edit Metadata"
+                  <td><p:commandButton styleClass="buttonInfo" value="Edit Metadata"
                       action="#{config.editMetadata}" /></td>
                   <td><h:panelGroup rendered="#{config.state=='Initialized'}">
                       <p:link styleClass="buttonInfo" target="_blank" href="#{config.capabilitiesUrl}"
                         value="#{labels.webservices_cap}" />
                     </h:panelGroup></td>
-                  <td><h:commandButton styleClass="buttonError" rendered="#{config.state=='Error'}"
+                  <td><p:commandButton styleClass="buttonError" rendered="#{config.state=='Error'}"
                       value="#{labels.show_errors}" action="#{config.showErrors}" /></td>
                 </tr>
               </ui:repeat>
@@ -47,7 +47,7 @@
           <h:form>
             <h:link styleClass="buttonCreateNew" value="#{labels.featureStores_new}" outcome="create" />
             <p:spacer width="10" height="1" /> | <p:spacer width="10" height="1" />
-            <h:commandButton styleClass="buttonEdit2" value="#{labels.webservices_edit_global}"
+            <p:commandButton styleClass="buttonEdit2" value="#{labels.webservices_edit_global}"
               action="#{servicesBean.mainConfig.edit}" />
           </h:form>
         </fieldset>
