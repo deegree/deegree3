@@ -9,7 +9,7 @@
           Mapping
           <h:outputText value="#{mappingWizardSQL.appSchemaInfo.numFtsTotal}" />
           feature type(s).
-          <p:commandButton styleClass="buttonCreateNew" value="Details"
+          <p:commandButton styleClass="ui-button buttonCreateNew" value="Details"
             action="/console/featurestore/sql/schema_details" onclick="show();" />
         </p>
         <p>
@@ -32,9 +32,9 @@
           <h:inputText styleClass="liste" id="columnLen" value="#{mappingWizardSQL.columnNameLength}" size="3" />
         </p>
         <p>
-          <p:commandButton styleClass="buttonCreateNew" value="Back" action="#{mappingWizardSQL.selectMode}"
+          <p:commandButton styleClass="ui-button buttonCreateNew" value="Back" action="#{mappingWizardSQL.selectMode}"
             onclick="show();" />
-          <p:commandButton styleClass="buttonCreateNew" value="Next" action="#{mappingWizardSQL.generateConfig}"
+          <p:commandButton styleClass="ui-button buttonCreateNew" value="Next" action="#{mappingWizardSQL.generateConfig}"
             onclick="show();" />
         </p>
       </h:form>

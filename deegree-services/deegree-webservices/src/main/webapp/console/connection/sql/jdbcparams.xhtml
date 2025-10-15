@@ -11,7 +11,7 @@
             <tr>
               <td />
             </tr>
-            <p:commandButton styleClass="buttonEdit" value="Use XML editor" action="#{jdbcBean.editAsXml}"></p:commandButton>
+            <p:commandButton styleClass="ui-button buttonEdit" value="Use XML editor" action="#{jdbcBean.editAsXml}"></p:commandButton>
             <tr>
               <td />
             </tr>
@@ -61,17 +61,17 @@
                   redisplay="false" value="#{jdbcBean.dbConn}" /></td>
             </tr>
             <tr>
-              <td><br /> <p:commandButton styleClass="buttonInfo" value="#{labels.jdbc_test}"
+              <td><br /> <p:commandButton styleClass="ui-button buttonInfo" value="#{labels.jdbc_test}"
                   action="#{jdbcBean.testConnection}" alt="#{config.id}">
                 </p:commandButton></td>
             </tr>
           </table>
           <br />
           <div>
-            <p:commandButton styleClass="buttonCreateNew" value="Create" action="#{jdbcBean.save}">
+            <p:commandButton styleClass="ui-button buttonCreateNew" value="Create" action="#{jdbcBean.save}">
               <f:setPropertyActionListener target="#{actionParams.param1}" value="#{config.id}" />
             </p:commandButton>
-            <h:outputLink styleClass="buttonCancel" value="../../#{configManager.currentResourceManager.startView}.jsf"
+            <h:outputLink styleClass="ui-button buttonCancel" value="../../#{configManager.currentResourceManager.startView}.jsf"
               action="#{jdbcBean.cancel}">
               <h:outputText value="Cancel" />
             </h:outputLink>

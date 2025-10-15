@@ -19,21 +19,21 @@
                       styleClass="ui-button buttonError" rendered="#{config.state=='Error'}" value="!" /></td>
                   <td />
                   <td><p:outputLabel styleClass="ui-button buttonDeactivate" value="#{config.id}" /></td>
-                  <td><p:commandButton styleClass="buttonInfo" rendered="#{config.state=='Initialized'}"
-                      value="Deactivate" action="#{config.deactivate}" /> <p:commandButton styleClass="buttonInfo"
+                  <td><p:commandButton styleClass="ui-button buttonInfo" rendered="#{config.state=='Initialized'}"
+                      value="Deactivate" action="#{config.deactivate}" /> <p:commandButton styleClass="ui-button buttonInfo"
                       rendered="#{config.state!='Error' and config.state!='Initialized'}" value="Activate" action="#{config.activate}" /></td>
-                  <td><p:commandButton styleClass="buttonEdit" value="#{labels.featureStores_edit}"
+                  <td><p:commandButton styleClass="ui-button buttonEdit" value="#{labels.featureStores_edit}"
                       action="#{config.edit}" /></td>
-                  <td><p:commandButton styleClass="buttonDelete" value="#{labels.featureStores_delete}"
+                  <td><p:commandButton styleClass="ui-button buttonDelete" value="#{labels.featureStores_delete}"
                       action="#{config.delete}" onclick="return confirmDelete();" /></td>
                   <td><p:commandButton styleClass="ui-button buttonError" rendered="#{config.state=='Error'}"
                       value="Show errors" action="#{config.showErrors}" /></td>
-                  <td><p:commandButton styleClass="buttonInfo" rendered="#{config.state=='Initialized'}"
+                  <td><p:commandButton styleClass="ui-button buttonInfo" rendered="#{config.state=='Initialized'}"
                       value="#{labels.featureStores_info}" action="#{config.showInfo}" alt="#{config.id}" /></td>
-                  <td><p:commandButton styleClass="buttonInfo" rendered="#{config.state=='Initialized'}"
+                  <td><p:commandButton styleClass="ui-button buttonInfo" rendered="#{config.state=='Initialized'}"
                       value="#{labels.featureStores_loader}" action="#{config.openImporter}" alt="#{config.id}"
                       actionListener="#{config.updateId}" /></td>
-                  <td><p:commandButton styleClass="buttonInfo" rendered="#{config.state=='Initialized'}"
+                  <td><p:commandButton styleClass="ui-button buttonInfo" rendered="#{config.state=='Initialized'}"
                       value="#{labels.featureStores_setup}" action="#{config.createTables}" alt="#{config.id}"
                       actionListener="#{config.updateId}" /></td>
                 </tr>
@@ -41,7 +41,7 @@
             </table>
           </h:form>
           <h:form>
-            <h:link styleClass="buttonCreateNew" value="#{labels.featureStores_new}" outcome="create" />
+            <h:link styleClass="ui-button buttonCreateNew" value="#{labels.featureStores_new}" outcome="create" />
           </h:form>
         </fieldset>
       </h:panelGroup>

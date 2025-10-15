@@ -22,7 +22,7 @@
           <p:outputLabel styleClass="label" value="Import URL" />
           <h:inputText styleClass="liste" id="gmlUrl" value="#{fsLoader.url}" size="32" required="true"
             requiredMessage="#{labels.fsLoader_url_req}" />
-          <p:commandButton styleClass="buttonCreateNew" value="#{labels.fsLoader_import}"
+          <p:commandButton styleClass="ui-button buttonCreateNew" value="#{labels.fsLoader_import}"
             action="#{fsLoader.importData}" onclick="show();" />
           <p:progressBar id="progressBarIndeterminate" style="height:6px" mode="indeterminate"/>
         </div>

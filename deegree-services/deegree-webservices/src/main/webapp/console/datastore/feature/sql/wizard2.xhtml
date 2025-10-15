@@ -19,7 +19,7 @@
               <h:panelGroup rendered="#{empty mappingWizardSQL.availableAppSchemaFiles}">
                 <p>
                   No schema files found.
-                  <h:commandLink styleClass="buttonCreateNew" value="Rescan">
+                  <h:commandLink styleClass="ui-button buttonCreateNew" value="Rescan">
                     <f:ajax render="schemaFiles" />
                   </h:commandLink>
                 </p>
@@ -27,7 +27,7 @@
               <h:panelGroup rendered="#{! empty mappingWizardSQL.availableAppSchemaFiles}">
                 <p>
                   Choose one or more schema file(s).
-                  <h:commandLink styleClass="buttonCreateNew" value="Rescan">
+                  <h:commandLink styleClass="ui-button buttonCreateNew" value="Rescan">
                     <f:ajax render="schemaFiles" />
                   </h:commandLink>
                   <br />
@@ -40,8 +40,8 @@
             </h:panelGroup>
           </div>
           <div>
-            <p:commandButton styleClass="buttonCreateNew" value="Back" action="/console/featurestore/sql/wizard" />
-            <p:commandButton styleClass="buttonCreateNew" value="Next" action="#{mappingWizardSQL.analyzeSchema}"
+            <p:commandButton styleClass="ui-button buttonCreateNew" value="Back" action="/console/featurestore/sql/wizard" />
+            <p:commandButton styleClass="ui-button buttonCreateNew" value="Next" action="#{mappingWizardSQL.analyzeSchema}"
               onclick="show();" />
           </div>
         </h:form>

@@ -8,9 +8,9 @@
   <h:panelGroup rendered="#{logBean.passwordSet and !logBean.loggedIn}">
     <p:outputLabel styleClass="label" value="#{labels.password}" />
     <h:inputSecret styleClass="liste" id="password" value="#{logBean.currentPassword}" />
-    <p:commandButton styleClass="buttonLogin" value="#{labels.login}" action="#{logBean.logIn}" />
+    <p:commandButton styleClass="ui-button buttonLogin" value="#{labels.login}" action="#{logBean.logIn}" />
   </h:panelGroup>
   <h:panelGroup rendered="#{logBean.passwordSet and logBean.loggedIn}">
-    <p:commandButton styleClass="buttonLogout" value="#{labels.logout}" action="#{logBean.logOut}" />
+    <p:commandButton styleClass="ui-button buttonLogout" value="#{labels.logout}" action="#{logBean.logOut}" />
   </h:panelGroup>
 </h:form>
