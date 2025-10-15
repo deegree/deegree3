@@ -471,7 +471,11 @@
   </properties>
 
   <modules>
-    <module>deegree-bom</module>
+    <!--
+      The first listed module must have this artifact as parent; otherwise,
+      the useAllReactorProjects directive in the deegree-core-schema assembly
+      descriptor will not function correctly.
+    -->
     <module>deegree-client</module>
     <module>deegree-core</module>
     <module>deegree-datastores</module>
@@ -481,6 +485,8 @@
     <module>deegree-themes</module>
     <module>deegree-tools</module>
     <module>deegree-workspaces</module>
+    <!-- module 'deegree-bom' is not parented to anything, do not move to the top of the list -->
+    <module>deegree-bom</module>
   </modules>
 
   <profiles>
