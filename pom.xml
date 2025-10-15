@@ -34,13 +34,6 @@
         <updatePolicy>never</updatePolicy>
       </releases>
     </repository>
-    <repository>
-      <id>geo-solutions-cache</id>
-      <url>https://repo.osgeo.org/repository/geo-solutions-cache/</url>
-      <releases>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-    </repository>
   </repositories>
 
   <distributionManagement>
