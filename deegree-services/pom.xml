@@ -35,6 +35,9 @@
     <module>deegree-services-wmts</module>
     <module>deegree-services-wps</module>
     <module>deegree-services-wpvs</module>
+    <module>deegree-webservices-commons</module>
+    <module>deegree-webservices-minimal</module>
+    <module>deegree-webservices-basic</module>
     <module>deegree-webservices</module>
   </modules>
 
