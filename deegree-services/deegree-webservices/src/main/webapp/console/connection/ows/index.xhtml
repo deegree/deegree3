@@ -11,12 +11,12 @@
             <table style="font-size: small; margin-bottom: 20px">
               <ui:repeat value="#{remoteOwsManagerBean.configs}" var="config">
                 <tr align="left">
-                  <td><p:outputLabel styleClass="buttonActivate" rendered="#{config.state=='Initialized'}"
-                      value="#{labels.featureStores_deactivate}" /> <p:outputLabel styleClass="buttonDeactivate"
+                  <td><p:outputLabel styleClass="ui-button buttonActivate" rendered="#{config.state=='Initialized'}"
+                      value="#{labels.featureStores_deactivate}" /> <p:outputLabel styleClass="ui-button buttonDeactivate"
                       rendered="#{config.state!='Error' and config.state!='Initialized'}" value="#{labels.featureStores_activate}" /> <p:outputLabel
                       styleClass="ui-button buttonError" rendered="#{config.state=='Error'}" value="!" /></td>
                   <td />
-                  <td><p:outputLabel styleClass="buttonDeactivate" value="#{config.id}" /></td>
+                  <td><p:outputLabel styleClass="ui-button buttonDeactivate" value="#{config.id}" /></td>
                   <td><p:commandButton styleClass="buttonInfo" rendered="#{config.state=='Initialized'}"
                       value="Deactivate" action="#{config.deactivate}" /> <p:commandButton styleClass="buttonInfo"
                       rendered="#{config.state!='Error' and config.state!='Initialized'}" value="Activate" action="#{config.activate}" /></td>
