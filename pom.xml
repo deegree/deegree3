@@ -1,13 +1,19 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.deegree</groupId>
   <artifactId>deegree</artifactId>
   <packaging>pom</packaging>
   <version>3.6.2-SNAPSHOT</version>
   <name>deegree</name>
   <description>Framework for OGC Web Service implementations and geospatial applications</description>
   <url>https://www.deegree.org</url>
+
+  <parent>
+    <groupId>org.deegree</groupId>
+    <artifactId>deegree-parent</artifactId>
+    <version>3.6.2-SNAPSHOT</version>
+    <relativePath>./deegree-parent</relativePath>
+  </parent>
 
   <scm>
     <connection>scm:git:git@github.com:deegree/deegree3.git</connection>
@@ -456,17 +462,6 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
     <site.dir>${user.home}/Sites</site.dir>
-    <java.version>17</java.version>
-    <antlr.version>3.5.3</antlr.version>
-    <antlr4.version>4.13.2</antlr4.version>
-    <oracle.version>23.4.0.24.05</oracle.version>
-    <logback.version>1.5.19</logback.version>
-    <slf4j.version>2.0.17</slf4j.version>
-    <spring-boot.version>3.4.10</spring-boot.version>
-    <batik.version>1.17</batik.version>
-    <axiom.version>1.4.0</axiom.version>
-    <jsonpath.version>2.9.0</jsonpath.version>
-    <jsonsmart.version>2.6.0</jsonsmart.version>
     <jvm.args>--add-exports java.desktop/sun.awt=ALL-UNNAMED --add-exports java.desktop/com.sun.imageio.spi=ALL-UNNAMED --add-exports java.desktop/sun.swing=ALL-UNNAMED --add-opens java.desktop/javax.imageio.spi=ALL-UNNAMED --add-opens java.desktop/com.sun.imageio.spi=ALL-UNNAMED</jvm.args>
   </properties>
 
