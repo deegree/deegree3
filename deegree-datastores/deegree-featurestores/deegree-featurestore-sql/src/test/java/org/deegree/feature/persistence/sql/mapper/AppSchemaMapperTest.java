@@ -63,6 +63,8 @@ public class AppSchemaMapperTest {
 
 	private File schemaWithNilValues;
 
+	private File schemaWithNilValuesAndRequiredAttributes;
+
 	private File schemaWithTimeProperties;
 
 	@Before
@@ -75,6 +77,7 @@ public class AppSchemaMapperTest {
 		this.schemaWithTwoSelfDependentCycles = copyToTmpFolder("schemaWithTwoSelfDependentCycles.xsd");
 		this.schemaForSampleValues = copyToTmpFolder("schemaForSampleValues.xsd");
 		this.schemaWithNilValues = copyToTmpFolder("schemaWithNilValues.xsd");
+		this.schemaWithNilValuesAndRequiredAttributes = copyToTmpFolder("schemaWithNilValuesAndRequiredAttributes.xsd");
 		this.schemaWithTimeProperties = copyToTmpFolder("schemaWithTimeProperties.xsd");
 	}
 
@@ -809,6 +812,40 @@ public class AppSchemaMapperTest {
 		assertThat(getCompound(mappings, "prop_A3").getParticles().size(), is(2));
 		assertThat(getCompound(mappings, "complex_A4"), is(notNullValue()));
 		assertThat(getCompound(mappings, "complex_A4").getParticles().size(), is(2));
+	}
+
+	@Test
+	public void testWithReferenceDataAndNilPropertiesAndRequiredAtttributes() throws Exception {
+		GMLAppSchemaReader xsdDecoder = new GMLAppSchemaReader(null, null, schemaWithNilValuesAndRequiredAttributes);
+		AppSchema appSchema = xsdDecoder.extractAppSchema();
+
+		QName featureTypeName = new QName("http://test.de/schema", "FeatureA", "te");
+		ReferenceData referenceData = mock(ReferenceData.class);
+		when(referenceData.shouldFeatureTypeMapped(featureTypeName)).thenReturn(true);
+		QName propA3 = new QName("http://test.de/schema", "prop_A3", "te");
+		when(referenceData.hasProperty(featureTypeName, asPathStep(propA3))).thenReturn(true);
+		when(referenceData.isPropertyNilled(featureTypeName, asPathStep(propA3))).thenReturn(true);
+		QName propA4 = new QName("http://test.de/schema", "complex_A4", "te");
+		when(referenceData.hasProperty(featureTypeName, asPathStep(propA4))).thenReturn(true);
+		when(referenceData.isPropertyNilled(featureTypeName, asPathStep(propA4))).thenReturn(true);
+
+		CRSRef storageCrs = CRSManager.getCRSRef("EPSG:4326");
+		GeometryStorageParams geometryParams = new GeometryStorageParams(storageCrs, "0", DIM_2);
+		AppSchemaMapper mapper = new AppSchemaMapper(appSchema, false, true, geometryParams, 63, true, true, 0,
+				referenceData, true, null);
+
+		MappedAppSchema mappedSchema = mapper.getMappedSchema();
+
+		Map<QName, FeatureTypeMapping> ftMappings = mappedSchema.getFtMappings();
+		assertThat(ftMappings.size(), is(1));
+
+		FeatureTypeMapping featureA = mappedSchema.getFtMapping(FEATURE_A);
+		List<Mapping> mappings = featureA.getMappings();
+		assertThat(mappings.size(), is(4));
+		assertThat(getCompound(mappings, "prop_A3"), is(notNullValue()));
+		assertThat(getCompound(mappings, "prop_A3").getParticles().size(), is(2));
+		assertThat(getCompound(mappings, "complex_A4"), is(notNullValue()));
+		assertThat(getCompound(mappings, "complex_A4").getParticles().size(), is(3));
 	}
 
 	@Test

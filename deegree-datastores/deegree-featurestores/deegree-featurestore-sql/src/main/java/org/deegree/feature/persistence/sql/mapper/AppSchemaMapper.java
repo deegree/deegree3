@@ -610,7 +610,7 @@ public class AppSchemaMapper {
 			if (attrDecl.getNamespace() != null) {
 				attrName = new QName(attrDecl.getNamespace(), attrDecl.getName());
 			}
-			if (propertyIsNilled && !"nilReason".equals(attrName.getLocalPart())) {
+			if (!attrUse.getRequired() && propertyIsNilled && !"nilReason".equals(attrName.getLocalPart())) {
 				continue;
 			}
 			if (attrDecl.getNamespace() != null) {
@@ -672,7 +672,7 @@ public class AppSchemaMapper {
 				// TODO should all xlink attributes be skipped?
 				continue;
 			}
-			if (propertyIsNilled && !"nilReason".equals(attrName.getLocalPart())) {
+			if (!attrUse.getRequired() && propertyIsNilled && !"nilReason".equals(attrName.getLocalPart())) {
 				continue;
 			}
 			if (attrDecl.getNamespace() != null) {
