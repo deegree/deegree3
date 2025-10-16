@@ -198,7 +198,7 @@ public abstract class AbstractMappedSchemaBuilder {
 		return GEOMETRY;
 	}
 
-	protected MappingExpression parseMappingExpression(String s) {
+	protected static MappingExpression parseMappingExpression(String s) {
 		MappingExpression mapping = null;
 		if (s != null) {
 			ANTLRStringStream in = new ANTLRStringStream(s);
