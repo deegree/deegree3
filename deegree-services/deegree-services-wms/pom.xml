@@ -92,8 +92,8 @@
     </dependency>
     -->
     <dependency>
-      <groupId>commons-beanutils</groupId>
-      <artifactId>commons-beanutils</artifactId>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-beanutils2</artifactId>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
