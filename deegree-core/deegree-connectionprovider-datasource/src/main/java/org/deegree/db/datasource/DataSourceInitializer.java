@@ -47,10 +47,10 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.beanutils.ConstructorUtils;
-import org.apache.commons.beanutils.ConvertUtils;
-import org.apache.commons.beanutils.MethodUtils;
+import org.apache.commons.beanutils2.BeanUtils;
+import org.apache.commons.beanutils2.ConstructorUtils;
+import org.apache.commons.beanutils2.ConvertUtils;
+import org.apache.commons.beanutils2.MethodUtils;
 import org.deegree.db.datasource.jaxb.DataSourceConnectionProvider;
 import org.deegree.db.datasource.jaxb.DataSourceConnectionProvider.DataSource.Argument;
 import org.slf4j.Logger;
