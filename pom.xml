@@ -167,7 +167,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
-          <version>3.21.0</version>
+          <version>3.12.1</version>
           <dependencies>
             <dependency>
               <groupId>org.apache.maven.wagon</groupId>
@@ -220,7 +220,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>3.11.3</version>
+          <version>3.12.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -254,6 +254,7 @@
           <detectLinks>false</detectLinks>
           <detectOfflineLinks>false</detectOfflineLinks>
           <excludePackageNames>*.jaxb</excludePackageNames>
+          <release>${java.version}</release>
         </configuration>
       </plugin>
       <plugin>
@@ -426,11 +427,13 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.6.2</version>
+        <version>3.12.0</version>
         <configuration>
           <doclint>none</doclint>
           <detectLinks>false</detectLinks>
           <detectOfflineLinks>false</detectOfflineLinks>
+          <excludePackageNames>*.jaxb</excludePackageNames>
+          <release>${java.version}</release>
           <minmemory>512m</minmemory>
           <maxmemory>2g</maxmemory>
           <inherited>false</inherited>
@@ -1299,13 +1302,14 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
-            <version>3.6.2</version>
+            <version>3.12.0</version>
             <configuration>
               <doclint>none</doclint>
               <detectLinks>false</detectLinks>
               <detectOfflineLinks>false</detectOfflineLinks>
               <failOnError>false</failOnError>
               <excludePackageNames>*.jaxb</excludePackageNames>
+              <release>${java.version}</release>
               <minmemory>512m</minmemory>
               <maxmemory>4g</maxmemory>
               <inherited>false</inherited>
@@ -1328,7 +1332,7 @@
           <plugin>
             <groupId>org.owasp</groupId>
             <artifactId>dependency-check-maven</artifactId>
-            <version>12.1.3</version>
+            <version>12.1.8</version>
             <configuration>
               <nvdValidForHours>24</nvdValidForHours>
               <knownExploitedEnabled>false</knownExploitedEnabled>
