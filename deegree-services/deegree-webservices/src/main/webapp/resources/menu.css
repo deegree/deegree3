@@ -2,16 +2,23 @@
 	font-weight: bold;
 	line-height: 1.4em;
 	text-decoration: none;
+	font-size: small;
 }
 
-.titel {
+.title {
 	font-weight: bold;
 	line-height: 1.4em;
+	font-size: small;
 }
 
 .menuitem {
 	margin-left: 15px;
 	line-height: 1.4em;
+	font-size: small;
+}
+
+.ui-widget {
+    font-size: small !important;
 }
 
 .ui-link.ui-widget.navi,

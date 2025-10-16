@@ -5,7 +5,7 @@
     <p:outputPanel>
       <fieldset class="fieldset">
         <legend>
-          <h:outputText styleClass="titel" value="#{labels.workspace_title}" />
+          <h:outputText styleClass="title" value="#{labels.workspace_title}" />
         </legend>
 
         <table style="font-size: small" border="0">
@@ -17,7 +17,7 @@
         </table>
 
         <br /> <br />
-        <h:outputText styleClass="titel" value="Active workspace" />
+        <h:outputText styleClass="title" value="Active workspace" />
         <table style="margin: 10px 0px; font-size: small" border="0">
           <h:form>
             <tr align="left">
@@ -27,7 +27,7 @@
         </table>
  
         <br /> <br />
-        <h:outputText styleClass="titel" value="Available workspaces" />
+        <h:outputText styleClass="title" value="Available workspaces" />
         <table style="margin: 10px 0px; font-size: small" border="0">
           <ui:repeat var="workspaceName" value="#{workspace.workspaceList}">
             <p:outputPanel rendered="#{workspace.activeWorkspace.name != workspaceName}">
@@ -50,7 +50,7 @@
         </table>
 
         <br /> <br />
-        <h:outputText styleClass="titel" value="Import an official workspace" />
+        <h:outputText styleClass="title" value="Import an official workspace" />
         <table style="margin: 10px 0px; font-size: small" border="0">
           <ui:repeat var="workspaceName" value="#{workspace.remoteWorkspaces}">
             <h:form>
@@ -69,7 +69,7 @@
         </p:outputPanel>
 
         <br /> <br />
-        <h:outputText styleClass="titel" value="Create a new workspace" />
+        <h:outputText styleClass="title" value="Create a new workspace" />
         <table style="margin: 10px 0px; font-size: small" border="0">
           <h:form>
             <tr>
@@ -85,7 +85,7 @@
         </table>
 
         <br /> <br />
-        <h:outputText styleClass="titel" value="Upload workspace" />
+        <h:outputText styleClass="title" value="Upload workspace" />
         <h:form>
           <table style="margin: 10px 0px; font-size: small" border="0">
             <tr>
