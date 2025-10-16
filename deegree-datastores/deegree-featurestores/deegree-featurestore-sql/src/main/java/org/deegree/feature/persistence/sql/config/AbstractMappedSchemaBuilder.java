@@ -53,9 +53,8 @@ import java.util.stream.Collectors;
 
 import jakarta.xml.bind.JAXBElement;
 
-import org.antlr.runtime.ANTLRStringStream;
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.RecognitionException;
+import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.tom.primitive.BaseType;
@@ -201,14 +200,15 @@ public abstract class AbstractMappedSchemaBuilder {
 	protected static MappingExpression parseMappingExpression(String s) {
 		MappingExpression mapping = null;
 		if (s != null) {
-			ANTLRStringStream in = new ANTLRStringStream(s);
+			CharStream in = CharStreams.fromString(s);
 			FMLLexer lexer = new FMLLexer(in);
 			CommonTokenStream tokens = new CommonTokenStream(lexer);
 			FMLParser parser = new FMLParser(tokens);
+			parser.setErrorHandler(new BailErrorStrategy());
 			try {
-				mapping = parser.mappingExpr().value;
+				mapping = parser.expr().mappingExpr().value;
 			}
-			catch (RecognitionException e) {
+			catch (ParseCancellationException e) {
 				LOG.warn("Unable to parse mapping expression '{}': treating as SQL expression", s);
 				return new Function(s);
 			}
