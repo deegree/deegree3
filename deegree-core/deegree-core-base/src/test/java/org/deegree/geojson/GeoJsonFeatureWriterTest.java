@@ -261,6 +261,10 @@ public class GeoJsonFeatureWriterTest {
 		assertThat(featureCollection, hasJsonPath("$.features[0].properties.estimatedAccuracy.uom", is("m")));
 		assertThat(featureCollection, hasJsonPath("$.features[0].properties.inspireId.Identifier.localId",
 				is("urn:adv:oid:DEHHALKA10000005")));
+		assertThat(featureCollection, hasNoJsonPath("$.features[0].properties.name.GeographicalName.sourceOfName"));
+		assertThat(featureCollection, hasNoJsonPath("$.features[0].properties.name.GeographicalName.pronunciation"));
+		assertThat(featureCollection, hasNoJsonPath("$.features[0].properties.name.GeographicalName.nameStatus"));
+		assertThat(featureCollection, hasNoJsonPath("$.features[0].properties.name.GeographicalName.nativeness"));
 		assertThat(featureCollection, hasJsonPath(
 				"$.features[0].properties.name.GeographicalName.spelling.SpellingOfName.text", is("Hamburg")));
 		assertThat(featureCollection,
