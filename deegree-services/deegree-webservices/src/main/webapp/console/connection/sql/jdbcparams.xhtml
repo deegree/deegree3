@@ -11,7 +11,7 @@
             <tr>
               <td />
             </tr>
-            <p:commandButton styleClass="ui-button buttonEdit" value="Use XML editor" action="#{jdbcBean.editAsXml}"></p:commandButton>
+            <p:commandButton styleClass="ui-button buttonEdit" value="Use XML editor" action="#{jdbcBean.editAsXml}" update=":container" global="false"></p:commandButton>
             <tr>
               <td />
             </tr>
@@ -62,13 +62,13 @@
             </tr>
             <tr>
               <td><br /> <p:commandButton styleClass="ui-button buttonInfo" value="#{labels.jdbc_test}"
-                  action="#{jdbcBean.testConnection}" alt="#{config.id}">
+                  action="#{jdbcBean.testConnection}" alt="#{config.id}" update=":container" global="false">
                 </p:commandButton></td>
             </tr>
           </table>
           <br />
           <div>
-            <p:commandButton styleClass="ui-button buttonCreateNew" value="Create" action="#{jdbcBean.save}">
+            <p:commandButton styleClass="ui-button buttonCreateNew" value="Create" action="#{jdbcBean.save}" update=":container" global="false">
               <f:setPropertyActionListener target="#{actionParams.param1}" value="#{config.id}" />
             </p:commandButton>
             <h:outputLink styleClass="ui-button buttonCancel" value="../../#{configManager.currentResourceManager.startView}.jsf"

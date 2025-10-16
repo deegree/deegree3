@@ -40,9 +40,9 @@
             </p:outputPanel>
           </div>
           <div>
-            <p:commandButton styleClass="ui-button buttonCreateNew" value="Back" action="/console/featurestore/sql/wizard" />
+            <p:commandButton styleClass="ui-button buttonCreateNew" value="Back" action="/console/featurestore/sql/wizard" update=":container" global="false" />
             <p:commandButton styleClass="ui-button buttonCreateNew" value="Next" action="#{mappingWizardSQL.analyzeSchema}"
-              onclick="show();" />
+              onclick="show();" update=":container" global="false" />
           </div>
         </h:form>
       </fieldset>

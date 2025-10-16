@@ -35,12 +35,12 @@
                 <tr align="left">
                   <td><h:outputText value="#{workspaceName}" /></td>
                   <td><p:commandButton styleClass="ui-button buttonInfo" label="#{workspaceName}"
-                      value="#{labels.start_workspace}" onclick="show();" action="#{workspace.startWorkspace}">
+                      value="#{labels.start_workspace}" onclick="show();" action="#{workspace.startWorkspace}" update=":container" global="false">
                       <f:setPropertyActionListener target="#{actionParams.param1}" value="#{workspaceName}" />
                     </p:commandButton></td>
                   <td><p:commandButton styleClass="ui-button buttonDelete" label="#{workspaceName}"
                       onclick="return confirmDelete();" value="#{labels.delete_workspace}"
-                      action="#{workspace.deleteWorkspace}">
+                      action="#{workspace.deleteWorkspace}" update=":container" global="false">
                       <f:setPropertyActionListener target="#{actionParams.param1}" value="#{workspaceName}" />
                     </p:commandButton></td>
                 </tr>
@@ -57,7 +57,7 @@
               <tr align="left">
                 <td><h:outputText value="#{workspaceName}" /></td>
                 <td><p:commandButton styleClass="ui-button buttonEdit" label="#{workspaceName}" value="Import"
-                    onclick="show();" action="#{workspace.downloadWorkspace}">
+                    onclick="show();" action="#{workspace.downloadWorkspace}" update=":container" global="false">
                     <f:setPropertyActionListener target="#{actionParams.param1}" value="#{workspaceName}" />
                   </p:commandButton></td>
               </tr>
@@ -79,7 +79,7 @@
             </tr>
             <tr>
               <td><p:commandButton styleClass="ui-button buttonCreateNew" value="#{labels.featureStores_new}"
-                action="#{createWorkspaceBean.createWorkspaceFolder}" /></td>
+                action="#{createWorkspaceBean.createWorkspaceFolder}" update=":container" global="false" /></td>
             </tr>
           </h:form>
         </table>
@@ -97,7 +97,7 @@
                                 allowTypes="/(\.|\/)(zip|gzip|tar.gz)$/"/></td>
             </tr>
 <!--            <tr>-->
-<!--              <td><p:commandButton styleClass="ui-button buttonInfo" value="Upload" ajax="false"/></td>-->
+<!--              <td><p:commandButton styleClass="ui-button buttonInfo" value="Upload" ajax="false" update=":container" global="false"/></td>-->
 <!--            </tr>-->
           </table>
         </h:form>

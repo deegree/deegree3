@@ -54,7 +54,7 @@
         <h:form>
           <div>
             <p:commandButton styleClass="ui-button buttonInfo" rendered="#{config.state=='init_ok'}" value="#{labels.jdbc_test}"
-              action="#{connectionTester.test}" alt="#{config.id}">
+              action="#{connectionTester.test}" alt="#{config.id}" update=":container" global="false">
               <f:setPropertyActionListener target="#{actionParams.param1}" value="#{config.id}" />
             </p:commandButton>
           </div>

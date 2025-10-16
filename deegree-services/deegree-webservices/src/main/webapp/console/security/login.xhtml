@@ -11,6 +11,6 @@
     <p:commandButton styleClass="ui-button buttonLogin" value="#{labels.login}" action="#{logBean.logIn}" update=":container" global="false" />
   </p:outputPanel>
   <p:outputPanel rendered="#{logBean.passwordSet and logBean.loggedIn}">
-    <p:commandButton styleClass="ui-button buttonLogout" value="#{labels.logout}" action="#{logBean.logOut}" update=":container" global="false" />
+    <p:commandButton styleClass="ui-button buttonLogout" value="#{labels.logout}" action="#{logBean.logOut}" update=":container" global="false"  />
   </p:outputPanel>
 </h:form>

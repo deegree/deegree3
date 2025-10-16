@@ -23,11 +23,11 @@
         <p:outputPanel id="xmleditor" layout="block">
           <p:outputPanel id="xmleditor-actions" layout="block">
             <p:commandButton styleClass="ui-button buttonSave" value="#{labels.xmlEditor_save}" onclick="save()"
-              action="${xmlEditorBean.save}" />
+              action="${xmlEditorBean.save}" update=":container" global="false" />
             <p:commandButton styleClass="ui-button buttonCancel" value="#{labels.xmlEditor_cancel}"
-              action="${xmlEditorBean.cancel}" />
+              action="${xmlEditorBean.cancel}" update=":container" global="false" />
             <p:commandButton styleClass="ui-button buttonCancel" value="Validate" onclick="save()"
-              action="${xmlEditorBean.validate}">
+              action="${xmlEditorBean.validate}" update=":container" global="false">
               <f:ajax execute="xmltextarea" />
             </p:commandButton>
           </p:outputPanel>

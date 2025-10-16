@@ -23,7 +23,7 @@
           <h:inputText styleClass="liste" id="gmlUrl" value="#{fsLoader.url}" size="32" required="true"
             requiredMessage="#{labels.fsLoader_url_req}" />
           <p:commandButton styleClass="ui-button buttonCreateNew" value="#{labels.fsLoader_import}"
-            action="#{fsLoader.importData}" onclick="show();" />
+            action="#{fsLoader.importData}" onclick="show();" update=":container" global="false" />
           <p:progressBar id="progressBarIndeterminate" style="height:6px" mode="indeterminate"/>
         </div>
       </h:form>

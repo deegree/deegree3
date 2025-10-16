@@ -82,7 +82,7 @@
         <h:form>
           <div>
             <p:commandButton styleClass="ui-button buttonEdit2" value="#{labels.proxy_edit_settings}"
-              action="#{proxyBean.proxyConfig.edit}" />
+              action="#{proxyBean.proxyConfig.edit}" update=":container" global="false" />
           </div>
         </h:form>
       </fieldset>

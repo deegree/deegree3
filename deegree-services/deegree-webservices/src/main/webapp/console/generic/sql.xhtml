@@ -10,8 +10,8 @@
         <h:inputTextarea id="sqlArea" cols="70" rows="21" value="#{execution.statements}" />
         <h:outputText value="#{execution.message}" />
         <br /> <br />
-        <p:commandButton styleClass="ui-button buttonSave" value="#{labels.sql_execute}" action="#{execution.execute}" />
-        <p:commandButton styleClass="ui-button buttonCancel" value="#{labels.sql_back}" action="#{execution.getBackOutcome}" />
+        <p:commandButton styleClass="ui-button buttonSave" value="#{labels.sql_execute}" action="#{execution.execute}" update=":container" global="false" />
+        <p:commandButton styleClass="ui-button buttonCancel" value="#{labels.sql_back}" action="#{execution.getBackOutcome}" update=":container" global="false" />
         <p id="highlighting" style="cursor: pointer;" class="schema" onclick="activateEditor();">Turn on
           highlighting</p>
       </fieldset>

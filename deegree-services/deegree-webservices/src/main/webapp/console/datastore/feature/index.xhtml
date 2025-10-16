@@ -20,20 +20,20 @@
                   <td />
                   <td><p:outputLabel styleClass="ui-button buttonDeactivate" value="#{config.id}" /></td>
                   <td><p:commandButton styleClass="ui-button buttonInfo" rendered="#{config.state=='Initialized'}"
-                      value="Deactivate" action="#{config.deactivate}" /> <p:commandButton styleClass="ui-button buttonInfo"
-                      rendered="#{config.state!='Error' and config.state!='Initialized'}" value="Activate" action="#{config.activate}" /></td>
+                      value="Deactivate" action="#{config.deactivate}" update=":container" global="false" /> <p:commandButton styleClass="ui-button buttonInfo"
+                      rendered="#{config.state!='Error' and config.state!='Initialized'}" value="Activate" action="#{config.activate}" update=":container" global="false" /></td>
                   <td><p:commandButton styleClass="ui-button buttonEdit" value="#{labels.featureStores_edit}"
-                      action="#{config.edit}" /></td>
+                      action="#{config.edit}" update=":container" global="false" /></td>
                   <td><p:commandButton styleClass="ui-button buttonDelete" value="#{labels.featureStores_delete}"
-                      action="#{config.delete}" onclick="return confirmDelete();" /></td>
+                      action="#{config.delete}" onclick="return confirmDelete();" update=":container" global="false" /></td>
                   <td><p:commandButton styleClass="ui-button buttonError" rendered="#{config.state=='Error'}"
-                      value="Show errors" action="#{config.showErrors}" /></td>
+                      value="Show errors" action="#{config.showErrors}" update=":container" global="false" /></td>
                   <td><p:commandButton styleClass="ui-button buttonInfo" rendered="#{config.state=='Initialized'}"
-                      value="#{labels.featureStores_info}" action="#{config.showInfo}" alt="#{config.id}" /></td>
+                      value="#{labels.featureStores_info}" action="#{config.showInfo}" alt="#{config.id}" update=":container" global="false" /></td>
                   <td><p:commandButton styleClass="ui-button buttonInfo" rendered="#{config.state=='Initialized'}"
-                      value="#{labels.featureStores_loader}" action="#{config.openLoader}" alt="#{config.id}" /></td>
+                      value="#{labels.featureStores_loader}" action="#{config.openLoader}" alt="#{config.id}" update=":container" global="false" /></td>
                   <td><p:commandButton styleClass="ui-button buttonInfo" rendered="#{config.sql}"
-                      value="#{labels.featureStores_setup}" action="#{config.createTables}" alt="#{config.id}" /></td>
+                      value="#{labels.featureStores_setup}" action="#{config.createTables}" alt="#{config.id}" update=":container" global="false" /></td>
                 </tr>
               </ui:repeat>
             </table>

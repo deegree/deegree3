@@ -23,8 +23,8 @@
             </h:selectOneMenu>
           </p>
           <p>
-            <p:commandButton styleClass="ui-button buttonCreateNew" value="Back" action="/console/datastore/feature" />
-            <p:commandButton styleClass="ui-button buttonCreateNew" value="Next" action="#{mappingWizardSQL.selectMode}" />
+            <p:commandButton styleClass="ui-button buttonCreateNew" value="Back" action="/console/datastore/feature" update=":container" global="false" />
+            <p:commandButton styleClass="ui-button buttonCreateNew" value="Next" action="#{mappingWizardSQL.selectMode}" update=":container" global="false" />
           </p>
         </h:form>
       </fieldset>

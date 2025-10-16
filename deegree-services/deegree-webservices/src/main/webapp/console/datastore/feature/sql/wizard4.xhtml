@@ -10,7 +10,7 @@
         </div>
         <div>
           <p:commandButton styleClass="ui-button buttonCreateNew" value="Create DB tables"
-            action="#{mappingWizardSQL.createTables}" onclick="show();" />
+            action="#{mappingWizardSQL.createTables}" onclick="show();" update=":container" global="false" />
         </div>
       </h:form>
     </p:outputPanel>
