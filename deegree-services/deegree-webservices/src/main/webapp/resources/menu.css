@@ -21,6 +21,34 @@
     font-size: small !important;
 }
 
+/* Compact input fields, override PrimeFaces defaults */
+.liste,
+input.liste,
+.ui-inputfield.liste {
+  width: auto !important;
+  max-width: 12em !important;
+  font-size: small !important;
+  padding: 0.1em 0.3em !important;
+  box-sizing: content-box !important;
+}
+
+/* Apply to all input fieldsof password */
+input[type="password"],
+input.ui-inputfield,
+.ui-inputfield input {
+    width: auto !important;
+    max-width: 12em !important;
+    font-size: small !important;
+    padding: 0.1em 0.3em !important;
+    box-sizing: content-box !important;
+}
+
+/* Recolor or hide asterisk */
+.ui-outputlabel-rfi {
+  color: #FF7F00; /* orange, to match your theme */
+  font-weight: bold;
+}
+
 .ui-link.ui-widget.navi,
 a.navi {
     color: grey !important;

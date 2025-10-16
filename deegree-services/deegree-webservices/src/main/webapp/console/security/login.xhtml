@@ -6,8 +6,8 @@
     </p:outputPanel>
   </p:outputPanel>
   <p:outputPanel rendered="#{logBean.passwordSet and !logBean.loggedIn}">
-    <p:outputLabel styleClass="label" value="#{labels.password}" />
-    <h:inputSecret styleClass="liste" id="password" value="#{logBean.currentPassword}" />
+    <p:outputLabel styleClass="label" value="#{labels.password}" style="margin-right:1em;" />
+    <h:inputSecret styleClass="liste" id="password" value="#{logBean.currentPassword}" style="margin-right:1em;" />
     <p:commandButton styleClass="ui-button buttonLogin" value="#{labels.login}" action="#{logBean.logIn}" />
   </p:outputPanel>
   <p:outputPanel rendered="#{logBean.passwordSet and logBean.loggedIn}">
