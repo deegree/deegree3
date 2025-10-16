@@ -42,13 +42,13 @@ import java.util.List;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
-import org.apache.commons.math.linear.Array2DRowRealMatrix;
-import org.apache.commons.math.linear.ArrayRealVector;
-import org.apache.commons.math.linear.DecompositionSolver;
-import org.apache.commons.math.linear.LUDecompositionImpl;
-import org.apache.commons.math.linear.RealMatrix;
-import org.apache.commons.math.linear.RealVector;
-import org.apache.commons.math.linear.SingularMatrixException;
+import org.apache.commons.math3.linear.Array2DRowRealMatrix;
+import org.apache.commons.math3.linear.ArrayRealVector;
+import org.apache.commons.math3.linear.DecompositionSolver;
+import org.apache.commons.math3.linear.LUDecomposition;
+import org.apache.commons.math3.linear.RealMatrix;
+import org.apache.commons.math3.linear.RealVector;
+import org.apache.commons.math3.linear.SingularMatrixException;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.points.Points;
@@ -484,7 +484,7 @@ public class CurveLinearizer {
 		RealMatrix coefficients = new Array2DRowRealMatrix(matrixA, false);
 
 		// LU-decomposition
-		DecompositionSolver solver = new LUDecompositionImpl(coefficients).getSolver();
+		DecompositionSolver solver = new LUDecomposition(coefficients).getSolver();
 
 		RealVector constants = new ArrayRealVector(vectorb, false);
 		RealVector solution = null;
@@ -495,7 +495,7 @@ public class CurveLinearizer {
 			LOG.error(e.getLocalizedMessage());
 			e.printStackTrace();
 		}
-		return solution.getData();
+		return solution.toArray();
 	}
 
 	private double[] interpolateSpline(int n, double[] h, double[] xcoor, double[] ycoor, double[] vectorx,
