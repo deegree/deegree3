@@ -39,12 +39,12 @@
       <p:outputPanel id="status" layout="block" rendered="#{logBean.loggedIn}">
           <h:form>
             <h:outputText styleClass="title" value="Active workspace: " />
-            <h:outputText value="#{workspace.activeWorkspace.name}" />
-            <p:commandButton value="#{labels.apply_changes}" styleClass="ui-button buttongray" action="#{workspace.applyChanges}"
-                             onclick="show();" rendered="#{!workspace.pendingChanges}" />
+            <h:outputText value="#{workspace.activeWorkspace.name}" style="padding-right:1em;" />
+            <p:commandButton value="#{labels.apply_changes}" styleClass="ui-button buttonReloadValidate" action="#{workspace.applyChanges}"
+                             onclick="show();" rendered="#{!workspace.pendingChanges}" style="margin-right:1em;" />
             <p:commandButton value="#{labels.apply_changes}" styleClass="ui-button buttonError" action="#{workspace.applyChanges}"
                              onclick="show();" rendered="#{workspace.pendingChanges}" />
-            <p:commandButton value="#{labels.validate_changes}" styleClass="ui-button buttongray" action="#{workspace.validate}"
+            <p:commandButton value="#{labels.validate_changes}" styleClass="ui-button buttonReloadValidate" action="#{workspace.validate}"
                              onclick="show();" />
           </h:form>
       </p:outputPanel>

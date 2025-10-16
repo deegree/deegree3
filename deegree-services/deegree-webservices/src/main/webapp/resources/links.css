@@ -1,5 +1,5 @@
 a {
-    color: #FE4500;
+    color: #FF7F00;
     text-decoration: none !important;
 }
 
@@ -10,12 +10,12 @@ a:hover {
 
 /* Target menu link specifically */
 a.ui-link.menutopic {
-    color: #FE4500 !important;
+    color: #FF7F00 !important;
     text-decoration: none !important;
 }
 
 /* Hover state */
 a.ui-link.menutopic:hover {
-    color: #FF7F00 !important;
+    color: #FE4500 !important;
     text-decoration: none !important;
 }

@@ -1,6 +1,6 @@
 /* General PrimeFaces button styling for size and default color */
 .ui-button {
-    padding: 0.2em 0.5em !important; /* Reduced padding for smaller buttons */
+    padding: 0.1em 0.1em !important; /* Reduced padding for smaller buttons */
     font-size: 90% !important; /* Consistent font size */
     background-color: #f0f0f0 !important; /* Neutral gray background */
     background-image: none !important; /* Remove PrimeFaces gradients */
@@ -11,12 +11,27 @@
     text-shadow: none !important;
 }
 
-/* Override hover and active states to prevent blue from showing */
+/* Minimal padding for text-only buttons */
+.ui-button.ui-button-text-only .ui-button-text {
+    padding: 0.2em 0.2em !important;  /* shrink inner span padding */
+    line-height: 1.4em !important;      /* reduce line spacing */
+    font-size: 90% !important;        /* match outer button */
+}
+
+
+/* Normal hover and active */
 .ui-button.ui-state-hover, .ui-button.ui-state-active {
     background-color: #e0e0e0 !important;
     color: #333 !important;
 }
 
+/* Focus or lingering pressed state */
+.ui-button:focus,
+.ui-button.ui-state-focus {
+    outline: none !important;             /* remove browser default focus ring */
+    box-shadow: 0 0 0 1px #FF7F00 !important;  /* orange glow around button */
+    border-color: #FF7F00 !important;         /* optional: orange border */
+}
 
 /* --- User's adapted styles --- */
 
@@ -26,10 +41,12 @@
 	cursor: pointer;
 }
 
-.ui-button.buttongray {
+.ui-button.buttonReloadValidate {
 	color: gray !important;
 	font: 90% Verdana, Arial, Helvetica, sans-serif !important;
 	background-color: #fcfcfc !important;
+	padding: 0.4em 0.4em !important;
+	border: 1px solid #FF7F00 !important;
 	cursor: pointer;
 }
 
@@ -53,6 +70,7 @@
 	font: 90% Verdana, Arial, Helvetica, sans-serif !important;
 	background-color: #fcfcfc !important;
 	font-weight: bold !important;
+	padding: 0.2em 0.5em !important;
 	cursor: pointer;
 }
 
@@ -107,12 +125,16 @@
 
 .ui-button.buttonLogin {
 	color: grey !important;
-	font: 80% Verdana, Arial, Helvetica, sans-serif !important;
+	font: 90% Verdana, Arial, Helvetica, sans-serif !important;
 	background-color: white !important;
+	border: 1px solid #FF7F00 !important;
+	padding: 0.4em 0.4em !important;
 }
 
 .ui-button.buttonLogout {
 	color: grey !important;
-	font: 80% Verdana, Arial, Helvetica, sans-serif !important;
+	font: 90% Verdana, Arial, Helvetica, sans-serif !important;
 	background-color: white !important;
+	border: 1px solid #FF7F00 !important;
+	padding: 0.4em 0.4em !important;
 }
