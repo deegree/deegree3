@@ -47,8 +47,6 @@ public class DBField implements MappingExpression {
 
 	private String column;
 
-	private String alias;
-
 	public DBField(String schema, String table, String column) {
 		this.schema = schema;
 		this.table = table;
@@ -70,14 +68,6 @@ public class DBField implements MappingExpression {
 
 	public String getTable() {
 		return table;
-	}
-
-	public void setAlias(String alias) {
-		this.alias = alias;
-	}
-
-	public String getAlias() {
-		return alias;
 	}
 
 	public String getColumn() {
