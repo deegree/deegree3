@@ -17,11 +17,11 @@
   <ui:composition template="/layout.xhtml">
     <ui:define name="center">
       <h:form styleClass="form-main">
-      	<h:panelGroup id="xmleditor-title" layout="block">
+      	<p:outputPanel id="xmleditor-title" layout="block">
         	<h:outputText value="Editing XML resource: ${xmlEditorBean.title}" />
-        </h:panelGroup>
-        <h:panelGroup id="xmleditor" layout="block">
-          <h:panelGroup id="xmleditor-actions" layout="block">            
+        </p:outputPanel>
+        <p:outputPanel id="xmleditor" layout="block">
+          <p:outputPanel id="xmleditor-actions" layout="block">
             <p:commandButton styleClass="ui-button buttonSave" value="#{labels.xmlEditor_save}" onclick="save()"
               action="${xmlEditorBean.save}" />
             <p:commandButton styleClass="ui-button buttonCancel" value="#{labels.xmlEditor_cancel}"
@@ -30,12 +30,12 @@
               action="${xmlEditorBean.validate}">
               <f:ajax execute="xmltextarea" />
             </p:commandButton>
-          </h:panelGroup>
-          <h:panelGroup id="xmleditor-input" layout="block">
+          </p:outputPanel>
+          <p:outputPanel id="xmleditor-input" layout="block">
             <pe:codeMirror id="xmltextarea" mode="xml" theme="ambiance" lineNumbers="true" matchBrackets="true"
                            cols="80" rows="25" value="${xmlEditorBean.content}" />
-          </h:panelGroup>
-        </h:panelGroup>
+          </p:outputPanel>
+        </p:outputPanel>
       </h:form>
     </ui:define>
   </ui:composition>

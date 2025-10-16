@@ -3,7 +3,7 @@
   xmlns:c="http://xmlns.jcp.org/jsp/jstl/core" xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
   xmlns:dg="http://deegree.org/jsf" xmlns:dgc="http://xmlns.jcp.org/jsf/composite/deegree" xmlns:p="http://primefaces.org/ui">
   <ui:define name="center">
-    <h:panelGroup>
+    <p:outputPanel>
       <h:form>
         <div>
           Mapping finished.<br />
@@ -14,6 +14,6 @@
             action="#{mappingWizardSQL.activateFS}" onclick="show();" />
         </div>
       </h:form>
-    </h:panelGroup>
+    </p:outputPanel>
   </ui:define>
 </ui:composition>

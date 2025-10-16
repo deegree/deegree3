@@ -11,11 +11,11 @@
 </cc:interface>
 
 <cc:implementation>
-  <h:panelGroup layout="block" styleClass="menuitem">
-    <h:link value="#{cc.attrs.displayname}" outcome="#{cc.attrs.target}"
+  <p:outputPanel layout="block" styleClass="menuitem">
+    <p:link value="#{cc.attrs.displayname}" outcome="#{cc.attrs.target}"
       styleClass="#{facesContext.viewRoot.viewId == cc.attrs.target ? 'naviactive' : 'navi'}" />
     <p:outputLabel styleClass="ui-button buttonError" rendered="#{cc.attrs.hasErrors}" value=" !" />
-  </h:panelGroup>
+  </p:outputPanel>
 </cc:implementation>
 
 </html>

@@ -13,7 +13,7 @@
   ----------------------------
   <br />
   <br />
-  <h:panelGroup rendered="#{!empty processExecutionsBean.executions}" >
+  <p:outputPanel rendered="#{!empty processExecutionsBean.executions}" >
     <table border="1" cellpadding="3" cellspacing="0">
       <tr>
         <th>Process</th>
@@ -34,7 +34,7 @@
         </tr>
       </ui:repeat>
     </table>
-  </h:panelGroup>
+  </p:outputPanel>
   <h:outputText rendered="#{empty processExecutionsBean.executions}" value="No processes have been executed so far." />
 </h:body>
 </html>

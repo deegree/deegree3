@@ -22,10 +22,10 @@
 								<p:commandButton id="collapse"
 												onclick="collapse(this, '#{cc.clientId}:content', '#{cc.attrs.openImg}', '#{cc.attrs.collapseImg}');"
 												image="#{cc.attrs.collapsed ? cc.attrs.openImg : cc.attrs.collapseImg }" />
-				</h:panelGrid> <h:panelGroup id="content" style="#{cc.attrs.collapsed ? 'display:none;' : 'display:inline;' }"
+				</h:panelGrid> <p:outputPanel id="content" style="#{cc.attrs.collapsed ? 'display:none;' : 'display:inline;' }"
 								styleClass="content" layout="block">
 								<composite:insertChildren />
-				</h:panelGroup></div>
+				</p:outputPanel></div>
 </composite:implementation>
 </body>
 </html>

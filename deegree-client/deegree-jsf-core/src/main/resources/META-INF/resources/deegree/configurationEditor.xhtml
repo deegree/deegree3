@@ -34,7 +34,7 @@
 								<f:ajax execute="@this" render="editPanel close" />
 				</h:commandLink>
 
-				<div><h:panelGroup id="editPanel" rendered="#{cc.attrs.editBean.map[cc.attrs.editorID] != null}">
+				<div><p:outputPanel id="editPanel" rendered="#{cc.attrs.editBean.map[cc.attrs.editorID] != null}">
 								<br />
 								<dg:inputConfigurationXML id="inputXML" value="#{cc.attrs.editBean.map[cc.attrs.editorID].xml}"
 												schemaURLS="#{cc.attrs.editBean.map[cc.attrs.editorID].schemaURLS}" style="width:500px; height:300px;" />
@@ -46,7 +46,7 @@
 								<dgc:ajaxStatus text="Working" />
 								<br />
 								<h:message for="#{cc.clientId}:inputXML" showDetail="true" showSummary="true" />
-				</h:panelGroup></div>
+				</p:outputPanel></div>
 </composite:implementation>
 </body>
 </html>

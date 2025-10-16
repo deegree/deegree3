@@ -3,7 +3,7 @@
   xmlns:c="http://xmlns.jcp.org/jsp/jstl/core" xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
   xmlns:dg="http://deegree.org/jsf" xmlns:dgc="http://xmlns.jcp.org/jsf/composite/deegree" xmlns:p="http://primefaces.org/ui">
   <ui:define name="center">
-    <h:panelGroup>
+    <p:outputPanel>
       <fieldset class="fieldset">
         <legend>
           <h:outputText styleClass="titel" value="Create new SQL feature store" />
@@ -15,16 +15,16 @@
               <h:outputText styleClass="titel" value="#{mappingWizardSQL.appSchemaDirectory}" />
               <br />
             </p>
-            <h:panelGroup id="schemaFiles">
-              <h:panelGroup rendered="#{empty mappingWizardSQL.availableAppSchemaFiles}">
+            <p:outputPanel id="schemaFiles">
+              <p:outputPanel rendered="#{empty mappingWizardSQL.availableAppSchemaFiles}">
                 <p>
                   No schema files found.
                   <h:commandLink styleClass="ui-button buttonCreateNew" value="Rescan">
                     <f:ajax render="schemaFiles" />
                   </h:commandLink>
                 </p>
-              </h:panelGroup>
-              <h:panelGroup rendered="#{! empty mappingWizardSQL.availableAppSchemaFiles}">
+              </p:outputPanel>
+              <p:outputPanel rendered="#{! empty mappingWizardSQL.availableAppSchemaFiles}">
                 <p>
                   Choose one or more schema file(s).
                   <h:commandLink styleClass="ui-button buttonCreateNew" value="Rescan">
@@ -36,8 +36,8 @@
                     <f:selectItems value="#{mappingWizardSQL.availableAppSchemaFiles}" />
                   </h:selectManyCheckbox>
                 </p>
-              </h:panelGroup>
-            </h:panelGroup>
+              </p:outputPanel>
+            </p:outputPanel>
           </div>
           <div>
             <p:commandButton styleClass="ui-button buttonCreateNew" value="Back" action="/console/featurestore/sql/wizard" />
@@ -46,6 +46,6 @@
           </div>
         </h:form>
       </fieldset>
-    </h:panelGroup>
+    </p:outputPanel>
   </ui:define>
 </ui:composition>

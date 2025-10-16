@@ -4,7 +4,7 @@
   xmlns:dg="http://deegree.org/jsf" xmlns:dgc="http://xmlns.jcp.org/jsf/composite/deegree" xmlns:p="http://primefaces.org/ui">
   <ui:define name="center">
     <f:view>
-      <h:panelGroup>
+      <p:outputPanel>
         <fieldset class="fieldset">
           <legend>
             <h:outputText styleClass="titel" value="Tile stores" />
@@ -33,10 +33,10 @@
             </table>
           </h:form>
           <h:form>
-            <h:link styleClass="ui-button buttonCreateNew" value="#{labels.featureStores_new}" outcome="create" />
+            <p:link styleClass="ui-button buttonCreateNew" value="#{labels.featureStores_new}" outcome="create" />
           </h:form>
         </fieldset>
-      </h:panelGroup>
+      </p:outputPanel>
     </f:view>
   </ui:define>
 </ui:composition>

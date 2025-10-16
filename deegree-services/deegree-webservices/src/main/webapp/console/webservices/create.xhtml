@@ -3,36 +3,36 @@
   xmlns:c="http://xmlns.jcp.org/jsp/jstl/core" xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
   xmlns:dg="http://deegree.org/jsf" xmlns:dgc="http://xmlns.jcp.org/jsf/composite/deegree" xmlns:p="http://primefaces.org/ui">
   <ui:define name="center">
-    <h:panelGroup>
+    <p:outputPanel>
       <fieldset class="fieldset">
         <legend>
           <h:outputText styleClass="titel" value="Create new service" />
         </legend>
         <h:form>
-          <h:panelGroup>
+          <p:outputPanel>
             <p:outputLabel styleClass="label" for="newFSBt" value="Identifier" />
             <h:inputText styleClass="liste" id="newFSBt" value="#{createServiceBean.id}" size="16" required="true"
               requiredMessage="#{labels.resource_name_req}" />
             <br />
-            <h:panelGroup>
+            <p:outputPanel>
               <p:outputLabel styleClass="label" for="newFSBt" value="Service type" />
               <h:selectOneMenu styleClass="liste" value="#{createServiceBean.type}">
                 <f:selectItems value="#{createServiceBean.types}" />
                 <f:ajax listener="#{createServiceBean.changeType}" render="templates" />
               </h:selectOneMenu>
-            </h:panelGroup>
-            <h:panelGroup id="templates">
+            </p:outputPanel>
+            <p:outputPanel id="templates">
               <h:outputText value="XML config template" />
               <h:selectOneMenu styleClass="liste" value="#{createServiceBean.configTemplate}">
                 <f:selectItems value="#{createServiceBean.configTemplates}" />
               </h:selectOneMenu>
-            </h:panelGroup>
+            </p:outputPanel>
             <br />
             <p:commandButton styleClass="ui-button buttonCreateNew" value="#{labels.featureStores_new}"
               action="#{createServiceBean.create}" />
-          </h:panelGroup>
+          </p:outputPanel>
         </h:form>
       </fieldset>
-    </h:panelGroup>
+    </p:outputPanel>
   </ui:define>
 </ui:composition>

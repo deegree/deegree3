@@ -28,15 +28,15 @@
   </div>
   <div id="PLEASEWAIT_BG"></div>
 
-  <h:panelGroup id="container" layout="block">
-    <h:panelGroup id="top" layout="block">
-      <h:panelGroup id="logo" layout="block" styleClass="logo">
+  <p:outputPanel id="container" layout="block">
+    <p:outputPanel id="top" layout="block">
+      <p:outputPanel id="logo" layout="block" styleClass="logo">
         <p:graphicImage name="images/logo.png" alt="deegree logo" />
-      </h:panelGroup>
-      <h:panelGroup id="login">
+      </p:outputPanel>
+      <p:outputPanel id="login">
         <ui:include src="/console/security/login.xhtml" />
-      </h:panelGroup>
-      <h:panelGroup id="status" layout="block" rendered="#{logBean.loggedIn}">
+      </p:outputPanel>
+      <p:outputPanel id="status" layout="block" rendered="#{logBean.loggedIn}">
           <h:form>
             <h:outputText styleClass="title" value="Active workspace: " />
             <h:outputText value="#{workspace.activeWorkspace.name}" />
@@ -47,25 +47,25 @@
             <p:commandButton value="#{labels.validate_changes}" styleClass="ui-button buttongray" action="#{workspace.validate}"
                              onclick="show();" />
           </h:form>
-      </h:panelGroup>
-    </h:panelGroup>
+      </p:outputPanel>
+    </p:outputPanel>
 
-    <h:panelGroup id="left">
+    <p:outputPanel id="left">
       <h:form prependId="false">
         <ui:include src="menu.xhtml" />
       </h:form>
-    </h:panelGroup>
+    </p:outputPanel>
 
-    <h:panelGroup id="main" layout="block" styleClass="main">
-      <h:panelGroup rendered="#{logBean.loggedIn}">
+    <p:outputPanel id="main" layout="block" styleClass="main">
+      <p:outputPanel rendered="#{logBean.loggedIn}">
         <p:messages id="messages" escape="false" showSummary="true" autoUpdate="true" closable="true" />
         <ui:insert name="center" />
-      </h:panelGroup>
-      <h:panelGroup rendered="#{!logBean.loggedIn}">
+      </p:outputPanel>
+      <p:outputPanel rendered="#{!logBean.loggedIn}">
         <h:outputText value="#{labels.access_forbidden}" />
-      </h:panelGroup>
-    </h:panelGroup>
+      </p:outputPanel>
+    </p:outputPanel>
 
-  </h:panelGroup>
+  </p:outputPanel>
 </h:body>
 </html>

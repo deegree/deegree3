@@ -4,7 +4,7 @@
   xmlns:p="http://primefaces.org/ui">
   <ui:define name="center">
     <f:view>
-      <h:panelGroup>
+      <p:outputPanel>
         <fieldset class="fieldset">
           <legend>
             <h:outputText styleClass="titel" value="Web services" />
@@ -24,20 +24,20 @@
                       value="Deactivate" action="#{config.deactivate}" /> <p:commandButton styleClass="ui-button buttonInfo"
                       rendered="#{config.state!='Error' and config.state!='Initialized'}" value="Activate"
                       action="#{config.activate}" /></td>
-                  <td><h:link outcome="/console/generic/xmleditor" styleClass="ui-button buttonEdit" value="Edit">
+                  <td><p:link outcome="/console/generic/xmleditor" styleClass="ui-button buttonEdit" value="Edit">
                       <f:param name="id" value="#{config.id}" />
                       <f:param name="schemaUrl" value="#{config.schemaURL}" />
                       <f:param name="resourceProviderClass" value="org.deegree.services.OWSProvider" />
                       <f:param name="nextView" value="/console/webservices/index" />
-                    </h:link></td>
+                    </p:link></td>
                   <td><p:commandButton styleClass="ui-button buttonDelete" value="#{labels.featureStores_delete}"
                       action="#{config.delete}" onclick="return confirmDelete();" /></td>
                   <td><p:commandButton styleClass="ui-button buttonInfo" value="Edit Metadata"
                       action="#{config.editMetadata}" /></td>
-                  <td><h:panelGroup rendered="#{config.state=='Initialized'}">
+                  <td><p:outputPanel rendered="#{config.state=='Initialized'}">
                       <p:link styleClass="ui-button buttonInfo" target="_blank" href="#{config.capabilitiesUrl}"
                         value="#{labels.webservices_cap}" />
-                    </h:panelGroup></td>
+                    </p:outputPanel></td>
                   <td><p:commandButton styleClass="ui-button buttonError" rendered="#{config.state=='Error'}"
                       value="#{labels.show_errors}" action="#{config.showErrors}" /></td>
                 </tr>
@@ -45,13 +45,13 @@
             </table>
           </h:form>
           <h:form>
-            <h:link styleClass="ui-button buttonCreateNew" value="#{labels.featureStores_new}" outcome="create" />
+            <p:link styleClass="ui-button buttonCreateNew" value="#{labels.featureStores_new}" outcome="create" />
             <p:spacer width="10" height="1" /> | <p:spacer width="10" height="1" />
             <p:commandButton styleClass="ui-button buttonEdit2" value="#{labels.webservices_edit_global}"
               action="#{servicesBean.mainConfig.edit}" />
           </h:form>
         </fieldset>
-      </h:panelGroup>
+      </p:outputPanel>
     </f:view>
   </ui:define>
 </ui:composition>

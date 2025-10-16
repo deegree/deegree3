@@ -2,7 +2,7 @@
   xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
   xmlns:p="http://primefaces.org/ui">
   <ui:define name="center">
-    <h:panelGroup>
+    <p:outputPanel>
       <fieldset class="fieldset">
         <legend>
           <h:outputText styleClass="titel" value="#{labels.workspace_title}" />
@@ -30,7 +30,7 @@
         <h:outputText styleClass="titel" value="Available workspaces" />
         <table style="margin: 10px 0px; font-size: small" border="0">
           <ui:repeat var="workspaceName" value="#{workspace.workspaceList}">
-            <h:panelGroup rendered="#{workspace.activeWorkspace.name != workspaceName}">
+            <p:outputPanel rendered="#{workspace.activeWorkspace.name != workspaceName}">
               <h:form>
                 <tr align="left">
                   <td><h:outputText value="#{workspaceName}" /></td>
@@ -45,7 +45,7 @@
                     </p:commandButton></td>
                 </tr>
               </h:form>
-            </h:panelGroup>
+            </p:outputPanel>
           </ui:repeat>
         </table>
 
@@ -64,9 +64,9 @@
             </h:form>
           </ui:repeat>
         </table>
-        <h:panelGroup rendered="#{empty workspace.remoteWorkspaces}">
+        <p:outputPanel rendered="#{empty workspace.remoteWorkspaces}">
           <h:outputText styleClass="error" value="Unable to fetch list of workspaces. Are your proxy settings correct?" />
-        </h:panelGroup>
+        </p:outputPanel>
 
         <br /> <br />
         <h:outputText styleClass="titel" value="Create a new workspace" />
@@ -102,6 +102,6 @@
           </table>
         </h:form>
       </fieldset>
-    </h:panelGroup>
+    </p:outputPanel>
   </ui:define>
 </ui:composition>

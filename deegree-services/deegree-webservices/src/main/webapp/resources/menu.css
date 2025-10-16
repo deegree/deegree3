@@ -1,6 +1,7 @@
 .menutopic {
 	font-weight: bold;
 	line-height: 1.4em;
+	text-decoration: none;
 }
 
 .titel {
@@ -13,18 +14,27 @@
 	line-height: 1.4em;
 }
 
-.navi {
-	color: grey;
+.ui-link.ui-widget.navi,
+a.navi {
+    color: grey !important;
+    text-decoration: none;
 }
 
+.ui-link.ui-widget.navi:hover,
+a.navi:hover {
+    color: #FF7F00 !important;
+    text-decoration: none;
+}
+
+/* Active menu item */
+.ui-link.ui-widget.naviactive,
+a.naviactive {
+    color: #FF7F00 !important;
+    font-weight: bold;
+}
+
+/* Optional: span fallback (if label is rendered separately) */
 span.navi {
 	color: #DCDAD5;
 }
 
-.navi:hover {
-	color: green;
-}
-
-.naviactive {
-	color: green;	
-}
