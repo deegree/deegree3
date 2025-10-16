@@ -27,20 +27,6 @@
         <enabled>true</enabled>
       </snapshots>
     </repository>
-    <repository>
-      <id>geotools-releases</id>
-      <url>https://repo.osgeo.org/repository/geotools-releases/</url>
-      <releases>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-    </repository>
-    <repository>
-      <id>geo-solutions-cache</id>
-      <url>https://repo.osgeo.org/repository/geo-solutions-cache/</url>
-      <releases>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-    </repository>
   </repositories>
 
   <distributionManagement>
