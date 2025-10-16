@@ -1,0 +1,21 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>deegree-webservices-minimal</artifactId>
+    <packaging>war</packaging>
+    <name>deegree-webservices-minimal</name>
+    <description>Webapp that includes deegree WMS, WFS, CSW, WPS, common datastore modules and REST services</description>
+    <parent>
+        <groupId>org.deegree</groupId>
+        <artifactId>deegree-services</artifactId>
+        <version>3.6.2-SNAPSHOT</version>
+    </parent>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.deegree</groupId>
+            <artifactId>deegree-webservices-commons</artifactId>
+            <version>${project.version}</version>
+            <type>pom</type>
+        </dependency>
+    </dependencies>
+</project>
