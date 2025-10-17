@@ -1,18 +1,18 @@
 <ui:composition template="/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
   xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
   xmlns:c="http://xmlns.jcp.org/jsp/jstl/core" xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
-  xmlns:dg="http://deegree.org/jsf" xmlns:dgc="http://xmlns.jcp.org/jsf/composite/deegree">
+  xmlns:dg="http://deegree.org/jsf" xmlns:dgc="http://xmlns.jcp.org/jsf/composite/deegree" xmlns:p="http://primefaces.org/ui">
   <ui:define name="center">
-    <h:panelGroup>
+    <p:outputPanel>
       <h:form>
         <div>
           Configuration / mapping created successfully.<br /> <br />
         </div>
         <div>
-          <h:commandButton styleClass="buttonCreateNew" value="Create DB tables"
-            action="#{mappingWizardSQL.createTables}" onclick="show();" />
+          <p:commandButton styleClass="ui-button buttonCreateNew" value="Create DB tables"
+            action="#{mappingWizardSQL.createTables}"  update=":container" />
         </div>
       </h:form>
-    </h:panelGroup>
+    </p:outputPanel>
   </ui:define>
 </ui:composition>

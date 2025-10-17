@@ -1,55 +1,55 @@
-<h:panelGroup xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
+<p:outputPanel xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
   xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
   xmlns:c="http://xmlns.jcp.org/jsp/jstl/core" xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
-  xmlns:dg="http://deegree.org/jsf" xmlns:dgc="http://xmlns.jcp.org/jsf/composite/deegree">
-  <h:panelGroup layout="block">
-    <h:link styleClass="menutopic" value="Home" outcome="home"/><br/><br/>
+  xmlns:dg="http://deegree.org/jsf" xmlns:dgc="http://xmlns.jcp.org/jsf/composite/deegree" xmlns:p="http://primefaces.org/ui">
+  <p:outputPanel layout="block">
+    <p:link styleClass="menutopic" value="Home" outcome="home"/><br/><br/>
     <h:outputText styleClass="menutopic" value="general" />
-  </h:panelGroup>
-  <h:panelGroup rendered="#{logBean.loggedIn}" layout="block">
+  </p:outputPanel>
+  <p:outputPanel rendered="#{logBean.loggedIn}" layout="block">
     <dgc:menuitem displayname="workspaces" target="/console/workspace/index" />
     <dgc:menuitem displayname="proxy" target="/console/proxy/index" />
     <dgc:menuitem displayname="password" target="/console/security/password" />
-  </h:panelGroup>
-  <h:panelGroup layout="block" style="margin-bottom:20px;">
+  </p:outputPanel>
+  <p:outputPanel layout="block" style="margin-bottom:20px;">
     <dgc:menuitem displayname="module info" target="/console/moduleinfo/index" />
-  </h:panelGroup>
-  <h:panelGroup rendered="#{logBean.loggedIn}">
-    <h:panelGroup layout="block">
+  </p:outputPanel>
+  <p:outputPanel rendered="#{logBean.loggedIn}">
+    <p:outputPanel layout="block">
       <h:outputText styleClass="menutopic" value="web services" />
-    </h:panelGroup>
-    <h:panelGroup layout="block">
+    </p:outputPanel>
+    <p:outputPanel layout="block">
       <dgc:menuitem displayname="services" target="/console/webservices/index" hasErrors="#{servicesBean.hasErrors}" />
-    </h:panelGroup>
-    <h:panelGroup layout="block">
+    </p:outputPanel>
+    <p:outputPanel layout="block">
       <h:outputText styleClass="menutopic" value="data stores" />
-    </h:panelGroup>
-    <h:panelGroup layout="block">
+    </p:outputPanel>
+    <p:outputPanel layout="block">
       <dgc:menuitem displayname="coverage" target="/console/datastore/coverage/index" hasErrors="#{coverageManagerBean.hasErrors}" />
       <dgc:menuitem displayname="feature" target="/console/datastore/feature/index" hasErrors="#{featureStoreManagerBean.hasErrors}" />
       <dgc:menuitem displayname="metadata" target="/console/datastore/metadata/index" hasErrors="#{metadataStoreManagerBean.hasErrors}" />
       <dgc:menuitem displayname="tile" target="/console/datastore/tile/index" hasErrors="#{tileStoreManagerBean.hasErrors}" />
-    </h:panelGroup>
-    <h:panelGroup layout="block">
+    </p:outputPanel>
+    <p:outputPanel layout="block">
       <h:outputText styleClass="menutopic" value="map layers" />
-    </h:panelGroup>
-    <h:panelGroup layout="block">
+    </p:outputPanel>
+    <p:outputPanel layout="block">
       <dgc:menuitem displayname="layers" target="/console/layer/layer/index" hasErrors="#{layerManagerBean.hasErrors}" />
       <dgc:menuitem displayname="styles" target="/console/layer/style/index" hasErrors="#{styleManagerBean.hasErrors}" />
       <dgc:menuitem displayname="themes" target="/console/layer/theme/index" hasErrors="#{themeManagerBean.hasErrors}" />
-    </h:panelGroup>
-    <h:panelGroup layout="block">
+    </p:outputPanel>
+    <p:outputPanel layout="block">
       <h:outputText styleClass="menutopic" value="connections" />
-    </h:panelGroup>
-    <h:panelGroup layout="block">
+    </p:outputPanel>
+    <p:outputPanel layout="block">
       <dgc:menuitem displayname="databases" target="/console/connection/sql/index" hasErrors="#{sqlConnectionManagerBean.hasErrors}" />
       <dgc:menuitem displayname="remote services" target="/console/connection/ows/index" hasErrors="#{remoteOwsManagerBean.hasErrors}" />
-    </h:panelGroup>
-    <h:panelGroup layout="block">
+    </p:outputPanel>
+    <p:outputPanel layout="block">
       <h:outputText styleClass="menutopic" value="processes" />
-    </h:panelGroup>
-    <h:panelGroup layout="block">
+    </p:outputPanel>
+    <p:outputPanel layout="block">
       <dgc:menuitem displayname="provider" target="/console/process/index" hasErrors="#{processManagerBean.hasErrors}" />
-    </h:panelGroup>
-  </h:panelGroup>
-</h:panelGroup>
+    </p:outputPanel>
+  </p:outputPanel>
+</p:outputPanel>

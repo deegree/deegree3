@@ -1,30 +1,75 @@
 .menutopic {
 	font-weight: bold;
 	line-height: 1.4em;
+	text-decoration: none;
+	font-size: small;
 }
 
-.titel {
+.title {
 	font-weight: bold;
 	line-height: 1.4em;
+	font-size: small;
 }
 
 .menuitem {
 	margin-left: 15px;
 	line-height: 1.4em;
+	font-size: small;
 }
 
-.navi {
-	color: grey;
+.ui-widget {
+    font-size: small !important;
 }
 
+/* Compact input fields, override PrimeFaces defaults */
+.liste,
+input.liste,
+.ui-inputfield.liste {
+  width: auto !important;
+  max-width: 12em !important;
+  font-size: small !important;
+  padding: 0.1em 0.3em !important;
+  box-sizing: content-box !important;
+}
+
+/* Apply to all input fieldsof password */
+input[type="password"],
+input.ui-inputfield,
+.ui-inputfield input {
+    width: auto !important;
+    max-width: 12em !important;
+    font-size: small !important;
+    padding: 0.1em 0.3em !important;
+    box-sizing: content-box !important;
+}
+
+/* Recolor or hide asterisk */
+.ui-outputlabel-rfi {
+  color: #FF7F00; /* orange, to match your theme */
+  font-weight: bold;
+}
+
+.ui-link.ui-widget.navi,
+a.navi {
+    color: grey !important;
+    text-decoration: none;
+}
+
+.ui-link.ui-widget.navi:hover,
+a.navi:hover {
+    color: #FF7F00 !important;
+    text-decoration: none;
+}
+
+/* Active menu item */
+.ui-link.ui-widget.naviactive,
+a.naviactive {
+    color: #FF7F00 !important;
+    font-weight: bold;
+}
+
+/* Optional: span fallback (if label is rendered separately) */
 span.navi {
 	color: #DCDAD5;
 }
 
-.navi:hover {
-	color: green;
-}
-
-.naviactive {
-	color: green;	
-}

@@ -1,16 +1,16 @@
 <ui:composition template="/layout.xhtml"
                 xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="jakarta.faces.html"
-                xmlns:ui="jakarta.faces.facelets">
+                xmlns:ui="jakarta.faces.facelets" xmlns:p="http://primefaces.org/ui">
   <ui:define name="center">
-    <h:panelGroup>
-      <h:outputText styleClass="titel" value="#{labels.welcome}" />
+    <p:outputPanel>
+      <h:outputText styleClass="title" value="#{labels.welcome}" />
       <br />
-      <h:outputText styleClass="titel" value=" deegree webservices version: " />
-      <h:outputText styleClass="titel" value="#{workspace.version}" />
+      <h:outputText styleClass="title" value=" deegree webservices version: " />
+      <h:outputText styleClass="title" value="#{workspace.version}" />
       <br />
       <br />
-      <h:panelGroup styleClass="welcomeText">
+      <p:outputPanel styleClass="welcomeText">
         <br />
         <h:outputText value="Use the general menu on the left to:" />
         <ul>
@@ -27,15 +27,15 @@
           <li>connections: Configure connections to databases and external servers</li>
           <li>processes: Configure geospatial WPS processes</li>
         </ul>
-      </h:panelGroup>
+      </p:outputPanel>
       <br />
-      <h:panelGroup styleClass="welcomeText">
+      <p:outputPanel styleClass="welcomeText">
         <h:outputText value="For more information, please refer to the " />
-        <h:outputLink styleClass="welcomeLink" value="https://www.deegree.org/documentation">
+        <h:outputLink styleClass="welcomeLink" value="https://www.deegree.org/documentation" target="_blank">
           <h:outputText value="official documentation" />
         </h:outputLink>
         <h:outputText value="." />
-      </h:panelGroup>
-    </h:panelGroup>
+      </p:outputPanel>
+    </p:outputPanel>
   </ui:define>
 </ui:composition>

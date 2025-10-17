@@ -6,7 +6,6 @@
 <h:head>
   <title>deegree 3 console</title>
   <h:outputStylesheet name="pagelayout.css" />
-  <h:outputStylesheet name="pleasewait.css" />
   <h:outputStylesheet name="links.css" />
   <h:outputStylesheet name="menu.css" />
   <h:outputStylesheet name="buttons.css" />
@@ -15,57 +14,61 @@
   <h:outputScript library="primefaces" name="jquery/jquery.js" />
 </h:head>
 <h:body>
-  <div id="PLEASEWAIT">
-    <div class="curved">
-      <b class="b1"></b><b class="b2"></b><b class="b3"></b><b class="b4"></b>
-      <div class="boxcontent">
-        <p>
-          Reloading workspace.<br /> Please wait.
-        </p>
-      </div>
-      <b class="b4"></b><b class="b3"></b><b class="b2"></b><b class="b1"></b>
-    </div>
-  </div>
-  <div id="PLEASEWAIT_BG"></div>
+    <!-- Global PrimeFaces AJAX loading dialog -->
+    <p:ajaxStatus
+            onstart="PF('globalStatus').show()"
+            oncomplete="PF('globalStatus').hide()"
+            onerror="PF('globalStatus').hide()" />
 
-  <h:panelGroup id="container" layout="block">
-    <h:panelGroup id="top" layout="block">
-      <h:panelGroup id="logo" layout="block" styleClass="logo">
+    <p:dialog widgetVar="globalStatus"
+              modal="true"
+              draggable="false"
+              closable="false"
+              resizable="false"
+              showHeader="false"
+              contentStyle="background: transparent; border:none; box-shadow:none; text-align:center;">
+        <i class="pi pi-spin pi-spinner" style="display:block; margin: 20px auto 0 auto; font-size:2em; color:#FF7F00; text-align:center;" />
+        <br />
+        <h:outputText value="Please wait..." style="color:#FF7F00; font-size:small;" />
+    </p:dialog>
+
+    <p:outputPanel id="container" layout="block">
+    <p:outputPanel id="top" layout="block">
+      <p:outputPanel id="logo" layout="block" styleClass="logo">
         <p:graphicImage name="images/logo.png" alt="deegree logo" />
-      </h:panelGroup>
-      <h:panelGroup id="login">
+      </p:outputPanel>
+      <p:outputPanel id="login">
         <ui:include src="/console/security/login.xhtml" />
-      </h:panelGroup>
-      <h:panelGroup id="status" layout="block" rendered="#{logBean.loggedIn}">
+      </p:outputPanel>
+      <p:outputPanel id="status" layout="block" rendered="#{logBean.loggedIn}">
           <h:form>
             <h:outputText styleClass="title" value="Active workspace: " />
-            <h:outputText value="#{workspace.activeWorkspace.name}" />
-            <h:commandButton value="#{labels.apply_changes}" styleClass="buttongray" action="#{workspace.applyChanges}"
-                             onclick="show();" rendered="#{!workspace.pendingChanges}" />
-            <h:commandButton value="#{labels.apply_changes}" styleClass="buttonError" action="#{workspace.applyChanges}"
-                             onclick="show();" rendered="#{workspace.pendingChanges}" />
-            <h:commandButton value="#{labels.validate_changes}" styleClass="buttongray" action="#{workspace.validate}"
-                             onclick="show();" />
+            <h:outputText value="#{workspace.activeWorkspace.name}" style="padding-right:1em;" />
+            <p:commandButton value="#{labels.apply_changes}" styleClass="ui-button buttonReloadValidate" action="#{workspace.applyChanges}"
+                              rendered="#{!workspace.pendingChanges}" style="margin-right:1em;" />
+            <p:commandButton value="#{labels.apply_changes}" styleClass="ui-button buttonError" action="#{workspace.applyChanges}"
+                              rendered="#{workspace.pendingChanges}" />
+            <p:commandButton value="#{labels.validate_changes}" styleClass="ui-button buttonReloadValidate" action="#{workspace.validate}" update=":container" />
           </h:form>
-      </h:panelGroup>
-    </h:panelGroup>
+      </p:outputPanel>
+    </p:outputPanel>
 
-    <h:panelGroup id="left">
+    <p:outputPanel id="left">
       <h:form prependId="false">
         <ui:include src="menu.xhtml" />
       </h:form>
-    </h:panelGroup>
+    </p:outputPanel>
 
-    <h:panelGroup id="main" layout="block" styleClass="main">
-      <h:panelGroup rendered="#{logBean.loggedIn}">
+    <p:outputPanel id="main" layout="block" styleClass="main">
+      <p:outputPanel rendered="#{logBean.loggedIn}">
         <p:messages id="messages" escape="false" showSummary="true" autoUpdate="true" closable="true" />
         <ui:insert name="center" />
-      </h:panelGroup>
-      <h:panelGroup rendered="#{!logBean.loggedIn}">
+      </p:outputPanel>
+      <p:outputPanel rendered="#{!logBean.loggedIn}">
         <h:outputText value="#{labels.access_forbidden}" />
-      </h:panelGroup>
-    </h:panelGroup>
+      </p:outputPanel>
+    </p:outputPanel>
 
-  </h:panelGroup>
+  </p:outputPanel>
 </h:body>
 </html>

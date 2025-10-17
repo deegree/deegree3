@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html" xmlns:f="http://xmlns.jcp.org/jsf/core"
   xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
-  xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions">
+  xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions" xmlns:p="http://primefaces.org/ui">
 <h:head>
   <title>deegree 3 WPS process status</title>
   <h:outputStylesheet name="styles.css" />
@@ -13,7 +13,7 @@
   ----------------------------
   <br />
   <br />
-  <h:panelGroup rendered="#{!empty processExecutionsBean.executions}" >
+  <p:outputPanel rendered="#{!empty processExecutionsBean.executions}" >
     <table border="1" cellpadding="3" cellspacing="0">
       <tr>
         <th>Process</th>
@@ -34,7 +34,7 @@
         </tr>
       </ui:repeat>
     </table>
-  </h:panelGroup>
+  </p:outputPanel>
   <h:outputText rendered="#{empty processExecutionsBean.executions}" value="No processes have been executed so far." />
 </h:body>
 </html>

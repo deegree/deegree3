@@ -1,9 +1,9 @@
 <ui:composition template="/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
-  xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+  xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:p="http://primefaces.org/ui">
   <ui:define name="center">
     <fieldset class="fieldset">
       <legend>
-        <h:outputText styleClass="titel" value="#{labels.modules_title}" />
+        <h:outputText styleClass="title" value="#{labels.modules_title}" />
       </legend>
       <table id="internalModules" style="font-size: small" border="0">
         <ui:repeat var="moduleinfo" value="#{modulesBean.internalModules}">
@@ -15,7 +15,7 @@
     </fieldset>
     <fieldset class="fieldset">
       <legend>
-        <h:outputText styleClass="titel" value="workspace modules" />
+        <h:outputText styleClass="title" value="workspace modules" />
       </legend>
       <table id="wsModules" style="font-size: small" border="0">
         <ui:repeat var="moduleinfo" value="#{modulesBean.workspaceModules}">

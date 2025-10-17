@@ -1,3 +1,21 @@
 a {
-	text-decoration: none;
+    color: #FF7F00;
+    text-decoration: none !important;
+}
+
+a:hover {
+    color: #FF7F00;
+    text-decoration: none !important;
+}
+
+/* Target menu link specifically */
+a.ui-link.menutopic {
+    color: #FF7F00 !important;
+    text-decoration: none !important;
+}
+
+/* Hover state */
+a.ui-link.menutopic:hover {
+    color: #FE4500 !important;
+    text-decoration: none !important;
 }

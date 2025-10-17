@@ -1,38 +1,38 @@
 <ui:composition template="/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
   xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
   xmlns:c="http://xmlns.jcp.org/jsp/jstl/core" xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
-  xmlns:dg="http://deegree.org/jsf" xmlns:dgc="http://xmlns.jcp.org/jsf/composite/deegree">
+  xmlns:dg="http://deegree.org/jsf" xmlns:dgc="http://xmlns.jcp.org/jsf/composite/deegree" xmlns:p="http://primefaces.org/ui">
   <ui:define name="center">
-    <h:panelGroup>
+    <p:outputPanel>
       <fieldset class="fieldset">
         <legend>
-          <h:outputText styleClass="titel" value="Create new feature store" />
+          <h:outputText styleClass="title" value="Create new feature store" />
         </legend>
         <h:form>
-          <h:panelGroup>
-            <h:outputLabel styleClass="label" for="newFSBt" value="Identifier" />
+          <p:outputPanel>
+            <p:outputLabel styleClass="label" for="newFSBt" value="Identifier" />
             <h:inputText styleClass="liste" id="newFSBt" value="#{createFeatureStoreBean.id}" size="16" required="true"
               requiredMessage="#{labels.resource_name_req}" />
             <br />
-            <h:panelGroup>
-              <h:outputLabel styleClass="label" for="newFSBt" value="Type" />
+            <p:outputPanel>
+              <p:outputLabel styleClass="label" for="newFSBt" value="Type" />
               <h:selectOneMenu styleClass="liste" value="#{createFeatureStoreBean.type}">
                 <f:selectItems value="#{createFeatureStoreBean.types}" />
                 <f:ajax listener="#{createFeatureStoreBean.changeType}" render="templates" />
               </h:selectOneMenu>
-            </h:panelGroup>
-            <h:panelGroup id="templates">
-              <h:outputText value="XML config template" />
+            </p:outputPanel>
+            <p:outputPanel id="templates">
+              <h:outputText value="XML config template" style="margin-right:0.5em;" />
               <h:selectOneMenu styleClass="liste" value="#{createFeatureStoreBean.configTemplate}">
                 <f:selectItems value="#{createFeatureStoreBean.configTemplates}" />
               </h:selectOneMenu>
-            </h:panelGroup>
+            </p:outputPanel>
             <br />
-            <h:commandButton styleClass="buttonCreateNew" value="#{labels.featureStores_new}"
-              action="#{createFeatureStoreBean.create}" />
-          </h:panelGroup>
+            <p:commandButton styleClass="ui-button buttonCreateNew" value="#{labels.featureStores_new}"
+              action="#{createFeatureStoreBean.create}" update=":container" global="false" />
+          </p:outputPanel>
         </h:form>
       </fieldset>
-    </h:panelGroup>
+    </p:outputPanel>
   </ui:define>
 </ui:composition>

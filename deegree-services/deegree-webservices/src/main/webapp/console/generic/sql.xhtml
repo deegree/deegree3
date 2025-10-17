@@ -1,17 +1,17 @@
 <ui:composition template="/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-   xmlns:pe="http://primefaces.org/ui/extensions">
+   xmlns:pe="http://primefaces.org/ui/extensions" xmlns:p="http://primefaces.org/ui">
   <ui:define name="center">
     <h:form id="sqlForm">
       <fieldset style="height: 90%;" class="fieldset">
         <legend>
-          <h:outputText styleClass="titel" value="Setup database" />
+          <h:outputText styleClass="title" value="Setup database" />
         </legend>
         <h:inputTextarea id="sqlArea" cols="70" rows="21" value="#{execution.statements}" />
         <h:outputText value="#{execution.message}" />
         <br /> <br />
-        <h:commandButton styleClass="buttonSave" value="#{labels.sql_execute}" action="#{execution.execute}" />
-        <h:commandButton styleClass="buttonCancel" value="#{labels.sql_back}" action="#{execution.getBackOutcome}" />
+        <p:commandButton styleClass="ui-button buttonSave" value="#{labels.sql_execute}" action="#{execution.execute}" update=":container" global="false" />
+        <p:commandButton styleClass="ui-button buttonCancel" value="#{labels.sql_back}" action="#{execution.getBackOutcome}" update=":container" global="false" />
         <p id="highlighting" style="cursor: pointer;" class="schema" onclick="activateEditor();">Turn on
           highlighting</p>
       </fieldset>

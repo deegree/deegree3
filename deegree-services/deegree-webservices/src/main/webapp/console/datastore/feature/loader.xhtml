@@ -2,33 +2,33 @@
   xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
   xmlns:p="http://primefaces.org/ui">
   <ui:define name="center">
-    <h:panelGroup>
+    <p:outputPanel>
       <h:outputText value="Import GML feature collections into feature store '#{fsConfig.id}'" />
       <br />
       <br />
       <h:form>
         <div>
-          <h:outputLabel styleClass="label" value="GML version" />
+          <p:outputLabel styleClass="label" value="GML version" />
           <h:selectOneMenu styleClass="liste" value="#{fsLoader.gmlVersion}">
             <f:selectItems value="#{fsLoader.availableGmlVersions}" />
           </h:selectOneMenu>
-          <h:outputLabel styleClass="label" value="Id mode" />
+          <p:outputLabel styleClass="label" value="Id mode" />
           <h:selectOneMenu styleClass="liste" value="#{fsLoader.idGenMode}">
             <f:selectItems value="#{fsLoader.availableIdGenModes}" />
           </h:selectOneMenu>
         </div>
         <div>
           <br /> <br />
-          <h:outputLabel styleClass="label" value="Import URL" />
+          <p:outputLabel styleClass="label" value="Import URL" />
           <h:inputText styleClass="liste" id="gmlUrl" value="#{fsLoader.url}" size="32" required="true"
             requiredMessage="#{labels.fsLoader_url_req}" />
-          <h:commandButton styleClass="buttonCreateNew" value="#{labels.fsLoader_import}"
-            action="#{fsLoader.importData}" onclick="show();" />
+          <p:commandButton styleClass="ui-button buttonCreateNew" value="#{labels.fsLoader_import}"
+            action="#{fsLoader.importData}"  update=":container" />
           <p:progressBar id="progressBarIndeterminate" style="height:6px" mode="indeterminate"/>
         </div>
       </h:form>
       <br />
       <br />
-    </h:panelGroup>
+    </p:outputPanel>
   </ui:define>
 </ui:composition>

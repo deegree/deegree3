@@ -19,7 +19,7 @@
 	    <h:selectOneMenu value="#{cc.attrs.selectedCRS}" required="true">
 	    	<f:selectItems value="#{cc.attrs.supportedCRSs}" />
 	    </h:selectOneMenu>
-	    <h:panelGroup />
+	    <p:outputPanel />
 	    <h:outputText value="MIN X" />
 	    <h:inputText value="#{cc.attrs.min.x}" required="true">
 	    	<f:validateDoubleRange />
