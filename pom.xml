@@ -1320,7 +1320,7 @@
           <plugin>
             <groupId>com.github.spotbugs</groupId>
             <artifactId>spotbugs-maven-plugin</artifactId>
-            <version>4.9.4.0</version>
+            <version>4.9.7.0</version>
             <configuration>
               <xmlOutput>true</xmlOutput>
               <spotbugsXmlOutput>true</spotbugsXmlOutput>
