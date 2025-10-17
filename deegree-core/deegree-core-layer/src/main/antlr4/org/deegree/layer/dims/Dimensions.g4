@@ -1,47 +1,21 @@
 grammar Dimensions;
 
-@parser::header {
-package org.deegree.layer.dims;
-}
-
-@lexer::header {
-package org.deegree.layer.dims;
-}
-
 @parser::members {
   public List<Object> values = new ArrayList<Object>();
   public String error;
 
-  public void displayRecognitionError(String[] tokenNames,
-                                    RecognitionException e) {
-    String hdr = getErrorHeader(e);
-    String msg = getErrorMessage(e, tokenNames);
-    error = hdr + ":" + msg;
-  }
-
-  protected void mismatch(IntStream input, int ttype, BitSet follow) throws MismatchedTokenException {
-    throw new MismatchedTokenException(ttype, input);
-  }
-
-  public Object recoverFromMismatchedSet(IntStream input, RecognitionException e, BitSet follow) throws RecognitionException {
-    throw e;
-  }
-}
-
-@rulecatch {
-  catch (RecognitionException e) {
-    throw e;
+  {
+      setErrorHandler(new BailErrorStrategy());
   }
 }
 
 dimensionvalues:
   value (',' value)*
   ;
-catch[RecognitionException e] {
+catch[ParseCancellationException e] {
   if(error == null) {
     error = "Expected another value after " + values + ".";
   }
-  throw e;
 }
 
 value:
@@ -60,7 +34,7 @@ catch[RecognitionException e] {
 }
 
 WS:
-  (' ' | '\t' | '\r' | '\n') { $channel = HIDDEN; }
+  [ \t\r\n] -> skip
   ;
 
 VALUE:

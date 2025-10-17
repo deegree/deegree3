@@ -48,9 +48,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.antlr.runtime.ANTLRStringStream;
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.RecognitionException;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.RecognitionException;
 import org.deegree.layer.dims.Dimension;
 import org.deegree.layer.dims.DimensionsLexer;
 import org.deegree.layer.dims.DimensionsParser;
@@ -69,11 +69,11 @@ public class DimensionConfigBuilder {
 	public static Map<String, Dimension<?>> parseDimensions(String layerName, List<DimensionType> dimensions) {
 		Map<String, Dimension<?>> map = new LinkedHashMap<String, Dimension<?>>();
 		for (DimensionType type : dimensions) {
-			DimensionsLexer lexer = new DimensionsLexer(new ANTLRStringStream(type.getExtent()));
+			DimensionsLexer lexer = new DimensionsLexer(CharStreams.fromString(type.getExtent()));
 			DimensionsParser parser = new DimensionsParser(new CommonTokenStream(lexer));
 			DimensionsParser defaultParser = null;
 			if (type.getDefaultValue() != null) {
-				lexer = new DimensionsLexer(new ANTLRStringStream(type.getDefaultValue()));
+				lexer = new DimensionsLexer(CharStreams.fromString(type.getDefaultValue()));
 				defaultParser = new DimensionsParser(new CommonTokenStream(lexer));
 			}
 

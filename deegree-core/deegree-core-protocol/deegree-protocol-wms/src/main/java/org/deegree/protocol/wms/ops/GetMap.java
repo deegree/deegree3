@@ -42,7 +42,6 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
 import static org.deegree.commons.utils.CollectionUtils.map;
-import static org.deegree.commons.utils.StringUtils.splitEscaped;
 import static org.deegree.layer.LayerRef.FROM_NAMES;
 import static org.deegree.layer.dims.Dimension.parseTyped;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_111;
@@ -59,7 +58,6 @@ import static org.deegree.rendering.r2d.context.MapOptions.Quality.NORMAL;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Color;
-import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -68,15 +66,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.antlr.runtime.ANTLRStringStream;
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.RecognitionException;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.RecognitionException;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.CollectionUtils;
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.utils.StringUtils;
 import org.deegree.cs.CRSUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
@@ -86,7 +83,6 @@ import org.deegree.layer.LayerRef;
 import org.deegree.layer.dims.DimensionsLexer;
 import org.deegree.layer.dims.DimensionsParser;
 import org.deegree.protocol.wms.Utils;
-import org.deegree.protocol.wms.filter.ScaleFunction;
 import org.deegree.rendering.r2d.RenderHelper;
 import org.deegree.rendering.r2d.context.MapOptions.Antialias;
 import org.deegree.rendering.r2d.context.MapOptions.Interpolation;
@@ -566,7 +562,7 @@ public class GetMap extends RequestBase {
 	 * @throws OWSException
 	 */
 	public static List<?> parseDimensionValues(String value, String name) throws OWSException {
-		DimensionsLexer lexer = new DimensionsLexer(new ANTLRStringStream(value));
+		DimensionsLexer lexer = new DimensionsLexer(CharStreams.fromString(value));
 		DimensionsParser parser = new DimensionsParser(new CommonTokenStream(lexer));
 		try {
 			parser.dimensionvalues();

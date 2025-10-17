@@ -37,9 +37,9 @@ package org.deegree.layer.dims;
 
 import junit.framework.TestCase;
 
-import org.antlr.runtime.ANTLRStringStream;
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.RecognitionException;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.RecognitionException;
 import org.junit.Test;
 
 /**
@@ -96,7 +96,7 @@ public class ParserTest extends TestCase {
 	}
 
 	private static DimensionsParser getParser(String input) throws RecognitionException {
-		DimensionsLexer lexer = new DimensionsLexer(new ANTLRStringStream(input));
+		DimensionsLexer lexer = new DimensionsLexer(CharStreams.fromString(input));
 		DimensionsParser parser = new DimensionsParser(new CommonTokenStream(lexer));
 		try {
 			parser.dimensionvalues();
