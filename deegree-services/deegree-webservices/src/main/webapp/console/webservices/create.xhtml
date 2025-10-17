@@ -29,7 +29,7 @@
             </p:outputPanel>
             <br />
             <p:commandButton styleClass="ui-button buttonCreateNew" value="#{labels.featureStores_new}"
-              action="#{createServiceBean.create}" />
+              action="#{createServiceBean.create}" update=":container" global="false" />
           </p:outputPanel>
         </h:form>
       </fieldset>

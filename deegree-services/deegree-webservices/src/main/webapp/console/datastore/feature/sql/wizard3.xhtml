@@ -10,7 +10,7 @@
           <h:outputText value="#{mappingWizardSQL.appSchemaInfo.numFtsTotal}" />
           feature type(s).
           <p:commandButton styleClass="ui-button buttonCreateNew" value="Details"
-            action="/console/featurestore/sql/schema_details" onclick="show();" update=":container" global="false" />
+            action="/console/featurestore/sql/schema_details"  update=":container" />
         </p>
         <p>
           Select storage mode:
@@ -33,9 +33,9 @@
         </p>
         <p>
           <p:commandButton styleClass="ui-button buttonCreateNew" value="Back" action="#{mappingWizardSQL.selectMode}"
-            onclick="show();" update=":container" global="false" />
+             update=":container" />
           <p:commandButton styleClass="ui-button buttonCreateNew" value="Next" action="#{mappingWizardSQL.generateConfig}"
-            onclick="show();" update=":container" global="false" />
+             update=":container" />
         </p>
       </h:form>
     </p:outputPanel>

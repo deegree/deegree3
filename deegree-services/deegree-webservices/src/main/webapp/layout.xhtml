@@ -27,7 +27,7 @@
               resizable="false"
               showHeader="false"
               contentStyle="background: transparent; border:none; box-shadow:none; text-align:center;">
-        <i class="pi pi-spin pi-spinner" style="font-size:2em; color:#FF7F00; margin-top:20px;" />
+        <i class="pi pi-spin pi-spinner" style="display:block; margin: 20px auto 0 auto; font-size:2em; color:#FF7F00; text-align:center;" />
         <br />
         <h:outputText value="Please wait..." style="color:#FF7F00; font-size:small;" />
     </p:dialog>
@@ -48,7 +48,7 @@
                               rendered="#{!workspace.pendingChanges}" style="margin-right:1em;" />
             <p:commandButton value="#{labels.apply_changes}" styleClass="ui-button buttonError" action="#{workspace.applyChanges}"
                               rendered="#{workspace.pendingChanges}" />
-            <p:commandButton value="#{labels.validate_changes}" styleClass="ui-button buttonReloadValidate" action="#{workspace.validate}" />
+            <p:commandButton value="#{labels.validate_changes}" styleClass="ui-button buttonReloadValidate" action="#{workspace.validate}" update=":container" />
           </h:form>
       </p:outputPanel>
     </p:outputPanel>

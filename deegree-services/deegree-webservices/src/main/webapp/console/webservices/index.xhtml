@@ -21,9 +21,9 @@
                   <td />
                   <td><p:outputLabel styleClass="ui-button buttonDeactivate" value="#{config.id}" /></td>
                   <td><p:commandButton styleClass="ui-button buttonInfo" rendered="#{config.state=='Initialized'}"
-                      value="Deactivate" action="#{config.deactivate}" /> <p:commandButton styleClass="ui-button buttonInfo"
+                      value="Deactivate" action="#{config.deactivate}" update=":container" global="false" /> <p:commandButton styleClass="ui-button buttonInfo"
                       rendered="#{config.state!='Error' and config.state!='Initialized'}" value="Activate"
-                      action="#{config.activate}" /></td>
+                      action="#{config.activate}" update=":container" global="false" /></td>
                   <td><p:link outcome="/console/generic/xmleditor" styleClass="ui-button buttonEdit" value="Edit">
                       <f:param name="id" value="#{config.id}" />
                       <f:param name="schemaUrl" value="#{config.schemaURL}" />
@@ -31,15 +31,15 @@
                       <f:param name="nextView" value="/console/webservices/index" />
                     </p:link></td>
                   <td><p:commandButton styleClass="ui-button buttonDelete" value="#{labels.featureStores_delete}"
-                      action="#{config.delete}" onclick="return confirmDelete();" /></td>
+                      action="#{config.delete}" onclick="return confirmDelete();" update=":container" global="false" /></td>
                   <td><p:commandButton styleClass="ui-button buttonInfo" value="Edit Metadata"
-                      action="#{config.editMetadata}" /></td>
+                      action="#{config.editMetadata}" update=":container" global="false" /></td>
                   <td><p:outputPanel rendered="#{config.state=='Initialized'}">
                       <p:link styleClass="ui-button buttonInfo" target="_blank" href="#{config.capabilitiesUrl}"
                         value="#{labels.webservices_cap}" />
                     </p:outputPanel></td>
                   <td><p:commandButton styleClass="ui-button buttonError" rendered="#{config.state=='Error'}"
-                      value="#{labels.show_errors}" action="#{config.showErrors}" /></td>
+                      value="#{labels.show_errors}" action="#{config.showErrors}" update=":container" global="false" /></td>
                 </tr>
               </ui:repeat>
             </table>
@@ -48,7 +48,7 @@
             <p:link styleClass="ui-button buttonCreateNew" value="#{labels.featureStores_new}" outcome="create" />
             <p:spacer width="10" height="1" /> | <p:spacer width="10" height="1" />
             <p:commandButton styleClass="ui-button buttonEdit2" value="#{labels.webservices_edit_global}"
-              action="#{servicesBean.mainConfig.edit}" />
+              action="#{servicesBean.mainConfig.edit}" update=":container" global="false" />
           </h:form>
         </fieldset>
       </p:outputPanel>
