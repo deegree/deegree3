@@ -40,9 +40,6 @@
     </snapshotRepository>
     <site>
       <id>apidoc.deegree.org</id>
-<!--
-      <url>scp://apidoc.deegree.org/var/www/apidoc.deegree.org/${project.version}/</url>
--->
       <url>file:///${site.dir}/${project.version}/</url>
     </site>
   </distributionManagement>
@@ -1276,7 +1273,6 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
-    <site.dir>${user.home}/Sites</site.dir>
     <java.version>17</java.version>
     <antlr.version>3.5.3</antlr.version>
     <antlr4.version>4.13.2</antlr4.version>
