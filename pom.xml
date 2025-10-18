@@ -148,7 +148,6 @@
               --add-opens jdk.management/com.sun.management.internal=ALL-UNNAMED</argLine>
             <forkCount>1</forkCount>
             <reuseForks>true</reuseForks>
-            <skip>${skip.unit.tests}</skip>
             <trimStackTrace>true</trimStackTrace>
           </configuration>
         </plugin>
@@ -484,7 +483,6 @@
           <release>${java.version}</release>
           <minmemory>512m</minmemory>
           <maxmemory>2g</maxmemory>
-          <inherited>false</inherited>
       </configuration>
       </plugin>
     </plugins>
@@ -1355,7 +1353,6 @@
               <release>${java.version}</release>
               <minmemory>512m</minmemory>
               <maxmemory>4g</maxmemory>
-              <inherited>false</inherited>
             </configuration>
           </plugin>
           <plugin>
