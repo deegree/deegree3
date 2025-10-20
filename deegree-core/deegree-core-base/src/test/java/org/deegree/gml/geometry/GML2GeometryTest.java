@@ -132,7 +132,7 @@ public class GML2GeometryTest extends TestCase {
 				envelope.getCoordinateSystem());
 
 		XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
-		outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", new Boolean(true));
+		outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", Boolean.TRUE);
 		XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
 
 		SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter(memoryWriter.getXMLStreamWriter(),
@@ -179,7 +179,7 @@ public class GML2GeometryTest extends TestCase {
 				point.getCoordinateSystem());
 
 		XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
-		outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", new Boolean(true));
+		outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", Boolean.TRUE);
 		XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
 
 		SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter(memoryWriter.getXMLStreamWriter(),
@@ -210,7 +210,7 @@ public class GML2GeometryTest extends TestCase {
 		Assert.assertEquals(30.0, point.get1(), DELTA);
 
 		XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
-		outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", new Boolean(true));
+		outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", Boolean.TRUE);
 		XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
 
 		SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter(memoryWriter.getXMLStreamWriter(),
@@ -270,7 +270,7 @@ public class GML2GeometryTest extends TestCase {
 				polygon.getCoordinateSystem());
 
 		XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
-		outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", new Boolean(true));
+		outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", Boolean.TRUE);
 		XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
 
 		SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter(memoryWriter.getXMLStreamWriter(),
@@ -314,7 +314,7 @@ public class GML2GeometryTest extends TestCase {
 				lineString.getCoordinateSystem());
 
 		XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
-		outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", new Boolean(true));
+		outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", Boolean.TRUE);
 		XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
 
 		SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter(memoryWriter.getXMLStreamWriter(),
@@ -370,7 +370,7 @@ public class GML2GeometryTest extends TestCase {
 		comparePoint(0.0, 0.0, points.get(3));
 
 		XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
-		outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", new Boolean(true));
+		outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", Boolean.TRUE);
 		XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
 
 		SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter(memoryWriter.getXMLStreamWriter(),
@@ -421,7 +421,7 @@ public class GML2GeometryTest extends TestCase {
 		comparePoint(0.45, 4.56, controlPoints.get(1));
 
 		XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
-		outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", new Boolean(true));
+		outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", Boolean.TRUE);
 		XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
 
 		SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter(memoryWriter.getXMLStreamWriter(),
@@ -461,7 +461,7 @@ public class GML2GeometryTest extends TestCase {
 		comparePoint(0.0, 0.0, secondMember);
 
 		XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
-		outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", new Boolean(true));
+		outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", Boolean.TRUE);
 		XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
 
 		SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter(memoryWriter.getXMLStreamWriter(),
@@ -529,7 +529,7 @@ public class GML2GeometryTest extends TestCase {
 				multiPolygon.getCoordinateSystem());
 
 		XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
-		outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", new Boolean(true));
+		outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", Boolean.TRUE);
 		XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
 
 		SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter(memoryWriter.getXMLStreamWriter(),

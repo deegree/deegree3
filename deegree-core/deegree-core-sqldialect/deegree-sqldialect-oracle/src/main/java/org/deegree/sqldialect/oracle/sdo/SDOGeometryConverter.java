@@ -638,7 +638,7 @@ public class SDOGeometryConverter {
 				for (int i = 0, j = orients.length; i < j; i++) {
 					final PropertyType decimalPt = new SimplePropertyType(
 							new QName(ExtraProps.EXTRA_PROP_NS, "orientation" + i), 1, 1, DECIMAL, null, null);
-					final TypedObjectNode value = new PrimitiveValue(Double.valueOf(orients[i]), pt);
+					final TypedObjectNode value = new PrimitiveValue(orients[i], pt);
 					props.add(new GenericProperty(decimalPt, value));
 				}
 				lastGeom.setProperties(props);

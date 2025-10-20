@@ -263,7 +263,7 @@ public class GMLObjectXPathTest {
 		assertEquals(1, result.length);
 		PrimitiveValue value = (PrimitiveValue) result[0];
 		assertEquals(DOUBLE, value.getType().getBaseType());
-		assertEquals(new Double(7.0), value.getValue());
+		assertEquals(7.0, value.getValue());
 	}
 
 	@Test
