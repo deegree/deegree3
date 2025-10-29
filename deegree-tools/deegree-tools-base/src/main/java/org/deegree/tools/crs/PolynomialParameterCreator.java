@@ -101,7 +101,7 @@ public class PolynomialParameterCreator {
 		// 5.936716E-7, -2.3854978E-12,
 		// 3.0211528E-12, -1.2788576E-12, 1.4953932E-13
 
-		params.add(new Double(1));
+		params.add(1.0);
 		if ("leastsquares".equals(transformationClass.toLowerCase().trim())) {
 			transform = new LeastSquareApproximation(params, params, source, target, 1, 1);
 		}

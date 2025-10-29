@@ -385,7 +385,7 @@ public class Interpolate extends AbstractCustomExpression {
 				String colorS = in.getAttributeValue(null, "color");
 				String opacity = in.getAttributeValue(null, "opacity");
 				String quantity = in.getAttributeValue(null, "quantity");
-				datas.add(quantity != null ? Double.valueOf(quantity) : 0);
+				datas.add(quantity != null ? Double.parseDouble(quantity) : 0);
 				if (opacity != null) {
 					colorS = "#" + toHexString(round(parseDouble(opacity) * 255)) + colorS.substring(1);
 				}

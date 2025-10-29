@@ -195,7 +195,7 @@ public class MemoryFeatureStoreTest {
 		Assert.assertTrue(o instanceof Ring);
 
 		XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
-		outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", new Boolean(true));
+		outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", Boolean.TRUE);
 		OutputStream out = new FileOutputStream(
 				System.getProperty("java.io.tmpdir") + File.separatorChar + "exported_ring.gml");
 		XMLStreamWriter writer = outputFactory.createXMLStreamWriter(out);

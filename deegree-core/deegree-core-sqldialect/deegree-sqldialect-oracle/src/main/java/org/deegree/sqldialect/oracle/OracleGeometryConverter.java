@@ -94,7 +94,7 @@ public class OracleGeometryConverter implements GeometryParticleConverter {
 		this.isrid = 0;
 		try {
 			if (srid != null)
-				this.isrid = Integer.valueOf(srid);
+				this.isrid = Integer.parseInt(srid);
 		}
 		catch (NumberFormatException nfe) {
 			// TODO handle it smoother

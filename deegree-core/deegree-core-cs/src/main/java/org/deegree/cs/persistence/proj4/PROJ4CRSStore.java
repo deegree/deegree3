@@ -1508,7 +1508,7 @@ public class PROJ4CRSStore extends AbstractCRSStore {
 		if (i != -1) {
 			String dd = text.substring(0, i);
 			String mmss = text.substring(i + 1);
-			d = Double.valueOf(dd);
+			d = Double.parseDouble(dd);
 			i = mmss.indexOf('m');
 			if (i == -1) {
 				i = mmss.indexOf('\'');
@@ -1516,14 +1516,14 @@ public class PROJ4CRSStore extends AbstractCRSStore {
 			if (i != -1) {
 				if (i != 0) {
 					String mm = mmss.substring(0, i);
-					m = Double.valueOf(mm);
+					m = Double.parseDouble(mm);
 				}
 				if (mmss.endsWith("s") || mmss.endsWith("\"")) {
 					mmss = mmss.substring(0, mmss.length() - 1);
 				}
 				if (i != mmss.length() - 1) {
 					String ss = mmss.substring(i + 1);
-					s = Double.valueOf(ss);
+					s = Double.parseDouble(ss);
 				}
 				if (m < 0 || m > 59) {
 					throw new NumberFormatException("Minutes must be between 0 and 59");
@@ -1533,7 +1533,7 @@ public class PROJ4CRSStore extends AbstractCRSStore {
 				}
 			}
 			else if (i != 0) {
-				m = Double.valueOf(mmss);
+				m = Double.parseDouble(mmss);
 			}
 			if (toDegrees) {
 				result = dmsToDeg(d, m, s);

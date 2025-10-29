@@ -90,7 +90,7 @@ public class AllocatedHeapMemory {
 			// set to 32
 			bits = "32";
 		}
-		REF_SIZE = Integer.valueOf(bits) / 8;
+		REF_SIZE = Integer.parseInt(bits) / 8;
 		INSTANCE_SIZE = REF_SIZE * 2;
 	}
 

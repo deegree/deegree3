@@ -380,9 +380,9 @@ public class DBFReader {
 					if (val.isEmpty()) {
 						continue;
 					}
-					int year = Integer.valueOf(val);
-					int month = Integer.valueOf(new String(bs, 4, 2));
-					int day = Integer.valueOf(new String(bs, 6, 2));
+					int year = Integer.parseInt(val);
+					int month = Integer.parseInt(new String(bs, 4, 2));
+					int day = Integer.parseInt(new String(bs, 6, 2));
 					Calendar cal = new GregorianCalendar(year, month, day);
 					PrimitiveType pt = field.propertyType.getPrimitiveType();
 					PrimitiveValue pv = new PrimitiveValue(new Date(cal, true), pt);
