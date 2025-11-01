@@ -18,7 +18,7 @@
               <p:outputLabel styleClass="label" for="newFSBt" value="Type" />
               <h:selectOneMenu styleClass="liste" value="#{createThemeBean.type}">
                 <f:selectItems value="#{createThemeBean.types}" />
-                <f:ajax listener="#{createThemeBean.changeType}" render="templates" />
+                <p:ajax listener="#{createThemeBean.changeType}" render="templates" global="false" />
               </h:selectOneMenu>
             </p:outputPanel>
             <p:outputPanel id="templates">
