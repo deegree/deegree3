@@ -18,7 +18,7 @@
               <p:outputLabel styleClass="label" for="newFSBt" value="Service type" />
               <h:selectOneMenu styleClass="liste" value="#{createServiceBean.type}">
                 <f:selectItems value="#{createServiceBean.types}" />
-                <f:ajax listener="#{createServiceBean.changeType}" render="templates" />
+                <p:ajax listener="#{createServiceBean.changeType}" render="templates" global="false" />
               </h:selectOneMenu>
             </p:outputPanel>
             <p:outputPanel id="templates">
