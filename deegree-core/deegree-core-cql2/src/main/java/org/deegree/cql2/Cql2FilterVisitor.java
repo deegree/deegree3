@@ -105,6 +105,13 @@ public class Cql2FilterVisitor extends Cql2ParserBaseVisitor {
 		if (terms == 1) {
 			return ctx.booleanTerm(0).accept(this);
 		}
+		if (Objects.nonNull(ctx.OR())) {
+			List<Operator> operator = ctx.booleanTerm()
+				.stream()
+				.map(booleaTerm -> (Operator) booleaTerm.accept(this))
+				.toList();
+			return new Or(operator.toArray(Operator[]::new));
+		}
 		throw new Cql2UnsupportedExpressionException("More than one booleanTerm are currently not supported.");
 	}
 
