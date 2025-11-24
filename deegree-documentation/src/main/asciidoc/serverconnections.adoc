@@ -366,7 +366,7 @@ org.deegree.sqldialect.postgis.PostGISDialectProvider)
 
 By default, the https://commons.apache.org/proper/commons-dbcp/[Apache Commons DBCP connection pool library] is provided with deegree webservices WAR file. In some cases you may consider another implementation as more appropriate to use. The following examples show how to use other connection pool provider. Keep in mind to add the mentioned libraries to the same classpath as the JDBC driver.
 
-==== PostgreSQL JDBC
+===== PostgreSQL JDBC
 
 The PostgreSQL JDBC driver provides two DataSource implementations which support, among other things, the configuration for multiple hosts. Read further in the https://jdbc.postgresql.org/documentation/datasource/[PostgreSQL JDBC driver documentation].
 This DataSource implementation requires the official PostgreSQL JDBC driver on the classpath.
@@ -389,7 +389,7 @@ Download the driver from: https://jdbc.postgresql.org/download/
 </DataSourceConnectionProvider>
 ----
 
-==== HikariCP
+===== Hikari Connection Pool
 
 The HikariCP project states that the implementation is a "zero-overhead" production ready JDBC connection pool and very lightweight.
 
@@ -411,7 +411,7 @@ Download the connection pool from: https://github.com/brettwooldridge/HikariCP
 </DataSourceConnectionProvider>
 ----
 
-===== c3p0
+===== c3p0 Connection Pool
 
 The c3p0 project states that the implementation is an easy-to-use library for making traditional JDBC drivers "enterprise-ready" by augmenting them with functionality defined by the JDBC 3 and 4 specs and the optional extensions to JDBC 2.
 
@@ -452,6 +452,8 @@ is called 'inspire', the database user is 'postgres' and password is
 </JDBCConnection>
 ----
 
+WARNING: When using this legacy configuration the connection pool size is hard coded to 5 connections as the minimal pool size and 25 connections as the maximum pool size.
+
 The legacy connection config file format is defined by schema file
 https://schemas.deegree.org/core/3.6/jdbc/jdbc.xsd. The root element is
 _JDBCConnection_. The following table lists the available configuration options. When
@@ -464,6 +466,8 @@ specifying them, their order must be respected.
 |User |1..n |String |DB username
 |Password |1..1 |String |DB password
 |===
+
+IMPORTANT: This configuration format is deprecated and will be removed in future versions. Switch to one of the described <<anchor-configuration-jdbc,JDBC connections>> using the `DataSourceConnectionProvider` instead.
 
 === Remote OWS connections
 

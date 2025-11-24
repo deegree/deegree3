@@ -10,6 +10,7 @@
         <jaxb:package name="org.deegree.db.legacy.jaxb" />
       </jaxb:schemaBindings>
     </appinfo>
+    <documentation>Deprecated configuration format, use DataSourceConnectionProvider instead</documentation>
   </annotation>
   <element name="JDBCConnection">
     <complexType>
