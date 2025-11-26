@@ -33,6 +33,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 
+import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.tom.datetime.DateTime;
@@ -48,6 +49,8 @@ import org.deegree.filter.comparison.PropertyIsLike;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.logical.And;
+import org.deegree.filter.logical.Not;
+import org.deegree.filter.logical.Or;
 import org.deegree.filter.spatial.Intersects;
 import org.deegree.filter.temporal.After;
 import org.deegree.geometry.Envelope;
@@ -673,6 +676,201 @@ public class Cql2FilterParserTest {
 		Object value = ((PrimitiveValue) primitiveValue).getValue();
 		assertTrue(value instanceof String);
 		assertEquals("V_L%", value);
+	}
+
+	@Test
+	public void test_parse_OR() throws UnknownCRSException {
+		String comp = "test1='VALUE1' OR test2 IN ('VALUE1','VALUE2')";
+		Object visit = parseCql2Filter(comp, crs(), PROPS);
+
+		assertTrue(visit instanceof Or);
+		assertEquals(2, ((Or) visit).getSize());
+
+		Operator or1 = ((Or) visit).getParameter(0);
+		Operator or2 = ((Or) visit).getParameter(1);
+
+		assertTrue(or1 instanceof PropertyIsEqualTo);
+
+		Expression param1_1 = ((PropertyIsEqualTo) or1).getParameter1();
+		assertTrue(param1_1 instanceof ValueReference);
+		assertEquals("test1", ((ValueReference) param1_1).getAsQName().getLocalPart());
+		assertEquals(NS_URL, ((ValueReference) param1_1).getAsQName().getNamespaceURI());
+
+		Expression param1_2 = ((PropertyIsEqualTo) or1).getParameter2();
+		assertTrue(param1_2 instanceof Literal);
+		TypedObjectNode primitiveValue1 = ((Literal<?>) param1_2).getValue();
+		assertTrue(primitiveValue1 instanceof PrimitiveValue);
+		Object value1 = ((PrimitiveValue) primitiveValue1).getValue();
+		assertTrue(value1 instanceof String);
+		assertEquals("VALUE1", value1);
+
+		assertTrue(or2 instanceof Or);
+		Operator[] or2Params = ((Or) or2).getParams();
+		assertTrue(or2Params[0] instanceof PropertyIsEqualTo);
+		PropertyIsEqualTo or2_param1 = (PropertyIsEqualTo) or2Params[0];
+		Expression or2_param1_1 = or2_param1.getParams()[0];
+		assertTrue(or2_param1_1 instanceof ValueReference);
+		assertEquals("test2", ((ValueReference) or2_param1_1).getAsQName().getLocalPart());
+		assertEquals(NS_URL, ((ValueReference) or2_param1_1).getAsQName().getNamespaceURI());
+		Expression or2_param1_2 = or2_param1.getParams()[1];
+		assertTrue(or2_param1_2 instanceof Literal<?>);
+		TypedObjectNode or2_param1_2_primitiveValue = ((Literal<?>) param1_2).getValue();
+		assertTrue(or2_param1_2_primitiveValue instanceof PrimitiveValue);
+		Object or2_param1_2_value = ((PrimitiveValue) primitiveValue1).getValue();
+		assertTrue(or2_param1_2_value instanceof String);
+		assertEquals("VALUE1", or2_param1_2_value);
+
+		assertTrue(or2Params[1] instanceof PropertyIsEqualTo);
+		PropertyIsEqualTo or2_param2 = (PropertyIsEqualTo) or2Params[0];
+		Expression or2_param2_1 = or2_param2.getParams()[0];
+		assertTrue(or2_param2_1 instanceof ValueReference);
+		assertEquals("test2", ((ValueReference) or2_param2_1).getAsQName().getLocalPart());
+		assertEquals(NS_URL, ((ValueReference) or2_param2_1).getAsQName().getNamespaceURI());
+		Expression or2_param2_2 = or2_param2.getParams()[1];
+		assertTrue(or2_param2_2 instanceof Literal<?>);
+		TypedObjectNode or2_param2_2_primitiveValue = ((Literal<?>) param1_2).getValue();
+		assertTrue(or2_param2_2_primitiveValue instanceof PrimitiveValue);
+		Object or2_param2_2_value = ((PrimitiveValue) primitiveValue1).getValue();
+		assertTrue(or2_param2_2_value instanceof String);
+		assertEquals("VALUE1", or2_param2_2_value);
+	}
+
+	@Test(expected = ParseCancellationException.class)
+	public void test_parse_inList_noValues() throws UnknownCRSException {
+		String comp = "test1 IN()";
+		parseCql2Filter(comp, crs(), PROPS);
+	}
+
+	@Test
+	public void test_parse_inList_oneValue() throws UnknownCRSException {
+		String comp = "test1 IN('VALUE1')";
+		Object visit = parseCql2Filter(comp, crs(), PROPS);
+
+		assertTrue(visit instanceof PropertyIsEqualTo);
+
+		Expression param1_1 = ((PropertyIsEqualTo) visit).getParameter1();
+		assertTrue(param1_1 instanceof ValueReference);
+		assertEquals("test1", ((ValueReference) param1_1).getAsQName().getLocalPart());
+		assertEquals(NS_URL, ((ValueReference) param1_1).getAsQName().getNamespaceURI());
+
+		Expression param1_2 = ((PropertyIsEqualTo) visit).getParameter2();
+		assertTrue(param1_2 instanceof Literal);
+		TypedObjectNode primitiveValue1 = ((Literal<?>) param1_2).getValue();
+		assertTrue(primitiveValue1 instanceof PrimitiveValue);
+		Object value1 = ((PrimitiveValue) primitiveValue1).getValue();
+		assertTrue(value1 instanceof String);
+		assertEquals("VALUE1", value1);
+	}
+
+	@Test
+	public void test_parse_inList_twoValues() throws UnknownCRSException {
+		String comp = "test1 IN('VALUE1','VALUE2')";
+		Object visit = parseCql2Filter(comp, crs(), PROPS);
+
+		assertTrue(visit instanceof Or);
+		assertEquals(2, ((Or) visit).getSize());
+
+		Operator or1 = ((Or) visit).getParameter(0);
+		Operator or2 = ((Or) visit).getParameter(1);
+
+		assertTrue(or1 instanceof PropertyIsEqualTo);
+
+		Expression param1_1 = ((PropertyIsEqualTo) or1).getParameter1();
+		assertTrue(param1_1 instanceof ValueReference);
+		assertEquals("test1", ((ValueReference) param1_1).getAsQName().getLocalPart());
+		assertEquals(NS_URL, ((ValueReference) param1_1).getAsQName().getNamespaceURI());
+
+		Expression param1_2 = ((PropertyIsEqualTo) or1).getParameter2();
+		assertTrue(param1_2 instanceof Literal);
+		TypedObjectNode primitiveValue1 = ((Literal<?>) param1_2).getValue();
+		assertTrue(primitiveValue1 instanceof PrimitiveValue);
+		Object value1 = ((PrimitiveValue) primitiveValue1).getValue();
+		assertTrue(value1 instanceof String);
+		assertEquals("VALUE1", value1);
+
+		assertTrue(or2 instanceof PropertyIsEqualTo);
+		Expression param2_1 = ((PropertyIsEqualTo) or2).getParams()[0];
+		assertTrue(param2_1 instanceof ValueReference);
+		assertEquals("test1", ((ValueReference) param2_1).getAsQName().getLocalPart());
+		assertEquals(NS_URL, ((ValueReference) param2_1).getAsQName().getNamespaceURI());
+
+		Expression param2_2 = ((PropertyIsEqualTo) or2).getParams()[1];
+		assertTrue(param2_2 instanceof Literal);
+		TypedObjectNode primitiveValue = ((Literal<?>) param2_2).getValue();
+		assertTrue(primitiveValue instanceof PrimitiveValue);
+		Object value = ((PrimitiveValue) primitiveValue).getValue();
+		assertTrue(value instanceof String);
+		assertEquals("VALUE2", value);
+	}
+
+	@Test
+	public void test_parse_notInList_oneValue() throws UnknownCRSException {
+		String comp = "test1 NOT IN('VALUE1')";
+		Object visit = parseCql2Filter(comp, crs(), PROPS);
+
+		assertTrue(visit instanceof Not);
+		assertEquals(1, ((Not) visit).getParams().length);
+		Operator notParam = ((Not) visit).getParams()[0];
+
+		assertTrue(notParam instanceof PropertyIsEqualTo);
+
+		Expression param1_1 = ((PropertyIsEqualTo) notParam).getParameter1();
+		assertTrue(param1_1 instanceof ValueReference);
+		assertEquals("test1", ((ValueReference) param1_1).getAsQName().getLocalPart());
+		assertEquals(NS_URL, ((ValueReference) param1_1).getAsQName().getNamespaceURI());
+
+		Expression param1_2 = ((PropertyIsEqualTo) notParam).getParameter2();
+		assertTrue(param1_2 instanceof Literal);
+		TypedObjectNode primitiveValue1 = ((Literal<?>) param1_2).getValue();
+		assertTrue(primitiveValue1 instanceof PrimitiveValue);
+		Object value1 = ((PrimitiveValue) primitiveValue1).getValue();
+		assertTrue(value1 instanceof String);
+		assertEquals("VALUE1", value1);
+	}
+
+	@Test
+	public void test_parse_notInList_twoValues() throws UnknownCRSException {
+		String comp = "test1 NOT IN('VALUE1','VALUE2')";
+		Object visit = parseCql2Filter(comp, crs(), PROPS);
+
+		assertTrue(visit instanceof Not);
+		assertEquals(1, ((Not) visit).getParams().length);
+		Operator or = ((Not) visit).getParams()[0];
+
+		assertTrue(or instanceof Or);
+		assertEquals(2, ((Or) or).getSize());
+
+		Operator or1 = ((Or) or).getParameter(0);
+		Operator or2 = ((Or) or).getParameter(1);
+
+		assertTrue(or1 instanceof PropertyIsEqualTo);
+
+		Expression param1_1 = ((PropertyIsEqualTo) or1).getParameter1();
+		assertTrue(param1_1 instanceof ValueReference);
+		assertEquals("test1", ((ValueReference) param1_1).getAsQName().getLocalPart());
+		assertEquals(NS_URL, ((ValueReference) param1_1).getAsQName().getNamespaceURI());
+
+		Expression param1_2 = ((PropertyIsEqualTo) or1).getParameter2();
+		assertTrue(param1_2 instanceof Literal);
+		TypedObjectNode primitiveValue1 = ((Literal<?>) param1_2).getValue();
+		assertTrue(primitiveValue1 instanceof PrimitiveValue);
+		Object value1 = ((PrimitiveValue) primitiveValue1).getValue();
+		assertTrue(value1 instanceof String);
+		assertEquals("VALUE1", value1);
+
+		assertTrue(or2 instanceof PropertyIsEqualTo);
+		Expression param2_1 = ((PropertyIsEqualTo) or2).getParams()[0];
+		assertTrue(param2_1 instanceof ValueReference);
+		assertEquals("test1", ((ValueReference) param2_1).getAsQName().getLocalPart());
+		assertEquals(NS_URL, ((ValueReference) param2_1).getAsQName().getNamespaceURI());
+
+		Expression param2_2 = ((PropertyIsEqualTo) or2).getParams()[1];
+		assertTrue(param2_2 instanceof Literal);
+		TypedObjectNode primitiveValue = ((Literal<?>) param2_2).getValue();
+		assertTrue(primitiveValue instanceof PrimitiveValue);
+		Object value = ((PrimitiveValue) primitiveValue).getValue();
+		assertTrue(value instanceof String);
+		assertEquals("VALUE2", value);
 	}
 
 	private static ICRS crs() throws UnknownCRSException {

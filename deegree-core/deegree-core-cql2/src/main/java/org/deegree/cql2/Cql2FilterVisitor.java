@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -62,6 +63,8 @@ import org.deegree.filter.comparison.PropertyIsLike;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.logical.And;
+import org.deegree.filter.logical.Not;
+import org.deegree.filter.logical.Or;
 import org.deegree.filter.spatial.Intersects;
 import org.deegree.filter.spatial.SpatialOperator;
 import org.deegree.filter.temporal.After;
@@ -101,6 +104,13 @@ public class Cql2FilterVisitor extends Cql2ParserBaseVisitor {
 		int terms = ctx.booleanTerm().size();
 		if (terms == 1) {
 			return ctx.booleanTerm(0).accept(this);
+		}
+		if (Objects.nonNull(ctx.OR())) {
+			List<Operator> operator = ctx.booleanTerm()
+				.stream()
+				.map(booleaTerm -> (Operator) booleaTerm.accept(this))
+				.toList();
+			return new Or(operator.toArray(Operator[]::new));
 		}
 		throw new Cql2UnsupportedExpressionException("More than one booleanTerm are currently not supported.");
 	}
@@ -151,7 +161,7 @@ public class Cql2FilterVisitor extends Cql2ParserBaseVisitor {
 		if (ctx.isBetweenPredicate() != null)
 			throw new Cql2UnsupportedExpressionException("isBetweenPredicates are currently not supported.");
 		if (ctx.isInListPredicate() != null)
-			throw new Cql2UnsupportedExpressionException("isInListPredicates are currently not supported.");
+			return ctx.isInListPredicate().accept(this);
 		if (ctx.isNullPredicate() != null)
 			throw new Cql2UnsupportedExpressionException("isNullPredicates are currently not supported.");
 		throw new Cql2UnsupportedExpressionException("ComparisonPredicate is currently not supported.");
@@ -176,6 +186,34 @@ public class Cql2FilterVisitor extends Cql2ParserBaseVisitor {
 		Expression param1 = (Expression) ctx.characterExpression().accept(this);
 		Expression param2 = (Expression) ctx.patternExpression().accept(this);
 		return new PropertyIsLike(param1, param2, "%", "_", "\\", matchCase, MatchAction.ANY);
+	}
+
+	@Override
+	public Object visitIsInListPredicate(Cql2Parser.IsInListPredicateContext ctx) {
+		Expression param1 = (Expression) ctx.scalarExpression().accept(this);
+		List<Expression> params = (List<Expression>) ctx.inList().accept(this);
+		List<PropertyIsEqualTo> propertyIsEqualToFilters = params.stream()
+			.map(param -> new PropertyIsEqualTo(param1, param, true, MatchAction.ANY))
+			.toList();
+		Operator isInOperator = createIsInOperator(propertyIsEqualToFilters);
+		if (Objects.nonNull(ctx.NOT()))
+			return new Not(isInOperator);
+		return isInOperator;
+	}
+
+	private static Operator createIsInOperator(List<PropertyIsEqualTo> propertyIsEqualToFilters) {
+		if (propertyIsEqualToFilters.size() == 1) {
+			return propertyIsEqualToFilters.get(0);
+		}
+		return new Or(propertyIsEqualToFilters.toArray(PropertyIsEqualTo[]::new));
+	}
+
+	@Override
+	public Object visitInList(Cql2Parser.InListContext ctx) {
+		return ctx.scalarExpression()
+			.stream()
+			.map(scalarExpression -> (Expression) scalarExpression.accept(this))
+			.toList();
 	}
 
 	@Override
