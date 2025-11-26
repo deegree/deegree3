@@ -1240,7 +1240,7 @@ The implementation of the visibility inspector checks whether a requested layer 
 Of course, also non category layers can be configured here, but for most use cases category layers will be more useful.
 If no _CategoryLayerIdentifier_ are configured, the VisibilityInspector is applied to all layers.
 
-Note: If a _CategoryLayerIdentifier_ is configured, the visibility inspector will just be executed if exactly this layer is requested. Still, as already stated above, the visibility inspector is applied to the requested layer plus all of its sublayers.
+NOTE: If a _CategoryLayerIdentifier_ is configured, the visibility inspector will just be executed if exactly this layer is requested. Still, as already stated above, the visibility inspector is applied to the requested layer plus all of its sublayers.
 If just one or more sublayers of the configured _CategoryLayerIdentifier_ are requested, the visibility inspector is NOT applied.
 This behaviour prevents that complex analyses and/or functions are executed during each GetMap request.
 
