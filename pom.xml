@@ -40,9 +40,6 @@
     </snapshotRepository>
     <site>
       <id>apidoc.deegree.org</id>
-<!--
-      <url>scp://apidoc.deegree.org/var/www/apidoc.deegree.org/${project.version}/</url>
--->
       <url>file:///${site.dir}/${project.version}/</url>
     </site>
   </distributionManagement>
@@ -151,7 +148,6 @@
               --add-opens jdk.management/com.sun.management.internal=ALL-UNNAMED</argLine>
             <forkCount>1</forkCount>
             <reuseForks>true</reuseForks>
-            <skip>${skip.unit.tests}</skip>
             <trimStackTrace>true</trimStackTrace>
           </configuration>
         </plugin>
@@ -487,7 +483,6 @@
           <release>${java.version}</release>
           <minmemory>512m</minmemory>
           <maxmemory>2g</maxmemory>
-          <inherited>false</inherited>
       </configuration>
       </plugin>
     </plugins>
@@ -1276,7 +1271,6 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
-    <site.dir>${user.home}/Sites</site.dir>
     <java.version>17</java.version>
     <antlr.version>3.5.3</antlr.version>
     <antlr4.version>4.13.2</antlr4.version>
@@ -1359,7 +1353,6 @@
               <release>${java.version}</release>
               <minmemory>512m</minmemory>
               <maxmemory>4g</maxmemory>
-              <inherited>false</inherited>
             </configuration>
           </plugin>
           <plugin>
@@ -1383,6 +1376,7 @@
             <configuration>
               <nvdValidForHours>24</nvdValidForHours>
               <knownExploitedEnabled>false</knownExploitedEnabled>
+              <formats>JSON,JENKINS</formats>
             </configuration>
             <reportSets>
               <reportSet>
