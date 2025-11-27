@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-featurestores</artifactId>
-    <version>3.6.4</version>
+    <version>3.6.5-SNAPSHOT</version>
   </parent>
 
   <dependencies>
