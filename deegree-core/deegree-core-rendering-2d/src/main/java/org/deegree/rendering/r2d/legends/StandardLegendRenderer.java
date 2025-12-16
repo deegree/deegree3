@@ -127,14 +127,7 @@ class StandardLegendRenderer {
 		paintLegendText(origin, opts, text, textRenderer);
 
 		// normalize symbol sizes
-		double maxSize = 0;
-		if (isPoint) {
-			for (Styling s : stylings) {
-				if (s instanceof PointStyling) {
-					maxSize = max(((PointStyling) s).graphic.size, maxSize);
-				}
-			}
-		}
+		double maxSize = calculateMaxSize(isPoint);
 
 		if (rule == null) {
 			for (Styling s : stylings) {
@@ -144,6 +137,21 @@ class StandardLegendRenderer {
 		}
 
 		paintRule(isPoint, maxSize, opts, geom);
+	}
+
+	private double calculateMaxSize(boolean isPoint) {
+		double maxSize = 0;
+		if (isPoint) {
+			for (Styling s : stylings) {
+				if (s instanceof PointStyling) {
+					maxSize = max(((PointStyling) s).graphic.size, maxSize);
+				}
+			}
+		}
+		if (maxSize > 0)
+			return maxSize;
+		// fallback to default size 6 to avoid infinite legend size if maxSize is 0
+		return 6;
 	}
 
 	private void paintRule(boolean isPoint, double maxSize, LegendOptions opts, Geometry geom) {
@@ -159,6 +167,10 @@ class StandardLegendRenderer {
 				if (styling instanceof PointStyling && isPoint) {
 					PointStyling ps = ((PointStyling) styling).copy();
 					ps.uom = Metre;
+					// fallback to default size 6 to avoid infinite legend size if maxSize
+					// is 0
+					if (ps.graphic.size <= 0)
+						ps.graphic.size = 6;
 					ps.graphic.size = ps.graphic.size / maxSize * min(opts.baseWidth, opts.baseHeight);
 					styling = ps;
 				}
