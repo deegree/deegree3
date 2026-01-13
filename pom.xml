@@ -684,13 +684,6 @@
         <version>5.0.1</version>
         <scope>provided</scope>
       </dependency>
-      <!--
-      <dependency>
-        <groupId>jakarta.faces</groupId>
-        <artifactId>jakarta.faces-api</artifactId>
-        <version>4.0.0</version>
-      </dependency>
-      -->
       <dependency>
         <groupId>org.glassfish</groupId>
         <artifactId>jakarta.faces</artifactId>
@@ -701,13 +694,6 @@
         <artifactId>jakarta.enterprise.cdi-api</artifactId>
         <version>4.0.1</version>
       </dependency>
-      <!--
-      <dependency>
-        <groupId>com.sun.jersey</groupId>
-        <artifactId>jersey-server</artifactId>
-        <version>1.19.4</version>
-      </dependency>
-      -->
       <!-- logging -->
       <dependency>
         <groupId>ch.qos.logback</groupId>
