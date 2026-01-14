@@ -217,7 +217,7 @@ public class WorkspaceBean implements Serializable {
 			OGCFrontController.getInstance().reload();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			LOG.error("Failed to reload OGCFrontController {} ", e.getMessage(), e);
 		}
 
 		modified = false;
@@ -240,6 +240,7 @@ public class WorkspaceBean implements Serializable {
 			importWorkspace(location);
 		}
 		catch (Throwable t) {
+			LOG.error("Failed to download workspace {} ", t.getMessage(), t);
 			FacesMessage fm = new FacesMessage(SEVERITY_ERROR, "Unable to download workspace: " + t.getMessage(), null);
 			FacesContext.getCurrentInstance().addMessage(null, fm);
 		}
@@ -274,7 +275,7 @@ public class WorkspaceBean implements Serializable {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			LOG.error("Failed to import workspace {} ", e.getMessage(), e);
 			FacesMessage fm = new FacesMessage(SEVERITY_ERROR, "Unable to import workspace: " + e.getMessage(), null);
 			FacesContext.getCurrentInstance().addMessage(null, fm);
 		}
@@ -363,7 +364,7 @@ public class WorkspaceBean implements Serializable {
 			return res;
 		}
 		catch (Throwable t) {
-			LOG.warn("Could not get workspace list: {}.", t.getMessage());
+			LOG.error("Could not get workspace list: {}.", t.getMessage());
 			return new ArrayList<String>();
 		}
 		finally {
