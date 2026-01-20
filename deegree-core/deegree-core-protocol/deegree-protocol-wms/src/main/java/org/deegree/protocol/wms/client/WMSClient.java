@@ -611,7 +611,12 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
 			catch (Throwable e) {
 				LOG.info("Error performing GetMap request: {}", e.getMessage());
 				LOG.trace("Stack trace:", e);
-				res.second = e.getMessage();
+				if (e instanceof IOException) {
+					res.second = "Error retrieving remote map.";
+				}
+				else {
+					res.second = e.getMessage();
+				}
 			}
 
 			if (errorsInImage && res.first == null) {
