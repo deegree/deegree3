@@ -110,6 +110,7 @@ import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.deegree.protocol.ows.http.OwsHttpClientImpl;
 import org.deegree.protocol.ows.http.OwsHttpResponse;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
+import org.deegree.protocol.wms.ops.EXCEPTIONS_FORMAT;
 import org.deegree.protocol.wms.ops.GetFeatureInfo;
 import org.deegree.protocol.wms.ops.GetMap;
 import org.deegree.rendering.r2d.RenderHelper;
@@ -286,7 +287,8 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
 	 */
 	public Pair<BufferedImage, String> getMap(GetMap getMap, Map<String, String> hardParameters, int timeout)
 			throws IOException {
-		return getMap(getMap, hardParameters, timeout, false);
+		boolean errorsInImage = EXCEPTIONS_FORMAT.INIMAGE.equals(getMap.getExceptionsFormat());
+		return getMap(getMap, hardParameters, timeout, errorsInImage);
 	}
 
 	/**

@@ -8,6 +8,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -45,6 +46,30 @@ public class GetMapTest {
 				"BBOX=228152.00000000%2C5690412.00000000%2C493382.00000000%2C5939023.00000000&CRS=EPSG%3A25833&FORMAT=image%2Fpng&HEIGHT=500&LAYERS=EF.EnvironmentalMonitoringProgrammes&REQUEST=GetMap&SERVICE=WMS&STYLES=EF.EnvironmentalMonitoringProgrammes.Default.Point&TRANSPARENT=zzzz&VERSION=1.3.0&WIDTH=500");
 		GetMap getMap = new GetMap(kvp, Version.parseVersion("1.3.0"), null, false);
 		assertFalse(getMap.getTransparent());
+	}
+
+	@Test
+	public void testExceptions_missing_wfs130() throws Exception {
+		Map<String, String> kvp = createRequest(
+				"BBOX=228152.00000000%2C5690412.00000000%2C493382.00000000%2C5939023.00000000&CRS=EPSG%3A25833&FORMAT=image%2Fpng&HEIGHT=500&LAYERS=EF.EnvironmentalMonitoringProgrammes&REQUEST=GetMap&SERVICE=WMS&STYLES=EF.EnvironmentalMonitoringProgrammes.Default.Point&TRANSPARENT=zzzz&VERSION=1.3.0&WIDTH=500");
+		GetMap getMap = new GetMap(kvp, Version.parseVersion("1.3.0"), null, false);
+		assertEquals(EXCEPTIONS_FORMAT.XML, getMap.getExceptionsFormat());
+	}
+
+	@Test
+	public void testExceptions_inimage_wfs130() throws Exception {
+		Map<String, String> kvp = createRequest(
+				"BBOX=228152.00000000%2C5690412.00000000%2C493382.00000000%2C5939023.00000000&CRS=EPSG%3A25833&FORMAT=image%2Fpng&HEIGHT=500&LAYERS=EF.EnvironmentalMonitoringProgrammes&REQUEST=GetMap&SERVICE=WMS&STYLES=EF.EnvironmentalMonitoringProgrammes.Default.Point&TRANSPARENT=zzzz&VERSION=1.3.0&WIDTH=500&EXCEPTIONS=INIMAGE");
+		GetMap getMap = new GetMap(kvp, Version.parseVersion("1.3.0"), null, false);
+		assertEquals(EXCEPTIONS_FORMAT.INIMAGE, getMap.getExceptionsFormat());
+	}
+
+	@Test
+	public void testExceptions_inimage_wfs111() throws Exception {
+		Map<String, String> kvp = createRequest(
+				"BBOX=228152.00000000%2C5690412.00000000%2C493382.00000000%2C5939023.00000000&SRS=EPSG%3A25833&FORMAT=image%2Fpng&HEIGHT=500&LAYERS=EF.EnvironmentalMonitoringProgrammes&REQUEST=GetMap&SERVICE=WMS&STYLES=EF.EnvironmentalMonitoringProgrammes.Default.Point&TRANSPARENT=zzzz&VERSION=1.3.0&WIDTH=500&EXCEPTIONS=application/vnd.ogc.se_inimage");
+		GetMap getMap = new GetMap(kvp, Version.parseVersion("1.1.1"), null, false);
+		assertEquals(EXCEPTIONS_FORMAT.INIMAGE, getMap.getExceptionsFormat());
 	}
 
 	private Map<String, String> createRequest(String queryParams) throws IOException {
