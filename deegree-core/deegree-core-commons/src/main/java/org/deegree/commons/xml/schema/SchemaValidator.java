@@ -105,6 +105,12 @@ public class SchemaValidator {
 	private static final String HONOUR_ALL_SCHEMA_LOCATIONS_ID = "http://apache.org/xml/features/honour-all-schemaLocations";
 
 	/**
+	 * use only schema components from the grammar pool provided
+	 * (http://apache.org/xml/features/internal/validation/schema/use-grammar-pool-only).
+	 */
+	public static final String USE_GRAMMAR_POOL_ONLY = "http://apache.org/xml/features/internal/validation/schema/use-grammar-pool-only";
+
+	/**
 	 * Validates the specified XML instance document according to the contained schema
 	 * references ( <code>xsi:schemaLocation</code> attribute) and/or to the explicitly
 	 * specified schema references.
@@ -115,7 +121,25 @@ public class SchemaValidator {
 	 * of 0 means valid document
 	 */
 	public static List<SchemaValidationEvent> validate(InputStream source, String... schemaUris) {
-		return validate(new XMLInputSource(null, null, null, source, null), schemaUris);
+		return validate(source, false, schemaUris);
+	}
+
+	/**
+	 * Validates the specified XML instance document according to the contained schema
+	 * references ( <code>xsi:schemaLocation</code> attribute) and/or to the explicitly
+	 * specified schema references.
+	 * @param source provides the XML document to be validated, must not be null
+	 * @param useGrammarPoolOnly <code>true</code> if only the passed schemas should be
+	 * used for validation, <code>false</code> if the schemaLocation from the XML document
+	 * should be used additionally
+	 * @param schemaUris URIs of schema documents to be considered, can be null (only the
+	 * <code>xsi:schemaLocation</code> attribute is considered then)
+	 * @return list of validation events (errors/warnings) that occured, never null, size
+	 * of 0 means valid document
+	 */
+	public static List<SchemaValidationEvent> validate(InputStream source, boolean useGrammarPoolOnly,
+			String... schemaUris) {
+		return validate(new XMLInputSource(null, null, null, source, null), useGrammarPoolOnly, schemaUris);
 	}
 
 	/**
@@ -132,8 +156,28 @@ public class SchemaValidator {
 	 */
 	public static List<SchemaValidationEvent> validate(String url, String... schemaUris)
 			throws MalformedURLException, IOException {
+		return validate(url, false, schemaUris);
+	}
+
+	/**
+	 * Validates the specified XML instance document according to the contained schema
+	 * references ( <code>xsi:schemaLocation</code> attribute) and/or to the explicitly
+	 * specified schema references.
+	 * @param url provides the XML document to be validated, must not be null
+	 * @param useGrammarPoolOnly <code>true</code> if only the passed schemas should be
+	 * used for validation, <code>false</code> if the schemaLocation from the XML document
+	 * should be used additionally
+	 * @param schemaUris URIs of schema documents to be considered, can be null (only the
+	 * <code>xsi:schemaLocation</code> attribute is considered then)
+	 * @return list of validation events (errors/warnings) that occured, never null, size
+	 * of 0 means valid document
+	 * @throws IOException
+	 * @throws MalformedURLException
+	 */
+	public static List<SchemaValidationEvent> validate(String url, boolean useGrammarPoolOnly, String... schemaUris)
+			throws MalformedURLException, IOException {
 		InputStream is = ProxySettings.openURLConnection(new URL(url), null, null).getInputStream();
-		return validate(new XMLInputSource(null, null, null, is, null), schemaUris);
+		return validate(new XMLInputSource(null, null, null, is, null), useGrammarPoolOnly, schemaUris);
 	}
 
 	/**
@@ -148,6 +192,26 @@ public class SchemaValidator {
 	 * <code>null</code>, size of 0 means valid document
 	 */
 	public static List<SchemaValidationEvent> validate(XMLInputSource source, String... schemaUris) {
+		return validate(source, false, schemaUris);
+	}
+
+	/**
+	 * Validates the specified XML instance document according to the contained schema
+	 * references ( <code>xsi:schemaLocation</code> attribute) and/or to explicitly
+	 * specified schema references.
+	 * @param source provides the document to be validated, must not be <code>null</code>
+	 * @param source provides the XML document to be validated, must not be null
+	 * @param useGrammarPoolOnly <code>true</code> if only the passed schemas should be
+	 * used for validation, <code>false</code> if the schemaLocation from the XML document
+	 * should be used additionally
+	 * @param schemaUris URIs of schema documents to be considered, can be
+	 * <code>null</code> (only the <code>xsi:schemaLocation</code> attribute is considered
+	 * then)
+	 * @return list of validation events (errors/warnings) that occurred, never
+	 * <code>null</code>, size of 0 means valid document
+	 */
+	public static List<SchemaValidationEvent> validate(XMLInputSource source, boolean useGrammarPoolOnly,
+			String... schemaUris) {
 		final List<SchemaValidationEvent> errors = new LinkedList<SchemaValidationEvent>();
 
 		try {
@@ -158,7 +222,8 @@ public class SchemaValidator {
 				}
 			}
 			GrammarPool grammarPool = (schemaUris == null ? null : GrammarPoolManager.getGrammarPool(schemaUris));
-			XMLParserConfiguration parserConfig = createValidatingParser(new RedirectingEntityResolver(), grammarPool);
+			XMLParserConfiguration parserConfig = createValidatingParser(new RedirectingEntityResolver(), grammarPool,
+					useGrammarPoolOnly);
 			parserConfig.setErrorHandler(new XMLErrorHandler() {
 				@SuppressWarnings("synthetic-access")
 				@Override
@@ -277,7 +342,7 @@ public class SchemaValidator {
 	}
 
 	private static XMLParserConfiguration createValidatingParser(XMLEntityResolver entityResolver,
-			GrammarPool grammarPool) throws XNIException {
+			GrammarPool grammarPool, boolean useGrammarPoolOnly) throws XNIException {
 
 		XMLParserConfiguration parserConfiguration = null;
 		if (grammarPool == null) {
@@ -296,6 +361,8 @@ public class SchemaValidator {
 		if (entityResolver != null) {
 			parserConfiguration.setEntityResolver(entityResolver);
 		}
+		if (useGrammarPoolOnly)
+			parserConfiguration.setFeature(USE_GRAMMAR_POOL_ONLY, true);
 		return parserConfiguration;
 	}
 
