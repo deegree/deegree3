@@ -886,7 +886,7 @@
       <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>42.7.8</version>
+        <version>42.7.9</version>
       </dependency>
       <!-- Oracle (Official provided driver from repo1.maven.org) -->
       <dependency>
