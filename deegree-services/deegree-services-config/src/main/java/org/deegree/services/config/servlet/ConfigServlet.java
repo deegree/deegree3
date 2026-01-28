@@ -44,8 +44,8 @@ import static org.deegree.services.config.actions.List.list;
 import static org.deegree.services.config.actions.ListFonts.listFonts;
 import static org.deegree.services.config.actions.ListWorkspaces.listWorkspaces;
 import static org.deegree.services.config.actions.Restart.restart;
-import static org.deegree.services.config.actions.UpdateBboxCache.updateBboxCache;
 import static org.deegree.services.config.actions.Update.update;
+import static org.deegree.services.config.actions.UpdateBboxCache.updateBboxCache;
 import static org.deegree.services.config.actions.Upload.upload;
 import static org.deegree.services.config.actions.Validate.validate;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -56,7 +56,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import org.apache.commons.io.IOUtils;
 import org.deegree.services.config.ApiKey;
 import org.slf4j.Logger;
@@ -111,7 +110,7 @@ public class ConfigServlet extends HttpServlet {
 			data.append(
 					"GET /config/validate[/path]                                  - validate currently running workspace or file in workspace\n");
 			data.append(
-					"GET /config/validate/wsname[/path]                           - validate workspace with name <wsname> or file in workspace\n");
+					"GET /config/validate/wsname[/path]                           - validate workspace with name <wsname> or file in workspace. Only the active workspace can be validated.\n");
 			data.append(
 					"GET /config/update/bboxcache[?featureStoreId=]               - recalculates the bounding boxes of all feature stores of the currently running workspace, with the parameter 'featureStoreId' a comma separated list of feature stores to update can be passed\n");
 			data.append(
