@@ -62,66 +62,72 @@ public class XMLValueMangler {
 
 	/**
 	 * Returns the internal representation for the given XML string and {@link BaseType}.
-	 * @param s
+	 * @param s may be null or empty
 	 * @param pt
 	 * @return
 	 * @throws IllegalArgumentException
 	 */
 	public static Object xmlToInternal(String s, BaseType pt) throws IllegalArgumentException {
-		Object value = s;
 		switch (pt) {
 			case BOOLEAN: {
+				if (isNullOrEmpty(s))
+					return null;
 				if (s.equals("true") || s.equals("1")) {
-					value = Boolean.TRUE;
+					return Boolean.TRUE;
 				}
 				else if (s.equals("false") || s.equals("0")) {
-					value = Boolean.FALSE;
+					return Boolean.FALSE;
 				}
 				else {
 					String msg = "Value ('" + s + "') is not valid with respect to the xs:boolean type. "
 							+ "Valid values are 'true', 'false', '1' and '0'.";
 					throw new IllegalArgumentException(msg);
 				}
-				break;
 			}
 			case DATE: {
-				value = parseDate(s);
-				break;
+				if (isNullOrEmpty(s))
+					return null;
+				return parseDate(s);
 			}
 			case DATE_TIME: {
-				value = parseDateTime(s);
-				break;
+				if (isNullOrEmpty(s))
+					return null;
+				return parseDateTime(s);
 			}
 			case DECIMAL: {
-				value = new BigDecimal(s);
-				break;
+				if (isNullOrEmpty(s))
+					return null;
+				return new BigDecimal(s);
 			}
 			case DOUBLE: {
-				value = new Double(s);
-				break;
+				if (isNullOrEmpty(s))
+					return null;
+				return new Double(s);
 			}
 			case INTEGER: {
-				value = new BigInteger(s);
-				break;
+				if (isNullOrEmpty(s))
+					return null;
+				return new BigInteger(s);
 			}
 			case STRING: {
 				break;
 			}
 			case TIME: {
+				if (isNullOrEmpty(s))
+					return null;
 				try {
-					value = parseTime(s);
+					return parseTime(s);
 				}
 				catch (Exception e) {
 					String msg = "Value ('" + s + "') is not valid with respect to the xs:time type.";
 					throw new IllegalArgumentException(msg);
 				}
-				break;
 			}
 			default: {
 				LOG.warn("Unhandled primitive type {} -- treating as string value.", pt);
 			}
 		}
-		return value;
+		return s;
 	}
 
 	static String internalToXML(Object o, BaseType pt) {
@@ -188,6 +194,10 @@ public class XMLValueMangler {
 			}
 		}
 		return xml;
+	}
+
+	private static boolean isNullOrEmpty(String s) {
+		return s == null || s.isEmpty();
 	}
 
 }
