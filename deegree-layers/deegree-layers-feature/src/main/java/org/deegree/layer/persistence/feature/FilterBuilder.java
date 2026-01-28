@@ -93,7 +93,7 @@ class FilterBuilder {
 		return filter;
 	}
 
-	static OperatorFilter buildFilter(Operator operator, FeatureType ft, Envelope clickBox) {
+	static OperatorFilter buildFilter(Operator operator, FeatureType ft, Envelope clickBox, ValueReference geomProp) {
 		if (ft == null) {
 			if (operator == null) {
 				return null;
@@ -112,9 +112,9 @@ class FilterBuilder {
 			// obnoxious case where feature has no geometry properties (but features may
 			// have extra geometry props)
 			if (operator == null) {
-				return new OperatorFilter(new Intersects(null, clickBox));
+				return new OperatorFilter(new Intersects(geomProp, clickBox));
 			}
-			return new OperatorFilter(new And(operator, new Intersects(null, clickBox)));
+			return new OperatorFilter(new And(operator, new Intersects(geomProp, clickBox)));
 		}
 		if (operator == null) {
 			return new OperatorFilter(list.get(0));

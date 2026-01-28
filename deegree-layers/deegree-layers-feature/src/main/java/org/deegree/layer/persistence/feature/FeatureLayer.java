@@ -150,13 +150,14 @@ public class FeatureLayer extends AbstractLayer {
 			layerRadius = getMetadata().getMapOptions().getFeatureInfoRadius();
 		}
 		final Envelope clickBox = query.calcClickBox(layerRadius > -1 ? layerRadius : query.getLayerRadius());
+		final ValueReference geomProp = findGeometryProperty(style);
 
-		filter = (OperatorFilter) addBBoxConstraint(clickBox, filter, null, false);
+		filter = (OperatorFilter) addBBoxConstraint(clickBox, filter, geomProp, false);
 		filter = Filters.repair(filter, AppSchemas.collectProperyNames(featureStore.getSchema(), featureType));
 
 		LOG.debug("Querying the feature store(s)...");
 
-		QueryBuilder builder = new QueryBuilder(featureStore, filter, featureType, clickBox, query, null,
+		QueryBuilder builder = new QueryBuilder(featureStore, filter, featureType, clickBox, query, geomProp,
 				sortByFeatureInfo, getMetadata().getName());
 		List<Query> queries = builder.buildInfoQueries();
 
