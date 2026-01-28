@@ -1281,7 +1281,7 @@
     <antlr.version>3.5.3</antlr.version>
     <antlr4.version>4.13.2</antlr4.version>
     <oracle.version>23.4.0.24.05</oracle.version>
-    <logback.version>1.5.21</logback.version>
+    <logback.version>1.5.25</logback.version>
     <slf4j.version>2.0.17</slf4j.version>
     <spring-boot.version>3.4.12</spring-boot.version>
     <batik.version>1.19</batik.version>
