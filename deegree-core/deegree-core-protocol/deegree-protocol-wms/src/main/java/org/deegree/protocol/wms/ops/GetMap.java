@@ -46,18 +46,19 @@ import static org.deegree.layer.LayerRef.FROM_NAMES;
 import static org.deegree.layer.dims.Dimension.parseTyped;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_111;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
+import static org.deegree.protocol.wms.ops.EXCEPTIONS_FORMAT.XML;
+import static org.deegree.rendering.r2d.context.MapOptions.Antialias.BOTH;
+import static org.deegree.rendering.r2d.context.MapOptions.Interpolation.NEARESTNEIGHBOR;
+import static org.deegree.rendering.r2d.context.MapOptions.Quality.NORMAL;
 import static org.deegree.rendering.r2d.context.MapOptions.getAntialiasGetter;
 import static org.deegree.rendering.r2d.context.MapOptions.getAntialiasSetter;
 import static org.deegree.rendering.r2d.context.MapOptions.getInterpolationGetter;
 import static org.deegree.rendering.r2d.context.MapOptions.getInterpolationSetter;
 import static org.deegree.rendering.r2d.context.MapOptions.getQualityGetter;
 import static org.deegree.rendering.r2d.context.MapOptions.getQualitySetter;
-import static org.deegree.rendering.r2d.context.MapOptions.Antialias.BOTH;
-import static org.deegree.rendering.r2d.context.MapOptions.Interpolation.NEARESTNEIGHBOR;
-import static org.deegree.rendering.r2d.context.MapOptions.Quality.NORMAL;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.awt.Color;
+import java.awt.*;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -130,6 +131,8 @@ public class GetMap extends RequestBase {
 
 	private Map<String, String> overriddenParameters;
 
+	private EXCEPTIONS_FORMAT exceptionsFormat = XML;
+
 	/**
 	 * @param map
 	 * @param version
@@ -144,6 +147,7 @@ public class GetMap extends RequestBase {
 		if (version.equals(VERSION_130)) {
 			parse130(map, exts, parseStrict);
 		}
+		exceptionsFormat = EXCEPTIONS_FORMAT.findByParamValue(map.get("EXCEPTIONS"));
 		parameterMap.putAll(map);
 		try {
 			scale = RenderHelper.calcScaleWMS130(width, height, bbox, crs, pixelSize);
@@ -194,6 +198,11 @@ public class GetMap extends RequestBase {
 
 	public GetMap(List<String> layers, int width, int height, Envelope envelope, ICRS crs, String format,
 			boolean transparent) {
+		this(layers, width, height, envelope, crs, format, transparent, XML);
+	}
+
+	public GetMap(List<String> layers, int width, int height, Envelope envelope, ICRS crs, String format,
+			boolean transparent, EXCEPTIONS_FORMAT exceptionsFormat) {
 		this.layers = map(layers, FROM_NAMES);
 		this.width = width;
 		this.height = height;
@@ -202,6 +211,7 @@ public class GetMap extends RequestBase {
 		this.crs = crs;
 		this.format = format;
 		this.transparent = transparent;
+		this.exceptionsFormat = exceptionsFormat;
 	}
 
 	public GetMap(List<LayerRef> layers, List<StyleRef> styles, int width, int height, Envelope envelope, ICRS crs,
@@ -809,6 +819,13 @@ public class GetMap extends RequestBase {
 	 */
 	public Map<String, String> getOverriddenParameters() {
 		return overriddenParameters;
+	}
+
+	/**
+	 * @return the requested format for EXCEPTIONS, defaults to XML if missing in request
+	 */
+	public EXCEPTIONS_FORMAT getExceptionsFormat() {
+		return exceptionsFormat;
 	}
 
 }
