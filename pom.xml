@@ -797,12 +797,6 @@
           </exclusion>
         </exclusions>
       </dependency>
-      <!-- javax.activation for axiom only (until migrated to jakarta) -->
-      <dependency>
-        <groupId>com.sun.activation</groupId>
-        <artifactId>jakarta.activation</artifactId>
-        <version>1.2.2</version>
-      </dependency>
       <dependency>
         <groupId>com.sun.xml.fastinfoset</groupId>
         <artifactId>FastInfoset</artifactId>
@@ -1292,7 +1286,7 @@
     <slf4j.version>2.0.17</slf4j.version>
     <spring-boot.version>3.4.12</spring-boot.version>
     <batik.version>1.19</batik.version>
-    <axiom.version>1.4.0</axiom.version>
+    <axiom.version>2.0.0</axiom.version>
     <jsonpath.version>2.9.0</jsonpath.version>
     <jsonsmart.version>2.6.0</jsonsmart.version>
     <jvm.args>--add-exports java.desktop/sun.awt=ALL-UNNAMED --add-exports java.desktop/com.sun.imageio.spi=ALL-UNNAMED --add-exports java.desktop/sun.swing=ALL-UNNAMED --add-opens java.desktop/javax.imageio.spi=ALL-UNNAMED --add-opens java.desktop/com.sun.imageio.spi=ALL-UNNAMED</jvm.args>
