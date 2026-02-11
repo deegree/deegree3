@@ -238,9 +238,9 @@
           <version>3.2.0</version>
         </plugin>
         <plugin>
-          <groupId>org.eclipse.jetty</groupId>
-          <artifactId>jetty-maven-plugin</artifactId>
-          <version>11.0.26</version>
+          <groupId>org.eclipse.jetty.ee10</groupId>
+          <artifactId>jetty-ee10-maven-plugin</artifactId>
+          <version>12.0.31</version>
         </plugin>
       </plugins>
     </pluginManagement>

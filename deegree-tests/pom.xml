@@ -43,9 +43,25 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-maven-plugin</artifactId>
+        <groupId>org.eclipse.jetty.ee10</groupId>
+        <artifactId>jetty-ee10-maven-plugin</artifactId>
         <configuration>
+          <webApp>
+            <containerIncludeJarPattern>^$</containerIncludeJarPattern>
+            <webInfIncludeJarPattern>^$</webInfIncludeJarPattern>
+          </webApp>
+          <systemProperties>
+             <jetty.home>${project.basedir}/src/main/resources</jetty.home>
+             <javax.xml.transform.TransformerFactory>net.sf.saxon.TransformerFactoryImpl</javax.xml.transform.TransformerFactory>
+          </systemProperties>
+          <loginServices>
+            <loginService implementation="org.eclipse.jetty.security.HashLoginService">
+              <name>deegree web configuration API</name>
+              <config implementation="org.eclipse.jetty.maven.MavenResource">
+                <resourceAsString>${project.basedir}/src/main/resources/realm.properties</resourceAsString>
+              </config>
+            </loginService>
+          </loginServices>
           <stopPort>${jetty.stop.port}</stopPort>
           <stopKey>STOP</stopKey>
           <stopWait>10</stopWait>
@@ -53,22 +69,7 @@
             <port>${jetty.http.port}</port>
             <idleTimeout>60000</idleTimeout>
           </httpConnector>
-          <systemProperties>
-            <jetty.home>${project.basedir}/src/main/resources</jetty.home>
-            <javax.xml.transform.TransformerFactory>net.sf.saxon.TransformerFactoryImpl</javax.xml.transform.TransformerFactory>
-          </systemProperties>
           <jvmArgs>${jvm.args}</jvmArgs>
-          <loginServices>
-            <loginService implementation="org.eclipse.jetty.security.HashLoginService">
-              <name>deegree web configuration API</name>
-              <config>${project.basedir}/src/main/resources/realm.properties</config>
-            </loginService>
-          </loginServices>
-          <webAppSourceDirectory>${project.basedir}/target/${project.artifactId}-${project.version}</webAppSourceDirectory>
-          <webApp>
-            <webInfIncludeJarPattern>^$</webInfIncludeJarPattern>
-            <containerIncludeJarPattern>^$</containerIncludeJarPattern>
-          </webApp>
         </configuration>
         <executions>
           <execution>
