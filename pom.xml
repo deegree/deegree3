@@ -439,7 +439,7 @@
           <dependency>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>extra-enforcer-rules</artifactId>
-            <version>1.10.0</version>
+            <version>1.11.0</version>
           </dependency>
         </dependencies>
       </plugin>
@@ -499,7 +499,7 @@
       <dependency>
         <groupId>jakarta.xml.bind</groupId>
         <artifactId>jakarta.xml.bind-api</artifactId>
-        <version>4.0.4</version>
+        <version>4.0.5</version>
       </dependency>
       <dependency>
         <groupId>org.glassfish.jaxb</groupId>
@@ -564,13 +564,13 @@
       <dependency>
         <groupId>org.xmlunit</groupId>
         <artifactId>xmlunit-core</artifactId>
-        <version>2.10.4</version>
+        <version>2.11.0</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.xmlunit</groupId>
         <artifactId>xmlunit-matchers</artifactId>
-        <version>2.10.4</version>
+        <version>2.11.0</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -615,12 +615,12 @@
       <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
-        <version>1.20.0</version>
+        <version>1.21.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-fileupload2-jakarta-servlet6</artifactId>
-        <version>2.0.0-M4</version>
+        <version>2.0.0-M5</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
@@ -636,12 +636,12 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-pool2</artifactId>
-        <version>2.12.1</version>
+        <version>2.13.1</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-dbcp2</artifactId>
-        <version>2.13.0</version>
+        <version>2.14.0</version>
         <exclusions>
           <exclusion>
             <groupId>commons-logging</groupId>
@@ -652,7 +652,7 @@
       <dependency>
         <groupId>commons-cli</groupId>
         <artifactId>commons-cli</artifactId>
-        <version>1.10.0</version>
+        <version>1.11.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -687,7 +687,7 @@
       <dependency>
         <groupId>org.glassfish</groupId>
         <artifactId>jakarta.faces</artifactId>
-        <version>4.0.13</version>
+        <version>4.0.14</version>
       </dependency>
       <dependency>
         <groupId>jakarta.enterprise</groupId>
@@ -867,7 +867,7 @@
       <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>42.7.9</version>
+        <version>42.7.10</version>
       </dependency>
       <!-- Oracle (Official provided driver from repo1.maven.org) -->
       <dependency>
@@ -1129,7 +1129,7 @@
       <dependency>
         <groupId>com.h2database</groupId>
         <artifactId>h2</artifactId>
-        <version>2.3.232</version>
+        <version>2.4.240</version>
       </dependency>
       <dependency>
         <groupId>org.deegree</groupId>
@@ -1268,12 +1268,12 @@
     <antlr.version>3.5.3</antlr.version>
     <antlr4.version>4.13.2</antlr4.version>
     <oracle.version>23.4.0.24.05</oracle.version>
-    <logback.version>1.5.25</logback.version>
+    <logback.version>1.5.32</logback.version>
     <slf4j.version>2.0.17</slf4j.version>
-    <spring-boot.version>3.4.12</spring-boot.version>
+    <spring-boot.version>3.4.13</spring-boot.version>
     <batik.version>1.19</batik.version>
     <axiom.version>2.0.0</axiom.version>
-    <jsonpath.version>2.9.0</jsonpath.version>
+    <jsonpath.version>2.10.0</jsonpath.version>
     <jsonsmart.version>2.6.0</jsonsmart.version>
     <jvm.args>--add-exports java.desktop/sun.awt=ALL-UNNAMED --add-exports java.desktop/com.sun.imageio.spi=ALL-UNNAMED --add-exports java.desktop/sun.swing=ALL-UNNAMED --add-opens java.desktop/javax.imageio.spi=ALL-UNNAMED --add-opens java.desktop/com.sun.imageio.spi=ALL-UNNAMED</jvm.args>
   </properties>
