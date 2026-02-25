@@ -27,7 +27,7 @@ pipeline {
                 sh 'mvn -version'
                 sh 'java -version'
                 sh 'git --version'
-                sh 'cyclonedx --version'
+                sh 'DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1 cyclonedx --version'
             }
         }
         stage ('Reduced Build for testing') {
@@ -40,6 +40,7 @@ pipeline {
             environment {
                 MAVEN_HELP_GOAL='org.apache.maven.plugins:maven-help-plugin:3.5.1:evaluate'
                 SBOM_LOCATION='target/bom.json'
+                DOTNET_SYSTEM_GLOBALIZATION_INVARIANT='1'
                 POM_VERSION="""${sh(
                     returnStdout: true,
                     script: 'mvn ${MAVEN_HELP_GOAL} -Dexpression=project.version -q -DforceStdout'
