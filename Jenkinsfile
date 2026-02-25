@@ -47,11 +47,10 @@ pipeline {
                 ).trim()}"""
                 TAG_VERSION="""${sh(
                     returnStdout: true,
-                    script: '(git describe --abbrev=0 --tags --match "deegree-*.*" 2>/dev/null || echo "deegree-0.0.0") | cut -d"-" -f 2-'
+                    script: '((git fetch origin "refs/tags/deegree-3.6*:refs/tags/deegree-3.6*" >/dev/null 2>/dev/null) && git describe --abbrev=0 --tags --match "deegree-*.*" 2>/dev/null || echo "deegree-0.0.0") | cut -d"-" -f 2-'
                 ).trim()}"""
             }
             steps {
-                sh 'printenv'
                 sh 'mvn -U dependency:copy -Dmdep.stripVersion=true -DoutputDirectory=target/sbom-snapshot -Dartifact=org.deegree:deegree:${POM_VERSION}:json:cyclonedx || true'
                 sh 'mvn -U dependency:copy -Dmdep.stripVersion=true -DoutputDirectory=target/sbom-last-tag -Dartifact=org.deegree:deegree:${TAG_VERSION}:json:cyclonedx || true'
                 echo 'Compare last repository snapshot bom with current build'
