@@ -7,9 +7,11 @@ pipeline {
         maven 'maven-3.9'
         jdk 'temurin-jdk17'
         git 'git-default'
+        generic 'cyclonedx'
     }
     environment {
         MAVEN_OPTS='-Djava.awt.headless=true -Xmx4096m'
+        CYCLONEDX_HOME = tool name: 'cyclonedx', type: 'io.jenkins.plugins.generic_tool.GenericToolInstallation'
     }
     parameters {
           string name: 'REL_VERSION', defaultValue: "3.6.x", description: 'Next release version'
@@ -26,6 +28,7 @@ pipeline {
                 sh 'mvn -version'
                 sh 'java -version'
                 sh 'git --version'
+                sh 'DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1 ${CYCLONEDX_HOME}/cyclonedx --version'
             }
         }
         stage ('Build') {
@@ -57,6 +60,28 @@ pipeline {
                 always {
                     recordIssues enabledForFailure: true, tools: [mavenConsole(), java(), javaDoc(), spotBugs()]
                 }
+            }
+        }
+        stage ('SBOM Comparsion') {
+            environment {
+                SBOM_LOCATION='target/bom.json'
+                DOTNET_SYSTEM_GLOBALIZATION_INVARIANT='1'
+                POM_VERSION="""${sh(
+                    returnStdout: true,
+                    script: 'mvn org.apache.maven.plugins:maven-help-plugin:3.5.1:evaluate -Dexpression=project.version -q -DforceStdout'
+                ).trim()}"""
+                TAG_VERSION="""${sh(
+                    returnStdout: true,
+                    script: '((git fetch origin "refs/tags/deegree-3.6*:refs/tags/deegree-3.6*" >/dev/null 2>/dev/null) && git describe --abbrev=0 --tags --match "deegree-*.*" 2>/dev/null || echo "deegree-0.0.0") | cut -d"-" -f 2-'
+                ).trim()}"""
+            }
+            steps {
+                sh 'mvn -U dependency:copy -Dmdep.stripVersion=true -DoutputDirectory=target/sbom-snapshot -Dartifact=org.deegree:deegree:${POM_VERSION}:json:cyclonedx || true'
+                sh 'mvn -U dependency:copy -Dmdep.stripVersion=true -DoutputDirectory=target/sbom-last-tag -Dartifact=org.deegree:deegree:${TAG_VERSION}:json:cyclonedx || true'
+                echo 'Compare last repository snapshot bom with current build'
+                sh '${CYCLONEDX_HOME}/cyclonedx diff --output-format text --component-versions target/sbom-snapshot/deegree-cyclonedx.json ${SBOM_LOCATION} || true'
+                echo 'Compare last repository tag bom with current build'
+                sh '${CYCLONEDX_HOME}/cyclonedx diff --output-format text --component-versions target/sbom-last-tag/deegree-cyclonedx.json ${SBOM_LOCATION} || true'
             }
         }
         stage ('Release') {
