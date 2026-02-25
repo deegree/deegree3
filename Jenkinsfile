@@ -14,9 +14,9 @@ pipeline {
         CYCLONEDX_HOME = tool name: 'cyclonedx', type: 'io.jenkins.plugins.generic_tool.GenericToolInstallation'
     }
     parameters {
-          string name: 'REL_VERSION', defaultValue: "3.6.x", description: 'Next release version'
-          string name: 'DEV_VERSION', defaultValue: "3.6.x-SNAPSHOT", description: 'Next snapshot version'
-          booleanParam name: 'PERFORM_RELEASE', defaultValue: false, description: 'Perform release build (on main branch only)'
+        string name: 'REL_VERSION', defaultValue: "3.6.x", description: 'Next release version'
+        string name: 'DEV_VERSION', defaultValue: "3.6.x-SNAPSHOT", description: 'Next snapshot version'
+        booleanParam name: 'PERFORM_RELEASE', defaultValue: false, description: 'Perform release build (on main branch only)'
     }
     stages {
         stage ('Initialize') {
@@ -33,8 +33,8 @@ pipeline {
         }
         stage ('Build') {
             steps {
-               echo 'Building'
-               sh 'mvn -B -C -P oracle clean test-compile'
+                echo 'Building'
+                sh 'mvn -B -C -P oracle clean test-compile'
             }
         }
         stage ('Test') {
