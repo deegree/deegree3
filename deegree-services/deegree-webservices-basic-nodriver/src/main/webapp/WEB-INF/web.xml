@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns = "https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation = "https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
+         version = "6.0"
+         metadata-complete = "false">
+  <display-name>deegree 3 OGC services + REST interface</display-name>
+
+  <servlet>
+    <servlet-name>services</servlet-name>
+    <servlet-class>org.deegree.services.controller.OGCFrontController</servlet-class>
+    <load-on-startup>2</load-on-startup>
+  </servlet>
+
+  <servlet>
+    <servlet-name>resources</servlet-name>
+    <servlet-class>org.deegree.services.resources.ResourcesServlet</servlet-class>
+    <load-on-startup>2</load-on-startup>
+  </servlet>
+
+  <servlet>
+    <servlet-name>config</servlet-name>
+    <servlet-class>org.deegree.services.config.servlet.ConfigServlet</servlet-class>
+    <load-on-startup>2</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>services</servlet-name>
+    <url-pattern>/services</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>services</servlet-name>
+    <url-pattern>/services/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>resources</servlet-name>
+    <url-pattern>/resources/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>config</servlet-name>
+    <url-pattern>/config/*</url-pattern>
+  </servlet-mapping>
+
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+  </welcome-file-list>
+
+  <!-- REST API is protected by API key by default. -->
+  <!--
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>Configuration</web-resource-name>
+      <url-pattern>/config/*</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>deegree</role-name>
+    </auth-constraint>
+  </security-constraint>
+
+  <login-config>
+    <auth-method>BASIC</auth-method>
+    <realm-name>deegree web configuration API</realm-name>
+  </login-config>
+
+  <security-role>
+    <description>deegree administrator role</description>
+    <role-name>deegree</role-name>
+  </security-role>
+  -->
+
+  <!-- http basic auth enable -->
+  <!-- Define a security constraint on this application -->
+  <!-- User and role must be added to tomcat-users.xml -->
+  <!--
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>Entire Application</web-resource-name>
+      <url-pattern>/*</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>demoadmin</role-name>
+    </auth-constraint>
+    </security-constraint>
+      <login-config>
+        <auth-method>BASIC</auth-method>
+        <realm-name>Tomcat Manager Application</realm-name>
+      </login-config>
+    <security-role>
+     <description>The role that is required to log in to the Manager Application</description>
+     <role-name>demoadmin</role-name>
+  </security-role>
+  -->
+  <!-- end -->
+
+</web-app>

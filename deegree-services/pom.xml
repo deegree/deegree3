@@ -39,7 +39,8 @@
     <module>deegree-webservices-minimal</module>
     <module>deegree-webservices-basic</module>
     <module>deegree-webservices</module>
+    <module>deegree-webservices-minimal-nodriver</module>
+    <module>deegree-webservices-basic-nodriver</module>
   </modules>
 
 </project>
-
