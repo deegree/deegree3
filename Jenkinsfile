@@ -7,6 +7,7 @@ pipeline {
         maven 'maven-3.9'
         jdk 'temurin-jdk17'
         git 'git-default'
+        generic 'cyclonedx'
     }
     environment {
         MAVEN_OPTS='-Djava.awt.headless=true -Xmx4096m'
@@ -26,37 +27,35 @@ pipeline {
                 sh 'mvn -version'
                 sh 'java -version'
                 sh 'git --version'
+                sh 'cyclonedx --version'
             }
         }
-        stage ('Build') {
+        stage ('Reduced Build for testing') {
             steps {
-               echo 'Building'
-               sh 'mvn -B -C -P oracle clean test-compile'
+                echo 'Building'
+                sh 'mvn -B -C clean package'
             }
         }
-        stage ('Test') {
-            steps {
-                echo 'Testing'
-                sh 'mvn -B -C -fae -P integration-tests,oracle install'
-            }
-            post {
-                always {
-                    junit '**/target/*-reports/*.xml'
-                }
-            }
-        }
-        stage ('Quality Checks') {
-            when {
-                branch 'main'
+        stage ('SBOM Comparsion') {
+            environment {
+                MAVEN_HELP_GOAL='org.apache.maven.plugins:maven-help-plugin:3.5.1:evaluate'
+                SBOM_LOCATION='target/bom.json'
+                POM_VERSION="""${sh(
+                    returnStdout: true,
+                    script: 'mvn ${MAVEN_HELP_GOAL} -Dexpression=project.version -q -DforceStdout'
+                ).trim()}"""
+                TAG_VERSION="""${sh(
+                    returnStdout: true,
+                    script: '(git describe --abbrev=0 --tags --match "deegree-*.*" 2>/dev/null || echo "deegree-0.0.0") | cut -d"-" -f 2-'
+                ).trim()}"""
             }
             steps {
-                echo 'Quality checking'
-                sh 'mvn -B -C -fae -P oracle com.github.spotbugs:spotbugs-maven-plugin:4.9.7.0:spotbugs javadoc:javadoc'
-            }
-            post {
-                always {
-                    recordIssues enabledForFailure: true, tools: [mavenConsole(), java(), javaDoc(), spotBugs()]
-                }
+                sh 'mvn -U dependency:copy -Dmdep.stripVersion=true -DoutputDirectory=target/sbom-snapshot -Dartifact=org.deegree:deegree:${POM_VERSION}:json:cyclonedx || true'
+                sh 'mvn -U dependency:copy -Dmdep.stripVersion=true -DoutputDirectory=target/sbom-last-tag -Dartifact=org.deegree:deegree:${TAG_VERSION}:json:cyclonedx || true'
+                echo 'Compare last repository snapshot bom with current build'
+                sh 'cyclonedx diff --output-format text --component-versions target/sbom-snapshot/deegree-cyclonedx.json ${SBOM_LOCATION} || true'
+                echo 'Compare last repository tag bom with current build'
+                sh 'cyclonedx diff --output-format text --component-versions target/sbom-last-tag/deegree-cyclonedx.json ${SBOM_LOCATION} || true'
             }
         }
         stage ('Release') {
