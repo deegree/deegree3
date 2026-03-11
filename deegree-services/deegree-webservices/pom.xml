@@ -3,7 +3,7 @@
   <artifactId>deegree-webservices</artifactId>
   <packaging>war</packaging>
   <name>deegree-webservices</name>
-  <description>Webapp that includes deegree WMS, WFS, CSW, WPS, common datastore modules and service administration console</description>
+  <description>Webapp that includes deegree WMS, WFS, CSW, WPS, common datastore modules, REST API and service administration console</description>
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-services</artifactId>
@@ -33,30 +33,6 @@
             </manifestEntries>
           </archive>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-resources-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy-resources</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/classes</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>src/main/resources</directory>
-                  <includes>
-                    <include>**/log4j2.properties</include>
-                  </includes>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.eclipse.jetty.ee10</groupId>
@@ -119,13 +95,11 @@
     <dependency>
       <groupId>org.primefaces</groupId>
       <artifactId>primefaces</artifactId>
-      <version>15.0.13</version>
       <classifier>jakarta</classifier>
     </dependency>
     <dependency>
       <groupId>org.primefaces.extensions</groupId>
       <artifactId>primefaces-extensions</artifactId>
-      <version>15.0.13</version>
       <classifier>jakarta</classifier>
     </dependency>
     <dependency>
