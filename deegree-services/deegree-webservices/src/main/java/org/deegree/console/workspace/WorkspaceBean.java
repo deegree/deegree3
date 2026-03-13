@@ -38,7 +38,6 @@ import static jakarta.faces.application.FacesMessage.SEVERITY_ERROR;
 import static jakarta.faces.application.FacesMessage.SEVERITY_INFO;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.readLines;
-import static org.deegree.client.core.utils.ActionParams.getParam1;
 import static org.deegree.commons.utils.net.HttpUtils.STREAM;
 import static org.deegree.console.JsfUtils.indicateException;
 import static org.deegree.services.controller.OGCFrontController.getModulesInfo;
@@ -56,14 +55,16 @@ import java.util.List;
 
 import jakarta.el.ELContext;
 import jakarta.el.ELResolver;
-import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.RequestScoped;
 import jakarta.faces.application.Application;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpResponse;
+import org.deegree.client.core.utils.ActionParams;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.moduleinfo.ModuleInfo;
 import org.deegree.commons.utils.Pair;
@@ -83,7 +84,7 @@ import org.slf4j.LoggerFactory;
  * @since 3.4
  */
 @Named("workspace")
-@ApplicationScoped
+@RequestScoped
 public class WorkspaceBean implements Serializable {
 
 	private static Logger LOG = LoggerFactory.getLogger(WorkspaceBean.class);
@@ -111,6 +112,9 @@ public class WorkspaceBean implements Serializable {
 	private UploadedFile upload;
 
 	private boolean modified;
+
+	@Inject
+	private ActionParams params;
 
 	public String getLastMessage() {
 		return lastMessage;
@@ -191,7 +195,8 @@ public class WorkspaceBean implements Serializable {
 	}
 
 	public void startWorkspace() {
-		String wsName = (String) getParam1();
+		String wsName = (String) params.getParam1();
+		LOG.debug("Starting workspace {}", wsName);
 		try {
 			OGCFrontController fc = OGCFrontController.getInstance();
 			fc.setActiveWorkspaceName(wsName);
@@ -204,8 +209,9 @@ public class WorkspaceBean implements Serializable {
 	}
 
 	public void deleteWorkspace() throws IOException {
-		String wsName = (String) getParam1();
+		String wsName = (String) params.getParam1();
 		DeegreeWorkspace dw = DeegreeWorkspace.getInstance(wsName);
+		LOG.debug("Deleting workspace {}", wsName);
 		if (dw.getLocation().isDirectory()) {
 			FileUtils.deleteDirectory(dw.getLocation());
 			lastMessage = "Workspace has been deleted.";
@@ -232,8 +238,9 @@ public class WorkspaceBean implements Serializable {
 	}
 
 	public void downloadWorkspace() {
-		String wsName = (String) getParam1();
+		String wsName = (String) params.getParam1();
 		String location = workspaceLocations.get(wsName);
+		LOG.debug("Downloading workspace {}", wsName);
 		InputStream in = null;
 		try {
 			setWorkspaceImportName(wsName);
@@ -250,6 +257,8 @@ public class WorkspaceBean implements Serializable {
 	}
 
 	private void importWorkspace(String location) {
+		if (location == null)
+			throw new IllegalArgumentException("location must not be null");
 		InputStream in = null;
 		try {
 			URL url = new URL(location);

@@ -36,12 +36,12 @@
                   <td><h:outputText value="#{workspaceName}" /></td>
                   <td><p:commandButton styleClass="ui-button buttonInfo" label="#{workspaceName}"
                       value="#{labels.start_workspace}" action="#{workspace.startWorkspace}" oncomplete="location.reload();" >
-                      <f:setPropertyActionListener target="#{actionParams.param1}" value="#{workspaceName}" />
+                      <f:param name="param1" value="#{workspaceName}" />
                     </p:commandButton></td>
                   <td><p:commandButton styleClass="ui-button buttonDelete" label="#{workspaceName}"
                       onclick="return confirmDelete();" value="#{labels.delete_workspace}"
                       action="#{workspace.deleteWorkspace}" global="false" oncomplete="location.reload();" >
-                      <f:setPropertyActionListener target="#{actionParams.param1}" value="#{workspaceName}" />
+                      <f:param name="param1" value="#{workspaceName}" />
                     </p:commandButton></td>
                 </tr>
               </h:form>
@@ -58,7 +58,7 @@
                 <td><h:outputText value="#{workspaceName}" /></td>
                 <td><p:commandButton styleClass="ui-button buttonEdit" label="#{workspaceName}" value="Import"
                      action="#{workspace.downloadWorkspace}" oncomplete="location.reload();" >
-                    <f:setPropertyActionListener target="#{actionParams.param1}" value="#{workspaceName}" />
+                    <f:param name="param1" value="#{workspaceName}" />
                   </p:commandButton></td>
               </tr>
             </h:form>
