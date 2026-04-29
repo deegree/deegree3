@@ -504,7 +504,7 @@
       <dependency>
         <groupId>org.glassfish.jaxb</groupId>
         <artifactId>jaxb-runtime</artifactId>
-        <version>4.0.6</version>
+        <version>4.0.7</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
@@ -687,7 +687,7 @@
       <dependency>
         <groupId>org.glassfish</groupId>
         <artifactId>jakarta.faces</artifactId>
-        <version>4.0.14</version>
+        <version>4.0.15</version>
       </dependency>
       <dependency>
         <groupId>jakarta.enterprise</groupId>
@@ -814,7 +814,7 @@
       <dependency>
         <groupId>jaxen</groupId>
         <artifactId>jaxen</artifactId>
-        <version>2.0.0</version>
+        <version>2.0.1</version>
       </dependency>
       <dependency>
         <groupId>xerces</groupId>
@@ -1205,7 +1205,7 @@
       <dependency>
         <groupId>org.gdal</groupId>
         <artifactId>gdal</artifactId>
-        <version>3.11.0</version>
+        <version>3.12.0</version>
       </dependency>
       <!-- TODO not maintained anymore ! to be removed! -->
       <dependency>
@@ -1287,12 +1287,12 @@
     <oracle.version>23.4.0.24.05</oracle.version>
     <logback.version>1.5.32</logback.version>
     <slf4j.version>2.0.17</slf4j.version>
-    <spring-boot.version>3.4.13</spring-boot.version>
+    <spring-boot.version>3.5.14</spring-boot.version>
     <batik.version>1.19</batik.version>
     <axiom.version>2.0.0</axiom.version>
     <jsonpath.version>2.10.0</jsonpath.version>
     <jsonsmart.version>2.6.0</jsonsmart.version>
-    <primefaces.version>15.0.13</primefaces.version>
+    <primefaces.version>15.0.14</primefaces.version>
     <jvm.args>--add-exports java.desktop/sun.awt=ALL-UNNAMED --add-exports java.desktop/com.sun.imageio.spi=ALL-UNNAMED --add-exports java.desktop/sun.swing=ALL-UNNAMED --add-opens java.desktop/javax.imageio.spi=ALL-UNNAMED --add-opens java.desktop/com.sun.imageio.spi=ALL-UNNAMED</jvm.args>
   </properties>
 
