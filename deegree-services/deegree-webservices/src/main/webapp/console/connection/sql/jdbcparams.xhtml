@@ -69,7 +69,7 @@
           <br />
           <div>
             <p:commandButton styleClass="ui-button buttonCreateNew" value="Create" action="#{jdbcBean.save}" update=":container" global="false">
-              <f:setPropertyActionListener target="#{actionParams.param1}" value="#{config.id}" />
+              <f:param name="param1" value="#{config.id}" />
             </p:commandButton>
             <h:outputLink styleClass="ui-button buttonCancel" value="../../#{configManager.currentResourceManager.startView}.jsf"
               action="#{jdbcBean.cancel}">
