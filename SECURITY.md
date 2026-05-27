@@ -7,7 +7,7 @@ The following versions of deegree are currently being supported with security up
 | Version | Supported          |
 |---------|--------------------|
 | 3.6.x   | :white_check_mark: |
-| 3.5.x   | :white_check_mark: |
+| 3.5.x   | :x:                |
 | 3.4.x   | :x:                |
 | <= 3.3  | :x:                |
 
