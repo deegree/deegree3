@@ -107,8 +107,8 @@ public class OracleDialectProvider implements SqlDialectProvider {
 				Pattern p = Pattern.compile("^(\\d+)\\.(\\d+)\\.");
 				Matcher m = p.matcher(rs.getString(1));
 				if (m.find()) {
-					major = Integer.valueOf(m.group(1));
-					minor = Integer.valueOf(m.group(2));
+					major = Integer.parseInt(m.group(1));
+					minor = Integer.parseInt(m.group(2));
 				}
 			}
 

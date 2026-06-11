@@ -39,6 +39,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.awt.image.BufferedImage;
 import java.util.Map;
 
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeatureCollection;
@@ -82,17 +83,23 @@ public class RemoteWMSLayerData implements LayerData {
 	}
 
 	@Override
-	public void render(RenderContext context) {
+	public void render(RenderContext context) throws OWSException {
+		String exception = null;
 		try {
 			Pair<BufferedImage, String> map = client.getMap(gm, extraParams, 30);
 			if (map.first != null) {
 				context.paintImage(map.first);
 			}
+			else if (map.second != null) {
+				exception = map.second;
+			}
 		}
 		catch (Throwable e) {
-			e.printStackTrace();
 			LOG.warn("Error when retrieving remote map: {}", e.getLocalizedMessage());
 			LOG.trace("Stack trace:", e);
+		}
+		if (exception != null) {
+			throw new OWSException(exception, OWSException.NO_APPLICABLE_CODE);
 		}
 	}
 

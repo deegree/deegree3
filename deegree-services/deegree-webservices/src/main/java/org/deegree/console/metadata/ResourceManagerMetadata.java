@@ -73,6 +73,9 @@ public class ResourceManagerMetadata implements Comparable<ResourceManagerMetada
 	private final Workspace workspace;
 
 	private ResourceManagerMetadata(ResourceManager<?> mgr, Workspace workspace) {
+		if (mgr == null)
+			throw new IllegalArgumentException(
+					"ResourceManager must not be null. Check your workspace configuration for errors.");
 		this.workspace = workspace;
 		if (mgr.getMetadata() != null) {
 			for (ResourceProvider<?> provider : mgr.getProviders()) {

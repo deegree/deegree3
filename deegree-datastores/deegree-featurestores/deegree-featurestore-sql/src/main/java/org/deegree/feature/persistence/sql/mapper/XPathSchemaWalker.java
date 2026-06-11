@@ -167,17 +167,18 @@ public class XPathSchemaWalker {
 				}
 				else if (step.getAxis() == Axis.ATTRIBUTE) {
 					QName qName = getQName(step);
-					XSTypeDefinition typeDef = currentEl.first.getTypeDefinition();
-					if (!(typeDef instanceof XSComplexTypeDefinition)) {
-						throw new IllegalArgumentException("Unable to match XPath '" + propName
-								+ "' to application schema. Referenced attribute does not exist.");
-					}
+					XSElementDeclaration elementDeclaration = currentEl.first;
 					if (new QName(XSINS, "nil").equals(qName)) {
-						if (!currentEl.first.getNillable()) {
+						if (!elementDeclaration.getNillable()) {
 							throw new IllegalArgumentException("Unable to match XPath '" + propName
 									+ "' to application schema. Referenced element is not nillable.");
 						}
 						return new Pair<PrimitiveType, Boolean>(new PrimitiveType(BOOLEAN), TRUE);
+					}
+					XSTypeDefinition typeDef = elementDeclaration.getTypeDefinition();
+					if (!(typeDef instanceof XSComplexTypeDefinition)) {
+						throw new IllegalArgumentException("Unable to match XPath '" + propName
+								+ "' to application schema. Referenced attribute does not exist.");
 					}
 					XSComplexTypeDefinition complexTypeDef = (XSComplexTypeDefinition) typeDef;
 					XSObjectList attrUses = complexTypeDef.getAttributeUses();

@@ -1,5 +1,8 @@
 name: 'Close stale PRs'
+
+# run on Wednesday mornings or manually
 on:
+  workflow_dispatch:
   schedule:
     - cron: '42 1 * * 3'
 
@@ -12,7 +15,10 @@ jobs:
       - uses: actions/stale@v10
         with:
           # dry-run / no changes
-          debug-only: true
+          #debug-only: true
+          # start with oldest
+          ascending: true
+          #
           enable-statistics: true
           # 
           stale-pr-label: "stuck"
@@ -27,3 +33,5 @@ jobs:
           # disabled for issues
           days-before-issue-stale: -1
           days-before-issue-close: -1
+          #
+          repo-token: ${{ secrets.GITHUB_TOKEN }}

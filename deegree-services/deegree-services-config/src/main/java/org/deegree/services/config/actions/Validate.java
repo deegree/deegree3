@@ -2,6 +2,7 @@ package org.deegree.services.config.actions;
 
 import static org.apache.commons.io.IOUtils.write;
 import static org.deegree.services.config.actions.Utils.getWorkspaceAndPath;
+import static org.deegree.services.controller.OGCFrontController.getServiceWorkspace;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
@@ -16,7 +17,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import jakarta.servlet.http.HttpServletResponse;
-
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.utils.Pair;
@@ -44,6 +44,13 @@ public class Validate {
 	 */
 	public static void validate(String path, HttpServletResponse resp) throws IOException {
 		Pair<DeegreeWorkspace, String> p = getWorkspaceAndPath(path);
+		DeegreeWorkspace currentWorkspace = getServiceWorkspace();
+		if (!currentWorkspace.getName().equals(p.getFirst().getName())) {
+			setStatusCodeAndContentType(400, resp);
+			write("Validating the requested workspace is not allowed: " + p.getFirst().getName()
+					+ " is not the currently active workspace.", resp.getOutputStream());
+			return;
+		}
 
 		try {
 			DeegreeWorkspace workspace = p.getFirst();

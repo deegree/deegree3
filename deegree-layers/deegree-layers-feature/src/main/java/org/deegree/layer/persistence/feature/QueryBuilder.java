@@ -132,10 +132,10 @@ class QueryBuilder {
 						public Query apply(FeatureType u) {
 							Filter f;
 							if (filter == null) {
-								f = buildFilter(null, u, bbox);
+								f = buildFilter(null, u, bbox, geomProp);
 							}
 							else {
-								f = buildFilter(((OperatorFilter) filter).getOperator(), u, bbox);
+								f = buildFilter((filter).getOperator(), u, bbox, geomProp);
 							}
 							return createQuery(u.getName(), f, -1, query.getFeatureCount(), -1, sortBy);
 						}
@@ -145,11 +145,11 @@ class QueryBuilder {
 		else {
 			Filter f;
 			if (filter == null) {
-				f = buildFilter(null, featureStore.getSchema().getFeatureType(ftName), bbox);
+				f = buildFilter(null, featureStore.getSchema().getFeatureType(ftName), bbox, geomProp);
 			}
 			else {
-				f = buildFilter(((OperatorFilter) filter).getOperator(),
-						featureStore.getSchema().getFeatureType(ftName), bbox);
+				f = buildFilter((filter).getOperator(), featureStore.getSchema().getFeatureType(ftName), bbox,
+						geomProp);
 			}
 			queries.add(createQuery(ftName, f, -1, query.getFeatureCount(), -1, sortBy));
 		}

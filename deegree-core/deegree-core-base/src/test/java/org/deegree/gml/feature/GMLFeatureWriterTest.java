@@ -132,7 +132,7 @@ public class GMLFeatureWriterTest {
 		gmlReader.getIdContext().resolveLocalRefs();
 
 		XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
-		outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", new Boolean(true));
+		outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", Boolean.TRUE);
 		XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
 		SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter(memoryWriter.getXMLStreamWriter(),
 				SCHEMA_LOCATION_31);
@@ -168,7 +168,7 @@ public class GMLFeatureWriterTest {
 		gmlReader.getIdContext().resolveLocalRefs();
 
 		XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
-		outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", new Boolean(true));
+		outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", Boolean.TRUE);
 		XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
 		SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter(memoryWriter.getXMLStreamWriter(),
 				SCHEMA_LOCATION_31);
@@ -199,7 +199,7 @@ public class GMLFeatureWriterTest {
 		gmlReader.getIdContext().resolveLocalRefs();
 
 		XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
-		outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", new Boolean(true));
+		outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", Boolean.TRUE);
 		XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
 		XMLStreamWriter writer = memoryWriter.getXMLStreamWriter();
 
@@ -431,7 +431,7 @@ public class GMLFeatureWriterTest {
 	public void testDecimalPropertyEncodedFaithfully() throws Exception {
 		final String formattedInputValue = "0.00000009";
 		final XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
-		outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", new Boolean(true));
+		outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", Boolean.TRUE);
 		final XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
 		final XMLStreamWriter writer = memoryWriter.getXMLStreamWriter();
 		final GMLStreamWriter exporter = createGMLStreamWriter(GML_2, writer);
@@ -457,7 +457,7 @@ public class GMLFeatureWriterTest {
 		gmlReader.getIdContext().resolveLocalRefs();
 
 		XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
-		outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", new Boolean(true));
+		outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", Boolean.TRUE);
 		XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
 		XMLStreamWriter writer = memoryWriter.getXMLStreamWriter();
 
@@ -495,7 +495,7 @@ public class GMLFeatureWriterTest {
 		gmlReader.getIdContext().resolveLocalRefs();
 
 		XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
-		outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", new Boolean(true));
+		outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", Boolean.TRUE);
 		XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
 		XMLStreamWriter writer = memoryWriter.getXMLStreamWriter();
 
@@ -533,7 +533,7 @@ public class GMLFeatureWriterTest {
 		gmlReader.getIdContext().resolveLocalRefs();
 
 		XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
-		outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", new Boolean(true));
+		outputFactory.setProperty("javax.xml.stream.isRepairingNamespaces", Boolean.TRUE);
 		XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
 		XMLStreamWriter writer = memoryWriter.getXMLStreamWriter();
 

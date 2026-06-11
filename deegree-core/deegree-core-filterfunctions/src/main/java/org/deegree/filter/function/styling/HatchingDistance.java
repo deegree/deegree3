@@ -144,7 +144,7 @@ public class HatchingDistance implements FunctionProvider {
 					distance = ak / Math.cos(Math.toRadians(angle));
 				}
 
-				return new TypedObjectNode[] { new PrimitiveValue(Double.valueOf(distance)) };
+				return new TypedObjectNode[] { new PrimitiveValue(distance) };
 			}
 		};
 	}

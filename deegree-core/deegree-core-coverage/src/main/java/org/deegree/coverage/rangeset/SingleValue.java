@@ -152,23 +152,23 @@ public class SingleValue<T extends Comparable<T>> {
 		switch (determined) {
 			case Byte:
 			case Short:
-				short s = Short.valueOf(value);
+				short s = Short.parseShort(value);
 				result = new SingleValue<Short>(determined, s);
 				break;
 			case Integer:
-				int i = Integer.valueOf(value);
+				int i = Integer.parseInt(value);
 				result = new SingleValue<Integer>(determined, i);
 				break;
 			case Long:
-				long l = Long.valueOf(value);
+				long l = Long.parseLong(value);
 				result = new SingleValue<Long>(determined, l);
 				break;
 			case Double:
-				double d = Double.valueOf(value);
+				double d = Double.parseDouble(value);
 				result = new SingleValue<Double>(determined, d);
 				break;
 			case Float:
-				float f = Float.valueOf(value);
+				float f = Float.parseFloat(value);
 				result = new SingleValue<Float>(determined, f);
 				break;
 			default:

@@ -246,20 +246,20 @@ public class Interval<T extends Comparable<T>, R extends Comparable<R>> {
 		switch (determined) {
 			case Byte:
 			case Short:
-				short smin = Short.valueOf(min);
-				short smax = Short.valueOf(max);
+				short smin = Short.parseShort(min);
+				short smax = Short.parseShort(max);
 				result = new Interval<Short, RS>(new SingleValue<Short>(determined, smin),
 						new SingleValue<Short>(determined, smax), closure, semantic, atomic, resolution);
 				break;
 			case Integer:
-				int imin = Integer.valueOf(min);
-				int imax = Integer.valueOf(max);
+				int imin = Integer.parseInt(min);
+				int imax = Integer.parseInt(max);
 				result = new Interval<Integer, RS>(new SingleValue<Integer>(determined, imin),
 						new SingleValue<Integer>(determined, imax), closure, semantic, atomic, resolution);
 				break;
 			case Long:
-				long lmin = Long.valueOf(min);
-				long lmax = Long.valueOf(max);
+				long lmin = Long.parseLong(min);
+				long lmax = Long.parseLong(max);
 				result = new Interval<Long, RS>(new SingleValue<Long>(determined, lmin),
 						new SingleValue<Long>(determined, lmax), closure, semantic, atomic, resolution);
 				break;

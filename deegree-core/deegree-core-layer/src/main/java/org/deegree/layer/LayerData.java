@@ -34,6 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.layer;
 
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.rendering.r2d.context.RenderContext;
 
@@ -42,7 +43,7 @@ import org.deegree.rendering.r2d.context.RenderContext;
  */
 public interface LayerData {
 
-	void render(RenderContext context) throws InterruptedException;
+	void render(RenderContext context) throws InterruptedException, OWSException;
 
 	// think about using a infocontext or something here
 	FeatureCollection info();

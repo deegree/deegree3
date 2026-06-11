@@ -65,6 +65,7 @@ import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.types.AppSchema;
+import org.deegree.geometry.io.DoubleCoordinateFormatter;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamReader;
@@ -139,6 +140,7 @@ public class BlobCodec {
 		GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter(gmlVersion, xmlWriter);
 		Map<String, String> bindings = new HashMap<String, String>(nsContext);
 		gmlWriter.setNamespaceBindings(bindings);
+		gmlWriter.setCoordinateFormatter(new DoubleCoordinateFormatter());
 		gmlWriter.setOutputCrs(crs);
 		gmlWriter.setExportExtraProps(true);
 		gmlWriter.write(object);

@@ -111,8 +111,8 @@ public class IDiv implements FunctionProvider {
 					pv2 = ((SimpleProperty) vals2[0]).getValue();
 				}
 
-				return new Pair<Integer, Integer>(round(Double.valueOf(pv1.getValue().toString())),
-						round(Double.valueOf(pv2.getValue().toString())));
+				return new Pair<Integer, Integer>(round(Double.parseDouble(pv1.getValue().toString())),
+						round(Double.parseDouble(pv2.getValue().toString())));
 			}
 
 			@Override

@@ -1240,7 +1240,7 @@ The implementation of the visibility inspector checks whether a requested layer 
 Of course, also non category layers can be configured here, but for most use cases category layers will be more useful.
 If no _CategoryLayerIdentifier_ are configured, the VisibilityInspector is applied to all layers.
 
-Note: If a _CategoryLayerIdentifier_ is configured, the visibility inspector will just be executed if exactly this layer is requested. Still, as already stated above, the visibility inspector is applied to the requested layer plus all of its sublayers.
+NOTE: If a _CategoryLayerIdentifier_ is configured, the visibility inspector will just be executed if exactly this layer is requested. Still, as already stated above, the visibility inspector is applied to the requested layer plus all of its sublayers.
 If just one or more sublayers of the configured _CategoryLayerIdentifier_ are requested, the visibility inspector is NOT applied.
 This behaviour prevents that complex analyses and/or functions are executed during each GetMap request.
 
@@ -1759,21 +1759,24 @@ Using the vendorspecific parameter CQL2_FILTER a more complex expression can be 
 
 * Logical operators
 ** AND
+** OR
 * Comparison operators
 ** equal to (=), with string, int and double values
 * Advanced Comparison Operators
 ** LIKE
+** IN List
+** NOT IN List
 * Case-insensitive Comparison
 ** within supported comparison operators and advanced comparison operators
 * Spatial Functions
 ** S_INTERSECTS
 * Temporal Functions
 ** T_AFTER
-* Temporal Functions
-** T_AFTER
+** T_BEFORE
 
 ----
 CQL2_FILTER=T_AFTER(creationDate,TIMESTAMP('2025-04-14T08:59:30Z'))
+CQL2_FILTER=T_BEFORE(creationDate,TIMESTAMP('2025-04-14T08:59:30Z'))
 CQL2_FILTER=S_INTERSECTS(geometry,BBOX(36.319836,32.288087,37.319836,33.288087))
 # city='Bonn'
 CQL2_FILTER=city%3D%27Bonn%27
@@ -1783,6 +1786,12 @@ CQL2_FILTER=index%3D10
 CQL2_FILTER=city%20LIKE%20CASEI%28%27B_N%25%27%29
 # city='Bonn' AND str LIKE 'Erm%'
 CQL2_FILTER=city%3D%27Bonn%27%20AND%20str%20LIKE%20%27Erm%25%27
+# city='Bonn' OR str LIKE 'Erm%'
+CQL2_FILTER=city%3D%27Bonn%27%20OR%20str%20LIKE%20%27Erm%25%27
+# city IN('Bonn','Bremen')
+CQL2_FILTER=city%20IN%28%27Bonn%27%2C%27Bremen%27%29
+# city NOT IN('Bonn','Bremen')
+CQL2_FILTER=city%20NOT%20IN%28%27Bonn%27%2C%27Bremen%27%29
 ----
 
 The other parameters addressed in the GetMap request (e.g. the style) are not effected by the parameters FILTERPROPERTY, FILTERVALUE and CQL2FILTER. If the filter cannot be applied to the layer, e.g. because it is a raster layer or the data source does not match the filter, the filter will be ignored.

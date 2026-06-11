@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-tests</artifactId>
-    <version>3.6.2-SNAPSHOT</version>
+    <version>3.6.10-SNAPSHOT</version>
   </parent>
 
   <build>
@@ -52,8 +52,8 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-maven-plugin</artifactId>
+        <groupId>org.eclipse.jetty.ee10</groupId>
+        <artifactId>jetty-ee10-maven-plugin</artifactId>
         <configuration>
           <webApp>
             <contextPath>/deegree-wmts-tests</contextPath>

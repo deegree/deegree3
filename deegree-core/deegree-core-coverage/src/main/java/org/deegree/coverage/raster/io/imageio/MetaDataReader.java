@@ -103,7 +103,7 @@ public class MetaDataReader {
 		GeoTiffIIOMetadataAdapter geoTIFFMetaData = new GeoTiffIIOMetadataAdapter(metaData);
 
 		try {
-			int modelType = Integer.valueOf(geoTIFFMetaData.getGeoKey(GeoTiffIIOMetadataAdapter.GTModelTypeGeoKey));
+			int modelType = Integer.parseInt(geoTIFFMetaData.getGeoKey(GeoTiffIIOMetadataAdapter.GTModelTypeGeoKey));
 			String epsgCode = null;
 			if (modelType == GeoTiffIIOMetadataAdapter.ModelTypeProjected) {
 				epsgCode = geoTIFFMetaData.getGeoKey(GeoTiffIIOMetadataAdapter.ProjectedCSTypeGeoKey);

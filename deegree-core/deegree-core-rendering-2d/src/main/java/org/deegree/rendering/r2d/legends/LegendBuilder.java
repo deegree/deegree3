@@ -53,10 +53,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
-import javax.imageio.ImageIO;
-
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.utils.net.HttpUtils;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.rendering.r2d.Java2DRasterRenderer;
@@ -92,6 +89,9 @@ class LegendBuilder {
 	}
 
 	Pair<Integer, Integer> getLegendSize(Style style) {
+		if (style.getLegendSize() != null) {
+			return style.getLegendSize();
+		}
 		URL url = style.getLegendURL();
 		File file = style.getLegendFile();
 		if (url == null) {
@@ -108,7 +108,7 @@ class LegendBuilder {
 			try {
 				BufferedImage legend = get(IMAGE, url.toExternalForm(), null);
 				if (legend != null) {
-					return new Pair<Integer, Integer>(legend.getWidth(), legend.getHeight());
+					style.setLegendSize(new Pair<>(legend.getWidth(), legend.getHeight()));
 				}
 				else {
 					LOG.warn("Legend file {} could not be read, using dynamic legend.", url);
@@ -131,7 +131,8 @@ class LegendBuilder {
 			res.second = 2 * opts.spacing + opts.baseWidth;
 		}
 
-		return res;
+		style.setLegendSize(res);
+		return style.getLegendSize();
 	}
 
 }

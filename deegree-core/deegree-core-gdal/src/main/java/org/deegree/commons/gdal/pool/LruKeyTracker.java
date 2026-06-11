@@ -53,7 +53,7 @@ class LruKeyTracker {
 	void add(final String key) {
 		Integer num = lruMap.get(key);
 		if (num == null) {
-			num = new Integer(1);
+			num = 1;
 		}
 		else {
 			num++;

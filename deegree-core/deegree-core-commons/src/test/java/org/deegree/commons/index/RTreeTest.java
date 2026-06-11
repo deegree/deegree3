@@ -64,35 +64,35 @@ public class RTreeTest {
 	@Before
 	public void loadWikipediaTree() {
 		float[] box = new float[] { 20, 70, 35, 85 };
-		tree.insert(box, new Long(8));
+		tree.insert(box, 8L);
 		box = new float[] { 50, 90, 65, 105 };
-		tree.insert(box, new Long(9));
+		tree.insert(box, 9L);
 		box = new float[] { 50, 75, 65, 85 };
-		tree.insert(box, new Long(10));
+		tree.insert(box, 10L);
 		box = new float[] { 85, 15, 95, 110 };
-		tree.insert(box, new Long(11));
+		tree.insert(box, 11L);
 		box = new float[] { 40, 45, 90, 65 };
-		tree.insert(box, new Long(12));
+		tree.insert(box, 12L);
 		box = new float[] { 125, 40, 135, 95 };
-		tree.insert(box, new Long(13));
+		tree.insert(box, 13L);
 		box = new float[] { 115, 60, 130, 85 };
-		tree.insert(box, new Long(14));
+		tree.insert(box, 14L);
 		box = new float[] { 0, 0, 15, 30 };
-		tree.insert(box, new Long(15));
+		tree.insert(box, 15L);
 		box = new float[] { 20, 0, 80, 40 };
-		tree.insert(box, new Long(16));
+		tree.insert(box, 16L);
 		box = new float[] { 140, 20, 180, 45 };
-		tree.insert(box, new Long(17));
+		tree.insert(box, 17L);
 		box = new float[] { 150, 5, 165, 55 };
-		tree.insert(box, new Long(18));
+		tree.insert(box, 18L);
 		box = new float[] { 155, 10, 175, 25 };
-		tree.insert(box, new Long(19));
+		tree.insert(box, 19L);
 		box = new float[] { 145, 75, 160, 105 };
-		tree.insert(box, new Long(20));
+		tree.insert(box, 20L);
 		box = new float[] { 150, 60, 170, 75 };
-		tree.insert(box, new Long(21));
+		tree.insert(box, 21L);
 		box = new float[] { 155, 85, 180, 95 };
-		tree.insert(box, new Long(22));
+		tree.insert(box, 22L);
 		printOut(tree);
 
 		System.out.println();
@@ -159,7 +159,7 @@ public class RTreeTest {
 
 	@Test
 	public void testRemove() {
-		tree.remove(new Long(11));
+		tree.remove(11L);
 		printOut(tree);
 	}
 

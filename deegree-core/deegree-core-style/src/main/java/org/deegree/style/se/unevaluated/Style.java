@@ -120,6 +120,8 @@ public class Style implements Copyable<Style> {
 
 	private boolean prefersGetLegendGraphicUrl;
 
+	private Pair<Integer, Integer> legendSize;
+
 	/**
 	 * @param rules
 	 * @param labels
@@ -449,6 +451,14 @@ public class Style implements Copyable<Style> {
 
 	public URL getLegendURL() {
 		return legendUrl;
+	}
+
+	public Pair<Integer, Integer> getLegendSize() {
+		return legendSize;
+	}
+
+	public void setLegendSize(Pair<Integer, Integer> legendSize) {
+		this.legendSize = legendSize;
 	}
 
 	public void setPrefersGetLegendGraphicUrl(boolean prefers) {

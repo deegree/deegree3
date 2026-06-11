@@ -2,6 +2,7 @@ package org.deegree.layer.persistence.remotewms;
 
 import static java.util.Collections.singletonList;
 import static org.deegree.commons.utils.RequestUtils.replaceParameters;
+import static org.deegree.protocol.oldwms.WMSConstants.WMSRequestType.map;
 import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetMap;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -26,6 +27,7 @@ import org.deegree.layer.persistence.remotewms.jaxb.RequestOptionsType;
 import org.deegree.layer.persistence.remotewms.jaxb.RequestOptionsType.DefaultCRS;
 import org.deegree.layer.persistence.remotewms.jaxb.RequestOptionsType.Parameter;
 import org.deegree.protocol.wms.client.WMSClient;
+import org.deegree.protocol.wms.ops.EXCEPTIONS_FORMAT;
 import org.deegree.protocol.wms.ops.GetFeatureInfo;
 import org.deegree.protocol.wms.ops.GetMap;
 import org.deegree.style.StyleRef;
@@ -146,6 +148,8 @@ class RemoteWMSLayer extends AbstractLayer {
 	public RemoteWMSLayerData mapQuery(LayerQuery query, List<String> headers) {
 		Map<String, String> extraParams = new HashMap<String, String>();
 		replaceParameters(extraParams, query.getParameters(), defaultParametersGetMap, hardParametersGetMap);
+		EXCEPTIONS_FORMAT exceptionsFormat = EXCEPTIONS_FORMAT
+			.findByParamValue(query.getParameters().get("EXCEPTIONS"));
 		ICRS crs = this.crs;
 		if (!alwaysUseDefaultCrs) {
 			ICRS envCrs = query.getEnvelope().getCoordinateSystem();
@@ -155,7 +159,7 @@ class RemoteWMSLayer extends AbstractLayer {
 		}
 
 		GetMap gm = new GetMap(singletonList(originalName), query.getWidth(), query.getHeight(), query.getEnvelope(),
-				crs, format, transparent);
+				crs, format, transparent, exceptionsFormat);
 		return new RemoteWMSLayerData(client, gm, extraParams);
 	}
 

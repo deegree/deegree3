@@ -278,7 +278,7 @@ public class Dimension<T> {
 			try {
 				Double min = Double.valueOf((String) iv.min);
 				Double max = Double.valueOf((String) iv.max);
-				Double res = iv.res instanceof Integer ? (Integer) iv.res : Double.valueOf((String) iv.res);
+				Double res = iv.res instanceof Integer ? (Integer) iv.res : Double.parseDouble((String) iv.res);
 				return new DimensionInterval<Double, Double, Double>(min, max, res);
 			}
 			catch (NumberFormatException e2) {

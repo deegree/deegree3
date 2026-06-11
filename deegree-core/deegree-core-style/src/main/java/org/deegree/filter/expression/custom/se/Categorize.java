@@ -223,7 +223,7 @@ public class Categorize extends AbstractCustomExpression {
 	 * @return Category value
 	 */
 	final Color lookup2(final double value) {
-		int pos = Arrays.binarySearch(thresholdsArray, new Float(value));
+		int pos = Arrays.binarySearch(thresholdsArray, (float) value);
 		if (pos >= 0) {
 			// found exact value in the thresholds array
 			if (precedingBelongs == false) {
