@@ -24,7 +24,7 @@ GDAL installation instructions.
 
 NOTE: Currently, GDAL library version 3 is supported.
 
-NOTE: deegree uses version 3.11.0 of the GDAL JAR file.
+NOTE: deegree uses version 3.12.0 of the GDAL JAR file.
 Most likely, this is compatible with any minor version of GDAL library 3.
 The deegree developer team tested several combinations without detecting any issues.
 However, if any problems occur, you might try to exchange the version of the GDAL JAR file inside the webapp to the GDAL library version installed on your operating system.

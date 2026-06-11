@@ -68,6 +68,7 @@ import org.deegree.filter.logical.Or;
 import org.deegree.filter.spatial.Intersects;
 import org.deegree.filter.spatial.SpatialOperator;
 import org.deegree.filter.temporal.After;
+import org.deegree.filter.temporal.Before;
 import org.deegree.filter.temporal.TemporalOperator;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
@@ -440,10 +441,15 @@ public class Cql2FilterVisitor extends Cql2ParserBaseVisitor {
 		TemporalOperator.SubType type = TemporalOperator.SubType.valueOf(temporalFunctionType);
 		switch (type) {
 			case AFTER:
-				Expression propName = checkExpressionType(
+				Expression propNameAfter = checkExpressionType(
 						(Expression) ctx.temporalExpression(0).propertyName().accept(this), DATE, DATE_TIME, TIME);
-				Expression dateValue = (Expression) ctx.temporalExpression(1).temporalInstance().accept(this);
-				return new After(propName, dateValue);
+				Expression dateValueAfter = (Expression) ctx.temporalExpression(1).temporalInstance().accept(this);
+				return new After(propNameAfter, dateValueAfter);
+			case BEFORE:
+				Expression propNameBefore = checkExpressionType(
+						(Expression) ctx.temporalExpression(0).propertyName().accept(this), DATE, DATE_TIME, TIME);
+				Expression dateValueBefore = (Expression) ctx.temporalExpression(1).temporalInstance().accept(this);
+				return new Before(propNameBefore, dateValueBefore);
 		}
 		throw new Cql2UnsupportedExpressionException("Unsupported geometry type " + type);
 	}

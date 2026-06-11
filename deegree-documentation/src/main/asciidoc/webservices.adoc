@@ -1772,11 +1772,11 @@ Using the vendorspecific parameter CQL2_FILTER a more complex expression can be 
 ** S_INTERSECTS
 * Temporal Functions
 ** T_AFTER
-* Temporal Functions
-** T_AFTER
+** T_BEFORE
 
 ----
 CQL2_FILTER=T_AFTER(creationDate,TIMESTAMP('2025-04-14T08:59:30Z'))
+CQL2_FILTER=T_BEFORE(creationDate,TIMESTAMP('2025-04-14T08:59:30Z'))
 CQL2_FILTER=S_INTERSECTS(geometry,BBOX(36.319836,32.288087,37.319836,33.288087))
 # city='Bonn'
 CQL2_FILTER=city%3D%27Bonn%27

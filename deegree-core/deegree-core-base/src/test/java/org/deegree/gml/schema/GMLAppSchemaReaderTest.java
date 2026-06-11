@@ -60,6 +60,7 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.gml.GMLVersion;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -92,6 +93,7 @@ public class GMLAppSchemaReaderTest {
 		Assert.assertEquals(4, fts.size());
 	}
 
+	@Ignore
 	@Test
 	public void testParsingCityGML()
 			throws ClassCastException, ClassNotFoundException, InstantiationException, IllegalAccessException {

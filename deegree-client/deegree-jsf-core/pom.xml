@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-client</artifactId>
-    <version>3.6.7-SNAPSHOT</version>
+    <version>3.6.10-SNAPSHOT</version>
   </parent>
 
   <build>
@@ -78,7 +78,6 @@
     <dependency>
       <groupId>org.jboss.weld.servlet</groupId>
       <artifactId>weld-servlet-core</artifactId>
-      <version>5.1.6.Final</version>
       <exclusions>
           <exclusion>
               <groupId>jakarta.el</groupId>

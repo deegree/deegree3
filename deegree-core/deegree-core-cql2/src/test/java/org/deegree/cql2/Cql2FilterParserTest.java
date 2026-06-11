@@ -53,6 +53,7 @@ import org.deegree.filter.logical.Not;
 import org.deegree.filter.logical.Or;
 import org.deegree.filter.spatial.Intersects;
 import org.deegree.filter.temporal.After;
+import org.deegree.filter.temporal.Before;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.multi.MultiGeometry;
@@ -484,9 +485,111 @@ public class Cql2FilterParserTest {
 	}
 
 	@Test
-	public void parse_t_after_non_date_property() throws Exception {
+	public void parse_t_after_non_date_property() {
 		String after = "T_AFTER(testString,TIMESTAMP('2025-04-14T08:59:30Z'))";
 		assertThrows(IllegalArgumentException.class, () -> parseCql2Filter(after, crs(), PROPS));
+	}
+
+	@Test
+	public void test_parse_T_BEFORE_date() throws UnknownCRSException {
+		String Before = "T_BEFORE(testDate,DATE('2025-04-14'))";
+		Object visit = parseCql2Filter(Before, crs(), PROPS);
+
+		assertTrue(visit instanceof Before);
+
+		Expression param1 = ((Before) visit).getParameter1();
+		assertTrue(param1 instanceof ValueReference);
+		assertEquals("testDate", ((ValueReference) param1).getAsQName().getLocalPart());
+		assertEquals(NS_URL, ((ValueReference) param1).getAsQName().getNamespaceURI());
+
+		Expression date = ((Before) visit).getParameter2();
+		assertTrue(date instanceof Literal);
+		TypedObjectNode primitiveValue = ((Literal<?>) date).getValue();
+		assertTrue(primitiveValue instanceof PrimitiveValue);
+		Object value = ((PrimitiveValue) primitiveValue).getValue();
+		assertTrue(value instanceof Date);
+		Calendar calendar = ((Date) value).getCalendar();
+		assertEquals(2025, calendar.get(Calendar.YEAR));
+		assertEquals(APRIL, calendar.get(Calendar.MONTH));
+		assertEquals(14, calendar.get(Calendar.DAY_OF_MONTH));
+	}
+
+	@Test
+	public void parse_t_Before_date() throws Exception {
+		String Before = "T_BEFORE(testDate,DATE('2025-04-14'))";
+		Object visit = parseCql2Filter(Before, crs(), FILTERPROPS);
+
+		assertTrue(visit instanceof Before);
+
+		Expression param1 = ((Before) visit).getParameter1();
+		assertTrue(param1 instanceof ValueReference);
+		assertEquals("testDate", ((ValueReference) param1).getAsQName().getLocalPart());
+		assertEquals("", ((ValueReference) param1).getAsQName().getNamespaceURI());
+
+		Expression date = ((Before) visit).getParameter2();
+		assertTrue(date instanceof Literal);
+		TypedObjectNode primitiveValue = ((Literal<?>) date).getValue();
+		assertTrue(primitiveValue instanceof PrimitiveValue);
+		Object value = ((PrimitiveValue) primitiveValue).getValue();
+		assertTrue(value instanceof Date);
+		Calendar calendar = ((Date) value).getCalendar();
+		assertEquals(2025, calendar.get(Calendar.YEAR));
+		assertEquals(APRIL, calendar.get(Calendar.MONTH));
+		assertEquals(14, calendar.get(Calendar.DAY_OF_MONTH));
+	}
+
+	@Test
+	public void test_parse_T_BEFORE_timestamp() throws UnknownCRSException {
+		String Before = "T_BEFORE(testDate,TIMESTAMP('2025-04-14T08:59:30Z'))";
+		Object visit = parseCql2Filter(Before, crs(), PROPS);
+
+		assertTrue(visit instanceof Before);
+
+		Expression param1 = ((Before) visit).getParameter1();
+		assertTrue(param1 instanceof ValueReference);
+		assertEquals("testDate", ((ValueReference) param1).getAsQName().getLocalPart());
+		assertEquals(NS_URL, ((ValueReference) param1).getAsQName().getNamespaceURI());
+
+		Expression date = ((Before) visit).getParameter2();
+		assertTrue(date instanceof Literal);
+		TypedObjectNode primitiveValue = ((Literal<?>) date).getValue();
+		assertTrue(primitiveValue instanceof PrimitiveValue);
+		Object value = ((PrimitiveValue) primitiveValue).getValue();
+		assertTrue(value instanceof DateTime);
+		Calendar calendar = ((DateTime) value).getCalendar();
+		assertEquals(2025, calendar.get(Calendar.YEAR));
+		assertEquals(APRIL, calendar.get(Calendar.MONTH));
+		assertEquals(14, calendar.get(Calendar.DAY_OF_MONTH));
+	}
+
+	@Test
+	public void parse_t_Before_timestamp() throws Exception {
+		String Before = "T_BEFORE(testDate,TIMESTAMP('2025-04-14T08:59:30Z'))";
+		Object visit = parseCql2Filter(Before, crs(), FILTERPROPS);
+
+		assertTrue(visit instanceof Before);
+
+		Expression param1 = ((Before) visit).getParameter1();
+		assertTrue(param1 instanceof ValueReference);
+		assertEquals("testDate", ((ValueReference) param1).getAsQName().getLocalPart());
+		assertEquals("", ((ValueReference) param1).getAsQName().getNamespaceURI());
+
+		Expression date = ((Before) visit).getParameter2();
+		assertTrue(date instanceof Literal);
+		TypedObjectNode primitiveValue = ((Literal<?>) date).getValue();
+		assertTrue(primitiveValue instanceof PrimitiveValue);
+		Object value = ((PrimitiveValue) primitiveValue).getValue();
+		assertTrue(value instanceof DateTime);
+		Calendar calendar = ((DateTime) value).getCalendar();
+		assertEquals(2025, calendar.get(Calendar.YEAR));
+		assertEquals(APRIL, calendar.get(Calendar.MONTH));
+		assertEquals(14, calendar.get(Calendar.DAY_OF_MONTH));
+	}
+
+	@Test
+	public void parse_t_Before_non_date_property() {
+		String Before = "T_BEFORE(testString,TIMESTAMP('2025-04-14T08:59:30Z'))";
+		assertThrows(IllegalArgumentException.class, () -> parseCql2Filter(Before, crs(), PROPS));
 	}
 
 	@Test
