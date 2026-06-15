@@ -45,6 +45,10 @@ import org.deegree.cs.persistence.CRSManager;
 import org.deegree.filter.Expression;
 import org.deegree.filter.Operator;
 import org.deegree.filter.comparison.PropertyIsEqualTo;
+import org.deegree.filter.comparison.PropertyIsGreaterThan;
+import org.deegree.filter.comparison.PropertyIsGreaterThanOrEqualTo;
+import org.deegree.filter.comparison.PropertyIsLessThan;
+import org.deegree.filter.comparison.PropertyIsLessThanOrEqualTo;
 import org.deegree.filter.comparison.PropertyIsLike;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.ValueReference;
@@ -974,6 +978,94 @@ public class Cql2FilterParserTest {
 		Object value = ((PrimitiveValue) primitiveValue).getValue();
 		assertTrue(value instanceof String);
 		assertEquals("VALUE2", value);
+	}
+
+	@Test
+	public void test_parse_lessThan() throws UnknownCRSException {
+		String comp = "test1<4";
+		Object visit = parseCql2Filter(comp, crs(), PROPS);
+
+		assertTrue(visit instanceof PropertyIsLessThan);
+		assertEquals(2, ((PropertyIsLessThan) visit).getParams().length);
+		Expression param1 = ((PropertyIsLessThan) visit).getParameter1();
+
+		assertTrue(param1 instanceof ValueReference);
+		assertEquals("test1", ((ValueReference) param1).getAsQName().getLocalPart());
+		assertEquals(NS_URL, ((ValueReference) param1).getAsQName().getNamespaceURI());
+
+		Expression param2 = ((PropertyIsLessThan) visit).getParameter2();
+		assertTrue(param2 instanceof Literal);
+		TypedObjectNode primitiveValue1 = ((Literal<?>) param2).getValue();
+		assertTrue(primitiveValue1 instanceof PrimitiveValue);
+		Object value1 = ((PrimitiveValue) primitiveValue1).getValue();
+		assertTrue(value1 instanceof Integer);
+		assertEquals(4, value1);
+	}
+
+	@Test
+	public void test_parse_lessThanOrEqualTo() throws UnknownCRSException {
+		String comp = "test1<=4";
+		Object visit = parseCql2Filter(comp, crs(), PROPS);
+
+		assertTrue(visit instanceof PropertyIsLessThanOrEqualTo);
+		assertEquals(2, ((PropertyIsLessThanOrEqualTo) visit).getParams().length);
+		Expression param1 = ((PropertyIsLessThanOrEqualTo) visit).getParameter1();
+
+		assertTrue(param1 instanceof ValueReference);
+		assertEquals("test1", ((ValueReference) param1).getAsQName().getLocalPart());
+		assertEquals(NS_URL, ((ValueReference) param1).getAsQName().getNamespaceURI());
+
+		Expression param2 = ((PropertyIsLessThanOrEqualTo) visit).getParameter2();
+		assertTrue(param2 instanceof Literal);
+		TypedObjectNode primitiveValue1 = ((Literal<?>) param2).getValue();
+		assertTrue(primitiveValue1 instanceof PrimitiveValue);
+		Object value1 = ((PrimitiveValue) primitiveValue1).getValue();
+		assertTrue(value1 instanceof Integer);
+		assertEquals(4, value1);
+	}
+
+	@Test
+	public void test_parse_greaterThan() throws UnknownCRSException {
+		String comp = "test1>4";
+		Object visit = parseCql2Filter(comp, crs(), PROPS);
+
+		assertTrue(visit instanceof PropertyIsGreaterThan);
+		assertEquals(2, ((PropertyIsGreaterThan) visit).getParams().length);
+		Expression param1 = ((PropertyIsGreaterThan) visit).getParameter1();
+
+		assertTrue(param1 instanceof ValueReference);
+		assertEquals("test1", ((ValueReference) param1).getAsQName().getLocalPart());
+		assertEquals(NS_URL, ((ValueReference) param1).getAsQName().getNamespaceURI());
+
+		Expression param2 = ((PropertyIsGreaterThan) visit).getParameter2();
+		assertTrue(param2 instanceof Literal);
+		TypedObjectNode primitiveValue1 = ((Literal<?>) param2).getValue();
+		assertTrue(primitiveValue1 instanceof PrimitiveValue);
+		Object value1 = ((PrimitiveValue) primitiveValue1).getValue();
+		assertTrue(value1 instanceof Integer);
+		assertEquals(4, value1);
+	}
+
+	@Test
+	public void test_parse_greaterThanOrEqualTo() throws UnknownCRSException {
+		String comp = "test1>=4";
+		Object visit = parseCql2Filter(comp, crs(), PROPS);
+
+		assertTrue(visit instanceof PropertyIsGreaterThanOrEqualTo);
+		assertEquals(2, ((PropertyIsGreaterThanOrEqualTo) visit).getParams().length);
+		Expression param1 = ((PropertyIsGreaterThanOrEqualTo) visit).getParameter1();
+
+		assertTrue(param1 instanceof ValueReference);
+		assertEquals("test1", ((ValueReference) param1).getAsQName().getLocalPart());
+		assertEquals(NS_URL, ((ValueReference) param1).getAsQName().getNamespaceURI());
+
+		Expression param2 = ((PropertyIsGreaterThanOrEqualTo) visit).getParameter2();
+		assertTrue(param2 instanceof Literal);
+		TypedObjectNode primitiveValue1 = ((Literal<?>) param2).getValue();
+		assertTrue(primitiveValue1 instanceof PrimitiveValue);
+		Object value1 = ((PrimitiveValue) primitiveValue1).getValue();
+		assertTrue(value1 instanceof Integer);
+		assertEquals(4, value1);
 	}
 
 	private static ICRS crs() throws UnknownCRSException {

@@ -1762,6 +1762,10 @@ Using the vendorspecific parameter CQL2_FILTER a more complex expression can be 
 ** OR
 * Comparison operators
 ** equal to (=), with string, int and double values
+** less than (<), with int and double values
+** less than or equal to (\<=), with int and double values
+** greater than (>), with int and double values
+** greater than or equal to (>=), with int and double values
 * Advanced Comparison Operators
 ** LIKE
 ** IN List
@@ -1780,6 +1784,14 @@ CQL2_FILTER=T_BEFORE(creationDate,TIMESTAMP('2025-04-14T08:59:30Z'))
 CQL2_FILTER=S_INTERSECTS(geometry,BBOX(36.319836,32.288087,37.319836,33.288087))
 # city='Bonn'
 CQL2_FILTER=city%3D%27Bonn%27
+# population<100000
+CQL2_FILTER=population%3C100000
+# population<=100000
+CQL2_FILTER=population%3C%3D100000
+# population>100000
+CQL2_FILTER=population%3E100000
+# population>=100000
+CQL2_FILTER=population%3E%3D100000
 #index=10
 CQL2_FILTER=index%3D10
 # city LIKE CASEI('B_N%')
