@@ -62,6 +62,9 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.xerces.impl.xs.XSComplexTypeDecl;
+import org.apache.xerces.impl.xs.XSModelGroupImpl;
+import org.apache.xerces.impl.xs.XSParticleDecl;
 import org.apache.xerces.xs.XSAttributeDeclaration;
 import org.apache.xerces.xs.XSAttributeUse;
 import org.apache.xerces.xs.XSComplexTypeDefinition;
@@ -69,6 +72,7 @@ import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSModelGroup;
 import org.apache.xerces.xs.XSObjectList;
 import org.apache.xerces.xs.XSParticle;
+import org.apache.xerces.xs.XSTerm;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.tom.TypedObjectNode;
@@ -627,7 +631,9 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 				if (particleValues.isEmpty() && !particleMapping.isVoidable()
 						&& particleMapping instanceof CompoundMapping
 						&& ((CompoundMapping) particleMapping).getElementDecl() != null
-						&& ((CompoundMapping) particleMapping).getElementDecl().getNillable()) {
+						&& ((CompoundMapping) particleMapping).getElementDecl().getNillable()
+						&& !isPartOfChoiceWithMinOccurs0(((CompoundMapping) mapping).getElementDecl(),
+								particleMapping.getPath().getAsQName())) {
 					TypedObjectNode nilParticle = createNilParticle((CompoundMapping) particleMapping,
 							Collections.emptyMap());
 					if (nilParticle != null)
@@ -930,6 +936,37 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 			}
 		}
 		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	private boolean isPartOfChoiceWithMinOccurs0(XSElementDeclaration elDecl, QName particleName) {
+		if (particleName == null)
+			return false;
+		if (elDecl != null && elDecl.getTypeDefinition() instanceof XSComplexTypeDecl) {
+			XSParticle particle = ((XSComplexTypeDecl) elDecl.getTypeDefinition()).getParticle();
+			if (particle instanceof XSParticleDecl particelDecl) {
+				XSTerm term = particelDecl.getTerm();
+				if (term instanceof XSModelGroupImpl xsModelGroup) {
+					for (Object p : xsModelGroup.getParticles()) {
+						if (p instanceof XSParticleDecl pdecl
+								&& pdecl.getTerm() instanceof XSModelGroupImpl subModelGroup) {
+							if (pdecl.getMinOccurs() == 0
+									&& subModelGroup.getCompositor() == XSModelGroup.COMPOSITOR_CHOICE) {
+								return subModelGroup.getParticles()
+									.stream()
+									.anyMatch(c -> ((XSParticle) c).getTerm()
+										.getNamespace()
+										.equals(particleName.getNamespaceURI())
+											&& ((XSParticle) c).getTerm()
+												.getName()
+												.equals(particleName.getLocalPart()));
+							}
+						}
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 }
