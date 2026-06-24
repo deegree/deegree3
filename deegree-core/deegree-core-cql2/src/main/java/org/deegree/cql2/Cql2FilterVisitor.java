@@ -59,6 +59,10 @@ import org.deegree.filter.Expression;
 import org.deegree.filter.MatchAction;
 import org.deegree.filter.Operator;
 import org.deegree.filter.comparison.PropertyIsEqualTo;
+import org.deegree.filter.comparison.PropertyIsGreaterThan;
+import org.deegree.filter.comparison.PropertyIsGreaterThanOrEqualTo;
+import org.deegree.filter.comparison.PropertyIsLessThan;
+import org.deegree.filter.comparison.PropertyIsLessThanOrEqualTo;
 import org.deegree.filter.comparison.PropertyIsLike;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.ValueReference;
@@ -171,14 +175,20 @@ public class Cql2FilterVisitor extends Cql2ParserBaseVisitor {
 	@Override
 	public Object visitBinaryComparisonPredicate(Cql2Parser.BinaryComparisonPredicateContext ctx) {
 		String comparisonOperator = ctx.ComparisonOperator().getText();
-		switch (comparisonOperator) {
-			case "=":
+		Expression param1 = (Expression) ctx.scalarExpression().get(0).accept(this);
+		Expression param2 = (Expression) ctx.scalarExpression().get(1).accept(this);
+		return switch (comparisonOperator) {
+			case "=" -> {
 				boolean matchCase = ctx.getText().contains("CASEI");
-				Expression param1 = (Expression) ctx.scalarExpression().get(0).accept(this);
-				Expression param2 = (Expression) ctx.scalarExpression().get(1).accept(this);
-				return new PropertyIsEqualTo(param1, param2, matchCase, MatchAction.ANY);
-		}
-		throw new Cql2UnsupportedExpressionException("Unsupported comparisonOperator " + comparisonOperator);
+				yield new PropertyIsEqualTo(param1, param2, matchCase, MatchAction.ANY);
+			}
+			case "<" -> new PropertyIsLessThan(param1, param2, false, MatchAction.ANY);
+			case ">" -> new PropertyIsGreaterThan(param1, param2, false, MatchAction.ANY);
+			case "<=" -> new PropertyIsLessThanOrEqualTo(param1, param2, false, MatchAction.ANY);
+			case ">=" -> new PropertyIsGreaterThanOrEqualTo(param1, param2, false, MatchAction.ANY);
+			default ->
+				throw new Cql2UnsupportedExpressionException("Unsupported comparisonOperator " + comparisonOperator);
+		};
 	}
 
 	@Override
