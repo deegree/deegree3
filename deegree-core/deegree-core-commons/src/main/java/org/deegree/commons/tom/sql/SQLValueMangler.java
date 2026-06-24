@@ -41,8 +41,6 @@ import java.sql.Timestamp;
 import org.deegree.commons.tom.datetime.Temporal;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Converts between internal object values and SQL objects.
@@ -50,8 +48,6 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  */
 public class SQLValueMangler {
-
-	private static final Logger LOG = LoggerFactory.getLogger(SQLValueMangler.class);
 
 	/**
 	 * Converts the given {@link PrimitiveValue} value to the corresponding SQL object
@@ -87,7 +83,12 @@ public class SQLValueMangler {
 					sqlValue = value;
 					break;
 				case INTEGER:
-					sqlValue = Integer.parseInt(value.toString());
+					try {
+						sqlValue = Integer.parseInt(value.toString());
+					}
+					catch (NumberFormatException e) {
+						sqlValue = Long.parseLong(value.toString());
+					}
 					break;
 				case STRING:
 					sqlValue = value;
