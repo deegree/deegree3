@@ -43,7 +43,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.apache.http.HttpResponse;
+import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.protocol.ows.exception.OWSExceptionReader;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
@@ -68,7 +68,7 @@ class OwsHttpResponseMock implements OwsHttpResponse {
 	}
 
 	@Override
-	public HttpResponse getAsHttpResponse() {
+	public ClassicHttpResponse getAsHttpResponse() {
 		throw new UnsupportedOperationException();
 	}
 

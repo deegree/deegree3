@@ -76,11 +76,12 @@ import jakarta.faces.model.SelectItemGroup;
 import jakarta.inject.Named;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.InputStreamEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.io.entity.InputStreamEntity;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.deegree.client.core.utils.MessageUtils;
 import org.deegree.commons.utils.net.DURL;
 import org.deegree.commons.utils.net.HttpUtils;
@@ -389,11 +390,11 @@ public class RequestBean implements Serializable {
 			InputStream is = new ByteArrayInputStream(request.getBytes("UTF-8"));
 			try {
 				DURL u = new DURL(targetUrl);
-				DefaultHttpClient client = enableProxyUsage(new DefaultHttpClient(), u);
+				CloseableHttpClient client = enableProxyUsage(HttpClients.createDefault(), u);
 				HttpPost post = new HttpPost(targetUrl);
 				post.setHeader("Content-Type", "text/xml;charset=UTF-8");
 				post.setEntity(new InputStreamEntity(is, -1));
-				HttpResponse response = client.execute(post);
+				ClassicHttpResponse response = client.execute(post);
 				Header[] headers = response.getHeaders("Content-Type");
 				if (headers.length > 0) {
 					mimeType = headers[0].getValue();
