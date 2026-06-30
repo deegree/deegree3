@@ -34,6 +34,11 @@
       <groupId>com.jayway.jsonpath</groupId>
       <artifactId>json-path</artifactId>
     </dependency>
+  <dependency>
+   <groupId>org.apache.httpcomponents.client5</groupId>
+   <artifactId>httpclient5</artifactId>
+   <version>5.4.4</version>
+  </dependency>
   </dependencies>
 
 </project>

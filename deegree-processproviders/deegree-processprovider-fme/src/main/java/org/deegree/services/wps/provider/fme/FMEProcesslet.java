@@ -65,8 +65,8 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.Header;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.RequestUtils;
 import org.deegree.services.wps.Processlet;
@@ -141,7 +141,7 @@ public class FMEProcesslet implements Processlet {
 		headers.put("Authorization", "fmetoken token=" + getSecurityToken());
 
 		LOG.debug("Sending {}", url);
-		Pair<InputStream, HttpResponse> p = postFullResponse(STREAM, url, kvpMap, headers, 0);
+		Pair<InputStream, ClassicHttpResponse> p = postFullResponse(STREAM, url, kvpMap, headers, 0);
 
 		InputStream is = p.first;
 		ComplexOutput output = (ComplexOutput) out.getParameter("FMEResponse");

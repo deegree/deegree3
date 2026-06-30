@@ -63,7 +63,7 @@ import jakarta.faces.context.FacesContext;
 
 import jakarta.inject.Named;
 import org.apache.commons.io.FileUtils;
-import org.apache.http.HttpResponse;
+import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.moduleinfo.ModuleInfo;
 import org.deegree.commons.utils.Pair;
@@ -253,12 +253,13 @@ public class WorkspaceBean implements Serializable {
 		InputStream in = null;
 		try {
 			URL url = new URL(location);
-			Pair<InputStream, HttpResponse> p = HttpUtils.getFullResponse(STREAM, location, null, null, null, 10);
+			Pair<InputStream, ClassicHttpResponse> p = HttpUtils.getFullResponse(STREAM, location, null, null, null,
+					10);
 			File root = new File(getWorkspaceRoot());
 			in = p.getFirst();
-			if (p.second.getStatusLine().getStatusCode() != 200) {
+			if (p.second.getCode() != 200) {
 				throw new Exception("Download of '" + location + "' failed. Server responded with HTTP status code "
-						+ p.second.getStatusLine().getStatusCode());
+						+ p.second.getCode());
 			}
 			String name = workspaceImportName;
 			if (name == null || name.isEmpty()) {
@@ -341,12 +342,12 @@ public class WorkspaceBean implements Serializable {
 	public List<String> downloadWorkspaceList(String url) {
 		InputStream in = null;
 		try {
-			Pair<InputStream, HttpResponse> p = HttpUtils.getFullResponse(STREAM, url, null, null, null, 10);
+			Pair<InputStream, ClassicHttpResponse> p = HttpUtils.getFullResponse(STREAM, url, null, null, null, 10);
 			LOG.debug("Retrieving list of remote workspaces from {} ", url);
 			in = p.getFirst();
-			if (p.second.getStatusLine().getStatusCode() != 200) {
+			if (p.second.getCode() != 200) {
 				LOG.warn("Could not get workspace list: Server responded with HTTP status code {}.",
-						p.second.getStatusLine().getStatusCode());
+						p.second.getCode());
 				return new ArrayList<String>();
 			}
 			List<String> list = readLines(in);
