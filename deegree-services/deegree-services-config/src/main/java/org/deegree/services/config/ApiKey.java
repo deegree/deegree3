@@ -37,7 +37,7 @@ public class ApiKey {
 	 * Token to be checked Every value matches this token if the value is "*". No value
 	 * matches this token if the value is null or an empty string.
 	 */
-    static class Token {
+	static class Token {
 
 		final boolean allowAll;
 
@@ -54,13 +54,16 @@ public class ApiKey {
 		}
 
 		public boolean matches(String value) {
-			if (allowAll)
+			if (allowAll) {
 				return true;
+			}
 
-			if (key == null || value == null)
+			if (key == null || value == null) {
 				return false;
-			return java.security.MessageDigest.isEqual(key.getBytes(java.nio.charset.StandardCharsets.UTF_8),
-					value.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+			}
+			// MessageDigest is preferred over String.equals because of timing attacks
+			return MessageDigest.isEqual(key.getBytes(StandardCharsets.UTF_8),
+					value.trim().getBytes(StandardCharsets.UTF_8));
 		}
 
 		public boolean isAnyAllowed() {
