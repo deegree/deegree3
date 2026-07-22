@@ -34,12 +34,10 @@ public class ApiKey {
 	private static final String API_TOKEN_FILE = "config.apikey";
 
 	/**
-	 * Token to be checked
-	 *
-	 * Every value matches this token if the value is "*". No value matches this token if
-	 * the value is null or an empty string.
+	 * Token to be checked Every value matches this token if the value is "*". No value
+	 * matches this token if the value is null or an empty string.
 	 */
-	class Token {
+	static class Token {
 
 		final boolean allowAll;
 
@@ -47,7 +45,7 @@ public class ApiKey {
 
 		public Token(String value) {
 			this.allowAll = value != null && "*".equals(value.trim());
-			this.key = value != null && value.trim().length() > 0 ? value.trim() : value;
+			this.key = value != null && !value.trim().isEmpty() ? value.trim() : value;
 		}
 
 		public Token() {
@@ -56,13 +54,16 @@ public class ApiKey {
 		}
 
 		public boolean matches(String value) {
-			if (allowAll)
+			if (allowAll) {
 				return true;
+			}
 
-			if (key == null)
+			if (key == null || value == null) {
 				return false;
-
-			return key.matches(value != null ? value.trim() : value);
+			}
+			// MessageDigest is preferred over String.equals because of timing attacks
+			return MessageDigest.isEqual(key.getBytes(StandardCharsets.UTF_8),
+					value.trim().getBytes(StandardCharsets.UTF_8));
 		}
 
 		public boolean isAnyAllowed() {
@@ -169,10 +170,10 @@ public class ApiKey {
 	public void validate(HttpServletRequest req) throws SecurityException {
 		String tmp, value = null;
 		// check for headers
-		if (value == null) {
+		if (req != null) {
 			value = req.getHeader("X-API-Key");
 		}
-		if (value == null) {
+		if (value == null && req != null) {
 			tmp = req.getHeader("Authorization");
 			if (tmp != null && tmp.toLowerCase().startsWith("bearer ")) {
 				value = tmp.substring(7);
@@ -190,7 +191,7 @@ public class ApiKey {
 		}
 
 		// check for parameter
-		if (value == null) {
+		if (value == null && req != null) {
 			Enumeration<?> keys = req.getParameterNames();
 			while (keys.hasMoreElements()) {
 				String key = (String) keys.nextElement();
@@ -209,7 +210,7 @@ public class ApiKey {
 			return;
 		}
 
-		if (value == null || value.trim().length() == 0) {
+		if (value == null || value.trim().isEmpty()) {
 			throw new SecurityException("Please specify API Key");
 		}
 
