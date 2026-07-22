@@ -52,14 +52,28 @@ import java.util.zip.ZipOutputStream;
 import org.slf4j.Logger;
 
 /**
+ * Utility class providing methods zip and unzip files.
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  */
-public class Zip {
+public final class Zip {
 
 	private static final Logger LOG = getLogger(Zip.class);
 
+	private Zip() {
+	}
+
+	private static void validateEntryPath(File dir, String entryName) throws IOException {
+		File f = new File(dir, entryName);
+		String canonicalDir = dir.getCanonicalPath();
+		String canonicalFile = f.getCanonicalPath();
+		if (!canonicalFile.startsWith(canonicalDir + File.separator) && !canonicalFile.equals(canonicalDir)) {
+			throw new IOException("Zip entry attempts path traversal: " + entryName);
+		}
+	}
+
 	public static void unzip(final InputStream in, File dir, boolean overwrite)
-			throws FileNotFoundException, IOException {
+			throws IOException {
 		ZipInputStream zin = new ZipInputStream(in);
 		ZipEntry entry;
 
@@ -70,6 +84,8 @@ public class Zip {
 		boolean rootRead = false;
 
 		while ((entry = zin.getNextEntry()) != null) {
+			validateEntryPath(dir, entry.getName());
+
 			if (entry.isDirectory()) {
 				File f = new File(dir, entry.getName());
 				// avoid directory-in-directory
@@ -105,9 +121,9 @@ public class Zip {
 	}
 
 	/**
-	 * @param in
-	 * @param dir
-	 * @throws IOException
+	 * @param in the input stream to read from
+	 * @param dir the directory to write to
+	 * @throws IOException in case of errors
 	 */
 	public static void unzip(final InputStream in, File dir) throws IOException {
 		unzip(in, dir, true);
@@ -115,11 +131,11 @@ public class Zip {
 
 	/**
 	 * .svn files/directories will be ignored.
-	 * @param f
-	 * @param out
+	 * @param f the file to add to the zip
+	 * @param out the output stream to write to
 	 * @param parent may be null, all written paths in the zip will be relative to this
 	 * one (default is f.toURI)
-	 * @throws IOException
+	 * @throws IOException in case of errors
 	 */
 	public static void zip(File f, ZipOutputStream out, URI parent) throws IOException {
 		if (f.getName().equalsIgnoreCase(".svn")) {
