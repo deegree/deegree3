@@ -366,6 +366,7 @@
                     <ignoreClass>com.sun.media.jai.*</ignoreClass>
                     <ignoreClass>com.sun.xml.*</ignoreClass>
                     <ignoreClass>org.w3c.dom.*</ignoreClass>
+                    <ignoreClass>org.deegree.commons.metadata.description.jaxb.*</ignoreClass>
                   </ignoreClasses>
                   <scopes>
                     <scope>compile</scope>
@@ -833,7 +834,7 @@
       <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>42.7.7</version>
+        <version>42.7.13</version>
       </dependency>
       <!-- Oracle (Official provided driver from repo1.maven.org) -->
       <dependency>
@@ -876,7 +877,7 @@
       <dependency>
         <groupId>com.microsoft.sqlserver</groupId>
         <artifactId>mssql-jdbc</artifactId>
-        <version>12.10.1.jre11</version>
+        <version>12.10.2.jre11</version>
       </dependency>
       <!-- Batik -->
       <dependency>
