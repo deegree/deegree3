@@ -180,12 +180,15 @@ public class Cql2FilterVisitor extends Cql2ParserBaseVisitor {
 		return switch (comparisonOperator) {
 			case "=" -> {
 				boolean matchCase = ctx.getText().contains("CASEI");
-				yield new PropertyIsEqualTo(param1, param2, matchCase, MatchAction.ANY);
+				if (matchCase)
+					yield new PropertyIsEqualTo(param1, param2, matchCase, MatchAction.ANY);
+				else
+					yield new PropertyIsEqualTo(param1, param2, null, MatchAction.ANY);
 			}
-			case "<" -> new PropertyIsLessThan(param1, param2, false, MatchAction.ANY);
-			case ">" -> new PropertyIsGreaterThan(param1, param2, false, MatchAction.ANY);
-			case "<=" -> new PropertyIsLessThanOrEqualTo(param1, param2, false, MatchAction.ANY);
-			case ">=" -> new PropertyIsGreaterThanOrEqualTo(param1, param2, false, MatchAction.ANY);
+			case "<" -> new PropertyIsLessThan(param1, param2, null, MatchAction.ANY);
+			case ">" -> new PropertyIsGreaterThan(param1, param2, null, MatchAction.ANY);
+			case "<=" -> new PropertyIsLessThanOrEqualTo(param1, param2, null, MatchAction.ANY);
+			case ">=" -> new PropertyIsGreaterThanOrEqualTo(param1, param2, null, MatchAction.ANY);
 			default ->
 				throw new Cql2UnsupportedExpressionException("Unsupported comparisonOperator " + comparisonOperator);
 		};
