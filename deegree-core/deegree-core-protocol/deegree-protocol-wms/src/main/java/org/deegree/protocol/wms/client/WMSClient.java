@@ -78,7 +78,7 @@ import javax.xml.stream.XMLStreamException;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.entity.ContentType;
+import org.apache.hc.core5.http.ContentType;
 import org.deegree.commons.concurrent.Executor;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.proxy.ProxySettings;

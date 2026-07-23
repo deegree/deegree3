@@ -57,30 +57,32 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeSet;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.Credentials;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.AuthCache;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.protocol.ClientContext;
-import org.apache.http.conn.params.ConnRoutePNames;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.FileEntity;
-import org.apache.http.entity.InputStreamEntity;
-import org.apache.http.impl.auth.BasicScheme;
-import org.apache.http.impl.client.BasicAuthCache;
-import org.apache.http.impl.client.DefaultConnectionKeepAliveStrategy;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.client5.http.auth.AuthCache;
+import org.apache.hc.client5.http.auth.AuthScope;
+import org.apache.hc.client5.http.auth.Credentials;
+import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
+import org.apache.hc.client5.http.impl.DefaultConnectionKeepAliveStrategy;
+import org.apache.hc.client5.http.impl.auth.BasicAuthCache;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.protocol.ClientContext;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.conn.params.ConnRoutePNames;
+import org.apache.hc.core5.http.io.entity.FileEntity;
+import org.apache.hc.core5.http.io.entity.InputStreamEntity;
+import org.apache.hc.client5.http.impl.auth.BasicScheme;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.message.BasicNameValuePair;
+/* No generic migration for classes in the `org.apache.http.params` package exists, please migrate manually */
 import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.HttpContext;
+import org.apache.hc.core5.http.protocol.BasicHttpContext;
+import org.apache.hc.core5.http.protocol.HttpContext;
 import org.deegree.commons.utils.Pair;
 import org.slf4j.Logger;
 
@@ -235,7 +237,7 @@ public class HttpUtils {
 	public static <T> T post(Worker<T> worker, String url, InputStream postBody, Map<String, String> headers)
 			throws IOException {
 		DURL u = new DURL(url);
-		DefaultHttpClient client = enableProxyUsage(new DefaultHttpClient(), u);
+		CloseableHttpClient client = enableProxyUsage(HttpClients.createDefault(), u);
 		HttpPost post = new HttpPost(url);
 		post.setEntity(new InputStreamEntity(postBody, -1));
 		if (headers != null) {
@@ -259,10 +261,10 @@ public class HttpUtils {
 			final int readTimeout) throws IOException {
 		DURL u = new DURL(url);
 		LOG.debug("Sending HTTP POST against {}", url);
-		DefaultHttpClient client = enableProxyUsage(new DefaultHttpClient(), u);
+		CloseableHttpClient client = enableProxyUsage(HttpClients.createDefault(), u);
 		client.setKeepAliveStrategy(new DefaultConnectionKeepAliveStrategy() {
 			@Override
-			public long getKeepAliveDuration(HttpResponse response, HttpContext context) {
+			public long getKeepAliveDuration(ClassicHttpResponse response, HttpContext context) {
 				long keepAlive = super.getKeepAliveDuration(response, context);
 				if (keepAlive == -1) {
 					keepAlive = readTimeout * 1000;
@@ -297,14 +299,14 @@ public class HttpUtils {
 	 * inspection
 	 * @throws IOException
 	 */
-	public static <T> Pair<T, HttpResponse> postFullResponse(Worker<T> worker, String url, Map<String, String> params,
-			Map<String, String> headers, final int readTimeout) throws IOException {
+	public static <T> Pair<T, ClassicHttpResponse> postFullResponse(Worker<T> worker, String url,
+			Map<String, String> params, Map<String, String> headers, final int readTimeout) throws IOException {
 		DURL u = new DURL(url);
 		LOG.debug("Sending HTTP POST against {}", url);
-		DefaultHttpClient client = enableProxyUsage(new DefaultHttpClient(), u);
+		CloseableHttpClient client = enableProxyUsage(HttpClients.createDefault(), u);
 		client.setKeepAliveStrategy(new DefaultConnectionKeepAliveStrategy() {
 			@Override
-			public long getKeepAliveDuration(HttpResponse response, HttpContext context) {
+			public long getKeepAliveDuration(ClassicHttpResponse response, HttpContext context) {
 				long keepAlive = super.getKeepAliveDuration(response, context);
 				if (keepAlive == -1) {
 					keepAlive = readTimeout * 1000;
@@ -324,14 +326,15 @@ public class HttpUtils {
 				post.addHeader(key, headers.get(key));
 			}
 		}
-		HttpResponse resp = client.execute(post);
+		ClassicHttpResponse resp = client.execute(post);
 		HttpEntity entity = resp.getEntity();
 		LOG.debug("Received response with content type {}", entity.getContentType());
-		return new Pair<T, HttpResponse>(worker.work(entity.getContent()), resp);
+		return new Pair<T, ClassicHttpResponse>(worker.work(entity.getContent()), resp);
 	}
 
-	private static void authenticate(DefaultHttpClient client, String user, String pass, DURL u) {
-		client.getCredentialsProvider().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(user, pass));
+	private static void authenticate(CloseableHttpClient client, String user, String pass, DURL u) {
+		client.getCredentialsProvider()
+			.setCredentials(new AuthScope(null, -1), new UsernamePasswordCredentials(user, pass.toCharArray()));
 		// preemptive authentication used to be easier in pre-4.x httpclient
 		AuthCache authCache = new BasicAuthCache();
 		BasicScheme basicAuth = new BasicScheme();
@@ -356,7 +359,7 @@ public class HttpUtils {
 	public static <T> T post(Worker<T> worker, String url, File postBody, Map<String, String> headers, String user,
 			String pass) throws IOException {
 		DURL u = new DURL(url);
-		DefaultHttpClient client = enableProxyUsage(new DefaultHttpClient(), u);
+		CloseableHttpClient client = enableProxyUsage(HttpClients.createDefault(), u);
 		HttpPost post = new HttpPost(url);
 		if (user != null && pass != null) {
 			authenticate(client, user, pass, u);
@@ -404,7 +407,7 @@ public class HttpUtils {
 		if (!("http".equalsIgnoreCase(protocol) || "https".equalsIgnoreCase(protocol))) {
 			return worker.work(u.getURL().openStream());
 		}
-		DefaultHttpClient client = enableProxyUsage(new DefaultHttpClient(), u);
+		CloseableHttpClient client = enableProxyUsage(HttpClients.createDefault(), u);
 		if (user != null && pass != null) {
 			authenticate(client, user, pass, u);
 		}
@@ -429,13 +432,13 @@ public class HttpUtils {
 	 * @return some object from the url, null, if url is not valid
 	 * @throws IOException
 	 */
-	public static <T> Pair<T, HttpResponse> getFullResponse(Worker<T> worker, String url, Map<String, String> headers,
-			String user, String pass) throws IOException {
+	public static <T> Pair<T, ClassicHttpResponse> getFullResponse(Worker<T> worker, String url,
+			Map<String, String> headers, String user, String pass) throws IOException {
 		DURL u = new DURL(url);
 		if (!u.valid()) {
 			return null;
 		}
-		DefaultHttpClient client = enableProxyUsage(new DefaultHttpClient(), u);
+		CloseableHttpClient client = enableProxyUsage(HttpClients.createDefault(), u);
 		if (user != null && pass != null) {
 			authenticate(client, user, pass, u);
 		}
@@ -445,11 +448,11 @@ public class HttpUtils {
 				get.addHeader(key, headers.get(key));
 			}
 		}
-		HttpResponse response = client.execute(get);
-		return new Pair<T, HttpResponse>(worker.work(response.getEntity().getContent()), response);
+		ClassicHttpResponse response = client.execute(get);
+		return new Pair<T, ClassicHttpResponse>(worker.work(response.getEntity().getContent()), response);
 	}
 
-	public static void handleProxies(String protocol, DefaultHttpClient client, String host) {
+	public static void handleProxies(String protocol, CloseableHttpClient client, String host) {
 		TreeSet<String> nops = new TreeSet<String>();
 
 		String proxyHost = getProperty((protocol == null ? "" : protocol + ".") + "proxyHost");
@@ -474,7 +477,7 @@ public class HttpUtils {
 			}
 
 			if (proxyUser != null) {
-				Credentials creds = new UsernamePasswordCredentials(proxyUser, proxyPass);
+				Credentials creds = new UsernamePasswordCredentials(proxyUser, proxyPass.toCharArray());
 				client.getCredentialsProvider().setCredentials(new AuthScope(proxyHost, proxyPort), creds);
 			}
 
@@ -503,16 +506,16 @@ public class HttpUtils {
 		}
 	}
 
-	public static <T> Pair<T, HttpResponse> getFullResponse(Worker<T> worker, String url, Map<String, String> headers,
-			String user, String pass, final int readTimeout) throws IOException {
+	public static <T> Pair<T, ClassicHttpResponse> getFullResponse(Worker<T> worker, String url,
+			Map<String, String> headers, String user, String pass, final int readTimeout) throws IOException {
 		DURL u = new DURL(url);
 		if (!u.valid()) {
 			return null;
 		}
-		DefaultHttpClient client = enableProxyUsage(new DefaultHttpClient(), u);
+		CloseableHttpClient client = enableProxyUsage(HttpClients.createDefault(), u);
 		client.setKeepAliveStrategy(new DefaultConnectionKeepAliveStrategy() {
 			@Override
-			public long getKeepAliveDuration(HttpResponse response, HttpContext context) {
+			public long getKeepAliveDuration(ClassicHttpResponse response, HttpContext context) {
 				long keepAlive = super.getKeepAliveDuration(response, context);
 				if (keepAlive == -1) {
 					keepAlive = readTimeout * 1000;
@@ -529,8 +532,8 @@ public class HttpUtils {
 				get.addHeader(key, headers.get(key));
 			}
 		}
-		HttpResponse response = client.execute(get);
-		return new Pair<T, HttpResponse>(worker.work(response.getEntity().getContent()), response);
+		ClassicHttpResponse response = client.execute(get);
+		return new Pair<T, ClassicHttpResponse>(worker.work(response.getEntity().getContent()), response);
 	}
 
 	/**
@@ -542,11 +545,11 @@ public class HttpUtils {
 	 * @param url must be valid
 	 * @return HttpClient with proxy configuration
 	 */
-	public static DefaultHttpClient enableProxyUsage(DefaultHttpClient client, DURL url) {
+	public static CloseableHttpClient enableProxyUsage(CloseableHttpClient client, DURL url) {
 		HttpConnectionParams.setConnectionTimeout(client.getParams(), DEFAULT_CONN_TIMEOUT);
 		client.setKeepAliveStrategy(new DefaultConnectionKeepAliveStrategy() {
 			@Override
-			public long getKeepAliveDuration(HttpResponse response, HttpContext context) {
+			public long getKeepAliveDuration(ClassicHttpResponse response, HttpContext context) {
 				long keepAlive = super.getKeepAliveDuration(response, context);
 				if (keepAlive == -1) {
 					keepAlive = DEFAULT_SOCKET_TIMEOUT;
