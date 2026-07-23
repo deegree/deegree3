@@ -72,8 +72,7 @@ public final class Zip {
 		}
 	}
 
-	public static void unzip(final InputStream in, File dir, boolean overwrite)
-			throws IOException {
+	public static void unzip(final InputStream in, File dir, boolean overwrite) throws IOException {
 		ZipInputStream zin = new ZipInputStream(in);
 		ZipEntry entry;
 
