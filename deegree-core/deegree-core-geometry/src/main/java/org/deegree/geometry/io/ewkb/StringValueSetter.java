@@ -20,39 +20,41 @@
  * License along with this library. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.sebasbaumh.postgis.binary;
-
-import io.github.sebasbaumh.postgis.PostGisUtil;
+package org.deegree.geometry.io.ewkb;
 
 /**
  * Allows writing values as a string in little endian encoding and hex format.
+ *
  * @author Sebastian Baumhekel
  */
-public class StringValueSetter extends ValueSetter
-{
+public class StringValueSetter extends ValueSetter {
+
 	private final StringBuilder sb = new StringBuilder();
 
 	/**
 	 * Constructs an instance.
+	 * @param axis
 	 */
-	public StringValueSetter()
-	{
+	public StringValueSetter(Axis axis) {
+		super(axis);
 	}
+
+	/**
+	 * Constructs an instance.
+	 */
 
 	/**
 	 * Gets the written value.
 	 * @return value
 	 */
-	public String getValue()
-	{
+	public String getValue() {
 		return sb.toString();
 	}
 
 	@Override
-	public void setByte(byte b)
-	{
-		sb.append(PostGisUtil.HEX_CHAR[(b >> 4) & 0xF]);
-		sb.append(PostGisUtil.HEX_CHAR[b & 0xF]);
+	public void setByte(byte b) {
+		sb.append(Utils.HEX_CHAR[(b >> 4) & 0xF]);
+		sb.append(Utils.HEX_CHAR[b & 0xF]);
 	}
 
 }
