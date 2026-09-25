@@ -20,89 +20,84 @@
  * License along with this library. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.sebasbaumh.postgis.binary;
+package org.deegree.geometry.io.ewkb;
+
+import org.deegree.geometry.Geometry;
+import org.deegree.geometry.GeometryFactory;
+import org.deegree.geometry.primitive.Curve;
+import org.deegree.geometry.primitive.LineString;
+import org.deegree.geometry.primitive.Point;
+import org.deegree.geometry.primitive.Polygon;
+import org.deegree.geometry.primitive.Ring;
+import org.deegree.geometry.primitive.segments.CurveSegment;
+import org.deegree.geometry.standard.points.PackedPoints;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
-import io.github.sebasbaumh.postgis.CircularString;
-import io.github.sebasbaumh.postgis.CompoundCurve;
-import io.github.sebasbaumh.postgis.Curve;
-import io.github.sebasbaumh.postgis.CurvePolygon;
-import io.github.sebasbaumh.postgis.Geometry;
-import io.github.sebasbaumh.postgis.GeometryCollection;
-import io.github.sebasbaumh.postgis.LineString;
-import io.github.sebasbaumh.postgis.LinearRing;
-import io.github.sebasbaumh.postgis.MultiCurve;
-import io.github.sebasbaumh.postgis.MultiLineString;
-import io.github.sebasbaumh.postgis.MultiPoint;
-import io.github.sebasbaumh.postgis.MultiPolygon;
-import io.github.sebasbaumh.postgis.MultiSurface;
-import io.github.sebasbaumh.postgis.Point;
-import io.github.sebasbaumh.postgis.Polygon;
-import io.github.sebasbaumh.postgis.PolygonBase;
+import static org.deegree.geometry.io.ewkb.Axis.XYM;
+import static org.deegree.geometry.io.ewkb.Axis.XYZ;
+import static org.deegree.geometry.io.ewkb.Axis.XYZM;
 
 /**
  * A parser for reading geometries from a binary or hex string representation.
+ *
  * @author Sebastian Baumhekel
  */
-public final class BinaryParser
-{
+public final class BinaryParser {
 
 	// prevent instantiating this class
 	@Deprecated
-	private BinaryParser()
-	{
+	private BinaryParser() {
 	}
+
+	private final static GeometryFactory _gf = new GeometryFactory();
 
 	/**
 	 * Parse a hex encoded geometry
 	 * @param value byte array containing the data to be parsed
 	 * @param offset offset
 	 * @return resulting geometry for the parsed data
-	 * @throws IllegalArgumentException if a contained geometry is of the wrong type or the encoding type is unknown
+	 * @throws IllegalArgumentException if a contained geometry is of the wrong type or
+	 * the encoding type is unknown
 	 */
-	public static Geometry parse(byte[] value, int offset)
-	{
-		return parseGeometry(new BinaryValueGetter(value, offset));
+	public static Geometry parse(Axis axis, byte[] value, int offset) {
+		return parseGeometry(new BinaryValueGetter(axis, value, offset));
 	}
 
 	/**
 	 * Parse a hex encoded geometry
 	 * @param value String containing the data to be parsed
 	 * @return resulting geometry for the parsed data
-	 * @throws IllegalArgumentException if a contained geometry is of the wrong type or the encoding type is unknown
+	 * @throws IllegalArgumentException if a contained geometry is of the wrong type or
+	 * the encoding type is unknown
 	 */
-	public static Geometry parse(String value)
-	{
-		return parseGeometry(new StringValueGetter(value));
+	public static Geometry parse(Axis axis, String value) {
+		return parseGeometry(new StringValueGetter(axis, value));
 	}
 
 	/**
-	 * Parse multiple geometries into a {@link Collection}. The number of geometries is read upfront from the
-	 * {@link ValueGetter}.
+	 * Parse multiple geometries into a {@link Collection}. The number of geometries is
+	 * read upfront from the {@link ValueGetter}.
 	 * @param clazz {@link Class} of the geometries
 	 * @param data {@link ValueGetter}
 	 * @return {@link Collection} of geometries
 	 * @throws IllegalArgumentException if a contained geometry is of the wrong type
 	 */
 	@SuppressWarnings("unchecked")
-	private static <T extends Geometry> Collection<T> parseGeometries(Class<T> clazz, ValueGetter data)
-	{
+	private static <T extends Geometry> List<T> parseGeometries(Class<T> clazz, ValueGetter data) {
 		// get number of geometries to parse
 		int count = data.getInt();
-		ArrayList<T> l = new ArrayList<T>(count);
+		ArrayList<T> l = new ArrayList<>(count);
 		// parse geometries
-		for (int i = 0; i < count; i++)
-		{
+		for (int i = 0; i < count; i++) {
 			Geometry geom = parseGeometry(data);
 			// check if the geometry is of the correct type
-			if (clazz.isInstance(geom))
-			{
+			if (clazz.isInstance(geom)) {
 				l.add((T) geom);
 			}
-			else
-			{
+			else {
 				throw new IllegalArgumentException(
 						"expected: " + clazz.getCanonicalName() + " got: " + geom.getClass().getCanonicalName());
 			}
@@ -116,8 +111,7 @@ public final class BinaryParser
 	 * @return the parsed geometry
 	 * @throws IllegalArgumentException for unknown geometry types
 	 */
-	private static Geometry parseGeometry(ValueGetter data)
-	{
+	private static Geometry parseGeometry(ValueGetter data) {
 		// read endian flag
 		data.readEncoding();
 		// and get the type
@@ -128,61 +122,57 @@ public final class BinaryParser
 		boolean haveM = (typeword & 0x40000000) != 0;
 		boolean haveS = (typeword & 0x20000000) != 0;
 
-		int srid = Geometry.UNKNOWN_SRID;
-		if (haveS)
-		{
+		// int srid = -1;
+		if (haveS) {
 			// ensure valid SRID
-			srid = data.getInt();
-			if (srid < 0)
-			{
-				srid = Geometry.UNKNOWN_SRID;
-			}
+			data.getInt();
+			// srid = data.getInt();
+			// if (srid < 0) {
+			// srid = -1;
+			// }
 		}
 		// parse geometry according to type
 		Geometry result;
-		switch (geometryType)
-		{
-			case Point.TYPE:
+		switch (geometryType) {
+			case Types.POINT_TYPE:
 				result = parsePoint(data, haveZ, haveM);
 				break;
-			case LineString.TYPE:
-				result = new LineString(parsePoints(data, haveZ, haveM));
+			case Types.LINESTRING_TYPE:
+				result = _gf.createLineString(null, null, parsePoints(data, haveZ, haveM));
 				break;
-			case CircularString.TYPE:
-				result = new CircularString(parsePoints(data, haveZ, haveM));
+			case Types.CIRCULAR_STRING_TYPE:
+				result = _gf.createCurve(null, null, _gf.createArcString(parsePoints(data, haveZ, haveM)));
 				break;
-			case CompoundCurve.TYPE:
-				result = new CompoundCurve(parseGeometries(LineString.class, data));
+			case Types.COMPOUND_CURVE_TYPE:
+				result = parseCompoundCurve(data);
 				break;
-			case Polygon.TYPE:
+			case Types.POLYGON_TYPE:
 				result = parsePolygon(data, haveZ, haveM);
 				break;
-			case CurvePolygon.TYPE:
-				result = new CurvePolygon(parseGeometries(Curve.class, data));
+			case Types.TIN_TYPE: // Triangles as Polygon
+			case Types.CURVE_POLYGON_TYPE:
+				List<Ring> rings = parseRings(data);
+				result = _gf.createPolygon(null, null, rings.remove(0), rings);
 				break;
-			case MultiPoint.TYPE:
-				result = new MultiPoint(parseGeometries(Point.class, data));
+			case Types.MULTIPOINT_TYPE:
+				result = _gf.createMultiPoint(null, null, parseGeometries(Point.class, data));
 				break;
-			case MultiLineString.TYPE:
-				result = new MultiLineString(parseGeometries(LineString.class, data));
+			case Types.MULTILINESTRING_TYPE:
+				result = _gf.createMultiLineString(null, null, parseGeometries(LineString.class, data));
 				break;
-			case MultiCurve.TYPE:
-				result = new MultiCurve(parseGeometries(Curve.class, data));
+			case Types.MULTICURVE_TYPE:
+				result = _gf.createMultiCurve(null, null, parseGeometries(Curve.class, data));
 				break;
-			case MultiPolygon.TYPE:
-				result = new MultiPolygon(parseGeometries(Polygon.class, data));
+			case Types.MULTIPOLYGON_TYPE:
+				result = _gf.createMultiPolygon(null, null, parseGeometries(Polygon.class, data));
 				break;
-			case MultiSurface.TYPE:
-				result = new MultiSurface(parseGeometries(PolygonBase.class, data));
-				break;
-			case GeometryCollection.TYPE:
-				result = new GeometryCollection(parseGeometries(Geometry.class, data));
+			case Types.MULTISURFACE_TYPE:
+			case Types.GEOMETRY_COLLECTION_TYPE:
+				result = _gf.createMultiGeometry(null, null, parseGeometries(Geometry.class, data));
 				break;
 			default:
 				throw new IllegalArgumentException("Unknown Geometry Type: " + geometryType);
 		}
-		// set SRID and return the geometry
-		result.setSrid(srid);
 		return result;
 	}
 
@@ -193,45 +183,112 @@ public final class BinaryParser
 	 * @param haveM parse measure value?
 	 * @return {@link Point}
 	 */
-	private static Point parsePoint(ValueGetter data, boolean haveZ, boolean haveM)
-	{
+	private static Point parsePoint(ValueGetter data, boolean haveZ, boolean haveM) {
 		double x = data.getDouble();
 		double y = data.getDouble();
-		Point result;
+		double z = haveZ ? data.getDouble() : data.getNoValue();
+		double m = haveM ? data.getDouble() : data.getNoValue();
 		// parse z?
-		if (haveZ)
-		{
-			result = new Point(x, y, data.getDouble());
-		}
-		else
-		{
-			result = new Point(x, y);
+		if (haveZ) {
+			z = data.getDouble();
 		}
 		// parse measure?
-		if (haveM)
-		{
-			result.setM(data.getDouble());
+		if (haveM) {
+			m = data.getDouble();
 		}
-		return result;
+
+		return switch (data.getAxis()) {
+			case XY -> _gf.createPoint(null, x, y, null);
+			case XYZ -> _gf.createPoint(null, x, y, z, null);
+			case XYM -> _gf.createPoint(null, x, y, m, null);
+			case XYZM -> _gf.createPoint(null, new double[] { x, y, z, m }, null);
+		};
 	}
 
 	/**
-	 * Parse an Array of "slim" {@link Point}s (without endianness and type, part of {@link LinearRing} and
-	 * {@link LineString}, but not {@link MultiPoint}!
+	 * Parse an Array of "slim" {@link Point}s
 	 * @param data {@link ValueGetter}
 	 * @param haveZ parse z value?
 	 * @param haveM parse measure value?
 	 * @return {@link Collection} of {@link Point}s
 	 */
-	private static Collection<Point> parsePoints(ValueGetter data, boolean haveZ, boolean haveM)
-	{
+	private static PackedPoints parsePoints(ValueGetter data, boolean haveZ, boolean haveM) {
 		int count = data.getInt();
-		ArrayList<Point> l = new ArrayList<Point>(count);
-		for (int i = 0; i < count; i++)
-		{
-			l.add(parsePoint(data, haveZ, haveM));
+		double[] points = new double[data.getAxis().size(count)];
+		int pos = 0;
+		for (int i = 0; i < count; i++) {
+			points[pos++] = data.getDouble();
+			points[pos++] = data.getDouble();
+			if (data.getAxis() == XYZ || data.getAxis() == XYZM) {
+				points[pos++] = haveZ ? data.getDouble() : data.getNoValue();
+			}
+			if (data.getAxis() == XYM || data.getAxis() == XYZM) {
+				points[pos++] = haveM ? data.getDouble() : data.getNoValue();
+			}
 		}
-		return l;
+		return new PackedPoints(null, points, data.getAxis().size(1));
+	}
+
+	private static Curve parseCompoundCurve(ValueGetter data) {
+		int count = data.getInt();
+		CurveSegment[] segments = new CurveSegment[count];
+		for (int i = 0; i < count; i++) {
+			// read endian flag
+			data.readEncoding();
+			// and get the type
+			int typeWord = data.getInt();
+			int geometryType = typeWord & 0x1FFFFFFF; // cut off high flag bits
+
+			boolean haveZ = (typeWord & 0x80000000) != 0;
+			boolean haveM = (typeWord & 0x40000000) != 0;
+			switch (geometryType) {
+				case Types.LINESTRING_TYPE:
+					segments[i] = _gf.createLineStringSegment(parsePoints(data, haveZ, haveM));
+					break;
+				case Types.CIRCULAR_STRING_TYPE:
+					segments[i] = _gf.createArcString(parsePoints(data, haveZ, haveM));
+					break;
+				default:
+					throw new IllegalArgumentException("Unknown Geometry Type: " + geometryType);
+			}
+		}
+		return _gf.createCurve(null, null, segments);
+	}
+
+	private static List<Ring> parseRings(ValueGetter data) {
+		int count = data.getInt();
+		List<Ring> segments = new ArrayList<>(count);
+		for (int i = 0; i < count; i++) {
+			// read endian flag
+			data.readEncoding();
+			// and get the type
+			int typeWord = data.getInt();
+			int geometryType = typeWord & 0x1FFFFFFF; // cut off high flag bits
+
+			boolean haveZ = (typeWord & 0x80000000) != 0;
+			boolean haveM = (typeWord & 0x40000000) != 0;
+			switch (geometryType) {
+				case Types.LINESTRING_TYPE:
+					segments.add(_gf.createLinearRing(null, null, parsePoints(data, haveZ, haveM)));
+					break;
+				case Types.CIRCULAR_STRING_TYPE:
+					segments.add(_gf.createRing(null, null, List
+						.of(_gf.createCurve(null, null, _gf.createArcString(parsePoints(data, haveZ, haveM))))));
+					break;
+				case Types.COMPOUND_CURVE_TYPE:
+					segments.add(_gf.createRing(null, null, List.of(parseCompoundCurve(data))));
+					break;
+				case Types.POLYGON_TYPE:
+				case Types.TRIANGLE_TYPE: // like a polygon
+					Polygon poly = parsePolygon(data, haveZ, haveM);
+					segments.add(poly.getExteriorRing());
+					segments.addAll(poly.getInteriorRings());
+					break;
+				default:
+					throw new IllegalArgumentException("Unknown Geometry Type: " + geometryType);
+			}
+		}
+		return segments;
 	}
 
 	/**
@@ -241,14 +298,13 @@ public final class BinaryParser
 	 * @param haveM parse measure value?
 	 * @return {@link Polygon}
 	 */
-	private static Polygon parsePolygon(ValueGetter data, boolean haveZ, boolean haveM)
-	{
+	private static Polygon parsePolygon(ValueGetter data, boolean haveZ, boolean haveM) {
 		int count = data.getInt();
-		ArrayList<LinearRing> rings = new ArrayList<LinearRing>(count);
-		for (int i = 0; i < count; i++)
-		{
-			rings.add(new LinearRing(parsePoints(data, haveZ, haveM)));
+		List<Ring> rings = new ArrayList<>(count);
+		for (int i = 0; i < count; i++) {
+			rings.add(_gf.createLinearRing(null, null, parsePoints(data, haveZ, haveM)));
 		}
-		return new Polygon(rings);
+		return _gf.createPolygon(null, null, rings.remove(0), rings);
 	}
+
 }

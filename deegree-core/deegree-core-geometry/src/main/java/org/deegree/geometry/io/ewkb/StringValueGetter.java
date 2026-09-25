@@ -20,36 +20,35 @@
  * License along with this library. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.sebasbaumh.postgis.binary;
-
-import io.github.sebasbaumh.postgis.PostGisUtil;
+package org.deegree.geometry.io.ewkb;
 
 /**
  * Allows reading values from a string.
+ *
  * @author Sebastian Baumhekel
  */
-public class StringValueGetter extends ValueGetter
-{
+public class StringValueGetter extends ValueGetter {
+
 	private int position;
+
 	private final String value;
 
 	/**
 	 * Constructs an instance.
 	 * @param value value as hex string
 	 */
-	public StringValueGetter(String value)
-	{
+	public StringValueGetter(Axis axis, String value) {
+		super(axis);
 		this.value = value;
 	}
 
 	@Override
-	protected int getNextByte()
-	{
+	protected int getNextByte() {
 		// get current position (and respect that every byte consists of 2 hex characters)
 		int index = position * 2;
 		// then advance the position to the next byte
 		position++;
-		return ((PostGisUtil.toHexByte(value.charAt(index)) << 4) | PostGisUtil.toHexByte(value.charAt(index + 1)));
+		return ((Utils.toHexByte(value.charAt(index)) << 4) | Utils.toHexByte(value.charAt(index + 1)));
 	}
 
 }

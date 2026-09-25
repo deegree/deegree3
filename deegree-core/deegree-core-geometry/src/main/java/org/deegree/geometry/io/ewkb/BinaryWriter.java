@@ -19,54 +19,69 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library. If not, see <https://www.gnu.org/licenses/>.
  */
+package org.deegree.geometry.io.ewkb;
 
-package io.github.sebasbaumh.postgis.binary;
+import org.deegree.commons.utils.kvp.InvalidParameterValueException;
+import org.deegree.geometry.Geometry;
+import org.deegree.geometry.multi.MultiGeometry;
+import org.deegree.geometry.points.Points;
+import org.deegree.geometry.primitive.Curve;
+import org.deegree.geometry.primitive.GeometricPrimitive;
+import org.deegree.geometry.primitive.Point;
+import org.deegree.geometry.primitive.Ring;
+import org.deegree.geometry.primitive.Surface;
+import org.deegree.geometry.primitive.patches.PolygonPatch;
+import org.deegree.geometry.primitive.patches.SurfacePatch;
+import org.deegree.geometry.primitive.segments.ArcString;
+import org.deegree.geometry.primitive.segments.CurveSegment;
+import org.deegree.geometry.primitive.segments.LineStringSegment;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.EnumSet;
+import java.util.List;
 
-import io.github.sebasbaumh.postgis.CircularString;
-import io.github.sebasbaumh.postgis.CompoundCurve;
-import io.github.sebasbaumh.postgis.Curve;
-import io.github.sebasbaumh.postgis.CurvePolygon;
-import io.github.sebasbaumh.postgis.Geometry;
-import io.github.sebasbaumh.postgis.GeometryCollection;
-import io.github.sebasbaumh.postgis.LineString;
-import io.github.sebasbaumh.postgis.LinearRing;
-import io.github.sebasbaumh.postgis.MultiCurve;
-import io.github.sebasbaumh.postgis.MultiLineString;
-import io.github.sebasbaumh.postgis.MultiPoint;
-import io.github.sebasbaumh.postgis.MultiPolygon;
-import io.github.sebasbaumh.postgis.MultiSurface;
-import io.github.sebasbaumh.postgis.Point;
-import io.github.sebasbaumh.postgis.Polygon;
-import io.github.sebasbaumh.postgis.PolygonBase;
-import io.github.sebasbaumh.postgis.PostGisUtil;
+import static org.deegree.geometry.primitive.segments.CurveSegment.CurveSegmentType.ARC_STRING;
+import static org.deegree.geometry.primitive.segments.CurveSegment.CurveSegmentType.LINE_STRING_SEGMENT;
 
 /**
  * A writer for building a binary or hex string representation of geometries.
+ *
  * @author Sebastian Baumhekel
  */
-public final class BinaryWriter
-{
+public final class BinaryWriter {
+
 	// prevent instantiating this class
 	@Deprecated
-	private BinaryWriter()
-	{
+	private BinaryWriter() {
 	}
 
 	/**
-	 * Write a binary encoded geometry. The geometry you put in must be consistent, geom.checkConsistency() must return
-	 * true. If not, the result may be invalid WKB.
-	 * @see Geometry#checkConsistency() the consistency checker
+	 * Write a binary encoded geometry. The geometry you put in must be consistent,
+	 * geom.checkConsistency() must return true. If not, the result may be invalid WKB.
 	 * @param geom the geometry to be written
-	 * @return byte arrray containing the encoded geometry
+	 * @return byte array containing the encoded geometry
 	 */
-	public static byte[] writeBinary(Geometry geom)
-	{
-		BinaryValueSetter bytes = new BinaryValueSetter();
-		writeGeometry(geom, bytes);
+	public static byte[] writeBinary(Axis axis, Geometry geom, int srid) {
+		BinaryValueSetter bytes = new BinaryValueSetter(axis, srid);
+		writeGeometry(geom, bytes, true);
 		return bytes.getValue();
+	}
+
+	private static void writeEndianAndTypeWord(final int type, ValueSetter dest) {
+		int typeword = type;
+		if (dest.hasZ()) {
+			typeword |= 0x80000000;
+		}
+		if (dest.hasM()) {
+			typeword |= 0x40000000;
+		}
+		// if (geom.getSrid() != Geometry.UNKNOWN_SRID) {
+		// dest.setInt(geom.getSrid());
+		// }
+
+		// write endian flag, NDR (little endian)
+		dest.setByte(Utils.LITTLE_ENDIAN);
+
+		dest.setInt(typeword);
 	}
 
 	/**
@@ -74,169 +89,198 @@ public final class BinaryWriter
 	 * @param geom the geometry to write
 	 * @param dest the value setting to be used for writing
 	 */
-	private static void writeGeometry(Geometry geom, ValueSetter dest)
-	{
-		// write endian flag, NDR (little endian)
-		dest.setByte(PostGisUtil.LITTLE_ENDIAN);
-
-		// write typeword
-		int typeword = geom.getType();
-		if (geom.is3d())
-		{
-			typeword |= 0x80000000;
+	private static void writeGeometry(Geometry geom, ValueSetter dest, boolean toplevel) {
+		Geometry.GeometryType typ = geom.getGeometryType();
+		if (typ == Geometry.GeometryType.PRIMITIVE_GEOMETRY) {
+			writePrimitive((GeometricPrimitive) geom, dest);
 		}
-		if (geom.hasMeasure())
-		{
-			typeword |= 0x40000000;
-		}
-		if (geom.getSrid() != Geometry.UNKNOWN_SRID)
-		{
-			typeword |= 0x20000000;
-		}
-		dest.setInt(typeword);
-
-		if (geom.getSrid() != Geometry.UNKNOWN_SRID)
-		{
-			dest.setInt(geom.getSrid());
-		}
-
-		switch (geom.getType())
-		{
-			case Point.TYPE:
-				writePoint((Point) geom, dest);
-				break;
-			case LineString.TYPE:
-				writePoints((LineString) geom, dest);
-				break;
-			case CircularString.TYPE:
-				writePoints((CircularString) geom, dest);
-				break;
-			case CompoundCurve.TYPE:
-				writeMultiGeometry(((CompoundCurve) geom).getGeometries(), dest);
-				break;
-			case Polygon.TYPE:
-				writePolygon((Polygon) geom, dest);
-				break;
-			case CurvePolygon.TYPE:
-				writePolygon((CurvePolygon) geom, dest);
-				break;
-			case MultiPoint.TYPE:
-				writeMultiGeometry(((MultiPoint) geom).getGeometries(), dest);
-				break;
-			case MultiLineString.TYPE:
-				writeMultiGeometry(((MultiLineString) geom).getGeometries(), dest);
-				break;
-			case MultiCurve.TYPE:
-				writeMultiGeometry(((MultiCurve) geom).getGeometries(), dest);
-				break;
-			case MultiPolygon.TYPE:
-				writeMultiGeometry(((MultiPolygon) geom).getGeometries(), dest);
-				break;
-			case MultiSurface.TYPE:
-				writeMultiGeometry(((MultiSurface) geom).getGeometries(), dest);
-				break;
-			case GeometryCollection.TYPE:
-				writeMultiGeometry(((GeometryCollection) geom).getGeometries(), dest);
-				break;
-			default:
-				throw new IllegalArgumentException("Unknown Geometry Type: " + geom.getType());
-		}
-	}
-
-	/**
-	 * Write a hex encoded geometry. The geometry you put in must be consistent, geom.checkConsistency() must return
-	 * true. If not, the result may be invalid WKB.
-	 * @see Geometry#checkConsistency() the consistency checker
-	 * @param geom the geometry to be written
-	 * @return String containing the hex encoded geometry
-	 */
-	public static String writeHexed(Geometry geom)
-	{
-		StringValueSetter bytes = new StringValueSetter();
-		writeGeometry(geom, bytes);
-		return bytes.getValue();
-	}
-
-	/**
-	 * Writes multiple geometries preceded by their count.
-	 * @param geoms geometries
-	 * @param dest writer
-	 */
-	private static <T extends Geometry> void writeMultiGeometry(Collection<T> geoms, ValueSetter dest)
-	{
-		dest.setInt(geoms.size());
-		for (Geometry geom : geoms)
-		{
-			writeGeometry(geom, dest);
-		}
-	}
-
-	/**
-	 * Writes a "slim" Point (without endiannes, srid ant type, only the ordinates and measure. Used by writeGeometry as
-	 * ell as writePointArray.
-	 * @param geom geometry
-	 * @param dest writer
-	 */
-	private static void writePoint(Point geom, ValueSetter dest)
-	{
-		dest.setDouble(geom.getX());
-		dest.setDouble(geom.getY());
-		// write z coordinate?
-		if (geom.is3d())
-		{
-			dest.setDouble(geom.getZ());
-		}
-		// write measure?
-		if (geom.hasMeasure())
-		{
-			dest.setDouble(geom.getM());
-		}
-	}
-
-	/**
-	 * Write an Array of "slim" Points (without endianness, srid and type, part of LinearRing and Linestring, but not
-	 * MultiPoint!
-	 * @param geom geometry
-	 * @param dest writer
-	 */
-	private static void writePoints(LineString geom, ValueSetter dest)
-	{
-		// number of points
-		dest.setInt(geom.getNumberOfCoordinates());
-		for (Point p : geom)
-		{
-			writePoint(p, dest);
-		}
-	}
-
-	/**
-	 * Writes a {@link Polygon}.
-	 * @param geom {@link Polygon}
-	 * @param dest writer
-	 */
-	private static <T extends Curve> void writePolygon(PolygonBase<T> geom, ValueSetter dest)
-	{
-		// collect all rings (outer ring+inner rings)
-		ArrayList<T> rings = new ArrayList<T>(geom.getNumberOfRings() + 1);
-		rings.add(geom.getOuterRing());
-		for (T ring : geom.getRings())
-		{
-			rings.add(ring);
-		}
-		// write number of rings
-		dest.setInt(rings.size());
-		// then all rings
-		for (T ring : rings)
-		{
-			// polygon linear rings are just written as a plain set of points
-			if (ring instanceof LinearRing lr)
-			{
-				writePoints(lr, dest);
+		else if (typ == Geometry.GeometryType.MULTI_GEOMETRY) {
+			if (!toplevel) {
+				// encapsulated multi not supported
+				throw new InvalidParameterValueException();
 			}
-			else
-			{
-				// curve polygons can have different geometries
-				writeGeometry(ring, dest);
+			MultiGeometry<? extends Geometry> geometries = (MultiGeometry<? extends Geometry>) geom;
+			if (geometries.getMultiGeometryType() == MultiGeometry.MultiGeometryType.MULTI_POINT) {
+				writeEndianAndTypeWord(Types.MULTIPOINT_TYPE, dest);
+			}
+			else if (geometries.getMultiGeometryType() == MultiGeometry.MultiGeometryType.MULTI_LINE_STRING) {
+				writeEndianAndTypeWord(Types.MULTILINESTRING_TYPE, dest);
+			}
+			else if (geometries.getMultiGeometryType() == MultiGeometry.MultiGeometryType.MULTI_POLYGON) {
+				writeEndianAndTypeWord(Types.MULTIPOLYGON_TYPE, dest);
+			}
+			else if (geometries.getMultiGeometryType() == MultiGeometry.MultiGeometryType.MULTI_CURVE) {
+				writeEndianAndTypeWord(Types.MULTICURVE_TYPE, dest);
+			}
+			else {
+				writeEndianAndTypeWord(Types.GEOMETRY_COLLECTION_TYPE, dest);
+			}
+			dest.setInt(geometries.size());
+			for (Geometry sub : geometries) {
+				writeGeometry(sub, dest, false);
+			}
+		}
+		else if (typ == Geometry.GeometryType.ENVELOPE) {
+			// TODO box2d
+			throw new InvalidParameterValueException();
+		}
+		else {
+			// COMPOSITE_GEOMETRY: and others
+			throw new InvalidParameterValueException();
+		}
+	}
+
+	private static void writePrimitive(GeometricPrimitive geom, ValueSetter dest) {
+		GeometricPrimitive.PrimitiveType typ = geom.getPrimitiveType();
+		if (typ == GeometricPrimitive.PrimitiveType.Curve) {
+			writeCurve((Curve) geom, dest);
+		}
+		else if (typ == GeometricPrimitive.PrimitiveType.Point) {
+			Point pnt = (Point) geom;
+			writePoint(pnt, dest);
+		}
+		else if (typ == GeometricPrimitive.PrimitiveType.Surface) {
+			writeSurface((Surface) geom, dest);
+
+		}
+		else {
+			// unsupported
+			throw new InvalidParameterValueException();
+		}
+	}
+
+	private static void writeSurface(Surface geom, ValueSetter dest) {
+		boolean isSimple = true;
+		EnumSet<CurveSegment.CurveSegmentType> types = EnumSet.noneOf(CurveSegment.CurveSegmentType.class);
+		if (geom.getPatches().size() > 1) {
+			// no multi polygon/surface at this point
+			throw new InvalidParameterValueException();
+		}
+		for (SurfacePatch sp : geom.getPatches()) {
+			if (sp.getSurfacePatchType() != SurfacePatch.SurfacePatchType.POLYGON_PATCH)
+				throw new InvalidParameterValueException();
+
+			PolygonPatch pp = (PolygonPatch) sp;
+			for (Ring r : pp.getBoundaryRings()) {
+				if (r.getCurveSegments().size() > 1) {
+					// compund
+					isSimple = false;
+					break;
+				}
+				checksCompoundLineSegment(types, r.getCurveSegments());
+			}
+		}
+		PolygonPatch pp = (PolygonPatch) geom.getPatches().get(0);
+		List<Ring> interiorRings = pp.getInteriorRings();
+		if (isSimple && types.size() == 1 && types.contains(LINE_STRING_SEGMENT)) {
+			writeEndianAndTypeWord(Types.POLYGON_TYPE, dest);
+			dest.setInt(1 + interiorRings.size());
+			writePoints(pp.getExteriorRing().getControlPoints(), dest);
+			for (Ring ring : interiorRings) {
+				writePoints(ring.getControlPoints(), dest);
+			}
+			return;
+		}
+		writeEndianAndTypeWord(Types.CURVE_POLYGON_TYPE, dest);
+		dest.setInt(1 + interiorRings.size());
+		writeCurve(pp.getExteriorRing(), dest);
+		for (Ring ring : interiorRings) {
+			writeCurve(ring, dest);
+		}
+	}
+
+	private static EnumSet<CurveSegment.CurveSegmentType> checksCompoundLineSegment(List<CurveSegment> segments) {
+		EnumSet<CurveSegment.CurveSegmentType> types = EnumSet.noneOf(CurveSegment.CurveSegmentType.class);
+		checksCompoundLineSegment(types, segments);
+		return types;
+	}
+
+	private static EnumSet<CurveSegment.CurveSegmentType> checksCompoundLineSegment(
+			EnumSet<CurveSegment.CurveSegmentType> types, List<CurveSegment> segments) {
+		for (CurveSegment segment : segments) {
+			switch (segment.getSegmentType()) {
+				case CIRCLE: // Circle extends ArcString
+				case ARC: // Arc extends ArcString
+				case ARC_STRING:
+					types.add(ARC_STRING);
+					break;
+				case LINE_STRING_SEGMENT:
+					types.add(LINE_STRING_SEGMENT);
+					break;
+				default:
+					throw new InvalidParameterValueException();
+			}
+		}
+		return types;
+	}
+
+	private static void writePoint(Point pnt, ValueSetter dest) {
+		writeEndianAndTypeWord(Types.POINT_TYPE, dest);
+		dest.setDouble(pnt.get0());
+		dest.setDouble(pnt.get1());
+		switch (dest.getAxis()) {
+			case XYZ:
+			case XYM:
+				dest.setDouble(pnt.get(2));
+				break;
+			case XYZM:
+				dest.setDouble(pnt.get(2));
+				dest.setDouble(pnt.get(3));
+		}
+	}
+
+	private static void writePoints(Points points, ValueSetter dest) {
+		dest.setInt(points.size());
+		Axis dim = dest.getAxis();
+		for (Point pnt : points) {
+			dest.setDouble(pnt.get0());
+			dest.setDouble(pnt.get1());
+			switch (dim) {
+				case XYZ:
+				case XYM:
+					dest.setDouble(pnt.get(2));
+					break;
+				case XYZM:
+					dest.setDouble(pnt.get(2));
+					dest.setDouble(pnt.get(3));
+			}
+		}
+	}
+
+	private static void writeCurve(Curve geom, ValueSetter dest) {
+		List<CurveSegment> segments = geom.getCurveSegments();
+		EnumSet<CurveSegment.CurveSegmentType> types = checksCompoundLineSegment(segments);
+
+		Points controlPoints = null;
+		if (types.size() == 1 && segments.size() == 1 && types.contains(LINE_STRING_SEGMENT)) {
+			writeEndianAndTypeWord(Types.LINESTRING_TYPE, dest);
+			controlPoints = ((LineStringSegment) segments.get(0)).getControlPoints();
+		}
+		else if (types.size() == 1 && segments.size() == 1 && types.contains(ARC_STRING)) {
+			writeEndianAndTypeWord(Types.CIRCULAR_STRING_TYPE, dest);
+			controlPoints = ((ArcString) segments.get(0)).getControlPoints();
+		}
+		else {
+			// COMPOUND
+			writeEndianAndTypeWord(Types.COMPOUND_CURVE_TYPE, dest);
+		}
+		if (controlPoints != null) {
+			writePoints(controlPoints, dest);
+		}
+		else {
+			dest.setInt(segments.size());
+			for (CurveSegment segment : segments) {
+				if (segment.getSegmentType() == LINE_STRING_SEGMENT) {
+					writeEndianAndTypeWord(Types.LINESTRING_TYPE, dest);
+					controlPoints = ((LineStringSegment) segment).getControlPoints();
+					writePoints(controlPoints, dest);
+				}
+				else {
+					// ARC
+					writeEndianAndTypeWord(Types.CIRCULAR_STRING_TYPE, dest);
+					controlPoints = ((ArcString) segment).getControlPoints();
+					writePoints(controlPoints, dest);
+				}
 			}
 		}
 	}

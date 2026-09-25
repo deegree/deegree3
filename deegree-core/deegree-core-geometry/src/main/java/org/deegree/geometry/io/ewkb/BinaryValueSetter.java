@@ -20,36 +20,42 @@
  * License along with this library. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.sebasbaumh.postgis.binary;
+package org.deegree.geometry.io.ewkb;
 
 import java.io.ByteArrayOutputStream;
 
 /**
  * Allows writing values to a byte array in little endian format.
+ *
  * @author Sebastian Baumhekel
  */
-public class BinaryValueSetter extends ValueSetter
-{
+public class BinaryValueSetter extends ValueSetter {
+
 	private final ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+	/**
+	 * Constructs an instance.
+	 * @param axis
+	 */
+	public BinaryValueSetter(Axis axis) {
+		super(axis);
+	}
 
 	/**
 	 * Gets the written value.
 	 * @return value
 	 */
-	public byte[] getValue()
-	{
+	public byte[] getValue() {
 		return out.toByteArray();
 	}
 
 	@Override
-	public void setByte(byte b)
-	{
+	public void setByte(byte b) {
 		out.write(b);
 	}
 
 	@Override
-	public void setInt(int value)
-	{
+	public void setInt(int value) {
 		out.write((value >>> 0) & 0xFF);
 		out.write((value >>> 8) & 0xFF);
 		out.write((value >>> 16) & 0xFF);
@@ -57,8 +63,7 @@ public class BinaryValueSetter extends ValueSetter
 	}
 
 	@Override
-	public void setLong(long value)
-	{
+	public void setLong(long value) {
 		out.write((int) ((value >>> 0) & 0xFF));
 		out.write((int) ((value >>> 8) & 0xFF));
 		out.write((int) ((value >>> 16) & 0xFF));

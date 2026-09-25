@@ -20,20 +20,38 @@
  * License along with this library. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.sebasbaumh.postgis.binary;
+package org.deegree.geometry.io.ewkb;
 
 /**
  * A base class for value setters.
+ *
  * @author Sebastian Baumhekel
  */
-public abstract class ValueSetter
-{
+public abstract class ValueSetter {
+
+	private final Axis axis;
 
 	/**
 	 * Constructs an instance.
 	 */
-	public ValueSetter()
-	{
+	public ValueSetter(final Axis axis) {
+		this.axis = axis;
+	}
+
+	/**
+	 * Get the count of dimensions
+	 * @return
+	 */
+	public Axis getAxis() {
+		return axis;
+	}
+
+	protected boolean hasZ() {
+		return axis == Axis.XYZ || axis == Axis.XYZM;
+	}
+
+	protected boolean hasM() {
+		return axis == Axis.XYM || axis == Axis.XYZM;
 	}
 
 	/**
@@ -46,8 +64,7 @@ public abstract class ValueSetter
 	 * Writes a double.
 	 * @param data double value to be set with
 	 */
-	public void setDouble(double data)
-	{
+	public void setDouble(double data) {
 		setLong(Double.doubleToLongBits(data));
 	}
 
@@ -55,8 +72,7 @@ public abstract class ValueSetter
 	 * Sets a 32-Bit integer
 	 * @param value int value to be set with
 	 */
-	public void setInt(int value)
-	{
+	public void setInt(int value) {
 		setByte((byte) value);
 		setByte((byte) (value >> 8));
 		setByte((byte) (value >> 16));
@@ -64,11 +80,11 @@ public abstract class ValueSetter
 	}
 
 	/**
-	 * Sets a long value. This is not needed directly, but as a nice side-effect from setDouble.
+	 * Sets a long value. This is not needed directly, but as a nice side-effect from
+	 * setDouble.
 	 * @param value value value to be set with
 	 */
-	public void setLong(long value)
-	{
+	public void setLong(long value) {
 		setByte((byte) value);
 		setByte((byte) (value >> 8));
 		setByte((byte) (value >> 16));
