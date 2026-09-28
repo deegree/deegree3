@@ -102,6 +102,64 @@ public class OGCFrontControllerTest {
 	}
 
 	@Test
+	public void testGetHttpPostURLWithXForwardedHostAndDefaultPortHttp() throws Exception {
+		String serviceUrl = "http://myservice.de/deegree-webservices/test";
+		String xForwardedHost = "xForwardedHost.de";
+		String xForwardedPort = "80";
+		RequestContext mockedContext = mockContext(serviceUrl, xForwardedHost, xForwardedPort);
+
+		prepareOGCFrontController(mockedContext);
+
+		String httpPostURL = OGCFrontController.getHttpPostURL();
+
+		assertThat(httpPostURL, is("http://xForwardedHost.de/deegree-webservices/test"));
+	}
+
+	@Test
+	public void testGetHttpPostURLWithXForwardedHostAndDefaultPortHttps() throws Exception {
+		String serviceUrl = "https://myservice.de/deegree-webservices/test";
+		String xForwardedHost = "xForwardedHost.de";
+		String xForwardedPort = "443";
+		String xForwardedProto = "https";
+		RequestContext mockedContext = mockContext(serviceUrl, xForwardedHost, xForwardedPort, xForwardedProto);
+
+		prepareOGCFrontController(mockedContext);
+
+		String httpPostURL = OGCFrontController.getHttpPostURL();
+
+		assertThat(httpPostURL, is("https://xForwardedHost.de/deegree-webservices/test"));
+	}
+
+	@Test
+	public void testGetHttpPostURLWithXForwardedHostAndDefaultPort443NotMatchingProtocol() throws Exception {
+		String serviceUrl = "http://myservice.de/deegree-webservices/test";
+		String xForwardedHost = "xForwardedHost.de";
+		String xForwardedPort = "443";
+		RequestContext mockedContext = mockContext(serviceUrl, xForwardedHost, xForwardedPort);
+
+		prepareOGCFrontController(mockedContext);
+
+		String httpPostURL = OGCFrontController.getHttpPostURL();
+
+		assertThat(httpPostURL, is("http://xForwardedHost.de:443/deegree-webservices/test"));
+	}
+
+	@Test
+	public void testGetHttpPostURLWithXForwardedHostAndDefaultPort80NotMatchingProtocol() throws Exception {
+		String serviceUrl = "https://myservice.de/deegree-webservices/test";
+		String xForwardedHost = "xForwardedHost.de";
+		String xForwardedPort = "80";
+		String xForwardedProto = "https";
+		RequestContext mockedContext = mockContext(serviceUrl, xForwardedHost, xForwardedPort, xForwardedProto);
+
+		prepareOGCFrontController(mockedContext);
+
+		String httpPostURL = OGCFrontController.getHttpPostURL();
+
+		assertThat(httpPostURL, is("https://xForwardedHost.de:80/deegree-webservices/test"));
+	}
+
+	@Test
 	public void testGetHttpPostURLWithXForwardedHostAndPortReplacePort() throws Exception {
 		String serviceUrl = "http://myservice.de:9090/deegree-webservices/test";
 		String xForwardedHost = "xForwardedHost.de";
