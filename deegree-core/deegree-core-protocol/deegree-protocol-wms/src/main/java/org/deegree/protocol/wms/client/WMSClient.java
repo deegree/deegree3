@@ -56,6 +56,9 @@ import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetFeatureInf
 import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetMap;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import javax.imageio.ImageIO;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -71,10 +74,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.Callable;
-
-import javax.imageio.ImageIO;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.commons.io.IOUtils;
@@ -898,6 +897,10 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
 		}
 		throw new IllegalArgumentException(get("WMSCLIENT.WRONG_VERSION_CAPABILITIES",
 				getIdentification().getServiceTypeVersion(), VERSION_111 + ", " + VERSION_130));
+	}
+
+	public Version getWmsVersion() {
+		return wmsVersion;
 	}
 
 	public boolean isOperationSupported(WMSRequestType request) {

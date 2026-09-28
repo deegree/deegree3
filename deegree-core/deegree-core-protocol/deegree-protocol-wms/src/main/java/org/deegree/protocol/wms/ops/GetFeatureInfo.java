@@ -484,12 +484,7 @@ public class GetFeatureInfo extends RequestBase {
 	private boolean hasAxisOrderChanged(String requestedCrs) {
 		if (!requestedCrs.startsWith("AUTO2:")) {
 			ICRS crsRef = CRSManager.getCRSRef(requestedCrs);
-			try {
-				return !CRSUtils.isAxisAware(crsRef);
-			}
-			catch (UnknownCRSException e) {
-				// already checked
-			}
+			return !CRSUtils.isAxisAware(crsRef);
 		}
 		return false;
 	}
