@@ -154,7 +154,7 @@ class RemoteWMSLayer extends AbstractLayer {
 		replaceParameters(extraParams, query.getParameters(), defaultParametersGetMap, hardParametersGetMap);
 		EXCEPTIONS_FORMAT exceptionsFormat = EXCEPTIONS_FORMAT
 			.findByParamValue(query.getParameters().get("EXCEPTIONS"));
-		CrsAndEnvelope result = retriveCrsAndEnvelope(query);
+		CrsAndEnvelope result = retrieveCrsAndEnvelope(query);
 		GetMap gm = new GetMap(singletonList(originalName), query.getWidth(), query.getHeight(), result.envelope(),
 				result.crs(), format, transparent, exceptionsFormat);
 		return new RemoteWMSLayerData(client, gm, extraParams);
@@ -165,7 +165,7 @@ class RemoteWMSLayer extends AbstractLayer {
 		Map<String, String> extraParams = new HashMap<>();
 		replaceParameters(extraParams, query.getParameters(), defaultParametersGetFeatureInfo,
 				hardParametersGetFeatureInfo);
-		CrsAndEnvelope result = retriveCrsAndEnvelope(query);
+		CrsAndEnvelope result = retrieveCrsAndEnvelope(query);
 		GetFeatureInfo gfi = new GetFeatureInfo(Collections.singletonList(originalName), query.getWidth(),
 				query.getHeight(), query.getX(), query.getY(), result.envelope(), result.crs(),
 				query.getFeatureCount());
@@ -186,7 +186,7 @@ class RemoteWMSLayer extends AbstractLayer {
 		return new DefaultFeatureInfoParser();
 	}
 
-	private CrsAndEnvelope retriveCrsAndEnvelope(LayerQuery query) {
+	private CrsAndEnvelope retrieveCrsAndEnvelope(LayerQuery query) {
 		ICRS crs = this.crs;
 		Envelope envelope = query.getEnvelope();
 		if (!alwaysUseDefaultCrs) {
