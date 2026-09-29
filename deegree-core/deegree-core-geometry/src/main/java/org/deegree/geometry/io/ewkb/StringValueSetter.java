@@ -34,9 +34,11 @@ public class StringValueSetter extends ValueSetter {
 	/**
 	 * Constructs an instance.
 	 * @param axis
+	 * @param srid PostGIS spatial reference identifier, must not be greater or equals
+	 * zero to be written
 	 */
-	public StringValueSetter(Axis axis) {
-		super(axis);
+	public StringValueSetter(Axis axis, int srid) {
+		super(axis, srid);
 	}
 
 	/**

@@ -31,11 +31,14 @@ public abstract class ValueSetter {
 
 	private final Axis axis;
 
+	private final int srid;
+
 	/**
 	 * Constructs an instance.
 	 */
-	public ValueSetter(final Axis axis) {
+	public ValueSetter(final Axis axis, int srid) {
 		this.axis = axis;
+		this.srid = srid;
 	}
 
 	/**
@@ -52,6 +55,15 @@ public abstract class ValueSetter {
 
 	protected boolean hasM() {
 		return axis == Axis.XYM || axis == Axis.XYZM;
+	}
+
+	/**
+	 * Get the srid to be written
+	 * @return PostGIS spatial reference identifier, is greater or equals zero if it
+	 * should be written
+	 */
+	public int getSrid() {
+		return srid;
 	}
 
 	/**

@@ -36,9 +36,11 @@ public class BinaryValueSetter extends ValueSetter {
 	/**
 	 * Constructs an instance.
 	 * @param axis
+	 * @param srid PostGIS spatial reference identifier, must not be greater or equals
+	 * zero to be written
 	 */
-	public BinaryValueSetter(Axis axis) {
-		super(axis);
+	public BinaryValueSetter(Axis axis, int srid) {
+		super(axis, srid);
 	}
 
 	/**

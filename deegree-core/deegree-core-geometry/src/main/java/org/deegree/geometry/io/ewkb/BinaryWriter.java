@@ -57,7 +57,9 @@ public final class BinaryWriter {
 	/**
 	 * Write a binary encoded geometry. The geometry you put in must be consistent,
 	 * geom.checkConsistency() must return true. If not, the result may be invalid WKB.
+	 * @param axis Requested number and arrangement of Axis
 	 * @param geom the geometry to be written
+	 * @param srid the srid to be set on geometry, values lower than zero are not set
 	 * @return byte array containing the encoded geometry
 	 */
 	public static byte[] writeBinary(Axis axis, Geometry geom, int srid) {
@@ -66,7 +68,7 @@ public final class BinaryWriter {
 		return bytes.getValue();
 	}
 
-	private static void writeEndianAndTypeWord(final int type, ValueSetter dest) {
+	private static void writeEndianAndTypeWord(final int type, ValueSetter dest, boolean top) {
 		int typeword = type;
 		if (dest.hasZ()) {
 			typeword |= 0x80000000;
@@ -74,14 +76,18 @@ public final class BinaryWriter {
 		if (dest.hasM()) {
 			typeword |= 0x40000000;
 		}
-		// if (geom.getSrid() != Geometry.UNKNOWN_SRID) {
-		// dest.setInt(geom.getSrid());
-		// }
+		if (dest.getSrid() >= 0 && top) {
+			typeword |= 0x20000000;
+		}
 
 		// write endian flag, NDR (little endian)
 		dest.setByte(Utils.LITTLE_ENDIAN);
 
 		dest.setInt(typeword);
+
+		if (dest.getSrid() >= 0 && top) {
+			dest.setInt(dest.getSrid());
+		}
 	}
 
 	/**
@@ -89,31 +95,31 @@ public final class BinaryWriter {
 	 * @param geom the geometry to write
 	 * @param dest the value setting to be used for writing
 	 */
-	private static void writeGeometry(Geometry geom, ValueSetter dest, boolean toplevel) {
+	private static void writeGeometry(Geometry geom, ValueSetter dest, boolean top) {
 		Geometry.GeometryType typ = geom.getGeometryType();
 		if (typ == Geometry.GeometryType.PRIMITIVE_GEOMETRY) {
-			writePrimitive((GeometricPrimitive) geom, dest);
+			writePrimitive((GeometricPrimitive) geom, dest, top);
 		}
 		else if (typ == Geometry.GeometryType.MULTI_GEOMETRY) {
-			if (!toplevel) {
+			if (!top) {
 				// encapsulated multi not supported
 				throw new InvalidParameterValueException();
 			}
 			MultiGeometry<? extends Geometry> geometries = (MultiGeometry<? extends Geometry>) geom;
 			if (geometries.getMultiGeometryType() == MultiGeometry.MultiGeometryType.MULTI_POINT) {
-				writeEndianAndTypeWord(Types.MULTIPOINT_TYPE, dest);
+				writeEndianAndTypeWord(Types.MULTIPOINT_TYPE, dest, top);
 			}
 			else if (geometries.getMultiGeometryType() == MultiGeometry.MultiGeometryType.MULTI_LINE_STRING) {
-				writeEndianAndTypeWord(Types.MULTILINESTRING_TYPE, dest);
+				writeEndianAndTypeWord(Types.MULTILINESTRING_TYPE, dest, top);
 			}
 			else if (geometries.getMultiGeometryType() == MultiGeometry.MultiGeometryType.MULTI_POLYGON) {
-				writeEndianAndTypeWord(Types.MULTIPOLYGON_TYPE, dest);
+				writeEndianAndTypeWord(Types.MULTIPOLYGON_TYPE, dest, top);
 			}
 			else if (geometries.getMultiGeometryType() == MultiGeometry.MultiGeometryType.MULTI_CURVE) {
-				writeEndianAndTypeWord(Types.MULTICURVE_TYPE, dest);
+				writeEndianAndTypeWord(Types.MULTICURVE_TYPE, dest, top);
 			}
 			else {
-				writeEndianAndTypeWord(Types.GEOMETRY_COLLECTION_TYPE, dest);
+				writeEndianAndTypeWord(Types.GEOMETRY_COLLECTION_TYPE, dest, top);
 			}
 			dest.setInt(geometries.size());
 			for (Geometry sub : geometries) {
@@ -121,7 +127,7 @@ public final class BinaryWriter {
 			}
 		}
 		else if (typ == Geometry.GeometryType.ENVELOPE) {
-			// TODO box2d
+			// TODO should this be written as polygon?
 			throw new InvalidParameterValueException();
 		}
 		else {
@@ -130,18 +136,17 @@ public final class BinaryWriter {
 		}
 	}
 
-	private static void writePrimitive(GeometricPrimitive geom, ValueSetter dest) {
+	private static void writePrimitive(GeometricPrimitive geom, ValueSetter dest, boolean top) {
 		GeometricPrimitive.PrimitiveType typ = geom.getPrimitiveType();
 		if (typ == GeometricPrimitive.PrimitiveType.Curve) {
-			writeCurve((Curve) geom, dest);
+			writeCurve((Curve) geom, dest, top);
 		}
 		else if (typ == GeometricPrimitive.PrimitiveType.Point) {
 			Point pnt = (Point) geom;
-			writePoint(pnt, dest);
+			writePoint(pnt, dest, top);
 		}
 		else if (typ == GeometricPrimitive.PrimitiveType.Surface) {
-			writeSurface((Surface) geom, dest);
-
+			writeSurface((Surface) geom, dest, top);
 		}
 		else {
 			// unsupported
@@ -149,7 +154,7 @@ public final class BinaryWriter {
 		}
 	}
 
-	private static void writeSurface(Surface geom, ValueSetter dest) {
+	private static void writeSurface(Surface geom, ValueSetter dest, boolean top) {
 		boolean isSimple = true;
 		EnumSet<CurveSegment.CurveSegmentType> types = EnumSet.noneOf(CurveSegment.CurveSegmentType.class);
 		if (geom.getPatches().size() > 1) {
@@ -173,7 +178,7 @@ public final class BinaryWriter {
 		PolygonPatch pp = (PolygonPatch) geom.getPatches().get(0);
 		List<Ring> interiorRings = pp.getInteriorRings();
 		if (isSimple && types.size() == 1 && types.contains(LINE_STRING_SEGMENT)) {
-			writeEndianAndTypeWord(Types.POLYGON_TYPE, dest);
+			writeEndianAndTypeWord(Types.POLYGON_TYPE, dest, top);
 			dest.setInt(1 + interiorRings.size());
 			writePoints(pp.getExteriorRing().getControlPoints(), dest);
 			for (Ring ring : interiorRings) {
@@ -181,11 +186,11 @@ public final class BinaryWriter {
 			}
 			return;
 		}
-		writeEndianAndTypeWord(Types.CURVE_POLYGON_TYPE, dest);
+		writeEndianAndTypeWord(Types.CURVE_POLYGON_TYPE, dest, top);
 		dest.setInt(1 + interiorRings.size());
-		writeCurve(pp.getExteriorRing(), dest);
+		writeCurve(pp.getExteriorRing(), dest, false);
 		for (Ring ring : interiorRings) {
-			writeCurve(ring, dest);
+			writeCurve(ring, dest, false);
 		}
 	}
 
@@ -214,8 +219,8 @@ public final class BinaryWriter {
 		return types;
 	}
 
-	private static void writePoint(Point pnt, ValueSetter dest) {
-		writeEndianAndTypeWord(Types.POINT_TYPE, dest);
+	private static void writePoint(Point pnt, ValueSetter dest, boolean top) {
+		writeEndianAndTypeWord(Types.POINT_TYPE, dest, top);
 		dest.setDouble(pnt.get0());
 		dest.setDouble(pnt.get1());
 		switch (dest.getAxis()) {
@@ -247,22 +252,22 @@ public final class BinaryWriter {
 		}
 	}
 
-	private static void writeCurve(Curve geom, ValueSetter dest) {
+	private static void writeCurve(Curve geom, ValueSetter dest, boolean top) {
 		List<CurveSegment> segments = geom.getCurveSegments();
 		EnumSet<CurveSegment.CurveSegmentType> types = checksCompoundLineSegment(segments);
 
 		Points controlPoints = null;
 		if (types.size() == 1 && segments.size() == 1 && types.contains(LINE_STRING_SEGMENT)) {
-			writeEndianAndTypeWord(Types.LINESTRING_TYPE, dest);
+			writeEndianAndTypeWord(Types.LINESTRING_TYPE, dest, top);
 			controlPoints = ((LineStringSegment) segments.get(0)).getControlPoints();
 		}
 		else if (types.size() == 1 && segments.size() == 1 && types.contains(ARC_STRING)) {
-			writeEndianAndTypeWord(Types.CIRCULAR_STRING_TYPE, dest);
+			writeEndianAndTypeWord(Types.CIRCULAR_STRING_TYPE, dest, top);
 			controlPoints = ((ArcString) segments.get(0)).getControlPoints();
 		}
 		else {
 			// COMPOUND
-			writeEndianAndTypeWord(Types.COMPOUND_CURVE_TYPE, dest);
+			writeEndianAndTypeWord(Types.COMPOUND_CURVE_TYPE, dest, top);
 		}
 		if (controlPoints != null) {
 			writePoints(controlPoints, dest);
@@ -271,13 +276,13 @@ public final class BinaryWriter {
 			dest.setInt(segments.size());
 			for (CurveSegment segment : segments) {
 				if (segment.getSegmentType() == LINE_STRING_SEGMENT) {
-					writeEndianAndTypeWord(Types.LINESTRING_TYPE, dest);
+					writeEndianAndTypeWord(Types.LINESTRING_TYPE, dest, false);
 					controlPoints = ((LineStringSegment) segment).getControlPoints();
 					writePoints(controlPoints, dest);
 				}
 				else {
 					// ARC
-					writeEndianAndTypeWord(Types.CIRCULAR_STRING_TYPE, dest);
+					writeEndianAndTypeWord(Types.CIRCULAR_STRING_TYPE, dest, false);
 					controlPoints = ((ArcString) segment).getControlPoints();
 					writePoints(controlPoints, dest);
 				}

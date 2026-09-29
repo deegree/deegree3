@@ -22,6 +22,10 @@
 
 package org.deegree.geometry.io.ewkb;
 
+import org.deegree.cs.coordinatesystems.ICRS;
+
+import java.util.function.IntFunction;
+
 /**
  * A base class for value readers.
  *
@@ -72,19 +76,28 @@ public abstract class ValueGetter {
 
 	private final Axis axis;
 
+	private final IntFunction<ICRS> sridToCrs;
+
 	/**
 	 * Constructs an instance.
 	 */
-	public ValueGetter(final Axis axis) {
+	public ValueGetter(final Axis axis, IntFunction<ICRS> sridToCrs) {
 		this.axis = axis;
+		this.sridToCrs = sridToCrs;
 	}
 
 	/**
 	 * Get the count of dimensions
-	 * @return
 	 */
 	public Axis getAxis() {
 		return axis;
+	}
+
+	/**
+	 * Get the converter function to convert srid to an ICRS or null
+	 */
+	public IntFunction<ICRS> getSridToCrs() {
+		return sridToCrs;
 	}
 
 	/**
