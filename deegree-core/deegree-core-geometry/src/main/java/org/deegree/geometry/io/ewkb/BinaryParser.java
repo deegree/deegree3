@@ -22,6 +22,8 @@
 
 package org.deegree.geometry.io.ewkb;
 
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.Curve;
@@ -35,6 +37,7 @@ import org.deegree.geometry.standard.points.PackedPoints;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.IntFunction;
 
 import static org.deegree.geometry.io.ewkb.Axis.XYM;
 import static org.deegree.geometry.io.ewkb.Axis.XYZ;
@@ -52,29 +55,46 @@ public final class BinaryParser {
 	private BinaryParser() {
 	}
 
+	@SuppressWarnings("SpellCheckingInspection")
+	public static final IntFunction<ICRS> SRID_TO_NONE = (srid) -> null;
+
+	@SuppressWarnings("SpellCheckingInspection")
+	public static final IntFunction<ICRS> SRID_TO_EPSG = (srid) -> srid >= 0 ? CRSManager.getCRSRef("EPSG:" + srid)
+			: null;
+
+	@SuppressWarnings("SpellCheckingInspection")
+	public static final IntFunction<ICRS> SRID_TO_URN_OGC_DEF_CRS_EPSG = (srid) -> srid >= 0
+			? CRSManager.getCRSRef("urn:ogc:def:crs:EPSG::" + srid) : null;
+
 	private final static GeometryFactory _gf = new GeometryFactory();
 
 	/**
 	 * Parse a hex encoded geometry
+	 * @param axis Requested number and arrangement of Axis
+	 * @param sridToCrs Converter function to convert srid to ICRS
 	 * @param value byte array containing the data to be parsed
 	 * @param offset offset
 	 * @return resulting geometry for the parsed data
 	 * @throws IllegalArgumentException if a contained geometry is of the wrong type or
 	 * the encoding type is unknown
 	 */
-	public static Geometry parse(Axis axis, byte[] value, int offset) {
-		return parseGeometry(new BinaryValueGetter(axis, value, offset));
+	public static Geometry parse(Axis axis, IntFunction<ICRS> sridToCrs, byte[] value, int offset) {
+		return parseGeometry(new BinaryValueGetter(axis != null ? axis : Axis.XY,
+				sridToCrs != null ? sridToCrs : SRID_TO_NONE, value, offset));
 	}
 
 	/**
 	 * Parse a hex encoded geometry
+	 * @param axis Requested number and arrangement of Axis
+	 * @param sridToCrs Converter function to convert srid to ICRS
 	 * @param value String containing the data to be parsed
 	 * @return resulting geometry for the parsed data
 	 * @throws IllegalArgumentException if a contained geometry is of the wrong type or
 	 * the encoding type is unknown
 	 */
-	public static Geometry parse(Axis axis, String value) {
-		return parseGeometry(new StringValueGetter(axis, value));
+	public static Geometry parse(Axis axis, IntFunction<ICRS> sridToCrs, String value) {
+		return parseGeometry(new StringValueGetter(axis != null ? axis : Axis.XY,
+				sridToCrs != null ? sridToCrs : SRID_TO_NONE, value));
 	}
 
 	/**
@@ -122,14 +142,12 @@ public final class BinaryParser {
 		boolean haveM = (typeword & 0x40000000) != 0;
 		boolean haveS = (typeword & 0x20000000) != 0;
 
-		// int srid = -1;
+		int srid = -1;
 		if (haveS) {
-			// ensure valid SRID
-			data.getInt();
-			// srid = data.getInt();
-			// if (srid < 0) {
-			// srid = -1;
-			// }
+			srid = data.getInt();
+			if (srid < 0) {
+				srid = -1;
+			}
 		}
 		// parse geometry according to type
 		Geometry result;
@@ -172,6 +190,12 @@ public final class BinaryParser {
 				break;
 			default:
 				throw new IllegalArgumentException("Unknown Geometry Type: " + geometryType);
+		}
+		if (srid >= 0) {
+			ICRS crs = data.getSridToCrs().apply(srid);
+			if (crs != null) {
+				result.setCoordinateSystem(crs);
+			}
 		}
 		return result;
 	}

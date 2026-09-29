@@ -22,6 +22,10 @@
 
 package org.deegree.geometry.io.ewkb;
 
+import org.deegree.cs.coordinatesystems.ICRS;
+
+import java.util.function.IntFunction;
+
 /**
  * Allows reading values from a byte array.
  *
@@ -38,8 +42,8 @@ public class BinaryValueGetter extends ValueGetter {
 	 * @param value value
 	 * @param offset offset to use
 	 */
-	public BinaryValueGetter(Axis axis, byte[] value, int offset) {
-		super(axis);
+	public BinaryValueGetter(Axis axis, IntFunction<ICRS> sridToCrs, byte[] value, int offset) {
+		super(axis, sridToCrs);
 		this.value = value;
 		this.position = offset;
 	}

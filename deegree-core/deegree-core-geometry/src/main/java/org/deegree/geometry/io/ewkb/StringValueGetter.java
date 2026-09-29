@@ -22,6 +22,10 @@
 
 package org.deegree.geometry.io.ewkb;
 
+import org.deegree.cs.coordinatesystems.ICRS;
+
+import java.util.function.IntFunction;
+
 /**
  * Allows reading values from a string.
  *
@@ -37,8 +41,8 @@ public class StringValueGetter extends ValueGetter {
 	 * Constructs an instance.
 	 * @param value value as hex string
 	 */
-	public StringValueGetter(Axis axis, String value) {
-		super(axis);
+	public StringValueGetter(Axis axis, IntFunction<ICRS> sridToCrs, String value) {
+		super(axis, sridToCrs);
 		this.value = value;
 	}
 
