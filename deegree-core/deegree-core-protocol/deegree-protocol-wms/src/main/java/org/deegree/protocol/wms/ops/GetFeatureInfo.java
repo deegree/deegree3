@@ -105,6 +105,8 @@ public class GetFeatureInfo extends RequestBase {
 
 	private double scale;
 
+	private String gfiTemplate;
+
 	/**
 	 * @param map
 	 * @param version
@@ -332,6 +334,7 @@ public class GetFeatureInfo extends RequestBase {
 
 		returnGeometries = map.get("GEOMETRIES") != null && map.get("GEOMETRIES").equalsIgnoreCase("true");
 		infoCrs = map.get("INFO_CRS") != null ? CRSManager.getCRSRef(map.get("INFO_CRS")) : null;
+		gfiTemplate = map.get("GFI_TEMPLATE");
 
 		return vals;
 	}
@@ -440,6 +443,14 @@ public class GetFeatureInfo extends RequestBase {
 	 */
 	public int getY() {
 		return y;
+	}
+
+	/**
+	 * @return the gfi template (vendor specific parameter GFI_TEMPLATE), may be
+	 * <code>null</code>
+	 */
+	public String getGfiTemplate() {
+		return gfiTemplate;
 	}
 
 	/**
