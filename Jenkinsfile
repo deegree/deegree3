@@ -54,7 +54,7 @@ pipeline {
             }
             steps {
                 echo 'Quality checking'
-                sh 'mvn -B -C -fae -P oracle com.github.spotbugs:spotbugs-maven-plugin:4.10.2.0:spotbugs javadoc:javadoc'
+                sh 'mvn -B -C -fae -P oracle com.github.spotbugs:spotbugs-maven-plugin:4.10.4.1:spotbugs javadoc:javadoc'
             }
             post {
                 always {
