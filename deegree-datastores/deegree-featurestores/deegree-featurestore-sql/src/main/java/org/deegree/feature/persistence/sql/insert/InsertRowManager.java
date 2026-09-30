@@ -49,6 +49,7 @@ import javax.xml.namespace.QName;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.array.TypedObjectNodeArray;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.primitive.BaseType;
@@ -61,6 +62,7 @@ import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.MappedAppSchema;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.SQLFeatureStoreTransaction;
+import org.deegree.feature.persistence.sql.converter.MultiParticleConverter;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.id.KeyPropagation;
 import org.deegree.feature.persistence.sql.id.TableDependencies;
@@ -300,6 +302,18 @@ public class InsertRowManager {
 
 		TypedObjectNodeXPathEvaluator evaluator = new TypedObjectNodeXPathEvaluator();
 		TypedObjectNode[] values = evaluator.eval(particle, mapping.getPath());
+
+		// Allow a direct mapping for a CompoundMapping without children through
+		// MultiParticleConverter
+		ParticleConverter<?> compoundConverter = fs.getConverter(mapping);
+		if (mapping instanceof CompoundMapping && compoundConverter instanceof MultiParticleConverter //
+				&& ((CompoundMapping) mapping).getParticles().size() == 0) {
+			MultiParticleConverter converter = (MultiParticleConverter) compoundConverter;
+			String column = converter.getColumn();
+			row.addPreparedArgument(column, new TypedObjectNodeArray<>(values), converter);
+			return;
+		}
+
 		int childIdx = 1;
 		for (TypedObjectNode value : values) {
 			InsertRow currentRow = row;
