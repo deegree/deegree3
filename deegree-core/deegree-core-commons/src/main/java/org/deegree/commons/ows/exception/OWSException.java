@@ -34,6 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.ows.exception;
 
+import java.io.Serial;
 import java.util.Collections;
 import java.util.List;
 
@@ -49,6 +50,7 @@ import org.deegree.commons.utils.kvp.MissingParameterException;
 public class OWSException extends Exception {
 
 	/** */
+	@Serial
 	private static final long serialVersionUID = 4274635657976045225L;
 
 	// OWS GetCapabilities exceptions

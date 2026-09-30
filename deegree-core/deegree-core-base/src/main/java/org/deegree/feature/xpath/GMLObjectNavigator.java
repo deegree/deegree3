@@ -38,6 +38,7 @@ import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.jaxen.JaxenConstants.EMPTY_ITERATOR;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -75,6 +76,7 @@ import org.jaxen.util.SingleObjectIterator;
  */
 class GMLObjectNavigator extends DefaultNavigator {
 
+	@Serial
 	private static final long serialVersionUID = 5684363154723828577L;
 
 	private DocumentNode documentNode;

@@ -39,6 +39,7 @@ import static jakarta.faces.application.FacesMessage.SEVERITY_ERROR;
 import static jakarta.faces.application.FacesMessage.SEVERITY_INFO;
 
 import java.io.File;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -69,6 +70,7 @@ public class MetadataImporter implements Serializable {
 
 	private static Logger LOG = LoggerFactory.getLogger(MetadataImporter.class);
 
+	@Serial
 	private static final long serialVersionUID = -1896633353209120888L;
 
 	private final MetadataStore ms;

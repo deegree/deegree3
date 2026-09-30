@@ -51,6 +51,7 @@ import static org.deegree.services.config.actions.Validate.validate;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
+import java.io.Serial;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
@@ -65,6 +66,7 @@ import org.slf4j.Logger;
  */
 public class ConfigServlet extends HttpServlet {
 
+	@Serial
 	private static final long serialVersionUID = -4412872621677620591L;
 
 	private static final Logger LOG = getLogger(ConfigServlet.class);

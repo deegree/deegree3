@@ -49,7 +49,7 @@ import jakarta.faces.component.UIInput;
  */
 @ResourceDependencies({ @ResourceDependency(library = "deegree", name = "css/multipleText.css", target = "head"),
 		@ResourceDependency(name = "javascript/multipleText.js", library = "deegree"),
-		@ResourceDependency(name = "jsf.js", target = "head", library = "javax.faces") })
+		@ResourceDependency(name = "jsf.js", target = "head", library = "jakarta.faces") })
 @FacesComponent(value = "HtmlInputMultipleText")
 public class HtmlInputMultipleText extends UIInput {
 

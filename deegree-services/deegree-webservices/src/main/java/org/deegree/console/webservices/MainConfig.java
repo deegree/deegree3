@@ -28,6 +28,7 @@
 package org.deegree.console.webservices;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.net.URL;
 
@@ -43,6 +44,7 @@ import org.deegree.services.controller.OGCFrontController;
  */
 public class MainConfig extends Config implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = -8185523546919352171L;
 
 	private static final URL MAIN_SCHEMA_URL = ServicesBean.class

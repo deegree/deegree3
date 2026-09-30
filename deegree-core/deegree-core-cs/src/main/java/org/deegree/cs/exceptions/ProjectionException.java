@@ -35,6 +35,8 @@
 
 package org.deegree.cs.exceptions;
 
+import java.io.Serial;
+
 /**
  * The <code>ProjectionException</code> class can be thrown if the projection runs into a
  * problem while projecting coordinates.
@@ -48,6 +50,7 @@ public class ProjectionException extends CRSException {
 	/**
 	 *
 	 */
+	@Serial
 	private static final long serialVersionUID = -6763536693500423010L;
 
 	/**

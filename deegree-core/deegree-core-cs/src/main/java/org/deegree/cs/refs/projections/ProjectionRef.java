@@ -34,6 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs.refs.projections;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import javax.vecmath.Point2d;
@@ -55,6 +56,7 @@ import org.deegree.cs.refs.CRSResourceRef;
  */
 public class ProjectionRef extends CRSResourceRef<IProjection> implements Serializable, IProjection {
 
+	@Serial
 	private static final long serialVersionUID = -5633208582212339185L;
 
 	/**

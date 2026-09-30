@@ -34,6 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.datastore.feature;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,6 +51,7 @@ import org.deegree.workspace.ResourceMetadata;
 @ViewScoped
 public class FeatureStoreManagerBean extends AbstractResourceManagerBean<FeatureStoreManager> implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = -7258840439551611498L;
 
 	public FeatureStoreManagerBean() {

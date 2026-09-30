@@ -65,7 +65,7 @@ import org.slf4j.Logger;
  *
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  */
-@FacesRenderer(componentFamily = "javax.faces.Output", rendererType = "org.deegree.OutputXML")
+@FacesRenderer(componentFamily = "jakarta.faces.Output", rendererType = "org.deegree.OutputXML")
 public class OutputXMLRenderer extends Renderer {
 
 	private static final Logger LOG = getLogger(OutputXMLRenderer.class);

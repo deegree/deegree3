@@ -35,6 +35,8 @@
 
 package org.deegree.cs.exceptions;
 
+import java.io.Serial;
+
 /**
  * The <code>WKTParsingException</code> class can be thrown if the parsing of WKT runs
  * into a problem.
@@ -47,6 +49,7 @@ public class WKTParsingException extends RuntimeException {
 	/**
 	 *
 	 */
+	@Serial
 	private static final long serialVersionUID = -4397703070708527581L;
 
 	/**

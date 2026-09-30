@@ -40,6 +40,7 @@ import static org.deegree.gml.GMLVersion.GML_32;
 import static org.deegree.protocol.wfs.transaction.action.IDGenMode.GENERATE_NEW;
 import static org.deegree.protocol.wfs.transaction.action.IDGenMode.USE_EXISTING;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.List;
@@ -67,6 +68,7 @@ import org.deegree.protocol.wfs.transaction.action.IDGenMode;
 @RequestScoped
 public class FeatureStoreLoader implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = 5091506903775758089L;
 
 	private final FeatureStore fs;

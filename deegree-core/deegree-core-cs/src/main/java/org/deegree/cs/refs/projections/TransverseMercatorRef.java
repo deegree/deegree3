@@ -34,6 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs.refs.projections;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import org.deegree.commons.tom.ReferenceResolver;
@@ -48,6 +49,7 @@ import org.deegree.cs.projections.cylindric.TransverseMercator;
  */
 public class TransverseMercatorRef extends ProjectionRef implements Serializable, ITransverseMercator {
 
+	@Serial
 	private static final long serialVersionUID = 179754691716158093L;
 
 	/**

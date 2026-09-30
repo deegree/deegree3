@@ -34,6 +34,8 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.lock;
 
+import java.io.Serial;
+
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 
 /**
@@ -43,6 +45,7 @@ import org.deegree.commons.utils.kvp.InvalidParameterValueException;
  */
 public class LockHasExpiredException extends InvalidParameterValueException {
 
+	@Serial
 	private static final long serialVersionUID = -5937588941973626816L;
 
 	/**

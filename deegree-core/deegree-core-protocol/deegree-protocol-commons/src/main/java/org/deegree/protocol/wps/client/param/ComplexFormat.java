@@ -34,6 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wps.client.param;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -43,6 +44,7 @@ import java.io.Serializable;
  */
 public class ComplexFormat implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = -55302641376503085L;
 
 	private String mimeType;

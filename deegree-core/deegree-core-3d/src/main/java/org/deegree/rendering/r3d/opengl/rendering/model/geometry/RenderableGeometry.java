@@ -37,6 +37,7 @@ package org.deegree.rendering.r3d.opengl.rendering.model.geometry;
 
 import static org.deegree.rendering.r3d.opengl.JOGLUtils.convertColorIntAsFloats;
 
+import java.io.Serial;
 import java.nio.FloatBuffer;
 
 import javax.media.opengl.GL;
@@ -71,6 +72,7 @@ public class RenderableGeometry implements RenderableQualityModelPart {
 	/**
 	 *
 	 */
+	@Serial
 	private static final long serialVersionUID = -7536310565460231026L;
 
 	private final static Logger LOG = LoggerFactory.getLogger(RenderableGeometry.class);

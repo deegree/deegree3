@@ -39,6 +39,8 @@ import static java.util.Arrays.copyOf;
 
 import org.deegree.commons.ows.exception.OWSException;
 
+import java.io.Serial;
+
 /**
  * The <code>SoapException</code> class wraps the soap specific fault parameters.
  *
@@ -50,6 +52,7 @@ public class SOAPException extends OWSException {
 	/**
 	 *
 	 */
+	@Serial
 	private static final long serialVersionUID = -8628066105740690101L;
 
 	/**

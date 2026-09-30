@@ -35,6 +35,8 @@
 
 package org.deegree.protocol.wms;
 
+import java.io.Serial;
+
 /**
  * <code>WMSException</code>
  *
@@ -42,6 +44,7 @@ package org.deegree.protocol.wms;
  */
 public class WMSException extends Exception {
 
+	@Serial
 	private static final long serialVersionUID = -2768366974222236855L;
 
 	/**
@@ -51,6 +54,7 @@ public class WMSException extends Exception {
 	 */
 	public static class MissingDimensionValue extends WMSException {
 
+		@Serial
 		private static final long serialVersionUID = -837719651798847810L;
 
 		/***/
@@ -72,6 +76,7 @@ public class WMSException extends Exception {
 	 */
 	public static class InvalidDimensionValue extends WMSException {
 
+		@Serial
 		private static final long serialVersionUID = 7140638649730642200L;
 
 		/***/

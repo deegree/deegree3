@@ -34,6 +34,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile;
 
+import java.io.Serial;
+
 /**
  * Indicates an exception that occured while reading or writing tile data.
  *
@@ -41,6 +43,7 @@ package org.deegree.tile;
  */
 public class TileIOException extends RuntimeException {
 
+	@Serial
 	private static final long serialVersionUID = -336113433539622673L;
 
 	/**

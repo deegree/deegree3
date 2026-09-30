@@ -63,7 +63,7 @@ import com.sun.faces.renderkit.html_basic.MenuRenderer;
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  */
 
-@FacesRenderer(componentFamily = "javax.faces.SelectOne", rendererType = "org.deegree.InputBBox")
+@FacesRenderer(componentFamily = "jakarta.faces.SelectOne", rendererType = "org.deegree.InputBBox")
 public class InputBBoxRenderer extends MenuRenderer {
 
 	private static final Logger LOG = getLogger(InputBBoxRenderer.class);

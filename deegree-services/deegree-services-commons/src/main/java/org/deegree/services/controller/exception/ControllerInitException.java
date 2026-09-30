@@ -35,6 +35,8 @@
 
 package org.deegree.services.controller.exception;
 
+import java.io.Serial;
+
 import org.deegree.services.controller.AbstractOWS;
 
 /**
@@ -45,6 +47,7 @@ import org.deegree.services.controller.AbstractOWS;
  */
 public class ControllerInitException extends Exception {
 
+	@Serial
 	private static final long serialVersionUID = 1349092248017136937L;
 
 	/**

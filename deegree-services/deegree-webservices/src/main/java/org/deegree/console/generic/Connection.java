@@ -34,6 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.generic;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import jakarta.enterprise.context.RequestScoped;
@@ -55,6 +56,7 @@ import org.deegree.workspace.Workspace;
 @RequestScoped
 public class Connection implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = 6495856816506360039L;
 
 	private String id;

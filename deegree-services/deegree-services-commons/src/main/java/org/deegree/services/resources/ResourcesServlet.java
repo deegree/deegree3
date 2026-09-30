@@ -39,6 +39,7 @@ import static org.h2.util.IOUtils.copyAndClose;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.Serial;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
@@ -59,6 +60,7 @@ public class ResourcesServlet extends HttpServlet {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ResourcesServlet.class);
 
+	@Serial
 	private static final long serialVersionUID = -2072170206703402474L;
 
 	/**

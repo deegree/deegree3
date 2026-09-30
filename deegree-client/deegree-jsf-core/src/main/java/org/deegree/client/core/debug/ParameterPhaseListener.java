@@ -37,6 +37,7 @@ package org.deegree.client.core.debug;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.Serial;
 import java.util.Map;
 
 import jakarta.faces.context.FacesContext;
@@ -53,6 +54,7 @@ import org.slf4j.Logger;
  */
 public class ParameterPhaseListener implements PhaseListener {
 
+	@Serial
 	private static final long serialVersionUID = 4319821487773977882L;
 
 	private static final Logger LOG = getLogger(ParameterPhaseListener.class);

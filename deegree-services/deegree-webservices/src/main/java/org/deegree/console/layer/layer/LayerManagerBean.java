@@ -34,6 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.layer.layer;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import jakarta.faces.view.ViewScoped;
@@ -46,6 +47,7 @@ import org.deegree.layer.persistence.LayerStoreManager;
 @ViewScoped
 public class LayerManagerBean extends AbstractResourceManagerBean<LayerStoreManager> implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = -7445293485322343946L;
 
 	public LayerManagerBean() {

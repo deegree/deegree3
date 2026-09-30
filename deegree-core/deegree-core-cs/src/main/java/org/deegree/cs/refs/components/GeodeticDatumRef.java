@@ -34,6 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs.refs.components;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import org.deegree.commons.tom.ReferenceResolver;
@@ -51,6 +52,7 @@ import org.deegree.cs.transformations.helmert.Helmert;
  */
 public class GeodeticDatumRef extends DatumRef implements Serializable, IGeodeticDatum {
 
+	@Serial
 	private static final long serialVersionUID = 7188015467664337955L;
 
 	/**

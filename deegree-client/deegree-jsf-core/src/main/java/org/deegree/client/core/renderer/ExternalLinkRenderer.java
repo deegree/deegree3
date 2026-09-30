@@ -50,14 +50,13 @@ import org.deegree.client.core.component.HtmlExternalLink;
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  */
 
-@FacesRenderer(componentFamily = "javax.faces.Command", rendererType = "org.deegree.ExternalLink")
+@FacesRenderer(componentFamily = "jakarta.faces.Command", rendererType = "org.deegree.ExternalLink")
 public class ExternalLinkRenderer extends Renderer {
 
 	@Override
 	public void encodeBegin(FacesContext context, UIComponent component) throws IOException {
 		ResponseWriter responseWriter = context.getResponseWriter();
-		if (component instanceof HtmlExternalLink) {
-			HtmlExternalLink command = (HtmlExternalLink) component;
+		if (component instanceof HtmlExternalLink command) {
 			String clientId = command.getClientId();
 
 			responseWriter.startElement("a", null);

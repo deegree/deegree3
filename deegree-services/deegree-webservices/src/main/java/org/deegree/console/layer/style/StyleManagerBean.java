@@ -34,6 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.layer.style;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import jakarta.faces.view.ViewScoped;
@@ -45,6 +46,7 @@ import org.deegree.style.persistence.StyleStoreManager;
 @ViewScoped
 public class StyleManagerBean extends AbstractResourceManagerBean<StyleStoreManager> implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = -7445293485322343946L;
 
 	public StyleManagerBean() {

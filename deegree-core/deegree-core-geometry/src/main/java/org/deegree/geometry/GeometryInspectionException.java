@@ -34,6 +34,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry;
 
+import java.io.Serial;
+
 /**
  * Indicates that a {@link GeometryInspector} rejects a {@link Geometry}.
  *
@@ -41,6 +43,7 @@ package org.deegree.geometry;
  */
 public class GeometryInspectionException extends GeometryException {
 
+	@Serial
 	private static final long serialVersionUID = -5464465536498293360L;
 
 	/**

@@ -34,6 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.process;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import jakarta.faces.view.ViewScoped;
@@ -45,6 +46,7 @@ import org.deegree.services.wps.ProcessManager;
 @ViewScoped
 public class ProcessManagerBean extends AbstractResourceManagerBean<ProcessManager> implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = 7461387824463347969L;
 
 	public ProcessManagerBean() {
