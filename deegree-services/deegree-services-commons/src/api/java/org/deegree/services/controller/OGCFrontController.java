@@ -1580,7 +1580,8 @@ public class OGCFrontController extends HttpServlet {
 
         StringBuffer urlBuilder = new StringBuffer();
         urlBuilder.append( protocol ).append( "://" ).append( host );
-        if ( port != null )
+        if (port != null && !("80".equals(port) && "http".equals(protocol))
+				&& !("443".equals(port) && "https".equals(protocol)))
             urlBuilder.append( ":" ).append( port );
         if ( path != null && !"".equals( path ) )
             urlBuilder.append( path );
