@@ -688,7 +688,7 @@
       <dependency>
         <groupId>org.glassfish</groupId>
         <artifactId>jakarta.faces</artifactId>
-        <version>4.0.24</version>
+        <version>4.0.26</version>
       </dependency>
       <dependency>
         <groupId>jakarta.enterprise</groupId>
@@ -1287,13 +1287,13 @@
     <antlr4.version>4.13.2</antlr4.version>
     <oracle.version>23.4.0.24.05</oracle.version>
     <logback.version>1.5.38</logback.version>
-    <slf4j.version>2.0.18</slf4j.version>
     <spring-boot.version>3.5.16</spring-boot.version>
+    <slf4j.version>2.0.20</slf4j.version>
     <batik.version>1.19</batik.version>
     <axiom.version>2.0.0</axiom.version>
     <jsonpath.version>2.10.0</jsonpath.version>
     <jsonsmart.version>2.6.0</jsonsmart.version>
-    <primefaces.version>15.0.17</primefaces.version>
+    <primefaces.version>15.0.18</primefaces.version>
     <jvm.args>--add-exports java.desktop/sun.awt=ALL-UNNAMED --add-exports java.desktop/com.sun.imageio.spi=ALL-UNNAMED --add-exports java.desktop/sun.swing=ALL-UNNAMED --add-opens java.desktop/javax.imageio.spi=ALL-UNNAMED --add-opens java.desktop/com.sun.imageio.spi=ALL-UNNAMED</jvm.args>
   </properties>
 
