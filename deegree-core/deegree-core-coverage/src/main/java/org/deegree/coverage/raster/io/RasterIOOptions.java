@@ -35,6 +35,7 @@
 package org.deegree.coverage.raster.io;
 
 import java.io.File;
+import java.io.Serial;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -60,6 +61,7 @@ import org.slf4j.LoggerFactory;
  */
 public class RasterIOOptions implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = 6804424511435114774L;
 
 	private final static Logger LOG = LoggerFactory.getLogger(RasterIOOptions.class);

@@ -46,6 +46,7 @@ import static org.deegree.services.controller.OGCFrontController.getModulesInfo;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serial;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
@@ -88,6 +89,7 @@ public class WorkspaceBean implements Serializable {
 
 	private static Logger LOG = LoggerFactory.getLogger(WorkspaceBean.class);
 
+	@Serial
 	private static final long serialVersionUID = -2225303815897732019L;
 
 	public static final String WS_MAIN_VIEW = "/console/workspace/workspace";

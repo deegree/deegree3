@@ -60,6 +60,7 @@ import org.deegree.commons.struct.Tree;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
@@ -404,6 +405,7 @@ public abstract class WMSCapabilitiesAdapter extends XMLAdapter implements OWSCa
 			}
 		}
 		md.setStyles(styles);
+		md.setScaleDenominators(parseScaleDenominators(lay));
 		return md;
 	}
 
@@ -617,6 +619,8 @@ public abstract class WMSCapabilitiesAdapter extends XMLAdapter implements OWSCa
 	protected abstract Version getServiceVersion();
 
 	protected abstract String getPrefix();
+
+	protected abstract DoublePair parseScaleDenominators(OMElement lay);
 
 	public void parseWMSSpecificCapabilities(OperationsMetadata operationsMetadata) {
 		namedLayers = parseNamedLayers();

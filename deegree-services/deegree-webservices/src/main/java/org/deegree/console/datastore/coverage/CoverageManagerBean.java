@@ -34,6 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.datastore.coverage;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import jakarta.faces.view.ViewScoped;
@@ -45,6 +46,7 @@ import org.deegree.coverage.persistence.CoverageManager;
 @ViewScoped
 public class CoverageManagerBean extends AbstractResourceManagerBean<CoverageManager> implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = 8213393417005100905L;
 
 	public CoverageManagerBean() {

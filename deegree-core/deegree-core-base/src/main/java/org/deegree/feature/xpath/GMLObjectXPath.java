@@ -34,6 +34,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.xpath;
 
+import java.io.Serial;
+
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.xpath.node.GMLObjectNode;
@@ -65,6 +67,7 @@ import org.jaxen.XPathFunctionContext;
  */
 public class GMLObjectXPath extends BaseXPath {
 
+	@Serial
 	private static final long serialVersionUID = 2352279998281119079L;
 
 	private static final String WFS_200_NS = "http://www.opengis.net/wfs/2.0";

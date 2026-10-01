@@ -33,6 +33,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.security.NoSuchAlgorithmException;
 
@@ -56,6 +57,7 @@ import org.slf4j.Logger;
 @SessionScoped
 public class LogBean implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = -4865071415988778817L;
 
 	private static final Logger LOG = getLogger(LogBean.class);

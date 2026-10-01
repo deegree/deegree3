@@ -35,6 +35,8 @@
 
 package org.deegree.services.wpvs.exception;
 
+import java.io.Serial;
+
 /**
  * The <code>DatasourceException</code> class signals that one of the datasources was not
  * available to the wpvs.
@@ -47,6 +49,7 @@ public class DatasourceException extends Exception {
 	/**
 	 *
 	 */
+	@Serial
 	private static final long serialVersionUID = -294202402824196720L;
 
 	/**

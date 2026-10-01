@@ -35,6 +35,7 @@
 
 package org.deegree.cs.exceptions;
 
+import java.io.Serial;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +57,7 @@ public class TransformationException extends Exception {
 	/**
 	 *
 	 */
+	@Serial
 	private static final long serialVersionUID = 1475176551325426832L;
 
 	private Map<Integer, String> transformErrors = new HashMap<Integer, String>();

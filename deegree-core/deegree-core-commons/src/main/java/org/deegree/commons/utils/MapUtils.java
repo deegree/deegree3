@@ -104,4 +104,22 @@ public class MapUtils {
 		return scale * DEFAULT_PIXEL_SIZE;
 	}
 
+	/**
+	 * Calculates the scale hint from the scale denominator with DEFAULT_PIXEL_SIZE
+	 * @param scaleDenominator
+	 * @return scaleHint calculated from scaleDenominator
+	 */
+	public static double calcScaleHint(double scaleDenominator) {
+		return Math.sqrt(Math.pow((scaleDenominator * DEFAULT_PIXEL_SIZE), 2) * 2);
+	}
+
+	/**
+	 * Calculates the scale denominator from the scale hint with DEFAULT_PIXEL_SIZE
+	 * @param scaleHint
+	 * @return scaleDenominator calculated from scaleHint
+	 */
+	public static double calcScaleDenominator(double scaleHint) {
+		return (Math.sqrt((Math.pow(scaleHint, 2) / 2))) / DEFAULT_PIXEL_SIZE;
+	}
+
 }

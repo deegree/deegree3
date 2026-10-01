@@ -50,13 +50,12 @@ import org.deegree.client.core.component.HtmlFieldset;
  * @author <a href="mailto:buesching@lat-lon.de">Lyn Buesching</a>
  */
 
-@FacesRenderer(componentFamily = "javax.faces.Panel", rendererType = "org.deegree.Fieldset")
+@FacesRenderer(componentFamily = "jakarta.faces.Panel", rendererType = "org.deegree.Fieldset")
 public class FieldsetRenderer extends Renderer {
 
 	@Override
 	public void encodeBegin(FacesContext context, UIComponent component) throws IOException {
-		if (component instanceof HtmlFieldset) {
-			HtmlFieldset fieldset = (HtmlFieldset) component;
+		if (component instanceof HtmlFieldset fieldset) {
 			ResponseWriter writer = FacesContext.getCurrentInstance().getResponseWriter();
 			writer.startElement("fieldset", component);
 			writer.writeAttribute("id", fieldset.getClientId(), "id");

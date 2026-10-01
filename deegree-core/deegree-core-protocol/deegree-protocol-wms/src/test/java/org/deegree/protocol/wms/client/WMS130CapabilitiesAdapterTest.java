@@ -48,10 +48,12 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMXMLBuilderFactory;
 import org.apache.axiom.om.OMXMLParserWrapper;
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.commons.utils.DoublePair;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.layer.metadata.LayerMetadata;
 import org.junit.Test;
 
 /**
@@ -92,6 +94,15 @@ public class WMS130CapabilitiesAdapterTest extends WMSCapabilitiesAdapterTest {
 		assertNotNull(boundingBox);
 		Envelope bbox = (new GeometryFactory()).createEnvelope(-180, -90, 180, 90, CRSManager.getCRSRef(WGS84));
 		assertTrue(boundingBox.equals(bbox));
+	}
+
+	@Test
+	public void testWMS130Capabilities_scaleDenominators() throws XMLStreamException {
+		WMSCapabilitiesAdapter capabilities = createCapabilities();
+		LayerMetadata layer = capabilities.getLayer("citelayers");
+		DoublePair scaleDenominators = layer.getScaleDenominators();
+		assertEquals(1.0, scaleDenominators.first, 0);
+		assertEquals(100000.0, scaleDenominators.second, 0);
 	}
 
 	@Override

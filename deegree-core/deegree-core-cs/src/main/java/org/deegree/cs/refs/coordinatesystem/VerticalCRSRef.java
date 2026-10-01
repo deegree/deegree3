@@ -34,6 +34,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs.refs.coordinatesystem;
 
+import java.io.Serial;
+
 import org.deegree.commons.tom.ReferenceResolver;
 import org.deegree.cs.components.IAxis;
 import org.deegree.cs.components.IVerticalDatum;
@@ -47,6 +49,7 @@ import org.deegree.cs.coordinatesystems.VerticalCRS;
  */
 public class VerticalCRSRef extends CRSRef implements IVerticalCRS {
 
+	@Serial
 	private static final long serialVersionUID = 2868443405450143905L;
 
 	/**

@@ -54,7 +54,7 @@ import com.sun.faces.util.Util;
  */
 @ResourceDependencies({ @ResourceDependency(library = "deegree", name = "css/inputMultiple.css", target = "head"),
 		@ResourceDependency(name = "javascript/multipleItems.js", library = "deegree"),
-		@ResourceDependency(name = "jsf.js", target = "head", library = "javax.faces") })
+		@ResourceDependency(name = "jsf.js", target = "head", library = "jakarta.faces") })
 @FacesComponent(value = "HtmlInputMultiple")
 public class HtmlInputMultiple extends UIInput implements ClientBehaviorHolder {
 
@@ -93,7 +93,7 @@ public class HtmlInputMultiple extends UIInput implements ClientBehaviorHolder {
 	public UIInput getInputInstance() {
 		if (inputComponentClass != null) {
 			try {
-				return (UIInput) inputComponentClass.newInstance();
+				return (UIInput) inputComponentClass.getDeclaredConstructor().newInstance();
 			}
 			catch (Exception e) {
 				try {
@@ -107,7 +107,7 @@ public class HtmlInputMultiple extends UIInput implements ClientBehaviorHolder {
 		}
 		else {
 			try {
-				return HtmlInputText.class.newInstance();
+				return HtmlInputText.class.getDeclaredConstructor().newInstance();
 			}
 			catch (Exception e) {
 				// TODO

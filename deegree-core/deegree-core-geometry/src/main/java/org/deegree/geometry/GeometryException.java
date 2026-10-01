@@ -35,6 +35,8 @@
 
 package org.deegree.geometry;
 
+import java.io.Serial;
+
 /**
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  *
@@ -44,6 +46,7 @@ public class GeometryException extends RuntimeException {
 	/**
 	 *
 	 */
+	@Serial
 	private static final long serialVersionUID = 3327285706883207758L;
 
 	/**

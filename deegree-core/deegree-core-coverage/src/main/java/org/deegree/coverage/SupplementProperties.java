@@ -37,6 +37,7 @@
 
 package org.deegree.coverage;
 
+import java.io.Serial;
 import java.util.HashMap;
 
 import org.deegree.coverage.rangeset.RangeSet;
@@ -68,6 +69,7 @@ public class SupplementProperties extends HashMap<String, Object> {
 	/**
 	 *
 	 */
+	@Serial
 	private static final long serialVersionUID = -5778613664306283101L;
 
 	/**

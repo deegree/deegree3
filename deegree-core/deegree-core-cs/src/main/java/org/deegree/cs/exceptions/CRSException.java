@@ -35,6 +35,8 @@
 
 package org.deegree.cs.exceptions;
 
+import java.io.Serial;
+
 /**
  * A <code>CRSException</code> will inform the user that an error occurred while
  * transforming, projecting or creating a crs. The exporting process has been halted.
@@ -48,6 +50,7 @@ public class CRSException extends Exception {
 	/**
 	 *
 	 */
+	@Serial
 	private static final long serialVersionUID = -8120907445764439063L;
 
 	/**

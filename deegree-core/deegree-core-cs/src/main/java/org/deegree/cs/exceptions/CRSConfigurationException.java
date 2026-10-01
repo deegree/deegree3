@@ -35,6 +35,8 @@
 
 package org.deegree.cs.exceptions;
 
+import java.io.Serial;
+
 /**
  * The <code>CRSConfigurationException</code> can be used to inform the user of an
  * configuration exception. Because the Configuration cannot recover from this error, it
@@ -51,6 +53,7 @@ public class CRSConfigurationException extends RuntimeException {
 	/**
 	 *
 	 */
+	@Serial
 	private static final long serialVersionUID = 2531439320900413725L;
 
 	/**

@@ -34,6 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs.refs.components;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import org.deegree.commons.tom.ReferenceResolver;
@@ -47,6 +48,7 @@ import org.deegree.cs.components.VerticalDatum;
  */
 public class VerticalDatumRef extends DatumRef implements Serializable, IVerticalDatum {
 
+	@Serial
 	private static final long serialVersionUID = -8057423901456946485L;
 
 	/**

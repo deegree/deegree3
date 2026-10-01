@@ -34,6 +34,8 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.filter;
 
+import java.io.Serial;
+
 /**
  * Indicates that the evaluation of a {@link Filter} expression failed.
  *
@@ -41,6 +43,7 @@ package org.deegree.filter;
  */
 public class FilterEvaluationException extends Exception {
 
+	@Serial
 	private static final long serialVersionUID = 2009587694159886757L;
 
 	/**

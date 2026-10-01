@@ -51,6 +51,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Serial;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -102,6 +103,7 @@ import org.slf4j.Logger;
 @RequestScoped
 public class RequestBean implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = 293894352421399345L;
 
 	private static final Logger LOG = getLogger(RequestBean.class);

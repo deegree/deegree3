@@ -34,6 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs.refs.projections;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import org.deegree.commons.tom.ReferenceResolver;
@@ -48,6 +49,7 @@ import org.deegree.cs.projections.azimuthal.LambertAzimuthalEqualArea;
  */
 public class LambertAzimuthalEqualAreaRef extends ProjectionRef implements Serializable, ILambertAzimuthalEqualArea {
 
+	@Serial
 	private static final long serialVersionUID = 1430433319511904567L;
 
 	/**

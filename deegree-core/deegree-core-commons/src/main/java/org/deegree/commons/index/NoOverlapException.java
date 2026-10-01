@@ -34,6 +34,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.index;
 
+import java.io.Serial;
+
 /**
  * The <code></code> class TODO add class documentation here.
  *
@@ -45,6 +47,7 @@ public class NoOverlapException extends Exception {
 	/**
 	 *
 	 */
+	@Serial
 	private static final long serialVersionUID = 7034200118893198908L;
 
 	/**

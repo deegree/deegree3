@@ -34,6 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs.refs.components;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import org.deegree.commons.tom.ReferenceResolver;
@@ -48,6 +49,7 @@ import org.deegree.cs.refs.CRSResourceRef;
  */
 public class EllipsoidRef extends CRSResourceRef<IEllipsoid> implements Serializable, IEllipsoid {
 
+	@Serial
 	private static final long serialVersionUID = -3013277810266766577L;
 
 	/**

@@ -37,6 +37,7 @@ package org.deegree.client.core.utils;
 import static jakarta.faces.application.FacesMessage.SEVERITY_ERROR;
 import static jakarta.faces.application.FacesMessage.SEVERITY_INFO;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -54,6 +55,7 @@ import org.slf4j.LoggerFactory;
 
 public class SQLExecution implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = -5784976166723417648L;
 
 	private static Logger LOG = LoggerFactory.getLogger(SQLExecution.class);

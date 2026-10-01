@@ -82,7 +82,7 @@
         <plugin>
           <groupId>org.jvnet.jaxb</groupId>
           <artifactId>jaxb-maven-plugin</artifactId>
-          <version>4.0.12</version>
+          <version>4.0.16</version>
           <executions>
             <execution>
               <goals>
@@ -142,7 +142,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>3.5.5</version>
+          <version>3.6.0</version>
           <configuration>
             <argLine>-Djava.awt.headless=true -Dfile.encoding=UTF-8 -Xms1024m -Xmx2048m
               --add-opens java.base/java.lang=ALL-UNNAMED
@@ -158,7 +158,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-failsafe-plugin</artifactId>
-          <version>3.5.5</version>
+          <version>3.6.0</version>
           <configuration>
             <argLine>${jvm.args}</argLine>
           </configuration>
@@ -195,7 +195,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.15.0</version>
+          <version>3.16.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -440,7 +440,7 @@
           <dependency>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>extra-enforcer-rules</artifactId>
-            <version>1.12.0</version>
+            <version>1.12.1</version>
           </dependency>
         </dependencies>
       </plugin>
@@ -688,7 +688,7 @@
       <dependency>
         <groupId>org.glassfish</groupId>
         <artifactId>jakarta.faces</artifactId>
-        <version>4.0.24</version>
+        <version>4.0.26</version>
       </dependency>
       <dependency>
         <groupId>jakarta.enterprise</groupId>
@@ -1287,13 +1287,13 @@
     <antlr4.version>4.13.2</antlr4.version>
     <oracle.version>23.4.0.24.05</oracle.version>
     <logback.version>1.5.38</logback.version>
-    <slf4j.version>2.0.18</slf4j.version>
+    <slf4j.version>2.0.20</slf4j.version>
     <spring-boot.version>4.0.8</spring-boot.version>
     <batik.version>1.19</batik.version>
     <axiom.version>2.0.0</axiom.version>
     <jsonpath.version>2.10.0</jsonpath.version>
     <jsonsmart.version>2.6.0</jsonsmart.version>
-    <primefaces.version>15.0.17</primefaces.version>
+    <primefaces.version>15.0.18</primefaces.version>
     <jvm.args>--add-exports java.desktop/sun.awt=ALL-UNNAMED --add-exports java.desktop/com.sun.imageio.spi=ALL-UNNAMED --add-exports java.desktop/sun.swing=ALL-UNNAMED --add-opens java.desktop/javax.imageio.spi=ALL-UNNAMED --add-opens java.desktop/com.sun.imageio.spi=ALL-UNNAMED</jvm.args>
   </properties>
 
@@ -1329,7 +1329,7 @@
           <plugin>
             <groupId>com.github.spotbugs</groupId>
             <artifactId>spotbugs-maven-plugin</artifactId>
-            <version>4.10.2.0</version>
+            <version>4.10.4.1</version>
             <configuration>
               <xmlOutput>true</xmlOutput>
               <spotbugsXmlOutput>true</spotbugsXmlOutput>
@@ -1385,7 +1385,7 @@
           <plugin>
             <groupId>org.owasp</groupId>
             <artifactId>dependency-check-maven</artifactId>
-            <version>12.2.2</version>
+            <version>13.0.0</version>
             <configuration>
               <nvdValidForHours>24</nvdValidForHours>
               <knownExploitedEnabled>false</knownExploitedEnabled>

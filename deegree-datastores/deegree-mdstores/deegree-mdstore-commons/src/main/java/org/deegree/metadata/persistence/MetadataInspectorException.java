@@ -34,6 +34,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence;
 
+import java.io.Serial;
+
 /**
  * Indicates an exception that occured in the metadata inspectation.
  *
@@ -44,6 +46,7 @@ public class MetadataInspectorException extends Exception {
 	/**
 	 *
 	 */
+	@Serial
 	private static final long serialVersionUID = -3833594286729370830L;
 
 	public MetadataInspectorException() {

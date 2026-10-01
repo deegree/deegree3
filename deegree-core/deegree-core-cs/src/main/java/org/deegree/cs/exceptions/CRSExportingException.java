@@ -35,6 +35,8 @@
 
 package org.deegree.cs.exceptions;
 
+import java.io.Serial;
+
 /**
  * The <code>CRSExportingException</code> class reports an error that occurred in the
  * process of exporting a CRS to a file, database, etc.
@@ -47,6 +49,7 @@ public class CRSExportingException extends RuntimeException {
 	/**
 	 *
 	 */
+	@Serial
 	private static final long serialVersionUID = 253985026986808212L;
 
 	/**

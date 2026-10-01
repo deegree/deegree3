@@ -27,6 +27,7 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.console.webservices;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,6 +49,7 @@ import org.deegree.workspace.ResourceMetadata;
 @ViewScoped
 public class ServicesBean extends AbstractResourceManagerBean<OwsManager> implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = -8669333203479413121L;
 
 	private final Config mainConfig;

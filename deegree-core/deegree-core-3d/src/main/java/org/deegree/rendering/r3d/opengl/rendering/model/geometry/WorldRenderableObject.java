@@ -35,6 +35,8 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.model.geometry;
 
+import java.io.Serial;
+
 import javax.media.opengl.GL;
 
 import org.deegree.geometry.Envelope;
@@ -55,6 +57,7 @@ import org.deegree.rendering.r3d.opengl.rendering.model.manager.LODSwitcher;
 public class WorldRenderableObject extends WorldObject<RenderableQualityModelPart, RenderableQualityModel>
 		implements JOGLRenderable {
 
+	@Serial
 	private static final long serialVersionUID = 2998719476993351372L;
 
 	private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(WorldRenderableObject.class);

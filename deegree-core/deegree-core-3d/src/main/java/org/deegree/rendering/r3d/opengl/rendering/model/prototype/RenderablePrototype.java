@@ -35,6 +35,8 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.model.prototype;
 
+import java.io.Serial;
+
 import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.RenderableQualityModel;
@@ -52,6 +54,7 @@ public class RenderablePrototype extends WorldRenderableObject {
 	/**
 	 *
 	 */
+	@Serial
 	private static final long serialVersionUID = -6438620186289443235L;
 
 	/**

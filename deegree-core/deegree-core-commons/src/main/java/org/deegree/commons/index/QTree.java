@@ -36,6 +36,7 @@
 package org.deegree.commons.index;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -59,6 +60,7 @@ import org.deegree.commons.utils.Pair;
  */
 public class QTree<T> extends SpatialIndex<T> implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = 4203959065145481646L;
 
 	private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(QTree.class);
@@ -743,6 +745,7 @@ public class QTree<T> extends SpatialIndex<T> implements Serializable {
 	 */
 	protected final class Entry<ET> implements Serializable {
 
+		@Serial
 		private static final long serialVersionUID = -1957657299823750733L;
 
 		/** the envelope of the object */

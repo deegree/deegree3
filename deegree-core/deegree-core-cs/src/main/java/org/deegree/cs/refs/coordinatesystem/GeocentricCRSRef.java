@@ -34,6 +34,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs.refs.coordinatesystem;
 
+import java.io.Serial;
+
 import org.deegree.commons.tom.ReferenceResolver;
 import org.deegree.cs.coordinatesystems.GeocentricCRS;
 import org.deegree.cs.coordinatesystems.IGeocentricCRS;
@@ -45,6 +47,7 @@ import org.deegree.cs.coordinatesystems.IGeocentricCRS;
  */
 public class GeocentricCRSRef extends CRSRef implements IGeocentricCRS {
 
+	@Serial
 	private static final long serialVersionUID = -3378370139262163204L;
 
 	/**

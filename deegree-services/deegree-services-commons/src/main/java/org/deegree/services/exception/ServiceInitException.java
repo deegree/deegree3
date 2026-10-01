@@ -35,6 +35,8 @@
 
 package org.deegree.services.exception;
 
+import java.io.Serial;
+
 /**
  * @author <a href="mailto:apadberg@uni-bonn.de">Alexander Padberg</a>
  *
@@ -44,6 +46,7 @@ public class ServiceInitException extends Exception {
 	/**
 	 *
 	 */
+	@Serial
 	private static final long serialVersionUID = 5186022262384740288L;
 
 	/**

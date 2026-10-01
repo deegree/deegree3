@@ -44,6 +44,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -133,6 +134,7 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
 
 	private static final String OPT_WPVS_DB_ID = "connection_id";
 
+	@Serial
 	private static final long serialVersionUID = 7634444161374573563L;
 
 	private final static double zNear = 1.0;

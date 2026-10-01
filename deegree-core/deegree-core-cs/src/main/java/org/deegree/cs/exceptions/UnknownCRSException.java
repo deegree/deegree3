@@ -34,6 +34,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs.exceptions;
 
+import java.io.Serial;
+
 import org.deegree.cs.i18n.Messages;
 
 /**
@@ -48,6 +50,7 @@ public class UnknownCRSException extends Exception {
 	/**
 	 * the serializable id.
 	 */
+	@Serial
 	private static final long serialVersionUID = 2343417746783122437L;
 
 	/**

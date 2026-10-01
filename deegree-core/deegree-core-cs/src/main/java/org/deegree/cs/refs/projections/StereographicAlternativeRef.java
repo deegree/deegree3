@@ -34,6 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs.refs.projections;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import org.deegree.commons.tom.ReferenceResolver;
@@ -48,6 +49,7 @@ import org.deegree.cs.projections.azimuthal.StereographicAlternative;
  */
 public class StereographicAlternativeRef extends ProjectionRef implements Serializable, IStereographicAlternative {
 
+	@Serial
 	private static final long serialVersionUID = 6442433217346649388L;
 
 	/**

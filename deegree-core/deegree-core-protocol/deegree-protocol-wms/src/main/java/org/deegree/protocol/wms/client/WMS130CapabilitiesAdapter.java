@@ -34,11 +34,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wms.client;
 
+import static java.lang.Double.NEGATIVE_INFINITY;
+import static java.lang.Double.POSITIVE_INFINITY;
 import static org.deegree.cs.coordinatesystems.GeographicCRS.WGS84;
 import static org.deegree.protocol.i18n.Messages.get;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.xml.XPath;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
@@ -114,6 +117,15 @@ public class WMS130CapabilitiesAdapter extends WMSCapabilitiesAdapter {
 	@Override
 	protected String getExtendedCapabilitiesRootXPath() {
 		return "//wms:WMS_Capabilities/wms:Capability";
+	}
+
+	@Override
+	protected DoublePair parseScaleDenominators(OMElement lay) {
+		double minScaleDenominator = getNodeAsDouble(lay, new XPath(getPrefix() + "MinScaleDenominator", nsContext),
+				NEGATIVE_INFINITY);
+		double maxScaleDenominator = getNodeAsDouble(lay, new XPath(getPrefix() + "MaxScaleDenominator", nsContext),
+				POSITIVE_INFINITY);
+		return new DoublePair(minScaleDenominator, maxScaleDenominator);
 	}
 
 }
