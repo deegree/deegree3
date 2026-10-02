@@ -1823,6 +1823,16 @@ The extent of a FeatureType is written in the capabilities as WGS84BoundingBox (
 
 TIP: It is possible to configure a _bbox_cache_<FeatureStoreId>.properties_ per SQLFeatureStore, this FeatureStore specific configuration is preferred over the bbox_cache.properties.
 
+For certain use cases, it may be required to make the bounding box cache file partial or fully read-only.
+If changes to the cache should stay in memory only, adding the entry `config.readonly=true` will prevent writing new or changed entries to _bbox_cache.properties_ or _bbox_cache_<FeatureStoreId>.properties_.
+
+If only certain feature types should be read-only, they can be added to the file with the prefix `ro:`. Should all feature types of a namespace be read-only, then only the namespace has to be entered with a prefix, e.g.:
+
+----
+ro:{http\://www.deegree.org/topo}=epsg\:4326,11.16,51.29,14.83,53.59
+ro:{http\://www.deegree.org/app}Railroads=epsg\:4326,11.16,51.29,14.83,53.59
+----
+
 [[anchor-setup-tables]]
 ==== Auto-generating database tables
 

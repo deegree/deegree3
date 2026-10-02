@@ -71,7 +71,11 @@ public class BBoxPropertiesCache implements BBoxCache {
 
 	private final File propsFile;
 
-	private final Map<String, Envelope> ftNameToEnvelope = synchronizedMap(new TreeMap<String, Envelope>());
+	private final Map<String, Envelope> ftNameToEnvelope = synchronizedMap(new TreeMap<>());
+
+	private final Map<String, Envelope> ftNameToEnvelopeReadOnly = new TreeMap<>();
+
+	private final boolean disableWriteToDisk;
 
 	/**
 	 * Creates a new {@link BBoxPropertiesCache} instance.
@@ -82,10 +86,12 @@ public class BBoxPropertiesCache implements BBoxCache {
 		this.propsFile = propsFile;
 		if (!propsFile.exists()) {
 			LOG.info("File '{}' does not exist. Will be created as needed.", propsFile.getCanonicalPath());
+			this.disableWriteToDisk = false;
 			return;
 		}
 		if (!propsFile.isFile()) {
 			LOG.error("File '{}' does not denote a standard file.", propsFile.getCanonicalPath());
+			this.disableWriteToDisk = false;
 			return;
 		}
 
@@ -98,28 +104,58 @@ public class BBoxPropertiesCache implements BBoxCache {
 			IOUtils.closeQuietly(is);
 		}
 
+		this.disableWriteToDisk = "true".equalsIgnoreCase(props.getProperty("config.readonly", null));
+
 		Enumeration<?> e = props.propertyNames();
 		while (e.hasMoreElements()) {
 			String propName = (String) e.nextElement();
+			if (propName == null || propName.length() == 0 || propName.startsWith("config.")) {
+				// skip non cache entries
+				continue;
+			}
 			String propValue = props.getProperty(propName);
 			Envelope env = decodePropValue(propValue);
-			LOG.debug("Envelope for feature type '{}': {}", propName, env);
-			ftNameToEnvelope.put(propName, env);
+			if (propName.startsWith("ro:") && propName.length() > 3) {
+				String name = propName.substring(3);
+				ftNameToEnvelopeReadOnly.put(name, env);
+				LOG.debug("Read-only Envelope for feature type '{}': {}", name, env);
+			}
+			else {
+				LOG.debug("Envelope for feature type '{}': {}", propName, env);
+				ftNameToEnvelope.put(propName, env);
+			}
 		}
 	}
 
 	@Override
 	public Envelope get(QName ftName) {
 		String s = ftName.toString();
-		if (!ftNameToEnvelope.containsKey(s)) {
+
+		// 1. ro:{namespace}name
+		Envelope res = ftNameToEnvelopeReadOnly.get(s);
+		// 2. ro:{namespace}
+		if (res == null) {
+			res = ftNameToEnvelopeReadOnly.get("{" + ftName.getNamespaceURI() + "}");
+		}
+		// 3. {namespace}name
+		if (res == null) {
+			res = ftNameToEnvelope.get(s);
+		}
+
+		if (res == null) {
 			throw new IllegalArgumentException("No envelope information for feature type '" + ftName + "' in cache.");
 		}
-		return ftNameToEnvelope.get(s);
+		return res;
 	}
 
 	@Override
 	public boolean contains(QName ftName) {
-		return ftNameToEnvelope.containsKey(ftName.toString());
+		// 1. ro:{namespace}name
+		// 2. ro:{namespace}
+		// 3. {namespace}name
+		return (ftNameToEnvelopeReadOnly.containsKey("{" + ftName.getNamespaceURI() + "}")
+				|| ftNameToEnvelopeReadOnly.containsKey(ftName.toString())
+				|| ftNameToEnvelope.containsKey(ftName.toString()));
 	}
 
 	@Override
@@ -131,16 +167,24 @@ public class BBoxPropertiesCache implements BBoxCache {
 			persist();
 		}
 		catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.error("Failed to persist bbox cache", e.getMessage());
+			LOG.trace("Exception", e);
 		}
 	}
 
 	@Override
 	public synchronized void persist() throws IOException {
+		if (disableWriteToDisk) {
+			LOG.debug("BBoxCache {} is configured to be read-only, changes will stay in memory only.", propsFile);
+			return;
+		}
+
 		Properties props = new Properties();
 		for (String ftName : ftNameToEnvelope.keySet()) {
 			props.put(ftName, encodePropValue(ftNameToEnvelope.get(ftName)));
+		}
+		for (String ftName : ftNameToEnvelopeReadOnly.keySet()) {
+			props.put("ro:" + ftName, encodePropValue(ftNameToEnvelopeReadOnly.get(ftName)));
 		}
 
 		FileOutputStream out = null;
