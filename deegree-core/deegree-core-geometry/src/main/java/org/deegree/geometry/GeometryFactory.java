@@ -179,6 +179,19 @@ public class GeometryFactory extends SimpleGeometryFactory {
 	}
 
 	/**
+	 * Creates a segmented {@link Curve} from one or more {@link CurveSegment}s. The last
+	 * {@link Point} of segment <code>i</code> must equal the first {@link Point} of
+	 * segment <code>i+1</code>.
+	 * @param id identifier of the new geometry instance
+	 * @param crs coordinate reference system
+	 * @param segments segments a curve shall be created from
+	 * @return created {@link Curve}
+	 */
+	public Curve createCurve(String id, ICRS crs, List<CurveSegment> segments) {
+		return (Curve) inspect(new DefaultCurve(id, crs, pm, segments));
+	}
+
+	/**
 	 * Creates a {@link LineStringSegment} curve segment.
 	 * @param points points to create the {@link LineStringSegment} from
 	 * @return created {@link CurveSegment}
