@@ -31,8 +31,8 @@ import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.SQLFeatureStoreTransaction;
 import org.slf4j.Logger;
-import org.springframework.batch.item.Chunk;
-import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.infrastructure.item.Chunk;
+import org.springframework.batch.infrastructure.item.ItemWriter;
 import org.springframework.util.Assert;
 
 /**

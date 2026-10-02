@@ -22,8 +22,8 @@
 package org.deegree.tools.featurestoresql.loader;
 
 import org.deegree.feature.Feature;
-import org.springframework.batch.item.Chunk;
-import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.infrastructure.item.Chunk;
+import org.springframework.batch.infrastructure.item.ItemWriter;
 
 /**
  * Dummy ItemWriter not writing any features.

@@ -11,8 +11,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.springframework.batch.core.ExitStatus;
-import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.job.JobExecution;
+import org.springframework.batch.core.step.StepExecution;
 
 /**
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz </a>

@@ -22,8 +22,8 @@
 package org.deegree.tools.featurestoresql.loader;
 
 import org.springframework.batch.core.ExitStatus;
-import org.springframework.batch.core.StepExecution;
-import org.springframework.batch.core.StepExecutionListener;
+import org.springframework.batch.core.listener.StepExecutionListener;
+import org.springframework.batch.core.step.StepExecution;
 
 /**
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz </a>
