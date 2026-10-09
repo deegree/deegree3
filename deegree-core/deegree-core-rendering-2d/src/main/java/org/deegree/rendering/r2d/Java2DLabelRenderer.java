@@ -57,8 +57,6 @@ import java.awt.BasicStroke;
 import java.awt.Font;
 import java.awt.Rectangle;
 import java.awt.Shape;
-import java.awt.font.FontRenderContext;
-import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
@@ -170,20 +168,11 @@ public class Java2DLabelRenderer implements LabelRenderer {
 
 	@Override
 	public Label createLabel(TextStyling styling, Font font, String text, Point p) {
-		TextLayout layout;
-		synchronized (FontRenderContext.class) {
-			// apparently getting the font render context is not threadsafe (despite
-			// having different graphics here)
-			// so do this globally synchronized to fix:
-			// http://tracker.deegree.org/deegree-core/ticket/200
-			FontRenderContext frc = renderer.graphics.getFontRenderContext();
-			layout = new TextLayout(text, font, frc);
-		}
-
 		Point2D.Double origin = (Point2D.Double) renderer.worldToScreen
 			.transform(new Point2D.Double(p.get0(), p.get1()), null);
 
-		return new Label(layout.getOutline(null), styling, font, text, origin, context);
+		Shape outline = textRenderer.getTextWithDecorations(text, styling, font);
+		return new Label(outline, styling, font, text, origin, context);
 	}
 
 	@Override

@@ -35,12 +35,12 @@
 
 package org.deegree.style.styling.components;
 
-import static org.deegree.style.styling.components.Font.Style.NORMAL;
+import org.deegree.style.styling.Copyable;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import org.deegree.style.styling.Copyable;
+import static org.deegree.style.styling.components.Font.Style.NORMAL;
 
 /**
  * <code>Font</code>
@@ -70,6 +70,55 @@ public class Font implements Copyable<Font> {
 	public double fontSize = 10;
 
 	/**
+	 * Default no strikethrough
+	 */
+	public boolean strikethrough = false;
+
+	/**
+	 * Default strikethrough offset/position of 0.25 of text height (deegree specific)
+	 *
+	 * default values are base on Font defaults defined in:
+	 * @see java.awt.Font#defaultLineMetrics(java.awt.font.FontRenderContext)
+	 * @see sun.font.Font2D#getStyleMetrics(float, float[], int)
+	 */
+	@SuppressWarnings("JavadocReference")
+	public double strikethroughOffset = 0.25d;
+
+	/**
+	 * Default strikethrough width multiplied with font-size (deegree specific)
+	 *
+	 * default values are base on Font defaults defined in:
+	 * @see java.awt.Font#defaultLineMetrics(java.awt.font.FontRenderContext)
+	 * @see sun.font.Font2D#getStyleMetrics(float, float[], int)
+	 */
+	@SuppressWarnings("JavadocReference")
+	public double strikethroughWidth = 1.0 / 12.0;
+
+	/**
+	 * Default no underline
+	 */
+	public boolean underline = false;
+
+	/**
+	 * Default underline offset width multiplied with font-size (deegree specific)
+	 *
+	 * default values are base on Font defaults defined in:
+	 * @see java.awt.Font#defaultLineMetrics(java.awt.font.FontRenderContext)
+	 * @see sun.font.Font2D#getStyleMetrics(float, float[], int)
+	 */
+	@SuppressWarnings("JavadocReference")
+	public double underlineOffset = 1.0 / 18.0;
+
+	/**
+	 * Default underline width multiplied with font-size (deegree specific) * default
+	 * values are base on Font defaults defined in:
+	 * @see java.awt.Font#defaultLineMetrics(java.awt.font.FontRenderContext)
+	 * @see sun.font.Font2D#getStyleMetrics(float, float[], int)
+	 */
+	@SuppressWarnings("JavadocReference")
+	public double underlineWidth = 1.0 / 12.0;
+
+	/**
 	 * <code>Style</code>
 	 *
 	 * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
@@ -92,6 +141,12 @@ public class Font implements Copyable<Font> {
 		copy.fontStyle = fontStyle;
 		copy.bold = bold;
 		copy.fontSize = fontSize;
+		copy.strikethrough = strikethrough;
+		copy.strikethroughWidth = strikethroughWidth;
+		copy.strikethroughOffset = strikethroughOffset;
+		copy.underline = underline;
+		copy.underlineWidth = underlineOffset;
+		copy.underlineOffset = underlineWidth;
 		return copy;
 	}
 

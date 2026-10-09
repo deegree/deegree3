@@ -60,8 +60,10 @@ import java.awt.Stroke;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Line2D;
 import java.awt.geom.Path2D.Double;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 
 import static java.awt.BasicStroke.CAP_BUTT;
@@ -72,6 +74,7 @@ import static java.awt.Font.PLAIN;
 import static java.lang.Math.toRadians;
 import static org.deegree.commons.utils.math.MathUtils.isZero;
 import static org.deegree.commons.utils.math.MathUtils.round;
+import static org.deegree.style.utils.ShapeHelper.combineShapes;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
@@ -181,16 +184,7 @@ public class Java2DTextRenderer implements TextRenderer {
 		AffineTransform transform = renderer.graphics.getTransform();
 		renderer.graphics.rotate(toRadians(styling.rotation), pt.x, pt.y);
 
-		TextLayout layout;
-		synchronized (FontRenderContext.class) {
-			// apparently getting the font render context is not threadsafe (despite
-			// having different graphics here)
-			// so do this globally synchronized to fix:
-			// http://tracker.deegree.org/deegree-core/ticket/200
-			FontRenderContext frc = renderer.graphics.getFontRenderContext();
-			layout = new TextLayout(text, font, frc);
-		}
-		Shape outline = layout.getOutline(null);
+		Shape outline = getTextWithDecorations(text, styling, font);
 		Rectangle bounds = outline.getBounds();
 		double width = bounds.getWidth();
 		double height = bounds.getHeight();
@@ -298,6 +292,41 @@ public class Java2DTextRenderer implements TextRenderer {
 					styling.linePlacement.perpendicularOffsetType);
 		}
 		return stroke;
+	}
+
+	Shape getTextWithDecorations(String text, TextStyling styling, Font font) {
+		TextLayout layout;
+		synchronized (FontRenderContext.class) {
+			// apparently getting the font render context is not threadsafe (despite
+			// having different graphics here)
+			// so do this globally synchronized to fix:
+			// http://tracker.deegree.org/deegree-core/ticket/200
+			FontRenderContext frc = renderer.graphics.getFontRenderContext();
+			layout = new TextLayout(text, font, frc);
+		}
+
+		Shape outline = layout.getOutline(null);
+		Rectangle2D bounds = outline.getBounds();
+		if (styling.font.underline || styling.font.strikethrough) {
+			double ascent = layout.getAscent();
+			Shape strikethrough = null;
+			Shape underline = null;
+			if (styling.font.strikethrough) {
+				double y = -ascent * styling.font.strikethroughOffset;
+				float width = Math.max(1.0f, (float) (ascent * styling.font.strikethroughWidth));
+				BasicStroke bs = new BasicStroke(width, CAP_BUTT, BasicStroke.JOIN_BEVEL);
+				strikethrough = bs.createStrokedShape(new Line2D.Double(bounds.getMinX(), y, bounds.getMaxX(), y));
+			}
+			if (styling.font.underline) {
+				double y = ascent * styling.font.underlineOffset;
+				float width = Math.max(1.0f, (float) (ascent * styling.font.underlineWidth));
+				BasicStroke bs = new BasicStroke(width, CAP_BUTT, BasicStroke.JOIN_BEVEL);
+				underline = bs.createStrokedShape(new Line2D.Double(bounds.getMinX(), y, bounds.getMaxX(), y));
+			}
+			outline = combineShapes(outline, strikethrough, underline);
+		}
+
+		return outline;
 	}
 
 }
