@@ -373,4 +373,19 @@ public class ShapeHelper {
 		return null;
 	}
 
+	/**
+	 * Combine multiple shapes into one GeneralPath
+	 * @param shapes List of {@link Shape} to be combined
+	 * @return A shape including all passed shapes
+	 */
+	public static Shape combineShapes(Shape... shapes) {
+		GeneralPath path = new GeneralPath(GeneralPath.WIND_NON_ZERO);
+		for (Shape shape : shapes) {
+			if (shape != null) {
+				path.append(shape, false);
+			}
+		}
+		return path;
+	}
+
 }
