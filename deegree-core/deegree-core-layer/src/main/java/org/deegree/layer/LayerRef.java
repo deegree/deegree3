@@ -68,10 +68,13 @@ public class LayerRef {
 
 	@Override
 	public boolean equals(Object other) {
-		if (!(other instanceof LayerRef)) {
-			return false;
+		if (other instanceof LayerRef otherRef) {
+			if (name == null) {
+				return otherRef.getName() == null;
+			}
+			return name.equals(otherRef.getName());
 		}
-		return name.equals(((LayerRef) other).getName());
+		return false;
 	}
 
 	@Override

@@ -158,7 +158,7 @@ public class PointLabelPositionOptions {
 		selection = selected;
 
 		Point2D.Double origin = label.getOrigin();
-		Rectangle2D bounds = label.getLayout().getBounds();
+		Rectangle2D bounds = label.getShape().getBounds();
 
 		selMinX = origin.x + displacementX * displacmentMultiplicatorX[selection] + 0.5;
 		selMaxY = origin.y - displacementY * displacmentMultiplicatorY[selection] + 0.5;
@@ -280,7 +280,7 @@ public class PointLabelPositionOptions {
 		totalMaxY = -Float.MAX_VALUE;
 
 		Point2D.Double origin = label.getOrigin();
-		Rectangle2D bounds = label.getLayout().getBounds();
+		Rectangle2D bounds = label.getShape().getBounds();
 
 		for (int i = 0; i < 4; i++) {
 

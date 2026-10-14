@@ -40,22 +40,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r2d;
 
-import static java.awt.BasicStroke.CAP_BUTT;
-import static java.awt.BasicStroke.JOIN_ROUND;
-import static java.awt.geom.AffineTransform.getTranslateInstance;
-import static java.lang.Math.toRadians;
-import static org.deegree.commons.utils.math.MathUtils.round;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.awt.BasicStroke;
-import java.awt.Font;
-import java.awt.font.FontRenderContext;
-import java.awt.font.TextLayout;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.multi.MultiCurve;
 import org.deegree.geometry.multi.MultiGeometry;
@@ -68,6 +52,24 @@ import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.style.styling.TextStyling;
 import org.slf4j.Logger;
+
+import java.awt.BasicStroke;
+import java.awt.Font;
+import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.font.FontRenderContext;
+import java.awt.font.TextLayout;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import static java.awt.BasicStroke.CAP_BUTT;
+import static java.awt.BasicStroke.JOIN_ROUND;
+import static java.lang.Math.toRadians;
+import static org.deegree.commons.utils.math.MathUtils.round;
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Responsible for creating and rendering of labels. Based on Java2DTextRenderer
@@ -168,7 +170,6 @@ public class Java2DLabelRenderer implements LabelRenderer {
 
 	@Override
 	public Label createLabel(TextStyling styling, Font font, String text, Point p) {
-
 		TextLayout layout;
 		synchronized (FontRenderContext.class) {
 			// apparently getting the font render context is not threadsafe (despite
@@ -181,7 +182,8 @@ public class Java2DLabelRenderer implements LabelRenderer {
 
 		Point2D.Double origin = (Point2D.Double) renderer.worldToScreen
 			.transform(new Point2D.Double(p.get0(), p.get1()), null);
-		return new Label(layout, styling, font, text, origin, context);
+
+		return new Label(layout.getOutline(null), styling, font, text, origin, context);
 	}
 
 	@Override
@@ -201,10 +203,14 @@ public class Java2DLabelRenderer implements LabelRenderer {
 
 	@Override
 	public void render(Label pLabel) {
-
 		renderer.graphics.setFont(pLabel.getFont());
 		AffineTransform transform = renderer.graphics.getTransform();
 		renderer.graphics.rotate(toRadians(pLabel.getStyling().rotation), pLabel.getOrigin().x, pLabel.getOrigin().y);
+
+		Shape outline = pLabel.getShape();
+		Rectangle bounds = outline.getBounds();
+		renderer.graphics.translate(pLabel.getDrawPosition().x - bounds.getMinX(),
+				pLabel.getDrawPosition().y - bounds.getMaxY());
 
 		if (pLabel.getStyling().halo != null) {
 			context.fillRenderer.applyFill(pLabel.getStyling().halo.fill, pLabel.getStyling().uom);
@@ -220,14 +226,10 @@ public class Java2DLabelRenderer implements LabelRenderer {
 					wi = 1;
 				}
 
-				int w = (int) (pLabel.getLayout().getBounds().getWidth() + Math.abs(pLabel.getDrawPosition().x % 1)
-						+ 0.5d);
-				int h = (int) (pLabel.getLayout().getBounds().getHeight() + Math.abs(pLabel.getDrawPosition().y % 1)
-						+ 0.5d);
-				int bx = (int) pLabel.getDrawPosition().x;
-				int by = (int) pLabel.getDrawPosition().y;
-
-				renderer.graphics.fillRect(bx - wi, by - h - wi, w + wi + wi, h + wi + wi);
+				int w = (int) (bounds.getWidth() + 0.5d);
+				int h = (int) (bounds.getHeight() + 0.5d);
+				renderer.graphics.fillRect((int) bounds.getX() - wi, ((int) bounds.getY()) - wi, w + wi + wi,
+						h + wi + wi);
 			}
 			else {
 				// prevent useless halo of sub-pixel-size
@@ -237,19 +239,13 @@ public class Java2DLabelRenderer implements LabelRenderer {
 
 				BasicStroke stroke = new BasicStroke(haloSize, CAP_BUTT, JOIN_ROUND);
 				renderer.graphics.setStroke(stroke);
-				renderer.graphics.draw(pLabel.getLayout()
-					.getOutline(getTranslateInstance(pLabel.getDrawPosition().x, pLabel.getDrawPosition().y)));
+				renderer.graphics.draw(outline);
 			}
 		}
 
-		// LOG.debug("LabelRender w:" + pLabel.getLayout().getBounds().getWidth() + " h:
-		// "+pLabel.getLayout().getBounds().getHeight()+" x: "+pLabel.getDrawPosition().x
-		// + " y: "+pLabel.getDrawPosition().y);
 		renderer.graphics.setStroke(new BasicStroke());
-
 		context.fillRenderer.applyFill(pLabel.getStyling().fill, pLabel.getStyling().uom);
-		pLabel.getLayout()
-			.draw(renderer.graphics, (float) pLabel.getDrawPosition().x, (float) pLabel.getDrawPosition().y);
+		renderer.graphics.fill(outline);
 
 		renderer.graphics.setTransform(transform);
 	}

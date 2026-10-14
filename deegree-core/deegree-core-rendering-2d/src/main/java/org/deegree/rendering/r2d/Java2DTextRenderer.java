@@ -34,27 +34,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r2d;
 
-import static java.awt.BasicStroke.CAP_BUTT;
-import static java.awt.BasicStroke.JOIN_ROUND;
-import static java.awt.Font.BOLD;
-import static java.awt.Font.ITALIC;
-import static java.awt.Font.PLAIN;
-import static java.awt.geom.AffineTransform.getTranslateInstance;
-import static java.lang.Math.toRadians;
-import static org.deegree.commons.utils.math.MathUtils.isZero;
-import static org.deegree.commons.utils.math.MathUtils.round;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.awt.BasicStroke;
-import java.awt.Font;
-import java.awt.Stroke;
-import java.awt.font.FontRenderContext;
-import java.awt.font.TextLayout;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Path2D.Double;
-import java.awt.geom.Point2D;
-import java.util.Collection;
-
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.multi.MultiCurve;
 import org.deegree.geometry.multi.MultiGeometry;
@@ -72,6 +51,28 @@ import org.deegree.rendering.r2d.strokes.TextStroke;
 import org.deegree.style.styling.TextStyling;
 import org.deegree.style.styling.components.Font.Style;
 import org.slf4j.Logger;
+
+import java.awt.BasicStroke;
+import java.awt.Font;
+import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.Stroke;
+import java.awt.font.FontRenderContext;
+import java.awt.font.TextLayout;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Path2D.Double;
+import java.awt.geom.Point2D;
+import java.util.Collection;
+
+import static java.awt.BasicStroke.CAP_BUTT;
+import static java.awt.BasicStroke.JOIN_ROUND;
+import static java.awt.Font.BOLD;
+import static java.awt.Font.ITALIC;
+import static java.awt.Font.PLAIN;
+import static java.lang.Math.toRadians;
+import static org.deegree.commons.utils.math.MathUtils.isZero;
+import static org.deegree.commons.utils.math.MathUtils.round;
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * <code>Java2DTextRenderer</code>
@@ -177,11 +178,9 @@ public class Java2DTextRenderer implements TextRenderer {
 		Point2D.Double pt = (Point2D.Double) renderer.worldToScreen.transform(new Point2D.Double(p.get0(), p.get1()),
 				null);
 
-		double x = pt.x + renderer.rendererContext.uomCalculator.considerUOM(styling.displacementX, styling.uom);
-		double y = pt.y - renderer.rendererContext.uomCalculator.considerUOM(styling.displacementY, styling.uom);
-		renderer.graphics.setFont(font);
 		AffineTransform transform = renderer.graphics.getTransform();
-		renderer.graphics.rotate(toRadians(styling.rotation), x, y);
+		renderer.graphics.rotate(toRadians(styling.rotation), pt.x, pt.y);
+
 		TextLayout layout;
 		synchronized (FontRenderContext.class) {
 			// apparently getting the font render context is not threadsafe (despite
@@ -191,10 +190,15 @@ public class Java2DTextRenderer implements TextRenderer {
 			FontRenderContext frc = renderer.graphics.getFontRenderContext();
 			layout = new TextLayout(text, font, frc);
 		}
-		double width = layout.getBounds().getWidth();
-		double height = layout.getBounds().getHeight();
+		Shape outline = layout.getOutline(null);
+		Rectangle bounds = outline.getBounds();
+		double width = bounds.getWidth();
+		double height = bounds.getHeight();
+		double x = pt.x + renderer.rendererContext.uomCalculator.considerUOM(styling.displacementX, styling.uom);
+		double y = pt.y - renderer.rendererContext.uomCalculator.considerUOM(styling.displacementY, styling.uom);
 		double px = x - styling.anchorPointX * width;
 		double py = y + styling.anchorPointY * height;
+		renderer.graphics.translate(px - bounds.getMinX(), py - bounds.getMaxY());
 
 		if (styling.halo != null) {
 			renderer.rendererContext.fillRenderer.applyFill(styling.halo.fill, styling.uom);
@@ -211,10 +215,9 @@ public class Java2DTextRenderer implements TextRenderer {
 
 				int w = (int) (width + 0.5d);
 				int h = (int) (height + 0.5d);
-				int bx = (int) px;
-				int by = (int) py;
 
-				renderer.graphics.fillRect(bx - wi, by - h - wi, w + wi + wi, h + wi + wi);
+				renderer.graphics.fillRect((int) bounds.getX() - wi, ((int) bounds.getY()) - wi, w + wi + wi,
+						h + wi + wi);
 			}
 			else {
 				// prevent useless halo of sub-pixel-size
@@ -224,14 +227,13 @@ public class Java2DTextRenderer implements TextRenderer {
 
 				BasicStroke stroke = new BasicStroke(haloSize, CAP_BUTT, JOIN_ROUND);
 				renderer.graphics.setStroke(stroke);
-				renderer.graphics.draw(layout.getOutline(getTranslateInstance(px, py)));
+				renderer.graphics.draw(outline);
 			}
 		}
 
 		renderer.graphics.setStroke(new BasicStroke());
-
 		renderer.rendererContext.fillRenderer.applyFill(styling.fill, styling.uom);
-		layout.draw(renderer.graphics, (float) px, (float) py);
+		renderer.graphics.fill(outline);
 
 		renderer.graphics.setTransform(transform);
 	}

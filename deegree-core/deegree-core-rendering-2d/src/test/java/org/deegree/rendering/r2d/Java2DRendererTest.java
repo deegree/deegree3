@@ -35,41 +35,6 @@
 
 package org.deegree.rendering.r2d;
 
-import static java.awt.Color.black;
-import static java.awt.Color.green;
-import static java.awt.Color.red;
-import static java.awt.Color.white;
-import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
-import static java.lang.System.currentTimeMillis;
-import static javax.imageio.ImageIO.read;
-import static org.deegree.commons.utils.test.IntegrationTestUtils.isImageSimilar;
-import static org.deegree.geometry.utils.GeometryUtils.move;
-import static org.deegree.style.styling.components.Font.Style.ITALIC;
-import static org.deegree.style.styling.components.Font.Style.NORMAL;
-import static org.deegree.style.styling.components.Font.Style.OBLIQUE;
-import static org.deegree.style.styling.components.Stroke.LineCap.BUTT;
-import static org.deegree.style.styling.components.Stroke.LineCap.ROUND;
-import static org.deegree.style.styling.components.Stroke.LineCap.SQUARE;
-import static org.deegree.style.styling.components.Stroke.LineJoin.BEVEL;
-import static org.deegree.style.styling.components.Stroke.LineJoin.MITRE;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.GraphicsEnvironment;
-import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.imageio.ImageIO;
-
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
@@ -93,9 +58,42 @@ import org.deegree.style.styling.components.Mark.SimpleMark;
 import org.deegree.style.styling.components.Stroke;
 import org.deegree.style.styling.components.Stroke.LineJoin;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
+
+import javax.imageio.ImageIO;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.GraphicsEnvironment;
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
+import static java.awt.Color.black;
+import static java.awt.Color.green;
+import static java.awt.Color.red;
+import static java.awt.Color.white;
+import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
+import static java.lang.System.currentTimeMillis;
+import static javax.imageio.ImageIO.read;
+import static org.deegree.commons.utils.test.IntegrationTestUtils.isImageSimilar;
+import static org.deegree.geometry.utils.GeometryUtils.move;
+import static org.deegree.style.styling.components.Font.Style.ITALIC;
+import static org.deegree.style.styling.components.Font.Style.NORMAL;
+import static org.deegree.style.styling.components.Font.Style.OBLIQUE;
+import static org.deegree.style.styling.components.Stroke.LineCap.BUTT;
+import static org.deegree.style.styling.components.Stroke.LineCap.ROUND;
+import static org.deegree.style.styling.components.Stroke.LineCap.SQUARE;
+import static org.deegree.style.styling.components.Stroke.LineJoin.BEVEL;
+import static org.deegree.style.styling.components.Stroke.LineJoin.MITRE;
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * <code>Java2DRenderingTest</code>
@@ -143,7 +141,7 @@ public class Java2DRendererTest extends AbstractSimilarityTest {
 	private void validateImage(RenderedImage img, double time, String testName) throws Exception {
 		LOG.debug("Test {} ran in {} ms", testName, time);
 		RenderedImage expected = ImageIO.read(this.getClass().getResource("./renderertest/" + testName + ".png"));
-		Assert.assertTrue("Image for " + testName + "are not similar enough",
+		Assert.assertTrue("Image for " + testName + " are not similar enough",
 				isImageSimilar(expected, img, 0.01, testName));
 	}
 
@@ -714,7 +712,7 @@ public class Java2DRendererTest extends AbstractSimilarityTest {
 
 		String text = "A b C - X Y Z";
 		TextStyling styling = new TextStyling();
-		styling.font.fontSize = 20;
+		styling.font.fontSize = 25;
 		styling.font.fontFamily.clear();
 		styling.font.fontFamily.add("Liberation Sans");
 		styling.halo = new Halo();
@@ -748,7 +746,7 @@ public class Java2DRendererTest extends AbstractSimilarityTest {
 
 		String text = "A b C - X Y Z";
 		TextStyling styling = new TextStyling();
-		styling.font.fontSize = 20;
+		styling.font.fontSize = 25;
 		styling.font.fontFamily.clear();
 		styling.font.fontFamily.add("Liberation Sans");
 		styling.halo = new Halo();
@@ -764,7 +762,83 @@ public class Java2DRendererTest extends AbstractSimilarityTest {
 
 		g.dispose();
 		long time2 = currentTimeMillis();
-		validateImage(img, time2 - time, "textstylinghalo");
+		validateImage(img, time2 - time, "textstylinghalo_label");
+	}
+
+	@Test
+	public void testTextStylingRotDisHalo() throws Exception {
+		BufferedImage img = new BufferedImage(200, 200, TYPE_INT_ARGB);
+
+		long time = currentTimeMillis();
+		Graphics2D g = img.createGraphics();
+		GeometryFactory geomFac = new GeometryFactory();
+		Java2DRenderer r2d = new Java2DRenderer(g, img.getWidth(), img.getHeight(),
+				geomFac.createEnvelope(new double[] { 0, 0 }, new double[] { 200d, 200d }, mapcs));
+		Java2DTextRenderer r = new Java2DTextRenderer(r2d);
+
+		LinkedList<Point> points = new LinkedList<Point>();
+		points.add(geomFac.createPoint(null, new double[] { 100, 50 }, mapcs));
+		points.add(geomFac.createPoint(null, new double[] { 100, 150 }, mapcs));
+
+		String text = "A b C - X Y Z";
+		TextStyling styling = new TextStyling();
+		styling.font.fontSize = 25;
+		styling.font.fontFamily.clear();
+		styling.font.fontFamily.add("Liberation Sans");
+		styling.rotation = -15;
+		styling.displacementX = 5;
+		styling.displacementY = 10;
+		styling.halo = new Halo();
+		styling.halo.radius = 10;
+		styling.halo.fill = new Fill();
+		styling.halo.fill.color = Color.RED;
+		r.render(styling, text, points.poll());
+		styling.halo.radius = -10;
+		r.render(styling, text, points.poll());
+
+		g.dispose();
+		long time2 = currentTimeMillis();
+		validateImage(img, time2 - time, "textstylinghalo_rotdis");
+	}
+
+	@Test
+	public void testTextStylingLabelRotDisHalo() throws Exception {
+		BufferedImage img = new BufferedImage(200, 200, TYPE_INT_ARGB);
+
+		long time = currentTimeMillis();
+		Graphics2D g = img.createGraphics();
+		GeometryFactory geomFac = new GeometryFactory();
+		Java2DRenderer r2d = new Java2DRenderer(g, img.getWidth(), img.getHeight(),
+				geomFac.createEnvelope(new double[] { 0, 0 }, new double[] { 200d, 200d }, mapcs));
+		Java2DTextRenderer tr = new Java2DTextRenderer(r2d);
+		Java2DLabelRenderer r = new Java2DLabelRenderer(r2d, tr);
+
+		LinkedList<Point> points = new LinkedList<Point>();
+		points.add(geomFac.createPoint(null, new double[] { 100, 50 }, mapcs));
+		points.add(geomFac.createPoint(null, new double[] { 100, 150 }, mapcs));
+
+		String text = "A b C - X Y Z";
+		TextStyling styling = new TextStyling();
+		styling.font.fontSize = 25;
+		styling.font.fontFamily.clear();
+		styling.font.fontFamily.add("Liberation Sans");
+		styling.halo = new Halo();
+		styling.halo.radius = 10;
+		styling.rotation = -15;
+		styling.displacementX = 5;
+		styling.displacementY = 10;
+		styling.halo.fill = new Fill();
+		styling.halo.fill.color = Color.RED;
+
+		r.createLabel(styling, text, points.poll());
+		styling = styling.copy();
+		styling.halo.radius = -10;
+		r.createLabel(styling, text, points.poll());
+		r.render(r.getLabels());
+
+		g.dispose();
+		long time2 = currentTimeMillis();
+		validateImage(img, time2 - time, "textstylinghalo_rotdis_label");
 	}
 
 	@Test(timeout = 2500)

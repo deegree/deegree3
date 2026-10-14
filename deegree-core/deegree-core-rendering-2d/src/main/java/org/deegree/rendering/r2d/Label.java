@@ -40,11 +40,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r2d;
 
-import java.awt.Font;
-import java.awt.font.TextLayout;
-import java.awt.geom.Point2D;
-
 import org.deegree.style.styling.TextStyling;
+
+import java.awt.Font;
+import java.awt.Shape;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 
 /**
  * A rectangular text label, ready to be drawn
@@ -54,7 +55,7 @@ import org.deegree.style.styling.TextStyling;
 
 public class Label {
 
-	public TextLayout mLayout;
+	public Shape mShape;
 
 	public TextStyling mStyling;
 
@@ -66,9 +67,9 @@ public class Label {
 
 	public Point2D.Double mDrawPosition;
 
-	Label(TextLayout pLayout, TextStyling pStyling, Font pFont, String pText, Point2D.Double pOrigin,
+	Label(Shape pShape, TextStyling pStyling, Font pFont, String pText, Point2D.Double pOrigin,
 			RendererContext context) {
-		mLayout = pLayout;
+		mShape = pShape;
 		mStyling = pStyling;
 		mFont = pFont;
 		mText = pText;
@@ -77,14 +78,22 @@ public class Label {
 		double ox = mOrigin.x + context.uomCalculator.considerUOM(mStyling.displacementX, mStyling.uom);
 		double oy = mOrigin.y - context.uomCalculator.considerUOM(mStyling.displacementY, mStyling.uom);
 
-		double px = ox - (mStyling.anchorPointX * mLayout.getBounds().getWidth());
-		double py = oy + (mStyling.anchorPointY * mLayout.getBounds().getHeight());
+		Rectangle2D bounds = mShape.getBounds();
+		double px = ox - (mStyling.anchorPointX * bounds.getWidth());
+		double py = oy + (mStyling.anchorPointY * bounds.getHeight());
 		mDrawPosition = new Point2D.Double(px, py);
-
 	}
 
-	public TextLayout getLayout() {
-		return mLayout;
+	public Shape getShape() {
+		return mShape;
+	}
+
+	/**
+	 * @deprecated as TextLayout was replaced with Shape and {@link #getShape()}
+	 */
+	@Deprecated
+	public Shape getLayout() {
+		return mShape;
 	}
 
 	public TextStyling getStyling() {
