@@ -766,7 +766,7 @@ public class Java2DRendererTest extends AbstractSimilarityTest {
 	}
 
 	@Test
-	public void testTextStylingRotDisHalo() throws Exception {
+	public void testTextStylingRotationDisplacementHalo() throws Exception {
 		BufferedImage img = new BufferedImage(200, 200, TYPE_INT_ARGB);
 
 		long time = currentTimeMillis();
@@ -802,7 +802,7 @@ public class Java2DRendererTest extends AbstractSimilarityTest {
 	}
 
 	@Test
-	public void testTextStylingLabelRotDisHalo() throws Exception {
+	public void testTextStylingLabelRotationDisplacementHalo() throws Exception {
 		BufferedImage img = new BufferedImage(200, 200, TYPE_INT_ARGB);
 
 		long time = currentTimeMillis();
@@ -991,15 +991,14 @@ public class Java2DRendererTest extends AbstractSimilarityTest {
 
 	/**
 	 * Prevent reintroducing of a clipping error on extra large geometries
-	 *
+	 * <p>
 	 * Prevent endless dash generation in rendering of strokes (or JVM Crashes in Tomcat)
 	 * if one of the coordinates of a geometry has an invalid value (which is out of
 	 * bounds) and the clipper does not clip the geometry
-	 *
+	 * <p>
 	 * A timeout is required to prevent a endless runtime in JUnit test runner
-	 *
-	 * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
 	 * @throws Exception
+	 * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
 	 */
 	@Test(timeout = 30000)
 	public void testClipperJvmCrash() throws Exception {
@@ -1026,6 +1025,232 @@ public class Java2DRendererTest extends AbstractSimilarityTest {
 		r.render(styling, lineString);
 
 		g.dispose();
+	}
+
+	@Test
+	public void testTextStylingUnderline() throws Exception {
+		BufferedImage img = new BufferedImage(400, 300, TYPE_INT_ARGB);
+
+		long time = currentTimeMillis();
+		Graphics2D g = img.createGraphics();
+		GeometryFactory geomFac = new GeometryFactory();
+		Java2DRenderer r2d = new Java2DRenderer(g, img.getWidth(), img.getHeight(),
+				geomFac.createEnvelope(new double[] { 0, 0 }, new double[] { 300d, 200d }, mapcs));
+		Java2DTextRenderer tr = new Java2DTextRenderer(r2d);
+		Java2DLabelRenderer r = new Java2DLabelRenderer(r2d, tr);
+
+		LinkedList<Point> points = new LinkedList<Point>();
+
+		points.add(geomFac.createPoint(null, new double[] { 75, 30 }, mapcs));
+		points.add(geomFac.createPoint(null, new double[] { 75, 70 }, mapcs));
+		points.add(geomFac.createPoint(null, new double[] { 75, 120 }, mapcs));
+		points.add(geomFac.createPoint(null, new double[] { 75, 170 }, mapcs));
+
+		points.add(geomFac.createPoint(null, new double[] { 200, 30 }, mapcs));
+		points.add(geomFac.createPoint(null, new double[] { 200, 70 }, mapcs));
+		points.add(geomFac.createPoint(null, new double[] { 200, 120 }, mapcs));
+		points.add(geomFac.createPoint(null, new double[] { 200, 170 }, mapcs));
+
+		String text = "Aca\u00C1qQ\u00A7";
+		TextStyling template = new TextStyling();
+		template.font.fontSize = 30;
+		template.font.fontFamily.clear();
+		template.font.fontFamily.add("Liberation Sans");
+		template.font.underline = true;
+		template.halo = new Halo();
+		template.halo.radius = 5;
+		template.halo.fill = new Fill();
+		template.halo.fill.color = Color.RED;
+
+		TextStyling styling = template.copy();
+		r.createLabel(styling, text, points.poll());
+
+		styling = template.copy();
+		styling.font.underlineOffset = 0;
+		r.createLabel(styling, text, points.poll());
+
+		styling = template.copy();
+		styling.font.underlineOffset = 0.5;
+		r.createLabel(styling, text, points.poll());
+
+		styling = template.copy();
+		styling.font.underlineOffset = 1;
+		r.createLabel(styling, text, points.poll());
+
+		template.rotation = 15;
+
+		styling = template.copy();
+		r.createLabel(styling, text, points.poll());
+
+		styling = template.copy();
+		styling.font.underlineOffset = 0;
+		r.createLabel(styling, text, points.poll());
+
+		styling = template.copy();
+		styling.font.underlineOffset = 0.5;
+		r.createLabel(styling, text, points.poll());
+
+		styling = template.copy();
+		styling.font.underlineOffset = 1;
+		r.createLabel(styling, text, points.poll());
+
+		r.render(r.getLabels());
+
+		g.dispose();
+		long time2 = currentTimeMillis();
+		validateImage(img, time2 - time, "textstyling_underline_offset");
+	}
+
+	@Test
+	public void testTextStylingStrikethrough() throws Exception {
+		BufferedImage img = new BufferedImage(400, 300, TYPE_INT_ARGB);
+
+		long time = currentTimeMillis();
+		Graphics2D g = img.createGraphics();
+		GeometryFactory geomFac = new GeometryFactory();
+		Java2DRenderer r2d = new Java2DRenderer(g, img.getWidth(), img.getHeight(),
+				geomFac.createEnvelope(new double[] { 0, 0 }, new double[] { 300d, 200d }, mapcs));
+		Java2DTextRenderer tr = new Java2DTextRenderer(r2d);
+		Java2DLabelRenderer r = new Java2DLabelRenderer(r2d, tr);
+
+		LinkedList<Point> points = new LinkedList<Point>();
+
+		points.add(geomFac.createPoint(null, new double[] { 75, 30 }, mapcs));
+		points.add(geomFac.createPoint(null, new double[] { 75, 70 }, mapcs));
+		points.add(geomFac.createPoint(null, new double[] { 75, 120 }, mapcs));
+		points.add(geomFac.createPoint(null, new double[] { 75, 170 }, mapcs));
+
+		points.add(geomFac.createPoint(null, new double[] { 200, 30 }, mapcs));
+		points.add(geomFac.createPoint(null, new double[] { 200, 70 }, mapcs));
+		points.add(geomFac.createPoint(null, new double[] { 200, 120 }, mapcs));
+		points.add(geomFac.createPoint(null, new double[] { 200, 170 }, mapcs));
+
+		String text = "Aca\u00C1qQ\u00A7";
+		TextStyling template = new TextStyling();
+		template.font.fontSize = 30;
+		template.font.fontFamily.clear();
+		template.font.fontFamily.add("Liberation Sans");
+		template.font.strikethrough = true;
+		template.halo = new Halo();
+		template.halo.radius = 5;
+		template.halo.fill = new Fill();
+		template.halo.fill.color = Color.RED;
+
+		TextStyling styling = template.copy();
+		r.createLabel(styling, text, points.poll());
+
+		styling = template.copy();
+		styling.font.strikethroughOffset = 0;
+		r.createLabel(styling, text, points.poll());
+
+		styling = template.copy();
+		styling.font.strikethroughOffset = 0.5;
+		r.createLabel(styling, text, points.poll());
+
+		styling = template.copy();
+		styling.font.strikethroughOffset = 1;
+		r.createLabel(styling, text, points.poll());
+
+		template.rotation = 15;
+		// rot
+
+		styling = template.copy();
+		r.createLabel(styling, text, points.poll());
+
+		styling = template.copy();
+		styling.font.strikethroughOffset = 0;
+		r.createLabel(styling, text, points.poll());
+
+		styling = template.copy();
+		styling.font.strikethroughOffset = 0.5;
+		r.createLabel(styling, text, points.poll());
+
+		styling = template.copy();
+		styling.font.strikethroughOffset = 1;
+		r.createLabel(styling, text, points.poll());
+
+		r.render(r.getLabels());
+
+		g.dispose();
+		long time2 = currentTimeMillis();
+		validateImage(img, time2 - time, "textstyling_strikethrough_offset");
+	}
+
+	@Test
+	public void testTextStylingStrikethroughUnderlineWidth() throws Exception {
+		BufferedImage img = new BufferedImage(400, 300, TYPE_INT_ARGB);
+
+		long time = currentTimeMillis();
+		Graphics2D g = img.createGraphics();
+		GeometryFactory geomFac = new GeometryFactory();
+		Java2DRenderer r2d = new Java2DRenderer(g, img.getWidth(), img.getHeight(),
+				geomFac.createEnvelope(new double[] { 0, 0 }, new double[] { 300d, 200d }, mapcs));
+		Java2DTextRenderer tr = new Java2DTextRenderer(r2d);
+		Java2DLabelRenderer r = new Java2DLabelRenderer(r2d, tr);
+
+		LinkedList<Point> points = new LinkedList<Point>();
+
+		points.add(geomFac.createPoint(null, new double[] { 75, 30 }, mapcs));
+		points.add(geomFac.createPoint(null, new double[] { 75, 70 }, mapcs));
+		points.add(geomFac.createPoint(null, new double[] { 75, 120 }, mapcs));
+		points.add(geomFac.createPoint(null, new double[] { 75, 170 }, mapcs));
+
+		points.add(geomFac.createPoint(null, new double[] { 200, 30 }, mapcs));
+		points.add(geomFac.createPoint(null, new double[] { 200, 70 }, mapcs));
+		points.add(geomFac.createPoint(null, new double[] { 200, 120 }, mapcs));
+		points.add(geomFac.createPoint(null, new double[] { 200, 170 }, mapcs));
+
+		String text = "Aca\u00C1qQ\u00A7";
+		TextStyling template = new TextStyling();
+		template.font.fontSize = 30;
+		template.font.fontFamily.clear();
+		template.font.fontFamily.add("Liberation Sans");
+		template.halo = new Halo();
+		template.halo.radius = 5;
+		template.halo.fill = new Fill();
+		template.halo.fill.color = Color.RED;
+
+		template.font.strikethrough = true;
+		template.font.underline = false;
+
+		TextStyling styling = template.copy();
+		r.createLabel(styling, text, points.poll());
+
+		styling = template.copy();
+		styling.font.strikethroughWidth = 0.0;
+		r.createLabel(styling, text, points.poll());
+
+		styling = template.copy();
+		styling.font.strikethroughWidth = 0.4;
+		r.createLabel(styling, text, points.poll());
+
+		styling = template.copy();
+		styling.font.strikethroughWidth = 0.6;
+		r.createLabel(styling, text, points.poll());
+
+		template.font.strikethrough = false;
+		template.font.underline = true;
+
+		styling = template.copy();
+		r.createLabel(styling, text, points.poll());
+
+		styling = template.copy();
+		styling.font.underlineWidth = 0.0;
+		r.createLabel(styling, text, points.poll());
+
+		styling = template.copy();
+		styling.font.underlineWidth = 0.4;
+		r.createLabel(styling, text, points.poll());
+
+		styling = template.copy();
+		styling.font.underlineWidth = 0.6;
+		r.createLabel(styling, text, points.poll());
+
+		r.render(r.getLabels());
+
+		g.dispose();
+		long time2 = currentTimeMillis();
+		validateImage(img, time2 - time, "textstyling_strikethrough_underline_width");
 	}
 
 }
