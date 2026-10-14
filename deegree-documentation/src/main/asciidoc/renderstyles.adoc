@@ -1037,6 +1037,86 @@ image::renderstyles_halo_regular_and_boxed.png[]
 </TextSymbolizer>
 ----
 
+===== Text decoration
+
+It is possible to enable strikethrough and/or underline for a _TextSymbolizer_ as well as to customize the position
+or thickness.
+
+These are the deegree specific font parameters available to enable more sophisticated text decoration.
+
+[cols="37,10,53",options="header"]
+|===
+| Parameter
+| Default
+| Description
+
+a| `deegree-font-strikethrough`
+a| `false`
+a| Set to `true` to enable strikethrough
+
+a| `deegree-font-strikethrough-offset`
+a| `0.25`
+a| The offset of the strikethrough is calculated by multiplying the offset with the font's ascent, where `0.0` is the
+font’s baseline. Positive values over `1.0` will result in lines above the text.
+
+a| `deegree-font-strikethrough-width`
+a| `0.08333`
+a| The width of the strikethrough is calculated by multiplying the offset with the font's ascent. Defaults to 1/12 of the ascent.
+
+a| `deegree-font-underline`
+a| `false`
+a| Set to `true` to enable underlining
+
+a| `deegree-font-underline-offset`
+a| `0.0555`
+a| The offset of the underline is calculated by multiplying the offset with the font's ascent, where `0.0` is the
+font's baseline. Positive values over the font's descent will result in lines below the text.
+Defaults to 1/18 of the font's ascent.
+
+a| `deegree-font-underline-width`
+a| `0.08333`
+a| The width of the underline is calculated by multiplying the offset with the font's ascent. Defaults to 1/12 of the ascent.
+
+|===
+
+Example of strikethrough, underline and both:
+
+.Example of text with strikethrough, underline and both
+image::renderstyles_text_strikethrough_underline.png[]
+
+.Symbolizer used in previous first example
+[source,xml]
+----
+<TextSymbolizer>
+	<!-- Label omitted -->
+	<Font>
+		<SvgParameter name="font-family">Sans-Serif</SvgParameter>
+		<SvgParameter name="font-size">30</SvgParameter>
+		<SvgParameter name="deegree-font-strikethrough">true</SvgParameter>
+	</Font>
+</TextSymbolizer>
+----
+
+This example uses underliner where the offset as well as the width is customized:
+
+.Example of text with customized underline
+image::renderstyles_text_underline_offset_width.png[]
+
+.Symbolizer with customized underline
+[source,xml]
+----
+<TextSymbolizer>
+	<!-- Label omitted -->
+	<Font>
+		<SvgParameter name="font-family">Sans-Serif</SvgParameter>
+		<SvgParameter name="font-size">30</SvgParameter>
+		<SvgParameter name="deegree-font-underline">true</SvgParameter>
+		<SvgParameter name="deegree-font-underline-offset">0.5</SvgParameter>
+		<SvgParameter name="deegree-font-underline-width">0.25</SvgParameter>
+	</Font>
+</TextSymbolizer>
+----
+
 ===== GraphicStroke extensions
 
 By default, a _GraphicStroke_ is drawn repeatedly, but it can also be
