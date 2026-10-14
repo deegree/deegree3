@@ -48,11 +48,10 @@ import java.io.InputStream;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
-import org.apache.http.conn.ClientConnectionManager;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.message.StatusLine;
+import org.apache.hc.client5.http.ClientConnectionManager;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.h2.util.IOUtils;
 import org.junit.Before;
@@ -248,34 +247,35 @@ public class OwsHttpResponseTest {
 
 	private OwsHttpResponse createScenario1() throws Exception {
 		InputStream payload = OwsHttpResponseTest.class.getResourceAsStream(SCENARIO1_RESPONSE);
-		HttpResponse httpResponse = mockHttpResponse(payload, 200);
+		ClassicHttpResponse httpResponse = mockHttpResponse(payload, 200);
 		return new OwsHttpResponseImpl(httpResponse, connManager, "");
 	}
 
 	private OwsHttpResponse createScenario2() throws Exception {
 		InputStream payload = OwsHttpResponseTest.class.getResourceAsStream(SCENARIO2_RESPONSE);
-		HttpResponse httpResponse = mockHttpResponse(payload, 200);
+		ClassicHttpResponse httpResponse = mockHttpResponse(payload, 200);
 		return new OwsHttpResponseImpl(httpResponse, connManager, "");
 	}
 
 	private OwsHttpResponse createScenario3() throws Exception {
 		InputStream payload = OwsHttpResponseTest.class.getResourceAsStream(SCENARIO3_RESPONSE);
-		HttpResponse httpResponse = mockHttpResponse(payload, 200);
+		ClassicHttpResponse httpResponse = mockHttpResponse(payload, 200);
 		return new OwsHttpResponseImpl(httpResponse, connManager, "");
 	}
 
 	private OwsHttpResponse createScenario4() throws Exception {
 		InputStream payload = new ByteArrayInputStream(new byte[0]);
-		HttpResponse httpResponse = mockHttpResponse(payload, 500);
+		ClassicHttpResponse httpResponse = mockHttpResponse(payload, 500);
 		return new OwsHttpResponseImpl(httpResponse, connManager, "");
 	}
 
-	private HttpResponse mockHttpResponse(InputStream payload, int status) throws IllegalStateException, IOException {
-		HttpResponse httpResponse = Mockito.mock(HttpResponse.class);
+	private ClassicHttpResponse mockHttpResponse(InputStream payload, int status)
+			throws IllegalStateException, IOException {
+		ClassicHttpResponse httpResponse = Mockito.mock(ClassicHttpResponse.class);
 		HttpEntity mockedEntity = mockHttpEntity(payload);
 		Mockito.when(httpResponse.getEntity()).thenReturn(mockedEntity);
 		StatusLine mockedStatus = mockStatusLine(status);
-		Mockito.when(httpResponse.getStatusLine()).thenReturn(mockedStatus);
+		Mockito.when(new StatusLine(httpResponse)).thenReturn(mockedStatus);
 		return httpResponse;
 	}
 
