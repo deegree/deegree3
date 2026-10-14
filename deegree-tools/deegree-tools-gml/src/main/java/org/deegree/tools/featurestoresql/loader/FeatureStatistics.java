@@ -31,7 +31,6 @@ import java.util.function.Consumer;
 import javax.xml.namespace.QName;
 
 import org.deegree.feature.Feature;
-import org.springframework.batch.core.ItemWriteListener;
 
 /**
  * Collects statistics for each type loaded

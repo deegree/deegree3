@@ -56,10 +56,10 @@ import org.deegree.gml.reference.matcher.BaseUrlReferencePatternMatcher;
 import org.deegree.gml.reference.matcher.MultipleReferencePatternMatcher;
 import org.deegree.gml.reference.matcher.ReferencePatternMatcher;
 import org.slf4j.Logger;
-import org.springframework.batch.item.ExecutionContext;
-import org.springframework.batch.item.ItemStreamException;
-import org.springframework.batch.item.file.ResourceAwareItemReaderItemStream;
-import org.springframework.batch.item.support.AbstractItemStreamItemReader;
+import org.springframework.batch.infrastructure.item.ExecutionContext;
+import org.springframework.batch.infrastructure.item.ItemStreamException;
+import org.springframework.batch.infrastructure.item.file.ResourceAwareItemReaderItemStream;
+import org.springframework.batch.infrastructure.item.support.AbstractItemStreamItemReader;
 import org.springframework.core.io.Resource;
 
 /**
