@@ -117,8 +117,9 @@ public class GmlReader extends AbstractItemStreamItemReader<Feature>
 		if (!featureIterator.hasNext())
 			return null;
 		Feature feature = this.featureIterator.next();
-		if (feature != null)
-			LOG.info("Read feature with id {} (number {}) ", feature.getId(), ++noOfFeaturesRead);
+		if (feature != null) {
+			LOG.debug("Read feature with id {} (number {}) ", feature.getId(), ++noOfFeaturesRead);
+		}
 		return feature;
 	}
 
