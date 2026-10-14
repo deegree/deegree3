@@ -40,7 +40,10 @@ import java.io.StreamTokenizer;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
@@ -58,6 +61,7 @@ import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.segments.ArcString;
+import org.deegree.geometry.primitive.segments.CurveSegment;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.util.Assert;
 
@@ -80,9 +84,20 @@ public class EWKTReader {
 
 	private GeometryFactory geometryFactory;
 
-	// private PrecisionModel precisionModel;
-
 	private StreamTokenizer tokenizer;
+
+	private EnumSet<WKTFlag> flags = EnumSet.noneOf(WKTFlag.class);
+
+	/**
+	 * These flags influnce the geometry derivation
+	 *
+	 */
+	public enum WKTFlag {
+
+		/** Use Curve instead of CompositeCurve */
+		USE_CURVE_INSTEADOF_COMPOSITE_CURVE
+
+	}
 
 	/**
 	 * Creates a reader that creates objects using the default {@link GeometryFactory}.
@@ -97,6 +112,13 @@ public class EWKTReader {
 	 */
 	public EWKTReader(GeometryFactory geometryFactory) {
 		this.geometryFactory = geometryFactory;
+	}
+
+	/**
+	 * @param flags the flags to set
+	 */
+	public void setFlags(EnumSet<WKTFlag> flags) {
+		this.flags = flags;
 	}
 
 	/**
@@ -461,20 +483,18 @@ public class EWKTReader {
 		}
 	}
 
-	// private double[] toControlPoints( List<Coordinate> coordinates ) {
-	// double[] result = new double[coordinates.size() * 2];
-	// for ( int i = 0; i < coordinates.size(); i++ ) {
-	// Coordinate c = coordinates.get( i );
-	// result[i * 2] = c.x;
-	// result[i * 2 + 1] = c.y;
-	// }
-	//
-	// return result;
-	// }
-
 	private Curve readCompoundCurveText() throws IOException, ParseException {
 		List<Curve> lineStrings = getLineStrings();
-		return geometryFactory.createCompositeCurve(null, null, lineStrings);
+		if (flags.contains(WKTFlag.USE_CURVE_INSTEADOF_COMPOSITE_CURVE)) {
+			// Simplify as only curve segments of type arc_string or linestring are
+			// possible
+			List<CurveSegment> segments = new LinkedList<>();
+			lineStrings.forEach(li -> segments.addAll(li.getCurveSegments()));
+			return geometryFactory.createCurve(null, null, segments);
+		}
+		else {
+			return geometryFactory.createCompositeCurve(null, null, lineStrings);
+		}
 	}
 
 	/**
