@@ -847,7 +847,7 @@ This is particularly useful if you want to display an area fill with a symbol.
 This explicit limit can be specified either as width and height or as the
 lower left and upper right corner.
 
-The syntax is: `wellknownname[width,height]` or `wellknownname[mix,miny,maxx,maxy]`
+The syntax is: `wellknownname[width,height]` or `wellknownname[mix,miny,width,height]`
 
 [cols="10,40,10,40"]
 |===

@@ -233,7 +233,10 @@ public class ShapeHelper {
 			t.translate(0, -(h - w) / 2);
 		}
 
-		shape = t.createTransformedShape(shape);
+		if (shape instanceof BoundedShape)
+			shape = ((BoundedShape) shape).transform(t);
+		else
+			shape = t.createTransformedShape(shape);
 
 		t = new AffineTransform();
 		if (translate) {
