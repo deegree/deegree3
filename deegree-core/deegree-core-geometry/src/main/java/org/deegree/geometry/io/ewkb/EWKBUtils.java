@@ -1,6 +1,6 @@
 package org.deegree.geometry.io.ewkb;
 
-public class Utils {
+public class EWKBUtils {
 
 	/**
 	 * Big endian encoding.

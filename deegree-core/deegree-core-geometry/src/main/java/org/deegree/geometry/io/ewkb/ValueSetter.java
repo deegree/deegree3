@@ -49,14 +49,6 @@ public abstract class ValueSetter {
 		return axis;
 	}
 
-	protected boolean hasZ() {
-		return axis == Axis.XYZ || axis == Axis.XYZM;
-	}
-
-	protected boolean hasM() {
-		return axis == Axis.XYM || axis == Axis.XYZM;
-	}
-
 	/**
 	 * Get the srid to be written
 	 * @return PostGIS spatial reference identifier, is greater or equals zero if it

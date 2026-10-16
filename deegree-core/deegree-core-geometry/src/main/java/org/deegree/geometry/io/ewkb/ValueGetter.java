@@ -60,7 +60,7 @@ public abstract class ValueGetter {
 	/**
 	 * Current encoding (default is little endian encoding).
 	 */
-	protected int endian = Utils.LITTLE_ENDIAN;
+	protected int endian = EWKBUtils.LITTLE_ENDIAN;
 
 	/**
 	 * Builder for integer values respecting the current encoding (default is little
@@ -151,12 +151,12 @@ public abstract class ValueGetter {
 		if (newEndian != this.endian) {
 			this.endian = newEndian;
 			switch (newEndian) {
-				case Utils.LITTLE_ENDIAN: {
+				case EWKBUtils.LITTLE_ENDIAN: {
 					this.funcInt = INT_BUILDER_LITTLE_ENDIAN;
 					this.funcLong = LONG_BUILDER_LITTLE_ENDIAN;
 				}
 					break;
-				case Utils.BIG_ENDIAN: {
+				case EWKBUtils.BIG_ENDIAN: {
 					this.funcInt = INT_BUILDER_BIG_ENDIAN;
 					this.funcLong = LONG_BUILDER_BIG_ENDIAN;
 				}

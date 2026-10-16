@@ -48,7 +48,7 @@ import static org.deegree.geometry.io.ewkb.Axis.XYZM;
  *
  * @author Sebastian Baumhekel
  */
-public final class BinaryParser {
+public final class BinaryParser implements EWKBTypes {
 
 	// prevent instantiating this class
 	@Deprecated
@@ -79,7 +79,7 @@ public final class BinaryParser {
 	 * the encoding type is unknown
 	 */
 	public static Geometry parse(Axis axis, IntFunction<ICRS> sridToCrs, byte[] value, int offset) {
-		return parseGeometry(new BinaryValueGetter(axis != null ? axis : Axis.XY,
+		return parseGeometry(new BinaryValueGetter(axis != null ? axis : Axis.AUTO,
 				sridToCrs != null ? sridToCrs : SRID_TO_NONE, value, offset));
 	}
 
@@ -93,7 +93,7 @@ public final class BinaryParser {
 	 * the encoding type is unknown
 	 */
 	public static Geometry parse(Axis axis, IntFunction<ICRS> sridToCrs, String value) {
-		return parseGeometry(new StringValueGetter(axis != null ? axis : Axis.XY,
+		return parseGeometry(new StringValueGetter(axis != null ? axis : Axis.AUTO,
 				sridToCrs != null ? sridToCrs : SRID_TO_NONE, value));
 	}
 
@@ -152,40 +152,40 @@ public final class BinaryParser {
 		// parse geometry according to type
 		Geometry result;
 		switch (geometryType) {
-			case Types.POINT_TYPE:
+			case POINT_TYPE:
 				result = parsePoint(data, haveZ, haveM);
 				break;
-			case Types.LINESTRING_TYPE:
+			case LINESTRING_TYPE:
 				result = _gf.createLineString(null, null, parsePoints(data, haveZ, haveM));
 				break;
-			case Types.CIRCULAR_STRING_TYPE:
+			case CIRCULAR_STRING_TYPE:
 				result = _gf.createCurve(null, null, _gf.createArcString(parsePoints(data, haveZ, haveM)));
 				break;
-			case Types.COMPOUND_CURVE_TYPE:
+			case COMPOUND_CURVE_TYPE:
 				result = parseCompoundCurve(data);
 				break;
-			case Types.POLYGON_TYPE:
+			case POLYGON_TYPE:
 				result = parsePolygon(data, haveZ, haveM);
 				break;
-			case Types.TIN_TYPE: // Triangles as Polygon
-			case Types.CURVE_POLYGON_TYPE:
+			case TIN_TYPE: // Triangles as Polygon
+			case CURVE_POLYGON_TYPE:
 				List<Ring> rings = parseRings(data);
 				result = _gf.createPolygon(null, null, rings.remove(0), rings);
 				break;
-			case Types.MULTIPOINT_TYPE:
+			case MULTIPOINT_TYPE:
 				result = _gf.createMultiPoint(null, null, parseGeometries(Point.class, data));
 				break;
-			case Types.MULTILINESTRING_TYPE:
+			case MULTILINESTRING_TYPE:
 				result = _gf.createMultiLineString(null, null, parseGeometries(LineString.class, data));
 				break;
-			case Types.MULTICURVE_TYPE:
+			case MULTICURVE_TYPE:
 				result = _gf.createMultiCurve(null, null, parseGeometries(Curve.class, data));
 				break;
-			case Types.MULTIPOLYGON_TYPE:
+			case MULTIPOLYGON_TYPE:
 				result = _gf.createMultiPolygon(null, null, parseGeometries(Polygon.class, data));
 				break;
-			case Types.MULTISURFACE_TYPE:
-			case Types.GEOMETRY_COLLECTION_TYPE:
+			case MULTISURFACE_TYPE:
+			case GEOMETRY_COLLECTION_TYPE:
 				result = _gf.createMultiGeometry(null, null, parseGeometries(Geometry.class, data));
 				break;
 			default:
@@ -221,11 +221,12 @@ public final class BinaryParser {
 			m = data.getDouble();
 		}
 
-		return switch (data.getAxis()) {
+		return switch (data.getAxis().withoutAuto(haveZ, haveM)) {
 			case XY -> _gf.createPoint(null, x, y, null);
 			case XYZ -> _gf.createPoint(null, x, y, z, null);
 			case XYM -> _gf.createPoint(null, x, y, m, null);
 			case XYZM -> _gf.createPoint(null, new double[] { x, y, z, m }, null);
+			case AUTO -> throw new IllegalArgumentException("Non convertable axis mode detect.");
 		};
 	}
 
@@ -238,19 +239,20 @@ public final class BinaryParser {
 	 */
 	private static PackedPoints parsePoints(ValueGetter data, boolean haveZ, boolean haveM) {
 		int count = data.getInt();
-		double[] points = new double[data.getAxis().size(count)];
+		final Axis axis = data.getAxis().withoutAuto(haveZ, haveM);
+		double[] points = new double[axis.size(count)];
 		int pos = 0;
 		for (int i = 0; i < count; i++) {
 			points[pos++] = data.getDouble();
 			points[pos++] = data.getDouble();
-			if (data.getAxis() == XYZ || data.getAxis() == XYZM) {
+			if (axis == XYZ || axis == XYZM) {
 				points[pos++] = haveZ ? data.getDouble() : data.getNoValue();
 			}
-			if (data.getAxis() == XYM || data.getAxis() == XYZM) {
+			if (axis == XYM || axis == XYZM) {
 				points[pos++] = haveM ? data.getDouble() : data.getNoValue();
 			}
 		}
-		return new PackedPoints(null, points, data.getAxis().size(1));
+		return new PackedPoints(null, points, axis.size(1));
 	}
 
 	private static Curve parseCompoundCurve(ValueGetter data) {
@@ -266,10 +268,10 @@ public final class BinaryParser {
 			boolean haveZ = (typeWord & 0x80000000) != 0;
 			boolean haveM = (typeWord & 0x40000000) != 0;
 			switch (geometryType) {
-				case Types.LINESTRING_TYPE:
+				case LINESTRING_TYPE:
 					segments[i] = _gf.createLineStringSegment(parsePoints(data, haveZ, haveM));
 					break;
-				case Types.CIRCULAR_STRING_TYPE:
+				case CIRCULAR_STRING_TYPE:
 					segments[i] = _gf.createArcString(parsePoints(data, haveZ, haveM));
 					break;
 				default:
@@ -292,18 +294,18 @@ public final class BinaryParser {
 			boolean haveZ = (typeWord & 0x80000000) != 0;
 			boolean haveM = (typeWord & 0x40000000) != 0;
 			switch (geometryType) {
-				case Types.LINESTRING_TYPE:
+				case LINESTRING_TYPE:
 					segments.add(_gf.createLinearRing(null, null, parsePoints(data, haveZ, haveM)));
 					break;
-				case Types.CIRCULAR_STRING_TYPE:
+				case CIRCULAR_STRING_TYPE:
 					segments.add(_gf.createRing(null, null, List
 						.of(_gf.createCurve(null, null, _gf.createArcString(parsePoints(data, haveZ, haveM))))));
 					break;
-				case Types.COMPOUND_CURVE_TYPE:
+				case COMPOUND_CURVE_TYPE:
 					segments.add(_gf.createRing(null, null, List.of(parseCompoundCurve(data))));
 					break;
-				case Types.POLYGON_TYPE:
-				case Types.TRIANGLE_TYPE: // like a polygon
+				case POLYGON_TYPE:
+				case TRIANGLE_TYPE: // like a polygon
 					Polygon poly = parsePolygon(data, haveZ, haveM);
 					segments.add(poly.getExteriorRing());
 					segments.addAll(poly.getInteriorRings());

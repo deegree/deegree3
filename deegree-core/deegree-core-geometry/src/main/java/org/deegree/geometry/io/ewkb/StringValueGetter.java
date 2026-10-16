@@ -52,7 +52,7 @@ public class StringValueGetter extends ValueGetter {
 		int index = position * 2;
 		// then advance the position to the next byte
 		position++;
-		return ((Utils.toHexByte(value.charAt(index)) << 4) | Utils.toHexByte(value.charAt(index + 1)));
+		return ((EWKBUtils.toHexByte(value.charAt(index)) << 4) | EWKBUtils.toHexByte(value.charAt(index + 1)));
 	}
 
 }
