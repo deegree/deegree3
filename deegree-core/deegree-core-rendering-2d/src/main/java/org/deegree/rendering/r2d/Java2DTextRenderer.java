@@ -50,6 +50,7 @@ import org.deegree.rendering.r2d.strokes.OffsetStroke;
 import org.deegree.rendering.r2d.strokes.TextStroke;
 import org.deegree.style.styling.TextStyling;
 import org.deegree.style.styling.components.Font.Style;
+import org.deegree.style.styling.components.UOM;
 import org.slf4j.Logger;
 
 import java.awt.BasicStroke;
@@ -313,13 +314,13 @@ public class Java2DTextRenderer implements TextRenderer {
 			Shape underline = null;
 			if (styling.font.strikethrough) {
 				double y = -ascent * styling.font.strikethroughOffset;
-				float width = Math.max(1.0f, (float) (ascent * styling.font.strikethroughWidth));
+				float width = calculateTextDecorationLineWidth(styling.font.strikethroughWidth, ascent, styling.uom);
 				BasicStroke bs = new BasicStroke(width, CAP_BUTT, BasicStroke.JOIN_BEVEL);
 				strikethrough = bs.createStrokedShape(new Line2D.Double(bounds.getMinX(), y, bounds.getMaxX(), y));
 			}
 			if (styling.font.underline) {
 				double y = ascent * styling.font.underlineOffset;
-				float width = Math.max(1.0f, (float) (ascent * styling.font.underlineWidth));
+				float width = calculateTextDecorationLineWidth(styling.font.underlineWidth, ascent, styling.uom);
 				BasicStroke bs = new BasicStroke(width, CAP_BUTT, BasicStroke.JOIN_BEVEL);
 				underline = bs.createStrokedShape(new Line2D.Double(bounds.getMinX(), y, bounds.getMaxX(), y));
 			}
@@ -327,6 +328,17 @@ public class Java2DTextRenderer implements TextRenderer {
 		}
 
 		return outline;
+	}
+
+	private float calculateTextDecorationLineWidth(double width, double ascent, UOM uom) {
+		double result;
+		if (width < 0) {
+			result = renderer.rendererContext.uomCalculator.considerUOM(Math.abs(width), uom);
+		}
+		else {
+			result = ascent * width;
+		}
+		return Math.max(1.0f, (float) result);
 	}
 
 }

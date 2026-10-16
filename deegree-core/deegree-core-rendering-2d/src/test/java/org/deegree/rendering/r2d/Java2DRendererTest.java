@@ -1225,7 +1225,7 @@ public class Java2DRendererTest extends AbstractSimilarityTest {
 		r.createLabel(styling, text, points.poll());
 
 		styling = template.copy();
-		styling.font.strikethroughWidth = 0.6;
+		styling.font.strikethroughWidth = -5;
 		r.createLabel(styling, text, points.poll());
 
 		template.font.strikethrough = false;
@@ -1243,7 +1243,7 @@ public class Java2DRendererTest extends AbstractSimilarityTest {
 		r.createLabel(styling, text, points.poll());
 
 		styling = template.copy();
-		styling.font.underlineWidth = 0.6;
+		styling.font.underlineWidth = -5;
 		r.createLabel(styling, text, points.poll());
 
 		r.render(r.getLabels());

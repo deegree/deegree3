@@ -1042,6 +1042,9 @@ image::renderstyles_halo_regular_and_boxed.png[]
 It is possible to enable strikethrough and/or underline for a _TextSymbolizer_ as well as to customize the position
 or thickness.
 
+NOTE: _TextSymbolizer_ does not yet support strikethrough or underlining when text is rendered along a line
+with _LinePlacement_ configured.
+
 These are the deegree specific font parameters available to enable more sophisticated text decoration.
 
 [cols="37,10,53",options="header"]
@@ -1061,7 +1064,9 @@ font’s baseline. Positive values over `1.0` will result in lines above the tex
 
 a| `deegree-font-strikethrough-width`
 a| `0.08333`
-a| The width of the strikethrough is calculated by multiplying the offset with the font's ascent. Defaults to 1/12 of the ascent.
+a| The width of the strikethrough is calculated by multiplying the offset with the font's ascent.
+Negative values are used in accordance with the set unit of measure (uom) and are not multiplied.
+Defaults to 1/12 of the ascent.
 
 a| `deegree-font-underline`
 a| `false`
@@ -1075,7 +1080,9 @@ Defaults to 1/18 of the font's ascent.
 
 a| `deegree-font-underline-width`
 a| `0.08333`
-a| The width of the underline is calculated by multiplying the offset with the font's ascent. Defaults to 1/12 of the ascent.
+a| The width of the underline is calculated by multiplying the offset with the font's ascent.
+Negative values are used in accordance with the set unit of measure (uom) and are not multiplied.
+Defaults to 1/12 of the ascent.
 
 |===
 
