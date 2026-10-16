@@ -47,7 +47,7 @@ import static org.deegree.geometry.primitive.segments.CurveSegment.CurveSegmentT
  *
  * @author Sebastian Baumhekel
  */
-public final class BinaryWriter {
+public final class BinaryWriter implements EWKBTypes {
 
 	// prevent instantiating this class
 	@Deprecated
@@ -68,12 +68,12 @@ public final class BinaryWriter {
 		return bytes.getValue();
 	}
 
-	private static void writeEndianAndTypeWord(final int type, ValueSetter dest, boolean top) {
+	private static void writeEndianAndTypeWord(final int type, ValueSetter dest, int dimensions, boolean top) {
 		int typeword = type;
-		if (dest.hasZ()) {
+		if (dest.getAxis().hasZ(dimensions)) {
 			typeword |= 0x80000000;
 		}
-		if (dest.hasM()) {
+		if (dest.getAxis().hasM(dimensions)) {
 			typeword |= 0x40000000;
 		}
 		if (dest.getSrid() >= 0 && top) {
@@ -81,7 +81,7 @@ public final class BinaryWriter {
 		}
 
 		// write endian flag, NDR (little endian)
-		dest.setByte(Utils.LITTLE_ENDIAN);
+		dest.setByte(EWKBUtils.LITTLE_ENDIAN);
 
 		dest.setInt(typeword);
 
@@ -107,19 +107,19 @@ public final class BinaryWriter {
 			}
 			MultiGeometry<? extends Geometry> geometries = (MultiGeometry<? extends Geometry>) geom;
 			if (geometries.getMultiGeometryType() == MultiGeometry.MultiGeometryType.MULTI_POINT) {
-				writeEndianAndTypeWord(Types.MULTIPOINT_TYPE, dest, top);
+				writeEndianAndTypeWord(MULTIPOINT_TYPE, dest, geometries.getCoordinateDimension(), true);
 			}
 			else if (geometries.getMultiGeometryType() == MultiGeometry.MultiGeometryType.MULTI_LINE_STRING) {
-				writeEndianAndTypeWord(Types.MULTILINESTRING_TYPE, dest, top);
+				writeEndianAndTypeWord(MULTILINESTRING_TYPE, dest, geometries.getCoordinateDimension(), true);
 			}
 			else if (geometries.getMultiGeometryType() == MultiGeometry.MultiGeometryType.MULTI_POLYGON) {
-				writeEndianAndTypeWord(Types.MULTIPOLYGON_TYPE, dest, top);
+				writeEndianAndTypeWord(MULTIPOLYGON_TYPE, dest, geometries.getCoordinateDimension(), true);
 			}
 			else if (geometries.getMultiGeometryType() == MultiGeometry.MultiGeometryType.MULTI_CURVE) {
-				writeEndianAndTypeWord(Types.MULTICURVE_TYPE, dest, top);
+				writeEndianAndTypeWord(MULTICURVE_TYPE, dest, geometries.getCoordinateDimension(), true);
 			}
 			else {
-				writeEndianAndTypeWord(Types.GEOMETRY_COLLECTION_TYPE, dest, top);
+				writeEndianAndTypeWord(GEOMETRY_COLLECTION_TYPE, dest, geometries.getCoordinateDimension(), true);
 			}
 			dest.setInt(geometries.size());
 			for (Geometry sub : geometries) {
@@ -168,7 +168,7 @@ public final class BinaryWriter {
 			PolygonPatch pp = (PolygonPatch) sp;
 			for (Ring r : pp.getBoundaryRings()) {
 				if (r.getCurveSegments().size() > 1) {
-					// compund
+					// compound
 					isSimple = false;
 					break;
 				}
@@ -178,7 +178,7 @@ public final class BinaryWriter {
 		PolygonPatch pp = (PolygonPatch) geom.getPatches().get(0);
 		List<Ring> interiorRings = pp.getInteriorRings();
 		if (isSimple && types.size() == 1 && types.contains(LINE_STRING_SEGMENT)) {
-			writeEndianAndTypeWord(Types.POLYGON_TYPE, dest, top);
+			writeEndianAndTypeWord(POLYGON_TYPE, dest, pp.getCoordinateDimension(), top);
 			dest.setInt(1 + interiorRings.size());
 			writePoints(pp.getExteriorRing().getControlPoints(), dest);
 			for (Ring ring : interiorRings) {
@@ -186,7 +186,7 @@ public final class BinaryWriter {
 			}
 			return;
 		}
-		writeEndianAndTypeWord(Types.CURVE_POLYGON_TYPE, dest, top);
+		writeEndianAndTypeWord(CURVE_POLYGON_TYPE, dest, pp.getCoordinateDimension(), top);
 		dest.setInt(1 + interiorRings.size());
 		writeCurve(pp.getExteriorRing(), dest, false);
 		for (Ring ring : interiorRings) {
@@ -200,8 +200,8 @@ public final class BinaryWriter {
 		return types;
 	}
 
-	private static EnumSet<CurveSegment.CurveSegmentType> checksCompoundLineSegment(
-			EnumSet<CurveSegment.CurveSegmentType> types, List<CurveSegment> segments) {
+	private static void checksCompoundLineSegment(EnumSet<CurveSegment.CurveSegmentType> types,
+			List<CurveSegment> segments) {
 		for (CurveSegment segment : segments) {
 			switch (segment.getSegmentType()) {
 				case CIRCLE: // Circle extends ArcString
@@ -216,14 +216,13 @@ public final class BinaryWriter {
 					throw new InvalidParameterValueException();
 			}
 		}
-		return types;
 	}
 
 	private static void writePoint(Point pnt, ValueSetter dest, boolean top) {
-		writeEndianAndTypeWord(Types.POINT_TYPE, dest, top);
+		writeEndianAndTypeWord(POINT_TYPE, dest, pnt.getCoordinateDimension(), top);
 		dest.setDouble(pnt.get0());
 		dest.setDouble(pnt.get1());
-		switch (dest.getAxis()) {
+		switch (dest.getAxis().withoutAuto(pnt.getCoordinateDimension())) {
 			case XYZ:
 			case XYM:
 				dest.setDouble(pnt.get(2));
@@ -236,7 +235,7 @@ public final class BinaryWriter {
 
 	private static void writePoints(Points points, ValueSetter dest) {
 		dest.setInt(points.size());
-		Axis dim = dest.getAxis();
+		Axis dim = dest.getAxis().withoutAuto(points.getDimension());
 		for (Point pnt : points) {
 			dest.setDouble(pnt.get0());
 			dest.setDouble(pnt.get1());
@@ -258,16 +257,16 @@ public final class BinaryWriter {
 
 		Points controlPoints = null;
 		if (types.size() == 1 && segments.size() == 1 && types.contains(LINE_STRING_SEGMENT)) {
-			writeEndianAndTypeWord(Types.LINESTRING_TYPE, dest, top);
+			writeEndianAndTypeWord(LINESTRING_TYPE, dest, geom.getCoordinateDimension(), top);
 			controlPoints = ((LineStringSegment) segments.get(0)).getControlPoints();
 		}
 		else if (types.size() == 1 && segments.size() == 1 && types.contains(ARC_STRING)) {
-			writeEndianAndTypeWord(Types.CIRCULAR_STRING_TYPE, dest, top);
+			writeEndianAndTypeWord(CIRCULAR_STRING_TYPE, dest, geom.getCoordinateDimension(), top);
 			controlPoints = ((ArcString) segments.get(0)).getControlPoints();
 		}
 		else {
 			// COMPOUND
-			writeEndianAndTypeWord(Types.COMPOUND_CURVE_TYPE, dest, top);
+			writeEndianAndTypeWord(COMPOUND_CURVE_TYPE, dest, geom.getCoordinateDimension(), top);
 		}
 		if (controlPoints != null) {
 			writePoints(controlPoints, dest);
@@ -276,13 +275,13 @@ public final class BinaryWriter {
 			dest.setInt(segments.size());
 			for (CurveSegment segment : segments) {
 				if (segment.getSegmentType() == LINE_STRING_SEGMENT) {
-					writeEndianAndTypeWord(Types.LINESTRING_TYPE, dest, false);
+					writeEndianAndTypeWord(LINESTRING_TYPE, dest, segment.getCoordinateDimension(), false);
 					controlPoints = ((LineStringSegment) segment).getControlPoints();
 					writePoints(controlPoints, dest);
 				}
 				else {
 					// ARC
-					writeEndianAndTypeWord(Types.CIRCULAR_STRING_TYPE, dest, false);
+					writeEndianAndTypeWord(CIRCULAR_STRING_TYPE, dest, segment.getCoordinateDimension(), false);
 					controlPoints = ((ArcString) segment).getControlPoints();
 					writePoints(controlPoints, dest);
 				}

@@ -55,8 +55,8 @@ public class StringValueSetter extends ValueSetter {
 
 	@Override
 	public void setByte(byte b) {
-		sb.append(Utils.HEX_CHAR[(b >> 4) & 0xF]);
-		sb.append(Utils.HEX_CHAR[b & 0xF]);
+		sb.append(EWKBUtils.HEX_CHAR[(b >> 4) & 0xF]);
+		sb.append(EWKBUtils.HEX_CHAR[b & 0xF]);
 	}
 
 }
