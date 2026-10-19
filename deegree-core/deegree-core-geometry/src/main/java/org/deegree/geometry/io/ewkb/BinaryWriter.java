@@ -101,25 +101,26 @@ public final class BinaryWriter implements EWKBTypes {
 			writePrimitive((GeometricPrimitive) geom, dest, top);
 		}
 		else if (typ == Geometry.GeometryType.MULTI_GEOMETRY) {
-			if (!top) {
-				// encapsulated multi not supported
+			MultiGeometry<? extends Geometry> geometries = (MultiGeometry<? extends Geometry>) geom;
+			if (!(top || isEmptyCollection(geometries))) {
+				// encapsulated non-empty multigeometry/collection is not supported
 				throw new InvalidParameterValueException();
 			}
-			MultiGeometry<? extends Geometry> geometries = (MultiGeometry<? extends Geometry>) geom;
+			int dimensions = isEmptyCollection(geometries) ? 2 : geometries.getCoordinateDimension();
 			if (geometries.getMultiGeometryType() == MultiGeometry.MultiGeometryType.MULTI_POINT) {
-				writeEndianAndTypeWord(MULTIPOINT_TYPE, dest, geometries.getCoordinateDimension(), true);
+				writeEndianAndTypeWord(MULTIPOINT_TYPE, dest, dimensions, true);
 			}
 			else if (geometries.getMultiGeometryType() == MultiGeometry.MultiGeometryType.MULTI_LINE_STRING) {
-				writeEndianAndTypeWord(MULTILINESTRING_TYPE, dest, geometries.getCoordinateDimension(), true);
+				writeEndianAndTypeWord(MULTILINESTRING_TYPE, dest, dimensions, true);
 			}
 			else if (geometries.getMultiGeometryType() == MultiGeometry.MultiGeometryType.MULTI_POLYGON) {
-				writeEndianAndTypeWord(MULTIPOLYGON_TYPE, dest, geometries.getCoordinateDimension(), true);
+				writeEndianAndTypeWord(MULTIPOLYGON_TYPE, dest, dimensions, true);
 			}
 			else if (geometries.getMultiGeometryType() == MultiGeometry.MultiGeometryType.MULTI_CURVE) {
-				writeEndianAndTypeWord(MULTICURVE_TYPE, dest, geometries.getCoordinateDimension(), true);
+				writeEndianAndTypeWord(MULTICURVE_TYPE, dest, dimensions, true);
 			}
 			else {
-				writeEndianAndTypeWord(GEOMETRY_COLLECTION_TYPE, dest, geometries.getCoordinateDimension(), true);
+				writeEndianAndTypeWord(GEOMETRY_COLLECTION_TYPE, dest, dimensions, true);
 			}
 			dest.setInt(geometries.size());
 			for (Geometry sub : geometries) {
@@ -134,6 +135,16 @@ public final class BinaryWriter implements EWKBTypes {
 			// COMPOSITE_GEOMETRY: and others
 			throw new InvalidParameterValueException();
 		}
+	}
+
+	private static boolean isEmptyCollection(MultiGeometry<? extends Geometry> geometries) {
+		if (geometries.isEmpty()) {
+			return true;
+		}
+		else if (geometries.size() == 1 && geometries.get(0) instanceof MultiGeometry<?> mg) {
+			return isEmptyCollection(mg);
+		}
+		return false;
 	}
 
 	private static void writePrimitive(GeometricPrimitive geom, ValueSetter dest, boolean top) {

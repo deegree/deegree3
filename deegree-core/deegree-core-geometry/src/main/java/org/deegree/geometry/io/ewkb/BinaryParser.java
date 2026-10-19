@@ -33,9 +33,12 @@ import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.segments.CurveSegment;
 import org.deegree.geometry.standard.points.PackedPoints;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.function.IntFunction;
 
@@ -49,6 +52,8 @@ import static org.deegree.geometry.io.ewkb.Axis.XYZM;
  * @author Sebastian Baumhekel
  */
 public final class BinaryParser implements EWKBTypes {
+
+	private static final Logger LOG = LoggerFactory.getLogger(BinaryParser.class);
 
 	// prevent instantiating this class
 	@Deprecated
@@ -74,13 +79,25 @@ public final class BinaryParser implements EWKBTypes {
 	 * @param sridToCrs Converter function to convert srid to ICRS
 	 * @param value byte array containing the data to be parsed
 	 * @param offset offset
-	 * @return resulting geometry for the parsed data
+	 * @return resulting geometry for the parsed data or <code>null</code> for (partial)
+	 * empty geometries
 	 * @throws IllegalArgumentException if a contained geometry is of the wrong type or
 	 * the encoding type is unknown
 	 */
 	public static Geometry parse(Axis axis, IntFunction<ICRS> sridToCrs, byte[] value, int offset) {
-		return parseGeometry(new BinaryValueGetter(axis != null ? axis : Axis.AUTO,
-				sridToCrs != null ? sridToCrs : SRID_TO_NONE, value, offset));
+		try {
+			return parseGeometry(new BinaryValueGetter(axis != null ? axis : Axis.AUTO,
+					sridToCrs != null ? sridToCrs : SRID_TO_NONE, value, offset));
+		}
+		catch (UnsportedEmptyGeometry e) {
+			// noinspection LoggingSimilarMessage
+			LOG.warn("Unsupported EMPTY geometry detected, returning 'null' instead.");
+			if (LOG.isTraceEnabled()) {
+				// noinspection LoggingSimilarMessage
+				LOG.trace("Unsupported geometry: '{}'", HexFormat.of().formatHex(value));
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -88,13 +105,25 @@ public final class BinaryParser implements EWKBTypes {
 	 * @param axis Requested number and arrangement of Axis
 	 * @param sridToCrs Converter function to convert srid to ICRS
 	 * @param value String containing the data to be parsed
-	 * @return resulting geometry for the parsed data
+	 * @return resulting geometry for the parsed data or <code>null</code> for (partial)
+	 * empty geometries
 	 * @throws IllegalArgumentException if a contained geometry is of the wrong type or
 	 * the encoding type is unknown
 	 */
 	public static Geometry parse(Axis axis, IntFunction<ICRS> sridToCrs, String value) {
-		return parseGeometry(new StringValueGetter(axis != null ? axis : Axis.AUTO,
-				sridToCrs != null ? sridToCrs : SRID_TO_NONE, value));
+		try {
+			return parseGeometry(new StringValueGetter(axis != null ? axis : Axis.AUTO,
+					sridToCrs != null ? sridToCrs : SRID_TO_NONE, value));
+		}
+		catch (UnsportedEmptyGeometry e) {
+			// noinspection LoggingSimilarMessage
+			LOG.warn("Unsupported EMPTY geometry detected, returning 'null' instead");
+			if (LOG.isTraceEnabled()) {
+				// noinspection LoggingSimilarMessage
+				LOG.trace("Unsupported geometry: '{}'", value);
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -104,9 +133,11 @@ public final class BinaryParser implements EWKBTypes {
 	 * @param data {@link ValueGetter}
 	 * @return {@link Collection} of geometries
 	 * @throws IllegalArgumentException if a contained geometry is of the wrong type
+	 * @throws UnsportedEmptyGeometry if a geometry is EMPTY or contains EMPTY elements
 	 */
 	@SuppressWarnings("unchecked")
-	private static <T extends Geometry> List<T> parseGeometries(Class<T> clazz, ValueGetter data) {
+	private static <T extends Geometry> List<T> parseGeometries(Class<T> clazz, ValueGetter data)
+			throws UnsportedEmptyGeometry {
 		// get number of geometries to parse
 		int count = data.getInt();
 		ArrayList<T> l = new ArrayList<>(count);
@@ -130,8 +161,9 @@ public final class BinaryParser implements EWKBTypes {
 	 * @param data ValueGetter with the data to be parsed
 	 * @return the parsed geometry
 	 * @throws IllegalArgumentException for unknown geometry types
+	 * @throws UnsportedEmptyGeometry if a geometry is EMPTY or contains EMPTY elements
 	 */
-	private static Geometry parseGeometry(ValueGetter data) {
+	private static Geometry parseGeometry(ValueGetter data) throws UnsportedEmptyGeometry {
 		// read endian flag
 		data.readEncoding();
 		// and get the type
@@ -206,19 +238,15 @@ public final class BinaryParser implements EWKBTypes {
 	 * @param haveZ parse z value?
 	 * @param haveM parse measure value?
 	 * @return {@link Point}
+	 * @throws UnsportedEmptyGeometry if a geometry is EMPTY or contains EMPTY elements
 	 */
-	private static Point parsePoint(ValueGetter data, boolean haveZ, boolean haveM) {
+	private static Point parsePoint(ValueGetter data, boolean haveZ, boolean haveM) throws UnsportedEmptyGeometry {
 		double x = data.getDouble();
 		double y = data.getDouble();
-		double z = haveZ ? data.getDouble() : data.getNoValue();
-		double m = haveM ? data.getDouble() : data.getNoValue();
-		// parse z?
-		if (haveZ) {
-			z = data.getDouble();
-		}
-		// parse measure?
-		if (haveM) {
-			m = data.getDouble();
+		double z = haveZ ? data.getDouble() : data.getNoData();
+		double m = haveM ? data.getDouble() : data.getNoData();
+		if (Double.isNaN(x) && Double.isNaN(y) && data.isNoData(z, haveZ) && data.isNoData(m, haveM)) {
+			throw new UnsportedEmptyGeometry();
 		}
 
 		return switch (data.getAxis().withoutAuto(haveZ, haveM)) {
@@ -237,8 +265,12 @@ public final class BinaryParser implements EWKBTypes {
 	 * @param haveM parse measure value?
 	 * @return {@link Collection} of {@link Point}s
 	 */
-	private static PackedPoints parsePoints(ValueGetter data, boolean haveZ, boolean haveM) {
+	private static PackedPoints parsePoints(ValueGetter data, boolean haveZ, boolean haveM)
+			throws UnsportedEmptyGeometry {
 		int count = data.getInt();
+		if (count == 0) {
+			throw new UnsportedEmptyGeometry();
+		}
 		final Axis axis = data.getAxis().withoutAuto(haveZ, haveM);
 		double[] points = new double[axis.size(count)];
 		int pos = 0;
@@ -246,17 +278,20 @@ public final class BinaryParser implements EWKBTypes {
 			points[pos++] = data.getDouble();
 			points[pos++] = data.getDouble();
 			if (axis == XYZ || axis == XYZM) {
-				points[pos++] = haveZ ? data.getDouble() : data.getNoValue();
+				points[pos++] = haveZ ? data.getDouble() : data.getNoData();
 			}
 			if (axis == XYM || axis == XYZM) {
-				points[pos++] = haveM ? data.getDouble() : data.getNoValue();
+				points[pos++] = haveM ? data.getDouble() : data.getNoData();
 			}
 		}
 		return new PackedPoints(null, points, axis.size(1));
 	}
 
-	private static Curve parseCompoundCurve(ValueGetter data) {
+	private static Curve parseCompoundCurve(ValueGetter data) throws UnsportedEmptyGeometry {
 		int count = data.getInt();
+		if (count == 0) {
+			throw new UnsportedEmptyGeometry();
+		}
 		CurveSegment[] segments = new CurveSegment[count];
 		for (int i = 0; i < count; i++) {
 			// read endian flag
@@ -281,8 +316,11 @@ public final class BinaryParser implements EWKBTypes {
 		return _gf.createCurve(null, null, segments);
 	}
 
-	private static List<Ring> parseRings(ValueGetter data) {
+	private static List<Ring> parseRings(ValueGetter data) throws UnsportedEmptyGeometry {
 		int count = data.getInt();
+		if (count == 0) {
+			throw new UnsportedEmptyGeometry();
+		}
 		List<Ring> segments = new ArrayList<>(count);
 		for (int i = 0; i < count; i++) {
 			// read endian flag
@@ -323,9 +361,13 @@ public final class BinaryParser implements EWKBTypes {
 	 * @param haveZ parse z value?
 	 * @param haveM parse measure value?
 	 * @return {@link Polygon}
+	 * @throws UnsportedEmptyGeometry if a geometry is EMPTY or contains EMPTY elements
 	 */
-	private static Polygon parsePolygon(ValueGetter data, boolean haveZ, boolean haveM) {
+	private static Polygon parsePolygon(ValueGetter data, boolean haveZ, boolean haveM) throws UnsportedEmptyGeometry {
 		int count = data.getInt();
+		if (count == 0) {
+			throw new UnsportedEmptyGeometry();
+		}
 		List<Ring> rings = new ArrayList<>(count);
 		for (int i = 0; i < count; i++) {
 			rings.add(_gf.createLinearRing(null, null, parsePoints(data, haveZ, haveM)));
