@@ -33,6 +33,8 @@ import java.util.function.IntFunction;
  */
 public abstract class ValueGetter {
 
+	private double noData = Double.NaN;
+
 	/**
 	 * Int builder for big endian encoding.
 	 */
@@ -102,10 +104,30 @@ public abstract class ValueGetter {
 
 	/**
 	 * Value to return if no value for Z or M is available
-	 * @return
+	 * @return no-data value
 	 */
-	public double getNoValue() {
-		return Double.NaN;
+	public double getNoData() {
+		return noData;
+	}
+
+	/**
+	 * Sets custom no-data value
+	 */
+	public void setNoData(double noData) {
+		this.noData = noData;
+	}
+
+	/**
+	 * Returns true if value matches no-data (hasValue=true) or NaN (hasValue=false)
+	 */
+	boolean isNoData(double value, boolean hasValue) {
+		double refValue = hasValue ? noData : Double.NaN;
+		if (Double.isNaN(refValue)) {
+			return Double.isNaN(value);
+		}
+		else {
+			return value == refValue;
+		}
 	}
 
 	/**
